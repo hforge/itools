@@ -112,7 +112,9 @@ class Catalog(Folder):
         self.removed_documents = []
 
 
-    def _save(self):
+    def _save(self, resource):
+        # XXX We don't use the given resource!!!
+
         # Remove documents
         for doc_number in self.removed_documents:
             self._del_handler('d%07d' % doc_number)

@@ -80,8 +80,11 @@ class Handler(object):
         self.timestamp = resource.get_mtime()
 
 
-    def save(self):
-        self._save()
+    def save(self, resource=None):
+        if resource is None:
+            resource = self.resource
+
+        self._save(resource)
         self.timestamp = self.resource.get_mtime()
 
 
@@ -134,6 +137,9 @@ class Handler(object):
             handler = transaction.pop()
             if handler.resource.get_mtime() is not None:
                 handler.save()
+                # Event: after commit
+                if hasattr(handler, 'after_commit'):
+                    handler.after_commit()
 
     commit_transaction = classmethod(commit_transaction)
 

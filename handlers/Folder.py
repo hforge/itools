@@ -68,7 +68,9 @@ class Folder(Handler):
         self.removed_handlers = Set()
 
 
-    def _save(self):
+    def _save(self, resource):
+        # XXX We don't use the given resource!!!
+
         # Remove handlers
         for name in self.removed_handlers:
             # XXX We may need to do something else here
@@ -246,6 +248,15 @@ class Folder(Handler):
         # Clean the 'removed_handlers' data structure if needed
         if name in container.removed_handlers:
             container.removed_handlers.remove(name)
+        # Make a copy of the handler
+        if isinstance(handler.resource, base.File):
+            resource = memory.File('')
+        else:
+            resource = memory.Folder()
+        handler.save(resource)
+        handler = handler.__class__(resource)
+        handler.parent = self
+        handler.name = name
         # Add the handler
         container.added_handlers[name] = handler
         # Event, on set handler

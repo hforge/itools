@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -53,8 +53,8 @@ class File(Handler):
         self._mimetype = resource.get_mimetype()
 
 
-    def _save(self):
-        self.resource.set_data(self.to_str())
+    def _save(self, resource):
+        resource.set_data(self.to_str())
 
 
     #########################################################################

@@ -442,7 +442,9 @@ class IIndex(Folder, Tree):
         self.removed_terms = {}
 
 
-    def _save(self):
+    def _save(self, resource):
+        # XXX We don't use the given resource!!!
+
         # Removed terms
         for term, documents in self.removed_terms.items():
             self._unindex_term(term, documents)

@@ -82,7 +82,7 @@ class KeyValue(Text):
     #########################################################################
     # API
     #########################################################################
-    def __unicode__(self):
+    def to_unicode(self):
         data = u''
         for key in self.keys:
             value = getattr(self, key)

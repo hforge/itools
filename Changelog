@@ -2,6 +2,28 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-08-11 12:12:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
+
+    Summary:
+      API, resources (get_data),  handlers (to_str/to_unicode)
+    Revision:
+      itools--main--0.4--patch-64
+
+    Improve the API for resources and handlers.
+    
+    The __str__ method from resources has been removed in favour of get_data.
+    
+    The file handler methods __str__ and __unicode__ are obsoleted by to_str
+    and to_unicode.
+
+    modified files:
+     Changelog catalog/Catalog.py doc/chandlers.tex handlers/CSV.py
+     handlers/File.py handlers/KeyValue.py handlers/PO.py
+     handlers/Text.py handlers/Var.py resources/base.py
+     resources/file.py resources/http.py resources/memory.py
+     xml/HTML.py xml/XML.py
+
+
 2004-08-08 17:33:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
 
     Summary:

@@ -69,7 +69,7 @@ class Record(object):
                   'unsupported header %s at line %d' % (keyword, line)
 
 
-    def __unicode__(self):
+    def to_unicode(self):
         s = u'URI: %s\n' % self.uri
         if self.type:
             s += u'Content-Type: %s\n' % self.type
@@ -133,5 +133,5 @@ class Var(Text):
     #######################################################################
     # API
     #######################################################################
-    def __unicode__(self):
-        return '\n'.join([ unicode(x) for x in self.records ])
+    def to_unicode(self):
+        return '\n'.join([ x.to_unicode() for x in self.records ])

@@ -92,7 +92,7 @@ class File(Resource, base.File):
 ##        return mimetype
 
 
-    def __str__(self):
+    def get_data(self):
         return file(self._path, 'rb').read()
 
 

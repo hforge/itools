@@ -54,12 +54,8 @@ class Resource:
 
 
 class File(Resource):
-    def __str__(self):
-        raise NotImplementedError
-
-
     def __getitem__(self, index):
-        return str(self)[index]
+        return self.get_data()[index]
 
 
     def __setitem__(self, index, value):
@@ -67,7 +63,11 @@ class File(Resource):
 
 
     def __getslice__(self, a, b):
-        return str(self)[a:b]
+        return self.get_data()[a:b]
+
+
+    def get_data(self):
+        raise NotImplementedError
 
 
     def set_data(self, data):
@@ -75,12 +75,9 @@ class File(Resource):
 
 
     def get_size(self):
-        return len(str(self))
+        return len(self.get_data())
 
 
-    def get_data(self):
-        # XXX Kept here for backwards compatibility only
-        return str(self)
 
 
 

@@ -117,7 +117,7 @@ class Message(object):
         self.msgstr = msgstr
 
 
-    def __unicode__(self):
+    def to_unicode(self):
         s = u''
         # The comments
         for comment in self.comments:
@@ -381,9 +381,8 @@ class PO(Text):
         return None
 
 
-    def __unicode__(self):
-        return '\n'.join([ unicode(x) for x in self._messages.values() ])
-
+    def to_unicode(self):
+        return '\n'.join([ x.to_unicode() for x in self._messages.values() ])
 
 
     def set_message(self, msgid, msgstr=[u''], comments=[], references={}):

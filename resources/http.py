@@ -42,7 +42,7 @@ class Resource(base.Resource):
 class File(Resource, base.File):
     """ """
 
-    def __str__(self):
+    def get_data(self):
         return urlopen(self.get_uri()).read()
 
 

@@ -55,7 +55,7 @@ class Fields(Text):
         self.field_numbers = {}
 
         r = self.resource
-        data = str(r)
+        data = r.get_data()
         for line in data.split('\n'):
             line = line.strip()
             if line:

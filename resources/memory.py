@@ -57,7 +57,7 @@ class File(Resource, base.File):
         self.data += value
 
 
-    def __str__(self):
+    def get_data(self):
         return self.data
 
 

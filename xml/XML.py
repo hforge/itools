@@ -680,7 +680,7 @@ class Document(Text.Text):
     #######################################################################
     # API
     #######################################################################
-    def __unicode__(self):
+    def to_unicode(self):
         # The children
         s = u''
         for child in self.children:

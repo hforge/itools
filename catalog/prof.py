@@ -18,6 +18,7 @@
 
 # Import from Python
 import profile
+from time import time
 
 # Import from itools
 from itools.handlers import get_handler, Text
@@ -41,38 +42,45 @@ class Document(HTML.Document):
 
 
 
-# Create and get a new empty index
-catalog = Catalog(fields=[('title', 'text', True, True),
-                          ('body', 'text', True, False)])
-tests = get_handler('tests')
-if tests.has_resource('catalog'):
-    tests.del_resource('catalog')
-tests.set_handler('catalog', catalog)
-catalog_resource = tests.get_resource('catalog')
-catalog = Catalog(catalog_resource)
+def create_catalog():
+    print 'Creating catalog...',
+    global catalog
+    # Create and get a new empty index
+    catalog = Catalog(fields=[('title', 'text', True, True),
+                              ('body', 'text', True, False)])
+    tests = get_handler('tests')
+    if tests.has_resource('catalog'):
+        tests.del_resource('catalog')
+    tests.set_handler('catalog', catalog)
+    catalog_resource = tests.get_resource('catalog')
+    catalog = Catalog(catalog_resource)
+    print 'done'
 
 
-src = get_resource(docs_path)
-resource_names = [ x for x in src.get_resources() if x.endswith('.html') ]
-resource_names.sort()
 documents = []
-for name in resource_names[:120]:
-    try:
-        doc = Document(src.get_resource(name))
-    except:
-        pass
-    else:
-        documents.append(doc)
-print len(documents)
+def load_documents():
+    print 'Loading documents...',
+    src = get_resource(docs_path)
+    resource_names = [ x for x in src.get_resources() if x.endswith('.html') ]
+    resource_names.sort()
+    for name in resource_names[:120]:
+        try:
+            doc = Document(src.get_resource(name))
+        except:
+            pass
+        else:
+            documents.append(doc)
+    print 'done'
 
 
-catalog = Catalog(fields=[('title', 'text', True, True),
-                          ('body', 'text', True, False)])
+##catalog = Catalog(fields=[('title', 'text', True, True),
+##                          ('body', 'text', True, False)])
 
 
 def profile_indexing():
-    for document in documents[:25]:
+    for document in documents[:50]:
         catalog.index_document(document)
+    catalog.save()
 
 
 def profile_search():
@@ -81,7 +89,16 @@ def profile_search():
 
 
 if __name__ == '__main__':
-    profile.run('profile_indexing()')
+    create_catalog()
+    load_documents()
+    # Benchmark
+    t0 = time()
+    profile_indexing()
+    t1 = time()
+    print t1 - t0
+    # Profile
+##    profile.run('profile_indexing()')
+
 ##    print
 ##    print
 ##    print

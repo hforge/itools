@@ -30,20 +30,20 @@ from IIndex import IIndex
 class IITestCase(TestCase):
     def test_hit(self):
         ii = IIndex()
-        ii.index_word(u'hello', 0, 0)
+        ii.index_term(u'hello', 0, 0)
         assert bool(ii.search_word(u'hello')) is True
 
 
     def test_miss(self):
         ii = IIndex()
-        ii.index_word(u'hello', 0, 0)
+        ii.index_term(u'hello', 0, 0)
         assert bool(ii.search_word(u'bye')) is False
 
 
     def test_unindex(self):
         ii = IIndex()
-        ii.index_word(u'hello', 0, 0)
-        ii.unindex_word(u'hello', 0)
+        ii.index_term(u'hello', 0, 0)
+        ii.unindex_term(u'hello', 0)
         assert bool(ii.search_word(u'hello')) is False
 
 
@@ -76,6 +76,7 @@ for resource_name in resource_names:
     resource = tests.get_resource(resource_name)
     document = Document(resource)
     catalog.index_document(document)
+catalog.save()
 
 
 

@@ -50,14 +50,6 @@ class Handler(object):
     _mimetype = None
 
 
-    def load(self, resource=None):
-        if resource is None:
-            resource = self.resource
-
-        self._load(resource)
-        self.timestamp = datetime.datetime.now()
-
-
     ########################################################################
     # API
     ########################################################################
@@ -68,6 +60,21 @@ class Handler(object):
         self._mimetype = mimetype
 
     mimetype = property(get_mimetype, set_mimetype, None, '')
+
+
+    ########################################################################
+    # Load / Save
+    def load(self, resource=None):
+        if resource is None:
+            resource = self.resource
+
+        self._load(resource)
+        self.timestamp = datetime.datetime.now()
+
+
+    def save(self):
+        self._save()
+        self.timestamp = datetime.datetime.now()
 
 
     ########################################################################

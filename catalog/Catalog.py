@@ -101,11 +101,37 @@ class Catalog(Folder):
 
 
     #########################################################################
+    # Load / Save state
+    #########################################################################
+    def _load(self, resource):
+        self.added_documents = {}
+        self.removed_documents = []
+
+
+    def _save(self):
+        # Remove documents
+        for doc_number in self.removed_documents:
+            self.del_handler('d%d' % doc_number)
+        self.removed_documents = []
+        # Add documents
+        for doc_number, document in self.added_documents.items():
+            self.set_handler('d%d' % doc_number, document)
+        self.added_documents = {}
+        # Save indexes
+        fields = self.get_handler('fields')
+        for field in fields.fields:
+            if field.is_indexed:
+                iindex = self.get_handler('f%d' % field.number)
+                iindex.save()
+
+
+    #########################################################################
     # Private API
     #########################################################################
     def get_new_document_number(self):
         documents = [ int(x[1:]) for x in self.resource.get_resources()
                       if x.startswith('d') ]
+        documents += self.added_documents.keys()
         if documents:
             documents.sort()
             return documents[-1] + 1
@@ -116,15 +142,12 @@ class Catalog(Folder):
     # Public API
     #########################################################################
     def index_document(self, document):
-        # Get the document number, and name
+        # Create the document
         doc_number = self.get_new_document_number()
-        doc_name = 'd%d' % doc_number
-
+        idoc = IDocument()
+        self.added_documents[doc_number] = idoc
+        # Index
         fields = self.get_handler('fields')
-        # Documents
-        self.set_handler(doc_name, IDocument())
-        idoc = self.get_handler(doc_name)
-        #
         for field in fields.fields:
             # Extract the field value from the document
             value = None
@@ -148,20 +171,20 @@ class Catalog(Folder):
 
                 # Choose the right analyser
                 if field.type == 'text':
-                    analyser = Analysers.Text(value)
+                    analyser = Analysers.Text
                 elif field.type == 'bool':
-                    analyser = Analysers.Bool(value)
+                    analyser = Analysers.Bool
                 elif field.type == 'keyword':
-                    analyser = Analysers.Keyword(value)
+                    analyser = Analysers.Keyword
                 elif field.type == 'path':
-                    analyser = Analysers.Path(value)
+                    analyser = Analysers.Path
 
                 # Inverted index (search)
                 ii = self.get_handler('f%d' % field.number)
                 terms = Set()
                 # Tokenize
-                for word, position in analyser:
-                    ii.index_word(word, doc_number, position)
+                for word, position in analyser(value):
+                    ii.index_term(word, doc_number, position)
                     # Update the un-index data structure
                     if word not in terms:
                         ifield.add_term(word)
@@ -171,25 +194,22 @@ class Catalog(Folder):
             if field.is_stored:
                 idoc.set_handler('s%d' % field.number, StoredField(data=value))
 
-        # Set timestamp
-        self.timestamp = datetime.datetime.now()
-
         return doc_number
 
 
     def unindex_document(self, doc_number):
-        document = self.get_handler('d%d' % doc_number)
+        if doc_number in self.added_documents:
+            document = self.added_documents.pop(doc_number)
+        else:
+            document = self.get_handler('d%d' % doc_number)
+            self.removed_documents.append(doc_number)
+            
         for name in document.get_resources():
             if name.startswith('i'):
                 field = document.get_handler(name)
                 ii = self.get_handler('f' + name[1:])
                 for term in field.terms:
-                    ii.unindex_word(term, doc_number)
-        # Remove the document
-        self.del_handler('d%d' % doc_number)
-
-        # Set timestamp
-        self.timestamp = datetime.datetime.now()
+                    ii.unindex_term(term, doc_number)
 
 
     def _search(self, query):

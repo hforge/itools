@@ -17,7 +17,7 @@
 
 
 # Import from Python
-import datetime
+from sets import Set
 
 # Import from itools
 from itools.handlers.File import File
@@ -262,7 +262,7 @@ class Tree(object):
     ########################################################################
     # API
     ########################################################################
-    def index_word(self, word, doc_number, position):
+    def _index_term(self, word, doc_number, position):
         if word:
             prefix, suffix = word[0], word[1:]
             if prefix in self.children:
@@ -283,7 +283,7 @@ class Tree(object):
                 this_slot = 16 + self.slot * 16
                 r[free_slot+12:free_slot+16] = r[this_slot+8:this_slot+12]
                 r[this_slot+8:this_slot+12] = IO.encode_link(free_slot_n)
-            subtree.index_word(suffix, doc_number, position)
+            subtree._index_term(suffix, doc_number, position)
         else:
             tree_handler = self.root.tree_handler
             tree_rsrc = tree_handler.resource
@@ -313,11 +313,11 @@ class Tree(object):
             docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frequency)
 
 
-    def unindex_word(self, word, doc_number):
+    def _unindex_term(self, word, doc_number):
         if word:
             prefix, suffix = word[0], word[1:]
             subtree = self.children[prefix]
-            subtree.unindex_word(suffix, doc_number)
+            subtree._unindex_term(suffix, doc_number)
         else:
             del self.documents[doc_number]
             # Update resource
@@ -399,6 +399,9 @@ class IIndex(Folder, Tree):
         return Folder._get_handler(self, segment, resource)
 
 
+    ########################################################################
+    # Load / Save
+    ########################################################################
     def _load(self, resource):
         self.tree_handler = tree_handler = self.get_handler('tree')
         self.docs_handler = docs_handler = self.get_handler('documents')
@@ -416,11 +419,28 @@ class IIndex(Folder, Tree):
             tree._load()
             # Next
             child_n = IO.decode_link(tree_rsrc[child+12:child+16])
+        # The state
+        self.added_terms = {}
+        self.removed_terms = {}
+
+
+    def _save(self):
+        # Removed terms
+        for term, documents in self.removed_terms.keys():
+            for doc_number in documents:
+                self._unindex_term(term, doc_number)
+        self.removed_terms = {}
+        # Added terms
+        for term, documents in self.removed_terms.keys():
+            for doc_number, positions in documents.keys():
+                for position in positions:
+                    self._index_term(term, doc_number, position)
 
 
     ########################################################################
-    # Public API
-    def index_word(self, word, doc_number, position):
+    # Private API
+    ########################################################################
+    def _index_term(self, word, doc_number, position):
         prefix, suffix = word[0], word[1:]
         if prefix in self.children:
             subtree = self.children[prefix]
@@ -438,13 +458,44 @@ class IIndex(Folder, Tree):
             # Prepend the new slot
             r[base+12:base+16] = r[8:12]
             r[8:12] = IO.encode_link(slot_number)
-        subtree.index_word(suffix, doc_number, position)
-
-        # Set timestamp
-        self.timestamp = datetime.datetime.now()
+        subtree._index_term(suffix, doc_number, position)
 
 
-    def unindex_word(self, word, doc_number):
-        Tree.unindex_word(self, word, doc_number)
-        # Set timestamp
-        self.timestamp = datetime.datetime.now()
+    ########################################################################
+    # Public API
+    ########################################################################
+    def index_term(self, term, doc_number, position):
+        # Removed terms
+        if term in self.removed_terms:
+            if doc_number in self.removed_terms[term]:
+                del self.removed_terms[term][doc_number]
+        # Added terms
+        documents = self.added_terms.setdefault(term, {})
+        positions = documents.setdefault(doc_number, [])
+        positions.append(position)
+
+
+    def unindex_term(self, term, doc_number):
+        # Added terms
+        if term in self.added_terms:
+            if doc_number in self.added_terms[term]:
+                del self.added_terms[term][doc_number]
+        # Removed terms
+        documents = self.removed_terms.setdefault(term, Set())
+        documents.add(doc_number)
+
+
+    def search_word(self, word):
+        documents = Tree.search_word(self, word)
+        # Remove documents
+        if word in self.removed_terms:
+            for doc_number in self.removed_terms[word]:
+                if doc_number in documents:
+                    del documents[doc_number]
+        # Add documents
+        if word in self.added_terms:
+            for doc_number, positions in self.added_terms[word].items():
+                documents.setdefault(doc_number, 0)
+                documents[doc_number] += len(positions)
+
+        return documents

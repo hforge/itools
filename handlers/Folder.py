@@ -56,6 +56,9 @@ class Folder(Handler):
         self.load()
 
 
+    #########################################################################
+    # Load / Save
+    #########################################################################
     def _load(self, resource):
         """
         By default folders don't load any state. This means they are always
@@ -64,6 +67,9 @@ class Folder(Handler):
         Warning: if you develop a folder handler that does load its state,
         be very careful to update the state whenever you modify the handler.
         """
+
+    def _save(self):
+        pass
 
 
     #########################################################################

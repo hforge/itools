@@ -45,9 +45,16 @@ class File(Handler):
         self.load()
 
 
+    #########################################################################
+    # Load / Save
+    #########################################################################
     def _load(self, resource):
         self._data = resource.get_data()
         self._mimetype = resource.get_mimetype()
+
+
+    def _save(self):
+        self.resource.set_data(self.to_str())
 
 
     #########################################################################
@@ -103,19 +110,14 @@ class File(Handler):
 
 
     #########################################################################
-    # API
+    # Serialization
     #########################################################################
     def to_str(self):
         return self._data
 
 
-    def save(self):
-        self.resource.set_data(self.to_str())
-        self.timestamp = datetime.datetime.now()
-
-
     #########################################################################
-    # Shorthands (there are chances they will be removed some time in the
+    # XXX Shorthands (there are chances they will be removed some time in the
     # future, use 'to_str' and 'to_unicode' instead!!)
     def __str__(self):
         return self.to_str()

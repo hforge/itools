@@ -112,15 +112,19 @@ class Catalog(Folder):
 
 
     def _save(self, resource):
-        # XXX We don't use the given resource!!!
-
         # Remove documents
         for doc_number in self.removed_documents:
-            self._del_handler('d%07d' % doc_number)
+            name = 'd%07d' % doc_number
+            resource.del_resource(name)
+            del self.cache[name]
         self.removed_documents = []
         # Add documents
         for doc_number, document in self.added_documents.items():
-            self._set_handler('d%07d' % doc_number, document)
+            if document.has_changed():
+                document.save()
+            name = 'd%07d' % doc_number
+            resource.set_resource(name, document.resource)
+            self.cache[name] = None
         self.added_documents = {}
         # Save indexes
         fields = self.get_handler('fields')

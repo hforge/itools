@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-09 14:07:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-43
+
+    Summary:
+      merge folder fix from 0.8
+    Revision:
+      itools--main--0.7--patch-43
+
+
+    modified files:
+     Changelog catalog/Catalog.py handlers/Folder.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.8--patch-13
+
+
 2005-03-08 10:55:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
 
     Summary:

@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-13 19:25:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
+
+    Summary:
+      handlers, fixing transaction bugs
+    Revision:
+      itools--main--0.7--patch-13
+
+    Two bugs have been fixed. First "Folder.set_handler" correctly sets the
+    container being modified as changed, instead of "self".
+    
+    Second, "commit_transaction" has been changed so if the transaction is
+    modified through the loop it does not break.
+
+    modified files:
+     Changelog handlers/Folder.py handlers/Handler.py
+
+
 2005-02-12 18:07:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
 
     Summary:

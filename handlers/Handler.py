@@ -126,11 +126,11 @@ class Handler(object):
 
     def commit_transaction(cls):
         transaction = cls.get_transaction()
-        for handler in transaction:
+        while transaction:
+            handler = transaction.pop()
             # XXX Maybe we should check the timestamp to know wether the
             # handler has really changed
             handler.save()
-        transaction.clear()
 
     commit_transaction = classmethod(commit_transaction)
 

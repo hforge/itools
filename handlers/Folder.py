@@ -230,8 +230,6 @@ class Folder(Handler):
 
 
     def set_handler(self, path, handler, **kw):
-        self.set_changed()
-
         if not isinstance(path, uri.Path):
             path = uri.Path(path)
 
@@ -239,6 +237,7 @@ class Folder(Handler):
         name = segment.name
 
         container = self.get_handler(path)
+        container.set_changed()
         # Check if there is already a handler with that name
         if name in container.get_handler_names():
             raise LookupError, 'there is already a handler named "%s"' % name

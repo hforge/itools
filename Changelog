@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-10 09:54:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
+
+    Summary:
+      xml, remove obsolete "stl:ifnot", "__unicode__" and "__str__"
+    Revision:
+      itools--main--0.8--patch-14
+
+
+    modified files:
+     Changelog xml/STL.py xml/Schema.py xml/XHTML.py xml/XML.py
+
+
 2005-03-09 13:43:54 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
 
     Summary:

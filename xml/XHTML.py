@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -219,11 +219,7 @@ class Document(XML.Document):
         message = i18n.segment.Message()
         keep_spaces = False
         for node, context in self.traverse2():
-            if isinstance(node, XML.XMLDeclaration):
-                decl = copy(node)
-                decl.encoding = 'UTF-8'
-                buffer.write(unicode(decl))
-            elif isinstance(node, XML.Raw):
+            if isinstance(node, XML.Raw):
                 message.append(node.data)
             elif isinstance(node, XML.Element):
                 if context.start:
@@ -252,7 +248,7 @@ class Document(XML.Document):
                         if node.name == 'pre':
                             keep_spaces = False
             else:
-                buffer.write(unicode(node))
+                buffer.write(node.to_unicode())
 
         data = buffer.getvalue()
         buffer.close()
@@ -381,7 +377,7 @@ class Document(XML.Document):
         text = ''
         for node in self.traverse():
             if isinstance(node, XML.Raw):
-                text += unicode(node)
+                text += node.to_unicode()
         return text
 
 

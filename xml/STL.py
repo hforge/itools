@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -380,14 +380,14 @@ class STL(object):
             if isinstance(child, XML.Element):
                 s.extend(self.process(child, stack, repeat))
             else:
-                s.append(unicode(child))
+                s.append(child.to_unicode())
         return u''.join(s)
 
 
     def process(self, node, stack, repeat_stack):
         # Raw nodes
         if isinstance(node, (XML.Raw, XML.Comment)):
-            return [unicode(node)]
+            return [node.to_unicode()]
 
         s = []
         # Process stl:repeat
@@ -429,13 +429,6 @@ class STL(object):
         if node.has_attribute('if', namespace=stl_uri):
             stl_expression = node.get_attribute('if', namespace=stl_uri)
             if not stl_expression.evaluate(stack, repeat):
-                return []
-
-        # Remove the element if the given expression evaluates to true
-        # XXX Obsolete as of 0.6 (remove by 0.7)
-        if node.has_attribute('ifnot', namespace=stl_uri):
-            stl_expression = node.get_attribute('ifnot', namespace=stl_uri)
-            if stl_expression.evaluate(stack, repeat):
                 return []
 
         # Print tag name
@@ -538,7 +531,6 @@ class NamespaceHandler(XML.NamespaceHandler):
     def get_attribute(cls, prefix, name, value):
         """Attribute factory, returns the right attribute instance."""
         attributes = {'repeat': RepeatAttr,
-                      'ifnot': Expression, # XXX Obsolete
                       'attributes': AttributesAttr,
                       'content': Expression}
         if name == 'if':

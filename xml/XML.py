@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -115,11 +115,6 @@ class NodeList(list):
         return 0
 
 
-    # XXX Backwards compatibility, to be removed by 0.8
-    __unicode__ = to_unicode
-    __str__ = to_str
-
-
 
 class Raw(Node):
     def __init__(self, data):
@@ -134,10 +129,6 @@ class Raw(Node):
         if not isinstance(other, self.__class__):
             return 1
         return cmp(self.to_unicode(), other.to_unicode())
-
-
-    # XXX Backwards compatibility, to be removed by 0.8
-    __unicode__ = to_unicode
 
 
 
@@ -175,10 +166,6 @@ class XMLDeclaration(Node):
         return XMLDeclaration(self.version, self.encoding, self.standalone)
 
 
-    # XXX Backwards compatibility, to be removed by 0.8
-    __unicode__ = to_unicode
-
-
 
 class DocumentType(Node):
     def __init__(self, name, system_id, public_id, has_internal_subset):
@@ -206,10 +193,6 @@ class DocumentType(Node):
         return 1
 
 
-    # XXX Backwards compatibility, to be removed by 0.8
-    __unicode__ = to_unicode
-
-
 
 class Comment(Node):
     def __init__(self, data):
@@ -224,10 +207,6 @@ class Comment(Node):
         if not isinstance(other, self.__class__):
             return 1
         return cmp(self.data, other.data)
-
-
-    # XXX Backwards compatibility, to be removed by 0.8
-    __unicode__ = to_unicode
 
 
 
@@ -305,7 +284,6 @@ class Document(Text.Text):
         """
         Builds a tree made of elements and raw data.
         """
-        File.File._load(self, resource)
         # Default values for version, encoding and standalone are the expat's
         # default or implicit values. These are overwritten if a declaration
         # is found.
@@ -357,14 +335,12 @@ class Document(Text.Text):
         self.ns_declarations = {}
 
         # Parse!!
-        parser.Parse(self._data, True)
+        parser.Parse(resource.get_data(), True)
 
         # Remove auxiliar attributes
         del self.parser
         del self.stack
         del self.ns_declarations
-        # Remove the processed data
-        del self._data
 
 
     #######################################################################
@@ -788,10 +764,6 @@ class Element(Node):
         attribute of the 'img' elements of XHTML.
         """
         return False
-
-
-    # XXX Backwards compatibility, to be removed by 0.8
-    __unicode__ = to_unicode
 
 
 

@@ -107,7 +107,7 @@ class ComplexType(object):
                 if issubclass(type, ComplexType):
                     value = type.decode(node)
                 else:
-                    value = unicode(node.children)
+                    value = node.children.to_unicode()
                     value = value.encode('utf8')
                     try:
                         value = type.decode(value)

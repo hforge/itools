@@ -88,6 +88,9 @@ class File(Resource):
         could start by a dot (a hidden file in Unix systems).
 
         XXX Use magic numbers too (like file -i).
+
+        XXX It does not work if name is 'itools-0.7.0.pdf', because it
+        thinks the extension is '0'.
         """
         name = self.get_name()
         if name is None:

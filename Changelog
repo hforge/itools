@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-23 14:40:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
+
+    Summary:
+      resources, signal bug in "get_mimetype"
+    Revision:
+      itools--main--0.7--patch-30
+
+    It should be reported in bugzilla instead (but we don't have
+    bugzilla yet).
+
+    modified files:
+     Changelog resources/base.py
+
+
 2005-02-23 13:55:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
 
     Summary:

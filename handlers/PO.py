@@ -264,7 +264,7 @@ class PO(Text):
                         key, value = value.split(':', 1)
                         if key == 'Content-Type':
                             mimetype, charset = value.split(';')
-                            charser = charset.strip()
+                            charset = charset.strip()
                             self._encoding = charset[len('charset='):]
                 elif line_type == BLANK:
                     # End of the entry
@@ -330,7 +330,7 @@ class PO(Text):
                     # XXX Get everything, not just the content type
                     if key == 'Content-Type':
                         mimetype, charset = value.split(';')
-                        charser = charset.strip()
+                        charset = charset.strip()
                         self._encoding = charset[len('charset='):]
         else:
             # Defaults, XXX guess it instead??

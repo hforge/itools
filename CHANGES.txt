@@ -1,3 +1,16 @@
+0.7.1 (2005/03/03)
+
+  URI
+  - Don't fail with malformed email addresses ("mailto" scheme).
+
+  Resources
+  - Finish Zope 2 resources.
+
+  Catalog
+  - Now the method "search" is a generator.
+  - Search performance optimizations.
+
+
 0.7.0 (2005/02/23)
 
   Resources

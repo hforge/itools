@@ -87,11 +87,15 @@ class Handler(object):
 
     def is_outdated(self):
         mtime = self.resource.get_mtime()
-        return mtime is None or mtime > self.timestamp
+        if mtime is None:
+            return True
+        return mtime > self.timestamp
 
 
     def has_changed(self):
         mtime = self.resource.get_mtime()
+        if mtime is None:
+            return False
         return self.timestamp > mtime
 
 
@@ -128,9 +132,8 @@ class Handler(object):
         transaction = cls.get_transaction()
         while transaction:
             handler = transaction.pop()
-            # XXX Maybe we should check the timestamp to know wether the
-            # handler has really changed
-            handler.save()
+            if handler.resource.get_mtime() is not None:
+                handler.save()
 
     commit_transaction = classmethod(commit_transaction)
 

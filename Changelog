@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-08-31 13:24:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-71
+
+    Summary:
+      XML, fix data nodes serialization
+    Revision:
+      itools--main--0.4--patch-71
+
+    XML serialization was broken because data nodes (XML.Raw) did not scape
+    the ampersand charachter (&). Fixed.
+
+    modified files:
+     Changelog xml/XML.py
+
+
 2004-08-30 10:15:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-70
 
     Summary:

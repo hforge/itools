@@ -102,30 +102,6 @@ class Folder(Handler):
         return self.resource.get_mimetype()
 
 
-    def get_resource_names(self, path='.'):
-        return self.resource.get_resource_names(path)
-
-
-    def get_resources(self, path='.'):
-        return self.resource.get_resources(path)
-
-
-    def get_resource(self, path):
-        return self.resource.get_resource(path)
-
-
-    def has_resource(self, path):
-        return self.resource.has_resource(path)
-
-
-    def set_resource(self, path, resource):
-        return self.resource.set_resource(path, resource)
-
-
-    def del_resource(self, path):
-        return self.resource.del_resource(path)
-
-
     #########################################################################
     # API (private)
     #########################################################################
@@ -199,8 +175,8 @@ class Folder(Handler):
         is_virtual = False
         if handler is None:
             # Lookup the resource handler
-            if self.has_resource(name):
-                resource = self.get_resource(name)
+            if self.resource.has_resource(name):
+                resource = self.resource.get_resource(name)
                 handler = self._get_handler(segment, resource)
             else:
                 handler = self._get_virtual_handler(segment)
@@ -252,7 +228,7 @@ class Folder(Handler):
     # Tree
     def traverse(self):
         yield self
-        for resource_name in self.get_resource_names():
+        for resource_name in self.get_handler_names():
             handler = self.get_handler(resource_name)
             if isinstance(handler, Folder):
                 for x in handler.traverse():
@@ -262,7 +238,7 @@ class Folder(Handler):
 
 
     def acquire(self, name):
-        if self.has_resource(name):
+        if self.has_handler(name):
             return self.get_handler(name)
         return Handler.acquire(self, name)
 

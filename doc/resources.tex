@@ -101,7 +101,7 @@ As an example of the API let's exercise it with a web page:
 
 \begin{code}
     >>> resource = get_resource('http://example.com')
-    >>> print repr(resource)
+    >>> print resource
     <itools.resources.http.File instance at 0x404aadec>
     >>> print resource.get_mimetype()
     text/html
@@ -190,9 +190,9 @@ To copy a web page to the local file system:
     >>> web_page = get_resource('http://example.com')
     >>> tmp.set_resource('example.html', web_page)
     >>> copy_of_web_page = tmp.get_resource('example.html')
-    >>> print repr(web_page)
+    >>> print web_page
     <itools.resources.http.File instance at 0x405e8a2c>
-    >>> print repr(copy_of_web_page)
+    >>> print copy_of_web_page
     <itools.resources.file.File instance at 0x405fb64c>
 \end{code}
 

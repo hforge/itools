@@ -116,20 +116,6 @@ class File(Handler):
         return self._data
 
 
-    #########################################################################
-    # XXX Shorthands (there are chances they will be removed some time in the
-    # future, use 'to_str' and 'to_unicode' instead!!)
-    def __str__(self):
-        return self.to_str()
-
-
-    def __unicode__(self):
-        # The method 'to_unicode' is defined by the subclass 'Text',
-        # binary files (those that do not inherit from 'Text') will
-        # raise an attribute error.
-        return self.to_unicode()
-
-
 Handler.register_handler_class(File)
 
 

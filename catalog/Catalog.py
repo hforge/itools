@@ -204,7 +204,7 @@ class Catalog(Folder):
             document = self.get_handler('d%d' % doc_number)
             self.removed_documents.append(doc_number)
             
-        for name in document.get_resource_names():
+        for name in document.resource.get_resource_names():
             if name.startswith('i'):
                 field = document.get_handler(name)
                 ii = self.get_handler('f' + name[1:])

@@ -25,7 +25,7 @@ Let's start with an example:
 \begin{code}
     >>> from itools.xml import HTML
     >>> handler = HTML.Document(resource)
-    >>> print repr(handler)
+    >>> print handler
     <itools.handlers.HTML.Document object at 0x40647b4c>
     >>> print handler.to_str()
     <HTML>
@@ -261,7 +261,7 @@ For example, from the {\tt examples} directory type:
     >>> for name in here.get_resource_names():
     ...     resource = here.get_resource(name)
     ...     handler = Handler.build_handler(resource)
-    ...     print name, repr(handler)
+    ...     print name, handler
     ... 
     chapter6 <itools.handlers.Folder.Folder object at 0x40538d4c>
     chapter7 <itools.handlers.Folder.Folder object at 0x4032c0cc>

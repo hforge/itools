@@ -135,4 +135,5 @@ setup(name = "itools",
                    'Topic :: Text Processing :: Markup',
                    'Topic :: Text Processing :: Markup :: XML'],
 ##      data_files = [('zope', ['zope/localroles.dtml'])],
+      scripts = ['i18n/igettext.py'],
       cmdclass = {'build_py': build_py})

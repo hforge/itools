@@ -1,9 +1,9 @@
 \chapter{Resource Handlers}
 
-The resource layer knowledge about the content of a resource is minimal.
-For example, it does not know that an XML document has a tree structure,
-hence it does not provide an API to traverse it; nor it knows how to get
-the messages and translations from a PO file.
+The resource layer knowledge about the {\em meaning} of the content of
+a resource is minimal. For example, it does not know that an XML document
+has a tree structure, hence it does not provide an API to traverse it; nor
+it knows how to get the messages and translations from a PO file.
 
 This is the purpose of the {\em resource handlers}, to add semantics to
 specific resources.
@@ -14,7 +14,7 @@ specific resources.
 Let's go straight with an example:
 
 \begin{enumerate}
-  \item First we load a resource as seen in the previous section:
+  \item First we load a resource as seen in the previous chapter:
 \begin{code}
     >>> from itools.resources import get_resource
     >>> resource = get_resource('http://example.com')
@@ -224,7 +224,7 @@ An example will show it better.
 
 Folders allow to classify files, hence giving a tree structure to our data.
 Every handler has two attributes, {\tt parent} and {\tt name}, they tell us
-where the handler is in the resource tree:
+where the handler is in the handler tree:
 
 \begin{code}
     >>> hello.parent
@@ -256,6 +256,11 @@ Based on these two attributes handlers provide the following API:
   {\tt get\_pathto(handler)}\\
   - Returns a relative path from {\tt self} to the given handler (which is
     supposed to be in the same tree), for example: {\tt ../../zoo/lion}.
+
+  {\tt traverse()}\\
+  - This method allows to traverse the handler tree below this folder. It
+    is a generator which returns a handler at a time, starting by this
+    folder.
 
   {\tt acquire(name)}\\
   - If the current handler is a folder and contains a resource with the given
@@ -310,8 +315,18 @@ for the {\tt Text} handler; specific methods of {\tt XML.Document} are:
   {\tt \_\_cmp\_\_(other)}\\
   - Lets to compare two XML documents.
 
+  {\tt get\_root\_element()}\\
+  - Returns the root element of this XML document.
+
+  {\tt traverse()}\\
+  - This method allows to traverse the XML document, as it has a tree
+    structure. It is a generator which returns a node at a time, starting
+    by the document instance.
+
   {\tt walk(before=None, after=None, context=None)}\\
-  - Lets to traverse the XML tree, and do things through the traverse.
+  - As {\tt traverse}, this method allows to traverse the XML document,
+    though it is more powerful, and complex. It will be explained in the
+    XML chapter.
 \end{api}
 
 Actually, the features provided by {\tt itools} to manage XML documents
@@ -328,6 +343,10 @@ The handler for XHTML documents, it extends the API provided by
 
   {\tt get\_body()}\\
   - Returns the body element.
+
+  {\tt to\_text()}\\
+  - Strips all the XML markup and returns the text content of the XHTML
+    document. This is useful, for example, to index the document.
 \end{api}
 
 \paragraph{PO}
@@ -337,39 +356,16 @@ utilities.
 
 \begin{api}
   {\tt get\_msgids()}\\
-  - Returns the list of messages ids stored in the catalog.
+  - Returns the list of message ids stored in the catalog.
+
+  {\tt get\_messages()}\\
+  - Returns the list of messages stored in the catalog, where each message
+    is represented as an instance of the class {\tt PO.Message}.
 
   {\tt get\_msgstr(msgid)}\\
   - Returns the message string for the given message id.
+
+  {\tt set\_message(msgid, msgstr=[u''], comments=[u''], references=\{\})}\\
+  - Adds a message (from the given parameters) to the catalog.
 \end{api}
 
-
-
-\section{Writing your own handler}
-
-When developing applications based on {\tt itools.handlers} most of the
-work is spent on developing new handler classes. This section describes
-the steps to follow to write a new handler:
-
-\begin{enumerate}
-  \item First the base class must be choosen, for example, if we want
-    to write a handler for {\bf T}ranslation {\bf M}emory
-    e{\bf X}change\footnote{http://www.lisa.org/tmx} documents, our TMX
-    class should inherit from {\tt XML.Document}; if we want to write
-    a handler for {\bf C}omma {\bf S}eparated {\bf V}alue files, then our
-    class should inherit from {\tt Text}.
-
-  \item Usually we will implement the method {\tt \_load()}, which is the
-    responsible to parse the resource data and to build the data structure
-    we want in memory.
-
-  \item It is likely we will also write the method {\tt get\_skeleton()}
-    which must return the default content of a resource.
-
-  \item Finally we will develop the specific API that will enable us to
-    work with our handler.
-\end{enumerate}
-
-
-There is much more to tell about writing our own handlers, and I will tell
-it in some unknown future...

@@ -46,13 +46,15 @@ they share:
 
 \begin{api}
   {\tt get\_ctime()}\\
-  - Returns a datetime object with the time the resource was created.
+  - Returns a {\tt datetime} object with the time the resource was created.
 
   {\tt get\_mtime()}\\
-  - Returns a datetime object with the last time the resource was modified.
+  - Returns a {\tt datetime} object with the last time the resource was
+    modified.
 
   {\tt get\_atime()}\\
-  - Returns a datetime object with the last time the resource was accessed.
+  - Returns a {\tt datetime} object with the last time the resource was
+    accessed.
 
   {\tt get\_mimetype()}\\
   - Returns an string with the mime type of the resource (the mime type of
@@ -76,6 +78,19 @@ an specific API, the one for file resources is:
 
   {\tt get\_size()}\\
   - Returns the length (the number of bytes) of the resource data.
+
+  {\tt \_\_getitem\_\_(index)}\\
+  - Returns the byte at the given position.
+
+  {\tt \_\_getslice\_\_(a, b)}\\
+  - Returns the byte string that goes from {\em a} to {\em b}.
+
+  {\tt \_\_setitem\_\_(index, value)}\\
+  - Sets the given value to the given position ({\em index}). Usually
+    value will be just a byte, but it may be an slice too.
+
+  {\tt append(data)}\\
+  - Appends the given data to the resource.
 \end{api}
 
 As an example of the API let's exercise it with a web page:
@@ -101,6 +116,23 @@ As an example of the API let's exercise it with a web page:
 Of course, in this example, we can not modify the resource as we don't have
 write access to the web server.
 
+The methods {\tt \_\_getitem\_\_}, {\tt \_\_setitem\_\_}, etc. are specially
+useful to work with binary files, as they allow to read and write data at
+specific positions within a resource. These methods allow to access the
+resource with the same syntax used to access lists in Python:
+
+\begin{code}
+    >>> import struct
+    >>> n = struct.pack('>I', 47)
+    >>> resource[20:24] = n
+\end{code}
+
+This brief example shows how to write the number 47 at the position 20 of
+a given resource, encoded as an 32 bits unsigned integer.
+
+For a real example you can look at {\tt itools.catalog}, which makes
+extensive and systematic use of this approach.
+
 
 \section{Folder Resources}
 
@@ -115,7 +147,8 @@ The specific API for folders is:
   - Returns a list with the names of all the resources in the given path.
 
   {\tt has\_resource(path)}\\
-  - Returns true if there is a resource in the given path, false otherwise.
+  - Returns {\tt True} if there is a resource in the given path, {\tt False}
+    otherwise.
 
   {\tt set\_resource(path, resource)}\\
   - Adds the given resource to the given path.
@@ -125,6 +158,11 @@ The specific API for folders is:
 
   {\tt del\_resources(paths)}\\
   - Removes the resources at the given paths (where paths is a list of paths).
+
+  {\tt traverse()}\\
+  - This method allows to traverse the resource tree below this folder. It
+    is a generator which returns a resource at a time, starting by this
+    folder.
 \end{api}
 
 Let's exercise the API a little:

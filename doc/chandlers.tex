@@ -1,0 +1,57 @@
+\chapter{Writing your own handler class}
+
+In previous chapters we have seen some of the handlers {\tt itools} provides
+out of the box, and how they help us to work with resources (e.g. XML
+documents).
+
+
+This chapter will explain how to build your own handler classes, which will
+let you to add support for file formats either standard or defined by yourself.
+The explanation will be driven by an example.
+
+Following up the previous chapter, we will extend our addressbook, which
+will become a handler class. This means that the list of addressess (each
+one with its last name, first name and telephone number) will be stored in
+a resource, hence giving persistence to our addressbook.
+
+\section{Step by step}
+
+The process to write a handler class can be splitted in several steps, these
+are:
+
+\begin{enumerate}
+  \item First the file format must be choosen or designed. If there is an
+    standard file format that matches our requirements it could be wise to
+    use it. Other option is to design your own.
+
+    For example, if, in the context of a miltilingual application, we want
+    to have a catalog that keeps sentences in one language and its
+    translations to another language, then there are two obvious options,
+    the PO file format from GNU gettext and the TMX standard ({\bf T}ranslation
+    {\bf M}emory e{\bf X}change\footnote{http://www.lisa.org/tmx}).
+
+    In other situations we may want to design our own format, this is the
+    case we will illustrate in this chapter with the new version of
+    the addressbook.
+
+  \item The second step is to choose the handler class to use as base class.
+
+    For instance, if we're going to write a handler for TMX the base handler
+    class should be {\tt XML.Document}. If we want to write a handler for
+    {\bf C}omma {\bf S}eparated {\bf V}alue files, then our class should
+    inherit from {\tt Text}.
+
+  \item Usually we will implement the method {\tt \_load()}, which is the
+    responsible to parse the resource data and to build the data structure
+    we want in memory.
+
+  \item It is likely we will also write the method {\tt get\_skeleton()}
+    which must return the default content of a resource.
+
+  \item Finally we will develop the specific API that will enable us to
+    work with our handler.
+\end{enumerate}
+
+\section{Example: Addressbook}
+
+\subsubsection{}

@@ -272,6 +272,9 @@ class Folder(Handler):
         name = segment.name
 
         container = self.get_handler(path)
+        # Event, on del handler
+        if hasattr(container, 'on_del_handler'):
+            container.on_del_handler(segment)
         # Check wether the handler really exists
         if name not in container.get_handler_names():
             raise LookupError, 'there is not any handler named "%s"' % name
@@ -280,9 +283,6 @@ class Folder(Handler):
             del container.added_handlers[name]
         # Mark the handler as deleted
         container.removed_handlers.add(name)
-        # Event, on set handler
-        if hasattr(container, 'on_del_handler'):
-            container.on_del_handler(segment)
         # Set timestamp
         container.timestamp = datetime.datetime.now()
 

@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-23 20:25:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
+
+    Summary:
+      xml, now schema deals with the empty element case
+    Revision:
+      itools--main--0.8--patch-25
+
+    For example "<owner></owner>".
+    
+    Though the solution is probably not the best one.
+
+    modified files:
+     Changelog xml/Schema.py
+
+
 2005-03-23 19:18:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
 
     Summary:

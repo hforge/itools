@@ -43,6 +43,7 @@ class SimpleType(XML.Element):
 
     schema = {}
 
+
     def set_comment(self, comment):
         raise ValueError
 
@@ -201,8 +202,14 @@ class ComplexType(XML.Element):
 
 
     def set_element(self, element):
+        type, default = self.schema[element.name]
+        try:
+            value = getattr(element, 'value')
+        except AttributeError:
+            value = type.decode('')
+
         if element.has_attribute('lang'):
-            self.set_property(element.name, element.value,
+            self.set_property(element.name, value,
                               language=element.get_attribute('lang'))
         else:
-            self.set_property(element.name, element.value)
+            self.set_property(element.name, value)

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-05 14:42:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-54
+
+    Summary:
+      handlers, add 'to_unicode' to some type coders
+    Revision:
+      itools--main--0.8--patch-54
+
+
+    modified files:
+     Changelog handlers/IO.py
+
+
 2005-04-04 17:41:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
 
     Summary:

@@ -26,14 +26,6 @@ from itools import uri
 
 class Integer(object):
 
-    def encode(cls, value):
-        if value is None:
-            return ''
-        return str(value)
-
-    encode = classmethod(encode)
-
-
     def decode(cls, value):
         if not value:
             return None
@@ -42,8 +34,30 @@ class Integer(object):
     decode = classmethod(decode)
 
 
+    def encode(cls, value):
+        if value is None:
+            return ''
+        return str(value)
+
+    encode = classmethod(encode)
+
+
+    def to_unicode(cls, value):
+        if value is None:
+            return u''
+        return unicode(value)
+
+    to_unicode = classmethod(to_unicode)
+
+
 
 class Unicode(object):
+
+    def decode(cls, value, encoding='UTF-8'):
+        return unicode(value, encoding)
+
+    decode = classmethod(decode)
+
 
     def encode(cls, value, encoding='UTF-8'):
         # Escape XML (XXX this is specific to XML)
@@ -51,12 +65,6 @@ class Unicode(object):
         return value.encode(encoding)
 
     encode = classmethod(encode)
-
-
-    def decode(cls, value, encoding='UTF-8'):
-        return unicode(value, encoding)
-
-    decode = classmethod(decode)
 
 
     def to_unicode(cls, value):
@@ -70,16 +78,16 @@ class Unicode(object):
 
 class String(object):
 
-    def encode(cls, value):
-        return value
-
-    encode = classmethod(encode)
-
-
     def decode(cls, value):
         return value
 
     decode = classmethod(decode)
+
+
+    def encode(cls, value):
+        return value
+
+    encode = classmethod(encode)
 
 
     def to_unicode(cls, value):
@@ -90,6 +98,12 @@ class String(object):
 
 
 class Boolean(object):
+
+    def decode(cls, value):
+        return bool(int(value))
+
+    decode = classmethod(decode)
+
 
     def encode(cls, value):
         if value is True:
@@ -102,22 +116,8 @@ class Boolean(object):
     encode = classmethod(encode)
 
 
-    def decode(cls, value):
-        return bool(int(value))
-
-    decode = classmethod(decode)
-
-
 
 class Date(object):
-
-    def encode(cls, value):
-        if value is None:
-            return ''
-        return value.strftime('%Y-%m-%d')
-
-    encode = classmethod(encode)
-
 
     def decode(cls, value):
         if not value:
@@ -129,16 +129,24 @@ class Date(object):
     decode = classmethod(decode)
 
 
-
-class DateTime(object):
-
     def encode(cls, value):
         if value is None:
             return ''
-        return value.strftime('%Y-%m-%d %H:%M')
+        return value.strftime('%Y-%m-%d')
 
     encode = classmethod(encode)
 
+
+    def to_unicode(cls, value):
+        if value is None:
+            return u''
+        return unicode(value.strftime('%Y-%m-%d'))
+
+    to_unicode = classmethod(to_unicode)
+
+
+
+class DateTime(object):
 
     def decode(cls, value):
         if not value:
@@ -153,19 +161,35 @@ class DateTime(object):
     decode = classmethod(decode)
 
 
-
-class URI(object):
-
     def encode(cls, value):
-        return str(value)
+        if value is None:
+            return ''
+        return value.strftime('%Y-%m-%d %H:%M')
 
     encode = classmethod(encode)
 
+
+    def to_unicode(cls, value):
+        if value is None:
+            return u''
+        return unicode(value.strftime('%Y-%m-%d %H:%M'))
+
+    to_unicode = classmethod(to_unicode)
+
+
+
+class URI(object):
 
     def decode(cls, value):
         return uri.get_reference(value)
 
     decode = classmethod(decode)
+
+
+    def encode(cls, value):
+        return str(value)
+
+    encode = classmethod(encode)
 
 
     def to_unicode(cls, value):

@@ -274,8 +274,11 @@ class Catalog(Folder):
             # Get the stored fields
             for field in fields.fields:
                 if field.is_stored:
-                    stored_field = self.get_handler('d%d/s%d' % (doc_number,
-                                                                 field.number))
+                    if doc_number in self.added_documents:
+                        doc_handler = self.added_documents[doc_number]
+                    else:
+                        doc_handler = self.get_handler('d%d' % doc_number)
+                    stored_field = doc_handler.get_handler('s%d' %field.number)
                     setattr(document, field.name, stored_field.value)
             documents[i] = document
         return documents

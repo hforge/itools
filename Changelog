@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-06 13:20:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-78
+
+    Summary:
+      fix catalog, works with both UCS-4 and UCS-2
+    Revision:
+      itools--main--0.4--patch-78
+
+    Fix the catalog so it works with Python interpetrers that have been built
+    with UCS-2 instead of UCS-4.
+
+    modified files:
+     Changelog catalog/IO.py
+
+
 2004-09-05 10:01:31 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-77
 
     Summary:

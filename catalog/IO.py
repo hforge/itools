@@ -19,6 +19,7 @@
 # Import from Python
 import datetime
 import struct
+import sys
 
 
 """
@@ -39,6 +40,10 @@ after the requested one, hence the decode function returns a two elements
 tuple, where the first element is the decoded value and the second one
 is the data that remains and does not belong to the value.
 """
+
+
+
+UCS2 = sys.maxunicode == 65535
 
 
 
@@ -91,10 +96,14 @@ def decode_vint(data):
 # Characters are represented using the Python's internal unicode codec,
 # which may be UCS-2 or UCS-4, fixed-length encodings.
 def encode_character(value):
+    if UCS2:
+        return value.encode('unicode_internal') + '\x00\x00'
     return value.encode('unicode_internal')
 
 
 def decode_character(data):
+    if UCS2:
+        return unicode(data[:2], 'unicode_internal')
     return unicode(data, 'unicode_internal')
 
 

@@ -23,7 +23,7 @@ from sets import Set
 from itools.handlers.Folder import Folder
 from itools.handlers.Text import Text
 import Analysers
-from Document import Document, IndexedField, StoredField
+from IDocument import IDocument, IndexedField, StoredField
 from IIndex import IIndex
 
 
@@ -94,7 +94,7 @@ class Catalog(Folder):
         elif name.startswith('f'):
             return IIndex(resource)
         elif name.startswith('d'):
-            return Document(resource)
+            return IDocument(resource)
         return Folder._get_handler(self, segment, resource)
 
 
@@ -124,7 +124,7 @@ class Catalog(Folder):
         fields = self.get_handler('fields')
         # Documents
         self.documents.append(doc_number)
-        self.set_handler(doc_name, Document())
+        self.set_handler(doc_name, IDocument())
         idoc = self.get_handler(doc_name)
         #
         for field in fields.fields:
@@ -214,8 +214,7 @@ class Catalog(Folder):
         # Build the document objects
         for i, document in enumerate(documents):
             weight, doc_number = document
-            document = Document() # XXX
-            document.__number__ = doc_number
+            document = Document(doc_number)
             # Get the stored fields
             for field in fields.fields:
                 if field.is_stored:
@@ -224,3 +223,9 @@ class Catalog(Folder):
                     setattr(document, field.name, stored_field.value)
             documents[i] = document
         return documents
+
+
+
+class Document(object):
+    def __init__(self, number):
+        self.__number__ = number

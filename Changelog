@@ -2,6 +2,35 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-08-24 08:17:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
+
+    Summary:
+      catalog, fix search, add the missing class Document
+    Revision:
+      itools--main--0.4--patch-67
+
+    Every time there is a hit an instance of the Document class is created
+    and populated with the stored indexes.
+    
+    Before, the Document class was missing, but there was another class
+    with the same name (used for other purposes), which was used instead
+    by mistake.
+    
+    Changes:
+    
+      - Rename Document.Document to IDocument.IDocument
+      - Add Catalog.Document
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/IDocument.py
+
+    renamed files:
+     catalog/.arch-ids/Document.py.id
+       ==> catalog/.arch-ids/IDocument.py.id
+     catalog/Document.py
+       ==> catalog/IDocument.py
+
+
 2004-08-18 13:07:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-66
 
     Summary:

@@ -174,9 +174,7 @@ class Document(XML.Document):
                 if len(message) == 1 and isinstance(message[0], XML.Element):
                     node = message[0]
                     open_tag(node)
-                    children = [ isinstance(x, XML.Raw) and x.data or x
-                                 for x in node.children ]
-                    message = i18n.segment.Message(children)
+                    message = i18n.segment.Message(node.children)
                     for x in process_message(message, keep_spaces):
                         yield x
                     yield node.get_closetag()
@@ -188,8 +186,8 @@ class Document(XML.Document):
                                 break
                         elif isinstance(x, XML.Element):
                             for node in x.traverse():
-                                if isinstance(node, XML.Raw):
-                                    if node.data.strip():
+                                if isinstance(node, unicode):
+                                    if node.strip():
                                         break
                             else:
                                 continue
@@ -197,7 +195,10 @@ class Document(XML.Document):
                     else:
                         # Nothing to translate
                         for x in message:
-                            yield unicode(x)
+                            if isinstance(x, unicode):
+                                yield x
+                            else:
+                                yield x.to_unicode()
                         raise StopIteration
                     # Something to translate: segmentation
                     for segment in message.get_segments(keep_spaces):
@@ -218,8 +219,8 @@ class Document(XML.Document):
         message = i18n.segment.Message()
         keep_spaces = False
         for node, context in self.traverse2():
-            if isinstance(node, XML.Raw):
-                message.append(node.data)
+            if isinstance(node, unicode):
+                message.append(node)
             elif isinstance(node, XML.Element):
                 if context.start:
                     # Inline or block
@@ -273,9 +274,7 @@ class Document(XML.Document):
                 # Check wether the message is only one element
                 if len(message) == 1 and isinstance(message[0], XML.Element):
                     node = message[0]
-                    children = [ isinstance(x, XML.Raw) and x.data or x
-                                 for x in node.children ]
-                    message = i18n.segment.Message(children)
+                    message = i18n.segment.Message(node.children)
                     for x in process_message(message, keep_spaces):
                         yield x
                 else:
@@ -286,8 +285,8 @@ class Document(XML.Document):
                                 break
                         elif isinstance(x, XML.Element):
                             for node in x.traverse():
-                                if isinstance(node, XML.Raw):
-                                    if node.data.strip():
+                                if isinstance(node, unicode):
+                                    if data.strip():
                                         break
                             else:
                                 continue
@@ -304,8 +303,8 @@ class Document(XML.Document):
         message = i18n.segment.Message()
         keep_spaces = False
         for node, context in self.traverse2():
-            if isinstance(node, XML.Raw):
-                message.append(node.data)
+            if isinstance(node, unicode):
+                message.append(node)
             elif isinstance(node, XML.Element):
                 if context.start:
                     if node.name in ['script', 'style']:

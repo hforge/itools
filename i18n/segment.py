@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -136,7 +136,7 @@ class Message(list):
                         token = STOP_WORD, atom
                         yield token
                 else:
-                    state, lexeme = 2, unicode(atom)
+                    state, lexeme = 2, atom.to_unicode()
             elif state == 1:
                 if isinstance(atom, unicode):
                     if atom.isspace():
@@ -157,7 +157,7 @@ class Message(list):
                 else:
                     token = SPACE, lexeme
                     yield token
-                    state, lexeme = 2, unicode(atom)
+                    state, lexeme = 2, atom.to_unicode()
             elif state == 2:
                 if isinstance(atom, unicode):
                     if atom.isspace():
@@ -176,7 +176,7 @@ class Message(list):
                         yield token
                         state, lexeme = 0, ''
                 else:
-                    lexeme += unicode(atom)
+                    lexeme += atom.to_unicode()
             elif state == 3:
                 if isinstance(atom, unicode):
                     if atom.isspace():
@@ -204,7 +204,7 @@ class Message(list):
                         yield token
                         state, lexeme = 0, u''
                 else:
-                    lexeme += unicode(atom)
+                    lexeme += atom.to_unicode()
                     state = 2
 
         if state == 1:

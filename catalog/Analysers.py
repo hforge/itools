@@ -79,13 +79,13 @@ def Text(data):
 
 
 def Bool(value):
-    yield str(int(value)), 0
+    yield unicode(int(value)), 0
 
 
 
 def Keyword(value):
     if value:
-        yield value, 0
+        yield unicode(value), 0
 
 
 
@@ -95,5 +95,5 @@ def Path(value):
 
     i = 0
     for segment in value:
-        yield str(segment), i
+        yield unicode(segment), i
         i += 1

@@ -16,9 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-__revision__ = "$Id: __init__.py,v 1.3 2004/01/03 10:22:54 jdavid Exp $"
-
-
 # XXX
 # We have to transform the "zmi" folder to a Python package so
 # it is installed, besides the re-implemenations of the build_py

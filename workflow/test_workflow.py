@@ -18,11 +18,6 @@
 
 
 
-
-__revision__ = "$Id: test_workflow.py,v 1.5 2004/01/03 10:22:54 jdavid Exp $"
-
-
-
 # Python unit test
 ##import unittest
 ##from unittest import TestCase

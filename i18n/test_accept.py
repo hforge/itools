@@ -16,9 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-__revision__ = "$Id: test_accept.py,v 1.2 2003/08/05 09:11:26 jdavid Exp $"
-
-
 """
 Test suite for the language negotiation stuff.
 """

@@ -17,9 +17,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-__revision__ = "$Id: workflow.py,v 1.8 2003/11/19 14:49:57 jdavid Exp $"
-
-
 """
 The workflow module simplifies the task of writing workflow systems.
 

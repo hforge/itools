@@ -16,9 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-__revision__ = "$Id: test_parsers.py,v 1.6 2004/01/03 10:22:54 jdavid Exp $"
-
-
 # Python
 import unittest
 from unittest import TestCase, TestSuite, TextTestRunner

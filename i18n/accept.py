@@ -16,9 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-__revision__ = "$Id: accept.py,v 1.5 2004/01/03 10:22:53 jdavid Exp $"
-
-
 """
 This module implements the Accept-Charset and Accept-Language request
 headers of the HTTP protocol.

@@ -16,8 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-__revision__ = "$Id: __init__.py,v 1.9 2004/05/26 17:26:37 jdavid Exp $"
-
 
 # Import from itools
 from itools import get_abspath

@@ -16,9 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-__revision__ = '$Id: test_stl.py,v 1.17 2004/05/31 08:16:34 jdavid Exp $'
-
-
 import unittest
 from __init__ import Expression, NamespaceStack, Template, \
      TID, TSLASH, TOPEN, TCLOSE, TEOF

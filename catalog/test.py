@@ -49,6 +49,7 @@ class IITestCase(TestCase):
 
 
 class Document(Text):
+
     def _load(self, resource):
         # Pre-process (load as unicode)
         Text._load(self, resource)
@@ -58,6 +59,7 @@ class Document(Text):
         lines = data.split('\n')
         self.title = lines[0]
         self.body = '\n'.join(lines[3:])
+
 
 
 # Build a catalog on memory

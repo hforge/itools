@@ -82,6 +82,7 @@ class Fields(Text):
 
 
 class Catalog(Folder):
+
     def get_skeleton(self, fields=[]):
         skeleton = [('fields', Fields(fields=fields))]
         for number, field in enumerate(fields):
@@ -104,6 +105,8 @@ class Catalog(Folder):
     # Load / Save state
     #########################################################################
     def _load(self, resource):
+        Folder._load(self, resource)
+        # XXX This may be removed..
         self.added_documents = {}
         self.removed_documents = []
 
@@ -111,11 +114,11 @@ class Catalog(Folder):
     def _save(self):
         # Remove documents
         for doc_number in self.removed_documents:
-            self.del_handler('d%07d' % doc_number)
+            self._del_handler('d%07d' % doc_number)
         self.removed_documents = []
         # Add documents
         for doc_number, document in self.added_documents.items():
-            self.set_handler('d%07d' % doc_number, document)
+            self._set_handler('d%07d' % doc_number, document)
         self.added_documents = {}
         # Save indexes
         fields = self.get_handler('fields')
@@ -261,8 +264,6 @@ class Catalog(Folder):
             raise ValueError, "expected a query"
         # Search
         return self.__search(query)
-
-
 
 
     def how_many(self, query=None, **kw):

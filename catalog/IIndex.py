@@ -419,6 +419,8 @@ class IIndex(Folder, Tree):
     # Load / Save
     ########################################################################
     def _load(self, resource):
+        Folder._load(self, resource)
+
         self.tree_handler = tree_handler = self.get_handler('tree')
         self.docs_handler = docs_handler = self.get_handler('documents')
         # The tree

@@ -16,8 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-# Import from Python
+# Import from the Standard Library
 import datetime
+from sets import Set
 
 # Import from itools
 from itools.resources import base, memory
@@ -44,7 +45,7 @@ class Folder(Handler):
             # Add the skeleton
             skeleton = self.get_skeleton(**kw)
             for name, handler in skeleton:
-                self.set_handler(name, handler)
+                self._set_handler(name, handler)
         else:
             self.resource = resource
 
@@ -76,16 +77,19 @@ class Folder(Handler):
 
 
     def _load(self, resource):
-        """
-        By default folders don't load any state. This means they are always
-        up-to-date.
+        self.added_handlers = {}
+        self.removed_handlers = Set()
 
-        Warning: if you develop a folder handler that does load its state,
-        be very careful to update the state whenever you modify the handler.
-        """
 
     def _save(self):
-        pass
+        # Remove handlers
+        for name in self.removed_handlers:
+            self._del_handler(name)
+        self.removed_handlers = Set()
+        # Add handlers
+        for name, handler in self.added_handlers.items():
+            self._set_handler(name, handler)
+        self.added_handlers = {}
 
 
     #########################################################################
@@ -139,8 +143,8 @@ class Folder(Handler):
         raise LookupError, 'the resource "%s" does not exist' % segment.name
 
 
-    def _set_handler(self, segment, handler):
-        self.resource.set_resource(segment.name, handler.resource)
+    def _set_handler(self, name, handler):
+        self.resource.set_resource(name, handler.resource)
 
 
     def _del_handler(self, segment):
@@ -151,8 +155,11 @@ class Folder(Handler):
     # API (public)
     #########################################################################
     def get_handler_names(self, path='.'):
-        handler = self.get_handler('.')
-        return handler._get_handler_names()
+        container = self.get_handler(path)
+        handler_names = [ x for x in container._get_handler_names()
+                          if x not in container.removed_handlers ]
+        handler_names.extend(container.added_handlers.keys())
+        return handler_names
 
 
     def has_handler(self, path):
@@ -160,8 +167,11 @@ class Folder(Handler):
         if not isinstance(path, uri.Path):
             path = uri.Path(path)
 
-        container = self.get_handler(path[:-1])
-        return path[-1].name in container.get_handler_names()
+        path, segment = path[:-1], path[-1]
+        name = segment.name
+
+        container = self.get_handler(path)
+        return name in container.get_handler_names()
 
 
     def get_handler(self, path):
@@ -181,8 +191,13 @@ class Folder(Handler):
         name = segment.name
 
         key = str(segment)
-        if self.resource.has_resource(name):
-            # There is a resource
+        resource_names = [ x for x in self.resource.get_resource_names()
+                           if x not in self.removed_handlers ]
+        if name in self.added_handlers:
+            # It is a new handler (added but not yet saved)
+            handler = self.added_handlers[name]
+        elif name in resource_names:
+            # There is a handler
             if key in self.cache:
                 # Hit (XXX we should check wether resource and handler.resource
                 # are the same or not)
@@ -200,7 +215,7 @@ class Folder(Handler):
             atime = datetime.datetime.now()
             self.cache[key] = (handler, atime)
         else:
-            # There is not a resource
+            # There is not a handler
             if key in self.cache:
                 # Hit. Clean the cache (virtual handlers are not cached)
                 del self.cache[key]
@@ -228,9 +243,20 @@ class Folder(Handler):
             path = uri.Path(path)
 
         path, segment = path[:-1], path[-1]
+        name = segment.name
 
         container = self.get_handler(path)
-        container._set_handler(segment, handler, **kw)
+        # Check if there is already a handler with that name
+        if name in container.get_handler_names():
+            raise LookupError, 'there is already a handler named "%s"' % name
+        # Clean the 'removed_handlers' data structure if needed
+        if name in container.removed_handlers:
+            container.removed_handlers.remove(name)
+        # Add the handler
+        container.added_handlers[name] = handler
+        # Event, on set handler
+        if hasattr(container, 'on_set_handler'):
+            container.on_set_handler(segment, handler, **kw)
         # Set timestamp
         container.timestamp = datetime.datetime.now()
 
@@ -239,8 +265,18 @@ class Folder(Handler):
         if not isinstance(path, uri.Path):
             path = uri.Path(path)
 
-        container = self.get_handler(path[:-1])
-        container._del_handler(path[-1])
+        path, segment = path[:-1], path[-1]
+        name = segment.name
+
+        container = self.get_handler(path)
+        # Check wether the handler really exists
+        if name not in container.get_handler_names():
+            raise LookupError, 'there is not any handler named "%s"' % name
+        # Clean the 'added_handlers' data structure if needed
+        if name in container.added_handlers:
+            del container.added_handlers[name]
+        # Mark the handler as deleted
+        container.removed_handlers.add(name)
         # Set timestamp
         container.timestamp = datetime.datetime.now()
 
@@ -249,8 +285,8 @@ class Folder(Handler):
     # Tree
     def traverse(self):
         yield self
-        for resource_name in self.get_handler_names():
-            handler = self.get_handler(resource_name)
+        for name in self.get_handler_names():
+            handler = self.get_handler(name)
             if isinstance(handler, Folder):
                 for x in handler.traverse():
                     yield x

@@ -155,9 +155,8 @@ class Folder(Handler):
 
 
     def _get_handler(self, segment, resource):
-        from __init__ import guess_mimetype
         # Get the mimetype
-        mimetype = guess_mimetype(segment.name, resource)
+        mimetype = resource.get_mimetype()        
         # Build and return the handler
         return self.build_handler(resource, mimetype)
 

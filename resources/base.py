@@ -17,6 +17,7 @@
 
 
 # Import from Python
+import mimetypes
 from types import StringTypes
 
 # Import from itools
@@ -51,13 +52,50 @@ class Resource:
         self.uri = uri_reference
 
 
-    def get_mimetype(self):
-        return ''
-
+    def get_name(self):
+        if self.uri:
+            if self.uri.path:
+                return self.uri.path[-1].name
+        return None
 
 
 
 class File(Resource):
+
+    def get_mimetype(self):
+        """
+        Try to guess the mimetype for a resource, given the resource itself
+        and its name. To guess from the name we need to extract the type
+        extension, we use an heuristic for this task, but it needs to be
+        improved because there are many patterns:
+
+        <name>                                 README
+        <name>.<type>                          index.html
+        <name>.<type>.<language>               index.html.en
+        <name>.<type>.<language>.<encoding>    index.html.en.UTF-8
+        <name>.<type>.<compression>            itools.tar.gz
+        etc...
+
+        And even more complex, the name could contain dots, or the filename
+        could start by a dot (a hidden file in Unix systems).
+
+        XXX Use magic numbers too (like file -i).
+        """
+        name = self.get_name()
+        if name is None:
+            return None
+        # Get the extension (use an heuristic)
+        name = name.split('.')
+        if len(name) > 1:
+            if len(name) > 2:
+                extension = name[-2]
+            else:
+                extension = name[-1]
+            mimetype, encoding = mimetypes.guess_type('.%s' % extension)
+
+        return mimetype
+
+
     def __getitem__(self, index):
         return self.get_data()[index]
 

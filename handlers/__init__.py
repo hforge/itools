@@ -48,47 +48,9 @@ import PO
 import Text
 
 
-
 mimetypes.add_type('text/po', '.po')
 mimetypes.add_type('text/comma-separated-values', '.csv')
 mimetypes.add_type('application/xhtml+xml', '.xhtml')
-
-
-def guess_mimetype(name, resource):
-    """
-    Try to guess the mimetype for a resource, given the resource itself
-    and its name. To guess from the name we need to extract the type
-    extension, we use an heuristic for this task, but it needs to be
-    improved because there are many patterns:
-
-    <name>                                 README
-    <name>.<type>                          index.html
-    <name>.<type>.<language>               index.html.en
-    <name>.<type>.<language>.<encoding>    index.html.en.UTF-8
-    <name>.<type>.<compression>            itools.tar.gz
-    etc...
-
-    And even more complex, the name could contain dots, or the filename
-    could start by a dot (a hidden file in Unix systems).
-
-    XXX Use magic numbers too (like file -i).
-    """
-    # Maybe the resource knows
-    mimetype = resource.get_mimetype()
-
-    # If it does not, try guess from the name
-    if not mimetype:
-        # Get the extension (use an heuristic)
-        name = name.split('.')
-        if len(name) > 1:
-            if len(name) > 2:
-                extension = name[-2]
-            else:
-                extension = name[-1]
-            mimetype, encoding = mimetypes.guess_type('.%s' % extension)
-
-    return mimetype
-
 
 
 def get_handler(uri):
@@ -112,14 +74,10 @@ def get_handler(uri):
     'index.html'), which variant is returned depends on language negotiation.
     By default 'accept' is None, what means that this feature is disabled.
     """
-    # XXX A class URI should be developed, and the uri parameter should be
-    # an instance of it
-
     # Get the resource
     resource = get_resource(uri)
     # Get the mimetype
-    name = uri.split('/')[-1]
-    mimetype = guess_mimetype(name, resource)
+    mimetype = resource.get_mimetype()
     # Build the handler
     return Handler.Handler.build_handler(resource, mimetype)
 

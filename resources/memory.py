@@ -26,14 +26,17 @@ import base
 
 
 class Resource(base.Resource):
-    pass
+    name = None
+    def get_name(self):
+        return self.name
 
 
 
 class File(Resource, base.File):
     """ """
 
-    def __init__(self, data):
+    def __init__(self, data, name=None):
+        self.name = name
         self.data = StringIO()
         self.data.write(data)
         self.ctime = self.mtime = datetime.now()
@@ -95,7 +98,8 @@ class File(Resource, base.File):
 class Folder(Resource, base.Folder):
     """ """
 
-    def __init__(self):
+    def __init__(self, name=None):
+        self.name = name
         self.resources = {}
         self.ctime = self.mtime = datetime.now()
 

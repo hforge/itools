@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from itools
 from itools.handlers import IO
 from itools.xml import XML, namespaces
@@ -25,7 +24,7 @@ schema = {
     'contributor': {},
     'coverage': {},
     'creator': {},
-    'date': {'type': IO.Date},
+    'date': {'type': IO.DateTime},
     'description': {'type': IO.Unicode, 'default': u''},
     'format': {},
     'identifier': {'type': IO.String},

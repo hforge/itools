@@ -23,10 +23,10 @@ from sets import Set
 from itools import uri
 
 
-common_words = ['about', 'an', 'and', 'are', 'at', 'as', 'be', 'from', 'for',
-                'how', 'in', 'is', 'it', 'of', 'on', 'or',
-                'that', 'the', 'this', 'to',
-                'was', 'what', 'when', 'where', 'which', 'who', 'why', 'will']
+common_words = Set(['about', 'an', 'and', 'are', 'at', 'as', 'be', 'from',
+                    'for', 'how', 'in', 'is', 'it', 'of', 'on', 'or', 'that',
+                    'the', 'this', 'to', 'was', 'what', 'when', 'where',
+                    'which', 'who', 'why', 'will'])
 
 
 def Text(data):
@@ -41,14 +41,10 @@ def Text(data):
     2 -> 2 [letter or number]
     2 -> word [stop word]
     """
-    data = data
-    index = 0
     position = 0
-
     state = 0
     lexeme = u''
-    while index < len(data):
-        c = data[index]
+    for c in data:
         if state == 0:
             if c.isalpha():
                 lexeme += c
@@ -73,7 +69,6 @@ def Text(data):
                     position += 1
                     lexeme = u''
                     state = 0
-        index += 1
     # Last word
     if state == 2:
         lexeme = lexeme.lower()

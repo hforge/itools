@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-17 19:53:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-54
+
+    Summary:
+      catalog, optimize the text analyser
+    Revision:
+      itools--main--0.7--patch-54
+
+
+    modified files:
+     Changelog catalog/Analysers.py
+
+
 2005-03-17 19:31:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
 
     Summary:

@@ -387,26 +387,26 @@ class STL(object):
         # Get the document
         document = self.handler
         # Process the children
-        s = u''
+        s = []
         for child in document.children:
             if isinstance(child, XML.Element):
-                s += self.process(child, stack, repeat)
+                s.extend(self.process(child, stack, repeat))
             else:
-                s += unicode(child)
-        return s
+                s.append(unicode(child))
+        return u''.join(s)
 
 
     def process(self, node, stack, repeat_stack):
         # Raw nodes
         if isinstance(node, (XML.Raw, XML.Comment)):
-            return unicode(node)
+            return [unicode(node)]
 
         # Element nodes
         attrs = node.attributes
         stl_uri = 'http://xml.itools.org/namespaces/stl'
         stl_attrs = attrs.namespaces.get(stl_uri, {})
 
-        s = u''
+        s = []
         # Process stl:repeat
         if 'repeat' in stl_attrs:
             repeat = stl_attrs['repeat']
@@ -427,14 +427,15 @@ class STL(object):
                 newrepeat.append({name: value})
 
                 # Process and append the clone
-                s += self.process1(node, newstack, newrepeat)
+                s.extend(self.process1(node, newstack, newrepeat))
 
                 # Increment counter
                 i = i + 1
 
             return s
 
-        return s + self.process1(node, stack, repeat_stack)
+        s.extend(self.process1(node, stack, repeat_stack))
+        return s
 
 
     def process1(self, node, stack, repeat):
@@ -449,16 +450,16 @@ class STL(object):
         if 'if' in stl_attrs:
             expression = stl_attrs['if'].stl_expression
             if not expression.evaluate(stack, repeat):
-                return u''
+                return []
 
         # Remove the element if the given expression evaluates to true
         if 'ifnot' in stl_attrs:
             expression = stl_attrs['ifnot'].stl_expression
             if expression.evaluate(stack, repeat):
-                return u''
+                return []
 
         # Print tag name
-        head = u'<' + node.qname
+        s = ['<%s' % node.qname]
 
         # Process attributes
         changed_attributes = {} # qname: value
@@ -490,15 +491,15 @@ class STL(object):
                 value = attribute.value
             # Output only values different than None
             if value is not None:
-                head += ' %s="%s"' % (qname, value)
+                s.append(' %s="%s"' % (qname, value))
 
         # Output remaining attributes
         for qname, value in changed_attributes.items():
             if value is not None:
-                head += ' %s="%s"' % (qname, value)
+                s.append(' %s="%s"' % (qname, value))
 
         # Close the open tag
-        head += '>'
+        s.append('>')
 
         # Process the content
         if 'content' in stl_attrs:
@@ -508,9 +509,9 @@ class STL(object):
             if isinstance(content, unicode):
                 pass
             elif isinstance(content, str):
-                content = unicode(content)
+                content = [unicode(content)]
             elif isinstance(content, int):
-                content = unicode(content)
+                content = [unicode(content)]
             else:
                 msg = 'expression "%(expr)s" evaluates to value of' \
                       ' unexpected type %(type)s'
@@ -518,17 +519,18 @@ class STL(object):
                              'type': content.__class__.__name__}
                 raise STLTypeError, msg
         else:
-            content = ''
+            content = []
             for child in node.children:
-                content += self.process(child, stack, repeat)
+                content.extend(self.process(child, stack, repeat))
 
         # Remove the element but preserves its children if it is a stl:block
         # or a stl:inline
         if isinstance(node, Element):
             return content
 
-        foot = '</%s>' % node.qname
-        return head + content + foot
+        s.extend(content)
+        s.append('</%s>' % node.qname)
+        return s
 
 
 

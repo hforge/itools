@@ -72,8 +72,8 @@ class NamespaceHandler(XML.NamespaceHandler):
 
     def get_attribute(cls, prefix, name, value):
         if name in ['src', 'href']:
-            value = IO.URI.decode(value)
-        return value
+            return IO.URI.decode(value)
+        return IO.Unicode.decode(value)
 
     get_attribute = classmethod(get_attribute)
 

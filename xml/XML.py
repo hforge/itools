@@ -833,7 +833,7 @@ class NamespaceHandler(object):
 
 
     def get_attribute(cls, prefix, name, value):
-        return value
+        return IO.Unicode.decode(value)
 
     get_attribute = classmethod(get_attribute)
 

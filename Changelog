@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-02 20:34:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-7
+
+    Summary:
+      catalog, optimize search (cache documents)
+    Revision:
+      itools--main--0.8--patch-7
+
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/IDocument.py
+
+
 2005-03-02 20:10:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-6
 
     Summary:

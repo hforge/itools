@@ -60,7 +60,7 @@ class Element(XML.Element):
         if self.name == 'img' and attribute_name == 'alt':
             return True
         if self.name == 'input' and attribute_name == 'value':
-            attribute = self.attributes.get('type')
+            attribute = self.get_attribute('type')
             if attribute and attribute.value == 'submit':
                 return True
         return False
@@ -121,22 +121,21 @@ class Document(XML.Document):
     # i18n API
     ########################################################################
     def translate(self, catalog, node=None):
-        """ """
         def open_tag(node, context):
             buffer = context.buffer
             # The open tag
             buffer.write(u'<%s' % node.qname)
             # The attributes
-            for attribute in node.attributes:
-                if node.is_translatable(attribute.name):
-                    msgid = attribute.value.strip()
+            for namespace, name, value in node.get_attributes():
+                if node.is_translatable(name):
+                    msgid = value.value.strip()
                     if msgid:
                         msgstr = catalog.get_msgstr(msgid) or msgid
                     else:
                         msgstr = msgid
-                    buffer.write(u' %s="%s"' % (attribute.qname, msgstr))
+                    buffer.write(u' %s="%s"' % (value.qname, msgstr))
                 else:
-                    buffer.write(u' %s' % unicode(attribute))
+                    buffer.write(u' %s' % unicode(value))
             buffer.write(u'>')
 
         def process_message(context):
@@ -300,12 +299,11 @@ class Document(XML.Document):
                     process_message(context)
                     return True
                 # Attributes
-                for attribute in node.attributes:
-                    if node.is_translatable(attribute.name):
-                        value = attribute.value.strip()
-                        if value:
-                            if attribute.value not in context.messages:
-                                context.messages.append(attribute.value)
+                for namespace, name, value in node.get_attributes():
+                    if node.is_translatable(name):
+                        if value.strip():
+                            if value.value not in context.messages:
+                                context.messages.append(value.value)
                 # Inline or Block
                 if node.is_inline():
                     message.append(node)

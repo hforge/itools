@@ -17,7 +17,7 @@
 
 
 # Import from Python
-from copy import copy
+from copy import copy, deepcopy
 import htmlentitydefs
 import logging
 from sets import Set
@@ -195,6 +195,7 @@ class DocumentType(Node):
         return 1
 
 
+
 class Comment(Node):
     def __init__(self, data):
         self.data = data
@@ -208,40 +209,6 @@ class Comment(Node):
         if not isinstance(other, self.__class__):
             return 1
         return cmp(self.data, other.data)
-
-
-
-class Attributes(dict):
-    def __init__(self):
-        # self[qname] = attribute
-        dict.__init__(self)
-        # self[uri][name] = attribute
-        self.namespaces = {}
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        if len(self) != len(other):
-            return 1
-        for key in self:
-            if self[key] != other[key]:
-                return 1
-        return 0
-
-
-    def __iter__(self):
-        return iter(self.values())
-
-
-    def add(self, attribute):
-        qname = attribute.qname
-        # self[qname] = attribue
-        self[qname] = attribute
-        # self[uri][name] = attribute
-        uri = attribute.namespace
-        namespace = self.namespaces.setdefault(uri, {})
-        namespace[attribute.name] = attribute
 
 
 
@@ -438,10 +405,12 @@ class Document(Text.Text):
         element_uri = ns_uri
 
         # Keep the namespace declarations (set them as attributes)
-        for prefix, uri in self.ns_declarations.items():
-            namespace_handler = self.get_namespace_handler('http://www.w3.org/2000/xmlns/')
-            attribute = namespace_handler.get_attribute('xmlns', prefix, uri)
-            element.set_attribute(attribute)
+        for name, value in self.ns_declarations.items():
+            ns_uri = 'http://www.w3.org/2000/xmlns/'
+            namespace_handler = self.get_namespace_handler(ns_uri)
+            attribute = namespace_handler.get_attribute('xmlns', name, value)
+            element.set_attribute(name, attribute, namespace=ns_uri,
+                                  prefix='xmlns')
         self.ns_declarations = {}
         # Set the attributes
         for name, value in attrs.items():
@@ -460,7 +429,8 @@ class Document(Text.Text):
                 e.line_number = self.parser.ErrorLineNumber
                 raise e
             else:
-                element.set_attribute(attribute)
+                element.set_attribute(name, attribute, namespace=ns_uri,
+                                      prefix=ns_uri)
 
         self.stack.append(element)
         return element
@@ -636,7 +606,8 @@ class Element(Node):
         self.prefix = prefix
         self.name = name
         # Attributes (including namespace declarations)
-        self.attributes = Attributes()
+        self.attributes = {}
+        self.attributes_by_qname = {}
         # Child nodes
         self.children = NodeList()
 
@@ -680,9 +651,8 @@ class Element(Node):
         # Build a new node
         clone = self.__class__(self.prefix, self.name)
         # Copy the attributes
-        for attribute in self.attributes:
-            attribute = attribute.copy()
-            clone.attribues.add(attribute)
+        clone.attributes = deepcopy(self.attributes)
+        clone.attributes_by_qname = deepcopy(self.attributes_by_qname)
         # Copy the children
         for child in self.children:
             clone.append_child(child)
@@ -692,9 +662,10 @@ class Element(Node):
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        if self.prefix == other.prefix and self.name == other.name \
-               and self.attributes == other.attributes \
-               and self.children == other.children:
+        if self.prefix == other.prefix and self.name == other.name:
+            if Set(self.get_attributes()) == Set(other.get_attributes()):
+                if self.children == other.children:
+                    return 0
             return 0
         return 1
 
@@ -710,8 +681,8 @@ class Element(Node):
     def get_opentag(self):
         s = '<%s' % self.qname
         # Output the attributes
-        for attribute in self.attributes:
-            s += ' ' + unicode(attribute)
+        for namespace, name, value in self.get_attributes():
+            s += ' ' + unicode(value)
         # Close the open tag
         return s + u'>'
 
@@ -722,8 +693,30 @@ class Element(Node):
 
     #######################################################################
     # Attributes
-    def set_attribute(self, attribute):
-        self.attributes.add(attribute)
+    def set_attribute(self, name, value, namespace=None, prefix=None):
+        self.attributes[(namespace, name)] = value
+        if prefix is None:
+            qname = name
+        else:
+            qname = '%s:%s' % (prefix, name)
+        self.attributes_by_qname[qname] = value
+
+
+    def get_attribute(self, name, namespace=None):
+        if namespace is None:
+            return self.attributes_by_qname[name]
+        return self.attributes[(namespace, name)]
+
+
+    def has_attribute(self, name, namespace=None):
+        if namespace is None:
+            return name in self.attributes_by_qname
+        return (namespace, name) in self.attributes
+
+
+    def get_attributes(self):
+        for key in self.attributes:
+            yield key[0], key[1], self.attributes[key]
 
 
     #######################################################################

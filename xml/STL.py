@@ -27,6 +27,10 @@ language I could imagine.
 from itools.xml import XML
 
 
+
+stl_uri = 'http://xml.itools.org/namespaces/stl'
+
+
 ########################################################################
 # Evaluate STL expressions
 ########################################################################
@@ -185,7 +189,7 @@ class Expression(object):
             if token == TSLASH:
                 token, lexeme = self.get_token()
                 if token == TID:
-                    attribute = self.node.attributes[lexeme]
+                    attribute = self.node.get_attribute(lexeme)
                     self.parameters = (attribute.value,)
                     self.parser3()
                     return
@@ -401,15 +405,10 @@ class STL(object):
         if isinstance(node, (XML.Raw, XML.Comment)):
             return [unicode(node)]
 
-        # Element nodes
-        attrs = node.attributes
-        stl_uri = 'http://xml.itools.org/namespaces/stl'
-        stl_attrs = attrs.namespaces.get(stl_uri, {})
-
         s = []
         # Process stl:repeat
-        if 'repeat' in stl_attrs:
-            repeat = stl_attrs['repeat']
+        if node.has_attribute('repeat', namespace=stl_uri):
+            repeat = node.get_attribute('repeat', namespace=stl_uri)
             name, expression = repeat.stl_name, repeat.stl_expression
 
             i = 0
@@ -442,20 +441,16 @@ class STL(object):
         """
         Process stl:if, stl:ifnot, stl:attributes and stl:content.
         """
-        attrs = node.attributes
-        stl_uri = 'http://xml.itools.org/namespaces/stl'
-        stl_attrs = attrs.namespaces.get(stl_uri, {})
-
         # Remove the element if the given expression evaluates to false
-        if 'if' in stl_attrs:
-            expression = stl_attrs['if'].stl_expression
-            if not expression.evaluate(stack, repeat):
+        if node.has_attribute('if', namespace=stl_uri):
+            value = node.get_attribute('if', namespace=stl_uri)
+            if not value.stl_expression.evaluate(stack, repeat):
                 return []
 
         # Remove the element if the given expression evaluates to true
-        if 'ifnot' in stl_attrs:
-            expression = stl_attrs['ifnot'].stl_expression
-            if expression.evaluate(stack, repeat):
+        if node.has_attribute('ifnot', namespace=stl_uri):
+            value = node.get_attribute('ifnot', namespace=stl_uri)
+            if value.stl_expression.evaluate(stack, repeat):
                 return []
 
         # Print tag name
@@ -464,8 +459,9 @@ class STL(object):
         # Process attributes
         changed_attributes = {} # qname: value
         # Evaluate stl:attributes
-        if 'attributes' in stl_attrs:
-            for name, expression in stl_attrs['attributes'].stl_attributes:
+        if node.has_attribute('attributes', namespace=stl_uri):
+            value = node.get_attribute('attributes', namespace=stl_uri)
+            for name, expression in value.stl_attributes:
                 value = expression.evaluate(stack, repeat)
                 # XXX Do it only if it is an HTML document.
                 if name in boolean_html_attributes:
@@ -479,16 +475,16 @@ class STL(object):
                 changed_attributes[name] = value
 
         # Output existing attributes
-        for attribute in node.attributes:
+        for namespace, name, value in node.get_attributes():
             # Ommit stl attributes
-            if attribute.prefix == 'stl':
+            if namespace == stl_uri:
                 continue
             # Get the attribute value
-            qname = attribute.qname
+            qname = value.qname
             if qname in changed_attributes:
                 value = changed_attributes.pop(qname)
             else:
-                value = attribute.value
+                value = value.value
             # Output only values different than None
             if value is not None:
                 s.append(' %s="%s"' % (qname, value))
@@ -502,9 +498,9 @@ class STL(object):
         s.append('>')
 
         # Process the content
-        if 'content' in stl_attrs:
-            expression = stl_attrs['content'].stl_expression
-            content = expression.evaluate(stack, repeat)
+        if node.has_attribute('content', namespace=stl_uri):
+            value = node.get_attribute('content', namespace=stl_uri)
+            content = value.stl_expression.evaluate(stack, repeat)
             # Coerce
             if isinstance(content, unicode):
                 pass

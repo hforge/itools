@@ -33,12 +33,12 @@ class RDF(XML.Document):
         for node in self.traverse():
             if isinstance(node, XML.Element):
                 if isinstance(node, Description):
-                    subject = node.attributes['about'].value
+                    subject = node.get_attribute('about').value
                     self.graph.setdefault(subject, [])
                 else:
                     parent = node.parent
                     if isinstance(parent, Description):
-                        subject = parent.attributes['about'].value
+                        subject = parent.get_attribute('about').value
                         predicate = node.name
                         object = unicode(node.children)
                         self.graph[subject].append((predicate, object))

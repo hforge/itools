@@ -103,8 +103,8 @@ class ComplexType(object):
                         # XXX Better to log it?
                         warnings.warn('Unable to decode "%s"' % name)
                 # The language
-                if 'lang' in node.attributes:
-                    language = node.attributes['lang'].value
+                if node.has_attribute('lang'):
+                    language = node.get_attribute('lang').value
                 else:
                     language = None
                 # Set property value

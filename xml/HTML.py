@@ -107,17 +107,19 @@ class Document(XHTML.Document, HTMLParser):
 
         for name, value in attrs:
             attribute = XHTML.Attribute(None, name,value)
-            element.attributes.add(attribute)
+            element.set_attribute(name, attribute)
 
         self.stack.append(element)
 
         # Check for the mime type and encoding
         if name == 'meta':
-            http_equiv = element.attributes.get('http-equiv')
-            if http_equiv is not None and http_equiv.value == 'Content-Type':
-                mimetype, charset = attributes['content'].split(';')
-                self._mimetype = mimetype.strip()
-                self._encoding = charset.strip()[len('charset='):]
+            if element.has_attribute('http-equiv'):
+                value = element.get_attribute('http-equiv')
+                if value.value == 'Content-Type':
+                    value = element.get_attribute('content')
+                    mimetype, charset = value.value.split(';')
+                    self._mimetype = mimetype.strip()
+                    self._encoding = charset.strip()[len('charset='):]
 
         # Close the tag if needed
         if name in empty_elements:

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #               2002 Thilo Ernst <Thilo.Ernst@dlr.de>
 #
 # This library is free software; you can redistribute it and/or
@@ -55,7 +55,7 @@ class WorkflowError(Exception):
     pass
 
 
-class Workflow:
+class Workflow(object):
     """
     This class is used to describe a workflow (actually it's just a
     graph). A workflow has states (one of them is the initial state),
@@ -84,7 +84,7 @@ class Workflow:
         """
         Sets the default initial state.
         """
-        if not self.states.has_key(name):
+        if name not in self.states:
             raise WorkflowError, "invalid initial state: '%s'" % name
         self.initstate = name
 
@@ -111,7 +111,7 @@ class Workflow:
 
 
 
-class State:
+class State(object):
     """
     This class is used to describe a state. An state has transitions
     to other states.
@@ -140,7 +140,7 @@ class State:
 
 
 
-class Transition:
+class Transition(object):
     """
     This class is used to describe transitions. Transitions come from
     one state and go to another.
@@ -195,19 +195,6 @@ class WorkflowAware:
     is implemented. It can be used, for example, to keep record of the states
     the object has been in.
     """
-
-    def __init__(self, workflow, initstate=None, *args, **kw):
-        """
-        Initialize the workflow aware object. initstate is 
-        the workflow state that should be taken on initially 
-        (if omitted or None, the workflow must provide a default 
-        initial state). Extra arguments are passed to the 
-        enter-state handler (if any) of the initial state. 
-        """
-        # extra constructor arguments are passed trough to enter-state handler
-        # for initial state, if any
-        self.enter_workflow(workflow, initstate, *args, **kw)
-
 
     def enter_workflow(self, workflow=None, initstate=None, *args, **kw):
         """

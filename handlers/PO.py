@@ -271,7 +271,7 @@ class PO(Text):
                     break
                 elif line_type == COMMENT:
                     # Add entry
-                    self._set_message(msgid, msgstrm, comments)
+                    self._set_message(msgid, msgstr, comments)
                     # Reset
                     id, comments, msgid, msgstr = None, [], [], []
                     state = 4
@@ -345,6 +345,7 @@ class PO(Text):
 
             # Get the comments and the msgstr in unicode
             comments = [ unicode(x, self._encoding) for x in comments ]
+            msgid = [ unicode(x, self._encoding) for x in msgid ]
             msgstr = [ unicode(x, self._encoding) for x in msgstr ]
 
             # Add the message
@@ -385,12 +386,12 @@ class PO(Text):
 
 
 
-    def set_message(self, msgid, msgstr=[''], comments=[], references={}):
+    def set_message(self, msgid, msgstr=[u''], comments=[], references={}):
         self._set_message(msgid, msgstr, comments, references)
         self.save()
 
 
-    def _set_message(self, msgid, msgstr=[''], comments=[], references={}):
+    def _set_message(self, msgid, msgstr=[u''], comments=[], references={}):
         if isinstance(msgid, (str, unicode)):
             msgid = [msgid]
         if isinstance(msgstr, (str, unicode)):

@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-30 09:57:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-45
+
+    Summary:
+      html, implement parser with generators
+    Revision:
+      itools--main--0.8--patch-45
+
+
+    new files:
+     html/.arch-ids/parser.py.id html/parser.py
+
+    modified files:
+     Changelog html/HTML.py xml/STL.py xml/XML.py xml/parser.py
+
+
 2005-03-29 17:03:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-44
 
     Summary:

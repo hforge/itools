@@ -116,8 +116,12 @@ class Parser(object):
         # Attributes
         for name, value in attrs.items():
             # Parse the attribute name: namespace_uri, name and prefix
-            if ' ' in name:
+            n = name.count(' ')
+            if n == 2:
                 namespace, name, prefix = name.split()
+            elif n == 1:
+                prefix = None
+                namespace, name = name.split()
             else:
                 prefix = None
                 namespace = element_uri

@@ -442,7 +442,8 @@ class STL(object):
         document = self.handler
         # Process the children
         s = []
-        for child in document.children:
+        root_element = document.get_root_element()
+        for child in root_element.children:
             if isinstance(child, XML.Element):
                 s.extend(self.process(child, stack, repeat))
             elif isinstance(child, unicode):

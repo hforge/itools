@@ -25,91 +25,9 @@ from sets import Set
 from itools.handlers import File, IO
 from itools.xml import XML
 from itools.xhtml import XHTML
+from parser import Parser
 
 
-#############################################################################
-# Parser
-#############################################################################
-class Parser(HTMLParser, XML.Parser):
-
-    def parse(self, data):
-        # Defaults
-        self.encoding = 'UTF-8'
-        self.declaration = None
-
-        # Initialize the data structure
-        self.children = []
-
-        # Parse
-        self.stack = [self]
-        self.feed(data)
-        self.close()
-        del self.stack
-
-        return self
-
-
-    def handle_decl(self, declaration):
-        # XXX This is related with the XML doctype, we should share code
-        self.declaration = declaration
-
-
-    def handle_starttag(self, name, attrs):
-        element_types = {'head': HeadElement}
-        element_type = element_types.get(name, Element)
-        element = element_type(None, name)
-
-        for attr_name, value in attrs:
-            element.set_attribute(None, attr_name, value)
-
-        self.stack.append(element)
-
-        # Check for the mime type and encoding
-        if name == 'meta':
-            if element.has_attribute(None, 'http-equiv'):
-                http_equiv = element.get_attribute(None, 'http-equiv')
-                if http_equiv == 'Content-Type':
-                    value = element.get_attribute(None, 'content')
-                    mimetype, charset = value.split(';')
-                    self.mimetype = mimetype.strip()
-                    self.encoding = charset.strip()[len('charset='):]
-
-        # Close the tag if needed
-        if name in empty_elements:
-            XML.Parser.end_element_handler(self, name)
-
-
-    def handle_endtag(self, name):
-        # Ignore end tags without an start
-        if name == getattr(self.stack[-1], 'name', None):
-            XML.Parser.end_element_handler(self, name)
-
-
-    def handle_comment(self, data):
-        XML.Parser.comment_handler(self, data)
-
-
-    handle_data = XML.Parser.char_data_handler
-
-
-    def handle_entityref(self, name):
-        XML.Parser.skipped_entity_handler(self, name, False)
-
-
-    # XXX handlers that remain to implement include
-##    def handle_pi(self, data):
-
-
-    def close(self):
-        while len(self.stack) > 1:
-            XML.Parser.end_element_handler(self, self.stack[-1].name)
-        HTMLParser.close(self)
-
-
-
-#############################################################################
-# Data types
-#############################################################################
 
 # List of empty elements, which don't have a close tag
 empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
@@ -186,19 +104,47 @@ class Document(XHTML.Document):
     # Load/Save
     #######################################################################
     def _load(self, resource):
-        parser = Parser()
-        state = parser.parse(resource.get_data())
 
-        self._encoding = state.encoding
-        self._declaration = state.declaration
-        self.children = state.children
+        self._encoding = 'UTF-8'
+        self.document_type = None
+        self.children = []
+
+        stack = []
+        parser = parser.Parser()
+        for event, value, line_number in parser.parse(resource.read()):
+            if event == parser.DOCUMENT_TYPE:
+                self.document_type = value
+            elif event == parser.START_ELEMENT:
+                stack.append(Element(None, name))
+            elif event == parser.END_ELEMENT:
+                element = stack.pop()
+                if stack:
+                    stack[-1].set_element(element)
+                else:
+                    self.children.append(element)
+            elif event == parser.ATTRIBUTE:
+                name, value = value
+                type = IO.Unicode
+                value = type.decode(value, encoding)
+                stack[-1].set_attribute(None, name, value)
+            elif event == parser.COMMENT:
+                comment = Comment(value)
+                if stack:
+                    stack[-1].set_comment(value)
+                else:
+                    self.children.append(comment)
+            elif event == parser.TEXT:
+                if stack:
+                    stack[-1].set_text(value, encoding)
+                else:
+                    self.children.append(value)
 
 
     def to_unicode(self, encoding='UTF-8'):
         s = u''
         # The declaration
-        if self._declaration is not None:
-            s = u'<!%s>' % self._declaration
+        if self.document_type is not None:
+            s = u'<!%s>' % self.document_type
         # The children
         for child in self.children:
             if isinstance(child, unicode):
@@ -211,8 +157,8 @@ class Document(XHTML.Document):
     def to_str(self, encoding='UTF-8'):
         s = u''
         # The declaration
-        if self._declaration is not None:
-            s = u'<!%s>' % self._declaration
+        if self.document_type is not None:
+            s = u'<!%s>' % self.document_type
         # The children
         for child in self.children:
             # XXX Fix <meta http-equiv="Content-Type" content="...">

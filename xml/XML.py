@@ -388,6 +388,7 @@ class Document(Text.Text):
         self.xml_version = '1.0'
         encoding = 'UTF-8'
         self.standalone = -1
+        self.document_type = None
 
         stack = []
         for event, value, line_number in parser.parser.parse(resource.read()):
@@ -412,7 +413,7 @@ class Document(Text.Text):
                     self.root_element = element
             elif event == parser.ATTRIBUTE:
                 namespace_uri, prefix, local_name, value = value
-                namespace = namespaces.get_namespace(namespace)
+                namespace = namespaces.get_namespace(namespace_uri)
                 try:
                     type = namespace.get_attribute_type(local_name)
                 except XMLError, e:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-26 20:27:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
+
+    Summary:
+      uri, add new unit tests, improve tests coding
+    Revision:
+      itools--main--0.8--patch-40
+
+
+    modified files:
+     Changelog test_uri.py
+
+
 2005-03-26 19:21:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
 
     Summary:

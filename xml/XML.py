@@ -77,13 +77,10 @@ class Context(object):
 
     - serves as a generic container for any specific data needed by the
       developers code
-
-    XXX In the will provide the means to control the tree traversal, for
-    example to prevent the traverse of a branch. This will allow to
-    implement STL with walk.
     """
 
     def __init__(self):
+        # XXX To be removed (the line below) for 0.7
         self.path = []
 
 
@@ -93,6 +90,14 @@ class Node(object):
 
     def traverse(self):
         yield self
+
+
+    def traverse2(self, context=None):
+        if context is None:
+            context = Context()
+        yield self, context
+
+
 
 
 
@@ -522,6 +527,26 @@ class Document(Text.Text):
                 yield x
 
 
+    def traverse2(self, context=None):
+        if context is None:
+            context = Context()
+            context.skip = False
+        # Down
+        context.start = True
+        yield self, context
+        # Children
+        if context.skip is True:
+            context.skip = False
+        else:
+            for child in self.children:
+                for x, context in child.traverse2(context):
+                    yield x, context
+        # Up
+        context.start = False
+        yield self, context
+
+
+    # XXX Obsoleted by traverse2, to be removed for 0.7
     def walk(self, before=None, after=None, context=None):
         """
         Traverse the tree, for each child do:
@@ -747,6 +772,24 @@ class Element(Node):
         for child in self.children:
             for x in child.traverse():
                 yield x
+
+
+    def traverse2(self, context=None):
+        if context is None:
+            context = Context()
+        # Down
+        context.start = True
+        yield self, context
+        # Children
+        if context.skip is True:
+            context.skip = False
+        else:
+            for child in self.children:
+                for x, context in child.traverse2(context):
+                    yield x, context
+        # Up
+        context.start = False
+        yield self, context
 
 
     def walk(self, before=None, after=None, context=None):

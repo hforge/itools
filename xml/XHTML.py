@@ -239,10 +239,7 @@ class Document(XML.Document):
 
 
     def get_messages(self):
-        def process_message(context):
-            # Get the message to process and set a new message in the context
-            message = context.message
-            context.message = i18n.segment.Message()
+        def process_message(message, keep_spaces):
             # Normalize the message
             message.normalize()
             # Left strip
@@ -262,8 +259,9 @@ class Document(XML.Document):
                     node = message[0]
                     children = [ isinstance(x, XML.Raw) and x.data or x
                                  for x in node.children ]
-                    context.message = i18n.segment.Message(children)
-                    process_message(context)
+                    message = i18n.segment.Message(children)
+                    for x in process_message(message, keep_spaces):
+                        yield x
                 else:
                     # Check wether the node message has real text to process.
                     for x in message:
@@ -280,55 +278,54 @@ class Document(XML.Document):
                             break
                     else:
                         # Nothing to translate
-                        return
+                        raise StopIteration
                     # Something to translate: segmentation
-                    for segment in message.get_segments(context.keep_spaces):
+                    for segment in message.get_segments(keep_spaces):
                         segment = segment.replace('"', '\\"')
-                        if segment not in context.messages:
-                            context.messages.append(segment)
+                        yield segment
 
-        def before(node, context):
-            message = context.message
+        messages = []
+        message = i18n.segment.Message()
+        keep_spaces = False
+        for node, context in self.traverse2():
             if isinstance(node, XML.Raw):
                 message.append(node.data)
             elif isinstance(node, XML.Element):
-                # Skip <script> and <style>
-                if node.name == 'script' or node.name == 'style':
-                    process_message(context)
-                    return True
-                # Attributes
-                for namespace, name, value in node.get_attributes():
-                    if node.is_translatable(name):
-                        if value.strip():
-                            if value not in context.messages:
-                                context.messages.append(value)
-                # Inline or Block
-                if node.is_inline():
-                    message.append(node)
-                    return True
+                if context.start:
+                    if node.name in ['script', 'style']:
+                        for x in process_message(message, keep_spaces):
+                            if x not in messages:
+                                yield x
+                        message = i18n.segment.Message()
+                        # Don't go through this node
+                        context.skip = True
+                    else:
+                        # Attributes
+                        for namespace, name, value in node.get_attributes():
+                            if node.is_translatable(name):
+                                if value.strip():
+                                    if value not in messages:
+                                        yield value
+                        # Inline or Block
+                        if node.is_inline():
+                            message.append(node)
+                            context.skip = True
+                        else:
+                            for x in process_message(message, keep_spaces):
+                                if x not in messages:
+                                    yield x
+                            message = i18n.segment.Message()
+                            # Presarve spaces if <pre>
+                            if node.name == 'pre':
+                                context.keep_spaces = True
                 else:
-                    process_message(context)
-                    # Presarve spaces if <pre>
-                    if node.name == 'pre':
-                        context.keep_spaces = True
-
-        def after(node, context):
-            if isinstance(node, XML.Element):
-                if node.is_block():
-                    process_message(context)
-                    # </pre> don't preserve spaces any more
-                    if node.name == 'pre':
-                        context.keep_spaces = False
-
-        context = XML.Context()
-        context.messages = []
-        context.message = i18n.segment.Message()
-        context.keep_spaces = False
-        self.walk(before, after, context)
-        # Process last message
-        process_message(context)
-
-        return context.messages
+                    if node.is_block():
+                        for x in process_message(message, keep_spaces):
+                            if x not in messages:
+                                yield x
+                        # </pre> don't preserve spaces any more
+                        if node.name == 'pre':
+                            keep_spaces = False
 
 
     ########################################################################

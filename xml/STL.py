@@ -40,6 +40,11 @@ class STLNameError(NameError):
     """ """
 
 
+class STLTypeError(TypeError):
+    """ """
+    
+
+
 # XXX Remove TCONTENT and TATTRIBUTES (it is a long time ago since we used
 # it for the last time)
 
@@ -203,7 +208,7 @@ class Expression(object):
 
 
     ###################################################################
-    # Semantic process.
+    # API
     ###################################################################
     def evaluate(self, stack, repeat):
         if self.repeat:
@@ -233,6 +238,12 @@ class Expression(object):
                 pass
 
         return x
+
+
+    def __str__(self):
+        # XXX Needs to consider parameters
+        return '/'.join(self.path)
+
 
 
 ###########################################################################
@@ -502,8 +513,17 @@ class STL(object):
             expression = stl_attrs['content'].stl_expression
             content = expression.evaluate(stack, repeat)
             # Coerce
-            if isinstance(content, int):
-                content = str(content)
+            if isinstance(content, unicode):
+                pass
+            elif isinstance(content, str):
+                content = unicode(content)
+            elif isinstance(content, int):
+                content = unicode(content)
+            else:
+                msg = 'expression "%(expr)s" evaluates to value of' \
+                      ' unexpected type %(type)s'
+                msg = msg % (str(expression), content.__class__.__name__)
+                raise STLTypeError, msg
         else:
             content = ''
             for child in node.children:

@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-25 10:41:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-34
+
+    Summary:
+      added warning comment for Windows ('get_abspath')
+    Revision:
+      itools--main--0.8--patch-34
+
+    Suggested by Oliver Marx.
+
+    modified files:
+     Changelog __init__.py
+
+
 2005-03-24 20:15:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-33
 
     Summary:

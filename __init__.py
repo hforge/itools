@@ -39,6 +39,7 @@ def get_abspath(globals_namespace, local_path):
         else:
             mpath = mname
 
+    # XXX This may not work on Windows, we should preserve the drive.
     mpath = os.path.splitdrive(mpath)[1]
     mpath = os.path.join(mpath, local_path)
 

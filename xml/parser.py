@@ -71,30 +71,29 @@ class Parser(object):
 ##        parser.ExternalEntityRefHandler =
         parser.SkippedEntityHandler = self.skipped_entity_handler
 
+        # Needed to get the line number
+        self.parser = parser
+
         # Initialize values
         self.events = []
-        for x in data:
-            parser.Parse(x)
-            for event, value in self.events:
-                yield event, value, parser.ErrorLineNumber
-                # Reset values
-                self.events = []
-        # End parsing
-        parser.Parse('', True)
+        parser.Parse(data, True)
+        return self.events
 
 
     def xml_declaration_handler(self, version, encoding, standalone):
         if encoding is None:
             encoding = 'UTF-8'
         self.encoding = encoding
-        self.events.append((XML_DECLARATION, (version, encoding, standalone)))
+        self.events.append((XML_DECLARATION, (version, encoding, standalone),
+                            self.parser.ErrorLineNumber))
 
 
     def start_doctype_handler(self, name, system_id, public_id,
                               has_internal_subset):
         has_internal_subset = bool(has_internal_subset)
         self.events.append((DOCUMENT_TYPE,
-                            (name, system_id, public_id, has_internal_subset)))
+                            (name, system_id, public_id, has_internal_subset),
+                            self.parser.ErrorLineNumber))
 
 
     def start_element_handler(self, name, attrs):
@@ -110,7 +109,8 @@ class Parser(object):
             namespace = None
 
         # Start Element
-        self.events.append((START_ELEMENT, (namespace, prefix, name)))
+        self.events.append((START_ELEMENT, (namespace, prefix, name),
+                            self.parser.ErrorLineNumber))
         element_uri = namespace
 
         # Keep the namespace declarations
@@ -118,7 +118,8 @@ class Parser(object):
             xmlns_namespace = namespaces.XMLNSNamespace
             self.events.append((ATTRIBUTE, (xmlns_namespace.class_uri,
                                             xmlns_namespace.class_prefix,
-                                            name, value)))
+                                            name, value),
+                                self.parser.ErrorLineNumber))
         self.namespaces = {}
 
         # Attributes
@@ -137,7 +138,8 @@ class Parser(object):
                 prefix = None
                 namespace = element_uri
 
-            self.events.append((ATTRIBUTE, (namespace, prefix, name, value)))
+            self.events.append((ATTRIBUTE, (namespace, prefix, name, value),
+                                self.parser.ErrorLineNumber))
 
 
     def end_element_handler(self, name):
@@ -152,7 +154,8 @@ class Parser(object):
             prefix = None
             namespace = None
 
-        self.events.append((END_ELEMENT, (namespace, prefix, name)))
+        self.events.append((END_ELEMENT, (namespace, prefix, name),
+                            self.parser.ErrorLineNumber))
 
 
     def start_namespace_handler(self, prefix, uri):
@@ -160,15 +163,15 @@ class Parser(object):
 
 
     def char_data_handler(self, data):
-        self.events.append((TEXT, data))
+        self.events.append((TEXT, data, self.parser.ErrorLineNumber))
 
 
     def comment_handler(self, data):
-        self.events.append((COMMENT, data))
+        self.events.append((COMMENT, data, self.parser.ErrorLineNumber))
 
 
     def default_handler(self, data):
-        self.events.append((TEXT, data))
+        self.events.append((TEXT, data, self.parser.ErrorLineNumber))
 
 
     def skipped_entity_handler(self, name, is_param_entity):
@@ -176,10 +179,12 @@ class Parser(object):
         if name in htmlentitydefs.name2codepoint:
             codepoint = htmlentitydefs.name2codepoint[name]
             char = unichr(codepoint).encode(self.encoding)
-            self.events.append((TEXT, char))
+            self.events.append((TEXT, char, self.parser.ErrorLineNumber))
         else:
             warnings.warn('Unknown entity reference "%s" (ignoring)' % name)
 
 
 
-parser = Parser()
+def parse(data):
+    parser = Parser()
+    return parser.parse(data)

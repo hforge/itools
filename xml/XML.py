@@ -339,7 +339,7 @@ class Document(Text.Text):
         Builds a tree made of elements and raw data.
         """
         stack = []
-        for event, value, line_number in parser.parser.parse(resource.read()):
+        for event, value, line_number in parser.parse(resource.read()):
             if event == parser.XML_DECLARATION:
                 self.xml_version, self.source_encoding, self.standalone = value
             elif event == parser.DOCUMENT_TYPE:

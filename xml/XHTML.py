@@ -37,11 +37,6 @@ inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
                        'sup', 'tt', 'var'])
 
 
-class Attribute(XML.Attribute):
-    pass
-
-
-
 class Element(XML.Element):
 
     namespace = 'http://www.w3.org/1999/xhtml'
@@ -60,9 +55,8 @@ class Element(XML.Element):
         if self.name == 'img' and attribute_name == 'alt':
             return True
         if self.name == 'input' and attribute_name == 'value':
-            attribute = self.get_attribute('type')
-            if attribute and attribute.value == 'submit':
-                return True
+            if self.has_attribute('type'):
+                return self.get_attribute('type') == 'submit'
         return False
 
 
@@ -78,7 +72,7 @@ class NamespaceHandler(XML.NamespaceHandler):
     def get_attribute(cls, prefix, name, value):
         if name in ['src', 'href']:
             value = IO.URI.decode(value)
-        return Attribute(prefix, name, value)
+        return value
 
     get_attribute = classmethod(get_attribute)
 
@@ -126,16 +120,12 @@ class Document(XML.Document):
             # The open tag
             buffer.write(u'<%s' % node.qname)
             # The attributes
-            for namespace, name, value in node.get_attributes():
-                if node.is_translatable(name):
-                    msgid = value.value.strip()
-                    if msgid:
-                        msgstr = catalog.get_msgstr(msgid) or msgid
-                    else:
-                        msgstr = msgid
-                    buffer.write(u' %s="%s"' % (value.qname, msgstr))
-                else:
-                    buffer.write(u' %s' % unicode(value))
+            for qname, value in node.attributes_by_qname.items():
+                if node.is_translatable(qname):
+                    value = value.strip()
+                    if value:
+                        value = catalog.get_msgstr(value) or value
+                buffer.write(u' %s="%s"' % (qname, unicode(value)))
             buffer.write(u'>')
 
         def process_message(context):
@@ -302,8 +292,8 @@ class Document(XML.Document):
                 for namespace, name, value in node.get_attributes():
                     if node.is_translatable(name):
                         if value.strip():
-                            if value.value not in context.messages:
-                                context.messages.append(value.value)
+                            if value not in context.messages:
+                                context.messages.append(value)
                 # Inline or Block
                 if node.is_inline():
                     message.append(node)

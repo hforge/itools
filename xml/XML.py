@@ -408,8 +408,8 @@ class Document(Text.Text):
         for name, value in self.ns_declarations.items():
             ns_uri = 'http://www.w3.org/2000/xmlns/'
             namespace_handler = self.get_namespace_handler(ns_uri)
-            attribute = namespace_handler.get_attribute('xmlns', name, value)
-            element.set_attribute(name, attribute, namespace=ns_uri,
+            value = namespace_handler.get_attribute('xmlns', name, value)
+            element.set_attribute(name, value, namespace=ns_uri,
                                   prefix='xmlns')
         self.ns_declarations = {}
         # Set the attributes
@@ -430,7 +430,7 @@ class Document(Text.Text):
                 raise e
             else:
                 element.set_attribute(name, attribute, namespace=ns_uri,
-                                      prefix=ns_uri)
+                                      prefix=prefix)
 
         self.stack.append(element)
         return element
@@ -681,8 +681,8 @@ class Element(Node):
     def get_opentag(self):
         s = '<%s' % self.qname
         # Output the attributes
-        for namespace, name, value in self.get_attributes():
-            s += ' ' + unicode(value)
+        for qname, value in self.attributes_by_qname.items():
+            s += ' %s="%s"' % (qname, unicode(value))
         # Close the open tag
         return s + u'>'
 
@@ -697,6 +697,8 @@ class Element(Node):
         self.attributes[(namespace, name)] = value
         if prefix is None:
             qname = name
+        elif name is None:
+            qname = prefix
         else:
             qname = '%s:%s' % (prefix, name)
         self.attributes_by_qname[qname] = value
@@ -781,48 +783,6 @@ class Element(Node):
 
 
 
-class Attribute(object):
-    namespace = None
-
-
-    def __init__(self, prefix, name, value):
-        self.prefix = prefix
-        self.name = name
-        self.value = value
-
-
-    #######################################################################
-    # API
-    #######################################################################
-    def get_qname(self):
-        """Returns the fully qualified name"""
-        if self.prefix is None:
-            return self.name
-        if self.name is None:
-            return self.prefix
-        return '%s:%s' % (self.prefix, self.name)
-
-    qname = property(get_qname, None, None, '')
-
-
-    def __unicode__(self):
-        return '%s="%s"' % (self.qname, self.value)
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        if self.prefix == other.prefix and self.name == other.name \
-               and self.value == other.value:
-            return 0
-        return 1
-
-
-    def copy(self):
-        return self.__class__(self.prefix, self.name, self.value)
-
-
-
 class NamespaceHandler(object):
 
     def namespace_handler(cls, document):
@@ -838,7 +798,7 @@ class NamespaceHandler(object):
 
 
     def get_attribute(cls, prefix, name, value):
-        return Attribute(prefix, name, value)
+        return value
 
     get_attribute = classmethod(get_attribute)
 

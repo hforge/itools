@@ -33,12 +33,12 @@ class RDF(XML.Document):
         for node in self.traverse():
             if isinstance(node, XML.Element):
                 if isinstance(node, Description):
-                    subject = node.get_attribute('about').value
+                    subject = node.get_attribute('about')
                     self.graph.setdefault(subject, [])
                 else:
                     parent = node.parent
                     if isinstance(parent, Description):
-                        subject = parent.get_attribute('about').value
+                        subject = parent.get_attribute('about')
                         predicate = node.name
                         object = unicode(node.children)
                         self.graph[subject].append((predicate, object))
@@ -54,18 +54,15 @@ class Description(XML.Element):
 
 ########################################################################
 # Register
-class NSHandler(object):
+class NamespaceHandler(XML.NamespaceHandler):
     def get_element(self, prefix, name):
         if name == 'Description':
             return Description(prefix, name)
         return XML.Element(prefix, name)
 
 
-    def get_attribute(self, prefix, name, value):
-        return XML.Attribute(prefix, name, value)
-
-
 
 XML.registry.set_namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-                           NSHandler())
-XML.registry.set_namespace('http://purl.org/dc/elements/1.1/', NSHandler())
+                           NamespaceHandler)
+XML.registry.set_namespace('http://purl.org/dc/elements/1.1/',
+                           NamespaceHandler)

@@ -189,8 +189,8 @@ class Expression(object):
             if token == TSLASH:
                 token, lexeme = self.get_token()
                 if token == TID:
-                    attribute = self.node.get_attribute(lexeme)
-                    self.parameters = (attribute.value,)
+                    value = self.node.get_attribute(lexeme)
+                    self.parameters = (value,)
                     self.parser3()
                     return
         elif token == TID:
@@ -246,6 +246,8 @@ class Expression(object):
 
     def __str__(self):
         # XXX Needs to consider parameters
+        if self.repeat is True:
+            return 'repeat/%s' % '/'.join(self.path)
         return '/'.join(self.path)
 
 
@@ -324,37 +326,20 @@ class Element(XML.Element):
 
 ########################################################################
 # STL attributes
-class Attribute(XML.Attribute):
-    namespace = 'http://xml.itools.org/namespaces/stl'
-
-
-class RepeatAttr(Attribute):
-    def __init__(self, prefix, name, value):
-        Attribute.__init__(self, prefix, name, value)
-        # Parse the expression
+class RepeatAttr(object):
+    def __init__(self, value):
         name, expression = value.split(' ', 1)
         self.stl_name = name
         self.stl_expression = Expression(expression)
 
-
-class IfAttr(Attribute):
-    def __init__(self, prefix, name, value):
-        Attribute.__init__(self, prefix, name, value)
-        # Parse the expression
-        self.stl_expression = Expression(value)
+    def __str__(self):
+        return '%s %s' % (self.stl_name, self.stl_expression)
 
 
-class IfnotAttr(Attribute):
-    def __init__(self, prefix, name, value):
-        Attribute.__init__(self, prefix, name, value)
-        # Parse the expression
-        self.stl_expression = Expression(value)
-
-
-class AttributesAttr(Attribute):
-    def __init__(self, prefix, name, value):
-        Attribute.__init__(self, prefix, name, value)
-        # Parse the expression
+# XXX This could be removed if "NSHandler.get_attributes" returns directly
+# "self.stl_attributes"
+class AttributesAttr(object):
+    def __init__(self, value):
         attributes = []
         for x in value.split(';'):
             x = x.strip().split(' ')
@@ -367,12 +352,8 @@ class AttributesAttr(Attribute):
         self.stl_attributes = tuple(attributes)
 
 
-class ContentAttr(Attribute):
-    def __init__(self, prefix, name, value):
-        Attribute.__init__(self, prefix, name, value)
-        # Parse the expression
-        self.stl_expression = Expression(value)
-
+    def __str__(self):
+        return ';'.join([ '%s %s' % x for x in self.stl_attributes ])
 
 
 ########################################################################
@@ -443,14 +424,14 @@ class STL(object):
         """
         # Remove the element if the given expression evaluates to false
         if node.has_attribute('if', namespace=stl_uri):
-            value = node.get_attribute('if', namespace=stl_uri)
-            if not value.stl_expression.evaluate(stack, repeat):
+            stl_expression = node.get_attribute('if', namespace=stl_uri)
+            if not stl_expression.evaluate(stack, repeat):
                 return []
 
         # Remove the element if the given expression evaluates to true
         if node.has_attribute('ifnot', namespace=stl_uri):
-            value = node.get_attribute('ifnot', namespace=stl_uri)
-            if value.stl_expression.evaluate(stack, repeat):
+            stl_expression = node.get_attribute('ifnot', namespace=stl_uri)
+            if stl_expression.evaluate(stack, repeat):
                 return []
 
         # Print tag name
@@ -475,16 +456,13 @@ class STL(object):
                 changed_attributes[name] = value
 
         # Output existing attributes
-        for namespace, name, value in node.get_attributes():
+        for namespace, qname, value in node.get_attributes():
             # Ommit stl attributes
             if namespace == stl_uri:
                 continue
             # Get the attribute value
-            qname = value.qname
             if qname in changed_attributes:
                 value = changed_attributes.pop(qname)
-            else:
-                value = value.value
             # Output only values different than None
             if value is not None:
                 s.append(' %s="%s"' % (qname, value))
@@ -499,8 +477,8 @@ class STL(object):
 
         # Process the content
         if node.has_attribute('content', namespace=stl_uri):
-            value = node.get_attribute('content', namespace=stl_uri)
-            content = value.stl_expression.evaluate(stack, repeat)
+            stl_expression = node.get_attribute('content', namespace=stl_uri)
+            content = stl_expression.evaluate(stack, repeat)
             # Coerce
             if isinstance(content, unicode):
                 pass
@@ -554,12 +532,13 @@ class NamespaceHandler(XML.NamespaceHandler):
 
     def get_attribute(cls, prefix, name, value):
         """Attribute factory, returns the right attribute instance."""
-        attributes = {'repeat': RepeatAttr, 'if': IfAttr, 'ifnot': IfnotAttr,
-                      'attributes': AttributesAttr, 'content': ContentAttr}
+        attributes = {'repeat': RepeatAttr, 'if': Expression,
+                      'ifnot': Expression, 'attributes': AttributesAttr,
+                      'content': Expression}
         attribute = attributes.get(name)
         if attribute is None:
             raise STLSyntaxError, 'unexpected attribute name: %s' % name
-        return attribute(prefix, name, value)
+        return attribute(value)
 
     get_attribute = classmethod(get_attribute)
 

@@ -39,15 +39,18 @@ class CSV(Text):
         data = [ x.strip() for x in data.split('\n') ]
         data = [ x.encode(self._encoding) for x in data if x ]
 
-        # Sniff the dialect
-        sniffer = csv.Sniffer()
-        dialect = sniffer.sniff('\n'.join(data))
+        if data:
+            # Sniff the dialect
+            sniffer = csv.Sniffer()
+            dialect = sniffer.sniff('\n'.join(data))
 
-        # Parse
-        self.lines = []
-        for line in csv.reader(data, dialect):
-            line = [ unicode(x, self._encoding) for x in line ]
-            self.lines.append(line)
+            # Parse
+            self.lines = []
+            for line in csv.reader(data, dialect):
+                line = [ unicode(x, self._encoding) for x in line ]
+                self.lines.append(line)
+        else:
+            self.lines = []
         
 
     #########################################################################

@@ -24,7 +24,9 @@ import tempfile
 
 # Import from itools
 from itools.resources import get_resource
-from itools.handlers import get_handler, PO, XHTML
+from itools.handlers import get_handler, PO
+from itools.xml import XHTML
+
 
 def run():
     """

@@ -62,7 +62,7 @@ class CSV(Text):
     def to_unicode(self):
         s = u''
         for line in self.lines:
-            line = [ '%s' % x for x in line ]
+            line = [ '"%s"' % x for x in line ]
             s += ','.join(line) + '\n'
         return s
 

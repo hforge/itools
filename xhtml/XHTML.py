@@ -31,10 +31,6 @@ from itools import i18n
 #############################################################################
 # Types
 #############################################################################
-inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
-                       'em','kbd', 'q', 'samp', 'span', 'strong', 'sub',
-                       'sup', 'tt', 'var'])
-
 
 class Element(XML.Element):
 
@@ -42,11 +38,11 @@ class Element(XML.Element):
 
 
     def is_inline(self):
-        return self.name in inline_elements
+        raise NotImplementedError
 
 
     def is_block(self):
-        return self.name not in inline_elements
+        raise NotImplementedError
 
 
     def is_translatable(self, attribute_name):
@@ -59,7 +55,30 @@ class Element(XML.Element):
         return False
 
 
-class HeadElement(Element):
+
+class InlineElement(Element):
+
+    def is_inline(self):
+        return True
+
+
+    def is_block(self):
+        return False
+
+
+
+class BlockElement(Element):
+
+    def is_inline(self):
+        return False
+
+
+    def is_block(self):
+        return True
+
+
+
+class HeadElement(BlockElement):
 
     def to_unicode(self, encoding='UTF-8'):
         return ''.join([self.get_opentag(),
@@ -70,9 +89,10 @@ class HeadElement(Element):
 
     def set_element(self, element):
         # Skip content type declaration
-        if element.namespace == namespaces.xhtml and element.name == 'meta':
-            if element.has_attribute(namespaces.xhtml, 'http-equiv'):
-                value = element.get_attribute(namespaces.xhtml, 'http-equiv')
+        xhtml_namespace = Namespace.class_uri
+        if element.namespace == xhtml_namespace and element.name == 'meta':
+            if element.has_attribute(xhtml_namespace, 'http-equiv'):
+                value = element.get_attribute(xhtml_namespace, 'http-equiv')
                 if value == 'Content-Type':
                     return
         self.children.append(element)
@@ -83,13 +103,44 @@ class HeadElement(Element):
 #############################################################################
 
 elements_schema = {
+    'a': {'type': InlineElement},
+    'abbr': {'type': InlineElement},
+    'acronym': {'type': InlineElement},
+    'b': {'type': InlineElement},
+    'cite': {'type': InlineElement},
+    'code': {'type': InlineElement},
+    'dfn': {'type': InlineElement},
+    'em': {'type': InlineElement},
     'head': {'type': HeadElement},
+    'kbd': {'type': InlineElement},
+    'q': {'type': InlineElement},
+    'samp': {'type': InlineElement},
+    'span': {'type': InlineElement},
+    'strong': {'type': InlineElement},
+    'sub': {'type': InlineElement},
+    'sup': {'type': InlineElement},
+    'tt': {'type': InlineElement},
+    'var': {'type': InlineElement},
     }
 
 
 attributes_schema = {
+    'abbr': {'type': IO.Unicode},
+    'accept-charsert': {'type': IO.String},
+    'accept': {'type': IO.String},
+    'accesskey': {'type': IO.Unicode},
+    'action': {'type': IO.URI},
+    'align': {'type': IO.String},
+    'alink': {'type': IO.String},
+    'alt': {'type': IO.Unicode},
+    'archive': {'type': IO.Unicode},
+    'axis': {'type': IO.Unicode},
+    'background': {'type': IO.URI},
+    'bgcolor': {'type': IO.String},
+    'border': {'type': IO.Integer},
+
+    'href': {'type': IO.URI},
     'src': {'type': IO.URI},
-    'href': {'type': IO.URI}
     }
 
 
@@ -100,13 +151,13 @@ class Namespace(namespaces.AbstractNamespace):
 
 
     def get_element_schema(name):
-        return elements_schema.get(name, {'type': Element})
+        return elements_schema.get(name, {'type': BlockElement})
 
     get_element_schema = staticmethod(get_element_schema)
 
 
     def get_attribute_schema(name):
-        return attributes.get(name, {'type': IO.Unicode})
+        return attributes_schema.get(name, {'type': IO.Unicode})
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 

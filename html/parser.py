@@ -27,8 +27,13 @@ DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, ATTRIBUTE, COMMENT, TEXT = range(6)
 
 
 # List of empty elements, which don't have a close tag
-empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
-                      'img', 'input', 'isindex', 'link', 'meta', 'param'])
+empty_elements = Set([
+    # XHTML 1.0 strict
+    'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param',
+    # XHTML 1.0 transitional
+    'basefont', 'isindex',
+    # XHTML 1.0 frameset
+    'frame'])
 
 
 

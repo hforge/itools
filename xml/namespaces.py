@@ -19,6 +19,10 @@
 # Import from the Standard Library
 import warnings
 
+# Import from itools
+from itools.xml.exceptions import XMLError
+
+
 
 """
 This module keeps a registry for namespaces and namespace handlers.
@@ -151,6 +155,7 @@ class DefaultNamespace(AbstractNamespace):
 
 
     def get_element_schema(name):
+        from XML import Element
         return {'type': Element}
 
     get_element_schema = staticmethod(get_element_schema)
@@ -177,10 +182,21 @@ class XMLNamespace(AbstractNamespace):
     get_attribute_schema = staticmethod(get_attribute_schema)
 
 
-# Some standard XML namespace uris
-xmlns = 'http://www.w3.org/2000/xmlns/'
+
+class XMLNSNamespace(AbstractNamespace):
+
+    class_uri = 'http://www.w3.org/2000/xmlns/'
+    class_prefix = 'xmlns'
+
+
+    def get_attribute_schema(name):
+        return {'type': IO.String}
+
+    get_attribute_schema = staticmethod(get_attribute_schema)
+
 
 
 # Register the namespaces
 set_namespace(DefaultNamespace)
 set_namespace(XMLNamespace)
+set_namespace(XMLNSNamespace)

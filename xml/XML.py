@@ -25,37 +25,9 @@ from xml.parsers import expat
 
 # Import from itools
 from itools.handlers import File, Text, IO
-import namespaces
+from itools.xml.exceptions import XMLError
+from itools.xml import namespaces
 from itools.xml import parser
-
-
-#############################################################################
-# Exceptions
-#############################################################################
-
-class XMLError(Exception):
-    """
-    The expat parser checks the document to be well formed, if it is not
-    the ExpatError exception is raised.
-
-    The XMLError exception (or a subclass of it) should be raised when
-    the document does not conform to an schema. For an example see how
-    it is used by the STL language.
-
-    Note that right now we don't automatically check against DTD's or
-    schemas (that's something to do: XXX), so your namespace handler must
-    verify the correctness itself.
-    """
-
-    def __init__(self, message):
-        self.message = message
-        self.line_number = None
-
-
-    def __str__(self):
-        if self.line_number is not None:
-            return '%s, line %s' % (self.message, self.line_number)
-        return self.message
 
 
 #############################################################################
@@ -220,7 +192,8 @@ class Element(object):
         Returns the type for the given attribute
         """
         namespace = namespaces.get_namespace(namespace_uri)
-        return namespace.get_attribute_type(local_name)
+        schema = namespace.get_attribute_schema(local_name)
+        return schema['type']
 
 
     #######################################################################
@@ -375,10 +348,12 @@ class Document(Text.Text):
                 namespace, prefix, local_name = value
                 namespace = namespaces.get_namespace(namespace)
                 try:
-                    element = namespace.get_element(prefix, local_name)
+                    schema = namespace.get_element_schema(local_name)
                 except XMLError, e:
                     e.line_number = line_number
                     raise e
+                element_type = schema['type']
+                element = element_type(prefix, local_name)
                 stack.append(element)
             elif event == parser.END_ELEMENT:
                 element = stack.pop()
@@ -390,11 +365,12 @@ class Document(Text.Text):
                 namespace_uri, prefix, local_name, value = value
                 namespace = namespaces.get_namespace(namespace_uri)
                 try:
-                    type = namespace.get_attribute_type(local_name)
+                    schema = namespace.get_attribute_schema(local_name)
                 except XMLError, e:
                     e.line_number = line_number
                     raise e
-                value = type.decode(value)
+                attribute_type = schema['type']
+                value = attribute_type.decode(value)
                 stack[-1].set_attribute(namespace_uri, local_name, value,
                                         prefix=prefix)
             elif event == parser.COMMENT:

@@ -22,7 +22,7 @@ from itools.xml import XML, namespaces
 
 
 schema = {
-    'title': {'type': IO.Unicode},
+    'title': {'type': IO.Unicode, 'default': u''},
     'description': {'type': IO.Unicode},
     'publisher': {'type': IO.Unicode},
     'identifier': {'type': IO.String},

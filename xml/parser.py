@@ -115,8 +115,10 @@ class Parser(object):
 
         # Keep the namespace declarations
         for name, value in self.namespaces.items():
-            self.events.append((ATTRIBUTE,
-                                (namespaces.xmlns, 'xmlns', name, value)))
+            xmlns_namespace = namespaces.XMLNSNamespace
+            self.events.append((ATTRIBUTE, (xmlns_namespace.class_uri,
+                                            xmlns_namespace.class_prefix,
+                                            name, value)))
         self.namespaces = {}
 
         # Attributes

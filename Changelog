@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-01 13:25:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
+
+    Summary:
+      xml, fix fix fix
+    Revision:
+      itools--main--0.8--patch-50
+
+
+    new files:
+     xml/.arch-ids/exceptions.py.id xml/exceptions.py
+
+    modified files:
+     Changelog handlers/IO.py html/parser.py xhtml/XHTML.py
+     xml/DublinCore.py xml/XML.py xml/namespaces.py xml/parser.py
+
+
 2005-03-31 18:57:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
 
     Summary:

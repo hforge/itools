@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -25,10 +25,12 @@ from itools import uri
 
 
 class Integer(object):
+
     def encode(cls, value):
         if value is None:
             return ''
         return str(value)
+
     encode = classmethod(encode)
 
 
@@ -36,20 +38,24 @@ class Integer(object):
         if not value:
             return None
         return int(value)
+
     decode = classmethod(decode)
 
 
 
 class Unicode(object):
+
     def encode(cls, value, encoding='UTF-8'):
         # Escape XML (XXX this is specific to XML)
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.encode(encoding)
+
     encode = classmethod(encode)
 
 
     def decode(cls, value, encoding='UTF-8'):
         return unicode(value, encoding)
+
     decode = classmethod(decode)
 
 
@@ -63,18 +69,28 @@ class Unicode(object):
 
 
 class String(object):
+
     def encode(cls, value):
         return value
+
     encode = classmethod(encode)
 
 
     def decode(cls, value):
         return value
+
     decode = classmethod(decode)
+
+
+    def to_unicode(cls, value):
+        return unicode(value)
+
+    to_unicode = classmethod(to_unicode)
 
 
 
 class Boolean(object):
+
     def encode(cls, value):
         if value is True:
             return '1'
@@ -82,20 +98,24 @@ class Boolean(object):
             return '0'
         else:
             raise ValueError, 'value is not a boolean'
+
     encode = classmethod(encode)
 
 
     def decode(cls, value):
         return bool(int(value))
+
     decode = classmethod(decode)
 
 
 
 class Date(object):
+
     def encode(cls, value):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d')
+
     encode = classmethod(encode)
 
 
@@ -105,15 +125,18 @@ class Date(object):
         year, month, day = value.split('-')
         year, month, day = int(year), int(month), int(day)
         return datetime.date(year, month, day)
+
     decode = classmethod(decode)
 
 
 
 class DateTime(object):
+
     def encode(cls, value):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d %H:%M')
+
     encode = classmethod(encode)
 
 
@@ -126,6 +149,7 @@ class DateTime(object):
         hours, minutes = time.split(':')
         hours, minutes = int(hours), int(minutes)
         return datetime.datetime(year, month, day, hours, minutes)
+
     decode = classmethod(decode)
 
 

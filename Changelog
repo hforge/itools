@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-16 14:37:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
+
+    Summary:
+      catalog, optimize index load
+    Revision:
+      itools--main--0.7--patch-50
+
+    Now the loading an index is faster. Indexes are stored in two
+    resources, "tree" and "documents". Before both were loaded at
+    the first access, now only the first one. Documents are loaded
+    when needed (lazy load).
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2005-03-14 15:51:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
 
     Summary:

@@ -227,8 +227,32 @@ class Tree(object):
         # The root is also the resource handler.
         self.root = root
         self.slot = slot
-        self.documents = {}
+        self.documents = None
         self.children = {}
+
+
+    def load_documents(self):
+        # Initialize data structure
+        self.documents = {}
+
+        # Load document pointer
+        tree_rsrc = self.root.tree_handler.resource
+        tree_slot = 16 + self.slot * 16
+        doc_slot_n = IO.decode_link(tree_rsrc[tree_slot+4:tree_slot+8])
+
+        # Load documents
+        doc_rsrc = self.root.docs_handler.resource
+        while doc_slot_n is not None:
+            # Decode doc slot
+            doc_slot = 12 + doc_slot_n * 12
+            doc_slot_data = doc_rsrc[doc_slot:doc_slot+12]
+            doc_number = IO.decode_uint32(doc_slot_data[0:4])
+            frequency = IO.decode_uint32(doc_slot_data[4:8])
+            doc_slot_n = IO.decode_link(doc_slot_data[8:12])
+            # Insert document
+            self.documents[doc_number] = documents = []
+            for i in range(frequency):
+                documents.append(None)
 
 
     ########################################################################
@@ -273,6 +297,8 @@ class Tree(object):
             fdoc_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
             fdoc_slot_n = IO.decode_link(fdoc_slot_r)
             for doc_number, doc_positions in documents.items():
+                if self.documents is None:
+                    self.load_documents()
                 if doc_number in self.documents:
                     positions = self.documents[doc_number]
                     positions.extend(doc_positions)
@@ -309,6 +335,8 @@ class Tree(object):
                 subtree = self.children[prefix]
                 subtree._unindex_term(suffix, documents)
         else:
+            if self.documents is None:
+                self.load_documents()
             for doc_number in documents:
                 del self.documents[doc_number]
             # Update resource
@@ -353,6 +381,8 @@ class Tree(object):
             else:
                 return subtree.search_word(suffix)
         else:
+            if self.documents is None:
+                self.load_documents()
             documents = {}
             for doc_number, positions in self.documents.items():
                 weight = len(positions)
@@ -363,12 +393,12 @@ class Tree(object):
     ########################################################################
     # Debugging
     ########################################################################
-    def show_for_humans(self, indent=0):
-        s = u''
-        for key, tree in self.children.items():
-            s = s + '%s%s: %s\n' % (' '*indent, key, tree.documents)
-            s += tree.show_for_humans(indent + len(key))
-        return s
+##    def show_for_humans(self, indent=0):
+##        s = u''
+##        for key, tree in self.children.items():
+##            s = s + '%s%s: %s\n' % (' '*indent, key, tree.documents)
+##            s += tree.show_for_humans(indent + len(key))
+##        return s
 
 
 
@@ -416,25 +446,12 @@ class IIndex(Folder, Tree):
             tree_slot = 16 + tree_slot_n * 16
             tree_slot_data = tree_rsrc[tree_slot:tree_slot+16]
             c = IO.decode_character(tree_slot_data[0:4])
-            doc_slot_n = IO.decode_link(tree_slot_data[4:8])
+##            doc_slot_n = IO.decode_link(tree_slot_data[4:8])
             child_n = IO.decode_link(tree_slot_data[8:12])
             sibling_n = IO.decode_link(tree_slot_data[12:16])
 
             # Add the tree instance to its parent
             parent.children[c] = tree
-
-            # Documents
-            while doc_slot_n is not None:
-                # Decode doc slot
-                doc_slot = 12 + doc_slot_n * 12
-                doc_slot_data = doc_rsrc[doc_slot:doc_slot+12]
-                doc_number = IO.decode_uint32(doc_slot_data[0:4])
-                frequency = IO.decode_uint32(doc_slot_data[4:8])
-                doc_slot_n = IO.decode_link(doc_slot_data[8:12])
-                # Insert document
-                tree.documents[doc_number] = documents = []
-                for i in range(frequency):
-                    documents.append(None)
 
             # Next sibling
             if sibling_n is not None:

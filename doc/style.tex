@@ -2,12 +2,11 @@
 
 This chapter describes the coding conventions used to write {\tt itools}.
 If you ever contribute a patch to {\tt itools}, be sure your code adheres
-to these coding rules.
+to these rules.
 
-This guide is more strict than the recommedations of {\em PEP
-8}\footnote{http://www.python.org/peps/pep-0008.html}. Sometimes this guide
-contradicts the {\em PEP 8} recommendations; in these cases this guide is
-applies, in the context of {\tt itools}.
+Sometimes this guide contradicts the {\em PEP
+8}\footnote{http://www.python.org/peps/pep-0008.html} recommendations; in
+these cases this guide applies, in the context of {\tt itools}.
 
 
 \section{Language and encoding}
@@ -62,8 +61,8 @@ Right after the copyright statement comes a reference to the license. For
 There should be a documentation string explaining what the module does
 (though it is better to have none than a dummy one).
 
-The explanation aboyt how to write a documentation string are out of this
-chapter, it is covered by the {\em PEP
+The explanation about how to write a documentation string is out of the
+scope of this chapter, it is covered by the {\em PEP
 257}\footnote{http://www.python.org/peps/pep-0257.html}.
 
 
@@ -130,17 +129,13 @@ For example, at the time of this writting the module
 
 
 
-\section{Code lay-out}
+\section{Format rules}
 
-\subsubsection{Tabs}
+\subsubsection{Indentation: 4 spaces}
 
-Never use tabs.
+Each indentation level must have four (4) spaces. Never use tabs.
 
-\subsubsection{Indentation}
-
-Each indentation level must have four (4) spaces.
-
-\subsubsection{Maximum line length}
+\subsubsection{Maximum line length: 80 characters}
 
 Lines should be 80 characters wide at most.
 
@@ -149,6 +144,29 @@ continuation inside parentheses, brackets and braces. If necessary, you can
 add an extra pair of parentheses around an expression, but usually using
 a backslash looks better.  Make sure to indent the continued line
 appropriately.
+
+\subsubsection{One line, one statement}
+
+Don't put more than one statement on the same line:
+
+\begin{quote}
+\begin{tabular}{l||l|l}
+  &Good                       & Bad \\
+  \hline\hline
+  1&{\tt if x is True:}       & {\tt if x is True: do\_something()} \\
+   &{\tt ~~~~do\_something()} & \\
+   && \\
+   && \\
+  2&{\tt do\_one()}           & {\tt do\_one(); do\_two(); do\_three()} \\
+   &{\tt do\_two()}           & \\
+   &{\tt do\_three()}         & \\
+   && \\
+   && \\
+  3&{\tt def get\_area(x, y):} & {\tt def get\_area(x, y): return x * y}\\ 
+   &{\tt ~~~~return x * y}     & \\
+\end{tabular}
+\end{quote}
+
 
 \subsubsection{Blank lines}
 
@@ -159,23 +177,26 @@ the first method definition.
 Use blank lines in functions, sparingly, to indicate logical sections.
 
 
-\section{Whitespace in expressions and statements}
 
-Don't put more than one statement on the same line:
+\subsubsection{Whitespace in expressions and statements}
 
-\begin{code}
-    # Bad                           |    # Bad
-    if x is True: do_something()    |    do_one(); do_two(); do_three()
-                                    |
-    # Good                          |    # Good
-    if x is True:                   |    do_one()
-        do_something()              |    do_two()
-                                    |    do_three()
-\end{code}
+Surround operators with one white space. Arithmetics operators may be the
+exception, for them it is possible to use either one space or none, whatever
+reads better. But never use more than one space.
 
-Surround operators with one white space.
+Well, there is another exception, the sign ``='' used in keyword arguments
+should not be surrounded by spaces. Type {\tt Document(title="hello")}
+instead of {\tt Document(title = "hello")}.
 
-XXX
+Never add spaces neither before nor after parentheses, brackets or braces.
+The only exception is for list comprehensions, where it is allowed to add
+an space after the opening bracket, and another space before the closing
+bracket.
+
+The comma and colon must be followed by an space (or a new line), but never
+put an space before. The only exception is for one element tuples, where
+the comma must be immediately followed by the closing parentheses.
+The semicolon should never be used.
 
 
 \section{Comments}
@@ -193,4 +214,59 @@ capitalized.
 
 \section{Naming conventions}
 
-XXX
+The names of {\em variables}, {\em classes}, {\em functions}, {\em methods}
+and {\em constants} are written with one or more english words. Most of
+the words used are {\em nouns}, {\em verbs}, and {\em adjectives}.
+
+Abbreviations may be used, but in general it is preferred the complete
+word, for example, {\tt language} instead of {\tt lang}. When an abbreviation
+is not obvious, its meaning should be explained with a comment.
+
+The allowed naming conventions are three:
+
+\begin{description}
+  \item [lower\_case\_with\_underscores] All words are in lowercase and
+    separated by an underscore. This convention is used for {\em variables},
+    {\em functions} and {\em methods}.
+
+  \item [UPPER\_CASE\_WITH\_UNDERSCORES] All words are in uppercase and
+    separated by an underscore. Used only for {\em constants}.
+
+  \item [CapitalizedWords] All words start by an uppercase, with the
+    rest of the word in lowercase. Words are not separated by any
+    character, the uppercase letters serve to visually distinguish
+    when a new word starts. Used only for {\em classes}.
+\end{description}
+
+
+\subsection{Class names}
+
+Class names are written in capitalized words. Typically they are made of
+nouns and/or adjectives.
+
+
+\subsection{Functions and methods}
+
+Functions and methods are written in lowercase with underscores.
+
+They must start by a verb, and they should be followed by a complenent that
+clearifies what the funciont does. For example, it is better to spell
+{\tt set\_object} than just {\tt set}.
+
+
+\subsection{Variables}
+
+Variables are written in lowercase with underscores. Most of the
+time they are nouns with or without adjectives.
+
+One letter variables may be used in mathematical expressions, for sequence
+indexes, or in comprehensive lists:
+
+\begin{code}
+    >>> public_handlers = [x for x in handlers if x.state == 'public']
+\end{code}
+
+
+\subsection{Constants}
+
+Constants are written in uppercase with underscores.

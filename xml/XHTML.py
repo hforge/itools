@@ -35,7 +35,7 @@ inline_elements = ['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn', 'em',
 
 
 class Attribute(XML.Attribute):
-    """ """
+    pass
 
 
 
@@ -346,18 +346,24 @@ class Document(XML.Document):
 
 ########################################################################
 # Interface for the XML parser, factories
-class NSHandler(object):
-    def get_element(self, prefix, name):
+class NamespaceHandler(XML.NamespaceHandler):
+
+    def get_element(cls, prefix, name):
         return Element(prefix, name)
 
+    get_element = classmethod(get_element)
 
-    def get_attribute(self, prefix, name, value):
+
+    def get_attribute(cls, prefix, name, value):
         return Attribute(prefix, name, value)
+
+    get_attribute = classmethod(get_attribute)
 
 
 ########################################################################
 # Register
-XML.registry.set_namespace('http://www.w3.org/1999/xhtml', NSHandler())
-XML.registry.set_doctype('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
+XML.Document.set_namespace_handler('http://www.w3.org/1999/xhtml',
+                                   NamespaceHandler)
+XML.Document.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
 
 XML.Document.register_handler_class(Document)

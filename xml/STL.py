@@ -536,28 +536,28 @@ class STL(object):
 
 ########################################################################
 # Interface for the XML parser, factories
-class NSHandler(object):
-    def namespace_handler(self, document):
+class NamespaceHandler(XML.NamespaceHandler):
+    def namespace_handler(cls, document):
         if not hasattr(document, 'stl'):
             aspect = STL()
             aspect.handler = document
             document.stl = aspect
 
+    namespace_handler = classmethod(namespace_handler)
 
-    def get_element(self, prefix, name):
+
+    def get_element(cls, prefix, name):
         """Element factory, returns the right element instance."""
         if name in ('block', 'inline'):
             return Element(prefix, name)
 
         raise STLSyntaxError, 'unexpected element name: %s' % name
 
+    get_element = classmethod(get_element)
 
-    def get_attribute(self, prefix, name, value):
+
+    def get_attribute(cls, prefix, name, value):
         """Attribute factory, returns the right attribute instance."""
-        # XXX Kept for backwards compatibility, to be removed
-        if name == 'i18n':
-            return XML.Attribute(prefix, name, value)
-
         attributes = {'repeat': RepeatAttr, 'if': IfAttr, 'ifnot': IfnotAttr,
                       'attributes': AttributesAttr, 'content': ContentAttr}
         attribute = attributes.get(name)
@@ -565,7 +565,10 @@ class NSHandler(object):
             raise STLSyntaxError, 'unexpected attribute name: %s' % name
         return attribute(prefix, name, value)
 
+    get_attribute = classmethod(get_attribute)
+
 
 ########################################################################
 # Register
-XML.registry.set_namespace('http://xml.itools.org/namespaces/stl', NSHandler())
+XML.Document.set_namespace_handler('http://xml.itools.org/namespaces/stl',
+                                   NamespaceHandler)

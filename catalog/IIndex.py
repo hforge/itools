@@ -231,34 +231,6 @@ class Tree(object):
         self.children = {}
 
 
-    def _load(self):
-        tree_rsrc = self.root.tree_handler.resource
-        slot = 16 + self.slot * 16
-        # Documents
-        doc_rsrc = self.root.docs_handler.resource
-        doc_slot_n = IO.decode_link(tree_rsrc[slot+4:slot+8])
-        while doc_slot_n is not None:
-            doc_slot = 12 + doc_slot_n * 12
-            doc_number = IO.decode_uint32(doc_rsrc[doc_slot:doc_slot+4])
-            self.documents[doc_number] = documents = []
-            frequency = IO.decode_uint32(doc_rsrc[doc_slot+4:doc_slot+8])
-            for i in range(frequency):
-                documents.append(None)
-            # Next
-            doc_slot_n = IO.decode_link(doc_rsrc[doc_slot+8:doc_slot+12])
-        # Children
-        child_n = IO.decode_link(tree_rsrc[slot+8:slot+12])
-        while child_n is not None:
-            child = 16 + child_n * 16
-            c = IO.decode_character(tree_rsrc[child:child+4])
-            tree = Tree(self.root, child_n)
-            self.children[c] = tree
-            tree._load()
-            # Next
-            child_n = IO.decode_link(tree_rsrc[child+12:child+16])
-            
-
-
     ########################################################################
     # API
     ########################################################################
@@ -428,15 +400,45 @@ class IIndex(Folder, Tree):
         self.children = {}
 
         tree_rsrc = tree_handler.resource
+        doc_rsrc = docs_handler.resource
+
+        stack = []
         child_n = tree_handler.first_slot
-        while child_n is not None:
-            child = 16 + child_n * 16
-            c = IO.decode_character(tree_rsrc[child:child+4])
-            tree = Tree(self, child_n)
-            self.children[c] = tree
-            tree._load()
-            # Next
-            child_n = IO.decode_link(tree_rsrc[child+12:child+16])
+        if child_n is not None:
+            stack.append((self, child_n))
+
+        while stack:
+            # Build the tree instance
+            parent, tree_slot_n = stack.pop()
+            tree = Tree(self, tree_slot_n)
+
+            # Add the tree instance to its parent
+            tree_slot = 16 + tree_slot_n * 16
+            c = IO.decode_character(tree_rsrc[tree_slot:tree_slot+4])
+            parent.children[c] = tree
+
+            # Documents
+            doc_slot_n = IO.decode_link(tree_rsrc[tree_slot+4:tree_slot+8])
+            while doc_slot_n is not None:
+                doc_slot = 12 + doc_slot_n * 12
+                doc_number = IO.decode_uint32(doc_rsrc[doc_slot:doc_slot+4])
+                tree.documents[doc_number] = documents = []
+                frequency = IO.decode_uint32(doc_rsrc[doc_slot+4:doc_slot+8])
+                for i in range(frequency):
+                    documents.append(None)
+                # Next
+                doc_slot_n = IO.decode_link(doc_rsrc[doc_slot+8:doc_slot+12])
+
+            # Next sibling
+            sibling_n = IO.decode_link(tree_rsrc[tree_slot+12:tree_slot+16])
+            if sibling_n is not None:
+                stack.append((parent, sibling_n))
+
+            # Children
+            child_n = IO.decode_link(tree_rsrc[tree_slot+8:tree_slot+12])
+            if child_n is not None:
+                stack.append((tree, child_n))
+
         # The state
         self.added_terms = {}
         self.removed_terms = {}

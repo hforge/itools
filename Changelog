@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-06 18:39:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
+
+    Summary:
+      catalog, use iterative algorithm to load the iindex
+    Revision:
+      itools--main--0.7--patch-37
+
+    Instead of a recursive one. While this does not seem to change anything
+    from the performance point of view, I expect this change to simplify
+    further profiling.
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2005-03-05 20:37:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
 
     Summary:

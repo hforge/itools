@@ -176,7 +176,8 @@ class Request(object):
             if isinstance(value, str):
                 new_query.append((key, value))
             elif isinstance(value, unicode):
-                new_query.append('%s:utf8:ustring' % key, value.encode('utf8'))
+                value = value.encode('utf8')
+                new_query.append(('%s:utf8:ustring' % key, value))
             elif isinstance(value, int):
                 new_query(('%s:int' % key, str(value)))
             elif isinstance(value, list):

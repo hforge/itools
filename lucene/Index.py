@@ -88,55 +88,53 @@ class Deletable(Lucene.File):
 
 
 class Index(Folder):
-    def _get_handler(self, segment):
+    def _get_handler(self, segment, resource):
         name = segment.name
-        if self.has_resource(name):
-            resource = self.get_resource(name)
-            if name == 'segments':
-                return Segments(resource)
-            elif name == 'deletable':
-                return Deletable(resource)
-            elif name.count('.') == 1:
-                # Maybe it is a segment file
-                segments = self.get_handler('segments')
-                name, extension = name.split('.')
-                if name in segments.segments:
-                    # It really looks like a segment file
-                    if extension == 'fnm':
-                        return Lucene.FieldInfos(resource)
-                    elif extension == 'fdx':
-                        ndocs = segments.segments[name]
-                        return Lucene.FieldIndex(resource, num_docs=ndocs)
-                    elif extension == 'fdt':
-                        ndocs = segments.segments[name]
-                        return Lucene.FieldData(resource, num_docs=ndocs)
-                    elif extension == 'tis':
-                        return Lucene.TermInfoFile(resource)
-                    elif extension == 'tii':
-                        return Lucene.TermInfoIndex(resource)
-                    elif extension == 'frq':
-                        tis = self.get_handler('%s.tis' % name)
-                        num_terms = tis.term_count
-                        return Lucene.FreqFile(resource, num_terms=num_terms)
-                    elif extension == 'prx':
-                        tis = self.get_handler('%s.tis' % name)
-                        num_terms = tis.term_count
-                        return Lucene.ProxFile(resource, num_terms=num_terms)
-                    elif extension == 'tvx':
-                        ndocs = segments.segments[name]
-                        return Lucene.DocumentIndex(resource, num_docs=ndocs)
-                    elif extension == 'tvd':
-                        ndocs = segments.segments[name]
-                        return Lucene.Document(resource, num_docs=ndocs)
-                    elif extension == 'tvf':
-                        tvd = self.get_handler('%s.tvd' % name)
-                        nfields = tvd.get_nfields()
-                        return Lucene.Field(resource, num_fields=nfields)
-                    elif extension == 'del':
-                        return Lucene.DeletedDocuments(resource)
-                    elif extension[0] == 'f':
-                        # XXX Normalization
-                        pass
+        if name == 'segments':
+            return Segments(resource)
+        elif name == 'deletable':
+            return Deletable(resource)
+        elif name.count('.') == 1:
+            # Maybe it is a segment file
+            segments = self.get_handler('segments')
+            name, extension = name.split('.')
+            if name in segments.segments:
+                # It really looks like a segment file
+                if extension == 'fnm':
+                    return Lucene.FieldInfos(resource)
+                elif extension == 'fdx':
+                    ndocs = segments.segments[name]
+                    return Lucene.FieldIndex(resource, num_docs=ndocs)
+                elif extension == 'fdt':
+                    ndocs = segments.segments[name]
+                    return Lucene.FieldData(resource, num_docs=ndocs)
+                elif extension == 'tis':
+                    return Lucene.TermInfoFile(resource)
+                elif extension == 'tii':
+                    return Lucene.TermInfoIndex(resource)
+                elif extension == 'frq':
+                    tis = self.get_handler('%s.tis' % name)
+                    num_terms = tis.term_count
+                    return Lucene.FreqFile(resource, num_terms=num_terms)
+                elif extension == 'prx':
+                    tis = self.get_handler('%s.tis' % name)
+                    num_terms = tis.term_count
+                    return Lucene.ProxFile(resource, num_terms=num_terms)
+                elif extension == 'tvx':
+                    ndocs = segments.segments[name]
+                    return Lucene.DocumentIndex(resource, num_docs=ndocs)
+                elif extension == 'tvd':
+                    ndocs = segments.segments[name]
+                    return Lucene.Document(resource, num_docs=ndocs)
+                elif extension == 'tvf':
+                    tvd = self.get_handler('%s.tvd' % name)
+                    nfields = tvd.get_nfields()
+                    return Lucene.Field(resource, num_fields=nfields)
+                elif extension == 'del':
+                    return Lucene.DeletedDocuments(resource)
+                elif extension[0] == 'f':
+                    # XXX Normalization
+                    pass
         return Folder._get_handler(self, segment)
 
 

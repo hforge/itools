@@ -44,6 +44,16 @@ To get a feeling, let's start with an example:
     ...
 \end{code}
 
+    There are several things to highlight here. First the way we have built
+    our handler instance, passing a resource to a handler class
+    ({\tt HTML.Document}), later we will see other ways to build handler
+    instances.
+
+    Second the {\tt to\_str} method (all the file handlers have this
+    method), which serializes the handler, i.e. transforms the handler to
+    a sequence of bytes. This is a key concept to which we will come back
+    later.
+
   \item Now we can start working with the handler:
 \begin{code}
     >>> from itools.xml import XML
@@ -52,6 +62,9 @@ To get a feeling, let's start with an example:
     ...         print node.children
     Example Web Page
 \end{code}
+
+   Unlike {\tt to\_str}, the method {\tt traverse} is specific to XML
+   documents. Every handler class provides its own API.
 \end{enumerate}
 
 
@@ -153,7 +166,7 @@ A file resource represents a sequence of bytes. A handler keeps a data
 structure in memory, and offers an API to inspect and modify this data
 structure.
 
-Two key concept in computer science will help to clarify what we have
+Two key concepts in computer science will help to clarify what we have
 seen up to now:
 
 \begin{description}
@@ -167,6 +180,10 @@ seen up to now:
 Now it becomes obvious that the {\tt load} method what actually does is
 to de-serialize the resource and update the handler. And viceversa, the
 {\tt save} method serializes the handler and updates the resource.
+
+Remember the method {\tt to\_str} we saw at the beginning? it is the
+one responsible for the serialization process. The {\tt save} method
+calls {\tt to\_str} first, and then updates the resource.
 
 
 \section{The skeleton}
@@ -233,13 +250,14 @@ inheritance relationship between them.
   \label{Figure: handler tree}
 \end{figure}
 
-Follows a short description of these handler classes, including the most
-relevant part of the API.
+We are not going to see folder handlers here, as they will be studied in
+the next chapter. Now we are going to present some of the file handler
+classes {\tt itools} includes.
 
-\paragraph{File}
-
-This is the default handler for files, to be used when there is nothing
-better. The API is really basic:
+The first one is the {\tt File} handler class, which is the root of the
+inheritance tree for all file handlers. This is the one to use when there
+is nothing better. It only provides the method {\tt to\_str} we have already
+seen before.
 
 \begin{api}
   {\tt to\_str()}\\
@@ -247,7 +265,11 @@ better. The API is really basic:
     method {\tt handler.resource.get\_data()}).
 \end{api}
 
-\paragraph{Text}
+
+
+\subsection{Text handlers}
+
+The {\tt Text} handler class is the base class for all text handlers.
 
 The default handler for text files, whose API is:
 

@@ -155,7 +155,7 @@ Now we are going to write the other half, the serialization process,
 just adding the {\tt to\_unicode} methdo to the {\tt TaskTracker} class:
 
 \begin{code}
-        def to_unicode(self, encoding=None):
+        def to_unicode(self, encoding='UTF-8'):
             lines = []
             for task in self.tasks:
                 lines.append(u'title:%s' % task.title)

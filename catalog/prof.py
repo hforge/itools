@@ -50,10 +50,11 @@ def create_catalog():
     catalog = Catalog(fields=[('title', 'text', True, True),
                               ('body', 'text', True, False)])
     tests = get_handler('tests')
-    if tests.has_resource('catalog'):
-        tests.del_resource('catalog')
+    if tests.has_handler('catalog'):
+        tests.del_handler('catalog')
     tests.set_handler('catalog', catalog)
-    catalog_resource = tests.get_resource('catalog')
+    tests.save()
+    catalog_resource = tests.resource.get_resource('catalog')
     catalog = Catalog(catalog_resource)
     print 'done'
 
@@ -104,7 +105,7 @@ if __name__ == '__main__':
         profile.run('profile_indexing()')
 ##        print
 ##        profile.run('profile_search()')
-    elif option == 'bech':
+    elif option == 'bench':
         create_catalog()
         load_documents()
         # Benchmark

@@ -69,6 +69,8 @@ class Handler(object):
             return ''
         return self.parent.get_abspath() + '/' + self.name
 
+    abspath = property(get_abspath, None, None, '')
+
 
     def get_root(self):
         if self.parent is None:

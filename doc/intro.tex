@@ -38,6 +38,142 @@ coherent set of tools for the developer. A summary of these tools follows:
  \item {\tt itools.catalog} -- An index and search engine.
 \end{itemize}
 
+One of the criterias behind the {\tt itools} architecture is to reduce the
+dependencies between the different modules to the minumum, what makes up a
+flexible set of tools. Think of it as an extension to the Python's Standard
+Library.
+
+
+\subsection{The resource-handler model}
+
+Of everything in {\tt itools} I am probably most proud of the the three
+sub-packages {\tt itools.uri}, {\tt itools.resources} and
+{\tt itools.handlers}, which make up what I call the {\em resource-handler}
+model.
+
+There is a linear relationship of dependency between these modules, {\tt uri}
+depends on nothing but Python, {\tt resources} depends on {\tt uri}, and
+{\tt handlers} depends on {\tt resources}.
+
+This allows to use these modules on a flexible way. For example, you can
+just use {\tt itools.uri} (ignoring the others) to benefit from a higher
+level API to work with URIs than that provided by the Standard Library
+({\tt urlparse}).
+
+Or you may use {\tt itools.resources} if you want to benefit from an
+abstraction layer over the storage. This is to say, if you want to be able
+to manipulate many resources stored in different systems and accessed
+through different protocols with the same, consistent, rich API.
+
+You may even take advantage of {\tt itools.handlers} without fully
+understanding the model behind. For example, you could use some of the
+handlers {\tt itools} offers out-of-the-box for standard file formats
+like CSV, PO or XHTML, to simplify your live if you ever need to work
+with one of these formats.
+
+But, in order to exploit everything {\tt itools} has to offer to its limit,
+you may choose to base part or all of your application architecture on the
+{\em resource-handler} model, a model heavily influenced by the filesystem
+and the Web. In this situation the three packages ({\tt uri}, {\tt resources}
+and {\tt handlers}) show themselves as three different components with
+a distinct role in the architecture:
+
+\begin{itemize}
+  \item {\tt itools.uri} identifies and locates resources, wherever they
+    are. Altogether with {\tt itools.resources} it effectively enables your
+    information system to be distributed through an heterogeneous base.
+
+  \item {\tt itools.resources} provides persistency to your data, this is
+    to say, resources are where the data is stored.
+
+  \item and {\tt itools.handlers} is where the logic lives. The essential
+    characteristic of a resource handler (or handler for short) is that it is
+    non-persistent, instead it is associated with a resource, whose content
+    it is responsible to manage.
+\end{itemize}
+
+The first chapters of this document will cover these sub-packages,
+{\tt itools.uri}, {\tt itools.resources} and {\tt itools.handlers} with
+detail.
+
+\subsection{eXtensible Markup Language}
+
+The {\tt itools.xml} depends on {\tt itools.handlers}, this is its first
+advantage. It represents an XML document as an DOM like tree. But it
+also provides support for schemas, what allows to easily build higher
+level data structures.
+
+The package also provides handlers for specific document types out-of-the-box,
+most notably XHTML and HTML (even if HTML is not XML, it shares a lot with
+XHTML).
+
+
+\subsection{The Simple Template Language}
+
+The Simple Template Language is included in the {\tt itools.xml} package,
+but it is important enough to deserve its own chapter in the documentation.
+
+Its design goals are:
+
+\begin{itemize}
+  \item Truly separate logic and presentation. Even Python expressions are
+    not allowed within the template.
+
+  \item Really simple. It can be mastered in half a day.
+
+  \item Damn fast (easy to achieve through simplicity).
+
+  \item Secure. Even non-trusted users could write templates without risk,
+    because code is not allowed within the template.
+\end{itemize}
+
+And the key idea behind, is to make it a {\em descriptive} language.
+
+
+\subsection{Workflow}
+
+The sub-package {\tt itools.workflow} (once known as {\em flux}) is the
+oldest code in {\tt itools}. It does not depend on anything but the
+Standard Library, and don't puts any restriction on the storage. This
+makes it very easy to combine with other frameworks.
+
+There is a chapter exclusively dedicated to it.
+
+\subsection{Internationalization and Localization}
+
+The {\tt itools.i18n} package provides a wide range of tools for
+internationalization and localization of both software and data. From
+message extraction to language negotiation, through text segmentation,
+fuzzy matching or algorithms to guess the language a text is written in.
+
+A chapter is devoted to this topic.
+
+
+\subsection{Index and Search}
+
+The {\tt itools.catalog} sub-package provides an index and search engine.
+Though still young, it already provides full text indexing, boolean queries
+and results sorted by weight.
+
+
+
+\section{Who is this document for?}
+
+This document is addressed to Python developers. Though it may be useful
+to software architects in general, as some ideas exposed here could be
+found interesting\footnote{For example, {\tt itools.workflow} inspired
+XXX to write a similar engine in Java, see {\tt http://XXX}}.
+
+It is convenient to have some basic skills with the Python programming
+language to fully understand this document. Probably the best introduction
+to Python is the official tutorial:
+
+\begin{quote}
+  {\tt http://python.org/doc/2.3.4/tut/tut.html}.
+\end{quote}
+
+This document touches many different technologies and standards, such as XML.
+References will be given in the relevant chapters.
 
 
 \section{Project status}
@@ -47,52 +183,14 @@ this writing the last version available is {\bf 0.5}). This means that the
 API is not yet stable, the documentation is incomplete, and there may be bugs.
 
 
-\section{About this document}
-
-The development keeps ahead of the documentation. Today only few aspects
-of {\tt itools} are documented. By order of appearance:
-
-\begin{enumerate}
-  \item The first chapter is dedicated to {\tt itools.uri}: we will learn how
-    to manipulate {\bf U}niform {\bf R}esource {\bf I}dentifiers.
-
-  \item Follows {\tt itools.resources}, the file like abstraction layer.
-
-  \item In third place comes {\tt itools.handlers}, or the art of working
-    with resources.
-
-  \item Next {\tt itools.xml} is explained, the XML services provided by
-    {\tt itools}, which are based on resource handlers.
-
-  \item Closing is the {\bf S}imple {\bf T}emplate {\bf L}anguage, as unknown
-    by the Python community as it is simple, powerful and fast.
-
-  \item As an appendix the use of GNU arch will be quickly exposed, what
-    will allow users to keep track of the {\tt itools} development.
-\end{enumerate}
-
-
-\subsection{Background}
-
-Remember that this is a Python package, if you don't know about the Python
-programming language better go read the tutorial first:
-
-% XXX
-\begin{quote}
-  {\tt http://python.org/doc/2.3.4/tut/tut.html}.
-\end{quote}
-
-Through this document different technologies will be exposed. Proper
-references will be given.
-
-\section{Get ready}
+\section{Installation}
 
 Before going further, be sure your system is correctly setup. First you
-will need Python 2.3 or later.
+will need Python 2.3.4 or later.
 
-Then download the last {\tt itools} version from
-{\tt http://sf.net/projects/lleu}, unpack it somewhere, and install it;
-{\tt itools} uses {\em distutils}, so just type:
+Then download the last {\tt itools} version from {\tt http://www.ikaaro.org},
+unpack it somewhere, and install it; {\tt itools} uses {\em distutils}, so
+just type:
 
 \begin{code}
     $ python setup.py install
@@ -100,3 +198,12 @@ Then download the last {\tt itools} version from
 
 Be sure to have the right permissions.
 
+
+\section{About this document}
+
+The development keeps ahead of the documentation. I would say the docs cover
+around 60\% of {\tt itools}.
+
+There are also two appendixes, one explaining the coding style {\tt itools}
+is written in, another one introducing the use of {\em GNU arch}. Both are
+specially addressed to those that want to contribute back to the main tree.

@@ -1,3 +1,4 @@
+# -*- coding: ISO-8859-1 -*-
 # Copyright (C) 2002-2003  J. David Ibáñez <jdavid@itaapy.com>
 #               2002  Thilo Ernst <Thilo.Ernst@dlr.de>
 #

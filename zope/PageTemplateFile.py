@@ -1,3 +1,4 @@
+# -*- coding: ISO-8859-1 -*-
 
 # Import Python modules
 from cStringIO import StringIO

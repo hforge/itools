@@ -1,3 +1,4 @@
+# -*- coding: ISO-8859-1 -*-
 # Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or

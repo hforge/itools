@@ -1,3 +1,25 @@
+0.7.2 (2005/03/11)
+
+  Resources
+  - Fix modification time for Zope 2 resources.
+
+  Handlers
+  - Add "traverse2" to folder handlers.
+  - Add boolean variable "is_virtual".
+  - Fix folder save, use the given resource.
+
+  XML
+  - Ignore unknown entity references, emit a warning instead of failing.
+  - Remove obsolete "walk" method.
+
+  Catalog
+  - Fix profile and benchmark script.
+  - Speed up the load of an index.
+
+  Packaging
+  - Fix setup, use relative paths.
+
+
 0.7.1 (2005/03/03)
 
   URI

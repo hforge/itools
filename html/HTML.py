@@ -54,7 +54,9 @@ class Parser(HTMLParser, XML.Parser):
 
 
     def handle_starttag(self, name, attrs):
-        element = Element(None, name)
+        element_types = {'head': HeadElement}
+        element_type = element_types.get(name, Element)
+        element = element_type(None, name)
 
         for attr_name, value in attrs:
             element.set_attribute(None, attr_name, value)
@@ -114,33 +116,20 @@ empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
 
 class Element(XHTML.Element):
 
-    # XXX This code is copy & paste (with minor changes) from
-    # 'XHTML.get_opentag'. It should be refactored.
-    def get_opentag(self, encoding='UTF-8'):
-        if self.name == 'meta':
-            if self.has_attribute(None, 'http-equiv'):
-                http_equiv = self.get_attribute(None, 'http-equiv')
-                if http_equiv == 'Content-Type':
-                    s = '<%s' % self.qname
-                    # Output the attributes
-                    for namespace, local_name, value in self.get_attributes():
-                        # This is HTML, we don't care about the namespace
-                        if local_name == 'content':
-                            value = u'text/html; charset=%s' % encoding
-                        else:
-                            value = unicode(value)
-                        s += ' %s="%s"' % (local_name, value)
-                    # Close the open tag
-                    return s + u'>'
-
-        return XHTML.Element.get_opentag(self, encoding)
-
-
     def get_closetag(self):
         if self.name in empty_elements:
             return ''
         return XHTML.Element.get_closetag(self)
 
+
+class HeadElement(XHTML.Element):
+
+    def to_unicode(self, encoding='UTF-8'):
+        # XXX This is almost identical to 'XHTML.Element.to_unicode'
+        return ''.join([self.get_opentag(),
+                        '\n    <meta http-equiv="Content-Type" content="text/html; charset=%s">' % encoding,
+                        XML.Children.encode(self.children, encoding=encoding),
+                        self.get_closetag()])
 
 
 #############################################################################

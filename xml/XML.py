@@ -431,18 +431,18 @@ class Element(object):
     #######################################################################
     # Serialization
     def to_unicode(self, encoding='UTF-8'):
-        return self.get_opentag(encoding) \
+        return self.get_opentag() \
                + Children.encode(self.children, encoding=encoding) \
                + self.get_closetag()
 
 
-    def get_opentag(self, encoding='UTF-8'):
+    def get_opentag(self):
         s = '<%s' % self.qname
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
             qname = self.get_attribute_qname(namespace_uri, local_name)
             type = self.get_attribute_type(namespace_uri, local_name)
-            value = type.to_unicode(value, encoding='UTF-8')
+            value = type.to_unicode(value)
             s += ' %s="%s"' % (qname, value)
         # Close the open tag
         return s + u'>'
@@ -474,10 +474,16 @@ class Element(object):
 
     def get_attribute_qname(self, namespace, local_name):
         """Returns the fully qualified name"""
-        # Returns attribute's qname
         prefix = self.prefixes[namespace]
         if prefix is None:
             return local_name
+
+        # Namespace declarations for the default namespace lack the local
+        # name (e.g. xmlns="http://www.example.org"). Here 'xmlns' is always
+        # the prefix, and there is not a local name. This an special case.
+        if local_name is None:
+            return prefix
+
         return '%s:%s' % (prefix, local_name)
 
 
@@ -656,9 +662,9 @@ class Document(Text.Text):
         s.append(pattern % (self.xml_version, encoding))
         # The document type
         if self.document_type is not None:
-            pattern = '<!DOCTYPE %s' \
-                      '\n     PUBLIC "%s"' \
-                      '\n    "%s">'
+            pattern = '<!DOCTYPE %s\n' \
+                      '     PUBLIC "%s\n"' \
+                      '    "%s">\n'
             s.append(pattern % self.document_type[:3])
         # The children
         s.append(self.root_element.to_unicode(encoding))

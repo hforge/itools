@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-26 18:41:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
+
+    Summary:
+      xhtml, specify always the content type in the meta tag
+    Revision:
+      itools--main--0.8--patch-37
+
+    Now XHTML and HTML handlers always include the "meta" tag for the
+    content type and encoding when serialized, even if the original
+    resource lacked it.
+
+    modified files:
+     Changelog handlers/IO.py html/HTML.py xml/XHTML.py xml/XML.py
+
+
 2005-03-25 20:04:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
 
     Summary:

@@ -63,35 +63,32 @@ class Element(XML.Element):
         return False
 
 
+class HeadElement(Element):
 
-class MetaElement(Element):
-
-    # XXX This is a hack to get the encoding information within the document's
-    # head right: the meta element. It only works if the document already
-    # contains the meta element.
-    # Probably the best solution would be to load the head into a higher
-    # level data structure, not as a DOM tree. Though this would break the
-    # the XML API.
     def to_unicode(self, encoding='UTF-8'):
-        s = '<%s' % self.qname
-        for namespace_uri, local_name, value in self.get_attributes():
-            if namespace_uri == xhtml_uri and local_name == 'content':
-                value = u'application/xhtml+xml; charset=%s' % encoding
-            else:
-                type = self.get_attribute_type(namespace_uri, local_name)
-                value = type.to_unicode(value)
-            qname = self.get_attribute_qname(namespace_uri, local_name)
-            s += ' %s="%s"' % (qname, value)
-        return s + u' />'
+        return ''.join([self.get_opentag(),
+                        '\n    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />' % encoding,
+                        XML.Children.encode(self.children, encoding=encoding),
+                        self.get_closetag()])
+
+
+    def set_element(self, element):
+        # Skip content type declaration
+        if element.namespace == xhtml_uri and element.name == 'meta':
+            if element.has_attribute(xhtml_uri, 'http-equiv'):
+                value = element.has_attribute(xhtml_uri, 'http-equiv')
+                if value == 'Content-Type':
+                    return
+        self.children.append(element)
 
 
 
 class Namespace(XML.Namespace):
 
     def get_element(cls, prefix, name):
-        if name == 'meta':
-            return MetaElement(prefix, name)
-        return Element(prefix, name)
+        element_types = {'head': HeadElement}
+        element_type = element_types.get(name, Element)
+        return element_type(prefix, name)
 
     get_element = classmethod(get_element)
 

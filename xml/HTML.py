@@ -40,7 +40,11 @@ class Element(XHTML.Element):
     def get_closetag(self):
         if self.name in empty_elements:
             return ''
-        return XHTML.Element.get_raw_closetag(self)
+        return XHTML.Element.get_closetag(self)
+
+
+    def handle_start_element(self, ns_uri, prefix, name):
+        return Element(prefix, name)
 
 
 
@@ -158,6 +162,13 @@ class Document(XHTML.Document, HTMLParser):
         while len(self.stack) > 1:
             XHTML.Document.end_element_handler(self, self.stack[-1].name)
         HTMLParser.close(self)
+
+
+    #######################################################################
+    # itools.xml handlers
+    def handle_start_element(self, ns_uri, prefix, name):
+        # Create the element instance
+        return Element(prefix, name)
 
 
     #######################################################################

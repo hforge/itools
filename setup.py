@@ -1,6 +1,7 @@
 # -*- coding: ISO-8859-1 -*-
 # Copyright (C) 2002-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #                    2005 Luis Belmar Leteliet <luis@itaapy.com>
+#                    2005 Hervé Cauwelier <herve@oursours.net>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,33 +20,39 @@
 """
 This script can be tested with the folowing::
 
-  sudo rm -r /usr/lib/python2.3/site-packages/itools
-  sudo make clean 
+  make clean 
   python setup.py -q clean sdist
   cd dist
-  tar xzf itools-0.6.4.tar.gz
-  cd itools-0.6.4
+  tar xzf itools-0.7.1.tar.gz
+  cd itools-0.7.1
   sudo python setup.py -q install
 
-We test the fact that Changelog, txt and dtml file are in site-packages::
+Make sure the following files are shipped:
+  - Changelog
+  - Makefile
+  - i18n/languages.txt
+  - zope/localroles.dtml
 
-  ls -lah /usr/lib/python2.3/site-packages/itools/Changelog
-  find /usr/lib/python2.3/site-packages/itools/ -name "*.dtml"
-  find /usr/lib/python2.3/site-packages/itools/ -name "*.txt"
+Note the path separator may vary on your platform.
 """
 
 
 # Import Python modules
-from distutils.command import build_py
 from distutils.core import setup
-from glob import glob
-import os, sys
-import string
+from distutils.command.install_data import install_data
+import os
 
 
-distutils_path = sys.modules['distutils'].__path__[0]
-python_path, trash = os.path.split(distutils_path)
-itools_path = os.path.join(python_path, 'site-packages', 'itools')
+# XXX make data installed as Python modules
+# In Python 2.4, the new package_data makes it damn easier.
+#
+class install_module_data(install_data):
+    def finalize_options (self):
+        self.set_undefined_options('install',
+                                   ('install_purelib', 'install_dir'),
+                                   ('root', 'root'),
+                                   ('force', 'force'),
+                                  )
 
 
 # XXX itools.zope.zmi shouldn't be a Python package, but this is the
@@ -104,11 +111,11 @@ setup(name = "itools",
                      'Topic :: Text Processing',
                      'Topic :: Text Processing :: Markup',
                      'Topic :: Text Processing :: Markup :: XML'],
-        data_files = [(itools_path, ['Changelog']), 
-                      (os.path.join(itools_path, ('zope')), 
-                       ['zope/localroles.dtml']),
-                      (os.path.join(itools_path, ('i18n')), 
-                       ['i18n/languages.txt']), 
-                     ],
-      scripts = ['i18n/igettext.py'],
+      data_files=[('itools', ['Changelog']),
+                  (os.path.join('itools', 'zope'),
+                   [os.path.join('zope', 'localroles.dtml')]),
+                  (os.path.join('itools', 'i18n'),
+                   [os.path.join('i18n', 'languages.txt')])],
+      scripts = [os.path.join('i18n', 'igettext.py')],
+      cmdclass={'install_data': install_module_data},
       )

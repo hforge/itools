@@ -2,6 +2,30 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-07 10:24:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
+
+    Summary:
+      packaging, fix setup.py, use relative paths (by Herve)
+    Revision:
+      itools--main--0.7--patch-39
+
+    Using relative paths solves the problem found by Herve when building
+    Debian packages.
+    
+    Note that there is a much better solution for Python 2.4 that should
+    be adopted once support for Python 2.3 is dropped, see:
+    
+      http://arch.oursours.net/zoom/herve@oursours.net--public/
+        itools--herve--0.7--patch-6/setup.py
+    
+    This change integrates the patchs #6, half of #8, #11, #12 and #13.
+    They have not been applied directly because the patch #8 was mixed
+    with another non related change and produced conflicts.
+
+    modified files:
+     Changelog setup.py
+
+
 2005-03-07 09:28:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
 
     Summary:

@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-21 20:11:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
+
+    Summary:
+      handlers, add new handler class MO (gettext)
+    Revision:
+      itools--main--0.7--patch-24
+
+
+    new files:
+     handlers/.arch-ids/MO.py.id handlers/MO.py
+
+    modified files:
+     Changelog handlers/PO.py handlers/__init__.py
+
+
 2005-02-21 20:08:39 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-23
 
     Summary:

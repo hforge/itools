@@ -141,7 +141,7 @@ class Message(object):
 
 class PO(Text):
 
-    class_mimetypes = ['text/po']
+    class_mimetypes = ['text/x-po']
 
     #########################################################################
     # The skeleton

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 
 
 """
-This package provides and abstraction layer for files, directories and links.
+This package provides an abstraction layer for files and directories.
 There are two key concepts, resources and handlers.
 
 A resource is anything that behaves like a file (it contains an array of
@@ -32,8 +32,7 @@ files, etc...
 """
 
 
-
-# Import from Python
+# Import from the Standard Library
 import mimetypes
 
 # Import from itools
@@ -44,35 +43,20 @@ import Handler
 import CSV
 import File
 import Folder
+import MO
 import PO
 import Text
 
 
-mimetypes.add_type('text/po', '.po')
+mimetypes.add_type('text/x-po', '.po')
+mimetypes.add_type('application/x-mo', '.mo')
 mimetypes.add_type('text/comma-separated-values', '.csv')
 mimetypes.add_type('application/xhtml+xml', '.xhtml')
 
 
 def get_handler(uri):
     """
-    Returns a resource handler from a path, where path can be a list of
-    strings or an string of the form 'a/b/c'.
-
-    The 'root' parameter is a folder resource (an instance of the class
-    'itools.resources.base.Folder'). If the path is relative the requested
-    resource will be searched starting from the given root; if none is
-    provided the root will be the current filesystem directory.
-
-    The paramater 'database' is an instance of the 'Database' class, which
-    keeps the association between resource types and handler classes. By
-    default the 'handlers' instance within this module is used.
-
-    The 'accept' parameter is used for language negotiation, it must be an
-    instance of the class 'itools.i18n.accept.AcceptLanguage'. If provided,
-    when the requested resource does not exists, a variant will be searched
-    and returned if found (for example 'index.html.en' is a variant of
-    'index.html'), which variant is returned depends on language negotiation.
-    By default 'accept' is None, what means that this feature is disabled.
+    Returns a resource handler from a uri reference.
     """
     # Get the resource
     resource = get_resource(uri)

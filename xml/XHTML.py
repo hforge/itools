@@ -28,9 +28,12 @@ from itools import i18n
 
 
 
-inline_elements = ['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn', 'em',
-                   'kbd', 'q', 'samp', 'span', 'strong', 'sub', 'sup', 'tt',
-                   'var']
+#############################################################################
+# Namespace
+#############################################################################
+inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
+                       'em','kbd', 'q', 'samp', 'span', 'strong', 'sub',
+                       'sup', 'tt', 'var'])
 
 
 
@@ -40,6 +43,7 @@ class Attribute(XML.Attribute):
 
 
 class Element(XML.Element):
+
     namespace = 'http://www.w3.org/1999/xhtml'
 
 
@@ -63,6 +67,29 @@ class Element(XML.Element):
 
 
 
+class NamespaceHandler(XML.NamespaceHandler):
+
+    def get_element(cls, prefix, name):
+        return Element(prefix, name)
+
+    get_element = classmethod(get_element)
+
+
+    def get_attribute(cls, prefix, name, value):
+        return Attribute(prefix, name, value)
+
+    get_attribute = classmethod(get_attribute)
+
+
+
+XML.Document.set_namespace_handler('http://www.w3.org/1999/xhtml',
+                                   NamespaceHandler)
+
+
+
+#############################################################################
+# Document
+#############################################################################
 class Document(XML.Document):
     """
     This class adds one thing to the XML class, the semantics of translatable
@@ -343,27 +370,5 @@ class Document(XML.Document):
 
 
 
-
-########################################################################
-# Interface for the XML parser, factories
-class NamespaceHandler(XML.NamespaceHandler):
-
-    def get_element(cls, prefix, name):
-        return Element(prefix, name)
-
-    get_element = classmethod(get_element)
-
-
-    def get_attribute(cls, prefix, name, value):
-        return Attribute(prefix, name, value)
-
-    get_attribute = classmethod(get_attribute)
-
-
-########################################################################
-# Register
-XML.Document.set_namespace_handler('http://www.w3.org/1999/xhtml',
-                                   NamespaceHandler)
 XML.Document.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
-
 XML.Document.register_handler_class(Document)

@@ -397,12 +397,8 @@ class Document(Text.Text):
 
 
     def start_namespace_handler(self, prefix, uri):
-        if registry.has_namespace(uri):
-            ns_handler = registry.get_namespace(uri)
-            if hasattr(ns_handler, 'namespace_handler'):
-                ns_handler.namespace_handler(self)
-        else:
-            warnings.warn('Unknown xml namespace: %s' % uri)        
+        namespace_handler = self.get_namespace_handler(uri)
+        namespace_handler.namespace_handler(self)
         # Keep the namespace declarations
         self.ns_declarations[prefix] = uri
 
@@ -837,10 +833,10 @@ class NamespaceHandler(object):
     get_element = classmethod(get_element)
 
 
-    def get_attributes(cls, prefix, name, value):
+    def get_attribute(cls, prefix, name, value):
         return Attribute(prefix, name, value)
 
-    get_attributes = classmethod(get_attributes)
+    get_attribute = classmethod(get_attribute)
 
 
 Document.set_namespace_handler(None, NamespaceHandler)

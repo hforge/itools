@@ -16,9 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-# Import from Python
+# Import from the Standard Library
 from copy import copy
 from HTMLParser import HTMLParser
+from sets import Set
 
 # Import from itools
 from itools.handlers import File
@@ -27,24 +28,14 @@ import XHTML
 
 
 # List of empty elements, which don't have a close tag
-empty_elements = ['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
-                  'img', 'input', 'isindex', 'link', 'meta', 'param']
+empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
+                      'img', 'input', 'isindex', 'link', 'meta', 'param'])
 
 class Element(XHTML.Element):
-##    def get_content(self):
-##        if self.name in empty_elements:
-##            return ''
-##        return XHTML.Element.get_content(self)
-
-
     def get_closetag(self):
         if self.name in empty_elements:
             return ''
         return XHTML.Element.get_closetag(self)
-
-
-    def handle_start_element(self, ns_uri, prefix, name):
-        return Element(prefix, name)
 
 
 
@@ -112,12 +103,13 @@ class Document(XHTML.Document, HTMLParser):
 
 
     def handle_starttag(self, name, attrs):
-        # Change attrs from a list to a dictionary, as needed by XHTML
-        attributes = {}
-        for k, v in attrs:
-            attributes[k] = v
+        element = Element(None, name)
 
-        element = XHTML.Document.start_element_handler(self, name, attributes)
+        for name, value in attrs:
+            attribute = XHTML.Attribute(None, name,value)
+            element.attributes.add(attribute)
+
+        self.stack.append(element)
 
         # Check for the mime type and encoding
         if name == 'meta':
@@ -162,13 +154,6 @@ class Document(XHTML.Document, HTMLParser):
         while len(self.stack) > 1:
             XHTML.Document.end_element_handler(self, self.stack[-1].name)
         HTMLParser.close(self)
-
-
-    #######################################################################
-    # itools.xml handlers
-    def handle_start_element(self, ns_uri, prefix, name):
-        # Create the element instance
-        return Element(prefix, name)
 
 
     #######################################################################

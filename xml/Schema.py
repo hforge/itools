@@ -91,17 +91,15 @@ class ComplexType(object):
             # Decode the value
             if name in schema:
                 type, default = schema[name]
-                if issubclass(type, SimpleType):
+                if issubclass(type, ComplexType):
+                    value = type.decode(node)
+                else:
                     value = unicode(node.children)
                     try:
                         value = type.decode(value)
                     except ValueError:
                         # XXX Better to log it?
                         warnings.warn('Unable to decode "%s"' % name)
-                elif issubclass(type, ComplexType):
-                    value = type.decode(node)
-                else:
-                    raise ValueError, 'bad type for "%s"' % name
                 # The language
                 if 'lang' in node.attributes:
                     language = node.attributes['lang'].value

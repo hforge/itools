@@ -16,19 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
+# Import from Python
+from datetime import datetime
+
 # Import from itools.resources
 import base
-import datetime
-
-
-
-class Revision(object):
-    def __init__(self, data, date=None):
-        self.data = data
-
-        if date is None:
-            date = datetime.datetime.now()
-        self.date = date
 
 
 
@@ -41,37 +33,45 @@ class File(Resource, base.File):
     """ """
 
     def __init__(self, data):
-        self.revisions = []
-        self.set_data(data)
+        self.data = data
+        self.ctime = self.mtime = datetime.now()
 
 
     def __setitem__(self, index, value):
-        data = self.revisions[-1].data
+        data = self.data
         if isinstance(index, slice):
             # XXX So far 'step' is not supported
             start, stop = index.start, index.stop
         else:
             start, stop = index, index + 1
-        data = data[:start] + value + data[stop:]
-        self.set_data(data)
+        self.data = data[:start] + value + data[stop:]
+        self.mtime = datetime.now()
+
+
+    def __setslice__(self, start, stop, value):
+        self.data = self.data[:start] + value + self.data[stop:]
+        self.mtime = datetime.now()
+
+
+    def append(self, value):
+        self.data += value
 
 
     def __str__(self):
-        return self.revisions[-1].data
+        return self.data
 
 
     def set_data(self, data):
-        revision = Revision(data)
-        self.revisions.append(revision)
+        self.data = data
+        self.mtime = datetime.now()
 
 
     def get_ctime(self):
-        return self.revisions[0].date
+        return self.ctime
 
 
     def get_mtime(self):
-        return self.revisions[-1].date
-
+        return self.mtime
 
 
 
@@ -80,7 +80,7 @@ class Folder(Resource, base.Folder):
 
     def __init__(self):
         self.resources = {}
-        self.ctime = self.mtime = datetime.datetime.now()
+        self.ctime = self.mtime = datetime.now()
 
 
     def get_mimetype(self):
@@ -114,19 +114,19 @@ class Folder(Resource, base.Folder):
     def _set_file_resource(self, name, resource):
         data = resource.get_data()
         self.resources[name] = File(data)
-        self.mtime = datetime.datetime.now()
+        self.mtime = datetime.now()
 
 
     def _set_folder_resource(self, name, resource):
         self.resources[name] = Folder()
-        self.mtime = datetime.datetime.now()
+        self.mtime = datetime.now()
 
 
     def _del_file_resource(self, name):
         del self.resources[name]
-        self.mtime = datetime.datetime.now()
+        self.mtime = datetime.now()
 
 
     def _del_folder_resource(self, name):
         del self.resources[name]
-        self.mtime = datetime.datetime.now()
+        self.mtime = datetime.now()

@@ -53,9 +53,12 @@ def normalize_path(path):
     """
     if not isinstance(path, str) and not isinstance(path, unicode):
         raise TypeError, 'path must be an string, not a %s' % type(path)
-
+    # Does the path start by an slash? i.e.: is it absolute?
     startswith_slash = path.startswith('/')
-    endswith_slash = path.endswith('/')
+    # Does the path end by an slash? (relevant to resolve URLs)
+    endswith_slash = path.endswith('/') \
+                     or path.endswith('/.') \
+                     or path.endswith('/..')
     # Split the path http://a//
     path = path.split('/')
     # Transform '//' and '/./' to '/'
@@ -196,9 +199,8 @@ class Path(list):
 
 
     def __add__(self, path):
-        if not isinstance(path, Path):
-            path = Path(path)
-        return self.__class__(list(self) + list(path))
+        raise NotImplementedError, \
+              'paths can not be added, use resolve2 instead'
 
 
     ##########################################################################
@@ -215,6 +217,8 @@ class Path(list):
         path += '/'.join([ str(x) for x in self ])
         if self.endswith_slash:
             path += '/'
+        if len(path) == 0:
+            return '.'
         return path
 
 
@@ -399,7 +403,10 @@ class Reference(object):
 
 
     def __str__(self):
-        return urlunsplit((self.scheme, str(self.authority), str(self.path),
+        path = str(self.path)
+        if path == '.':
+            path = ''
+        return urlunsplit((self.scheme, str(self.authority), path,
                            str(self.query), self.fragment))
 
 

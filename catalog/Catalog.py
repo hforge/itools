@@ -26,6 +26,7 @@ from itools.handlers.Text import Text
 import Analysers
 from IDocument import IDocument, IndexedField, StoredField
 from IIndex import IIndex
+import Query
 
 
 class Field(object):
@@ -191,28 +192,62 @@ class Catalog(Folder):
         self.timestamp = datetime.datetime.now()
 
 
-    def search(self, **kw):
-        documents = {}
-
-        fields = self.get_handler('fields')
-        # Search
-        for field_name, value in kw.items():
-            field_number = fields.field_numbers[field_name]
+    def _search(self, query):
+        if isinstance(query, Query.Simple):
+            # A simple query
+            fields = self.get_handler('fields')
+            documents = {}
+            field_number = fields.field_numbers[query.name]
             field = fields.fields[field_number]
             if field_number in fields.indexed_fields:
                 tree = self.get_handler('f%d' % field_number)
                 # XXX Analyse
+                value = query.value
                 if field.type == 'bool':
                     value = str(int(value))
                 for doc_number, weight in tree.search_word(value).items():
-                    documents.setdefault(doc_number, 0)
-                    documents[doc_number] += weight
+                    documents[doc_number] = weight
+            return documents
+        else:
+            # A complex query
+            r1 = self._search(query.left)
+            r2 = self._search(query.right)
+            documents = {}
+            if query.operator == 'and':
+                for number in r1:
+                    if number in r2:
+                        documents[number] = r1[number] + r2[number]
+                return documents
+            elif query.operator == 'or':
+                for number, weight in r2.items():
+                    if number in r1:
+                        r1[number] += weight
+                    else:
+                        r1[number] = weight
+                return r1
+
+
+    def search(self, query=None, **kw):
+        # Build the query if it is passed through keyword parameters
+        if query is None:
+            for key, value in kw.items():
+                atom = Query.Simple(key, value)
+                if query is None:
+                    query = atom
+                else:
+                    query = Query.Complex(query, 'and', atom)
+        # Check wether there is a query at all
+        if query is None:
+            raise ValueError, "expected a query"
+        # Search
+        documents = self._search(query)
         # Sort by weight
         documents = [ (weight, doc_number)
                       for doc_number, weight in documents.items() ]
         documents.sort()
         documents.reverse()
         # Build the document objects
+        fields = self.get_handler('fields')
         for i, document in enumerate(documents):
             weight, doc_number = document
             document = Document(doc_number)

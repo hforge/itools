@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-18 15:30:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
+
+    Summary:
+      catalog, fix skeletons (rename "__version__" to "class_version")
+    Revision:
+      itools--main--0.7--patch-56
+
+
+    modified files:
+     Changelog catalog/IIndex.py catalog/IO.py
+
+
 2005-03-18 08:54:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
 
     Summary:

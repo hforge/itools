@@ -162,7 +162,7 @@ def decode_link(data):
 
 # The first four bytes of every resource contain the version number. The
 # version number is expressed as a date, whose compact human readable format
-# is '20040723' (see at any handler __version__ attribute). In the resource
+# is '20040723' (see at any handler class_version attribute). In the resource
 # it is stored as the proleptic Gregorian ordinal.
 def encode_version(value):
     year, month, day = int(value[:4]), int(value[4:6]), int(value[6:])

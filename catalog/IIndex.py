@@ -97,7 +97,7 @@ class IIndexTree(File):
 
     def get_skeleton(self):
         # The header
-        version = IO.encode_version(self.__version__)
+        version = IO.encode_version(self.class_version)
         number_of_slots = IO.encode_uint32(0)
         first_slot = IO.encode_link(None)
         first_empty = IO.encode_link(None)
@@ -160,7 +160,7 @@ class IIndexDocuments(File):
 
 
     def get_skeleton(self):
-        version = IO.encode_version(self.__version__)
+        version = IO.encode_version(self.class_version)
         number_of_slots = IO.encode_uint32(0)
         first_empty = IO.encode_link(None)
         return version + number_of_slots + first_empty

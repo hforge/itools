@@ -26,7 +26,7 @@ Let's see a few examples:
 
 \begin{code}
     >>> from itools.resources import get_resource
-    >>> get_resource('examples/hello.txt.en')
+    >>> get_resource('examples/hello.txt')
     <itools.resources.file.File instance at 0x402175ac>
     >>> get_resource('http://example.com')
     <itools.resources.http.File instance at 0x404aadec>
@@ -132,8 +132,8 @@ Let's exercise the API a little:
 \begin{code}
     >>> examples = get_resource('examples')
     >>> print examples.get_resources()
-    ['hello.txt.es', 'hello.txt.en', 'CVS']
-    >>> hello = examples.get_resource('hello.txt.en')
+    ['hello.xhtml~', 'hello.xhtml', 'hello.txt', '.arch-ids']
+    >>> hello = examples.get_resource('hello.txt')
     >>> print hello.get_data()
     hello world
 \end{code}

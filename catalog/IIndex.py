@@ -262,9 +262,16 @@ class Tree(object):
     ########################################################################
     # API
     ########################################################################
-    def _index_term(self, word, doc_number, positions):
-        if word:
-            prefix, suffix = word[0], word[1:]
+    def _index_term(self, term, documents):
+        """
+        Indexes the given term. The parameter 'documents' is a mapping
+        from document number to list of positions:
+
+          {<document number>: [postion, ...],
+           ...}
+        """
+        if term:
+            prefix, suffix = term[0], term[1:]
             if prefix in self.children:
                 subtree = self.children[prefix]
             else:
@@ -283,7 +290,7 @@ class Tree(object):
                 this_slot = 16 + self.slot * 16
                 r[free_slot+12:free_slot+16] = r[this_slot+8:this_slot+12]
                 r[this_slot+8:this_slot+12] = IO.encode_link(free_slot_n)
-            subtree._index_term(suffix, doc_number, positions)
+            subtree._index_term(suffix, documents)
         else:
             tree_handler = self.root.tree_handler
             tree_rsrc = tree_handler.resource
@@ -293,31 +300,38 @@ class Tree(object):
             tree_slot = 16 + self.slot * 16
             fdoc_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
             fdoc_slot_n = IO.decode_link(fdoc_slot_r)
-            if doc_number in self.documents:
-                aux = self.documents[doc_number]
-                aux.extend(positions)
-                positions = aux
-                # Update slot
-                doc_slot_n = docs_handler._get_document_slot(fdoc_slot_n,
-                                                             doc_number)
-                doc_slot = 12 + doc_slot_n * 12
-            else:
-                self.documents[doc_number] = positions
-                # Update slot
-                doc_slot_n = docs_handler._get_free_slot()
-                doc_slot = 12 + doc_slot_n * 12
-                docs_rsrc[doc_slot:doc_slot+4] = IO.encode_uint32(doc_number)
-                docs_rsrc[doc_slot+8:doc_slot+12] = fdoc_slot_r
-                tree_rsrc[tree_slot+4:tree_slot+8] = IO.encode_link(doc_slot_n)
-            frequency = len(positions)
-            docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frequency)
+            for doc_number, doc_positions in documents.items():
+                if doc_number in self.documents:
+                    positions = self.documents[doc_number]
+                    positions.extend(doc_positions)
+                    # Update slot
+                    doc_slot_n = docs_handler._get_document_slot(fdoc_slot_n,
+                                                                 doc_number)
+                    doc_slot = 12 + doc_slot_n * 12
+                    # Calculate the frequency
+                    frequency = len(positions)
+                else:
+                    self.documents[doc_number] = doc_positions
+                    # Update slot
+                    doc_slot_n = docs_handler._get_free_slot()
+                    doc_slot = 12 + doc_slot_n * 12
+                    docs_rsrc[doc_slot:doc_slot+4] = IO.encode_uint32(doc_number)
+                    docs_rsrc[doc_slot+8:doc_slot+12] = fdoc_slot_r
+                    tree_rsrc[tree_slot+4:tree_slot+8] = IO.encode_link(doc_slot_n)
+                    # Update 'fdoc_slot_*'
+                    fdoc_slot_n = doc_slot_n
+                    fdoc_slot_r = IO.encode_link(fdoc_slot_n)
+                    # Calculate the frequency
+                    frequency = len(doc_positions)
+                docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frequency)
 
 
     def _unindex_term(self, word, doc_number):
         if word:
             prefix, suffix = word[0], word[1:]
-            subtree = self.children[prefix]
-            subtree._unindex_term(suffix, doc_number)
+            if prefix in self.children:
+                subtree = self.children[prefix]
+                subtree._unindex_term(suffix, doc_number)
         else:
             del self.documents[doc_number]
             # Update resource
@@ -426,21 +440,27 @@ class IIndex(Folder, Tree):
 
     def _save(self):
         # Removed terms
-        for term, documents in self.removed_terms.keys():
+        for term, documents in self.removed_terms.items():
             for doc_number in documents:
                 self._unindex_term(term, doc_number)
         self.removed_terms = {}
         # Added terms
-        for term, documents in self.removed_terms.keys():
-            for doc_number, positions in documents.keys():
-                self._index_term(term, doc_number, positions)
+        for term, documents in self.added_terms.items():
+            self._index_term(term, documents)
 
 
     ########################################################################
     # Private API
     ########################################################################
-    def _index_term(self, word, doc_number, positions):
-        prefix, suffix = word[0], word[1:]
+    def _index_term(self, term, documents):
+        """
+        Indexes the given term. The parameter 'documents' is a mapping
+        from document number to list of positions:
+
+          {<document number>: [postion, ...],
+           ...}
+        """
+        prefix, suffix = term[0], term[1:]
         if prefix in self.children:
             subtree = self.children[prefix]
         else:
@@ -457,7 +477,7 @@ class IIndex(Folder, Tree):
             # Prepend the new slot
             r[base+12:base+16] = r[8:12]
             r[8:12] = IO.encode_link(slot_number)
-        subtree._index_term(suffix, doc_number, positions)
+        subtree._index_term(suffix, documents)
 
 
     ########################################################################

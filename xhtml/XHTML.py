@@ -29,7 +29,7 @@ from itools import i18n
 
 
 #############################################################################
-# Namespace
+# Types
 #############################################################################
 inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
                        'em','kbd', 'q', 'samp', 'span', 'strong', 'sub',
@@ -38,7 +38,7 @@ inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
 
 class Element(XML.Element):
 
-    namespace = namespaces.xhtml
+    namespace = 'http://www.w3.org/1999/xhtml'
 
 
     def is_inline(self):
@@ -78,25 +78,40 @@ class HeadElement(Element):
         self.children.append(element)
 
 
+#############################################################################
+# Namespace
+#############################################################################
 
-class Namespace(XML.Namespace):
-
-    def get_element(cls, prefix, name):
-        element_types = {'head': HeadElement}
-        element_type = element_types.get(name, Element)
-        return element_type(prefix, name)
-
-    get_element = classmethod(get_element)
+elements_schema = {
+    'head': {'type': HeadElement},
+    }
 
 
-    def get_attribute_type(local_name):
-        attributes = {'src': IO.URI, 'href': IO.URI}
-        return attributes.get(local_name, IO.Unicode)
+attributes_schema = {
+    'src': {'type': IO.URI},
+    'href': {'type': IO.URI}
+    }
 
-    get_attribute_type = staticmethod(get_attribute_type)
+
+class Namespace(namespaces.AbstractNamespace):
+
+    class_uri = 'http://www.w3.org/1999/xhtml'
+    class_prefix = None
 
 
-namespaces.set_namespace(namespaces.xhtml, Namespace)
+    def get_element_schema(name):
+        return elements_schema.get(name, {'type': Element})
+
+    get_element_schema = staticmethod(get_element_schema)
+
+
+    def get_attribute_schema(name):
+        return attributes.get(name, {'type': IO.Unicode})
+
+    get_attribute_schema = staticmethod(get_attribute_schema)
+
+
+namespaces.set_namespace(Namespace)
 
 
 #############################################################################
@@ -110,7 +125,7 @@ class Document(XML.Document):
 
     class_mimetypes = ['application/xhtml+xml']
 
-    namespace = namespaces.xhtml
+    namespace = 'http://www.w3.org/1999/xhtml'
 
     #########################################################################
     # The skeleton

@@ -21,16 +21,18 @@ from itools.handlers import IO
 from itools.xml import XML, namespaces
 
 
-schema = {'title': IO.Unicode,
-          'description': IO.Unicode,
-          'publisher': IO.Unicode,
-          'identifier': IO.String,
-          'created': IO.Date}
+schema = {
+    'title': {'type': IO.Unicode},
+    'description': {'type': IO.Unicode},
+    'publisher': {'type': IO.Unicode},
+    'identifier': {'type': IO.String},
+    'created': {'type': IO.Date}
+    }
 
 
 class Element(XML.Element):
 
-    namespace = namespaces.dublin_core
+    namespace = 'http://purl.org/dc/elements/1.1'
 
 
     def set_comment(self, comment):
@@ -51,16 +53,19 @@ class Element(XML.Element):
 
 
 
-class Namespace(XML.Namespace):
+class Namespace(namespaces.AbstractNamespace):
 
-    namespace = namespaces.dublin_core
+    class_uri = 'http://purl.org/dc/elements/1.1'
+    class_prefix = 'dc'
 
-    def get_element(cls, prefix, name):
-        if name not in schema:
+
+    def get_element_schema(name):
+        try:
+            return schema[name]
+        except KeyError:
             raise XML.XMLError, 'unknown property "%s"' % name
-        return Element(prefix, name)
 
-    get_element = classmethod(get_element)
+    get_element_schema = staticmethod(get_element_schema)
 
 
-namespaces.set_namespace(namespaces.dublin_core, Namespace, prefix='dc')
+namespaces.set_namespace(Namespace)

@@ -59,33 +59,6 @@ class XMLError(Exception):
 
 
 #############################################################################
-# Namespaces
-#############################################################################
-
-class Namespace(object):
-    """
-    Default namespace handler for elements and attributes that are not bound
-    to a particular namespace.
-    """
-
-    def get_element(cls, prefix, name):
-        return Element(prefix, name)
-
-    get_element = classmethod(get_element)
-
-
-    def get_attribute_type(local_name):
-        return IO.Unicode
-
-    get_attribute_type = staticmethod(get_attribute_type)
-
-
-# Set the default namespace
-namespaces.set_namespace(None, Namespace)
-    
-
-
-#############################################################################
 # Data types
 #############################################################################
 

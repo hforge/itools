@@ -36,30 +36,31 @@ useful to refer to a namespace through its prefix. This feature must
 be used carefully, collisions 
 """
 
+# Import from itools
+from itools.handlers import IO
 
 
-# Some standard XML namespace uris
-xml = 'http://www.w3.org/XML/1998/namespace'
-xmlns = 'http://www.w3.org/2000/xmlns/'
-xhtml = 'http://www.w3.org/1999/xhtml'
-dublin_core = 'http://purl.org/dc/elements/1.1'
 
+#############################################################################
+# The registry
+#############################################################################
 
 namespaces = {}
 prefixes = {}
 
 
-def set_namespace(namespace_uri, namespace_handler, prefix=None):
+def set_namespace(namespace):
     """
     Associates a namespace handler to a namespace uri. It a prefix is
     given it also associates that that prefix to the given namespace.
     """
-    namespaces[namespace_uri] = namespace_handler
+    namespaces[namespace.class_uri] = namespace
 
+    prefix = namespace.class_prefix
     if prefix is not None:
         if prefix in prefixes:
             warnings.warn('The prefix "%s" is already registered.' % prefix)
-        prefixes[prefix] = namespace_uri
+        prefixes[prefix] = namespace.class_uri
 
 
 def get_namespace(namespace_uri):
@@ -96,3 +97,90 @@ def get_namespace_by_prefix(prefix):
     # Use default
     warnings.warn('Unknown namespace prefix "%s" (using default)' % prefix)
     return namespaces[None]
+
+
+#############################################################################
+# Namespaces
+#############################################################################
+
+class AbstractNamespace(object):
+    """
+    This class defines the default behaviour for namespaces, which is to
+    raise an error.
+
+    Subclasses should define:
+
+    class_uri
+    - The uri that uniquely identifies the namespace.
+
+    class_prefix
+    - The recommended prefix.
+
+    get_element_schema(name)
+    - Returns a dictionary that defines the schema for the given element.
+
+    get_attribute_schema(name)
+    - Returns a dictionary that defines the schema for the given attribute.
+    """
+
+    class_uri = None
+    class_prefix = None
+
+
+    def get_element_schema(name):
+        raise XMLError, 'undefined element "%s"' % name
+
+    get_element_schema = staticmethod(get_element_schema)
+
+
+    def get_attribute_schema(name):
+        raise XMLError, 'undefined attribute "%s"' % name
+
+    get_attribute_schema = staticmethod(get_attribute_schema)
+
+
+
+class DefaultNamespace(AbstractNamespace):
+    """
+    Default namespace handler for elements and attributes that are not bound
+    to a particular namespace.
+    """
+
+    class_uri = None
+    class_prefix = None
+
+
+    def get_element_schema(name):
+        return {'type': Element}
+
+    get_element_schema = staticmethod(get_element_schema)
+
+
+    def get_attribute_schema(name):
+        return {'type': IO.Unicode}
+
+    get_attribute_schema = staticmethod(get_attribute_schema)
+
+
+
+class XMLNamespace(AbstractNamespace):
+
+    class_uri = 'http://www.w3.org/XML/1998/namespace'
+    class_prefix = 'xml'
+
+
+    def get_attribute_schema(name):
+        if name == 'lang':
+            return {'type': IO.String}
+        return {'type': IO.Unicode}
+
+    get_attribute_schema = staticmethod(get_attribute_schema)
+
+
+# Some standard XML namespace uris
+xmlns = 'http://www.w3.org/2000/xmlns/'
+
+
+# Register the namespaces
+set_namespace(DefaultNamespace)
+set_namespace(XMLNamespace)

@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-31 18:57:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
+
+    Summary:
+      xml, clean namespaces programming interface
+    Revision:
+      itools--main--0.8--patch-49
+
+    Now the 'itools.xml' package is completely broken.
+
+    modified files:
+     Changelog xhtml/XHTML.py xml/DublinCore.py xml/STL.py
+     xml/XML.py xml/namespaces.py
+
+
 2005-03-30 18:56:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
 
     Summary:

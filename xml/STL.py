@@ -569,34 +569,46 @@ class STL(object):
         return s
 
 
-
 ########################################################################
 # The XML namespace handler
 ########################################################################
-class Namespace(XML.Namespace):
 
-    def get_element(cls, prefix, name):
-        """Element factory, returns the right element instance."""
-        if name in ('block', 'inline'):
-            return Element(prefix, name)
-
-        raise STLSyntaxError, 'unexpected element name: %s' % name
-
-    get_element = classmethod(get_element)
+elements_schema = {
+    'block': {'type': Element},
+    'inline': {'type': Element}
+    }
 
 
-    def get_attribute_type(local_name):
-        """Attribute factory, returns the right attribute instance."""
-        attributes = {'repeat': RepeatAttr,
-                      'attributes': AttributesAttr,
-                      'content': ContentAttr,
-                      'if': IfAttr}
+attributes_schema = {
+    'repeat': {'type': RepeatAttr},
+    'attributes': {'type': AttributesAttr},
+    'content': {'type': ContentAttr},
+    'if': {'type': IfAttr}
+    }
+
+
+class Namespace(namespaces.AbstractNamespace):
+
+    class_uri = 'http://xml.itools.org/namespaces/stl'
+    class_prefix = 'stl'
+
+
+    def get_element_schema(name):
         try:
-            return attributes[local_name]
+            return elements_schema[name]
         except KeyError:
-            raise STLSyntaxError, 'unexpected attribute name: %s' % local_name
+            raise STLSyntaxError, 'unexpected element name: %s' % name
 
-    get_attribute_type = staticmethod(get_attribute_type)
+    get_element_schema = staticmethod(get_element_schema)
 
 
-namespaces.set_namespace('http://xml.itools.org/namespaces/stl', Namespace)
+    def get_attribute_schema(name):
+        try:
+            return attributes_schema[name]
+        except KeyError:
+            raise STLSyntaxError, 'unexpected attribute name: %s' % name
+
+    get_attribute_schema = staticmethod(get_attribute_schema)
+
+
+namespaces.set_namespace(Namespace)

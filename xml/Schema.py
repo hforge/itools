@@ -41,7 +41,9 @@ from itools.xml import XML
 
 class SimpleType(XML.Element):
 
-    schema = {}
+    def __init__(self, prefix, name, schema={}):
+        XML.Element.__init__(self, prefix, name)
+        self.schema = schema
 
 
     def set_comment(self, comment):
@@ -66,7 +68,9 @@ class SimpleType(XML.Element):
 ############################################################################
 class ComplexType(XML.Element):
 
-    schema = {}
+    def __init__(self, prefix, name, schema={}):
+        XML.Element.__init__(self, prefix, name)
+        self.schema = schema
 
 
     #########################################################################
@@ -125,7 +129,7 @@ class ComplexType(XML.Element):
 
     def decode(cls, node):
         schema = cls.schema
-        property = cls(None, None)
+        property = cls(None, None, schema)
         for node in node.get_elements():
             name = node.name
             # Decode the value

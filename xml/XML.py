@@ -613,7 +613,8 @@ class Document(Text.Text):
         # Document type
         self.document_type = state.document_type
         # Children
-        self.children = state.children
+        elements = [ x for x in state.children if isinstance(x, Element) ]
+        self.root_element = elements[0]
 
         # XXX This is horrible
         if hasattr(state, 'stl'):
@@ -627,16 +628,20 @@ class Document(Text.Text):
         s = []
         # The XML declaration
         if self._standalone == 1:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>'
+            pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>\n'
         elif self._standalone == 0:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>'
+            pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>\n'
         else:
-            pattern = u'<?xml version="%s" encoding="%s"?>'
+            pattern = u'<?xml version="%s" encoding="%s"?>\n'
         s.append(pattern % (self._version, encoding))
-        # The document type (XXX)
-        
+        # The document type
+        if self.document_type is not None:
+            pattern = '<!DOCTYPE %s' \
+                      '\n     PUBLIC "%s"' \
+                      '\n    "%s">'
+            s.append(pattern % self.document_type[:3])
         # The children
-        s.append(Children.encode(self.children, encoding=encoding))
+        s.append(self.root_element.to_unicode(encoding))
 
         return ''.join(s)
 
@@ -644,43 +649,28 @@ class Document(Text.Text):
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        return cmp(self.children, other.children)
+        # XXX Remains to compare the declaration and the document type
+        return cmp(self.root_element, other.root_element)
 
 
     def get_root_element(self):
         """
         Returns the root element (XML documents have one root element).
         """
-        for child in self.children:
-            if isinstance(child, Element):
-                return child
-        return None
-##        raise XMLError, 'XML document has not a root element!!'
+        return self.root_element
 
 
     def traverse(self):
-        yield self
-        for child in self.children:
-            if isinstance(child, Element):
-                for x in child.traverse():
-                    yield x
-            else:
-                yield child
+        for x in self.root_element.traverse():
+            yield x
 
 
     def traverse2(self, context=None):
         if context is None:
             context = Context()
         # Children
-        if context.skip is True:
-            context.skip = False
-        else:
-            for child in self.children:
-                if isinstance(child, Element):
-                    for x, context in child.traverse2(context):
-                        yield x, context
-                else:
-                    yield child, context
+        for x, context in self.root_element.traverse2(context):
+            yield x, context
 
 
 #############################################################################

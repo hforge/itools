@@ -57,8 +57,6 @@ The method {\tt traverse} lets us to easily inspect the tree nodes:
     >>> for node in doc.traverse():
     ...     print repr(node)
     ... 
-    <itools.xml.XML.Document object at 0xb7a3adec>
-    u'\n'
     <itools.xml.XML.Element object at 0xb7a3316c>
     u'\n  '
     <itools.xml.XML.Element object at 0xb7a331ac>
@@ -73,7 +71,6 @@ The method {\tt traverse} lets us to easily inspect the tree nodes:
     u'\n  '
     <itools.xml.XML.Element object at 0xb798574c>
     u'\n  '
-    u'\n'
     u'\n'
 \end{code}
 
@@ -162,8 +159,6 @@ XML parser to build a more ``intelligent'' tree:
     >>> for node in doc.traverse():
     ...     print repr(node)
     ... 
-    <itools.xml.XML.Document object at 0xb7a4426c>
-    u'\n\n'
     <itools.xml.XHTML.Element object at 0xb7a3316c>
     u'\n  '
     <itools.xml.XHTML.Element object at 0xb7a331ac>

@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-24 16:11:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-28
+
+    Summary:
+      xml, documents only have a root element, no children
+    Revision:
+      itools--main--0.8--patch-28
+
+    Now XML documents have a root element ('.root_element'), instead of
+    a list of children ('.children').
+
+    modified files:
+     Changelog doc/xml.tex xml/Schema.py xml/XML.py
+
+
 2005-03-24 15:12:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-27
 
     Summary:

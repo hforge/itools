@@ -17,7 +17,7 @@ specific resources. Let's go straight with an example:
 
   \item Now we build a handler for the resource:
 \begin{code}
-    >>> from itools.handlers import HTML
+    >>> from itools.xml import HTML
     >>> handler = HTML.Document(resource)
     >>> print repr(handler)
     <itools.handlers.HTML.Document object at 0x40647b4c>
@@ -33,12 +33,10 @@ specific resources. Let's go straight with an example:
 
   \item Now we can start working with the handler:
 \begin{code}
-    >>> from itools.handlers import XML
-    >>> def find_title(node, context):
+    >>> from itools.xml import XML
+    >>> for node in handler.traverse():
     ...     if isinstance(node, XML.Element) and node.name == 'title':
     ...         print node.children
-    ... 
-    >>> handler.walk(find_title)
     Example Web Page
 \end{code}
 \end{enumerate}
@@ -61,15 +59,15 @@ one resource, which is accessible through the {\tt resource} attribute:
 \section{New handlers}
 
 We have seen in the previous sub-section that the handler constructor expects
-one parameter: the resource it is mean to handle; and once the handler is
+one parameter: the resource it is meant to handle; and once the handler is
 built the resource is always accessible with {\tt handler.resource}.
 
 However, it is also possible to build a handler without passing it any
-parameter, in this case a memory resource will be built on the fly, let's
+parameter; in this case a memory resource will be built on the fly, let's
 see an example:
 
 \begin{code}
-    >>> from itools.handlers import HTML
+    >>> from itools.xml import HTML
     >>> handler = HTML.Document()
     >>> handler
     <itools.handlers.HTML.Document object at 0x403ee12c>
@@ -89,7 +87,6 @@ see an example:
 The default content of the resource depends on the handler, and it is called
 the {\em handler skeleton}. The constructor also accepts arbitrary keyword
 parameters:
-
 
 \begin{code}
     >>> handler = HTML.Document(title='Hello World')
@@ -145,7 +142,7 @@ An example will show it better.
   \item Second, we create a new HTML handler:
 
 \begin{code}
-    >>> from itools.handlers import HTML
+    >>> from itools.xml import HTML
     >>> hello = HTML.Document(title='Hello World')
     >>> hello.resource
     <itools.resources.memory.File instance at 0x405e49cc>
@@ -172,7 +169,7 @@ An example will show it better.
     <itools.resources.file.File instance at 0x40638c6c>
 \end{code}
 
-    Note that the handler {\tt hello} we have built in these las lines
+    Note that the handler {\tt hello} we have built in these last lines
     manages a resource that lives in the file system.
 
 \end{enumerate}
@@ -330,5 +327,5 @@ the steps to follow to write a new handler:
 \end{enumerate}
 
 
-There is much more to tell about writing our own handlers, unfortunately
-it would take too much for the scope of this article.
+There is much more to tell about writing our own handlers, and I will tell
+it in some unknown future...

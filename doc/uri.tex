@@ -6,8 +6,9 @@ and locate the numerous resources that populate it. Well, that's what
 {\bf U}niform {\bf R}esource {\bf I}dentifiers (or just URIs) are for.
 
 The Python Standard Library (batteries included!!) provides a module named
-{\tt urlparse} which is able to split a generic URI into its main parts,
-to rebuild it, and to resolve relative references.
+{\tt urlparse} which is able to split a generic URI into its main parts
+(scheme, authority, path, query and fragment), to rebuild it, and to
+resolve relative references.
 
 But there are more things we would like to do with a URI. For example we
 could go further in the parsing process and split the path into its segments,
@@ -19,7 +20,8 @@ resolving relative references, etc.
 This is the purpose of {\tt itools.uri}, to provide a complete API to parse
 and work with URIs, following the standard as described by {\bf RFC2396}.
 
-The reference factory is {\tt get\_reference}:
+The main function provided by {\tt itools.uri} is {\tt get\_reference},
+a factory to build references:
 
 \begin{api}
     {\tt get\_reference(reference)}\\
@@ -41,7 +43,7 @@ Let's go right to the code:
 \section{Syntax}
 
 Before going further, we will give an overview of the URI syntax, something
-required to understand the rest of the section.
+required to understand the rest of this chapter.
 
 A URI is divided in two parts. The first one is the scheme: {\tt http},
 {\tt ftp}, {\tt mailto}, etc.. The syntax and semantics of the second
@@ -113,8 +115,8 @@ quickly describe each of these components:
 
   \item [Fragment] The fragment is a reference within the resource.
 
-    Actually, the fragment does not belong to the URI, as it does not
-    identifies the resource, however we include it here because it does
+    Actually, the fragment does not belong to the URI, as it does not help
+    to identify the resource, however we include it here because it does
     appears in URI references, what is what we work with.
 
     As the query, the fragment does not have a pre-defined syntax.
@@ -168,7 +170,7 @@ absolute paths, and relative paths:
 \end{verbatim}
 
   \item [Relative paths] Relative paths lack the first slash of absolute
-    paths. They can start by the special segment "{\tt .}", or by a one or
+    paths. They can start by the special segment "{\tt .}", or by one or
     more "{\tt ..}". Examples are:
 
 \begin{verbatim}
@@ -182,9 +184,10 @@ absolute paths, and relative paths:
 
 \subsection{Resolving references}
 
-Often we want to resolve a relative reference, that is to say, to calculate
-a new reference from an absolute one (called the {\em base} reference) and
-from a relative one. This is achieved with the {\tt resolve} method:
+The most common operation with relative references is to resolve them. That
+is to say, to obtain (with the help of a base reference) the absolute
+reference that identifies our resource. This is achieved with the
+{\tt resolve} method:
 
 \begin{code}
     >>> base = uri.get_reference(http://www.ietf.org/rfc/rfc2615.txt)
@@ -228,12 +231,15 @@ the parameter. The code below illustrates this:
     >>> path = uri.Path('/itaapy;lang=es/team')
     >>> for segment in path:
     ...     print repr(segment)
-    ...     print '  name="%s", param="%s"' % (segment.name, segment.param)
+    ...     print '  name:', segment.name
+    ...     print '  param:', segment.param
     ... 
-    <itools.uri.Segment object at 0x403f562c>
-      name="itaapy", param="lang=es"
-    <itools.uri.Segment object at 0x403f568c>
-      name="team", param="None"
+    <itools.uri.Segment object at 0x404c1acc>
+      name: itaapy
+      param: lang=es
+    <itools.uri.Segment object at 0x404c1a2c>
+      name: team
+      param: None
 \end{code}
 
 The {\tt uri.Path} class also provides an API to manipulate paths:

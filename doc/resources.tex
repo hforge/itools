@@ -1,6 +1,6 @@
 \chapter{Resources}
 
-In the previous section we have learned how to work with URIs, objects that
+In the previous chapter we have learned how to work with URIs, objects that
 identify resources; but how to manipulate the resources themselves?
 
 The problem we face now is the fact that the resources are dispersed, stored
@@ -15,7 +15,7 @@ consistent API.
 \section{Retrieving resources}
 
 Of course, the first step, before working with a resource, is to retrieve it,
-this is done with the method {\tt get\_resource}:
+this is done with the function {\tt get\_resource}:
 
 \begin{api}
   {\tt get\_resource(reference)}\\
@@ -35,7 +35,7 @@ Let's see a few examples:
 \end{code}
 
 These examples show two fundamental aspects of {\tt itools.resources} which
-we will explore on detail later. First is the support for multiple storages,
+we will explore on detail later. First is the support for multiple protocols,
 in particular the example illustrates the schemes {\tt file} for the local
 file system, and {\tt http} for the {\bf H}yper{\bf T}ext {\bf T}ransfer
 {\bf P}rotocol.
@@ -82,7 +82,7 @@ As an example of the API let's exercise it with a web page:
 
 \begin{code}
     >>> resource = get_resource('http://example.com')
-    >>> print resource
+    >>> print repr(resource)
     <itools.resources.http.File instance at 0x404aadec>
     >>> print resource.get_mimetype()
     text/html
@@ -98,7 +98,8 @@ As an example of the API let's exercise it with a web page:
     ...
 \end{code}
 
-Of course we can not modify the resource as we don't have write access.
+Of course, in this example, we can not modify the resource as we don't have
+write access to the web server.
 
 
 \section{Folder Resources}
@@ -144,9 +145,9 @@ To copy a web page to the local file system:
     >>> web_page = get_resource('http://example.com')
     >>> tmp.set_resource('example.html', web_page)
     >>> copy_of_web_page = tmp.get_resource('example.html')
-    >>> print web_page
+    >>> print repr(web_page)
     <itools.resources.http.File instance at 0x405e8a2c>
-    >>> print copy_of_web_page
+    >>> print repr(copy_of_web_page)
     <itools.resources.file.File instance at 0x405fb64c>
 \end{code}
 
@@ -160,16 +161,13 @@ To copy a whole tree:
     ['itools-vfs',
      'Makefile',
      'itools-vfs.log',
-     'itools-vfs-abstract.txt',
      'itools-vfs.tex',
      'itools-vfs.aux',
      'itools-vfs.toc',
      'itools-vfs.dvi',
      'itools-vfs.ps',
      'itools-vfs.pdf',
-     'itools-vfs.tex.bak',
-     'itools-vfs.tex~',
-     '#itools-vfs.tex#']
+     'itools-vfs.tex~']
 \end{code}
 
 This is more impressive when copying a big tree from one storage to another.
@@ -203,6 +201,6 @@ constructor:
     >>> tmp.set_resource('hello.txt', resource)
 \end{code}
 
-This technique is used internally by resource handlers (to build handler
-instances without passing a resource), they are the object of our next
+This technique is used internally by resource handlers to build handler
+instances without passing a resource. They are the object of our next
 section.

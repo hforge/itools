@@ -55,7 +55,7 @@ namespace. But first we have to load the template as a handler:
     >>> from itools.resources import get_resource
     >>> from itools.xml import XML
     >>>   
-    >>> resource = get_resource('examples/template.xml')
+    >>> resource = get_resource('template.xml')
     >>> template = XML.Document(resource)
     >>> 
     >>> template
@@ -97,7 +97,7 @@ the namespace passed as parameter to {\tt template.stl}.
 \section{Example: an addressbook}
 
 Let's see a more complex example. The template below shows a simple
-adressbook (see {\tt examples/addressbook.xml}):
+addressbook (see {\tt examples/chapter6/addressbook\_view.xml}):
 
 \begin{code}
     <?xml version="1.0" encoding="UTF-8"?>
@@ -138,9 +138,10 @@ mapping, whose value is an string.
 
 \subsubsection{The Python side}
 
-Now let's see the Python code (in the script {\tt examples/addressbook.py}),
-this time as a class which keeps the addressbook information, with a method
-that process the template to produce an HTML page that shows the addressbook.
+Now let's see the Python code (in the script
+{\tt examples/chapter6/addressbook.py}), this time as a class which keeps
+the addressbook information, with a method that process the template to
+produce an HTML page that shows the addressbook.
 
 \begin{code}
     # Import from itools
@@ -162,7 +163,7 @@ that process the template to produce an HTML page that shows the addressbook.
 
         def view(self):
             # Load the STL template
-            resource = get_resource('addressbook.xml')
+            resource = get_resource('addressbook_view.xml')
             template = XML.Document(resource)
 
             # Build the namespace

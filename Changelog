@@ -2,6 +2,46 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-08-08 17:33:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
+
+    Summary:
+      documentation, explain the load and save handler methods
+    Revision:
+      itools--main--0.4--patch-63
+
+    Working on the documentation, the chapter about writing classes has been
+    improved with the section about loading and saving.
+
+    new files:
+     doc/examples/chapter6/.arch-ids/=id
+     doc/examples/chapter7/.arch-ids/=id
+     doc/examples/chapter7/.arch-ids/addressbook.py.id
+     doc/examples/chapter7/.arch-ids/addressbook.xml.id
+     doc/examples/chapter7/addressbook.py
+     doc/examples/chapter7/addressbook.xml
+
+    modified files:
+     Changelog doc/chandlers.tex doc/stl.tex
+
+    renamed files:
+     doc/examples/.arch-ids/addressbook.py.id
+       ==> doc/examples/chapter6/.arch-ids/addressbook.py.id
+     doc/examples/.arch-ids/addressbook.xml.id
+       ==> doc/examples/chapter6/.arch-ids/addressbook_view.xml.id
+     doc/examples/.arch-ids/template.xml.id
+       ==> doc/examples/chapter6/.arch-ids/template.xml.id
+     doc/examples/addressbook.py
+       ==> doc/examples/chapter6/addressbook.py
+     doc/examples/addressbook.xml
+       ==> doc/examples/chapter6/addressbook_view.xml
+     doc/examples/template.xml
+       ==> doc/examples/chapter6/template.xml
+
+    new directories:
+     doc/examples/chapter6 doc/examples/chapter6/.arch-ids
+     doc/examples/chapter7 doc/examples/chapter7/.arch-ids
+
+
 2004-08-07 17:33:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
 
     Summary:

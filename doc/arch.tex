@@ -75,10 +75,10 @@ Once {\em tla} is installed, follow the steps described below.
 
 \begin{code}
     $ cd ~/sandboxes
-    $ tla get jdavid@itaapy.com--public/itools--main--0.5 itools-0.5
-    $ cd itools-0.5
+    $ tla get jdavid@itaapy.com--public/itools--main--0.6 itools-0.6
+    $ cd itools-0.6
     $ tla tree-version
-    jdavid@itaapy.com--public/itools--main--0.5
+    jdavid@itaapy.com--public/itools--main--0.6
 \end{code}
 
 \subsection{A session with {\em tla} and {\tt itools}}
@@ -87,7 +87,7 @@ Now, whenever you want to see if something has changed in {\tt itools},
 just type:
 
 \begin{code}
-    $ cd ~/sandboxes/itools-0.5
+    $ cd ~/sandboxes/itools-0.6
     $ tla missing --summary
     patch-80
         use Python's documentation to profile the catalog
@@ -179,11 +179,10 @@ Make it your default archive:
 With your own archive, it is time to create a branch of {\tt itools}:
 
 \begin{code}
-    $ tla archive-setup itools--toto--0.5
+    $ tla tag -S jdavid@itaapy.com--public/itools--main--0.6 itools--toto--0.6
       * creating category toto@example.com--public/itools
       * creating branch toto@example.com--public/itools--toto
-      * creating version toto@example.com--public/itools--toto--0.5
-    $ tla tag jdavid@itaapy.com--public/itools--main--0.5 itools--toto--0.5
+      * creating version toto@example.com--public/itools--toto--0.6
       * Archive caching revision
 \end{code}
 
@@ -192,11 +191,11 @@ your own branch:
 
 \begin{code}
     $ cd ~/sandboxes
-    $ rm -rf itools-0.5
-    $ tla get toto@example.com--public/itools--toto--0.5 itools-0.5
-    $ cd itools-0.5
+    $ rm -rf itools-0.6
+    $ tla get toto@example.com--public/itools--toto--0.6 itools-0.6
+    $ cd itools-0.6
     $ tla tree-version
-    toto@example.com--public/itools--toto--0.5
+    toto@example.com--public/itools--toto--0.6
 \end{code}
 
 
@@ -274,8 +273,8 @@ Ok, so now the upstream version of {\tt itools} is modified, how to merge
 the changes in your tree? easy:
 
 \begin{code}
-    $ cd ~/sandboxes/itools-0.5
-    $ tla star-merge -t jdavid@itaapy.com--public/itools--main--0.5
+    $ cd ~/sandboxes/itools-0.6
+    $ tla star-merge -t jdavid@itaapy.com--public/itools--main--0.6
     [...]
 \end{code}
 
@@ -311,9 +310,6 @@ commands seen in this section.
 
     {\tt tla my-default-archive}\\
     - Print or change your default archive.
-
-    {\tt tla archive-setup}\\
-    - Create new categories, branches and versions.
 
     {\tt tla tag}\\
     - Create a continuation revision (aka tag or branch).
@@ -354,7 +350,7 @@ commands seen in this section.
 
 
 
-\section{Contibuting your work to the main tree}
+\section{Contributing your work to the main tree}
 
 To contribute your changes back to the main development branch you must
 make your branch available through internet. We assume the archive you

@@ -9,9 +9,9 @@ This is the purpose of the {\em resource handlers}, to add semantics to
 specific resources.
 
 
-\section{Example}
+\section{Introduction}
 
-Let's go straight with an example:
+Let's start with an example:
 
 \begin{enumerate}
   \item First we load a resource as seen in the previous chapter:
@@ -26,7 +26,7 @@ Let's go straight with an example:
     >>> handler = HTML.Document(resource)
     >>> print repr(handler)
     <itools.handlers.HTML.Document object at 0x40647b4c>
-    >>> print handler
+    >>> print handler.to_str()
     <HTML>
     <HEAD>
       <TITLE>Example Web Page</TITLE>
@@ -47,9 +47,15 @@ Let's go straight with an example:
 \end{enumerate}
 
 
+\subsection{One resource, many handlers}
 
-It is important to highlight that every handler has associated one and only
-one resource, which is accessible through the {\tt resource} attribute:
+The relationship between resources to handlers is {\em 1} to {\em n}.
+While you may have several different handlers associated to the same
+resource (though this is rarely useful), a handler is only associated
+to one resource.
+
+The resource associated to a handler is accessible through the {\tt resource}
+attribute:
 
 \begin{code}
     >>> resource
@@ -61,82 +67,11 @@ one resource, which is accessible through the {\tt resource} attribute:
 \end{code}
 
 
-\section{The handler factory}
+\subsection{The handler skeleton}
 
-In the last section we built the handler with the line:
-
-\begin{code}
-    >>> handler = HTML.Document(resource)
-\end{code}
-
-With this sentence we have explicitly chosen the handler class we want
-to use to work with our resource. And we can do so because we know the
-resource is an HTML document.
-
-But what happens if we don't know what our resource actually is. Often
-it is just better to let {\tt itools} decide which is the better handler
-class to use:
-
-\begin{code}
-    >>> from itools.handlers.Handler import Handler
-    >>> handler = Handler.build_handler(resource)
-\end{code}
-
-Here we use a handler class as a factory. The class method {\tt build\_handler}
-will choose the available handler class that better matches the given resource,
-and will build and return a handler for it.
-
-\begin{api}
-  {\tt build\_handler(resource)}\\
-  - A class method that identifies the given resource, chooses the available
-  handler class that better matches it, and builds and returns a handler for
-  it.
-\end{api}
-
-
-\section{The {\tt get\_handler} shorthand}
-
-There is a short way to load a handler (instead of loading first the resource
-and then building the handler explicitly), the function {\tt get\_handler}:
-
-\begin{api}
-  {\tt get\_handler(uri)}\\
-  - Loads the resource at the given uri, tries to guess its mimetype by
-  different meanings (name extension, etc.), searches for a suitable
-  handler class in the registry, builds and returns the handler for
-  the resource.
-\end{api}
-
-Compare the explicit way seen before:
-
-\begin{code}
-    >>> from itools.resources import get_resource
-    >>> from itools.xml import HTML
-    >>>
-    >>> resource = get_resource('http://example.com')
-    >>> handler = HTML.Document(resource)
-\end{code}
-
-With the shorthand:
-
-\begin{code}
-    >>> from itools.handlers import get_handler
-    >>>
-    >>> handler = get_handler('http://example.com')
-\end{code}
-
-Note that there is chance {\tt get\_handler} chooses a handler class
-different than the one you would like to use.
-
-In the examples that follow we will use {\tt get\_handler} most of the
-time.
-
-
-\section{The handler skeleton}
-
-We have seen in the previous sub-section that the handler constructor expects
-one parameter: the resource it is meant to handle; and once the handler is
-built the resource is always accessible with {\tt handler.resource}.
+As we have seen the handler constructor expects one parameter: the resource
+it is meant to handle (and once the handler is built the resource is always
+accessible with {\tt handler.resource}).
 
 However, it is also possible to build a handler without passing it any
 parameter; in this case a memory resource will be built on the fly, let's
@@ -178,10 +113,182 @@ parameters:
     </html>
 \end{code}
 
-The keyword parameters are used to initialize the skeleton, in the example
-the {\tt title} parameter defines the HTML document title, which by default
-is empty. The parameters accepted depend on the handler.
+The keyword parameters are used to initialize the skeleton; in the example
+above the {\tt title} parameter defines the HTML document title, which by
+default is empty. The parameters accepted depend on the handler.
 
+
+\section{Overview of the available handlers}
+
+Out of the box {\tt itools} comes with several handlers for different
+standard file formats. The Figure~\ref{Figure: handler tree} shows an
+excerpt of the tree of the available handler classes, which express the
+inheritance relationship between them.
+
+\begin{figure}
+  \center
+  \includegraphics[height=\textwidth]{handlers.eps}
+  \caption{The handler tree}
+  \label{Figure: handler tree}
+\end{figure}
+
+Follows a short description of these handler classes, including the most
+relevant part of the API.
+
+\paragraph{File}
+
+This is the default handler for files, to be used when there is nothing
+better. The API is really basic:
+
+\begin{api}
+  {\tt to\_str()}\\
+  - Returns the resource data as a byte string (this is similar to the
+    method {\tt handler.resource.get\_data()}).
+\end{api}
+
+\paragraph{Text}
+
+The default handler for text files, whose API is:
+
+\begin{api}
+  {\tt to\_unicode()}\\
+  - Returns the resource data as an unicode string.
+
+  {\tt to\_str(encoding='UTF-8')}\\
+  - Returns the resource data as a byte string, using the given encoding
+  (defaults to {\tt UTF-8}). Note that this will be different than the
+  string returned by {\tt handler.resource.get\_data()} if the resource
+  data is not encoded in {\tt UTF-8} in the source.
+\end{api}
+
+\paragraph{XML.Document}
+
+This is the default handler for XML documents, which internally are
+represented as a tree. The API includes the methods already described
+for the {\tt Text} handler; specific methods of {\tt XML.Document} are:
+
+\begin{api}
+  {\tt \_\_cmp\_\_(other)}\\
+  - Lets to compare two XML documents.
+
+  {\tt get\_root\_element()}\\
+  - Returns the root element of this XML document.
+
+  {\tt traverse()}\\
+  - This method allows to traverse the XML document, as it has a tree
+    structure. It is a generator which returns a node at a time, starting
+    by the document instance.
+
+  {\tt traverse2()}\\
+  - As {\tt traverse}, this method allows to traverse the XML document,
+    though it is more powerful, and complex. It will be explained in the
+    XML chapter.
+\end{api}
+
+\paragraph{XHTML.Document}
+
+The handler for XHTML documents, it extends the API provided by
+{\tt XML.Document} API with the methods:
+
+\begin{api}
+  {\tt get\_head()}\\
+  - Returns the head element.
+
+  {\tt get\_body()}\\
+  - Returns the body element.
+
+  {\tt to\_text()}\\
+  - Strips all the XML markup and returns the text content of the XHTML
+    document. This is useful, for example, to index the document.
+\end{api}
+
+\paragraph{PO}
+
+The handler to manage PO files, the message catalog of the GNU gettext
+utilities.
+
+\begin{api}
+  {\tt get\_msgids()}\\
+  - Returns the list of message ids stored in the catalog.
+
+  {\tt get\_messages()}\\
+  - Returns the list of messages stored in the catalog, where each message
+    is represented as an instance of the class {\tt PO.Message}.
+
+  {\tt get\_msgstr(msgid)}\\
+  - Returns the message string for the given message id.
+
+  {\tt set\_message(msgid, msgstr=[u''], comments=[u''], references=\{\})}\\
+  - Adds a message (from the given parameters) to the catalog.
+\end{api}
+
+
+\section{The handler factory}
+
+So far we have built a handler instance with a line like:
+
+\begin{code}
+    >>> handler = HTML.Document(resource)
+\end{code}
+
+With this sentence we have explicitly chosen the handler class we want
+to use to work with our resource. And we can do so because we know the
+resource is an HTML document.
+
+But what happens if we don't know what our resource actually is. Often
+it is just better to let {\tt itools} decide which is the better handler
+class to use:
+
+\begin{code}
+    >>> from itools.handlers.Handler import Handler
+    >>> handler = Handler.build_handler(resource)
+\end{code}
+
+Here we use a handler class as a factory. The class method {\tt build\_handler}
+will choose the available handler class that better matches the given resource,
+and will build and return a handler for it.
+
+\begin{api}
+  {\tt build\_handler(resource)}\\
+  - A class method that identifies the given resource, chooses the available
+  handler class that better matches it, and builds and returns a handler for
+  it.
+\end{api}
+
+
+\subsection{The {\tt get\_handler} shorthand}
+
+There is a short way to load a handler (instead of loading first the resource
+and then building the handler explicitly), the function {\tt get\_handler}:
+
+\begin{api}
+  {\tt get\_handler(uri)}\\
+  - Loads the resource at the given uri, tries to guess its mimetype by
+  different meanings (name extension, etc.), searches for a suitable
+  handler class in the registry, builds and returns the handler for
+  the resource.
+\end{api}
+
+Compare the explicit way seen before:
+
+\begin{code}
+    >>> from itools.resources import get_resource
+    >>> from itools.handlers.Handler import Handler
+    >>>
+    >>> resource = get_resource('http://example.com')
+    >>> handler = Handler.build_handler(resource)
+\end{code}
+
+With the shorthand:
+
+\begin{code}
+    >>> from itools.handlers import get_handler
+    >>>
+    >>> handler = get_handler('http://example.com')
+\end{code}
+
+In the examples that follow we will use {\tt get\_handler} most of the
+time.
 
 
 \section{Folders}
@@ -302,115 +409,3 @@ Based on these two attributes handlers provide the following API:
     and recursively to the root tree. This method actually shows how to
     implement {\em acquisition}.
 \end{api}
-
-
-
-\section{Overview of the available handlers}
-
-The Figure~\ref{Figure: handler tree} shows an excerpt from the tree of
-handler classes provided by {\tt itools}, which express the inheritance
-relationship between them.
-
-\begin{figure}
-  \center
-  \includegraphics[height=\textwidth]{handlers.eps}
-  \caption{The handler tree}
-  \label{Figure: handler tree}
-\end{figure}
-
-What follows is a non exhaustive list of the resource handlers that
-{\tt itools} includes out of the box, with the most relevant part of the API.
-
-\paragraph{File}
-
-This is the default handler for files, to be used when there is nothing
-better. The API is really basic:
-
-\begin{api}
-  {\tt \_\_str\_\_}\\
-  - Returns the resource data as a byte string (this is similar to the
-    method {\tt handler.resource.get\_data()}).
-\end{api}
-
-\paragraph{Text}
-
-The default handler for text files, whose API is:
-
-\begin{api}
-  {\tt \_\_unicode\_\_}\\
-  - Returns the resource data as an unicode string.
-
-  {\tt \_\_str\_\_}\\
-  - Returns the resource data as a byte string, by default the used
-  encoding is UTF-8. Note that this will be different than the string
-  returned by {\tt handler.resource.get\_data()} if the resource data
-  is not encoded in UTF-8 in the source.
-
-  {\tt to\_str(encoding='UTF-8')}\\
-  - Returns the resource data as a byte string, using the given encoding.
-\end{api}
-
-\paragraph{XML.Document}
-
-This is the default handler for XML documents, which internally are
-represented as a tree. The API includes the methods already described
-for the {\tt Text} handler; specific methods of {\tt XML.Document} are:
-
-\begin{api}
-  {\tt \_\_cmp\_\_(other)}\\
-  - Lets to compare two XML documents.
-
-  {\tt get\_root\_element()}\\
-  - Returns the root element of this XML document.
-
-  {\tt traverse()}\\
-  - This method allows to traverse the XML document, as it has a tree
-    structure. It is a generator which returns a node at a time, starting
-    by the document instance.
-
-  {\tt traverse2()}\\
-  - As {\tt traverse}, this method allows to traverse the XML document,
-    though it is more powerful, and complex. It will be explained in the
-    XML chapter.
-\end{api}
-
-Actually, the features provided by {\tt itools} to manage XML documents
-are quite powerful, but beyond the scope of this article.
-
-\paragraph{XHTML.Document}
-
-The handler for XHTML documents, it extends the API provided by
-{\tt XML.Document} API with the methods:
-
-\begin{api}
-  {\tt get\_head()}\\
-  - Returns the head element.
-
-  {\tt get\_body()}\\
-  - Returns the body element.
-
-  {\tt to\_text()}\\
-  - Strips all the XML markup and returns the text content of the XHTML
-    document. This is useful, for example, to index the document.
-\end{api}
-
-\paragraph{PO}
-
-The handler to manage PO files, the message catalog of the GNU gettext
-utilities.
-
-\begin{api}
-  {\tt get\_msgids()}\\
-  - Returns the list of message ids stored in the catalog.
-
-  {\tt get\_messages()}\\
-  - Returns the list of messages stored in the catalog, where each message
-    is represented as an instance of the class {\tt PO.Message}.
-
-  {\tt get\_msgstr(msgid)}\\
-  - Returns the message string for the given message id.
-
-  {\tt set\_message(msgid, msgstr=[u''], comments=[u''], references=\{\})}\\
-  - Adds a message (from the given parameters) to the catalog.
-\end{api}
-

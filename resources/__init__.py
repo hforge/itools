@@ -37,7 +37,12 @@ def get_resource(reference):
     if not isinstance(reference, uri.Reference):
         reference = uri.get_reference(reference)
 
-    base = uri.Reference('file://%s/' % os.getcwd())
+    base = os.getcwd()
+    # Make it working with Windows. Internally we use always the "/".
+    if os.path.sep == '\\':
+        base = base.replace(os.path.sep, '/')
+
+    base = uri.Reference('file://%s/' % base)
     reference = base.resolve(reference)
 
     scheme = reference.scheme

@@ -39,4 +39,10 @@ def get_abspath(globals_namespace, local_path):
             mpath = mname
 
     mpath = os.path.splitdrive(mpath)[1]
-    return os.path.join(mpath, local_path)
+    mpath = os.path.join(mpath, local_path)
+
+    # Make it working with Windows. Internally we use always the "/".
+    if os.path.sep == '\\':
+        mpath = mpath.replace(os.path.sep, '/')
+
+    return mpath

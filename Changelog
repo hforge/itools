@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.6
 #
 
+2005-02-16 14:24:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
+
+    Summary:
+      fix paths for Windows
+    Revision:
+      itools--main--0.6--patch-61
+
+    Internally we use always a forward slash, the "os.path" methods
+    ("listdir", "exists", etc.) understand them even in Windows.
+    
+    The only problem is the input, if the API is feed with backslashes
+    (like the path produced by "os.getcwd") it may not work.
+
+    modified files:
+     Changelog __init__.py resources/__init__.py
+
+
 2005-02-14 16:58:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
 
     Summary:

@@ -207,9 +207,10 @@ class Parser(object):
 
         # Keep the namespace declarations (set them as attributes)
         xmlns_uri = 'http://www.w3.org/2000/xmlns/'
-        xmlns = get_namespace(xmlns_uri)
+##        xmlns = get_namespace(xmlns_uri)
+        xmlns = get_namespace(None)
         for name, value in self.ns_declarations.items():
-            value = namespace.get_attribute('xmlns', name, value)
+            value = xmlns.get_attribute('xmlns', name, value)
             element.set_attribute(name, value, namespace=xmlns_uri,
                                   prefix='xmlns')
         self.ns_declarations = {}

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-21 19:54:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
+
+    Summary:
+      xml, fix parsing, and avoid warning for namespace declarations
+    Revision:
+      itools--main--0.8--patch-21
+
+
+    modified files:
+     Changelog xml/XML.py
+
+
 2005-03-21 19:19:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
 
     Summary:

@@ -257,7 +257,8 @@ class Document(XML.Document):
                     # Something to translate: segmentation
                     for segment in message.get_segments(context.keep_spaces):
                         segment = segment.replace('"', '\\"')
-                        context.messages.add(segment)
+                        if segment not in context.messages:
+                            context.messages.append(segment)
 
         def before(node, context):
             message = context.message
@@ -273,7 +274,8 @@ class Document(XML.Document):
                     if node.is_translatable(attribute.name):
                         value = attribute.value.strip()
                         if value:
-                            context.messages.add(attribute.value)
+                            if attribute.value not in context.messages:
+                                context.messages.append(attribute.value)
                 # Inline or Block
                 if node.is_inline():
                     message.append(node)
@@ -293,7 +295,7 @@ class Document(XML.Document):
                         context.keep_spaces = False
 
         context = XML.Context()
-        context.messages = Set()
+        context.messages = []
         context.message = i18n.segment.Message()
         context.keep_spaces = False
         self.walk(before, after, context)

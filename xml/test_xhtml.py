@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002, 2003 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2002-2004 J. David Ibáñez <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -16,14 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-# Import from Python
+# Import from the Standard Library
 from sets import Set
 import unittest
 from unittest import TestCase
 
 # Import from itools
 from itools.resources import memory
-from PO import PO
 import XHTML
 
 
@@ -43,7 +42,7 @@ class SegmentationTestCase(TestCase):
                     u' <em>innovation</em> on the Internet.',
                     u'Developing the acclaimed, <em>open source</em>,'
                     u' <b>Mozilla 1.6</b>.']
-        self.assertEqual(doc.get_messages(), Set(expected))
+        self.assertEqual(doc.get_messages(), expected)
 
 
     def test_table(self):
@@ -67,7 +66,7 @@ class SegmentationTestCase(TestCase):
         expected = [u'Title', u'Size',
                     u'The good, the bad and the ugly', u'looong',
                     u'Love story', u'even longer']
-        self.assertEqual(doc.get_messages(), Set(expected))
+        self.assertEqual(doc.get_messages(), expected)
 
 
     def test_random(self):
@@ -86,7 +85,7 @@ class SegmentationTestCase(TestCase):
         expected = [u'this <em>word</em> is nice',
                     u'hello world',
                     u'bye <em>J. David Ibanez Palomar</em>']
-        self.assertEqual(doc.get_messages(), Set(expected))
+        self.assertEqual(doc.get_messages(), expected)
 
 
     def test_form(self):
@@ -100,7 +99,7 @@ class SegmentationTestCase(TestCase):
         doc = XHTML.Document(resource)
 
         messages = doc.get_messages()
-        self.assertEqual(messages, Set([u'Change']))
+        self.assertEqual(messages, [u'Change'])
         
 
 

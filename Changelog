@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-24 15:12:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-27
+
+    Summary:
+      documentation, fix xml examples
+    Revision:
+      itools--main--0.8--patch-27
+
+
+    modified files:
+     Changelog doc/xml.tex
+
+
 2005-03-24 15:11:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-26
 
     Summary:

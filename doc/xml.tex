@@ -57,25 +57,24 @@ The method {\tt traverse} lets us to easily inspect the tree nodes:
     >>> for node in doc.traverse():
     ...     print repr(node)
     ... 
-    <itools.xml.XML.Document object at 0x405ea38c>
-    <itools.xml.XML.XMLDeclaration object at 0x405e0f8c>
-    <itools.xml.XML.Raw object at 0x4064408c>
-    <itools.xml.XML.Element object at 0x4065248c>
-    <itools.xml.XML.Raw object at 0x406528ec>
-    <itools.xml.XML.Element object at 0x40652a6c>
-    <itools.xml.XML.Raw object at 0x406525ac>
-    <itools.xml.XML.Element object at 0x406526ac>
-    <itools.xml.XML.Raw object at 0x40652d0c>
-    <itools.xml.XML.Element object at 0x406527cc>
-    <itools.xml.XML.Raw object at 0x40652dac>
-    <itools.xml.XML.Raw object at 0x4065284c>
-    <itools.xml.XML.Comment object at 0x40652f4c>
-    <itools.xml.XML.Raw object at 0x40652e6c>
-    <itools.xml.XML.Raw object at 0x40652e8c>
-    <itools.xml.XML.Element object at 0x40652e4c>
-    <itools.xml.XML.Raw object at 0x40652eac>
-    <itools.xml.XML.Raw object at 0x40652f8c>
-    <itools.xml.XML.Raw object at 0x40652ecc>
+    <itools.xml.XML.Document object at 0xb7a3adec>
+    u'\n'
+    <itools.xml.XML.Element object at 0xb7a3316c>
+    u'\n  '
+    <itools.xml.XML.Element object at 0xb7a331ac>
+    u'\n    '
+    <itools.xml.XML.Element object at 0xb7a332ac>
+    u'\n    '
+    <itools.xml.XML.Element object at 0xb7a331ec>
+    u'Hello world'
+    u'\n    '
+    <itools.xml.XML.Comment object at 0xb7a335cc>
+    u'\n  '
+    u'\n  '
+    <itools.xml.XML.Element object at 0xb798574c>
+    u'\n  '
+    u'\n'
+    u'\n'
 \end{code}
 
 This example shows the different types of nodes that make up the document
@@ -163,26 +162,23 @@ XML parser to build a more ``intelligent'' tree:
     >>> for node in doc.traverse():
     ...     print repr(node)
     ... 
-    <itools.xml.XML.Document object at 0x405ea38c>
-    <itools.xml.XML.XMLDeclaration object at 0x403eb82c>
-    <itools.xml.XML.Raw object at 0x406514ac>
-    <itools.xml.XML.DocumentType object at 0x406515cc>
-    <itools.xml.XML.Raw object at 0x406516cc>
-    <itools.xml.XHTML.Element object at 0x40651d2c>
-    <itools.xml.XML.Raw object at 0x406517ec>
-    <itools.xml.XHTML.Element object at 0x40651d0c>
-    <itools.xml.XML.Raw object at 0x40651e0c>
-    <itools.xml.XHTML.Element object at 0x4065186c>
-    <itools.xml.XML.Raw object at 0x40651eac>
-    <itools.xml.XHTML.Element object at 0x40651f6c>
-    <itools.xml.XML.Raw object at 0x40651f8c>
-    <itools.xml.XML.Raw object at 0x40651bec>
-    <itools.xml.XML.Comment object at 0x40651c0c>
-    <itools.xml.XML.Raw object at 0x40651fec>
-    <itools.xml.XML.Raw object at 0x4065180c>
-    <itools.xml.XHTML.Element object at 0x40651dec>
-    <itools.xml.XML.Raw object at 0x405e0eac>
-    <itools.xml.XML.Raw object at 0x405e0eec>
+    <itools.xml.XML.Document object at 0xb7a4426c>
+    u'\n\n'
+    <itools.xml.XHTML.Element object at 0xb7a3316c>
+    u'\n  '
+    <itools.xml.XHTML.Element object at 0xb7a331ac>
+    u'\n    '
+    <itools.xml.XHTML.Element object at 0xb7a332ac>
+    u'\n    '
+    <itools.xml.XHTML.Element object at 0xb7a33f2c>
+    u'Hello world'
+    u'\n    '
+    <itools.xml.XML.Comment object at 0xb798554c>
+    u'\n  '
+    u'\n  '
+    <itools.xml.XHTML.Element object at 0xb79855ac>
+    u'\n  '
+    u'\n'
 \end{code}
 
 Now, the element nodes are not any more instances of {\tt XML.Element}, but

@@ -326,14 +326,19 @@ class Tree(object):
                 docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frequency)
 
 
-    def _unindex_term(self, word, doc_number):
+    def _unindex_term(self, word, documents):
+        """
+        Un-indexes the given term. The parameter 'documents' is a list with
+        the numbers of the documents that must be un-indexed.
+        """
         if word:
             prefix, suffix = word[0], word[1:]
             if prefix in self.children:
                 subtree = self.children[prefix]
-                subtree._unindex_term(suffix, doc_number)
+                subtree._unindex_term(suffix, documents)
         else:
-            del self.documents[doc_number]
+            for doc_number in documents:
+                del self.documents[doc_number]
             # Update resource
             tree_rsrc = self.root.tree_handler.resource
             docs = self.root.docs_handler
@@ -344,12 +349,13 @@ class Tree(object):
             docs_slot_n = IO.decode_link(docs_slot_r)
             # Free slot
             prev_slot_n = prev_slot = None
-            while docs_slot_n is not None:
+            while documents and docs_slot_n is not None:
                 docs_slot = 12 + docs_slot_n * 12
                 x = IO.decode_uint32(docs_rsrc[docs_slot:docs_slot+4])
                 next_slot_r = docs_rsrc[docs_slot+8:docs_slot+12]
                 next_slot_n = IO.decode_link(next_slot_r)
-                if x == doc_number:
+                if x in documents:
+                    documents.remove(x)
                     # Remove from the documents list
                     if prev_slot_n is None:
                         tree_rsrc[tree_slot+4:tree_slot+8] = next_slot_r
@@ -361,13 +367,9 @@ class Tree(object):
                     docs_rsrc[8:12] = IO.encode_link(docs_slot_n)
                     # Update on memory
                     docs.first_empty = docs_slot_n
-                    # Done
-                    break
                 # Next
                 prev_slot_n, prev_slot = docs_slot_n, docs_slot
                 docs_slot_n = next_slot_n
-            else:
-                raise ValueError, 'The database is corrupted!!'
 
 
     def search_word(self, word):
@@ -441,8 +443,7 @@ class IIndex(Folder, Tree):
     def _save(self):
         # Removed terms
         for term, documents in self.removed_terms.items():
-            for doc_number in documents:
-                self._unindex_term(term, doc_number)
+            self._unindex_term(term, documents)
         self.removed_terms = {}
         # Added terms
         for term, documents in self.added_terms.items():

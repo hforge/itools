@@ -169,6 +169,17 @@ class Folder(Handler):
 
     ########################################################################
     # Tree
+    def traverse(self):
+        yield self
+        for resource_name in self.get_resources():
+            handler = self.get_handler(resource_name)
+            if isinstance(handler, Folder):
+                for x in handler.traverse():
+                    yield x
+            else:
+                yield handler
+
+
     def acquire(self, name):
         if self.has_resource(name):
             return self.get_handler(name)

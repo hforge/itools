@@ -327,8 +327,9 @@ class Query(dict):
     def __init__(self, query):
         if query:
             for x in query.split('&'):
-                key, value = x.split('=', 1)
-                dict.__setitem__(self, key, value)
+                if x:
+                    key, value = x.split('=', 1)
+                    dict.__setitem__(self, key, value)
 
 
     def __str__(self):

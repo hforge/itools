@@ -522,7 +522,8 @@ class STL(object):
             else:
                 msg = 'expression "%(expr)s" evaluates to value of' \
                       ' unexpected type %(type)s'
-                msg = msg % (str(expression), content.__class__.__name__)
+                msg = msg % {'expr': str(expression),
+                             'type': content.__class__.__name__}
                 raise STLTypeError, msg
         else:
             content = ''

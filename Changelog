@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-18 08:54:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
+
+    Summary:
+      catalog, improve docstrings, coding style corrections
+    Revision:
+      itools--main--0.7--patch-55
+
+
+    modified files:
+     Changelog catalog/IIndex.py catalog/prof.py
+
+
 2005-03-17 19:53:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-54
 
     Summary:

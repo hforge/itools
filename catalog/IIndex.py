@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -43,20 +43,32 @@ search is succesful (e.g. 'here' takes 4 lookups and 'hello' takes 5).
 If the search is not succesful it could take less lookups (4 for 'hell',
 but only 2 for 'holidays').
 
-Every node also contains which documents contain the word and how many
-times, for example (if the word 'hello' appears once in the first document
-and the word 'here' appears twice in the second document):
+Every node also contains which documents contain the word and the positions
+the word appears within the document, for example (if the word 'hello'
+appears once in the first document and the word 'here' appears twice in
+the second document):
 
-  h -- e -- l -- l -- o (0: 1)
-         \- r -- e (1: 2)
+  h -- e -- l -- l -- o {0: [28]}
+         \- r -- e {1: [5, 37]}
 
-On the file structure every inverted index (there is one for each field
-being indexed) is a folder which contains two files: 'tree' and 'documents'.
-The first file (tree) represents on the files the same tree structure, the
-second file (documents) records the appearences of each word (document
-numbers and frequency).
+Actually, today we do not keep the positions, so the list is filled with
+None values:
+
+  h -- e -- l -- l -- o {0: [None]}
+         \- r -- e {1: [None, None]}
+
+But this is a temporal situation, in a future version we will keep the
+positions.
+
+At the resource level, an inverted index is stored as a folder with two
+file resources:
+
+  - 'tree', keeps the tree structure of terms;
+
+  - 'documents', keeps the numbers of the documents where each term has
+    been found, and the frequency (number of times the term has been found
+    in a document).
 """
-
 
 
 
@@ -80,8 +92,7 @@ class IIndexTree(File):
       - next sibling (4 bytes)
     """
 
-
-    __version__ = '20040723'
+    class_version = '20040723'
 
 
     def get_skeleton(self):
@@ -130,7 +141,6 @@ class IIndexTree(File):
 
 
 
-
 class IIndexDocuments(File):
     """
     The header format is:
@@ -146,8 +156,7 @@ class IIndexDocuments(File):
       - next document (4 bytes)
     """
 
-
-    __version__ = '20040723'
+    class_version = '20040723'
 
 
     def get_skeleton(self):
@@ -415,6 +424,7 @@ class Tree(object):
 
 
 class IIndex(Folder, Tree):
+
     def get_skeleton(self):
         return [('tree', IIndexTree()),
                 ('documents', IIndexDocuments())]

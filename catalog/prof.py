@@ -82,7 +82,7 @@ def load_documents():
 
 
 def profile_indexing():
-    for document in documents[:50]:
+    for document in documents[:100]:
         catalog.index_document(document)
     catalog.save()
 

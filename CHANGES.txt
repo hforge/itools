@@ -1,3 +1,12 @@
+0.5.1 (2004/12/17)
+
+  XML
+  - Make the Schema more robust.
+
+  Documentation
+  - Several fixes, by Hervé Cauwelier.
+
+
 0.5.0 (2004/11/28)
 
   URI

@@ -18,6 +18,7 @@
 
 # Import from Python
 from copy import copy
+import re
 from sets import Set
 from StringIO import StringIO
 from urlparse import urlsplit
@@ -179,7 +180,14 @@ class Document(XML.Document):
                     # Something to translate: segmentation
                     for segment in message.get_segments(context.keep_spaces):
                         msgstr = catalog.get_msgstr(segment) or segment
-                        msgstr = msgstr.replace('&', '&amp;')
+                        # Escapes "&", except when it is an entity reference
+                        def f(match):
+                            x = match.group(0)
+                            if x.endswith(';'):
+                                return x
+                            return "&amp;" + x[1:]
+                        msgstr = re.sub("&[\w;]*", f, msgstr)
+
                         context.buffer.write(msgstr)
                         if context.keep_spaces is False:
                             context.buffer.write(' ')

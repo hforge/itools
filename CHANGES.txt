@@ -1,4 +1,21 @@
-0.6.0 (2004/01/07)
+0.6.1 (2005/01/18)
+
+  URI
+  - Now the references "" and "." are interpreted as "." (instead of ""),
+    while "#" is interpreted as "#" (instead of ""). This is more correct,
+    but the game is not over yet (see "uri.py" for details).
+
+  Handlers
+  - Minor performance improvement of "Folder.get_handler".
+
+  Internationalization
+  - Now accept objects provide support for the "del" operation.
+
+  Packaging
+  - Fix setup.py informational metadata (home site).
+
+
+0.6.0 (2005/01/07)
 
   Resources
   - Now "get_resources" is an iterator that returns a resource (not a name)

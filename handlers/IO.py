@@ -131,12 +131,20 @@ class DateTime(object):
 
 
 class URI(object):
+
     def encode(cls, value):
         return str(value)
+
     encode = classmethod(encode)
 
 
     def decode(cls, value):
         return uri.get_reference(value)
+
     decode = classmethod(decode)
-        
+
+
+    def to_unicode(cls, value):
+        return unicode(value)
+
+    to_unicode = classmethod(to_unicode)

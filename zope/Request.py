@@ -36,7 +36,7 @@ class Request(object):
 
         # The URI
         query = zope_request.environ.get('QUERY_STRING', '')
-        query = uri.Query(query)
+        query = uri.generic.Query(query)
         # The scheme
         scheme = 'http'
         # The authority

@@ -2,6 +2,43 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-27 18:06:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
+
+    Summary:
+      uri, now 'itools.uri' is a package instead of a module
+    Revision:
+      itools--main--0.8--patch-41
+
+    The 'itools.uri' code has been clened. The special case of empty
+    references works now.
+    
+    Also, the script 'igettext' works again.
+
+    new files:
+     uri/.arch-ids/=id uri/.arch-ids/__init__.py.id
+     uri/.arch-ids/mailto.py.id uri/__init__.py uri/mailto.py
+     xhtml/.arch-ids/__init__.py.id xhtml/__init__.py
+
+    modified files:
+     Changelog handlers/IO.py i18n/igettext.py
+     resources/__init__.py resources/file.py setup.py
+     uri/generic.py uri/test_generic.py xhtml/XHTML.py
+     zope/Request.py
+
+    renamed files:
+     .arch-ids/test_uri.py.id
+       ==> uri/.arch-ids/test_generic.py.id
+     .arch-ids/uri.py.id
+       ==> uri/.arch-ids/generic.py.id
+     test_uri.py
+       ==> uri/test_generic.py
+     uri.py
+       ==> uri/generic.py
+
+    new directories:
+     uri uri/.arch-ids
+
+
 2005-03-26 20:27:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
 
     Summary:

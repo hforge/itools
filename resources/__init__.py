@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ def get_resource(reference):
 
     - http (only file resources, no language negotiation)
     """
-    if not isinstance(reference, uri.Reference):
+    if not isinstance(reference, uri.generic.Reference):
         reference = uri.get_reference(reference)
 
     base = os.getcwd()
@@ -42,7 +42,7 @@ def get_resource(reference):
     if os.path.sep == '\\':
         base = base.replace(os.path.sep, '/')
 
-    base = uri.Reference('file://%s/' % base)
+    base = uri.generic.decode('file://%s/' % base)
     reference = base.resolve(reference)
 
     scheme = reference.scheme

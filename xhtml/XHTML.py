@@ -145,6 +145,7 @@ class Document(XML.Document):
                     value = value.strip()
                     if value:
                         value = catalog.get_msgstr(value) or value
+                qname = node.get_attribute_qname(namespace, local_name)
                 buffer.write(u' %s="%s"' % (qname, unicode(value)))
             buffer.write(u'>')
 

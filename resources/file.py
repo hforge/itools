@@ -183,6 +183,6 @@ def get_resource(reference):
         return File(reference)
     elif os.path.isdir(path):
         if not str(reference).endswith('/'):
-            reference = uri.Reference(str(reference) + '/')
+            reference = uri.generic.decode(str(reference) + '/')
         return Folder(reference)
     raise IOError, 'nor file neither folder at %s' % reference

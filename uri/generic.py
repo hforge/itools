@@ -29,48 +29,65 @@ Other related RFCs include:
  - Registration of new schemes, http://www.ietf.org/rfc/rfc2717.txt
 """
 
-# XXX
-#
-# According to the W3C, the references "", "." and "#" do not mean the
-# same thing:
-#
-#  - ("") an empty reference refers to the start of the current document.
-#  - ("#") is a self-document reference too, where the fragment identifier
-#    is the empty string.
-#  - (".") it may be an external reference (e.g. "a/b/c" + "." = "a/b/")
-#
-# Browsers behaviour also differs from one reference to another. Though
-# it is not consistent (at least for Mozilla and IE).
-#
-# In the other hand Python's urlsplit/urlunsplit considers all three are
-# the same.
-#
-# itools.uri corrects this behaviour to some extent, today both "" and "."
-# default to ".", while "#" is "#". Another case which is not correctly
-# dealt with today is "http://exampe.com/index.html" as opposed to
-# "http://example.com/index.html#", I think both should be considered to
-# be different, but they are not today.
-#
-# The odd behaviour of urlsplit/urlunsplit make me think that the best
-# solution would be to implement the low level parsing ourselves, and
-# get rid of the urlparse library.
-#
-# For references see RFC2396, sections 4 and C2
+# XXX A resource should be an inmutable object, at least its components
+# (scheme, authority, path, query and fragment). Then we could get rid
+# of the copy method. And this change woule easy the way to a datetime
+# like API.
 
-
-# XXX
-#
-# Serialization and de-serialization should be decoupled from the produced
-# objects (like in "handlers.IO"), isn't it?
-
-
-# Import from Python
+# Import from the Standard Library
+from copy import copy
 from urlparse import urlsplit, urlunsplit
+
+
+##########################################################################
+# Authority
+##########################################################################
+
+class Authority(object):
+    """
+    There are two types of authorities: registry based and server-based;
+    right now only server-based are supported (XXX).
+
+    The userinfo component could be further processed.
+    """
+
+    def __init__(self, auth):
+        # The userinfo
+        if '@' in auth:
+            self.userinfo, auth = auth.split('@', 1)
+        else:
+            self.userinfo = None
+        # host:port
+        if ':' in auth:
+            self.host, self.port = auth.split(':', 1)
+        else:
+            self.host = auth
+            self.port = None
+
+
+    def __str__(self):
+        # userinfo@host
+        if self.userinfo is not None:
+            auth = '%s@%s' % (self.userinfo, self.host)
+        else:
+            auth = self.host
+        # The port
+        if self.port is not None:
+            return auth + ':' + self.port
+        return auth
+
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+
+    def __nonzero__(self):
+        return bool(str(self))
 
 
 
 #########################################################################
-# Utilities
+# Path
 ##########################################################################
 
 def normalize_path(path):
@@ -126,54 +143,8 @@ def normalize_path(path):
 
 
 
-#########################################################################
-# URI Components
-##########################################################################
-
-class Authority(object):
-    """
-    There are two types of authorities: registry based and server-based;
-    right now only server-based are supported (XXX).
-
-    The userinfo component could be further processed.
-    """
-
-    def __init__(self, auth):
-        # The userinfo
-        if '@' in auth:
-            self.userinfo, auth = auth.split('@', 1)
-        else:
-            self.userinfo = None
-        # host:port
-        if ':' in auth:
-            self.host, self.port = auth.split(':', 1)
-        else:
-            self.host = auth
-            self.port = None
-
-
-    def __str__(self):
-        # userinfo@host
-        if self.userinfo is not None:
-            auth = '%s@%s' % (self.userinfo, self.host)
-        else:
-            auth = self.host
-        # The port
-        if self.port is not None:
-            return auth + ':' + self.port
-        return auth
-
-
-    def __eq__(self, other):
-        return str(self) == str(other)
-
-
-    def __nonzero__(self):
-        return bool(str(self))
-
-
-
 class Segment(object):
+
     def __init__(self, segment=''):
         if isinstance(segment, Segment):
             self.name = segment.name
@@ -238,7 +209,6 @@ class Path(list):
 
     ##########################################################################
     # API
-    ##########################################################################
     def __repr__(self):
         return '<itools.uri.Path at %s>' % hex(id(self))
 
@@ -350,6 +320,11 @@ class Path(list):
         return Path('../' * (len(self) - 1))
 
 
+
+#########################################################################
+# Query
+##########################################################################
+
 class Query(dict):
     """
     (XXX) RFC2396 does not specifies a format for the query component,
@@ -374,10 +349,10 @@ class Query(dict):
         return str(self) == str(other)
 
 
-##########################################################################
-# URI References
-##########################################################################
 
+##########################################################################
+# Generic references
+##########################################################################
 
 class Reference(object):
     """
@@ -402,39 +377,12 @@ class Reference(object):
     XXX
     """
 
-    def __init__(self, reference):
-        if isinstance(reference, Path):
-            self.scheme = ''
-            self.authority = Authority('')
-            self.path = reference
-            self.query = Query('')
-            self.fragment = None
-        elif isinstance(reference, str) or isinstance(reference, unicode):
-            if reference == '#':
-                # Dealing with the case "#"
-                scheme = authority = path = query = ''
-                fragment = ''
-            else:
-                # Split the reference in its components
-                scheme, authority, path, query, fragment = urlsplit(reference)
-                if fragment == '':
-                    fragment = None
-            # The scheme
-            self.scheme = scheme
-            # The authority
-            self.authority = Authority(authority)
-            # The path
-            self.path = Path(path)
-            # The query
-            try:
-                query = Query(query)
-            except ValueError:
-                pass
-            self.query = query
-            # The frgment
-            self.fragment = fragment
-        else:
-            raise TypeError, 'unexpected %s' % type(reference)
+    def __init__(self, scheme, authority, path, query, fragment=None):
+        self.scheme = scheme
+        self.authority = authority
+        self.path = path
+        self.query = query
+        self.fragment = fragment
 
 
 ##    def get_netpath(self):
@@ -469,7 +417,7 @@ class Reference(object):
         absolute, the result is undefined.
         """
         if not isinstance(reference, Reference):
-            reference = get_reference(reference)
+            reference = decode(reference)
 
         # Absolute URI
         if reference.scheme:
@@ -477,69 +425,90 @@ class Reference(object):
 
         # Network path
         if reference.authority:
-            return Reference('%s:%s' % (self.scheme, reference))
+            return Reference(self.scheme,
+                             copy(reference.authority),
+                             copy(reference.path),
+                             copy(reference.query),
+                             reference.fragment)
 
         # Absolute path
         if reference.path.is_absolute():
-            return Reference('%s://%s%s' % (self.scheme, self.authority,
-                                            reference))
+            return Reference(self.scheme,
+                             copy(self.authority),
+                             copy(reference.path),
+                             copy(reference.query),
+                             reference.fragment)
+
+        # Internal references
+        if isinstance(reference, EmptyReference):
+            return Reference(self.scheme,
+                             copy(self.authority),
+                             copy(self.path),
+                             copy(self.query),
+                             None)
 
         if reference.fragment and not reference.path and not reference.query:
-            # Internal reference
-            path = self.path
-            query = self.query
-            fragment = reference.fragment
-        else:
-            # Relative path
-            path = self.path.resolve(reference.path)
-            query = reference.query
-            fragment = reference.fragment
+            return Reference(self.scheme,
+                             copy(self.authority),
+                             copy(self.path),
+                             copy(self.query),
+                             reference.fragment)
 
-        reference = '%s://%s%s' % (self.scheme, self.authority, path)
-        if query:
-            reference = reference + '?' + query
-        if fragment is not None:
-            reference = reference + '#' + fragment
-        return Reference(reference)
+        # Relative path
+        return Reference(self.scheme,
+                         copy(self.authority),
+                         self.path.resolve(reference.path),
+                         copy(reference.query),
+                         reference.fragment)
 
 
 
-##########################################################################
-# Specific schemes
-##########################################################################
+class EmptyReference(Reference):
 
-class Mailto(Reference):
-    scheme = 'mailto'
+    scheme = None
+    authority = None
+    path = Path('')
+    query = None
+    fragment = None
 
-    def __init__(self, email_address):
-        # Use authority instead?? (XXX)
-        self.username, self.host = email_address.split('@')
+
+    def __init__(self):
+        pass
 
 
     def __str__(self):
-        return 'mailto:%s@%s' % (self.username, self.host)
-
-
-schemes = {Mailto.scheme: Mailto}
+        return ''
 
 
 ##########################################################################
-# Reference factory
+# Factory
 ##########################################################################
 
-def get_reference(reference):
-    """
-    Factory that returns an instance of the right scheme.
-    """
-    # Catch specific schemes
-    if reference.startswith('mailto:'):
-        email_address = reference[7:]
+def decode(data):
+    if isinstance(data, Path):
+        return Reference('', Authority(''), data, Query(''), None)
+
+    if isinstance(data, (str, unicode)):
+        # Special case, the empty reference
+        if data == '':
+            return EmptyReference()
+
+        # Special case, the empty fragment
+        if data == '#':
+            return Reference('', Authority(''), Path(''), Query(''), '')
+
+        # All other cases, split the reference in its components
+        scheme, authority, path, query, fragment = urlsplit(data)
+        if fragment == '':
+            fragment = None
+
+        # Parse the query
         try:
-            return Mailto(email_address)
+            query = Query(query)
         except ValueError:
-            # Case the email address has not an '@'
-            # XXX Emit a warning or something here
-            return reference
+            pass
 
-    # Default to generic references
-    return Reference(reference)
+        return Reference(scheme, Authority(authority), Path(path), query,
+                         fragment)
+
+    raise TypeError, 'unexpected %s' % type(reference)

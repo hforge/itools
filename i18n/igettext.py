@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2003-2004 J. David Ibáñez <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ import tempfile
 # Import from itools
 from itools.resources import get_resource
 from itools.handlers import get_handler, PO
-from itools.xml import XHTML
+from itools.xhtml import XHTML
 
 
 def run():

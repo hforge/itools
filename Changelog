@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-30 18:56:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
+
+    Summary:
+      xml, register the dublin core namespace with a prefix
+    Revision:
+      itools--main--0.8--patch-48
+
+
+    modified files:
+     Changelog xml/DublinCore.py
+
+
 2005-03-30 17:51:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
 
     Summary:

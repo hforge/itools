@@ -53,6 +53,8 @@ class Element(XML.Element):
 
 class Namespace(XML.Namespace):
 
+    namespace = namespaces.dublin_core
+
     def get_element(cls, prefix, name):
         if name not in schema:
             raise XML.XMLError, 'unknown property "%s"' % name
@@ -61,4 +63,4 @@ class Namespace(XML.Namespace):
     get_element = classmethod(get_element)
 
 
-namespaces.set_namespace(namespaces.dublin_core, Namespace)
+namespaces.set_namespace(namespaces.dublin_core, Namespace, prefix='dc')

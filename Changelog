@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-21 19:19:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
+
+    Summary:
+      xml, start DublinCore implementation, change parser as needed
+    Revision:
+      itools--main--0.8--patch-20
+
+
+    new files:
+     xml/.arch-ids/DublinCore.py.id xml/DublinCore.py
+
+    modified files:
+     Changelog xml/XML.py xml/__init__.py
+
+
 2005-03-20 19:55:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-19
 
     Summary:

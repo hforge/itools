@@ -23,4 +23,4 @@ from itools.handlers import Handler
 import XML
 import XHTML
 import STL
-##import DublinCore
+import DublinCore

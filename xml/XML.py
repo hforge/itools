@@ -146,6 +146,7 @@ class Parser(object):
 
     #######################################################################
     # expat handlers
+    #######################################################################
     def xml_declaration_handler(self, version, encoding, standalone):
         self.version = version
         if encoding is not None:
@@ -177,60 +178,59 @@ class Parser(object):
         element = self.stack[-1]
 
         comment = Comment(data)
-        element.append_child(comment)
+        element.set_comment(comment)
 
 
     def start_element_handler(self, name, attrs):
-        # Parse the element name: ns_uri, name and prefix
+        # Parse the element name: namespace_uri, name and prefix
         n = name.count(' ')
         if n == 2:
-            ns_uri, name, prefix = name.split()
+            namespace_uri, name, prefix = name.split()
         elif n == 1:
             prefix = None
-            ns_uri, name = name.split()
+            namespace_uri, name = name.split()
         else:
             prefix = None
-            ns_uri = None
+            namespace_uri = None
 
         # Load the namespace handler
-        namespace_handler = get_namespace(ns_uri)
+        namespace = get_namespace(namespace_uri)
         # Load the element
-##        element = self.stack[-1]
         try:
-            element = namespace_handler.get_element(prefix, name)
-        except XMLError, e: 
+            element = namespace.get_element(prefix, name)
+        except XMLError, e:
             # Add the line number information
             e.line_number = self.parser.ErrorLineNumber
             raise e
 
-        element_uri = ns_uri
+        element_uri = namespace_uri
 
         # Keep the namespace declarations (set them as attributes)
+        xmlns_uri = 'http://www.w3.org/2000/xmlns/'
+        xmlns = get_namespace(xmlns_uri)
         for name, value in self.ns_declarations.items():
-            ns_uri = 'http://www.w3.org/2000/xmlns/'
-            namespace_handler = get_namespace(ns_uri)
-            value = namespace_handler.get_attribute('xmlns', name, value)
-            element.set_attribute(name, value, namespace=ns_uri,
+            value = namespace.get_attribute('xmlns', name, value)
+            element.set_attribute(name, value, namespace=xmlns_uri,
                                   prefix='xmlns')
         self.ns_declarations = {}
         # Set the attributes
         for name, value in attrs.items():
-            # Parse the attribute name: ns_uri, name and prefix
+            # Parse the attribute name: namespace_uri, name and prefix
             if ' ' in name:
-                ns_uri, name, prefix = name.split()
+                namespace_uri, name, prefix = name.split()
             else:
                 prefix = None
-                ns_uri = element_uri
+                namespace_uri = element_uri
 
-            namespace_handler = get_namespace(ns_uri)
+            namespace = get_namespace(namespace_uri)
             try:
-                attribute = namespace_handler.get_attribute(prefix, name,value)
+                attribute = namespace.get_attribute(prefix, name,value)
             except XMLError, e:
                 # Add the line number information
                 e.line_number = self.parser.ErrorLineNumber
                 raise e
             else:
-                element.set_attribute(name, attribute, namespace=ns_uri,
+                element.set_attribute(name, attribute, namespace=namespace_uri,
                                       prefix=prefix)
 
         self.stack.append(element)
@@ -240,18 +240,12 @@ class Parser(object):
     def end_element_handler(self, name):
         element = self.stack.pop()
         parent = self.stack[-1]
-        parent.handle_end_element(element)
+        parent.set_element(element)
 
 
     def char_data_handler(self, data):
         element = self.stack[-1]
-        data = IO.Unicode.decode(data, self.encoding)
-
-        children = element.children
-        if children and isinstance(children[-1], str):
-            children[-1] = children[-1] + data
-        else:
-            children.append(data)
+        element.set_text(data, self.encoding)
 
 
     def skipped_entity_handler(self, name, is_param_entity):
@@ -269,9 +263,23 @@ class Parser(object):
 
 
     #######################################################################
-    # itools.xml handlers
-    def handle_end_element(self, element):
+    # Private API
+    #######################################################################
+    def set_comment(self, comment):
+        self.children.append(comment)
+
+
+    def set_element(self, element):
         self.children.append(element)
+
+
+    def set_text(self, text, encoding='UTF-8'):
+        text = IO.Unicode.decode(text, encoding)
+        children = self.children
+        if children and isinstance(children[-1], unicode):
+            children[-1] = children[-1] + text
+        else:
+            children.append(text)
 
 
 
@@ -368,13 +376,6 @@ class Element(object):
 
 
     #######################################################################
-    # Parsing
-    #######################################################################
-    def handle_end_element(self, element):
-        self.append_child(element)
-
-
-    #######################################################################
     # API
     #######################################################################
     def get_qname(self):
@@ -395,9 +396,10 @@ class Element(object):
         # Copy the attributes
         clone.attributes = deepcopy(self.attributes)
         clone.attributes_by_qname = deepcopy(self.attributes_by_qname)
-        # Copy the children
-        for child in self.children:
-            clone.append_child(child)
+        # Copy the children (XXX)
+        clone.children = deepcopy(self.children)
+##        for child in self.children:
+##            clone.append_child(child)
         return clone
 
 
@@ -465,10 +467,23 @@ class Element(object):
 
     #######################################################################
     # Children
-    def append_child(self, child):
+    def set_comment(self, comment):
+        self.children.append(comment)
+
+
+    def set_element(self, element):
         # XXX Use weak references?
-        child.parent = self
-        self.children.append(child)
+        element.parent = self
+        self.children.append(element)
+
+
+    def set_text(self, text, encoding='UTF-8'):
+        text = IO.Unicode.decode(text, encoding)
+        children = self.children
+        if children and isinstance(children[-1], unicode):
+            children[-1] = children[-1] + text
+        else:
+            children.append(text)
 
 
     def get_elements(self, name=None):

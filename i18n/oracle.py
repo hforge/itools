@@ -45,12 +45,13 @@ language = (('French', French_base, French_char),
             ('English', English_base, English_char))
 
 
-class Char:
+class Char(object):
     def __init__(self, language, lexeme=''):
         self.language = language
         self.lexeme = lexeme
 
-class Stat_special_char(Char):
+
+class StatSpecialChar(Char):
     def __init__(self, text):
         self.text = text.upper().swapcase()
 
@@ -73,10 +74,12 @@ class Stat_special_char(Char):
         return stat
 
 
-class Token:
+class Token(object):
     def __init__(self, id, lexeme=''):
         self.id = id
         self.lexeme = lexeme
+
+
 
 class Select_token(Token):
     def __init__(self, text):
@@ -135,7 +138,8 @@ class Select_token(Token):
             stat[slang] = percent
         return stat
 
-class Language:
+
+class Language(object):
     def __init__(self, text):
         self.text = text
 
@@ -147,7 +151,7 @@ class Language:
         first_percent, second_percent = 0, 0
         first_lang, second_lang = '', ''
         word = Select_token(self.text)
-        char = Stat_special_char(self.text)
+        char = StatSpecialChar(self.text)
         words = word.compare()
         chars = char.stat_special_char()
         for lang in language:

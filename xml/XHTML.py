@@ -35,13 +35,6 @@ inline_elements = ['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn', 'em',
 
 class Attribute(XML.Attribute):
     """ """
-    def set_uriprefix(self, prefix):
-        if self.name in ('href', 'src'):
-            scheme, host, path, query, fragment = urlsplit(self.value)
-            if not scheme:
-                return u'%s="%s"' % (self.qname, prefix + self.value)
-
-        return unicode(self)
 
 
 
@@ -305,46 +298,6 @@ class Document(XML.Document):
         process_message(context)
 
         return context.messages
-
-
-    ########################################################################
-    # API
-    ########################################################################
-    def set_uriprefix(self, prefix):
-        """
-        Outputs the document, adds the given prefix to with the relative uris.
-
-        XXX Rewrite with walk.
-        """
-        s = u''
-        for child in self.children:
-            if isinstance(child, Element):
-                s += self._set_uriprefix(child, prefix)
-            else:
-                s += unicode(child)
-        return s
-
-
-    def _set_uriprefix(self, node, prefix):
-        if isinstance(node, (XML.Raw, XML.Comment)):
-            return unicode(node)
-        # An element
-        s = u'<%s' % node.qname
-        # The attributes
-        for attribute in node.attributes:
-            if hasattr(attribute, 'set_uriprefix'):
-                s += ' ' + attribute.set_uriprefix(prefix)
-            else:
-                s += ' ' + unicode(attribute)
-        # Close the open tag
-        s += u'>'
-        # The children
-        for child in node.children:
-            s += self._set_uriprefix(child, prefix)
-        # The close tag
-        s += node.get_closetag()
-
-        return s
 
 
     ########################################################################

@@ -62,6 +62,10 @@ class File(Resource):
         return str(self)[index]
 
 
+    def __setitem__(self, index, value):
+        raise NotImplementedError
+
+
     def __getslice__(self, a, b):
         return str(self)[a:b]
 

@@ -104,6 +104,15 @@ class File(Resource, base.File):
         return byte
 
 
+    def __setitem__(self, index, value):
+        if isinstance(index, slice):
+            index = index.start
+        f = file(self._path, 'r+b')
+        f.seek(index)
+        f.write(value)
+        f.close()
+
+
     def __getslice__(self, a, b):
         f = file(self._path, 'rb')
         f.seek(a)

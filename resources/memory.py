@@ -45,6 +45,17 @@ class File(Resource, base.File):
         self.set_data(data)
 
 
+    def __setitem__(self, index, value):
+        data = self.revisions[-1].data
+        if isinstance(index, slice):
+            # XXX So far 'step' is not supported
+            start, stop = index.start, index.stop
+        else:
+            start, stop = index, index + 1
+        data = data[:start] + value + data[stop:]
+        self.set_data(data)
+
+
     def __str__(self):
         return self.revisions[-1].data
 

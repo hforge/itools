@@ -72,7 +72,9 @@ tools are:
    box.
 
  * itools.xml -- XML infrastructure, includes resource handlers for XML
-   and XHTML documents. Plus the Simple Template Language.
+   and the Simple Template Language.
+
+ * itools.xhtml -- resource handlers for XHTML documents.
 
  * itools.html -- resource handlers for HTML documents.
 
@@ -96,7 +98,7 @@ setup(name = "itools",
       package_dir = {'itools': ''},
       packages = ['itools', 'itools.catalog', 'itools.handlers', 'itools.i18n',
                   'itools.resources', 'itools.workflow', 'itools.xml',
-                  'itools.html', 'itools.zope'],
+                  'itools.xhtml', 'itools.html', 'itools.zope'],
       classifiers = ['Development Status :: 3 - Alpha',
                      'Intended Audience :: Developers',
                      ('License :: OSI Approved :: GNU Library or Lesser General'

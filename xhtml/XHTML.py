@@ -21,12 +21,11 @@ from copy import copy
 import re
 from sets import Set
 from StringIO import StringIO
-from urlparse import urlsplit
 
 # Import from itools
+from itools.handlers import IO
 from itools.xml import XML
 from itools import i18n
-from itools.handlers import IO
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'

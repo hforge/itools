@@ -16,8 +16,5 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-# Import from itools.handlers
-##from itools.handlers import Handler
-
 # Import from itools
 import HTML

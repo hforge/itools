@@ -23,7 +23,8 @@ from sets import Set
 
 # Import from itools
 from itools.handlers import File, IO
-from itools.xml import XML, XHTML
+from itools.xml import XML
+from itools.xhtml import XHTML
 
 
 #############################################################################

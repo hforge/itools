@@ -2,6 +2,35 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-26 19:05:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
+
+    Summary:
+      xml, move the xhtml code to its own package, 'itools.xhtml'
+    Revision:
+      itools--main--0.8--patch-38
+
+
+    new files:
+     xhtml/.arch-ids/=id
+
+    modified files:
+     Changelog html/HTML.py html/__init__.py setup.py
+     xhtml/XHTML.py xml/__init__.py
+
+    renamed files:
+     xml/.arch-ids/XHTML.py.id
+       ==> xhtml/.arch-ids/XHTML.py.id
+     xml/.arch-ids/test_xhtml.py.id
+       ==> xhtml/.arch-ids/test_xhtml.py.id
+     xml/XHTML.py
+       ==> xhtml/XHTML.py
+     xml/test_xhtml.py
+       ==> xhtml/test_xhtml.py
+
+    new directories:
+     xhtml xhtml/.arch-ids
+
+
 2005-03-26 18:41:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
 
     Summary:

@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-11 18:19:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
+
+    Summary:
+      use Python's documentation to profile the catalog
+    Revision:
+      itools--main--0.4--patch-80
+
+    Now the catalog profiling code uses the Python's documentation
+    as its corpus, which is bigger and better to test the catalog's
+    performance.
+    
+    Today the path to the Python's docs is hardcoded, so you may need
+    to change it to make the code work
+
+    modified files:
+     Changelog catalog/prof.py
+
+
 2004-09-11 18:11:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-79
 
     Summary:

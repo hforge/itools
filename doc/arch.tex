@@ -1,17 +1,25 @@
 \chapter{GNU arch}
 
-The {\tt itools} source code is managed by {\em tla} (also known as
-{\em GNU arch}\footnote{\tt http://www.gnu.org/software/gnu-arch/}),
-a distributed control version system.
+A control version system is a tool that keeps track of changes made
+in the code, when a change was made, by whom. It helps multiple
+developers to work on the same project, to merge the different
+changes they made in the same code base.
 
-This chapter explains how:
+{\em GNU arch}\footnote{\tt http://www.gnu.org/software/gnu-arch/}
+(also known as {\em tla}) is a modern and advanced control version
+system. It is the one we use to manage the {\tt itools} source code.
+
+There are many ways to work with {\em tla}, this appendix explains
+the one we use for {\tt itools}.
+
+The exposition is organized in three sections that detail:
 
 \begin{enumerate}
-  \item To keep track of the {\tt itools} development.
+  \item How to keep track of the development of {\tt itools}.
 
-  \item To maintain private changes.
+  \item How to maintain private changes.
 
-  \item To contribute your changes back to the main development tree.
+  \item How to contribute your changes back to the main development tree.
 \end{enumerate}
 
 
@@ -67,19 +75,19 @@ Once {\em tla} is installed, follow the steps described below.
 
 \begin{code}
     $ cd ~/sandboxes
-    $ tla get jdavid@itaapy.com--public/itools--main--0.4 itools-0.4
-    $ cd itools-0.4
+    $ tla get jdavid@itaapy.com--public/itools--main--0.5 itools-0.5
+    $ cd itools-0.5
     $ tla tree-version
-    jdavid@itaapy.com--public/itools--main--0.4
+    jdavid@itaapy.com--public/itools--main--0.5
 \end{code}
 
-\subsubsection{A session with {\em tla} and {\tt itools}}
+\subsection{A session with {\em tla} and {\tt itools}}
 
 Now, whenever you want to see if something has changed in {\tt itools},
 just type:
 
 \begin{code}
-    $ cd ~/sandboxes/itools-0.4
+    $ cd ~/sandboxes/itools-0.5
     $ tla missing --summary
     patch-80
         use Python's documentation to profile the catalog
@@ -95,7 +103,45 @@ the output will be empty). Say you want to apply the patches, type:
     [...]
 \end{code}
 
-Use the {\tt tla help} to learn about other commands available.
+\subsection{Help}
+
+The Table~\ref{Table: tla commands 1} summarizes the {\em tla} commands seen
+in this section. To learn about other commands use {\tt tla help}, and
+for details about a command type:
+
+\begin{code}
+    $ tla <command> --help
+\end{code}
+
+\begin{table}
+  \begin{api}
+    {\tt tla my-id}\\
+    - Print or change your id.
+
+    {\tt tla register-archive}\\
+    - Change an archive location registration.
+
+    {\tt tla archives}\\
+    - Report registered archives and their locations.
+
+    {\tt tla get}\\
+    - Construct a project tree for a revision.
+
+    {\tt tla tree-version}\\
+    - Print the default version for a project tree.
+
+    {\tt tla missing}\\
+    - Print patches missing from a project tree.
+
+    {\tt tla update}\\
+    - Update a project tree to reflect recent archived changes.
+
+    {\tt tla help}\\
+    - Provide help with arch.
+  \end{api}
+  \caption{Basic {\em tla} commands}
+  \label{Table: tla commands 1}
+\end{table}
 
 
 \section{Maintaining private changes}
@@ -107,7 +153,7 @@ to easily update to the last version while keeping your changes.
 The first step is to setup an archive (if you have already one you can
 skip to the next subsection).
 
-\subsubsection{Create an archive}
+\subsection{Create an archive}
 
 \begin{code}
     $ mkdir ~/{archives}
@@ -128,16 +174,16 @@ Make it your default archive:
     toto@example.com--public
 \end{code}
 
-\subsubsection{Create a branch}
+\subsection{Create a branch}
 
 With your own archive, it is time to create a branch of {\tt itools}:
 
 \begin{code}
-    $ tla archive-setup itools--toto--0.4
+    $ tla archive-setup itools--toto--0.5
       * creating category toto@example.com--public/itools
       * creating branch toto@example.com--public/itools--toto
-      * creating version toto@example.com--public/itools--toto--0.4
-    $ tla tag jdavid@itaapy.com--public/itools--main--0.4 itools--toto--0.4
+      * creating version toto@example.com--public/itools--toto--0.5
+    $ tla tag jdavid@itaapy.com--public/itools--main--0.5 itools--toto--0.5
       * Archive caching revision
 \end{code}
 
@@ -146,18 +192,45 @@ your own branch:
 
 \begin{code}
     $ cd ~/sandboxes
-    $ rm -rf itools-0.4
-    $ tla get toto@example.com--public/itools--toto--0.4 itools-0.4
-    $ cd itools-0.4
+    $ rm -rf itools-0.5
+    $ tla get toto@example.com--public/itools--toto--0.5 itools-0.5
+    $ cd itools-0.5
     $ tla tree-version
-    toto@example.com--public/itools--toto--0.4
+    toto@example.com--public/itools--toto--0.5
 \end{code}
 
 
-\subsubsection{Working with your branch}
+\subsection{Working with your branch}
 
-So, now you modify {\tt itools} to add a new feature. Before anything else
-it is a good idea to check what you have changed:
+So, now you modify {\tt itools} to add a new feature. Every change made
+to a file will be automatically detected by {\em tla}, but if your work
+includes new files or directories, or you have removed, renamed or moved
+a file or a directory, then you must tell {\em tla} about these changes,
+to do so use the commands below:
+
+\begin{code}
+    $ tla add <filename>
+    [...]
+    $ tla delete <filename>
+    [...]
+    $ tla move <old filename> <new filename>
+    [...]
+\end{code}
+
+Maybe you forgot to add a file, before committing is a very good idea
+to verify it with the command {\tt tree-lint}:
+
+\begin{code}
+    $ tla tree-lint
+    [...]
+\end{code}
+
+This command looks at your project tree and tells you about files suspected
+to be source code that have non been added yet.
+
+Ok, so you have finished working on this new cool feature and are willing
+to check it in your branch of {\tt itools}. First, verify what you have
+changed:
 
 \begin{code}
     $ tla changes
@@ -171,18 +244,11 @@ added or moved. For a more detailed description, try:
     $ tla changes --diffs | less
 \end{code}
 
-Before committing, it is also a very good idea to check wether you forgot
-to add a file:
+Take your time to examine the changes, maybe you forgot to remove a print
+statement? a close look at the output of {\tt tla changes --diffs} will
+tell you.
 
-\begin{code}
-    $ tla tree-lint
-    [...]
-\end{code}
-
-The command above checks your project tree, it will tell you about files
-suspected to be source code.
-
-When you are sure everything is alright, it came the time to commit.
+Once you are sure everything is alright, it came the time to commit.
 First you have to write a log message:
 
 \begin{code}
@@ -190,8 +256,8 @@ First you have to write a log message:
 \end{code}
 
 Within the editor, you should introduce a title that describes the changes
-you have done, and optionally a longer description, and some keywords. Once
-you are done, left the editor and type:
+you have done, and optionally a longer description. Once you are done,
+left the editor and type:
 
 \begin{code}
     $ tla commit
@@ -202,15 +268,14 @@ you are done, left the editor and type:
 \end{code}
 
 
-\subsubsection{Merging from the main branch}
-
+\subsection{Merging from the main branch}
 
 Ok, so now the upstream version of {\tt itools} is modified, how to merge
 the changes in your tree? easy:
 
 \begin{code}
-    $ cd ~/sandboxes/itools-0.4
-    $ tla star-merge -t jdavid@itaapy.com--public/itools--main--0.4
+    $ cd ~/sandboxes/itools-0.5
+    $ tla star-merge -t jdavid@itaapy.com--public/itools--main--0.5
     [...]
 \end{code}
 
@@ -232,6 +297,61 @@ have been applied. So you just have to add the subject, something like
 \begin{code}
     $ tla commit
 \end{code}
+
+
+\subsubsection{Summary}
+
+See the Table~\ref{Table: tla commands 2} for a summary of the {\em tla}
+commands seen in this section.
+
+\begin{table}
+  \begin{api}
+    {\tt tla make-archive}\\
+    - Create a new archive directory.
+
+    {\tt tla my-default-archive}\\
+    - Print or change your default archive.
+
+    {\tt tla archive-setup}\\
+    - Create new categories, branches and versions.
+
+    {\tt tla tag}\\
+    - Create a continuation revision (aka tag or branch).
+
+    {\tt tla add}\\
+    - Add an explicit inventory id.
+
+    {\tt tla delete}\\
+    - Remove an explicit inventory id.
+
+    {\tt tla move}\\
+    - Move an explicit inventory id.
+
+    {\tt tla tree-lint}\\
+    - Audit a source tree.
+
+    {\tt tla changes}\\
+    - Report about local changes in a project tree.
+
+    {\tt tla make-log}\\
+    - Initialize a new log file entry.
+
+    {\tt tla commit}\\
+    - Archive a changeset-based revision.
+
+    {\tt tla revisions}\\
+    - List the revisions in an archive version.
+
+    {\tt tla star-merge}\\
+    - Merge mutually merged branches.
+
+    {\tt tla log-for-merge}\\
+    - Generate a log entry body for a merge.
+  \end{api}
+  \caption{Maintaining private changes: summary}
+  \label{Table: tla commands 2}
+\end{table}
+
 
 
 \section{Contibuting your work to the main tree}
@@ -257,3 +377,14 @@ community, you have to synchronize your mirror:
     [...]
 \end{code}
 
+See the Table~\ref{Table: tla commands 3} for a summary of the commands seen
+in this section.
+
+\begin{table}
+  \begin{api}
+    {\tt tla archive-mirror}\\
+    - Update an archive mirror.
+  \end{api}
+  \caption{Maintaining private changes: summary}
+  \label{Table: tla commands 3}
+\end{table}

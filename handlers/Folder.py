@@ -54,7 +54,13 @@ class Folder(Handler):
 
 
     def _load(self, resource):
-        pass
+        """
+        By default folders don't load any state. This means they are always
+        up-to-date.
+
+        Warning: if you develop a folder handler that does load its state,
+        be very careful to update the state whenever you modify the handler.
+        """
 
 
     #########################################################################
@@ -65,7 +71,10 @@ class Folder(Handler):
 
 
     #########################################################################
-    # API
+    # Obsolete API
+    # XXX To be removed by 0.5, direct access to the resource must be done
+    # through "self.resource". A new API must be developed (has_handler,
+    # get_handlers, etc.)
     #########################################################################
     def get_mimetype(self):
         return self.resource.get_mimetype()
@@ -91,6 +100,9 @@ class Folder(Handler):
         return self.resource.del_resource(path)
 
 
+    #########################################################################
+    # API
+    #########################################################################
     def get_handler(self, path):
         # Be sure path is a Path
         if not isinstance(path, uri.Path):
@@ -164,6 +176,8 @@ class Folder(Handler):
 
         container = self.get_handler(path)
         container._set_handler(segment, handler, **kw)
+        # Set timestamp
+        self.timestamp = datetime.datetime.now()
 
 
     def _set_handler(self, segment, handler):
@@ -176,6 +190,8 @@ class Folder(Handler):
 
         container = self.get_handler(path[:-1])
         container._del_handler(path[-1])
+        # Set timestamp
+        self.timestamp = datetime.datetime.now()
 
 
     def _del_handler(self, segment):

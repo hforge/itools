@@ -16,6 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
+# Import from Python
+import datetime
+
 # Import from itools
 from itools.handlers.File import File
 from itools.handlers.Folder import Folder
@@ -437,3 +440,12 @@ class IIndex(Folder, Tree):
             r[base+12:base+16] = r[8:12]
             r[8:12] = IO.encode_link(slot_number)
         subtree.index_word(suffix, doc_number, position)
+
+        # Set timestamp
+        self.timestamp = datetime.datetime.now()
+
+
+    def unindex_word(self, word, doc_number):
+        Tree.unindex_word(self, word, doc_number)
+        # Set timestamp
+        self.timestamp = datetime.datetime.now()

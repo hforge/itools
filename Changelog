@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-11 18:11:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-79
+
+    Summary:
+      update the timestamp when a folder handler is modified
+    Revision:
+      itools--main--0.4--patch-79
+
+    Now the timestamp of a handler folder is updated after adding or
+    removing a handler, this prevents it to be reloaded, hence it
+    improves the performance.
+    
+    Similarly, when a catalog index is modified its timestamp is updated.
+
+    modified files:
+     Changelog catalog/IIndex.py handlers/Folder.py
+
+
 2004-09-06 13:20:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-78
 
     Summary:

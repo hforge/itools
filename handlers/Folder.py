@@ -17,7 +17,7 @@
 
 
 # Import from the Standard Library
-import datetime
+from datetime import datetime
 from sets import Set
 
 # Import from itools
@@ -53,7 +53,7 @@ class Folder(Handler):
             # Add the skeleton
             skeleton = self.get_skeleton(**kw)
             for name, handler in skeleton:
-                self._set_handler(name, handler)
+                self.resource.set_resource(name, handler.resource)
         else:
             self.resource = resource
 
@@ -77,18 +77,22 @@ class Folder(Handler):
 
 
     def _save(self, resource):
-        # XXX We don't use the given resource!!!
-
         # Remove handlers
         for name in self.removed_handlers:
-            # XXX We may need to do something else here
-            self._del_handler(name)
+            resource.del_resource(name)
+            # Update the cache
+            del self.cache[name]
         self.removed_handlers = Set()
+
         # Add handlers
         for name, handler in self.added_handlers.items():
             if name in self._get_handler_names():
-                self._del_handler(name)
-            self._set_handler(name, handler)
+                resource.del_resource(name)
+            if handler.has_changed():
+                handler.save()
+            resource.set_resource(name, handler.resource)
+            # Update the cache
+            self.cache[name] = None
         self.added_handlers = {}
 
 
@@ -143,6 +147,7 @@ class Folder(Handler):
         raise LookupError, 'the resource "%s" does not exist' % segment.name
 
 
+    # XXX To be removed
     def _set_handler(self, name, handler):
         if handler.has_changed():
             handler.save()
@@ -151,6 +156,7 @@ class Folder(Handler):
         self.timestamp = self.resource.get_mtime()
 
 
+    # XXX To be removed
     def _del_handler(self, name):
         self.resource.del_resource(name)
         del self.cache[name]
@@ -265,6 +271,8 @@ class Folder(Handler):
         # Event, on set handler
         if hasattr(container, 'on_set_handler'):
             container.on_set_handler(segment, handler, **kw)
+        # Set timestamp
+        self.timestamp = datetime.now()
 
 
     def del_handler(self, path):
@@ -288,6 +296,8 @@ class Folder(Handler):
             del container.added_handlers[name]
         # Mark the handler as deleted
         container.removed_handlers.add(name)
+        # Set timestamp
+        self.timestamp = datetime.now()
 
 
     ########################################################################

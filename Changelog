@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-09 13:43:54 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
+
+    Summary:
+      handlers, fix folder save (use the given resource)
+    Revision:
+      itools--main--0.8--patch-13
+
+    Also, set the timestamp with "set_handler" and "del_handler".
+
+    modified files:
+     Changelog catalog/Catalog.py handlers/Folder.py
+
+
 2005-03-09 10:52:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
 
     Summary:

@@ -34,8 +34,8 @@ class RoleManager(Role.RoleManager):
 
 
     # Disable static local roles
-    manage_listLocalRoles = DTMLFile('zmi/localroles', globals())
-    manage_editLocalRoles = DTMLFile('zmi/localroles', globals())
+    manage_listLocalRoles = DTMLFile('localroles', globals())
+    manage_editLocalRoles = DTMLFile('localroles', globals())
 
 
     def manage_addLocalRoles(self, userid, roles, REQUEST=None):

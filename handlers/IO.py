@@ -41,16 +41,24 @@ class Integer(object):
 
 
 class Unicode(object):
-    def encode(cls, value, encoding='utf8'):
+    def encode(cls, value, encoding='UTF-8'):
         # Escape XML (XXX this is specific to XML)
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.encode(encoding)
     encode = classmethod(encode)
 
 
-    def decode(cls, value, encoding='utf8'):
+    def decode(cls, value, encoding='UTF-8'):
         return unicode(value, encoding)
     decode = classmethod(decode)
+
+
+    def to_unicode(cls, value, encoding='UTF-8'):
+        # Escape XML (XXX this is specific to XML)
+        value = value.replace('&', '&amp;').replace('<', '&lt;')
+        return value
+
+    to_unicode = classmethod(to_unicode)
 
 
 

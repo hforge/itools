@@ -232,9 +232,10 @@ class Expression(object):
         return s
 
 
-########################################################################
+############################################################################
 # Boolean expressions
 class NotExpression(Expression):
+
     def __init__(self, expression):
         expression = expression[3:].strip()
         Expression.__init__(self, expression)
@@ -247,7 +248,6 @@ class NotExpression(Expression):
 
     def __str__(self):
         return 'not %s' % Expression.__str__(self)
-
 
 
 ###########################################################################
@@ -311,7 +311,8 @@ boolean_html_attributes = ['compact', 'nowrap', 'ismap', 'declare', 'noshade',
 ########################################################################
 # STL elements
 class Element(XML.Element):
-    namespace = 'http://xml.itools.org/namespaces/stl'
+
+    namespace = stl_uri
 
     def is_block(self):
         return self.name == 'block'
@@ -323,23 +324,33 @@ class Element(XML.Element):
 
 
 ########################################################################
-# STL attributes
-class RepeatAttr(object):
-    def __init__(self, value):
-        name, expression = value.split(' ', 1)
-        self.stl_name = name
-        self.stl_expression = Expression(expression)
+# Input/Output
+########################################################################
+class ContentAttr(object):
 
-    def __str__(self):
-        return '%s %s' % (self.stl_name, self.stl_expression)
+    def decode(cls, data):
+        return Expression(data)
+
+    decode = classmethod(decode)
 
 
-# XXX This could be removed if "NSHandler.get_attributes" returns directly
-# "self.stl_attributes"
+    def encode(cls, value):
+        return str(value)
+
+    encode = classmethod(encode)
+
+
+    def to_unicode(cls, value, encoding='UTF-8'):
+        return unicode(value)
+
+    to_unicode = classmethod(to_unicode)
+
+
 class AttributesAttr(object):
-    def __init__(self, value):
+
+    def decode(cls, data):
         attributes = []
-        for x in value.split(';'):
+        for x in data.split(';'):
             x = x.strip().split(' ', 1)
             if len(x) == 1:
                 raise STLSyntaxError, \
@@ -352,15 +363,71 @@ class AttributesAttr(object):
                 expr = Expression(expr)
             attributes.append((name, expr))
 
-        self.stl_attributes = tuple(attributes)
+        return tuple(attributes)
+
+    decode = classmethod(decode)
 
 
-    def __str__(self):
-        return ';'.join([ '%s %s' % x for x in self.stl_attributes ])
+    def encode(cls, value):
+        return ';'.join([ '%s %s' % x for x in value ])
+
+    encode = classmethod(encode)
+
+
+    def to_unicode(cls, value, encoding='UTF-8'):
+        return u';'.join([ u'%s %s' % x for x in value ])
+
+    to_unicode = classmethod(to_unicode)
+
+
+
+class IfAttr(object):
+
+    def decode(cls, data):
+        if data.startswith('not '):
+            return NotExpression(data)
+        return Expression(data)
+
+    decode = classmethod(decode)
+
+
+    def encode(cls, value):
+        return str(value)
+
+    encode = classmethod(encode)
+
+
+    def to_unicode(cls, value, encoding='UTF-8'):
+        return unicode(value)
+
+    to_unicode = classmethod(to_unicode)
+
+
+
+class RepeatAttr(object):
+
+    def decode(cls, data):
+        name, expression = data.split(' ', 1)
+        return name, Expression(expression)
+
+    decode = classmethod(decode)
+
+
+    def encode(cls, value):
+        return '%s %s' % value
+
+    encode = classmethod(encode)
+
+
+    def to_unicode(cls, value, encoding='UTF-8'):
+        return u'%s %s' % value
+
+    to_unicode = classmethod(to_unicode)
 
 
 ########################################################################
-# The namespace handler
+# The run-time engine
+########################################################################
 class STL(object):
     """The stl namespace handler. It is an aspect."""
 
@@ -398,8 +465,7 @@ class STL(object):
         s = []
         # Process stl:repeat
         if node.has_attribute(stl_uri, 'repeat'):
-            repeat = node.get_attribute(stl_uri, 'repeat')
-            name, expression = repeat.stl_name, repeat.stl_expression
+            name, expression = node.get_attribute(stl_uri, 'repeat')
 
             i = 0
             values = expression.evaluate(stack, repeat_stack)
@@ -445,7 +511,7 @@ class STL(object):
         # Evaluate stl:attributes
         if node.has_attribute(stl_uri, 'attributes'):
             value = node.get_attribute(stl_uri, 'attributes')
-            for name, expression in value.stl_attributes:
+            for name, expression in value:
                 value = expression.evaluate(stack, repeat)
                 # XXX Do it only if it is an HTML document.
                 if name in boolean_html_attributes:
@@ -514,7 +580,8 @@ class STL(object):
 
 
 ########################################################################
-# Interface for the XML parser, factories
+# The XML namespace handler
+########################################################################
 class Namespace(XML.Namespace):
 
     def namespace_handler(cls, document):
@@ -536,25 +603,18 @@ class Namespace(XML.Namespace):
     get_element = classmethod(get_element)
 
 
-    def get_attribute(cls, prefix, name, value):
+    def get_attribute_type(local_name):
         """Attribute factory, returns the right attribute instance."""
         attributes = {'repeat': RepeatAttr,
                       'attributes': AttributesAttr,
-                      'content': Expression}
-        if name == 'if':
-            if value.startswith('not '):
-                return NotExpression(value)
-            else:
-                return Expression(value)
-        elif name in attributes:
-            attribute = attributes[name]
-            return attribute(value)
-        else:
-            raise STLSyntaxError, 'unexpected attribute name: %s' % name
+                      'content': ContentAttr,
+                      'if': IfAttr}
+        try:
+            return attributes[local_name]
+        except KeyError:
+            raise STLSyntaxError, 'unexpected attribute name: %s' % local_name
 
-    get_attribute = classmethod(get_attribute)
+    get_attribute_type = staticmethod(get_attribute_type)
 
 
-########################################################################
-# Register
 XML.set_namespace('http://xml.itools.org/namespaces/stl', Namespace)

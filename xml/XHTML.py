@@ -63,48 +63,44 @@ class Element(XML.Element):
         return False
 
 
+
+class MetaElement(Element):
+
     # XXX This is a hack to get the encoding information within the document's
     # head right: the meta element. It only works if the document already
     # contains the meta element.
     # Probably the best solution would be to load the head into a higher
     # level data structure, not as a DOM tree. Though this would break the
     # the XML API.
-    def get_opentag(self, encoding='UTF-8'):
-        if self.name == 'meta':
-            if self.has_attribute(xhtml_uri, 'http-equiv'):
-                http_equiv = self.get_attribute(xhtml_uri, 'http-equiv')
-                if http_equiv == 'Content-Type':
-                    s = '<%s' % self.qname
-                    # Output the attributes
-                    for namespace, local_name, value in self.get_attributes():
-                        if namespace == xhtml_uri and local_name == 'content':
-                            value = u'application/xhtml+xml; charset=%s' \
-                                    % encoding
-                        else:
-                            value = unicode(value)
-                        qname = self.get_attribute_qname(namespace, local_name)
-                        s += ' %s="%s"' % (qname, value)
-                    # Close the open tag
-                    return s + u'>'
-
-        return XML.Element.get_opentag(self, encoding)
+    def to_unicode(self, encoding='UTF-8'):
+        s = '<%s' % self.qname
+        for namespace_uri, local_name, value in self.get_attributes():
+            if namespace_uri == xhtml_uri and local_name == 'content':
+                value = u'application/xhtml+xml; charset=%s' % encoding
+            else:
+                type = self.get_attribute_type(namespace_uri, local_name)
+                value = type.to_unicode(value)
+            qname = self.get_attribute_qname(namespace_uri, local_name)
+            s += ' %s="%s"' % (qname, value)
+        return s + u' />'
 
 
 
 class Namespace(XML.Namespace):
 
     def get_element(cls, prefix, name):
+        if name == 'meta':
+            return MetaElement(prefix, name)
         return Element(prefix, name)
 
     get_element = classmethod(get_element)
 
 
-    def get_attribute(cls, prefix, name, value):
-        if name in ['src', 'href']:
-            return IO.URI.decode(value)
-        return IO.Unicode.decode(value)
+    def get_attribute_type(local_name):
+        attributes = {'src': IO.URI, 'href': IO.URI}
+        return attributes.get(local_name, IO.Unicode)
 
-    get_attribute = classmethod(get_attribute)
+    get_attribute_type = staticmethod(get_attribute_type)
 
 
 

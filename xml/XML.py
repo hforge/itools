@@ -216,7 +216,8 @@ class Parser(object):
 ##        xmlns = get_namespace(xmlns_uri)
         xmlns = get_namespace(None)
         for name, value in self.ns_declarations.items():
-            value = xmlns.get_attribute('xmlns', name, value)
+            type = xmlns.get_attribute_type(name)
+            value = type.decode(value)
             element.set_attribute(xmlns_uri, name, value, prefix='xmlns')
         self.ns_declarations = {}
         # Set the attributes
@@ -230,13 +231,14 @@ class Parser(object):
 
             namespace = get_namespace(namespace_uri)
             try:
-                attribute = namespace.get_attribute(prefix, name, value)
+                type = namespace.get_attribute_type(name)
             except XMLError, e:
                 # Add the line number information
                 e.line_number = self.parser.ErrorLineNumber
                 raise e
             else:
-                element.set_attribute(namespace_uri, name, attribute,
+                value = type.decode(value)
+                element.set_attribute(namespace_uri, name, value,
                                       prefix=prefix)
 
         self.stack.append(element)
@@ -331,10 +333,10 @@ class Namespace(object):
     get_element = classmethod(get_element)
 
 
-    def get_attribute(cls, prefix, name, value):
-        return IO.Unicode.decode(value)
+    def get_attribute_type(local_name):
+        return IO.Unicode
 
-    get_attribute = classmethod(get_attribute)
+    get_attribute_type = staticmethod(get_attribute_type)
 
 
 # Set the default namespace
@@ -437,9 +439,11 @@ class Element(object):
     def get_opentag(self, encoding='UTF-8'):
         s = '<%s' % self.qname
         # Output the attributes
-        for namespace, local_name, value in self.get_attributes():
-            qname = self.get_attribute_qname(namespace, local_name)
-            s += ' %s="%s"' % (qname, unicode(value))
+        for namespace_uri, local_name, value in self.get_attributes():
+            qname = self.get_attribute_qname(namespace_uri, local_name)
+            type = self.get_attribute_type(namespace_uri, local_name)
+            value = type.to_unicode(value, encoding='UTF-8')
+            s += ' %s="%s"' % (qname, value)
         # Close the open tag
         return s + u'>'
 
@@ -475,6 +479,14 @@ class Element(object):
         if prefix is None:
             return local_name
         return '%s:%s' % (prefix, local_name)
+
+
+    def get_attribute_type(self, namespace_uri, local_name):
+        """
+        Returns the type for the given attribute
+        """
+        namespace = get_namespace(namespace_uri)
+        return namespace.get_attribute_type(local_name)
 
 
     #######################################################################

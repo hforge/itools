@@ -2,8 +2,15 @@ SOURCES = itools.tex itools.sty intro.tex uri.tex resources.tex \
 	handlers.tex xml.tex stl.tex chandlers.tex addendum.tex \
 	arch.tex
 
+FIGURES = handlers.eps
 
-dvi: $(SOURCES)
+
+%.eps : %.dot
+	dot -Tps $< -o $@
+
+
+
+dvi: $(FIGURES) $(SOURCES)
 	latex itools.tex
 	latex itools.tex
 	touch dvi

@@ -9,7 +9,7 @@ This is the purpose of the {\em resource handlers}, to add semantics to
 specific resources.
 
 
-\section{Building handlers}
+\section{Example}
 
 Let's go straight with an example:
 
@@ -61,7 +61,40 @@ one resource, which is accessible through the {\tt resource} attribute:
 \end{code}
 
 
-\subsection{The {\tt get\_handler} shorthand}
+\section{The handler factory}
+
+In the last section we built the handler with the line:
+
+\begin{code}
+    >>> handler = HTML.Document(resource)
+\end{code}
+
+With this sentence we have explicitly chosen the handler class we want
+to use to work with our resource. And we can do so because we know the
+resource is an HTML document.
+
+But what happens if we don't know what our resource actually is. Often
+it is just better to let {\tt itools} decide which is the better handler
+class to use:
+
+\begin{code}
+    >>> from itools.handlers.Handler import Handler
+    >>> handler = Handler.build_handler(resource)
+\end{code}
+
+Here we use a handler class as a factory. The class method {\tt build\_handler}
+will choose the available handler class that better matches the given resource,
+and will build and return a handler for it.
+
+\begin{api}
+  {\tt build\_handler(resource)}\\
+  - A class method that identifies the given resource, chooses the available
+  handler class that better matches it, and builds and returns a handler for
+  it.
+\end{api}
+
+
+\section{The {\tt get\_handler} shorthand}
 
 There is a short way to load a handler (instead of loading first the resource
 and then building the handler explicitly), the function {\tt get\_handler}:
@@ -272,6 +305,17 @@ Based on these two attributes handlers provide the following API:
 
 
 \section{Overview of the available handlers}
+
+The Figure~\ref{Figure: handler tree} shows an excerpt from the tree of
+handler classes provided by {\tt itools}, which express the inheritance
+relationship between them.
+
+\begin{figure}
+  \center
+  \includegraphics[height=\textwidth]{handlers.eps}
+  \caption{The handler tree}
+  \label{Figure: handler tree}
+\end{figure}
 
 What follows is a non exhaustive list of the resource handlers that
 {\tt itools} includes out of the box, with the most relevant part of the API.

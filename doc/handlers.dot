@@ -1,0 +1,11 @@
+digraph G {
+    Handler;
+    Handler -> File;
+    File -> Text
+    Text -> CSV
+    Text -> PO
+    Text -> "XML.Document";
+    "XML.Document" -> "XHTML.Document";
+    "XHTML.Document" -> "HTML.Document";
+    Handler -> Folder;
+}

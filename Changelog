@@ -2,6 +2,75 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-22 19:07:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-86
+
+    Summary:
+      remove lucene
+    Revision:
+      itools--main--0.4--patch-86
+
+    Remove the lucene package, it is replaced by catalog.
+
+    removed files:
+     lucene/.arch-ids/=id lucene/.arch-ids/Fields.dia.id
+     lucene/.arch-ids/Index.py.id lucene/.arch-ids/Lucene.py.id
+     lucene/.arch-ids/Segment.py.id
+     lucene/.arch-ids/TermDictionary.dia.id
+     lucene/.arch-ids/TermVectors.dia.id
+     lucene/.arch-ids/__init__.py.id lucene/.arch-ids/prof.py.id
+     lucene/.arch-ids/test.py.id lucene/Fields.dia lucene/Index.py
+     lucene/Lucene.py lucene/Segment.py lucene/TermDictionary.dia
+     lucene/TermVectors.dia lucene/__init__.py lucene/prof.py
+     lucene/test.py lucene/tests/.arch-ids/00.txt.id
+     lucene/tests/.arch-ids/01.txt.id
+     lucene/tests/.arch-ids/02.txt.id
+     lucene/tests/.arch-ids/03.txt.id
+     lucene/tests/.arch-ids/04.txt.id
+     lucene/tests/.arch-ids/05.txt.id
+     lucene/tests/.arch-ids/06.txt.id
+     lucene/tests/.arch-ids/07.txt.id
+     lucene/tests/.arch-ids/08.txt.id
+     lucene/tests/.arch-ids/09.txt.id
+     lucene/tests/.arch-ids/10.txt.id
+     lucene/tests/.arch-ids/11.txt.id
+     lucene/tests/.arch-ids/12.txt.id
+     lucene/tests/.arch-ids/13.txt.id
+     lucene/tests/.arch-ids/14.txt.id
+     lucene/tests/.arch-ids/15.txt.id
+     lucene/tests/.arch-ids/16.txt.id
+     lucene/tests/.arch-ids/17.txt.id
+     lucene/tests/.arch-ids/18.txt.id
+     lucene/tests/.arch-ids/19.txt.id
+     lucene/tests/.arch-ids/20.txt.id
+     lucene/tests/.arch-ids/21.txt.id
+     lucene/tests/.arch-ids/22.txt.id
+     lucene/tests/.arch-ids/23.txt.id
+     lucene/tests/.arch-ids/24.txt.id
+     lucene/tests/.arch-ids/25.txt.id
+     lucene/tests/.arch-ids/26.txt.id
+     lucene/tests/.arch-ids/27.txt.id
+     lucene/tests/.arch-ids/28.txt.id
+     lucene/tests/.arch-ids/29.txt.id
+     lucene/tests/.arch-ids/30.txt.id lucene/tests/.arch-ids/=id
+     lucene/tests/00.txt lucene/tests/01.txt lucene/tests/02.txt
+     lucene/tests/03.txt lucene/tests/04.txt lucene/tests/05.txt
+     lucene/tests/06.txt lucene/tests/07.txt lucene/tests/08.txt
+     lucene/tests/09.txt lucene/tests/10.txt lucene/tests/11.txt
+     lucene/tests/12.txt lucene/tests/13.txt lucene/tests/14.txt
+     lucene/tests/15.txt lucene/tests/16.txt lucene/tests/17.txt
+     lucene/tests/18.txt lucene/tests/19.txt lucene/tests/20.txt
+     lucene/tests/21.txt lucene/tests/22.txt lucene/tests/23.txt
+     lucene/tests/24.txt lucene/tests/25.txt lucene/tests/26.txt
+     lucene/tests/27.txt lucene/tests/28.txt lucene/tests/29.txt
+     lucene/tests/30.txt
+
+    modified files:
+     Changelog setup.py
+
+    removed directories:
+     lucene lucene/.arch-ids lucene/tests lucene/tests/.arch-ids
+
+
 2004-09-18 15:51:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-85
 
     Summary:

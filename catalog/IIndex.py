@@ -344,7 +344,7 @@ class Tree(object):
                     # Add to the free list
                     old_first_r = docs_rsrc[8:12]
                     docs_rsrc[docs_slot+8:docs_slot+12] = old_first_r
-                    docs_rsrc[8:12] = docs_slot_r
+                    docs_rsrc[8:12] = IO.encode_link(docs_slot_n)
                     # Update on memory
                     docs.first_empty = docs_slot_n
                     # Done

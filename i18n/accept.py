@@ -52,6 +52,22 @@ class Node:
         node.quality = quality
 
 
+    def __delitem__(self, key):
+        if isinstance(key, str):
+            if key == '*':
+                key = []
+            else:
+                key = key.split('-')
+
+        if len(key) == 0:
+            self.quality = None
+        else:
+            child = self.children[key[0]]
+            del child[key[1:]]
+            if len(child.children) == 0 and child.quality is None:
+                del self.children[key[0]]
+
+
     def __str__(self):
         d = {}
         for key, value in self.children.items():
@@ -68,7 +84,6 @@ class Node:
             return max([ x.get_quality() for x in self.children.values() ])
 
         return self.quality
-
 
 
 
@@ -220,6 +235,7 @@ class AcceptCharset(Root, CharsetNode):
         if key == '*':
             return self
         return self.children.setdefault(key, CharsetNode())            
+
 
 
 class AcceptLanguage(Root, LanguageNode):

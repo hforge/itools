@@ -1,0 +1,196 @@
+\chapter{Coding style guide}
+
+This chapter describes the coding conventions used to write {\tt itools}.
+If you ever contribute a patch to {\tt itools}, be sure your code adheres
+to these coding rules.
+
+This guide is more strict than the recommedations of {\em PEP
+8}\footnote{http://www.python.org/peps/pep-0008.html}. Sometimes this guide
+contradicts the {\em PEP 8} recommendations; in these cases this guide is
+applies, in the context of {\tt itools}.
+
+
+\section{Language and encoding}
+
+Code must be written in english. The preferred encoding is {\em UTF-8},
+though others encodings are allowed.
+
+
+\section{Module structure}
+
+Each module is splitted in six sections:
+
+\begin{enumerate}
+  \item encoding statement;
+  \item copyright notice;
+  \item license reference;
+  \item the module documentation string;
+  \item import statements;
+  \item the code itself.
+\end{enumerate}
+
+Here we are going to describe the module's header, made up of the first
+five sections. The style for the code itself will described in the rest
+of this chapter.
+
+
+\subsubsection{The encoding}
+
+It is only requiered if it is any other encoding than ASCII. Example:
+
+\begin{code}
+    # -*- coding: UTF-8 -*-
+\end{code}
+
+\subsubsection{The Copyright}
+
+After the encoding comes the copyright, whose structure is:
+
+\begin{code}
+    # Copyright (C) <years> <author name> <email>
+                    <years> <author name> <email>
+                    ...
+\end{code}
+
+\subsubsection{The License}
+
+Right after the copyright statement comes a reference to the license. For
+{\tt itools} it is the {\em LGPL}.
+
+\subsubsection{The module's documentation string}
+
+There should be a documentation string explaining what the module does
+(though it is better to have none than a dummy one).
+
+The explanation aboyt how to write a documentation string are out of this
+chapter, it is covered by the {\em PEP
+257}\footnote{http://www.python.org/peps/pep-0257.html}.
+
+
+\subsubsection{Imports}
+
+The imports statements are at the top of the file (just after the legal
+statements and the module docstrings), though there may be imports within
+a function or method to avoid circular references.
+
+Imports should be grouped, with the order being:
+
+\begin{enumerate}
+  \item standard library imports
+  \item {\tt itools} imports
+  \item other package package imports
+\end{enumerate}
+
+Every group should be preceded by an introductory comment, like:
+
+\begin{code}
+    # Import from the Standard Library
+    ...
+
+    # Import from itools
+    ...
+\end{code}
+
+
+\subsection{Example}
+
+For example, at the time of this writting the module
+{\tt itools.handlers.Handler} starts by:
+
+\begin{code}
+    # -*- coding: ISO-8859-1 -*-
+    # Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+    #
+    # This library is free software; you can redistribute it and/or
+    # modify it under the terms of the GNU Lesser General Public
+    # License as published by the Free Software Foundation; either
+    # version 2.1 of the License, or (at your option) any later version.
+    #
+    # This library is distributed in the hope that it will be useful,
+    # but WITHOUT ANY WARRANTY; without even the implied warranty of
+    # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    # Lesser General Public License for more details.
+    #
+    # You should have received a copy of the GNU Lesser General Public
+    # License along with this library; if not, write to the Free Software
+    # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+
+    """
+    This module provides the abstract class which is the root in the
+    handler class hierarchy.
+    """
+
+    # Import from the Standard Library
+    import datetime
+
+    # Import from itools
+    from itools import uri
+    from itools.resources import base
+\end{code}
+
+
+
+\section{Code lay-out}
+
+\subsubsection{Tabs}
+
+Never use tabs.
+
+\subsubsection{Indentation}
+
+Each indentation level must have four (4) spaces.
+
+\subsubsection{Maximum line length}
+
+Lines should be 80 characters wide at most.
+
+The preferred way of wrapping long lines is by using Python's implied line
+continuation inside parentheses, brackets and braces. If necessary, you can
+add an extra pair of parentheses around an expression, but usually using
+a backslash looks better.  Make sure to indent the continued line
+appropriately.
+
+\subsubsection{Blank lines}
+
+Separate classes with three blank lines. Separate methods and functions with
+two blank lines. There is also a blank line between the class definition and
+the first method definition.
+
+Use blank lines in functions, sparingly, to indicate logical sections.
+
+
+\section{Whitespace in expressions and statements}
+
+Don't put more than one statement on the same line:
+
+\begin{code}
+    # Bad                           |    # Bad
+    if x is True: do_something()    |    do_one(); do_two(); do_three()
+                                    |
+    # Good                          |    # Good
+    if x is True:                   |    do_one()
+        do_something()              |    do_two()
+                                    |    do_three()
+\end{code}
+
+Surround operators with one white space.
+
+XXX
+
+
+\section{Comments}
+
+Comments must describe the code that follows them, and must be indented
+to the same level of that code. Inline comments are not allowed; this is
+to say, a comment always starts a new line.
+
+A comment starts by a single {\tt \#} character followed by an space.
+
+Comments must be written in good english (as good as the developer can
+write it). This means, for example, that the first letter must be
+capitalized.
+
+
+\section{Naming conventions}
+
+XXX

@@ -1,6 +1,6 @@
 SOURCES = itools.tex itools.sty intro.tex uri.tex resources.tex \
 	handlers.tex xml.tex stl.tex chandlers.tex i18n.tex addendum.tex \
-	arch.tex
+	style.tex arch.tex
 
 FIGURES = handlers.eps l10n.eps
 

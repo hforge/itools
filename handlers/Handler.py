@@ -15,8 +15,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
+"""
+This module provides the abstract class which is the root in the
+handler class hierarchy.
+"""
 
-# Import from Python
+
+# Import from the Standard Library
 import datetime
 
 # Import from itools

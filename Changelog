@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.6
 #
 
+2005-02-17 13:01:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
+
+    Summary:
+      catalog, add unit test for "IO"
+    Revision:
+      itools--main--0.6--patch-64
+
+
+    new files:
+     catalog/.arch-ids/test_io.py.id catalog/test_io.py
+
+    modified files:
+     Changelog
+
+
 2005-02-17 13:00:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
 
     Summary:

@@ -165,7 +165,6 @@ class Document(XHTML.Document, HTMLParser):
 
 
     # XXX handlers that remain to implement include
-##    def handle_comment(self, data):
 ##    def handle_pi(self, data):
 
 

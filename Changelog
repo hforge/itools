@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-15 17:43:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
+
+    Summary:
+      xml, remove "handle_rawdata" and "handle_comment"
+    Revision:
+      itools--main--0.8--patch-16
+
+    Continue simplifying the code.
+
+    modified files:
+     Changelog xml/HTML.py xml/XML.py
+
+
 2005-03-14 14:10:31 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
 
     Summary:

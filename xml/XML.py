@@ -373,7 +373,9 @@ class Document(Text.Text):
 
     def comment_handler(self, data):
         element = self.stack[-1]
-        element.handle_comment(data)
+
+        comment = Comment(data)
+        element.append_child(comment)
 
 
     def start_element_handler(self, name, attrs):
@@ -442,7 +444,12 @@ class Document(Text.Text):
     def char_data_handler(self, data):
         element = self.stack[-1]
         data = IO.Unicode.decode(data, self._encoding)
-        element.handle_rawdata(data)
+
+        children = element.children
+        if children and isinstance(children[-1], Raw):
+            children[-1].data += data
+        else:
+            children.append(Raw(data))
 
 
     def skipped_entity_handler(self, name, is_param_entity):
@@ -463,14 +470,6 @@ class Document(Text.Text):
     # itools.xml handlers
     def handle_end_element(self, element):
         self.children.append(element)
-
-
-    def handle_rawdata(self, data):
-        children = self.children
-        if children and isinstance(children[-1], Raw):
-            children[-1].data += data
-        else:
-            children.append(Raw(data))
 
 
     #######################################################################
@@ -603,19 +602,6 @@ class Element(Node):
     #######################################################################
     def handle_end_element(self, element):
         self.append_child(element)
-
-
-    def handle_comment(self, data):
-        comment = Comment(data)
-        self.append_child(comment)
-
-
-    def handle_rawdata(self, data):
-        children = self.children
-        if children and isinstance(children[-1], Raw):
-            children[-1].data += data
-        else:
-            children.append(Raw(data))
 
 
     #######################################################################

@@ -16,6 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
+# Import from Python
+import datetime
+
 # Import from itools
 from itools.handlers.File import File
 from itools.handlers.Folder import Folder
@@ -44,6 +47,8 @@ class IndexedField(File):
         # Update the resource
         self.resource[:4] = IO.encode_uint32(self.number_of_terms)
         self.resource.append(IO.encode_string(term))
+        # Set timestamp
+        self.timestamp = datetime.datetime.now()
 
 
 

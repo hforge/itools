@@ -51,7 +51,7 @@ class CSV(Text):
                 self.lines.append(line)
         else:
             self.lines = []
-        
+
 
     #########################################################################
     # API

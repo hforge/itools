@@ -2,6 +2,29 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-18 15:51:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-85
+
+    Summary:
+      catalog, fix unindexing
+    Revision:
+      itools--main--0.4--patch-85
+
+    When a term was unindexed, the tree in memory (IIndex.Tree.children)
+    was cut if empty, but it was not cut on the resource. This inconsistency
+    between the resource and the handler lead to errors in further operations,
+    and finally to database inconsistency. Now the tree is not cut at all.
+    
+    A side effect of the change is a performance improvement in re-indexing
+    operations.
+    
+    There is another change, IDocument instances timestamp is kept up-to-date,
+    this brings further perfomance improvement.
+
+    modified files:
+     Changelog catalog/IDocument.py catalog/IIndex.py
+     handlers/CSV.py
+
+
 2004-09-16 17:30:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-84
 
     Summary:

@@ -117,7 +117,6 @@ class IIndexTree(File):
             slot_number = self.number_of_slots
             # Number of slots
             self.number_of_slots += 1
-            r = self.resource
             r[4:8] = IO.encode_uint32(self.number_of_slots)
             # Append the new slot to the end of the file
             base = 16 + slot_number * 16
@@ -318,8 +317,6 @@ class Tree(object):
             prefix, suffix = word[0], word[1:]
             subtree = self.children[prefix]
             subtree.unindex_word(suffix, doc_number)
-            if len(subtree.children) == 0 and len(subtree.documents) == 0:
-                del self.children[prefix]
         else:
             del self.documents[doc_number]
             # Update resource

@@ -95,6 +95,8 @@ class File(Resource):
             else:
                 extension = name[-1]
             mimetype, encoding = mimetypes.guess_type('.%s' % extension)
+        else:
+            mimetype = 'application/octet-stream'
 
         return mimetype
 

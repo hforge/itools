@@ -38,6 +38,8 @@ class Resource:
     - get_mimetype(): returns the mime type of the resource (None means it
         is unknown)
 
+    - set_mtime(mtime): sets the modification time
+
     Note that resources are classic Python objects, this is because we want
     to support the ZODB 3.2, which is based on old extension classes, which
     are incompatible with new style Python classes. This will change when

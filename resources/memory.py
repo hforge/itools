@@ -44,6 +44,10 @@ class Resource(base.Resource):
         return self.mtime
 
 
+    def set_mtime(self, mtime):
+        self.mtime = mtime
+
+
 
 class File(Resource, base.File):
     """ """

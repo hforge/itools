@@ -22,6 +22,7 @@
 import datetime
 import mimetypes
 import os
+import time
 
 # Import from itools
 from itools import i18n
@@ -60,6 +61,12 @@ class Resource(base.Resource):
             return None
         time = os.path.getctime(self._path)
         return datetime.datetime.fromtimestamp(time)
+
+
+    def set_mtime(self, mtime):
+        atime = os.path.getatime(self._path)
+        mtime = time.mktime(mtime.timetuple())
+        os.utime(self._path, (atime, mtime))
 
 
 

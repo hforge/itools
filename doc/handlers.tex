@@ -275,8 +275,8 @@ are quite powerful, but beyond the scope of this article.
 
 \paragraph{XHTML.Document}
 
-The handler for XHTML documents, it extedns the API provided by
-{\tt XML.Document} API witht the methods:
+The handler for XHTML documents, it extends the API provided by
+{\tt XML.Document} API with the methods:
 
 \begin{api}
   {\tt get\_head()}\\
@@ -308,7 +308,7 @@ work is spent on developing new handler classes. This section describes
 the steps to follow to write a new handler:
 
 \begin{enumerate}
-  \item First the base class must be choosed, for example, if we want
+  \item First the base class must be choosen, for example, if we want
     to write a handler for {\bf T}ranslation {\bf M}emory
     e{\bf X}change\footnote{http://www.lisa.org/tmx} documents, our TMX
     class should inherit from {\tt XML.Document}; if we want to write
@@ -316,7 +316,7 @@ the steps to follow to write a new handler:
     class should inherit from {\tt Text}.
 
   \item Usually we will implement the method {\tt \_load()}, which is the
-    responsible to parse the resource data and to build the data strucutre
+    responsible to parse the resource data and to build the data structure
     we want in memory.
 
   \item It is likely we will also write the method {\tt get\_skeleton()}

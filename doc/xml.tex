@@ -21,9 +21,9 @@ talking about a handler class, the {\tt XML.Document} class:
 \end{code}
 
 The document is represented on memory as a tree of nodes, like the
-{\bf D}ocument {\bf O}bject {\bf M}odel standard\footnote{http://XXX}.
-Though, so far, no effort has been done to develop an API compatible with
-{\bf DOM}.
+{\bf D}ocument {\bf O}bject {\bf M}odel
+standard\footnote{http://www.w3.org/DOM/}. Though, so far, no effort
+has been done to develop an API compatible with {\bf DOM}.
 
 In fact, the API is rather simple:
 
@@ -91,7 +91,7 @@ Lets to stop and look at the API of the most important node type,
     - It is the element's parent.
 
     {\tt attributes}\\
-    - The element's attributes, it is a mapping from attibute names to
+    - The element's attributes, it is a mapping from attribute names to
     {\tt XML.Attribute} objects.
 
     {\tt get\_elements(name=None)}\\
@@ -100,7 +100,7 @@ Lets to stop and look at the API of the most important node type,
     element nodes.
 
     {\tt traverse()}\\
-    - As with {\\tt XML.Document}, this method is a generator that traverses
+    - As with {\tt XML.Document}, this method is a generator that traverses
     the element children in pre-order, and returns each time a node.
 
     {\tt copy()}\\
@@ -118,7 +118,7 @@ Lets to stop and look at the API of the most important node type,
 One very important concept of XML are the {\em namespaces}.
 
 An XML document may contain many different elements and attributes, if there
-is not any XML declaration these elemenets and attributes will be instances
+is not any XML declaration these elements and attributes will be instances
 of the {\tt XML.Element} and {\tt XML.Attribute} classes, with the standard
 API and none specific semantics.
 

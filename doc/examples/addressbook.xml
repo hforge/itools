@@ -9,8 +9,8 @@
     <h3>Addressbook</h3>
     <ul>
       <li stl:repeat="address addressbook">
-        <stl:block content="address/lastname" />,
-        <stl:block content="address/firstname" />:
+        <stl:block content="address/last_name" />,
+        <stl:block content="address/first_name" />:
         <stl:block content="address/telephone" />
       </li>
     </ul>

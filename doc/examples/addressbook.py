@@ -18,31 +18,29 @@
 
 
 # Import from itools
-from itools import get_abspath
-from itools.handlers import get_handler
-
-class Address(object):
-    def __init__(self, lastname, firstname, telephone):
-        self.lastname = lastname
-        self.firstname = firstname
-        self.telephone = telephone
+from itools.resources import get_resource
+from itools.xml import XML
 
 
 class Addressbook(object):
     def __init__(self):
-        self.addressbook = []
+        self.addresses = []
 
-    def add_address(self, lastname, firstname, telephone):
-        address = Address(lastname, firstname, telephone)
-        self.addressbook.append(address)
+
+    def add_address(self, last_name, first_name, telephone):
+        address = {'last_name': last_name,
+                   'first_name': first_name,
+                   'telephone': telephone}
+        self.addresses.append(address)
+
 
     def view(self):
         # Load the STL template
-        path = get_abspath(globals(), 'addressbook.xml')
-        template = get_handler(path)
+        resource = get_resource('addressbook.xml')
+        template = XML.Document(resource)
 
         # Build the namespace
-        namespace = {'addressbook': self.addressbook}
+        namespace = {'addressbook': self.addresses}
 
         # Process the template and return the output
         return template.stl(namespace)
@@ -53,10 +51,6 @@ if __name__ == '__main__':
     addressbook = Addressbook()
     addressbook.add_address('Jordan', 'Robert', '0606060606')
     addressbook.add_address('Buendia', 'Aureliano', '0612345678')
-
-    # Output the HTTP headers
-    print "Content-Type: text/html"
-    print
 
     # Output the addressbook content
     print addressbook.view()

@@ -175,7 +175,8 @@ class FieldInfos(File):
             bits = self.load_byte()
             indexed = bool(bits & 0x01)
             stored = bool(bits & 0x02)
-            self.fields.append((name, indexed, stored))
+            tokenized = bool(bits & 0x04)
+            self.fields.append((name, indexed, stored, tokenized))
 
         if self.index < len(self.data):
             raise ValueError, 'the file size is bigger than expected'
@@ -185,10 +186,20 @@ class FieldInfos(File):
 
 
     def get_skeleton(self, fields=[]):
+        """
+        Each item pf the given list contains a four elements tuple:
+
+          <name>, <indexed>, <stored>, <tokenized>
+
+        Where the last three elements are booleans.
+
+        XXX Note that itools.lucene stores the tokenized bit in FiledInfos,
+        while Lucene stores it in FieldData.
+        """
         data = self.save_vint(len(fields))
-        for name, indexed, stored in fields:
+        for name, indexed, stored, tokenized in fields:
             data += self.save_string(name)
-            byte = int(stored) << 1 | int(indexed)
+            byte = int(tokenized) << 2 | int(stored) << 1 | int(indexed)
             data += self.save_byte(byte)
         return data
 
@@ -197,7 +208,7 @@ class FieldInfos(File):
         data = self.save_vint(len(self.fields))
         for name, indexed, stored in self.fields:
             data += self.save_string(name)
-            byte = int(stored) << 1 | int(indexed)
+            byte = int(tokenized) << 2 | int(stored) << 1 | int(indexed)
             data += self.save_byte(byte)
         return data
 

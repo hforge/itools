@@ -114,6 +114,8 @@ class Tree(object):
             prefix, suffix = word[0], word[1:]
             subtree = self.children[prefix]
             subtree.unindex_word(suffix, doc_number)
+            if len(subtree.children) == 0 and len(subtree.documents) == 0:
+                del self.children[prefix]
         else:
             del self.documents[doc_number]
 
@@ -207,7 +209,7 @@ class Segment(object):
 
         # Load the field metadata
         for field_number, field_metadata in enumerate(fnm.fields):
-            field_name, is_indexed, is_stored = field_metadata
+            field_name, is_indexed, is_stored, is_tokenized = field_metadata
             # Keep mapping from field numbers to field names and viceversa
             self.field_names.append(field_name)
             self.field_numbers[field_name] = field_number
@@ -240,6 +242,14 @@ class Segment(object):
                 terms.append(term_text)
 
 
+    def is_tokenized(self, field_name):
+        for field_number, field_metadata in enumerate(self.fnm.fields):
+            name, is_indexed, is_stored, is_tokenized = field_metadata
+            if name == field_name:
+                return is_tokenized
+        raise LookupError, 'unknown field name "%s"' % field_name
+
+
     def get_new_document_number(self):
         if self.documents:
             document_numbers = self.documents.keys()
@@ -264,14 +274,19 @@ class Segment(object):
                 if callable(data):
                     data = data()
 
-                analyser = Analyser(data)
-                word, position = analyser.next_word()
-                while word is not None:
-                    tree.index_word(word, doc_number, position)
-                    # Update the un-index data structure ('self.documents')
-                    terms.add(word)
-                    # Next word
+                if self.is_tokenized(field_name):
+                    analyser = Analyser(data)
                     word, position = analyser.next_word()
+                    while word is not None:
+                        tree.index_word(word, doc_number, position)
+                        # Update the un-index data structure ('self.documents')
+                        terms.add(word)
+                        # Next word
+                        word, position = analyser.next_word()
+                else:
+                    tree.index_word(data, doc_number, 0)
+                    terms.add(data)
+
                 if terms:
                     fields[field_name] = terms
 
@@ -280,7 +295,7 @@ class Segment(object):
             # Stored fields
             fields = []
             for field_number, field in enumerate(self.fnm.fields):
-                field_name, is_indexed, is_stored = field
+                field_name, is_indexed, is_stored, is_tokenized = field
                 if is_stored and hasattr(document, field_name):
                     data = getattr(document, field_name)
                     if callable(data):
@@ -304,9 +319,7 @@ class Segment(object):
             tree = self.indexed_fields[field_name]
             for term in terms:
                 tree.unindex_word(term, doc_number)
-
         del self.documents[doc_number]
-
         # Stored fields
         del self.fdt.documents[doc_number] 
 

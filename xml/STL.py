@@ -463,15 +463,15 @@ class STL(object):
         if 'attributes' in stl_attrs:
             for name, expression in stl_attrs['attributes'].stl_attributes:
                 value = expression.evaluate(stack, repeat)
-                # Coerce
-                if isinstance(value, int):
-                    value = str(value)
                 # XXX Do it only if it is an HTML document.
                 if name in boolean_html_attributes:
                     if bool(value) is True:
                         value = name
                     else:
                         value = None
+                # Coerce
+                elif isinstance(value, int):
+                    value = str(value)
                 changed_attributes[name] = value
 
         # Output existing attributes

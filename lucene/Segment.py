@@ -261,27 +261,30 @@ class Segment(object):
         doc_number = self.get_new_document_number()
         # Add the document to 'self.documents'
         fields = {}
-        # Update the search data structure (term dictionary)
-        for field_name in self.indexed_fields:
-            field = None
+        # Get the field values
+        values = {}
+        for field_number, field in enumerate(self.fnm.fields):
+            field_name, is_indexed, is_stored, is_tokenized = field
+            # Go
+            value = None
             if hasattr(document, field_name):
-                field = getattr(document, field_name)
+                value = getattr(document, field_name)
             elif isinstance(document, dict):
                 if field_name in document:
-                    field = document[field_name]
+                    value = document[field_name]
+            if callable(field):
+                value = value()
+            values[field_name] = value
 
-            if field is not None:
+        # Update the search data structure (term dictionary)
+        for field_name in self.indexed_fields:
+            value = values[field_name]
+
+            if value is not None:
                 tree = self.indexed_fields[field_name]
                 terms = Set()
-
-                # XXX Check that data is an string
-                if callable(field):
-                    data = field()
-                else:
-                    data = field
-
                 if self.is_tokenized(field_name):
-                    analyser = Analyser(data)
+                    analyser = Analyser(value)
                     word, position = analyser.next_word()
                     while word is not None:
                         tree.index_word(word, doc_number, position)
@@ -290,8 +293,8 @@ class Segment(object):
                         # Next word
                         word, position = analyser.next_word()
                 else:
-                    tree.index_word(data, doc_number, 0)
-                    terms.add(data)
+                    tree.index_word(value, doc_number, 0)
+                    terms.add(value)
 
                 if terms:
                     fields[field_name] = terms
@@ -302,11 +305,10 @@ class Segment(object):
             fields = []
             for field_number, field in enumerate(self.fnm.fields):
                 field_name, is_indexed, is_stored, is_tokenized = field
-                if is_stored and hasattr(document, field_name):
-                    data = getattr(document, field_name)
-                    if callable(data):
-                        data = data()
-                    fields.append((field_number, True, data))
+                if is_stored:
+                    value = values[field_name]
+                    if value is not None:
+                        fields.append((field_number, True, value))
             self.fdt.documents.append(fields)
 
             # Save the data
@@ -320,14 +322,19 @@ class Segment(object):
 
 
     def unindex_document(self, doc_number):
+        # Stored fields
+        doc_numbers = self.documents.keys()
+        doc_numbers.sort()
+        i = doc_numbers.index(doc_number)
+        del self.fdt.documents[i]
+        # Search, tree data structure
         fields = self.documents[doc_number]
         for field_name, terms in fields.items():
             tree = self.indexed_fields[field_name]
             for term in terms:
                 tree.unindex_word(term, doc_number)
+        # Term vectors
         del self.documents[doc_number]
-        # Stored fields
-        del self.fdt.documents[doc_number] 
 
 
     def search(self, **kw):

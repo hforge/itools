@@ -36,7 +36,8 @@ class Document(Text.Text):
         self.body = '\n'.join(lines[3:])
 
 # Create and get a new empty index
-index = Index.Index(fields=[('title', True, True), ('body', True, False)])
+index = Index.Index(fields=[('title', True, True, True),
+                            ('body', True, False, True)])
 tests = get_handler('tests')
 if tests.has_resource('index'):
     tests.del_resource('index')

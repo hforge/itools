@@ -115,6 +115,7 @@ class Folder(Handler):
             if handler.is_outdated():
                 handler = None
         # Cache miss, search the handler
+        is_virtual = False
         if handler is None:
             # Lookup the resource handler
             if self.has_resource(name):
@@ -122,12 +123,14 @@ class Folder(Handler):
                 handler = self._get_handler(segment, resource)
             else:
                 handler = self._get_virtual_handler(segment)
+                is_virtual = True
             # Set parent and name
             handler.parent = self
             handler.name = segment.name
         # Update the cache
-        atime = datetime.datetime.now()
-        self.cache[key] = (handler, atime)
+        if is_virtual is False:
+            atime = datetime.datetime.now()
+            self.cache[key] = (handler, atime)
 
         # Continue with the rest of the path
         if path:

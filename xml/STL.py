@@ -216,19 +216,10 @@ class Expression(object):
 
         # Call
         if self.parameters:
-            return apply(x, self.parameters)
-        else:
-            return self.end(x)
-
-
-    def end(self, value):
-        """
-        Call the object at the end of the traversal to get the value,
-        if it is callable.
-        """
-        if callable(value):
+            x = apply(x, self.parameters)
+        elif callable(x):
             try:
-                value = value()
+                x = x()
             except AttributeError, error_value:
                 # XXX "callable" could return true even if the object is not
                 # callable (see Python's documentation).
@@ -241,8 +232,7 @@ class Expression(object):
                 # needed..
                 pass
 
-        return value
-
+        return x
 
 
 ###########################################################################
@@ -473,6 +463,9 @@ class STL(object):
         if 'attributes' in stl_attrs:
             for name, expression in stl_attrs['attributes'].stl_attributes:
                 value = expression.evaluate(stack, repeat)
+                # Coerce
+                if isinstance(value, int):
+                    value = str(value)
                 # XXX Do it only if it is an HTML document.
                 if name in boolean_html_attributes:
                     if bool(value) is True:
@@ -507,8 +500,10 @@ class STL(object):
         # Process the content
         if 'content' in stl_attrs:
             expression = stl_attrs['content'].stl_expression
-
             content = expression.evaluate(stack, repeat)
+            # Coerce
+            if isinstance(content, int):
+                content = str(content)
         else:
             content = ''
             for child in node.children:

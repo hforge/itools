@@ -26,6 +26,9 @@ from itools.zope import get_context
 # Import from Zope
 from OFS.Image import File as ZopeFile
 from OFS.Folder import Folder as ZopeFolder
+from AccessControl import User
+import webdav
+
 
 
 # XXX
@@ -88,6 +91,26 @@ class Resource(base.Resource):
 
 
     def set_mtime(self, mtime):
+        raise NotImplementedError
+
+
+    def lock(self):
+        object = self._get_object()
+        creator = User.nobody
+        lock = webdav.LockItem.LockItem(creator)
+        key = lock.getLockToken()
+        object.wl_setLock(key, lock)
+        return lock, key
+
+
+    def unlock(self, key):
+        object = self._get_object()
+        key = webdav.common.tokenFinder(key)
+        object.wl_delLock(key)
+
+
+    def is_locked(self):
+        # XXX Implement! See Zope's "webdav.Resource.LOCK".
         raise NotImplementedError
 
 

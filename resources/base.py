@@ -66,6 +66,18 @@ class Resource(object):
     name = property(get_name, None, None, '')
 
 
+    def lock(self):
+        raise NotImplementedError
+
+
+    def unlock(self):
+        raise NotImplementedError
+
+
+    def is_locked(self):
+        raise NotImplementedError
+
+
 
 class File(Resource):
 

@@ -1,3 +1,13 @@
+0.4.6 (2004/09/24)
+
+  Handlers
+  - Fix folders timestamp.
+
+  Index & Search
+  - Fix unindexing.
+  - Remove obsolete itools.lucene.
+
+
 0.4.5 (2004/09/12)
 
   Resources

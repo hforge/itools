@@ -32,6 +32,28 @@ empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
                       'img', 'input', 'isindex', 'link', 'meta', 'param'])
 
 class Element(XHTML.Element):
+
+    # XXX This code is copy & paste (with minor changes) from
+    # 'XHTML.get_opentag'. It should be refactored.
+    def get_opentag(self, encoding='UTF-8'):
+        if self.name == 'meta':
+            if self.has_attribute('http-equiv'):
+                http_equiv = self.get_attribute('http-equiv')
+                if http_equiv == 'Content-Type':
+                    s = '<%s' % self.qname
+                    # Output the attributes
+                    for qname, value in self.attributes_by_qname.items():
+                        if qname == 'content':
+                            value = u'text/html; charset=%s' % encoding
+                        else:
+                            value = unicode(value)
+                        s += ' %s="%s"' % (qname, value)
+                    # Close the open tag
+                    return s + u'>'
+
+        return XHTML.Element.get_opentag(self, encoding)
+
+
     def get_closetag(self):
         if self.name in empty_elements:
             return ''
@@ -163,7 +185,7 @@ class Document(XHTML.Document, HTMLParser):
             s = u'<!%s>' % self._declaration
         # The children
         for child in self.children:
-            s += unicode(child)
+            s += child.to_unicode(encoding)
         return s
 
 
@@ -175,7 +197,7 @@ class Document(XHTML.Document, HTMLParser):
         # The children
         for child in self.children:
             # XXX Fix <meta http-equiv="Content-Type" content="...">
-            s += unicode(child)
+            s += child.to_unicode(encoding)
 
         return s.encode(encoding)
 

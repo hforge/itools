@@ -101,15 +101,15 @@ class Node(object):
 
 
 class NodeList(list):
-    def __unicode__(self):
+    def to_unicode(self, encoding='UTF-8'):
         s = u''
         for node in self:
-            s += unicode(node)
+            s += node.to_unicode(encoding=encoding)
         return s
 
 
-    def __str__(self):
-        return unicode(self).encode('UTF-8')
+    def to_str(self, encoding='UTF-8'):
+        return self.to_unicode(encoding).encode(encoding)
 
 
     def __cmp__(self, other):
@@ -123,40 +123,51 @@ class NodeList(list):
         return 0
 
 
+    # XXX Backwards compatibility, to be removed by 0.8
+    __unicode__ = to_unicode
+    __str__ = to_str
+
+
 
 class Raw(Node):
     def __init__(self, data):
         self.data = data
 
 
-    def __unicode__(self):
+    def to_unicode(self, encoding='UTF-8'):
         return self.data.replace('&', '&amp;').replace('<', '&lt;')
 
 
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        return cmp(unicode(self), unicode(other))
+        return cmp(self.to_unicode(), other.to_unicode())
+
+
+    # XXX Backwards compatibility, to be removed by 0.8
+    __unicode__ = to_unicode
 
 
 
 class XMLDeclaration(Node):
+
     def __init__(self, version, encoding, standalone):
         self.version = version
+        # XXX Should we keep the encoding? Probably not
         self.encoding = encoding
         self.standalone = standalone
 
 
-    def __unicode__(self):
+    def to_unicode(self, encoding='UTF-8'):
         if self.standalone == 1:
             return u'<?xml version="%s" encoding="%s" standalone="yes"?>' \
-                   % (self.version, self.encoding)
+                   % (self.version, encoding)
         elif self.standalone == 0:
             return u'<?xml version="%s" encoding="%s" standalone="no"?>' \
-                   % (self.version, self.encoding)
+                   % (self.version, encoding)
         else:
             return u'<?xml version="%s" encoding="%s"?>' \
-                   % (self.version, self.encoding)
+                   % (self.version, encoding)
 
 
     def __cmp__(self, other):
@@ -172,6 +183,10 @@ class XMLDeclaration(Node):
         return XMLDeclaration(self.version, self.encoding, self.standalone)
 
 
+    # XXX Backwards compatibility, to be removed by 0.8
+    __unicode__ = to_unicode
+
+
 
 class DocumentType(Node):
     def __init__(self, name, system_id, public_id, has_internal_subset):
@@ -181,7 +196,7 @@ class DocumentType(Node):
         self.has_internal_subset = has_internal_subset
 
 
-    def __unicode__(self):
+    def to_unicode(self, encoding='UTF-8'):
         # XXX The system and public ids maybe None
         pattern = '<!DOCTYPE %s' \
                   '\n     PUBLIC "%s"' \
@@ -199,13 +214,17 @@ class DocumentType(Node):
         return 1
 
 
+    # XXX Backwards compatibility, to be removed by 0.8
+    __unicode__ = to_unicode
+
+
 
 class Comment(Node):
     def __init__(self, data):
         self.data = data
 
 
-    def __unicode__(self):
+    def to_unicode(self, encoding='UTF-8'):
         return u'<!--%s-->' % self.data
 
 
@@ -213,6 +232,10 @@ class Comment(Node):
         if not isinstance(other, self.__class__):
             return 1
         return cmp(self.data, other.data)
+
+
+    # XXX Backwards compatibility, to be removed by 0.8
+    __unicode__ = to_unicode
 
 
 
@@ -487,14 +510,14 @@ class Document(Text.Text):
         s = []
         if encoding is None:
             for child in self.children:
-                s.append(unicode(child))
+                s.append(child.to_unicode(encoding))
         else:
             for child in self.children:
                 if isinstance(child, XMLDeclaration):
                     child = copy(child)
                     child.encoding = encoding
-                s.append(unicode(child))
-            
+                s.append(child.to_unicode(encoding))
+
         return ''.join(s)
 
 
@@ -688,13 +711,13 @@ class Element(Node):
 
     #######################################################################
     # Serialization
-    def __unicode__(self):
-        return self.get_opentag() \
-               + unicode(self.children) \
+    def to_unicode(self, encoding='UTF-8'):
+        return self.get_opentag(encoding) \
+               + self.children.to_unicode(encoding) \
                + self.get_closetag()
 
 
-    def get_opentag(self):
+    def get_opentag(self, encoding='UTF-8'):
         s = '<%s' % self.qname
         # Output the attributes
         for qname, value in self.attributes_by_qname.items():
@@ -815,6 +838,10 @@ class Element(Node):
         attribute of the 'img' elements of XHTML.
         """
         return False
+
+
+    # XXX Backwards compatibility, to be removed by 0.8
+    __unicode__ = to_unicode
 
 
 

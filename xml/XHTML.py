@@ -61,6 +61,32 @@ class Element(XML.Element):
         return False
 
 
+    # XXX This is a hack to get the encoding information within the document's
+    # head right: the meta element. It only works if the document already
+    # contains the meta element.
+    # Probably the best solution would be to load the head into a higher
+    # level data structure, not as a DOM tree. Though this would break the
+    # the XML API.
+    def get_opentag(self, encoding='UTF-8'):
+        if self.name == 'meta':
+            if self.has_attribute('http-equiv'):
+                http_equiv = self.get_attribute('http-equiv')
+                if http_equiv == 'Content-Type':
+                    s = '<%s' % self.qname
+                    # Output the attributes
+                    for qname, value in self.attributes_by_qname.items():
+                        if qname == 'content':
+                            value = u'application/xhtml+xml; charset=%s' \
+                                    % encoding
+                        else:
+                            value = unicode(value)
+                        s += ' %s="%s"' % (qname, value)
+                    # Close the open tag
+                    return s + u'>'
+
+        return XML.Element.get_opentag(self, encoding)
+
+
 
 class NamespaceHandler(XML.NamespaceHandler):
 

@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.6
 #
 
+2005-02-14 16:44:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
+
+    Summary:
+      xml, fix XHTML and HTML serialization, correctly set the encoding
+    Revision:
+      itools--main--0.6--patch-59
+
+    Now the encoding specified within the head is correctly set on serialization.
+
+    modified files:
+     Changelog xml/HTML.py xml/XHTML.py xml/XML.py
+
+
 2005-02-10 10:21:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
 
     Summary:

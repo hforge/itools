@@ -26,7 +26,7 @@ import warnings
 from xml.parsers import expat
 
 # Import from itools.handlers
-from itools.handlers import File, Text
+from itools.handlers import File, Text, IO
 
 
 ### Create a logger for dubugging
@@ -303,6 +303,8 @@ class Document(Text.Text):
         parser.namespace_prefixes = True
         # Improve performance by reducing the calls to the default handler
         parser.buffer_text = True
+        # Do the "de-serialization" ourselves.
+        parser.returns_unicode = False
 
         # Set parsing handlers (XXX there are several not yet supported)
         parser.XmlDeclHandler = self.xml_declaration_handler
@@ -444,13 +446,14 @@ class Document(Text.Text):
 
     def char_data_handler(self, data):
         element = self.stack[-1]
+        data = IO.Unicode.decode(data, self._encoding)
         element.handle_rawdata(data)
 
 
     def skipped_entity_handler(self, name, is_param_entity):
         # XXX HTML specific
         codepoint = htmlentitydefs.name2codepoint[name]
-        char = unichr(codepoint)
+        char = unichr(codepoint).encode(self._encoding)
         self.char_data_handler(char)
 
 

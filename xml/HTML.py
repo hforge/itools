@@ -105,8 +105,8 @@ class Document(XHTML.Document, HTMLParser):
     def handle_starttag(self, name, attrs):
         element = Element(None, name)
 
-        for name, value in attrs:
-            element.set_attribute(name, value)
+        for attr_name, value in attrs:
+            element.set_attribute(attr_name, value)
 
         self.stack.append(element)
 
@@ -135,11 +135,7 @@ class Document(XHTML.Document, HTMLParser):
         XHTML.Document.comment_handler(self, data)
 
 
-    def handle_data(self, data):
-        # Unlike XML, the python's parser (HTMLParser) gets the data as normal
-        # strings, instead of unicode strings, so we must decode them.
-        data = unicode(data, self._encoding)
-        XHTML.Document.default_handler(self, data)
+    handle_data = XHTML.Document.default_handler
 
 
     def handle_entityref(self, name):

@@ -480,8 +480,6 @@ class Element(object):
 
 
     def set_element(self, element):
-        # XXX Use weak references?
-        element.parent = self
         self.children.append(element)
 
 

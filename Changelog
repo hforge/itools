@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-24 19:39:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
+
+    Summary:
+      xml, remove the parent reference, it was not used anywhere
+    Revision:
+      itools--main--0.8--patch-31
+
+
+    modified files:
+     Changelog xml/XML.py
+
+
 2005-03-24 19:33:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
 
     Summary:

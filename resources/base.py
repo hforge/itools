@@ -145,8 +145,9 @@ class Folder(Resource):
 
 
     def get_resources(self, path='.'):
-        for resource_name in self.get_resource_names(path):
-            yield self.get_resource(resource_name)
+        resource = self.get_resource(path)
+        for name in resource._get_resource_names():
+            yield resource.get_resource(name)
 
 
     def get_resource(self, path):

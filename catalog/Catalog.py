@@ -17,7 +17,6 @@
 
 
 # Import from Python
-import datetime
 from sets import Set
 import warnings
 
@@ -296,7 +295,7 @@ class Catalog(Folder):
         documents.reverse()
         # Build the document objects
         fields = self.get_handler('fields')
-        for i, document in enumerate(documents):
+        for document in documents:
             weight, doc_number = document
             document = Document(doc_number)
             # Load the IDocument
@@ -314,9 +313,8 @@ class Catalog(Folder):
                     else:
                         value = None
                     setattr(document, field.name, value)
-                        
-            documents[i] = document
-        return documents
+
+            yield document
 
 
 

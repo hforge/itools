@@ -114,11 +114,20 @@ class File(Resource, base.File):
 
 
     def __getslice__(self, a, b):
+        if b > self.get_size():
+            b = self.get_size()
+
         f = file(self._path, 'rb')
         f.seek(a)
         slice = f.read(b-a)
         f.close()
         return slice
+
+
+    def append(self, data):
+        f = file(self._path, 'ab')
+        f.write(data)
+        f.close()
 
 
     def set_data(self, data):

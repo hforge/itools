@@ -63,6 +63,7 @@ class File(Handler):
 
     def save(self):
         self.resource.set_data(self.to_str())
+        self.timestamp = datetime.datetime.now()
 
 
     #########################################################################

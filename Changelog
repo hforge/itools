@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-03 13:37:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-74
+
+    Summary:
+      fix file handlers, set timestamp when saving
+    Revision:
+      itools--main--0.4--patch-74
+
+    Now the method "save" for file handlers sets the timestamp. This
+    way the handler won't be reloaded next time it is accessed through
+    its parent.
+
+    modified files:
+     Changelog handlers/File.py
+
+
 2004-09-02 18:18:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-73
 
     Summary:

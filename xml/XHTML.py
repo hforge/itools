@@ -25,6 +25,7 @@ from urlparse import urlsplit
 # Import from itools
 import XML
 from itools import i18n
+from itools.handlers import IO
 
 
 
@@ -34,7 +35,6 @@ from itools import i18n
 inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
                        'em','kbd', 'q', 'samp', 'span', 'strong', 'sub',
                        'sup', 'tt', 'var'])
-
 
 
 class Attribute(XML.Attribute):
@@ -76,6 +76,8 @@ class NamespaceHandler(XML.NamespaceHandler):
 
 
     def get_attribute(cls, prefix, name, value):
+        if name in ['src', 'href']:
+            value = IO.URI.decode(value)
         return Attribute(prefix, name, value)
 
     get_attribute = classmethod(get_attribute)

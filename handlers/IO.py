@@ -19,13 +19,16 @@
 # Import from the Standard Library
 import datetime
 
+# Import from itools
+from itools import uri
+
 
 
 class Integer(object):
     def encode(cls, value):
         if value is None:
             return ''
-        return unicode(value)
+        return str(value)
     encode = classmethod(encode)
 
 
@@ -37,9 +40,26 @@ class Integer(object):
     decode = classmethod(decode)
 
 
+
 class Unicode(object):
+    def encode(cls, value, encoding='utf8'):
+        # Escape XML (XXX this is specific to XML)
+        value = value.replace('&', '&amp;').replace('<', '&lt;')
+        return value.encode(encoding)
+    encode = classmethod(encode)
+
+
+    def decode(cls, value, encoding='utf8'):
+        value = value.strip()
+        return unicode(value, encoding)
+    decode = classmethod(decode)
+
+
+
+class String(object):
     def encode(cls, value):
-        return value.replace('&', '&amp;').replace('<', '&lt;')
+        value = value.strip()
+        return value
     encode = classmethod(encode)
 
 
@@ -49,17 +69,6 @@ class Unicode(object):
     decode = classmethod(decode)
 
 
-class String(object):
-    def encode(cls, value):
-        return unicode(value)
-    encode = classmethod(encode)
-
-
-    def decode(cls, value):
-        value = value.strip()
-        return str(value)
-    decode = classmethod(decode)
-
 
 class Boolean(object):
     def encode(cls, value):
@@ -67,6 +76,8 @@ class Boolean(object):
             return '1'
         elif value is False:
             return '0'
+        else:
+            raise ValueError, 'value is not a boolean'
     encode = classmethod(encode)
 
 
@@ -74,7 +85,8 @@ class Boolean(object):
         value = value.strip()
         return bool(int(value))
     decode = classmethod(decode)
-  
+
+
 
 class Date(object):
     def encode(cls, value):
@@ -92,6 +104,7 @@ class Date(object):
         year, month, day = int(year), int(month), int(day)
         return datetime.date(year, month, day)
     decode = classmethod(decode)
+
 
 
 class DateTime(object):
@@ -113,3 +126,16 @@ class DateTime(object):
         hours, minutes = int(hours), int(minutes)
         return datetime.datetime(year, month, day, hours, minutes)
     decode = classmethod(decode)
+
+
+
+class URI(object):
+    def encode(cls, value):
+        return str(value)
+    encode = classmethod(encode)
+
+
+    def decode(cls, value):
+        return uri.get_reference(value)
+    decode = classmethod(decode)
+        

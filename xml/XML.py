@@ -441,7 +441,7 @@ class Document(Text.Text):
         for prefix, uri in self.ns_declarations.items():
             namespace_handler = self.get_namespace_handler('http://www.w3.org/2000/xmlns/')
             attribute = namespace_handler.get_attribute('xmlns', prefix, uri)
-            element.attributes.add(attribute)
+            element.set_attribute(attribute)
         self.ns_declarations = {}
         # Set the attributes
         for name, value in attrs.items():
@@ -460,7 +460,7 @@ class Document(Text.Text):
                 e.line_number = self.parser.ErrorLineNumber
                 raise e
             else:
-                element.attributes.add(attribute)
+                element.set_attribute(attribute)
 
         self.stack.append(element)
         return element
@@ -642,31 +642,6 @@ class Element(Node):
 
 
     #######################################################################
-    # DOM Level 3
-    #######################################################################
-    def append_child(self, child):
-        # XXX Use weak references?
-        child.parent = self
-        self.children.append(child)
-
-
-    def copy(self):
-        """
-        DOM: cloneNode.
-        """
-        # Build a new node
-        clone = self.__class__(self.prefix, self.name)
-        # Copy the attributes
-        for attribute in self.attributes:
-            attribute = attribute.copy()
-            clone.attribues.add(attribute)
-        # Copy the children
-        for child in self.children:
-            clone.append_child(child)
-        return clone
-
-
-    #######################################################################
     # Parsing
     #######################################################################
     def handle_end_element(self, element):
@@ -698,10 +673,20 @@ class Element(Node):
     qname = property(get_qname, None, None, '')
 
 
-    def __unicode__(self):
-        return self.get_opentag() \
-               + unicode(self.children) \
-               + self.get_closetag()
+    def copy(self):
+        """
+        DOM: cloneNode.
+        """
+        # Build a new node
+        clone = self.__class__(self.prefix, self.name)
+        # Copy the attributes
+        for attribute in self.attributes:
+            attribute = attribute.copy()
+            clone.attribues.add(attribute)
+        # Copy the children
+        for child in self.children:
+            clone.append_child(child)
+        return clone
 
 
     def __cmp__(self, other):
@@ -712,6 +697,14 @@ class Element(Node):
                and self.children == other.children:
             return 0
         return 1
+
+
+    #######################################################################
+    # Serialization
+    def __unicode__(self):
+        return self.get_opentag() \
+               + unicode(self.children) \
+               + self.get_closetag()
 
 
     def get_opentag(self):
@@ -727,6 +720,20 @@ class Element(Node):
         return '</%s>' % self.qname
 
 
+    #######################################################################
+    # Attributes
+    def set_attribute(self, attribute):
+        self.attributes.add(attribute)
+
+
+    #######################################################################
+    # Children
+    def append_child(self, child):
+        # XXX Use weak references?
+        child.parent = self
+        self.children.append(child)
+
+
     def get_elements(self, name=None):
         elements = []
         for x in self.children:
@@ -735,6 +742,8 @@ class Element(Node):
         return elements
 
 
+    #######################################################################
+    # Traverse
     def traverse(self):
         yield self
         for child in self.children:
@@ -762,6 +771,8 @@ class Element(Node):
         context.path.pop()
 
 
+    #######################################################################
+    # Internationalization
     def is_translatable(self, attribute_name=None):
         """
         Some elements may contain text addressed to users, that is, text

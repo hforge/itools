@@ -63,6 +63,7 @@ class ComplexType(object):
                     # Multilingual
                     for language, value in value.items():
                         value = type.encode(value)
+                        value = unicode(value, 'utf8')
                         data += u'<%s lang="%s">%s</%s>\n' \
                                 % (name, language, value, name)
                 else:
@@ -95,6 +96,7 @@ class ComplexType(object):
                     value = type.decode(node)
                 else:
                     value = unicode(node.children)
+                    value = value.encode('utf8')
                     try:
                         value = type.decode(value)
                     except ValueError:

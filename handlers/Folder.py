@@ -127,8 +127,51 @@ class Folder(Handler):
 
 
     #########################################################################
-    # API
+    # API (private)
     #########################################################################
+    def _get_handler_names(self):
+        return self.resource._get_resource_names()
+
+
+    def _get_handler(self, segment, resource):
+        # Build and return the handler
+        return Handler.build_handler(resource)
+
+
+    def _get_virtual_handler(self, segment):
+        """
+        This method must return a handler for the given segment, or raise
+        the exception LookupError. We know there is not a resource with
+        the given name, this method is used to return 'virtual' handlers.
+        """
+        raise LookupError, 'the resource "%s" does not exist' % segment.name
+
+
+    def _set_handler(self, segment, handler):
+        self.resource.set_resource(segment.name, handler.resource)
+
+
+    def _del_handler(self, segment):
+        self.resource.del_resource(segment)
+
+
+    #########################################################################
+    # API (public)
+    #########################################################################
+    def get_handler_names(self, path='.'):
+        handler = self.get_handler('.')
+        return handler._get_handler_names()
+
+
+    def has_handler(self, path):
+        # Normalize the path
+        if not isinstance(path, uri.Path):
+            path = uri.Path(path)
+
+        container = self.get_handler(path[:-1])
+        return path[-1].name in container.get_handler_names()
+
+
     def get_handler(self, path):
         # Be sure path is a Path
         if not isinstance(path, uri.Path):
@@ -177,18 +220,10 @@ class Folder(Handler):
         return handler
 
 
-    def _get_handler(self, segment, resource):
-        # Build and return the handler
-        return Handler.build_handler(resource)
-
-
-    def _get_virtual_handler(self, segment):
-        """
-        This method must return a handler for the given segment, or raise
-        the exception LookupError. We know there is not a resource with
-        the given name, this method is used to return 'virtual' handlers.
-        """
-        raise LookupError, 'the resource "%s" does not exist' % segment.name
+    def get_handlers(self, path='.'):
+        handler = self.get_handler(path)
+        for name in handler.get_handler_names(path):
+            yield handler.get_handler(name)
 
 
     def set_handler(self, path, handler, **kw):
@@ -203,10 +238,6 @@ class Folder(Handler):
         container.timestamp = datetime.datetime.now()
 
 
-    def _set_handler(self, segment, handler):
-        self.resource.set_resource(segment.name, handler.resource)
-
-
     def del_handler(self, path):
         if not isinstance(path, uri.Path):
             path = uri.Path(path)
@@ -215,10 +246,6 @@ class Folder(Handler):
         container._del_handler(path[-1])
         # Set timestamp
         container.timestamp = datetime.datetime.now()
-
-
-    def _del_handler(self, segment):
-        self.resource.del_resource(segment)
 
 
     ########################################################################

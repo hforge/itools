@@ -340,6 +340,16 @@ folders, whose core API is:
   - Returns a handler for the resource at the given path. It will use the
     available handler class that better matches the resource mimetype.
 
+  {\tt get\_handler\_names(path='.')}\\
+  - Returns a list with the names of all the handlers in the given path.
+
+  {\tt get\_handlers(path='.')}\\
+  - Returns the handlers in the given path (it is a generator).
+
+  {\tt has\_handler(path)}\\
+  - Returns {\tt True} if there is a handler in the given path, {\tt False}
+    otherwise.
+
   {\tt set\_handler(path, handler)}\\
   - Adds the given handler to the given path. Actually what is added is
     the resource associated to the handler.

@@ -148,7 +148,7 @@ class Folder(Resource, base.Folder):
         return base.Folder.get_mimetype(self)
 
 
-    def _get_resources(self):
+    def _get_resource_names(self):
         return os.listdir(self._path)
 
 

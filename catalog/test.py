@@ -70,7 +70,8 @@ tests.set_handler('catalog', catalog)
 catalog_resource = tests.get_resource('catalog')
 catalog = Catalog(catalog_resource)
 
-resource_names = [ x for x in tests.get_resources() if x.endswith('.txt') ]
+resource_names = [ x for x in tests.get_resource_names()
+                   if x.endswith('.txt') ]
 resource_names.sort()
 for resource_name in resource_names:
     resource = tests.get_resource(resource_name)

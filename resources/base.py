@@ -141,13 +141,12 @@ class Folder(Resource):
     # Specific folder API
     def get_resource_names(self, path='.'):
         resource = self.get_resource(path)
-        return resource._get_resources()
+        return resource._get_resource_names()
 
-    # XXX Backwards compatibility (to be replaced for 0.5 by the method below)
-    get_resources = get_resource_names
-##    def get_resources(self):
-##        for resource_name in self.get_resource_names():
-##            yield self.get_resource(resource_name)
+
+    def get_resources(self, path='.'):
+        for resource_name in self.get_resource_names(path):
+            yield self.get_resource(resource_name)
 
 
     def get_resource(self, path):
@@ -214,7 +213,7 @@ class Folder(Resource):
             # Recursively add sub-resources
             source = resource
             target = self._get_resource(name)
-            for name in source.get_resources():
+            for name in source.get_resource_names():
                 resource = source._get_resource(name)
                 target._set_resource(name, resource)
 
@@ -246,7 +245,7 @@ class Folder(Resource):
             self._del_file_resource(name)
         elif isinstance(resource, Folder):
             # Remove sub-resources
-            for subresource_name in resource.get_resources():
+            for subresource_name in resource.get_resource_names():
                 resource._del_resource(subresource_name)
             # Remove itself
             self._del_folder_resource(name)
@@ -259,8 +258,7 @@ class Folder(Resource):
 
     def traverse(self):
         yield self
-        for resource_name in self.get_resources():
-            resource = self.get_resource(resource_name)
+        for resource in self.get_resources():
             if isinstance(resource, Folder):
                 for x in resource.traverse():
                     yield x
@@ -270,7 +268,7 @@ class Folder(Resource):
 
     ######################################################################
     # Private API
-    def _get_resources(self):
+    def _get_resource_names(self):
         """
         Returns a list with all the names of the resources.
         """

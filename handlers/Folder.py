@@ -102,6 +102,10 @@ class Folder(Handler):
         return self.resource.get_mimetype()
 
 
+    def get_resource_names(self, path='.'):
+        return self.resource.get_resource_names(path)
+
+
     def get_resources(self, path='.'):
         return self.resource.get_resources(path)
 
@@ -221,7 +225,7 @@ class Folder(Handler):
     # Tree
     def traverse(self):
         yield self
-        for resource_name in self.get_resources():
+        for resource_name in self.get_resource_names():
             handler = self.get_handler(resource_name)
             if isinstance(handler, Folder):
                 for x in handler.traverse():

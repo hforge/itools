@@ -62,7 +62,8 @@ documents = []
 def load_documents():
     print 'Loading documents...',
     src = get_resource(docs_path)
-    resource_names = [ x for x in src.get_resources() if x.endswith('.html') ]
+    resource_names = [ x for x in src.get_resource_names()
+                       if x.endswith('.html') ]
     resource_names.sort()
     for name in resource_names[:120]:
         try:

@@ -42,7 +42,7 @@ class FileTestCase(TestCase):
     def test_link(self):
         c = self.tests.get_resource('c')
         tests = c.get_resource('..')
-        assert 'c' in tests.get_resources()
+        assert 'c' in tests.get_resource_names()
 
 
 ##    def test_python(self):

@@ -150,8 +150,11 @@ The specific API for folders is:
   - Returns the resource in the given path (where path is either an instance
     of {\tt uri.Path} or an string).
 
-  {\tt get\_resources(path='.')}\\
+  {\tt get\_resource\_names(path='.')}\\
   - Returns a list with the names of all the resources in the given path.
+
+  {\tt get\_resources(path='.')}\\
+  - Returns the resources in the given path (it is a generator).
 
   {\tt has\_resource(path)}\\
   - Returns {\tt True} if there is a resource in the given path, {\tt False}
@@ -176,7 +179,7 @@ Let's exercise the API a little:
 
 \begin{code}
     >>> examples = get_resource('examples')
-    >>> print examples.get_resources()
+    >>> print examples.get_resource_names()
     ['hello.xhtml~', 'hello.xhtml', 'hello.txt', '.arch-ids']
     >>> hello = examples.get_resource('hello.txt')
     >>> print hello.get_data()
@@ -202,7 +205,7 @@ To copy a whole tree:
     >>> from pprint import pprint
     >>> talks = get_resource('/home/jdavid/talks')
     >>> tmp.set_resource('talks', talks)
-    >>> pprint(tmp.get_resources('talks/EuroPython2004'))
+    >>> pprint(tmp.get_resource_names('talks/EuroPython2004'))
     ['itools-vfs',
      'Makefile',
      'itools-vfs.log',

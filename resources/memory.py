@@ -120,7 +120,7 @@ class Folder(Resource, base.Folder):
         return self.ctime
 
 
-    def _get_resources(self):
+    def _get_resource_names(self):
         return self.resources.keys()
 
 

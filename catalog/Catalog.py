@@ -129,7 +129,7 @@ class Catalog(Folder):
     # Private API
     #########################################################################
     def get_new_document_number(self):
-        documents = [ int(x[1:]) for x in self.resource.get_resources()
+        documents = [ int(x[1:]) for x in self.resource.get_resource_names()
                       if x.startswith('d') ]
         documents += self.added_documents.keys()
         if documents:
@@ -204,7 +204,7 @@ class Catalog(Folder):
             document = self.get_handler('d%d' % doc_number)
             self.removed_documents.append(doc_number)
             
-        for name in document.get_resources():
+        for name in document.get_resource_names():
             if name.startswith('i'):
                 field = document.get_handler(name)
                 ii = self.get_handler('f' + name[1:])

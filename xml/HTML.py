@@ -69,7 +69,8 @@ class Document(XHTML.Document, HTMLParser):
     # The skeleton
     #########################################################################
     def get_skeleton(self, title=''):
-        s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n' \
+        s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"\n' \
+            '  "http://www.w3.org/TR/html4/loose.dtd">\n' \
             '<html>\n' \
             '  <head>\n' \
             '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\n' \

@@ -3,9 +3,11 @@ doc:
 
 
 clean:
-	rm -f *~ *.pyc
+	find ./ -name "*~" -exec rm {} \;
+	find ./ -name "*.pyc" -exec rm {} \;
 	rm -rf dist
-	rm MANIFEST
+	rm -rf build
+	rm -f MANIFEST
 
 
 test:

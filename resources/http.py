@@ -38,7 +38,7 @@ class File(Resource, base.File):
 
 
     def get_mimetype(self):
-        return urlopen(str(uri)).info().gettype()
+        return urlopen(str(self.uri)).info().gettype()
 
 
 

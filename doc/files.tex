@@ -1,4 +1,4 @@
-\chapter{Resource Handlers}
+\chapter{File handlers}
 
 Resources provide persistence to our data, but they lack any knowledge
 about the structure and the meaning of the information they contain. For
@@ -9,10 +9,17 @@ how to get the messages and translations from a PO file.
 This is the purpose of the {\em resource handlers}, to add semantics to
 specific resources.
 
+As with resources, there are two types of handlers, files and folders.
+This first chapter focuses on file handlers, the next one will analyze
+the folder handlers.
 
-\section{Introduction}
+Several key concepts will be exposed in this chapter, the relationship
+between resources and handlers, the load (de-serialization) and save
+(serialization) operations, the handler skeleton, and the handler factory.
+We will learn to use the file handlers {\tt itools} offers out of the box,
+and how to write custom handler classes.
 
-Let's start with an example:
+To get a feeling, let's start with an example:
 
 \begin{enumerate}
   \item First we load a resource as seen in the previous chapter:
@@ -48,15 +55,17 @@ Let's start with an example:
 \end{enumerate}
 
 
-\subsection{One resource, many handlers}
+\section{One resource, many handlers}
 
 The relationship between resources to handlers is {\em 1} to {\em n}.
-While you may have several different handlers associated to the same
-resource (though this is rarely useful), a handler is only associated
-to one resource.
+While there may be several different handlers associated to the same
+resource (though it is not obvious how this is useful), a handler is
+only associated to one resource.
 
 The resource associated to a handler is accessible through the {\tt resource}
-attribute:
+attribute. Following the example above, the code below checks that the
+resource we loaded in the first place is exactly the same our handler is
+associated to:
 
 \begin{code}
     >>> resource
@@ -68,7 +77,99 @@ attribute:
 \end{code}
 
 
-\subsection{The handler skeleton}
+\section{Load}
+
+It may happen that the resource (a web page in our example) gets updated, then
+the handler will keep a data structure on memory that does not correspond
+anymore to the content of the resource, in other words, the handler would
+be out-of-date. We can check this by comparing the last modification time of
+the resource with the timestamp every handler always keeps:
+
+\begin{code}
+    >>> print handler.resource.get_mtime()
+    2004-11-28 19:53:57
+    >>> print handler.timestamp
+    2004-12-29 19:31:39.055367
+    >>> handler.resource.get_mtime() > handler.timestamp
+    False
+\end{code}
+
+Ok, the example above shows everything is alright. But what to do if it was
+not? then we would need to reload the resource, this is done with the
+{\tt load} method:
+
+\begin{code}
+    >>> print handler.timestamp
+    2004-12-29 19:31:39.055367
+    >>> handler.load()
+    >>> print handler.timestamp
+    2004-12-29 19:51:50.152499
+\end{code}
+
+You should try it yourself with a resource in the filesystem: start the
+Python interpreter, build a handler for a resource in the filesystem,
+modify the resource with another program, see how the resource
+modification time is more recent than the handler's timestamp, then reload
+the handler and verify the handler is up-to-date now.
+
+The full prototype of the method {\tt load} follows:
+
+\begin{api}
+  {\tt load(resource=None)}\\
+  - Loads the data from the given resource into the handler, if no
+    resource is given, the one the handler is attached to will be used.
+\end{api}
+
+As you see the {\tt load} method accepts an optional parameter, a resource.
+If it is not given the handler will be reloaded from the resource it handles.
+But if other resource is passed it will be loaded from the given resource.
+Then we would reach a situation opposite to the one seen before: the resource
+would be outdated, as the handler would keep a newer version.
+
+
+\section{Save}
+
+Another way to get a handler more recent than the resource it is associated
+with, is to modify the handler through the API it offers, which depends
+on the handler class (e.g. the API of an XML handler is different from the
+API of an image handler).
+
+To update the resource so both resource and handler are in sync again we
+use the {\tt save} method:
+
+\begin{api}
+  {\tt save()}\\
+  - Saves the handler into the resource.
+\end{api}
+
+So {\tt load} and {\tt save} are two sides of the same coin. The first
+one reloads the handler with the resource, the second one saves the
+handler state in the resource.
+
+
+\section{Serialization and de-serialization}
+
+A file resource represents a sequence of bytes. A handler keeps a data
+structure in memory, and offers an API to inspect and modify this data
+structure.
+
+Two key concept in computer science will help to clarify what we have
+seen up to now:
+
+\begin{description}
+  \item [serialization] is the process by which a sequence of bytes is
+    transformed into a data structure.
+
+  \item [de-serialization] is the process by which a data structure is
+    transformed to a sequence of bytes.
+\end{description}
+
+Now it becomes obvious that the {\tt load} method what actually does is
+to de-serialize the resource and update the handler. And viceversa, the
+{\tt save} method serializes the handler and updates the resource.
+
+
+\section{The skeleton}
 
 As we have seen the handler constructor expects one parameter: the resource
 it is meant to handle (and once the handler is built the resource is always
@@ -85,7 +186,7 @@ see an example:
     <itools.handlers.HTML.Document object at 0x403ee12c>
     >>> handler.resource
     <itools.resources.memory.File instance at 0x40638e4c>
-    >>> print handler
+    >>> print handler.to_str()
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
       "http://www.w3.org/TR/html4/loose.dtd">
     <html>
@@ -103,11 +204,11 @@ parameters:
 
 \begin{code}
     >>> handler = HTML.Document(title='Hello World')
-    >>> print handler
+    >>> print handler.to_str()
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
     <html>
       <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></meta>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
         <title>Hello World</title>
       </head>
       <body></body>
@@ -117,7 +218,6 @@ parameters:
 The keyword parameters are used to initialize the skeleton; in the example
 above the {\tt title} parameter defines the HTML document title, which by
 default is empty. The parameters accepted depend on the handler.
-
 
 \section{Overview of the available handlers}
 
@@ -328,133 +428,3 @@ With the shorthand:
     >>>
     >>> handler = get_handler('http://example.com')
 \end{code}
-
-
-\section{Folders}
-
-A handler that deserves its particular section is the default handler for
-folders, whose core API is:
-
-\begin{api}
-  {\tt get\_handler(path)}\\
-  - Returns a handler for the resource at the given path. It will use the
-    available handler class that better matches the resource mimetype.
-
-  {\tt get\_handler\_names(path='.')}\\
-  - Returns a list with the names of all the handlers in the given path.
-
-  {\tt get\_handlers(path='.')}\\
-  - Returns the handlers in the given path (it is a generator).
-
-  {\tt has\_handler(path)}\\
-  - Returns {\tt True} if there is a handler in the given path, {\tt False}
-    otherwise.
-
-  {\tt set\_handler(path, handler)}\\
-  - Adds the given handler to the given path. Actually what is added is
-    the resource associated to the handler.
-
-  {\tt del\_handler(path)}\\
-  - Removes the handler at the given path (i.e. the associated resource).
-\end{api}
-
-An example will show it better.
-
-\begin{enumerate}
-  \item First we build a handler for the temporary directory:
-
-\begin{code}
-    >>> from itools.handlers import get_handler
-    >>>
-    >>> tmp = get_handler('/tmp')
-    >>> tmp
-    <itools.handlers.Folder.Folder object at 0x40652dec>
-    >>> tmp.resource
-    <itools.resources.file.Folder instance at 0x406acacc>
-\end{code}
-
-  \item Second, we create a new HTML handler:
-
-\begin{code}
-    >>> from itools.xml import HTML
-    >>> hello = HTML.Document(title='Hello World')
-    >>> hello.resource
-    <itools.resources.memory.File instance at 0x405e49cc>
-\end{code}
-
-    Note that the associated resource is built on the fly and lives in memory.
-
-  \item Third, we set the HTML handler to the temporary folder:
-
-\begin{code}
-    >>> tmp.set_handler('hello.html', hello)
-\end{code}
-
-    What this actually does is to add the file {\tt hello.resource} (which
-    lives in memory) to the folder {\tt tmp.resource} (which is on the
-    file system); this is to say, it creates a new file in the file system
-    at {\tt /tmp/hello.html}.
-
-  \item Finally, we get the handler we just added:
-
-\begin{code}
-    >>> hello = tmp.get_handler('hello.html')
-    >>> hello.resource
-    <itools.resources.file.File instance at 0x40638c6c>
-\end{code}
-
-    Note that the handler {\tt hello} we have built in these last lines
-    manages a resource that lives in the file system.
-
-\end{enumerate}
-
-
-
-\subsection{The handler tree}
-
-Folders allow to classify files, hence giving a tree structure to our data.
-Every handler has two attributes, {\tt parent} and {\tt name}, they tell us
-where the handler is in the handler tree:
-
-\begin{code}
-    >>> hello.parent
-    <itools.handlers.Folder.Folder object at 0x403ebb2c>
-    >>> hello.name  
-    'hello.html'
-    >>> hello.parent is tmp
-    True
-    >>> print tmp.parent
-    None
-    >>> print tmp.name
-
-    >>> 
-\end{code}
-
-Based on these two attributes handlers provide the following API:
-
-\begin{api}
-  {\tt get\_abspath()}\\
-  - Returns the absolute path from the tree root to the {\tt self} handler.
-
-  {\tt get\_root()}\\
-  - Returns the handler for the root of the tree.
-
-  {\tt get\_pathtoroot()}\\
-  - Returns a relative path from {\tt self} to the tree root (e.g.
-    {\tt ../../..}).
-
-  {\tt get\_pathto(handler)}\\
-  - Returns a relative path from {\tt self} to the given handler (which is
-    supposed to be in the same tree), for example: {\tt ../../zoo/lion}.
-
-  {\tt traverse()}\\
-  - This method allows to traverse the handler tree below this folder. It
-    is a generator which returns a handler at a time, starting by this
-    folder.
-
-  {\tt acquire(name)}\\
-  - If the current handler is a folder and contains a resource with the given
-    name, then return a handler for it; otherwise look at the parent folder,
-    and recursively to the root tree. This method actually shows how to
-    implement {\em acquisition}.
-\end{api}

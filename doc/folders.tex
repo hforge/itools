@@ -1,0 +1,128 @@
+\chapter{Folder handlers}
+
+A handler that deserves its particular section is the default handler for
+folders, whose core API is:
+
+\begin{api}
+  {\tt get\_handler(path)}\\
+  - Returns a handler for the resource at the given path. It will use the
+    available handler class that better matches the resource mimetype.
+
+  {\tt get\_handler\_names(path='.')}\\
+  - Returns a list with the names of all the handlers in the given path.
+
+  {\tt get\_handlers(path='.')}\\
+  - Returns the handlers in the given path (it is a generator).
+
+  {\tt has\_handler(path)}\\
+  - Returns {\tt True} if there is a handler in the given path, {\tt False}
+    otherwise.
+
+  {\tt set\_handler(path, handler)}\\
+  - Adds the given handler to the given path. Actually what is added is
+    the resource associated to the handler.
+
+  {\tt del\_handler(path)}\\
+  - Removes the handler at the given path (i.e. the associated resource).
+\end{api}
+
+An example will show it better.
+
+\begin{enumerate}
+  \item First we build a handler for the temporary directory:
+
+\begin{code}
+    >>> from itools.handlers import get_handler
+    >>>
+    >>> tmp = get_handler('/tmp')
+    >>> tmp
+    <itools.handlers.Folder.Folder object at 0x40652dec>
+    >>> tmp.resource
+    <itools.resources.file.Folder instance at 0x406acacc>
+\end{code}
+
+  \item Second, we create a new HTML handler:
+
+\begin{code}
+    >>> from itools.xml import HTML
+    >>> hello = HTML.Document(title='Hello World')
+    >>> hello.resource
+    <itools.resources.memory.File instance at 0x405e49cc>
+\end{code}
+
+    Note that the associated resource is built on the fly and lives in memory.
+
+  \item Third, we set the HTML handler to the temporary folder:
+
+\begin{code}
+    >>> tmp.set_handler('hello.html', hello)
+\end{code}
+
+    What this actually does is to add the file {\tt hello.resource} (which
+    lives in memory) to the folder {\tt tmp.resource} (which is on the
+    file system); this is to say, it creates a new file in the file system
+    at {\tt /tmp/hello.html}.
+
+  \item Finally, we get the handler we just added:
+
+\begin{code}
+    >>> hello = tmp.get_handler('hello.html')
+    >>> hello.resource
+    <itools.resources.file.File instance at 0x40638c6c>
+\end{code}
+
+    Note that the handler {\tt hello} we have built in these last lines
+    manages a resource that lives in the file system.
+
+\end{enumerate}
+
+
+
+\section{The handler tree}
+
+Folders allow to classify files, hence giving a tree structure to our data.
+Every handler has two attributes, {\tt parent} and {\tt name}, they tell us
+where the handler is in the handler tree:
+
+\begin{code}
+    >>> hello.parent
+    <itools.handlers.Folder.Folder object at 0x403ebb2c>
+    >>> hello.name  
+    'hello.html'
+    >>> hello.parent is tmp
+    True
+    >>> print tmp.parent
+    None
+    >>> print tmp.name
+
+    >>> 
+\end{code}
+
+Based on these two attributes handlers provide the following API:
+
+\begin{api}
+  {\tt get\_abspath()}\\
+  - Returns the absolute path from the tree root to the {\tt self} handler.
+
+  {\tt get\_root()}\\
+  - Returns the handler for the root of the tree.
+
+  {\tt get\_pathtoroot()}\\
+  - Returns a relative path from {\tt self} to the tree root (e.g.
+    {\tt ../../..}).
+
+  {\tt get\_pathto(handler)}\\
+  - Returns a relative path from {\tt self} to the given handler (which is
+    supposed to be in the same tree), for example: {\tt ../../zoo/lion}.
+
+  {\tt traverse()}\\
+  - This method allows to traverse the handler tree below this folder. It
+    is a generator which returns a handler at a time, starting by this
+    folder.
+
+  {\tt acquire(name)}\\
+  - If the current handler is a folder and contains a resource with the given
+    name, then return a handler for it; otherwise look at the parent folder,
+    and recursively to the root tree. This method actually shows how to
+    implement {\em acquisition}.
+\end{api}

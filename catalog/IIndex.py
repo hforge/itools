@@ -72,7 +72,7 @@ class IIndexTree(File):
     Each slot is made of:
 
       - character (2 or 4 bytes)
-      - frequency number (4 bytes)
+      - frequency number (4 bytes), pointer to IIndexDocuments
       - first child (4 bytes)
       - next sibling (4 bytes)
     """
@@ -137,8 +137,21 @@ class IIndexTree(File):
 
 
 
-
 class IIndexDocuments(File):
+    """
+    The header format is:
+
+      - version number (4 bytes)
+      - number of slots (4 bytes)
+      - first empty slot (4 bytes)
+
+    Each slot is made of:
+
+      - document number (4 bytes)
+      - frequency (4 bytes)
+      - next document (4 bytes)
+    """
+
 
     __version__ = '20040723'
 
@@ -313,7 +326,6 @@ class Tree(object):
             # Search the document slot
             tree_slot = 16 + self.slot * 16
             docs_slot_n = IO.decode_link(tree_rsrc[tree_slot+4:tree_slot+8])
-            docs_slot_n = docs._get_document_slot(docs_slot_n, doc_number)
             # Free slot
             prev_slot_n = prev_slot = None
             while docs_slot_n is not None:

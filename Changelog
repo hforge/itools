@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-08-29 18:46:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-69
+
+    Summary:
+      catalog, fix unindexing
+    Revision:
+      itools--main--0.4--patch-69
+
+    The catalog had a bug, when unindexing a document, if there were more
+    documents indexed with the same term, they were unindexed too.
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2004-08-24 13:17:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
 
     Summary:

@@ -529,6 +529,7 @@ class IIndex(Folder, Tree):
         if term in self.added_terms:
             if doc_number in self.added_terms[term]:
                 del self.added_terms[term][doc_number]
+                return
         # Removed terms
         documents = self.removed_terms.setdefault(term, Set())
         documents.add(doc_number)

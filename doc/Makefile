@@ -36,6 +36,6 @@ clean:
 	rm -f itools.dvi itools.ps itools.pdf
 	rm -f missfont.log 
 	rm -f *~
-	rm -f *.eps
+	rm -f $(FIGURES)
 	rm -f dvi ps pdf html
 	rm -rf itools

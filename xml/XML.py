@@ -505,7 +505,7 @@ class Document(Text.Text):
     #######################################################################
     # API
     #######################################################################
-    def to_unicode(self, encoding=None):
+    def to_unicode(self, encoding='UTF-8'):
         # The children
         s = []
         if encoding is None:

@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.6
 #
 
+2005-02-14 16:58:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
+
+    Summary:
+      handlers, now the encoding default is UTF-8 (for "to_unicode")
+    Revision:
+      itools--main--0.6--patch-60
+
+    The method "to_unicode" of text handlers accepts the parameter "encoding",
+    before its default value was "None", now it is UTF-8.
+
+    modified files:
+     Changelog doc/files.tex doc/files2.tex handlers/Text.py
+     xml/HTML.py xml/XML.py
+
+
 2005-02-14 16:44:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
 
     Summary:

@@ -472,6 +472,11 @@ class Document(Text.Text):
     just 'Element' and 'Raw'.
     """
 
+    class_id = 'text/xml'
+    class_aliases = ['application/xml']
+    class_ancestor = Text.Text
+
+
     #######################################################################
     # Load
     #######################################################################

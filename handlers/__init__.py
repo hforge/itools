@@ -34,13 +34,13 @@ files, etc...
 
 
 # Import from Python
-from mimetypes import MimeTypes
-from types import StringTypes
+import mimetypes
 
 # Import from itools
 from itools.resources import base, get_resource
 
 # Import from itools.handlers
+import Handler
 import CSV
 import File
 import Folder
@@ -48,135 +48,50 @@ import PO
 import Text
 
 
-############################################################################
-# The handlers database
-############################################################################
 
-class Database(MimeTypes, object):
+mimetypes.add_type('text/po', '.po')
+mimetypes.add_type('text/comma-separated-values', '.csv')
+mimetypes.add_type('application/xhtml+xml', '.xhtml')
+
+
+def guess_mimetype(name, resource):
     """
-    This class represents a database that associates resource types to
-    resource handlers.
+    Try to guess the mimetype for a resource, given the resource itself
+    and its name. To guess from the name we need to extract the type
+    extension, we use an heuristic for this task, but it needs to be
+    improved because there are many patterns:
 
-    A resource type is a tuple with two elements. The first one is the
-    a number that says wether the resource is a file or a directory,
-    the second one is an string that details the file or diretory type.
-    For files the mime standard is used.
+    <name>                                 README
+    <name>.<type>                          index.html
+    <name>.<type>.<language>               index.html.en
+    <name>.<type>.<language>.<encoding>    index.html.en.UTF-8
+    <name>.<type>.<compression>            itools.tar.gz
+    etc...
 
-    For example, the type of an XML file is (0, 'text/xml').
+    And even more complex, the name could contain dots, or the filename
+    could start by a dot (a hidden file in Unix systems).
+
+    XXX Use magic numbers too (like file -i).
     """
+    # Maybe the resource knows
+    mimetype = resource.get_mimetype()
 
-    def __init__(self, filenames=(), strict=True):
-        MimeTypes.__init__(self, filenames, strict)
+    # If it does not, try guess from the name
+    if not mimetype:
+        # Get the extension (use an heuristic)
+        name = name.split('.')
+        if len(name) > 1:
+            if len(name) > 2:
+                extension = name[-2]
+            else:
+                extension = name[-1]
+            mimetype, encoding = mimetypes.guess_type('.%s' % extension)
 
-        self.file_handlers = {}
-        self.folder_handlers = {}
-
-        # Initialize with the built-in handlers
-        self.set_file_handler('', File.File)
-        self.set_file_handler('text', Text.Text)
-        self.set_file_handler('text/comma-separated-values', CSV.CSV, '.csv')
-        self.set_file_handler('text/po', PO.PO, '.po')
-        self.set_folder_handler('', Folder.Folder)
-
-
-    #########################################################################
-    # API
-    #########################################################################
-    def set_file_handler(self, resource_type, handler, extensions=[]):
-        """
-        Associates a handler class to a resource type (for file resources).
-        """
-        self.file_handlers[resource_type] = handler
-
-        # Register the extensions
-        if isinstance(extensions, StringTypes):
-            extensions = [extensions]
-
-        for extension in extensions:
-            self.add_type(resource_type, extension)
+    return mimetype
 
 
-    def set_folder_handler(self, resource_type, handler):
-        """
-        Associates a handler class to a resource type (for file resources).
-        """
-        self.folder_handlers[resource_type] = handler
 
-
-    def guess_mimetype(self, name, resource):
-        """
-        Try to guess the mimetype for a resource, given the resource itself
-        and its name. To guess from the name we need to extract the type
-        extension, we use an heuristic for this task, but it needs to be
-        improved because there are many patterns:
-
-        <name>                                 README
-        <name>.<type>                          index.html
-        <name>.<type>.<language>               index.html.en
-        <name>.<type>.<language>.<encoding>    index.html.en.UTF-8
-        <name>.<type>.<compression>            itools.tar.gz
-        etc...
-
-        And even more complex, the name could contain dots, or the filename
-        could start by a dot (a hidden file in Unix systems).
-
-        XXX Use magic numbers too (like file -i).
-        """
-        # Maybe the resource knows
-        mimetype = resource.get_mimetype()
-
-        # If it does not, try guess from the name
-        if not mimetype:
-            # Get the extension (use an heuristic)
-            name = name.split('.')
-            if len(name) > 1:
-                if len(name) > 2:
-                    extension = name[-2]
-                else:
-                    extension = name[-1]
-                mimetype, encoding = database.guess_type('.%s' % extension)
-
-        return mimetype
-
-
-    def get_handler(self, resource, mimetype):
-        if mimetype is None:
-            mimetype = ''
-
-        """Receives a resource and a mimetype, returns a handler."""
-        # Get the right handlers database
-        if isinstance(resource, base.File):
-            database = self.file_handlers
-        elif isinstance(resource, base.Folder):
-            database = self.folder_handlers
-        else:
-            raise ValueError, 'resource is not a file nor a folder'
-
-        # Get the minimal type there is a handler for
-        type = mimetype
-        while type not in database:
-            type = '/'.join(type.split('/')[:-1])
-
-        # Get the handler class
-        handler_class_or_factory = database[type]
-        # Build the handler
-        handler = handler_class_or_factory(resource)
-        # Fix the mimetype if needed
-        if not handler.mimetype:
-            handler.mimetype = mimetype
-        # Return the handler
-        return handler
-
-
-############################################################################
-# Default database
-database = Database()
-
-
-############################################################################
-# API
-############################################################################
-def get_handler(uri, database=database):
+def get_handler(uri):
     """
     Returns a resource handler from a path, where path can be a list of
     strings or an string of the form 'a/b/c'.
@@ -204,8 +119,12 @@ def get_handler(uri, database=database):
     resource = get_resource(uri)
     # Get the mimetype
     name = uri.split('/')[-1]
-    mimetype = database.guess_mimetype(name, resource)
+    mimetype = guess_mimetype(name, resource)
     # Build the handler
-    handler = database.get_handler(resource, mimetype)
+    return Handler.Handler.build_handler(resource, mimetype)
 
-    return handler
+
+
+# Initialize with the built-in handlers
+for handler_class in File.File, Text.Text, CSV.CSV, PO.PO, Folder.Folder:
+    Handler.Handler.register_handler_class(handler_class)

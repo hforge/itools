@@ -33,6 +33,9 @@ class Folder(Handler):
     specific handler.
     """
 
+    class_id = 'application/x-not-regular-file'
+
+
     def __init__(self, resource=None, **kw):
         self.cache = {}
 
@@ -152,11 +155,11 @@ class Folder(Handler):
 
 
     def _get_handler(self, segment, resource):
+        from __init__ import guess_mimetype
         # Get the mimetype
-        from itools.handlers import database
-        mimetype = database.guess_mimetype(segment.name, resource)
+        mimetype = guess_mimetype(segment.name, resource)
         # Build and return the handler
-        return database.get_handler(resource, mimetype)
+        return self.build_handler(resource, mimetype)
 
 
     def _get_virtual_handler(self, segment):

@@ -17,7 +17,7 @@
 
 
 # Import from itools.handlers
-from itools.handlers import database
+from itools.handlers import Handler
 
 # Import from itools.xml
 import XML
@@ -27,7 +27,9 @@ import STL
 
 
 # Register the xml handlers in the database
-database.set_file_handler('text/html', HTML.Document)
-database.set_file_handler('text/xml', XML.get_handler)
-database.set_file_handler('application/xml', XML.get_handler)
-database.set_file_handler('application/xhtml+xml', XHTML.Document, '.xhtml')
+for handler_class in HTML.Document, XML.Document, XHTML.Document:
+    Handler.Handler.register_handler_class(handler_class)
+##database.set_file_handler('text/html', HTML.Document)
+##database.set_file_handler('text/xml', XML.get_handler)
+##database.set_file_handler('application/xml', XML.get_handler)
+##database.set_file_handler('application/xhtml+xml', XHTML.Document, '.xhtml')

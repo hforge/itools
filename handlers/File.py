@@ -32,6 +32,9 @@ class File(Handler):
     specific handler.
     """
 
+    class_id = 'application/octet-stream'
+
+
     def __init__(self, resource=None, **kw):
         if resource is None:
             # No resource given, then we create a dummy one

@@ -59,6 +59,9 @@ class Document(XHTML.Document, HTMLParser):
     from HTMLParser.
     """
 
+    class_id = 'text/html'
+    class_ancestor = XHTML.Document
+
     # HTML does not support XML namespace declarations
     ns_declarations = {}
 

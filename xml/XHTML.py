@@ -69,6 +69,10 @@ class Document(XML.Document):
     text.
     """
 
+    class_id = 'application/xhtml+xml'
+    class_aliases = []
+    class_ancestor = XML.Document
+
     namespace = 'http://www.w3.org/1999/xhtml'
 
     #########################################################################

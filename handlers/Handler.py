@@ -21,6 +21,7 @@ import datetime
 
 # Import from itools
 from itools import uri
+from itools.resources import base
 
 
 class AcquisitionError(LookupError):
@@ -35,6 +36,11 @@ class Handler(object):
     a file, a directory or a link. It is used as a base class for any
     other handler class.
     """
+
+    class_id = None
+    class_aliases = []
+    class_ancestor = None
+
 
     # By default the handler is a free node (does not belong to a tree, or
     # is the root of a tree).
@@ -62,6 +68,45 @@ class Handler(object):
         self._mimetype = mimetype
 
     mimetype = property(get_mimetype, set_mimetype, None, '')
+
+
+    ########################################################################
+    # The registry
+    handler_class_registry = {}    
+
+    def register_handler_class(cls, handler_class):
+        cls.handler_class_registry[handler_class.class_id] = handler_class
+        # Register aliases
+        for id in handler_class.class_aliases:
+            cls.handler_class_registry[id] = handler_class
+
+    register_handler_class = classmethod(register_handler_class)
+
+
+    def get_handler_class(cls, class_id):
+        return cls.handler_class_registry.get(class_id)
+
+    get_handler_class = classmethod(get_handler_class)
+
+
+    def build_handler(cls, resource, class_id):
+        handler_class = cls.handler_class_registry.get(class_id)
+        while handler_class is not None:
+            try:
+                return handler_class(resource)
+            except:
+                # XXX Define the exception LoadError and only catch it
+                handler_class = handler_class.class_ancestor
+        # Default to File and Folder
+        if isinstance(resource, base.File):
+            from File import File
+            return File(resource)
+        elif isinstance(resource, base.Folder):
+            from Folder import Folder
+            return Folder(resource)
+        raise ValueError, 'failed to build the handler for "%s"' % class_id
+
+    build_handler = classmethod(build_handler)
 
 
     ########################################################################

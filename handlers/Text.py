@@ -21,7 +21,10 @@ from File import File
 
 
 class Text(File):
-    """ """
+
+    class_id = 'text/plain'
+    class_ancestor = File
+
 
     #########################################################################
     # Load

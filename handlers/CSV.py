@@ -26,6 +26,10 @@ from Text import Text
 
 class CSV(Text):
 
+    class_id = 'text/comma-separated-values'
+    class_aliases = ['text/csv']
+
+
     #########################################################################
     # Parsing
     #########################################################################

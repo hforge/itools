@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-07 09:28:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
+
+    Summary:
+      catalog, optimize load, decode each slot in one step
+    Revision:
+      itools--main--0.7--patch-38
+
+    Now each slot is loaded in one step, hence with only one access to the
+    resource.
+    
+    The meseaured performance improvement when the resource layer is zope2
+    is of 300%. With other resource layers the improvement is likely to be
+    much lower.
+
+    modified files:
+     Changelog catalog/IIndex.py catalog/IO.py
+
+
 2005-03-06 18:39:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
 
     Summary:

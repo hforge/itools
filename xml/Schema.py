@@ -19,6 +19,9 @@
 # Import from the Standard Library
 import warnings
 
+# Import from Python
+from itools.handlers import IO
+
 
 ############################################################################
 # Simple Types
@@ -49,9 +52,9 @@ class ComplexType(object):
                 self.set_property(key, value)
 
 
-    def encode(self):
+    def encode(self, encoding='UTF-8'):
         schema = self.schema
-        data = u''
+        lines = []
 
         property_names = schema.keys()
         property_names.sort()
@@ -62,26 +65,35 @@ class ComplexType(object):
                 if isinstance(value, dict):
                     # Multilingual
                     for language, value in value.items():
-                        value = type.encode(value)
-                        value = unicode(value, 'utf8')
-                        data += u'<%s lang="%s">%s</%s>\n' \
-                                % (name, language, value, name)
+                        if issubclass(type, IO.Unicode):
+                            value = type.encode(value, encoding)
+                        elif issubclass(type, ComplexType):
+                            value = type.encode(value, encoding)
+                        else:
+                            value = type.encode(value)
+                        lines.append('<%s lang="%s">%s</%s>\n'
+                                     % (name, language, value, name))
                 else:
                     if isinstance(value, list):
                         values = value
                     else:
                         values = [value]
                     for value in values:
-                        value = type.encode(value)
-                        if issubclass(type, ComplexType):
-                            data += u'<%s>\n' % name
-                            value = [ '  %s\n' % x
-                                      for x in value.splitlines() ]
-                            data += ''.join(value)
-                            data += u'</%s>\n' % name
+                        if issubclass(type, IO.Unicode):
+                            value = type.encode(value, encoding) 
+                        elif issubclass(type, ComplexType):
+                            value = type.encode(value, encoding)
                         else:
-                            data += u'<%s>%s</%s>\n' % (name, value, name)
-        return data
+                            value = type.encode(value)
+
+                        if issubclass(type, ComplexType):
+                            lines.append('<%s>\n' % name)
+                            for line in value.splitlines():
+                                lines.append('  %s\n' % line)
+                            lines.append('</%s>\n' % name)
+                        else:
+                            lines.append('<%s>%s</%s>\n' % (name, value, name))
+        return ''.join(lines)
 
 
     def decode(cls, node):
@@ -113,6 +125,7 @@ class ComplexType(object):
                 # XXX Maybe better to log it
                 warnings.warn('The schema does not define "%s"' % name)
         return property
+
     decode = classmethod(decode)
 
 

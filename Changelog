@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-23 14:41:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
+
+    Summary:
+      catalog, fix 'unindex_term'
+    Revision:
+      itools--main--0.7--patch-61
+
+    The sequence:
+    
+      index_document(x)
+      unindex_document(n)
+    
+    Where "n" is the document number assigned to "x", led the catalog to
+    an inconsistent state, because the terms were labeled for unindexing
+    when they were not indexed in the catalog.
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2005-03-22 08:06:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
 
     Summary:

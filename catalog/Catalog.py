@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -146,6 +146,9 @@ class Catalog(Folder):
     # Public API
     #########################################################################
     def index_document(self, document):
+        # Mark as changed
+        self.set_changed()
+
         # Create the document
         doc_number = self.get_new_document_number()
         idoc = IDocument()
@@ -203,6 +206,9 @@ class Catalog(Folder):
 
 
     def unindex_document(self, doc_number):
+        # Mark as changed
+        self.set_changed()
+
         if doc_number in self.added_documents:
             document = self.added_documents.pop(doc_number)
         else:

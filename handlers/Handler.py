@@ -23,15 +23,21 @@ handler class hierarchy.
 
 # Import from the Standard Library
 import datetime
+from sets import Set
+import thread
 
 # Import from itools
 from itools import uri
 from itools.resources import base
 
 
+
 class AcquisitionError(LookupError):
     pass
 
+
+
+thread_lock = thread.allocate_lock()
 
 
 
@@ -67,6 +73,8 @@ class Handler(object):
     def load(self, resource=None):
         if resource is None:
             resource = self.resource
+        else:
+            self.set_changed()
 
         self._load(resource)
         self.timestamp = resource.get_mtime()
@@ -75,6 +83,60 @@ class Handler(object):
     def save(self):
         self._save()
         self.timestamp = datetime.datetime.now()
+
+
+    def is_outdated(self):
+        mtime = self.resource.get_mtime()
+        return mtime is None or mtime > self.timestamp
+
+
+    def has_changed(self):
+        mtime = self.resource.get_mtime()
+        return self.timestamp > mtime
+
+
+    ########################################################################
+    # Transactions
+    _transactions = {}
+
+
+    def get_transaction(cls):
+        ident = thread.get_ident()
+
+        thread_lock.acquire()
+        try:
+            transaction = cls._transactions.setdefault(ident, Set())
+        finally:
+            thread_lock.release()
+
+        return transaction
+
+    get_transaction = classmethod(get_transaction)
+
+
+    def rollback_transaction(cls):
+        transaction = cls.get_transaction()
+        for handler in transaction:
+            # XXX Maybe it should be re-loaded instead
+            handler.timestamp = datetime.datetime(1900, 1, 1)
+        transaction.clear()
+
+    rollback_transaction = classmethod(rollback_transaction)
+
+
+    def commit_transaction(cls):
+        transaction = cls.get_transaction()
+        for handler in transaction:
+            # XXX Maybe we should check the timestamp to know wether the
+            # handler has really changed
+            handler.save()
+        transaction.clear()
+
+    commit_transaction = classmethod(commit_transaction)
+
+
+    def set_changed(self):
+        self.get_transaction().add(self)
 
 
     ########################################################################
@@ -141,15 +203,3 @@ class Handler(object):
         if self.parent is None:
             raise AcquisitionError, name
         return self.parent.acquire(name)
-
-
-    ########################################################################
-    # Cache
-    def is_outdated(self):
-        mtime = self.resource.get_mtime()
-        return mtime is None or mtime > self.timestamp
-
-
-    def has_changed(self):
-        mtime = self.resource.get_mtime()
-        return self.timestamp > mtime

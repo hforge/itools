@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-12 18:07:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
+
+    Summary:
+      handlers, implement transactions
+    Revision:
+      itools--main--0.7--patch-12
+
+    Now handler classes provide an API to work with transactions:
+    
+     - set_changed
+     - commit_transaction
+     - rollback_transaction
+
+    modified files:
+     Changelog catalog/Catalog.py handlers/Folder.py
+     handlers/Handler.py handlers/PO.py zope/Context.py
+
+
 2005-02-12 16:20:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
 
     Summary:

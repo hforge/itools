@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -393,6 +393,7 @@ class PO(Text):
 
 
     def _set_message(self, msgid, msgstr=[u''], comments=[], references={}):
+        self.set_changed()
         if isinstance(msgid, (str, unicode)):
             msgid = [msgid]
         if isinstance(msgstr, (str, unicode)):

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -44,8 +44,6 @@ class Context(object):
         self.path = None
         # The authenticated user
         self.user = None
-        # The transaction (keeps modified handlers)
-        self.transaction = Set()
 
 
     ########################################################################

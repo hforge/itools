@@ -207,9 +207,6 @@ class Folder(Handler):
                     # Miss
                     resource = self.resource.get_resource(name)
                     handler = self._get_handler(segment, resource)
-                    # Set parent and name
-                    handler.parent = self
-                    handler.name = segment.name
                     # Update the cache
                     self.cache[name] = handler
                 else:
@@ -217,6 +214,7 @@ class Folder(Handler):
                     # handler.resource are the same or not)
                     if handler.is_outdated():
                         handler.load()
+                handler.is_virtual = False
             else:
                 # Virtual handler
                 if name in self.cache:
@@ -224,9 +222,10 @@ class Folder(Handler):
                     del self.cache[name]
                 # Maybe we found a virtual handler
                 handler = self._get_virtual_handler(segment)
-                # Set parent and name
-                handler.parent = self
-                handler.name = segment.name
+                handler.is_virtual = True
+        # Set parent and name
+        handler.parent = self
+        handler.name = segment.name
 
         # Continue with the rest of the path
         if path:
@@ -260,6 +259,7 @@ class Folder(Handler):
         handler = handler.copy_handler()
         handler.parent = self
         handler.name = name
+        handler.is_virtual = False
         # Add the handler
         container.added_handlers[name] = handler
         # Event, on set handler
@@ -328,6 +328,8 @@ class Folder(Handler):
                         yield x, context
                 else:
                     yield handler, context
+                    if context.skip is True:
+                        context.skip = False
 
 
     def acquire(self, name):

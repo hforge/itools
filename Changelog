@@ -2,6 +2,34 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-08 10:55:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
+
+    Summary:
+      handlers, add is_virtual variable, fix traverse2
+    Revision:
+      itools--main--0.7--patch-42
+
+    Fix 'traverse2': set 'context.skip' to false for file handlers.
+    
+    Add the variable 'is_virtual' to distinct between handlers
+    accessed through the physical path ('_get_handler') and virtual
+    handlers ('_get_virtual_handler').
+    
+    Also, always set 'parent', 'name' and 'is_virtual' each time
+    the handler is reached with 'get_handler'. This way the handler
+    returned by 'get_handler' always has these variable correctly
+    set.
+    
+    However, there is still a bug, if you load the same handler twice
+    through different paths, the 'parent', 'name' and 'is_virtual'
+    attributes will be those of the last load. This may produce
+    subtle, hard to find errors.
+
+    modified files:
+     Changelog handlers/File.py handlers/Folder.py
+     handlers/Handler.py
+
+
 2005-03-07 15:00:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
 
     Summary:

@@ -60,6 +60,9 @@ class Resource:
                 return self.uri.path[-1].name
         return None
 
+    # XXX To be uncommented once we use new-style classes
+##    name = property(get_name, None, None, '')
+
 
 
 class File(Resource):
@@ -127,6 +130,9 @@ class File(Resource):
         return len(self.get_data())
 
 
+    # File like interface
+    def read(self):
+        return self.get_data()
 
 
 

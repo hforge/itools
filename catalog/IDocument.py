@@ -48,7 +48,7 @@ class IndexedField(File):
         self.resource[:4] = IO.encode_uint32(self.number_of_terms)
         self.resource.append(IO.encode_string(term))
         # Set timestamp
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = self.resource.get_mtime()
 
 
 

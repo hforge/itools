@@ -134,15 +134,17 @@ class Folder(Handler):
 
 
     def _set_handler(self, name, handler):
+        if handler.has_changed():
+            handler.save()
         self.resource.set_resource(name, handler.resource)
         self.cache[name] = None
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = self.resource.get_mtime()
 
 
     def _del_handler(self, name):
         self.resource.del_resource(name)
         del self.cache[name]
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = self.resource.get_mtime()
 
 
     #########################################################################

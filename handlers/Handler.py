@@ -82,7 +82,7 @@ class Handler(object):
 
     def save(self):
         self._save()
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = self.resource.get_mtime()
 
 
     def is_outdated(self):

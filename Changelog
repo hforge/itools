@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-13 20:02:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
+
+    Summary:
+      handlers, fix "_set_handler"
+    Revision:
+      itools--main--0.7--patch-14
+
+    Now, when trying to effectively add a handler to a folder (see
+    Folder._set_handler), it is saved first if it is not up-to-date.
+    
+    Also, fix the timestamp in several places, from "now()" to the
+    resources modification time.
+
+    modified files:
+     Changelog catalog/IDocument.py handlers/Folder.py
+     handlers/Handler.py
+
+
 2005-02-13 19:25:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
 
     Summary:

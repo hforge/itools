@@ -1,13 +1,16 @@
 SOURCES = itools.tex itools.sty intro.tex uri.tex resources.tex \
-	handlers.tex xml.tex stl.tex chandlers.tex addendum.tex \
+	handlers.tex xml.tex stl.tex chandlers.tex i18n.tex addendum.tex \
 	arch.tex
 
-FIGURES = handlers.eps
+FIGURES = handlers.eps l10n.eps
 
 
-%.eps : %.dot
+%.eps: %.dot
 	dot -Tps $< -o $@
 
+
+%.eps: %.dia
+	dia --export=$@ $<
 
 
 dvi: $(FIGURES) $(SOURCES)

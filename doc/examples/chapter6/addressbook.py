@@ -36,7 +36,7 @@ class Addressbook(object):
 
     def view(self):
         # Load the STL template
-        resource = get_resource('addressbook.xml')
+        resource = get_resource('addressbook_view.xml')
         template = XML.Document(resource)
 
         # Build the namespace

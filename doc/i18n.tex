@@ -1,0 +1,187 @@
+\chapter{Internationalization and Localization}
+\label{Chapter: i18n}
+
+Or the art of developing multilingual applications. Let's start with the
+concepts\footnote{Definitions take fron the GNU gettext documentation.}:
+
+\begin{description}
+  \item [Internationalization] the operation by which a program, or a set
+    of programs turned into a package, is made aware of and able to support
+    multiple languages. This is a generalization process, by which the
+    programs are untied from calling only English strings or other English
+    specific habits, and connected to generic ways of doing the same, instead.
+
+  \item [Localization] the operation by which, in a set of programs already
+    internationalized, one gives the program all needed information so that
+    it can adapt itself to handle its input and output in a fashion which is
+    correct for some native language and cultural habits. This is a
+    particularisation process, by which generic methods already implemented
+    in an internationalized program are used in specific ways. 
+\end{description}
+
+We are going to illustrate both processes, in the context of {\tt itools},
+by extending the addressbook example.
+
+
+\section{Internationalization}
+
+What must be internationalized is the user interface, what in our example
+is reduced to the template {\tt addressbook\_view.xml}.
+
+\subsection{Naming conventions}
+
+The technique we use with {\tt itools} requires to have one template per
+language, being english the master language. Each template must have a
+distinct name, we will achieve it by appending the language code to the
+end of the file:
+
+\begin{code}
+    addressbook_view.xml.en
+    addressbook_view.xml.es
+    addressbook_view.xml.fr
+    ...
+\end{code}
+
+So the first thing to do is to rename the file {\tt addressbook\_view.xml}
+to {\tt addressbook\_view.xml.en}.
+
+Note that only the template in English belongs to the source, the others
+will be automatically built with the help of {\tt itools}.
+
+\subsection{Template selection}
+
+The method {\tt view} also must be modified, so the right template is used:
+
+\begin{code}
+    def view(self, language='en'):
+        # Load the STL template
+        resource_name = 'addressbook_view.xml.%s' % language
+        resource = get_resource(resource_name)
+        template = XML.Document(resource)
+
+        ...
+\end{code}
+
+
+What remains to explain is how the application chooses the language the
+user wants to see the addressbook in. This topic is out of the scope
+of this chapter.
+
+\section{Localization}
+
+To illustrate the example we will use Spanish as the second language.
+
+The issue is, from the template {\tt addressbook\_view.xml.en} we
+must produce a template named {\tt addressbook\_view.xml.es}, where
+the translatable messages will be in Spanish instead of English.
+
+In our case there is only one translatable message, the word
+{\tt Addressbook}. While the English template contains the header:
+
+\begin{code}
+    <h3>Addressbook</h3>
+\end{code}
+
+the Spansih one must have:
+
+\begin{code}
+    <h3>Libro de direcciones</h3>
+\end{code}
+
+The localization process is splitted in three stages:
+
+\begin{enumerate}
+  \item Message extraction.
+  \item Human translation.
+  \item Template re-construction.
+\end{enumerate}
+
+Through the whole process we will use {\tt GNU
+gettext}\footnote{http://www.gnu.org/software/gettext/}, which is the
+standard in the Free Software world for software internationalization
+and localization; and the script {\tt igettext.py} provided by {\tt itools}.
+
+The Figure~\ref{Figure: i18n} shows the localization process.
+
+\begin{figure}
+  \center
+  \includegraphics[width=\textwidth]{i18n.eps}
+  \caption{The localization process}
+  \label{Figure: i18n}
+\end{figure}
+
+\subsection{Message extraction}
+
+This step consists on the parsing of the templates that define the user
+interface (in our case the file {\tt addressbook\_view.xml.en}), the
+extraction of the translatable messages they contain, and the building of
+a {\em PO} file which will be the input for the human translator.
+
+This all is done with the {\tt igettext.py} script:
+
+\begin{code}
+    $ python igettext.py --pot addressbook_view.xml.en > es.po
+\end{code}
+
+The result is the {\tt es.po} file, whose content will be:
+
+\begin{code}
+    msgid ""
+    msgstr ""
+    "Project-Id-Version: PACKAGE VERSION\n"
+    "POT-Creation-Date: 2004-10-28 17:10+CET\n"
+    "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+    "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+    "Language-Team: LANGUAGE <LL@li.org>\n"
+    "MIME-Version: 1.0\n"
+    "Content-Type: text/plain; charset=UTF-8\n"
+    "Content-Transfer-Encoding: 8bit\n"
+
+    #: addressbook_view.xml.en:0
+    msgid "Addressbook"
+    msgstr ""
+\end{code}
+
+The file consist of a header and the translatable messages that have been
+found, in our case just the word {\tt Addressbook}. This file is the one
+the translator will work with.
+
+
+\section{Human translation}
+
+The human translator receives the PO file, and must return the same PO
+file, but including the translations for every message. In our example
+he should return the file (excluding the header):
+
+\begin{code}
+    #: addressbook_view.xml.en:0
+    msgid "Addressbook"
+    msgstr "Libro de direcciones"
+\end{code}
+
+To do his work he may use a simple text editor like {\em vi} or {\em emacs}.
+But typically he will use one of the PO graphic editors available, for
+example:
+
+\begin{itemize}
+  \item KBabel, http://www.kde.org/
+  \item poedit, http://poedit.sourceforge.net/
+\end{itemize}
+
+
+\section{Template building}
+
+To close the process, we must generate the template
+{\tt addressbook\_view.xml.es} from the master template
+({\tt addressbook\_view.xml.en}) and from the translated PO file ({\tt es.po}).
+This is done with the script {\tt igettext.py}:
+
+\begin{code}
+    $ igettext.py --xhtml addressbook_view.xml.en es.po \
+          > addressbook_view.xml.es
+\end{code}
+
+And that's it, now we have the two templates, one in English and one in
+Spanish.
+
+

@@ -179,7 +179,7 @@ class Request(object):
                 value = value.encode('utf8')
                 new_query.append(('%s:utf8:ustring' % key, value))
             elif isinstance(value, int):
-                new_query(('%s:int' % key, str(value)))
+                new_query.append(('%s:int' % key, str(value)))
             elif isinstance(value, list):
                 for x in value:
                     # XXX Should coerce too

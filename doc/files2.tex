@@ -1,0 +1,74 @@
+\chapter{Writing file handler classes}
+
+The chapter before we have learn about file handlers and how to use them,
+now we are going to learn to write our own handler classes, what by the
+way will help to solodify the concepts seen before.
+
+The explanation will be driven by an example, we are going to write a task
+tracker (what would be very handy to keep accounting of the {\tt itools}
+bugs, if {\tt itools} had bugs of course). The code for the example can
+be found in the directory {\tt examples/chapter5}.
+
+\section{Functional scope}
+
+Lets start by defining the functional scope of our task tracker. It is
+going to be very simple, it will be a collection of tasks where every
+task will have four fields:
+
+\begin{itemize}
+  \item {\em id}, it will be a natural number, starting from 0, which
+    will uniquely identify each task.
+
+  \item {\em title}, a short sentence describing the task.
+
+  \item {\em description}, a longer description detailing the task.
+
+  \item {\em state}, it maybe {\em open} (if the task has not been
+    finished yet), or {\em closed} (if the task has been finished).
+\end{itemize}
+
+The task tracker will provide an API to manipulate the collection of
+tasks: create a new task, see either the open or the closed tasks,
+and close a task.
+
+
+\section{The file format}
+
+Now that we know what we want to do, we have to decide where and how
+the information will be stored.
+
+We will keep the tasks in a single text file, with a format somewhat
+similar to the one used by the standards {\em vCard} and {\em iCal},
+for example:
+
+\begin{code}
+    id:0
+    title:Re-write the chapter about writing handler classes.
+    description:A new chapter that explains how to write file handler
+     classes must be written, it should go inmediately after the chapter
+     that introduces file handlers.
+    state:closed
+
+    id:1
+    title:Finish the chapter about folder handlers.
+    description:The chapter about folder handlers needs much more work.
+     For example the skeleton of folder handlers must be explained.
+    state:open
+\end{code}
+
+Each task is separated from the next one by a blank line. Every field
+starts by the field name follewed by the field value, both are separated
+by colon. If a field value is very long it can be written in multiple lines,
+where the second and next lines start by an space.
+
+This very same file can be found in the examples directory with the name
+{\tt itools.tt} name. Using our own filename extansion ({\tt tt}) will
+prove useful as we will see later.
+
+
+\section{Loading\dots}
+
+The first draft of our handler class will be able to load (de-serialize)
+the resource into a data structure on memory.
+
+

@@ -1,0 +1,12 @@
+id:0
+title:Re-write the chapter about writing handler classes.
+description:A new chapter that explains how to write file handler
+ classes must be written, it should go inmediately after the chapter
+ that introduces file handlers.
+state:closed
+
+id:1
+title:Finish the chapter about folder handlers.
+description:The chapter about folder handlers needs much more work.
+ For example the skeleton of folder handlers must be explained.
+state:open    

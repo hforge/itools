@@ -125,17 +125,15 @@ class Tree(object):
             prefix, suffix = word[0], word[1:]
             subtree = self.children.get(prefix, None)
             if subtree is None:
-                return []
+                return {}
             else:
                 return subtree.search_word(suffix)
         else:
-            documents = []
+            documents = {}
             for doc_number, positions in self.documents.items():
                 weight = len(positions)
-                documents.append((weight, doc_number))
-            documents.sort()
-            documents.reverse()
-            return [ y for x, y in documents ]
+                documents[doc_number] = weight
+            return documents
 
 
     def to_str(self, indent=0):
@@ -325,23 +323,34 @@ class Segment(object):
 
 
     def search(self, **kw):
-        documents = []
+        documents = {}
+        # Search
         for key, value in kw.items():
             if key in self.indexed_fields:
                 tree = self.indexed_fields[key]
-                for doc_number in tree.search_word(value):
-                    # Calculate the document index
-                    document_numbers = self.documents.keys()
-                    document_numbers.sort()
-                    doc_index = document_numbers.index(doc_number)
-                    # Get the stored fields
-                    stored_fields = self.fdt.documents[doc_index]
-                    # Build the document
-                    document = Document(doc_number)
-                    for field_number, tokenized, value in stored_fields:
-                        field_name = self.field_names[field_number]
-                        setattr(document, field_name, value)
-                    documents.append(document)
+                for doc_number, weight in tree.search_word(value).items():
+                    documents.setdefault(doc_number, 0)
+                    documents[doc_number] += weight
+        # Sort by weight
+        documents = [ (weight, doc_number)
+                      for doc_number, weight in documents.items() ]
+        documents.sort()
+        documents.reverse()
+        # Calculate the document index
+        document_numbers = self.documents.keys()
+        document_numbers.sort()
+        # Build the document objects
+        for i, document in enumerate(documents):
+            weight, doc_number = document
+            doc_index = document_numbers.index(doc_number)
+            # Get the stored fields
+            stored_fields = self.fdt.documents[doc_index]
+            # Build the document
+            document = Document(doc_number)
+            for field_number, tokenized, value in stored_fields:
+                field_name = self.field_names[field_number]
+                setattr(document, field_name, value)
+            documents[i] = document
         return documents
 
 

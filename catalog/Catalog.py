@@ -19,6 +19,7 @@
 # Import from Python
 import datetime
 from sets import Set
+import warnings
 
 # Import from itools
 from itools.handlers.Folder import Folder
@@ -250,12 +251,17 @@ class Catalog(Folder):
     def _search(self, query=None, **kw):
         # Build the query if it is passed through keyword parameters
         if query is None:
+            field_numbers = self.get_handler('fields').field_numbers
             for key, value in kw.items():
-                atom = Query.Simple(key, value)
-                if query is None:
-                    query = atom
+                if key in field_numbers:
+                    atom = Query.Simple(key, value)
+                    if query is None:
+                        query = atom
+                    else:
+                        query = Query.Complex(query, 'and', atom)
                 else:
-                    query = Query.Complex(query, 'and', atom)
+                    # Output a warning, case the field is not in the catalog
+                    warnings.warn('unknown field "%s"' % key)
         # Check wether there is a query at all
         if query is None:
             raise ValueError, "expected a query"

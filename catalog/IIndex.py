@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -43,20 +43,32 @@ search is succesful (e.g. 'here' takes 4 lookups and 'hello' takes 5).
 If the search is not succesful it could take less lookups (4 for 'hell',
 but only 2 for 'holidays').
 
-Every node also contains which documents contain the word and how many
-times, for example (if the word 'hello' appears once in the first document
-and the word 'here' appears twice in the second document):
+Every node also contains which documents contain the word and the positions
+the word appears within the document, for example (if the word 'hello'
+appears once in the first document and the word 'here' appears twice in
+the second document):
 
-  h -- e -- l -- l -- o (0: 1)
-         \- r -- e (1: 2)
+  h -- e -- l -- l -- o {0: [28]}
+         \- r -- e {1: [5, 37]}
 
-On the file structure every inverted index (there is one for each field
-being indexed) is a folder which contains two files: 'tree' and 'documents'.
-The first file (tree) represents on the files the same tree structure, the
-second file (documents) records the appearences of each word (document
-numbers and frequency).
+Actually, today we do not keep the positions, so the list is filled with
+None values:
+
+  h -- e -- l -- l -- o {0: [None]}
+         \- r -- e {1: [None, None]}
+
+But this is a temporal situation, in a future version we will keep the
+positions.
+
+At the resource level, an inverted index is stored as a folder with two
+file resources:
+
+  - 'tree', keeps the tree structure of terms;
+
+  - 'documents', keeps the numbers of the documents where each term has
+    been found, and the frequency (number of times the term has been found
+    in a document).
 """
-
 
 
 
@@ -80,13 +92,12 @@ class IIndexTree(File):
       - next sibling (4 bytes)
     """
 
-
-    __version__ = '20040723'
+    class_version = '20040723'
 
 
     def get_skeleton(self):
         # The header
-        version = IO.encode_version(self.__version__)
+        version = IO.encode_version(self.class_version)
         number_of_slots = IO.encode_uint32(0)
         first_slot = IO.encode_link(None)
         first_empty = IO.encode_link(None)
@@ -115,17 +126,9 @@ class IIndexTree(File):
         r = self.resource
         if self.first_empty is None:
             slot_number = self.number_of_slots
-            # Number of slots
+            # Increment number of slots
             self.number_of_slots += 1
             r[4:8] = IO.encode_uint32(self.number_of_slots)
-            # Append the new slot to the end of the file
-            base = 16 + slot_number * 16
-            character = '\x00\x00\x00\x00'
-            frequency = IO.encode_link(None)
-            first_child = IO.encode_link(None)
-            next_sibling = IO.encode_link(None)
-            r[base:base+16] = character + frequency + first_child \
-                              + next_sibling
         else:
             slot_number = self.first_empty
             # Update first empty
@@ -135,7 +138,6 @@ class IIndexTree(File):
             r[12:16] = first_empty_link
 
         return slot_number
-
 
 
 
@@ -154,12 +156,11 @@ class IIndexDocuments(File):
       - next document (4 bytes)
     """
 
-
-    __version__ = '20040723'
+    class_version = '20040723'
 
 
     def get_skeleton(self):
-        version = IO.encode_version(self.__version__)
+        version = IO.encode_version(self.class_version)
         number_of_slots = IO.encode_uint32(0)
         first_empty = IO.encode_link(None)
         return version + number_of_slots + first_empty
@@ -180,15 +181,9 @@ class IIndexDocuments(File):
         r = self.resource
         if self.first_empty is None:
             slot_number = self.number_of_slots
-            # Number of slots
+            # Increment the number of slots
             self.number_of_slots += 1
             r[4:8] = IO.encode_uint32(self.number_of_slots)
-            # Append the new slot to the end of the file
-            base = 12 + slot_number * 12
-            document_number = IO.encode_link(None)
-            frequency = IO.encode_uint32(0)
-            next = IO.encode_link(None)
-            r[base:base+12] = document_number + frequency + next
         else:
             slot_number = self.first_empty
             # Update first empty
@@ -227,8 +222,48 @@ class Tree(object):
         # The root is also the resource handler.
         self.root = root
         self.slot = slot
+        self.documents = None
+        self.children = None
+
+
+    def load_documents(self):
+        # Initialize data structure
         self.documents = {}
+
+        # Load document pointer
+        tree_rsrc = self.root.tree_handler.resource
+        tree_slot = 16 + self.slot * 16
+        doc_slot_n = IO.decode_link(tree_rsrc[tree_slot+4:tree_slot+8])
+
+        # Load documents
+        doc_rsrc = self.root.docs_handler.resource
+        while doc_slot_n is not None:
+            # Decode doc slot
+            doc_slot = 12 + doc_slot_n * 12
+            doc_slot_data = doc_rsrc[doc_slot:doc_slot+12]
+            doc_number = IO.decode_uint32(doc_slot_data[0:4])
+            frequency = IO.decode_uint32(doc_slot_data[4:8])
+            doc_slot_n = IO.decode_link(doc_slot_data[8:12])
+            # Insert document
+            self.documents[doc_number] = documents = []
+            for i in range(frequency):
+                documents.append(None)
+
+
+    def load_children(self):
         self.children = {}
+
+        tree_rsrc = self.root.tree_handler.resource
+        slot = 16 + self.slot * 16
+        # Children
+        child_n = IO.decode_link(tree_rsrc[slot+8:slot+12])
+        while child_n is not None:
+            child = 16 + child_n * 16
+            c = IO.decode_character(tree_rsrc[child:child+4])
+            tree = Tree(self.root, child_n)
+            self.children[c] = tree
+            # Next
+            child_n = IO.decode_link(tree_rsrc[child+12:child+16])
 
 
     ########################################################################
@@ -243,6 +278,9 @@ class Tree(object):
            ...}
         """
         if term:
+            if self.children is None:
+                self.load_children()
+
             prefix, suffix = term[0], term[1:]
             if prefix in self.children:
                 subtree = self.children[prefix]
@@ -255,12 +293,12 @@ class Tree(object):
                 r = self.root.tree_handler.resource
                 # Initialize the empty slot
                 free_slot = 16 + free_slot_n * 16
-                r[free_slot:free_slot+4] = IO.encode_character(prefix)
-                r[free_slot+4:free_slot+8] = IO.encode_link(None)
-                r[free_slot+8:free_slot+12] = IO.encode_link(None)
-                # Prepend the new slot
                 this_slot = 16 + self.slot * 16
-                r[free_slot+12:free_slot+16] = r[this_slot+8:this_slot+12]
+                r[free_slot:free_slot+16] = IO.encode_character(prefix) \
+                                            + IO.encode_link(None) \
+                                            + IO.encode_link(None) \
+                                            + r[this_slot+8:this_slot+12]
+                # Prepend the new slot
                 r[this_slot+8:this_slot+12] = IO.encode_link(free_slot_n)
             subtree._index_term(suffix, documents)
         else:
@@ -273,6 +311,8 @@ class Tree(object):
             fdoc_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
             fdoc_slot_n = IO.decode_link(fdoc_slot_r)
             for doc_number, doc_positions in documents.items():
+                if self.documents is None:
+                    self.load_documents()
                 if doc_number in self.documents:
                     positions = self.documents[doc_number]
                     positions.extend(doc_positions)
@@ -281,21 +321,21 @@ class Tree(object):
                                                                  doc_number)
                     doc_slot = 12 + doc_slot_n * 12
                     # Calculate the frequency
-                    frequency = len(positions)
+                    frq = len(positions)
+                    docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frq)
                 else:
                     self.documents[doc_number] = doc_positions
                     # Update slot
                     doc_slot_n = docs_handler._get_free_slot()
                     doc_slot = 12 + doc_slot_n * 12
-                    docs_rsrc[doc_slot:doc_slot+4] = IO.encode_uint32(doc_number)
-                    docs_rsrc[doc_slot+8:doc_slot+12] = fdoc_slot_r
+                    docs_rsrc[doc_slot:doc_slot+12] = (
+                        IO.encode_uint32(doc_number)
+                        + IO.encode_uint32(len(doc_positions))
+                        + fdoc_slot_r)
                     tree_rsrc[tree_slot+4:tree_slot+8] = IO.encode_link(doc_slot_n)
                     # Update 'fdoc_slot_*'
                     fdoc_slot_n = doc_slot_n
                     fdoc_slot_r = IO.encode_link(fdoc_slot_n)
-                    # Calculate the frequency
-                    frequency = len(doc_positions)
-                docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frequency)
 
 
     def _unindex_term(self, word, documents):
@@ -304,11 +344,16 @@ class Tree(object):
         the numbers of the documents that must be un-indexed.
         """
         if word:
+            if self.children is None:
+                self.load_children()
+
             prefix, suffix = word[0], word[1:]
             if prefix in self.children:
                 subtree = self.children[prefix]
                 subtree._unindex_term(suffix, documents)
         else:
+            if self.documents is None:
+                self.load_documents()
             for doc_number in documents:
                 del self.documents[doc_number]
             # Update resource
@@ -346,6 +391,9 @@ class Tree(object):
 
     def search_word(self, word):
         if word:
+            if self.children is None:
+                self.load_children()
+
             prefix, suffix = word[0], word[1:]
             subtree = self.children.get(prefix, None)
             if subtree is None:
@@ -353,6 +401,9 @@ class Tree(object):
             else:
                 return subtree.search_word(suffix)
         else:
+            if self.documents is None:
+                self.load_documents()
+
             documents = {}
             for doc_number, positions in self.documents.items():
                 weight = len(positions)
@@ -363,16 +414,17 @@ class Tree(object):
     ########################################################################
     # Debugging
     ########################################################################
-    def show_for_humans(self, indent=0):
-        s = u''
-        for key, tree in self.children.items():
-            s = s + '%s%s: %s\n' % (' '*indent, key, tree.documents)
-            s += tree.show_for_humans(indent + len(key))
-        return s
+##    def show_for_humans(self, indent=0):
+##        s = u''
+##        for key, tree in self.children.items():
+##            s = s + '%s%s: %s\n' % (' '*indent, key, tree.documents)
+##            s += tree.show_for_humans(indent + len(key))
+##        return s
 
 
 
 class IIndex(Folder, Tree):
+
     def get_skeleton(self):
         return [('tree', IIndexTree()),
                 ('documents', IIndexDocuments())]
@@ -400,49 +452,14 @@ class IIndex(Folder, Tree):
         self.children = {}
 
         tree_rsrc = tree_handler.resource
-        doc_rsrc = docs_handler.resource
-
-        stack = []
         child_n = tree_handler.first_slot
-        if child_n is not None:
-            stack.append((self, child_n))
-
-        while stack:
-            # Build the tree instance
-            parent, tree_slot_n = stack.pop()
-            tree = Tree(self, tree_slot_n)
-
-            # Decode tree slot
-            tree_slot = 16 + tree_slot_n * 16
-            tree_slot_data = tree_rsrc[tree_slot:tree_slot+16]
-            c = IO.decode_character(tree_slot_data[0:4])
-            doc_slot_n = IO.decode_link(tree_slot_data[4:8])
-            child_n = IO.decode_link(tree_slot_data[8:12])
-            sibling_n = IO.decode_link(tree_slot_data[12:16])
-
-            # Add the tree instance to its parent
-            parent.children[c] = tree
-
-            # Documents
-            while doc_slot_n is not None:
-                # Decode doc slot
-                doc_slot = 12 + doc_slot_n * 12
-                doc_slot_data = doc_rsrc[doc_slot:doc_slot+12]
-                doc_number = IO.decode_uint32(doc_slot_data[0:4])
-                frequency = IO.decode_uint32(doc_slot_data[4:8])
-                doc_slot_n = IO.decode_link(doc_slot_data[8:12])
-                # Insert document
-                tree.documents[doc_number] = documents = []
-                for i in range(frequency):
-                    documents.append(None)
-
-            # Next sibling
-            if sibling_n is not None:
-                stack.append((parent, sibling_n))
-
-            # Children
-            if child_n is not None:
-                stack.append((tree, child_n))
+        while child_n is not None:
+            child = 16 + child_n * 16
+            c = IO.decode_character(tree_rsrc[child:child+4])
+            tree = Tree(self, child_n)
+            self.children[c] = tree
+            # Next
+            child_n = IO.decode_link(tree_rsrc[child+12:child+16])
 
         # The state
         self.added_terms = {}
@@ -484,11 +501,11 @@ class IIndex(Folder, Tree):
             r = self.tree_handler.resource
             # Update data structure on memory
             base = 16 + slot_number * 16
-            r[base:base+4] = IO.encode_character(prefix)
-            r[base+4:base+8] = IO.encode_link(None)
-            r[base+8:base+12] = IO.encode_link(None)
+            r[base:base+16] = IO.encode_character(prefix) \
+                              + IO.encode_link(None) \
+                              + IO.encode_link(None) \
+                              + r[8:12]
             # Prepend the new slot
-            r[base+12:base+16] = r[8:12]
             r[8:12] = IO.encode_link(slot_number)
         subtree._index_term(suffix, documents)
 

@@ -80,7 +80,7 @@ class ComplexType(object):
                         values = [value]
                     for value in values:
                         if issubclass(type, IO.Unicode):
-                            value = type.encode(value, encoding) 
+                            value = type.encode(value, encoding)
                         elif issubclass(type, ComplexType):
                             value = type.encode(value, encoding)
                         else:

@@ -133,6 +133,10 @@ class Handler(object):
 
 
     def commit_transaction(cls):
+        # XXX The save operation will save sub-objects if they have been
+        # modified, but they are not removed from the transaction, so they
+        # may be saved more thant once. Check wether this is what really
+        # happens or not, and if it is: fix.
         transaction = cls.get_transaction()
         while transaction:
             handler = transaction.pop()
@@ -177,8 +181,13 @@ class Handler(object):
     def get_abspath(self):
         # XXX Should return a uri.Path instance
         if self.parent is None:
-            return ''
-        return self.parent.get_abspath() + '/' + self.name
+            return '/'
+
+        parent_path = self.parent.get_abspath()
+        if not parent_path.endswith('/'):
+            parent_path += '/'
+
+        return parent_path + self.name
 
     abspath = property(get_abspath, None, None, '')
 

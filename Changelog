@@ -2,6 +2,59 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-20 16:01:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-17
+
+    Summary:
+      merge from the 0.7 branch
+    Revision:
+      itools--main--0.8--patch-17
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-49
+       handlers, now "abspath" is "/" for the root instead of "" (#13)
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-50
+       catalog, optimize index load
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-51
+       catalog, optimize index load
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-52
+       catalog, lazy load the indexes
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-53
+       catalog, optimize indexing, reduce write access to the resource
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-54
+       catalog, optimize the text analyser
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-55
+       catalog, improve docstrings, coding style corrections
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-56
+       catalog, fix skeletons (rename "__version__" to "class_version")
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-57
+       handlers, add comment to remember an issue with transactions
+    
+
+    modified files:
+     Changelog catalog/Analysers.py catalog/IIndex.py catalog/IO.py
+     catalog/prof.py handlers/Handler.py xml/Schema.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.7--patch-49
+     jdavid@itaapy.com--public/itools--main--0.7--patch-50
+     jdavid@itaapy.com--public/itools--main--0.7--patch-51
+     jdavid@itaapy.com--public/itools--main--0.7--patch-52
+     jdavid@itaapy.com--public/itools--main--0.7--patch-53
+     jdavid@itaapy.com--public/itools--main--0.7--patch-54
+     jdavid@itaapy.com--public/itools--main--0.7--patch-55
+     jdavid@itaapy.com--public/itools--main--0.7--patch-56
+     jdavid@itaapy.com--public/itools--main--0.7--patch-57
+
+
 2005-03-15 17:43:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
 
     Summary:

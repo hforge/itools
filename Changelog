@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-05 10:48:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-35
+
+    Summary:
+      xml, ignore unknown entity references, instead of failing
+    Revision:
+      itools--main--0.7--patch-35
+
+
+    modified files:
+     Changelog xml/XML.py
+
+
 2005-03-04 12:56:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-34
 
     Summary:

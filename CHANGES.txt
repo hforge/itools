@@ -1,3 +1,10 @@
+0.4.3 (2004/08/24)
+
+  Index & Search
+  - Fix search. Rename "Document.Document to IDocument.IDocument"
+    and add "Catalog.Document".
+
+
 0.4.2 (2004/08/18)
 
   Resources

@@ -46,7 +46,7 @@ class Resource(base.Resource):
 
 
     def get_atime(self):
-        raise NotImplementedError
+        return None
 
 
     def get_mtime(self):
@@ -57,7 +57,7 @@ class Resource(base.Resource):
 
 
     def get_ctime(self):
-        raise NotImplementedError
+        return None
 
 
     def set_mtime(self, mtime):
@@ -82,6 +82,19 @@ class File(Resource, base.File):
         object.update_data(data)
 
 
+    def __setitem__(self, index, value):
+        object = self._get_object()
+
+        data = str(object.data)
+        if isinstance(index, slice):
+            # XXX So far 'step' is not supported
+            start, stop = index.start, index.stop
+        else:
+            start, stop = index, index + 1
+        data = data[:start] + value + data[stop:]
+        object.update_data(data)
+
+
 
 class Folder(Resource, base.Folder):
 
@@ -91,7 +104,7 @@ class Folder(Resource, base.Folder):
 
 
     def _get_resource(self, name):
-        reference = self.uri.resolve(name)
+        reference = self.uri.path.resolve2(name)
         return get_resource(reference)
 
 
@@ -101,23 +114,22 @@ class Folder(Resource, base.Folder):
 
     def _set_file_resource(self, name, resource):
         object = self._get_object()
-        object._setOb(name, ZopeFile(name, '', resource.get_data()))
+        object._setObject(name, ZopeFile(name, '', resource.get_data()))
 
 
     def _set_folder_resource(self, name, resource):
         object = self._get_object()
-        object._setOb(name, ZopeFolder(name))
+        object._setObject(name, ZopeFolder(name))
 
 
     def _del_file_resource(self, name):
         object = self._get_object()
-        object._delOb(name)
+        object._delObject(name)
 
 
     def _del_folder_resource(self, name):
         object = self._get_object()
-        object._delOb(name)
-
+        object._delObject(name)
 
 
 
@@ -125,6 +137,8 @@ def get_resource(reference):
     # Get path
     if isinstance(reference, uri.Reference):
         path = str(reference.path)
+    elif isinstance(reference, uri.Path):
+        path = str(reference)
     else:
         path = reference
     # Get object

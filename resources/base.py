@@ -49,8 +49,16 @@ class Resource:
     uri = None
 
     def __init__(self, uri_reference):
-        if not isinstance(uri_reference, uri.Reference):
+        if isinstance(uri_reference, uri.Reference):
+            pass
+        elif isinstance(uri_reference, uri.Path):
+            uri_reference = uri.get_reference(str(uri_reference))
+        elif isinstance(uri_reference, StringTypes):
             uri_reference = uri.get_reference(uri_reference)
+        else:
+            raise TypeError, \
+                  'unexpected value of type "%s"' % type(uri_reference)
+
         self.uri = uri_reference
 
 

@@ -72,3 +72,8 @@ class IDocument(Folder):
         elif name.startswith('s'):
             return StoredField(resource)
         return Folder._get_handler(self, segment, resource)
+
+
+    def _load(self, resource):
+        Folder._load(self, resource)
+        self.document = None

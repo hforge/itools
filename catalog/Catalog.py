@@ -17,7 +17,6 @@
 
 
 # Import from Python
-import datetime
 from sets import Set
 import warnings
 
@@ -296,27 +295,28 @@ class Catalog(Folder):
         documents.reverse()
         # Build the document objects
         fields = self.get_handler('fields')
-        for i, document in enumerate(documents):
+        for document in documents:
             weight, doc_number = document
-            document = Document(doc_number)
             # Load the IDocument
             if doc_number in self.added_documents:
                 doc_handler = self.added_documents[doc_number]
             else:
                 doc_handler = self.get_handler('d%07d' % doc_number)
             # Get the stored fields
-            for field in fields.fields:
-                if field.is_stored:
-                    name = 's%d' % field.number
-                    if doc_handler.has_handler(name):
-                        stored_field = doc_handler.get_handler(name)
-                        value = stored_field.value
-                    else:
-                        value = None
-                    setattr(document, field.name, value)
-                        
-            documents[i] = document
-        return documents
+            if doc_handler.document is None:
+                document = Document(doc_number)
+                for field in fields.fields:
+                    if field.is_stored:
+                        name = 's%d' % field.number
+                        if doc_handler.has_handler(name):
+                            stored_field = doc_handler.get_handler(name)
+                            value = stored_field.value
+                        else:
+                            value = None
+                        setattr(document, field.name, value)
+                doc_handler.document = document
+
+            yield doc_handler.document
 
 
 

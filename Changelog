@@ -2,6 +2,51 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-03 13:23:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-32
+
+    Summary:
+      backport fixes and performance improvements from 0.8 branch
+    Revision:
+      itools--main--0.7--patch-32
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.7--patch-30
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-1
+       resources, initialization is more robust now
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-2
+       resources, fix zope2 resources
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-3
+       resources, implement get_ctime and get_atime for Zope 2
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-4
+       resources, implement __setitem__ (Zope 2 file resources)
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-6
+       catalog, now the method "search" is a generator
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-7
+       catalog, optimize search (cache documents)
+    
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/IDocument.py
+     resources/base.py resources/zope2.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.8--base-0
+     jdavid@itaapy.com--public/itools--main--0.8--patch-1
+     jdavid@itaapy.com--public/itools--main--0.8--patch-2
+     jdavid@itaapy.com--public/itools--main--0.8--patch-3
+     jdavid@itaapy.com--public/itools--main--0.8--patch-4
+     jdavid@itaapy.com--public/itools--main--0.8--patch-6
+     jdavid@itaapy.com--public/itools--main--0.8--patch-7
+
+
 2005-02-24 18:22:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
 
     Summary:

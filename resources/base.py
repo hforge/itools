@@ -204,6 +204,17 @@ class Folder(Resource):
             self.del_resource(path)
 
 
+    def traverse(self):
+        yield self
+        for resource_name in self.get_resources():
+            resource = self.get_resource(resource_name)
+            if isinstance(resource, Folder):
+                for x in resource.traverse():
+                    yield x
+            else:
+                yield handler
+
+
     ######################################################################
     # Private API
     def _get_resources(self):

@@ -29,14 +29,14 @@ from xml.parsers import expat
 from itools.handlers import File, Text
 
 
-# Create a logger for dubugging
-import os
-try:
-    os.remove('/tmp/xml_debug.txt')
-except OSError:
-    pass
-logger = logging.getLogger('xml debug')
-logger.setLevel(logging.DEBUG)
+### Create a logger for dubugging
+##import os
+##try:
+##    os.remove('/tmp/xml_debug.txt')
+##except OSError:
+##    pass
+##logger = logging.getLogger('xml debug')
+##logger.setLevel(logging.DEBUG)
 ##handler = logging.FileHandler('/tmp/xml_debug.txt')
 ##logger.addHandler(handler)
 
@@ -587,7 +587,7 @@ class Document(Text.Text):
 
 
     def start_element_handler(self, name, attrs):
-        logger.debug('XML.Document.start_element_handler(%s)', name)
+##        logger.debug('XML.Document.start_element_handler(%s)', name)
         # Parse the element name: ns_uri, name and prefix
         n = name.count(' ')
         if n == 2:

@@ -73,7 +73,7 @@ class Schema(XML.Element):
 
 
     def handle_end_element(self, element):
-        XML.logger.debug('xsd:schema.handle_end_element(%s)', element)
+##        XML.logger.debug('xsd:schema.handle_end_element(%s)', element)
         if isinstance(element, Element):
             self.elements[element.xsd_name] = element.xsd_type
             if element.xsd_content != None:
@@ -106,7 +106,7 @@ class Schema(XML.Element):
     # API
     #######################################################################
     def get_element(self, prefix, name): 
-        XML.logger.debug('Schema.Schema.get_element(%s)', name)
+##        XML.logger.debug('Schema.Schema.get_element(%s)', name)
         if name in self.elements:
             element_type = self.elements[name]
             if isinstance(element_type, unicode):
@@ -250,7 +250,7 @@ class ComplexType(XML.Element):
 
 
     def handle_attribute(self, ns_uri, prefix, name, value):
-        XML.logger.debug('xsd:complexType.handle_attr(%s, %s)', name, value)
+##        XML.logger.debug('xsd:complexType.handle_attr(%s, %s)', name, value)
         if ns_uri == xsd_uri:
             if name == 'name':
                 self.xsd_name = value
@@ -277,7 +277,7 @@ class ComplexType(XML.Element):
 
 
     def handle_end_element(self, element):
-        XML.logger.debug('xsd:complexType.handle_end_element(%s)', element)
+##        XML.logger.debug('xsd:complexType.handle_end_element(%s)', element)
         if isinstance(element, Sequence):
             self.xsd_content = element
         elif isinstance(element, Attribute):
@@ -467,8 +467,8 @@ class InstanceComplexType(XML.Element):
     #xsd_uri = "http://www.itools.org/namespaces/simple"
 
     def handle_attribute(self, ns_uri, prefix, name, value):
-        XML.logger.debug('%s:%s.handle_attribute(%s)',
-                         self.xsd_uri, self.__class__.__name__, name)
+##        XML.logger.debug('%s:%s.handle_attribute(%s)',
+##                         self.xsd_uri, self.__class__.__name__, name)
         if ns_uri == self.xsd_uri:
             if name not in self.xsd_attributes:
                 raise SchemaError, 'unexpected attribute "%s"' % name
@@ -489,8 +489,8 @@ class InstanceComplexType(XML.Element):
 
 
     def handle_start_element(self, ns_uri, prefix, name):
-        XML.logger.debug('%s:%s.handle_start_element(%s)',
-                         self.xsd_uri, self.__class__.__name__, name)
+##        XML.logger.debug('%s:%s.handle_start_element(%s)',
+##                         self.xsd_uri, self.__class__.__name__, name)
         if ns_uri == self.xsd_uri:
             elements = self.xsd_content.elements
             types = self.xsd_schema.types
@@ -526,8 +526,8 @@ class InstanceSimpleType(XML.Element):
     xsd_uri = "http://www.lisa.org/tmx"
 
     def handle_attribute(self, ns_uri, prefix, name, value):
-        XML.logger.debug('%s:%s.handle_attribute(%s)',
-                         self.xsd_uri, self.__class__.__name__, name)
+##        XML.logger.debug('%s:%s.handle_attribute(%s)',
+##                         self.xsd_uri, self.__class__.__name__, name)
         if ns_uri == self.xsd_uri:
             if name not in self.xsd_attributes:
                 raise SchemaError, 'unexpected attribute "%s"' % name

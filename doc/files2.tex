@@ -55,7 +55,7 @@ a colon. If a field value is very long it can be written in multiple lines,
 where the second and next lines start by an space.
 
 This very same file can be found in the examples directory with the name
-{\tt itools.tt}. Using our own filename extansion ({\tt tt}) will prove
+{\tt itools.tt}. Using our own filename extension ({\tt tt}) will prove
 useful, as we will see later.
 
 
@@ -107,7 +107,7 @@ the resource into a data structure on memory.
                         fields[field_name] = field_value
 \end{code}
 
-First, our handler class {\tt TaskTracker} inhetits from the handler class
+First, our handler class {\tt TaskTracker} inherits from the handler class
 {\tt Text}, because it is intended to manage a text file.
 
 The method {\tt \_load} is the one to implement, it is responsible to
@@ -152,7 +152,7 @@ Lets try it:
 \section{Serialization}
 
 Now we are going to write the other half, the serialization process,
-just adding the {\tt to\_unicode} methdo to the {\tt TaskTracker} class:
+just adding the {\tt to\_unicode} method to the {\tt TaskTracker} class:
 
 \begin{code}
         def to_unicode(self, encoding='UTF-8'):

@@ -22,11 +22,21 @@ from itools.xml import XML, namespaces
 
 
 schema = {
-    'title': {'type': IO.Unicode, 'default': u''},
-    'description': {'type': IO.Unicode},
-    'publisher': {'type': IO.Unicode},
+    'contributor': {},
+    'coverage': {},
+    'creator': {},
+    'date': {'type': IO.Date},
+    'description': {'type': IO.Unicode, 'default': u''},
+    'format': {},
     'identifier': {'type': IO.String},
-    'created': {'type': IO.Date}
+    'language': {'type': IO.String, 'default': None},
+    'publisher': {'type': IO.Unicode},
+    'relation': {},
+    'rights': {},
+    'source': {},
+    'subject': {},
+    'title': {'type': IO.Unicode, 'default': u''},
+    'type': {},
     }
 
 
@@ -45,7 +55,7 @@ class Element(XML.Element):
 
     def set_text(self, text, encoding='UTF-8'):
         text = text.strip()
-        type = schema[self.name]
+        type = schema[self.name]['type']
         if type is IO.Unicode:
             self.value = type.decode(text, encoding)
         else:
@@ -60,12 +70,21 @@ class Namespace(namespaces.AbstractNamespace):
 
 
     def get_element_schema(name):
+        if name not in schema:
+            raise XML.XMLError, 'unknown property "%s"' % name
+
+        return Element
+
+    get_element_schema = staticmethod(get_element_schema)
+
+
+    def get_attribute_schema(name):
         try:
             return schema[name]
         except KeyError:
             raise XML.XMLError, 'unknown property "%s"' % name
 
-    get_element_schema = staticmethod(get_element_schema)
+    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 namespaces.set_namespace(Namespace)

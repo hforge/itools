@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-01 16:51:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-51
+
+    Summary:
+      xml, improving dublin core, removing obsolete code
+    Revision:
+      itools--main--0.8--patch-51
+
+
+    modified files:
+     Changelog xml/DublinCore.py xml/Schema.py
+
+
 2005-04-01 13:25:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
 
     Summary:

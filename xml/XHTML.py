@@ -275,7 +275,9 @@ class Document(XML.Document):
                 # Attributes
                 for attribute in node.attributes:
                     if node.is_translatable(attribute.name):
-                        context.messages.add(attribute.value)
+                        value = attribute.value.strip()
+                        if value:
+                            context.messages.add(attribute.value)
                 # Inline or Block
                 if node.is_inline():
                     message.append(node)

@@ -1,3 +1,12 @@
+0.4.1 (2004/06/05)
+
+  - Moved from CVS to GNU arch
+
+  - First documentation release
+
+  - Minor fixes
+
+
 0.4.0 (2004/06/01)
 
   - Added itools.lucene (index and search).

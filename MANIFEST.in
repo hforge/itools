@@ -3,4 +3,6 @@ include lucene/*.dia lucene/tests/*.txt
 include resources/tests/index.html.en
 include xml/test*.html xml/test.rdf xml/simple.xml xml/simple.xsd
 include zope/*.dtml
+include doc/*.tex doc/*.txt doc/itools.sty doc/Makefile
+include doc/examples/*.py doc/examples/*.xml doc/examples/*.txt doc/examples/*.xhtml 
 include LGPL-2.1

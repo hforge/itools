@@ -109,7 +109,7 @@ tools are:
 """
 
 setup(name = "itools",
-      version = "0.4.0",
+      version = "0.4.1",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",

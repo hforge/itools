@@ -111,11 +111,11 @@ class Catalog(Folder):
     def _save(self):
         # Remove documents
         for doc_number in self.removed_documents:
-            self.del_handler('d%d' % doc_number)
+            self.del_handler('d%07d' % doc_number)
         self.removed_documents = []
         # Add documents
         for doc_number, document in self.added_documents.items():
-            self.set_handler('d%d' % doc_number, document)
+            self.set_handler('d%07d' % doc_number, document)
         self.added_documents = {}
         # Save indexes
         fields = self.get_handler('fields')
@@ -201,7 +201,7 @@ class Catalog(Folder):
         if doc_number in self.added_documents:
             document = self.added_documents.pop(doc_number)
         else:
-            document = self.get_handler('d%d' % doc_number)
+            document = self.get_handler('d%07d' % doc_number)
             self.removed_documents.append(doc_number)
             
         for name in document.resource.get_resource_names():
@@ -277,7 +277,7 @@ class Catalog(Folder):
                     if doc_number in self.added_documents:
                         doc_handler = self.added_documents[doc_number]
                     else:
-                        doc_handler = self.get_handler('d%d' % doc_number)
+                        doc_handler = self.get_handler('d%07d' % doc_number)
                     stored_field = doc_handler.get_handler('s%d' %field.number)
                     setattr(document, field.name, stored_field.value)
             documents[i] = document

@@ -1,3 +1,9 @@
+0.7.3 (2005/03/13)
+
+  Catalog
+  - Fix unindexing of two or more documents in the same transaction.
+
+
 0.7.2 (2005/03/11)
 
   Resources

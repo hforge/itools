@@ -17,7 +17,6 @@
 
 
 # Import from the Standard Library
-import htmlentitydefs
 import logging
 from sets import Set
 import sys
@@ -27,6 +26,7 @@ from xml.parsers import expat
 # Import from itools
 from itools.handlers import File, Text, IO
 import namespaces
+from itools.xml import parser
 
 
 #############################################################################
@@ -59,232 +59,6 @@ class XMLError(Exception):
 
 
 #############################################################################
-# Parser
-#############################################################################
-
-class Children(object):
-
-    def encode(cls, value, encoding='UTF-8'):
-        s = []
-        for node in value:
-            if isinstance(node, unicode):
-                s.append(node)
-            else:
-                s.append(node.to_unicode(encoding=encoding))
-        return ''.join(s)
-
-    encode = classmethod(encode)
-
-
-
-class Parser(object):
-
-    def parse(self, data):
-        # Default values for version, encoding and standalone are the expat's
-        # default or implicit values. These are overwritten if a declaration
-        # is found.
-        self.version = '1.0'
-        self.encoding = 'UTF-8' # XXX Should we call 'guess_encoding' instead?
-        self.standalone = -1
-
-        self.document_type = None
-
-        # Initialize the data structure
-        self.children = []
-
-        # Create the parser object
-        parser = expat.ParserCreate(namespace_separator=' ')
-        # Enable namespace declaration handlers
-        parser.namespace_prefixes = True
-        # Improve performance by reducing the calls to the default handler
-        parser.buffer_text = True
-        # Do the "de-serialization" ourselves.
-        parser.returns_unicode = False
-
-        # Set parsing handlers (XXX there are several not yet supported)
-        parser.XmlDeclHandler = self.xml_declaration_handler
-        parser.StartDoctypeDeclHandler = self.start_doctype_handler
-        parser.EndDoctypeDeclHandler = self.end_doctype_handler
-##        parser.ElementDeclHandler =
-##        parser.AttlistDeclHandler =
-        parser.StartElementHandler = self.start_element_handler
-        parser.EndElementHandler = self.end_element_handler
-##        parser.ProcessingInstructionHandler =
-        parser.CharacterDataHandler = self.char_data_handler
-##        parser.UnparsedEntityDeclHandler =
-##        parser.EntityDeclHandler =
-##        parser.NotatioDeclHandler =
-        parser.StartNamespaceDeclHandler = self.start_namespace_handler
-        parser.EndNamespaceDeclHandler = self.end_namespace_handler
-        parser.CommentHandler = self.comment_handler
-##        parser.StartCdataSectionHandler =
-##        parser.EndCdataSectionHandler = 
-        parser.DefaultHandler = self.default_handler
-##        parser.DefaultHandlerExpand =
-##        parser.NotStandaloneHandler =
-##        parser.ExternalEntityRefHandler =
-        parser.SkippedEntityHandler = self.skipped_entity_handler
-
-        # The parser, so we keep the error information
-        self.parser = parser
-        # Stack with the still open elements
-        self.stack = [self]
-        # The last namespace declaration
-        self.ns_declarations = {}
-
-        # Parse!!
-        parser.Parse(data, True)
-
-        # Remove auxiliar attributes
-        del self.parser
-        del self.stack
-        del self.ns_declarations
-
-        return self
-
-
-    #######################################################################
-    # expat handlers
-    #######################################################################
-    def xml_declaration_handler(self, version, encoding, standalone):
-        self.version = version
-        if encoding is not None:
-            self.encoding = encoding
-        self.standalone = standalone
-
-
-    def start_doctype_handler(self, name, system_id, public_id,
-                              has_internal_subset):
-        has_internal_subset = bool(has_internal_subset)
-        self.document_type = (name, system_id, public_id, has_internal_subset)
-
-
-    def end_doctype_handler(self):
-        pass
-
-
-    def start_namespace_handler(self, prefix, uri):
-        namespace_handler = namespaces.get_namespace(uri)
-        namespace_handler.namespace_handler(self)
-        # Keep the namespace declarations
-        self.ns_declarations[prefix] = uri
-
-
-    def end_namespace_handler(self, prefix):
-        pass
-
-
-    def comment_handler(self, data):
-        element = self.stack[-1]
-
-        comment = Comment(data)
-        element.set_comment(comment)
-
-
-    def start_element_handler(self, name, attrs):
-        # Parse the element name: namespace_uri, name and prefix
-        n = name.count(' ')
-        if n == 2:
-            namespace_uri, name, prefix = name.split()
-        elif n == 1:
-            prefix = None
-            namespace_uri, name = name.split()
-        else:
-            prefix = None
-            namespace_uri = None
-
-        # Load the namespace handler
-        namespace = namespaces.get_namespace(namespace_uri)
-        # Load the element
-        try:
-            element = namespace.get_element(prefix, name)
-        except XMLError, e:
-            # Add the line number information
-            e.line_number = self.parser.ErrorLineNumber
-            raise e
-
-        element_uri = namespace_uri
-
-        # Keep the namespace declarations (set them as attributes)
-##        xmlns = namespaces.get_namespace(namespaces.xml)
-        xmlns = namespaces.get_namespace(None)
-        for name, value in self.ns_declarations.items():
-            type = xmlns.get_attribute_type(name)
-            value = type.decode(value)
-            element.set_attribute(namespaces.xml, name, value, prefix='xmlns')
-        self.ns_declarations = {}
-        # Set the attributes
-        for name, value in attrs.items():
-            # Parse the attribute name: namespace_uri, name and prefix
-            if ' ' in name:
-                namespace_uri, name, prefix = name.split()
-            else:
-                prefix = None
-                namespace_uri = element_uri
-
-            namespace = namespaces.get_namespace(namespace_uri)
-            try:
-                type = namespace.get_attribute_type(name)
-            except XMLError, e:
-                # Add the line number information
-                e.line_number = self.parser.ErrorLineNumber
-                raise e
-            else:
-                value = type.decode(value)
-                element.set_attribute(namespace_uri, name, value,
-                                      prefix=prefix)
-
-        self.stack.append(element)
-        return element
-
-
-    def end_element_handler(self, name):
-        element = self.stack.pop()
-        parent = self.stack[-1]
-        parent.set_element(element)
-
-
-    def char_data_handler(self, data):
-        element = self.stack[-1]
-        element.set_text(data, self.encoding)
-
-
-    def skipped_entity_handler(self, name, is_param_entity):
-        # XXX HTML specific
-        if name in htmlentitydefs.name2codepoint:
-            codepoint = htmlentitydefs.name2codepoint[name]
-            char = unichr(codepoint).encode(self.encoding)
-            self.char_data_handler(char)
-        else:
-            warnings.warn('Unknown entity reference "%s" (ignoring)' % name)
-
-
-    def default_handler(self, data):
-        self.char_data_handler(data)
-
-
-    #######################################################################
-    # Private API
-    #######################################################################
-    def set_comment(self, comment):
-        self.children.append(comment)
-
-
-    def set_element(self, element):
-        self.children.append(element)
-
-
-    def set_text(self, text, encoding='UTF-8'):
-        text = IO.Unicode.decode(text, encoding)
-        children = self.children
-        if children and isinstance(children[-1], unicode):
-            children[-1] = children[-1] + text
-        else:
-            children.append(text)
-
-
-
-#############################################################################
 # Namespaces
 #############################################################################
 
@@ -293,12 +67,6 @@ class Namespace(object):
     Default namespace handler for elements and attributes that are not bound
     to a particular namespace.
     """
-
-    def namespace_handler(cls, document):
-        pass
-
-    namespace_handler = classmethod(namespace_handler)
-
 
     def get_element(cls, prefix, name):
         return Element(prefix, name)
@@ -320,6 +88,20 @@ namespaces.set_namespace(None, Namespace)
 #############################################################################
 # Data types
 #############################################################################
+
+class Children(object):
+
+    def encode(cls, value, encoding='UTF-8'):
+        s = []
+        for node in value:
+            if isinstance(node, unicode):
+                s.append(node)
+            else:
+                s.append(node.to_unicode(encoding=encoding))
+        return ''.join(s)
+
+    encode = classmethod(encode)
+
 
 class Comment(object):
 
@@ -603,21 +385,52 @@ class Document(Text.Text):
         """
         Builds a tree made of elements and raw data.
         """
-        # Parse
-        parser = Parser()
-        state = parser.parse(resource.get_data())
-        # Declaration
-        self.xml_version = state.version
-        self.standalone = state.standalone
-        # Document type
-        self.document_type = state.document_type
-        # Children
-        elements = [ x for x in state.children if isinstance(x, Element) ]
-        self.root_element = elements[0]
+        self.xml_version = '1.0'
+        encoding = 'UTF-8'
+        self.standalone = -1
 
-        # XXX This is horrible
-        if hasattr(state, 'stl'):
-            self.stl = state.stl
+        stack = []
+        for event, value, line_number in parser.parser.parse(resource.read()):
+            if event == parser.XML_DECLARATION:
+                self.xml_version, encoding, self.standalone = value
+            elif event == parser.DOCUMENT_TYPE:
+                self.document_type = value
+            elif event == parser.START_ELEMENT:
+                namespace, prefix, local_name = value
+                namespace = namespaces.get_namespace(namespace)
+                try:
+                    element = namespace.get_element(prefix, local_name)
+                except XMLError, e:
+                    e.line_number = line_number
+                    raise e
+                stack.append(element)
+            elif event == parser.END_ELEMENT:
+                element = stack.pop()
+                if stack:
+                    stack[-1].set_element(element)
+                else:
+                    self.root_element = element
+            elif event == parser.ATTRIBUTE:
+                namespace_uri, prefix, local_name, value = value
+                namespace = namespaces.get_namespace(namespace)
+                try:
+                    type = namespace.get_attribute_type(local_name)
+                except XMLError, e:
+                    e.line_number = line_number
+                    raise e
+                value = type.decode(value)
+                stack[-1].set_attribute(namespace_uri, local_name, value,
+                                        prefix=prefix)
+            elif event == parser.COMMENT:
+                stack[-1].set_comment(Comment(value))
+            elif event == parser.TEXT:
+                if stack:
+                    stack[-1].set_text(value, encoding)
+
+        # XXX This is an horrible hack
+        from STL import STL
+        self.stl = STL()
+        self.stl.handler = self
 
 
     #######################################################################

@@ -583,15 +583,6 @@ class STL(object):
 ########################################################################
 class Namespace(XML.Namespace):
 
-    def namespace_handler(cls, document):
-        if not hasattr(document, 'stl'):
-            aspect = STL()
-            aspect.handler = document
-            document.stl = aspect
-
-    namespace_handler = classmethod(namespace_handler)
-
-
     def get_element(cls, prefix, name):
         """Element factory, returns the right element instance."""
         if name in ('block', 'inline'):

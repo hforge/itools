@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-29 17:03:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-44
+
+    Summary:
+      xml, started new parser, with generators
+    Revision:
+      itools--main--0.8--patch-44
+
+    The new module 'parser' contains a wrapper around expat that
+    provides an interface to parse an XML document through a
+    generator style interface (see 'XML.Document._load').
+
+    new files:
+     xml/.arch-ids/parser.py.id xml/parser.py
+
+    modified files:
+     Changelog xml/STL.py xml/XML.py
+
+
 2005-03-28 16:11:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-43
 
     Summary:

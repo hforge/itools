@@ -4,73 +4,234 @@ The {\tt itools} source code is managed by {\em tla} (also known as
 {\em GNU arch}\footnote{\tt http://www.gnu.org/software/gnu-arch/}),
 a distributed control version system.
 
-The purpose of this chapter is to help people:
+This chapter explains how:
 
-\begin{itemize}
+\begin{enumerate}
   \item To keep track of the {\tt itools} development.
 
-  \item To contribute to the development of {\tt itools}.
-\end{itemize}
+  \item To maintain private changes.
+
+  \item To contribute your changes back to the main development tree.
+\end{enumerate}
 
 
 \section{Keeping track of {\tt itools}}
 
-If you just want to look at the sources once in while, you can do it
-through the web, see my public {\em tla} archive at:
+You may want to have the last bleeding edge features from {\tt itools} in
+your system as soon as they are written, or to track how the development
+is going on. Then this section is for you.
+
+\subsection{Browsing the sources}
+
+To browse the {\tt itools} archive tree through the web, just go the url
+below:
 
 \begin{code}
-    http://in-girum.net/cgi-bin/archzoom.cgi
+    http://in-girum.net/cgi-bin/archzoom.cgi/jdavid@itaapy.com--public
 \end{code}
 
 \subsection{Check out}
 
-But if you want to check out {\tt itools} from the archive to be up-to-date
-regularly, you will have to install {\em tla} (not covered here) and to set
-up it.
+To check out {\tt itools} from the archive you need to install {\em tla}.
+Most distributions include it, for example, if you use
+Gentoo\footnote{http://www.gentoo.org} just type:
+
+\begin{code}
+    $ sudo emerge tla
+\end{code}
+
+Once {\em tla} is installed, follow the steps described below.
+
 
 \subsubsection{Set your id}
 
 \begin{code}
-    $ tla my-id "J. David Ibáñez <jdavid@itaapy.com>"
+    $ tla my-id "Toto Bonaparte <toto@example.com>"
+    $ tla my-id
+    Toto Bonaparte <toto@example.com>
 \end{code}
 
 
-\subsubsection{Register the official itools archive}
+\subsubsection{Register the official {\tt itools} archive}
 
 \begin{code}
     $ tla register-archive jdavid@itaapy.com--public \
           http://in-girum.net/~jdavid/archives/public
+    $ tla archives
+    jdavid@itaapy.com--public
+        http://in-girum.net/~jdavid/archives/public
 \end{code}
 
 
-\subsubsection{Check out itools}
+\subsubsection{Check out {\tt itools}}
 
 \begin{code}
-    $ tla get jdavid@itaapy.com--public/itools--main--0.4 itools
+    $ cd ~/sandboxes
+    $ tla get jdavid@itaapy.com--public/itools--main--0.4 itools-0.4
+    $ cd itools-0.4
+    $ tla tree-version
+    jdavid@itaapy.com--public/itools--main--0.4
 \end{code}
 
-\subsubsection{Update}
+\subsubsection{A session with {\em tla} and {\tt itools}}
+
+Now, whenever you want to see if something has changed in {\tt itools},
+just type:
 
 \begin{code}
-    $ cd itools
+    $ cd ~/sandboxes/itools-0.4
+    $ tla missing --summary
+    patch-80
+        use Python's documentation to profile the catalog
+    patch-81
+        fix XML error handling (hence better STL message errors)
+\end{code}
+
+The output shows the new patches available (if your code is up-to-date
+the output will be empty). Say you want to apply the patches, type:
+
+\begin{code}
     $ tla update
+    [...]
 \end{code}
 
-To be done often!
+Use the {\tt tla help} to learn about other commands available.
 
 
-%%\section{Developing {\tt itools}}
+\section{Maintaining private changes}
 
-%%Unlike CVS\footnote{\tt http://www.cvshome.org} or
-%%Subversion\footnote{\tt http://subversion.tigris.org} {\em tla} is a
-%%distributed system, in the style of
-%%Bitkeeper\footnote{\tt http://www.bitkeeper.com}.
+Now maybe you want to make some changes to {\tt itools}. The wisest to do
+in this situation is to create a branch of {\tt itools}, this will let you
+to easily update to the last version while keeping your changes.
+
+The first step is to setup an archive (if you have already one you can
+skip to the next subsection).
+
+\subsubsection{Create an archive}
+
+\begin{code}
+    $ mkdir ~/{archives}
+    $ mkdir ~/{archives}/public
+    $ tla make-archive toto@example.com--public ~/{archives}/public
+    $ tla archives
+    jdavid@itaapy.com--public
+        http://in-girum.net/~jdavid/archives/public
+    toto@example.com--public
+        /home/toto/{archives}/public
+\end{code}
+
+Make it your default archive:
+
+\begin{code}
+    $ tla my-default-archive toto@example.com--public
+    $ tla my-default-archive
+    toto@example.com--public
+\end{code}
+
+\subsubsection{Create a branch}
+
+With your own archive, it is time to create a branch of {\tt itools}:
+
+\begin{code}
+    $ tla archive-setup itools--toto--0.4
+      * creating category toto@example.com--public/itools
+      * creating branch toto@example.com--public/itools--toto
+      * creating version toto@example.com--public/itools--toto--0.4
+    $ tla tag jdavid@itaapy.com--public/itools--main--0.4 itools--toto--0.4
+      * Archive caching revision
+\end{code}
+
+So now you can replace the check-out from the main tree with a one from
+your own branch:
+
+\begin{code}
+    $ cd ~/sandboxes
+    $ rm -rf itools-0.4
+    $ tla get toto@example.com--public/itools--toto--0.4 itools-0.4
+    $ cd itools-0.4
+    $ tla tree-version
+    toto@example.com--public/itools--toto--0.4
+\end{code}
 
 
-%%\subsubsection{Create a new archive}
+\subsubsection{Working with your branch}
 
-%%\begin{code}
-%%    $ mkdir ~/{archives}
-%%    $ tla make-archive jdavid@itaapy.com--public ~/{archives}/public
-%%    $ tla my-default-archive jdavid@itaapy.com--public
-%%\end{code}
+So, now you modify {\tt itools} to add a new feature. Before anything else
+it is a good idea to check what you have changed:
+
+\begin{code}
+    $ tla changes
+    [...]
+\end{code}
+
+This command shows which files (and folders) have been modified, removed,
+added or moved. For a more detailed description, try:
+
+\begin{code}
+    $ tla changes --diffs | less
+\end{code}
+
+Before committing, it is also a very good idea to check wether you forgot
+to add a file:
+
+\begin{code}
+    $ tla tree-lint
+    [...]
+\end{code}
+
+The command above checks your project tree, it will tell you about files
+suspected to be source code.
+
+When you are sure everything is alright, it came the time to commit.
+First you have to write a log message:
+
+\begin{code}
+    $ vi `tla make-log`
+\end{code}
+
+Within the editor, you should introduce a title that describes the changes
+you have done, and optionally a longer description, and some keywords. Once
+you are done, left the editor and type:
+
+\begin{code}
+    $ tla commit
+    $ tla revisions
+    [...]
+    patch-1
+        add feature XXX
+\end{code}
+
+
+\subsubsection{Merging from the main branch}
+
+
+Ok, so now the upstream version of {\tt itools} is modified, how to merge
+the changes in your tree? easy:
+
+\begin{code}
+    $ cd ~/sandboxes/itools-0.4
+    $ tla star-merge -t jdavid@itaapy.com--public/itools--main--0.4
+    [...]
+\end{code}
+
+Beware, there may be conflicts that you must resolve.
+
+Now, your project tree contains the changes from the upstream archive,
+you must commit them in your own archive. The log is written automatically
+by typing:
+
+\begin{code}
+    $ tla log-for-merge >> `tla make-log`
+    $ vi `tla make-log`
+\end{code}
+
+Within the editor there will be a description detailing the patchs that
+have been applied. So you just have to add the subject, something like
+``merging from the main tree''. Once this is done just commit as usual:
+
+\begin{code}
+    $ tla commit
+\end{code}
+
+
+\section{Contibuting your work to the main tree}

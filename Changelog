@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-12 16:42:46 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-82
+
+    Summary:
+      documentation, improve the appendix about GNU Arch
+    Revision:
+      itools--main--0.4--patch-82
+
+    Documentation, improve the appendix about GNU Arch.
+
+    modified files:
+     Changelog doc/arch.tex
+
+
 2004-09-11 18:41:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
 
     Summary:

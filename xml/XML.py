@@ -706,7 +706,7 @@ class Document(Text.Text):
         return cmp(self.children, other.children)
 
 
-    def get_root(self):
+    def get_root_element(self):
         """
         Returns the root element (XML documents have one root element).
         """

@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-22 17:53:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-26
+
+    Summary:
+      merge catalog optimization from the 0.6 branch
+    Revision:
+      itools--main--0.7--patch-26
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.6--patch-65
+       catalog, optimize search
+    
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/IDocument.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.6--patch-65
+
+
 2005-02-22 13:10:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
 
     Summary:

@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-05 10:01:31 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-77
+
+    Summary:
+      XHTML, add "tt" to the list of inline elements
+    Revision:
+      itools--main--0.4--patch-77
+
+    XHTML, add "tt" to the list of inline elements.
+
+    modified files:
+     Changelog xml/XHTML.py
+
+
 2004-09-03 14:35:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-76
 
     Summary:

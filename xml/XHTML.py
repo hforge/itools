@@ -29,7 +29,8 @@ from itools import i18n
 
 
 inline_elements = ['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn', 'em',
-                   'kbd', 'q', 'samp', 'span', 'strong', 'sub', 'sup', 'var']
+                   'kbd', 'q', 'samp', 'span', 'strong', 'sub', 'sup', 'tt',
+                   'var']
 
 
 

@@ -1,3 +1,49 @@
+0.4.2 (2004/08/18)
+
+  Resources
+  - Allow direct write through a list like interface (e.g. r[a:b] = 'xxx'),
+    and the new method "append".
+  - Remove versioning from memory resources.
+  - Add the method "Folder.traverse".
+
+  Handlers
+  - The "__str__" and "__unicode__" methods from file handlers have been
+    obsoleted in favor of "to_str" and "to_unicode".
+  - The method "Folder.get_handler" accepts paths that start with "..".
+  - Add the concept of virtual handlers, include the new method
+    "Folder._get_virtual_handler". Virtual handlers are not cached.
+  - Add the method "traverse" to folders.
+  - The CSV handler works now, it uses the Python's "csv" module.
+  - The PO handler now accepts non ASCII character on the message id.
+
+  XML
+  - Consider the XML doctype to choose the right handler class.
+  - Fix "XHTML.get_messages", don't consider empty attributes.
+  - Remove "XHTML.set_uriprefix".
+  - Fix the HTML handler, use "HTML.Element" instead of "XML.Element".
+
+  Simple Template Language
+  - Fix "stl:attributes" for boolean attributes (e.g. checked).
+  - Improve error messages.
+  - Coerce integers to strings for "stl:attributes" and "stl:content".
+
+  Internationalization
+  - Add the modules "i18n.fuzzy", calculates the distance between two
+    sentences.
+  - Add "i18n.oracle", guesses the language of a text language.
+  - Rename "i18n.parsers" to "i18n.igettext" and install it as an script.
+
+  Index & Search
+  - Obsolete itools.lucene in favor of the new engine, itools.catalog
+
+  Documentation
+  - Revise docuementation.
+  - Start a chapter about building new handler classes.
+
+  Packaging
+  - Add the Changelog file, generated automatically by tla.
+
+
 0.4.1 (2004/06/05)
 
   - Moved from CVS to GNU arch

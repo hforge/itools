@@ -104,12 +104,11 @@ tools are:
    from one state to another through transitions, classes can add specific
    semantics to states and transitions.
 
- * itools.lucene -- An underway implementation of the famous Jakarta's
-   indexing and search tool.
+ * itools.catalog -- An Index & Search engine.
 """
 
 setup(name = "itools",
-      version = "0.4.1",
+      version = "0.4.2",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",

@@ -2,6 +2,34 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-04 17:41:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
+
+    Summary:
+      documentation, update XML chapter
+    Revision:
+      itools--main--0.8--patch-53
+
+
+    new files:
+     doc/examples/chapter7/.arch-ids/=id
+     doc/examples/chapter7/.arch-ids/namespaces.py.id
+     doc/examples/chapter7/.arch-ids/parser.py.id
+     doc/examples/chapter7/namespaces.py
+     doc/examples/chapter7/parser.py
+
+    modified files:
+     Changelog doc/files.tex doc/xml.tex xhtml/XHTML.py
+
+    renamed files:
+     doc/examples/.arch-ids/hello.xml.id
+       ==> doc/examples/chapter7/.arch-ids/hello.xml.id
+     doc/examples/hello.xml
+       ==> doc/examples/chapter7/hello.xml
+
+    new directories:
+     doc/examples/chapter7 doc/examples/chapter7/.arch-ids
+
+
 2005-04-04 17:41:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-52
 
     Summary:

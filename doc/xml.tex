@@ -3,17 +3,151 @@
 The purpose of this chapter is to explain the XML services provided by
 {\tt itools}, which can be found in the sub-package {\tt itools.xml}.
 
-\section{XML.Document}
 
-The XML facilities provided by {\tt itools} are built upon the resource-handler
-architecture. The basic handler class that enables us to manipulate XML files
-is {\tt XML.Document}, now we are going to play a little bit with it:
+\section{The parser}
+
+The first layer is the event driven parser implemented by
+{\tt itools.xml.parser}, which is a wrapper around the
+{\tt expat}\footnote{http://expat.sourceforge.net/} parser.
+
+With {\tt expat} you need a function for every event you want to manage,
+so for example, if you want to deal just with elements, comments and text
+nodes, you will need four functions (the start element, end element, comment
+and character data handlers), plus the main function that sets up the
+parser. State is typically shared across event handlers through instance
+variables. The {\tt expat} approach makes it relatively hard to follow the
+program flow.
+
+With {\tt itools.xml.parser} all the code is within a single function, and
+state is stored in local variables. Let's see a dummy example:
+
+\begin{code}
+    from itools.xml import parser
+
+    for event, value, line_number in parser.parse(data):
+        if event == parser.START_ELEMENT:
+            namespace, prefix, local_name = value
+            print 'START ELEMENT:', local_name
+        elif event == parser.END_ELEMENT:
+            namespace, prefix, local_name = value
+            print 'END ELEMENT:', local_name
+        elif event == parser.TEXT:
+            print 'TEXT', value
+\end{code}
+
+The example above just prints a message to standard output each time the
+start of an element, the end of an element or a text node is found.
+
+The parser returns a list of events, where every event is a tuple of three
+valuese: the event type, the value (which depends on the event type) and
+the line number. The types of events implemented are:
+
+\begin{quote}
+  \begin{tabular}{ll}
+    Event & Value\\\hline
+    {\tt XML\_DECLARATION} & (xml version, encoding, standalone)\\
+    {\tt DOCUMENT\_TYPE} & (name, system id, public id, has internal subset)\\
+    {\tt START\_ELEMENT} & (namespace uri, prefix, local name)\\
+    {\tt END\_ELEMENT} & (namespace uri, prefix, local name)\\
+    {\tt ATTRIBUTE} & (namespace uri, prefix, local name, value)\\
+    {\tt COMMENT} & value\\
+    {\tt TEXT} & value\\
+  \end{tabular}
+\end{quote}
+
+As you can appreciate only a subset of the XML standard is supported, though
+it is all what most users need.
+
+Another impotant thing to note is that all values returned are normal
+strings, not unicode strings. It is not the job of the low level parser
+to deserialize the values.
+
+
+\section{Namespaces}
+
+From the table above you can see {\tt itools.xml} provides support for XML
+namespaces. The event values for elements and attributes are tuples, where
+the first two components are the {\em namespace uri} and the {\em prefix}.
+If an element or attribute is not attached to a namespace, the {\em uri}
+and the {\em prefix} will be {\tt None}.
+
+The module {\tt itools.xml.namespaces} provides a registry for namespace
+handlers, and an abstract class which defines the programming interface
+and provides a default behaviour for subclasses. The table below defines
+this programming interface:
+
+\begin{api}
+    {\tt class\_uri}\\
+    - The uri that uniquely identifies this namespace.
+
+    {\tt class\_prefix}\\
+    - The recommended prefix for the namespace. For example ``{\tt dc}''
+      for Dublin Core. By default it is {\tt None}.
+
+    {\tt get\_element\_schema(name)}\\
+    - Returns the schema for the given element name.
+
+    {\tt get\_attribute\_schema(name)}\\
+    - Returns the schema for the given attribute name.
+\end{api}
+
+The schema is a dictionary whose keys and values are somewhat arbitrary,
+they will depend on what you need. Though, it usually includes the type
+of the attribute or element, which is used to deserialize and serialize
+the values. For example, consider a link within an XHTML document, like:
+
+\begin{code}
+    <a href="http://www.example.com" title="Example" />
+\end{code}
+
+The {\tt href} attribute should be loaded as a URI reference, and {\tt title}
+should be a unicode string. The excerpt below will do the job:
+
+\begin{code}
+    from itools.xml import parser, namespaces
+    from itools import xhtml
+
+    for event, value, line_number in parser.parse(data):
+        if event == parser.ATTRIBUTE:
+            namespace_uri, prefix, local_name, value = value
+            namespace = namespaces.get_namespace(namespace_uri)
+            schema = namespace.get_attribute_schema(local_name)
+            value = schema['type'].decode(value)
+            print local_name, schema['type']
+            print repr(value)
+            print
+\end{code}
+
+The output when running this code is:
+
+\begin{code}
+    href <class 'itools.handlers.IO.URI'>
+    <itools.uri.generic.Reference object at 0xb7a8c8ac>
+
+    title <class 'itools.handlers.IO.Unicode'>
+    u'Example'
+\end{code}
+
+For examples about how to define your own namespace handlers see the Dublin
+Core ({\tt itools.xml.DublinCore}) and XHTML ({\tt itools.xhtml.XHTML})
+implementations.
+
+
+\section{Documents}
+
+If {\tt itools.xml.parser} provides an event driven parser, whose function
+is similar to SAX\footnote{http://XXX}, we do have too an equivalent for
+DOM\footnote{http://XXX}. And of course it takes the form of a resource
+handler.
+
+The handler class {\tt itools.xml.XML.Document} loads the document into memory
+as a tree of nodes, with some global attributes. Let's inspect an example:
 
 \begin{code}
     >>> from itools.handlers import get_handler
     >>> import itools.xml
     >>>
-    >>> doc = get_handler('examples/hello.xml')
+    >>> doc = get_handler('examples/chapter7/hello.xml')
     >>> doc
     <itools.xml.XML.Document object at 0x4064466c>
     >>> print doc.xml_version
@@ -190,18 +324,13 @@ And here is the API:
 \end{api}
 
 
-\section{Namespaces}
+\section{XHTML}
 
-One very important concept of XML are the {\em namespaces}.
+To finish the chapter we are going to give a glance to the implementation
+of XHTML provided by {\tt itools.xhtml}.
 
-An XML document may contain many different elements and attributes, if there
-is not any XML declaration these elements and attributes will be instances
-of the {\tt XML.Element} and {\tt XML.Attribute} classes, with the standard
-API and none specific semantics.
-
-But if there are namespace declarations, {\tt itools.xml} will be able to
-build specific objects that add some special semantics. To see it we are
-going to load the file {\tt examples/hello.xhtml}, whose content is:
+To drive the explanation here is the document source we will use as example
+(see {\tt examples/hello.xhtml}):
 
 \begin{code}
     <?xml version="1.0" encoding="UTF-8"?>
@@ -219,40 +348,29 @@ going to load the file {\tt examples/hello.xhtml}, whose content is:
 \end{code}
 
 The only two differences between this file and the example we saw at the
-beginning ({\tt examples/hello.xml}) are the {\em document type} declaration
-and, what interests us now, the XML namespace declaration:
+beginning ({\tt examples/chapter7/hello.xml}) are the {\em document type}
+declaration and the XML namespace declaration. The result is {\tt get\_handler}
+returns an XHTML document instead of an XML document:
 
 \begin{code}
-    xmlns="http://www.w3.org/1999/xhtml"
-\end{code}
-
-What this sentence says is that all the elements and attributes within the
-document belong to the XHTML namespace. This information lets the {\tt itools}
-XML parser to build a more ``intelligent'' tree:
-
-\begin{code}
-    >>> resource = get_resource('examples/hello.xhtml')
-    >>> doc = XML.Document(resource)
-    >>> 
+    >>> doc = get_handler('examples/hello.xhtml')
     >>> doc
-    <itools.xml.XML.Document object at 0x405ea38c>
+    <itools.xhtml.XHTML.Document object at 0xb7a2ec4c>
     >>> 
     >>> for node in doc.traverse():
     ...     print repr(node)
     ... 
-    <itools.xml.XHTML.Element object at 0xb7a3316c>
+    <itools.xhtml.XHTML.BlockElement object at 0xb79884ec>
     u'\n  '
-    <itools.xml.XHTML.Element object at 0xb7a331ac>
-    u'\n    '
-    <itools.xml.XHTML.Element object at 0xb7a332ac>
-    u'\n    '
-    <itools.xml.XHTML.Element object at 0xb7a33f2c>
+    <itools.xhtml.XHTML.HeadElement object at 0xb798852c>
+    u'\n    \n    '
+    <itools.xhtml.XHTML.BlockElement object at 0xb79885ac>
     u'Hello world'
     u'\n    '
-    <itools.xml.XML.Comment object at 0xb798554c>
+    <itools.xml.XML.Comment object at 0xb798856c>
     u'\n  '
     u'\n  '
-    <itools.xml.XHTML.Element object at 0xb79855ac>
+    <itools.xhtml.XHTML.BlockElement object at 0xb798858c>
     u'\n  '
     u'\n'
 \end{code}

@@ -141,6 +141,7 @@ attributes_schema = {
 
     'href': {'type': IO.URI},
     'src': {'type': IO.URI},
+    'title': {'type': IO.Unicode},
     }
 
 

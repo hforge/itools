@@ -228,7 +228,7 @@ class Tree(object):
         self.root = root
         self.slot = slot
         self.documents = None
-        self.children = {}
+        self.children = None
 
 
     def load_documents(self):
@@ -255,6 +255,22 @@ class Tree(object):
                 documents.append(None)
 
 
+    def load_children(self):
+        self.children = {}
+
+        tree_rsrc = self.root.tree_handler.resource
+        slot = 16 + self.slot * 16
+        # Children
+        child_n = IO.decode_link(tree_rsrc[slot+8:slot+12])
+        while child_n is not None:
+            child = 16 + child_n * 16
+            c = IO.decode_character(tree_rsrc[child:child+4])
+            tree = Tree(self.root, child_n)
+            self.children[c] = tree
+            # Next
+            child_n = IO.decode_link(tree_rsrc[child+12:child+16])
+
+
     ########################################################################
     # API
     ########################################################################
@@ -267,6 +283,9 @@ class Tree(object):
            ...}
         """
         if term:
+            if self.children is None:
+                self.load_children()
+
             prefix, suffix = term[0], term[1:]
             if prefix in self.children:
                 subtree = self.children[prefix]
@@ -330,6 +349,9 @@ class Tree(object):
         the numbers of the documents that must be un-indexed.
         """
         if word:
+            if self.children is None:
+                self.load_children()
+
             prefix, suffix = word[0], word[1:]
             if prefix in self.children:
                 subtree = self.children[prefix]
@@ -374,6 +396,9 @@ class Tree(object):
 
     def search_word(self, word):
         if word:
+            if self.children is None:
+                self.load_children()
+
             prefix, suffix = word[0], word[1:]
             subtree = self.children.get(prefix, None)
             if subtree is None:
@@ -383,6 +408,7 @@ class Tree(object):
         else:
             if self.documents is None:
                 self.load_documents()
+
             documents = {}
             for doc_number, positions in self.documents.items():
                 weight = len(positions)
@@ -429,37 +455,15 @@ class IIndex(Folder, Tree):
         self.documents = {}
         self.children = {}
 
-        tree_data = tree_handler.resource.read()
-        doc_rsrc = docs_handler.resource
-
-        stack = []
+        tree_rsrc = tree_handler.resource
         child_n = tree_handler.first_slot
-        if child_n is not None:
-            stack.append((self, child_n))
-
-        while stack:
-            # Build the tree instance
-            parent, tree_slot_n = stack.pop()
-            tree = Tree(self, tree_slot_n)
-
-            # Decode tree slot
-            tree_slot = 16 + tree_slot_n * 16
-            tree_slot_data = tree_data[tree_slot:tree_slot+16]
-            c = IO.decode_character(tree_slot_data[0:4])
-##            doc_slot_n = IO.decode_link(tree_slot_data[4:8])
-            child_n = IO.decode_link(tree_slot_data[8:12])
-            sibling_n = IO.decode_link(tree_slot_data[12:16])
-
-            # Add the tree instance to its parent
-            parent.children[c] = tree
-
-            # Next sibling
-            if sibling_n is not None:
-                stack.append((parent, sibling_n))
-
-            # Children
-            if child_n is not None:
-                stack.append((tree, child_n))
+        while child_n is not None:
+            child = 16 + child_n * 16
+            c = IO.decode_character(tree_rsrc[child:child+4])
+            tree = Tree(self, child_n)
+            self.children[c] = tree
+            # Next
+            child_n = IO.decode_link(tree_rsrc[child+12:child+16])
 
         # The state
         self.added_terms = {}

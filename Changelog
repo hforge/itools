@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-10-24 18:12:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-88
+
+    Summary:
+      backport catalog fix from itools 0.5
+    Revision:
+      itools--main--0.4--patch-88
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.5--patch-14
+       catalog, now the keyword, bool and path analysers return unicode
+    
+
+    modified files:
+     Changelog catalog/Analysers.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.5--patch-14
+
+
 2004-09-24 10:01:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-87
 
     Summary:

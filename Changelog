@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-24 18:22:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
+
+    Summary:
+      uri, don't fail with malformed email addresses ("mailto" scheme)
+    Revision:
+      itools--main--0.7--patch-31
+
+
+    modified files:
+     Changelog uri.py
+
+
 2005-02-23 14:40:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
 
     Summary:

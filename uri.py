@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -56,6 +56,13 @@ Other related RFCs include:
 # get rid of the urlparse library.
 #
 # For references see RFC2396, sections 4 and C2
+
+
+# XXX
+#
+# Serialization and de-serialization should be decoupled from the produced
+# objects (like in "handlers.IO"), isn't it?
+
 
 # Import from Python
 from urlparse import urlsplit, urlunsplit
@@ -527,7 +534,12 @@ def get_reference(reference):
     # Catch specific schemes
     if reference.startswith('mailto:'):
         email_address = reference[7:]
-        return Mailto(email_address)
+        try:
+            return Mailto(email_address)
+        except ValueError:
+            # Case the email address has not an '@'
+            # XXX Emit a warning or something here
+            return reference
 
     # Default to generic references
     return Reference(reference)

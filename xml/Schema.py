@@ -116,7 +116,10 @@ class ComplexType(object):
                         warnings.warn('Unable to decode "%s"' % name)
                 # The language
                 if node.has_attribute('lang'):
-                    language = node.get_attribute('lang')
+                    # XXX the lang attribute should be "xml:lang", the xml
+                    # namespace should load it as an string. Then we would
+                    # not need to coerce the value to str.
+                    language = str(node.get_attribute('lang'))
                 else:
                     language = None
                 # Set property value

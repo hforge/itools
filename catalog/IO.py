@@ -67,7 +67,7 @@ def decode_uint32(data):
 #
 #   9831 = 0010 0110 0110 0111
 #
-# (1) Split by groups of seven bytes:
+# (1) Split by groups of seven bits:
 #
 #   00 1001100 1100111
 #
@@ -175,6 +175,3 @@ def decode_version(data):
     ordinal = struct.unpack('>I', data)[0]
     date = datetime.date.fromordinal(ordinal)
     return date.strftime('%Y%m%d')
-
-
-

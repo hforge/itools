@@ -365,7 +365,7 @@ class STL(object):
     """The stl namespace handler. It is an aspect."""
 
     def __call__(self, namespace={}):
-        # XXX Rewrite with walk.
+        # XXX Rewrite with traverse2.
 
         # Initialize the namespace stack
         stack = NamespaceStack()

@@ -122,10 +122,7 @@ class File(Handler):
     def copy_handler(self):
         resource = memory.File(self.to_str())
         return self.__class__(resource)
-        
 
 
 
 Handler.register_handler_class(File)
-
-

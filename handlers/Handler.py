@@ -52,6 +52,7 @@ class Handler(object):
     # is the root of a tree).
     parent = None
     name = ''
+    is_virtual = False
     # Default for mimetype (XXX revise)
     _mimetype = None
 

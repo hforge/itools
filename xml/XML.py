@@ -69,15 +69,7 @@ class XMLError(Exception):
 
 
 class Context(object):
-    """
-    The parameter 'context' expected by 'Document.walk' must be an instance
-    of this class. For now it does two things:
-
-    - keeps the path to the current node in the 'path' attibute
-
-    - serves as a generic container for any specific data needed by the
-      developers code
-    """
+    """Used by 'traverse2' to control the traversal."""
 
     def __init__(self):
         self.skip = False
@@ -560,30 +552,6 @@ class Document(Text.Text):
                     yield x, context
 
 
-    # XXX Obsoleted by traverse2, to be removed for 0.7
-    def walk(self, before=None, after=None, context=None):
-        """
-        Traverse the tree, for each child do:
-
-        1. before(child, context)
-        2. traverse it
-        3. after(child, context)
-        """
-        if context is None:
-            context = Context()
-
-        context.path.append(self)
-        for child in self.children:
-            if before is not None:
-                before(child, context)
-            if isinstance(child, Element):
-                child.walk(before, after, context)
-            if after is not None:
-                after(child, context)
-        context.path.pop()
-
-
-
 #############################################################################
 # XML Factory
 #############################################################################
@@ -804,27 +772,6 @@ class Element(Node):
         # Up
         context.start = False
         yield self, context
-
-
-    # XXX Obsoleted by traverse2, to be removed for 0.7
-    def walk(self, before=None, after=None, context=None):
-        """
-        Traverse the tree, for each child do:
-
-        1. call before
-        2. traverse it
-        3. call after
-        """
-        context.path.append(self)
-        for child in self.children:
-            if before is not None:
-                stop = before(child, context)
-            if not stop:
-                if isinstance(child, Element):
-                    child.walk(before, after, context)
-            if after is not None:
-                after(child, context)
-        context.path.pop()
 
 
     #######################################################################

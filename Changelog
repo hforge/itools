@@ -2,6 +2,52 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-09 10:25:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
+
+    Summary:
+      merge from 0.7 branch
+    Revision:
+      itools--main--0.8--patch-11
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-36
+       resources, fix the modification time of Zope 2 resources
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-37
+       catalog, use iterative algorithm to load the iindex
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-38
+       catalog, optimize load, decode each slot in one step
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-39
+       packaging, fix setup.py, use relative paths (by Herve)
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-40
+       xml, remove obsolete 'walk' method
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-41
+       handlers, add "traverse2" method to folders
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-42
+       handlers, add is_virtual variable, fix traverse2
+    
+
+    modified files:
+     Changelog catalog/IIndex.py catalog/IO.py handlers/File.py
+     handlers/Folder.py handlers/Handler.py resources/zope2.py
+     setup.py xml/STL.py xml/XML.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.7--patch-36
+     jdavid@itaapy.com--public/itools--main--0.7--patch-37
+     jdavid@itaapy.com--public/itools--main--0.7--patch-38
+     jdavid@itaapy.com--public/itools--main--0.7--patch-39
+     jdavid@itaapy.com--public/itools--main--0.7--patch-40
+     jdavid@itaapy.com--public/itools--main--0.7--patch-41
+     jdavid@itaapy.com--public/itools--main--0.7--patch-42
+
+
 2005-03-05 18:25:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
 
     Summary:

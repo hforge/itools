@@ -1,5 +1,6 @@
 # -*- coding: ISO-8859-1 -*-
 # Copyright (C) 2002-2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#                    2005 Luis Belmar Letelier <luis@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -46,3 +47,29 @@ def get_abspath(globals_namespace, local_path):
         mpath = mpath.replace(os.path.sep, '/')
 
     return mpath
+
+
+def get_arch_revision():
+    """ get the arch revision name from the Changelog file """
+    changelog_path, line = '', ''
+
+    # Get Changelog path 
+    paths = globals().get('__path__', [])
+    paths = [path for path in paths if path.endswith('itools')]
+    if paths:
+        changelog_path = '%s/Changelog' % paths[0]
+
+    # Open Changelog file and take the first line after the first 'Revision:'
+    try:
+        file = open(changelog_path, 'r')
+    except IOError:
+        print 'arch revision of itools: not found '
+        tla_revision = None
+    else:
+        while not line.startswith('Revision:'):
+            line = file.readline().strip()
+        tla_revision = file.readline().strip()
+
+    return tla_revision
+
+__arch_revision__ = get_arch_revision()

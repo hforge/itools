@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-21 16:56:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
+
+    Summary:
+      merge from Luis branch (itools.__arch_revision__)
+    Revision:
+      itools--main--0.7--patch-21
+
+    Patches applied:
+    
+     * luis@itaapy.com--private/itools--luis--0.7--patch-6
+       Allow to ask for the __arch_revision__ to the itools instance.
+    
+
+    modified files:
+     Changelog __init__.py
+
+    new patches:
+     luis@itaapy.com--private/itools--luis--0.7--patch-6
+
+
 2005-02-21 08:37:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
 
     Summary:

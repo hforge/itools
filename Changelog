@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-30 12:43:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
+
+    Summary:
+      xml, fix "xml" and "xmlns" namespaces
+    Revision:
+      itools--main--0.8--patch-46
+
+
+    modified files:
+     Changelog xml/namespaces.py xml/parser.py
+
+
 2005-03-30 09:57:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-45
 
     Summary:

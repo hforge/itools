@@ -110,7 +110,7 @@ class Parser(object):
         # Keep the namespace declarations
         for name, value in self.namespaces.items():
             self.events.append((ATTRIBUTE,
-                                (namespaces.xml, 'xmlns', name, value)))
+                                (namespaces.xmlns, 'xmlns', name, value)))
         self.namespaces = {}
 
         # Attributes
@@ -120,8 +120,11 @@ class Parser(object):
             if n == 2:
                 namespace, name, prefix = name.split()
             elif n == 1:
-                prefix = None
                 namespace, name = name.split()
+                if namespace == namespaces.xml:
+                    prefix = 'xml'
+                else:
+                    prefix = None
             else:
                 prefix = None
                 namespace = element_uri

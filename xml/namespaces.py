@@ -39,7 +39,8 @@ be used carefully, collisions
 
 
 # Some standard XML namespace uris
-xml = 'http://www.w3.org/2000/xmlns/'
+xml = 'http://www.w3.org/XML/1998/namespace'
+xmlns = 'http://www.w3.org/2000/xmlns/'
 xhtml = 'http://www.w3.org/1999/xhtml'
 dublin_core = 'http://purl.org/dc/elements/1.1'
 

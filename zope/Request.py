@@ -153,32 +153,42 @@ class Request(object):
         if url is None:
             url = self.uri.path[-1]
 
-        query = {}
+        query = []
         # Preserve request parameters that start with any of the prefixes.
         for key, value in self.form.items():
             for prefix in preserve:
                 if key.startswith(prefix):
-                    query[key] = value
+                    query.append((key, value))
                     break
 
         # Modify the parameters
-        query.update(kw)
+        for key in kw:
+            for i, x in enumerate(query):
+                if x is not None and x[0] == key:
+                    query[i] = None
+        query = [ x for x in query if x is not None ]
+        for key, value in kw.items():
+            query.append((key, value))
 
         # Keep the type
-        for key, value in query.items():
+        new_query = []
+        for key, value in query:
             if isinstance(value, str):
-                continue
-            del query[key]
-            if isinstance(value, unicode):
-                query['%s:utf8:ustring' % key] = value.encode('utf8')
+                new_query.append((key, value))
+            elif isinstance(value, unicode):
+                new_query.append('%s:utf8:ustring' % key, value.encode('utf8'))
             elif isinstance(value, int):
-                query['%s:int' % key] = str(value)
+                new_query(('%s:int' % key, str(value)))
+            elif isinstance(value, list):
+                for x in value:
+                    # XXX Should coerce too
+                    new_query.append(('%s:list' % key, x))
             else:
                 # XXX More types needed!!
-                query[key] = str(value)
+                new_query.append((key, str(value)))
 
         # Re-build the query string
-        query_string = urlencode(query)
+        query_string = urlencode(new_query)
 
         # Build the new url
         if query_string:

@@ -16,6 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
+# Import from Python
+import csv
+
 # Import from itools
 from Text import Text
 
@@ -34,25 +37,17 @@ class CSV(Text):
 
         # csv.reader expects an iterator
         data = [ x.strip() for x in data.split('\n') ]
-        data = [ x for x in data if x ]
+        data = [ x.encode(self._encoding) for x in data if x ]
 
-        # The standard library has a module named 'csv', but it is broken
-        # XXX The current code does only deal with CSV without quoting whose
-        # separator is ','
+        # Sniff the dialect
+        sniffer = csv.Sniffer()
+        dialect = sniffer.sniff('\n'.join(data))
+
+        # Parse
         self.lines = []
-        for line in data:
-            line = line.split(',')
+        for line in csv.reader(data, dialect):
+            line = [ unicode(x, self._encoding) for x in line ]
             self.lines.append(line)
-
-##        # Sniff the dialect
-##        sniffer = csv.Sniffer()
-##        dialect = sniffer.sniff('\n'.join(data))
-
-##        # Parse
-##        self.lines = []
-##        for line in csv.reader(data, dialect):
-##            line = [ unicode(x, self._encoding) for x in line ]
-##            self.lines.append(line)
         
 
     #########################################################################

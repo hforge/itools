@@ -18,6 +18,7 @@
 
 # Import from Python
 from datetime import datetime
+from cStringIO import StringIO
 
 # Import from itools.resources
 import base
@@ -33,36 +34,52 @@ class File(Resource, base.File):
     """ """
 
     def __init__(self, data):
-        self.data = data
+        self.data = StringIO()
+        self.data.write(data)
         self.ctime = self.mtime = datetime.now()
 
 
+    def __getitem__(self, i):
+        self.data.seek(i)
+        return self.data.read(1)
+
+
+    def __getslice__(self, a, b):
+        self.data.seek(a)
+        return self.data.read(b-a)
+
+
     def __setitem__(self, index, value):
-        data = self.data
         if isinstance(index, slice):
-            # XXX So far 'step' is not supported
-            start, stop = index.start, index.stop
-        else:
-            start, stop = index, index + 1
-        self.data = data[:start] + value + data[stop:]
+            index = index.start
+        self.data.seek(index)
+        self.data.write(value)
         self.mtime = datetime.now()
 
 
     def __setslice__(self, start, stop, value):
-        self.data = self.data[:start] + value + self.data[stop:]
+        rest = self[stop:]
+        self.data.seek(start)
+        self.data.truncate()
+        self.data.write(value)
+        self.data.write(rest)
         self.mtime = datetime.now()
 
 
     def append(self, value):
-        self.data += value
+        self.data.seek(0, 2)
+        self.data.write(value)
 
 
     def get_data(self):
-        return self.data
+        self.data.seek(0)
+        return self.data.read()
 
 
     def set_data(self, data):
-        self.data = data
+        self.data.seek(0)
+        self.data.truncate()
+        self.data.write(data)
         self.mtime = datetime.now()
 
 

@@ -74,7 +74,7 @@ class IIndexTree(File):
 
     Each slot is made of:
 
-      - character (2 or 4 bytes)
+      - character (4 bytes)
       - frequency number (4 bytes), pointer to IIndexDocuments
       - first child (4 bytes)
       - next sibling (4 bytes)
@@ -121,7 +121,7 @@ class IIndexTree(File):
             # Append the new slot to the end of the file
             base = 16 + slot_number * 16
             character = '\x00\x00\x00\x00'
-            frequency = IO.encode_uint32(0)
+            frequency = IO.encode_link(None)
             first_child = IO.encode_link(None)
             next_sibling = IO.encode_link(None)
             r[base:base+16] = character + frequency + first_child \
@@ -269,20 +269,20 @@ class Tree(object):
                 subtree = self.children[prefix]
             else:
                 # Get an empty slot
-                slot_number = self.root.tree_handler._get_free_slot()
-                # Update data structure on memoty
-                subtree = self.children[prefix] = Tree(self.root, slot_number)
+                free_slot_n = self.root.tree_handler._get_free_slot()
+                # Update data structure on memory
+                subtree = self.children[prefix] = Tree(self.root, free_slot_n)
                 # Update resource
                 r = self.root.tree_handler.resource
                 # Initialize the empty slot
-                base = 16 + slot_number * 16
-                r[base:base+4] = IO.encode_character(prefix)
-                r[base+4:base+8] = IO.encode_link(None)
-                r[base+8:base+12] = IO.encode_link(None)
+                free_slot = 16 + free_slot_n * 16
+                r[free_slot:free_slot+4] = IO.encode_character(prefix)
+                r[free_slot+4:free_slot+8] = IO.encode_link(None)
+                r[free_slot+8:free_slot+12] = IO.encode_link(None)
                 # Prepend the new slot
-                this_base = 16 + self.slot * 16
-                r[base+12:base+16] = r[this_base+8:this_base+12]
-                r[this_base+8:this_base+12] = IO.encode_link(slot_number)
+                this_slot = 16 + self.slot * 16
+                r[free_slot+12:free_slot+16] = r[this_slot+8:this_slot+12]
+                r[this_slot+8:this_slot+12] = IO.encode_link(free_slot_n)
             subtree.index_word(suffix, doc_number, position)
         else:
             tree_handler = self.root.tree_handler
@@ -291,7 +291,8 @@ class Tree(object):
             docs_rsrc = docs_handler.resource
             # Get the slot in the 'documents' resource
             tree_slot = 16 + self.slot * 16
-            fdoc_slot_n = IO.decode_link(tree_rsrc[tree_slot+4:tree_slot+8])
+            fdoc_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
+            fdoc_slot_n = IO.decode_link(fdoc_slot_r)
             if doc_number in self.documents:
                 positions = self.documents[doc_number]
                 positions.append(position)
@@ -306,7 +307,7 @@ class Tree(object):
                 doc_slot_n = docs_handler._get_free_slot()
                 doc_slot = 12 + doc_slot_n * 12
                 docs_rsrc[doc_slot:doc_slot+4] = IO.encode_uint32(doc_number)
-                docs_rsrc[doc_slot+8:doc_slot+12] = IO.encode_link(fdoc_slot_n)
+                docs_rsrc[doc_slot+8:doc_slot+12] = fdoc_slot_r
                 tree_rsrc[tree_slot+4:tree_slot+8] = IO.encode_link(doc_slot_n)
                 frequency = 1
             docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frequency)
@@ -325,7 +326,8 @@ class Tree(object):
             docs_rsrc = docs.resource
             # Search the document slot
             tree_slot = 16 + self.slot * 16
-            docs_slot_n = IO.decode_link(tree_rsrc[tree_slot+4:tree_slot+8])
+            docs_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
+            docs_slot_n = IO.decode_link(docs_slot_r)
             # Free slot
             prev_slot_n = prev_slot = None
             while docs_slot_n is not None:
@@ -342,7 +344,7 @@ class Tree(object):
                     # Add to the free list
                     old_first_r = docs_rsrc[8:12]
                     docs_rsrc[docs_slot+8:docs_slot+12] = old_first_r
-                    docs_rsrc[8:12] = IO.encode_link(docs_slot_n)
+                    docs_rsrc[8:12] = docs_slot_r
                     # Update on memory
                     docs.first_empty = docs_slot_n
                     # Done

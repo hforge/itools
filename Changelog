@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-03 14:35:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-76
+
+    Summary:
+      fix catalog, new document number
+    Revision:
+      itools--main--0.4--patch-76
+
+    Fix catalog, new document number, when the catalog is created.
+
+    modified files:
+     Changelog catalog/Catalog.py
+
+
 2004-09-03 13:45:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-75
 
     Summary:

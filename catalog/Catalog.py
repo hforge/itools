@@ -105,8 +105,10 @@ class Catalog(Folder):
     def get_new_document_number(self):
         documents = [ int(x[1:]) for x in self.resource.get_resources()
                       if x.startswith('d') ]
-        documents.sort()
-        return documents[-1] + 1
+        if documents:
+            documents.sort()
+            return documents[-1] + 1
+        return 0
 
 
     #########################################################################

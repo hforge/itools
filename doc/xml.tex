@@ -10,5 +10,56 @@ and handlers infrastructure. Hence the first thing we are going to talk
 about is the {\tt XML.Document} class, a handler class:
 
 \begin{code}
+    >>> from itools.resources import get_resource
     >>> from itools.xml import XML
+    >>>
+    >>> resource = get_resource('examples/hello.xhtml')
+    >>> doc = XML.Document(resource)
+    >>>
+    >>> doc
+    <itools.xml.XML.Document object at 0x4064466c>
+\end{code}
+
+The document is represented on memory as a tree of nodes, like the
+{\bf D}ocument {\bf O}bject {\bf M}odel standard\footnote{http://XXX}.
+Though, so far no effort has been done to develop an API compatible with
+{\bf DOM}.
+
+Actually, the API is rather simple:
+
+\begin{api}
+    {\tt get\_root\_element()}\\
+    - Returns the root element.
+
+    {\tt traverse()}\\
+    - It is a generator that traverses the XML tree in pre-order, and returns
+    each time a node.
+\end{api}
+
+Lets to see the nodes of our xml document:
+
+\begin{code}
+    >>> for node in doc.traverse():
+    ...     print repr(node)
+    ... 
+    <itools.xml.XML.Document object at 0x4064466c>
+    <itools.xml.XML.XMLDeclaration object at 0x403ebe2c>
+    <itools.xml.XML.Raw object at 0x40416b0c>
+    <itools.xml.XML.DocumentType object at 0x4064f94c>
+    <itools.xml.XML.Raw object at 0x4064fdac>
+    <itools.xml.XHTML.Element object at 0x4065276c>
+    <itools.xml.XML.Raw object at 0x4065266c>
+    <itools.xml.XHTML.Element object at 0x4065286c>
+    <itools.xml.XML.Raw object at 0x406528ac>
+    <itools.xml.XHTML.Element object at 0x406528cc>
+    <itools.xml.XML.Raw object at 0x406528ec>
+    <itools.xml.XHTML.Element object at 0x4065290c>
+    <itools.xml.XML.Raw object at 0x4065296c>
+    <itools.xml.XML.Raw object at 0x4065298c>
+    <itools.xml.XML.Comment object at 0x406529cc>
+    <itools.xml.XML.Raw object at 0x406529ec>
+    <itools.xml.XML.Raw object at 0x40652a0c>
+    <itools.xml.XHTML.Element object at 0x40652a2c>
+    <itools.xml.XML.Raw object at 0x40652a4c>
+    <itools.xml.XML.Raw object at 0x40652a6c>
 \end{code}

@@ -23,80 +23,18 @@ http://www.gnu.org/copyleft/fdl.html}\\
 \maketitle
 \tableofcontents
 
-
 \input{intro.tex}
 \input{uri.tex}
 \input{resources.tex}
 \input{handlers.tex}
 \input{xml.tex}
 \input{stl.tex}
+\input{addendum.tex}
 
-
-
-\chapter{Conclusion}
-
-This article has presented three core features provided by {\tt itools}:
-{\tt itools.uri}, {\tt itools.resources} and {\tt itools.handlers}. Many
-things have been left aside to keep the article short: the description
-of the possibilities of the XML handler, or a deeper discussion about how
-to build your own handlers.
-
-We hope you have found these tools interesting enough to get a closer look.
-
-\section{In the real world}
-
-In spite of the youth of {\tt itools} (version {\tt 0.3} at the time of
-this writing), it is already being used in real production projects.
-Specially, it is the foundation of the {\bf iKaaro} Content Management System.
-
-Some of the advantages provided by its architecture are:
-
-\begin{itemize}
-  \item The whole web site data is stored as a tree of human readable
-    files, instead of opaque persistent Python objects. It is possible
-    to export a web site to the file system, to inspect and manipulate
-    the tree, to make a tarball, to import it back to the ZODB.
-
-  \item This approach encourages the use of standards, every time we
-    need a new feature we look first if there is already an standard
-    file format. The result is a highly portable, standards compliant
-    application, easy to interact with other applications.
-
-  \item It is possible to seamlessly integrate content from foreign
-    sources and to make it appear as if they were in our web site.
-    We are just at the surface of the possibilities.
-\end{itemize}
-
-But the most important, it provides a simple, high-productive framework
-to build our applications on, to reduce the development time to the
-minimum.
-
-\section{Future works}
-
-There is much to do however:
-
-\begin{itemize}
-  \item {\tt itools.uri} is not yet 100\% compliant with the RFC2396,
-    once mature enough this module even could become part of the
-    Python's Standard Library;
-
-  \item support for new schemes, protocols and storages should be
-    added to {\tt itools.resources};
-
-  \item there are a thousand handlers to develop, for standard file formats
-    like vCard, iCal, etc. 
-\end{itemize}
-
-And, last but not least, {\tt itools} is free software, released to the
-world under the terms and conditions of the GNU Lesser General Public
-License, developers own the copyright of the code they write, contributions
-are very welcomed.
-
-
+% Apedices
 \begin{appendix}
 \input{arch.tex}
 \end{appendix}
-
 
 
 \end{document}

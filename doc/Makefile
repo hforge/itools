@@ -1,5 +1,5 @@
 SOURCES = itools.tex itools.sty intro.tex uri.tex resources.tex \
-	handlers.tex xml.tex stl.tex arch.tex
+	handlers.tex xml.tex stl.tex addendum.tex arch.tex
 
 
 dvi: $(SOURCES)

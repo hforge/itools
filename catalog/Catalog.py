@@ -212,7 +212,7 @@ class Catalog(Folder):
                     ii.unindex_term(term, doc_number)
 
 
-    def _search(self, query):
+    def __search(self, query):
         if isinstance(query, Query.Simple):
             # A simple query
             fields = self.get_handler('fields')
@@ -230,8 +230,8 @@ class Catalog(Folder):
             return documents
         else:
             # A complex query
-            r1 = self._search(query.left)
-            r2 = self._search(query.right)
+            r1 = self.__search(query.left)
+            r2 = self.__search(query.right)
             documents = {}
             if query.operator == 'and':
                 for number in r1:
@@ -247,7 +247,7 @@ class Catalog(Folder):
                 return r1
 
 
-    def search(self, query=None, **kw):
+    def _search(self, query=None, **kw):
         # Build the query if it is passed through keyword parameters
         if query is None:
             for key, value in kw.items():
@@ -260,7 +260,21 @@ class Catalog(Folder):
         if query is None:
             raise ValueError, "expected a query"
         # Search
-        documents = self._search(query)
+        return self.__search(query)
+
+
+
+
+    def how_many(self, query=None, **kw):
+        """
+        Returns the number of documents found.
+        """
+        return len(self._search(query, **kw))
+
+
+    def search(self, query=None, **kw):
+        # Search
+        documents = self._search(query, **kw)
         # Sort by weight
         documents = [ (weight, doc_number)
                       for doc_number, weight in documents.items() ]

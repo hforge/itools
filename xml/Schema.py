@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 import datetime
+import warnings
 
 
 
@@ -175,21 +176,25 @@ class ComplexType(object):
         for node in node.get_elements():
             name = node.name
             # Decode the value
-            type, default = schema[name]
-            if issubclass(type, SimpleType):
-                value = unicode(node.children)
-                value = type.decode(value)
-            elif issubclass(type, ComplexType):
-                value = type.decode(node)
+            if name in schema:
+                type, default = schema[name]
+                if issubclass(type, SimpleType):
+                    value = unicode(node.children)
+                    value = type.decode(value)
+                elif issubclass(type, ComplexType):
+                    value = type.decode(node)
+                else:
+                    raise ValueError, 'bad type for "%s"' % name
+                # The language
+                if 'lang' in node.attributes:
+                    language = node.attributes['lang'].value
+                else:
+                    language = None
+                # Set property value
+                property.set_property(name, value, language=language)
             else:
-                raise ValueError, 'bad type for "%s"' % name
-            # The language
-            if 'lang' in node.attributes:
-                language = node.attributes['lang'].value
-            else:
-                language = None
-            # Set property value
-            property.set_property(name, value, language=language)
+                # XXX Maybe better to log it
+                warnings.warn('The schema does not define "%s"' % name)
         return property
     decode = classmethod(decode)
 

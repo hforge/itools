@@ -307,6 +307,7 @@ class Path(list):
 
         prefix = self.get_prefix(path)
         i = len(prefix)
+##        '/'.join(['..'] * len(self[i:]) + path[i:]
         return Path(((['..'] * len(self[i:])) + path[i:]) or ['.'])
 
 

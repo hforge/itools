@@ -127,9 +127,18 @@ class Handler(object):
 
 
     def get_pathtoroot(self):
-        if self.parent is None:
+        i = 0
+        parent = self.parent
+        while parent is not None:
+            parent = parent.parent
+            i += 1
+        if i == 0:
             return './'
-        return self.parent.get_pathtoroot() + '../'
+        return '../' * i
+
+##        if self.parent is None:
+##            return './'
+##        return self.parent.get_pathtoroot() + '../'
 
 
     def get_pathto(self, handler):

@@ -334,13 +334,13 @@ class Tree(object):
                     else:
                         docs_rsrc[prev_slot+8:prev_slot+12] = next_slot_r
                     # Add to the free list
-                    old_first_r = docs_rsrc[8:12]
-                    docs_rsrc[docs_slot+8:docs_slot+12] = old_first_r
+                    docs_rsrc[docs_slot+8:docs_slot+12] = docs_rsrc[8:12]
                     docs_rsrc[8:12] = IO.encode_link(docs_slot_n)
                     # Update on memory
                     docs.first_empty = docs_slot_n
+                else:
+                    prev_slot_n, prev_slot = docs_slot_n, docs_slot
                 # Next
-                prev_slot_n, prev_slot = docs_slot_n, docs_slot
                 docs_slot_n = next_slot_n
 
 

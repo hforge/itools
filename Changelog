@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-13 19:19:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
+
+    Summary:
+      catalog, fix unindex
+    Revision:
+      itools--main--0.7--patch-47
+
+    There was an error in the unindex algorithm where it would
+    uncorrectly perform the operation when two consecutive
+    documents were unindexed.
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2005-03-11 19:19:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
 
     Summary:

@@ -414,8 +414,12 @@ class Reference(object):
             query = reference.query
             fragment = reference.fragment
 
-        return Reference('%s://%s%s?%s#%s' % (self.scheme, self.authority,
-                                              path, query, fragment))
+        reference = '%s://%s%s' % (self.scheme, self.authority, path)
+        if query:
+            reference = reference + '?' + query
+        if fragment:
+            reference = reference + '#' + fragment
+        return Reference(reference)
 
 
 

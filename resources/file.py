@@ -30,14 +30,12 @@ import base
 
 
 class Resource(base.Resource):
-    """ """
 
-    def __init__(self, path):
-        if not isinstance(path, uri.Path):
-            self.path = uri.Path(path)
+    def __init__(self, uri_reference):
+        base.Resource.__init__(self, uri_reference)
         # Keep a copy of the path as a plain string, because this is what
         # the 'os.*' and 'os.path.*' expects. Used internally.
-        self._path = str(path)
+        self._path = str(self.uri.path)
 
 
     def get_atime(self):
@@ -155,18 +153,8 @@ class Folder(Resource, base.Folder):
 
 
     def _get_resource(self, name):
-        path = '%s/%s' % (self._path, name)
-
-        if not os.path.exists(path):
-            return None
-            raise IOError, "No such file or directory: '%s'" % path
-
-        if os.path.isfile(path):
-            return File(path)
-        elif os.path.isdir(path):
-            return Folder(path)
-
-        raise IOError, '%s it is not a file, nor a directory nor a link' % path
+        reference = self.uri.resolve(name)
+        return get_resource(reference)
 
 
     def _has_resource(self, name):
@@ -192,15 +180,12 @@ class Folder(Resource, base.Folder):
 
 
 
-def get_resource(path):
-    if not isinstance(path, uri.Path):
-        path = uri.Path(path)
-
-    # Absolute path
-    if path.is_relative():
-        base = os.getcwd() + '/'
-        base = uri.Path(base)
-        path = base.resolve(path)
-
-    root = Folder('/')
-    return root.get_resource(path)
+def get_resource(reference):
+    path = str(reference.path)
+    if os.path.isfile(path):
+        return File(reference)
+    elif os.path.isdir(path):
+        if not str(reference).endswith('/'):
+            reference = uri.Reference(str(reference) + '/')
+        return Folder(reference)
+    raise IOError, 'nor file neither folder at %s' % reference

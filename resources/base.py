@@ -43,8 +43,12 @@ class Resource:
     ZODB 3.3 and Zope 2.8 arrive (XXX).
     """
 
+    uri = None
+
     def __init__(self, uri_reference):
-        self.uri_reference = uri_reference
+        if not isinstance(uri_reference, uri.Reference):
+            uri_reference = uri.get_reference(uri_reference)
+        self.uri = uri_reference
 
 
     def get_mimetype(self):
@@ -89,9 +93,15 @@ class Folder(Resource):
 
     ######################################################################
     # Specific folder API
-    def get_resources(self, path='.'):
+    def get_resource_names(self, path='.'):
         resource = self.get_resource(path)
         return resource._get_resources()
+
+    # XXX Backwards compatibility (to be replaced for 0.5 by the method below)
+    get_resources = get_resource_names
+##    def get_resources(self):
+##        for resource_name in self.get_resource_names():
+##            yield self.get_resource(resource_name)
 
 
     def get_resource(self, path):

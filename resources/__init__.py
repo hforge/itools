@@ -17,6 +17,7 @@
 
 
 # Import from Python
+import os
 from urlparse import urlsplit
 
 # Import from itools
@@ -36,15 +37,15 @@ def get_resource(reference):
     if not isinstance(reference, uri.Reference):
         reference = uri.get_reference(reference)
 
-    if reference.scheme:
-        scheme = reference.scheme
-    else:
-        scheme = 'file'
+    base = uri.Reference('file://%s/' % os.getcwd())
+    reference = base.resolve(reference)
+
+    scheme = reference.scheme
 
     if scheme == 'file':
         # reference must be a path
-        return file.get_resource(reference.path)
+        return file.get_resource(reference)
     elif scheme == 'http':
         return http.get_resource(reference)
-    else:
-        raise ValueError, 'scheme "%s" unsupported' % scheme
+
+    raise ValueError, 'scheme "%s" unsupported' % scheme

@@ -26,7 +26,7 @@ import base
 
 
 class Resource(base.Resource):
-    """ """
+    pass
 
 
 

@@ -27,27 +27,18 @@ from itools import uri
 
 
 class Resource(base.Resource):
-    """ """
+    pass
 
-    def __init__(self, reference):
-        if not isinstance(reference, uri.Reference):
-            netpath = uri.Reference(reference)
-        self.reference = reference
-
-
-    def get_uri(self):
-        return str(self.reference)
 
 
 class File(Resource, base.File):
-    """ """
 
     def get_data(self):
-        return urlopen(self.get_uri()).read()
+        return urlopen(str(self.uri)).read()
 
 
     def get_mimetype(self):
-        return urlopen(self.get_uri()).info().gettype()
+        return urlopen(str(uri)).info().gettype()
 
 
 

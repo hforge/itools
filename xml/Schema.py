@@ -180,7 +180,11 @@ class ComplexType(object):
                 type, default = schema[name]
                 if issubclass(type, SimpleType):
                     value = unicode(node.children)
-                    value = type.decode(value)
+                    try:
+                        value = type.decode(value)
+                    except ValueError:
+                        # XXX Better to log it?
+                        warnings.warn('Unable to decode "%s"' % name)
                 elif issubclass(type, ComplexType):
                     value = type.decode(node)
                 else:

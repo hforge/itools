@@ -57,7 +57,7 @@ are:
 
 \section{Example: Addressbook}
 
-An adressbook could be stored in a resource using different file formats,
+An addressbook could be stored in a resource using different file formats,
 we are going to use an XML based one, below is an example (which can be
 found in {\tt examples/chapter7/addressbook.xml}):
 
@@ -190,12 +190,12 @@ a byte string representing the data contained by the handler:
             # Open root element
             data += u'<addressbook>\n'
             # Addresses
+            pattern = u'  <address>\n' \
+                      u'    <lastname>%(last_name)s</lastname>\n' \
+                      u'    <firstname>%(first_name)s</firstname>\n' \
+                      u'    <telephone>%(telephone)s</telephone>\n' \
+                      u'  </address>\n'
             for address in self.addresses:
-                pattern = u'  <address>\n' \
-                          u'    <lastname>%(last_name)s</lastname>\n' \
-                          u'    <firstname>%(first_name)s</firstname>\n' \
-                          u'    <telephone>%(telephone)s</telephone>\n' \
-                          u'  </address>\n'
                 data += pattern % address
             # Close root element
             data += u'</addressbook>'
@@ -283,8 +283,8 @@ In summary the API is:
 
 \begin{api}
   {\tt load(resource=None)}\\
-  - Loads the data from the given resource into the handler, if none
-    resource is given the one the handler is attached to wil be used.
+  - Loads the data from the given resource into the handler, if no
+    resource is given, the one the handler is attached to will be used.
 
   {\tt save()}\\
   - Saves the handler into the resource.

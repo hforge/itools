@@ -150,14 +150,15 @@ see an example:
     >>> handler.resource
     <itools.resources.memory.File instance at 0x40638e4c>
     >>> print handler
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+      "http://www.w3.org/TR/html4/loose.dtd">
     <html>
       <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></meta>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
         <title></title>
-      </head>
+      
       <body></body>
-    </html>
+    </head></html>
 \end{code}
 
 The default content of the resource depends on the handler, and it is called

@@ -49,8 +49,9 @@ they share:
   - The URI reference the resource was retrieved from.
 
   {\tt get\_mimetype()}\\
-  - Tries to guess the mimetype of the resource and returns it. If it fails
-  returns {\tt None}.
+  - Tries to guess the mimetype of the resource and returns it as a string.
+    Folders are always {\tt application/x-not-regular-file}. Returns {\tt None}
+    if it fails.
 
   {\tt get\_ctime()}\\
   - Returns a {\tt datetime} object with the time the resource was created.
@@ -62,19 +63,15 @@ they share:
   {\tt get\_atime()}\\
   - Returns a {\tt datetime} object with the last time the resource was
     accessed.
-
-  {\tt get\_mimetype()}\\
-  - Returns an string with the mime type of the resource (the mime type of
-    folder is always {\tt application/x-not-regular-file}).
 \end{api}
 
-It may happen that an specific scheme does not implements one or more of
+It may happen that a specific scheme does not implements one or more of
 these methods.
 
 \section{File Resources}
 
 Besides the common methods for files and folders, each resource type has
-an specific API, the one for file resources is:
+a specific API, the one for file resources is:
 
 \begin{api}
   {\tt get\_data()}\\
@@ -94,7 +91,7 @@ an specific API, the one for file resources is:
 
   {\tt \_\_setitem\_\_(index, value)}\\
   - Sets the given value to the given position ({\em index}). Usually
-    value will be just a byte, but it may be an slice too.
+    value will be just a byte, but it may be a slice too.
 
   {\tt append(data)}\\
   - Appends the given data to the resource.
@@ -148,7 +145,7 @@ The specific API for folders is:
 \begin{api}
   {\tt get\_resource(path)}\\
   - Returns the resource in the given path (where path is either an instance
-    of {\tt uri.Path} or an string).
+    of {\tt uri.Path} or a string).
 
   {\tt get\_resource\_names(path='.')}\\
   - Returns a list with the names of all the resources in the given path.

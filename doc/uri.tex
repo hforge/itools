@@ -5,7 +5,7 @@ In the wild Internet, the first challenge we encounter is how to identify
 and locate the numerous resources that populate it. Well, that's what
 {\bf U}niform {\bf R}esource {\bf I}dentifiers (or just URIs) are for.
 
-The Python Standard Library (batteries included!!) provides a module named
+The Python Standard Library (batteries included!) provides a module named
 {\tt urlparse} which is able to split a generic URI into its main parts
 (scheme, authority, path, query and fragment), to rebuild it, and to
 resolve relative references.
@@ -163,7 +163,7 @@ absolute paths, and relative paths:
 \end{verbatim}
 
   \item [Absolute paths] The absolute paths lack both the scheme and the
-     authority. They start by an slash.
+     authority. They start by a slash.
 
 \begin{verbatim}
     /rfc/rfc2396.txt
@@ -190,7 +190,7 @@ reference that identifies our resource. This is achieved with the
 {\tt resolve} method:
 
 \begin{code}
-    >>> base = uri.get_reference(http://www.ietf.org/rfc/rfc2615.txt)
+    >>> base = uri.get_reference('http://www.ietf.org/rfc/rfc2615.txt')
     >>> print base.resolve('//www.ietf.org/rfc/rfc2396.txt')
     http://www.ietf.org/rfc/rfc2396.txt
     >>> print base.resolve('/rfc/rfc2396.txt')
@@ -251,7 +251,7 @@ The {\tt uri.Path} class also provides an API to manipulate paths:
 
   {\tt is\_relative()}\\
   - Returns {\tt True} if the path is relative (i.e. if it does not start
-    by an slash), {\tt False} otherwise.
+    by a slash), {\tt False} otherwise.
 
   {\tt get\_prefix(path)}\\
   - Returns the path that is common to {\tt self} and to the given path.

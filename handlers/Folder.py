@@ -40,17 +40,13 @@ class Folder(Handler):
         self.cache = {}
 
         if resource is None:
-            resource = memory.Folder()
+            self.resource = memory.Folder()
+            # Add the skeleton
             skeleton = self.get_skeleton(**kw)
-        else:
-            skeleton = None
-
-        self.resource = resource
-
-        # Add the skeleton
-        if skeleton is not None:
             for name, handler in skeleton:
                 self.set_handler(name, handler)
+        else:
+            self.resource = resource
 
         # Load
         self.load()
@@ -59,6 +55,26 @@ class Folder(Handler):
     #########################################################################
     # Load / Save
     #########################################################################
+    def load(self, resource=None):
+        # XXX Clean the cache.
+        #
+        # This has a very negative performance impact; for example, if you
+        # create a new resource into a folder, the folder's modification
+        # time will change, then it will be re-loaded the next time; if the
+        # handler has a lot of content, it will be cleaned, even if it is
+        # up-to-date.
+        #
+        # We keep this code for now because it is safer. For example for the
+        # catalog, if the cache is not cleaned the indexes won't be up-to-date,
+        # hence causing errors.
+        #
+        # Anyway, this line must be removed, another solution must be found
+        # for the catalog in particular, and for all folders in general.
+        self.cache = {}
+
+        Handler.load(self, resource)
+
+
     def _load(self, resource):
         """
         By default folders don't load any state. This means they are always

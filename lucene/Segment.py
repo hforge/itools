@@ -263,14 +263,22 @@ class Segment(object):
         fields = {}
         # Update the search data structure (term dictionary)
         for field_name in self.indexed_fields:
+            field = None
             if hasattr(document, field_name):
+                field = getattr(document, field_name)
+            elif isinstance(document, dict):
+                if field_name in document:
+                    field = document[field_name]
+
+            if field is not None:
                 tree = self.indexed_fields[field_name]
                 terms = Set()
 
                 # XXX Check that data is an string
-                data = getattr(document, field_name)
-                if callable(data):
-                    data = data()
+                if callable(field):
+                    data = field()
+                else:
+                    data = field
 
                 if self.is_tokenized(field_name):
                     analyser = Analyser(data)

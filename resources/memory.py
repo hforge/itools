@@ -31,6 +31,19 @@ class Resource(base.Resource):
         return self.name
 
 
+    def get_ctime(self):
+        return self.ctime
+
+
+    def get_mtime(self):
+        return self.mtime
+
+
+    def get_atime(self):
+        # XXX Should we correctly keep the real access time??
+        return self.mtime
+
+
 
 class File(Resource, base.File):
     """ """
@@ -86,14 +99,6 @@ class File(Resource, base.File):
         self.mtime = datetime.now()
 
 
-    def get_ctime(self):
-        return self.ctime
-
-
-    def get_mtime(self):
-        return self.mtime
-
-
 
 class Folder(Resource, base.Folder):
     """ """
@@ -110,14 +115,6 @@ class Folder(Resource, base.Folder):
         # to workaround the wrong inheritance algorithm of classic Python
         # classes.
         return base.Folder.get_mimetype(self)
-
-
-    def get_mtime(self):
-        return self.mtime
-
-
-    def get_ctime(self):
-        return self.ctime
 
 
     def _get_resource_names(self):

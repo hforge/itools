@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-16 17:30:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-84
+
+    Summary:
+      handlers, fix folders timestamp
+    Revision:
+      itools--main--0.4--patch-84
+
+    Handlers, fix folders timestamp.
+
+    modified files:
+     Changelog handlers/Folder.py
+
+
 2004-09-12 18:02:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-83
 
     Summary:

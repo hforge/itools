@@ -177,7 +177,7 @@ class Folder(Handler):
         container = self.get_handler(path)
         container._set_handler(segment, handler, **kw)
         # Set timestamp
-        self.timestamp = datetime.datetime.now()
+        container.timestamp = datetime.datetime.now()
 
 
     def _set_handler(self, segment, handler):
@@ -191,7 +191,7 @@ class Folder(Handler):
         container = self.get_handler(path[:-1])
         container._del_handler(path[-1])
         # Set timestamp
-        self.timestamp = datetime.datetime.now()
+        container.timestamp = datetime.datetime.now()
 
 
     def _del_handler(self, segment):

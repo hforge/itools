@@ -95,10 +95,14 @@ As this example shows, the value of the variable {\tt title} is looked within
 the namespace passed as parameter to {\tt template.stl}.
 
 
-\section{Example: an addressbook}
+\section{Example: Task Tracker}
 
-Let's go with a more complex example. The template below shows a simple
-addressbook (see {\tt examples/chapter8/addressbook\_view.xml}):
+Now we are going to illustrate {\bf STL} with a more complex example.
+Building up on the Task Tracker from the Chapter~\ref{section: files2},
+we are going to write a method that produces an HTML page showing all
+the tasks.
+
+First, the template (see {\tt examples/chapter8/TaskTracker\_view.xml}):
 
 \begin{code}
     <?xml version="1.0" encoding="UTF-8"?>
@@ -109,86 +113,67 @@ addressbook (see {\tt examples/chapter8/addressbook\_view.xml}):
           xmlns:stl="http://xml.itools.org/namespaces/stl">
       <head></head>
       <body>
-        <h3>Addressbook</h3>
-        <ul>
-          <li stl:repeat="address addressbook">
-            <stl:block content="address/last_name" />,
-            <stl:block content="address/first_name" />:
-            <stl:block content="address/telephone" />
-          </li>
-        </ul>
+        <h2>Task Tracker</h2>
+        <div stl:repeat="task tasks">
+          <h4>
+            #<stl:block content="task/id" />:
+            <stl:block content="task/title" />
+            (<em stl:content="task/state" />)
+          </h4>
+          <p stl:content="task/description" />
+        </div>
       </body>
     </html>
 \end{code}
 
 The first new thing this example shows is the {\tt repeat} statement. While
-{\tt stl:content} expects a string as the value, {\tt stl:repeat} expects
-a sequence. When this template is processed, the XML output will contain as
-many {\tt <li>} elements as items are in the {\tt addressbook} variable.
-Within the element, in each iteration over the {\tt addressbook} sequence,
-the variable {\tt address} will be the respective item of the list.
+{\tt stl:content} expects a string as the value, {\tt stl:repeat} expects a
+sequence. When this template is processed, the XML output will contain as
+many {\tt <div>} elements as tasks are in the {\tt tasks} variable. Within
+the div element, in each iteration over the {\tt tasks} sequence, the
+variable {\tt task} will be the respective item of the list.
 
 The second new thing we see is the {\tt <stl:block>} element. When the
 template is processed the {\tt <stl:block>} tags are automatically
 removed.
 
-Finally, look at the expression {\tt address/last\_name}, it shows the {\em
-slash} operator, which lets to traverse namespaces. So the variable {\tt
-address} is expected to be a mapping (e.g. a dictionary), and {\tt last\_name}
-a key in that mapping, whose value is a string.
+Finally, look at the expression {\tt task/id} or {\tt task/title}, it shows
+the {\em slash} operator, which lets to traverse namespaces. So the variable
+{\tt task} is expected to be a mapping (e.g. a dictionary), and
+{\tt id} a key in that mapping, whose value is a string.
 
 \subsubsection{The Python side}
 
-Now let's see the Python code (see {\tt examples/chapter8/addressbook.py}),
-this time as a class which keeps the addressbook information, with a method
-that process the template to produce an HTML page that shows the addressbook.
+Now let's see the Python code (see {\tt examples/chapter8/TaskTracker.py}).
+Basically we have added the method {\tt view} to the class {\tt TaskTracker}:
 
 \begin{code}
-    # Import from itools
-    from itools.handlers import get_handler
-    from itools import xml
+    def view(self):
+        # Load the STL template
+        handler = get_handler('TaskTracker_view.xml')
 
+        # Build the namespace
+        namespace = {}
+        namespace['tasks'] = []
+        for i, task in enumerate(self.tasks):
+            namespace['tasks'].append({'id': i,
+                                       'title': task.title,
+                                       'description': task.description,
+                                       'state': task.state,
+                                       'is_open': task.state == 'open'})
 
-    class Addressbook(object):
-        def __init__(self):
-            self.addresses = []
-
-
-        def add_address(self, last_name, first_name, telephone):
-            address = {'last_name': last_name,
-                       'first_name': first_name,
-                       'telephone': telephone}
-            self.addresses.append(address)
-
-
-        def view(self):
-            # Load the STL template
-            template = get_handler('addressbook_view.xml')
-
-            # Build the namespace
-            namespace = {'addressbook': self.addresses}
-
-            # Process the template and return the output
-            return template.stl(namespace)
+        # Process the template and return the output
+        return handler.stl(namespace)
 \end{code}
 
-The end of the module creates an {\tt Addressbook} instance, fills it with
-a couple of entries and prints the result of the {\tt view} method:
+To try the code run the Python interpreter and type:
 
 \begin{code}
-    if __name__ == '__main__':
-        # Create the addressbook
-        addressbook = Addressbook()
-        addressbook.add_address('Jordan', 'Robert', '0606060606')
-        addressbook.add_address('Buendia', 'Aureliano', '0612345678')
-
-        # Output the addressbook content
-        print addressbook.view()
-\end{code}
-
-The output of running this program is:
-
-\begin{code}
+    >>> from itools.handlers import get_handler
+    >>> import TaskTracker
+    >>> 
+    >>> task_tracker = get_handler('itools.tt')
+    >>> print task_tracker.view()
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE html
          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -197,21 +182,26 @@ The output of running this program is:
           xmlns="http://www.w3.org/1999/xhtml">
       <head></head>
       <body>
-        <h3>Addressbook</h3>
-        <ul>
-          <li>
-            Jordan,
-            Robert:
-            0606060606
-          </li><li>
-            Buendia,
-            Aureliano:
-            0612345678
-          </li>
-        </ul>
-      </body>
-    </html>
+        <h2>Task Tracker</h2>
+        <div>
+          <h4>
+            #0:
+            Re-write the chapter about writing handler classes.
+            (<em>closed</em>)
+          </h4>
+          <p>A new chapter...
 \end{code}
+
+The Figure~\ref{Figure: task tracker} shows how the HTML looks with a
+browser.
+
+\begin{figure}
+  \center
+  \includegraphics[width=\textwidth]{task_tracker.eps}
+  \caption{The task tracker view}
+  \label{Figure: task tracker}
+\end{figure}
+
 
 
 \section{Language overview}

@@ -22,6 +22,8 @@ import textwrap
 # Import from itools
 from itools.resources import get_resource
 from itools.handlers.Text import Text
+from itools.handlers import get_handler
+import itools.xml
 
 
 mimetypes.add_type('text/x-task-tracker', '.tt')
@@ -120,13 +122,31 @@ class TaskTracker(Text):
         task.state = u'closed'
 
 
+    #########################################################################
+    # Web Interface
+    #########################################################################
+    def view(self):
+        # Load the STL template
+        handler = get_handler('TaskTracker_view.xml')
+
+        # Build the namespace
+        namespace = {}
+        namespace['tasks'] = []
+        for i, task in enumerate(self.tasks):
+            namespace['tasks'].append({'id': i,
+                                       'title': task.title,
+                                       'description': task.description,
+                                       'state': task.state,
+                                       'is_open': task.state == 'open'})
+
+        # Process the template and return the output
+        return handler.stl(namespace)
+
+
 Text.register_handler_class(TaskTracker)
 
 
 
-
-
 if __name__ == '__main__':
-    resource = get_resource('itools.tt')
-    task_tracker = TaskTracker(resource)
-    task_tracker.show_open_tasks()
+    task_tracker = get_handler('itools.tt')
+    print task_tracker.view()

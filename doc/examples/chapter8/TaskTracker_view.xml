@@ -6,13 +6,14 @@
       xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head></head>
   <body>
-    <h3>Addressbook</h3>
-    <ul>
-      <li stl:repeat="address addressbook">
-        <stl:block content="address/last_name" />,
-        <stl:block content="address/first_name" />:
-        <stl:block content="address/telephone" />
-      </li>
-    </ul>
+    <h2>Task Tracker</h2>
+    <div stl:repeat="task tasks">
+      <h4>
+        #<stl:block content="task/id" />:
+        <stl:block content="task/title" />
+        (<em stl:content="task/state" />)
+      </h4>
+      <p stl:content="task/description" />
+    </div>
   </body>
 </html>

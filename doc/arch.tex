@@ -235,3 +235,25 @@ have been applied. So you just have to add the subject, something like
 
 
 \section{Contibuting your work to the main tree}
+
+To contribute your changes back to the main development branch you must
+make your branch available through internet. We assume the archive you
+have set-up is your local computer, so you have to create a mirror of
+your archive from your local computer to an internet server:
+
+\begin{code}
+    $ tla make-archive --listing --mirror toto@example.com--public \
+          sftp://example.com/home/toto/{archives}/public
+\end{code}
+
+You must be sure your mirror can be accessed through an internet protocol,
+like HTTP or FTP. So other developers will be able to merge from your branch.
+
+Now, whenever you make and commit a change, to share that change with the
+community, you have to synchronize your mirror:
+
+\begin{code}
+    $ tla archive-mirror
+    [...]
+\end{code}
+

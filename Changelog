@@ -2,6 +2,25 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-12 16:20:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
+
+    Summary:
+      handlers, the timestamp is initialized with its resource mtime
+    Revision:
+      itools--main--0.7--patch-11
+
+    Now the handler timestamp is initialized with its resource's timestamp,
+    instead of with the current time. So now we are able to know wether a
+    handler has changed, i.e. the resource is outdated.
+    
+    The method "has_changed" has been added to the API.
+    
+    This change will allow performance improvements.
+
+    modified files:
+     Changelog handlers/Handler.py
+
+
 2005-02-12 15:58:31 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
 
     Summary:

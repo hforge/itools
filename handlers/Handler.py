@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -69,7 +69,7 @@ class Handler(object):
             resource = self.resource
 
         self._load(resource)
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = resource.get_mtime()
 
 
     def save(self):
@@ -148,3 +148,8 @@ class Handler(object):
     def is_outdated(self):
         mtime = self.resource.get_mtime()
         return mtime is None or mtime > self.timestamp
+
+
+    def has_changed(self):
+        mtime = self.resource.get_mtime()
+        return self.timestamp > mtime

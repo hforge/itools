@@ -80,8 +80,7 @@ class Context(object):
     """
 
     def __init__(self):
-        # XXX To be removed (the line below) for 0.7
-        self.path = []
+        self.skip = False
 
 
 
@@ -530,10 +529,6 @@ class Document(Text.Text):
     def traverse2(self, context=None):
         if context is None:
             context = Context()
-            context.skip = False
-        # Down
-        context.start = True
-        yield self, context
         # Children
         if context.skip is True:
             context.skip = False
@@ -541,9 +536,6 @@ class Document(Text.Text):
             for child in self.children:
                 for x, context in child.traverse2(context):
                     yield x, context
-        # Up
-        context.start = False
-        yield self, context
 
 
     # XXX Obsoleted by traverse2, to be removed for 0.7
@@ -792,6 +784,7 @@ class Element(Node):
         yield self, context
 
 
+    # XXX Obsoleted by traverse2, to be removed for 0.7
     def walk(self, before=None, after=None, context=None):
         """
         Traverse the tree, for each child do:

@@ -115,9 +115,8 @@ class Document(XML.Document):
     ########################################################################
     # i18n API
     ########################################################################
-    def translate(self, catalog, node=None):
-        def open_tag(node, context):
-            buffer = context.buffer
+    def translate(self, catalog):
+        def open_tag(node):
             # The open tag
             buffer.write(u'<%s' % node.qname)
             # The attributes
@@ -129,10 +128,7 @@ class Document(XML.Document):
                 buffer.write(u' %s="%s"' % (qname, unicode(value)))
             buffer.write(u'>')
 
-        def process_message(context):
-            # Get the message to process and set a new message in the context
-            message = context.message
-            context.message = i18n.segment.Message()
+        def process_message(message, keep_spaces):
             # Normalize the message
             message.normalize()
             # Left strip
@@ -140,24 +136,25 @@ class Document(XML.Document):
                 x = message[0]
                 if isinstance(x, unicode) and x.strip() == u'':
                     del message[0]
-                    context.buffer.write(x)
+                    yield x
             # Right strip
             if message:
                 x = message[-1]
                 if isinstance(x, unicode) and x.strip() == u'':
                     del message[-1]
-                    context.buffer.write(x)
+                    yield x
             # Process
             if message:
                 # XXX
                 if len(message) == 1 and isinstance(message[0], XML.Element):
                     node = message[0]
-                    open_tag(node, context)
+                    open_tag(node)
                     children = [ isinstance(x, XML.Raw) and x.data or x
                                  for x in node.children ]
-                    context.message = i18n.segment.Message(children)
-                    process_message(context)
-                    context.buffer.write(node.get_closetag())
+                    message = i18n.segment.Message(children)
+                    for x in process_message(message, keep_spaces):
+                        yield x
+                    yield node.get_closetag()
                 else:
                     # Check wether the node message has real text to process.
                     for x in message:
@@ -175,10 +172,10 @@ class Document(XML.Document):
                     else:
                         # Nothing to translate
                         for x in message:
-                            context.buffer.write(unicode(x))
-                        return
+                            yield unicode(x)
+                        raise StopIteration
                     # Something to translate: segmentation
-                    for segment in message.get_segments(context.keep_spaces):
+                    for segment in message.get_segments(keep_spaces):
                         msgstr = catalog.get_msgstr(segment) or segment
                         # Escapes "&", except when it is an entity reference
                         def f(match):
@@ -188,13 +185,14 @@ class Document(XML.Document):
                             return "&amp;" + x[1:]
                         msgstr = re.sub("&[\w;]*", f, msgstr)
 
-                        context.buffer.write(msgstr)
-                        if context.keep_spaces is False:
-                            context.buffer.write(' ')
+                        yield msgstr
+                        if keep_spaces is False:
+                            yield ' '
 
-        def before(node, context):
-            buffer = context.buffer
-            message = context.message
+        buffer = StringIO()
+        message = i18n.segment.Message()
+        keep_spaces = False
+        for node, context in self.traverse2():
             if isinstance(node, XML.XMLDeclaration):
                 decl = copy(node)
                 decl.encoding = 'UTF-8'
@@ -202,39 +200,36 @@ class Document(XML.Document):
             elif isinstance(node, XML.Raw):
                 message.append(node.data)
             elif isinstance(node, XML.Element):
-                # Inline or block
-                if node.is_inline():
-                    message.append(node)
-                    return True
+                if context.start:
+                    # Inline or block
+                    if node.is_inline():
+                        message.append(node)
+                        context.skip = True
+                    else:
+                        # Process any previous message
+                        for x in process_message(message, keep_spaces):
+                            buffer.write(x)
+                        message = i18n.segment.Message()
+                        # The open tag
+                        open_tag(node)
+                        # Presarve spaces if <pre>
+                        if node.name == 'pre':
+                            keep_spaces = True
                 else:
-                    # Process any previous message
-                    process_message(context)
-                    # The open tag
-                    open_tag(node, context)
-                    # Presarve spaces if <pre>
-                    if node.name == 'pre':
-                        context.keep_spaces = True
+                    if node.is_block():
+                        for x in process_message(message, keep_spaces):
+                            buffer.write(x)
+                        message = i18n.segment.Message()
+                        # The close tag
+                        buffer.write(node.get_closetag())
+                        # </pre> don't preserve spaces any more
+                        if node.name == 'pre':
+                            keep_spaces = False
             else:
                 buffer.write(unicode(node))
 
-        def after(node, context):
-            if isinstance(node, XML.Element):
-                if node.is_block():
-                    process_message(context)
-                    # The close tag
-                    context.buffer.write(node.get_closetag())
-                    # </pre> don't preserve spaces any more
-                    if node.name == 'pre':
-                        context.keep_spaces = False
-
-        context = XML.Context()
-        context.catalog = catalog
-        context.buffer = StringIO()
-        context.message = i18n.segment.Message()
-        context.keep_spaces = False
-        self.walk(before, after, context)
-        data = context.buffer.getvalue()
-        context.buffer.close()
+        data = buffer.getvalue()
+        buffer.close()
         return data
 
 

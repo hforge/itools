@@ -245,10 +245,12 @@ class Expression(object):
 
 
     def __str__(self):
-        # XXX Needs to consider parameters
+        s = '/'.join(self.path)
         if self.repeat is True:
-            return 'repeat/%s' % '/'.join(self.path)
-        return '/'.join(self.path)
+            return 'repeat/%s' % s
+        if self.parameters:
+            return s + '(%s)' % self.parameters
+        return s
 
 
 

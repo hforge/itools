@@ -1,3 +1,33 @@
+0.5.0 (2004/11/XX)
+
+  URI
+  - Add the method 'resolve2' to the path API.
+  - Don't support the add operation on paths anymore.
+  - Serialize an empty path to '.' instead of ''.
+
+  Resources
+  - Now resources provide the attribute 'uri'.
+  - Add 'get_mimetype' to the API.
+
+  Handlers
+  - New model to find the right handler for a resource.
+
+  XML
+  - Start support for schema.
+
+  Simple Template Language
+  - Improve performance.
+
+  Index & Search
+  - Implement boolean queries.
+
+  Documentation
+  - Improve the chapter "Resource Handlers".
+  - Start chapter about internationalization.
+  - Start appendix about the coding style.
+  - Improve the GNU arch appendix.
+
+
 0.4.6 (2004/09/24)
 
   Handlers

@@ -99,6 +99,11 @@ class Folder(Handler):
         if len(path) == 0:
             return self
 
+        if path[0].name == '..':
+            if self.parent is None:
+                raise ValueError, 'this handler is the root handler'
+            return self.parent.get_handler(path[1:])
+
         segment, path = path[0], path[1:]
         name = segment.name
 

@@ -122,6 +122,18 @@ class DateTime(SimpleType):
     decode = classmethod(decode)
 
 
+class XML(SimpleType):
+    def encode(cls, value):
+        return value
+    encode = classmethod(encode)
+
+
+    def decode(cls, value):
+        value = value.strip()
+        return value
+    decode = classmethod(decode)
+
+
 ############################################################################
 # Complex Types
 ############################################################################

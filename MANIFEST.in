@@ -5,6 +5,7 @@ recursive-include xml test.rdf test*.xml simple.xml simple.xsd
 recursive-include zope *.dtml
 recursive-include i18n *.txt
 recursive-include doc *.tex *.txt itools.sty Makefile *.dot *.sty *.dia
+include doc/task_tracker.eps
 recursive-include doc/examples *.xml *.txt *.xhtml
 recursive-include doc/examples/chapter? *.py *.xml *.tt
 include LGPL-2.1

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-22 08:06:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
+
+    Summary:
+      packaging, include "doc/task_tracker.eps"
+    Revision:
+      itools--main--0.7--patch-60
+
+
+    modified files:
+     Changelog MANIFEST.in
+
+
 2005-03-22 08:01:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
 
     Summary:

@@ -258,6 +258,11 @@ The {\tt uri.Path} class also provides an API to manipulate paths:
 
   {\tt resolve(path)}\\
   - Returns a new path from a base path ({\tt self}) and the given path.
+  Follows the RFC2396 standard, i.e. takes into account the trailing slash.
+
+  {\tt resolve2(path)}\\
+  - Same as {\tt resolve}, but it does not teke into account the trailing
+  slash.
 
   {\tt get\_pathto(path)}\\
   - Returns the path needed to go from {\tt self} to the given path (this

@@ -235,6 +235,13 @@ class Path(list):
 
 
     def resolve(self, path):
+        """
+        Resolve the path following the standard (RFC2396). This is to say,
+        it takes into account the trailing slash, so:
+
+          Path('/a/b').resolve('c') => Path('/a/c')
+          Path('/a/b/').resolve('c') => Path('/a/b/c')
+        """
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -245,6 +252,27 @@ class Path(list):
             return Path('%s/%s' % (self, path))
 
         return Path('%s/../%s' % (self, path))
+
+
+    def resolve2(self, path):
+        """
+        This method provides an alternative to the standards resolution
+        algorithm. The difference is that it not takes into account the
+        trailing slash (it behaves like if always there was a trailing
+        slash):
+
+          Path('/a/b').resolve('c') => Path('/a/b/c')
+          Path('/a/b/').resolve('c') => Path('/a/b/c')
+
+        Very, very practical.
+        """
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        if path.is_absolute():
+            return path
+
+        return Path('%s/%s' % (self, path))
 
 
     def get_prefix(self, path):

@@ -17,7 +17,6 @@
 
 
 # Import from Python
-from copy import deepcopy
 import htmlentitydefs
 import logging
 from sets import Set
@@ -359,6 +358,10 @@ class Comment(object):
         return u'<!--%s-->' % self.data
 
 
+    def copy(self):
+        return Comment(self.data)
+
+
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
@@ -368,7 +371,6 @@ class Comment(object):
 
 class Element(object):
 
-    parent = None
     namespace = None
 
 
@@ -404,10 +406,12 @@ class Element(object):
         # Copy the attributes
         clone.attributes = self.attributes.copy()
         clone.prefixes = self.prefixes.copy()
-        # Copy the children (XXX)
-        clone.children = deepcopy(self.children)
-##        for child in self.children:
-##            clone.append_child(child)
+        # Copy the children
+        for child in self.children:
+            if isinstance(child, unicode):
+                self.children.append(child)
+            else:
+                self.children.append(child.copy())
         return clone
 
 

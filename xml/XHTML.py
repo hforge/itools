@@ -161,6 +161,7 @@ class Document(XML.Document):
                     # Something to translate: segmentation
                     for segment in message.get_segments(context.keep_spaces):
                         msgstr = catalog.get_msgstr(segment) or segment
+                        msgstr = msgstr.replace('&', '&amp;')
                         context.buffer.write(msgstr)
                         if context.keep_spaces is False:
                             context.buffer.write(' ')

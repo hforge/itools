@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-07 15:00:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
+
+    Summary:
+      handlers, add "traverse2" method to folders
+    Revision:
+      itools--main--0.7--patch-41
+
+
+    modified files:
+     Changelog handlers/Folder.py
+
+
 2005-03-07 14:44:45 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
 
     Summary:

@@ -27,6 +27,14 @@ from Handler import Handler
 
 
 
+class Context(object):
+    """Used by 'traverse2' to control the traversal."""
+
+    def __init__(self):
+        self.skip = False
+
+
+
 class Folder(Handler):
     """
     This is the base handler class for any folder handler. It is also used
@@ -303,6 +311,23 @@ class Folder(Handler):
                     yield x
             else:
                 yield handler
+
+
+    def traverse2(self, context=None):
+        if context is None:
+            context = Context()
+
+        yield self, context
+        if context.skip is True:
+            context.skip = False
+        else:
+            for name in self.get_handler_names():
+                handler = self.get_handler(name)
+                if isinstance(handler, Folder):
+                    for x, context in handler.traverse2(context):
+                        yield x, context
+                else:
+                    yield handler, context
 
 
     def acquire(self, name):

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.6
 #
 
+2005-02-17 13:00:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
+
+    Summary:
+      catalog, fix "IO.decode_vint" and "IO.encode_byte"
+    Revision:
+      itools--main--0.6--patch-63
+
+
+    modified files:
+     Changelog catalog/IO.py
+
+
 2005-02-16 14:31:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
 
     Summary:

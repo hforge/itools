@@ -48,7 +48,7 @@ UCS2 = sys.maxunicode == 65535
 
 
 def encode_byte(value):
-    return chr(byte)
+    return chr(value)
 
 
 def decode_byte(data):
@@ -63,7 +63,30 @@ def decode_uint32(data):
     return int(struct.unpack('>I', data)[0])
 
 
-# Variable legth integers
+# Variable legth integers. Example
+#
+#   9831 = 0010 0110 0110 0111
+#
+# (1) Split by groups of seven bytes:
+#
+#   00 1001100 1100111
+#
+# (2) Remove the left group if zero:
+#
+#   1001100 1100111
+#
+# (3) Fill bytes with a zero for the first one, 1 for the rest:
+#
+#   01001100 11100111
+#   ^        ^
+#
+# (4) Swap order:
+#
+#   11100111 01001100
+#   ^        ^
+#
+# This is to say, the first bit says wether there is or not a byte after.
+
 def encode_vint(value):
     if value == 0:
         return '\x00'
@@ -84,7 +107,7 @@ def decode_vint(data):
 
     i = 1
     while byte & 0x80:
-        byte = decode_byte(data[i+1])
+        byte = decode_byte(data[i])
         x |= (byte & 0x7F) << (i * 7)
         i = i + 1
     # Being a variable length value, it returns a tuple, where the first

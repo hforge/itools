@@ -18,6 +18,7 @@
 
 # Import from Python
 import profile
+import sys
 from time import time
 
 # Import from itools
@@ -66,6 +67,7 @@ def load_documents():
     for name in resource_names[:120]:
         try:
             doc = Document(src.get_resource(name))
+            doc.to_unicode()
         except:
             pass
         else:
@@ -89,18 +91,26 @@ def profile_search():
 
 
 if __name__ == '__main__':
-    create_catalog()
-    load_documents()
-    # Benchmark
-    t0 = time()
-    profile_indexing()
-    t1 = time()
-    print t1 - t0
-    # Profile
-##    profile.run('profile_indexing()')
+    if len(sys.argv) == 2:
+        option = sys.argv[1]
+    else:
+        option = None
 
-##    print
-##    print
-##    print
-##    profile.run('profile_search()')
-
+    if option == 'profile':
+        create_catalog()
+        load_documents()
+        # Profile
+        profile.run('profile_indexing()')
+##        print
+##        profile.run('profile_search()')
+    elif option == 'bech':
+        create_catalog()
+        load_documents()
+        # Benchmark
+        t0 = time()
+        profile_indexing()
+        t1 = time()
+        print t1 - t0
+    else:
+        print "This script expects only one of the two options: 'profile'" \
+              " or 'bench'."

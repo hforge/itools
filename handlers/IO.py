@@ -33,7 +33,6 @@ class Integer(object):
 
 
     def decode(cls, value):
-        value = value.strip()
         if not value:
             return None
         return int(value)
@@ -50,7 +49,6 @@ class Unicode(object):
 
 
     def decode(cls, value, encoding='utf8'):
-        value = value.strip()
         return unicode(value, encoding)
     decode = classmethod(decode)
 
@@ -58,13 +56,11 @@ class Unicode(object):
 
 class String(object):
     def encode(cls, value):
-        value = value.strip()
         return value
     encode = classmethod(encode)
 
 
     def decode(cls, value):
-        value = value.strip()
         return value
     decode = classmethod(decode)
 
@@ -82,7 +78,6 @@ class Boolean(object):
 
 
     def decode(cls, value):
-        value = value.strip()
         return bool(int(value))
     decode = classmethod(decode)
 
@@ -97,7 +92,6 @@ class Date(object):
 
 
     def decode(cls, value):
-        value = value.strip()
         if not value:
             return None
         year, month, day = value.split('-')
@@ -116,7 +110,6 @@ class DateTime(object):
 
 
     def decode(cls, value):
-        value = value.strip()
         if not value:
             return None
         date, time = value.split()

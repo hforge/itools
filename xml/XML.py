@@ -126,7 +126,7 @@ class Raw(Node):
 
 
     def __unicode__(self):
-        return self.data.replace('<', '&lt;').replace('&', '&amp;')
+        return self.data.replace('&', '&amp;').replace('<', '&lt;')
 
 
     def __cmp__(self, other):

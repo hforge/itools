@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-01 21:12:31 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-72
+
+    Summary:
+      fix HTML parsing of entity references
+    Revision:
+      itools--main--0.4--patch-72
+
+    Fix HTML parsing of entity references.
+
+    modified files:
+     Changelog xml/HTML.py xml/XML.py
+
+
 2004-08-31 13:24:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-71
 
     Summary:

@@ -90,15 +90,12 @@ class Document(XHTML.Document, HTMLParser):
         self._encoding = 'UTF-8'
         self._declaration = None
 
-        # Escape internal entities
-        data = self._data.replace('&', '&amp;')
-
         # Initialize the data structure
         self.children = []
 
         # Parse
         self.stack = [self]
-        self.feed(data)
+        self.feed(self._data)
         self.close()
         del self.stack
 

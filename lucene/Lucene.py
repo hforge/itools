@@ -164,8 +164,8 @@ class FieldInfos(File):
     booleans. The position of a field in the list is the field number.
     """
 
-    def _load(self):
-        self.data = self.resource.get_data()
+    def _load(self, resource):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         count = self.load_vint()
@@ -228,8 +228,8 @@ class FieldIndex(File):
       documents = [<index to FieldData>, ...]
     """
 
-    def _load(self, num_docs=0):
-        self.data = self.resource.get_data()
+    def _load(self, resource, num_docs=0):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         self.documents = []
@@ -251,8 +251,8 @@ class FieldData(File):
       fields = [(<field number>, <is tokenized>, <field value>), ...]
     """
 
-    def _load(self):
-        self.data = self.resource.get_data()
+    def _load(self, resource):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         self.documents = []
@@ -301,13 +301,13 @@ class TermInfoFile(File):
           prefix_length, suffix, field_number, ... = terminfo
     """
 
-    def _load(self, field_names=[]):
+    def _load(self, resource, field_names=[]):
         """
         The parameter 'field_names' must be the list of field names from the
         FieldInfos (fnm) file, we need it because the TermInfoFile (tis) is
         ordered first by the field name.
         """
-        self.data = self.resource.get_data()
+        self.data = resource.get_data()
         self.index = 0
         # Load metadata
         self.version = self.load_int32()
@@ -346,8 +346,8 @@ class TermInfoIndex(File):
       indices = [(term_info, index_delta), ...]
     """
 
-    def _load(self):
-        self.data = self.resource.get_data()
+    def _load(self, resource):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         count = self.load_uint32()
@@ -375,8 +375,8 @@ class FreqFile(File):
     Handler for '<segment>.frq' files.
     """
 
-    def _load(self, num_terms=0):
-        self.data = self.resource.get_data()
+    def _load(self, resource, num_terms=0):
+        self.data = resource.get_data()
         self.index = 0
 
 
@@ -410,8 +410,8 @@ class ProxFile(File):
     Handler for '<segment>.prx' files.
     """
 
-    def _load(self, num_terms=0):
-        self.data = self.resource.get_data()
+    def _load(self, resource, num_terms=0):
+        self.data = resource.get_data()
         self.index = 0
 
 
@@ -435,8 +435,8 @@ class Normalization(File):
       documents = <normalization factor>
     """
 
-    def _load(self, num_docs=0):
-        self.data = self.resource.get_data()
+    def _load(self, resource, num_docs=0):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         self.documents = []
@@ -470,8 +470,8 @@ class DocumentIndex(File):
       indexes = [<document index>, ...]
     """
 
-    def _load(self, num_docs=0):
-        self.data = self.resource.get_data()
+    def _load(self, resource, num_docs=0):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         self.version = self.load_int32()
@@ -501,8 +501,8 @@ class Document(File):
       field = (<field num>, <field index>)
     """
 
-    def _load(self, num_docs=0):
-        self.data = self.resource.get_data()
+    def _load(self, resource, num_docs=0):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         self.version = self.load_int32()
@@ -563,8 +563,8 @@ class Field(File):
       term = (<text>, <frequency>)
     """
 
-    def _load(self, num_fields=0):
-        self.data = self.resource.get_data()
+    def _load(self, resource, num_fields=0):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         self.version = self.load_int32()
@@ -606,8 +606,8 @@ class DeletedDocuments(File):
 
     """
 
-    def _load(self):
-        self.data = self.resource.get_data()
+    def _load(self, resource):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         byte_count = self.load_uint32()

@@ -26,8 +26,8 @@ import XML
 
 
 class RDF(XML.Document):
-    def _load(self):
-        XML.Document._load(self)
+    def _load(self, resource):
+        XML.Document._load(self, resource)
 
         self.graph = {}
         for node in self.traverse():

@@ -294,7 +294,7 @@ class PO(Text):
         return id, comments, msgid, msgstr
 
 
-    def _load(self):
+    def _load(self, resource):
         """
         A PO file is made of entries, where entries are separated by one
         or more blank lines. Each entry consists of a msgid and a msgstr,
@@ -311,7 +311,7 @@ class PO(Text):
         There could be an empty msgid, it contains information about the PO
         file, like the Project-Id-Version or the PO-Revision-Date.
         """
-        File._load(self)
+        File._load(self, resource)
         # Initialize messages
         self._messages = {}
 

@@ -49,9 +49,9 @@ class IITestCase(TestCase):
 
 
 class Document(Text):
-    def _load(self):
+    def _load(self, resource):
         # Pre-process (load as unicode)
-        Text._load(self)
+        Text._load(self, resource)
         data = self._data
         del self._data
         # Extract the title and body

@@ -2,6 +2,32 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-08-12 09:59:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
+
+    Summary:
+      handlers, change "load()" to "load(resource=None)"
+    Revision:
+      itools--main--0.4--patch-65
+
+    Improve the handlers API. Now the "load" method accepts the parameter
+    resource, which specifies wich resource's data must be loaded, if
+    none is given the resource the handler is attached to will be used.
+    
+    The method "_load" also has changed its prototype, now it expects
+    a resource as parameter. Note that any code that currently defines
+    "_load" must be changed.
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/Document.py
+     catalog/IIndex.py catalog/prof.py catalog/test.py
+     doc/chandlers.tex handlers/CSV.py handlers/File.py
+     handlers/Folder.py handlers/Handler.py handlers/KeyValue.py
+     handlers/PO.py handlers/Text.py handlers/Var.py
+     handlers/iCalendar.py lucene/Index.py lucene/Lucene.py
+     lucene/prof.py lucene/test.py xml/HTML.py xml/RDF.py
+     xml/XML.py
+
+
 2004-08-11 12:12:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
 
     Summary:

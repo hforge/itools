@@ -92,13 +92,12 @@ class IIndexTree(File):
         return header
 
 
-    def _load(self):
-        r = self.resource
+    def _load(self, resource):
         # The header
-        self.version = IO.decode_version(r[:4])
-        self.number_of_slots = IO.decode_uint32(r[4:8])
-        self.first_slot = IO.decode_link(r[8:12])
-        self.first_empty = IO.decode_link(r[12:16])
+        self.version = IO.decode_version(resource[:4])
+        self.number_of_slots = IO.decode_uint32(resource[4:8])
+        self.first_slot = IO.decode_link(resource[8:12])
+        self.first_empty = IO.decode_link(resource[12:16])
 
 
     def _get_free_slot(self):
@@ -151,12 +150,11 @@ class IIndexDocuments(File):
         return version + number_of_slots + first_empty
         
 
-    def _load(self):
-        r = self.resource
+    def _load(self, resource):
         # The header
-        self.version = IO.decode_version(r[:4])
-        self.number_of_slots = IO.decode_uint32(r[4:8])
-        self.first_empty = IO.decode_link(r[8:12])
+        self.version = IO.decode_version(resource[:4])
+        self.number_of_slots = IO.decode_uint32(resource[4:8])
+        self.first_empty = IO.decode_link(resource[8:12])
 
 
     def _get_free_slot(self):
@@ -387,7 +385,7 @@ class IIndex(Folder, Tree):
         return Folder._get_handler(self, segment, resource)
 
 
-    def _load(self):
+    def _load(self, resource):
         self.tree_handler = tree_handler = self.get_handler('tree')
         self.docs_handler = docs_handler = self.get_handler('documents')
         # The tree

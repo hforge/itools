@@ -29,8 +29,8 @@ class CSV(Text):
     #########################################################################
     # Parsing
     #########################################################################
-    def _load(self):
-        Text._load(self)
+    def _load(self, resource):
+        Text._load(self, resource)
 
         data = self._data
         del self._data

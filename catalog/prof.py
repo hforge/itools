@@ -27,9 +27,9 @@ from itools.catalog.Catalog import Catalog
 
 
 class Document(Text.Text):
-    def _load(self):
+    def _load(self, resource):
         # Pre-process (load as unicode)
-        Text.Text._load(self)
+        Text.Text._load(self, resource)
         data = self._data
         del self._data
         # Extract the title and body

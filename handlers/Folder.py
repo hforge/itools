@@ -53,7 +53,7 @@ class Folder(Handler):
         self.load()
 
 
-    def _load(self):
+    def _load(self, resource):
         pass
 
 

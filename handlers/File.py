@@ -42,8 +42,7 @@ class File(Handler):
         self.load()
 
 
-    def _load(self):
-        resource = self.resource
+    def _load(self, resource):
         self._data = resource.get_data()
         self._mimetype = resource.get_mimetype()
 

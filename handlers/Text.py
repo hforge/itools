@@ -26,8 +26,8 @@ class Text(File):
     #########################################################################
     # Load
     #########################################################################
-    def _load(self):
-        File._load(self)
+    def _load(self, resource):
+        File._load(self, resource)
         self._encoding = self.guess_encoding(self._data)
         self._data = unicode(self._data, self._encoding)
 

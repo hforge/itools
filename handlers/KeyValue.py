@@ -35,8 +35,8 @@ class KeyValue(Text):
     __keys__ = []
     __keys_types__ = {}
 
-    def _load(self):
-        File._load(self)
+    def _load(self, resource):
+        File._load(self, resource)
 
         # Initializes the keys.
         self.keys = sets.Set()

@@ -81,8 +81,8 @@ class Document(XHTML.Document, HTMLParser):
     #######################################################################
     # Parsing
     #######################################################################
-    def _load(self):
-        File.File._load(self)
+    def _load(self, resource):
+        File.File._load(self, resource)
         # Initialize the parser
         HTMLParser.__init__(self)
 

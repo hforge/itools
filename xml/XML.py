@@ -485,11 +485,11 @@ class Document(Text.Text):
     #######################################################################
     # Load
     #######################################################################
-    def _load(self):
+    def _load(self, resource):
         """
         Builds a tree made of elements and raw data.
         """
-        File.File._load(self)
+        File.File._load(self, resource)
         # Default values for version, encoding and standalone are the expat's
         # default or implicit values. These are overwritten if a declaration
         # is found.

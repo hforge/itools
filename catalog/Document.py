@@ -28,12 +28,11 @@ class IndexedField(File):
         return IO.encode_uint32(0)
 
 
-    def _load(self):
-        r = self.resource
-        self.number_of_terms = IO.decode_uint32(r[:4])
+    def _load(self, resource):
+        self.number_of_terms = IO.decode_uint32(resource[:4])
         self.terms = []
 
-        data = r[4:]
+        data = resource[4:]
         for i in range(self.number_of_terms):
             term, data = IO.decode_string(data)
             self.terms.append(term)
@@ -53,8 +52,8 @@ class StoredField(File):
         return IO.encode_string(data)
 
 
-    def _load(self):
-        data = self.resource.get_data()
+    def _load(self, resource):
+        data = resource.get_data()
         self.value = IO.decode_string(data)[0]
 
 

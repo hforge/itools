@@ -90,8 +90,8 @@ class Var(Text):
     #######################################################################
     # Parsing
     #######################################################################
-    def _load(self):
-        File._load(self)
+    def _load(self, resource):
+        File._load(self, resource)
         self.records = []
 
         i = 1

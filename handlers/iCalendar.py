@@ -120,8 +120,8 @@ def parse_line(line):
 
 
 class iCalendar(Text):
-    def _load(self):
-        Text._load(self)
+    def _load(self, resource):
+        Text._load(self, resource)
 
         for line in get_lines(self._data):
             line = list(parse_line(line))

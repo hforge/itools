@@ -110,8 +110,8 @@ class AnalyserTestCase(TestCase):
 
 
 class Document(Text.Text):
-    def _load(self):
-        data = self.resource.get_data()
+    def _load(self, resource):
+        data = resource.get_data()
         lines = data.split('\n')
         self.title = lines[0]
         self.body = '\n'.join(lines[3:])

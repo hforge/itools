@@ -41,7 +41,7 @@ are:
     {\bf C}omma {\bf S}eparated {\bf V}alue files, then our class should
     inherit from {\tt Text}.
 
-  \item Usually we will implement the method {\tt \_load()}, which is the
+  \item Usually we will implement the method {\tt \_load}, which is the
     responsible to parse the resource data and to build the data structure
     we want in memory.
 
@@ -114,9 +114,9 @@ is {\tt \_load}:
 
 \begin{code}
     class Addressbook(XML.Document):
-        def _load(self):
+        def _load(self, resource):
             # Load the XML tree
-            XML.Document._load(self)
+            XML.Document._load(self, resource)
             # Initialize data structure
             self.addresses = []
             # Load addressbook
@@ -180,7 +180,7 @@ a byte string representing the data contained by the handler:
 
 \begin{code}
     class Addressbook(XML.Document):
-        def _load(self):
+        def _load(self, resource):
             ...
 
 
@@ -282,8 +282,9 @@ to update the handler is {\tt load}.
 In summary the API is:
 
 \begin{api}
-  {\tt load()}\\
-  - Loads the resource data into the handler.
+  {\tt load(resource=None)}\\
+  - Loads the data from the given resource into the handler, if none
+    resource is given the one the handler is attached to wil be used.
 
   {\tt save()}\\
   - Saves the handler into the resource.

@@ -44,8 +44,11 @@ class Handler(object):
     _mimetype = None
 
 
-    def load(self):
-        self._load()
+    def load(self, resource=None):
+        if resource is None:
+            resource = self.resource
+
+        self._load(resource)
         self.timestamp = datetime.datetime.now()
 
 

@@ -46,7 +46,7 @@ class Fields(Text):
         return skeleton
 
 
-    def _load(self):
+    def _load(self, resource):
         # Keep fields info (each item is an isntance of <Field>)
         self.fields = []
         # Keep the list of indexed fields (only its numbers)
@@ -54,8 +54,7 @@ class Fields(Text):
         # Keeps a mapping from field name to field number
         self.field_numbers = {}
 
-        r = self.resource
-        data = r.get_data()
+        data = resource.get_data()
         for line in data.split('\n'):
             line = line.strip()
             if line:
@@ -99,8 +98,8 @@ class Catalog(Folder):
         return Folder._get_handler(self, segment, resource)
 
 
-    def _load(self):
-        self.documents = [ int(x[1:]) for x in self.get_resources()
+    def _load(self, resource):
+        self.documents = [ int(x[1:]) for x in resource.get_resources()
                            if x.startswith('d') ]
         self.documents.sort()
 

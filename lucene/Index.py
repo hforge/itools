@@ -26,11 +26,11 @@ import Segment
 
 class Segments(Lucene.File):
 
-    def _load(self):
+    def _load(self, resource):
         """
         Load the segments into memory as a dictionary <name>: <size>
         """
-        self.data = self.resource.get_data()
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         count = self.load_uint32()
@@ -65,8 +65,8 @@ class Segments(Lucene.File):
 
 
 class Deletable(Lucene.File):
-    def _load(self):
-        self.data = self.resource.get_data()
+    def _load(self, resource):
+        self.data = resource.get_data()
         self.index = 0
         # Parse
         n = self.load_unit32()
@@ -157,7 +157,7 @@ class Index(Folder):
         return skeleton
 
 
-    def _load(self):
+    def _load(self, resource):
         segments = self.get_handler('segments')
 
         self.segments = {}

@@ -1,3 +1,13 @@
+0.6.3 (2005/02/03)
+
+  XML
+  - Now "ComplexType.encode" returns string instead of unicode.
+
+  Zope
+  - Fix "checkid", be sure it always returns a byte string (or None),
+  instead of a unicode string.
+
+
 0.6.2 (2005/01/31)
 
   Resources

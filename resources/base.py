@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ from types import StringTypes
 from itools import uri
 
 
-class Resource:
+class Resource(object):
     """
     There are two types of resources, files and folders. The generic API for
     them is:
@@ -39,11 +39,6 @@ class Resource:
         is unknown)
 
     - set_mtime(mtime): sets the modification time
-
-    Note that resources are classic Python objects, this is because we want
-    to support the ZODB 3.2, which is based on old extension classes, which
-    are incompatible with new style Python classes. This will change when
-    ZODB 3.3 and Zope 2.8 arrive (XXX).
     """
 
     uri = None
@@ -68,8 +63,7 @@ class Resource:
                 return self.uri.path[-1].name
         return None
 
-    # XXX To be uncommented once we use new-style classes
-##    name = property(get_name, None, None, '')
+    name = property(get_name, None, None, '')
 
 
 

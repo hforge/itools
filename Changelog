@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-09 10:52:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
+
+    Summary:
+      resources, move to new style classes
+    Revision:
+      itools--main--0.8--patch-12
+
+
+    modified files:
+     Changelog resources/base.py resources/file.py
+     resources/memory.py
+
+
 2005-03-09 10:25:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
 
     Summary:

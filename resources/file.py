@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -71,7 +71,6 @@ class Resource(base.Resource):
 
 
 class File(Resource, base.File):
-    """ """
 
 ##    def get_mimetype(self):
 ##        name = self._path.split('/')[-1]
@@ -145,15 +144,6 @@ class File(Resource, base.File):
 
 
 class Folder(Resource, base.Folder):
-    """ """
-
-    def get_mimetype(self):
-        # XXX This method should be removed as soon as the Folder class
-        # becomes a new style class, because this method is here only
-        # to workaround the wrong inheritance algorithm of classic Python
-        # classes.
-        return base.Folder.get_mimetype(self)
-
 
     def _get_resource_names(self):
         return os.listdir(self._path)

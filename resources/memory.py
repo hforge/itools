@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@ import base
 
 
 class Resource(base.Resource):
+
     name = None
     def get_name(self):
         return self.name
@@ -50,7 +51,6 @@ class Resource(base.Resource):
 
 
 class File(Resource, base.File):
-    """ """
 
     def __init__(self, data, name=None):
         self.name = name
@@ -111,14 +111,6 @@ class Folder(Resource, base.Folder):
         self.name = name
         self.resources = {}
         self.ctime = self.mtime = datetime.now()
-
-
-    def get_mimetype(self):
-        # XXX This method should be removed as soon as the Folder class
-        # becomes a new style class, because this method is here only
-        # to workaround the wrong inheritance algorithm of classic Python
-        # classes.
-        return base.Folder.get_mimetype(self)
 
 
     def _get_resource_names(self):

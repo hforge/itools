@@ -79,7 +79,6 @@ def Text(data):
 
 
 def Bool(value):
-    print value
     yield str(int(value)), 0
 
 

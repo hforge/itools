@@ -681,7 +681,7 @@ class Document(Text.Text):
 
 
     def traverse(self):
-        for x in self.root_element.traverse():
+        for x in self.get_root_element().traverse():
             yield x
 
 
@@ -689,7 +689,7 @@ class Document(Text.Text):
         if context is None:
             context = Context()
         # Children
-        for x, context in self.root_element.traverse2(context):
+        for x, context in self.get_root_element().traverse2(context):
             yield x, context
 
 

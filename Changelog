@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-25 20:04:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
+
+    Summary:
+      html, update to the last changes in xml
+    Revision:
+      itools--main--0.8--patch-36
+
+
+    modified files:
+     Changelog html/HTML.py xml/XML.py
+
+
 2005-03-25 19:19:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-35
 
     Summary:

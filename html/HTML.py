@@ -57,16 +57,16 @@ class Parser(HTMLParser, XML.Parser):
         element = Element(None, name)
 
         for attr_name, value in attrs:
-            element.set_attribute(attr_name, value)
+            element.set_attribute(None, attr_name, value)
 
         self.stack.append(element)
 
         # Check for the mime type and encoding
         if name == 'meta':
-            if element.has_attribute('http-equiv'):
-                http_equiv = element.get_attribute('http-equiv')
+            if element.has_attribute(None, 'http-equiv'):
+                http_equiv = element.get_attribute(None, 'http-equiv')
                 if http_equiv == 'Content-Type':
-                    value = element.get_attribute('content')
+                    value = element.get_attribute(None, 'content')
                     mimetype, charset = value.split(';')
                     self.mimetype = mimetype.strip()
                     self.encoding = charset.strip()[len('charset='):]
@@ -118,17 +118,18 @@ class Element(XHTML.Element):
     # 'XHTML.get_opentag'. It should be refactored.
     def get_opentag(self, encoding='UTF-8'):
         if self.name == 'meta':
-            if self.has_attribute('http-equiv'):
-                http_equiv = self.get_attribute('http-equiv')
+            if self.has_attribute(None, 'http-equiv'):
+                http_equiv = self.get_attribute(None, 'http-equiv')
                 if http_equiv == 'Content-Type':
                     s = '<%s' % self.qname
                     # Output the attributes
-                    for qname, value in self.attributes_by_qname.items():
-                        if qname == 'content':
+                    for namespace, local_name, value in self.get_attributes():
+                        # This is HTML, we don't care about the namespace
+                        if local_name == 'content':
                             value = u'text/html; charset=%s' % encoding
                         else:
                             value = unicode(value)
-                        s += ' %s="%s"' % (qname, value)
+                        s += ' %s="%s"' % (local_name, value)
                     # Close the open tag
                     return s + u'>'
 
@@ -198,7 +199,10 @@ class Document(XHTML.Document):
             s = u'<!%s>' % self._declaration
         # The children
         for child in self.children:
-            s += child.to_unicode(encoding)
+            if isinstance(child, unicode):
+                s +=  child
+            else:
+                s += child.to_unicode(encoding)
         return s
 
 
@@ -210,9 +214,22 @@ class Document(XHTML.Document):
         # The children
         for child in self.children:
             # XXX Fix <meta http-equiv="Content-Type" content="...">
-            s += child.to_unicode(encoding)
+            if isinstance(child, unicode):
+                s += child
+            else:
+                s += child.to_unicode(encoding)
 
         return s.encode(encoding)
+
+
+    #######################################################################
+    # API
+    #######################################################################
+    def get_root_element(self):
+        # XXX Probably this should work like XML
+        for child in self.children:
+            if isinstance(child, Element):
+                return child
 
 
 XHTML.Document.register_handler_class(Document)

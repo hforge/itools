@@ -1,3 +1,26 @@
+0.4.5 (2004/09/12)
+
+  Resources
+  - Speed up memory resources by storing the resource's data with cStringIO
+  instead of normal strings.
+
+  Handlers
+  - Speed up by correctly setting the timestamp to folders when they are
+  changed.
+
+  XML
+  - Miscellaneous fixes.
+
+  Simple Template Language
+  - Improve error messages.
+
+  Index & Search
+  - Miscellaneus fixes.
+
+  Documentation
+  - Improve the appendix about GNU Arch.
+
+
 0.4.4 (2004/08/30)
 
   Index & Search

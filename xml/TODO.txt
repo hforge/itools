@@ -11,3 +11,4 @@
   do this we should relax the way xml is interpreted, maybe we couldn't use
   expat anymore.
 
+* Make STL tests working again.

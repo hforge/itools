@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-16 14:44:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-51
+
+    Summary:
+      catalog, optimize index load
+    Revision:
+      itools--main--0.7--patch-51
+
+    Index loading has been optimized again. Now we read the full "tree"
+    resource data into memory, instead of accessing the resource for
+    every slot.
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2005-03-16 14:37:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
 
     Summary:

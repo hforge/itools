@@ -429,7 +429,7 @@ class IIndex(Folder, Tree):
         self.documents = {}
         self.children = {}
 
-        tree_rsrc = tree_handler.resource
+        tree_data = tree_handler.resource.read()
         doc_rsrc = docs_handler.resource
 
         stack = []
@@ -444,7 +444,7 @@ class IIndex(Folder, Tree):
 
             # Decode tree slot
             tree_slot = 16 + tree_slot_n * 16
-            tree_slot_data = tree_rsrc[tree_slot:tree_slot+16]
+            tree_slot_data = tree_data[tree_slot:tree_slot+16]
             c = IO.decode_character(tree_slot_data[0:4])
 ##            doc_slot_n = IO.decode_link(tree_slot_data[4:8])
             child_n = IO.decode_link(tree_slot_data[8:12])

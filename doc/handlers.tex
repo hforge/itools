@@ -1,9 +1,10 @@
 \chapter{Resource Handlers}
 
-The resource layer knowledge about the {\em meaning} of the content of
-a resource is minimal. For example, it does not know that an XML document
-has a tree structure, hence it does not provide an API to traverse it; nor
-it knows how to get the messages and translations from a PO file.
+Resources lack any knowledge about the structure and the meaning of
+the information they contain. For example, the resource layer ignores
+that an XML document has a tree structure, hence it does not provide
+an API to traverse it; nor it knows how to get the messages and
+translations from a PO file.
 
 This is the purpose of the {\em resource handlers}, to add semantics to
 specific resources.
@@ -225,28 +226,22 @@ utilities.
 
 \section{The handler factory}
 
-So far we have built a handler instance with a line like:
+So far we have built a handler instance through a handler class:
 
 \begin{code}
     >>> handler = HTML.Document(resource)
+    >>> handler
+    <itools.xml.HTML.Document object at 0x405740cc>
 \end{code}
 
-With this sentence we have explicitly chosen the handler class we want
-to use to work with our resource. And we can do so because we know the
-resource is an HTML document.
+This is the standard pattern to build instances. However, if the resource
+is not an HTML document this procedure would fail. In other words, this
+procedure is only useful if you already know the kind of resource you
+are working with.
 
-But what happens if we don't know what our resource actually is. Often
-it is just better to let {\tt itools} decide which is the better handler
-class to use:
-
-\begin{code}
-    >>> from itools.handlers.Handler import Handler
-    >>> handler = Handler.build_handler(resource)
-\end{code}
-
-Here we use a handler class as a factory. The class method {\tt build\_handler}
-will choose the available handler class that better matches the given resource,
-and will build and return a handler for it.
+Another option is to let {\tt itools} to choose which handler class to use.
+This can be done with the {\tt build\_handler} method, which provides the
+factory pattern.
 
 \begin{api}
   {\tt build\_handler(resource)}\\
@@ -254,6 +249,53 @@ and will build and return a handler for it.
   handler class that better matches it, and builds and returns a handler for
   it.
 \end{api}
+
+For example, from the {\tt examples} directory type:
+
+\begin{code}
+    >>> from itools.resources import get_resource
+    >>> from itools.handlers.Handler import Handler
+    >>> from itools import xml
+    >>> 
+    >>> here = get_resource('.')
+    >>> for name in here.get_resource_names():
+    ...     resource = here.get_resource(name)
+    ...     handler = Handler.build_handler(resource)
+    ...     print name, repr(handler)
+    ... 
+    chapter6 <itools.handlers.Folder.Folder object at 0x40538d4c>
+    chapter7 <itools.handlers.Folder.Folder object at 0x4032c0cc>
+    hello.txt <itools.handlers.Text.Text object at 0x40536f4c>
+    hello.xhtml <itools.xml.XHTML.Document object at 0x4053b70c>
+    hello.xml <itools.xml.XML.Document object at 0x40538d6c>
+\end{code}
+
+Note that {\tt build\_handler} is a class method. In the example above
+we have called it through the most abstract handler class: {\tt Handler},
+which is the root of the inheritance tree. But it is also possible to call
+it with another handler class:
+
+\begin{code}
+    >>> from itools.xml import XML
+    >>> 
+    >>> resource = here.get_resource('hello.xhtml')
+    >>> XML.Document.build_handler(resource)
+    <itools.xml.XHTML.Document object at 0x405c6ecc>
+\end{code}
+
+There is an important difference between calling {\tt build\_handler} from
+one or another class: the set of possible handler classes to use is
+restricted to all the sub-classes of the choosen handler class. For example,
+if we pass a plain text file to {\tt XML.Document.build\_handler}, it will
+fail:
+
+\begin{code}
+    >>> resource = here.get_resource('hello.txt')
+    >>> XML.Document.build_handler(resource)
+    Traceback (most recent call last):
+      [...]
+    xml.parsers.expat.ExpatError: syntax error: line 1, column 0
+\end{code}
 
 
 \subsection{The {\tt get\_handler} shorthand}
@@ -286,9 +328,6 @@ With the shorthand:
     >>>
     >>> handler = get_handler('http://example.com')
 \end{code}
-
-In the examples that follow we will use {\tt get\_handler} most of the
-time.
 
 
 \section{Folders}

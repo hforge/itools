@@ -255,21 +255,13 @@ def lookup(namespace, name):
     """
     if hasattr(namespace, 'stl_lookup'):
         return namespace.stl_lookup(name)
-
-    if isinstance(namespace, dict):
+    elif isinstance(namespace, dict):
         if name in namespace:
             return namespace[name]
+    elif hasattr(namespace, name):
+        return getattr(namespace, name)
 
-    try:
-        value = getattr(namespace, name)
-    except AttributeError:
-        # XXX Maybe we shouldn't try this one
-        try:
-            value = namespace[name]
-        except KeyError:
-            raise STLNameError, 'name "%s" not found in the namespace' % name
-
-    return value
+    raise STLNameError, 'name "%s" not found in the namespace' % name
 
 
 

@@ -72,7 +72,7 @@ class HeadElement(Element):
         # Skip content type declaration
         if element.namespace == namespaces.xhtml and element.name == 'meta':
             if element.has_attribute(namespaces.xhtml, 'http-equiv'):
-                value = element.has_attribute(namespaces.xhtml, 'http-equiv')
+                value = element.get_attribute(namespaces.xhtml, 'http-equiv')
                 if value == 'Content-Type':
                     return
         self.children.append(element)
@@ -96,9 +96,7 @@ class Namespace(XML.Namespace):
     get_attribute_type = staticmethod(get_attribute_type)
 
 
-
 namespaces.set_namespace(namespaces.xhtml, Namespace)
-
 
 
 #############################################################################

@@ -21,7 +21,7 @@ import warnings
 
 # Import from Python
 from itools.handlers import IO
-from itools.xml import XML
+from itools.xml import XML, namespaces
 
 
 ############################################################################
@@ -72,6 +72,8 @@ class ComplexType(XML.Element):
         XML.Element.__init__(self, prefix, name)
         self.schema = schema
 
+        self._properties = {}
+
 
     #########################################################################
     # XXX Obsolete code, to be removed for 0.9
@@ -91,8 +93,8 @@ class ComplexType(XML.Element):
         property_names.sort()
         for name in property_names:
             type, default = schema[name]
-            if hasattr(self, name):
-                value = getattr(self, name)
+            if name in self._properties:
+                value = self._properties[name]
                 if isinstance(value, dict):
                     # Multilingual
                     for language, value in value.items():
@@ -172,7 +174,14 @@ class ComplexType(XML.Element):
         if name not in schema:
             raise LookupError, 'schema does not define property "%s"' % name
         type, default = schema[name]
-        return getattr(self, name, default)
+        return self._properties.get(name, default)
+
+
+    def has_property(self, name):
+        schema = self.schema
+        if name not in schema:
+            raise LookupError, 'schema does not define property "%s"' % name
+        return name in self._properties
 
 
     def set_property(self, name, value, language=None):
@@ -180,18 +189,14 @@ class ComplexType(XML.Element):
             type, default = self.schema[name]
             if isinstance(default, list):
                 if isinstance(value, list):
-                    setattr(self, name, value)
+                    self._properties[name] = value
                 else:
-                    if not hasattr(self, name):
-                        setattr(self, name, [])
-                    values = getattr(self, name)
+                    values = self._properties.setdefault(name, [])
                     values.append(value)
             else:
-                setattr(self, name, value)
+                self._properties[name] = value
         else:
-            if not hasattr(self, name):
-                setattr(self, name, {})
-            values = getattr(self, name)
+            values = self._properties.setdefault(name, {})
             values[language] = value
 
 
@@ -208,13 +213,17 @@ class ComplexType(XML.Element):
 
     def set_element(self, element):
         type, default = self.schema[element.name]
-        try:
-            value = getattr(element, 'value')
-        except AttributeError:
-            value = type.decode('')
+        if issubclass(type, ComplexType):
+            # XXX
+            pass
+        else:
+            try:
+                value = getattr(element, 'value')
+            except AttributeError:
+                value = type.decode('')
 
-        if element.has_attribute(XML.xmlns_uri, 'lang'):
-            language = element.get_attribute(XML.xmlns_uri, 'lang')
+        if element.has_attribute(namespaces.xml, 'lang'):
+            language = element.get_attribute(namespaces.xml, 'lang')
             self.set_property(element.name, value, language=str(language))
         else:
             self.set_property(element.name, value)

@@ -123,14 +123,26 @@ class Element(XHTML.Element):
         return XHTML.Element.get_closetag(self)
 
 
-class HeadElement(XHTML.Element):
+# XXX This class is almost identical to 'XHTML.Element'
+class HeadElement(Element):
 
     def to_unicode(self, encoding='UTF-8'):
-        # XXX This is almost identical to 'XHTML.Element.to_unicode'
         return ''.join([self.get_opentag(),
                         '\n    <meta http-equiv="Content-Type" content="text/html; charset=%s">' % encoding,
                         XML.Children.encode(self.children, encoding=encoding),
                         self.get_closetag()])
+
+
+    def set_element(self, element):
+        # Skip content type declaration
+        if element.name == 'meta':
+            if element.has_attribute(None, 'http-equiv'):
+                value = element.get_attribute(None, 'http-equiv')
+                if value == 'Content-Type':
+                    return
+        self.children.append(element)
+
+
 
 
 #############################################################################

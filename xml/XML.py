@@ -164,7 +164,7 @@ class Parser(object):
 
 
     def start_namespace_handler(self, prefix, uri):
-        namespace_handler = get_namespace(uri)
+        namespace_handler = namespaces.get_namespace(uri)
         namespace_handler.namespace_handler(self)
         # Keep the namespace declarations
         self.ns_declarations[prefix] = uri
@@ -194,7 +194,7 @@ class Parser(object):
             namespace_uri = None
 
         # Load the namespace handler
-        namespace = get_namespace(namespace_uri)
+        namespace = namespaces.get_namespace(namespace_uri)
         # Load the element
         try:
             element = namespace.get_element(prefix, name)
@@ -206,8 +206,8 @@ class Parser(object):
         element_uri = namespace_uri
 
         # Keep the namespace declarations (set them as attributes)
-##        xmlns = get_namespace(namespaces.xml)
-        xmlns = get_namespace(None)
+##        xmlns = namespaces.get_namespace(namespaces.xml)
+        xmlns = namespaces.get_namespace(None)
         for name, value in self.ns_declarations.items():
             type = xmlns.get_attribute_type(name)
             value = type.decode(value)
@@ -222,7 +222,7 @@ class Parser(object):
                 prefix = None
                 namespace_uri = element_uri
 
-            namespace = get_namespace(namespace_uri)
+            namespace = namespaces.get_namespace(namespace_uri)
             try:
                 type = namespace.get_attribute_type(name)
             except XMLError, e:
@@ -464,7 +464,7 @@ class Element(object):
         """
         Returns the type for the given attribute
         """
-        namespace = get_namespace(namespace_uri)
+        namespace = namespaces.get_namespace(namespace_uri)
         return namespace.get_attribute_type(local_name)
 
 

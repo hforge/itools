@@ -175,8 +175,8 @@ Now we are going to do the opposite, to transform the data structure to
 a byte string (the process known as serialization). This way we will be
 able to save the changes we do to our the handler instance.
 
-The method we are going to implement is {\tt to\_str}, which must return
-a byte string representing the data contained by the handler:
+The method we are going to implement is {\tt to\_unicode}, which must return
+a unicode string representing the data contained by the handler:
 
 \begin{code}
     class Addressbook(XML.Document):
@@ -184,7 +184,7 @@ a byte string representing the data contained by the handler:
             ...
 
 
-        def to_str(self, encoding='UTF-8'):
+        def to_unicode(self, encoding='UTF-8'):
             # XML declaration
             data = u'<?xml version="1.0" encoding="%s"?>\n' % encoding
             # Open root element
@@ -200,8 +200,11 @@ a byte string representing the data contained by the handler:
             # Close root element
             data += u'</addressbook>'
             # Return as a byte string
-            return data.encode(encoding)
+            return data
 \end{code}
+
+Note that it accepts the encoding parameter, and that the returned unicode
+string starts by the XML declaration which specifies the encoding.
 
 To test it type the code below:
 

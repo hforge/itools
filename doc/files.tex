@@ -19,6 +19,9 @@ between resources and handlers, the load (de-serialization) and save
 We will learn to use the file handlers {\tt itools} offers out of the box,
 and how to write custom handler classes.
 
+
+\section{Introduction}
+
 To get a feeling, let's start with an example:
 
 \begin{enumerate}
@@ -68,7 +71,7 @@ To get a feeling, let's start with an example:
 \end{enumerate}
 
 
-\section{One resource, many handlers}
+\subsection{One resource, many handlers}
 
 The relationship between resources to handlers is {\em 1} to {\em n}.
 While there may be several different handlers associated to the same
@@ -90,7 +93,7 @@ associated to:
 \end{code}
 
 
-\section{Load}
+\subsection{Load}
 
 It may happen that the resource (a web page in our example) gets updated, then
 the handler will keep a data structure on memory that does not correspond
@@ -140,7 +143,7 @@ Then we would reach a situation opposite to the one seen before: the resource
 would be outdated, as the handler would keep a newer version.
 
 
-\section{Save}
+\subsection{Save}
 
 Another way to get a handler more recent than the resource it is associated
 with, is to modify the handler through the API it offers, which depends
@@ -160,7 +163,7 @@ one reloads the handler with the resource, the second one saves the
 handler state in the resource.
 
 
-\section{Serialization and de-serialization}
+\subsection{Serialization and de-serialization}
 
 A file resource represents a sequence of bytes. A handler keeps a data
 structure in memory, and offers an API to inspect and modify this data
@@ -236,6 +239,62 @@ The keyword parameters are used to initialize the skeleton; in the example
 above the {\tt title} parameter defines the HTML document title, which by
 default is empty. The parameters accepted depend on the handler.
 
+
+\section{Text and binary handlers}
+
+File handlers split into text and binary handlers. The class {\tt Text}
+is the base class for all the text handlers.
+
+The key difference is that text handlers represent the resource's content
+in memory as a unicode string, instead of just a byte string.
+
+When the resource is loaded the text handler tries to guess the character
+encoding of the resource's content. For some file formats this information
+is stored within the content itself; for example an XML document starts
+by an XML declaration that specifies the encoding, if the declaration is
+missing it is assumed the encoding is UTF-8. When this information is not
+explicitly indicated, the text handler tries to guess the encoding by
+brute force.
+
+With the character encoding the text handler decodes and loads the resource's
+content.
+
+The API of binary and text handlers also differs, compare the one offered
+by the {\tt File} handler class:
+
+\begin{api}
+  {\tt to\_str()}\\
+  - Returns the resource data as a byte string (this is similar to the
+    method {\tt handler.resource.get\_data()}).
+\end{api}
+
+with the one offered by the {\tt Text} handler class:
+
+\begin{api}
+  {\tt to\_str(encoding='UTF-8')}\\
+  - Returns the resource data as a byte string, using the given encoding
+  (defaults to {\tt UTF-8}). Note that this will be different than the
+  string returned by {\tt handler.resource.get\_data()} if the resource
+  data is not encoded in {\tt UTF-8} in the source.
+
+  {\tt to\_unicode(encoding=None)}\\
+  - Returns the resource data as an unicode string.
+\end{api}
+
+Note the {\tt to\_str} method for text handlers accepts the encoding as
+an optional parameter. This not only will return a byte string in the
+given charater encoding, it will also specify the encoding in the byte
+string for file formats that should include it.
+
+There is also the new method {\tt to\_unicode}, which returns the content
+as a unicode string. This method accepts the encoding parameter too. For
+file formats that do not include the encoding within the content, the
+result of {\tt to\_unicode} will be the same regardless of the given
+encoding. But for file formats like XML that should specify the encoding
+within the content, the returned unicode string will include it.
+
+
+
 \section{Overview of the available handlers}
 
 Out of the box {\tt itools} comes with several handlers for different
@@ -251,38 +310,12 @@ inheritance relationship between them.
 \end{figure}
 
 We are not going to see folder handlers here, as they will be studied in
-the next chapter. Now we are going to present some of the file handler
-classes {\tt itools} includes.
+the next chapter.
 
-The first one is the {\tt File} handler class, which is the root of the
-inheritance tree for all file handlers. This is the one to use when there
-is nothing better. It only provides the method {\tt to\_str} we have already
-seen before.
+We have already seen the difference between binary and text handlers. Now
+we are going to present some of the higher level file handler classes
+{\tt itools} includes.
 
-\begin{api}
-  {\tt to\_str()}\\
-  - Returns the resource data as a byte string (this is similar to the
-    method {\tt handler.resource.get\_data()}).
-\end{api}
-
-
-
-\subsection{Text handlers}
-
-The {\tt Text} handler class is the base class for all text handlers.
-
-The default handler for text files, whose API is:
-
-\begin{api}
-  {\tt to\_unicode(encoding=None)}\\
-  - Returns the resource data as an unicode string.
-
-  {\tt to\_str(encoding='UTF-8')}\\
-  - Returns the resource data as a byte string, using the given encoding
-  (defaults to {\tt UTF-8}). Note that this will be different than the
-  string returned by {\tt handler.resource.get\_data()} if the resource
-  data is not encoded in {\tt UTF-8} in the source.
-\end{api}
 
 \paragraph{XML.Document}
 

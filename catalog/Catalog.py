@@ -17,6 +17,7 @@
 
 
 # Import from Python
+import datetime
 from sets import Set
 
 # Import from itools
@@ -98,19 +99,14 @@ class Catalog(Folder):
         return Folder._get_handler(self, segment, resource)
 
 
-    def _load(self, resource):
-        self.documents = [ int(x[1:]) for x in resource.get_resources()
-                           if x.startswith('d') ]
-        self.documents.sort()
-
-
     #########################################################################
     # Private API
     #########################################################################
     def get_new_document_number(self):
-        if self.documents:
-            return self.documents[-1] + 1
-        return 0
+        documents = [ int(x[1:]) for x in self.resource.get_resources()
+                      if x.startswith('d') ]
+        documents.sort()
+        return documents[-1] + 1
 
 
     #########################################################################
@@ -123,7 +119,6 @@ class Catalog(Folder):
 
         fields = self.get_handler('fields')
         # Documents
-        self.documents.append(doc_number)
         self.set_handler(doc_name, IDocument())
         idoc = self.get_handler(doc_name)
         #
@@ -173,6 +168,9 @@ class Catalog(Folder):
             if field.is_stored:
                 idoc.set_handler('s%d' % field.number, StoredField(data=value))
 
+        # Set timestamp
+        self.timestamp = datetime.datetime.now()
+
         return doc_number
 
 
@@ -185,9 +183,10 @@ class Catalog(Folder):
                 for term in field.terms:
                     ii.unindex_word(term, doc_number)
         # Remove the document
-        i = self.documents.index(doc_number)
-        del self.documents[i]
         self.del_handler('d%d' % doc_number)
+
+        # Set timestamp
+        self.timestamp = datetime.datetime.now()
 
 
     def search(self, **kw):

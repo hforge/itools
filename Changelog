@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-03 13:45:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-75
+
+    Summary:
+      catalog, prevent it to be reloaded after indexing/unindexing
+    Revision:
+      itools--main--0.4--patch-75
+
+    Set the timestamp after indexing and unindexing a document. This prevents
+    the catalog to be reloaded.
+    
+    Don't load any state on the catalog's handler, to avoid problems on multi-
+    threaded systems (e.g. Zope).
+
+    modified files:
+     Changelog catalog/Catalog.py
+
+
 2004-09-03 13:37:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-74
 
     Summary:

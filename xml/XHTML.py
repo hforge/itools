@@ -265,8 +265,8 @@ class Document(XML.Document):
             if isinstance(node, XML.Raw):
                 message.append(node.data)
             elif isinstance(node, XML.Element):
-                # Skip <script> (XXX do the same with <style>??)
-                if node.name == 'script':
+                # Skip <script> and <style>
+                if node.name == 'script' or node.name == 'style':
                     process_message(context)
                     return True
                 # Attributes

@@ -1,3 +1,47 @@
+0.6.0 (2004/01/07)
+
+  Resources
+  - Now "get_resources" is an iterator that returns a resource (not a name)
+    at a time.
+  - Memory folders provide "get_atime".
+
+  Handlers
+  - Add the methods "get_handler_names", "get_handlers" and "has_handler".
+  - The methods "get_resource", "has_resource", "set_resource", etc. have
+    been removed. Access them throug the "resource" attribute, or use the
+    equivalent handler methods ("get_handler_names", etc).
+  - Now text handlers only must define the method "to_unicode", which now
+    accepts the optional parameter encoding.
+  - The methods "__str__" and "__unicode__" have been removed. Use instead
+    "to_str" and "to_unicode".
+  - Serialization and de-serialization code has been moved from "xml.Schema"
+    to "handlers.IO". Now the code serializes and de-serializes to and from
+    byte strings.
+
+  XML
+  - The architecture has been cleaned and simplified, specially for attributes,
+    whose API has changed.
+  - The new method "traverse2" makes "walk" obsolete.
+
+  Simple Template Language
+  - The "stl:if" and "stl:attributes" expressions accept the new "not"
+    operator. This change makes the "stl:ifnot" statement obsolete.
+
+  Catalog
+  - Now the catalog follows the load/save logic. As a side effect the index
+    and unindex operation has been speeded up but a factor of 2, aproximately.
+
+  Workflow
+  - Remove the "__init__" method from the "WorkflowAware" class to avoid
+    conflicts with handler classes. Now the method "enter_workflow" must
+    be called explicitly.
+
+  Documentation
+  - Re-write part of the introduction.
+  - Re-organize the handler chapters. Explain some things for the first time,
+    explain other things better.
+
+
 0.5.1 (2004/12/17)
 
   XML

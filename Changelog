@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-23 19:18:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
+
+    Summary:
+      xml, first draft of the new schema
+    Revision:
+      itools--main--0.8--patch-24
+
+    The new schema classes take advantage of the new parsing process.
+
+    modified files:
+     Changelog xml/Schema.py
+
+
 2005-03-23 17:47:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-23
 
     Summary:

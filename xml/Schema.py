@@ -39,18 +39,43 @@ from itools.xml import XML
 ##    decode = classmethod(decode)
 
 
+class SimpleType(XML.Element):
+
+    schema = {}
+
+    def set_comment(self, comment):
+        raise ValueError
+
+
+    def set_element(self, element):
+        raise ValueError
+
+
+    def set_text(self, text, encoding='UTF-8'):
+        text = text.strip()
+        type, default = self.schema[self.name]
+        if type is IO.Unicode:
+            self.value = type.decode(text, encoding)
+        else:
+            self.value = type.decode(text)
+
+
 ############################################################################
 # Complex Types
 ############################################################################
-class ComplexType(object):
+class ComplexType(XML.Element):
+
     schema = {}
 
 
-    def __init__(self, **kw):
-        schema = self.schema
-        for key, value in kw.items():
-            if key in schema:
-                self.set_property(key, value)
+    #########################################################################
+    # XXX Obsolete code, to be removed for 0.9
+    #########################################################################
+##    def __init__(self, **kw):
+##        schema = self.schema
+##        for key, value in kw.items():
+##            if key in schema:
+##                self.set_property(key, value)
 
 
     def encode(self, encoding='UTF-8'):
@@ -99,7 +124,7 @@ class ComplexType(object):
 
     def decode(cls, node):
         schema = cls.schema
-        property = cls()
+        property = cls(None, None)
         for node in node.get_elements():
             name = node.name
             # Decode the value
@@ -133,6 +158,9 @@ class ComplexType(object):
     decode = classmethod(decode)
 
 
+    #########################################################################
+    # API
+    #########################################################################
     def get_property(self, name):
         schema = self.schema
         if name not in schema:
@@ -159,3 +187,22 @@ class ComplexType(object):
                 setattr(self, name, {})
             values = getattr(self, name)
             values[language] = value
+
+
+    #########################################################################
+    # Parsing
+    #########################################################################
+    def set_text(self, text, encoding='UTF-8'):
+        pass
+
+
+    def set_comment(self, comment):
+        pass
+
+
+    def set_element(self, element):
+        if element.has_attribute('lang'):
+            self.set_property(element.name, element.value,
+                              language=element.get_attribute('lang'))
+        else:
+            self.set_property(element.name, element.value)

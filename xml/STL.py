@@ -379,14 +379,20 @@ class STL(object):
         for child in document.children:
             if isinstance(child, XML.Element):
                 s.extend(self.process(child, stack, repeat))
-            else:
+            elif isinstance(child, unicode):
+                s.append(child)
+            elif isinstance(child, XML.Comment):
                 s.append(child.to_unicode())
+            else:
+                raise ValueError, 'unexpected value "%s"' % child
         return u''.join(s)
 
 
     def process(self, node, stack, repeat_stack):
         # Raw nodes
-        if isinstance(node, (XML.Raw, XML.Comment)):
+        if isinstance(node, unicode):
+            return [node]
+        elif isinstance(node, XML.Comment):
             return [node.to_unicode()]
 
         s = []

@@ -375,8 +375,8 @@ class Document(XML.Document):
         """
         text = ''
         for node in self.traverse():
-            if isinstance(node, XML.Raw):
-                text += node.to_unicode()
+            if isinstance(node, unicode):
+                text += node
         return text
 
 

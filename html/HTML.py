@@ -22,22 +22,19 @@ from HTMLParser import HTMLParser
 from sets import Set
 
 # Import from itools
-from itools.handlers import File
+from itools.handlers import File, IO
 from itools.xml import XML, XHTML
 
 
 #############################################################################
 # Parser
 #############################################################################
-class Parser(HTMLParser):
+class Parser(HTMLParser, XML.Parser):
 
     def parse(self, data):
-        # Initialize the parser
-        HTMLParser.__init__(self)
-
         # Defaults
-        self._encoding = 'UTF-8'
-        self._declaration = None
+        self.encoding = 'UTF-8'
+        self.declaration = None
 
         # Initialize the data structure
         self.children = []
@@ -48,10 +45,12 @@ class Parser(HTMLParser):
         self.close()
         del self.stack
 
+        return self
 
-    def handle_decl(self, decl):
+
+    def handle_decl(self, declaration):
         # XXX This is related with the XML doctype, we should share code
-        self._declaration = decl
+        self.declaration = declaration
 
 
     def handle_starttag(self, name, attrs):
@@ -69,8 +68,8 @@ class Parser(HTMLParser):
                 if http_equiv == 'Content-Type':
                     value = element.get_attribute('content')
                     mimetype, charset = value.split(';')
-                    self._mimetype = mimetype.strip()
-                    self._encoding = charset.strip()[len('charset='):]
+                    self.mimetype = mimetype.strip()
+                    self.encoding = charset.strip()[len('charset='):]
 
         # Close the tag if needed
         if name in empty_elements:
@@ -87,7 +86,7 @@ class Parser(HTMLParser):
         XML.Parser.comment_handler(self, data)
 
 
-    handle_data = XML.Parser.default_handler
+    handle_data = XML.Parser.char_data_handler
 
 
     def handle_entityref(self, name):
@@ -187,7 +186,8 @@ class Document(XHTML.Document):
         parser = Parser()
         state = parser.parse(resource.get_data())
 
-        self.encoding = state.encoding
+        self._encoding = state.encoding
+        self._declaration = state.declaration
         self.children = state.children
 
 

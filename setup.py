@@ -71,8 +71,10 @@ tools are:
    resources). This package also includes several handlers out of the
    box.
 
- * itools.xml -- XML infrastructure, includes resource handlers for XML,
-   XHTML and HTML documents. Plus the Simple Template Language.
+ * itools.xml -- XML infrastructure, includes resource handlers for XML
+   and XHTML documents. Plus the Simple Template Language.
+
+ * itools.html -- resource handlers for HTML documents.
 
  * itools.i18n -- tools for language negotiation and text segmentation.
 
@@ -84,7 +86,7 @@ tools are:
 """
 
 setup(name = "itools",
-      version = "0.7.3",
+      version = "0.8.X",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",

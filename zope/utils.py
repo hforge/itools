@@ -120,7 +120,7 @@ def guess_contenttype(name, data, file=None):
     if content_type.startswith('text/'):
         if content_type == 'text/plain/po':
             po = i18n.parsers.PO(data)
-            text_encoding = po.encoding
+            text_encoding = po.get_encoding()
 
         # Brute force, likely to get the wrong encoding
         if text_encoding is None:

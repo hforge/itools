@@ -65,8 +65,6 @@ class Text(File):
     def get_encoding(self):
         return self._encoding
 
-    encoding = property(get_encoding, None, None, "")
-
 
     def to_unicode(self, encoding='UTF-8'):
         return self._data

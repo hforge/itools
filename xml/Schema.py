@@ -21,21 +21,22 @@ import warnings
 
 # Import from Python
 from itools.handlers import IO
+from itools.xml import XML
 
 
 ############################################################################
 # Simple Types
 ############################################################################
-class XML(object):
-    def encode(cls, value):
-        return value
-    encode = classmethod(encode)
+##class XML(object):
+##    def encode(cls, value):
+##        return value
+##    encode = classmethod(encode)
 
 
-    def decode(cls, value):
-        value = value.strip()
-        return value
-    decode = classmethod(decode)
+##    def decode(cls, value):
+##        value = value.strip()
+##        return value
+##    decode = classmethod(decode)
 
 
 ############################################################################
@@ -107,16 +108,7 @@ class ComplexType(object):
                 if issubclass(type, ComplexType):
                     value = type.decode(node)
                 else:
-                    # XXX Maybe this should be moved to a IO.XXX.decode
-                    # method
-                    value = []
-                    for x in node.children:
-                        if isinstance(x, unicode):
-                            value.append(x)
-                        else:
-                            value.append(x.to_unicode(encoding=encoding))
-                    value = ''.join(value)
-##                    value = node.children.to_unicode()
+                    value = XML.Children.encode(node.children)
                     value = value.encode('utf8')
                     try:
                         value = type.decode(value)

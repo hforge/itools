@@ -63,6 +63,21 @@ class XMLError(Exception):
 # Parser
 #############################################################################
 
+class Children(object):
+
+    def encode(cls, value, encoding='UTF-8'):
+        s = []
+        for node in value:
+            if isinstance(node, unicode):
+                s.append(node)
+            else:
+                s.append(node.to_unicode(encoding=encoding))
+        return ''.join(s)
+
+    encode = classmethod(encode)
+
+
+
 class Parser(object):
 
     def parse(self, data):
@@ -141,8 +156,6 @@ class Parser(object):
     def start_doctype_handler(self, name, system_id, public_id,
                               has_internal_subset):
         self.document_type = (name, system_id, public_id, has_internal_subset)
-##        doctype = DocumentType(name, system_id, public_id, has_internal_subset)
-##        self.children.append(doctype)
 
 
     def end_doctype_handler(self):
@@ -337,16 +350,6 @@ class Comment(object):
         return cmp(self.data, other.data)
 
 
-    def traverse(self):
-        yield self
-
-
-    def traverse2(self, context=None):
-        if context is None:
-            context = Context()
-        yield self, context
-
-
 
 class Element(object):
 
@@ -413,7 +416,7 @@ class Element(object):
     # Serialization
     def to_unicode(self, encoding='UTF-8'):
         return self.get_opentag(encoding) \
-               + self.children.to_unicode(encoding) \
+               + Children.encode(self.children, encoding=encoding) \
                + self.get_closetag()
 
 
@@ -481,8 +484,11 @@ class Element(object):
     def traverse(self):
         yield self
         for child in self.children:
-            for x in child.traverse():
-                yield x
+            if isinstance(child, Element):
+                for x in child.traverse():
+                    yield x
+            else:
+                yield child
 
 
     def traverse2(self, context=None):
@@ -496,8 +502,11 @@ class Element(object):
             context.skip = False
         else:
             for child in self.children:
-                for x, context in child.traverse2(context):
-                    yield x, context
+                if isinstance(child, Element):
+                    for x, context in child.traverse2(context):
+                        yield x, context
+                else:
+                    yield child, context
         # Up
         context.start = False
         yield self, context
@@ -590,6 +599,10 @@ class Document(Text.Text):
         # Children
         self.children = state.children
 
+        # XXX This is horrible
+        if hasattr(state, 'stl'):
+            self.stl = state.stl
+
 
     #######################################################################
     # API
@@ -607,8 +620,7 @@ class Document(Text.Text):
         # The document type (XXX)
         
         # The children
-        for child in self.children:
-            s.append(child.to_unicode(encoding))
+        s.append(Children.encode(self.children, encoding=encoding))
 
         return ''.join(s)
 
@@ -645,8 +657,11 @@ class Document(Text.Text):
             context.skip = False
         else:
             for child in self.children:
-                for x, context in child.traverse2(context):
-                    yield x, context
+                if isinstance(child, Element):
+                    for x, context in child.traverse2(context):
+                        yield x, context
+                else:
+                    yield child, context
 
 
 #############################################################################

@@ -2,6 +2,33 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-20 19:55:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-19
+
+    Summary:
+      xml, fixing
+    Revision:
+      itools--main--0.8--patch-19
+
+    So far the XML code has been reorganized in two ways. The HTML handler
+    has been moved to the new "itools.html", and the parsing has been
+    splitted from the document ("XML.Parser" and "HTML.Parser").
+    
+    Also, several classes have been removed: "XMLDeclaration", "DocumentType"
+    and "Raw".
+    
+    This patch just fixes many things that got broken with the last one.
+
+    modified files:
+     Changelog handlers/Text.py html/HTML.py setup.py xml/STL.py
+     xml/Schema.py xml/XHTML.py xml/XML.py zope/utils.py
+
+    renamed files:
+     xml/.arch-ids/test_html.py.id
+       ==> html/.arch-ids/test_html.py.id
+     xml/test_html.py
+       ==> html/test_html.py
+
+
 2005-03-20 18:34:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-18
 
     Summary:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-17 19:31:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
+
+    Summary:
+      catalog, optimize indexing, reduce write access to the resource
+    Revision:
+      itools--main--0.7--patch-53
+
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2005-03-16 18:06:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-52
 
     Summary:

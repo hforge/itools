@@ -212,7 +212,7 @@ class Folder(Resource):
                 for x in resource.traverse():
                     yield x
             else:
-                yield handler
+                yield resource
 
 
     ######################################################################

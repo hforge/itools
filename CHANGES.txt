@@ -17,7 +17,7 @@
   - Speed up the load of an index.
 
   Packaging
-  - Fix setup, use relative paths.
+  - Fix setup, use relative paths. By Hervé Cauwelier.
 
 
 0.7.1 (2005/03/03)

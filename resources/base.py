@@ -110,7 +110,7 @@ class Folder(Resource):
         for i, segment in enumerate(path):
             resource = resource._get_resource(segment.name)
             if resource is None:
-                raise ValueError, "resource '%s' not found" % str(path[:i+1])
+                raise LookupError, "resource '%s' not found" % str(path[:i+1])
         return resource
 
 

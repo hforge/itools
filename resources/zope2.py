@@ -46,7 +46,7 @@ class Resource(base.Resource):
 
 
     def get_atime(self):
-        raise NotImplementedError
+        return None
 
 
     def get_mtime(self):
@@ -57,7 +57,7 @@ class Resource(base.Resource):
 
 
     def get_ctime(self):
-        raise NotImplementedError
+        return None
 
 
     def set_mtime(self, mtime):

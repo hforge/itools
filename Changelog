@@ -2,6 +2,35 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-05 20:37:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
+
+    Summary:
+      resources, fix the modification time of Zope 2 resources
+    Revision:
+      itools--main--0.7--patch-36
+
+    Zope 2 resources should use "bobobase_modification_time()", so if a
+    resource is modified through the ZMI (for example) the resource is
+    reloaded the next time.
+    
+    But unfortunately we can't use it.
+    
+    Because the "bobobase_modification_time" is set with the ZODB transaction
+    commit, which happens always at the end, after the handler timestamp has
+    been set. This means that the resource modification time is always newer
+    than the handler's timestamp; so the resource always would be reloaded
+    after a modification, what is unacceptable.
+    
+    This is the reason we keep ourselves the modification time, within the
+    persistent variable 'mtime'. When the resource is loaded for the first
+    time the on memory variable "bobo_time" is initialized; the modification
+    time of a resource is defined as the newer of the "object.mtime" and
+    "resource.bobo_time" variables.
+
+    modified files:
+     Changelog resources/zope2.py
+
+
 2005-03-05 10:48:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-35
 
     Summary:

@@ -3,22 +3,26 @@ Itools is a Python package that encapsulates several Python tools
 developed by the Itaapy company and other developers. The provided
 tools are:
 
- * itools.uri -- an API to manage URIs, to identify and locate resources;
+ * itools.uri -- an API to manage URIs, to identify and locate resources.
 
  * itools.resources -- an abstraction layer over resources that let to
-   manage them with a consistent API, independently of where they are stored;
+   manage them with a consistent API, independently of where they are stored.
 
- * itools.handlers -- resource handlers, they are non persistent classes
-   that add specific semantic to resources, for example there are handlers
-   for file formats like XML, CSV, PO, etc..
+ * itools.handlers -- resource handlers infrastructure (resource
+   handlers are non persistent classes that add specific semantics to
+   resources). This package also includes several handlers out of the
+   box.                 
+                        
+ * itools.xml -- XML infrastructure, includes resource handlers for XML,
+   XHTML and HTML documents. Plus the Simple Template Language.
 
  * itools.i18n -- tools for language negotiation and text segmentation.
 
  * itools.workflow -- represent workflows as automatons, objects can move
    from one state to another through transitions, classes can add specific
-   semantics to states and transitions
-
- * itools.zope -- miscellaneous utilities for Zope
+   semantics to states and transitions.
+                
+ * itools.catalog -- An Index & Search engine.
 
 
 Install

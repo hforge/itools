@@ -1,3 +1,0 @@
-The itools coding style guide makes the appendix A of the itools manual. See the
-doc/ directory or consult a generated manual. PS, PDF and HTML formats are
-available.

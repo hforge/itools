@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-28 15:06:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
+
+    Summary:
+      xml, move the namespace registry to its own module
+    Revision:
+      itools--main--0.8--patch-42
+
+    Add also a registry from namespace prefix to uri.
+
+    new files:
+     xml/.arch-ids/namespaces.py.id xml/namespaces.py
+
+    modified files:
+     Changelog xhtml/XHTML.py xml/DublinCore.py xml/STL.py
+     xml/XML.py
+
+
 2005-03-27 18:06:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
 
     Summary:

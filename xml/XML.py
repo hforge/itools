@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-# Import from Python
+# Import from the Standard Library
 import htmlentitydefs
 import logging
 from sets import Set
@@ -26,14 +26,7 @@ from xml.parsers import expat
 
 # Import from itools
 from itools.handlers import File, Text, IO
-
-
-
-#############################################################################
-# Constants
-#############################################################################
-
-xmlns_uri = 'http://www.w3.org/2000/xmlns/'
+import namespaces
 
 
 #############################################################################
@@ -213,12 +206,12 @@ class Parser(object):
         element_uri = namespace_uri
 
         # Keep the namespace declarations (set them as attributes)
-##        xmlns = get_namespace(xmlns_uri)
+##        xmlns = get_namespace(namespaces.xml)
         xmlns = get_namespace(None)
         for name, value in self.ns_declarations.items():
             type = xmlns.get_attribute_type(name)
             value = type.decode(value)
-            element.set_attribute(xmlns_uri, name, value, prefix='xmlns')
+            element.set_attribute(namespaces.xml, name, value, prefix='xmlns')
         self.ns_declarations = {}
         # Set the attributes
         for name, value in attrs.items():
@@ -295,26 +288,6 @@ class Parser(object):
 # Namespaces
 #############################################################################
 
-namespaces = {}
-
-
-def set_namespace(uri, handler):
-    namespaces[uri] = handler
-
-
-def get_namespace(uri):
-    if uri in namespaces:
-        return namespaces[uri]
-    # Use default 
-    warnings.warn('Unknown namespace "%s" (using default)' % uri)
-    return namespaces[None]
-
-
-def has_namespace(uri):
-    return uri in namespaces
-
-
-
 class Namespace(object):
     """
     Default namespace handler for elements and attributes that are not bound
@@ -340,7 +313,7 @@ class Namespace(object):
 
 
 # Set the default namespace
-set_namespace(None, Namespace)
+namespaces.set_namespace(None, Namespace)
     
 
 

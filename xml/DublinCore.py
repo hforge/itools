@@ -18,10 +18,8 @@
 
 # Import from itools
 from itools.handlers import IO
-from itools.xml import XML
+from itools.xml import XML, namespaces
 
-
-namespace_uri = 'http://purl.org/dc/elements/1.1/'
 
 schema = {'title': IO.Unicode,
           'description': IO.Unicode,
@@ -32,7 +30,8 @@ schema = {'title': IO.Unicode,
 
 class Element(XML.Element):
 
-    namespace = namespace_uri
+    namespace = namespaces.dublin_core
+
 
     def set_comment(self, comment):
         raise ValueError
@@ -62,4 +61,4 @@ class Namespace(XML.Namespace):
     get_element = classmethod(get_element)
 
 
-XML.set_namespace(namespace_uri, Namespace)
+namespaces.set_namespace(namespaces.dublin_core, Namespace)

@@ -24,11 +24,8 @@ from StringIO import StringIO
 
 # Import from itools
 from itools.handlers import IO
-from itools.xml import XML
+from itools.xml import XML, namespaces
 from itools import i18n
-
-
-xhtml_uri = 'http://www.w3.org/1999/xhtml'
 
 
 #############################################################################
@@ -41,7 +38,7 @@ inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
 
 class Element(XML.Element):
 
-    namespace = xhtml_uri
+    namespace = namespaces.xhtml
 
 
     def is_inline(self):
@@ -57,8 +54,8 @@ class Element(XML.Element):
         if self.name == 'img' and attribute_name == 'alt':
             return True
         if self.name == 'input' and attribute_name == 'value':
-            if self.has_attribute(xhtml_uri, 'type'):
-                return self.get_attribute(xhtml_uri, 'type') == 'submit'
+            if self.has_attribute(namespaces.xhtml, 'type'):
+                return self.get_attribute(namespaces.xhtml, 'type') == 'submit'
         return False
 
 
@@ -73,9 +70,9 @@ class HeadElement(Element):
 
     def set_element(self, element):
         # Skip content type declaration
-        if element.namespace == xhtml_uri and element.name == 'meta':
-            if element.has_attribute(xhtml_uri, 'http-equiv'):
-                value = element.has_attribute(xhtml_uri, 'http-equiv')
+        if element.namespace == namespaces.xhtml and element.name == 'meta':
+            if element.has_attribute(namespaces.xhtml, 'http-equiv'):
+                value = element.has_attribute(namespaces.xhtml, 'http-equiv')
                 if value == 'Content-Type':
                     return
         self.children.append(element)
@@ -100,7 +97,7 @@ class Namespace(XML.Namespace):
 
 
 
-XML.set_namespace(xhtml_uri, Namespace)
+namespaces.set_namespace(namespaces.xhtml, Namespace)
 
 
 
@@ -115,7 +112,7 @@ class Document(XML.Document):
 
     class_mimetypes = ['application/xhtml+xml']
 
-    namespace = xhtml_uri
+    namespace = namespaces.xhtml
 
     #########################################################################
     # The skeleton

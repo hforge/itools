@@ -23,12 +23,11 @@ language I could imagine.
 
 
 # Import from itools
-from itools.xml import XML
+from itools.xml import XML, namespaces
 
 
 
 stl_uri = 'http://xml.itools.org/namespaces/stl'
-
 
 
 ########################################################################
@@ -617,4 +616,4 @@ class Namespace(XML.Namespace):
     get_attribute_type = staticmethod(get_attribute_type)
 
 
-XML.set_namespace('http://xml.itools.org/namespaces/stl', Namespace)
+namespaces.set_namespace('http://xml.itools.org/namespaces/stl', Namespace)

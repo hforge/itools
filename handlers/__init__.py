@@ -39,7 +39,6 @@ from types import StringTypes
 
 # Import from itools
 from itools.resources import base, get_resource
-from itools.xml import XML, XHTML, HTML
 
 # Import from itools.handlers
 import CSV
@@ -76,12 +75,7 @@ class Database(MimeTypes, object):
         self.set_file_handler('', File.File)
         self.set_file_handler('text', Text.Text)
         self.set_file_handler('text/comma-separated-values', CSV.CSV, '.csv')
-        self.set_file_handler('text/html', HTML.Document)
         self.set_file_handler('text/po', PO.PO, '.po')
-        self.set_file_handler('text/xml', XML.Document)
-        self.set_file_handler('application/xml', XML.Document)
-        self.set_file_handler('application/xhtml+xml', XHTML.Document,
-                              '.xhtml')
         self.set_folder_handler('', Folder.Folder)
 
 

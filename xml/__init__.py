@@ -15,7 +15,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
+# Import from itools.handlers
+from itools.handlers import database
+
+# Import from itools.xml
 import XML
 import XHTML
 import HTML
 import STL
+
+
+# Register the xml handlers in the database
+database.set_file_handler('text/html', HTML.Document)
+database.set_file_handler('text/xml', XML.Document)
+database.set_file_handler('application/xml', XML.Document)
+database.set_file_handler('application/xhtml+xml', XHTML.Document, '.xhtml')

@@ -133,7 +133,7 @@ class Folder(Handler):
             resource = self.get_resource(segment.name)
 
             # Get the mimetype
-            from __init__ import database
+            from itools.handlers import database
             mimetype = database.guess_mimetype(segment.name, resource)
             # Build and return the handler
             return database.get_handler(resource, mimetype)

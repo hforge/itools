@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,9 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
+
+# Import from the Standard Library
+from sets import Set
 
 # Import from itools
 from itools import uri
@@ -85,7 +88,11 @@ def Bool(value):
 
 def Keyword(value):
     if value:
-        yield unicode(value), 0
+        if isinstance(value, list) or isinstance(value, Set):
+            for x in value:
+                yield unicode(x), 0
+        else:
+            yield unicode(value), 0
 
 
 

@@ -438,20 +438,11 @@ class STL(object):
         stack.append(namespace)
         # Initialize the repeat stack (keeps repeat/index, repeat/odd, etc...)
         repeat = NamespaceStack()
+
         # Get the document
         document = self.handler
-        # Process the children
-        s = []
-        root_element = document.get_root_element()
-        for child in root_element.children:
-            if isinstance(child, XML.Element):
-                s.extend(self.process(child, stack, repeat))
-            elif isinstance(child, unicode):
-                s.append(child)
-            elif isinstance(child, XML.Comment):
-                s.append(child.to_unicode())
-            else:
-                raise ValueError, 'unexpected value "%s"' % child
+        s = self.process(document.root_element, stack, repeat)
+
         return u''.join(s)
 
 

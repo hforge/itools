@@ -16,27 +16,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-# Import from the Standard Library
-from copy import copy
-from HTMLParser import HTMLParser
-from sets import Set
-
 # Import from itools
 from itools.handlers import File, IO
 from itools.xml import XML
 from itools.xhtml import XHTML
-from parser import Parser
+from itools.html import parser
 
 
-
-# List of empty elements, which don't have a close tag
-empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
-                      'img', 'input', 'isindex', 'link', 'meta', 'param'])
 
 class Element(XHTML.Element):
 
     def get_closetag(self):
-        if self.name in empty_elements:
+        if self.name in parser.empty_elements:
             return ''
         return XHTML.Element.get_closetag(self)
 
@@ -104,18 +95,17 @@ class Document(XHTML.Document):
     # Load/Save
     #######################################################################
     def _load(self, resource):
-
         self._encoding = 'UTF-8'
         self.document_type = None
         self.children = []
 
         stack = []
-        parser = parser.Parser()
-        for event, value, line_number in parser.parse(resource.read()):
+        data = resource.read()
+        for event, value, line_number in parser.Parser().parse(data):
             if event == parser.DOCUMENT_TYPE:
                 self.document_type = value
             elif event == parser.START_ELEMENT:
-                stack.append(Element(None, name))
+                stack.append(Element(None, value))
             elif event == parser.END_ELEMENT:
                 element = stack.pop()
                 if stack:
@@ -125,7 +115,7 @@ class Document(XHTML.Document):
             elif event == parser.ATTRIBUTE:
                 name, value = value
                 type = IO.Unicode
-                value = type.decode(value, encoding)
+                value = type.decode(value, self._encoding)
                 stack[-1].set_attribute(None, name, value)
             elif event == parser.COMMENT:
                 comment = Comment(value)
@@ -135,8 +125,9 @@ class Document(XHTML.Document):
                     self.children.append(comment)
             elif event == parser.TEXT:
                 if stack:
-                    stack[-1].set_text(value, encoding)
+                    stack[-1].set_text(value, self._encoding)
                 else:
+                    value = IO.Unicode.decode(value, self._encoding)
                     self.children.append(value)
 
 

@@ -18,11 +18,17 @@
 # Import from the Standard Library
 import htmlentitydefs
 from HTMLParser import HTMLParser
+from sets import Set
 import warnings
 
 
 
 DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, ATTRIBUTE, COMMENT, TEXT = range(6)
+
+
+# List of empty elements, which don't have a close tag
+empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
+                      'img', 'input', 'isindex', 'link', 'meta', 'param'])
 
 
 
@@ -36,8 +42,8 @@ class Parser(HTMLParser):
         for x in data:
             self.feed(x)
             for event, value in self.events:
-                print self.getpos()
-                yield event, value, self.getpos()
+                line_number, offset = self.getpos()
+                yield event, value, line_number
                 # Reset values
                 self.events = []
 

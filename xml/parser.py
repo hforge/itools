@@ -31,12 +31,17 @@ XML_DECLARATION, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, ATTRIBUTE, \
 
 class Parser(object):
 
+    encoding = 'UTF-8'
+
+
     def parse(self, data):
         self.namespaces = {}
 
         # Create the parser object
         parser = expat.ParserCreate(namespace_separator=' ')
 
+        # Enable namespace declaration handlers
+        parser.namespace_prefixes = True
         # Improve performance by reducing the calls to the default handler
         parser.buffer_text = True
         # Do the "de-serialization" ourselves.
@@ -81,6 +86,7 @@ class Parser(object):
     def xml_declaration_handler(self, version, encoding, standalone):
         if encoding is None:
             encoding = 'UTF-8'
+        self.encoding = encoding
         self.events.append((XML_DECLARATION, (version, encoding, standalone)))
 
 
@@ -133,7 +139,18 @@ class Parser(object):
 
 
     def end_element_handler(self, name):
-        self.events.append((END_ELEMENT, None))
+        # Parse the element name: namespace_uri, name and prefix
+        n = name.count(' ')
+        if n == 2:
+            namespace, name, prefix = name.split()
+        elif n == 1:
+            prefix = None
+            namespace, name = name.split()
+        else:
+            prefix = None
+            namespace = None
+
+        self.events.append((END_ELEMENT, (namespace, prefix, name)))
 
 
     def start_namespace_handler(self, prefix, uri):

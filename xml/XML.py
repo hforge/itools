@@ -354,6 +354,13 @@ class Document(Text.Text):
     class_mimetypes = ['text/xml', 'application/xml']
 
 
+    # Default values
+    xml_version = '1.0'
+    source_encoding = 'UTF-8'
+    standalone = -1
+    document_type = None
+    
+
     #######################################################################
     # The Document Types registry
     #######################################################################
@@ -385,15 +392,10 @@ class Document(Text.Text):
         """
         Builds a tree made of elements and raw data.
         """
-        self.xml_version = '1.0'
-        encoding = 'UTF-8'
-        self.standalone = -1
-        self.document_type = None
-
         stack = []
         for event, value, line_number in parser.parser.parse(resource.read()):
             if event == parser.XML_DECLARATION:
-                self.xml_version, encoding, self.standalone = value
+                self.xml_version, self.source_encoding, self.standalone = value
             elif event == parser.DOCUMENT_TYPE:
                 self.document_type = value
             elif event == parser.START_ELEMENT:
@@ -426,7 +428,7 @@ class Document(Text.Text):
                 stack[-1].set_comment(Comment(value))
             elif event == parser.TEXT:
                 if stack:
-                    stack[-1].set_text(value, encoding)
+                    stack[-1].set_text(value, self.source_encoding)
 
         # XXX This is an horrible hack
         from STL import STL

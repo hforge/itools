@@ -29,6 +29,33 @@ Other related RFCs include:
  - Registration of new schemes, http://www.ietf.org/rfc/rfc2717.txt
 """
 
+# XXX
+#
+# According to the W3C, the references "", "." and "#" do not mean the
+# same thing:
+#
+#  - ("") an empty reference refers to the start of the current document.
+#  - ("#") is a self-document reference too, where the fragment identifier
+#    is the empty string.
+#  - (".") it may be an external reference (e.g. "a/b/c" + "." = "a/b/")
+#
+# Browsers behaviour also differs from one reference to another. Though
+# it is not consistent (at least for Mozilla and IE).
+#
+# In the other hand Python's urlsplit/urlunsplit considers all three are
+# the same.
+#
+# itools.uri corrects this behaviour to some extent, today both "" and "."
+# default to ".", while "#" is "#". Another case which is not correctly
+# dealt with today is "http://exampe.com/index.html" as opposed to
+# "http://example.com/index.html#", I think both should be considered to
+# be different, but they are not today.
+#
+# The odd behaviour of urlsplit/urlunsplit make me think that the best
+# solution would be to implement the low level parsing ourselves, and
+# get rid of the urlparse library.
+#
+# For references see RFC2396, sections 4 and C2
 
 # Import from Python
 from urlparse import urlsplit, urlunsplit
@@ -374,10 +401,17 @@ class Reference(object):
             self.authority = Authority('')
             self.path = reference
             self.query = Query('')
-            self.fragment = ''
+            self.fragment = None
         elif isinstance(reference, str) or isinstance(reference, unicode):
-            # Split the reference in its components
-            scheme, authority, path, query, fragment = urlsplit(reference)
+            if reference == '#':
+                # Dealing with the case "#"
+                scheme = authority = path = query = ''
+                fragment = ''
+            else:
+                # Split the reference in its components
+                scheme, authority, path, query, fragment = urlsplit(reference)
+                if fragment == '':
+                    fragment = None
             # The scheme
             self.scheme = scheme
             # The authority
@@ -403,20 +437,14 @@ class Reference(object):
 
 
     def __str__(self):
-        # XXX Houston, we still have a problem here:
-        #
-        #    >>> print uri.get_reference('#')
-        #    .
-        #    >>> print uri.get_reference('')
-        #    .
-        #
-        # Well, it may not be really a problem, we will see.
         path = str(self.path)
         if path == '.':
             path = ''
         reference = urlunsplit((self.scheme, str(self.authority), path,
                                 str(self.query), self.fragment))
         if reference == '':
+            if self.fragment is not None:
+                return '#'
             return '.'
         return reference
 
@@ -463,7 +491,7 @@ class Reference(object):
         reference = '%s://%s%s' % (self.scheme, self.authority, path)
         if query:
             reference = reference + '?' + query
-        if fragment:
+        if fragment is not None:
             reference = reference + '#' + fragment
         return Reference(reference)
 

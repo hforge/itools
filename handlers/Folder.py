@@ -249,12 +249,7 @@ class Folder(Handler):
         if name in container.removed_handlers:
             container.removed_handlers.remove(name)
         # Make a copy of the handler
-        if isinstance(handler.resource, base.File):
-            resource = memory.File('')
-        else:
-            resource = memory.Folder()
-        handler.save(resource)
-        handler = handler.__class__(resource)
+        handler = handler.copy_handler()
         handler.parent = self
         handler.name = name
         # Add the handler
@@ -285,6 +280,16 @@ class Folder(Handler):
             del container.added_handlers[name]
         # Mark the handler as deleted
         container.removed_handlers.add(name)
+
+
+    ########################################################################
+    # Other methods
+    def copy_handler(self):
+        resource = memory.Folder()
+        for name in self.resource.get_resource_names():
+            resource.set_resource(name, self.resource.get_resource(name))
+        self.save(resource)
+        return self.__class__(resource)
 
 
     ########################################################################

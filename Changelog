@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-22 13:10:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
+
+    Summary:
+      handlers, add method "copy_handler" to the API
+    Revision:
+      itools--main--0.7--patch-25
+
+
+    modified files:
+     Changelog handlers/File.py handlers/Folder.py
+
+
 2005-02-21 20:11:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
 
     Summary:

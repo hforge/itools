@@ -396,4 +396,5 @@ class NSHandler(object):
 
 ########################################################################
 # Register
-XML.registry.register('http://www.w3.org/1999/xhtml', NSHandler())
+XML.registry.set_namespace('http://www.w3.org/1999/xhtml', NSHandler())
+XML.registry.set_doctype('-//W3C//DTD XHTML 1.0 Strict//EN', Document)

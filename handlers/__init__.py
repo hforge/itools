@@ -158,9 +158,9 @@ class Database(MimeTypes, object):
             type = '/'.join(type.split('/')[:-1])
 
         # Get the handler class
-        handler_class = database[type]
+        handler_class_or_factory = database[type]
         # Build the handler
-        handler = handler_class(resource)
+        handler = handler_class_or_factory(resource)
         # Fix the mimetype if needed
         if not handler.mimetype:
             handler.mimetype = mimetype

@@ -558,4 +558,4 @@ class NSHandler(object):
 
 ########################################################################
 # Register
-XML.registry.register('http://xml.itools.org/namespaces/stl', NSHandler())
+XML.registry.set_namespace('http://xml.itools.org/namespaces/stl', NSHandler())

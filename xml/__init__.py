@@ -28,6 +28,6 @@ import STL
 
 # Register the xml handlers in the database
 database.set_file_handler('text/html', HTML.Document)
-database.set_file_handler('text/xml', XML.Document)
-database.set_file_handler('application/xml', XML.Document)
+database.set_file_handler('text/xml', XML.get_handler)
+database.set_file_handler('application/xml', XML.get_handler)
 database.set_file_handler('application/xhtml+xml', XHTML.Document, '.xhtml')

@@ -330,7 +330,7 @@ class Element(Node):
     #######################################################################
     def handle_attribute(self, ns_uri, prefix, name, value):
         # Get the namespace handler
-        namespace = registry.get(ns_uri)
+        namespace = registry.get_namespace(ns_uri)
         # Create the attribute instance
         if namespace is None:
             attribute = Attribute(prefix, name, value)
@@ -347,7 +347,7 @@ class Element(Node):
 
     def handle_start_element(self, ns_uri, prefix, name):
         # Get the namespace handler
-        ns_handler = registry.get(ns_uri)
+        ns_handler = registry.get_namespace(ns_uri)
 
         # Create the element instance
         if ns_handler is None:
@@ -567,8 +567,8 @@ class Document(Text.Text):
 
 
     def start_namespace_handler(self, prefix, uri):
-        if uri in registry:
-            ns_handler = registry[uri]
+        if registry.has_namespace(uri):
+            ns_handler = registry.get_namespace(uri)
             if hasattr(ns_handler, 'namespace_handler'):
                 ns_handler.namespace_handler(self)
         else:
@@ -650,7 +650,7 @@ class Document(Text.Text):
     # itools.xml handlers
     def handle_start_element(self, ns_uri, prefix, name):
         # Get the namespace handler
-        ns_handler = registry.get(ns_uri)
+        ns_handler = registry.get_namespace(ns_uri)
 
         # Create the element instance
         if ns_handler is None:
@@ -747,12 +747,92 @@ class Document(Text.Text):
 
 
 
+#############################################################################
+# The Registry
+#############################################################################
+class Registry(object):
+    """
+    Keeps account of namespace and document types handlers.
+    """
 
-# The XML namespace registry keeps a mapping from XML namespace uris to
-# associated handlers.
-class Registry(dict):
-    def register(self, ns_uri, ns_handler):
-        dict.__setitem__(self, ns_uri, ns_handler)
+    def __init__(self):
+        self.namespaces = {}
+        self.doctypes = {}
+
+
+    def set_namespace(self, uri, handler):
+        self.namespaces[uri] = handler
+
+
+    def get_namespace(self, uri):
+        return self.namespaces.get(uri)
+
+
+    def has_namespace(self, uri):
+        return uri in self.namespaces
+
+
+    def set_doctype(self, public_id, handler):
+        self.doctypes[public_id] = handler
+
+
+    def get_doctype(self, public_id):
+        return self.doctypes.get(public_id)
+
+
+    def has_doctype(self, public_id):
+        return public_id in self.doctypes
 
 
 registry = Registry()
+
+
+
+#############################################################################
+# XML Factory
+#############################################################################
+class StopOracle(Exception):
+    pass
+
+
+class Oracle(object):
+    def guess_doctype(self, resource):
+        data = resource.get_data()
+        self._doctype = None
+
+        parser = expat.ParserCreate()
+        parser.StartDoctypeDeclHandler = self.start_doctype_handler
+        parser.StartElementHandler = self.start_element_handler
+        try:
+            parser.Parse(data, True)
+        except StopOracle:
+            doctype = self._doctype
+            del self._doctype
+            return doctype
+
+
+    def start_doctype_handler(self, name, system_id, public_id,
+                              has_internal_subset):
+        self._doctype = public_id
+        raise StopOracle
+
+
+    def start_element_handler(self, nale, attrs):
+        raise StopOracle
+
+
+
+def get_handler(resource):
+    """
+    Factory for XML handlers. From a given resource, try to guess its document
+    type, and return the proper XML handler.
+    """
+    oracle = Oracle()
+
+    doctype = oracle.guess_doctype(resource)
+    if registry.has_doctype(doctype):
+        handler_class = registry.get_doctype(doctype)
+    else:
+        handler_class = Document
+    return handler_class(resource)
+

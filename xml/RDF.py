@@ -66,6 +66,6 @@ class NSHandler(object):
 
 
 
-XML.registry.register('http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-                      NSHandler())
-XML.registry.register('http://purl.org/dc/elements/1.1/', NSHandler())
+XML.registry.set_namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+                           NSHandler())
+XML.registry.set_namespace('http://purl.org/dc/elements/1.1/', NSHandler())

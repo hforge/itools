@@ -39,9 +39,9 @@ class SchemaTestCase(TestCase):
 #           print self.schema.types[x].xsd_content
 
         # Register the scheme
-        XML.registry.register('http://www.lisa.org/tmx', self.schema)
-#        XML.registry.register('http://www.itools.org/namespaces/simple',
-#                              self.schema)
+        XML.registry.set_namespace('http://www.lisa.org/tmx', self.schema)
+#        XML.registry.set_namespace('http://www.itools.org/namespaces/simple',
+#                                   self.schema)
         print"============§§§§§§§======================="
 #        print doc.children[0].elements
 #        print doc.children[0].types

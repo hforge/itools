@@ -830,4 +830,4 @@ class NSHandler(object):
     def get_attribute(self, prefix, name, value):
         return XML.Attribute(prefix, name, value)
 
-XML.registry.register(xsd_uri, NSHandler())
+XML.registry.set_namespace(xsd_uri, NSHandler())

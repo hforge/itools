@@ -15,10 +15,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
+# Import from Python
 import unittest
-from STL import Expression, NamespaceStack, Template, \
-     TID, TSLASH, TOPEN, TCLOSE, TEOF
+
+# Import from itools
+from itools.resources import get_resource
+from itools.handlers import get_handler
+from STL import Expression, NamespaceStack, TID, TSLASH, TOPEN, TCLOSE, TEOF
 
 
 class STLTestCase(unittest.TestCase):
@@ -44,7 +47,7 @@ class STLTestCase(unittest.TestCase):
 
 
     def test_function(self):
-        namespace = {'translate': lambda x: x.upper()}
+        namespace = {'sum': lambda x: str(sum(range(1, int(x) + 1)))}
 
         class Node:
             def toxml(self):
@@ -53,10 +56,10 @@ class STLTestCase(unittest.TestCase):
         stack = NamespaceStack()
         stack.append(namespace)
         repeat = NamespaceStack()
-        expression = Expression('translate(content)', Node())
+        expression = Expression('sum(5)')
         value = expression.evaluate(stack, repeat)
 
-        assert value == 'HELLO WORLD'
+        assert value == '15'
 
 
     def test_template(self):
@@ -64,21 +67,22 @@ class STLTestCase(unittest.TestCase):
                      'objects': [{'id': 'itools', 'title': 'Itaapy Tools'},
                                  {'id': 'ikaaro', 'title': 'The ikaaro CMS'}]}
 
-        template = Template(open('test-in.html'))
-        output = template(namespace)
+        template = get_handler('test-in.xml')
+        output = template.stl(namespace)
 
-        assert output == open('test-out.html').read()
+        assert output == get_handler('test-out.xml').to_unicode()
 
 
     def test_template2(self):
         namespace = {'title': 'hello world'}
-        template = Template(open('test21-in.html'))(namespace)
+        template = get_handler('test21-in.xml')
+        template = template.stl(namespace)
 
         namespace = {'body': template}
-        template = Template(open('test20-in.html'))
-        output = template(namespace)
+        template = get_handler('test20-in.xml')
+        output = template.stl(namespace)
 
-        assert output == open('test2-out.html').read()
+        assert output == get_handler('test2-out.xml').to_unicode()
 
 
 ##    def test_nested(self):
@@ -91,9 +95,10 @@ class STLTestCase(unittest.TestCase):
 ##              '  <stl:block repeat="value label/values"' \
 ##              '             content="value" />' \
 ##              '</stl:block>'
-##        template = Template(stl)
+##        resource = memory.File(stl)
+##        template = XML.Document(resource)
 
-##        print template(namespace)
+##        print template.stl(namespace)
 
 
 

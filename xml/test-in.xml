@@ -2,12 +2,14 @@
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:stl="http://xml.itools.org/namespaces/stl"
+      xml:lang="en" lang="en">
   <head>
     <title></title>
   </head>
   <body>
-    <h1 stl:content="title">The title &nbsp;</h1>
+    <h1 stl:content="title">The title</h1>
     <stl:block repeat="object objects">
       <a stl:attributes="href object/id" stl:content="object/title">link</a>
       <br />

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-
 """
 STL stands for Simple Template Language, as it is the simplest template
 language I could imagine.
@@ -31,35 +30,33 @@ from itools.xml import XML
 stl_uri = 'http://xml.itools.org/namespaces/stl'
 
 
-########################################################################
-# Evaluate STL expressions
-########################################################################
 
-# STL exceptions
+########################################################################
+# Exceptions
+########################################################################
 class STLSyntaxError(XML.XMLError):
-    """ """
+    pass
 
 
 class STLNameError(NameError):
-    """ """
+    pass
 
 
 class STLTypeError(TypeError):
-    """ """
-    
+    pass
 
 
-# XXX Remove TCONTENT and TATTRIBUTES (it is a long time ago since we used
-# it for the last time)
+########################################################################
+# Expressions
+########################################################################
 
-# Expressions tokens
-TID, TSLASH, TOPEN, TCLOSE, TEOF, TCONTENT, TATTRIBUTES, TREPEAT = range(8)
+# Tokens
+TID, TSLASH, TOPEN, TCLOSE, TEOF, TREPEAT = range(6)
 token_name = ['id', 'slash', 'open parentheses', 'close parentheses',
-              'end of expression', 'reserved word "content"',
-              'reserver word "attributes"', 'reserved word "repeat"']
+              'end of expression', 'reserved word "repeat"']
 
 
-keywords = {'content': TCONTENT, 'attributes': TATTRIBUTES, 'repeat': TREPEAT}
+keywords = {'repeat': TREPEAT}
 
 
 class Expression(object):
@@ -69,8 +66,6 @@ class Expression(object):
     Examples of allowed expressions:
     
       a
-      a(content)
-      a(attributes/alt)
       a(literal)
       a/b/c
       a/b/c(content)
@@ -135,9 +130,7 @@ class Expression(object):
     #   parser1 = TEOF
     #             | TSLASH parse
     #             | TOPEN parser2
-    #   parser2 = TCONTENT parser3
-    #             | TATTRIBUTES TSLASH TID parser3
-    #             | TID parser3
+    #   parser2 = TID parser3
     #   parser3 = TCLOSE TEOF
     ###################################################################
     def parse(self):
@@ -179,21 +172,7 @@ class Expression(object):
 
     def parser2(self):
         token, lexeme = self.get_token()
-        if token == TCONTENT:
-            value = self.node.toxml()
-            self.parameters = (value,)
-            self.parser3()
-            return
-        elif token == TATTRIBUTES:
-            token, lexeme = self.get_token()
-            if token == TSLASH:
-                token, lexeme = self.get_token()
-                if token == TID:
-                    value = self.node.get_attribute(lexeme)
-                    self.parameters = (value,)
-                    self.parser3()
-                    return
-        elif token == TID:
+        if token == TID:
             self.parameters = (lexeme,)
             self.parser3()
             return
@@ -251,6 +230,23 @@ class Expression(object):
         if self.parameters:
             return s + '(%s)' % self.parameters
         return s
+
+
+########################################################################
+# Boolean expressions
+class NotExpression(Expression):
+    def __init__(self, expression):
+        expression = expression[3:].strip()
+        Expression.__init__(self, expression)
+
+
+    def evaluate(self, stack, repeat):
+        value = Expression.evaluate(self, stack, repeat)
+        return not value
+
+
+    def __str__(self):
+        return 'not %s' % Expression.__str__(self)
 
 
 
@@ -344,12 +340,17 @@ class AttributesAttr(object):
     def __init__(self, value):
         attributes = []
         for x in value.split(';'):
-            x = x.strip().split(' ')
-            if len(x) != 2:
+            x = x.strip().split(' ', 1)
+            if len(x) == 1:
                 raise STLSyntaxError, \
                       'attributes expression expects two fields'
+
             name, expr = x
-            attributes.append((name, Expression(expr)))
+            if expr.startswith('not '):
+                expr = NotExpression(expr)
+            else:
+                expr = Expression(expr)
+            attributes.append((name, expr))
 
         self.stl_attributes = tuple(attributes)
 
@@ -422,7 +423,7 @@ class STL(object):
 
     def process1(self, node, stack, repeat):
         """
-        Process stl:if, stl:ifnot, stl:attributes and stl:content.
+        Process stl:if, stl:attributes and stl:content.
         """
         # Remove the element if the given expression evaluates to false
         if node.has_attribute('if', namespace=stl_uri):
@@ -431,6 +432,7 @@ class STL(object):
                 return []
 
         # Remove the element if the given expression evaluates to true
+        # XXX Obsolete as of 0.6 (remove by 0.7)
         if node.has_attribute('ifnot', namespace=stl_uri):
             stl_expression = node.get_attribute('ifnot', namespace=stl_uri)
             if stl_expression.evaluate(stack, repeat):
@@ -458,9 +460,10 @@ class STL(object):
                 changed_attributes[name] = value
 
         # Output existing attributes
-        for namespace, qname, value in node.get_attributes():
-            # Ommit stl attributes
-            if namespace == stl_uri:
+        for qname, value in node.attributes_by_qname.items():
+            # Ommit stl attributes (XXX it should check the namespace, not the
+            # prefix).
+            if qname.startswith('stl:'):
                 continue
             # Get the attribute value
             if qname in changed_attributes:
@@ -491,7 +494,7 @@ class STL(object):
             else:
                 msg = 'expression "%(expr)s" evaluates to value of' \
                       ' unexpected type %(type)s'
-                msg = msg % {'expr': str(expression),
+                msg = msg % {'expr': str(stl_expression),
                              'type': content.__class__.__name__}
                 raise STLTypeError, msg
         else:
@@ -534,13 +537,20 @@ class NamespaceHandler(XML.NamespaceHandler):
 
     def get_attribute(cls, prefix, name, value):
         """Attribute factory, returns the right attribute instance."""
-        attributes = {'repeat': RepeatAttr, 'if': Expression,
-                      'ifnot': Expression, 'attributes': AttributesAttr,
+        attributes = {'repeat': RepeatAttr,
+                      'ifnot': Expression, # XXX Obsolete
+                      'attributes': AttributesAttr,
                       'content': Expression}
-        attribute = attributes.get(name)
-        if attribute is None:
+        if name == 'if':
+            if value.startswith('not '):
+                return NotExpression(value)
+            else:
+                return Expression(value)
+        elif name in attributes:
+            attribute = attributes[name]
+            return attribute(value)
+        else:
             raise STLSyntaxError, 'unexpected attribute name: %s' % name
-        return attribute(value)
 
     get_attribute = classmethod(get_attribute)
 

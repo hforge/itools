@@ -18,8 +18,8 @@
 
 
 # Import from itools
-from itools.resources import get_resource
-from itools.xml import XML
+from itools.handlers import get_handler
+from itools import xml
 
 
 class Addressbook(object):
@@ -36,8 +36,7 @@ class Addressbook(object):
 
     def view(self):
         # Load the STL template
-        resource = get_resource('addressbook_view.xml')
-        template = XML.Document(resource)
+        template = get_handler('addressbook_view.xml')
 
         # Build the namespace
         namespace = {'addressbook': self.addresses}

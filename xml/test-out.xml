@@ -2,7 +2,7 @@
 <!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html lang="en" xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   <head>
     <title></title>
   </head>
@@ -16,7 +16,7 @@
       <br></br>
     
     <p>
-      Esto es una prueba (&aacute;)
+      Esto es una prueba (á)
     </p>
   </body>
 </html>

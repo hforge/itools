@@ -55,12 +55,12 @@ class Addressbook(XML.Document):
         # Open root element
         data += u'<addressbook>\n'
         # Addresses
+        pattern = u'  <address>\n' \
+                  u'    <lastname>%(last_name)s</lastname>\n' \
+                  u'    <firstname>%(first_name)s</firstname>\n' \
+                  u'    <telephone>%(telephone)s</telephone>\n' \
+                  u'  </address>\n'
         for address in self.addresses:
-            pattern = u'  <address>\n' \
-                      u'    <lastname>%(last_name)s</lastname>\n' \
-                      u'    <firstname>%(first_name)s</firstname>\n' \
-                      u'    <telephone>%(telephone)s</telephone>\n' \
-                      u'  </address>\n'
             data += pattern % address
         # Close root element
         data += u'</addressbook>'

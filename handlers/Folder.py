@@ -164,30 +164,35 @@ class Folder(Handler):
         segment, path = path[0], path[1:]
         name = segment.name
 
-        handler = None
-        # Lookup the cache
         key = str(segment)
-        if key in self.cache:
-            handler, atime = self.cache.pop(key)
-            if handler.is_outdated():
-                handler = None
-        # Cache miss, search the handler
-        is_virtual = False
-        if handler is None:
-            # Lookup the resource handler
-            if self.resource.has_resource(name):
+        if self.resource.has_resource(name):
+            # There is a resource
+            if key in self.cache:
+                # Hit (XXX we should check wether resource and handler.resource
+                # are the same or not)
+                handler, atime = self.cache[key]
+                if handler.is_outdated():
+                    handler.load()
+            else:
+                # Miss
                 resource = self.resource.get_resource(name)
                 handler = self._get_handler(segment, resource)
-            else:
-                handler = self._get_virtual_handler(segment)
-                is_virtual = True
+                # Set parent and name
+                handler.parent = self
+                handler.name = segment.name
+            # Update the cache
+            atime = datetime.datetime.now()
+            self.cache[key] = (handler, atime)
+        else:
+            # There is not a resource
+            if key in self.cache:
+                # Hit. Clean the cache (virtual handlers are not cached)
+                del self.cache[key]
+            # Maybe we found a virtual handler
+            handler = self._get_virtual_handler(segment)
             # Set parent and name
             handler.parent = self
             handler.name = segment.name
-        # Update the cache
-        if is_virtual is False:
-            atime = datetime.datetime.now()
-            self.cache[key] = (handler, atime)
 
         # Continue with the rest of the path
         if path:

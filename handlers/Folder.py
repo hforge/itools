@@ -100,6 +100,7 @@ class Folder(Handler):
             return self
 
         segment, path = path[0], path[1:]
+        name = segment.name
 
         handler = None
         # Lookup the cache
@@ -110,10 +111,12 @@ class Folder(Handler):
                 handler = None
         # Cache miss, search the handler
         if handler is None:
-            handler = self._get_handler(segment)
-            # Not found
-            if handler is None:
-                raise ValueError, '%s not found' % segment
+            # Lookup the resource handler
+            if self.has_resource(name):
+                resource = self.get_resource(name)
+                handler = self._get_handler(segment, resource)
+            else:
+                handler = self._get_virtual_handler(segment)
             # Set parent and name
             handler.parent = self
             handler.name = segment.name
@@ -128,17 +131,21 @@ class Folder(Handler):
         return handler
 
 
-    def _get_handler(self, segment):
-        if self.has_resource(segment.name):
-            resource = self.get_resource(segment.name)
+    def _get_handler(self, segment, resource):
+        # Get the mimetype
+        from itools.handlers import database
+        mimetype = database.guess_mimetype(segment.name, resource)
+        # Build and return the handler
+        return database.get_handler(resource, mimetype)
 
-            # Get the mimetype
-            from itools.handlers import database
-            mimetype = database.guess_mimetype(segment.name, resource)
-            # Build and return the handler
-            return database.get_handler(resource, mimetype)
 
-        return None
+    def _get_virtual_handler(self, segment):
+        """
+        This method must return a handler for the given segment, or raise
+        the exception LookupError. We know there is not a resource with
+        the given name, this method is used to return 'virtual' handlers.
+        """
+        raise LookupError, 'the resource "%s" does not exist' % segment.name
 
 
     def set_handler(self, path, handler, **kw):

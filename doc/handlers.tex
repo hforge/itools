@@ -1,12 +1,17 @@
 \chapter{Resource Handlers}
 
-The resource layer lacks any knowledge about the information a resource holds.
+The resource layer knowledge about the content of a resource is minimal.
 For example, it does not know that an XML document has a tree structure,
 hence it does not provide an API to traverse it; nor it knows how to get
 the messages and translations from a PO file.
 
-But this is the purpose of the {\em resource handlers}, to add semantics to
-specific resources. Let's go straight with an example:
+This is the purpose of the {\em resource handlers}, to add semantics to
+specific resources.
+
+
+\section{Building handlers}
+
+Let's go straight with an example:
 
 \begin{enumerate}
   \item First we load a resource as seen in the previous section:
@@ -56,7 +61,45 @@ one resource, which is accessible through the {\tt resource} attribute:
 \end{code}
 
 
-\section{New handlers}
+\subsection{The {\tt get\_handler} shorthand}
+
+There is a short way to load a handler (instead of loading first the resource
+and then building the handler explicitly), the function {\tt get\_handler}:
+
+\begin{api}
+  {\tt get\_handler(uri)}\\
+  - Loads the resource at the given uri, tries to guess its mimetype by
+  different meanings (name extension, etc.), searches for a suitable
+  handler class in the registry, builds and returns the handler for
+  the resource.
+\end{api}
+
+Compare the explicit way seen before:
+
+\begin{code}
+    >>> from itools.resources import get_resource
+    >>> from itools.xml import HTML
+    >>>
+    >>> resource = get_resource('http://example.com')
+    >>> handler = HTML.Document(resource)
+\end{code}
+
+With the shorthand:
+
+\begin{code}
+    >>> from itools.handlers import get_handler
+    >>>
+    >>> handler = get_handler('http://example.com')
+\end{code}
+
+Note that there is chance {\tt get\_handler} chooses a handler class
+different than the one you would like to use.
+
+In the examples that follow we will use {\tt get\_handler} most of the
+time.
+
+
+\section{The handler skeleton}
 
 We have seen in the previous sub-section that the handler constructor expects
 one parameter: the resource it is meant to handle; and once the handler is
@@ -131,12 +174,13 @@ An example will show it better.
   \item First we build a handler for the temporary directory:
 
 \begin{code}
-    >>> from itools.resources import get_resource
-    >>> from itools.handlers import Folder
-    >>> tmp_resource = get_resource('/tmp')
-    >>> tmp = Folder.Folder(tmp)
+    >>> from itools.handlers import get_handler
+    >>>
+    >>> tmp = get_handler('/tmp')
+    >>> tmp
+    <itools.handlers.Folder.Folder object at 0x40652dec>
     >>> tmp.resource
-    <itools.resources.file.Folder instance at 0x405e4a2c>
+    <itools.resources.file.Folder instance at 0x406acacc>
 \end{code}
 
   \item Second, we create a new HTML handler:

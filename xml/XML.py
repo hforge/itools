@@ -335,12 +335,7 @@ class Element(Node):
         if namespace is None:
             attribute = Attribute(prefix, name, value)
         else:
-            try:
-                attribute = namespace.get_attribute(prefix, name, value)
-            except XMLError, e:
-                # Add the line number information
-                e.line_number = self.parser.ErrorLineNumber
-                raise e
+            attribute = namespace.get_attribute(prefix, name, value)
         # Set the attribute
         self.attributes.add(attribute)
 
@@ -353,12 +348,7 @@ class Element(Node):
         if ns_handler is None:
             element = Element(prefix, name)
         else:
-            try:
-                element = ns_handler.get_element(prefix, name)
-            except XMLError, e: 
-                # Add the line number information
-                e.line_number = self.parser.ErrorLineNumber
-                raise e
+            element = ns_handler.get_element(prefix, name)
         return element
 
 
@@ -600,7 +590,12 @@ class Document(Text.Text):
             ns_uri = None
 
         element = self.stack[-1]
-        element = element.handle_start_element(ns_uri, prefix, name)
+        try:
+            element = element.handle_start_element(ns_uri, prefix, name)
+        except XMLError, e: 
+            # Add the line number information
+            e.line_number = self.parser.ErrorLineNumber
+            raise e
 
         element_uri = ns_uri
 
@@ -618,7 +613,12 @@ class Document(Text.Text):
                 prefix = None
                 ns_uri = element_uri
 
-            element.handle_attribute(ns_uri, prefix, name, value)
+            try:
+                element.handle_attribute(ns_uri, prefix, name, value)
+            except XMLError, e:
+                # Add the line number information
+                e.line_number = self.parser.ErrorLineNumber
+                raise e
 
         self.stack.append(element)
         return element
@@ -656,12 +656,7 @@ class Document(Text.Text):
         if ns_handler is None:
             element = Element(prefix, name)
         else:
-            try:
-                element = ns_handler.get_element(prefix, name)
-            except XMLError, e: 
-                # Add the line number information
-                e.line_number = self.parser.ErrorLineNumber
-                raise e
+            element = ns_handler.get_element(prefix, name)
         return element
 
 

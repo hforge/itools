@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.4
 #
 
+2004-09-11 18:41:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
+
+    Summary:
+      fix XML error handling (hence better STL message errors)
+    Revision:
+      itools--main--0.4--patch-81
+
+    There wars a bug on the XML error handling, one consequence were bad
+    error messages when an unkown STL element or attribute was used. Fixed.
+
+    modified files:
+     Changelog xml/XML.py xml/test20-in.html xml/test_stl.py
+
+
 2004-09-11 18:19:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
 
     Summary:

@@ -17,7 +17,7 @@
 
 
 import unittest
-from __init__ import Expression, NamespaceStack, Template, \
+from STL import Expression, NamespaceStack, Template, \
      TID, TSLASH, TOPEN, TCLOSE, TEOF
 
 

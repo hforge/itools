@@ -82,6 +82,19 @@ class File(Resource, base.File):
         object.update_data(data)
 
 
+    def __setitem__(self, index, value):
+        object = self._get_object()
+
+        data = str(object.data)
+        if isinstance(index, slice):
+            # XXX So far 'step' is not supported
+            start, stop = index.start, index.stop
+        else:
+            start, stop = index, index + 1
+        data = data[:start] + value + data[stop:]
+        object.update_data(data)
+
+
 
 class Folder(Resource, base.Folder):
 

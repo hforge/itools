@@ -77,7 +77,7 @@ tools are:
 """
 
 setup(name = "itools",
-      version = "0.7.0",
+      version = "0.7.1",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",

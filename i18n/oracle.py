@@ -16,6 +16,16 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
+"""
+if you want to add a new langage, it's very easy:
+
+ - create a litle dictionnary like Deutch_base = [...], don't forget the u for
+   unicode
+ - create a specific char dictionnary like Deutch_char = [u'ß', u'ü', u'ö']
+
+ - add the new langage in global variable language.
+"""
+
 keeping_punctuation = [ u'¡', u'¿']
 rubbish_punctuation = [u'.', u',', u';', u'?', '!', u"'", u'"']
 
@@ -27,9 +37,9 @@ French_char = [u'ê', u'ç', ]
 Deutch_base = []
 Deutch_char = [u'ß', u'ä', u'ü', u'ö']
 
-Spanish_base = [u'como',u'de', u'del', u'una', u'al', u'el', u'está' u'los',
-                u'por',
-                u'es', u'con', u'o', u'su'] + keeping_punctuation
+Spanish_base = [u'de', u'del', u'una', u'al', u'el', u'está', u'los', u'y', 
+                u'por', u'para', u'qué', u'como', u'hay', u'las', u'no',u'es',
+                u'con', u'o', u'su', u'lo', u'pero'] + keeping_punctuation
 Spainish_char = [u'ó', u'ú', u'í', u'ñ']
 
 English_base = [u'but', u'of', u'no', u'on', u'their', u'as', u'this',
@@ -39,10 +49,10 @@ English_base = [u'but', u'of', u'no', u'on', u'their', u'as', u'this',
 English_char = []
 
 
-language = (('French', French_base, French_char),
-            ('Deutch', Deutch_base, Deutch_char),
-            ('Spanish', Spanish_base, Spainish_char),
-            ('English', English_base, English_char))
+language = (('fr', French_base, French_char),
+            ('de', Deutch_base, Deutch_char),
+            ('es', Spanish_base, Spainish_char),
+            ('en', English_base, English_char))
 
 
 class Char(object):
@@ -51,7 +61,7 @@ class Char(object):
         self.lexeme = lexeme
 
 
-class StatSpecialChar(Char):
+class Stat_special_char(Char):
     def __init__(self, text):
         self.text = text.upper().swapcase()
 
@@ -78,7 +88,6 @@ class Token(object):
     def __init__(self, id, lexeme=''):
         self.id = id
         self.lexeme = lexeme
-
 
 
 class Select_token(Token):
@@ -139,36 +148,36 @@ class Select_token(Token):
         return stat
 
 
-class Language(object):
-    def __init__(self, text):
-        self.text = text
+def guess_language(text, threshold=20):
+    """
+    Return the early language or None.
+    """
+    first_percent, second_percent = 0, 0
+    first_lang, second_lang = '', ''
+    word = Select_token(text)
+    char = Stat_special_char(text)
+    words = word.compare()
+    chars = char.stat_special_char()
+    for lang in language:
+        slang = lang[0]
+        if len(text) < 75:
+             percent = min(words[slang] + chars[slang], 99)
+        elif len(text) < 500:
+            percent = min(1.2*words[slang] + 2*chars[slang], 99)
+        else:
+            percent = min(1.6*words[slang] + 4*chars[slang], 99)
+        if percent > first_percent:
+            second_percent, second_lang = first_percent, first_lang 
+            first_percent, first_lang = percent, slang
+        elif percent > second_percent:
+            second_percent, second_lang = percent, slang
+    diff_percent = abs (first_percent - second_percent)
+    if len(text) < 75 and diff_percent <9:    
+        return None
+    elif len(text) < 500 and diff_percent < 19:
+        return None
+    elif  diff_percent < 29:
+        return None
+    return first_lang
 
-
-    def percent(self):
-        """
-        return with percent the tow early language
-        """
-        first_percent, second_percent = 0, 0
-        first_lang, second_lang = '', ''
-        word = Select_token(self.text)
-        char = StatSpecialChar(self.text)
-        words = word.compare()
-        chars = char.stat_special_char()
-        for lang in language:
-            slang = lang[0]
-            if len(self.text) < 75:
-                 percent = min(words[slang] + chars[slang], 99)
-            elif len(self.text) < 500:
-                percent = min(1.2*words[slang] + 2*chars[slang], 99)
-            else:
-                percent = min(1.6*words[slang] + 4*chars[slang], 99)
-            #print (slang, words[slang], chars[slang])
-            if percent > first_percent:
-                second_percent, second_lang = first_percent, first_lang 
-                first_percent, first_lang = percent, slang
-            elif percent > second_percent:
-                second_percent, second_lang = percent, slang
-        return ((first_lang, int(first_percent)),
-                (second_lang, int(second_percent)))
-
-
+                    

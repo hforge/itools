@@ -40,8 +40,7 @@ class OracleTestCase(unittest.TestCase):
         de Estudios sobre la Universidad (CESU) y el Instituto de
         Investigaciones Económicas tendrán nuevas instalaciones, decisión que
         está más que justificada y, repito, se agradece."""
-        p = oracle.Language(text)
-        print 'test_spain_long', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'es')
 
 
     def test_spain_short(self):
@@ -49,14 +48,12 @@ class OracleTestCase(unittest.TestCase):
         doctora Olga Hansberg, el pasado martes 17 tomó posesión como
         coordinadora de Humanidades de la UNAM la doctora Mari Carmen Serra
         Puche."""
-        p = oracle.Language(text)
-        print 'test_spain_short', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'es')
 
 
     def test_spain_very_sort(self):
         text = """Nueva coordinadora de Humanidades."""
-        p = oracle.Language(text)
-        print 'test_spain_very_short', p.percent()
+        print self.assertEqual(oracle.guess_language(text), 'es')
 
 
     def test_french_long(self):
@@ -69,22 +66,19 @@ class OracleTestCase(unittest.TestCase):
         leur épargner enlèvements, embuscades et autres attentats mortels Pour
         les soldats sur le terrain, loccupation de lIrak se transforme en une
         descente aux enfers."""
-        p = oracle.Language(text)
-        print 'test_french_long', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'fr')
                 
 
     def test_french_short(self):
         text = u"""un dossier spécial consacré à la « révolution de velours »
         géorgienne sur le site de lagence Radio Free Europe fondée par le
         Congrès des Etats-Unis."""
-        p = oracle.Language(text)
-        print 'test_french_short', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'fr')
                 
 
     def test_french_very_sort(self):
         text = u"""Les déclarations du président Vladimir Poutine"""
-        p = oracle.Language(text)
-        print 'test_french_very_sort', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'fr')
                 
 
     def test_english_long(self):
@@ -99,22 +93,19 @@ class OracleTestCase(unittest.TestCase):
         .
         U.S. companies account for 70 percent of the revenue. Karnik forecast
         growth of 30 percent to 32 percent in the current"""
-        p = oracle.Language(text)
-        print 'test_english_long', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'en')
 
 
     def test_english_short(self):
         text = """The French, too, paid much attention to French-German
         reconciliation and interpreted the ceremonies as a celebration of
         European integration and peace."""
-        p = oracle.Language(text)
-        print 'test_english_short', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'en')
 
 
     def test_english_very_sort(self):
         text = """But from a cloudless blue sky"""
-        p = oracle.Language(text)
-        print 'test_english_very_short', p.percent()
+        self.assertEqual(oracle.guess_language(text), 'en')
 
 
 if __name__ == '__main__':

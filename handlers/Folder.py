@@ -56,27 +56,14 @@ class Folder(Handler):
     #########################################################################
     # Load / Save
     #########################################################################
-    def load(self, resource=None):
-        # XXX Clean the cache.
-        #
-        # This has a very negative performance impact; for example, if you
-        # create a new resource into a folder, the folder's modification
-        # time will change, then it will be re-loaded the next time; if the
-        # handler has a lot of content, it will be cleaned, even if it is
-        # up-to-date.
-        #
-        # We keep this code for now because it is safer. For example for the
-        # catalog, if the cache is not cleaned the indexes won't be up-to-date,
-        # hence causing errors.
-        #
-        # Anyway, this line must be removed, another solution must be found
-        # for the catalog in particular, and for all folders in general.
-        self.cache = {}
-
-        Handler.load(self, resource)
-
-
     def _load(self, resource):
+        # XXX This code may be optimized just checkig wether there is
+        # already an up-to-date handler in the cache, then it should
+        # not be touched.
+        self.cache = {}
+        for name in self.resource.get_resource_names():
+            self.cache[name] = None
+
         self.added_handlers = {}
         self.removed_handlers = Set()
 
@@ -129,7 +116,7 @@ class Folder(Handler):
     # API (private)
     #########################################################################
     def _get_handler_names(self):
-        return self.resource._get_resource_names()
+        return self.cache.keys()
 
 
     def _get_handler(self, segment, resource):
@@ -148,10 +135,14 @@ class Folder(Handler):
 
     def _set_handler(self, name, handler):
         self.resource.set_resource(name, handler.resource)
+        self.cache[name] = None
+        self.timestamp = datetime.datetime.now()
 
 
-    def _del_handler(self, segment):
-        self.resource.del_resource(segment)
+    def _del_handler(self, name):
+        self.resource.del_resource(name)
+        del self.cache[name]
+        self.timestamp = datetime.datetime.now()
 
 
     #########################################################################
@@ -193,40 +184,37 @@ class Folder(Handler):
         segment, path = path[0], path[1:]
         name = segment.name
 
-        key = str(segment)
-        resource_names = [ x for x in self.resource.get_resource_names()
-                           if x not in self.removed_handlers ]
         if name in self.added_handlers:
             # It is a new handler (added but not yet saved)
             handler = self.added_handlers[name]
-        elif name in resource_names:
-            # There is a handler
-            if key in self.cache:
-                # Hit (XXX we should check wether resource and handler.resource
-                # are the same or not)
-                handler, atime = self.cache[key]
-                if handler.is_outdated():
-                    handler.load()
+        else:
+            if name in self.cache and name not in self.removed_handlers:
+                # Real handler
+                handler = self.cache[name]
+                if handler is None:
+                    # Miss
+                    resource = self.resource.get_resource(name)
+                    handler = self._get_handler(segment, resource)
+                    # Set parent and name
+                    handler.parent = self
+                    handler.name = segment.name
+                    # Update the cache
+                    self.cache[name] = handler
+                else:
+                    # Hit (XXX we should check wether resource and
+                    # handler.resource are the same or not)
+                    if handler.is_outdated():
+                        handler.load()
             else:
-                # Miss
-                resource = self.resource.get_resource(name)
-                handler = self._get_handler(segment, resource)
+                # Virtual handler
+                if name in self.cache:
+                    # Hit. Clean the cache (virtual handlers are not cached)
+                    del self.cache[name]
+                # Maybe we found a virtual handler
+                handler = self._get_virtual_handler(segment)
                 # Set parent and name
                 handler.parent = self
                 handler.name = segment.name
-            # Update the cache
-            atime = datetime.datetime.now()
-            self.cache[key] = (handler, atime)
-        else:
-            # There is not a handler
-            if key in self.cache:
-                # Hit. Clean the cache (virtual handlers are not cached)
-                del self.cache[key]
-            # Maybe we found a virtual handler
-            handler = self._get_virtual_handler(segment)
-            # Set parent and name
-            handler.parent = self
-            handler.name = segment.name
 
         # Continue with the rest of the path
         if path:
@@ -260,8 +248,6 @@ class Folder(Handler):
         # Event, on set handler
         if hasattr(container, 'on_set_handler'):
             container.on_set_handler(segment, handler, **kw)
-        # Set timestamp
-        container.timestamp = datetime.datetime.now()
 
 
     def del_handler(self, path):
@@ -283,8 +269,6 @@ class Folder(Handler):
             del container.added_handlers[name]
         # Mark the handler as deleted
         container.removed_handlers.add(name)
-        # Set timestamp
-        container.timestamp = datetime.datetime.now()
 
 
     ########################################################################

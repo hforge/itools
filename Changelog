@@ -2,6 +2,25 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-12 15:58:31 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
+
+    Summary:
+      handlers, folder's state keeps resource names (in the cache)
+    Revision:
+      itools--main--0.7--patch-10
+
+    With this patch when folder handler is loaded its cache initialized
+    with the resource names. This is to say, the handler state are the
+    the names of the resources it contains.
+    
+    This change prevents to access the folder's resource on read operations,
+    hence improving the performance. How much depends on the speed of the
+    underlying resource layer.
+
+    modified files:
+     Changelog handlers/Folder.py
+
+
 2005-02-10 10:23:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-9
 
     Summary:

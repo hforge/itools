@@ -2,14 +2,53 @@
 
 The {\tt itools} source code is managed by {\em tla} (also known as
 {\em GNU arch}\footnote{\tt http://www.gnu.org/software/gnu-arch/}),
-a new generation control version system. The purpose of this chapter
-is to help people willing to contribute to the development of
-{\tt itools} by providing a short introduction to {\em arch} and a
-compact guide to get a full developer set up.
+a distributed control version system.
 
-XXX
+The purpose of this chapter is to help people:
 
-\subsubsection{Philosophy}
+\begin{itemize}
+  \item To keep track of the {\tt itools} development.
+
+  \item To contribute to the development of {\tt itools}.
+\end{itemize}
+
+
+\section{Keeping track of {\tt itools}}
+
+Here we assume that you have already installed {\em tla}.
+
+
+\subsubsection{Set your id}
+
+\begin{code}
+    $ tla my-id "J. David Ibáñez <jdavid@itaapy.com>"
+\end{code}
+
+
+\subsubsection{Register the official itools archive}
+
+\begin{code}
+    $ tla register-archive jdavid@itaapy.com--public \
+          http://in-girum.net/~jdavid/archives/public
+\end{code}
+
+
+\subsubsection{Check out itools}
+
+\begin{code}
+    $ tla get jdavid@itaapy.com--public/itools--main--0.4 itools
+\end{code}
+
+\subsubsection{Update}
+
+\begin{code}
+    $ cd itools
+    $ tla update
+\end{code}
+
+
+
+\section{Developing {\tt itools}}
 
 Unlike CVS\footnote{\tt http://www.cvshome.org} or
 Subversion\footnote{\tt http://subversion.tigris.org} {\em tla} is a
@@ -18,22 +57,6 @@ Bitkeeper\footnote{\tt http://www.bitkeeper.com}.
 
 XXX
 
-
-
-\section{Quick start}
-
-This section describes how to set up a developer installation of itools.
-
-\subsubsection{Install tla}
-
-XXX
-
-
-\subsubsection{Set your id}
-
-\begin{code}
-    $ tla my-id "J. David Ibáñez <jdavid@itaapy.com>"
-\end{code}
 
 \subsubsection{Create a new archive}
 

@@ -1,3 +1,13 @@
+0.7.4 (2005/03/21)
+
+  Handlers
+  - Now "get_abspath" returns "/" instead of "" for the root handler.
+
+  Catalog
+  - Speed-up the index load, by implementing lazy load.
+  - Optimize indexing (around 40% for filesystem resources).
+
+
 0.7.3 (2005/03/13)
 
   Catalog

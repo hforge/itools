@@ -43,7 +43,7 @@ The releases and the CVS can be reached from SourceForge:
 Author and license
 ------------------
 
-Copyright 2002-2004  J. David Ibáñez <jdavid@itaapy.com>
+Copyright 2002-2005  J. David Ibáñez <jdavid@itaapy.com>
           2002 Thilo Ernst <Thilo.Ernst@dlr.de>
 
 This library is free software; you can redistribute it and/or

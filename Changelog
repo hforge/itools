@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-21 22:04:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
+
+    Summary:
+      get ready to release 0.7.4
+    Revision:
+      itools--main--0.7--patch-58
+
+
+    modified files:
+     CHANGES.txt Changelog README.txt setup.py
+
+
 2005-03-18 20:07:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-57
 
     Summary:

@@ -459,11 +459,12 @@ class STL(object):
                 changed_attributes[name] = value
 
         # Output existing attributes
-        for qname, value in node.attributes_by_qname.items():
-            # Ommit stl attributes (XXX it should check the namespace, not the
-            # prefix).
-            if qname.startswith('stl:'):
+        for namespace, local_name, value in node.get_attributes():
+            # Ommit stl attributes
+            if namespace == stl_uri:
                 continue
+
+            qname = node.get_attribute_qname(namespace, local_name)
             # Get the attribute value
             if qname in changed_attributes:
                 value = changed_attributes.pop(qname)

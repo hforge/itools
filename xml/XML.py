@@ -17,7 +17,7 @@
 
 
 # Import from Python
-from copy import copy, deepcopy
+from copy import deepcopy
 import htmlentitydefs
 import logging
 from sets import Set
@@ -218,8 +218,7 @@ class Parser(object):
         xmlns = get_namespace(None)
         for name, value in self.ns_declarations.items():
             value = xmlns.get_attribute('xmlns', name, value)
-            element.set_attribute(name, value, namespace=xmlns_uri,
-                                  prefix='xmlns')
+            element.set_attribute(xmlns_uri, name, value, prefix='xmlns')
         self.ns_declarations = {}
         # Set the attributes
         for name, value in attrs.items():
@@ -238,7 +237,7 @@ class Parser(object):
                 e.line_number = self.parser.ErrorLineNumber
                 raise e
             else:
-                element.set_attribute(name, attribute, namespace=namespace_uri,
+                element.set_attribute(namespace_uri, name, attribute,
                                       prefix=prefix)
 
         self.stack.append(element)
@@ -378,7 +377,7 @@ class Element(object):
         self.name = name
         # Attributes (including namespace declarations)
         self.attributes = {}
-        self.attributes_by_qname = {}
+        self.prefixes = {}
         # Child nodes
         self.children = []
 
@@ -388,6 +387,7 @@ class Element(object):
     #######################################################################
     def get_qname(self):
         """Returns the fully qualified name"""
+        # Returns attribute's qname
         if self.prefix is None:
             return self.name
         return '%s:%s' % (self.prefix, self.name)
@@ -402,8 +402,8 @@ class Element(object):
         # Build a new node
         clone = self.__class__(self.prefix, self.name)
         # Copy the attributes
-        clone.attributes = deepcopy(self.attributes)
-        clone.attributes_by_qname = deepcopy(self.attributes_by_qname)
+        clone.attributes = self.attributes.copy()
+        clone.prefixes = self.prefixes.copy()
         # Copy the children (XXX)
         clone.children = deepcopy(self.children)
 ##        for child in self.children:
@@ -433,7 +433,8 @@ class Element(object):
     def get_opentag(self, encoding='UTF-8'):
         s = '<%s' % self.qname
         # Output the attributes
-        for qname, value in self.attributes_by_qname.items():
+        for namespace, local_name, value in self.get_attributes():
+            qname = self.get_attribute_qname(namespace, local_name)
             s += ' %s="%s"' % (qname, unicode(value))
         # Close the open tag
         return s + u'>'
@@ -445,15 +446,9 @@ class Element(object):
 
     #######################################################################
     # Attributes
-    def set_attribute(self, name, value, namespace=None, prefix=None):
+    def set_attribute(self, namespace, name, value, prefix=None):
         self.attributes[(namespace, name)] = value
-        if prefix is None:
-            qname = name
-        elif name is None:
-            qname = prefix
-        else:
-            qname = '%s:%s' % (prefix, name)
-        self.attributes_by_qname[qname] = value
+        self.prefixes[namespace] = prefix
 
 
     def get_attribute(self, namespace, local_name):
@@ -465,8 +460,17 @@ class Element(object):
 
 
     def get_attributes(self):
-        for key in self.attributes:
-            yield key[0], key[1], self.attributes[key]
+        for key, value in self.attributes.items():
+            yield key[0], key[1], value
+
+
+    def get_attribute_qname(self, namespace, local_name):
+        """Returns the fully qualified name"""
+        # Returns attribute's qname
+        prefix = self.prefixes[namespace]
+        if prefix is None:
+            return local_name
+        return '%s:%s' % (prefix, local_name)
 
 
     #######################################################################

@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-24 19:33:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
+
+    Summary:
+      xml, improve attributes API and implementation
+    Revision:
+      itools--main--0.8--patch-30
+
+    The data structure 'attributes_by_qname' has been replaced by the more
+    compact and less redundant 'prefixes'.
+    
+    A new method has been added, 'get_attribute_qname', and the prototype of
+    'set_attribute' has changed so it now requires the namespace uri to be
+    passed first.
+
+    modified files:
+     Changelog xml/STL.py xml/XHTML.py xml/XML.py
+
+
 2005-03-24 18:08:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
 
     Summary:

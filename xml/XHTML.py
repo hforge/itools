@@ -76,12 +76,13 @@ class Element(XML.Element):
                 if http_equiv == 'Content-Type':
                     s = '<%s' % self.qname
                     # Output the attributes
-                    for qname, value in self.attributes_by_qname.items():
-                        if qname == 'content':
+                    for namespace, local_name, value in self.get_attributes():
+                        if namespace == xhtml_uri and local_name == 'content':
                             value = u'application/xhtml+xml; charset=%s' \
                                     % encoding
                         else:
                             value = unicode(value)
+                        qname = self.get_attribute_qname(namespace, local_name)
                         s += ' %s="%s"' % (qname, value)
                     # Close the open tag
                     return s + u'>'
@@ -147,8 +148,8 @@ class Document(XML.Document):
             # The open tag
             buffer.write(u'<%s' % node.qname)
             # The attributes
-            for qname, value in node.attributes_by_qname.items():
-                if node.is_translatable(qname):
+            for namespace, local_name, value in node.get_attributes():
+                if node.is_translatable(local_name):
                     value = value.strip()
                     if value:
                         value = catalog.get_msgstr(value) or value

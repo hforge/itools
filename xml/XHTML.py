@@ -24,7 +24,7 @@ from StringIO import StringIO
 from urlparse import urlsplit
 
 # Import from itools
-import XML
+from itools.xml import XML
 from itools import i18n
 from itools.handlers import IO
 
@@ -88,7 +88,7 @@ class Element(XML.Element):
 
 
 
-class NamespaceHandler(XML.NamespaceHandler):
+class Namespace(XML.Namespace):
 
     def get_element(cls, prefix, name):
         return Element(prefix, name)
@@ -105,8 +105,7 @@ class NamespaceHandler(XML.NamespaceHandler):
 
 
 
-XML.Document.set_namespace_handler('http://www.w3.org/1999/xhtml',
-                                   NamespaceHandler)
+XML.set_namespace('http://www.w3.org/1999/xhtml', Namespace)
 
 
 

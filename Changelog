@@ -2,6 +2,33 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-20 18:34:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-18
+
+    Summary:
+      xml, started overhaul, add "itools.html"
+    Revision:
+      itools--main--0.8--patch-18
+
+    Now "itools.xml" is badly broken.
+
+    new files:
+     html/.arch-ids/=id html/.arch-ids/__init__.py.id
+     html/__init__.py
+
+    modified files:
+     Changelog html/HTML.py setup.py xml/STL.py xml/Schema.py
+     xml/XHTML.py xml/XML.py xml/__init__.py
+
+    renamed files:
+     xml/.arch-ids/HTML.py.id
+       ==> html/.arch-ids/HTML.py.id
+     xml/HTML.py
+       ==> html/HTML.py
+
+    new directories:
+     html html/.arch-ids
+
+
 2005-03-20 16:01:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-17
 
     Summary:

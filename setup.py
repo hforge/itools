@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #                    2005 Luis Belmar Leteliet <luis@itaapy.com>
 #                    2005 Hervé Cauwelier <herve@oursours.net>
 #
@@ -94,7 +94,7 @@ setup(name = "itools",
       package_dir = {'itools': ''},
       packages = ['itools', 'itools.catalog', 'itools.handlers', 'itools.i18n',
                   'itools.resources', 'itools.workflow', 'itools.xml',
-                  'itools.zope'],
+                  'itools.html', 'itools.zope'],
       classifiers = ['Development Status :: 3 - Alpha',
                      'Intended Audience :: Developers',
                      ('License :: OSI Approved :: GNU Library or Lesser General'

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -107,7 +107,16 @@ class ComplexType(object):
                 if issubclass(type, ComplexType):
                     value = type.decode(node)
                 else:
-                    value = node.children.to_unicode()
+                    # XXX Maybe this should be moved to a IO.XXX.decode
+                    # method
+                    value = []
+                    for x in node.children:
+                        if isinstance(x, unicode):
+                            value.append(x)
+                        else:
+                            value.append(x.to_unicode(encoding=encoding))
+                    value = ''.join(value)
+##                    value = node.children.to_unicode()
                     value = value.encode('utf8')
                     try:
                         value = type.decode(value)

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -23,9 +23,91 @@ from sets import Set
 
 # Import from itools
 from itools.handlers import File
-import XHTML
+from itools.xml import XML, XHTML
 
 
+#############################################################################
+# Parser
+#############################################################################
+class Parser(HTMLParser):
+
+    def parse(self, data):
+        # Initialize the parser
+        HTMLParser.__init__(self)
+
+        # Defaults
+        self._encoding = 'UTF-8'
+        self._declaration = None
+
+        # Initialize the data structure
+        self.children = []
+
+        # Parse
+        self.stack = [self]
+        self.feed(data)
+        self.close()
+        del self.stack
+
+
+    def handle_decl(self, decl):
+        # XXX This is related with the XML doctype, we should share code
+        self._declaration = decl
+
+
+    def handle_starttag(self, name, attrs):
+        element = Element(None, name)
+
+        for attr_name, value in attrs:
+            element.set_attribute(attr_name, value)
+
+        self.stack.append(element)
+
+        # Check for the mime type and encoding
+        if name == 'meta':
+            if element.has_attribute('http-equiv'):
+                http_equiv = element.get_attribute('http-equiv')
+                if http_equiv == 'Content-Type':
+                    value = element.get_attribute('content')
+                    mimetype, charset = value.split(';')
+                    self._mimetype = mimetype.strip()
+                    self._encoding = charset.strip()[len('charset='):]
+
+        # Close the tag if needed
+        if name in empty_elements:
+            XML.Parser.end_element_handler(self, name)
+
+
+    def handle_endtag(self, name):
+        # Ignore end tags without an start
+        if name == getattr(self.stack[-1], 'name', None):
+            XML.Parser.end_element_handler(self, name)
+
+
+    def handle_comment(self, data):
+        XML.Parser.comment_handler(self, data)
+
+
+    handle_data = XML.Parser.default_handler
+
+
+    def handle_entityref(self, name):
+        XML.Parser.skipped_entity_handler(self, name, False)
+
+
+    # XXX handlers that remain to implement include
+##    def handle_pi(self, data):
+
+
+    def close(self):
+        while len(self.stack) > 1:
+            XML.Parser.end_element_handler(self, self.stack[-1].name)
+        HTMLParser.close(self)
+
+
+
+#############################################################################
+# Data types
+#############################################################################
 
 # List of empty elements, which don't have a close tag
 empty_elements = Set(['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr',
@@ -61,7 +143,11 @@ class Element(XHTML.Element):
 
 
 
-class Document(XHTML.Document, HTMLParser):
+#############################################################################
+# Documents
+#############################################################################
+
+class Document(XHTML.Document):
     """
     HTML files are a lot like XHTML, only the parsing and the output is
     different, so we inherit from XHTML instead of Text, even if the
@@ -95,88 +181,16 @@ class Document(XHTML.Document, HTMLParser):
 
 
     #######################################################################
-    # Parsing
+    # Load/Save
     #######################################################################
     def _load(self, resource):
-        File.File._load(self, resource)
-        # Initialize the parser
-        HTMLParser.__init__(self)
+        parser = Parser()
+        state = parser.parse(resource.get_data())
 
-        # Defaults
-        self._encoding = 'UTF-8'
-        self._declaration = None
-
-        # Initialize the data structure
-        self.children = []
-
-        # Parse
-        self.stack = [self]
-        self.feed(self._data)
-        self.close()
-        del self.stack
-
-        # Remove the original data, don't neet it anymore
-        del self._data
+        self.encoding = state.encoding
+        self.children = state.children
 
 
-    def handle_decl(self, decl):
-        # XXX This is related with the XML doctype, we should share code
-        self._declaration = decl
-
-
-    def handle_starttag(self, name, attrs):
-        element = Element(None, name)
-
-        for attr_name, value in attrs:
-            element.set_attribute(attr_name, value)
-
-        self.stack.append(element)
-
-        # Check for the mime type and encoding
-        if name == 'meta':
-            if element.has_attribute('http-equiv'):
-                http_equiv = element.get_attribute('http-equiv')
-                if http_equiv == 'Content-Type':
-                    value = element.get_attribute('content')
-                    mimetype, charset = value.split(';')
-                    self._mimetype = mimetype.strip()
-                    self._encoding = charset.strip()[len('charset='):]
-
-        # Close the tag if needed
-        if name in empty_elements:
-            XHTML.Document.end_element_handler(self, name)
-
-
-    def handle_endtag(self, name):
-        # Ignore end tags without an start
-        if name == getattr(self.stack[-1], 'name', None):
-            XHTML.Document.end_element_handler(self, name)
-
-
-    def handle_comment(self, data):
-        XHTML.Document.comment_handler(self, data)
-
-
-    handle_data = XHTML.Document.default_handler
-
-
-    def handle_entityref(self, name):
-        XHTML.Document.skipped_entity_handler(self, name, False)
-
-
-    # XXX handlers that remain to implement include
-##    def handle_pi(self, data):
-
-
-    def close(self):
-        while len(self.stack) > 1:
-            XHTML.Document.end_element_handler(self, self.stack[-1].name)
-        HTMLParser.close(self)
-
-
-    #######################################################################
-    # API
-    #######################################################################
     def to_unicode(self, encoding='UTF-8'):
         s = u''
         # The declaration

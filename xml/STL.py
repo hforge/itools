@@ -508,7 +508,8 @@ class STL(object):
 
 ########################################################################
 # Interface for the XML parser, factories
-class NamespaceHandler(XML.NamespaceHandler):
+class Namespace(XML.Namespace):
+
     def namespace_handler(cls, document):
         if not hasattr(document, 'stl'):
             aspect = STL()
@@ -549,5 +550,4 @@ class NamespaceHandler(XML.NamespaceHandler):
 
 ########################################################################
 # Register
-XML.Document.set_namespace_handler('http://xml.itools.org/namespaces/stl',
-                                   NamespaceHandler)
+XML.set_namespace('http://xml.itools.org/namespaces/stl', Namespace)

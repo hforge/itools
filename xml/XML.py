@@ -25,22 +25,14 @@ import sys
 import warnings
 from xml.parsers import expat
 
-# Import from itools.handlers
+# Import from itools
 from itools.handlers import File, Text, IO
 
 
-### Create a logger for dubugging
-##import os
-##try:
-##    os.remove('/tmp/xml_debug.txt')
-##except OSError:
-##    pass
-##logger = logging.getLogger('xml debug')
-##logger.setLevel(logging.DEBUG)
-##handler = logging.FileHandler('/tmp/xml_debug.txt')
-##logger.addHandler(handler)
 
-
+#############################################################################
+# Exceptions
+#############################################################################
 
 class XMLError(Exception):
     """
@@ -67,232 +59,24 @@ class XMLError(Exception):
         return self.message
 
 
+#############################################################################
+# Parser
+#############################################################################
 
-class Context(object):
-    """Used by 'traverse2' to control the traversal."""
+class Parser(object):
 
-    def __init__(self):
-        self.skip = False
-
-
-
-class Node(object):
-    parent = None
-
-    def traverse(self):
-        yield self
-
-
-    def traverse2(self, context=None):
-        if context is None:
-            context = Context()
-        yield self, context
-
-
-
-
-
-class NodeList(list):
-    def to_unicode(self, encoding='UTF-8'):
-        s = u''
-        for node in self:
-            s += node.to_unicode(encoding=encoding)
-        return s
-
-
-    def to_str(self, encoding='UTF-8'):
-        return self.to_unicode(encoding).encode(encoding)
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        if len(self) != len(other):
-            return 1
-        for i in range(len(self)):
-            if self[i] != other[i]:
-                return 1
-        return 0
-
-
-
-class Raw(Node):
-    def __init__(self, data):
-        self.data = data
-
-
-    def to_unicode(self, encoding='UTF-8'):
-        return self.data.replace('&', '&amp;').replace('<', '&lt;')
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        return cmp(self.to_unicode(), other.to_unicode())
-
-
-
-class XMLDeclaration(Node):
-
-    def __init__(self, version, encoding, standalone):
-        self.version = version
-        # XXX Should we keep the encoding? Probably not
-        self.encoding = encoding
-        self.standalone = standalone
-
-
-    def to_unicode(self, encoding='UTF-8'):
-        if self.standalone == 1:
-            return u'<?xml version="%s" encoding="%s" standalone="yes"?>' \
-                   % (self.version, encoding)
-        elif self.standalone == 0:
-            return u'<?xml version="%s" encoding="%s" standalone="no"?>' \
-                   % (self.version, encoding)
-        else:
-            return u'<?xml version="%s" encoding="%s"?>' \
-                   % (self.version, encoding)
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        if self.version == other.version and self.encoding == other.encoding \
-               and self.standalone == other.standalone:
-            return 0
-        return 1
-
-
-    def copy(self):
-        return XMLDeclaration(self.version, self.encoding, self.standalone)
-
-
-
-class DocumentType(Node):
-    def __init__(self, name, system_id, public_id, has_internal_subset):
-        self.name = name
-        self.system_id = system_id
-        self.public_id = public_id
-        self.has_internal_subset = has_internal_subset
-
-
-    def to_unicode(self, encoding='UTF-8'):
-        # XXX The system and public ids maybe None
-        pattern = '<!DOCTYPE %s' \
-                  '\n     PUBLIC "%s"' \
-                  '\n    "%s">'
-        return pattern % (self.name, self.public_id, self.system_id)
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        if self.name == other.name and self.system_id == other.system_id \
-               and self.public_id == other.public_id \
-               and self.has_internal_subset == other.has_internal_subset:
-            return 0
-        return 1
-
-
-
-class Comment(Node):
-    def __init__(self, data):
-        self.data = data
-
-
-    def to_unicode(self, encoding='UTF-8'):
-        return u'<!--%s-->' % self.data
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        return cmp(self.data, other.data)
-
-
-
-class Document(Text.Text):
-    """
-    An XML file is represented in memory as a tree where the nodes are
-    instances of the classes 'Element' and 'Raw'. The 'Element' class
-    represents an XML element, the 'Raw' class represents a text string.
-
-    XML sub-classes will, usually, provide their specific semantics by
-    providing their own Element and Raw classes. This is the reason why
-    we use 'self.Element' and 'self.Raw' throghout the code instead of
-    just 'Element' and 'Raw'.
-    """
-
-    class_mimetypes = ['text/xml', 'application/xml']
-
-
-    #######################################################################
-    # The XML namespace registry
-    #######################################################################
-    namespace_handlers = {}
-
-
-    def set_namespace_handler(cls, uri, handler):
-        cls.namespace_handlers[uri] = handler
-
-    set_namespace_handler = classmethod(set_namespace_handler)
-
-
-    def get_namespace_handler(cls, uri):
-        if uri in cls.namespace_handlers:
-            return cls.namespace_handlers[uri]
-        # Use default 
-        warnings.warn('Unknown namespace "%s" (using default)' % uri)
-        return cls.namespace_handlers[None]
-
-    get_namespace_handler = classmethod(get_namespace_handler)
-
-
-    def has_namespace_handler(cls, uri):
-        return uri in cls.namespace_handlers
-
-    has_namespace_handler = classmethod(has_namespace_handler)
-
-
-    #######################################################################
-    # The Document Types registry
-    #######################################################################
-    doctype_handlers = {}
-
-
-    def set_doctype_handler(cls, public_id, handler):
-        cls.doctype_handlers[public_id] = handler
-
-    set_doctype_handler = classmethod(set_doctype_handler)
-
-
-    def get_doctype_handler(cls, public_id):
-        return cls.doctype_handlers.get(public_id)
-
-    get_doctype_handler = classmethod(get_doctype_handler)
-
-
-    def has_doctype_handler(cls, public_id):
-        return public_id in cls.doctype_handlers
-
-    has_doctype_handler = classmethod(has_doctype_handler)
-
-
-    #######################################################################
-    # Load
-    #######################################################################
-    def _load(self, resource):
-        """
-        Builds a tree made of elements and raw data.
-        """
+    def parse(self, data):
         # Default values for version, encoding and standalone are the expat's
         # default or implicit values. These are overwritten if a declaration
         # is found.
-        self._version = '1.0'
-        self._encoding = 'UTF-8' # XXX Should we call 'guess_encoding' instead?
-        self._standalone = -1
+        self.version = '1.0'
+        self.encoding = 'UTF-8' # XXX Should we call 'guess_encoding' instead?
+        self.standalone = -1
+
+        self.document_type = None
 
         # Initialize the data structure
-        self.children = NodeList()
+        self.children = []
 
         # Create the parser object
         parser = expat.ParserCreate(namespace_separator=' ')
@@ -335,25 +119,30 @@ class Document(Text.Text):
         self.ns_declarations = {}
 
         # Parse!!
-        parser.Parse(resource.get_data(), True)
+        parser.Parse(data, True)
 
         # Remove auxiliar attributes
         del self.parser
         del self.stack
         del self.ns_declarations
 
+        return self
+
 
     #######################################################################
     # expat handlers
     def xml_declaration_handler(self, version, encoding, standalone):
-        xml_declaration = XMLDeclaration(version, encoding, standalone)
-        self.children.append(xml_declaration)
+        self.version = version
+        if encoding is not None:
+            self.encoding = encoding
+        self.standalone = standalone
 
 
     def start_doctype_handler(self, name, system_id, public_id,
                               has_internal_subset):
-        doctype = DocumentType(name, system_id, public_id, has_internal_subset)
-        self.children.append(doctype)
+        self.document_type = (name, system_id, public_id, has_internal_subset)
+##        doctype = DocumentType(name, system_id, public_id, has_internal_subset)
+##        self.children.append(doctype)
 
 
     def end_doctype_handler(self):
@@ -361,7 +150,7 @@ class Document(Text.Text):
 
 
     def start_namespace_handler(self, prefix, uri):
-        namespace_handler = self.get_namespace_handler(uri)
+        namespace_handler = get_namespace(uri)
         namespace_handler.namespace_handler(self)
         # Keep the namespace declarations
         self.ns_declarations[prefix] = uri
@@ -391,7 +180,7 @@ class Document(Text.Text):
             ns_uri = None
 
         # Load the namespace handler
-        namespace_handler = self.get_namespace_handler(ns_uri)
+        namespace_handler = get_namespace(ns_uri)
         # Load the element
 ##        element = self.stack[-1]
         try:
@@ -406,7 +195,7 @@ class Document(Text.Text):
         # Keep the namespace declarations (set them as attributes)
         for name, value in self.ns_declarations.items():
             ns_uri = 'http://www.w3.org/2000/xmlns/'
-            namespace_handler = self.get_namespace_handler(ns_uri)
+            namespace_handler = get_namespace(ns_uri)
             value = namespace_handler.get_attribute('xmlns', name, value)
             element.set_attribute(name, value, namespace=ns_uri,
                                   prefix='xmlns')
@@ -420,7 +209,7 @@ class Document(Text.Text):
                 prefix = None
                 ns_uri = element_uri
 
-            namespace_handler = self.get_namespace_handler(ns_uri)
+            namespace_handler = get_namespace(ns_uri)
             try:
                 attribute = namespace_handler.get_attribute(prefix, name,value)
             except XMLError, e:
@@ -443,20 +232,20 @@ class Document(Text.Text):
 
     def char_data_handler(self, data):
         element = self.stack[-1]
-        data = IO.Unicode.decode(data, self._encoding)
+        data = IO.Unicode.decode(data, self.encoding)
 
         children = element.children
-        if children and isinstance(children[-1], Raw):
-            children[-1].data += data
+        if children and isinstance(children[-1], str):
+            children[-1] = children[-1] + data
         else:
-            children.append(Raw(data))
+            children.append(data)
 
 
     def skipped_entity_handler(self, name, is_param_entity):
         # XXX HTML specific
         if name in htmlentitydefs.name2codepoint:
             codepoint = htmlentitydefs.name2codepoint[name]
-            char = unichr(codepoint).encode(self._encoding)
+            char = unichr(codepoint).encode(self.encoding)
             self.char_data_handler(char)
         else:
             warnings.warn('Unknown entity reference "%s" (ignoring)' % name)
@@ -472,118 +261,96 @@ class Document(Text.Text):
         self.children.append(element)
 
 
-    #######################################################################
-    # API
-    #######################################################################
-    def to_unicode(self, encoding='UTF-8'):
-        # The children
-        s = []
-        if encoding is None:
-            for child in self.children:
-                s.append(child.to_unicode(encoding))
-        else:
-            for child in self.children:
-                if isinstance(child, XMLDeclaration):
-                    child = copy(child)
-                    child.encoding = encoding
-                s.append(child.to_unicode(encoding))
 
-        return ''.join(s)
+#############################################################################
+# Namespaces
+#############################################################################
+
+namespaces = {}
+
+
+def set_namespace(uri, handler):
+    namespaces[uri] = handler
+
+
+def get_namespace(uri):
+    if uri in namespaces:
+        return namespaces[uri]
+    # Use default 
+    warnings.warn('Unknown namespace "%s" (using default)' % uri)
+    return namespaces[None]
+
+
+def has_namespace(uri):
+    return uri in namespaces
+
+
+
+class Namespace(object):
+    """
+    Default namespace handler for elements and attributes that are not bound
+    to a particular namespace.
+    """
+
+    def namespace_handler(cls, document):
+        pass
+
+    namespace_handler = classmethod(namespace_handler)
+
+
+    def get_element(cls, prefix, name):
+        return Element(prefix, name)
+
+    get_element = classmethod(get_element)
+
+
+    def get_attribute(cls, prefix, name, value):
+        return IO.Unicode.decode(value)
+
+    get_attribute = classmethod(get_attribute)
+
+
+# Set the default namespace
+set_namespace(None, Namespace)
+    
+
+
+#############################################################################
+# Data types
+#############################################################################
+
+class Comment(object):
+
+    parent = None
+
+    def __init__(self, data):
+        self.data = data
+
+
+    def to_unicode(self, encoding='UTF-8'):
+        return u'<!--%s-->' % self.data
 
 
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        return cmp(self.children, other.children)
-
-
-    def get_root_element(self):
-        """
-        Returns the root element (XML documents have one root element).
-        """
-        for child in self.children:
-            if isinstance(child, Element):
-                return child
-        return None
-##        raise XMLError, 'XML document has not a root element!!'
+        return cmp(self.data, other.data)
 
 
     def traverse(self):
         yield self
-        for child in self.children:
-            for x in child.traverse():
-                yield x
 
 
     def traverse2(self, context=None):
         if context is None:
             context = Context()
-        # Children
-        if context.skip is True:
-            context.skip = False
-        else:
-            for child in self.children:
-                for x, context in child.traverse2(context):
-                    yield x, context
-
-
-#############################################################################
-# XML Factory
-#############################################################################
-class StopOracle(Exception):
-    pass
-
-
-class Oracle(object):
-    def guess_doctype(self, resource):
-        data = resource.get_data()
-        self._doctype = None
-
-        parser = expat.ParserCreate()
-        parser.StartDoctypeDeclHandler = self.start_doctype_handler
-        parser.StartElementHandler = self.start_element_handler
-        try:
-            parser.Parse(data, True)
-        except StopOracle:
-            doctype = self._doctype
-            del self._doctype
-            return doctype
-
-
-    def start_doctype_handler(self, name, system_id, public_id,
-                              has_internal_subset):
-        self._doctype = public_id
-        raise StopOracle
-
-
-    def start_element_handler(self, nale, attrs):
-        raise StopOracle
+        yield self, context
 
 
 
-def get_handler(resource):
-    """
-    Factory for XML handlers. From a given resource, try to guess its document
-    type, and return the proper XML handler.
-    """
-    oracle = Oracle()
+class Element(object):
 
-    doctype = oracle.guess_doctype(resource)
-    if registry.has_doctype(doctype):
-        handler_class = registry.get_doctype(doctype)
-    else:
-        handler_class = Document
-    return handler_class(resource)
-
-
-Text.Text.register_handler_class(Document)
-
-
-
-#############################################################################
-# Default XML namespace handler
-#############################################################################
-class Element(Node):
+    parent = None
     namespace = None
 
 
@@ -594,7 +361,7 @@ class Element(Node):
         self.attributes = {}
         self.attributes_by_qname = {}
         # Child nodes
-        self.children = NodeList()
+        self.children = []
 
 
     #######################################################################
@@ -753,24 +520,185 @@ class Element(Node):
 
 
 
-class NamespaceHandler(object):
+#############################################################################
+# Documents
+#############################################################################
 
-    def namespace_handler(cls, document):
-        pass
+class Context(object):
+    """Used by 'traverse2' to control the traversal."""
 
-    namespace_handler = classmethod(namespace_handler)
-
-
-    def get_element(cls, prefix, name):
-        return Element(prefix, name)
-
-    get_element = classmethod(get_element)
+    def __init__(self):
+        self.skip = False
 
 
-    def get_attribute(cls, prefix, name, value):
-        return IO.Unicode.decode(value)
 
-    get_attribute = classmethod(get_attribute)
+class Document(Text.Text):
+    """
+    An XML file is represented in memory as a tree where the nodes are
+    instances of the classes 'Element' and 'Raw'. The 'Element' class
+    represents an XML element, the 'Raw' class represents a text string.
+
+    XML sub-classes will, usually, provide their specific semantics by
+    providing their own Element and Raw classes. This is the reason why
+    we use 'self.Element' and 'self.Raw' throghout the code instead of
+    just 'Element' and 'Raw'.
+    """
+
+    class_mimetypes = ['text/xml', 'application/xml']
 
 
-Document.set_namespace_handler(None, NamespaceHandler)
+    #######################################################################
+    # The Document Types registry
+    #######################################################################
+    doctype_handlers = {}
+
+
+    def set_doctype_handler(cls, public_id, handler):
+        cls.doctype_handlers[public_id] = handler
+
+    set_doctype_handler = classmethod(set_doctype_handler)
+
+
+    def get_doctype_handler(cls, public_id):
+        return cls.doctype_handlers.get(public_id)
+
+    get_doctype_handler = classmethod(get_doctype_handler)
+
+
+    def has_doctype_handler(cls, public_id):
+        return public_id in cls.doctype_handlers
+
+    has_doctype_handler = classmethod(has_doctype_handler)
+
+
+    #######################################################################
+    # Load
+    #######################################################################
+    def _load(self, resource):
+        """
+        Builds a tree made of elements and raw data.
+        """
+        # Parse
+        parser = Parser()
+        state = parser.parse(resource.get_data())
+        # Declaration
+        self._version = state.version
+        self._encoding = state.encoding
+        self._standalone = state.standalone
+        # Document type
+        self.document_type = state.document_type
+        # Children
+        self.children = state.children
+
+
+    #######################################################################
+    # API
+    #######################################################################
+    def to_unicode(self, encoding='UTF-8'):
+        s = []
+        # The XML declaration
+        if self._standalone == 1:
+            pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>'
+        elif self._standalone == 0:
+            pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>'
+        else:
+            pattern = u'<?xml version="%s" encoding="%s"?>'
+        s.append(pattern % (self._version, encoding))
+        # The document type (XXX)
+        
+        # The children
+        for child in self.children:
+            s.append(child.to_unicode(encoding))
+
+        return ''.join(s)
+
+
+    def __cmp__(self, other):
+        if not isinstance(other, self.__class__):
+            return 1
+        return cmp(self.children, other.children)
+
+
+    def get_root_element(self):
+        """
+        Returns the root element (XML documents have one root element).
+        """
+        for child in self.children:
+            if isinstance(child, Element):
+                return child
+        return None
+##        raise XMLError, 'XML document has not a root element!!'
+
+
+    def traverse(self):
+        yield self
+        for child in self.children:
+            for x in child.traverse():
+                yield x
+
+
+    def traverse2(self, context=None):
+        if context is None:
+            context = Context()
+        # Children
+        if context.skip is True:
+            context.skip = False
+        else:
+            for child in self.children:
+                for x, context in child.traverse2(context):
+                    yield x, context
+
+
+#############################################################################
+# XML Factory
+#############################################################################
+class StopOracle(Exception):
+    pass
+
+
+class Oracle(object):
+    def guess_doctype(self, resource):
+        data = resource.get_data()
+        self._doctype = None
+
+        parser = expat.ParserCreate()
+        parser.StartDoctypeDeclHandler = self.start_doctype_handler
+        parser.StartElementHandler = self.start_element_handler
+        try:
+            parser.Parse(data, True)
+        except StopOracle:
+            doctype = self._doctype
+            del self._doctype
+            return doctype
+
+
+    def start_doctype_handler(self, name, system_id, public_id,
+                              has_internal_subset):
+        self._doctype = public_id
+        raise StopOracle
+
+
+    def start_element_handler(self, nale, attrs):
+        raise StopOracle
+
+
+
+def get_handler(resource):
+    """
+    Factory for XML handlers. From a given resource, try to guess its document
+    type, and return the proper XML handler.
+    """
+    oracle = Oracle()
+
+    doctype = oracle.guess_doctype(resource)
+    if registry.has_doctype(doctype):
+        handler_class = registry.get_doctype(doctype)
+    else:
+        handler_class = Document
+    return handler_class(resource)
+
+
+Text.Text.register_handler_class(Document)
+
+
+

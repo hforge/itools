@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,7 @@
 
 
 # Import from itools.handlers
-from itools.handlers import Handler
+##from itools.handlers import Handler
 
-# Import from itools.xml
-import XML
-import XHTML
-import STL
-##import DublinCore
+# Import from itools
+import HTML

@@ -68,7 +68,7 @@ class Text(File):
     encoding = property(get_encoding, None, None, "")
 
 
-    def to_unicode(self):
+    def to_unicode(self, encoding=None):
         return self._data
 
 
@@ -80,7 +80,7 @@ class Text(File):
         # Warning!! Some files (XML, PO, etc.) store the encoding information
         # within the document. For them this method should change that
         # information to the given encoding.
-        return self.to_unicode().encode(encoding)
+        return self.to_unicode(encoding).encode(encoding)
 
 
 File.register_handler_class(Text)

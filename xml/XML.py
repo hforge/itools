@@ -482,24 +482,20 @@ class Document(Text.Text):
     #######################################################################
     # API
     #######################################################################
-    def to_unicode(self):
+    def to_unicode(self, encoding=None):
         # The children
-        s = u''
-        for child in self.children:
-            s += unicode(child)
-        return s
-
-
-    def to_str(self, encoding='UTF-8'):
-        # The children
-        s = u''
-        for child in self.children:
-            if isinstance(child, XMLDeclaration):
-                child = copy(child)
-                child.encoding = encoding
-            s += unicode(child)
-
-        return s.encode(encoding)
+        s = []
+        if encoding is None:
+            for child in self.children:
+                s.append(unicode(child))
+        else:
+            for child in self.children:
+                if isinstance(child, XMLDeclaration):
+                    child = copy(child)
+                    child.encoding = encoding
+                s.append(unicode(child))
+            
+        return ''.join(s)
 
 
     def __cmp__(self, other):

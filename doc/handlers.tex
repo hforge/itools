@@ -1,10 +1,10 @@
 \chapter{Resource Handlers}
 
-Resources lack any knowledge about the structure and the meaning of
-the information they contain. For example, the resource layer ignores
-that an XML document has a tree structure, hence it does not provide
-an API to traverse it; nor it knows how to get the messages and
-translations from a PO file.
+Resources provide persistence to our data, but they lack any knowledge
+about the structure and the meaning of the information they contain. For
+example, the resource layer ignores that an XML document has a tree
+structure, hence it does not provide an API to traverse it; nor it knows
+how to get the messages and translations from a PO file.
 
 This is the purpose of the {\em resource handlers}, to add semantics to
 specific resources.
@@ -152,7 +152,7 @@ better. The API is really basic:
 The default handler for text files, whose API is:
 
 \begin{api}
-  {\tt to\_unicode()}\\
+  {\tt to\_unicode(encoding=None)}\\
   - Returns the resource data as an unicode string.
 
   {\tt to\_str(encoding='UTF-8')}\\

@@ -1,3 +1,19 @@
+0.6.4 (2005/02/16)
+
+  Handlers
+  - Now the encoding default is UTF-8 (for "Text.to_unicode").
+
+  XML
+  - Load the "lang" attribute (Schema) as an string.
+  - Fix XHTML and HTML serialization, correctly set the encoding.
+
+  Catalog
+  - Search by keywords checks if the field exists.
+
+  Windows
+  - Fix paths in "get_abspath" and "resources.get_resource".
+
+
 0.6.3 (2005/02/03)
 
   XML

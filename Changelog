@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.6
 #
 
+2005-02-16 14:31:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
+
+    Summary:
+      get ready to release 0.6.4
+    Revision:
+      itools--main--0.6--patch-62
+
+
+    modified files:
+     CHANGES.txt Changelog setup.py
+
+
 2005-02-16 14:24:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
 
     Summary:

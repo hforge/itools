@@ -403,11 +403,22 @@ class Reference(object):
 
 
     def __str__(self):
+        # XXX Houston, we still have a problem here:
+        #
+        #    >>> print uri.get_reference('#')
+        #    .
+        #    >>> print uri.get_reference('')
+        #    .
+        #
+        # Well, it may not be really a problem, we will see.
         path = str(self.path)
         if path == '.':
             path = ''
-        return urlunsplit((self.scheme, str(self.authority), path,
-                           str(self.query), self.fragment))
+        reference = urlunsplit((self.scheme, str(self.authority), path,
+                                str(self.query), self.fragment))
+        if reference == '':
+            return '.'
+        return reference
 
 
     def __eq__(self, other):

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-07 14:44:45 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
+
+    Summary:
+      xml, remove obsolete 'walk' method
+    Revision:
+      itools--main--0.7--patch-40
+
+
+    modified files:
+     Changelog xml/STL.py xml/XML.py
+
+
 2005-03-07 10:24:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
 
     Summary:

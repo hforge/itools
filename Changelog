@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-24 15:11:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-26
+
+    Summary:
+      xml, fix traverse
+    Revision:
+      itools--main--0.8--patch-26
+
+
+    modified files:
+     Changelog xml/XML.py
+
+
 2005-03-23 20:25:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
 
     Summary:

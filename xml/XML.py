@@ -661,8 +661,11 @@ class Document(Text.Text):
     def traverse(self):
         yield self
         for child in self.children:
-            for x in child.traverse():
-                yield x
+            if isinstance(child, Element):
+                for x in child.traverse():
+                    yield x
+            else:
+                yield child
 
 
     def traverse2(self, context=None):

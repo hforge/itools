@@ -62,7 +62,7 @@ def checkid(id):
             return None
 
     # The id is good
-    return id
+    return str(id)
 
 
 

@@ -1,3 +1,31 @@
+0.7.0 (2005/02/23)
+
+  Resources
+  - New layer for Zope 2 (resources.zope2)
+  - Add file like interface (just the read method).
+
+  Handlers
+  - Now folders follow the load/save model.
+  - Initialize timestamp with resource's modification time (instead of
+    current time).
+  - Implement transactions (set_changed, commit_transaction, etc.)
+  - New handler class "MO", to manage gettext binary files.
+  - Add method 'copy_handler' to the API.
+  - New event methods: 'on_del_handler' and 'after_commit'.
+
+  Catalog
+  - Fix "IO.decode_vint" and "IO.encode_byte".
+  - Optimize search.
+
+  Documentation
+  - Update example for the STL chapter.
+
+  Packaging
+  - Include the changelog file on source distributions, clean 'setup.py'
+    (by Luis Belmar-Letelier).
+  - Add 'itools.__arch_revision__' variable (by Luis Belmar-Letelier).
+
+
 0.6.4 (2005/02/16)
 
   Handlers

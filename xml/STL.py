@@ -397,8 +397,8 @@ class STL(object):
 
         s = []
         # Process stl:repeat
-        if node.has_attribute('repeat', namespace=stl_uri):
-            repeat = node.get_attribute('repeat', namespace=stl_uri)
+        if node.has_attribute(stl_uri, 'repeat'):
+            repeat = node.get_attribute(stl_uri, 'repeat')
             name, expression = repeat.stl_name, repeat.stl_expression
 
             i = 0
@@ -432,8 +432,8 @@ class STL(object):
         Process stl:if, stl:attributes and stl:content.
         """
         # Remove the element if the given expression evaluates to false
-        if node.has_attribute('if', namespace=stl_uri):
-            stl_expression = node.get_attribute('if', namespace=stl_uri)
+        if node.has_attribute(stl_uri, 'if'):
+            stl_expression = node.get_attribute(stl_uri, 'if')
             if not stl_expression.evaluate(stack, repeat):
                 return []
 
@@ -443,8 +443,8 @@ class STL(object):
         # Process attributes
         changed_attributes = {} # qname: value
         # Evaluate stl:attributes
-        if node.has_attribute('attributes', namespace=stl_uri):
-            value = node.get_attribute('attributes', namespace=stl_uri)
+        if node.has_attribute(stl_uri, 'attributes'):
+            value = node.get_attribute(stl_uri, 'attributes')
             for name, expression in value.stl_attributes:
                 value = expression.evaluate(stack, repeat)
                 # XXX Do it only if it is an HTML document.
@@ -480,8 +480,8 @@ class STL(object):
         s.append('>')
 
         # Process the content
-        if node.has_attribute('content', namespace=stl_uri):
-            stl_expression = node.get_attribute('content', namespace=stl_uri)
+        if node.has_attribute(stl_uri, 'content'):
+            stl_expression = node.get_attribute(stl_uri, 'content')
             content = stl_expression.evaluate(stack, repeat)
             # Coerce
             if isinstance(content, unicode):

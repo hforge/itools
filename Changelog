@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-24 18:08:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
+
+    Summary:
+      xml, improving API and documentation
+    Revision:
+      itools--main--0.8--patch-29
+
+    Specifically the document's ('xml_version', 'standalone', etc.) and
+    attributes ('get_attribute', etc.) APIs.
+
+    modified files:
+     Changelog doc/xml.tex xml/STL.py xml/Schema.py xml/XHTML.py
+     xml/XML.py
+
+
 2005-03-24 16:11:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-28
 
     Summary:

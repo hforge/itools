@@ -31,6 +31,13 @@ from itools.handlers import File, Text, IO
 
 
 #############################################################################
+# Constants
+#############################################################################
+
+xmlns_uri = 'http://www.w3.org/2000/xmlns/'
+
+
+#############################################################################
 # Exceptions
 #############################################################################
 
@@ -156,6 +163,7 @@ class Parser(object):
 
     def start_doctype_handler(self, name, system_id, public_id,
                               has_internal_subset):
+        has_internal_subset = bool(has_internal_subset)
         self.document_type = (name, system_id, public_id, has_internal_subset)
 
 
@@ -206,7 +214,6 @@ class Parser(object):
         element_uri = namespace_uri
 
         # Keep the namespace declarations (set them as attributes)
-        xmlns_uri = 'http://www.w3.org/2000/xmlns/'
 ##        xmlns = get_namespace(xmlns_uri)
         xmlns = get_namespace(None)
         for name, value in self.ns_declarations.items():
@@ -225,7 +232,7 @@ class Parser(object):
 
             namespace = get_namespace(namespace_uri)
             try:
-                attribute = namespace.get_attribute(prefix, name,value)
+                attribute = namespace.get_attribute(prefix, name, value)
             except XMLError, e:
                 # Add the line number information
                 e.line_number = self.parser.ErrorLineNumber
@@ -449,16 +456,12 @@ class Element(object):
         self.attributes_by_qname[qname] = value
 
 
-    def get_attribute(self, name, namespace=None):
-        if namespace is None:
-            return self.attributes_by_qname[name]
-        return self.attributes[(namespace, name)]
+    def get_attribute(self, namespace, local_name):
+        return self.attributes[(namespace, local_name)]
 
 
-    def has_attribute(self, name, namespace=None):
-        if namespace is None:
-            return name in self.attributes_by_qname
-        return (namespace, name) in self.attributes
+    def has_attribute(self, namespace, local_name):
+        return (namespace, local_name) in self.attributes
 
 
     def get_attributes(self):
@@ -607,9 +610,8 @@ class Document(Text.Text):
         parser = Parser()
         state = parser.parse(resource.get_data())
         # Declaration
-        self._version = state.version
-        self._encoding = state.encoding
-        self._standalone = state.standalone
+        self.xml_version = state.version
+        self.standalone = state.standalone
         # Document type
         self.document_type = state.document_type
         # Children
@@ -627,13 +629,13 @@ class Document(Text.Text):
     def to_unicode(self, encoding='UTF-8'):
         s = []
         # The XML declaration
-        if self._standalone == 1:
+        if self.standalone == 1:
             pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>\n'
-        elif self._standalone == 0:
+        elif self.standalone == 0:
             pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>\n'
         else:
             pattern = u'<?xml version="%s" encoding="%s"?>\n'
-        s.append(pattern % (self._version, encoding))
+        s.append(pattern % (self.xml_version, encoding))
         # The document type
         if self.document_type is not None:
             pattern = '<!DOCTYPE %s' \

@@ -5,38 +5,71 @@ The purpose of this chapter is to explain the XML services provided by
 
 \section{XML.Document}
 
-As the reader already knows from the previous chapters, the XML services
-are built upon the resource-handler model. Hence we are going to start
-talking about a handler class, the {\tt XML.Document} class:
+The XML facilities provided by {\tt itools} are built upon the resource-handler
+architecture. The basic handler class that enables us to manipulate XML files
+is {\tt XML.Document}, now we are going to play a little bit with it:
 
 \begin{code}
-    >>> from itools.resources import get_resource
-    >>> from itools.xml import XML
+    >>> from itools.handlers import get_handler
+    >>> import itools.xml
     >>>
-    >>> resource = get_resource('examples/hello.xml')
-    >>> doc = XML.Document(resource)
-    >>>
+    >>> doc = get_handler('examples/hello.xml')
     >>> doc
     <itools.xml.XML.Document object at 0x4064466c>
+    >>> print doc.xml_version
+    1.0
+    >>> print doc.standalone 
+    -1
+    >>> print doc.document_type
+    None
+    >>> print doc.root_element
+    <itools.xml.XML.Element object at 0xb7a3272c>
 \end{code}
 
-The document is represented on memory as a tree of nodes, like the
-{\bf D}ocument {\bf O}bject {\bf M}odel
-standard\footnote{http://www.w3.org/DOM/}. Though, so far, no effort
-has been done to develop an API compatible with {\bf DOM}.
+The code above shows the four attributes that keep the document's state:
 
-In fact, the API is rather simple:
+\begin{api}
+    {\tt xml\_version}\\
+    - The XML version of the document, usually it is {\tt 1.0}.
+
+    {\tt standalone}\\
+    - Possible values are: {\tt 1} if the document was declared standalone,
+      {\tt 0} if it was declared not to be standalone, or {\tt -1} if the
+      standalone clause was omitted.
+
+    {\tt document\_type}\\
+    - If the document lacks a document type declaration this attribute will
+      be {\tt None}. If the document type was specified this attribute will
+      be a tuple with four values: the name, the system id, the public id
+      and a boolean that tells wether the document contains an internal
+      declaration subset.
+
+    {\tt root\_element}\\
+    - An instance of the {\tt XML.Element} class, the root of the DOM-like
+      tree that represents the XML data, and that we will study later with
+      more detail.
+\end{api}
+
+
+The API for the documents is rather simple:
 
 \begin{api}
     {\tt get\_root\_element()}\\
     - Returns the root element.
 
     {\tt traverse()}\\
-    - It is a generator that traverses the XML tree in pre-order, and returns
-    each time a node.
+    - A generator that traverses the XML tree in pre-order, and returns
+      each time a node. It is a shorthand for {\tt root\_element.traverse()}.
+
+    {\tt traverse2()}\\
+    - A more powerful version of {\tt traverse}. It is a shorthand for
+      {\tt root\_element.traverse2()}.
 \end{api}
 
-The {\tt examples/hello.xml} file's content is:
+
+\subsection{Inspecting the tree}
+
+Coming back to the example, the {\tt examples/hello.xml} file's content is:
 
 \begin{code}
     <?xml version="1.0" encoding="UTF-8"?>
@@ -74,10 +107,22 @@ The method {\tt traverse} lets us to easily inspect the tree nodes:
     u'\n'
 \end{code}
 
-This example shows the different types of nodes that make up the document
-tree: elements, comments, text nodes, etc.
+Here we see the three kind of nodes currently supported: elements, comments
+and text nodes.
 
-\subsection{XML.Element}
+\subsection{Elements}
+
+Of the three kinds of nodes, elements are the most most important and complex.
+Element nodes give the tree structure, as they are the only ones that may have
+children. Following the example, lets look inside an element:
+
+\begin{code}
+    >>> root_element = doc.root_element
+    >>> root_element
+    <itools.xml.XML.Element object at 0xb7a3272c>
+\end{code}
+
+
 
 Lets to stop and look at the API of the most important node type,
 {\tt XML.Element}:

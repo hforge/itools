@@ -29,6 +29,8 @@ from itools import i18n
 from itools.handlers import IO
 
 
+xhtml_uri = 'http://www.w3.org/1999/xhtml'
+
 
 #############################################################################
 # Namespace
@@ -40,7 +42,7 @@ inline_elements = Set(['a', 'abbr', 'acronym', 'b', 'cite', 'code', 'dfn',
 
 class Element(XML.Element):
 
-    namespace = 'http://www.w3.org/1999/xhtml'
+    namespace = xhtml_uri
 
 
     def is_inline(self):
@@ -56,8 +58,8 @@ class Element(XML.Element):
         if self.name == 'img' and attribute_name == 'alt':
             return True
         if self.name == 'input' and attribute_name == 'value':
-            if self.has_attribute('type'):
-                return self.get_attribute('type') == 'submit'
+            if self.has_attribute(xhtml_uri, 'type'):
+                return self.get_attribute(xhtml_uri, 'type') == 'submit'
         return False
 
 
@@ -69,8 +71,8 @@ class Element(XML.Element):
     # the XML API.
     def get_opentag(self, encoding='UTF-8'):
         if self.name == 'meta':
-            if self.has_attribute('http-equiv'):
-                http_equiv = self.get_attribute('http-equiv')
+            if self.has_attribute(xhtml_uri, 'http-equiv'):
+                http_equiv = self.get_attribute(xhtml_uri, 'http-equiv')
                 if http_equiv == 'Content-Type':
                     s = '<%s' % self.qname
                     # Output the attributes
@@ -105,7 +107,7 @@ class Namespace(XML.Namespace):
 
 
 
-XML.set_namespace('http://www.w3.org/1999/xhtml', Namespace)
+XML.set_namespace(xhtml_uri, Namespace)
 
 
 
@@ -120,7 +122,7 @@ class Document(XML.Document):
 
     class_mimetypes = ['application/xhtml+xml']
 
-    namespace = 'http://www.w3.org/1999/xhtml'
+    namespace = xhtml_uri
 
     #########################################################################
     # The skeleton

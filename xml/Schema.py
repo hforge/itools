@@ -146,11 +146,12 @@ class ComplexType(XML.Element):
                         # XXX Better to log it?
                         warnings.warn('Unable to decode "%s"' % name)
                 # The language
-                if node.has_attribute('lang'):
+                if node.has_attribute(None, 'lang'):
                     # XXX the lang attribute should be "xml:lang", the xml
                     # namespace should load it as an string. Then we would
                     # not need to coerce the value to str.
-                    language = str(node.get_attribute('lang'))
+                    language = node.get_attribute(None, 'lang')
+                    language = str(language)
                 else:
                     language = None
                 # Set property value
@@ -212,8 +213,8 @@ class ComplexType(XML.Element):
         except AttributeError:
             value = type.decode('')
 
-        if element.has_attribute('lang'):
-            self.set_property(element.name, value,
-                              language=element.get_attribute('lang'))
+        if element.has_attribute(XML.xmlns_uri, 'lang'):
+            language = element.get_attribute(XML.xmlns_uri, 'lang')
+            self.set_property(element.name, value, language=str(language))
         else:
             self.set_property(element.name, value)

@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 import datetime
+import warnings
 
 
 
@@ -121,6 +122,18 @@ class DateTime(SimpleType):
     decode = classmethod(decode)
 
 
+class XML(SimpleType):
+    def encode(cls, value):
+        return value
+    encode = classmethod(encode)
+
+
+    def decode(cls, value):
+        value = value.strip()
+        return value
+    decode = classmethod(decode)
+
+
 ############################################################################
 # Complex Types
 ############################################################################
@@ -175,21 +188,29 @@ class ComplexType(object):
         for node in node.get_elements():
             name = node.name
             # Decode the value
-            type, default = schema[name]
-            if issubclass(type, SimpleType):
-                value = unicode(node.children)
-                value = type.decode(value)
-            elif issubclass(type, ComplexType):
-                value = type.decode(node)
+            if name in schema:
+                type, default = schema[name]
+                if issubclass(type, SimpleType):
+                    value = unicode(node.children)
+                    try:
+                        value = type.decode(value)
+                    except ValueError:
+                        # XXX Better to log it?
+                        warnings.warn('Unable to decode "%s"' % name)
+                elif issubclass(type, ComplexType):
+                    value = type.decode(node)
+                else:
+                    raise ValueError, 'bad type for "%s"' % name
+                # The language
+                if 'lang' in node.attributes:
+                    language = node.attributes['lang'].value
+                else:
+                    language = None
+                # Set property value
+                property.set_property(name, value, language=language)
             else:
-                raise ValueError, 'bad type for "%s"' % name
-            # The language
-            if 'lang' in node.attributes:
-                language = node.attributes['lang'].value
-            else:
-                language = None
-            # Set property value
-            property.set_property(name, value, language=language)
+                # XXX Maybe better to log it
+                warnings.warn('The schema does not define "%s"' % name)
         return property
     decode = classmethod(decode)
 

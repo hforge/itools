@@ -1,4 +1,4 @@
-0.5.0 (2004/11/XX)
+0.5.0 (2004/11/28)
 
   URI
   - Add the method 'resolve2' to the path API.

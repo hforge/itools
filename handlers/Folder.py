@@ -84,10 +84,13 @@ class Folder(Handler):
     def _save(self):
         # Remove handlers
         for name in self.removed_handlers:
+            # XXX We may need to do something else here
             self._del_handler(name)
         self.removed_handlers = Set()
         # Add handlers
         for name, handler in self.added_handlers.items():
+            if name in self._get_handler_names():
+                self._del_handler(name)
             self._set_handler(name, handler)
         self.added_handlers = {}
 
@@ -277,6 +280,9 @@ class Folder(Handler):
             del container.added_handlers[name]
         # Mark the handler as deleted
         container.removed_handlers.add(name)
+        # Event, on set handler
+        if hasattr(container, 'on_del_handler'):
+            container.on_del_handler(segment)
         # Set timestamp
         container.timestamp = datetime.datetime.now()
 

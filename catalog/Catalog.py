@@ -170,7 +170,7 @@ class Catalog(Folder):
             # Indexed fields
             if field.is_indexed:
                 # Forward index (unindex)
-                idoc.set_handler('i%d' % field.number, IndexedField())
+                idoc._set_handler('i%d' % field.number, IndexedField())
                 ifield = idoc.get_handler('i%d' % field.number)
 
                 # Choose the right analyser
@@ -196,7 +196,8 @@ class Catalog(Folder):
 
             # Stored fields (hits)
             if field.is_stored:
-                idoc.set_handler('s%d' % field.number, StoredField(data=value))
+                idoc._set_handler('s%d' % field.number,
+                                  StoredField(data=value))
 
         return doc_number
 
@@ -207,7 +208,7 @@ class Catalog(Folder):
         else:
             document = self.get_handler('d%07d' % doc_number)
             self.removed_documents.append(doc_number)
-            
+
         for name in document.resource.get_resource_names():
             if name.startswith('i'):
                 field = document.get_handler(name)

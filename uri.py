@@ -57,8 +57,7 @@ def normalize_path(path):
     startswith_slash = path.startswith('/')
     # Does the path end by an slash? (relevant to resolve URLs)
     endswith_slash = path.endswith('/') \
-                     or path.endswith('/.') \
-                     or path.endswith('/..')
+                     or path.endswith('/.')
     # Split the path http://a//
     path = path.split('/')
     # Transform '//' and '/./' to '/'
@@ -307,7 +306,6 @@ class Path(list):
 
         prefix = self.get_prefix(path)
         i = len(prefix)
-##        '/'.join(['..'] * len(self[i:]) + path[i:]
         return Path(((['..'] * len(self[i:])) + path[i:]) or ['.'])
 
 

@@ -1,19 +1,19 @@
 \chapter{eXtensible Markup Language}
 
 The purpose of this chapter is to explain the XML services provided by
-{\tt itools}, which can be found in the sub-package {\tt itools.uri}.
+{\tt itools}, which can be found in the sub-package {\tt itools.xml}.
 
 \section{XML.Document}
 
-As the reader already knows the XML services are built upon the resources
-and handlers infrastructure. Hence the first thing we are going to talk
-about is the {\tt XML.Document} class, a handler class:
+As the reader already knows from the previous chapters, the XML services
+are built upon the resource-handler model. Hence we are going to start
+talking about a handler class, the {\tt XML.Document} class:
 
 \begin{code}
     >>> from itools.resources import get_resource
     >>> from itools.xml import XML
     >>>
-    >>> resource = get_resource('examples/hello.xhtml')
+    >>> resource = get_resource('examples/hello.xml')
     >>> doc = XML.Document(resource)
     >>>
     >>> doc
@@ -22,10 +22,10 @@ about is the {\tt XML.Document} class, a handler class:
 
 The document is represented on memory as a tree of nodes, like the
 {\bf D}ocument {\bf O}bject {\bf M}odel standard\footnote{http://XXX}.
-Though, so far no effort has been done to develop an API compatible with
+Though, so far, no effort has been done to develop an API compatible with
 {\bf DOM}.
 
-Actually, the API is rather simple:
+In fact, the API is rather simple:
 
 \begin{api}
     {\tt get\_root\_element()}\\
@@ -36,30 +36,177 @@ Actually, the API is rather simple:
     each time a node.
 \end{api}
 
-Lets to see the nodes of our xml document:
+The {\tt examples/hello.xml} file's content is:
+
+\begin{code}
+    <?xml version="1.0" encoding="UTF-8"?>
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Hello world</title>
+        <!-- Changed by: , 02-Jun-2004 -->
+      </head>
+      <body>
+      </body>
+    </html>
+\end{code}
+
+The method {\tt traverse} lets us to easily inspect the tree nodes:
 
 \begin{code}
     >>> for node in doc.traverse():
     ...     print repr(node)
     ... 
-    <itools.xml.XML.Document object at 0x4064466c>
-    <itools.xml.XML.XMLDeclaration object at 0x403ebe2c>
-    <itools.xml.XML.Raw object at 0x40416b0c>
-    <itools.xml.XML.DocumentType object at 0x4064f94c>
-    <itools.xml.XML.Raw object at 0x4064fdac>
-    <itools.xml.XHTML.Element object at 0x4065276c>
-    <itools.xml.XML.Raw object at 0x4065266c>
-    <itools.xml.XHTML.Element object at 0x4065286c>
-    <itools.xml.XML.Raw object at 0x406528ac>
-    <itools.xml.XHTML.Element object at 0x406528cc>
+    <itools.xml.XML.Document object at 0x405ea38c>
+    <itools.xml.XML.XMLDeclaration object at 0x405e0f8c>
+    <itools.xml.XML.Raw object at 0x4064408c>
+    <itools.xml.XML.Element object at 0x4065248c>
     <itools.xml.XML.Raw object at 0x406528ec>
-    <itools.xml.XHTML.Element object at 0x4065290c>
-    <itools.xml.XML.Raw object at 0x4065296c>
-    <itools.xml.XML.Raw object at 0x4065298c>
-    <itools.xml.XML.Comment object at 0x406529cc>
-    <itools.xml.XML.Raw object at 0x406529ec>
-    <itools.xml.XML.Raw object at 0x40652a0c>
-    <itools.xml.XHTML.Element object at 0x40652a2c>
-    <itools.xml.XML.Raw object at 0x40652a4c>
-    <itools.xml.XML.Raw object at 0x40652a6c>
+    <itools.xml.XML.Element object at 0x40652a6c>
+    <itools.xml.XML.Raw object at 0x406525ac>
+    <itools.xml.XML.Element object at 0x406526ac>
+    <itools.xml.XML.Raw object at 0x40652d0c>
+    <itools.xml.XML.Element object at 0x406527cc>
+    <itools.xml.XML.Raw object at 0x40652dac>
+    <itools.xml.XML.Raw object at 0x4065284c>
+    <itools.xml.XML.Comment object at 0x40652f4c>
+    <itools.xml.XML.Raw object at 0x40652e6c>
+    <itools.xml.XML.Raw object at 0x40652e8c>
+    <itools.xml.XML.Element object at 0x40652e4c>
+    <itools.xml.XML.Raw object at 0x40652eac>
+    <itools.xml.XML.Raw object at 0x40652f8c>
+    <itools.xml.XML.Raw object at 0x40652ecc>
 \end{code}
+
+This example shows the different types of nodes that make up the document
+tree: elements, comments, text nodes, etc.
+
+\subsection{XML.Element}
+
+Lets to stop and look at the API of the most important node type,
+{\tt XML.Element}:
+
+\begin{api}
+    {\tt parent}\\
+    - It is the element's parent.
+
+    {\tt attributes}\\
+    - The element's attributes, it is a mapping from attibute names to
+    {\tt XML.Attribute} objects.
+
+    {\tt get\_elements(name=None)}\\
+    - Returns a list with all the element nodes whose name is the given
+    name; if the parameter {\tt name} is not given, then return all the
+    element nodes.
+
+    {\tt traverse()}\\
+    - As with {\\tt XML.Document}, this method is a generator that traverses
+    the element children in pre-order, and returns each time a node.
+
+    {\tt copy()}\\
+    - Returns a copy of the element, including all its children; but with
+    the attribute {\tt parent} set to {\tt None}.
+
+    {\tt append\_child(node)}\\
+    - Appends the given node to the element children, the current element will
+    be the node's parent.
+\end{api}
+
+
+\section{Namespaces}
+
+One very important concept of XML are the {\em namespaces}.
+
+An XML document may contain many different elements and attributes, if there
+is not any XML declaration these elemenets and attributes will be instances
+of the {\tt XML.Element} and {\tt XML.Attribute} classes, with the standard
+API and none specific semantics.
+
+But if there are namespace declarations, {\tt itools.xml} will be able to
+build specific objects that add some special semantics. To see it we are
+going to load the file {\tt examples/hello.xhtml}, whose content is:
+
+\begin{code}
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Hello world</title>
+        <!-- Changed by: , 02-Jun-2004 -->
+      </head>
+      <body>
+      </body>
+    </html>
+\end{code}
+
+The only two differences between this file and the example we saw at the
+beginning ({\tt examples/hello.xml}) are the {\em document type} declaration
+and, what interests us now, the XML namespace declaration:
+
+\begin{code}
+    xmlns="http://www.w3.org/1999/xhtml"
+\end{code}
+
+What this sentence says is that all the elements and attributes within the
+document belong to the XHTML namespace. This information lets the {\tt itools}
+XML parser to build a more ``intelligent'' tree:
+
+\begin{code}
+    >>> resource = get_resource('examples/hello.xhtml')
+    >>> doc = XML.Document(resource)
+    >>> 
+    >>> doc
+    <itools.xml.XML.Document object at 0x405ea38c>
+    >>> 
+    >>> for node in doc.traverse():
+    ...     print repr(node)
+    ... 
+    <itools.xml.XML.Document object at 0x405ea38c>
+    <itools.xml.XML.XMLDeclaration object at 0x403eb82c>
+    <itools.xml.XML.Raw object at 0x406514ac>
+    <itools.xml.XML.DocumentType object at 0x406515cc>
+    <itools.xml.XML.Raw object at 0x406516cc>
+    <itools.xml.XHTML.Element object at 0x40651d2c>
+    <itools.xml.XML.Raw object at 0x406517ec>
+    <itools.xml.XHTML.Element object at 0x40651d0c>
+    <itools.xml.XML.Raw object at 0x40651e0c>
+    <itools.xml.XHTML.Element object at 0x4065186c>
+    <itools.xml.XML.Raw object at 0x40651eac>
+    <itools.xml.XHTML.Element object at 0x40651f6c>
+    <itools.xml.XML.Raw object at 0x40651f8c>
+    <itools.xml.XML.Raw object at 0x40651bec>
+    <itools.xml.XML.Comment object at 0x40651c0c>
+    <itools.xml.XML.Raw object at 0x40651fec>
+    <itools.xml.XML.Raw object at 0x4065180c>
+    <itools.xml.XHTML.Element object at 0x40651dec>
+    <itools.xml.XML.Raw object at 0x405e0eac>
+    <itools.xml.XML.Raw object at 0x405e0eec>
+\end{code}
+
+Now, the element nodes are not any more instances of {\tt XML.Element}, but
+instances of {\tt XHTML.Element}, which extends the generic API with the
+methods:
+
+\begin{api}
+    {\tt is\_inline()}\\
+    - Returns {\tt True} if the element is an inline element, {\tt False}
+    otherwise.
+
+    {\tt is\_block()}\\
+    - Returns {\tt True} if the element is an inline block, {\tt False}
+    otherwise.
+\end{api}
+
+Ok, not too much\footnote{These two methods, {\tt is\_inline} and
+{\tt is\_block}, are actually really useful. They are used by the message
+extraction algorithm, a fundamental brick of the internationalization and
+localization services provided by {\tt itools}.}, but enough to give an
+idea of the power the {\tt itools.xml}.
+
+In the next chapter we will see a much more compelling example of what the
+way {\tt itools.xml} handles namespaces let us to do, the {\bf S}imple
+{\bf T}emplate {\bf L}anguage.
+
+

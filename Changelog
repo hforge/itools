@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-03-24 20:15:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-33
+
+    Summary:
+      documentation, update XML element's API
+    Revision:
+      itools--main--0.8--patch-33
+
+
+    modified files:
+     Changelog doc/xml.tex
+
+
 2005-03-24 19:56:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-32
 
     Summary:

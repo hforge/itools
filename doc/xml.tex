@@ -112,28 +112,69 @@ and text nodes.
 
 \subsection{Elements}
 
-Of the three kinds of nodes, elements are the most most important and complex.
-Element nodes give the tree structure, as they are the only ones that may have
-children. Following the example, lets look inside an element:
-
-\begin{code}
-    >>> root_element = doc.root_element
-    >>> root_element
-    <itools.xml.XML.Element object at 0xb7a3272c>
-\end{code}
-
-
-
-Lets to stop and look at the API of the most important node type,
-{\tt XML.Element}:
+Of the three kinds of nodes, elements are the most important and complex.
+Element nodes give the tree structure, as they are the only ones that may
+have children. If you inspect an element you will see the following
+attributes:
 
 \begin{api}
-    {\tt parent}\\
-    - It is the element's parent.
+    {\tt namespace}\\
+    - The XML namespace of the element (it will be None for a bare element).
+
+    {\tt prefix}\\
+    - The prefix used for the element's XML namespace.
+
+    {\tt name}\\
+    - The name of the element.
 
     {\tt attributes}\\
-    - The element's attributes, it is a mapping from attribute names to
-    {\tt XML.Attribute} objects.
+    - A dictionary mapping from the tuple XML namespace and local name to
+      the attributes value.
+
+    {\tt prefixes}\\
+    - A mapping from XML namespace to prefix (used to get the qualified
+      name of an attribute).
+
+    {\tt children}\\
+    - A list with the children of the element (elements, comments and text
+      nodes).
+\end{api}
+
+
+And here is the API:
+
+\begin{api}
+    {\tt get\_qname()}\\
+    - Returns the qualified name of the element.
+
+    {\tt copy()}\\
+    - Returns a clone of the element.
+
+    {\tt set\_attribute(namespace, local\_name, value, prefix=None)}\\
+    - Sets the given attribute.
+
+    {\tt get\_attribute(namespace, local\_name)}\\
+    - Returns the attribute value for the given XML namespace and local name.
+
+    {\tt has\_attribute(namespace, local\_name)}\\
+    - Returns a boolean value, true if the element contains a value for the
+      given XML namespace and local name, false otherwise.
+
+    {\tt get\_attributes()}
+    - Is a generator that returns a three value tuple each time, the values
+      are: XML namespace uri, local name, value.
+
+    {\tt get\_attribute\_qname(namespace, local\_name)}\\
+    - Returns the qualified name for the given XML namespace and local name.
+
+    {\tt set\_element(element)}\\
+    - Appends the given element to the list of children.
+
+    {\tt set\_comment(comment)}\\
+    - Appends the given comment to the list of children.
+
+    {\tt set\_text(text)}\\
+    - Appends the given text node (a unicode value) to the list of children.
 
     {\tt get\_elements(name=None)}\\
     - Returns a list with all the element nodes whose name is the given
@@ -141,16 +182,11 @@ Lets to stop and look at the API of the most important node type,
     element nodes.
 
     {\tt traverse()}\\
-    - As with {\tt XML.Document}, this method is a generator that traverses
-    the element children in pre-order, and returns each time a node.
+    - A generator that traverses the element's children in pre-order, and
+      returns each time a node.
 
-    {\tt copy()}\\
-    - Returns a copy of the element, including all its children; but with
-    the attribute {\tt parent} set to {\tt None}.
-
-    {\tt append\_child(node)}\\
-    - Appends the given node to the element children, the current element will
-    be the node's parent.
+    {\tt traverse2()}\\
+    - A more powerful version of {\tt traverse}.
 \end{api}
 
 

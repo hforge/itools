@@ -383,7 +383,7 @@ class PO(Text):
         return None
 
 
-    def to_unicode(self):
+    def to_unicode(self, encoding=None):
         return '\n'.join([ x.to_unicode() for x in self._messages.values() ])
 
 

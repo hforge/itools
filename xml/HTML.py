@@ -156,7 +156,7 @@ class Document(XHTML.Document, HTMLParser):
     #######################################################################
     # API
     #######################################################################
-    def to_unicode(self):
+    def to_unicode(self, encoding=None):
         s = u''
         # The declaration
         if self._declaration is not None:

@@ -133,5 +133,5 @@ class Var(Text):
     #######################################################################
     # API
     #######################################################################
-    def to_unicode(self):
+    def to_unicode(self, encoding=None):
         return '\n'.join([ x.to_unicode() for x in self.records ])

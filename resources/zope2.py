@@ -26,7 +26,7 @@ from itools.zope import get_context
 # Import from Zope
 from OFS.Image import File as ZopeFile
 from OFS.Folder import Folder as ZopeFolder
-import Zope
+
 
 
 class Resource(base.Resource):
@@ -41,7 +41,7 @@ class Resource(base.Resource):
 
 
     def _get_object(self):
-        root = Zope.app()
+        root = get_context().request.zope_request['PARENTS'][-1]
         return root.unrestrictedTraverse(self._path)
 
 
@@ -128,8 +128,6 @@ def get_resource(reference):
     else:
         path = reference
     # Get object
-##    root = Zope.app()
-##    root = Zope.bobo_application()
     root = get_context().request.zope_request['PARENTS'][-1]
     object = root.unrestrictedTraverse(path)
     # Return resource

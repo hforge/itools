@@ -159,12 +159,10 @@ class Catalog(Folder):
         fields = self.get_handler('fields')
         for field in fields.fields:
             # Extract the field value from the document
-            value = None
-            if hasattr(document, field.name):
-                value = getattr(document, field.name)
-            elif isinstance(document, dict):
-                if field.name in document:
-                    value = document[field.name]
+            if isinstance(document, dict):
+                value = document.get(field.name)
+            else:
+                value = getattr(document, field.name, None)
             if callable(value):
                 value = value()
 

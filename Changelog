@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-22 19:16:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-28
+
+    Summary:
+      catalog, don't use hasattr (it hides exceptions)
+    Revision:
+      itools--main--0.7--patch-28
+
+    The method "hasattr" calls "getattr", and catches the exceptions it
+    may produce, hence it is a source of confusing errors.
+    
+    Now "Catalog.index_document" does not use it anymore. I think it is
+    better to avoid using "hasattr".
+
+    modified files:
+     Changelog catalog/Catalog.py
+
+
 2005-02-22 18:05:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-27
 
     Summary:

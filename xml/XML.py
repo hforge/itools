@@ -479,9 +479,12 @@ class Document(Text.Text):
 
     def skipped_entity_handler(self, name, is_param_entity):
         # XXX HTML specific
-        codepoint = htmlentitydefs.name2codepoint[name]
-        char = unichr(codepoint).encode(self._encoding)
-        self.char_data_handler(char)
+        if name in htmlentitydefs.name2codepoint:
+            codepoint = htmlentitydefs.name2codepoint[name]
+            char = unichr(codepoint).encode(self._encoding)
+            self.char_data_handler(char)
+        else:
+            warnings.warn('Unknown entity reference "%s" (ignoring)' % name)
 
 
     def default_handler(self, data):

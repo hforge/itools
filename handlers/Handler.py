@@ -37,11 +37,6 @@ class Handler(object):
     other handler class.
     """
 
-    class_id = None
-    class_aliases = []
-    class_ancestor = None
-
-
     # By default the handler is a free node (does not belong to a tree, or
     # is the root of a tree).
     parent = None
@@ -71,40 +66,24 @@ class Handler(object):
 
 
     ########################################################################
-    # The registry
-    handler_class_registry = {}    
+    # The factory
+    handler_class_registry = {}
 
     def register_handler_class(cls, handler_class):
-        cls.handler_class_registry[handler_class.class_id] = handler_class
-        # Register aliases
-        for id in handler_class.class_aliases:
-            cls.handler_class_registry[id] = handler_class
+        resource_type = handler_class.class_resource_type
+##        if resource_type in cls.handler_class_registry:
+##            log
+        cls.handler_class_registry[resource_type] = handler_class
 
     register_handler_class = classmethod(register_handler_class)
 
 
-    def get_handler_class(cls, class_id):
-        return cls.handler_class_registry.get(class_id)
-
-    get_handler_class = classmethod(get_handler_class)
-
-
-    def build_handler(cls, resource, class_id):
-        handler_class = cls.handler_class_registry.get(class_id)
-        while handler_class is not None:
-            try:
-                return handler_class(resource)
-            except:
-                # XXX Define the exception LoadError and only catch it
-                handler_class = handler_class.class_ancestor
-        # Default to File and Folder
-        if isinstance(resource, base.File):
-            from File import File
-            return File(resource)
-        elif isinstance(resource, base.Folder):
-            from Folder import Folder
-            return Folder(resource)
-        raise ValueError, 'failed to build the handler for "%s"' % class_id
+    def build_handler(cls, resource):
+        resource_type = resource.class_resource_type
+        if resource_type in cls.handler_class_registry:
+            handler_class = cls.handler_class_registry[resource_type]
+            return handler_class.build_handler(resource)
+        raise ValueError, 'unknown resource type "%s"' % resource_type
 
     build_handler = classmethod(build_handler)
 

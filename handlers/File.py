@@ -20,7 +20,7 @@
 import datetime
 
 # Import from itools
-from itools.resources import memory
+from itools.resources import base, memory
 from Handler import Handler
 
 
@@ -32,7 +32,7 @@ class File(Handler):
     specific handler.
     """
 
-    class_id = 'application/octet-stream'
+    class_resource_type = 'file'
 
 
     def __init__(self, resource=None, **kw):
@@ -48,6 +48,51 @@ class File(Handler):
     def _load(self, resource):
         self._data = resource.get_data()
         self._mimetype = resource.get_mimetype()
+
+
+    #########################################################################
+    # The factory
+    #########################################################################
+    handler_class_registry = []
+
+    def register_handler_class(cls, handler_class):
+        if 'handler_class_registry' not in cls.__dict__:
+            cls.handler_class_registry = []
+        cls.handler_class_registry.append(handler_class)
+
+    register_handler_class = classmethod(register_handler_class)
+
+
+    def build_handler(cls, resource):
+        mimetype = resource.get_mimetype()
+        if mimetype is not None:
+            registry = cls.__dict__.get('handler_class_registry', [])
+            for handler_class in registry:
+                if handler_class.is_able_to_handle_mimetype(mimetype):
+                    return handler_class.build_handler(resource)
+        return cls(resource)
+
+    build_handler = classmethod(build_handler)
+
+
+    def is_able_to_handle_mimetype(cls, mimetype):
+        # Check wether this class understands this mimetype
+        type, subtype = mimetype.split('/')
+        for class_mimetype in cls.class_mimetypes:
+            class_type, class_subtype = class_mimetype.split('/')
+            if type == class_type:
+                if subtype == class_subtype:
+                    return True
+                if class_subtype == '*':
+                    return True
+        # Check wether any sub-class is able to handle the mimetype
+        for handler_class in cls.__dict__.get('handler_class_registry', []):
+            if handler_class.is_able_to_handle_mimetype(mimetype):
+                return True
+        # Everything failed, we are not able to manage the mimetype
+        return False
+
+    is_able_to_handle_mimetype = classmethod(is_able_to_handle_mimetype)
 
 
     #########################################################################
@@ -81,5 +126,8 @@ class File(Handler):
         # binary files (those that do not inherit from 'Text') will
         # raise an attribute error.
         return self.to_unicode()
+
+
+Handler.register_handler_class(File)
 
 

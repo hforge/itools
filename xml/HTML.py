@@ -59,8 +59,7 @@ class Document(XHTML.Document, HTMLParser):
     from HTMLParser.
     """
 
-    class_id = 'text/html'
-    class_ancestor = XHTML.Document
+    class_mimetypes = ['text/html']
 
     # HTML does not support XML namespace declarations
     ns_declarations = {}
@@ -196,3 +195,6 @@ class Document(XHTML.Document, HTMLParser):
             s += unicode(child)
 
         return s.encode(encoding)
+
+
+XHTML.Document.register_handler_class(Document)

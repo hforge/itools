@@ -141,9 +141,7 @@ class Message(object):
 
 class PO(Text):
 
-    class_id = 'text/po'
-    class_ancestor = Text
-
+    class_mimetypes = ['text/po']
 
     #########################################################################
     # The skeleton
@@ -402,3 +400,6 @@ class PO(Text):
 
         id = ''.join(msgid)
         self._messages[id] = Message(comments, msgid, msgstr, references)
+
+
+Text.register_handler_class(PO)

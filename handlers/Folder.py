@@ -33,7 +33,7 @@ class Folder(Handler):
     specific handler.
     """
 
-    class_id = 'application/x-not-regular-file'
+    class_resource_type = 'folder'
 
 
     def __init__(self, resource=None, **kw):
@@ -64,6 +64,19 @@ class Folder(Handler):
         Warning: if you develop a folder handler that does load its state,
         be very careful to update the state whenever you modify the handler.
         """
+
+
+    #########################################################################
+    # The factory
+    #########################################################################
+    def register_handler_class(cls, handler_class):
+        raise NotImplementedError
+    register_handler_class = classmethod(register_handler_class)
+
+
+    def build_handler(cls, resource):
+        return cls(resource)
+    build_handler = classmethod(build_handler)
 
 
     #########################################################################
@@ -155,10 +168,8 @@ class Folder(Handler):
 
 
     def _get_handler(self, segment, resource):
-        # Get the mimetype
-        mimetype = resource.get_mimetype()        
         # Build and return the handler
-        return self.build_handler(resource, mimetype)
+        return Handler.build_handler(resource)
 
 
     def _get_virtual_handler(self, segment):
@@ -217,3 +228,6 @@ class Folder(Handler):
         if self.has_resource(name):
             return self.get_handler(name)
         return Handler.acquire(self, name)
+
+
+Handler.register_handler_class(Folder)

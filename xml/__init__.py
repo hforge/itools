@@ -24,12 +24,3 @@ import XML
 import XHTML
 import HTML
 import STL
-
-
-# Register the xml handlers in the database
-for handler_class in HTML.Document, XML.Document, XHTML.Document:
-    Handler.Handler.register_handler_class(handler_class)
-##database.set_file_handler('text/html', HTML.Document)
-##database.set_file_handler('text/xml', XML.get_handler)
-##database.set_file_handler('application/xml', XML.get_handler)
-##database.set_file_handler('application/xhtml+xml', XHTML.Document, '.xhtml')

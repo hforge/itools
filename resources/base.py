@@ -62,6 +62,9 @@ class Resource:
 
 class File(Resource):
 
+    class_resource_type = 'file'
+
+
     def get_mimetype(self):
         """
         Try to guess the mimetype for a resource, given the resource itself
@@ -124,6 +127,9 @@ class File(Resource):
 
 
 class Folder(Resource):
+
+    class_resource_type = 'folder'
+
 
     def get_mimetype(self):
         return 'application/x-not-regular-file'

@@ -22,8 +22,7 @@ from File import File
 
 class Text(File):
 
-    class_id = 'text/plain'
-    class_ancestor = File
+    class_mimetypes = ['text/*']
 
 
     #########################################################################
@@ -82,3 +81,6 @@ class Text(File):
         # within the document. For them this method should change that
         # information to the given encoding.
         return self.to_unicode().encode(encoding)
+
+
+File.register_handler_class(Text)

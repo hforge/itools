@@ -472,9 +472,7 @@ class Document(Text.Text):
     just 'Element' and 'Raw'.
     """
 
-    class_id = 'text/xml'
-    class_aliases = ['application/xml']
-    class_ancestor = Text.Text
+    class_mimetypes = ['text/xml', 'application/xml']
 
 
     #######################################################################
@@ -836,3 +834,5 @@ def get_handler(resource):
         handler_class = Document
     return handler_class(resource)
 
+
+Text.Text.register_handler_class(Document)

@@ -76,13 +76,5 @@ def get_handler(uri):
     """
     # Get the resource
     resource = get_resource(uri)
-    # Get the mimetype
-    mimetype = resource.get_mimetype()
     # Build the handler
-    return Handler.Handler.build_handler(resource, mimetype)
-
-
-
-# Initialize with the built-in handlers
-for handler_class in File.File, Text.Text, CSV.CSV, PO.PO, Folder.Folder:
-    Handler.Handler.register_handler_class(handler_class)
+    return Handler.Handler.build_handler(resource)

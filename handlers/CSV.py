@@ -26,8 +26,7 @@ from Text import Text
 
 class CSV(Text):
 
-    class_id = 'text/comma-separated-values'
-    class_aliases = ['text/csv']
+    class_mimetypes = ['text/comma-separated-values', 'text/csv']
 
 
     #########################################################################
@@ -66,3 +65,6 @@ class CSV(Text):
             line = [ '%s' % x for x in line ]
             s += ','.join(line) + '\n'
         return s
+
+
+CSV.register_handler_class(Text)

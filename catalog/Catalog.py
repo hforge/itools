@@ -309,8 +309,14 @@ class Catalog(Folder):
             # Get the stored fields
             for field in fields.fields:
                 if field.is_stored:
-                    stored_field = doc_handler.get_handler('s%d' %field.number)
-                    setattr(document, field.name, stored_field.value)
+                    name = 's%d' % field.number
+                    if doc_handler.has_handler(name):
+                        stored_field = doc_handler.get_handler(name)
+                        value = stored_field.value
+                    else:
+                        value = None
+                    setattr(document, field.name, value)
+                        
             documents[i] = document
         return documents
 

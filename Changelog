@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-02-22 18:05:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-27
+
+    Summary:
+      catalog, make search more robust
+    Revision:
+      itools--main--0.7--patch-27
+
+    Don't fail if stored field is missing.
+
+    modified files:
+     Changelog catalog/Catalog.py
+
+
 2005-02-22 17:53:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-26
 
     Summary:

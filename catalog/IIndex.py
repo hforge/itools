@@ -448,6 +448,7 @@ class IIndex(Folder, Tree):
         # Added terms
         for term, documents in self.added_terms.items():
             self._index_term(term, documents)
+        self.added_terms = {}
 
 
     ########################################################################

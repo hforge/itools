@@ -42,11 +42,6 @@ is the data that remains and does not belong to the value.
 """
 
 
-
-UCS2 = sys.maxunicode == 65535
-
-
-
 def encode_byte(value):
     return chr(value)
 
@@ -118,16 +113,50 @@ def decode_vint(data):
 
 # Characters are represented using the Python's internal unicode codec,
 # which may be UCS-2 or UCS-4, fixed-length encodings.
-def encode_character(value):
-    if UCS2:
-        return value.encode('unicode_internal') + '\x00\x00'
-    return value.encode('unicode_internal')
+
+# XXX This actually does not work for non-ascci characters, because:
+#
+#  >>> u'é'.encode('unicode_internal')
+#  '\xc3\x00\x00\x00\xa9\x00\x00\x00'
+#
+# That is, a 8 byte length string, instead of just 4 bytes
+
+if u''.encode('utf-16') == '\xff\xfe':
+    # Little Endian
+    if sys.maxunicode == 65535:
+        # UCS 2
+        def encode_character(value):
+            return value.encode('unicode_internal') + '\x00\x00'
 
 
-def decode_character(data):
-    if UCS2:
-        return unicode(data[:2], 'unicode_internal')
-    return unicode(data, 'unicode_internal')
+        def decode_character(data):
+            return unicode(data[:2], 'unicode_internal')
+    else:
+        # UCS 4
+        def encode_character(value):
+            return value.encode('unicode_internal')
+
+
+        def decode_character(data):
+            return unicode(data, 'unicode_internal')
+else:
+    # Big endian
+    if sys.maxunicode == 65535:
+        # UCS 2
+        def encode_character(value):
+            return value.encode('unicode_internal')[::-1] + '\x00\x00'
+
+
+        def decode_character(data):
+            return unicode(data[:2:-1], 'unicode_internal')
+    else:
+        # UCS 4
+        def encode_character(value):
+            return value.encode('unicode_internal')[::-1]
+
+
+        def decode_character(data):
+            return unicode(data[::-1], 'unicode_internal')
 
 
 # Strings start by a variable length vint, which contains the number of bytes

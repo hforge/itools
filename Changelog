@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-31 13:45:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
+
+    Summary:
+      catalog, fix so indexes are the same for big and little endian
+    Revision:
+      itools--main--0.7--patch-62
+
+    The "IO.encode_character" and "IO.decode_character" now work on
+    little endian, even if the system is big endian. This way a catalog
+    instance can be exchanged between little and big endian systems.
+
+    modified files:
+     Changelog catalog/IO.py
+
+
 2005-03-23 14:41:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
 
     Summary:

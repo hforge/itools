@@ -177,8 +177,13 @@ class Handler(object):
     def get_abspath(self):
         # XXX Should return a uri.Path instance
         if self.parent is None:
-            return ''
-        return self.parent.get_abspath() + '/' + self.name
+            return '/'
+
+        parent_path = self.parent.get_abspath()
+        if not parent_path.endswith('/'):
+            parent_path += '/'
+
+        return parent_path + self.name
 
     abspath = property(get_abspath, None, None, '')
 

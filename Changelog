@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-03-14 15:51:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
+
+    Summary:
+      handlers, now "abspath" is "/" for the root instead of "" (#13)
+    Revision:
+      itools--main--0.7--patch-49
+
+    This way the root handler can be indexed by the "abspath" attribute.
+    Fixes bug #13.
+
+    modified files:
+     Changelog handlers/Handler.py
+
+
 2005-03-13 19:49:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
 
     Summary:

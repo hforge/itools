@@ -1,0 +1,334 @@
+\chapter{Resource Handlers}
+
+The resource layer lacks any knowledge about the information a resource holds.
+For example, it does not know that an XML document has a tree structure,
+hence it does not provide an API to traverse it; nor it knows how to get
+the messages and translations from a PO file.
+
+But this is the purpose of the {\em resource handlers}, to add semantics to
+specific resources. Let's go straight with an example:
+
+\begin{enumerate}
+  \item First we load a resource as seen in the previous section:
+\begin{code}
+    >>> from itools.resources import get_resource
+    >>> resource = get_resource('http://example.com')
+\end{code}
+
+  \item Now we build a handler for the resource:
+\begin{code}
+    >>> from itools.handlers import HTML
+    >>> handler = HTML.Document(resource)
+    >>> print repr(handler)
+    <itools.handlers.HTML.Document object at 0x40647b4c>
+    >>> print handler
+    <HTML>
+    <HEAD>
+      <TITLE>Example Web Page</TITLE>
+    </HEAD> 
+    <body>  
+    <p>You have reached this web page by typing
+    ...
+\end{code}
+
+  \item Now we can start working with the handler:
+\begin{code}
+    >>> from itools.handlers import XML
+    >>> def find_title(node, context):
+    ...     if isinstance(node, XML.Element) and node.name == 'title':
+    ...         print node.children
+    ... 
+    >>> handler.walk(find_title)
+    Example Web Page
+\end{code}
+\end{enumerate}
+
+
+
+It is important to highlight that every handler has associated one and only
+one resource, which is accessible through the {\tt resource} attribute:
+
+\begin{code}
+    >>> resource
+    <itools.resources.http.File instance at 0x404aadec>
+    >>> handler.resource
+    <itools.resources.http.File instance at 0x404aadec>
+    >>> resource is handler.resource
+    True
+\end{code}
+
+
+\section{New handlers}
+
+We have seen in the previous sub-section that the handler constructor expects
+one parameter: the resource it is mean to handle; and once the handler is
+built the resource is always accessible with {\tt handler.resource}.
+
+However, it is also possible to build a handler without passing it any
+parameter, in this case a memory resource will be built on the fly, let's
+see an example:
+
+\begin{code}
+    >>> from itools.handlers import HTML
+    >>> handler = HTML.Document()
+    >>> handler
+    <itools.handlers.HTML.Document object at 0x403ee12c>
+    >>> handler.resource
+    <itools.resources.memory.File instance at 0x40638e4c>
+    >>> print handler
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <html>
+      <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></meta>
+        <title></title>
+      </head>
+      <body></body>
+    </html>
+\end{code}
+
+The default content of the resource depends on the handler, and it is called
+the {\em handler skeleton}. The constructor also accepts arbitrary keyword
+parameters:
+
+
+\begin{code}
+    >>> handler = HTML.Document(title='Hello World')
+    >>> print handler
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <html>
+      <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"></meta>
+        <title>Hello World</title>
+      </head>
+      <body></body>
+    </html>
+\end{code}
+
+The keyword parameters are used to initialize the skeleton, in the example
+the {\tt title} parameter defines the HTML document title, which by default
+is empty. The parameters accepted depend on the handler.
+
+
+
+\section{Folders}
+
+A handler that deserves its particular section is the default handler for
+folders, whose core API is:
+
+\begin{api}
+  {\tt get\_handler(path)}\\
+  - Returns a handler for the resource at the given path. It will use the
+    available handler class that better matches the resource mimetype.
+
+  {\tt set\_handler(path, handler)}\\
+  - Adds the given handler to the given path. Actually what is added is
+    the resource associated to the handler.
+
+  {\tt del\_handler(path)}\\
+  - Removes the handler at the given path (i.e. the associated resource).
+\end{api}
+
+An example will show it better.
+
+\begin{enumerate}
+  \item First we build a handler for the temporary directory:
+
+\begin{code}
+    >>> from itools.resources import get_resource
+    >>> from itools.handlers import Folder
+    >>> tmp_resource = get_resource('/tmp')
+    >>> tmp = Folder.Folder(tmp)
+    >>> tmp.resource
+    <itools.resources.file.Folder instance at 0x405e4a2c>
+\end{code}
+
+  \item Second, we create a new HTML handler:
+
+\begin{code}
+    >>> from itools.handlers import HTML
+    >>> hello = HTML.Document(title='Hello World')
+    >>> hello.resource
+    <itools.resources.memory.File instance at 0x405e49cc>
+\end{code}
+
+    Note that the associated resource is built on the fly and lives in memory.
+
+  \item Third, we set the HTML handler to the temporary folder:
+
+\begin{code}
+    >>> tmp.set_handler('hello.html', hello)
+\end{code}
+
+    What this actually does is to add the file {\tt hello.resource} (which
+    lives in memory) to the folder {\tt tmp.resource} (which is on the
+    file system); this is to say, it creates a new file in the file system
+    at {\tt /tmp/hello.html}.
+
+  \item Finally, we get the handler we just added:
+
+\begin{code}
+    >>> hello = tmp.get_handler('hello.html')
+    >>> hello.resource
+    <itools.resources.file.File instance at 0x40638c6c>
+\end{code}
+
+    Note that the handler {\tt hello} we have built in these las lines
+    manages a resource that lives in the file system.
+
+\end{enumerate}
+
+
+
+\subsection{The handler tree}
+
+Folders allow to classify files, hence giving a tree structure to our data.
+Every handler has two attributes, {\tt parent} and {\tt name}, they tell us
+where the handler is in the resource tree:
+
+\begin{code}
+    >>> hello.parent
+    <itools.handlers.Folder.Folder object at 0x403ebb2c>
+    >>> hello.name  
+    'hello.html'
+    >>> hello.parent is tmp
+    True
+    >>> print tmp.parent
+    None
+    >>> print tmp.name
+
+    >>> 
+\end{code}
+
+Based on these two attributes handlers provide the following API:
+
+\begin{api}
+  {\tt get\_abspath()}\\
+  - Returns the absolute path from the tree root to the {\tt self} handler.
+
+  {\tt get\_root()}\\
+  - Returns the handler for the root of the tree.
+
+  {\tt get\_pathtoroot()}\\
+  - Returns a relative path from {\tt self} to the tree root (e.g.
+    {\tt ../../..}).
+
+  {\tt get\_pathto(handler)}\\
+  - Returns a relative path from {\tt self} to the given handler (which is
+    supposed to be in the same tree), for example: {\tt ../../zoo/lion}.
+
+  {\tt acquire(name)}\\
+  - If the current handler is a folder and contains a resource with the given
+    name, then return a handler for it; otherwise look at the parent folder,
+    and recursively to the root tree. This method actually shows how to
+    implement {\em acquisition}.
+\end{api}
+
+
+
+\section{Overview of the available handlers}
+
+What follows is a non exhaustive list of the resource handlers that
+{\tt itools} includes out of the box, with the most relevant part of the API.
+
+\paragraph{File}
+
+This is the default handler for files, to be used when there is nothing
+better. The API is really basic:
+
+\begin{api}
+  {\tt \_\_str\_\_}\\
+  - Returns the resource data as a byte string (this is similar to the
+    method {\tt handler.resource.get\_data()}).
+\end{api}
+
+\paragraph{Text}
+
+The default handler for text files, whose API is:
+
+\begin{api}
+  {\tt \_\_unicode\_\_}\\
+  - Returns the resource data as an unicode string.
+
+  {\tt \_\_str\_\_}\\
+  - Returns the resource data as a byte string, by default the used
+  encoding is UTF-8. Note that this will be different than the string
+  returned by {\tt handler.resource.get\_data()} if the resource data
+  is not encoded in UTF-8 in the source.
+
+  {\tt to\_str(encoding='UTF-8')}\\
+  - Returns the resource data as a byte string, using the given encoding.
+\end{api}
+
+\paragraph{XML.Document}
+
+This is the default handler for XML documents, which internally are
+represented as a tree. The API includes the methods already described
+for the {\tt Text} handler; specific methods of {\tt XML.Document} are:
+
+\begin{api}
+  {\tt \_\_cmp\_\_(other)}\\
+  - Lets to compare two XML documents.
+
+  {\tt walk(before=None, after=None, context=None)}\\
+  - Lets to traverse the XML tree, and do things through the traverse.
+\end{api}
+
+Actually, the features provided by {\tt itools} to manage XML documents
+are quite powerful, but beyond the scope of this article.
+
+\paragraph{XHTML.Document}
+
+The handler for XHTML documents, it extedns the API provided by
+{\tt XML.Document} API witht the methods:
+
+\begin{api}
+  {\tt get\_head()}\\
+  - Returns the head element.
+
+  {\tt get\_body()}\\
+  - Returns the body element.
+\end{api}
+
+\paragraph{PO}
+
+The handler to manage PO files, the message catalog of the GNU gettext
+utilities.
+
+\begin{api}
+  {\tt get\_msgids()}\\
+  - Returns the list of messages ids stored in the catalog.
+
+  {\tt get\_msgstr(msgid)}\\
+  - Returns the message string for the given message id.
+\end{api}
+
+
+
+\section{Writing your own handler}
+
+When developing applications based on {\tt itools.handlers} most of the
+work is spent on developing new handler classes. This section describes
+the steps to follow to write a new handler:
+
+\begin{enumerate}
+  \item First the base class must be choosed, for example, if we want
+    to write a handler for {\bf T}ranslation {\bf M}emory
+    e{\bf X}change\footnote{http://www.lisa.org/tmx} documents, our TMX
+    class should inherit from {\tt XML.Document}; if we want to write
+    a handler for {\bf C}omma {\bf S}eparated {\bf V}alue files, then our
+    class should inherit from {\tt Text}.
+
+  \item Usually we will implement the method {\tt \_load()}, which is the
+    responsible to parse the resource data and to build the data strucutre
+    we want in memory.
+
+  \item It is likely we will also write the method {\tt get\_skeleton()}
+    which must return the default content of a resource.
+
+  \item Finally we will develop the specific API that will enable us to
+    work with our handler.
+\end{enumerate}
+
+
+There is much more to tell about writing our own handlers, unfortunately
+it would take too much for the scope of this article.

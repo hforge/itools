@@ -1,0 +1,4 @@
+global-include *.py *.txt
+recursive-include zope *.dtml
+recursive-include doc *.tex
+include LGPL-2.1

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head></head>
+  <body>
+    <h3>Addressbook</h3>
+    <ul>
+      <li stl:repeat="address addressbook">
+        <stl:block content="address/lastname" />,
+        <stl:block content="address/firstname" />:
+        <stl:block content="address/telephone" />
+      </li>
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+0.4.0 (2004/06/01)
+
+  - Added itools.lucene (index and search).
+  
+  - Split itools.xml from itools.handlers
+
+  - Added 'traverse' (a generator method) to XML documents.
+
+  - Changed the message extraction algorithm of XHTML.Document
+
+  - Added itools.i18n.segment (text segmentation).
+
+  - Updated documentation (itools.doc)
+
+
+0.3.0 (2004/05/03)
+
+  Added itools.uri, itools.resources and itools.handlers
+
+
+0.2.0 (2003/09/14)
+
+  STL. Added the repeat keyword and stack.
+
+
+0.1.0 (2003/06/24)
+
+  Initial release.

@@ -1,0 +1,188 @@
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+
+
+# XXX Test with windows, maybe we will have to use os.'path.join'
+
+# Import from Python
+import datetime
+import mimetypes
+import os
+
+# Import from itools
+from itools import i18n
+from itools import uri
+import base
+
+
+class Resource(base.Resource):
+    """ """
+
+    def __init__(self, path):
+        if not isinstance(path, uri.Path):
+            self.path = uri.Path(path)
+        # Keep a copy of the path as a plain string, because this is what
+        # the 'os.*' and 'os.path.*' expects. Used internally.
+        self._path = str(path)
+
+
+    def get_atime(self):
+        """Returns the last time the resource was accessed."""
+        if not os.path.exists(self._path):
+            return None
+        time = os.path.getatime(self._path)
+        return datetime.datetime.fromtimestamp(time)
+
+
+    def get_mtime(self):
+        """Returns the last time the resource was modified."""
+        if not os.path.exists(self._path):
+            return None
+        time = os.path.getmtime(self._path)
+        return datetime.datetime.fromtimestamp(time)
+
+
+    def get_ctime(self):
+        """Returns the time the resource was created."""
+        if not os.path.exists(self._path):
+            return None
+        time = os.path.getctime(self._path)
+        return datetime.datetime.fromtimestamp(time)
+
+
+
+class File(Resource, base.File):
+    """ """
+
+##    def get_mimetype(self):
+##        name = self._path.split('/')[-1]
+##        name = name.split('.')
+##        if name[-1] in i18n.languages.keys():
+##            name = '.'.join(name[:-1])
+##        else:
+##            name = '.'.join(name)
+
+##        # Try to use a mime types database, the default if none is given
+##        if database is None:
+##            mimetype, encoding = mimetypes.guess_type(name)
+##        else:
+##            mimetype, encoding = database.guess_type(name)
+
+##        # If it failed try 'file -i' (only works on Unix systems)
+##        if mimetype is None:
+##            x = os.popen('file -i %s' % self._path).read()
+##            if x:
+##                # Only if the command 'file' is installed
+##                mimetype = x.split(':', 1)[1].split(';')[0].split(',')[0].strip()
+
+##        return mimetype
+
+
+    def __str__(self):
+        return file(self._path, 'rb').read()
+
+
+    def __getitem__(self, index):
+        f = file(self._path, 'rb')
+        f.seek(index)
+        byte = f.read(1)
+        f.close()
+        return byte
+
+
+    def __getslice__(self, a, b):
+        f = file(self._path, 'rb')
+        f.seek(a)
+        slice = f.read(b-a)
+        f.close()
+        return slice
+
+
+    def set_data(self, data):
+        file(self._path, 'wb').write(data)
+
+
+    def get_size(self):
+        return os.path.getsize(self._path)
+
+
+
+class Folder(Resource, base.Folder):
+    """ """
+
+    def get_mimetype(self):
+        # XXX This method should be removed as soon as the Folder class
+        # becomes a new style class, because this method is here only
+        # to workaround the wrong inheritance algorithm of classic Python
+        # classes.
+        return base.Folder.get_mimetype(self)
+
+
+    def _get_resources(self):
+        return os.listdir(self._path)
+
+
+    def _get_resource(self, name):
+        path = '%s/%s' % (self._path, name)
+
+        if not os.path.exists(path):
+            return None
+            raise IOError, "No such file or directory: '%s'" % path
+
+        if os.path.isfile(path):
+            return File(path)
+        elif os.path.isdir(path):
+            return Folder(path)
+
+        raise IOError, '%s it is not a file, nor a directory nor a link' % path
+
+
+    def _has_resource(self, name):
+        path = '%s/%s' % (self._path, name)
+        return os.path.exists(path)
+
+
+    def _set_file_resource(self, name, resource):
+        data = resource.get_data()
+        file('%s/%s' % (self._path, name), 'wb').write(data)
+
+
+    def _set_folder_resource(self, name, resource):
+        os.mkdir('%s/%s' % (self._path, name))
+
+
+    def _del_file_resource(self, name):
+        os.remove('%s/%s' % (self._path, name))
+
+
+    def _del_folder_resource(self, name):
+        os.rmdir('%s/%s' % (self._path, name))
+
+
+
+def get_resource(path):
+    if not isinstance(path, uri.Path):
+        path = uri.Path(path)
+
+    # Absolute path
+    if path.is_relative():
+        base = os.getcwd() + '/'
+        base = uri.Path(base)
+        path = base.resolve(path)
+
+    root = Folder('/')
+    return root.get_resource(path)

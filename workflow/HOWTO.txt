@@ -1,0 +1,7 @@
+
+This package lets to implement workflow based applications, where
+information (documents, tasks, whatever) moves from one state to
+another following..
+
+There are two key elements, the workflow definition and the the
+objects that move through the workflow.

@@ -1,0 +1,97 @@
+\chapter{Introduction}
+
+This paper is the official documentation of {\tt itools}.
+
+\section{What is {\tt itools}?}
+
+{\tt itools} is a Python\footnote{\tt http://www.python.org} package.
+Originally it was intended to develop web applications, but being low
+level stuff it is likely to be found useful in other contexts.
+
+It consists of a collection of sub-packages and modules which makes up a
+coherent set of tools for the developer. A summary of these tools follows:
+
+\begin{itemize}
+ \item {\tt itools.uri} -- an API to manage URIs, to identify and locate
+    resources.
+
+ \item {\tt itools.resources} -- an abstraction layer over resources that
+   lets to manage them with a consistent API, independently of where they
+   are stored.
+
+ \item {\tt itools.handlers} -- resource handlers infrastructure (resource
+   handlers are non persistent classes that add specific semantics to
+   resources). This package also includes several handlers {\em out of the
+   box}.
+
+ \item {\tt itools.xml} -- XML infrastructure, includes resource handlers
+   for XML, XHTML and HTML documents. Plus the {\bf S}imple {\bf T}emplate
+   {\bf L}anguage.
+
+ \item {\tt itools.i18n} -- tools for language negotiation and text
+   segmentation.
+
+ \item {\tt itools.workflow} -- represent workflows as automatons, objects
+   can move from one state to another through transitions, classes can add
+   specific semantics to states and transitions.
+
+ \item {\tt itools.lucene} -- An underway implementation of the famous
+   Jakarta's indexing and search tool:
+   {\em Lucene}\footnote{\tt http://jakarta.apache.org/lucene}.
+\end{itemize}
+
+
+
+\section{Project status}
+
+Currently {\tt itools} is in alpha stage of development (at the time of
+this writing the last version available is {\bf 0.4}). This means that the
+API is unstable, the documentation is incomplete, and there are many bugs.
+You are warned.
+
+\section{About this document}
+
+The development keeps ahead of the documentation. Today only four aspects
+of {\tt itools} are documented. By order of appearence:
+
+\begin{enumerate}
+  \item The first chapter is dedicated to {\tt itools.uri}: we will learn how
+    to manipulate {\bf U}niform {\bf R}esource {\bf I}dentifiers.
+
+  \item Follows {\tt itools.resources}, the file like abstraction layer.
+
+  \item In third place comes {\tt itools.handlers}, or the art of working
+    with resources.
+
+  \item Closing is the {\bf S}imple {\bf T}emplate {\bf L}anguage, as unknown
+    by the Python community as it is simple, powerful and fast.
+\end{enumerate}
+
+
+\subsection{Background}
+
+Remember that this is a Python package, if you don't know about the Python
+programming language better go read the tutorial first:
+
+\begin{quote}
+  {\tt http://www.python.org/.../html/tut/tut.html}.
+\end{quote}
+
+Through this document different technologies will be exposed. Proper
+references will be given.
+
+\section{Get ready}
+
+Before going further, be sure your system is correctly setup. The {\tt itools}
+package requires Python 2.3 or later.
+
+Download the last version from {\tt http://sf.net/projects/lleu}, then
+unpack it somewhere. The {\tt itools} software is a Python package, so
+it uses {\em distutils}, to install it just type:
+
+\begin{code}
+    $ python setup.py install
+\end{code}
+
+Be sure to have the right permissions.
+

@@ -1,0 +1,176 @@
+\chapter{Simple Template Language}
+
+This is a template language to process and transform XML files. It is
+aimed at presentation, for example to produce the web pages that make
+up the user interface of a web application.
+
+Unlike other template languages in the Python world, STL does not mix
+Python code within the template. The STL statements only describe the
+transformations to be performed on the template. It is a descriptive
+language.
+
+For example, look at the template below (see {\tt demo/hello.stl}):
+
+\begin{code}
+    <html>
+      <head></head>
+      <body>
+        <h1 stl:content="title" />
+      </body>
+    </html>
+\end{code}
+
+When this template will be processed, the content of the {\tt <h1>} tag
+will be replaced by the value of the variable {\tt title}. But, which
+is its value?
+
+\section{The namespace}
+
+In order to process an STL template, you need to pass it a Python
+namespace. But first we have to load the template as a handler:
+
+\begin{code}
+    >>> from itools.handlers import get_handler
+    >>> handler = get_handler('demo/hello.stl')
+    >>> print handler
+    <itools.handlers.stl.Template object at 0x401ee1ec>
+\end{code}
+
+Now we build the namespace and process the template:
+
+\begin{code}
+    >>> namespace = {'title': 'hello world'}
+    >>> print handler(namespace)
+    <html>
+      <head></head>
+      <body>
+        <h1>hello world</h1>
+      </body>
+    </html>
+\end{code}
+
+
+As this example shows, the value of the variable {\tt title} is looked at
+the namespace we pass to the template to process it.
+
+
+\section{Repeat}
+
+Let's see a more complex example. The template below shows a simple
+adressbook (see {\tt demo/addressbook.stl}):
+
+\begin{code}
+    <html>
+      <head></head>
+      <body>
+        <h3>Addressbook</h3>
+        <ul>
+          <li stl:repeat="address addressbook">
+            <stl:block content="address/lastname" />,
+            <stl:block content="address/firstname" />:
+            <stl:block content="address/telephone" />
+          </li>
+        </ul>
+      </body>
+    </html>
+\end{code}
+
+The first new thing this example shows is the {\tt repeat} statement. While
+the {\tt content} statement expects an string as the value, the {\tt repeat}
+statement expects a list. When this template is processed, the xml output
+will contain as many {\tt <li>} elements as items are in the {\tt addressbook}
+list. Within the element, in each iteration over the {\tt addressbook} list,
+the variable {\tt address} will be the respective item of the list.
+
+The second new thing we see is the {\tt <stl:block>} element. When the
+template is processed the {\tt <stl:block>} elements are automatically
+removed.
+
+Finally, look at the expression {\tt address/lastname}, it shows the {\em
+slash} operator, which lets to traverse namespaces. So the variable {\tt
+address} is expected to be a dictionary, and {\tt lastname} a key in that
+dictionary, whose value is an string.
+
+\subsection{The Python side}
+
+Now let's see the Python code (in the script {\tt demo/addressbook.cgi}),
+this time as a class which keeps the addressbook information, with a method
+that process the template to produce an HTML page that shows the addressbook.
+
+\begin{code}
+    # Import from itools
+    from itools import get_abspath
+    from itools.handlers import get_handler
+
+    class Address(object):
+        def __init__(self, lastname, firstname, telephone):
+            self.lastname = lastname
+            self.firstname = firstname
+            self.telephone = telephone
+
+    class Addressbook(object):
+        def __init__(self):
+            self.addressbook = []
+
+        def add_address(self, lastname, firstname, telephone):
+            address = Address(lastname, firstname, telephone)
+            self.addressbook.append(address)
+
+        def view(self):
+            # Load the STL template
+            path = get_abspath(globals(), 'addressbook.stl')
+            template = get_handler(path)
+
+            # Build the namespace
+            namespace = {'addressbook': self.addressbook}
+
+            # Process the template and return the output
+            return template(namespace)
+\end{code}
+
+The end of the module creates an {\tt addressbook} instance, fills it with
+a couple of entries and makes up the response:
+
+\begin{code}
+    if __name__ == '__main__':
+        # Create the addressbook
+        addressbook = Addressbook()
+        addressbook.add_address('Jordan', 'Robert', '0606060606')
+        addressbook.add_address('Buendia', 'Aureliano', '0612345678')
+
+        # Output the HTTP headers
+        print "Content-Type: text/html"
+        print
+
+        # Output the addressbook content
+        print addressbook.view()
+\end{code}
+
+The result of running this program is:
+
+\begin{code}
+    Content-Type: text/html
+
+    <html>
+      <head></head>
+      <body>
+        <h3>Addressbook</h3>
+        <ul>
+          <li>
+            Jordan,
+            Robert:
+            0606060606
+          </li><li>
+            Buendia,
+            Aureliano:
+            0612345678
+          </li>
+        </ul>
+      </body>
+    </html>
+\end{code}
+
+
+
+
+

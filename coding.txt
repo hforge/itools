@@ -1,0 +1,6 @@
+This document describes the itools coding style guidelines.
+
+First, all the rules in the Python coding style guidelines (PEP 8)
+apply here too, if you are not familiarized with them you should read
+the PEP 8 first.
+

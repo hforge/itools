@@ -1,8 +1,10 @@
 include *.txt
 include Changelog
 include resources/tests/index.html.en
-include xml/test*.html xml/test.rdf xml/simple.xml xml/simple.xsd
-include zope/*.dtml
-include doc/*.tex doc/*.txt doc/itools.sty doc/Makefile
-include doc/examples/*.py doc/examples/*.xml doc/examples/*.txt doc/examples/*.xhtml 
+recursive-include xml test.rdf test*.xml simple.xml simple.xsd
+recursive-include zope *.dtml
+recursive-include i18n *.txt
+recursive-include doc *.tex *.txt itools.sty Makefile *.dot *.sty *.dia
+recursive-include doc/examples *.xml *.txt *.xhtml
+recursive-include doc/examples/chapter? *.py *.xml *.tt
 include LGPL-2.1

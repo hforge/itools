@@ -64,6 +64,7 @@ class StoredField(File):
 
 
 class IDocument(Folder):
+
     def _get_handler(self, segment, resource):
         name = segment.name
         if name.startswith('i'):

@@ -18,6 +18,7 @@
 
 # Import from Python
 import datetime
+from sets import Set
 
 # Import from itools
 from Request import Request
@@ -43,6 +44,8 @@ class Context(object):
         self.path = None
         # The authenticated user
         self.user = None
+        # The transaction (keeps modified handlers)
+        self.transaction = Set()
 
 
     ########################################################################

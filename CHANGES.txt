@@ -1,3 +1,9 @@
+0.4.4 (2004/08/30)
+
+  Index & Search
+  - Fix unindexing.
+
+
 0.4.3 (2004/08/24)
 
   Index & Search

@@ -118,7 +118,7 @@ class Document(XHTML.Document):
                 value = type.decode(value, self._encoding)
                 stack[-1].set_attribute(None, name, value)
             elif event == parser.COMMENT:
-                comment = Comment(value)
+                comment = XML.Comment(value)
                 if stack:
                     stack[-1].set_comment(value)
                 else:

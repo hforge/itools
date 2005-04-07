@@ -40,50 +40,44 @@ empty_elements = Set([
 class Parser(HTMLParser):
 
     def parse(self, data):
-        
         self.encoding = 'UTF-8'
 
         self.events = []
-        for x in data:
-            self.feed(x)
-            for event, value in self.events:
-                line_number, offset = self.getpos()
-                yield event, value, line_number
-                # Reset values
-                self.events = []
-
+        self.feed(data)
         self.close()
+        return self.events
 
 
     def handle_decl(self, declaration):
         # XXX This is related with the XML doctype, it should have a similar
         # structure.
-        self.events.append((DOCUMENT_TYPE, declaration))
+        self.events.append((DOCUMENT_TYPE, declaration, self.getpos()[0]))
 
 
     def handle_starttag(self, name, attrs):
+        line_number = self.getpos()[0]
         # Start element
-        self.events.append((START_ELEMENT, name))
+        self.events.append((START_ELEMENT, name, line_number))
 
         # Attributes
         for attribute in attrs:
-            self.events.append((ATTRIBUTE, attribute))
+            self.events.append((ATTRIBUTE, attribute, line_number))
 
         # End element
         if name in empty_elements:
-            self.events.append((END_ELEMENT, name))
+            self.events.append((END_ELEMENT, name, line_number))
 
 
     def handle_endtag(self, name):
-        self.events.append((END_ELEMENT, name))
+        self.events.append((END_ELEMENT, name, self.getpos()[0]))
 
 
     def handle_comment(self, data):
-        self.events.append((COMMENT, data))
+        self.events.append((COMMENT, data, self.getpos()[0]))
 
 
     def handle_data(self, data):
-        self.events.append((TEXT, data))
+        self.events.append((TEXT, data, self.getpos()[0]))
 
 
     def handle_entityref(self, name):
@@ -91,7 +85,7 @@ class Parser(HTMLParser):
         if name in htmlentitydefs.name2codepoint:
             codepoint = htmlentitydefs.name2codepoint[name]
             char = unichr(codepoint).encode(self.encoding)
-            self.events.append((TEXT, char))
+            self.events.append((TEXT, char, self.getpos()[0]))
         else:
             warnings.warn('Unknown entity reference "%s" (ignoring)' % name)
 

@@ -42,7 +42,7 @@ class SchemaTestCase(TestCase):
         XML.registry.set_namespace('http://www.lisa.org/tmx', self.schema)
 #        XML.registry.set_namespace('http://www.itools.org/namespaces/simple',
 #                                   self.schema)
-        print"============§§§§§§§======================="
+        print"=========================================="
 #        print doc.children[0].elements
 #        print doc.children[0].types
 

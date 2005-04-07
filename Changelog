@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-07 15:35:39 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
+
+    Summary:
+      html, fix load of comments, now the parser returns a list
+    Revision:
+      itools--main--0.8--patch-56
+
+
+    modified files:
+     Changelog html/HTML.py html/parser.py xml/parser.py
+     xml/test_xsd.py
+
+
 2005-04-05 14:43:16 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
 
     Summary:

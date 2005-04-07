@@ -83,7 +83,8 @@ class HeadElement(BlockElement):
     def to_unicode(self, encoding='UTF-8'):
         return ''.join([self.get_opentag(),
                         '\n    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />' % encoding,
-                        XML.Children.encode(self.children, encoding=encoding),
+                        XML.Children.to_unicode(self.children,
+                                                encoding=encoding),
                         self.get_closetag()])
 
 

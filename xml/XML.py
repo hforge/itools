@@ -36,16 +36,17 @@ from itools.xml import parser
 
 class Children(object):
 
-    def encode(cls, value, encoding='UTF-8'):
+    def to_unicode(cls, value, encoding='UTF-8'):
         s = []
         for node in value:
             if isinstance(node, unicode):
                 s.append(node)
             else:
                 s.append(node.to_unicode(encoding=encoding))
-        return ''.join(s)
+        return u''.join(s)
 
-    encode = classmethod(encode)
+    to_unicode = classmethod(to_unicode)
+
 
 
 class Comment(object):
@@ -132,7 +133,7 @@ class Element(object):
     # Serialization
     def to_unicode(self, encoding='UTF-8'):
         return self.get_opentag() \
-               + Children.encode(self.children, encoding=encoding) \
+               + Children.to_unicode(self.children, encoding=encoding) \
                + self.get_closetag()
 
 

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-07 19:25:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
+
+    Summary:
+      xml, rename 'Children.encode' to 'to_unicode'
+    Revision:
+      itools--main--0.8--patch-60
+
+
+    modified files:
+     Changelog html/HTML.py xhtml/XHTML.py xml/XML.py
+
+
 2005-04-07 18:55:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
 
     Summary:

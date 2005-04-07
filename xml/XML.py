@@ -377,7 +377,7 @@ class Document(Text.Text):
                 stack[-1].set_comment(Comment(value))
             elif event == parser.TEXT:
                 if stack:
-                    stack[-1].set_text(value, self.source_encoding)
+                    stack[-1].set_text(value, 'UTF-8')
 
         # XXX This is an horrible hack
         from STL import STL

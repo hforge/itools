@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-07 18:54:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
+
+    Summary:
+      xml, fix deserialization for non UTF-8 documents
+    Revision:
+      itools--main--0.8--patch-58
+
+    When the expat parser is configured to return byte strings, it does
+    return them always in the UTF-8 encoding, regardless of the encoding
+    specified in the source.
+    
+    This is not what I would expect (nor what I would like, for performance
+    reasons).
+
+    modified files:
+     Changelog xml/XML.py xml/parser.py
+
+
 2005-04-07 18:10:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-57
 
     Summary:

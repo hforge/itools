@@ -44,6 +44,10 @@ class Parser(object):
         # Improve performance by reducing the calls to the default handler
         parser.buffer_text = True
         # Do the "de-serialization" ourselves.
+        # Note that expat always will return strings encoded in UTF-8,
+        # regardless of the sourc encoding. This is sub-optimal from a
+        # performance point of view, yet another reason to get rid of
+        # expat.
         parser.returns_unicode = False
 
         # Set parsing handlers (XXX there are several not yet supported)
@@ -177,7 +181,7 @@ class Parser(object):
         # XXX HTML specific
         if name in htmlentitydefs.name2codepoint:
             codepoint = htmlentitydefs.name2codepoint[name]
-            char = unichr(codepoint).encode(self.encoding)
+            char = unichr(codepoint).encode('UTF-8')
             self.events.append((TEXT, char, self.parser.ErrorLineNumber))
         else:
             warnings.warn('Unknown entity reference "%s" (ignoring)' % name)

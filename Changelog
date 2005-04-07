@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-07 18:55:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
+
+    Summary:
+      xhtml, fix translate
+    Revision:
+      itools--main--0.8--patch-59
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-04-07 18:54:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
 
     Summary:

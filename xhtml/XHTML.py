@@ -208,7 +208,10 @@ class Document(XML.Document):
                     if value:
                         value = catalog.get_msgstr(value) or value
                 qname = node.get_attribute_qname(namespace, local_name)
-                buffer.write(u' %s="%s"' % (qname, unicode(value)))
+                namespace = namespaces.get_namespace(namespace)
+                schema = namespace.get_attribute_schema(local_name)
+                type = schema['type']
+                buffer.write(u' %s="%s"' % (qname, type.to_unicode(value)))
             buffer.write(u'>')
 
         def process_message(message, keep_spaces):

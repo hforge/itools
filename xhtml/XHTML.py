@@ -50,8 +50,8 @@ class Element(XML.Element):
         if self.name == 'img' and attribute_name == 'alt':
             return True
         if self.name == 'input' and attribute_name == 'value':
-            if self.has_attribute(namespaces.xhtml, 'type'):
-                return self.get_attribute(namespaces.xhtml, 'type') == 'submit'
+            if self.has_attribute(Namespace.class_uri, 'type'):
+                return self.get_attribute(Namespace.class_uri, 'type') == 'submit'
         return False
 
 

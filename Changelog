@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-07 19:32:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
+
+    Summary:
+      xml, escape the '<' sign on serialization
+    Revision:
+      itools--main--0.8--patch-61
+
+    Otherwise the output is not well-formed XML.
+
+    modified files:
+     Changelog xml/XML.py
+
+
 2005-04-07 19:25:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
 
     Summary:

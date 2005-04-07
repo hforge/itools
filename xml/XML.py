@@ -40,7 +40,9 @@ class Children(object):
         s = []
         for node in value:
             if isinstance(node, unicode):
-                s.append(node)
+                # XXX This is equivalent to 'handlers.IO.Unicode.to_unicode',
+                # there should be a single place.
+                s.append(node.replace('<', '&lt;'))
             else:
                 s.append(node.to_unicode(encoding=encoding))
         return u''.join(s)

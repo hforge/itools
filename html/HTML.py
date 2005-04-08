@@ -121,7 +121,7 @@ class Document(XHTML.Document):
             elif event == parser.COMMENT:
                 comment = XML.Comment(value)
                 if stack:
-                    stack[-1].set_comment(value)
+                    stack[-1].set_comment(comment)
                 else:
                     self.children.append(comment)
             elif event == parser.TEXT:

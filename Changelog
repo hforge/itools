@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-08 13:45:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
+
+    Summary:
+      merge from the 0.7 branch
+    Revision:
+      itools--main--0.8--patch-64
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-62
+       catalog, fix so indexes are the same for big and little endian
+    
+
+    modified files:
+     Changelog catalog/IO.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.7--patch-62
+
+
 2005-04-08 13:04:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
 
     Summary:

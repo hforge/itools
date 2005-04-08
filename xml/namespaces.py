@@ -162,7 +162,7 @@ class DefaultNamespace(AbstractNamespace):
 
 
     def get_attribute_schema(name):
-        return {'type': IO.Unicode}
+        return {'type': IO.String}
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 

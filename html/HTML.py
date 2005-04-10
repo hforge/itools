@@ -32,8 +32,16 @@ class Element(XHTML.Element):
         return XHTML.Element.get_closetag(self)
 
 
+class InlineElement(Element, XHTML.InlineElement):
+    pass
+
+
+class BlockElement(Element, XHTML.BlockElement):
+    pass
+
+
 # XXX This class is almost identical to 'XHTML.Element'
-class HeadElement(Element):
+class HeadElement(BlockElement):
 
     def to_unicode(self, encoding='UTF-8'):
         return ''.join([self.get_opentag(),
@@ -53,6 +61,26 @@ class HeadElement(Element):
         self.children.append(element)
 
 
+elements_schema = {
+    'a': {'type': InlineElement},
+    'abbr': {'type': InlineElement},
+    'acronym': {'type': InlineElement},
+    'b': {'type': InlineElement},
+    'cite': {'type': InlineElement},
+    'code': {'type': InlineElement},
+    'dfn': {'type': InlineElement},
+    'em': {'type': InlineElement},
+    'head': {'type': HeadElement},
+    'kbd': {'type': InlineElement},
+    'q': {'type': InlineElement},
+    'samp': {'type': InlineElement},
+    'span': {'type': InlineElement},
+    'strong': {'type': InlineElement},
+    'sub': {'type': InlineElement},
+    'sup': {'type': InlineElement},
+    'tt': {'type': InlineElement},
+    'var': {'type': InlineElement},
+    }
 
 
 #############################################################################
@@ -106,7 +134,9 @@ class Document(XHTML.Document):
             if event == parser.DOCUMENT_TYPE:
                 self.document_type = value
             elif event == parser.START_ELEMENT:
-                stack.append(Element(None, value))
+                schema = elements_schema.get(value, {'type': BlockElement})
+                element_class = schema['type']
+                stack.append(element_class(None, value))
             elif event == parser.END_ELEMENT:
                 element = stack.pop()
                 if stack:

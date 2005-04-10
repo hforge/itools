@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-10 17:54:45 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
+
+    Summary:
+      html, implement inline and block elements
+    Revision:
+      itools--main--0.8--patch-65
+
+
+    modified files:
+     Changelog html/HTML.py
+
+
 2005-04-08 13:45:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
 
     Summary:

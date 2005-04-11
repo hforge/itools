@@ -133,10 +133,6 @@ class Handler(object):
 
 
     def commit_transaction(cls):
-        # XXX The save operation will save sub-objects if they have been
-        # modified, but they are not removed from the transaction, so they
-        # may be saved more thant once. Check wether this is what really
-        # happens or not, and if it is: fix.
         transaction = cls.get_transaction()
         while transaction:
             handler = transaction.pop()

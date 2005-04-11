@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-11 18:43:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-66
+
+    Summary:
+      handlers, now save updates the transaction
+    Revision:
+      itools--main--0.8--patch-66
+
+    When a folder is saved, it saves first sub-objects that have been
+    modified. An object is considered to be modified if it appears in
+    the transaction. Once saved, the sub-object is removed from the
+    transaction.
+
+    modified files:
+     Changelog handlers/Folder.py handlers/Handler.py
+
+
 2005-04-10 17:54:45 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
 
     Summary:

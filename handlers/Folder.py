@@ -77,6 +77,8 @@ class Folder(Handler):
 
 
     def _save(self, resource):
+        transaction = self.get_transaction()
+
         # Remove handlers
         for name in self.removed_handlers:
             resource.del_resource(name)
@@ -88,8 +90,9 @@ class Folder(Handler):
         for name, handler in self.added_handlers.items():
             if name in self._get_handler_names():
                 resource.del_resource(name)
-            if handler.has_changed():
+            if handler in transaction:
                 handler.save()
+                transaction.remove(handler)
             resource.set_resource(name, handler.resource)
             # Update the cache
             self.cache[name] = None

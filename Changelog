@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-04-12 21:49:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
+
+    Summary:
+      handlers, optimize CSV serialization
+    Revision:
+      itools--main--0.7--patch-63
+
+
+    modified files:
+     Changelog handlers/CSV.py
+
+
 2005-03-31 13:45:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
 
     Summary:

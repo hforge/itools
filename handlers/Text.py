@@ -34,7 +34,7 @@ class Text(File):
         self._data = unicode(self._data, self._encoding)
 
 
-    def guess_encoding(self, data):
+    def guess_encoding(cls, data):
         """
         Tries to guess the encoding by brute force. It is likely to get
         the wrong encoding, for example many utf8 files will be identified
@@ -50,6 +50,8 @@ class Text(File):
 
         # Default to UTF-8
         return 'utf8'
+
+    guess_encoding = classmethod(guess_encoding)
 
 
     def guess_language(self):

@@ -24,36 +24,37 @@ from Text import Text
 
 
 
+def parse(data, schema=None):
+    encoding = Text.guess_encoding(data)
+    dialect = csv.Sniffer().sniff(data[:1000])
+    if schema is None:
+        for line in csv.reader(data.splitlines(), dialect):
+            yield [ unicode(x, encoding) for x in line ]
+    else:
+        for line in csv.reader(data.splitlines(), dialect):
+            yield [ schema[i].decode(value)
+                    for i, value in enumerate(line) ]
+
+
 class CSV(Text):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
+
+
+    schema = []
 
 
     #########################################################################
     # Parsing
     #########################################################################
     def _load(self, resource):
-        Text._load(self, resource)
+        data = resource.read()
 
-        data = self._data
-        del self._data
+##        data = [ x.strip() for x in data.splitlines() ]
+##        data = [ x for x in data if x ]
 
-        # csv.reader expects an iterator
-        data = [ x.strip() for x in data.split('\n') ]
-        data = [ x.encode(self._encoding) for x in data if x ]
-
-        if data:
-            # Sniff the dialect
-            sniffer = csv.Sniffer()
-            dialect = sniffer.sniff('\n'.join(data))
-
-            # Parse
-            self.lines = []
-            for line in csv.reader(data, dialect):
-                line = [ unicode(x, self._encoding) for x in line ]
-                self.lines.append(line)
-        else:
-            self.lines = []
+        self.lines = list(parse(data))
+        self._encoding = self.guess_encoding(data)
 
 
     #########################################################################

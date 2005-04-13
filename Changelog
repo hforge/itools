@@ -2,6 +2,25 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-04-13 09:39:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
+
+    Summary:
+      handlers, optimize CSV deserialization
+    Revision:
+      itools--main--0.7--patch-64
+
+    Separate the parsing from the load. Now there is a generator
+    ("CSV.parse") independent of the CSV handler class, which can
+    be used by specialized handler classes to load the resource
+    in one step.
+    
+    Also, now "Text.guess_encoding" is a class method, so it can
+    be used without a "Text" instance.
+
+    modified files:
+     Changelog handlers/CSV.py handlers/Text.py
+
+
 2005-04-12 21:49:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
 
     Summary:

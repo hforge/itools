@@ -2,6 +2,34 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-13 18:56:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-69
+
+    Summary:
+      merge CSV optimizations from the 0.7 branch
+    Revision:
+      itools--main--0.8--patch-69
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-63
+       handlers, optimize CSV serialization
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-64
+       handlers, optimize CSV deserialization
+    
+     * jdavid@itaapy.com--public/itools--main--0.7--patch-65
+       handlers, fix CSV, use schema
+    
+
+    modified files:
+     Changelog handlers/CSV.py handlers/Text.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.7--patch-63
+     jdavid@itaapy.com--public/itools--main--0.7--patch-64
+     jdavid@itaapy.com--public/itools--main--0.7--patch-65
+
+
 2005-04-13 18:54:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
 
     Summary:

@@ -2,6 +2,27 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-13 18:54:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
+
+    Summary:
+      handlers, new transactions module, lock before commit
+    Revision:
+      itools--main--0.8--patch-68
+
+    The transaction code has been moved from the 'Handler' class to its
+    own module, 'itools.handlers.transactions'.
+    
+    Now the commit operation (still in the 'Handler' class) locks the
+    transaction before saving the changes. This should avoid database
+    inconsistencies.
+
+    new files:
+     handlers/.arch-ids/transactions.py.id handlers/transactions.py
+
+    modified files:
+     Changelog handlers/Folder.py handlers/Handler.py
+
+
 2005-04-13 15:41:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
 
     Summary:

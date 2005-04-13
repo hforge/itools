@@ -23,7 +23,8 @@ from sets import Set
 # Import from itools
 from itools.resources import base, memory
 from itools import uri
-from Handler import Handler
+from itools.handlers.Handler import Handler
+from itools.handlers.transactions import get_transaction
 
 
 
@@ -77,7 +78,7 @@ class Folder(Handler):
 
 
     def _save(self, resource):
-        transaction = self.get_transaction()
+        transaction = get_transaction()
 
         # Remove handlers
         for name in self.removed_handlers:

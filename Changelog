@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-13 15:41:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
+
+    Summary:
+      xml, fix missing import (found by Herve)
+    Revision:
+      itools--main--0.8--patch-67
+
+
+    modified files:
+     Changelog xml/parser.py
+
+
 2005-04-11 18:43:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-66
 
     Summary:

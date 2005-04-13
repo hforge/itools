@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 import htmlentitydefs
+import warnings
 from xml.parsers import expat
 
 # Import from itools

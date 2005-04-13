@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 
-# Import from Python
+# Import from the Standard Library
 import csv
 
 # Import from itools
@@ -41,7 +41,7 @@ class CSV(Text):
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
 
 
-    schema = []
+    schema = None
 
 
     #########################################################################
@@ -53,7 +53,7 @@ class CSV(Text):
 ##        data = [ x.strip() for x in data.splitlines() ]
 ##        data = [ x for x in data if x ]
 
-        self.lines = list(parse(data))
+        self.lines = list(parse(data, self.schema))
         self._encoding = self.guess_encoding(data)
 
 

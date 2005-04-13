@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-04-13 14:22:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
+
+    Summary:
+      handlers, fix CSV, use schema
+    Revision:
+      itools--main--0.7--patch-65
+
+
+    modified files:
+     Changelog handlers/CSV.py
+
+
 2005-04-13 09:39:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
 
     Summary:

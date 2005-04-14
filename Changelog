@@ -2,6 +2,27 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-14 14:01:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-71
+
+    Summary:
+      handlers, rollback if there is an error in the commit phase
+    Revision:
+      itools--main--0.8--patch-71
+
+    If an error happens when committing a transaction, it is rolled back.
+    This way the handlers state is always consistent.
+    
+    However, the resource layer may still be left into an inconsistent
+    state (there is no problem with "itools.resources.zope2" because it
+    provides transactions on its own, but there is problem with the
+    filesystem resource layer for instance).
+    
+    Also, added a missing import.
+
+    modified files:
+     Changelog handlers/transactions.py
+
+
 2005-04-14 13:42:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-70
 
     Summary:

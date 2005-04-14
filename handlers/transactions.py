@@ -16,6 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from the Standard Library
+import datetime
 from sets import Set
 import thread
 
@@ -39,12 +40,22 @@ class Transaction(Set):
 
         thread_lock.acquire()
         try:
-            for handler in self:
-                if handler.resource.get_mtime() is not None:
-                    handler.save()
+            # Errors should not happen in this stage.
+            try:
+                for handler in self:
+                    if handler.resource.get_mtime() is not None:
+                        handler.save()
+            except:
+                # XXX Right now we just rollback the transaction, so handlers
+                # state will be consistent.
+                #
+                # However, it may happen something worse, the resource layer
+                # may be left into an inconsistent state.
+                self.rollback()
+                raise
+            self.clear()
         finally:
             thread_lock.release()
-        self.clear()
 
 
     def lock(self):

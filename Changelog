@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-14 16:06:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-72
+
+    Summary:
+      handlers, fix PO programming interface
+    Revision:
+      itools--main--0.8--patch-72
+
+    The private method "_set_message" does not mark the handler as
+    changed.  And the public method "set_message" does mark it as
+    changed, instead of saving it stright away.
+    
+    After a handler load, it should never be marked as changed (stored
+    in the transaction).
+
+    modified files:
+     Changelog handlers/PO.py
+
+
 2005-04-14 14:01:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-71
 
     Summary:

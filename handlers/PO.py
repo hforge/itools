@@ -388,12 +388,11 @@ class PO(Text):
 
 
     def set_message(self, msgid, msgstr=[u''], comments=[], references={}):
+        self.set_changed()
         self._set_message(msgid, msgstr, comments, references)
-        self.save()
 
 
     def _set_message(self, msgid, msgstr=[u''], comments=[], references={}):
-        self.set_changed()
         if isinstance(msgid, (str, unicode)):
             msgid = [msgid]
         if isinstance(msgstr, (str, unicode)):

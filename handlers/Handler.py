@@ -98,35 +98,6 @@ class Handler(object):
         return self.timestamp > mtime
 
 
-    ########################################################################
-    # Transactions
-    def rollback_transaction(cls):
-        transaction = get_transaction()
-        for handler in transaction:
-            # XXX Maybe it should be re-loaded instead
-            handler.timestamp = datetime.datetime(1900, 1, 1)
-        transaction.clear()
-
-    rollback_transaction = classmethod(rollback_transaction)
-
-
-    def commit_transaction(cls):
-        transaction = get_transaction()
-        transaction.lock()
-        try:
-            while transaction:
-                handler = transaction.pop()
-                if handler.resource.get_mtime() is not None:
-                    handler.save()
-                    # Event: after commit
-                    if hasattr(handler, 'after_commit'):
-                        handler.after_commit()
-        finally:
-            transaction.release()
-
-    commit_transaction = classmethod(commit_transaction)
-
-
     def set_changed(self):
         get_transaction().add(self)
 

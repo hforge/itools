@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-14 13:42:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-70
+
+    Summary:
+      handlers, move commit and rollback to the transactions module
+    Revision:
+      itools--main--0.8--patch-70
+
+
+    modified files:
+     Changelog handlers/Folder.py handlers/Handler.py
+     handlers/transactions.py
+
+
 2005-04-13 18:56:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-69
 
     Summary:

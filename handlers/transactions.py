@@ -24,11 +24,32 @@ thread_lock = thread.allocate_lock()
 
 
 class Transaction(Set):
+
+    def rollback(self):
+        for handler in self:
+            handler.timestamp = datetime.datetime(1900, 1, 1)
+        self.clear()
+
+
     def commit(self):
-        pass
+        # Event: before commit
+        for handler in list(self):
+            if hasattr(handler, 'before_commit'):
+                handler.before_commit()
+
+        thread_lock.acquire()
+        try:
+            for handler in self:
+                if handler.resource.get_mtime() is not None:
+                    handler.save()
+        finally:
+            thread_lock.release()
+        self.clear()
+
 
     def lock(self):
         thread_lock.acquire()
+
 
     def release(self):
         thread_lock.release()

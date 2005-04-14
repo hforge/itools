@@ -20,7 +20,6 @@ This module provides the abstract class which is the root in the
 handler class hierarchy.
 """
 
-
 # Import from the Standard Library
 import datetime
 from sets import Set
@@ -29,16 +28,12 @@ import thread
 # Import from itools
 from itools import uri
 from itools.resources import base
+from itools.handlers.transactions import get_transaction
 
 
 
 class AcquisitionError(LookupError):
     pass
-
-
-
-thread_lock = thread.allocate_lock()
-
 
 
 class Handler(object):
@@ -103,54 +98,8 @@ class Handler(object):
         return self.timestamp > mtime
 
 
-    ########################################################################
-    # Transactions
-    _transactions = {}
-
-
-    def get_transaction(cls):
-        ident = thread.get_ident()
-
-        thread_lock.acquire()
-        try:
-            transaction = cls._transactions.setdefault(ident, Set())
-        finally:
-            thread_lock.release()
-
-        return transaction
-
-    get_transaction = classmethod(get_transaction)
-
-
-    def rollback_transaction(cls):
-        transaction = cls.get_transaction()
-        for handler in transaction:
-            # XXX Maybe it should be re-loaded instead
-            handler.timestamp = datetime.datetime(1900, 1, 1)
-        transaction.clear()
-
-    rollback_transaction = classmethod(rollback_transaction)
-
-
-    def commit_transaction(cls):
-        # XXX The save operation will save sub-objects if they have been
-        # modified, but they are not removed from the transaction, so they
-        # may be saved more thant once. Check wether this is what really
-        # happens or not, and if it is: fix.
-        transaction = cls.get_transaction()
-        while transaction:
-            handler = transaction.pop()
-            if handler.resource.get_mtime() is not None:
-                handler.save()
-                # Event: after commit
-                if hasattr(handler, 'after_commit'):
-                    handler.after_commit()
-
-    commit_transaction = classmethod(commit_transaction)
-
-
     def set_changed(self):
-        self.get_transaction().add(self)
+        get_transaction().add(self)
 
 
     ########################################################################

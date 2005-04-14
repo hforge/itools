@@ -23,7 +23,8 @@ from sets import Set
 # Import from itools
 from itools.resources import base, memory
 from itools import uri
-from Handler import Handler
+from itools.handlers.Handler import Handler
+from itools.handlers.transactions import get_transaction
 
 
 
@@ -88,9 +89,8 @@ class Folder(Handler):
         for name, handler in self.added_handlers.items():
             if name in self._get_handler_names():
                 resource.del_resource(name)
-            if handler.has_changed():
-                handler.save()
             resource.set_resource(name, handler.resource)
+            handler.resource = resource.get_resource(name)
             # Update the cache
             self.cache[name] = None
         self.added_handlers = {}
@@ -119,8 +119,7 @@ class Folder(Handler):
     #########################################################################
     # Obsolete API
     # XXX To be removed by 0.5, direct access to the resource must be done
-    # through "self.resource". A new API must be developed (has_handler,
-    # get_handlers, etc.)
+    # through "self.resource".
     #########################################################################
     def get_mimetype(self):
         return self.resource.get_mimetype()

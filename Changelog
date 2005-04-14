@@ -2,6 +2,41 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-04-14 14:39:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-66
+
+    Summary:
+      backport new transaction code from the 0.8 branch
+    Revision:
+      itools--main--0.7--patch-66
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-66
+       handlers, now save updates the transaction
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-68
+       handlers, new transactions module, lock before commit
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-70
+       handlers, move commit and rollback to the transactions module
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-71
+       handlers, rollback if there is an error in the commit phase
+    
+
+    new files:
+     handlers/.arch-ids/transactions.py.id handlers/transactions.py
+
+    modified files:
+     Changelog handlers/Folder.py handlers/Handler.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.8--patch-66
+     jdavid@itaapy.com--public/itools--main--0.8--patch-68
+     jdavid@itaapy.com--public/itools--main--0.8--patch-70
+     jdavid@itaapy.com--public/itools--main--0.8--patch-71
+
+
 2005-04-13 14:22:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
 
     Summary:

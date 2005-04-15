@@ -34,9 +34,13 @@ class Transaction(Set):
 
     def commit(self):
         # Event: before commit
-        for handler in list(self):
-            if hasattr(handler, 'before_commit'):
-                handler.before_commit()
+        try:
+            for handler in list(self):
+                if hasattr(handler, 'before_commit'):
+                    handler.before_commit()
+        except:
+            self.rollback()
+            raise
 
         thread_lock.acquire()
         try:

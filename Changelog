@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-15 10:21:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-73
+
+    Summary:
+      start changes file
+    Revision:
+      itools--main--0.8--patch-73
+
+
+    modified files:
+     CHANGES.txt Changelog
+
+
 2005-04-14 16:06:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-72
 
     Summary:

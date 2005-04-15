@@ -1,3 +1,48 @@
+0.8.0 (2005/0?/??)
+
+  URI
+  - Correctly deal with empty references: "".
+
+  Resources
+  - Move to new style classes.
+  - Add lock/unlock API. Implemented only by the Zope 2 resources for now.
+
+  XML
+  - New module "itools.xml.parser", is a wrapper around "expat" that
+    provides a nicer programming interface.
+  - New module "itools.xml.namespaces", provides the new improved namespace
+    registry, a base class for namespace handlers, and some basic namespace
+    handlers.
+  - Now XML Documents have a root element, instead of a list of children.
+    The XML declaration and the document type are stored in the instance
+    variables 'xml_version', 'source_encoding', 'standalone' and
+    'document_type'.
+  - New API to work with attributes. Now the methods 'set_attribute',
+    'get_attribute' and 'has_attribute' expect the namespace uri to be
+    passed first, and the local name to be passed after. There is a new
+    method, 'get_attribute_qname', that returns the qualified name (i.e.
+    'dc:title') from the namespace uri.
+    and the local name.
+  - Now the node tree is lighter. The reference from a node to its parent
+    has been removed. The 'NodeList' has been removed, now the children
+    is just a list of nodes. The class "Raw" has been removed, now text
+    nodes are unicode strings. Now attribute values are loaded as byte
+    strings, for attributes not attached to an XML namespace.
+  - STL, remove obsolete "stl:ifnot".
+  - Start Dublin Core implementation.
+
+  Handlers
+  - New module "itools.handlers.transactions" provides a better and more
+    robust API.
+
+  Code Organization
+  - New sub-packages "itools.xhtml" and "itools.html".
+  - Now the module 'uri' has become a package.
+
+  Documentation
+  - Update XML chapter.
+
+
 0.7.4 (2005/03/21)
 
   Handlers

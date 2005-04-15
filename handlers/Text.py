@@ -29,9 +29,9 @@ class Text(File):
     # Load
     #########################################################################
     def _load(self, resource):
-        File._load(self, resource)
-        self._encoding = self.guess_encoding(self._data)
-        self._data = unicode(self._data, self._encoding)
+        data = resource.read()
+        self._encoding = self.guess_encoding(data)
+        self._data = unicode(data, self._encoding)
 
 
     def guess_encoding(cls, data):

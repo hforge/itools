@@ -48,20 +48,15 @@ class Handler(object):
     parent = None
     name = ''
     is_virtual = False
-    # Default for mimetype (XXX revise)
-    _mimetype = None
 
 
     ########################################################################
     # API
     ########################################################################
     def get_mimetype(self):
-        return self._mimetype
+        return self.resource.get_mimetype()
 
-    def set_mimetype(self, mimetype):
-        self._mimetype = mimetype
-
-    mimetype = property(get_mimetype, set_mimetype, None, '')
+    mimetype = property(get_mimetype, None, None, '')
 
 
     ########################################################################

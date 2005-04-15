@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-15 13:14:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-74
+
+    Summary:
+      handlers, now 'get_mimetype' calls the resource layer
+    Revision:
+      itools--main--0.8--patch-74
+
+
+    modified files:
+     Changelog handlers/File.py handlers/Handler.py
+     handlers/Text.py
+
+
 2005-04-15 10:21:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-73
 
     Summary:

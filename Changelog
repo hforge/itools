@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-15 13:36:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-75
+
+    Summary:
+      handlers, rollback if there is an error in 'before_commit'
+    Revision:
+      itools--main--0.8--patch-75
+
+    Now the 'before_commit' event is protected by a "try..except"
+    clause, so if there is a problem the transaction is rolled
+    back.
+
+    modified files:
+     Changelog handlers/transactions.py
+
+
 2005-04-15 13:14:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-74
 
     Summary:

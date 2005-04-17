@@ -106,7 +106,15 @@ class Catalog(Folder):
     #########################################################################
     def _load(self, resource):
         Folder._load(self, resource)
-        # XXX This may be removed..
+        # The document number
+        document_numbers = [ int(x[1:])
+                             for x in self.resource.get_resource_names()
+                             if x.startswith('d') ]
+        if document_numbers:
+            self.document_number = max(document_numbers) + 1
+        else:
+            self.document_number = 0
+        # Added and removed documents
         self.added_documents = {}
         self.removed_documents = []
 
@@ -139,13 +147,9 @@ class Catalog(Folder):
     # Private API
     #########################################################################
     def get_new_document_number(self):
-        documents = [ int(x[1:]) for x in self.resource.get_resource_names()
-                      if x.startswith('d') ]
-        documents += self.added_documents.keys()
-        if documents:
-            documents.sort()
-            return documents[-1] + 1
-        return 0
+        document_number = self.document_number
+        self.document_number += 1
+        return document_number
 
 
     #########################################################################

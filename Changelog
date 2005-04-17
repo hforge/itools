@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-17 19:20:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-76
+
+    Summary:
+      handlers, now 'save' is atomic
+    Revision:
+      itools--main--0.8--patch-76
+
+    Now the method 'save' locks the transaction, i.e. it is atomic.
+    Also, the handler being saved is removed from the transaction
+    (if it is being saved to its associated resource).
+
+    modified files:
+     Changelog handlers/Handler.py handlers/transactions.py
+
+
 2005-04-15 13:36:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-75
 
     Summary:

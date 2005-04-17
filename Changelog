@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-17 19:22:45 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-77
+
+    Summary:
+      handlers, fix folder's interaction with transactions
+    Revision:
+      itools--main--0.8--patch-77
+
+    Now a folder is stored in the transaction (methods 'set_handler'
+    and 'del_handler'), only if it has been really changed. This is
+    to say, if there has not been an error.
+
+    modified files:
+     Changelog handlers/Folder.py
+
+
 2005-04-17 19:20:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-76
 
     Summary:

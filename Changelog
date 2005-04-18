@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-18 16:12:45 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-82
+
+    Summary:
+      xml, fix XML header serialization
+    Revision:
+      itools--main--0.8--patch-82
+
+
+    modified files:
+     Changelog xml/STL.py xml/XML.py
+
+
 2005-04-18 12:14:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
 
     Summary:

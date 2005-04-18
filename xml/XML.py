@@ -391,7 +391,7 @@ class Document(Text.Text):
     #######################################################################
     # API
     #######################################################################
-    def to_unicode(self, encoding='UTF-8'):
+    def header_to_unicode(self, encoding='UTF-8'):
         s = []
         # The XML declaration
         if self.standalone == 1:
@@ -404,13 +404,20 @@ class Document(Text.Text):
         # The document type
         if self.document_type is not None:
             pattern = '<!DOCTYPE %s\n' \
-                      '     PUBLIC "%s\n"' \
+                      '     PUBLIC "%s"\n' \
                       '    "%s">\n'
             s.append(pattern % self.document_type[:3])
+
+        return u''.join(s)
+
+
+    def to_unicode(self, encoding='UTF-8'):
+        s = []
+        s.append(self.header_to_unicode(encoding))
         # The children
         s.append(self.root_element.to_unicode(encoding))
 
-        return ''.join(s)
+        return u''.join(s)
 
 
     def __cmp__(self, other):

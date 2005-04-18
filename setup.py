@@ -88,7 +88,7 @@ tools are:
 """
 
 setup(name = "itools",
-      version = "0.8.X",
+      version = "0.8.0",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",

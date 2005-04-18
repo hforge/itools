@@ -1,4 +1,4 @@
-0.8.0 (2005/0?/??)
+0.8.0 (2005/04/18)
 
   URI
   - Correctly deal with empty references: "".

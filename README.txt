@@ -12,9 +12,13 @@ tools are:
    handlers are non persistent classes that add specific semantics to
    resources). This package also includes several handlers out of the
    box.                 
-                        
- * itools.xml -- XML infrastructure, includes resource handlers for XML,
-   XHTML and HTML documents. Plus the Simple Template Language.
+
+ * itools.xml -- XML infrastructure, includes resource handlers for XML
+   and the Simple Template Language.
+         
+ * itools.xhtml -- resource handlers for XHTML documents.
+
+ * itools.html -- resource handlers for HTML documents.
 
  * itools.i18n -- tools for language negotiation and text segmentation.
 
@@ -32,12 +36,17 @@ Unpack the package and run "python setup.py install", be sure to have
 the right permissions, maybe you will need to run the command as root.
 
 
-Download
---------
+Resources
+---------
 
-The releases and the CVS can be reached from SourceForge:
+Home
+http://www.ikaaro.org/itools
 
-  http://sourceforge.net/projects/lleu
+Mailing list
+http://in-girum.net/mailman/listinfo/ikaaro
+
+Bug Tracker
+http://in-girum.net/cgi-bin/bugzilla/index.cgi
 
 
 Author and license

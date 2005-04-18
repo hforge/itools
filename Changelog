@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-18 12:14:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
+
+    Summary:
+      resources, fix 'get_mimetype'
+    Revision:
+      itools--main--0.8--patch-81
+
+
+    modified files:
+     Changelog resources/base.py
+
+
 2005-04-18 10:16:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
 
     Summary:

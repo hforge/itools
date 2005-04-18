@@ -22,6 +22,7 @@ from types import StringTypes
 
 # Import from itools
 from itools import uri
+from itools import i18n
 
 
 class Resource(object):
@@ -102,24 +103,22 @@ class File(Resource):
         could start by a dot (a hidden file in Unix systems).
 
         XXX Use magic numbers too (like file -i).
-
-        XXX It does not work if name is 'itools-0.7.0.pdf', because it
-        thinks the extension is '0'.
         """
         name = self.get_name()
         if name is None:
             return None
         # Get the extension (use an heuristic)
         name = name.split('.')
-        if len(name) > 1:
-            if len(name) > 2:
-                extension = name[-2]
-            else:
-                extension = name[-1]
-            mimetype, encoding = mimetypes.guess_type('.%s' % extension)
-        else:
-            mimetype = 'application/octet-stream'
 
+        # XXX Filter the encoding (UTF-8, etc.)
+
+        # Filter the language
+        if name[-1] in i18n.languages:
+            name = name[:-1]
+
+        mimetype, encoding = mimetypes.guess_type('.'.join(name))
+        if mimetype is None:
+            return 'application/octet-stream'
         return mimetype
 
 

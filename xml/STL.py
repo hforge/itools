@@ -441,9 +441,7 @@ class STL(object):
 
         # Get the document
         document = self.handler
-        s = []
-        s.append(document.header_to_unicode())
-        s.extend(self.process(document.root_element, stack, repeat))
+        s = self.process(document.root_element, stack, repeat)
 
         return u''.join(s)
 

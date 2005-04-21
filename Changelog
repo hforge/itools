@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-04-21 10:53:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-84
+
+    Summary:
+      handlers, fix the CSV handler when called with an empty resource
+    Revision:
+      itools--main--0.8--patch-84
+
+
+    modified files:
+     Changelog handlers/CSV.py
+
+
 2005-04-18 16:17:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-83
 
     Summary:

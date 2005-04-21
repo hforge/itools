@@ -80,7 +80,16 @@ class Handler(object):
         if resource is None:
             resource = self.resource
 
-        self._save(resource)
+        transaction = get_transaction()
+        transaction.lock()
+        try:
+            self._save(resource)
+            if resource is self.resource:
+                if self in transaction:
+                    transaction.remove(self)
+        finally:
+            transaction.release()
+
         self.timestamp = self.resource.get_mtime()
 
 

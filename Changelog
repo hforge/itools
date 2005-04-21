@@ -2,6 +2,35 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.7
 #
 
+2005-04-21 15:23:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
+
+    Summary:
+      merge transaction improvements from the 0.8 branch
+    Revision:
+      itools--main--0.7--patch-68
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-76
+       handlers, now 'save' is atomic
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-77
+       handlers, fix folder's interaction with transactions
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-78
+       catalog, fix save
+    
+
+    modified files:
+     Changelog catalog/Catalog.py handlers/Folder.py
+     handlers/Handler.py handlers/transactions.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.8--patch-76
+     jdavid@itaapy.com--public/itools--main--0.8--patch-77
+     jdavid@itaapy.com--public/itools--main--0.8--patch-78
+
+
 2005-04-15 13:41:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
 
     Summary:

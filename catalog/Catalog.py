@@ -131,7 +131,8 @@ class Catalog(Folder):
         for field in fields.fields:
             if field.is_indexed:
                 iindex = self.get_handler('f%d' % field.number)
-                iindex.save()
+                iindex._save(iindex.resource)
+                iindex.timestamp = iindex.resource.get_mtime()
 
 
     #########################################################################

@@ -66,7 +66,7 @@ class Folder(Handler):
     # Load / Save
     #########################################################################
     def _load(self, resource):
-        # XXX This code may be optimized just checkig wether there is
+        # XXX This code may be optimized just checking wether there is
         # already an up-to-date handler in the cache, then it should
         # not be touched.
         self.cache = {}
@@ -253,10 +253,12 @@ class Folder(Handler):
         name = segment.name
 
         container = self.get_handler(path)
-        container.set_changed()
         # Check if there is already a handler with that name
         if name in container.get_handler_names():
             raise LookupError, 'there is already a handler named "%s"' % name
+
+        # Store the container in the transaction
+        container.set_changed()
         # Clean the 'removed_handlers' data structure if needed
         if name in container.removed_handlers:
             container.removed_handlers.remove(name)
@@ -275,8 +277,6 @@ class Folder(Handler):
 
 
     def del_handler(self, path):
-        self.set_changed()
-
         if not isinstance(path, uri.Path):
             path = uri.Path(path)
 
@@ -284,12 +284,15 @@ class Folder(Handler):
         name = segment.name
 
         container = self.get_handler(path)
-        # Event, on del handler
-        if hasattr(container, 'on_del_handler'):
-            container.on_del_handler(segment)
         # Check wether the handler really exists
         if name not in container.get_handler_names():
             raise LookupError, 'there is not any handler named "%s"' % name
+
+        # Store the container in the transaction
+        container.set_changed()
+        # Event, on del handler
+        if hasattr(container, 'on_del_handler'):
+            container.on_del_handler(segment)
         # Clean the 'added_handlers' data structure if needed
         if name in container.added_handlers:
             del container.added_handlers[name]

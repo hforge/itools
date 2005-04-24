@@ -105,7 +105,6 @@ class File(Resource, base.File):
 
 
 class Folder(Resource, base.Folder):
-    """ """
 
     def __init__(self, name=None):
         self.name = name
@@ -127,12 +126,12 @@ class Folder(Resource, base.Folder):
 
     def _set_file_resource(self, name, resource):
         data = resource.get_data()
-        self.resources[name] = File(data)
+        self.resources[name] = File(data, name=name)
         self.mtime = datetime.now()
 
 
     def _set_folder_resource(self, name, resource):
-        self.resources[name] = Folder()
+        self.resources[name] = Folder(name=name)
         self.mtime = datetime.now()
 
 

@@ -306,8 +306,10 @@ class Folder(Handler):
     # Other methods
     def copy_handler(self):
         resource = memory.Folder()
-        for name in self.resource.get_resource_names():
-            resource.set_resource(name, self.resource.get_resource(name))
+        for handler in self.traverse():
+            if handler is not self:
+                path = self.get_pathto(handler)
+                resource.set_resource(path, handler.resource)
         self.save(resource)
         return self.__class__(resource)
 

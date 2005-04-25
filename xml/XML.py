@@ -42,7 +42,7 @@ class Children(object):
             if isinstance(node, unicode):
                 # XXX This is equivalent to 'handlers.IO.Unicode.to_unicode',
                 # there should be a single place.
-                s.append(node.replace('<', '&lt;'))
+                s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             else:
                 s.append(node.to_unicode(encoding=encoding))
         return u''.join(s)

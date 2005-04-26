@@ -36,7 +36,7 @@ To get a feeling, let's start with an example:
     >>> from itools.xml import HTML
     >>> handler = HTML.Document(resource)
     >>> print handler
-    <itools.handlers.HTML.Document object at 0x40647b4c>
+    <itools.html.HTML.Document object at 0x40647b4c>
     >>> print handler.to_str()
     <HTML>
     <HEAD>
@@ -71,7 +71,7 @@ To get a feeling, let's start with an example:
 \end{enumerate}
 
 
-\subsection{One resource, many handlers}
+\subsubsection{One resource, many handlers}
 
 The relationship between resources to handlers is {\em 1} to {\em n}.
 While there may be several different handlers associated to the same
@@ -92,6 +92,15 @@ associated to:
     True
 \end{code}
 
+
+\section{Handler's state}
+
+\begin{figure}
+  \center
+  \includegraphics[width=\textwidth]{state.eps}
+  \caption{Handler's state}
+  \label{Figure: state}
+\end{figure}
 
 \subsection{Load}
 
@@ -200,7 +209,7 @@ parameter; in this case a memory resource will be built on the fly, let's
 see an example:
 
 \begin{code}
-    >>> from itools.xml import HTML
+    >>> from itools.html import HTML
     >>> handler = HTML.Document()
     >>> handler
     <itools.handlers.HTML.Document object at 0x403ee12c>

@@ -2,7 +2,7 @@ SOURCES = itools.tex itools.sty intro.tex uri.tex resources.tex files.tex \
 	files2.tex folders.tex xml.tex stl.tex i18n.tex addendum.tex \
 	style.tex arch.tex
 
-FIGURES = handlers.eps l10n.eps
+FIGURES = state.eps handlers.eps l10n.eps
 
 
 %.eps: %.dot

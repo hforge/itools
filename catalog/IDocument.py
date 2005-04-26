@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import datetime
 
@@ -32,7 +31,7 @@ class IndexedField(File):
         return IO.encode_uint32(0)
 
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         self.number_of_terms = IO.decode_uint32(resource[:4])
         self.terms = []
 
@@ -64,7 +63,7 @@ class StoredField(File):
         return IO.encode_string(data)
 
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         data = resource.get_data()
         self.value = IO.decode_string(data)[0]
 
@@ -85,6 +84,6 @@ class IDocument(Folder):
         return Folder._get_handler(self, segment, resource)
 
 
-    def _load(self, resource):
-        Folder._load(self, resource)
+    def _load_state(self, resource):
+        Folder._load_state(self, resource)
         self.document = None

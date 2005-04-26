@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 from sets import Set
 
 # Import from itools
@@ -106,7 +105,7 @@ class IIndexTree(File):
         return header
 
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         # The header
         self.version = IO.decode_version(resource[:4])
         self.number_of_slots = IO.decode_uint32(resource[4:8])
@@ -166,7 +165,7 @@ class IIndexDocuments(File):
         return version + number_of_slots + first_empty
         
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         # The header
         self.version = IO.decode_version(resource[:4])
         self.number_of_slots = IO.decode_uint32(resource[4:8])
@@ -442,8 +441,8 @@ class IIndex(Folder, Tree):
     ########################################################################
     # Load / Save
     ########################################################################
-    def _load(self, resource):
-        Folder._load(self, resource)
+    def _load_state(self, resource):
+        Folder._load_state(self, resource)
 
         self.tree_handler = tree_handler = self.get_handler('tree')
         self.docs_handler = docs_handler = self.get_handler('documents')
@@ -466,7 +465,7 @@ class IIndex(Folder, Tree):
         self.removed_terms = {}
 
 
-    def _save(self, resource):
+    def _save_state(self, resource):
         # XXX We don't use the given resource!!!
 
         # Removed terms

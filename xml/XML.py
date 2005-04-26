@@ -337,7 +337,7 @@ class Document(Text.Text):
     #######################################################################
     # Load
     #######################################################################
-    def _load(self, resource):
+    def _load_state(self, resource):
         """
         Builds a tree made of elements and raw data.
         """

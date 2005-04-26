@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from itools
 from Text import Text
 
@@ -120,8 +119,9 @@ def parse_line(line):
 
 
 class iCalendar(Text):
-    def _load(self, resource):
-        Text._load(self, resource)
+
+    def _load_state(self, resource):
+        Text._load_state(self, resource)
 
         for line in get_lines(self._data):
             line = list(parse_line(line))

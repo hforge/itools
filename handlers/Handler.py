@@ -61,24 +61,24 @@ class Handler(object):
 
     ########################################################################
     # Load / Save
-    def load(self, resource=None):
+    def load_state(self, resource=None):
         if resource is None:
             resource = self.resource
         else:
             self.set_changed()
 
-        self._load(resource)
+        self._load_state(resource)
         self.timestamp = resource.get_mtime()
 
 
-    def save(self, resource=None):
+    def save_state(self, resource=None):
         if resource is None:
             resource = self.resource
 
         transaction = get_transaction()
         transaction.lock()
         try:
-            self._save(resource)
+            self._save_state(resource)
             if resource is self.resource:
                 if self in transaction:
                     transaction.remove(self)

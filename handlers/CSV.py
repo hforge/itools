@@ -47,7 +47,7 @@ class CSV(Text):
     #########################################################################
     # Parsing
     #########################################################################
-    def _load(self, resource):
+    def _load_state(self, resource):
         data = resource.read()
 
 ##        data = [ x.strip() for x in data.splitlines() ]

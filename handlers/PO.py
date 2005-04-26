@@ -15,15 +15,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import re
 import time
 
 # Import from itools
 from File import File
 from Text import Text
-
 
 
 # Line types
@@ -296,7 +294,7 @@ class PO(Text):
         return id, comments, msgid, msgstr
 
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         """
         A PO file is made of entries, where entries are separated by one
         or more blank lines. Each entry consists of a msgid and a msgstr,
@@ -313,14 +311,13 @@ class PO(Text):
         There could be an empty msgid, it contains information about the PO
         file, like the Project-Id-Version or the PO-Revision-Date.
         """
-        File._load(self, resource)
         # Initialize messages
         self._messages = {}
 
         # Split the data by lines and intialize the line index
-        self.lines = self._data.split('\n') + ['']
+        data = resource.read()
+        self.lines = data.split('\n') + ['']
         self.line_number = 0
-        del self._data
 
         # Parse header
         entry_id, comments, msgid, msgstr = self.next_entry()

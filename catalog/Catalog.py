@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 from sets import Set
 import warnings
 
@@ -38,7 +37,9 @@ class Field(object):
         self.is_stored = is_stored
 
 
+
 class Fields(Text):
+
     def get_skeleton(self, fields=[]):
         skeleton = ''
         for number, field in enumerate(fields):
@@ -48,7 +49,7 @@ class Fields(Text):
         return skeleton
 
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         # Keep fields info (each item is an isntance of <Field>)
         self.fields = []
         # Keep the list of indexed fields (only its numbers)
@@ -104,8 +105,8 @@ class Catalog(Folder):
     #########################################################################
     # Load / Save state
     #########################################################################
-    def _load(self, resource):
-        Folder._load(self, resource)
+    def _load_state(self, resource):
+        Folder._load_state(self, resource)
         # The document number
         document_numbers = [ int(x[1:])
                              for x in self.resource.get_resource_names()
@@ -119,7 +120,7 @@ class Catalog(Folder):
         self.removed_documents = []
 
 
-    def _save(self, resource):
+    def _save_state(self, resource):
         # Remove documents
         for doc_number in self.removed_documents:
             name = 'd%07d' % doc_number
@@ -129,7 +130,7 @@ class Catalog(Folder):
         # Add documents
         for doc_number, document in self.added_documents.items():
             if document.has_changed():
-                document.save()
+                document.save_state()
             name = 'd%07d' % doc_number
             resource.set_resource(name, document.resource)
             self.cache[name] = None
@@ -139,7 +140,7 @@ class Catalog(Folder):
         for field in fields.fields:
             if field.is_indexed:
                 iindex = self.get_handler('f%d' % field.number)
-                iindex._save(iindex.resource)
+                iindex._save_state(iindex.resource)
                 iindex.timestamp = iindex.resource.get_mtime()
 
 

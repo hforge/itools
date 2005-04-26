@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import unittest
 from unittest import TestCase
 
@@ -50,9 +49,9 @@ class IITestCase(TestCase):
 
 class Document(Text):
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         # Pre-process (load as unicode)
-        Text._load(self, resource)
+        Text._load_state(self, resource)
         data = self._data
         del self._data
         # Extract the title and body
@@ -79,7 +78,7 @@ for resource_name in resource_names:
     resource = tests.get_resource(resource_name)
     document = Document(resource)
     catalog.index_document(document)
-catalog.save()
+catalog.save_state()
 
 
 

@@ -42,17 +42,17 @@ class File(Handler):
             resource = memory.File(data)
 
         self.resource = resource
-        self.load()
+        self.load_state()
 
 
     #########################################################################
     # Load / Save
     #########################################################################
-    def _load(self, resource):
+    def _load_state(self, resource):
         self._data = resource.get_data()
 
 
-    def _save(self, resource):
+    def _save_state(self, resource):
         resource.set_data(self.to_str())
 
 

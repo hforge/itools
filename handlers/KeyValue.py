@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import sets
 
 # Import from itools
@@ -24,10 +23,7 @@ from File import File
 from Text import Text
 
 
-
-
 class KeyValue(Text):
-
 
     #########################################################################
     # Parsing
@@ -35,9 +31,7 @@ class KeyValue(Text):
     __keys__ = []
     __keys_types__ = {}
 
-    def _load(self, resource):
-        File._load(self, resource)
-
+    def _load_state(self, resource):
         # Initializes the keys.
         self.keys = sets.Set()
         for key in self.__keys__:
@@ -47,10 +41,7 @@ class KeyValue(Text):
 
         # Parses the input data, stores the keys in self.keys and the values
         # as attributes.
-        data = self._data
-        del self._data
-
-        # Parse
+        data = resource.read()
         for line in data.split('\n'):
             line = line.strip()
             if line:
@@ -76,7 +67,6 @@ class KeyValue(Text):
                 # XXX Error!!
                 pass
             setattr(self, key, value)
-
 
 
     #########################################################################

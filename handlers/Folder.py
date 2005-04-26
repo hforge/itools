@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 from datetime import datetime
 from sets import Set
@@ -59,13 +58,13 @@ class Folder(Handler):
             self.resource = resource
 
         # Load
-        self.load()
+        self.load_state()
 
 
     #########################################################################
     # Load / Save
     #########################################################################
-    def _load(self, resource):
+    def _load_state(self, resource):
         # XXX This code may be optimized just checking wether there is
         # already an up-to-date handler in the cache, then it should
         # not be touched.
@@ -77,7 +76,7 @@ class Folder(Handler):
         self.removed_handlers = Set()
 
 
-    def _save(self, resource):
+    def _save_state(self, resource):
         # Remove handlers
         for name in self.removed_handlers:
             resource.del_resource(name)
@@ -149,7 +148,7 @@ class Folder(Handler):
     # XXX To be removed
     def _set_handler(self, name, handler):
         if handler.has_changed():
-            handler.save()
+            handler.save_state()
         self.resource.set_resource(name, handler.resource)
         self.cache[name] = None
         self.timestamp = self.resource.get_mtime()
@@ -218,7 +217,7 @@ class Folder(Handler):
                     # Hit (XXX we should check wether resource and
                     # handler.resource are the same or not)
                     if handler.is_outdated():
-                        handler.load()
+                        handler.load_state()
                 handler.is_virtual = False
             else:
                 # Virtual handler
@@ -230,7 +229,7 @@ class Folder(Handler):
                 handler.is_virtual = True
         # Set parent and name
         handler.parent = self
-        handler.name = segment.name
+        handler.name = name
 
         # Continue with the rest of the path
         if path:
@@ -310,7 +309,7 @@ class Folder(Handler):
             if handler is not self:
                 path = self.get_pathto(handler)
                 resource.set_resource(path, handler.resource)
-        self.save(resource)
+        self.save_state(resource)
         return self.__class__(resource)
 
 

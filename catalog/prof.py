@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import profile
 import sys
 from time import time
@@ -53,7 +52,7 @@ def create_catalog():
     if tests.has_handler('catalog'):
         tests.del_handler('catalog')
     tests.set_handler('catalog', catalog)
-    tests.save()
+    tests.save_state()
     catalog_resource = tests.resource.get_resource('catalog')
     catalog = Catalog(catalog_resource)
     print 'done'
@@ -84,7 +83,7 @@ def load_documents():
 def profile_indexing():
     for document in documents[:100]:
         catalog.index_document(document)
-    catalog.save()
+    catalog.save_state()
 
 
 def profile_search():

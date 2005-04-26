@@ -78,9 +78,9 @@ the resource into a data structure on memory.
 
     class TaskTracker(Text):
 
-        def _load(self, resource=None):
+        def _load_state(self, resource=None):
             # Load the resource as a unicode string
-            Text._load(self, resource)
+            Text._load_state(self, resource)
             # Split the raw data in lines.
             lines = self._data.splitlines()
             # Append None to signal the end of the data.
@@ -111,13 +111,13 @@ the resource into a data structure on memory.
 First, our handler class {\tt TaskTracker} inherits from the handler class
 {\tt Text}, because it is intended to manage a text file.
 
-The method {\tt \_load} is the one to implement, it is responsible to
-de-serialize the resource and build a data structure on memory that
+The method {\tt \_load\_state} is the one to implement, it is responsible
+to de-serialize the resource and build a data structure on memory that
 represents it.
 
-The first thing it does is to call the parent's {\tt \_load} method, which
-will read the resource's data and get a unicode string from it, which will
-be stored in the {\tt self.\_data} variable. This is an intermediary
+The first thing it does is to call the parent's {\tt \_load\_state} method,
+which will read the resource's data and get a unicode string from it, which
+will be stored in the {\tt self.\_data} variable. This is an intermediary
 representation, which will be discarded.
 
 The rest of the method process the raw data and builds a list of instances

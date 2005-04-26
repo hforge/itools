@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from itools.handlers
+# Import from itools
 from File import File
 
 
@@ -28,7 +27,7 @@ class Text(File):
     #########################################################################
     # Load
     #########################################################################
-    def _load(self, resource):
+    def _load_state(self, resource):
         data = resource.read()
         self._encoding = self.guess_encoding(data)
         self._data = unicode(data, self._encoding)

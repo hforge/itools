@@ -27,7 +27,7 @@ class MO(File):
     class_mimetypes = ['application/x-mo']
 
 
-    def _load(self, resource):
+    def _load_state(self, resource):
         self.translations = GNUTranslations(resource)
 
 

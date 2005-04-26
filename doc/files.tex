@@ -112,12 +112,12 @@ the resource with the timestamp every handler always keeps:
 
 Ok, the example above shows everything is alright. But what to do if it was
 not? then we would need to reload the resource, this is done with the
-{\tt load} method:
+{\tt load\_state} method:
 
 \begin{code}
     >>> print handler.timestamp
     2004-12-29 19:31:39.055367
-    >>> handler.load()
+    >>> handler.load_state()
     >>> print handler.timestamp
     2004-12-29 19:51:50.152499
 \end{code}
@@ -128,19 +128,19 @@ modify the resource with another program, see how the resource
 modification time is more recent than the handler's timestamp, then reload
 the handler and verify the handler is up-to-date now.
 
-The full prototype of the method {\tt load} follows:
+The full prototype of the method {\tt load\_state} follows:
 
 \begin{api}
-  {\tt load(resource=None)}\\
+  {\tt load\_state(resource=None)}\\
   - Loads the data from the given resource into the handler, if no
     resource is given, the one the handler is attached to will be used.
 \end{api}
 
-As you see the {\tt load} method accepts an optional parameter, a resource.
-If it is not given the handler will be reloaded from the resource it handles.
-But if other resource is passed it will be loaded from the given resource.
-Then we would reach a situation opposite to the one seen before: the resource
-would be outdated, as the handler would keep a newer version.
+As you see the {\tt load\_state} method accepts an optional parameter, a
+resource. If it is not given the handler will be reloaded from the resource
+it handles. But if other resource is passed it will be loaded from the given
+resource. Then we would reach a situation opposite to the one seen before:
+the resource would be outdated, as the handler would keep a newer version.
 
 
 \subsection{Save}
@@ -151,16 +151,16 @@ on the handler class (e.g. the API of an XML handler is different from the
 API of an image handler).
 
 To update the resource so both resource and handler are in sync again we
-use the {\tt save} method:
+use the {\tt save\_state} method:
 
 \begin{api}
-  {\tt save()}\\
+  {\tt save\_state()}\\
   - Saves the handler into the resource.
 \end{api}
 
-So {\tt load} and {\tt save} are two sides of the same coin. The first
-one reloads the handler with the resource, the second one saves the
-handler state in the resource.
+So {\tt load\_state} and {\tt save\_state} are two sides of the same coin.
+The first one reloads the handler with the resource, the second one saves
+the handler state in the resource.
 
 
 \subsection{Serialization and de-serialization}
@@ -180,12 +180,12 @@ seen up to now:
     transformed to a sequence of bytes.
 \end{description}
 
-Now it becomes obvious that the {\tt load} method what actually does is
-to de-serialize the resource and update the handler. And viceversa, the
-{\tt save} method serializes the handler and updates the resource.
+Now it becomes obvious that the {\tt load\_state} method what actually
+does is to de-serialize the resource and update the handler. And viceversa,
+the {\tt save\_state} method serializes the handler and updates the resource.
 
-Remember the method {\tt to\_str} we saw at the beginning? it is the
-one responsible for the serialization process. The {\tt save} method
+Remember the method {\tt to\_str} we saw at the beginning? it is the one
+responsible for the serialization process. The {\tt save\_state} method
 calls {\tt to\_str} first, and then updates the resource.
 
 

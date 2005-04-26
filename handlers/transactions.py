@@ -48,7 +48,7 @@ class Transaction(Set):
             try:
                 for handler in self:
                     if handler.resource.get_mtime() is not None:
-                        handler._save(handler.resource)
+                        handler._save_state(handler.resource)
                         handler.timestamp = handler.resource.get_mtime()
             except:
                 # XXX Right now we just rollback the transaction, so handlers

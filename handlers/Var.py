@@ -15,15 +15,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 """
 This module implements a parser for the Apache's type map files.
 For now we don't support the 'Body' keyword. See the documentation
 in Apache for the module 'mod_negotiation'.
 """
 
-
-# Import from itools.handlers
+# Import from itools
 from File import File
 from Text import Text
 
@@ -90,13 +88,13 @@ class Var(Text):
     #######################################################################
     # Parsing
     #######################################################################
-    def _load(self, resource):
-        File._load(self, resource)
+    def _load_state(self, resource):
         self.records = []
 
         i = 1
         state = 0
-        for line in self._data.split('\n'):
+        data = resource.read()
+        for line in data.split('\n'):
             line = line.strip()
 
             if line.startswith('#'):
@@ -115,9 +113,6 @@ class Var(Text):
                     state = 0
 
             i = i + 1
-
-        # Remove data
-        del self._data
 
 
     ########################################################################

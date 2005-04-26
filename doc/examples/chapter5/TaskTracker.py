@@ -43,9 +43,9 @@ class TaskTracker(Text):
     #########################################################################
     # Load & Save
     #########################################################################
-    def _load(self, resource=None):
+    def _load_state(self, resource=None):
         # Load the resource as a unicode string
-        Text._load(self, resource)
+        Text._load_state(self, resource)
         # Split the raw data in lines.
         lines = self._data.splitlines()
         # Append None to signal the end of the data.

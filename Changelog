@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-04-26 16:07:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-6
+
+    Summary:
+      merge fix from the 0.8 branch
+    Revision:
+      itools--main--0.9--patch-6
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-84
+       handlers, fix the CSV handler when called with an empty resource
+    
+
+    modified files:
+     Changelog handlers/CSV.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.8--patch-84
+
+
 2005-04-26 16:06:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-5
 
     Summary:

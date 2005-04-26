@@ -26,12 +26,18 @@ from Text import Text
 
 def parse(data, schema=None):
     encoding = Text.guess_encoding(data)
-    dialect = csv.Sniffer().sniff(data[:1000])
+    # Build the reader
+    if data:
+        dialect = csv.Sniffer().sniff(data[:1000])
+        reader = csv.reader(data.splitlines(), dialect)
+    else:
+        reader = csv.reader(data.splitlines())
+    # Add type
     if schema is None:
-        for line in csv.reader(data.splitlines(), dialect):
+        for line in reader:
             yield [ unicode(x, encoding) for x in line ]
     else:
-        for line in csv.reader(data.splitlines(), dialect):
+        for line in reader:
             yield [ schema[i].decode(value)
                     for i, value in enumerate(line) ]
 

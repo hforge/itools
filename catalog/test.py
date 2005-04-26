@@ -27,6 +27,7 @@ from IIndex import IIndex
 
 
 class IITestCase(TestCase):
+
     def test_hit(self):
         ii = IIndex()
         ii.index_term(u'hello', 0, 0)
@@ -83,6 +84,7 @@ catalog.save_state()
 
 
 class CatalogTestCase(TestCase):
+
     def test_hit(self):
         documents = catalog.search(body='forget')
         doc_numbers = [ x.__number__ for x in documents ]
@@ -116,8 +118,6 @@ class CatalogTestCase(TestCase):
 ##        documents = catalog.search(body='plano')
 ##        doc_numbers = [ x.__number__ for x in documents ]
 ##        self.assertEqual(doc_numbers, [])
-
-
 
 
 

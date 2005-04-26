@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import unittest
 from unittest import TestCase
@@ -66,11 +65,6 @@ class IOTestCase(TestCase):
         value = '20050217'
         encoded_value = IO.encode_version(value)
         self.assertEqual(IO.decode_version(encoded_value), value)
-
-
-
-
-
 
 
 

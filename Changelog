@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-04-27 08:46:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-9
+
+    Summary:
+      documentation, continue with the handler's state section
+    Revision:
+      itools--main--0.9--patch-9
+
+
+    modified files:
+     Changelog doc/files.tex doc/state.dia
+
+
 2005-04-26 21:34:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-8
 
     Summary:

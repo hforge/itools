@@ -95,12 +95,22 @@ associated to:
 
 \section{Handler's state}
 
+A handler is a non-persitent object, it stores in volatile memory a data
+structure that represents the resource's content. For example, the
+Figure~\ref{Figure: state} shows at the left an XML file, and at the
+right the state of the handler as a tree of XML elements.
+
 \begin{figure}
   \center
   \includegraphics[width=\textwidth]{state.eps}
   \caption{Handler's state}
   \label{Figure: state}
 \end{figure}
+
+The state of a handler is stored within the instance variable {\tt state},
+what this variable contains depends on the handler, e.g. an element tree
+for XML documents, a mapping from message to translation for PO files, or
+just a unicode string for plain text files.
 
 \subsection{Load}
 

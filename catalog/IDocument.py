@@ -32,28 +32,33 @@ class IndexedField(File):
 
 
     def _load_state(self, resource):
-        self.number_of_terms = IO.decode_uint32(resource[:4])
-        self.terms = []
+        state = self.state
+
+        state.number_of_terms = IO.decode_uint32(resource[:4])
+        state.terms = []
 
         data = resource[4:]
-        for i in range(self.number_of_terms):
+        for i in range(state.number_of_terms):
             term, data = IO.decode_string(data)
-            self.terms.append(term)
+            state.terms.append(term)
 
 
     def add_term(self, term):
-        self.number_of_terms += 1
-        self.terms.append(term)
+        state = self.state
+
+        state.number_of_terms += 1
+        state.terms.append(term)
         # Update the resource
-        self.resource[:4] = IO.encode_uint32(self.number_of_terms)
+        self.resource[:4] = IO.encode_uint32(state.number_of_terms)
         self.resource.append(IO.encode_string(term))
         # Set timestamp
         self.timestamp = self.resource.get_mtime()
 
 
     def to_str(self):
-        return IO.encode_uint32(self.number_of_terms) \
-               + ''.join([ IO.encode_string(x) for x in self.terms ])
+        state = self.state
+        return IO.encode_uint32(state.number_of_terms) \
+               + ''.join([ IO.encode_string(x) for x in state.terms ])
 
 
 
@@ -64,12 +69,12 @@ class StoredField(File):
 
 
     def _load_state(self, resource):
-        data = resource.get_data()
-        self.value = IO.decode_string(data)[0]
+        data = resource.read()
+        self.state.value = IO.decode_string(data)[0]
 
 
     def to_str(self):
-        return IO.encode_string(self.value)
+        return IO.encode_string(self.state.value)
 
 
 

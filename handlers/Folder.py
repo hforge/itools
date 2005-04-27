@@ -22,7 +22,7 @@ from sets import Set
 # Import from itools
 from itools.resources import base, memory
 from itools import uri
-from itools.handlers.Handler import Handler
+from itools.handlers.Handler import Handler, State
 from itools.handlers.transactions import get_transaction
 
 
@@ -46,7 +46,8 @@ class Folder(Handler):
 
 
     def __init__(self, resource=None, **kw):
-        self.cache = {}
+        self.state = State()
+        self.state.cache = {}
 
         if resource is None:
             self.resource = memory.Folder()
@@ -68,31 +69,33 @@ class Folder(Handler):
         # XXX This code may be optimized just checking wether there is
         # already an up-to-date handler in the cache, then it should
         # not be touched.
-        self.cache = {}
-        for name in self.resource.get_resource_names():
-            self.cache[name] = None
+        state = self.state
+        state.cache = {}
+        for name in resource.get_resource_names():
+            state.cache[name] = None
 
-        self.added_handlers = {}
-        self.removed_handlers = Set()
+        state.added_handlers = {}
+        state.removed_handlers = Set()
 
 
     def _save_state(self, resource):
+        state = self.state
         # Remove handlers
-        for name in self.removed_handlers:
+        for name in state.removed_handlers:
             resource.del_resource(name)
             # Update the cache
-            del self.cache[name]
-        self.removed_handlers = Set()
+            del state.cache[name]
+        state.removed_handlers = Set()
 
         # Add handlers
-        for name, handler in self.added_handlers.items():
+        for name, handler in state.added_handlers.items():
             if name in self._get_handler_names():
                 resource.del_resource(name)
             resource.set_resource(name, handler.resource)
             handler.resource = resource.get_resource(name)
             # Update the cache
-            self.cache[name] = None
-        self.added_handlers = {}
+            state.cache[name] = None
+        state.added_handlers = {}
 
 
     #########################################################################
@@ -128,7 +131,7 @@ class Folder(Handler):
     # API (private)
     #########################################################################
     def _get_handler_names(self):
-        return self.cache.keys()
+        return self.state.cache.keys()
 
 
     def _get_handler(self, segment, resource):
@@ -150,14 +153,14 @@ class Folder(Handler):
         if handler.has_changed():
             handler.save_state()
         self.resource.set_resource(name, handler.resource)
-        self.cache[name] = None
+        self.state.cache[name] = None
         self.timestamp = self.resource.get_mtime()
 
 
     # XXX To be removed
     def _del_handler(self, name):
         self.resource.del_resource(name)
-        del self.cache[name]
+        del self.state.cache[name]
         self.timestamp = self.resource.get_mtime()
 
 
@@ -167,8 +170,8 @@ class Folder(Handler):
     def get_handler_names(self, path='.'):
         container = self.get_handler(path)
         handler_names = [ x for x in container._get_handler_names()
-                          if x not in container.removed_handlers ]
-        handler_names.extend(container.added_handlers.keys())
+                          if x not in container.state.removed_handlers ]
+        handler_names.extend(container.state.added_handlers.keys())
         return handler_names
 
 
@@ -200,19 +203,20 @@ class Folder(Handler):
         segment, path = path[0], path[1:]
         name = segment.name
 
-        if name in self.added_handlers:
+        state = self.state
+        if name in state.added_handlers:
             # It is a new handler (added but not yet saved)
-            handler = self.added_handlers[name]
+            handler = state.added_handlers[name]
         else:
-            if name in self.cache and name not in self.removed_handlers:
+            if name in state.cache and name not in state.removed_handlers:
                 # Real handler
-                handler = self.cache[name]
+                handler = state.cache[name]
                 if handler is None:
                     # Miss
                     resource = self.resource.get_resource(name)
                     handler = self._get_handler(segment, resource)
                     # Update the cache
-                    self.cache[name] = handler
+                    state.cache[name] = handler
                 else:
                     # Hit (XXX we should check wether resource and
                     # handler.resource are the same or not)
@@ -221,9 +225,9 @@ class Folder(Handler):
                 handler.is_virtual = False
             else:
                 # Virtual handler
-                if name in self.cache:
+                if name in state.cache:
                     # Hit. Clean the cache (virtual handlers are not cached)
-                    del self.cache[name]
+                    del state.cache[name]
                 # Maybe we found a virtual handler
                 handler = self._get_virtual_handler(segment)
                 handler.is_virtual = True
@@ -259,15 +263,15 @@ class Folder(Handler):
         # Store the container in the transaction
         container.set_changed()
         # Clean the 'removed_handlers' data structure if needed
-        if name in container.removed_handlers:
-            container.removed_handlers.remove(name)
+        if name in container.state.removed_handlers:
+            container.state.removed_handlers.remove(name)
         # Make a copy of the handler
         handler = handler.copy_handler()
         handler.parent = self
         handler.name = name
         handler.is_virtual = False
         # Add the handler
-        container.added_handlers[name] = handler
+        container.state.added_handlers[name] = handler
         # Event, on set handler
         if hasattr(container, 'on_set_handler'):
             container.on_set_handler(segment, handler, **kw)
@@ -293,10 +297,10 @@ class Folder(Handler):
         if hasattr(container, 'on_del_handler'):
             container.on_del_handler(segment)
         # Clean the 'added_handlers' data structure if needed
-        if name in container.added_handlers:
-            del container.added_handlers[name]
+        if name in container.state.added_handlers:
+            del container.state.added_handlers[name]
         # Mark the handler as deleted
-        container.removed_handlers.add(name)
+        container.state.removed_handlers.add(name)
         # Set timestamp
         self.timestamp = datetime.now()
 

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -28,9 +28,10 @@ class Text(File):
     # Load
     #########################################################################
     def _load_state(self, resource):
+        state = self.state
         data = resource.read()
-        self._encoding = self.guess_encoding(data)
-        self._data = unicode(data, self._encoding)
+        state.encoding = self.guess_encoding(data)
+        state.data = unicode(data, state.encoding)
 
 
     def guess_encoding(cls, data):
@@ -64,11 +65,11 @@ class Text(File):
     # API
     #########################################################################
     def get_encoding(self):
-        return self._encoding
+        return self.state.encoding
 
 
     def to_unicode(self, encoding='UTF-8'):
-        return self._data
+        return self.state.data
 
 
     def to_str(self, encoding='UTF-8'):

@@ -110,7 +110,30 @@ right the state of the handler as a tree of XML elements.
 The state of a handler is stored within the instance variable {\tt state},
 what this variable contains depends on the handler, e.g. an element tree
 for XML documents, a mapping from message to translation for PO files, or
-just a unicode string for plain text files.
+just a unicode string for plain text files. For example:
+
+\begin{code}
+    >>> 
+\end{code}
+
+The process to build the handler state from the content stored in the
+resource is called {\em load}. The process to update the resource content
+with the changes made to the handler state is called {\em save}.
+
+There are a couple of scenarios we want to deal with:
+
+\begin{itemize}
+  \item Once the handler is loaded, the resource is modified by other
+    means, for example you open the file with an editor and modify it.
+
+    Then the handler is outdated, its state represents an older version
+    of the resource.
+
+  \item After loading the handler, its state is modified ...
+\end{itemize}
+
+
+
 
 \subsection{Load}
 

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -32,12 +32,14 @@ class KeyValue(Text):
     __keys_types__ = {}
 
     def _load_state(self, resource):
+        state = self.state
+
         # Initializes the keys.
-        self.keys = sets.Set()
+        keys = sets.Set()
         for key in self.__keys__:
-            if not hasattr(self, key):
-                self.keys.add(key)
-                setattr(self, key, '')
+            if not hasattr(state, key):
+                keys.add(key)
+                setattr(state, key, '')
 
         # Parses the input data, stores the keys in self.keys and the values
         # as attributes.
@@ -50,12 +52,12 @@ class KeyValue(Text):
                 except ValueError:
                     pass
                 else:
-                    self.keys.add(key)
-                    setattr(self, key, value)
+                    keys.add(key)
+                    setattr(state, key, value)
 
         # Convert the values to the right type.
-        for key in self.keys:
-            value = getattr(self, key)
+        for key in keys:
+            value = getattr(state, key)
             type = self.__keys_types__.get(key, 'str')
             if type == 'str':
                 pass
@@ -66,15 +68,18 @@ class KeyValue(Text):
             else:
                 # XXX Error!!
                 pass
-            setattr(self, key, value)
+            setattr(state, key, value)
+
+        # Set state
+        state.keys = keys
 
 
     #########################################################################
     # API
     #########################################################################
     def to_unicode(self, encoding=None):
-        data = u''
-        for key in self.keys:
+        data = []
+        for key in self.state.keys:
             value = getattr(self, key)
             t = self.__keys_types__.get(key, 'str')
             if t == 'str':
@@ -86,6 +91,6 @@ class KeyValue(Text):
             else:
                 # XXX Error!!
                 pass
-            data += u'%s:%s\n' % (key, value)
-        return data
+            data.append(u'%s:%s\n' % (key, value))
+        return u''.join(data)
 

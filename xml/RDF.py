@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from itools
 import XML
 
@@ -30,20 +29,22 @@ class RDF(XML.Document):
     def _load_state(self, resource):
         XML.Document._load_state(self, resource)
 
-        self.graph = {}
+        graph = {}
         for node in self.traverse():
             if isinstance(node, XML.Element):
                 if isinstance(node, Description):
                     subject = node.get_attribute('about')
-                    self.graph.setdefault(subject, [])
+                    graph.setdefault(subject, [])
                 else:
                     parent = node.parent
                     if isinstance(parent, Description):
                         subject = parent.get_attribute('about')
                         predicate = node.name
                         object = unicode(node.children)
-                        self.graph[subject].append((predicate, object))
+                        graph[subject].append((predicate, object))
 
+        # Set state
+        self.state.graph = graph
 
 
 ########################################################################

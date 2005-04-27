@@ -28,11 +28,11 @@ class MO(File):
 
 
     def _load_state(self, resource):
-        self.translations = GNUTranslations(resource)
+        self.state.translations = GNUTranslations(resource)
 
 
     def gettext(self, message):
-        return self.translations.ugettext(message)
+        return self.state.translations.ugettext(message)
 
 
 File.register_handler_class(MO)

@@ -47,6 +47,7 @@ class POError(Exception):
 
 
 class POSyntaxError(Exception):
+
     def __init__(self, line_number, line_type=None):
         self.line_number = line_number
         self.line_type = line_type
@@ -312,7 +313,8 @@ class PO(Text):
         file, like the Project-Id-Version or the PO-Revision-Date.
         """
         # Initialize messages
-        self._messages = {}
+        state = self.state
+        state.messages = {}
 
         # Split the data by lines and intialize the line index
         data = resource.read()
@@ -330,22 +332,22 @@ class PO(Text):
                     if key == 'Content-Type':
                         mimetype, charset = value.split(';')
                         charset = charset.strip()
-                        self._encoding = charset[len('charset='):]
+                        state.encoding = charset[len('charset='):]
         else:
             # Defaults, XXX guess it instead??
-            self._encoding = 'utf8'
+            state.encoding = 'utf8'
 
         # Add entries
         while entry_id is not None:
             # Check for duplicated messages
-            if entry_id in self._messages:
+            if entry_id in state.messages:
                 raise POError, \
                       'msgid at line %d is duplicated' % self.line_number
 
             # Get the comments and the msgstr in unicode
-            comments = [ unicode(x, self._encoding) for x in comments ]
-            msgid = [ unicode(x, self._encoding) for x in msgid ]
-            msgstr = [ unicode(x, self._encoding) for x in msgstr ]
+            comments = [ unicode(x, state.encoding) for x in comments ]
+            msgid = [ unicode(x, state.encoding) for x in msgid ]
+            msgstr = [ unicode(x, state.encoding) for x in msgstr ]
 
             # Add the message
             self._set_message(msgid, msgstr, comments)
@@ -357,31 +359,31 @@ class PO(Text):
         del self.line_number
 
 
-
     #######################################################################
     # API
     #######################################################################
     def get_msgids(self):
-        return self._messages.keys()
+        return self.state.messages.keys()
 
     msgids = property(get_msgids, None, None, "")
 
 
     def get_messages(self):
-        return self._messages.values()
+        return self.state.messages.values()
 
     messages = property(get_messages, None, None, "")
 
 
     def get_msgstr(self, msgid):
-        message = self._messages.get(msgid)
+        message = self.state.messages.get(msgid)
         if message:
             return ''.join(message.msgstr)
         return None
 
 
     def to_unicode(self, encoding=None):
-        return '\n'.join([ x.to_unicode() for x in self._messages.values() ])
+        messages = self.state.messages
+        return '\n'.join([ x.to_unicode() for x in messages.values() ])
 
 
     def set_message(self, msgid, msgstr=[u''], comments=[], references={}):
@@ -396,7 +398,7 @@ class PO(Text):
             msgstr = [msgstr]
 
         id = ''.join(msgid)
-        self._messages[id] = Message(comments, msgid, msgstr, references)
+        self.state.messages[id] = Message(comments, msgid, msgstr, references)
 
 
 Text.register_handler_class(PO)

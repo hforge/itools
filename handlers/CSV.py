@@ -15,13 +15,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import csv
 
 # Import from itools
 from Text import Text
-
 
 
 def parse(data, schema=None):
@@ -59,8 +57,9 @@ class CSV(Text):
 ##        data = [ x.strip() for x in data.splitlines() ]
 ##        data = [ x for x in data if x ]
 
-        self.lines = list(parse(data, self.schema))
-        self._encoding = self.guess_encoding(data)
+        state = self.state
+        state.lines = list(parse(data, self.schema))
+        state.encoding = self.guess_encoding(data)
 
 
     #########################################################################
@@ -68,7 +67,7 @@ class CSV(Text):
     #########################################################################
     def to_unicode(self, encoding=None):
         lines = []
-        for line in self.lines:
+        for line in self.state.lines:
             line = [ u'"%s"' % x for x in line ]
             lines.append(u','.join(line))
         return u'\n'.join(lines)

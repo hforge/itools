@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from itools
 from itools.handlers import File, IO
 from itools.xml import XML
@@ -124,15 +123,16 @@ class Document(XHTML.Document):
     # Load/Save
     #######################################################################
     def _load_state(self, resource):
-        self._encoding = 'UTF-8'
-        self.document_type = None
-        self.children = []
+        state = self.state
+        state.encoding = 'UTF-8'
+        state.document_type = None
+        state.children = []
 
         stack = []
         data = resource.read()
         for event, value, line_number in parser.Parser().parse(data):
             if event == parser.DOCUMENT_TYPE:
-                self.document_type = value
+                state.document_type = value
             elif event == parser.START_ELEMENT:
                 schema = elements_schema.get(value, {'type': BlockElement})
                 element_class = schema['type']
@@ -142,54 +142,38 @@ class Document(XHTML.Document):
                 if stack:
                     stack[-1].set_element(element)
                 else:
-                    self.children.append(element)
+                    state.children.append(element)
             elif event == parser.ATTRIBUTE:
                 name, value = value
                 type = IO.Unicode
-                value = type.decode(value, self._encoding)
+                value = type.decode(value, state.encoding)
                 stack[-1].set_attribute(None, name, value)
             elif event == parser.COMMENT:
                 comment = XML.Comment(value)
                 if stack:
                     stack[-1].set_comment(comment)
                 else:
-                    self.children.append(comment)
+                    state.children.append(comment)
             elif event == parser.TEXT:
                 if stack:
-                    stack[-1].set_text(value, self._encoding)
+                    stack[-1].set_text(value, state.encoding)
                 else:
-                    value = IO.Unicode.decode(value, self._encoding)
-                    self.children.append(value)
+                    value = IO.Unicode.decode(value, state.encoding)
+                    state.children.append(value)
 
 
     def to_unicode(self, encoding='UTF-8'):
-        s = u''
+        s = []
         # The declaration
-        if self.document_type is not None:
-            s = u'<!%s>' % self.document_type
+        if self.state.document_type is not None:
+            s.append(u'<!%s>' % self.state.document_type)
         # The children
-        for child in self.children:
+        for child in self.state.children:
             if isinstance(child, unicode):
-                s +=  child
+                s.append(child)
             else:
-                s += child.to_unicode(encoding)
-        return s
-
-
-    def to_str(self, encoding='UTF-8'):
-        s = u''
-        # The declaration
-        if self.document_type is not None:
-            s = u'<!%s>' % self.document_type
-        # The children
-        for child in self.children:
-            # XXX Fix <meta http-equiv="Content-Type" content="...">
-            if isinstance(child, unicode):
-                s += child
-            else:
-                s += child.to_unicode(encoding)
-
-        return s.encode(encoding)
+                s.append(child.to_unicode(encoding))
+        return u''.join(s)
 
 
     #######################################################################
@@ -197,7 +181,7 @@ class Document(XHTML.Document):
     #######################################################################
     def get_root_element(self):
         # XXX Probably this should work like XML
-        for child in self.children:
+        for child in self.state.children:
             if isinstance(child, Element):
                 return child
 

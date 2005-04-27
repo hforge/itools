@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@ from Text import Text
 
 
 class Record(object):
+
     def __init__(self, uri=None, type=None, language=None, encoding=None,
                  length=None):
         self.uri = uri
@@ -78,8 +79,6 @@ class Record(object):
         if self.length:
             s += u'Content-Length: %s\n' % self.length
         return s
-        
-        
 
 
 
@@ -89,7 +88,7 @@ class Var(Text):
     # Parsing
     #######################################################################
     def _load_state(self, resource):
-        self.records = []
+        records = []
 
         i = 1
         state = 0
@@ -109,10 +108,13 @@ class Var(Text):
                 if line:
                     record.set_header(line)
                 else:
-                    self.records.append(record)
+                    records.append(record)
                     state = 0
 
             i = i + 1
+
+        # Set state
+        self.state.records = records
 
 
     ########################################################################
@@ -129,4 +131,4 @@ class Var(Text):
     # API
     #######################################################################
     def to_unicode(self, encoding=None):
-        return '\n'.join([ x.to_unicode() for x in self.records ])
+        return '\n'.join([ x.to_unicode() for x in self.state.records ])

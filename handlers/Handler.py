@@ -36,6 +36,12 @@ class AcquisitionError(LookupError):
     pass
 
 
+
+class State(object):
+    pass
+
+
+
 class Handler(object):
     """
     This class represents a resource handler, where a resource can be

@@ -21,7 +21,7 @@ import datetime
 
 # Import from itools
 from itools.resources import base, memory
-from Handler import Handler
+from Handler import Handler, State
 
 
 
@@ -42,6 +42,7 @@ class File(Handler):
             resource = memory.File(data)
 
         self.resource = resource
+        self.state = State()
         self.load_state()
 
 
@@ -49,7 +50,8 @@ class File(Handler):
     # Load / Save
     #########################################################################
     def _load_state(self, resource):
-        self._data = resource.get_data()
+        state = self.state
+        state.data = resource.get_data()
 
 
     def _save_state(self, resource):
@@ -112,7 +114,7 @@ class File(Handler):
     # Serialization
     #########################################################################
     def to_str(self):
-        return self._data
+        return self.state.data
 
 
     #########################################################################
@@ -121,7 +123,6 @@ class File(Handler):
     def copy_handler(self):
         resource = memory.File(self.to_str())
         return self.__class__(resource)
-
 
 
 Handler.register_handler_class(File)

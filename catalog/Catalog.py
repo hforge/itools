@@ -50,12 +50,13 @@ class Fields(Text):
 
 
     def _load_state(self, resource):
+        state = self.state
         # Keep fields info (each item is an isntance of <Field>)
-        self.fields = []
+        state.fields = []
         # Keep the list of indexed fields (only its numbers)
-        self.indexed_fields = []
+        state.indexed_fields = []
         # Keeps a mapping from field name to field number
-        self.field_numbers = {}
+        state.field_numbers = {}
 
         data = resource.get_data()
         for line in data.split('\n'):
@@ -66,19 +67,19 @@ class Fields(Text):
                 is_indexed = bool(int(is_indexed))
                 is_stored = bool(int(is_stored))
                 field = Field(number, name, type, is_indexed, is_stored)
-                self.fields.append(field)
+                state.fields.append(field)
                 if is_indexed:
-                    self.indexed_fields.append(number)
-                self.field_numbers[name] = number
+                    state.indexed_fields.append(number)
+                state.field_numbers[name] = number
 
 
     def unicode(self):
-        data = u''
+        data = []
         for field in fields:
-            data += u'%d#%s#%s#%d#%d\n' % (field.number, field.name,
-                                           field.type, field.is_indexed,
-                                           field.is_stored)
-        return data
+            data.append(u'%d#%s#%s#%d#%d\n' % (field.number, field.name,
+                                               field.type, field.is_indexed,
+                                               field.is_stored))
+        return u''.join(data)
 
 
 
@@ -107,37 +108,39 @@ class Catalog(Folder):
     #########################################################################
     def _load_state(self, resource):
         Folder._load_state(self, resource)
+
+        state = self.state
         # The document number
-        document_numbers = [ int(x[1:])
-                             for x in self.resource.get_resource_names()
+        document_numbers = [ int(x[1:]) for x in resource.get_resource_names()
                              if x.startswith('d') ]
         if document_numbers:
-            self.document_number = max(document_numbers) + 1
+            state.document_number = max(document_numbers) + 1
         else:
-            self.document_number = 0
+            state.document_number = 0
         # Added and removed documents
-        self.added_documents = {}
-        self.removed_documents = []
+        state.added_documents = {}
+        state.removed_documents = []
 
 
     def _save_state(self, resource):
+        state = self.state
         # Remove documents
-        for doc_number in self.removed_documents:
+        for doc_number in state.removed_documents:
             name = 'd%07d' % doc_number
             resource.del_resource(name)
-            del self.cache[name]
-        self.removed_documents = []
+            del state.cache[name]
+        state.removed_documents = []
         # Add documents
-        for doc_number, document in self.added_documents.items():
+        for doc_number, document in state.added_documents.items():
             if document.has_changed():
                 document.save_state()
             name = 'd%07d' % doc_number
             resource.set_resource(name, document.resource)
-            self.cache[name] = None
-        self.added_documents = {}
+            state.cache[name] = None
+        state.added_documents = {}
         # Save indexes
         fields = self.get_handler('fields')
-        for field in fields.fields:
+        for field in fields.state.fields:
             if field.is_indexed:
                 iindex = self.get_handler('f%d' % field.number)
                 iindex._save_state(iindex.resource)
@@ -148,8 +151,9 @@ class Catalog(Folder):
     # Private API
     #########################################################################
     def get_new_document_number(self):
-        document_number = self.document_number
-        self.document_number += 1
+        state = self.state
+        document_number = state.document_number
+        state.document_number += 1
         return document_number
 
 
@@ -160,13 +164,14 @@ class Catalog(Folder):
         # Mark as changed
         self.set_changed()
 
+        state = self.state
         # Create the document
         doc_number = self.get_new_document_number()
         idoc = IDocument()
-        self.added_documents[doc_number] = idoc
+        state.added_documents[doc_number] = idoc
         # Index
         fields = self.get_handler('fields')
-        for field in fields.fields:
+        for field in fields.state.fields:
             # Extract the field value from the document
             if isinstance(document, dict):
                 value = document.get(field.name)
@@ -218,17 +223,18 @@ class Catalog(Folder):
         # Mark as changed
         self.set_changed()
 
-        if doc_number in self.added_documents:
-            document = self.added_documents.pop(doc_number)
+        state = self.state
+        if doc_number in state.added_documents:
+            document = state.added_documents.pop(doc_number)
         else:
             document = self.get_handler('d%07d' % doc_number)
-            self.removed_documents.append(doc_number)
+            state.removed_documents.append(doc_number)
 
         for name in document.resource.get_resource_names():
             if name.startswith('i'):
                 field = document.get_handler(name)
                 ii = self.get_handler('f' + name[1:])
-                for term in field.terms:
+                for term in field.state.terms:
                     ii.unindex_term(term, doc_number)
 
 
@@ -237,9 +243,9 @@ class Catalog(Folder):
             # A simple query
             fields = self.get_handler('fields')
             documents = {}
-            field_number = fields.field_numbers[query.name]
-            field = fields.fields[field_number]
-            if field_number in fields.indexed_fields:
+            field_number = fields.state.field_numbers[query.name]
+            field = fields.state.fields[field_number]
+            if field_number in fields.state.indexed_fields:
                 tree = self.get_handler('f%d' % field_number)
                 # XXX Analyse
                 value = query.value
@@ -270,7 +276,7 @@ class Catalog(Folder):
     def _search(self, query=None, **kw):
         # Build the query if it is passed through keyword parameters
         if query is None:
-            field_numbers = self.get_handler('fields').field_numbers
+            field_numbers = self.get_handler('fields').state.field_numbers
             for key, value in kw.items():
                 if key in field_numbers:
                     atom = Query.Simple(key, value)
@@ -304,23 +310,24 @@ class Catalog(Folder):
         documents.sort()
         documents.reverse()
         # Build the document objects
+        state = self.state
         fields = self.get_handler('fields')
         for document in documents:
             weight, doc_number = document
             # Load the IDocument
-            if doc_number in self.added_documents:
-                doc_handler = self.added_documents[doc_number]
+            if doc_number in state.added_documents:
+                doc_handler = state.added_documents[doc_number]
             else:
                 doc_handler = self.get_handler('d%07d' % doc_number)
             # Get the stored fields
             if doc_handler.document is None:
                 document = Document(doc_number)
-                for field in fields.fields:
+                for field in fields.state.fields:
                     if field.is_stored:
                         name = 's%d' % field.number
                         if doc_handler.has_handler(name):
                             stored_field = doc_handler.get_handler(name)
-                            value = stored_field.value
+                            value = stored_field.state.value
                         else:
                             value = None
                         setattr(document, field.name, value)

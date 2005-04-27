@@ -21,7 +21,6 @@ import logging
 from sets import Set
 import sys
 import warnings
-from xml.parsers import expat
 
 # Import from itools
 from itools.handlers import File, Text, IO
@@ -302,14 +301,6 @@ class Document(Text.Text):
 
     class_mimetypes = ['text/xml', 'application/xml']
 
-
-    # Default values
-    xml_version = '1.0'
-    source_encoding = 'UTF-8'
-    standalone = -1
-    document_type = None
-    
-
     #######################################################################
     # The Document Types registry
     #######################################################################
@@ -341,12 +332,21 @@ class Document(Text.Text):
         """
         Builds a tree made of elements and raw data.
         """
+        state = self.state
+        # Default values
+        state.xml_version = '1.0'
+        state.source_encoding = 'UTF-8'
+        state.standalone = -1
+        state.document_type = None
+        # Parse
         stack = []
         for event, value, line_number in parser.parse(resource.read()):
             if event == parser.XML_DECLARATION:
-                self.xml_version, self.source_encoding, self.standalone = value
+                state.xml_version = value[0]
+                state.source_encoding = value[1]
+                state.standalone = value[2]
             elif event == parser.DOCUMENT_TYPE:
-                self.document_type = value
+                state.document_type = value
             elif event == parser.START_ELEMENT:
                 namespace, prefix, local_name = value
                 namespace = namespaces.get_namespace(namespace)
@@ -363,7 +363,7 @@ class Document(Text.Text):
                 if stack:
                     stack[-1].set_element(element)
                 else:
-                    self.root_element = element
+                    state.root_element = element
             elif event == parser.ATTRIBUTE:
                 namespace_uri, prefix, local_name, value = value
                 namespace = namespaces.get_namespace(namespace_uri)
@@ -392,21 +392,23 @@ class Document(Text.Text):
     # API
     #######################################################################
     def header_to_unicode(self, encoding='UTF-8'):
+        state = self.state
+
         s = []
         # The XML declaration
-        if self.standalone == 1:
+        if state.standalone == 1:
             pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>\n'
-        elif self.standalone == 0:
+        elif state.standalone == 0:
             pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>\n'
         else:
             pattern = u'<?xml version="%s" encoding="%s"?>\n'
-        s.append(pattern % (self.xml_version, encoding))
+        s.append(pattern % (state.xml_version, encoding))
         # The document type
-        if self.document_type is not None:
+        if state.document_type is not None:
             pattern = '<!DOCTYPE %s\n' \
                       '     PUBLIC "%s"\n' \
                       '    "%s">\n'
-            s.append(pattern % self.document_type[:3])
+            s.append(pattern % state.document_type[:3])
 
         return u''.join(s)
 
@@ -415,7 +417,7 @@ class Document(Text.Text):
         s = []
         s.append(self.header_to_unicode(encoding))
         # The children
-        s.append(self.root_element.to_unicode(encoding))
+        s.append(self.state.root_element.to_unicode(encoding))
 
         return u''.join(s)
 
@@ -423,15 +425,14 @@ class Document(Text.Text):
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        # XXX Remains to compare the declaration and the document type
-        return cmp(self.root_element, other.root_element)
+        return cmp(self.state.__dict__, other.state.__dict__)
 
 
     def get_root_element(self):
         """
         Returns the root element (XML documents have one root element).
         """
-        return self.root_element
+        return self.state.root_element
 
 
     def traverse(self):
@@ -447,38 +448,19 @@ class Document(Text.Text):
             yield x, context
 
 
+Text.Text.register_handler_class(Document)
+
+
 #############################################################################
 # XML Factory
 #############################################################################
-class StopOracle(Exception):
-    pass
-
-
-class Oracle(object):
-    def guess_doctype(self, resource):
-        data = resource.get_data()
-        self._doctype = None
-
-        parser = expat.ParserCreate()
-        parser.StartDoctypeDeclHandler = self.start_doctype_handler
-        parser.StartElementHandler = self.start_element_handler
-        try:
-            parser.Parse(data, True)
-        except StopOracle:
-            doctype = self._doctype
-            del self._doctype
-            return doctype
-
-
-    def start_doctype_handler(self, name, system_id, public_id,
-                              has_internal_subset):
-        self._doctype = public_id
-        raise StopOracle
-
-
-    def start_element_handler(self, nale, attrs):
-        raise StopOracle
-
+def guess_doctype(resource):
+    for event, value, line_number in parser.parse(resource.read()):
+        if event == parser.DOCUMENT_TYPE:
+            return value
+        elif event == parser.START_ELEMENT:
+            return None
+    return None
 
 
 def get_handler(resource):
@@ -486,17 +468,9 @@ def get_handler(resource):
     Factory for XML handlers. From a given resource, try to guess its document
     type, and return the proper XML handler.
     """
-    oracle = Oracle()
-
-    doctype = oracle.guess_doctype(resource)
+    doctype = guess_doctype(resource)
     if registry.has_doctype(doctype):
         handler_class = registry.get_doctype(doctype)
     else:
         handler_class = Document
     return handler_class(resource)
-
-
-Text.Text.register_handler_class(Document)
-
-
-

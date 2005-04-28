@@ -108,19 +108,39 @@ right the state of the handler as a tree of XML elements.
 \end{figure}
 
 The state of a handler is stored within the instance variable {\tt state},
-what this variable contains depends on the handler, e.g. an element tree
-for XML documents, a mapping from message to translation for PO files, or
-just a unicode string for plain text files. For example:
+what this variable contains depends on the handler class; e.g. an element
+tree for XML documents, a mapping from message to translation for PO files,
+or just a unicode string for plain text files. For example:
 
 \begin{code}
-    >>> 
+    >>> from itools.xhtml import XHTML
+    >>> handler = XHTML.Document()
+    >>> print handler
+    <itools.xhtml.XHTML.Document object at 0xb7cae8ac>
+    >>> print handler.state
+    <itools.handlers.Handler.State object at 0xb7cae92c>
+    >>>
+    >>> from pprint import pprint
+    >>> pprint(handler.state.__dict__.keys())
+    ['xml_version',
+     'source_encoding',
+     'document_type',
+     'root_element',
+     'standalone']
 \end{code}
 
-The process to build the handler state from the content stored in the
-resource is called {\em load}. The process to update the resource content
-with the changes made to the handler state is called {\em save}.
+The state variable should never be accessed directly, instead the API each
+handler provides should be used.
 
-There are a couple of scenarios we want to deal with:
+We call {\em load} to the process of building the handler state from the
+data stored in the resource. And viceversa, we call {\em save} to the
+process of updating the resource with the changes made to the handler
+state.
+
+So, while the handler and the resource are synced inmediately after the
+handler is loaded, this is to say, they contain the same information,
+one or the other may change, hence becoming desynchronized. There are a
+couple of scenarios we want to deal with:
 
 \begin{itemize}
   \item Once the handler is loaded, the resource is modified by other

@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Juan David Ib��ez Palomar <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,18 @@ class TextTestCase(TestCase):
     def test_hello(self):
         words = list(Analysers.Text(u'Hello world'))
         self.assertEqual(words, [(u'hello', 0), (u'world', 1)])
+
+
+    def test_accents(self):
+        words = list(Analysers.Text(u'Te doy una canción'))
+        self.assertEqual(words, [(u'te', 0), (u'doy', 1), (u'una', 2),
+                                 (u'canción', 3)])
+
+
+    def test_russian(self):
+        text = u'Это наш дом'
+        words = list(Analysers.Text(text))
+        self.assertEqual(words, [(u'это', 0), (u'наш', 1),  (u'дом', 2)])
 
 
 

@@ -43,6 +43,7 @@ import Handler
 import CSV
 import File
 import Folder
+import Image
 import MO
 import PO
 import Text

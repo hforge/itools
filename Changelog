@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-04-28 13:46:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
+
+    Summary:
+      catalog, use built-in set type (Python 2.4)
+    Revision:
+      itools--main--0.9--patch-12
+
+    So now "itools.catalog" depends on Python 2.4, the rest of itools
+    still can and must work with Python 2.3
+
+    modified files:
+     Changelog catalog/Analysers.py catalog/Catalog.py
+     catalog/IIndex.py
+
+
 2005-04-28 08:32:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
 
     Summary:

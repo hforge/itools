@@ -16,7 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from the Standard Library
-from sets import Set
 import warnings
 
 # Import from itools
@@ -35,7 +34,6 @@ class Field(object):
         self.type = type
         self.is_indexed = is_indexed
         self.is_stored = is_stored
-
 
 
 class Fields(Text):
@@ -202,7 +200,7 @@ class Catalog(Folder):
 
                 # Inverted index (search)
                 ii = self.get_handler('f%d' % field.number)
-                terms = Set()
+                terms = set()
                 # Tokenize
                 for word, position in analyser(value):
                     ii.index_term(word, doc_number, position)

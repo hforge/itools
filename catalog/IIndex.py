@@ -15,9 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Import from the Standard Library
-from sets import Set
-
 # Import from itools
 from itools.handlers.File import File
 from itools.handlers.Folder import Folder
@@ -511,7 +508,7 @@ class IIndex(Folder):
                 del state.added_terms[term][doc_number]
                 return
         # Removed terms
-        documents = state.removed_terms.setdefault(term, Set())
+        documents = state.removed_terms.setdefault(term, set())
         documents.add(doc_number)
 
 

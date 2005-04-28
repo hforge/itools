@@ -15,14 +15,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Import from the Standard Library
-from sets import Set
-
 # Import from itools
 from itools import uri
 
 
-common_words = Set(['about', 'an', 'and', 'are', 'at', 'as', 'be', 'from',
+common_words = set(['about', 'an', 'and', 'are', 'at', 'as', 'be', 'from',
                     'for', 'how', 'in', 'is', 'it', 'of', 'on', 'or', 'that',
                     'the', 'this', 'to', 'was', 'what', 'when', 'where',
                     'which', 'who', 'why', 'will'])
@@ -82,7 +79,7 @@ def Bool(value):
 
 def Keyword(value):
     if value:
-        if isinstance(value, list) or isinstance(value, Set):
+        if isinstance(value, list) or isinstance(value, set):
             for x in value:
                 yield unicode(x), 0
         else:

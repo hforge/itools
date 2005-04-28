@@ -546,7 +546,7 @@ class STL(object):
                 pass
             elif isinstance(content, str):
                 content = [unicode(content)]
-            elif isinstance(content, int):
+            elif isinstance(content, (int, long)):
                 content = [unicode(content)]
             else:
                 msg = 'expression "%(expr)s" evaluates to value of' \

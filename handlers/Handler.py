@@ -53,7 +53,7 @@ class Handler(object):
     # is the root of a tree).
     parent = None
     name = ''
-    is_virtual = False
+    real_handler = None
 
 
     ########################################################################

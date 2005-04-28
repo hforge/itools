@@ -217,12 +217,14 @@ class Folder(Handler):
                     handler = self._get_handler(segment, resource)
                     # Update the cache
                     state.cache[name] = handler
+                    # Set parent and name
+                    handler.parent = self
+                    handler.name = name
                 else:
                     # Hit (XXX we should check wether resource and
                     # handler.resource are the same or not)
                     if handler.is_outdated():
                         handler.load_state()
-                handler.is_virtual = False
             else:
                 # Virtual handler
                 if name in state.cache:
@@ -230,10 +232,10 @@ class Folder(Handler):
                     del state.cache[name]
                 # Maybe we found a virtual handler
                 handler = self._get_virtual_handler(segment)
-                handler.is_virtual = True
-        # Set parent and name
-        handler.parent = self
-        handler.name = name
+                handler = build_virtual_handler(handler)
+                # Set parent and name
+                handler.parent = self
+                handler.name = name
 
         # Continue with the rest of the path
         if path:
@@ -269,7 +271,6 @@ class Folder(Handler):
         handler = handler.copy_handler()
         handler.parent = self
         handler.name = name
-        handler.is_virtual = False
         # Add the handler
         container.state.added_handlers[name] = handler
         # Event, on set handler
@@ -356,3 +357,23 @@ class Folder(Handler):
 
 
 Handler.register_handler_class(Folder)
+
+
+
+def build_virtual_handler(handler):
+    virtual_handler = Handler.__new__(handler.__class__)
+
+    # XXX Use weak references?
+    virtual_handler.resource = handler.resource
+    virtual_handler.state = handler.state
+    virtual_handler.timestamp = handler.timestamp
+
+    # Keep a reference to the real handler
+    virtual_handler.real_handler = handler
+
+    # XXX Horrible hack
+    if hasattr(handler, 'stl'):
+        virtual_handler.stl = handler.stl
+
+    return virtual_handler
+    

@@ -71,6 +71,8 @@ tools are:
    resources). This package also includes several handlers out of the
    box.
 
+ * itools.gettext -- resource handlers for PO and MO files.
+
  * itools.xml -- XML infrastructure, includes resource handlers for XML
    and the Simple Template Language.
 
@@ -100,6 +102,7 @@ setup(name = "itools",
                   'itools.uri',
                   'itools.resources',
                   'itools.handlers',
+                  'itools.gettext',
                   'itools.catalog',
                   'itools.i18n',
                   'itools.workflow',

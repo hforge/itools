@@ -31,28 +31,20 @@ example there is a handler to manage XML files, another to manage PO
 files, etc...
 """
 
-
 # Import from the Standard Library
 import mimetypes
 
 # Import from itools
-from itools.resources import base, get_resource
-
-# Import from itools.handlers
+from itools.resources import get_resource
 import Handler
 import CSV
 import File
 import Folder
 import Image
-import MO
-import PO
 import Text
 
 
-mimetypes.add_type('text/x-po', '.po')
-mimetypes.add_type('application/x-mo', '.mo')
 mimetypes.add_type('text/comma-separated-values', '.csv')
-mimetypes.add_type('application/xhtml+xml', '.xhtml')
 
 
 def get_handler(uri):

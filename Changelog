@@ -2,6 +2,36 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-04-28 18:05:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
+
+    Summary:
+      handlers, move the PO and MO handlers to the new package gettext
+    Revision:
+      itools--main--0.9--patch-16
+
+
+    new files:
+     gettext/.arch-ids/=id gettext/.arch-ids/__init__.py.id
+     gettext/__init__.py
+
+    modified files:
+     Changelog gettext/MO.py gettext/PO.py handlers/__init__.py
+     setup.py xhtml/__init__.py
+
+    renamed files:
+     handlers/.arch-ids/MO.py.id
+       ==> gettext/.arch-ids/MO.py.id
+     handlers/.arch-ids/PO.py.id
+       ==> gettext/.arch-ids/PO.py.id
+     handlers/MO.py
+       ==> gettext/MO.py
+     handlers/PO.py
+       ==> gettext/PO.py
+
+    new directories:
+     gettext gettext/.arch-ids
+
+
 2005-04-28 16:33:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
 
     Summary:

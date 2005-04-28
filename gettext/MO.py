@@ -19,7 +19,7 @@
 from gettext import GNUTranslations
 
 # Import from itools
-from File import File
+from itools.handlers.File import File
 
 
 class MO(File):

@@ -20,8 +20,8 @@ import re
 import time
 
 # Import from itools
-from File import File
-from Text import Text
+from itools.handlers.File import File
+from itools.handlers.Text import Text
 
 
 # Line types

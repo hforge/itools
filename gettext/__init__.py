@@ -19,7 +19,9 @@
 import mimetypes
 
 # Import from itools
-import XHTML
+import MO
+import PO
 
 
-mimetypes.add_type('application/xhtml+xml', '.xhtml')
+mimetypes.add_type('text/x-po', '.po')
+mimetypes.add_type('application/x-mo', '.mo')

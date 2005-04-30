@@ -15,14 +15,44 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import mimetypes
 from types import StringTypes
 
 # Import from itools
 from itools import uri
 from itools import i18n
+
+
+class FileName(object):
+
+    def decode(cls, data):
+        data = data.split('.')
+
+        # Default values
+        type = None
+        language = None
+
+        # XXX The encoding (UTF-8, etc.)
+
+        # The language
+        if data[-1] in i18n.languages:
+            language = data[-1]
+            data = data[:-1]
+
+        # The type
+        if '.%s' % data[-1] in mimetypes.types_map:
+            type = data[-1]
+            data = data[:-1]
+
+        # The name
+        name = '.'.join(data)
+
+        return name, type, language
+
+    decode = classmethod(decode)
+
+
 
 
 class Resource(object):
@@ -107,19 +137,17 @@ class File(Resource):
         name = self.get_name()
         if name is None:
             return None
-        # Get the extension (use an heuristic)
-        name = name.split('.')
 
-        # XXX Filter the encoding (UTF-8, etc.)
+        # Parse the filename
+        name, type, language = FileName.decode(name)
 
-        # Filter the language
-        if name[-1] in i18n.languages:
-            name = name[:-1]
+        # Get the mimetype
+        if type is not None:
+            mimetype, encoding = mimetypes.guess_type('.%s' % type)
+            if mimetype is not None:
+                return mimetype
 
-        mimetype, encoding = mimetypes.guess_type('.'.join(name))
-        if mimetype is None:
-            return 'application/octet-stream'
-        return mimetype
+        return 'application/octet-stream'
 
 
     def __getitem__(self, index):

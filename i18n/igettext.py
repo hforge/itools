@@ -16,8 +16,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import optparse
 import os
 import tempfile
@@ -25,6 +24,7 @@ import tempfile
 # Import from itools
 from itools.resources import get_resource
 from itools.handlers import get_handler, PO
+from itools import gettext
 from itools.xhtml import XHTML
 
 

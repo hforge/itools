@@ -15,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import logging
 from sets import Set
@@ -23,7 +22,8 @@ import sys
 import warnings
 
 # Import from itools
-from itools.handlers import File, Text, IO
+from itools.handlers import File, Text
+from itools import types
 from itools.xml.exceptions import XMLError
 from itools.xml import namespaces
 from itools.xml import parser
@@ -39,7 +39,7 @@ class Children(object):
         s = []
         for node in value:
             if isinstance(node, unicode):
-                # XXX This is equivalent to 'handlers.IO.Unicode.to_unicode',
+                # XXX This is equivalent to 'types.Unicode.to_unicode',
                 # there should be a single place.
                 s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             else:
@@ -209,7 +209,7 @@ class Element(object):
 
 
     def set_text(self, text, encoding='UTF-8'):
-        text = IO.Unicode.decode(text, encoding)
+        text = types.Unicode.decode(text, encoding)
         children = self.children
         if children and isinstance(children[-1], unicode):
             children[-1] = children[-1] + text

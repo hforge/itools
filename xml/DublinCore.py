@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools.handlers import IO
+from itools import types
 from itools.xml import XML, namespaces
 
 
@@ -24,17 +24,17 @@ schema = {
     'contributor': {},
     'coverage': {},
     'creator': {},
-    'date': {'type': IO.DateTime},
-    'description': {'type': IO.Unicode, 'default': u''},
+    'date': {'type': types.DateTime},
+    'description': {'type': types.Unicode, 'default': u''},
     'format': {},
-    'identifier': {'type': IO.String},
-    'language': {'type': IO.String, 'default': None},
-    'publisher': {'type': IO.Unicode},
+    'identifier': {'type': types.String},
+    'language': {'type': types.String, 'default': None},
+    'publisher': {'type': types.Unicode},
     'relation': {},
     'rights': {},
     'source': {},
     'subject': {},
-    'title': {'type': IO.Unicode, 'default': u''},
+    'title': {'type': types.Unicode, 'default': u''},
     'type': {},
     }
 
@@ -55,7 +55,7 @@ class Element(XML.Element):
     def set_text(self, text, encoding='UTF-8'):
         text = text.strip()
         type = schema[self.name]['type']
-        if type is IO.Unicode:
+        if type is types.Unicode:
             self.value = type.decode(text, encoding)
         else:
             self.value = type.decode(text)

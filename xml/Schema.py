@@ -15,12 +15,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import warnings
 
 # Import from Python
-from itools.handlers import IO
+from itools import types
 from itools.xml import XML, namespaces
 
 
@@ -57,7 +56,7 @@ class SimpleType(XML.Element):
     def set_text(self, text, encoding='UTF-8'):
         text = text.strip()
         type, default = self.schema[self.name]
-        if type is IO.Unicode:
+        if type is types.Unicode:
             self.value = type.decode(text, encoding)
         else:
             self.value = type.decode(text)

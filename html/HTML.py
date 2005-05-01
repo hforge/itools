@@ -16,7 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools.handlers import File, IO
+from itools import types
+from itools.handlers import File
 from itools.xml import XML
 from itools.xhtml import XHTML
 from itools.html import parser
@@ -145,7 +146,7 @@ class Document(XHTML.Document):
                     state.children.append(element)
             elif event == parser.ATTRIBUTE:
                 name, value = value
-                type = IO.Unicode
+                type = types.Unicode
                 value = type.decode(value, state.encoding)
                 stack[-1].set_attribute(None, name, value)
             elif event == parser.COMMENT:
@@ -158,7 +159,7 @@ class Document(XHTML.Document):
                 if stack:
                     stack[-1].set_text(value, state.encoding)
                 else:
-                    value = IO.Unicode.decode(value, state.encoding)
+                    value = types.Unicode.decode(value, state.encoding)
                     state.children.append(value)
 
 

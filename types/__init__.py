@@ -15,12 +15,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import datetime
+import mimetypes
 
 # Import from itools
 from itools import uri
+from itools import i18n
 
 
 
@@ -196,3 +197,56 @@ class URI(object):
         return unicode(value)
 
     to_unicode = classmethod(to_unicode)
+
+
+
+class FileName(object):
+
+    def decode(cls, data):
+        data = data.split('.')
+
+        # Default values
+        type = None
+        language = None
+
+        # XXX The encoding (UTF-8, etc.)
+
+        # The language
+        if data[-1] in i18n.languages:
+            language = data[-1]
+            data = data[:-1]
+
+        # The type
+        if '.%s' % data[-1] in mimetypes.types_map:
+            type = data[-1]
+            data = data[:-1]
+
+        # The name
+        name = '.'.join(data)
+
+        return name, type, language
+
+    decode = classmethod(decode)
+
+
+
+class QName(object):
+
+    def decode(cls, data):
+        if ':' in data:
+            return tuple(data.split(':'))
+
+        return None, data
+
+    decode = classmethod(decode)
+
+
+    def encode(cls, value):
+        if value[0] is None:
+            return value[1]
+        return '%s:%s' % value
+
+    encode = classmethod(encode)
+
+
+

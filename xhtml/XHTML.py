@@ -15,15 +15,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 from copy import copy
 import re
-from sets import Set
 from StringIO import StringIO
 
 # Import from itools
-from itools.handlers import IO
+from itools import types
 from itools.xml import XML, namespaces
 from itools import i18n
 
@@ -126,23 +124,23 @@ elements_schema = {
 
 
 attributes_schema = {
-    'abbr': {'type': IO.Unicode},
-    'accept-charsert': {'type': IO.String},
-    'accept': {'type': IO.String},
-    'accesskey': {'type': IO.Unicode},
-    'action': {'type': IO.URI},
-    'align': {'type': IO.String},
-    'alink': {'type': IO.String},
-    'alt': {'type': IO.Unicode},
-    'archive': {'type': IO.Unicode},
-    'axis': {'type': IO.Unicode},
-    'background': {'type': IO.URI},
-    'bgcolor': {'type': IO.String},
-    'border': {'type': IO.Integer},
+    'abbr': {'type': types.Unicode},
+    'accept-charsert': {'type': types.String},
+    'accept': {'type': types.String},
+    'accesskey': {'type': types.Unicode},
+    'action': {'type': types.URI},
+    'align': {'type': types.String},
+    'alink': {'type': types.String},
+    'alt': {'type': types.Unicode},
+    'archive': {'type': types.Unicode},
+    'axis': {'type': types.Unicode},
+    'background': {'type': types.URI},
+    'bgcolor': {'type': types.String},
+    'border': {'type': types.Integer},
 
-    'href': {'type': IO.URI},
-    'src': {'type': IO.URI},
-    'title': {'type': IO.Unicode},
+    'href': {'type': types.URI},
+    'src': {'type': types.URI},
+    'title': {'type': types.Unicode},
     }
 
 
@@ -159,7 +157,7 @@ class Namespace(namespaces.AbstractNamespace):
 
 
     def get_attribute_schema(name):
-        return attributes_schema.get(name, {'type': IO.Unicode})
+        return attributes_schema.get(name, {'type': types.Unicode})
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 

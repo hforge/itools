@@ -2,6 +2,32 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-01 08:34:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-22
+
+    Summary:
+      move "handlers.IO" to the new package "types"
+    Revision:
+      itools--main--0.9--patch-22
+
+
+    new files:
+     types/.arch-ids/=id
+
+    modified files:
+     Changelog html/HTML.py resources/base.py setup.py
+     types/__init__.py xhtml/XHTML.py xml/DublinCore.py
+     xml/Schema.py xml/XML.py xml/namespaces.py
+
+    renamed files:
+     handlers/.arch-ids/IO.py.id
+       ==> types/.arch-ids/__init__.py.id
+     handlers/IO.py
+       ==> types/__init__.py
+
+    new directories:
+     types types/.arch-ids
+
+
 2005-04-30 09:25:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
 
     Summary:

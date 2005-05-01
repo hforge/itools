@@ -15,12 +15,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import warnings
 
 # Import from itools
 from itools.xml.exceptions import XMLError
+from itools import types
 
 
 
@@ -39,10 +39,6 @@ While namespace prefixes are local to an XML document, it is sometimes
 useful to refer to a namespace through its prefix. This feature must
 be used carefully, collisions 
 """
-
-# Import from itools
-from itools.handlers import IO
-
 
 
 #############################################################################
@@ -162,7 +158,7 @@ class DefaultNamespace(AbstractNamespace):
 
 
     def get_attribute_schema(name):
-        return {'type': IO.String}
+        return {'type': types.String}
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 
@@ -176,8 +172,8 @@ class XMLNamespace(AbstractNamespace):
 
     def get_attribute_schema(name):
         if name == 'lang':
-            return {'type': IO.String}
-        return {'type': IO.Unicode}
+            return {'type': types.String}
+        return {'type': types.Unicode}
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 
@@ -190,7 +186,7 @@ class XMLNSNamespace(AbstractNamespace):
 
 
     def get_attribute_schema(name):
-        return {'type': IO.String}
+        return {'type': types.String}
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 

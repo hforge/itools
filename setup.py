@@ -63,6 +63,9 @@ tools are:
 
  * itools.uri -- an API to manage URIs, to identify and locate resources.
 
+ * itools.types -- several type marshalers for basic types (integer, date,
+   etc.) and not so basic types (filenames, XML qualified names, etc.)
+
  * itools.resources -- an abstraction layer over resources that let to
    manage them with a consistent API, independently of where they are stored.
 
@@ -100,6 +103,7 @@ setup(name = "itools",
       package_dir = {'itools': ''},
       packages = ['itools',
                   'itools.uri',
+                  'itools.types',
                   'itools.resources',
                   'itools.handlers',
                   'itools.gettext',

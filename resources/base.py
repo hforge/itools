@@ -17,41 +17,11 @@
 
 # Import from the Standard Library
 import mimetypes
-from types import StringTypes
 
 # Import from itools
 from itools import uri
 from itools import i18n
-
-
-class FileName(object):
-
-    def decode(cls, data):
-        data = data.split('.')
-
-        # Default values
-        type = None
-        language = None
-
-        # XXX The encoding (UTF-8, etc.)
-
-        # The language
-        if data[-1] in i18n.languages:
-            language = data[-1]
-            data = data[:-1]
-
-        # The type
-        if '.%s' % data[-1] in mimetypes.types_map:
-            type = data[-1]
-            data = data[:-1]
-
-        # The name
-        name = '.'.join(data)
-
-        return name, type, language
-
-    decode = classmethod(decode)
-
+from itools.types import FileName
 
 
 
@@ -79,7 +49,7 @@ class Resource(object):
             pass
         elif isinstance(uri_reference, uri.Path):
             uri_reference = uri.get_reference(str(uri_reference))
-        elif isinstance(uri_reference, StringTypes):
+        elif isinstance(uri_reference, (str, unicode)):
             uri_reference = uri.get_reference(uri_reference)
         else:
             raise TypeError, \

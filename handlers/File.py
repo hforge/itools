@@ -19,6 +19,7 @@
 import datetime
 
 # Import from itools
+from itools import uri
 from itools.resources import base, memory
 from Handler import Handler, State
 
@@ -122,6 +123,25 @@ class File(Handler):
     def copy_handler(self):
         resource = memory.File(self.to_str())
         return self.__class__(resource)
+
+
+    def get_handler(self, path):
+        # Be sure path is a Path
+        if not isinstance(path, uri.Path):
+            path = uri.Path(path)
+
+        if path.is_absolute():
+            root = self.get_root()
+            path = str(path)[1:]
+            return root.get_handler(path)
+
+        if len(path) == 0:
+            return self
+
+        if path[0].name == '..':
+            return self.parent.get_handler(path[1:])
+
+        raise LookupError, 'file handlers can not be traversed'
 
 
 Handler.register_handler_class(File)

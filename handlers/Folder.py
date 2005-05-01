@@ -192,6 +192,11 @@ class Folder(Handler):
         if not isinstance(path, uri.Path):
             path = uri.Path(path)
 
+        if path.is_absolute():
+            root = self.get_root()
+            path = str(path)[1:]
+            return root.get_handler(path)
+
         if len(path) == 0:
             return self
 

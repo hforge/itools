@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-02 17:53:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-85
+
+    Summary:
+      xhtml, fix "get_messages"
+    Revision:
+      itools--main--0.8--patch-85
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-04-21 10:53:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-84
 
     Summary:

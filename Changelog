@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-02 06:58:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
+
+    Summary:
+      handlers, fix "set_handler"
+    Revision:
+      itools--main--0.9--patch-24
+
+
+    modified files:
+     Changelog handlers/Folder.py
+
+
 2005-05-01 18:13:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-23
 
     Summary:

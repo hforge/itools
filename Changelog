@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-03 13:08:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-87
+
+    Summary:
+      i18n, fix igettext
+    Revision:
+      itools--main--0.8--patch-87
+
+
+    modified files:
+     Changelog i18n/igettext.py
+
+
 2005-05-03 12:59:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-86
 
     Summary:

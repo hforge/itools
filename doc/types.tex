@@ -1,0 +1,116 @@
+
+\chapter{Type marshalers}
+
+
+The module {\tt itools.types} provides deserialization and serialization
+code for several simple types, from built-in types like intergers or dates
+to slightly more complex types like URIs or XML qualified names.
+
+All of them are implemented as the couple of class methods {\tt decode}
+and {\tt encode}, for example:
+
+\begin{code}
+    >>> from itools.types import DateTime
+    >>> datetime = DateTime.decode('2005-05-02 16:47')
+    >>> datetime
+    datetime.datetime(2005, 5, 2, 16, 47)
+    >>> DateTime.encode(datetime)
+    '2005-05-02 16:47'
+\end{code}
+
+This approach, to implement the serialization/deserialization code separate
+from the type itself, allows to avoid subclassig built-in types, what has a
+performance impact.
+
+This also illustrates one of the software principles behind the itools coding,
+different programming aspects should be cleary distinct in the implementation
+and programming interface.
+
+
+\section{Built-in types}
+
+The Python built-in types supported, including those provided by the
+standard library, are integers, text strings (unicode), byte strings,
+booleans, dates and datetimes.
+
+\subsubsection{Integers ({\tt itools.types.Integer})}
+
+An integer number is serialized using ASCII characters. This means a call to
+{\tt Integer.decode(x)} is equivalent to {\tt int(x)}, and
+{\tt Integer.encode(x)} does the same than {\tt str(x)}.
+
+\subsubsection{Unicode strings ({\tt itools.types.Unicode})}
+
+Unicode strings are serialized using the UTF-8 encoding (by default).
+
+\subsubsection{Byte strings ({\tt itools.types.String})}
+
+A byte string does not needs to be serialized or deserialized, the
+output is always equal to the input.
+
+\subsubsection{Booleans ({\tt itools.types.Boolean})}
+
+Boolean values are encoded with the ``0'' character for the {\em false}
+value and with the ``1'' character for the {\em true} value.
+
+\subsubsection{Dates ({\tt itools.types.Date})}
+
+Dates are encoded following the ISO 8601 standard: ``YYYY-MM-DD''.
+
+\subsubsection{Datetimes ({\tt itools.types.DateTime})}
+
+Date and time is encoded with the pattern: ``YYYY-MM-DD hh:mm''.
+
+\section{Other types}
+
+Type marshalers are provided for other three types: URIs, filenames
+and XML qualified names.
+
+
+\subsubsection{URIs ({\tt itools.types.URI})}
+
+The URI decoder will build and return one of the URI reference objects
+defined in the {\tt itools.uri} package, usually it will be an instance
+of the class {\tt itools.uri.generic.Reference}.
+
+
+\subsubsection{Filenames ({\tt itools.types.FileName})}
+
+Usually filenames include extensions to indicate the file type, and
+sometimes other information like the language. The filename decoder
+will parse a filename and return a tuple where the first element is
+the filename, the second element is the file type, and the last element
+is the language. For example:
+
+\begin{code}
+    >>> from itools.types import FileName
+    >>> FileName.decode('index.html.en')
+    ('index', 'html', 'en')
+    >>> FileName.decode('index.html')
+    ('index', 'html', None)
+    >>> FileName.decode('index')
+    ('index', None, None)
+\end{code}
+
+
+\subsubsection{XML qualified names ({\tt itools.types.QName})}
+
+An XML qualified name has two parts, the prefix and the local name, so
+our decoder will return a tuple with these two elements:
+
+\begin{code}
+    >>> from itools.types import QName
+    >>> QName.decode('dc:title')
+    ('dc', 'title')
+    >>> QName.decode('href')
+    (None, 'href')
+\end{code}
+
+The encoder expects a two element tuple:
+
+\begin{code}
+    >>> QName.encode(('dc', 'title'))
+    'dc:title'
+    >>> QName.encode((None, 'href'))
+    'href'
+\end{code}

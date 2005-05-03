@@ -264,7 +264,7 @@ class Folder(Handler):
             container.removed_handlers.remove(name)
         # Make a copy of the handler
         handler = handler.copy_handler()
-        handler.parent = self
+        handler.parent = container
         handler.name = name
         handler.is_virtual = False
         # Add the handler
@@ -273,7 +273,7 @@ class Folder(Handler):
         if hasattr(container, 'on_set_handler'):
             container.on_set_handler(segment, handler, **kw)
         # Set timestamp
-        self.timestamp = datetime.now()
+        container.timestamp = datetime.now()
 
 
     def del_handler(self, path):

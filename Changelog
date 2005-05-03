@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-03 12:59:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-86
+
+    Summary:
+      backport fix from the 0.9 branch
+    Revision:
+      itools--main--0.8--patch-86
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-24
+       handlers, fix "set_handler"
+    
+
+    modified files:
+     Changelog handlers/Folder.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.9--patch-24
+
+
 2005-05-02 17:53:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-85
 
     Summary:

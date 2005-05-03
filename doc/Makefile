@@ -15,6 +15,7 @@ FIGURES = state.eps handlers.eps l10n.eps
 
 dvi: $(FIGURES) $(SOURCES)
 	latex itools.tex
+	makeindex itools.idx
 	latex itools.tex
 	touch dvi
 

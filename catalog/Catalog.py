@@ -21,7 +21,7 @@ import warnings
 # Import from itools
 from itools.handlers.Folder import Folder
 from itools.handlers.Text import Text
-import Analysers
+from Analysers import get_analyser
 from IDocument import IDocument, IndexedField, StoredField
 from IIndex import IIndex
 import Query
@@ -188,20 +188,11 @@ class Catalog(Folder):
                 idoc._set_handler('i%d' % field.number, IndexedField())
                 ifield = idoc.get_handler('i%d' % field.number)
 
-                # Choose the right analyser
-                if field.type == 'text':
-                    analyser = Analysers.Text
-                elif field.type == 'bool':
-                    analyser = Analysers.Bool
-                elif field.type == 'keyword':
-                    analyser = Analysers.Keyword
-                elif field.type == 'path':
-                    analyser = Analysers.Path
-
                 # Inverted index (search)
                 ii = self.get_handler('f%d' % field.number)
                 terms = set()
                 # Tokenize
+                analyser = get_analyser(field.type)
                 for word, position in analyser(value):
                     ii.index_term(word, doc_number, position)
                     # Update the un-index data structure
@@ -240,17 +231,28 @@ class Catalog(Folder):
         if isinstance(query, Query.Simple):
             # A simple query
             fields = self.get_handler('fields')
-            documents = {}
             field_number = fields.state.field_numbers[query.name]
             field = fields.state.fields[field_number]
             if field_number in fields.state.indexed_fields:
                 tree = self.get_handler('f%d' % field_number)
-                # XXX Analyse
-                value = query.value
-                if field.type == 'bool':
-                    value = str(int(value))
-                for doc_number, weight in tree.search_word(value).items():
-                    documents[doc_number] = weight
+                analyser = get_analyser(field.type)
+                for value, offset in analyser(query.value):
+                    result = tree.search_word(value)
+                    if offset == 0:
+                        documents = result
+                    else:
+                        aux = {}
+                        for doc_number in documents:
+                            if doc_number in result:
+                                pos = [ x for x in documents[doc_number]
+                                        if x + offset in result[doc_number] ]
+                                if pos:
+                                    aux[doc_number] = set(pos)
+                        documents = aux
+                # Calculate the weight
+                for doc_number in documents:
+                    documents[doc_number] = len(documents[doc_number])
+
             return documents
         else:
             # A complex query

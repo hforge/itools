@@ -304,11 +304,11 @@ class Tree(object):
             pos_slot_n = IO.decode_link(doc_slot_data[8:12])
             doc_slot_n = IO.decode_link(doc_slot_data[12:16])
             # Insert document
-            self.documents[doc_number] = documents = []
+            self.documents[doc_number] = documents = set()
             while pos_slot_n is not None:
                 pos_slot = 12 + pos_slot_n * 8
                 position = IO.decode_uint32(posi_rsrc[pos_slot:pos_slot+4])
-                documents.append(position)
+                documents.add(position)
                 pos_slot_n = IO.decode_link(posi_rsrc[pos_slot+4:pos_slot+8])
 
 ##            for i in range(frequency):
@@ -500,11 +500,7 @@ class Tree(object):
             if self.documents is None:
                 self.load_documents()
 
-            documents = {}
-            for doc_number, positions in self.documents.items():
-                weight = len(positions)
-                documents[doc_number] = weight
-            return documents
+            return self.documents.copy()
 
 
     ########################################################################
@@ -593,8 +589,8 @@ class IIndex(Folder):
                 del state.removed_terms[term][doc_number]
         # Added terms
         documents = state.added_terms.setdefault(term, {})
-        positions = documents.setdefault(doc_number, [])
-        positions.append(position)
+        positions = documents.setdefault(doc_number, set())
+        positions.add(position)
 
 
     def unindex_term(self, term, doc_number):

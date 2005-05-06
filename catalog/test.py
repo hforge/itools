@@ -53,30 +53,41 @@ class Document(Text):
     def _load_state(self, resource):
         # Pre-process (load as unicode)
         Text._load_state(self, resource)
-        data = self._data
-        del self._data
+        state = self.state
+        data = state.data
+        del state.data
         # Extract the title and body
         lines = data.split('\n')
-        self.title = lines[0]
-        self.body = '\n'.join(lines[3:])
+        state.title = lines[0]
+        state.body = '\n'.join(lines[3:])
+
+
+    def title(self):
+        return self.state.title
+
+
+    def body(self):
+        return self.state.body
+
 
 
 
 # Build a catalog on memory
 tests = get_handler('tests')
-if tests.has_resource('catalog'):
-    tests.del_resource('catalog')
+if tests.has_handler('catalog'):
+    tests.del_handler('catalog')
 catalog = Catalog(fields=[('title', 'text', True, True),
                           ('body', 'text', True, False)])
 tests.set_handler('catalog', catalog)
-catalog_resource = tests.get_resource('catalog')
+tests.save_state()
+catalog_resource = tests.resource.get_resource('catalog')
 catalog = Catalog(catalog_resource)
 
-resource_names = [ x for x in tests.get_resource_names()
+resource_names = [ x for x in tests.get_handler_names()
                    if x.endswith('.txt') ]
 resource_names.sort()
 for resource_name in resource_names:
-    resource = tests.get_resource(resource_name)
+    resource = tests.resource.get_resource(resource_name)
     document = Document(resource)
     catalog.index_document(document)
 catalog.save_state()
@@ -89,6 +100,12 @@ class CatalogTestCase(TestCase):
         documents = catalog.search(body='forget')
         doc_numbers = [ x.__number__ for x in documents ]
         self.assertEqual(doc_numbers, [5, 10])
+
+
+    def test_phrase(self):
+        documents = catalog.search(body='your son')
+        doc_numbers = [ x.__number__ for x in documents ]
+        self.assertEqual(doc_numbers, [5])
 
 
     def test_miss(self):

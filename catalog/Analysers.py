@@ -95,3 +95,13 @@ def Path(value):
     for segment in value:
         yield unicode(segment), i
         i += 1
+
+
+
+analysers = {'text': Text,
+             'bool': Bool,
+             'keyword': Keyword,
+             'path': Path}
+
+def get_analyser(name):
+    return analysers.get(name)

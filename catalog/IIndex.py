@@ -151,10 +151,11 @@ class IIndexDocuments(File):
 
       - document number (4 bytes)
       - frequency (4 bytes)
+      - positions (4 bytes)
       - next document (4 bytes)
     """
 
-    class_version = '20040723'
+    class_version = '20050506'
 
 
     def get_skeleton(self):
@@ -187,8 +188,8 @@ class IIndexDocuments(File):
         else:
             slot_number = state.first_empty
             # Update first empty
-            base = 12 + slot_number * 12
-            first_empty_link = r[base+8:base+12]
+            base = 12 + slot_number * 16
+            first_empty_link = r[base+12:base+16]
             state.first_empty = IO.decode_link(first_empty_link)
             r[8:12] = first_empty_link
 
@@ -202,14 +203,70 @@ class IIndexDocuments(File):
         """
         r = self.resource
         while True:
-            base = 12 + slot_number * 12
+            base = 12 + slot_number * 16
             x = IO.decode_uint32(r[base:base+4])
             if x == document_number:
                 return slot_number
-            slot_number = IO.decode_link(r[base+8:base+12])
+            slot_number = IO.decode_link(r[base+12:base+16])
             if slot_number is None:
                 return None
         raise ValueError, 'The database is corrupted!!'
+
+
+
+class IIndexPositions(File):
+    """
+    The header format is:
+
+      - version number (4 bytes)
+      - number of slots (4 bytes)
+      - first empty slot (4 bytes)
+
+    Each slot is made of:
+
+      - position (4 bytes)
+      - next position (4 bytes)
+    """
+
+    class_version = '20050506'
+
+
+    def get_skeleton(self):
+        version = IO.encode_version(self.class_version)
+        number_of_slots = IO.encode_uint32(0)
+        first_empty = IO.encode_link(None)
+        return version + number_of_slots + first_empty
+
+
+    def _load_state(self, resource):
+        state = self.state
+        # The header
+        state.version = IO.decode_version(resource[:4])
+        state.number_of_slots = IO.decode_uint32(resource[4:8])
+        state.first_empty = IO.decode_link(resource[8:12])
+
+
+    def _get_free_slot(self):
+        """
+        Returns the slot number of a free slot, allocates a new one if
+        needed.
+        """
+        state = self.state
+        r = self.resource
+        if state.first_empty is None:
+            slot_number = state.number_of_slots
+            # Increment the number of slots
+            state.number_of_slots += 1
+            r[4:8] = IO.encode_uint32(state.number_of_slots)
+        else:
+            slot_number = state.first_empty
+            # Update first empty
+            base = 12 + slot_number * 8
+            first_empty_link = r[base+4:base+8]
+            state.first_empty = IO.decode_link(first_empty_link)
+            r[8:12] = first_empty_link
+
+        return slot_number
 
 
 
@@ -234,20 +291,28 @@ class Tree(object):
         tree_rsrc = self.root.tree_handler.resource
         tree_slot = 16 + self.slot * 16
         doc_slot_n = IO.decode_link(tree_rsrc[tree_slot+4:tree_slot+8])
+        posi_rsrc = self.root.posi_handler.resource
 
         # Load documents
         doc_rsrc = self.root.docs_handler.resource
         while doc_slot_n is not None:
             # Decode doc slot
-            doc_slot = 12 + doc_slot_n * 12
-            doc_slot_data = doc_rsrc[doc_slot:doc_slot+12]
+            doc_slot = 12 + doc_slot_n * 16
+            doc_slot_data = doc_rsrc[doc_slot:doc_slot+16]
             doc_number = IO.decode_uint32(doc_slot_data[0:4])
             frequency = IO.decode_uint32(doc_slot_data[4:8])
-            doc_slot_n = IO.decode_link(doc_slot_data[8:12])
+            pos_slot_n = IO.decode_link(doc_slot_data[8:12])
+            doc_slot_n = IO.decode_link(doc_slot_data[12:16])
             # Insert document
             self.documents[doc_number] = documents = []
-            for i in range(frequency):
-                documents.append(None)
+            while pos_slot_n is not None:
+                pos_slot = 12 + pos_slot_n * 8
+                position = IO.decode_uint32(posi_rsrc[pos_slot:pos_slot+4])
+                documents.append(position)
+                pos_slot_n = IO.decode_link(posi_rsrc[pos_slot+4:pos_slot+8])
+
+##            for i in range(frequency):
+##                documents.append(None)
 
 
     def load_children(self):
@@ -309,6 +374,8 @@ class Tree(object):
             tree_rsrc = tree_handler.resource
             docs_handler = self.root.docs_handler
             docs_rsrc = docs_handler.resource
+            posi_handler = self.root.posi_handler
+            posi_rsrc = posi_handler.resource
             # Get the slot in the 'documents' resource
             tree_slot = 16 + self.slot * 16
             fdoc_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
@@ -322,7 +389,7 @@ class Tree(object):
                     # Update slot
                     doc_slot_n = docs_handler._get_document_slot(fdoc_slot_n,
                                                                  doc_number)
-                    doc_slot = 12 + doc_slot_n * 12
+                    doc_slot = 12 + doc_slot_n * 16
                     # Calculate the frequency
                     frq = len(positions)
                     docs_rsrc[doc_slot+4:doc_slot+8] = IO.encode_uint32(frq)
@@ -330,15 +397,25 @@ class Tree(object):
                     self.documents[doc_number] = doc_positions
                     # Update slot
                     doc_slot_n = docs_handler._get_free_slot()
-                    doc_slot = 12 + doc_slot_n * 12
-                    docs_rsrc[doc_slot:doc_slot+12] = (
+                    doc_slot = 12 + doc_slot_n * 16
+                    docs_rsrc[doc_slot:doc_slot+16] = (
                         IO.encode_uint32(doc_number)
                         + IO.encode_uint32(len(doc_positions))
+                        + IO.encode_link(None)
                         + fdoc_slot_r)
                     tree_rsrc[tree_slot+4:tree_slot+8] = IO.encode_link(doc_slot_n)
                     # Update 'fdoc_slot_*'
                     fdoc_slot_n = doc_slot_n
                     fdoc_slot_r = IO.encode_link(fdoc_slot_n)
+
+                # Update positions
+                for position in doc_positions:
+                    p_r = docs_rsrc[doc_slot+8:doc_slot+12]
+                    f_n = posi_handler._get_free_slot()
+                    f_b = 12 + f_n * 8
+                    posi_rsrc[f_b:f_b+4] = IO.encode_uint32(position)
+                    posi_rsrc[f_b+4:f_b+8] = p_r
+                    docs_rsrc[doc_slot+8:doc_slot+12] = IO.encode_link(f_n)
 
 
     def _unindex_term(self, word, documents):
@@ -363,6 +440,7 @@ class Tree(object):
             tree_rsrc = self.root.tree_handler.resource
             docs = self.root.docs_handler
             docs_rsrc = docs.resource
+            posi_rsrc = self.root.posi_handler.resource
             # Search the document slot
             tree_slot = 16 + self.slot * 16
             docs_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
@@ -370,12 +448,27 @@ class Tree(object):
             # Free slot
             prev_slot_n = prev_slot = None
             while documents and docs_slot_n is not None:
-                docs_slot = 12 + docs_slot_n * 12
+                docs_slot = 12 + docs_slot_n * 16
                 x = IO.decode_uint32(docs_rsrc[docs_slot:docs_slot+4])
-                next_slot_r = docs_rsrc[docs_slot+8:docs_slot+12]
+                next_slot_r = docs_rsrc[docs_slot+12:docs_slot+16]
                 next_slot_n = IO.decode_link(next_slot_r)
                 if x in documents:
                     documents.remove(x)
+                    # Update positions
+                    f_e = posi_rsrc[8:12]
+                    p_r = docs_rsrc[docs_slot+8:docs_slot+12]
+                    posi_rsrc[8:12] = p_r
+
+                    p_n = IO.decode_link(p_r)
+                    p_b = 12 + p_n * 8
+                    pn_r = posi_rsrc[p_b+4:p_b+8]
+                    pn_n = IO.decode_link(pn_r)
+                    while pn_n is not None:
+                        p_n = pn_n
+                        p_b = 12 + p_n * 8
+                        pn_r = posi_rsrc[p_b+4:p_b+8]
+                        pn_n = IO.decode_link(pn_r)
+                    posi_rsrc[p_b+8:p_b+12] = f_e
                     # Remove from the documents list
                     if prev_slot_n is None:
                         tree_rsrc[tree_slot+4:tree_slot+8] = next_slot_r
@@ -430,7 +523,8 @@ class IIndex(Folder):
 
     def get_skeleton(self):
         return [('tree', IIndexTree()),
-                ('documents', IIndexDocuments())]
+                ('documents', IIndexDocuments()),
+                ('positions', IIndexPositions())]
 
 
     def _get_handler(self, segment, resource):
@@ -439,6 +533,8 @@ class IIndex(Folder):
             return IIndexTree(resource)
         elif name == 'documents':
             return IIndexDocuments(resource)
+        elif name == 'positions':
+            return IIndexPositions(resource)
         return Folder._get_handler(self, segment, resource)
 
 
@@ -451,6 +547,7 @@ class IIndex(Folder):
 
         state.tree_handler = tree_handler = self.get_handler('tree')
         state.docs_handler = docs_handler = self.get_handler('documents')
+        state.posi_handler = self.get_handler('positions')
         # The tree
         state.root = Tree(state, None)
         state.root.documents = {}

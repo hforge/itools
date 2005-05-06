@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-06 17:16:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
+
+    Summary:
+      types, add "FileName.encode"
+    Revision:
+      itools--main--0.9--patch-30
+
+
+    modified files:
+     Changelog types/__init__.py
+
+
 2005-05-06 15:54:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
 
     Summary:

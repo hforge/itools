@@ -229,6 +229,17 @@ class FileName(object):
     decode = classmethod(decode)
 
 
+    def encode(cls, value):
+        name, type, language = value
+        if type is not None:
+            name = name + '.' + type
+        if language is not None:
+            name = name + '.' + language
+        return name
+
+    encode = classmethod(encode)
+
+
 
 class QName(object):
 

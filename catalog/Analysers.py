@@ -32,6 +32,11 @@ def Text(data):
 
     0 -> 1 [letter or number]
     0 -> 0 [stop word]
+    1 -> 1 [letter or number]
+    1 -> 0 [stop word]
+
+    0 -> 1 [letter or number]
+    0 -> 0 [stop word]
     1 -> 2 [letter or number]
     1 -> 0 [stop word]
     2 -> 2 [letter or number]
@@ -48,25 +53,14 @@ def Text(data):
         elif state == 1:
             if c.isalpha():
                 lexeme += c
-                state = 2
-            else:
-                lexeme = u''
-                state = 0
-        elif state == 2:
-            if c.isalpha():
-                lexeme += c
             else:
                 lexeme = lexeme.lower()
-                if lexeme in common_words:
-                    lexeme = u''
-                    state = 0
-                else:
-                    yield lexeme, position
-                    position += 1
-                    lexeme = u''
-                    state = 0
+                yield lexeme, position
+                position += 1
+                lexeme = u''
+                state = 0
     # Last word
-    if state == 2:
+    if state == 1:
         lexeme = lexeme.lower()
         yield lexeme, position
 

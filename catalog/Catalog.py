@@ -236,6 +236,7 @@ class Catalog(Folder):
             if field_number in fields.state.indexed_fields:
                 tree = self.get_handler('f%d' % field_number)
                 analyser = get_analyser(field.type)
+                documents = {}
                 for value, offset in analyser(query.value):
                     result = tree.search_word(value)
                     if offset == 0:

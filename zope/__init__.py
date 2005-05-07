@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,30 +15,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-
-# Import from Python
+# Import from the Standard Library
 from thread import get_ident
-
-# Import from Zope
-from AccessControl import getSecurityManager
-
 
 
 def get_context():
     """Returns the context."""
     from Products.iHotfix import contexts
     return contexts.get(get_ident())
-
-
-
-# XXX Some non ikaaro application use it, maybe we should try to put the
-# authenticated user in the context, always
-def get_user():
-    """
-    Returns the user object or None if it is anonymous.
-    """
-    user = getSecurityManager().getUser()
-    if user.getUserName() == 'Anonymous User':
-        return None
-    return user

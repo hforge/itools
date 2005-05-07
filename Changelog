@@ -2,6 +2,30 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-07 19:29:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-32
+
+    Summary:
+      merge fixes from the 0.8 branch
+    Revision:
+      itools--main--0.9--patch-32
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-85
+       xhtml, fix "get_messages"
+    
+     * jdavid@itaapy.com--public/itools--main--0.8--patch-87
+       i18n, fix igettext
+    
+
+    modified files:
+     Changelog i18n/igettext.py xhtml/XHTML.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.8--patch-85
+     jdavid@itaapy.com--public/itools--main--0.8--patch-87
+
+
 2005-05-07 17:23:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
 
     Summary:

@@ -25,6 +25,7 @@ import tempfile
 from itools.resources import get_resource
 from itools.handlers import get_handler, PO
 from itools import gettext
+from itools.handlers.transactions import get_transaction
 from itools.xhtml import XHTML
 
 
@@ -73,8 +74,9 @@ def run():
                     po.set_message(msgid, references={source_file: [0]})
                 root.set_handler(tmp_file, po)
 
-            if os.path.exists(tmp_file):
+            if root.has_handler(tmp_file):
                 tmp_files.append(tmp_file)
+        get_transaction().commit()
 
         # Merge all the PO files
         command = 'msgcat -s %s' % ' '.join(tmp_files)

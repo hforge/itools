@@ -346,7 +346,7 @@ class Document(XML.Document):
                         elif isinstance(x, XML.Element):
                             for node in x.traverse():
                                 if isinstance(node, unicode):
-                                    if data.strip():
+                                    if node.strip():
                                         break
                             else:
                                 continue

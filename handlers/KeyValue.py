@@ -79,8 +79,9 @@ class KeyValue(Text):
     #########################################################################
     def to_unicode(self, encoding=None):
         data = []
-        for key in self.state.keys:
-            value = getattr(self, key)
+        state = self.state
+        for key in state.keys:
+            value = getattr(state, key)
             t = self.__keys_types__.get(key, 'str')
             if t == 'str':
                 value = unicode(value)

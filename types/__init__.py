@@ -117,6 +117,17 @@ class Boolean(object):
     encode = classmethod(encode)
 
 
+    def to_unicode(cls, value):
+        if value is True:
+            return u'1'
+        elif value is False:
+            return u'0'
+        else:
+            raise ValueError, 'value is not a boolean'
+
+    to_unicode = classmethod(to_unicode)
+
+
 
 class Date(object):
 

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-09 15:51:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-90
+
+    Summary:
+      html, detect source encoding
+    Revision:
+      itools--main--0.8--patch-90
+
+
+    modified files:
+     Changelog html/HTML.py
+
+
 2005-05-09 13:04:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-89
 
     Summary:

@@ -51,16 +51,6 @@ class HeadElement(BlockElement):
                         self.get_closetag()])
 
 
-    def set_element(self, element):
-        # Skip content type declaration
-        if element.name == 'meta':
-            if element.has_attribute(None, 'http-equiv'):
-                value = element.get_attribute(None, 'http-equiv')
-                if value == 'Content-Type':
-                    return
-        self.children.append(element)
-
-
 elements_schema = {
     'a': {'type': InlineElement},
     'abbr': {'type': InlineElement},
@@ -139,6 +129,16 @@ class Document(XHTML.Document):
                 stack.append(element_class(None, value))
             elif event == parser.END_ELEMENT:
                 element = stack.pop()
+
+                # Detect <meta http-equiv="Content-Type" content="...">
+                if element.name == 'meta':
+                    if element.has_attribute(None, 'http-equiv'):
+                        value = element.get_attribute(None, 'http-equiv')
+                        if value == 'Content-Type':
+                            value = element.get_attribute(None, 'content')
+                            self._encoding = value.split(';')[-1].strip()[8:]
+                            continue
+
                 if stack:
                     stack[-1].set_element(element)
                 else:

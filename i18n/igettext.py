@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 J. David Ibáñez <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import tempfile
 from itools.resources import get_resource
 from itools.handlers import get_handler, PO
 from itools import gettext
-from itools.handlers.transactions import get_transaction
 from itools.xhtml import XHTML
 
 
@@ -54,7 +53,7 @@ def run():
     options, args = parser.parse_args()
 
     # Action
-    root = get_handler('/')
+    root_resource = get_resource('/')
     if options.action == 0:
         # Create one auxiliar PO file for each input file
         tmp_files = []
@@ -72,11 +71,10 @@ def run():
                 xhtml = XHTML.Document(resource)
                 for msgid in xhtml.get_messages():
                     po.set_message(msgid, references={source_file: [0]})
-                root.set_handler(tmp_file, po)
+                open(tmp_file, 'w').write(po.to_str())
 
-            if root.has_handler(tmp_file):
+            if root_resource.has_resource(tmp_file):
                 tmp_files.append(tmp_file)
-        get_transaction().commit()
 
         # Merge all the PO files
         command = 'msgcat -s %s' % ' '.join(tmp_files)

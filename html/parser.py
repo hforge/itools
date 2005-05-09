@@ -14,7 +14,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
 # Import from the Standard Library
 import htmlentitydefs
 from HTMLParser import HTMLParser
@@ -33,7 +32,9 @@ empty_elements = Set([
     # XHTML 1.0 transitional
     'basefont', 'isindex',
     # XHTML 1.0 frameset
-    'frame'])
+    'frame',
+    # Vendor specific, not approved by W3C
+    'embed'])
 
 
 

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-09 13:04:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-89
+
+    Summary:
+      html, add non standard "embed" empty tag
+    Revision:
+      itools--main--0.8--patch-89
+
+
+    modified files:
+     Changelog html/parser.py
+
+
 2005-05-09 11:04:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-88
 
     Summary:

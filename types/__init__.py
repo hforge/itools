@@ -272,3 +272,21 @@ class QName(object):
 
 
 
+class Tokens(object):
+
+    def decode(cls, data):
+        return tuple(data.split())
+
+    decode = classmethod(decode)
+
+
+    def encode(cls, value):
+        return ' '.join(value)
+
+    encode = classmethod(encode)
+
+
+    def to_unicode(cls, value):
+        return u' '.join(value)
+
+    to_unicode = classmethod(to_unicode)

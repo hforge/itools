@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import profile
 import sys
 from time import time
@@ -24,12 +23,12 @@ from time import time
 # Import from itools
 from itools.handlers import get_handler, Text
 from itools.resources import get_resource
-from itools.xml import HTML
+from itools.html import HTML
 from itools.catalog.Catalog import Catalog
 
 
 
-docs_path = '/usr/share/doc/python-docs-2.3.4/html/lib'
+docs_path = '/usr/share/doc/python-docs-2.3.5/html/lib'
 
 
 class Document(HTML.Document):
@@ -66,10 +65,9 @@ def load_documents():
     resource_names = [ x for x in src.get_resource_names()
                        if x.endswith('.html') ]
     resource_names.sort()
-    for name in resource_names[:120]:
+    for name in resource_names:
         try:
             doc = Document(src.get_resource(name))
-            doc.to_unicode()
         except:
             pass
         else:

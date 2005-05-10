@@ -2,6 +2,25 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-10 14:39:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-91
+
+    Summary:
+      html, make a more robust parser
+    Revision:
+      itools--main--0.8--patch-91
+
+    Deal with:
+    
+     - Elements with optional end tag that miss it.
+    
+     - Lonely end tags.
+    
+     - Boolean attributes in minimized form.
+
+    modified files:
+     Changelog catalog/prof.py html/HTML.py html/parser.py
+
+
 2005-05-09 15:51:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-90
 
     Summary:

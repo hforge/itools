@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-12 18:57:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
+
+    Summary:
+      zope, add "Request.get_cookie"
+    Revision:
+      itools--main--0.9--patch-39
+
+
+    modified files:
+     Changelog zope/Request.py
+
+
 2005-05-11 15:08:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
 
     Summary:

@@ -121,6 +121,10 @@ class Request(object):
     cookies = property(get_cookies, None, None, "")
 
 
+    def get_cookie(self, name):
+        return self.zope_request.cookies.get(name)
+
+
     ########################################################################
     # Environ
     ########################################################################

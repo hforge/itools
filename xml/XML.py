@@ -300,6 +300,8 @@ class Document(Text.Text):
     """
 
     class_mimetypes = ['text/xml', 'application/xml']
+    class_extension = 'xml'
+
 
     #######################################################################
     # The Document Types registry

@@ -43,6 +43,7 @@ def parse(data, schema=None):
 class CSV(Text):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
+    class_extension = 'csv'
 
 
     schema = None

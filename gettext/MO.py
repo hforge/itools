@@ -25,6 +25,7 @@ from itools.handlers.File import File
 class MO(File):
 
     class_mimetypes = ['application/x-mo']
+    class_extension = 'mo'
 
 
     def _load_state(self, resource):

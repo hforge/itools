@@ -175,6 +175,7 @@ class Document(XML.Document):
     """
 
     class_mimetypes = ['application/xhtml+xml']
+    class_extension = 'xhtml'
 
     namespace = 'http://www.w3.org/1999/xhtml'
 

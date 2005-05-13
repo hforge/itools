@@ -89,6 +89,7 @@ class Document(XHTML.Document):
     """
 
     class_mimetypes = ['text/html']
+    class_extension = 'html'
 
     # HTML does not support XML namespace declarations
     ns_declarations = {}

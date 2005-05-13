@@ -49,6 +49,10 @@ class Handler(object):
     other handler class.
     """
 
+    class_mimetypes = []
+    class_extension = None
+
+
     # By default the handler is a free node (does not belong to a tree, or
     # is the root of a tree).
     parent = None

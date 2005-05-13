@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-13 17:21:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-43
+
+    Summary:
+      handlers, add "class_extension"
+    Revision:
+      itools--main--0.9--patch-43
+
+    Add the "class_extension" variable, which is the preferred filename
+    extension for a given handler.
+    
+    The standard library module "mimetypes" keeps all possible extensions
+    for a given mimetype, but when more than one exists, it does not
+    define which is the preferred.
+
+    modified files:
+     Changelog gettext/MO.py gettext/PO.py handlers/CSV.py
+     handlers/Handler.py handlers/Text.py html/HTML.py
+     xhtml/XHTML.py xml/XML.py
+
+
 2005-05-13 09:45:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
 
     Summary:

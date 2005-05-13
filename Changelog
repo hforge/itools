@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-13 09:10:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
+
+    Summary:
+      i18n, expose "oracle" so "i18n.oracle" works
+    Revision:
+      itools--main--0.9--patch-40
+
+
+    modified files:
+     Changelog i18n/__init__.py
+
+
 2005-05-12 18:57:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
 
     Summary:

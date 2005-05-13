@@ -18,6 +18,7 @@
 # Import from itools
 from itools import get_abspath
 import accept
+import oracle
 import segment
 
 

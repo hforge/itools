@@ -518,9 +518,9 @@ class Tree(object):
 class IIndex(Folder):
 
     def get_skeleton(self):
-        return [('tree', IIndexTree()),
-                ('documents', IIndexDocuments()),
-                ('positions', IIndexPositions())]
+        return {'tree': IIndexTree(),
+                'documents': IIndexDocuments(),
+                'positions': IIndexPositions()}
 
 
     def _get_handler(self, segment, resource):

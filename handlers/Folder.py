@@ -53,7 +53,7 @@ class Folder(Handler):
             self.resource = memory.Folder()
             # Add the skeleton
             skeleton = self.get_skeleton(**kw)
-            for name, handler in skeleton:
+            for name, handler in skeleton.items():
                 self.resource.set_resource(name, handler.resource)
         else:
             self.resource = resource
@@ -115,7 +115,7 @@ class Folder(Handler):
     # The skeleton
     #########################################################################
     def get_skeleton(self):
-        return []
+        return {}
 
 
     #########################################################################

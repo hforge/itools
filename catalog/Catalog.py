@@ -84,9 +84,9 @@ class Fields(Text):
 class Catalog(Folder):
 
     def get_skeleton(self, fields=[]):
-        skeleton = [('fields', Fields(fields=fields))]
+        skeleton = {'fields': Fields(fields=fields)}
         for number, field in enumerate(fields):
-            skeleton.append(('f%d' % number, IIndex()))
+            skeleton['f%d' % number] = IIndex()
         return skeleton
 
 

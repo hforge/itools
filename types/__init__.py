@@ -212,28 +212,46 @@ class URI(object):
 
 
 class FileName(object):
+    """
+    A filename is tuple consisting of a name, a type and a language.
+
+    XXX We should extend this to add the character encoding and the
+    compression (gzip, bzip, etc.).
+    """
 
     def decode(cls, data):
         data = data.split('.')
 
-        # Default values
-        type = None
-        language = None
-
         # XXX The encoding (UTF-8, etc.)
 
-        # The language
-        if data[-1] in i18n.languages:
-            language = data[-1]
-            data = data[:-1]
+        n = len(data)
+        if n == 1:
+            return data[0], None, None
+        elif n == 2:
+            if '.%s' % data[-1] in mimetypes.types_map:
+                name, type = data
+                return name, type, None
+            elif data[-1] in i18n.languages:
+                name, language = data
+                return name, None, language
+            else:
+                return '.'.join(data), None, None
+        else:
+            # Default values
+            type = language = None
 
-        # The type
-        if '.%s' % data[-1] in mimetypes.types_map:
-            type = data[-1]
-            data = data[:-1]
+            # The language
+            if data[-1] in i18n.languages:
+                language = data[-1]
+                data = data[:-1]
 
-        # The name
-        name = '.'.join(data)
+            # The type
+            if '.%s' % data[-1] in mimetypes.types_map:
+                type = data[-1]
+                data = data[:-1]
+
+            # The name
+            name = '.'.join(data)
 
         return name, type, language
 

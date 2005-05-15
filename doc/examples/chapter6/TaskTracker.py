@@ -47,14 +47,15 @@ class TaskTracker(Text):
         # Load the resource as a unicode string
         Text._load_state(self, resource)
         # Split the raw data in lines.
-        lines = self._data.splitlines()
+        state = self.state
+        lines = state.data.splitlines()
         # Append None to signal the end of the data.
         lines.append(None)
-        # Free the un-needed data structure, 'self._data'
-        del self._data
+        # Free the un-needed data structure, 'state.data'
+        del state.data
 
         # Initialize the internal data structure
-        self.tasks = []
+        state.tasks = []
         # Parse and load the tasks
         fields = {}
         for line in lines:
@@ -63,7 +64,7 @@ class TaskTracker(Text):
                     task = Task(fields['title'],
                                 fields['description'],
                                 fields['state'])
-                    self.tasks.append(task)
+                    state.tasks.append(task)
                     fields = {}
             else:
                 if line.startswith(' '):
@@ -75,7 +76,7 @@ class TaskTracker(Text):
 
     def to_unicode(self, encoding=None):
         lines = []
-        for task in self.tasks:
+        for task in self.state.tasks:
             lines.append(u'title:%s' % task.title)
             description = u'description:%s' % task.description
             description = textwrap.wrap(description)
@@ -102,11 +103,11 @@ class TaskTracker(Text):
     #########################################################################
     def add_task(self, title, description):
         task = Task(title, description)
-        self.tasks.append(task)
+        self.state.tasks.append(task)
 
 
     def show_open_tasks(self):
-        for id, task in enumerate(self.tasks):
+        for id, task in enumerate(self.state.tasks):
             if task.state == 'open':
                 print 'Task #%d: %s' % (id, task.title)
                 print
@@ -116,7 +117,7 @@ class TaskTracker(Text):
 
 
     def close_task(self, id):
-        task = self.tasks[id]
+        task = self.state.tasks[id]
         task.state = u'closed'
 
 

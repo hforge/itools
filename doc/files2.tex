@@ -82,14 +82,15 @@ the resource into a data structure on memory.
             # Load the resource as a unicode string
             Text._load_state(self, resource)
             # Split the raw data in lines.
-            lines = self._data.splitlines()
+            state = self.state
+            lines = state.data.splitlines()
             # Append None to signal the end of the data.
             lines.append(None)
-            # Free the un-needed data structure, 'self._data'
-            del self._data
+            # Free the un-needed data structure, 'state.data'
+            del state.data
 
             # Initialize the internal data structure
-            self.tasks = []
+            state.tasks = []
             # Parse and load the tasks
             fields = {}
             for line in lines:
@@ -98,7 +99,7 @@ the resource into a data structure on memory.
                         task = Task(fields['title'],
                                     fields['description'],
                                     fields['state'])
-                        self.tasks.append(task)
+                        state.tasks.append(task)
                         fields = {}
                 else:
                     if line.startswith(' '):
@@ -117,11 +118,11 @@ represents it.
 
 The first thing it does is to call the parent's {\tt \_load\_state} method,
 which will read the resource's data and get a unicode string from it, which
-will be stored in the {\tt self.\_data} variable. This is an intermediary
+will be stored in the {\tt self.state.data} variable. This is an intermediary
 representation, which will be discarded.
 
 The rest of the method process the raw data and builds a list of instances
-of the class {\tt Task} into the variable {\tt self.tasks}.
+of the class {\tt Task} into the variable {\tt self.state.tasks}.
 
 Lets try it:
 
@@ -134,11 +135,11 @@ Lets try it:
     >>> resource = get_resource('itools.tt')
     >>> task_tracker = TaskTracker(resource)
     >>>
-    >>> pprint(task_tracker.tasks)
+    >>> pprint(task_tracker.state.tasks)
     [<TaskTracker.Task object at 0xb7aebd4c>,
      <TaskTracker.Task object at 0xb7aebe6c>]
     >>>
-    >>> task = task_tracker.tasks[0]
+    >>> task = task_tracker.state.tasks[0]
     >>> print task.title
     Re-write the chapter about writing handler classes.
     >>> print textwrap.fill(task.description)
@@ -158,7 +159,7 @@ just adding the {\tt to\_unicode} method to the {\tt TaskTracker} class:
 \begin{code}
         def to_unicode(self, encoding='UTF-8'):
             lines = []
-            for task in self.tasks:
+            for task in self.state.tasks:
                 lines.append(u'title:%s' % task.title)
                 description = u'description:%s' % task.description
                 description = textwrap.wrap(description)
@@ -203,11 +204,11 @@ Now it is time to write the API to manage the tasks, here is an excerpt:
 \begin{code}
     def add_task(self, title, description):
         task = Task(title, description)
-        self.tasks.append(task)
+        self.state.tasks.append(task)
 
 
     def show_open_tasks(self):
-        for id, task in enumerate(self.tasks):
+        for id, task in enumerate(self.state.tasks):
             if task.state == 'open':
                 print 'Task #%d: %s' % (id, task.title)
                 print
@@ -217,7 +218,7 @@ Now it is time to write the API to manage the tasks, here is an excerpt:
 
 
     def close_task(self, id):
-        task = self.tasks[id]
+        task = self.state.tasks[id]
         task.state = u'closed'
 \end{code}
 
@@ -273,6 +274,7 @@ come back to it later:
     >>>
     >>> tmp = get_handler('/tmp')
     >>> tmp.set_handler('most_important_things_in_live.tt', task_tracker)
+    >>> tmp.save_state()
 \end{code}
 
 

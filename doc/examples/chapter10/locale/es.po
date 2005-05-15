@@ -29,4 +29,4 @@ msgstr ""
 
 #: TaskTracker_view.xml.en:0
 msgid "Task Tracker"
-msgstr ""
+msgstr "Gestor de tareas"

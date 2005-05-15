@@ -23,6 +23,7 @@ import textwrap
 from itools.resources import get_resource
 from itools.handlers.Text import Text
 from itools.handlers import get_handler
+from itools.gettext import domains
 import itools.xml
 
 
@@ -37,7 +38,7 @@ class Task(object):
 
 
 
-class TaskTracker(Text):
+class TaskTracker(Text, domains.Domain):
 
     class_mimetypes = ['text/x-task-tracker']
 
@@ -128,7 +129,8 @@ class TaskTracker(Text):
     #########################################################################
     def view(self):
         # Load the STL template
-        handler = get_handler('TaskTracker_view.xml')
+        language = self.select_language(['en', 'es'])
+        handler = get_handler('TaskTracker_view.xml.%s' % language)
 
         # Build the namespace
         namespace = {}

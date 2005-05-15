@@ -8,6 +8,9 @@ MO = locale/en.mo locale/es.mo
 %.es: %.en
 	igettext.py --output=$@ --xhtml $< locale/es.po
 
+%.mo: %.po
+	msgfmt $< -o $@
+
 bin: $(ES) $(MO)
 	touch bin
 

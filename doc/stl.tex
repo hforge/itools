@@ -155,7 +155,7 @@ Basically we have added the method {\tt view} to the class {\tt TaskTracker}:
         # Build the namespace
         namespace = {}
         namespace['tasks'] = []
-        for i, task in enumerate(self.tasks):
+        for i, task in enumerate(self.state.tasks):
             namespace['tasks'].append({'id': i,
                                        'title': task.title,
                                        'description': task.description,

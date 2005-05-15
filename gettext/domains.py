@@ -15,8 +15,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
+# Import from the Standard Library
+import os
+
 # Import from itools
 from itools.handlers import get_handler
+from itools.i18n.accept import AcceptLanguage
 
 domains = {}
 
@@ -56,8 +60,12 @@ class Domain:
 
 
     def select_language(self, languages):
-        raise NotImplementedError
-            
+        language = os.environ.get('LANGUAGE')
+        language = language.split('.')[0]
+        language = language.replace('_', '-')
+        accept_language = AcceptLanguage(language)
+        return accept_language.select_language(languages)
+
 
 
 def N_(message, language=None):

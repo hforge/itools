@@ -1,26 +1,54 @@
 \chapter{Internationalization and Localization}
 \label{Chapter: i18n}
 
-Or the art of developing multilingual applications. Let's start with the
-concepts\footnote{Definitions take fron the GNU gettext documentation.}:
+The task tracker from the previous chapter provides a user interface in
+only one language: English. The purpose of this chapter is to show how
+to build applications that provide a user interface in many languages.
+We will illustrate how to do it building up on the task tracker example.
 
-\begin{description}
-  \item [Internationalization] the operation by which a program, or a set
-    of programs turned into a package, is made aware of and able to support
-    multiple languages. This is a generalization process, by which the
-    programs are untied from calling only English strings or other English
-    specific habits, and connected to generic ways of doing the same, instead.
+See the file layout of the already multilingual task tracker:
 
-  \item [Localization] the operation by which, in a set of programs already
-    internationalized, one gives the program all needed information so that
-    it can adapt itself to handle its input and output in a fashion which is
-    correct for some native language and cultural habits. This is a
-    particularisation process, by which generic methods already implemented
-    in an internationalized program are used in specific ways. 
-\end{description}
+\begin{code}
+    Makefile
+    TaskTracker.py
+    TaskTracker_view.xml.en
+    locale/
+      locale.pot
+      en.po
+      es.po
+\end{code}
 
-We are going to illustrate both processes, in the context of {\tt itools},
-by extending the addressbook example.
+There are two things to note. First the {\tt locale} directory: it is
+a database which keeps the translations for the text messages of the user
+interface. The translations are stored in {\em PO}\footnote{XXX} files;
+there is one {\em PO} file for every language, in our example there is
+one for English ({\tt en.po}) and another for Spanish ({\tt es.po}). Each
+{\em PO} file keeps the source messages, usually written in English, and
+their translations (because the source language is English, the {\tt en.po}
+file will be usually empty).
+
+The second thing to note is the {\tt Makefile}, it will help us to automatize
+the localization and build processes.
+
+XXX
+
+
+The text messages to translate are stored in the XML template and the Python
+code, 
+
+
+
+Basically we need to be able to output the text messages in the language
+the user prefers. These text messages may be found in two places, the
+XML templates and the Python code.
+
+We assume the text messages are first written in English, and then translated
+from English to whatever languages we want. This means that we need 
+
+
+
+Altogether with the code and the templates we will distribute the translations
+
 
 
 \section{Internationalization}

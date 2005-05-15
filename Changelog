@@ -2,6 +2,42 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-15 19:08:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
+
+    Summary:
+      documentation, start i18n chapter re-write
+    Revision:
+      itools--main--0.9--patch-49
+
+
+    new files:
+     doc/examples/chapter10/.arch-ids/=id
+     doc/examples/chapter10/.arch-ids/Makefile.id
+     doc/examples/chapter10/.arch-ids/TaskTracker.py.id
+     doc/examples/chapter10/.arch-ids/TaskTracker_view.xml.en.id
+     doc/examples/chapter10/.arch-ids/itools.tt.id
+     doc/examples/chapter10/Makefile
+     doc/examples/chapter10/TaskTracker.py
+     doc/examples/chapter10/TaskTracker_view.xml.en
+     doc/examples/chapter10/itools.tt
+     doc/examples/chapter10/locale/.arch-ids/=id
+     doc/examples/chapter10/locale/.arch-ids/en.po.id
+     doc/examples/chapter10/locale/.arch-ids/es.po.id
+     doc/examples/chapter10/locale/.arch-ids/locale.pot.id
+     doc/examples/chapter10/locale/en.po
+     doc/examples/chapter10/locale/es.po
+     doc/examples/chapter10/locale/locale.pot
+
+    modified files:
+     Changelog doc/examples/chapter6/TaskTracker.py
+     doc/examples/chapter9/TaskTracker.py doc/i18n.tex doc/l10n.dia
+
+    new directories:
+     doc/examples/chapter10 doc/examples/chapter10/.arch-ids
+     doc/examples/chapter10/locale
+     doc/examples/chapter10/locale/.arch-ids
+
+
 2005-05-15 17:43:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
 
     Summary:

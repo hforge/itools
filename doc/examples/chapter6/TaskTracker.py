@@ -32,7 +32,7 @@ class Task(object):
         self.title = title
         self.description = description
         self.state = state
-    
+
 
 
 class TaskTracker(Text):

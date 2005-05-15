@@ -2,6 +2,62 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-15 17:13:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
+
+    Summary:
+      documentation, fix examples (rename directory names)
+    Revision:
+      itools--main--0.9--patch-46
+
+
+    modified files:
+     Changelog doc/files2.tex doc/stl.tex doc/xml.tex
+
+    renamed files:
+     doc/examples/chapter5/.arch-ids/=id
+       ==> doc/examples/chapter6/.arch-ids/=id
+     doc/examples/chapter5/.arch-ids/TaskTracker.py.id
+       ==> doc/examples/chapter6/.arch-ids/TaskTracker.py.id
+     doc/examples/chapter5/.arch-ids/itools.tt.id
+       ==> doc/examples/chapter6/.arch-ids/itools.tt.id
+     doc/examples/chapter7/.arch-ids/=id
+       ==> doc/examples/chapter8/.arch-ids/=id
+     doc/examples/chapter7/.arch-ids/hello.xml.id
+       ==> doc/examples/chapter8/.arch-ids/hello.xml.id
+     doc/examples/chapter7/.arch-ids/namespaces.py.id
+       ==> doc/examples/chapter8/.arch-ids/namespaces.py.id
+     doc/examples/chapter7/.arch-ids/parser.py.id
+       ==> doc/examples/chapter8/.arch-ids/parser.py.id
+     doc/examples/chapter8/.arch-ids/=id
+       ==> doc/examples/chapter9/.arch-ids/=id
+     doc/examples/chapter8/.arch-ids/TaskTracker.py.id
+       ==> doc/examples/chapter9/.arch-ids/TaskTracker.py.id
+     doc/examples/chapter8/.arch-ids/TaskTracker_view.xml.id
+       ==> doc/examples/chapter9/.arch-ids/TaskTracker_view.xml.id
+     doc/examples/chapter8/.arch-ids/itools.tt.id
+       ==> doc/examples/chapter9/.arch-ids/itools.tt.id
+     doc/examples/chapter8/.arch-ids/template.xml.id
+       ==> doc/examples/chapter9/.arch-ids/template.xml.id
+
+    new directories:
+     doc/examples/chapter6/.arch-ids
+     doc/examples/chapter9/.arch-ids
+
+    removed directories:
+     doc/examples/chapter5/.arch-ids
+     doc/examples/chapter7/.arch-ids
+
+    renamed directories:
+     doc/examples/chapter5
+       ==> doc/examples/chapter6
+     doc/examples/chapter7
+       ==> doc/examples/chapter8
+     doc/examples/chapter8
+       ==> doc/examples/chapter9
+     doc/examples/chapter8/.arch-ids
+       ==> doc/examples/chapter8/.arch-ids
+
+
 2005-05-14 19:26:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-45
 
     Summary:

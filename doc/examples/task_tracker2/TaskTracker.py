@@ -23,7 +23,7 @@ import textwrap
 from itools.resources import get_resource
 from itools.handlers.Text import Text
 from itools.handlers import get_handler
-from itools.gettext import domains
+from itools.gettext.domains import DomainAware
 import itools.xml
 
 
@@ -38,7 +38,7 @@ class Task(object):
 
 
 
-class TaskTracker(Text, domains.Domain):
+class TaskTracker(Text, DomainAware):
 
     class_mimetypes = ['text/x-task-tracker']
 

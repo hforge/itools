@@ -19,17 +19,36 @@
 import os
 
 # Import from itools
-from itools.handlers import get_handler
+from itools.resources import get_resource
+from itools.handlers.Folder import Folder
 from itools.i18n.accept import AcceptLanguage
 
 domains = {}
 
 def register_domain(name, locale_path):
     if name not in domains:
-        domains[name] = get_handler(locale_path)
+        resource = get_resource(locale_path)
+        domains[name] = Domain(resource)
 
 
-class Domain:
+
+class Domain(Folder):
+
+    def gettext(self, message, language):
+        handler_name = '%s.mo' % language
+        if self.has_handler(handler_name):
+            handler = self.get_handler(handler_name)
+            return handler.gettext(message)
+        return message
+
+
+    def get_languages(self):
+        return [ x[:-3] for x in domain.get_handler_names()
+                 if x.endswith('.mo') ]
+
+
+
+class DomainAware:
 
     class_domain = None
 
@@ -38,25 +57,18 @@ class Domain:
         if domain is None:
             domain = self.class_domain
 
-        if domain is None:
-            return message
-
         if domain not in domains:
             return message
 
         domain = domains[domain]
         if language is None:
-            # Build the list of available languages
-            languages = [ x[:-3] for x in domain.get_handler_names()
-                          if x.endswith('.mo') ]
-
+            languages = domain.get_languages()
             language = self.select_language(languages)
 
         if language is None:
             return message
 
-        mo = domain.get_handler('%s.mo' % language)
-        return mo.gettext(message)
+        return domain.gettext(message, language)
 
 
     def select_language(self, languages):

@@ -2,9 +2,9 @@
 \label{Chapter: i18n}
 
 The task tracker from the previous chapter provides a user interface in
-only one language: English. The purpose of this chapter is to show how
+only one language: English. The purpose of this chapter is to explain how
 to build applications that provide a user interface in many languages.
-We will illustrate how to do it building up on the task tracker example.
+We will illustrate this building up on the task tracker example.
 
 See the file layout of the already multilingual task tracker:
 
@@ -28,13 +28,73 @@ their translations (because the source language is English, the {\tt en.po}
 file will be usually empty).
 
 The second thing to note is the {\tt Makefile}, it will help us to automatize
-the localization and build processes.
+the localization and build processes. The Figure~\ref{Figure: l10n} shows
+these two processes.
 
-XXX
+\begin{figure}
+  \center
+  \includegraphics[width=\textwidth]{l10n.eps}
+  \caption{The localization process}
+  \label{Figure: l10n}
+\end{figure}
 
 
-The text messages to translate are stored in the XML template and the Python
-code, 
+\section{Internationalization}
+
+Internationalization:
+
+\begin{quote}
+  \em
+  the operation by which a program, or a set
+  of programs turned into a package, is made aware of and able to support
+  multiple languages.
+\end{quote}
+
+The text messages to translate are stored in the XML templates and the Python
+code, so these are the two things to internationalize.
+
+\subsection{Python code}
+
+To start our task tracker must be {\em domain aware}:
+
+\begin{code}
+    from itools.gettext.domains import DomainAware
+
+    class TaskTracker(Text, DomainAware):
+
+        class_domain = 'task tracker'
+\end{code}
+
+The class {\tt DomainAware} provides the application programming interface
+we will use within the Python code:
+
+\begin{api}
+  {\tt gettext(message, language=None, domain=None)}\\
+  - Returns the translation for the given message in the given language,
+    from the given domain. If there is not a translation the same message
+    is returned. If no language is given the method {\tt select\_language}
+    will be called to choose one from the languages available in the
+    domain. By default the domain used is the one specified in the class
+    variable {\tt class\_domain}.
+
+  {\tt select\_language(languages)}\\
+  - Chooses and returns a language from the given list of languages. The
+    default implementation uses the environment variable {\tt LANGUAGE}.
+\end{api}
+
+Now we just need to replace every text string in the source code by a
+call to {\tt gettext}, for example:
+
+\begin{code}
+\end{code}
+
+
+\subsubsection{Deferred translations}
+
+
+
+
+\subsection{Templates}
 
 
 
@@ -45,9 +105,22 @@ XML templates and the Python code.
 We assume the text messages are first written in English, and then translated
 from English to whatever languages we want. This means that we need 
 
-
-
 Altogether with the code and the templates we will distribute the translations
+
+
+\section{Localization}
+
+Localization:
+
+\begin{quote}
+  \em
+  the operation by which, in a set of programs already internationalized,
+  one gives the program all needed information so that it can adapt itself
+  to handle its input and output in a fashion which is correct for some
+  native language and cultural habits.
+\end{quote}
+
+
 
 
 
@@ -129,14 +202,6 @@ gettext}\footnote{http://www.gnu.org/software/gettext/}, which is the
 standard in the Free Software world for software internationalization
 and localization; and the script {\tt igettext.py} provided by {\tt itools}.
 
-The Figure~\ref{Figure: i18n} shows the localization process.
-
-\begin{figure}
-  \center
-  \includegraphics[width=\textwidth]{l10n.eps}
-  \caption{The localization process}
-  \label{Figure: i18n}
-\end{figure}
 
 \subsection{Message extraction}
 

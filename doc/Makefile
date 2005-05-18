@@ -34,6 +34,7 @@ html: $(SOURCES)
 
 clean:
 	rm -f itools.toc itools.lot itools.log itools.aux
+	rm -f itools.idx itools.ilg itools.ind
 	rm -f itools.dvi itools.ps itools.pdf
 	rm -f missfont.log 
 	rm -f *~

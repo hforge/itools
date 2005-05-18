@@ -2,6 +2,27 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-18 14:30:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-92
+
+    Summary:
+      html, fix parser when encoding is defined late
+    Revision:
+      itools--main--0.8--patch-92
+
+    Now the encoding is detected by "html.parser", this allows to parse
+    documents when an encoding different than UTF-8 is defined late, for
+    example:
+    
+      <title>some accentuated character here in latin 1</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    
+    Here an accentuated character appears before the encoding declaration.
+    Now we can deal with these cases.
+
+    modified files:
+     Changelog html/HTML.py html/parser.py
+
+
 2005-05-10 14:39:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-91
 
     Summary:

@@ -90,6 +90,15 @@ class Parser(HTMLParser):
         # Start element
         self.events.append((START_ELEMENT, name, line_number))
 
+        # Check the encoding
+        if name == 'meta':
+            if ('http-equiv', 'Content-Type') in attrs:
+                for attribute_name, attribute_value in attrs:
+                    if attribute_name == 'content':
+                        encoding = attribute_value.split(';')[-1].strip()[8:]
+                        self.encoding = encoding
+                        break
+
         # Attributes
         for attribute_name, attribute_value in attrs:
             if attribute_value is None:

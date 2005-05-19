@@ -20,14 +20,15 @@ from itools import types
 from itools.handlers import File
 from itools.xml import XML
 from itools.xhtml import XHTML
-from itools.html import parser
+from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \
+     END_ELEMENT, ATTRIBUTE, COMMENT, TEXT, empty_elements
 
 
 
 class Element(XHTML.Element):
 
     def get_closetag(self):
-        if self.name in parser.empty_elements:
+        if self.name in empty_elements:
             return ''
         return XHTML.Element.get_closetag(self)
 
@@ -122,14 +123,15 @@ class Document(XHTML.Document):
 
         stack = []
         data = resource.read()
-        for event, value, line_number in parser.Parser().parse(data):
-            if event == parser.DOCUMENT_TYPE:
+        parser = Parser()
+        for event, value, line_number in parser.parse(data):
+            if event == DOCUMENT_TYPE:
                 state.document_type = value
-            elif event == parser.START_ELEMENT:
+            elif event == START_ELEMENT:
                 schema = elements_schema.get(value, {'type': BlockElement})
                 element_class = schema['type']
                 stack.append(element_class(None, value))
-            elif event == parser.END_ELEMENT:
+            elif event == END_ELEMENT:
                 element = stack.pop()
 
                 # Detect <meta http-equiv="Content-Type" content="...">
@@ -137,30 +139,28 @@ class Document(XHTML.Document):
                     if element.has_attribute(None, 'http-equiv'):
                         value = element.get_attribute(None, 'http-equiv')
                         if value == 'Content-Type':
-                            value = element.get_attribute(None, 'content')
-                            self._encoding = value.split(';')[-1].strip()[8:]
                             continue
 
                 if stack:
                     stack[-1].set_element(element)
                 else:
                     state.children.append(element)
-            elif event == parser.ATTRIBUTE:
+            elif event == ATTRIBUTE:
                 name, value = value
                 type = types.Unicode
-                value = type.decode(value, state.encoding)
+                value = type.decode(value, parser.encoding)
                 stack[-1].set_attribute(None, name, value)
-            elif event == parser.COMMENT:
+            elif event == COMMENT:
                 comment = XML.Comment(value)
                 if stack:
                     stack[-1].set_comment(comment)
                 else:
                     state.children.append(comment)
-            elif event == parser.TEXT:
+            elif event == TEXT:
                 if stack:
-                    stack[-1].set_text(value, state.encoding)
+                    stack[-1].set_text(value, parser.encoding)
                 else:
-                    value = types.Unicode.decode(value, state.encoding)
+                    value = types.Unicode.decode(value, parser.encoding)
                     state.children.append(value)
 
 

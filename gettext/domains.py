@@ -43,7 +43,7 @@ class Domain(Folder):
 
 
     def get_languages(self):
-        return [ x[:-3] for x in domain.get_handler_names()
+        return [ x[:-3] for x in self.get_handler_names()
                  if x.endswith('.mo') ]
 
 
@@ -51,6 +51,21 @@ class Domain(Folder):
 class DomainAware:
 
     class_domain = None
+
+
+    def get_languages(self):
+        return NotImplementedError
+
+
+    def select_language(self, languages=None):
+        if languages is None:
+            languages = self.get_languages()
+
+        language = os.environ.get('LANGUAGE')
+        language = language.split('.')[0]
+        language = language.replace('_', '-')
+        accept_language = AcceptLanguage(language)
+        return accept_language.select_language(languages)
 
 
     def gettext(self, message, language=None, domain=None):
@@ -71,12 +86,6 @@ class DomainAware:
         return domain.gettext(message, language)
 
 
-    def select_language(self, languages):
-        language = os.environ.get('LANGUAGE')
-        language = language.split('.')[0]
-        language = language.replace('_', '-')
-        accept_language = AcceptLanguage(language)
-        return accept_language.select_language(languages)
 
 
 

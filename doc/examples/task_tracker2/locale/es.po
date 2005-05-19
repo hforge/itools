@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2005-05-15 18:05+CET\n"
+"POT-Creation-Date: 2005-05-19 17:05+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,11 @@ msgstr ""
 #: TaskTracker_view.xml.en:0
 msgid ":"
 msgstr ""
+
+#: TaskTracker.py:115
+#, python-format
+msgid "Task #%(id)d: %(title)s"
+msgstr "Tarea #%(id)d: %(title)s"
 
 #: TaskTracker_view.xml.en:0
 msgid "Task Tracker"

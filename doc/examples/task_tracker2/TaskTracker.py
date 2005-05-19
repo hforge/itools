@@ -20,10 +20,11 @@ import mimetypes
 import textwrap
 
 # Import from itools
+from itools import get_abspath
 from itools.resources import get_resource
 from itools.handlers.Text import Text
 from itools.handlers import get_handler
-from itools.gettext.domains import DomainAware
+from itools.gettext.domains import DomainAware, register_domain
 import itools.xml
 
 
@@ -41,6 +42,7 @@ class Task(object):
 class TaskTracker(Text, DomainAware):
 
     class_mimetypes = ['text/x-task-tracker']
+    class_domain = 'task tracker'
 
 
     #########################################################################
@@ -112,7 +114,8 @@ class TaskTracker(Text, DomainAware):
     def show_open_tasks(self):
         for id, task in enumerate(self.state.tasks):
             if task.state == 'open':
-                print 'Task #%d: %s' % (id, task.title)
+                print self.gettext('Task #%(id)d: %(title)s') \
+                      % {'id': id, 'title': task.title}
                 print
                 print textwrap.fill(task.description)
                 print
@@ -125,11 +128,18 @@ class TaskTracker(Text, DomainAware):
 
 
     #########################################################################
+    # Internationalization
+    #########################################################################
+    def get_languages(self):
+        return ['en', 'es']
+
+
+    #########################################################################
     # Web Interface
     #########################################################################
     def view(self):
         # Load the STL template
-        language = self.select_language(['en', 'es'])
+        language = self.select_language()
         handler = get_handler('TaskTracker_view.xml.%s' % language)
 
         # Build the namespace
@@ -147,6 +157,11 @@ class TaskTracker(Text, DomainAware):
 
 
 Text.register_handler_class(TaskTracker)
+
+# Register the domain
+domain_path = get_abspath(globals(), '../locale')
+register_domain(TaskTracker.class_domain, domain_path)
+
 
 
 

@@ -9,8 +9,8 @@
     <h2>Task Tracker</h2>
     <div stl:repeat="task tasks">
       <h4>
-        #<stl:block content="task/id" />:
-        <stl:block content="task/title" />
+        #<stl:inline content="task/id" />:
+        <stl:inline content="task/title" />
         (<em stl:content="task/state" />)
       </h4>
       <p stl:content="task/description" />

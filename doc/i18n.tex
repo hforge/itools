@@ -198,116 +198,68 @@ Localization:
   native language and cultural habits.
 \end{quote}
 
-
-
-
-
-\subsection{Template selection}
-
-The method {\tt view} also must be modified, so the right template is used:
-
-\begin{code}
-    def view(self, language='en'):
-        # Load the STL template
-        resource_name = 'addressbook_view.xml.%s' % language
-        resource = get_resource(resource_name)
-        template = XML.Document(resource)
-
-        ...
-\end{code}
-
-
-What remains to explain is how the application chooses the language the
-user wants to see the addressbook in. This topic is out of the scope
-of this chapter.
-
-\section{Localization}
-
-To illustrate the example we will use Spanish as the second language.
-
-The issue is, from the template {\tt addressbook\_view.xml.en} we
-must produce a template named {\tt addressbook\_view.xml.es}, where
-the translatable messages will be in Spanish instead of English.
-
-In our case there is only one translatable message, the word
-{\tt Addressbook}. While the English template contains the header:
-
-\begin{code}
-    <h3>Addressbook</h3>
-\end{code}
-
-the Spansih one must have:
-
-\begin{code}
-    <h3>Libro de direcciones</h3>
-\end{code}
-
-The localization process is splitted in three stages:
+The source is ready, now starts the localization process, it consists of
+two steps:
 
 \begin{enumerate}
   \item Message extraction.
   \item Human translation.
-  \item Template re-construction.
 \end{enumerate}
-
-Through the whole process we will use {\tt GNU
-gettext}\footnote{http://www.gnu.org/software/gettext/}, which is the
-standard in the Free Software world for software internationalization
-and localization; and the script {\tt igettext.py} provided by {\tt itools}.
 
 
 \subsection{Message extraction}
 
-This step consists on the parsing of the templates that define the user
-interface (in our case the file {\tt addressbook\_view.xml.en}), the
-extraction of the translatable messages they contain, and the building of
-a {\em PO} file which will be the input for the human translator.
+This step consists on the parsing of the source code, the extraction of
+the translatable messages they contain, and the building of a {\em PO}
+file which will be the input for the human translator.
 
-This all is done with the {\tt igettext.py} script:
+This is done with the
+{\tt GNU gettext}\footnote{http://www.gnu.org/software/gettext/} tools,
+which are the standard in the Free Software world for software
+internationalization and localization; and the script {\tt igettext.py}
+provided by {\tt itools}.
+
+But the process is automatized by the {\tt Makefile} so the only thing we
+need to do is to type:
 
 \begin{code}
-    $ python igettext.py --pot addressbook_view.xml.en > es.po
+    $ make po
 \end{code}
 
-The result is the {\tt es.po} file, whose content will be:
+This will parse the Python and XHTML source and update the PO files within
+the {\tt locale} directory. See below an excerpt:
 
 \begin{code}
-    msgid ""
+    #: TaskTracker.py:117
+    #, python-format
+    msgid "Task #%(id)d: %(title)s"
     msgstr ""
-    "Project-Id-Version: PACKAGE VERSION\n"
-    "POT-Creation-Date: 2004-10-28 17:10+CET\n"
-    "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-    "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-    "Language-Team: LANGUAGE <LL@li.org>\n"
-    "MIME-Version: 1.0\n"
-    "Content-Type: text/plain; charset=UTF-8\n"
-    "Content-Transfer-Encoding: 8bit\n"
 
-    #: addressbook_view.xml.en:0
-    msgid "Addressbook"
+    #: TaskTracker_view.xml.en:0
+    msgid "Task Tracker"
     msgstr ""
 \end{code}
 
-The file consist of a header and the translatable messages that have been
-found, in our case just the word {\tt Addressbook}. This file is the one
-the translator will work with.
 
-
-\section{Human translation}
+\subsection{Human translation}
 
 The human translator receives the PO file, and must return the same PO
 file, but including the translations for every message. In our example
-he should return the file (excluding the header):
+the output should be:
 
 \begin{code}
-    #: addressbook_view.xml.en:0
-    msgid "Addressbook"
-    msgstr "Libro de direcciones"
+    #: TaskTracker.py:117
+    #, python-format
+    msgid "Task #%(id)d: %(title)s"
+    msgstr "Tarea #%(id)d: %(title)s"
+
+    #: TaskTracker_view.xml.en:0
+    msgid "Task Tracker"
+    msgstr "Gestor de tareas"
 \end{code}
 
-To do his work he may use a simple text editor like {\em vi} or {\em emacs}.
-But typically he will use one of the PO graphic editors available, for
-example:
+To do this work the translator don't needs to understand the file format,
+there are graphical tools available to do the job like:
 
 \begin{itemize}
   \item KBabel, {\tt http://www.kde.org}
@@ -315,19 +267,37 @@ example:
 \end{itemize}
 
 
-\section{Template building}
+\section{Build}
 
-To close the process, we must generate the template
-{\tt addressbook\_view.xml.es} from the master template
-({\tt addressbook\_view.xml.en}) and from the translated PO file ({\tt es.po}).
-This is done with the script {\tt igettext.py}:
+To close the process, we must generate the translated templates
+({\tt TaskTracker\_view.xml.es}) and the {\em MO} files ({\tt en.mo},
+{\tt es.mo}) that will be used in runtime by the {\tt gettext} method.
+
+To build the templates from the master template 
+({\tt TaskTracker\_view.xml.en}) and from the translated PO file ({\tt es.po}),
+is done with the script {\tt igettext.py}:
 
 \begin{code}
     $ igettext.py --xhtml addressbook_view.xml.en es.po \
           > addressbook_view.xml.es
 \end{code}
 
-And that's it, now we have the two templates, one in English and one in
-Spanish.
+The MO file is a binary version of the PO file, and is built with the
+{\tt msgfmt} tool.
+
+But, again, the process is automatized by the {\tt Makefile}, so the only
+thing we need to do is to type:
+
+\begin{code}
+    $ make bin
+    igettext.py --output=TaskTracker_view.xml.es \
+      --xhtml TaskTracker_view.xml.en locale/es.po
+    msgfmt locale/en.po -o locale/en.mo
+    msgfmt locale/es.po -o locale/es.mo
+    touch bin
+\end{code}
+
+And {\em voilà}.
+
 
 

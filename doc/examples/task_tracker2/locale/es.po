@@ -16,18 +16,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: TaskTracker_view.xml.en:0
-msgid "#"
+msgid "#<stl:inline content=\"task/id\"></stl:inline>:"
 msgstr ""
 
 #: TaskTracker_view.xml.en:0
-msgid "(<em stl:content=\"task/state\"></em>)"
+msgid ""
+"<stl:inline content=\"task/title\"></stl:inline> (<em stl:content=\"task/"
+"state\"></em>)"
 msgstr ""
 
-#: TaskTracker_view.xml.en:0
-msgid ":"
-msgstr ""
-
-#: TaskTracker.py:115
+#: TaskTracker.py:117
 #, python-format
 msgid "Task #%(id)d: %(title)s"
 msgstr "Tarea #%(id)d: %(title)s"

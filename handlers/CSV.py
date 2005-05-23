@@ -27,11 +27,10 @@ from Text import Text
 def parse(data, schema=None):
     encoding = Text.guess_encoding(data)
     # Build the reader
-    if data:
-        dialect = csv.Sniffer().sniff(data[:1000])
-        reader = csv.reader(data.splitlines(), dialect)
-    else:
-        reader = csv.reader(data.splitlines())
+    dialect = csv.Sniffer().sniff(data[:1000])
+    if dialect.delimiter == '':
+        dialect.delimiter = ','
+    reader = csv.reader(data.splitlines(), dialect)
     # Add type
     if schema is None:
         for line in reader:

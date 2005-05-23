@@ -2,9 +2,9 @@
 \label{Chapter: i18n}
 
 The task tracker from the previous chapter provides a user interface in
-only one language: English. The purpose of this chapter is to explain how
-to build applications that provide a user interface in many languages.
-We will illustrate this building up on the task tracker example.
+only one language. The purpose of this chapter is to explain how to build
+applications that provide a user interface in many languages. We will
+illustrate this building up on the task tracker example.
 
 See the file layout of the already multilingual task tracker:
 
@@ -20,12 +20,11 @@ See the file layout of the already multilingual task tracker:
 
 There are two things to note. First the {\tt locale} directory: it is
 a database which keeps the translations for the text messages of the user
-interface. The translations are stored in {\em PO}\footnote{XXX} files;
-there is one {\em PO} file for every language, in our example there is
-one for English ({\tt en.po}) and another for Spanish ({\tt es.po}). Each
-{\em PO} file keeps the source messages, usually written in English, and
-their translations (because the source language is English, the {\tt en.po}
-file will be usually empty).
+interface. The translations are stored in {\em PO}\footnote{XXX} files,
+one per language; in our example there is one for English ({\tt en.po})
+and another for Spanish ({\tt es.po}). Each {\em PO} file keeps the source
+messages, usually written in English, and their translations (because the
+source language is English, the {\tt en.po} file will be usually empty).
 
 The second thing to note is the {\tt Makefile}, it will help us to automatize
 the localization and build processes. The Figure~\ref{Figure: l10n} shows
@@ -50,6 +49,12 @@ Internationalization:
   multiple languages.
 \end{quote}
 
+This is to say, if you have a monolingual product like the task tracker from
+the previous chapter, you will need to make some changes to the code, so it
+becomes able to deal with multiple languages. This process is called
+{\em internationalization}. Of course, you may also write international
+software since the beginning.
+
 The text messages to translate are stored in the XML templates and the Python
 code, so these are the two things to internationalize.
 
@@ -66,6 +71,12 @@ To start, our task tracker must be {\em domain aware}:
         class_domain = 'task tracker'
 \end{code}
 
+We use here the word {\em domain} because it is standard in the
+internationalization jargon. Here by a {\em domain} we understand a
+database that keeps message translations for one or more languages.
+A {\em domain aware} class is one that is implicitly associated to a
+domain and has an API to access that domain.
+
 Every application and library will have a unique domain name, this will
 allow us to explicitly refer to a given domain to retrieve translations
 from it. The domain name is specified with the class variable
@@ -75,14 +86,7 @@ By the way, we need to register the domain:
 
 \begin{code}
     from itools import get_abspath
-    from itools.gettext.domains import DomainAware, register_domain
-
-    class TaskTracker(Text, DomainAware):
-
-        class_mimetypes = ['text/x-task-tracker']
-        class_domain = 'task tracker'
-
-    ...
+    from itools.gettext.domains import register_domain
 
     domain_path = get_abspath(globals(), '../locale')
     register_domain(TaskTracker.class_domain, domain_path)
@@ -112,7 +116,8 @@ we will use within the Python code:
 \end{api}
 
 Now we just need to replace every text string in the source code by a
-call to {\tt gettext}, for example:
+call to {\tt gettext}, e.g {\tt u'hello'} becomes {\tt self.gettext(u'hello')}.
+In our example it would be:
 
 \begin{code}
     def show_open_tasks(self):
@@ -127,15 +132,15 @@ Note that we have used named arguments for the formatted string instead
 of positional arguments. This is because the position of the arguments
 may be different in another language.
 
-The method {\tt gettext} not only will return the translation for the
-given message, it also allows the message extraction script to detect
-the messages that need to be translated.
+\subsubsection{Marking messages}
 
-\subsubsection{Deferred translations}
+The method {\tt gettext} does two things, it returns the message translation
+when it is called, and marks the message so the  extraction script will
+be able to find it.
 
-Sometimes we want to mark an string as translatable, so the message
-extraction script finds it, but we don't want to translate it at run time.
-This is done using a dummy function that just returns the given message:
+But sometimes we only want mark the text string. How to tell the message
+extraction script to pick up a message but still do nothing at run-time?
+We use a dummy function:
 
 \begin{code}
     from itools.gettext.domains import N_
@@ -146,8 +151,8 @@ This is done using a dummy function that just returns the given message:
         class_title = N_(u'Task Tracker')
 \end{code}
 
-The function {\tt N\_} does nothing, it just returns the message it
-receives. But allows the message extraction script to find it.
+The function {\tt N\_} returns the same message it receives, so it changes
+nothing. But it allows the message extraction script to detect the message.
 
 
 \subsection{Templates}

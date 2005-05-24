@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,10 +15,10 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-
-# Import from Python
+# Import from the Standard Library
+from datetime import datetime
 from urllib import urlopen
+import time
 
 # Import from itools
 import base
@@ -39,6 +39,12 @@ class File(Resource, base.File):
 
     def get_mimetype(self):
         return urlopen(str(self.uri)).info().gettype()
+
+
+    def get_mtime(self):
+        mtime = urlopen(str(self.uri)).info().getdate('Last-Modified')
+        mtime = datetime.fromtimestamp(time.mktime(mtime))
+        return mtime
 
 
 

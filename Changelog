@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-24 16:53:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-94
+
+    Summary:
+      resources, import get_mtime for http resources (#45)
+    Revision:
+      itools--main--0.8--patch-94
+
+
+    modified files:
+     Changelog resources/base.py resources/http.py
+
+
 2005-05-23 09:45:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-93
 
     Summary:

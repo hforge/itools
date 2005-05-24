@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 import mimetypes
 from types import StringTypes
 
@@ -31,8 +30,6 @@ class Resource(object):
     them is:
 
     - get_atime(): returns the last time the object was accessed
-
-    - get_mtime(): returns the last time the object was modified
 
     - get_ctime(): returns the time the object was created
 
@@ -65,6 +62,10 @@ class Resource(object):
         return None
 
     name = property(get_name, None, None, '')
+
+
+    def get_mtime(self):
+        raise NotImplementedError
 
 
     def lock(self):

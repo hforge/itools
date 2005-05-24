@@ -32,8 +32,6 @@ class Resource(object):
 
     - get_atime(): returns the last time the object was accessed
 
-    - get_mtime(): returns the last time the object was modified
-
     - get_ctime(): returns the time the object was created
 
     - get_mimetype(): returns the mime type of the resource (None means it
@@ -65,6 +63,10 @@ class Resource(object):
         return None
 
     name = property(get_name, None, None, '')
+
+
+    def get_mtime(self):
+        raise NotImplementedError
 
 
     def lock(self):

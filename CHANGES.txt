@@ -1,3 +1,26 @@
+0.8.1 (2005/05/25)
+
+  Resources
+  - Improve "get_mimetype".
+  - Implemente "get_mtime" for http resources.
+
+  Handlers
+  - Improve CSV parser, more robust now.
+  - Fix "set_handler".
+
+  XML
+  - Fix header serialization.
+
+  XHTML
+  - Fix "get_messages".
+
+  HTML
+  - Improve parser, more robust now.
+
+  Internationalization
+  - Fix igettext.
+
+
 0.8.0 (2005/04/18)
 
   URI

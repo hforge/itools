@@ -41,8 +41,94 @@ class State(object):
     pass
 
 
+class Node(object):
 
-class Handler(object):
+    def get_abspath(self):
+        # XXX Should return a uri.Path instance
+        if self.parent is None:
+            return '/'
+
+        parent_path = self.parent.get_abspath()
+        if not parent_path.endswith('/'):
+            parent_path += '/'
+
+        return parent_path + self.name
+
+    abspath = property(get_abspath, None, None, '')
+
+
+    def get_root(self):
+        if self.parent is None:
+            return self
+        return self.parent.get_root()
+
+
+    def get_pathtoroot(self):
+        i = 0
+        parent = self.parent
+        while parent is not None:
+            parent = parent.parent
+            i += 1
+        if i == 0:
+            return './'
+        return '../' * i
+
+##        if self.parent is None:
+##            return './'
+##        return self.parent.get_pathtoroot() + '../'
+
+
+    def get_pathto(self, handler):
+        path = uri.Path(self.get_abspath())
+        return path.get_pathto(handler.get_abspath())
+
+
+    def acquire(self, name):
+        if self.parent is None:
+            raise AcquisitionError, name
+        return self.parent.acquire(name)
+
+
+    def get_handler(self, path):
+        # Be sure path is a Path
+        if not isinstance(path, uri.Path):
+            path = uri.Path(path)
+
+        if path.is_absolute():
+            root = self.get_root()
+            path = str(path)[1:]
+            return root.get_handler(path)
+
+        if len(path) == 0:
+            return self
+
+        if path[0].name == '..':
+            if self.parent is None:
+                raise ValueError, 'this handler is the root handler'
+            return self.parent.get_handler(path[1:])
+
+        segment, path = path[0], path[1:]
+        name = segment.name
+
+        handler = self._get_virtual_handler(segment)
+        # Set parent and name
+        handler.parent = self
+        handler.name = name
+
+        if path:
+            return handler.get_handler(path)
+
+        return handler
+
+
+    def _get_virtual_handler(self, segment):
+        raise LookupError, 'file handlers can not be traversed'
+
+
+
+
+
+class Handler(Node):
     """
     This class represents a resource handler, where a resource can be
     a file, a directory or a link. It is used as a base class for any
@@ -137,51 +223,3 @@ class Handler(object):
         raise ValueError, 'unknown resource type "%s"' % resource_type
 
     build_handler = classmethod(build_handler)
-
-
-    ########################################################################
-    # Tree
-    def get_abspath(self):
-        # XXX Should return a uri.Path instance
-        if self.parent is None:
-            return '/'
-
-        parent_path = self.parent.get_abspath()
-        if not parent_path.endswith('/'):
-            parent_path += '/'
-
-        return parent_path + self.name
-
-    abspath = property(get_abspath, None, None, '')
-
-
-    def get_root(self):
-        if self.parent is None:
-            return self
-        return self.parent.get_root()
-
-
-    def get_pathtoroot(self):
-        i = 0
-        parent = self.parent
-        while parent is not None:
-            parent = parent.parent
-            i += 1
-        if i == 0:
-            return './'
-        return '../' * i
-
-##        if self.parent is None:
-##            return './'
-##        return self.parent.get_pathtoroot() + '../'
-
-
-    def get_pathto(self, handler):
-        path = uri.Path(self.get_abspath())
-        return path.get_pathto(handler.get_abspath())
-
-
-    def acquire(self, name):
-        if self.parent is None:
-            raise AcquisitionError, name
-        return self.parent.acquire(name)

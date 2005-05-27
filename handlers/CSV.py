@@ -25,7 +25,7 @@ from Text import Text
 def parse(data, schema=None):
     encoding = Text.guess_encoding(data)
     # Build the reader
-    dialect = csv.Sniffer().sniff(data[:1000])
+    dialect = csv.Sniffer().sniff('\n'.join(data.splitlines()[:10]))
     if dialect.delimiter == '':
         dialect.delimiter = ','
     reader = csv.reader(data.splitlines(), dialect)
@@ -39,10 +39,17 @@ def parse(data, schema=None):
                     for i, value in enumerate(line) ]
 
 
+
+class Row(list):
+    pass
+
+
+
 class CSV(Text):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
     class_extension = 'csv'
+    class_version = '20040625'
 
 
     schema = None
@@ -57,9 +64,21 @@ class CSV(Text):
 ##        data = [ x.strip() for x in data.splitlines() ]
 ##        data = [ x for x in data if x ]
 
-        state = self.state
-        state.lines = list(parse(data, self.schema))
-        state.encoding = self.guess_encoding(data)
+        lines = []
+        index = 0
+        for line in parse(data, self.schema):
+            row = Row(line)
+            row.index = index
+            lines.append(row)
+            index = index + 1
+
+        self.state.lines = lines
+        self.state.encoding = self.guess_encoding(data)
+
+
+    def _get_virtual_handler(self, segment):
+        index = int(segment.name)
+        return self.state.lines[index]
 
 
     #########################################################################

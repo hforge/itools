@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-28 12:51:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-96
+
+    Summary:
+      catalog, fix profile and bench script
+    Revision:
+      itools--main--0.8--patch-96
+
+
+    modified files:
+     Changelog catalog/prof.py
+
+
 2005-05-25 16:39:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-95
 
     Summary:

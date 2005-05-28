@@ -38,7 +38,7 @@ class Document(HTML.Document):
 
 
     def body(self):
-        return unicode(self.get_body().children)
+        return self.to_text()
 
 
 
@@ -62,7 +62,7 @@ documents = []
 def load_documents():
     print 'Loading documents...',
     src = get_resource(docs_path)
-    resource_names = [ x for x in src.get_resource_names()
+    resource_names = [ x for x in src.get_resource_names()[:101]
                        if x.endswith('.html') ]
     resource_names.sort()
     for name in resource_names:

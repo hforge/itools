@@ -433,11 +433,11 @@ class Document(XML.Document):
         """
         Removes the markup and returns a plain text string.
         """
-        text = ''
+        text = []
         for node in self.traverse():
             if isinstance(node, unicode):
-                text += node
-        return text
+                text.append(node)
+        return u' '.join(text)
 
 
 

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-05-28 12:52:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-97
+
+    Summary:
+      xhtml, improve "to_text" performance for big documents
+    Revision:
+      itools--main--0.8--patch-97
+
+
+    modified files:
+     CHANGES.txt Changelog xhtml/XHTML.py
+
+
 2005-05-28 12:51:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-96
 
     Summary:

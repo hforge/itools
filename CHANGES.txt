@@ -2,7 +2,7 @@
 
   Resources
   - Improve "get_mimetype".
-  - Implemente "get_mtime" for http resources.
+  - Implement "get_mtime" for http resources.
 
   Handlers
   - Improve CSV parser, more robust now.

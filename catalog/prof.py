@@ -23,6 +23,7 @@ from time import time
 # Import from itools
 from itools.handlers import get_handler, Text
 from itools.resources import get_resource
+from itools.xml import XML
 from itools.html import HTML
 from itools.catalog.Catalog import Catalog
 
@@ -32,9 +33,11 @@ docs_path = '/usr/share/doc/python-docs-2.3.5/html/lib'
 
 
 class Document(HTML.Document):
+
     def title(self):
         head = self.get_head()
-        return unicode(head.get_elements('title')[0].children)
+        title = head.get_elements('title')[0]
+        return XML.Children.to_unicode(title.children)
 
 
     def body(self):

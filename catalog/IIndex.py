@@ -222,10 +222,19 @@ class IIndexPositions(File):
       - number of slots (4 bytes)
       - first empty slot (4 bytes)
 
-    Each slot is made of:
+    The rest of the file is split into variable size blocks. A block maybe
+    busy or free.
 
-      - position (4 bytes)
-      - next position (4 bytes)
+    A free block starts with a header:
+
+      - number of slots [uint32] (excluding the header, maybe 0 or more)
+      - next free block [link]
+
+    A busy block stars with the header:
+
+      - number of slots [uint32]
+
+    So, the minimal size for a block, free or busy, is two.
     """
 
     class_version = '20050506'
@@ -244,29 +253,6 @@ class IIndexPositions(File):
         state.version = IO.decode_version(resource[:4])
         state.number_of_slots = IO.decode_uint32(resource[4:8])
         state.first_empty = IO.decode_link(resource[8:12])
-
-
-    def _get_free_slot(self):
-        """
-        Returns the slot number of a free slot, allocates a new one if
-        needed.
-        """
-        state = self.state
-        r = self.resource
-        if state.first_empty is None:
-            slot_number = state.number_of_slots
-            # Increment the number of slots
-            state.number_of_slots += 1
-            r[4:8] = IO.encode_uint32(state.number_of_slots)
-        else:
-            slot_number = state.first_empty
-            # Update first empty
-            base = 12 + slot_number * 8
-            first_empty_link = r[base+4:base+8]
-            state.first_empty = IO.decode_link(first_empty_link)
-            r[8:12] = first_empty_link
-
-        return slot_number
 
 
 
@@ -303,16 +289,14 @@ class Tree(object):
             frequency = IO.decode_uint32(doc_slot_data[4:8])
             pos_slot_n = IO.decode_link(doc_slot_data[8:12])
             doc_slot_n = IO.decode_link(doc_slot_data[12:16])
-            # Insert document
+            # Load positions
             self.documents[doc_number] = documents = set()
-            while pos_slot_n is not None:
-                pos_slot = 12 + pos_slot_n * 8
-                position = IO.decode_uint32(posi_rsrc[pos_slot:pos_slot+4])
-                documents.add(position)
-                pos_slot_n = IO.decode_link(posi_rsrc[pos_slot+4:pos_slot+8])
-
-##            for i in range(frequency):
-##                documents.append(None)
+            pos_slot = 12 + pos_slot_n * 4
+            data = posi_rsrc[pos_slot+4:pos_slot+4+(frequency*4)]
+            i = 0
+            while i < frequency:
+                documents.add(IO.decode_uint32(data[i:i+4]))
+                i += 1
 
 
     def load_children(self):
@@ -398,9 +382,10 @@ class Tree(object):
                     # Update slot
                     doc_slot_n = docs_handler._get_free_slot()
                     doc_slot = 12 + doc_slot_n * 16
+                    frq = len(doc_positions)
                     docs_rsrc[doc_slot:doc_slot+16] = (
                         IO.encode_uint32(doc_number)
-                        + IO.encode_uint32(len(doc_positions))
+                        + IO.encode_uint32(frq)
                         + IO.encode_link(None)
                         + fdoc_slot_r)
                     tree_rsrc[tree_slot+4:tree_slot+8] = IO.encode_link(doc_slot_n)
@@ -409,13 +394,62 @@ class Tree(object):
                     fdoc_slot_r = IO.encode_link(fdoc_slot_n)
 
                 # Update positions
-                for position in doc_positions:
-                    p_r = docs_rsrc[doc_slot+8:doc_slot+12]
-                    f_n = posi_handler._get_free_slot()
-                    f_b = 12 + f_n * 8
-                    posi_rsrc[f_b:f_b+4] = IO.encode_uint32(position)
-                    posi_rsrc[f_b+4:f_b+8] = p_r
-                    docs_rsrc[doc_slot+8:doc_slot+12] = IO.encode_link(f_n)
+                # Find a free block
+                free_block_n = posi_handler.state.first_empty
+                previous_block_n = None
+                while free_block_n is not None:
+                    free_block = 12 + free_block_n * 4
+                    n = IO.decode_uint32(posi_rsrc[free_block:free_block+4])
+                    if frq < n:
+                        # Create new free block
+                        new_free_block_n = free_block_n + frq + 1
+                        new_free_block = 12 + new_free_block_n * 4
+                        next_free_block_r = posi_rsrc[free_block+4:free_block+8]
+                        posi_rsrc[new_free_block:new_free_block+8] = (
+                            IO.encode_uint32(n - frq - 1) + next_free_block_r)
+                        # Insert new free block
+                        if previous_block_n is None:
+                            posi_rsrc[8:12] = IO.encode_link(new_free_block_n)
+                            # Update in memory
+                            posi_handler.state.first_empty = new_free_block_n
+                        else:
+                            previous_block = 12 + previous_block_n * 4
+                            posi_rsrc[previous_block+4:previous_block+8] = (
+                                IO.encode_link(new_free_block_n))
+                        break
+                    elif frq == n + 1:
+                        # Pop block
+                        next_free_block_r = posi_rsrc[free_block+4:free_block+8]
+                        if previous_block_n is None:
+                            posi_rsrc[8:12] = next_free_block_r
+                            # Update in memory
+                            posi_handler.state.first_empty = IO.decode_link(next_free_block_r)
+                        else:
+                            previous_block = 12 + previous_block_n * 4
+                            posi_rsrc[previous_block+4:previous_block+8] = (
+                                next_free_block_r)
+                        break
+                    else:
+                        previous_block_n = free_block_n
+                        free_block_r = posi_rsrc[free_block+4:free_block+8]
+                        free_block_n = IO.decode_link(free_block_r)
+
+                # Create new block if needed
+                if free_block_n is None:
+                    free_block_n = posi_handler.state.number_of_slots
+                    free_block = 12 + free_block_n * 4
+                    number_of_slots = free_block_n + frq + 1
+                    posi_rsrc[4:8] = IO.encode_uint32(number_of_slots)
+                    # Update in memory
+                    posi_handler.state.number_of_slots = number_of_slots
+
+                # Fill the slot
+                posi_rsrc[free_block:free_block+4+(frq*4)] = (
+                    IO.encode_uint32(frq)
+                    + ''.join([ IO.encode_uint32(x) for x in doc_positions]))
+                # Link the slot from the frequency resource
+                free_block_r = IO.encode_link(free_block_n)
+                docs_rsrc[doc_slot+8:doc_slot+12] = free_block_r
 
 
     def _unindex_term(self, word, documents):
@@ -440,7 +474,8 @@ class Tree(object):
             tree_rsrc = self.root.tree_handler.resource
             docs = self.root.docs_handler
             docs_rsrc = docs.resource
-            posi_rsrc = self.root.posi_handler.resource
+            posi_handler = self.root.posi_handler
+            posi_rsrc = posi_handler.resource
             # Search the document slot
             tree_slot = 16 + self.slot * 16
             docs_slot_r = tree_rsrc[tree_slot+4:tree_slot+8]
@@ -455,20 +490,17 @@ class Tree(object):
                 if x in documents:
                     documents.remove(x)
                     # Update positions
-                    f_e = posi_rsrc[8:12]
-                    p_r = docs_rsrc[docs_slot+8:docs_slot+12]
-                    posi_rsrc[8:12] = p_r
-
-                    p_n = IO.decode_link(p_r)
-                    p_b = 12 + p_n * 8
-                    pn_r = posi_rsrc[p_b+4:p_b+8]
-                    pn_n = IO.decode_link(pn_r)
-                    while pn_n is not None:
-                        p_n = pn_n
-                        p_b = 12 + p_n * 8
-                        pn_r = posi_rsrc[p_b+4:p_b+8]
-                        pn_n = IO.decode_link(pn_r)
-                    posi_rsrc[p_b+8:p_b+12] = f_e
+                    new_free_block_r = docs_rsrc[docs_slot+8:docs_slot+12]
+                    new_free_block_n = IO.decode_link(new_free_block_r)
+                    new_free_block = 12 + new_free_block_n * 4
+                    frq = IO.decode_uint32(posi_rsrc[new_free_block:new_free_block+4])
+                    first_free_block_r = posi_rsrc[8:12]
+                    posi_rsrc[new_free_block:new_free_block+8] = (
+                        IO.encode_uint32(frq - 1) + first_free_block_r)
+                    # Insert in the list of free blocks
+                    posi_rsrc[8:12] = new_free_block_r
+                    # Update in memory
+                    posi_handler.state.first_empty = new_free_block_n
                     # Remove from the documents list
                     if prev_slot_n is None:
                         tree_rsrc[tree_slot+4:tree_slot+8] = next_slot_r

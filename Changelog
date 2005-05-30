@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-05-30 18:59:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-66
+
+    Summary:
+      catalog, fix un-index
+    Revision:
+      itools--main--0.9--patch-66
+
+
+    modified files:
+     Changelog catalog/IIndex.py
+
+
 2005-05-30 18:28:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
 
     Summary:

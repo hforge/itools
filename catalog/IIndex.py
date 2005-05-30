@@ -411,7 +411,7 @@ class Tree(object):
                         + first_free_block_r)
                     docs_rsrc[8:12] = docs_slot_r
                     # Update on memory
-                    docs.first_empty = docs_slot_n
+                    docs.state.first_empty = docs_slot_n
                 else:
                     prev_slot_n, prev_slot = docs_slot_n, docs_slot
                 # Next

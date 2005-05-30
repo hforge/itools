@@ -304,8 +304,8 @@ class Tree(object):
                 previous_block_n = None
                 while free_block_n is not None:
                     free_block = 12 + free_block_n * 4
-                    head = IO.decode_uint32(docs_rsrc[free_block:free_block+8])
-                    size = head[0:4]
+                    head = docs_rsrc[free_block:free_block+8]
+                    size = IO.decode_uint32(head[0:4])
                     next_r = head[4:8]
                     if size >= frequency + 7:
                         # Create new free block
@@ -399,8 +399,6 @@ class Tree(object):
                 next_slot_n = IO.decode_link(next_slot_r)
                 if x in documents:
                     documents.remove(x)
-
-
                     # Remove from the documents list
                     if prev_slot_n is None:
                         tree_rsrc[tree_slot+4:tree_slot+8] = next_slot_r

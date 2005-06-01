@@ -429,17 +429,5 @@ class Document(XML.Document):
         return None
 
 
-    def to_text(self):
-        """
-        Removes the markup and returns a plain text string.
-        """
-        text = []
-        for node in self.traverse():
-            if isinstance(node, unicode):
-                text.append(node)
-        return u' '.join(text)
-
-
-
 XML.Document.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
 XML.Document.register_handler_class(Document)

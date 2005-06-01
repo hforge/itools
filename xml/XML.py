@@ -450,6 +450,17 @@ class Document(Text.Text):
             yield x, context
 
 
+    def to_text(self):
+        """
+        Removes the markup and returns a plain text string.
+        """
+        text = []
+        for node in self.traverse():
+            if isinstance(node, unicode):
+                text.append(node)
+        return u' '.join(text)
+
+
 Text.Text.register_handler_class(Document)
 
 

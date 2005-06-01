@@ -27,10 +27,10 @@ from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \
 
 class Element(XHTML.Element):
 
-    def get_closetag(self):
+    def get_end_tag(self):
         if self.name in empty_elements:
             return ''
-        return XHTML.Element.get_closetag(self)
+        return XHTML.Element.get_end_tag(self)
 
 
 class InlineElement(Element, XHTML.InlineElement):

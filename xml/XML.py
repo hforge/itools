@@ -133,12 +133,10 @@ class Element(object):
     #######################################################################
     # Serialization
     def to_unicode(self, encoding='UTF-8'):
-        return self.get_opentag() \
-               + Children.to_unicode(self.children, encoding=encoding) \
-               + self.get_closetag()
+        return self.get_start_tag() + self.get_content() + self.get_end_tag()
 
 
-    def get_opentag(self):
+    def get_start_tag(self):
         s = '<%s' % self.qname
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
@@ -146,12 +144,16 @@ class Element(object):
             type = self.get_attribute_type(namespace_uri, local_name)
             value = type.to_unicode(value)
             s += ' %s="%s"' % (qname, value)
-        # Close the open tag
+        # Close the start tag
         return s + u'>'
 
 
-    def get_closetag(self):
+    def get_end_tag(self):
         return '</%s>' % self.qname
+
+
+    def get_content(self):
+        return Children.to_unicode(self.children, encoding=encoding)
 
 
     #######################################################################

@@ -70,9 +70,9 @@ class Element(XML.Element):
                 # there should be a single place.
                 s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             elif isinstance(node, Element):
-                s.append(self.get_start_tag())
-                s.append(self.get_content_as_html())
-                s.append(self.get_end_tag_as_html())
+                s.append(node.get_start_tag())
+                s.append(node.get_content_as_html())
+                s.append(node.get_end_tag_as_html())
             else:
                 s.append(node.to_unicode(encoding=encoding))
         return u''.join(s)

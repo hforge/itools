@@ -30,6 +30,7 @@ from itools.catalog.Catalog import Catalog
 
 
 docs_path = '/usr/share/doc/python-docs-2.3.5/html/lib'
+#docs_path = '/usr/share/doc/python2.3-doc/html/lib/'
 
 
 class Document(HTML.Document):

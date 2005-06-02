@@ -242,7 +242,8 @@ class Document(XML.Document):
                 if node.is_translatable(local_name):
                     value = value.strip()
                     if value:
-                        value = catalog.get_msgstr(value) or value
+                        value = catalog.get_translation(value)
+                        #value = catalog.get_msgstr(value) or value
                 qname = node.get_attribute_qname(namespace, local_name)
                 namespace = namespaces.get_namespace(namespace)
                 schema = namespace.get_attribute_schema(local_name)
@@ -299,7 +300,8 @@ class Document(XML.Document):
                         raise StopIteration
                     # Something to translate: segmentation
                     for segment in message.get_segments(keep_spaces):
-                        msgstr = catalog.get_msgstr(segment) or segment
+                        msgstr = catalog.get_translation(segment)
+                        #msgstr = catalog.get_msgstr(segment) or segment
                         # Escapes "&", except when it is an entity reference
                         def f(match):
                             x = match.group(0)

@@ -24,48 +24,82 @@ from unittest import TestCase
 # Import from itools.handlers
 from PO import PO
 
+# Import from itools.resources
+from itools.resources.memory import File as mFile
 
 
 class POTestCase(TestCase):
+
     def test_case1(self):
         """Test for newlines."""
         content = 'msgid "Add"\n' \
-                  'msgstr "Añadir\\n"\n'
+                  'msgstr "Ajouter\\n"\n'
+        da = mFile(content)
+        po = PO(da)
 
-        po = PO(content)
-        assert po.messages == {('Add',): ([], [u'Añadir\n'])}
+        self.assertEqual(po._messages['Add'].msgstr, [u'Ajouter\n'])
 
 
     def test_case2(self):
-        """Test for multiple lines"""
+        """Test for multiple lines."""
         content = 'msgid "Hello world"\n' \
                   'msgstr ""\n' \
                   '"Hola "\n' \
                   '"mundo"\n'
+        da = mFile(content)
+        po = PO(da)
 
-        po = PO(content)
-        assert po.messages == {('Hello world',): ([], ['', 'Hola ', 'mundo'])}
+        assert po._messages['Hello world'].msgstr == ['', u'Hola ', u'mundo']
 
 
     def test_case3(self):
         """Test for double quotes."""
         content = 'msgid "test"\n' \
                   'msgstr "Esto es una \\"prueba\\""\n'
+        da = mFile(content)
+        po = PO(da)
 
-        po = PO(content)
-        assert po.messages == {('test',): ([], ['Esto es una "prueba"'])}
+        assert po._messages['test'].msgstr == [u'Esto es una "prueba"']
 
 
     def test_output(self):
-        """Test output"""
+        """Test output."""
         content = '# Comment\n' \
+                  '#: pouet.py:45\n' \
+                  '#, fuzzy\n' \
                   'msgid "Hello"\n' \
                   'msgstr ""\n' \
                   '"Hola\\n"\n'
+        da = mFile(content)
+        po = PO(da)
 
-        po = PO(content)
-        assert po.get_data() == content
+        assert (po.get_messages())[0].to_unicode() == content
 
+        
+    def test_fuzzy(self):
+        """Test fuzzy."""
+        content = '# Comment\n' \
+                  '#: pouet.py:45\n' \
+                  '#, fuzzy\n' \
+                  'msgid "Hello"\n' \
+                  'msgstr ""\n' \
+                  '"Hola\\n"\n'
+        da = mFile(content)
+        po = PO(da)
+        translation = po.get_translation('Hello')
+
+        assert translation == 'Hello'
+
+    def test_end_comment(self):
+        """Test end comment."""
+        content = '#, fuzzy\n' \
+                  '#~ msgid "Hello"\n' \
+                  '#~ msgstr "Hola"\n'
+        da = mFile(content)
+        po = PO(da)
+        translation = po.get_translation('Hello')
+
+        assert translation == 'Hello'
 
 if __name__ == '__main__':
     unittest.main()

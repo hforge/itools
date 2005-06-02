@@ -28,6 +28,7 @@ from Text import Text
 
 # Line types
 BLANK = 'blank'
+FUZZY = 'fuzzy'
 COMMENT = 'comment'
 MSGID = 'msgid'
 MSGSTR = 'msgstr'
@@ -65,20 +66,9 @@ def escape(s):
     return s.replace('\n', '\\n')
 
 
+expr = re.compile(r'(\\.)')
 def unescape(s):
-    s2 = ''
-    state = 0
-    for x in s:
-        if state == 0:
-            if x == '\\':
-                state = 1
-            else:
-                s2 = s2 + x
-        else:
-            s2 = s2 + eval("'\%s'" % x)
-            state = 0
-
-    return s2
+    return expr.sub(lambda x: eval("'%s'" % x.group(0)), s)
 
 
 
@@ -110,12 +100,12 @@ class Message(object):
     XXX
     """
 
-    def __init__(self, comments, msgid, msgstr, references={}):
+    def __init__(self, comments, msgid, msgstr, references={}, fuzzy=False):
         self.comments = comments
         self.references = references
         self.msgid = msgid
         self.msgstr = msgstr
-
+        self.fuzzy = fuzzy
 
     def to_unicode(self):
         s = u''
@@ -126,6 +116,9 @@ class Message(object):
         for filename, lines in self.references.items():
             for line in lines:
                 s += '#: %s:%s\n' % (filename, line)
+        # The Fuzzy flag
+        if self.fuzzy:
+            s += '#, fuzzy\n'
         # The msgid
         s += 'msgid "%s"\n' % escape(self.msgid[0])
         for string in self.msgid[1:]:
@@ -142,6 +135,7 @@ class Message(object):
 class PO(Text):
 
     class_mimetypes = ['text/x-po']
+
 
     #########################################################################
     # The skeleton
@@ -171,81 +165,91 @@ class PO(Text):
     # Parsing
     #######################################################################
     def next_line(self):
-        # Check for end of file
-        if self.line_number >= len(self.lines):
-            return EOF, None
+        line_number = 0
+        while line_number <= len(self.lines):
+            # Check for end of file
+            if line_number == len(self.lines):
+                yield EOF, None, line_number
+                break
 
-        # Load line
-        line = self.lines[self.line_number].strip()
-        self.line_number += 1
+            # Load line
+            line = self.lines[line_number].strip()
+            line_number += 1
 
-        # Empty
-        if not line:
-            return BLANK, None
-        # Comment
-        elif line.startswith('#'):
-            return COMMENT, line[1:]
-        # msgid
-        elif line.startswith('msgid'):
-            match = re_msgid.match(line)
-            if match is not None:
-                value = match.group(1)
-                return MSGID, unescape(value)
-        # msgstr
-        elif line.startswith('msgstr'):
-            match = re_msgstr.match(line)
-            if match is not None:
-                value = match.group(1)
-                return MSGSTR, unescape(value)
-        # string
-        elif line.startswith('"'):
-            match = re_str.match(line)
-            if match is not None:
-                value = match.group(1)
-                return STRING, unescape(value)
+            # Empty
+            if not line:
+                yield BLANK, None, line_number
+            # Fuzzy flag
+            elif line == '#, fuzzy':
+                yield FUZZY, None, line_number
+            # Comment
+            elif line.startswith('#'):
+                yield COMMENT, line[1:], line_number
+            # msgid
+            elif line.startswith('msgid'):
+                match = re_msgid.match(line)
+                if match is not None:
+                    value = match.group(1)
+                    yield MSGID, unescape(value), line_number
+            # msgstr
+            elif line.startswith('msgstr'):
+                match = re_msgstr.match(line)
+                if match is not None:
+                    value = match.group(1)
+                    yield MSGSTR, unescape(value), line_number
+            # string
+            elif line.startswith('"'):
+                match = re_str.match(line)
+                if match is not None:
+                    value = match.group(1)
+                    yield STRING, unescape(value), line_number
 
-        # Unknown
-        raise POSyntaxError(self.line_number)
+            # Unknown
+            else:
+                raise POSyntaxError(line_number)
 
 
     def next_entry(self):
-        # Load the next line
-        line_type, value = self.next_line()
-
         # Initialize entry information
-        id, comments, msgid, msgstr = None, [], [], []
-
+        id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
         # Parse entry
         state = 0
-        while 1:
+        for m in self.next_line():
+            line_type, value, line_number = m
             # Syntactic and semantic analysis
             if state == 0:
                 # Wait for an entry
                 if line_type == EOF:
-                    return None, [], [], []
+                    return
                 elif line_type == BLANK:
                     pass
                 elif line_type == COMMENT:
                     comments.append(value)
                     state = 1
+                elif line_type == FUZZY and not fuzzy:
+                    fuzzy = True
+                    state = 1
                 elif line_type == MSGID:
                     msgid.append(value)
                     state = 2
                 else:
-                    raise POSyntaxError(self.line_number, line_type)
+                    raise POSyntaxError(line_number, line_type)
             elif state == 1:
                 # Read comments and wait for the message id
                 if line_type == COMMENT:
                     comments.append(value)
+                elif line_type == FUZZY and not fuzzy:
+                    fuzzy = True
                 elif line_type == BLANK:
                     # Discard isolated comments
+                    fuzzy = False
                     comments = []
                     state = 0
                 elif line_type == MSGID:
                     msgid.append(value)
                     state = 2
                 else:
-                    raise POSyntaxError(self.line_number, line_type)
+                    raise POSyntaxError(line_number, line_type)
             elif state == 2:
                 # Read the message id and wait for the message string
                 if line_type == STRING:
@@ -254,7 +258,7 @@ class PO(Text):
                     msgstr.append(value)
                     state = 3
                 else:
-                    raise POSyntaxError(self.line_number, line_type)
+                    raise POSyntaxError(line_number, line_type)
             elif state == 3:
                 # Read the message string
                 if line_type == STRING:
@@ -270,30 +274,30 @@ class PO(Text):
                             self._encoding = charset[len('charset='):]
                 elif line_type == BLANK:
                     # End of the entry
-                    break
+                    id = ''.join(msgid)
+                    yield id, comments, msgid, msgstr, fuzzy, line_number
+                    state = 0
+                    id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
                 elif line_type == COMMENT:
                     # Add entry
-                    self._set_message(msgid, msgstr, comments)
+                    self._set_message(msgid, msgstr, comments, {}, fuzzy)
                     # Reset
-                    id, comments, msgid, msgstr = None, [], [], []
+                    id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
                     state = 4
                 else:
-                    raise POSyntaxError(self.line_number, line_type)
+                    raise POSyntaxError(line_number, line_type)
             elif state == 4:
                 # Discard trailing comments
                 if line_type == COMMENT:
                     pass
                 elif line_type == BLANK:
                     # End of the entry
-                    break
+                    id = ''.join(msgid)
+                    yield id, comments, msgid, msgstr, fuzzy, line_number
+                    state = 0
+                    id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
                 else:
-                    raise POSyntaxError(self.line_number, line_type)
-
-            # Next line
-            line_type, value = self.next_line()
-
-        id = ''.join(msgid)
-        return id, comments, msgid, msgstr
+                    raise POSyntaxError(line_number, line_type)
 
 
     def _load(self, resource):
@@ -313,37 +317,21 @@ class PO(Text):
         There could be an empty msgid, it contains information about the PO
         file, like the Project-Id-Version or the PO-Revision-Date.
         """
-        File._load(self, resource)
         # Initialize messages
         self._messages = {}
+        #Defaults, XXX guess it instead??
+        self._encoding = 'utf8'
 
         # Split the data by lines and intialize the line index
-        self.lines = self._data.split('\n') + ['']
-        self.line_number = 0
-        del self._data
+        data = resource.read()
+        self.lines = data.split('\n') + ['']
+        
+        for m in self.next_entry():
+            entry_id, comments, msgid, msgstr, fuzzy, line_number = m
 
-        # Parse header
-        entry_id, comments, msgid, msgstr = self.next_entry()
-        if entry_id == '':
-            # Parse header
-            for line in msgstr:
-                if line:
-                    key, value = line.split(':', 1)
-                    # XXX Get everything, not just the content type
-                    if key == 'Content-Type':
-                        mimetype, charset = value.split(';')
-                        charset = charset.strip()
-                        self._encoding = charset[len('charset='):]
-        else:
-            # Defaults, XXX guess it instead??
-            self._encoding = 'utf8'
-
-        # Add entries
-        while entry_id is not None:
-            # Check for duplicated messages
             if entry_id in self._messages:
                 raise POError, \
-                      'msgid at line %d is duplicated' % self.line_number
+                      'msgid at line %d is duplicated' % line_number
 
             # Get the comments and the msgstr in unicode
             comments = [ unicode(x, self._encoding) for x in comments ]
@@ -351,14 +339,7 @@ class PO(Text):
             msgstr = [ unicode(x, self._encoding) for x in msgstr ]
 
             # Add the message
-            self._set_message(msgid, msgstr, comments)
-
-            entry_id, comments, msgid, msgstr = self.next_entry()
-
-        # Remove auxiliar attributes
-        del self.lines
-        del self.line_number
-
+            self._set_message(msgid, msgstr, comments, {}, fuzzy)
 
 
     #######################################################################
@@ -382,24 +363,33 @@ class PO(Text):
             return ''.join(message.msgstr)
         return None
 
+    # same as precedent but do not translate fuzzy messages
+    def get_translation(self, msgid):
+        message = self._messages.get(msgid)
+        if message and not message.fuzzy:
+            return ''.join(message.msgstr)
+        return ''.join(msgid)
+
 
     def to_unicode(self, encoding=None):
         return '\n'.join([ x.to_unicode() for x in self._messages.values() ])
 
 
-    def set_message(self, msgid, msgstr=[u''], comments=[], references={}):
+    def set_message(self, msgid, msgstr=[u''], comments=[], references={},
+                    fuzzy=False):
         self.set_changed()
-        self._set_message(msgid, msgstr, comments, references)
+        self._set_message(msgid, msgstr, comments, references, fuzzy)
 
 
-    def _set_message(self, msgid, msgstr=[u''], comments=[], references={}):
+    def _set_message(self, msgid, msgstr=[u''], comments=[], references={},
+                     fuzzy=False):
         if isinstance(msgid, (str, unicode)):
             msgid = [msgid]
         if isinstance(msgstr, (str, unicode)):
             msgstr = [msgstr]
 
         id = ''.join(msgid)
-        self._messages[id] = Message(comments, msgid, msgstr, references)
+        self._messages[id] = Message(comments, msgid, msgstr, references, fuzzy)
 
 
 Text.register_handler_class(PO)

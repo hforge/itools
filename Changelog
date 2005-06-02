@@ -2,6 +2,51 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-06-02 14:29:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-98
+
+    Summary:
+      merge PO fuzzy from Nicolas Oyez
+    Revision:
+      itools--main--0.8--patch-98
+
+    Patches applied:
+    
+     * noyez@itaapy.com--private/itools--PO-Flags--0.8--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.8--patch-97
+    
+     * noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-1
+       handle the fuzzy flags during deserialisation of PO file
+    
+     * noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-2
+       change some print in the test_po.py file
+    
+     * noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-3
+       make next_line and next_entry generatrice function in PO.py
+    
+     * noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-4
+       add the get_translation method to PO.py
+    
+     * noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-5
+       replace the get_msgstr method by the get_translation method and fix a bug in the syntactic analysis concerning fuzzy tag for PO files
+    
+     * noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-6
+       increase performance by changing the unescape method of PO.py
+    
+
+    modified files:
+     Changelog catalog/prof.py handlers/PO.py handlers/test_po.py
+     xhtml/XHTML.py
+
+    new patches:
+     noyez@itaapy.com--private/itools--PO-Flags--0.8--base-0
+     noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-1
+     noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-2
+     noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-3
+     noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-4
+     noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-5
+     noyez@itaapy.com--private/itools--PO-Flags--0.8--patch-6
+
+
 2005-05-28 12:52:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-97
 
     Summary:

@@ -274,7 +274,7 @@ class Document(XML.Document):
                     message = i18n.segment.Message(node.children)
                     for x in process_message(message, keep_spaces):
                         yield x
-                    yield node.get_closetag()
+                    yield node.get_end_tag()
                 else:
                     # Check wether the node message has real text to process.
                     for x in message:
@@ -340,7 +340,7 @@ class Document(XML.Document):
                             buffer.write(x)
                         message = i18n.segment.Message()
                         # The close tag
-                        buffer.write(node.get_closetag())
+                        buffer.write(node.get_end_tag())
                         # </pre> don't preserve spaces any more
                         if node.name == 'pre':
                             keep_spaces = False
@@ -407,7 +407,7 @@ class Document(XML.Document):
                     if node.name in ['script', 'style']:
                         for x in process_message(message, keep_spaces):
                             if x not in messages:
-                                yield x
+                                yield x, 0
                         message = i18n.segment.Message()
                         # Don't go through this node
                         context.skip = True
@@ -417,7 +417,7 @@ class Document(XML.Document):
                             if node.is_translatable(name):
                                 if value.strip():
                                     if value not in messages:
-                                        yield value
+                                        yield value, 0
                         # Inline or Block
                         if node.is_inline():
                             message.append(node)
@@ -425,7 +425,7 @@ class Document(XML.Document):
                         else:
                             for x in process_message(message, keep_spaces):
                                 if x not in messages:
-                                    yield x
+                                    yield x, 0
                             message = i18n.segment.Message()
                             # Presarve spaces if <pre>
                             if node.name == 'pre':
@@ -434,7 +434,7 @@ class Document(XML.Document):
                     if node.is_block():
                         for x in process_message(message, keep_spaces):
                             if x not in messages:
-                                yield x
+                                yield x, 0
                         # </pre> don't preserve spaces any more
                         if node.name == 'pre':
                             keep_spaces = False

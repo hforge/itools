@@ -19,12 +19,12 @@
 # Import from the Standard Library
 import optparse
 import os
-import tempfile
 
 # Import from itools
 from itools.resources import get_resource
-from itools.handlers import get_handler, PO
-from itools import gettext
+from itools.handlers import get_handler
+from itools.handlers.Python import Python
+from itools.gettext import PO
 from itools.xhtml import XHTML
 
 
@@ -55,34 +55,20 @@ def run():
     # Action
     root_resource = get_resource('/')
     if options.action == 0:
-        # Create one auxiliar PO file for each input file
-        tmp_files = []
+        po = PO.PO()
         for source_file in args:
-            # Create the temp file and add it to the list
-            tmp_file = tempfile.mktemp('.po')
-
-            # Write the file's content
+            # Load the source handler
+            resource = get_resource(source_file)
             if source_file.endswith('.py'):
-                os.system('xgettext --omit-header --keyword=ugettext --keyword=N_ --output=%s %s' % (tmp_file, source_file))
+                handler = Python(resource)
             else:
-                # XXX Suppose it is HTML
-                po = PO.PO()
-                resource = get_resource(source_file)
-                xhtml = XHTML.Document(resource)
-                for msgid in xhtml.get_messages():
-                    po.set_message(msgid, references={source_file: [0]})
-                open(tmp_file, 'w').write(po.to_str())
-
-            if root_resource.has_resource(tmp_file):
-                tmp_files.append(tmp_file)
-
-        # Merge all the PO files
-        command = 'msgcat -s %s' % ' '.join(tmp_files)
-        output = os.popen(command).read()
-
-        # Remove all the used files
-        for file in tmp_files:
-            os.remove(file)
+                # XXX Suppose it is XHTML
+                handler = XHTML.Document(resource)
+            # Extract the messages
+            for msgid, line_number in handler.get_messages():
+                po.set_message(msgid, references={source_file: [line_number]})
+            # XXX Should omit the header
+            output = po.to_str()
     elif options.action == 1:
         pot = args[0]
         po = args[1]

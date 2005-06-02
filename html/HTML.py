@@ -21,16 +21,13 @@ from itools.handlers import File
 from itools.xml import XML
 from itools.xhtml import XHTML
 from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \
-     END_ELEMENT, ATTRIBUTE, COMMENT, TEXT, empty_elements
+     END_ELEMENT, ATTRIBUTE, COMMENT, TEXT
 
 
 
 class Element(XHTML.Element):
 
-    def get_end_tag(self):
-        if self.name in empty_elements:
-            return ''
-        return XHTML.Element.get_end_tag(self)
+    get_end_tag = XHTML.Element.get_end_tag_as_html
 
 
 class InlineElement(Element, XHTML.InlineElement):
@@ -45,11 +42,12 @@ class BlockElement(Element, XHTML.BlockElement):
 class HeadElement(BlockElement):
 
     def to_unicode(self, encoding='UTF-8'):
-        return ''.join([self.get_opentag(),
-                        '\n    <meta http-equiv="Content-Type" content="text/html; charset=%s">' % encoding,
-                        XML.Children.to_unicode(self.children,
-                                                encoding=encoding),
-                        self.get_closetag()])
+        head = []
+        head.append(u'<head>\n')
+        head.append(u'    <meta http-equiv="Content-Type" content="text/html; charset=%s" />\n' % encoding)
+        head.append(self.get_content(encoding))
+        head.append(u'</head>')
+        return ''.join(head)
 
 
 elements_schema = {

@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-02 09:46:45 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-69
+
+    Summary:
+      xhtml, now XHTML elements can be serialized as HTML
+    Revision:
+      itools--main--0.9--patch-69
+
+
+    modified files:
+     Changelog catalog/prof.py html/HTML.py html/parser.py
+     xhtml/XHTML.py xml/XML.py
+
+
 2005-06-01 19:03:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
 
     Summary:

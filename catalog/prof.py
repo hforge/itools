@@ -37,7 +37,7 @@ class Document(HTML.Document):
     def title(self):
         head = self.get_head()
         title = head.get_elements('title')[0]
-        return XML.Children.to_unicode(title.children)
+        return title.get_content()
 
 
     def body(self):

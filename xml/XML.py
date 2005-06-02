@@ -33,23 +33,6 @@ from itools.xml import parser
 # Data types
 #############################################################################
 
-class Children(object):
-
-    def to_unicode(cls, value, encoding='UTF-8'):
-        s = []
-        for node in value:
-            if isinstance(node, unicode):
-                # XXX This is equivalent to 'types.Unicode.to_unicode',
-                # there should be a single place.
-                s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
-            else:
-                s.append(node.to_unicode(encoding=encoding))
-        return u''.join(s)
-
-    to_unicode = classmethod(to_unicode)
-
-
-
 class Comment(object):
 
     parent = None
@@ -152,8 +135,16 @@ class Element(object):
         return '</%s>' % self.qname
 
 
-    def get_content(self):
-        return Children.to_unicode(self.children, encoding=encoding)
+    def get_content(self, encoding='UTF-8'):
+        s = []
+        for node in self.children:
+            if isinstance(node, unicode):
+                # XXX This is equivalent to 'types.Unicode.to_unicode',
+                # there should be a single place.
+                s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
+            else:
+                s.append(node.to_unicode(encoding=encoding))
+        return u''.join(s)
 
 
     #######################################################################

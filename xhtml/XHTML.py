@@ -18,12 +18,25 @@
 # Import from the Standard Library
 from copy import copy
 import re
+from sets import Set
 from StringIO import StringIO
 
 # Import from itools
 from itools import types
 from itools.xml import XML, namespaces
 from itools import i18n
+
+
+# List of empty elements, which don't have a close tag
+empty_elements = Set([
+    # XHTML 1.0 strict
+    'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param',
+    # XHTML 1.0 transitional
+    'basefont', 'isindex',
+    # XHTML 1.0 frameset
+    'frame',
+    # Vendor specific, not approved by W3C
+    'embed'])
 
 
 #############################################################################
@@ -41,6 +54,28 @@ class Element(XML.Element):
 
     def is_block(self):
         raise NotImplementedError
+
+
+    def get_end_tag_as_html(self):
+        if self.name in empty_elements:
+            return ''
+        return self.get_end_tag(self)
+
+
+    def get_content_as_html(self, encoding='UTF-8'):
+        s = []
+        for node in self.children:
+            if isinstance(node, unicode):
+                # XXX This is equivalent to 'types.Unicode.to_unicode',
+                # there should be a single place.
+                s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
+            elif isinstance(node, Element):
+                s.append(self.get_start_tag())
+                s.append(self.get_content_as_html())
+                s.append(self.get_end_tag_as_html())
+            else:
+                s.append(node.to_unicode(encoding=encoding))
+        return u''.join(s)
 
 
     def is_translatable(self, attribute_name):
@@ -79,11 +114,12 @@ class BlockElement(Element):
 class HeadElement(BlockElement):
 
     def to_unicode(self, encoding='UTF-8'):
-        return ''.join([self.get_opentag(),
-                        '\n    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />' % encoding,
-                        XML.Children.to_unicode(self.children,
-                                                encoding=encoding),
-                        self.get_closetag()])
+        head = []
+        head.append(u'<head>\n')
+        head.append(u'    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />\n' % encoding)
+        head.append(self.get_content(encoding))
+        head.append(u'</head>')
+        return ''.join(head)
 
 
     def set_element(self, element):

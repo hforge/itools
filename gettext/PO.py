@@ -377,13 +377,17 @@ class PO(Text):
 
     def to_unicode(self, encoding=None):
         messages = self.state.messages
-        return '\n'.join([ x.to_unicode() for x in messages.values() ])
+        message_ids = messages.keys()
+        message_ids.sort()
+        messages = [ messages[x].to_unicode() for x in message_ids ]
+        return '\n'.join(messages)
 
 
     def set_message(self, msgid, msgstr=[u''], comments=[], references={},
                     fuzzy=False):
-        self.set_changed()
-        self._set_message(msgid, msgstr, comments, references, fuzzy)
+        if msgid:
+            self.set_changed()
+            self._set_message(msgid, msgstr, comments, references, fuzzy)
 
 
     def _set_message(self, msgid, msgstr=[u''], comments=[], references={},

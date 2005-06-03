@@ -67,7 +67,7 @@ def run():
             # Extract the messages
             for msgid, line_number in handler.get_messages():
                 po.set_message(msgid, references={source_file: [line_number]})
-            # XXX Should omit the header
+            # XXX Should omit the header?
             output = po.to_str()
     elif options.action == 1:
         pot = args[0]

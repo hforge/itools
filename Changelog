@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-03 11:56:16 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-73
+
+    Summary:
+      gettext, remove obsolete N_
+    Revision:
+      itools--main--0.9--patch-73
+
+
+    modified files:
+     Changelog gettext/domains.py
+
+
 2005-06-02 18:52:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-72
 
     Summary:

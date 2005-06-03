@@ -90,14 +90,3 @@ class DomainAware:
         return domain.gettext(message, language)
 
     gettext = classmethod(gettext)
-
-
-
-
-def N_(message, language=None):
-    """
-    Used to markup a string for translation but without translating it,
-    this is known as deferred translations.
-    """
-    return message
-

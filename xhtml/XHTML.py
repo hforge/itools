@@ -395,7 +395,6 @@ class Document(XML.Document):
                         raise StopIteration
                     # Something to translate: segmentation
                     for segment in message.get_segments(keep_spaces):
-                        segment = segment.replace('"', '\\"')
                         yield segment
 
         messages = []

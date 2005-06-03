@@ -62,7 +62,7 @@ class POSyntaxError(Exception):
 
 # Escape and unescape strings
 def escape(s):
-    return s.replace('\n', '\\n')
+    return s.replace('\n', '\\n').replace('"', '\\"')
 
 
 expr = re.compile(r'(\\.)')
@@ -106,28 +106,29 @@ class Message(object):
         self.msgstr = msgstr
         self.fuzzy = fuzzy
 
+
     def to_unicode(self):
-        s = u''
+        s = []
         # The comments
         for comment in self.comments:
-            s += '#%s\n' % comment
+            s.append(u'#%s\n' % comment)
         # The reference comments
         for filename, lines in self.references.items():
             for line in lines:
-                s += '#: %s:%s\n' % (filename, line)
+                s.append(u'#: %s:%s\n' % (filename, line))
         # The Fuzzy flag
         if self.fuzzy:
-            s += '#, fuzzy\n'
+            s.append(u'#, fuzzy\n')
         # The msgid
-        s += 'msgid "%s"\n' % escape(self.msgid[0])
+        s.append(u'msgid "%s"\n' % escape(self.msgid[0]))
         for string in self.msgid[1:]:
-            s += '"%s"\n' % escape(string)
+            s.append(u'"%s"\n' % escape(string))
         # The msgstr
-        s += 'msgstr "%s"\n' % escape(self.msgstr[0])
+        s.append(u'msgstr "%s"\n' % escape(self.msgstr[0]))
         for string in self.msgstr[1:]:
-            s += '"%s"\n' % escape(string)
+            s.append(u'"%s"\n' % escape(string))
         
-        return s
+        return u''.join(s)
 
 
 

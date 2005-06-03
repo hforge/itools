@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-03 15:23:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-76
+
+    Summary:
+      gettext, fix PO messages encode, optimize serialization
+    Revision:
+      itools--main--0.9--patch-76
+
+
+    modified files:
+     Changelog gettext/PO.py xhtml/XHTML.py
+
+
 2005-06-03 13:05:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-75
 
     Summary:

@@ -132,29 +132,6 @@ Note that we have used named arguments for the formatted string instead
 of positional arguments. This is because the position of the arguments
 may be different in another language.
 
-\subsubsection{Marking messages}
-
-The method {\tt gettext} does two things, it returns the message translation
-when it is called, and marks the message so the  extraction script will
-be able to find it.
-
-But sometimes we only want mark the text string. How to tell the message
-extraction script to pick up a message but still do nothing at run-time?
-We use a dummy function:
-
-\begin{code}
-    from itools.gettext.domains import N_
-
-    class TaskTracker(Text, DomainAware):
-
-        class_domain = 'task tracker'
-        class_title = N_(u'Task Tracker')
-\end{code}
-
-The function {\tt N\_} returns the same message it receives, so it changes
-nothing. But it allows the message extraction script to detect the message.
-
-
 \subsection{Templates}
 
 
@@ -246,6 +223,34 @@ the {\tt locale} directory. See below an excerpt:
 \end{code}
 
 
+\subsubsection{Marking messages}
+
+The message extraction script will pick all text strings\footnote{Text
+strings are most often known as unicode strings in Python.} from the Python
+source, and all text nodes from the source templates. Then it will split
+the messages into sentences, a process known as segmentation, it will
+be these sentences which will feed the message catalog.
+
+This means that no explicit markup is required to signal a text string
+as translatable. This way we reduce the burden on the developer, who just
+needs to remember to use Python unicode strings for text, i.e. to type:
+
+\begin{code}
+    u'Hello world.'
+\end{code}
+
+instead of:
+
+\begin{code}
+    'Hello world.'
+\end{code}
+
+For the templates, the only rule is to write them properly. In particular,
+to use block elements as block elements, and inline elements as inline
+elements.
+
+
+
 \subsection{Human translation}
 
 The human translator receives the PO file, and must return the same PO
@@ -270,6 +275,7 @@ there are graphical tools available to do the job like:
   \item KBabel, {\tt http://www.kde.org}
   \item poedit, {\tt http://poedit.sourceforge.net}
 \end{itemize}
+
 
 
 \section{Build}

@@ -33,7 +33,7 @@ class Resource(base.Resource):
 
 class File(Resource, base.File):
 
-    def get_data(self):
+    def read(self):
         return urlopen(str(self.uri)).read()
 
 

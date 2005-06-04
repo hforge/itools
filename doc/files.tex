@@ -330,7 +330,7 @@ by the {\tt File} handler class:
 \begin{api}
   {\tt to\_str()}\\
   - Returns the resource data as a byte string (this is similar to the
-    method {\tt handler.resource.get\_data()}).
+    method {\tt handler.resource.read()}).
 \end{api}
 
 with the one offered by the {\tt Text} handler class:
@@ -339,7 +339,7 @@ with the one offered by the {\tt Text} handler class:
   {\tt to\_str(encoding='UTF-8')}\\
   - Returns the resource data as a byte string, using the given encoding
   (defaults to {\tt UTF-8}). Note that this will be different than the
-  string returned by {\tt handler.resource.get\_data()} if the resource
+  string returned by {\tt handler.resource.read()} if the resource
   data is not encoded in {\tt UTF-8} in the source.
 
   {\tt to\_unicode(encoding='UTF-8')}\\

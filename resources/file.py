@@ -18,7 +18,7 @@
 
 # XXX Test with windows, maybe we will have to use os.'path.join'
 
-# Import from Python
+# Import from the Standard Library
 import datetime
 import mimetypes
 import os
@@ -96,7 +96,7 @@ class File(Resource, base.File):
 ##        return mimetype
 
 
-    def get_data(self):
+    def read(self):
         return file(self._path, 'rb').read()
 
 
@@ -160,7 +160,7 @@ class Folder(Resource, base.Folder):
 
 
     def _set_file_resource(self, name, resource):
-        data = resource.get_data()
+        data = resource.read()
         file('%s/%s' % (self._path, name), 'wb').write(data)
 
 

@@ -15,8 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-
-# Import from Python
+# Import from the Standard Library
 from datetime import datetime
 from cStringIO import StringIO
 
@@ -91,7 +90,7 @@ class File(Resource, base.File):
         self.data.write(value)
 
 
-    def get_data(self):
+    def read(self):
         self.data.seek(0)
         return self.data.read()
 
@@ -125,7 +124,7 @@ class Folder(Resource, base.Folder):
 
 
     def _set_file_resource(self, name, resource):
-        data = resource.get_data()
+        data = resource.read()
         self.resources[name] = File(data, name=name)
         self.mtime = datetime.now()
 

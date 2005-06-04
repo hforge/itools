@@ -74,7 +74,7 @@ Besides the common methods for files and folders, each resource type has
 a specific API, the one for file resources is:
 
 \begin{api}
-  {\tt get\_data()}\\
+  {\tt read()}\\
   - Returns the resource data as a byte string.
 
   {\tt set\_data(data)}\\
@@ -107,7 +107,7 @@ As an example of the API let's exercise it with a web page:
     text/html
     >>> print resource.get_size()
     438
-    >>> print resource.get_data()
+    >>> print resource.read()
     <HTML>
     <HEAD>
       <TITLE>Example Web Page</TITLE>
@@ -179,7 +179,7 @@ Let's exercise the API a little:
     >>> print examples.get_resource_names()
     ['hello.xhtml~', 'hello.xhtml', 'hello.txt', '.arch-ids']
     >>> hello = examples.get_resource('hello.txt')
-    >>> print hello.get_data()
+    >>> print hello.read()
     hello world
 \end{code}
 
@@ -241,7 +241,7 @@ constructor:
     >>> resource = memory.File('hello world')
     >>> resource
     <itools.resources.memory.File instance at 0x405e458c>
-    >>> resource.get_data()
+    >>> resource.read()
     'hello world'
     >>> tmp.set_resource('hello.txt', resource)
 \end{code}

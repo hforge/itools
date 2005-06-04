@@ -123,7 +123,7 @@ class File(Resource):
 
 
     def __getitem__(self, index):
-        return self.get_data()[index]
+        return self.read()[index]
 
 
     def __setitem__(self, index, value):
@@ -131,10 +131,10 @@ class File(Resource):
 
 
     def __getslice__(self, a, b):
-        return self.get_data()[a:b]
+        return self.read()[a:b]
 
 
-    def get_data(self):
+    def read(self):
         raise NotImplementedError
 
 
@@ -143,12 +143,7 @@ class File(Resource):
 
 
     def get_size(self):
-        return len(self.get_data())
-
-
-    # File like interface
-    def read(self):
-        return self.get_data()
+        return len(self.read())
 
 
 

@@ -122,7 +122,7 @@ class File(Resource, base.File):
         return object.content_type
 
 
-    def get_data(self):
+    def read(self):
         object = self._get_object()
         return str(object.data)
 
@@ -168,7 +168,7 @@ class Folder(Resource, base.Folder):
 
     def _set_file_resource(self, name, resource):
         object = self._get_object()
-        object._setObject(name, ZopeFile(name, '', resource.get_data()))
+        object._setObject(name, ZopeFile(name, '', resource.read()))
         # Set modification time
         object.mtime = datetime.now()
 

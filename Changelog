@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-04 19:02:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-78
+
+    Summary:
+      resources, replace "get_data" by "read"
+    Revision:
+      itools--main--0.9--patch-78
+
+
+    modified files:
+     Changelog doc/files.tex doc/resources.tex resources/base.py
+     resources/file.py resources/http.py resources/memory.py
+     resources/zope2.py
+
+
 2005-06-04 18:42:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-77
 
     Summary:

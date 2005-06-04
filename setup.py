@@ -76,8 +76,8 @@ tools are:
 
  * itools.gettext -- resource handlers for PO and MO files.
 
- * itools.xml -- XML infrastructure, includes resource handlers for XML
-   and the Simple Template Language.
+ * itools.xml -- includes an intuitive event driven XML parser, a handler
+   for XML documents, and the Simple Template Language.
 
  * itools.xhtml -- resource handlers for XHTML documents.
 

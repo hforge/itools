@@ -4,44 +4,49 @@ This paper is the official documentation of {\tt itools}.
 
 \section{What is {\tt itools}?}
 
-{\tt itools} is a Python\footnote{\tt http://www.python.org} package.
-Originally it was intended to develop web applications, but being low
-level stuff it is likely to be found useful in other contexts.
+{\tt itools} is a Python\footnote{\tt http://www.python.org} library.
+Originally intended to develop web applications, it has evolved into
+a large framework suitable for a wide range of applications.
 
-It consists of a collection of sub-packages and modules which makes up a
-coherent set of tools for the developer. A summary of these tools follows:
+It can be seen as an extension of the Python's {\em Standard Library},
+as it provides a set of lightly coupled sub-packages which can be used
+independently; {\tt itools} is split into the following sub-packages:
 
 \begin{itemize}
- \item {\tt itools.uri} -- an API to manage URIs, to identify and locate
+  \item {\tt itools.uri} -- an API to manage URIs, to identify and locate
     resources.
 
- \item {\tt itools.resources} -- an abstraction layer over resources that
-   lets to manage them with a consistent API, independently of where they
-   are stored.
+  \item {\tt itools.types} -- type marshalers for basic types (integer, date,
+    etc.) and not so basic types (filenames, XML qualified names, etc.).
 
- \item {\tt itools.handlers} -- resource handlers infrastructure (resource
-   handlers are non persistent classes that add specific semantics to
-   resources). This package also includes several handlers {\em out of the
-   box}.
+  \item {\tt itools.resources} -- an abstraction layer over resources that
+    lets to manage them with a consistent API, independently of where they
+    are stored.
 
- \item {\tt itools.xml} -- XML infrastructure, includes resource handlers
-   for XML, XHTML and HTML documents. Plus the {\bf S}imple {\bf T}emplate
-   {\bf L}anguage.
+  \item {\tt itools.handlers} -- resource handlers infrastructure (resource
+    handlers are non persistent classes that add specific semantics to
+    resources). This package also includes several handlers {\em out of the
+    box}.
 
- \item {\tt itools.i18n} -- tools for language negotiation and text
-   segmentation.
+  \item {\tt itools.gettext} -- resource handlers for PO and MO files.
 
- \item {\tt itools.workflow} -- represent workflows as automatons, objects
-   can move from one state to another through transitions, classes can add
-   specific semantics to states and transitions.
+  \item {\tt itools.xml} -- includes an intuitive event driven XML parser,
+    a handler for XML documents, and the {\bf S}imple {\bf T}emplate
+    {\bf L}anguage.
 
- \item {\tt itools.catalog} -- An index and search engine.
+  \item {\tt itools.xhtml} -- resource handlers for XHTML documents.
+
+  \item {\tt itools.html} -- resource handlers for HTML documents.
+
+  \item {\tt itools.i18n} -- tools for language negotiation and text
+    segmentation.
+
+  \item {\tt itools.workflow} -- represent workflows as automatons, objects
+    can move from one state to another through transitions, classes can add
+    specific semantics to states and transitions.
+
+  \item {\tt itools.catalog} -- An index and search engine.
 \end{itemize}
-
-One of the criterias behind the {\tt itools} architecture is to reduce the
-dependencies between the different modules to the minumum, what makes up a
-flexible set of tools. Think of it as an extension to the Python's Standard
-Library.
 
 
 \subsection{The resource-handler model}
@@ -169,7 +174,7 @@ language to fully understand this document. Probably the best introduction
 to Python is the official tutorial:
 
 \begin{quote}
-  {\tt http://python.org/doc/2.3.4/tut/tut.html}.
+  {\tt http://python.org/doc/2.3.5/tut/tut.html}.
 \end{quote}
 
 This document touches many different technologies and standards, such as XML.
@@ -179,7 +184,7 @@ References will be given in the relevant chapters.
 \section{Project status}
 
 Currently {\tt itools} is in alpha stage of development (at the time of
-this writing the last version available is {\bf 0.5}). This means that the
+this writing the last version available is {\bf 0.8}). This means that the
 API is not yet stable, the documentation is incomplete, and there may be bugs.
 
 However, we have been using it on a daily basis for a long time now. It

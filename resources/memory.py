@@ -95,7 +95,7 @@ class File(Resource, base.File):
         return self.data.read()
 
 
-    def set_data(self, data):
+    def write(self, data):
         self.data.seek(0)
         self.data.truncate()
         self.data.write(data)

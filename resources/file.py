@@ -134,7 +134,7 @@ class File(Resource, base.File):
         f.close()
 
 
-    def set_data(self, data):
+    def write(self, data):
         file(self._path, 'wb').write(data)
 
 

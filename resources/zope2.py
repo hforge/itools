@@ -127,7 +127,7 @@ class File(Resource, base.File):
         return str(object.data)
 
 
-    def set_data(self, data):
+    def write(self, data):
         object = self._get_object()
         object.update_data(data)
         # Set modification time

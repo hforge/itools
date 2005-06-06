@@ -138,12 +138,17 @@ class File(Resource):
         raise NotImplementedError
 
 
-    def set_data(self, data):
+    def write(self, data):
         raise NotImplementedError
 
 
     def get_size(self):
         return len(self.read())
+
+
+    # XXX Backwards compatibility with itools < 0.9
+    def set_data(self, data):
+        self.write(data)
 
 
 

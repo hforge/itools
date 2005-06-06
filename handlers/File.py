@@ -55,7 +55,7 @@ class File(Handler):
 
 
     def _save_state(self, resource):
-        resource.set_data(self.to_str())
+        resource.write(self.to_str())
 
 
     #########################################################################

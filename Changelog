@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-06 16:56:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
+
+    Summary:
+      handlers, add "set_data" to file handlers API
+    Revision:
+      itools--main--0.9--patch-80
+
+
+    modified files:
+     Changelog catalog/Catalog.py doc/files.tex handlers/File.py
+
+
 2005-06-06 14:01:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-79
 
     Summary:

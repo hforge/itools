@@ -51,7 +51,7 @@ class File(Handler):
     #########################################################################
     def _load_state(self, resource):
         state = self.state
-        state.data = resource.get_data()
+        state.data = resource.read()
 
 
     def _save_state(self, resource):
@@ -120,6 +120,11 @@ class File(Handler):
     #########################################################################
     # API
     #########################################################################
+    def set_data(self, data):
+        self.set_changed()
+        self.state.data = data
+
+
     def copy_handler(self):
         resource = memory.File(self.to_str())
         return self.__class__(resource)

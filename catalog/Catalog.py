@@ -56,7 +56,7 @@ class Fields(Text):
         # Keeps a mapping from field name to field number
         state.field_numbers = {}
 
-        data = resource.get_data()
+        data = resource.read()
         for line in data.split('\n'):
             line = line.strip()
             if line:

@@ -59,7 +59,7 @@ class Element(XML.Element):
     def get_end_tag_as_html(self):
         if self.name in empty_elements:
             return ''
-        return self.get_end_tag()
+        return '</%s>' % self.qname
 
 
     def get_content_as_html(self, encoding='UTF-8'):

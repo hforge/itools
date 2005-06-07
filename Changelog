@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-07 13:31:40 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-82
+
+    Summary:
+      get ready to release 0.9.0
+    Revision:
+      itools--main--0.9--patch-82
+
+
+    modified files:
+     CHANGES.txt Changelog README.txt gettext/domains.py setup.py
+
+
 2005-06-07 08:31:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
 
     Summary:

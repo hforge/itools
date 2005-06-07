@@ -1,3 +1,59 @@
+0.9.0 (2005/06/07)
+
+  Type marshalers
+  - New package "itools.types", includes the old module "itools.handlers.IO".
+  - Add marshaler for filenames.
+
+  Resources
+  - Replace "get_data" by "read", and "set_data" by "write".
+
+  Handlers
+  - Split new class "Node" from the "Handler" class.
+  - Now virtual handlers are distinct from the real handler (#22).
+  - Now folder's skeleton is a dictionary instead of a list, by Hervé
+    Cauwelier.
+  - Rename "load" and "save" to "load_state" and "save_state" respectively.
+  - Move handler's state to instance variable "state".
+  - Add "class_extension" to keep the default file type extension.
+  - Now file handlers have too the "get_handler" method.
+  - Add "set_data" to file handlers.
+  - New handler for images.
+  - New handler for Python resources.
+
+  Gettext
+  - New package "itools.gettext" contains the PO and MO handlers before found
+    in "itools.handlers".
+  - Add support for fuzzy entries to PO files, by Nicolas Oyez.
+  - Now "igettext" does not takes into account fuzzy messages, by Nicolas
+    Oyez.
+  - Add module "itools.gettext.domains", provides an API to internationalize
+    software.
+
+  XML
+  - Move "XHTML.Document.to_text" to "XML.Document".
+  - Add "Element.get_content"
+  - Change naming style for some methods: "get_start_tag" and "get_end_tag".
+
+  XHTML
+  - Now XHTML elements can be serialized as HTML.
+
+  Simple Template Language
+  - Now "stl:content" accepts long integer values.
+
+  Catalog
+  - Use built-in set type (Python 2.4)
+  - Keep document positions, index format changed.
+  - Add phrase search.
+  - Index common and one letter words.
+
+  Documentation
+  - Update the introduction chapter.
+  - Document the handler's state.
+  - Add a chapter about "itools.types".
+  - Re-work the internationalization chapter.
+  - Fix the examples.
+
+
 0.8.1 (2005/05/25)
 
   Resources

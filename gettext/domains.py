@@ -48,7 +48,7 @@ class Domain(Folder):
 
 
 
-class DomainAware:
+class DomainAware(object):
 
     class_domain = None
 

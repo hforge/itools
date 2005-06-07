@@ -5,6 +5,9 @@ tools are:
 
  * itools.uri -- an API to manage URIs, to identify and locate resources.
 
+ * itools.types -- several type marshalers for basic types (integer, date,
+   etc.) and not so basic types (filenames, XML qualified names, etc.)
+
  * itools.resources -- an abstraction layer over resources that let to
    manage them with a consistent API, independently of where they are stored.
 
@@ -12,6 +15,8 @@ tools are:
    handlers are non persistent classes that add specific semantics to
    resources). This package also includes several handlers out of the
    box.                 
+
+ * itools.gettext -- resource handlers for PO and MO files.
 
  * itools.xml -- XML infrastructure, includes resource handlers for XML
    and the Simple Template Language.

@@ -93,7 +93,7 @@ tools are:
 """
 
 setup(name = "itools",
-      version = "0.8.1",
+      version = "0.9.0",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",

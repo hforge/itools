@@ -64,6 +64,8 @@ class DomainAware(object):
             languages = cls.get_languages()
 
         language = os.environ.get('LANGUAGE')
+        if language is None:
+            return None
         language = language.split('.')[0]
         language = language.replace('_', '-')
         accept_language = AcceptLanguage(language)

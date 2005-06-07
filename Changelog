@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-07 15:49:39 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-83
+
+    Summary:
+      gettext, fix "DomainAware.select_language"
+    Revision:
+      itools--main--0.9--patch-83
+
+    When the environment variable 'LANGUAGE' is not available.
+
+    modified files:
+     Changelog gettext/domains.py
+
+
 2005-06-07 13:31:40 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-82
 
     Summary:

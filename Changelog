@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-07 08:31:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
+
+    Summary:
+      documentation, add section about folder's state
+    Revision:
+      itools--main--0.9--patch-81
+
+
+    modified files:
+     Changelog doc/folders.tex
+
+
 2005-06-06 16:56:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
 
     Summary:

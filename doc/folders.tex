@@ -1,7 +1,48 @@
 \chapter{Folder handlers}
 
-A handler that deserves its particular section is the default handler for
-folders, whose core API is:
+A handler that deserves its particular chapter is the default handler for
+folders.
+
+
+\section{Folder's state}
+
+If the content of a file resource is a byte string, the content of a folder
+resource is a set of resources, each one identified by a name. Hence, the
+state of a folder handler is a mapping fron handler name to handler instance.
+
+But imagine a folder that contains many big files. To load its state would
+mean to load all the files it contains, what is unacceptable from a
+performance point of view. This is the reason the folder handler implements
+lazy load, this is to say, it loads a handler only when it is needed.
+
+The folder state is stored in the variable {\tt cache}, because it behaves
+like a cache. See:
+
+\begin{code}
+  >>> examples = get_handler('examples')
+
+  [some operations later]
+
+  >>> pprint(examples.state.cache)
+  {'.arch-ids': None,
+   'chapter8': <itools.handlers.Folder.Folder object at 0xb77b2fac>,
+   'chapter9': None,
+   'hello.txt': <itools.handlers.Text.Text object at 0xb77b2bcc>,
+   'hello.xhtml': None,
+   'task_tracker0': None,
+   'task_tracker1': None,
+   'task_tracker2': None}
+\end{code}
+
+As the code above shows, a handler that has not yet been loaded appears in
+the cache with the {\tt None} value.
+
+
+\section{The API}
+
+The programming interface for folder handlers remembers the one of folder
+resources, where there we spelled {\tt get\_resource} here we will write
+{\tt get\_handler}. Details follow:
 
 \begin{api}
   {\tt get\_handler(path)}\\
@@ -26,7 +67,11 @@ folders, whose core API is:
   - Removes the handler at the given path (i.e. the associated resource).
 \end{api}
 
-An example will show it better.
+
+\section{Example}
+
+As the proverb says, {\em a code snippet is worth more than one thousand
+words}:
 
 \begin{enumerate}
   \item First we build a handler for the temporary directory:

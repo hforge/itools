@@ -24,6 +24,7 @@ from itools.handlers import get_handler
 from itools.handlers.Text import Text
 from Catalog import Catalog
 from IIndex import IIndex
+import Query
 
 
 class IITestCase(TestCase):
@@ -112,6 +113,14 @@ class CatalogTestCase(TestCase):
         documents = catalog.search(body='plano')
         doc_numbers = [ x.__number__ for x in documents ]
         self.assertEqual(doc_numbers, [])
+
+
+    def test_range(self):
+        query = Query.Range('body', 'home', 'horse')
+        documents = catalog.search(query)
+        doc_numbers = [ x.__number__ for x in documents ]
+        self.assertEqual(doc_numbers,
+                         [22, 17, 2, 30, 25, 19, 16, 13, 12, 11, 8, 5])
 
 
     def test_unindex(self):

@@ -436,6 +436,69 @@ class Tree(object):
             return self.documents.copy()
 
 
+    def search_range(self, left, right):
+        """
+        Searches the index from 'left' to 'right', left included and right
+        excluded: [left, right[
+
+        Returns a mapping with all the documents found, the values of the
+        mapping are the weights.
+        """
+        documents = {}
+        # Here
+        if not left:
+            if self.documents is None:
+                self.load_documents()
+
+            for n in self.documents:
+                documents[n] = len(self.documents[n])
+
+        # Children
+        if self.children is None:
+            self.load_children()
+
+        if left:
+            prefix_left, left = left[0], left[1:]
+        else:
+            prefix_left = None
+
+        if right:
+            prefix_right, right = right[0], right[1:]
+        else:
+            prefix_right = None
+
+        for c in self.children:
+            # Skip too small values
+            if prefix_left and c < prefix_left:
+                continue
+            # Skipt too big values
+            if prefix_right:
+                if c > prefix_right:
+                    continue
+                if c == prefix_right and not right:
+                    continue
+            # Build query for the child
+            # Left border
+            if c == prefix_left:
+                c_left = left
+            else:
+                c_left = None
+            # Right border
+            if c == prefix_right:
+                c_right = right
+            else:
+                c_right = None
+            # Run query
+            child_documents = self.children[c].search_range(c_left, c_right)
+            for n in child_documents:
+                if n in documents:
+                    documents[n] += child_documents[n]
+                else:
+                    documents[n] = child_documents[n]
+                
+        return documents
+
+
     ########################################################################
     # Debugging
     ########################################################################
@@ -548,5 +611,15 @@ class IIndex(Folder):
             for doc_number, positions in state.added_terms[word].items():
                 documents.setdefault(doc_number, 0)
                 documents[doc_number] += len(positions)
+
+        return documents
+
+
+    def search_range(self, left, right):
+        state = self.state
+
+        documents = state.root.search_range(left, right)
+        # XXX We still need to consider removed and added terms, otherwise
+        # we may get inaccurate results.
 
         return documents

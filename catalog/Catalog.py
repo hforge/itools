@@ -227,64 +227,17 @@ class Catalog(Folder):
                     ii.unindex_term(term, doc_number)
 
 
-    def __search(self, query):
-        if isinstance(query, Query.Simple):
-            # A simple query
-            fields = self.get_handler('fields')
-            field_number = fields.state.field_numbers[query.name]
-            field = fields.state.fields[field_number]
-            if field_number in fields.state.indexed_fields:
-                tree = self.get_handler('f%d' % field_number)
-                analyser = get_analyser(field.type)
-                documents = {}
-                for value, offset in analyser(query.value):
-                    result = tree.search_word(value)
-                    if offset == 0:
-                        documents = result
-                    else:
-                        aux = {}
-                        for doc_number in documents:
-                            if doc_number in result:
-                                pos = [ x for x in documents[doc_number]
-                                        if x + offset in result[doc_number] ]
-                                if pos:
-                                    aux[doc_number] = set(pos)
-                        documents = aux
-                # Calculate the weight
-                for doc_number in documents:
-                    documents[doc_number] = len(documents[doc_number])
-
-            return documents
-        else:
-            # A complex query
-            r1 = self.__search(query.left)
-            r2 = self.__search(query.right)
-            documents = {}
-            if query.operator == 'and':
-                for number in r1:
-                    if number in r2:
-                        documents[number] = r1[number] + r2[number]
-                return documents
-            elif query.operator == 'or':
-                for number, weight in r2.items():
-                    if number in r1:
-                        r1[number] += weight
-                    else:
-                        r1[number] = weight
-                return r1
-
-
     def _search(self, query=None, **kw):
         # Build the query if it is passed through keyword parameters
         if query is None:
             field_numbers = self.get_handler('fields').state.field_numbers
             for key, value in kw.items():
                 if key in field_numbers:
-                    atom = Query.Simple(key, value)
+                    atom = Query.Phrase(key, value)
                     if query is None:
                         query = atom
                     else:
-                        query = Query.Complex(query, 'and', atom)
+                        query = Query.And(query, atom)
                 else:
                     # Output a warning, case the field is not in the catalog
                     warnings.warn('unknown field "%s"' % key)
@@ -292,7 +245,7 @@ class Catalog(Folder):
         if query is None:
             raise ValueError, "expected a query"
         # Search
-        return self.__search(query)
+        return query.search(self)
 
 
     def how_many(self, query=None, **kw):

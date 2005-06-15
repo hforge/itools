@@ -372,7 +372,9 @@ class PO(Text):
     def get_translation(self, msgid):
         message = self.state.messages.get(msgid)
         if message and not message.fuzzy:
-            return ''.join(message.msgstr)
+            msgstr = ''.join(message.msgstr)
+            if msgstr:
+                return msgstr
         return msgid
 
 

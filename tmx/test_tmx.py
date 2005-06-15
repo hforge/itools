@@ -25,7 +25,8 @@ from TMX import TMX
 # Import from itools.resources
 from itools.resources import get_resource
 
-file = "localizermsgs.tmx"
+#file = "localizermsgs.tmx"
+file = "test.tmx"
 
 class TMXTestCase(TestCase):
 

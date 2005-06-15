@@ -20,6 +20,35 @@ from itools.handlers.Text import Text
 from itools.xml import parser
 
 
+def protect_content(s):
+    return s.replace('<','&lt;').replace('>','&gt;')
+
+
+
+class Note(object):
+
+    def __init__(self, text=None, attributes={}):
+        self.text = text
+        self.attributes = attributes
+
+    def to_unicode(self):
+        s = []
+        if self.attributes != {}:
+            att = [u'%s="%s"' % (k, self.attributes[k])
+                  for k in self.attributes.keys() if k != 'lang']
+            s.append(u'<note %s ' % u' '.join(att))
+            if 'lang' in self.attributes.keys():
+                s.append('xml:lang="%s"' % self.attributes['lang'])
+            s.append(u'>')
+        else:
+            s.append(u'<note>')
+
+        s.append(self.text)
+
+        s.append(u'</note>\n')
+
+        return u''.join(s)
+
 
 class Sentence(object):
 
@@ -40,9 +69,9 @@ class Sentence(object):
         
         if self.notes:
             for l in self.notes:
-                s.append(u'<note>%s</note>\n' % l)
+                s.append(l.to_unicode())
         
-        s.append(u'<seg>%s</seg>\n' % self.text)
+        s.append(u'<seg>%s</seg>\n' % protect_content(self.text))
         
         s.append(u'</tuv>\n')
         return u''.join(s)
@@ -67,7 +96,7 @@ class Message(object):
         
         if self.notes:
             for l in self.notes:
-                s.append(u'<note>%s</note>\n' % l)
+                s.append(l.to_unicode())
         
         for l in self.msgstr.keys():
             s.append(self.msgstr[l].to_unicode())
@@ -87,7 +116,7 @@ class TMX(Text):
         state.header, state.messages, state.header_notes = {}, {}, {}
         stack = [] 
         message = {}
-        tu_attribute, tuv_attribute = {}, {}
+        tu_attribute, tuv_attribute, note_att = {}, {}, {}
         srclang, text = None, ''
         notes = {'tu':[], 'tuv':[], 'header':[]}
         for event, value, line_number in parser.parse(resource.read()):
@@ -131,13 +160,17 @@ class TMX(Text):
                 elif stack[-1] == "tuv":
                     tuv_attribute[local_name] = data 
                 elif stack[-1] == "header":
-                    state.header[local_name] = data 
+                    state.header[local_name] = data
+                elif stack[-1] == "note":
+                    note_att[local_name] = data
             elif event == parser.COMMENT:
                 pass
             elif event == parser.TEXT:
                 if stack:
                     if stack[-1] == 'note':
-                        notes[stack[-2]].append(unicode(value,'utf8'))
+                        n = Note(unicode(value,'utf8'), note_att)
+                        notes[stack[-2]].append(n)
+                        note_att = {}
                     elif stack[-1] == 'seg':
                         text = unicode(value,'utf8')
 
@@ -181,7 +214,7 @@ class TMX(Text):
 
         if state.header_notes != []:
             for n in state.header_notes:
-                s.append(u'<note>%s</note>\n' % n)
+                s.append(n.to_unicode())
 
         s.append(u'</header>\n')
             

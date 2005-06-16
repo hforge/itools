@@ -21,12 +21,21 @@ from HTMLParser import HTMLParser
 from sets import Set
 import warnings
 
-# Import from itools
-from itools.xhtml.XHTML import empty_elements
-
-
 
 DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, ATTRIBUTE, COMMENT, TEXT = range(6)
+
+
+# List of empty elements, which don't have a close tag
+# XXX Sentenced to dead, to use namespace schema instead.
+empty_elements = Set([
+    # XHTML 1.0 strict
+    'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param',
+    # XHTML 1.0 transitional
+    'basefont', 'isindex',
+    # XHTML 1.0 frameset
+    'frame',
+    # Vendor specific, not approved by W3C
+    'embed'])
 
 
 # Elements whose end tag is optional

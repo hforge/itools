@@ -534,8 +534,15 @@ class STL(object):
             if value is not None:
                 s.append(' %s="%s"' % (qname, value))
 
+        # The element schema, we need it
+        namespace = namespaces.get_namespace(node.namespace)
+        schema = namespace.get_element_schema(node.name)
+        is_empty = schema.get('is_empty', False)
         # Close the open tag
-        s.append('>')
+        if is_empty:
+            s.append('/>')
+        else:
+            s.append('>')
 
         # Process the content
         if node.has_attribute(stl_uri, 'content'):
@@ -565,7 +572,8 @@ class STL(object):
             return content
 
         s.extend(content)
-        s.append('</%s>' % node.qname)
+        if not is_empty:
+            s.append('</%s>' % node.qname)
         return s
 
 

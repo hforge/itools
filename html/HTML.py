@@ -27,7 +27,7 @@ from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \
 
 class Element(XHTML.Element):
 
-    get_end_tag = XHTML.Element.get_end_tag_as_html
+    get_start_tag = XHTML.Element.get_start_tag_as_html
 
 
 class InlineElement(Element, XHTML.InlineElement):

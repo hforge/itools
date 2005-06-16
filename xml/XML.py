@@ -130,11 +130,22 @@ class Element(object):
             value = type.to_unicode(value)
             s += ' %s="%s"' % (qname, value)
         # Close the start tag
-        return s + u'>'
+        namespace = namespaces.get_namespace(self.namespace)
+        schema = namespace.get_element_schema()
+        is_empty = schema.get('is_empty', False)
+        if is_empty:
+            return s + u'/>'
+        else:
+            return s + u'>'
 
 
     def get_end_tag(self):
-        return '</%s>' % self.qname
+        namespace = namespaces.get_namespace(self.namespace)
+        schema = namespace.get_element_schema()
+        is_empty = schema.get('is_empty', False)
+        if is_empty:
+            return u''
+        return u'</%s>' % self.qname
 
 
     def get_content(self, encoding='UTF-8'):

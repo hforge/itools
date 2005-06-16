@@ -27,18 +27,6 @@ from itools.xml import XML, namespaces
 from itools import i18n
 
 
-# List of empty elements, which don't have a close tag
-empty_elements = Set([
-    # XHTML 1.0 strict
-    'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param',
-    # XHTML 1.0 transitional
-    'basefont', 'isindex',
-    # XHTML 1.0 frameset
-    'frame',
-    # Vendor specific, not approved by W3C
-    'embed'])
-
-
 #############################################################################
 # Types
 #############################################################################
@@ -56,10 +44,15 @@ class Element(XML.Element):
         raise NotImplementedError
 
 
-    def get_end_tag_as_html(self):
-        if self.name in empty_elements:
-            return ''
-        return '</%s>' % self.qname
+    def get_start_tag_as_html(self):
+        s = u'<%s' % self.qname
+        # Output the attributes
+        for namespace_uri, local_name, value in self.get_attributes():
+            qname = self.get_attribute_qname(namespace_uri, local_name)
+            type = self.get_attribute_type(namespace_uri, local_name)
+            value = type.to_unicode(value)
+            s += u' %s="%s"' % (qname, value)
+        return s + u'>'
 
 
     def get_content_as_html(self, encoding='UTF-8'):
@@ -70,9 +63,9 @@ class Element(XML.Element):
                 # there should be a single place.
                 s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             elif isinstance(node, Element):
-                s.append(node.get_start_tag())
+                s.append(node.get_start_tag_as_html())
                 s.append(node.get_content_as_html())
-                s.append(node.get_end_tag_as_html())
+                s.append(node.get_end_tag())
             else:
                 s.append(node.to_unicode(encoding=encoding))
         return u''.join(s)
@@ -147,24 +140,43 @@ class HeadElement(BlockElement):
 #############################################################################
 
 elements_schema = {
-    'a': {'type': InlineElement},
-    'abbr': {'type': InlineElement},
-    'acronym': {'type': InlineElement},
-    'b': {'type': InlineElement},
-    'cite': {'type': InlineElement},
-    'code': {'type': InlineElement},
-    'dfn': {'type': InlineElement},
-    'em': {'type': InlineElement},
-    'head': {'type': HeadElement},
-    'kbd': {'type': InlineElement},
-    'q': {'type': InlineElement},
-    'samp': {'type': InlineElement},
-    'span': {'type': InlineElement},
-    'strong': {'type': InlineElement},
-    'sub': {'type': InlineElement},
-    'sup': {'type': InlineElement},
-    'tt': {'type': InlineElement},
-    'var': {'type': InlineElement},
+    # XHTML 1.0 strict
+    'area': {'type': BlockElement, 'is_empty': True},
+    'base': {'type': BlockElement, 'is_empty': True},
+    'br': {'type': BlockElement, 'is_empty': True},
+    'col': {'type': BlockElement, 'is_empty': True},
+    'hr': {'type': BlockElement, 'is_empty': True},
+    'img': {'type': BlockElement, 'is_empty': True},
+    'input': {'type': BlockElement, 'is_empty': True},
+    'link': {'type': BlockElement, 'is_empty': True},
+    'meta': {'type': BlockElement, 'is_empty': True},
+    'param': {'type': BlockElement, 'is_empty': True},
+    # XHTML 1.0 transitional
+    'basefont': {'type': BlockElement, 'is_empty': True},
+    'isindex': {'type': BlockElement, 'is_empty': True},
+    # XHTML 1.0 frameset
+    'frame': {'type': BlockElement, 'is_empty': True},
+    # Vendor specific, not approved by W3C
+    'embed': {'type': BlockElement, 'is_empty': True},
+    # Unclassified
+    'a': {'type': InlineElement, 'is_empty': False},
+    'abbr': {'type': InlineElement, 'is_empty': False},
+    'acronym': {'type': InlineElement, 'is_empty': False},
+    'b': {'type': InlineElement, 'is_empty': False},
+    'cite': {'type': InlineElement, 'is_empty': False},
+    'code': {'type': InlineElement, 'is_empty': False},
+    'dfn': {'type': InlineElement, 'is_empty': False},
+    'em': {'type': InlineElement, 'is_empty': False},
+    'head': {'type': HeadElement, 'is_empty': False},
+    'kbd': {'type': InlineElement, 'is_empty': False},
+    'q': {'type': InlineElement, 'is_empty': False},
+    'samp': {'type': InlineElement, 'is_empty': False},
+    'span': {'type': InlineElement, 'is_empty': False},
+    'strong': {'type': InlineElement, 'is_empty': False},
+    'sub': {'type': InlineElement, 'is_empty': False},
+    'sup': {'type': InlineElement, 'is_empty': False},
+    'tt': {'type': InlineElement, 'is_empty': False},
+    'var': {'type': InlineElement, 'is_empty': False},
     }
 
 
@@ -196,7 +208,9 @@ class Namespace(namespaces.AbstractNamespace):
 
 
     def get_element_schema(name):
-        return elements_schema.get(name, {'type': BlockElement})
+        default_schema = {'type': BlockElement,
+                          'is_empty': False}
+        return elements_schema.get(name, default_schema)
 
     get_element_schema = staticmethod(get_element_schema)
 

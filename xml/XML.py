@@ -116,7 +116,9 @@ class Element(object):
     #######################################################################
     # Serialization
     def to_unicode(self, encoding='UTF-8'):
-        return self.get_start_tag() + self.get_content() + self.get_end_tag()
+        return self.get_start_tag() \
+               + self.get_content(encoding) \
+               + self.get_end_tag()
 
 
     def get_start_tag(self):

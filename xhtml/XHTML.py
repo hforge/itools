@@ -116,8 +116,17 @@ class HeadElement(BlockElement):
     def to_unicode(self, encoding='UTF-8'):
         head = []
         head.append(u'<head>\n')
+
+        # The content type
         head.append(u'    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />\n' % encoding)
-        head.append(self.get_content(encoding))
+
+        # The rest of the head
+        content = self.get_content(encoding)
+        lines = content.splitlines()
+        while lines and lines[0].strip() == u'':
+            lines = lines[1:]
+        head.append('\n'.join(lines))
+
         head.append(u'</head>')
         return ''.join(head)
 

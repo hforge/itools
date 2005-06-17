@@ -131,7 +131,7 @@ class Element(object):
             s += ' %s="%s"' % (qname, value)
         # Close the start tag
         namespace = namespaces.get_namespace(self.namespace)
-        schema = namespace.get_element_schema()
+        schema = namespace.get_element_schema(self.name)
         is_empty = schema.get('is_empty', False)
         if is_empty:
             return s + u'/>'
@@ -141,7 +141,7 @@ class Element(object):
 
     def get_end_tag(self):
         namespace = namespaces.get_namespace(self.namespace)
-        schema = namespace.get_element_schema()
+        schema = namespace.get_element_schema(self.name)
         is_empty = schema.get('is_empty', False)
         if is_empty:
             return u''

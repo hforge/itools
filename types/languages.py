@@ -15,30 +15,31 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Python
-import unittest
-from unittest import TestCase
 
-# Import from itools.tmx
-from TMX import TMX
+class LanguageTag(object):
 
-# Import from itools.resources
-from itools.resources import get_resource
 
-file = "localizermsgs.tmx"
-#file = "test.tmx"
+    def decode(cls, value):
+        res = value.split('-', 1)
+        if len(res) < 2:
+            return (res[0].lower(), None)
+        else:
+            return (res[0].lower(), res[1].upper())
+            
+    decode = classmethod(decode)
 
-class TMXTestCase(TestCase):
 
-    def test_input(self):
-        """Test input."""
-        
-        src = get_resource(file)
-        tmx = TMX(src)
-        fd = open('test.tmx', 'w')
-        fd.write(tmx.to_str())
-        fd.close()
+    def encode(cls, value):
+        language, locality = value
+        if locality is None:
+            return language.lower()
+        return '%s-%s' % (language.lower(), locality.upper())
 
- 
-if __name__ == '__main__':
-    unittest.main()
+    encode = classmethod(encode)
+
+
+    def to_unicode(cls, value):
+        return unicode('-'.join([i for i in value if i != None]))
+
+    to_unicode = classmethod(to_unicode)
+    

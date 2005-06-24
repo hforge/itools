@@ -52,7 +52,7 @@ class Note(object):
 
 class Sentence(object):
 
-    def __init__(self, text, attributes={}, notes=[]):
+    def __init__(self, text='', attributes={}, notes=[]):
         self.attributes = attributes
         self.text = text
         self.notes = notes
@@ -97,8 +97,11 @@ class Message(object):
         if self.notes:
             for l in self.notes:
                 s.append(l.to_unicode())
-        
-        for l in self.msgstr.keys():
+       
+        mkeys = self.msgstr.keys()
+        mkeys.sort()
+        #for l in self.msgstr.keys():
+        for l in mkeys:
             s.append(self.msgstr[l].to_unicode())
             
         s.append(u'</tu>\n')
@@ -107,6 +110,47 @@ class Message(object):
 
 
 class TMX(Text):
+
+
+    def get_skeleton(self):
+        s = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+             '<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">\n'
+             '<tmx version="1.4">\n'
+             '  <header o-encoding="utf-8" srclang="fr">\n'
+             '  </header>\n'
+             '    <body>\n'
+             '      <tu>\n'
+             '        <tuv xml:lang="fr" >\n'
+             '          <seg>nothing</seg>\n'
+             '        </tuv>\n'
+             '      </tu>\n'
+             '    </body>\n'
+             '</tmx>')
+
+        return s
+
+    def build(self, xml_header, version, tmx_header, msgs):
+        state = self.state
+        state.standalone = xml_header['standalone']
+        state.xml_version = xml_header['xml_version']
+        state.document_type = xml_header['document_type']
+        state.source_encoding = tmx_header['o-encoding']
+        state.header = tmx_header
+        state.messages = msgs
+        state.version = version
+
+    def get_languages(self):
+        state = self.state
+        languages = []
+        for m in state.messages.values():
+            for l in m.msgstr.keys():
+                if l not in languages:
+                    languages.append(l)
+        return languages
+
+    def get_srclang(self):
+        state = self.state
+        return u'%s' % state.header['srclang']
 
     #######################################################################
     # Load
@@ -224,7 +268,10 @@ class TMX(Text):
 
     def to_unicode(self, encoding=None):
         state = self.state
-        msgs = u'\n'.join([ x.to_unicode() for x in state.messages.values() ])
+        #msgs = u'\n'.join([ x.to_unicode() for x in state.messages.values() ])
+        idKeys = state.messages.keys()
+        idKeys.sort()
+        msgs = u'\n'.join([state.messages[x].to_unicode() for x in idKeys])
         s = []
         s.append(self.xml_header_to_unicode())
         s.append(self.header_to_unicode())

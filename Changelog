@@ -2,6 +2,107 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.9
 #
 
+2005-06-24 12:51:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-93
+
+    Summary:
+      get ready to release 0.9.2
+    Revision:
+      itools--main--0.9--patch-93
+
+
+    modified files:
+     CHANGES.txt Changelog setup.py
+
+
+2005-06-17 11:59:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-92
+
+    Summary:
+      xml, remove obsolete and confusing RDF module
+    Revision:
+      itools--main--0.9--patch-92
+
+
+    removed files:
+     xml/.arch-ids/RDF.py.id xml/RDF.py
+
+    modified files:
+     Changelog
+
+
+2005-06-17 11:24:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-91
+
+    Summary:
+      xml, fixing "get_start_tag" and "get_end_tag"
+    Revision:
+      itools--main--0.9--patch-91
+
+
+    modified files:
+     Changelog xml/XML.py
+
+
+2005-06-16 20:58:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-90
+
+    Summary:
+      xml, add "is_empty" to the element's schema
+    Revision:
+      itools--main--0.9--patch-90
+
+    Empty elements are serialized with the compact form, as "<br/>".
+
+    modified files:
+     Changelog html/HTML.py html/parser.py xhtml/XHTML.py
+     xml/STL.py xml/XML.py xml/namespaces.py
+
+
+2005-06-16 19:55:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-89
+
+    Summary:
+      xhtml, fix head output style (remove ugly blank lines)
+    Revision:
+      itools--main--0.9--patch-89
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
+2005-06-16 19:27:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-88
+
+    Summary:
+      xml, fix serialization for encodings different than UTF-8
+    Revision:
+      itools--main--0.9--patch-88
+
+
+    modified files:
+     Changelog xml/XML.py
+
+
+2005-06-16 12:46:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-87
+
+    Summary:
+      get ready to release 1.1
+    Revision:
+      itools--main--0.9--patch-87
+
+
+    modified files:
+     CHANGES.txt Changelog setup.py
+
+
+2005-06-15 16:50:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-86
+
+    Summary:
+      gettext, fix "PO.get_translation" when the msgstr is empty
+    Revision:
+      itools--main--0.9--patch-86
+
+
+    modified files:
+     Changelog gettext/PO.py
+
+
 2005-06-07 16:21:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-85
 
     Summary:

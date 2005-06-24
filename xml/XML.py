@@ -116,7 +116,9 @@ class Element(object):
     #######################################################################
     # Serialization
     def to_unicode(self, encoding='UTF-8'):
-        return self.get_start_tag() + self.get_content() + self.get_end_tag()
+        return self.get_start_tag() \
+               + self.get_content(encoding) \
+               + self.get_end_tag()
 
 
     def get_start_tag(self):
@@ -128,11 +130,22 @@ class Element(object):
             value = type.to_unicode(value)
             s += ' %s="%s"' % (qname, value)
         # Close the start tag
-        return s + u'>'
+        namespace = namespaces.get_namespace(self.namespace)
+        schema = namespace.get_element_schema(self.name)
+        is_empty = schema.get('is_empty', False)
+        if is_empty:
+            return s + u'/>'
+        else:
+            return s + u'>'
 
 
     def get_end_tag(self):
-        return '</%s>' % self.qname
+        namespace = namespaces.get_namespace(self.namespace)
+        schema = namespace.get_element_schema(self.name)
+        is_empty = schema.get('is_empty', False)
+        if is_empty:
+            return u''
+        return u'</%s>' % self.qname
 
 
     def get_content(self, encoding='UTF-8'):

@@ -71,10 +71,10 @@ class Translation(object):
             s.append(u'<trans-unit>\n')
         
         if self.source:
-            s.append(u'<source>%s</source>\n' % protect_content(self.source))
+            s.append(u' <source>%s</source>\n' % protect_content(self.source))
 
         if self.target:
-            s.append(u'<target>%s</target>\n' % protect_content(self.target))
+            s.append(u' <target>%s</target>\n' % protect_content(self.target))
 
         if self.notes:
             for l in self.notes:
@@ -112,7 +112,10 @@ class File(object):
             s.append(u'</header>\n')
             
         if self.body:
-            msgs = u'\n'.join([ m.to_unicode() for m in self.body.values() ])
+            mkeys = self.body.keys()
+            mkeys.sort()
+            
+            msgs = u'\n'.join([ self.body[m].to_unicode() for m in mkeys ])
             
             s.append(u'<body>\n')
             s.append(msgs)
@@ -126,15 +129,62 @@ class File(object):
 
 class XLIFF(Text):
 
+    def get_skeleton(self):
+        s = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+             '<!DOCTYPE xliff SYSTEM "http://www.oasis-open.org/'
+             'committees/xliff/documents/xliff.dtd">\n'
+             '<xliff version="1.0">\n'
+             '  <file original="/nothing" datatype="plaintext"\n'
+             '        source-language="en">\n'
+             '    <body>\n'
+             '      <trans-unit id="1">\n'
+             '        <source>nothing</source>\n'
+             '      </trans-unit>\n'
+             '    </body>\n'
+             '  </file>\n'
+             '</xliff>\n')
+
+        return s
+
+
+    def build(self, xml_header, version, files):
+        state = self.state
+        state.standalone = xml_header['standalone']
+        state.xml_version = xml_header['xml_version']
+        state.document_type = xml_header['document_type']
+        state.files = files
+        state.version = version
+
+
+    def get_languages(self):
+        state = self.state
+        
+        files_id, sources, targets = [], [], []
+        for file in state.files:
+            file_id = file.attributes['original']
+            source = file.attributes['source-language']
+            target = file.attributes.get('target-language', '')
+
+            if file_id not in files_id:
+                files_id.append(file_id)
+            if source not in sources:
+                sources.append(source)
+            if target not in targets:
+                targets.append(target)
+                
+        languages = ((files_id, sources, targets))
+
+        return languages
+
     #######################################################################
     # Load
     #######################################################################
     def _load_state(self, resource):
         state = self.state
-        state.files = []
+        state.files, state.lang = [], u''
         stack = []
         file_att, body = {}, {}
-        trans_att, source, target, trans_id = {}, None, None, None
+        trans_att, source, target = {}, None, None
         note_att = {}
         notes = {'header':[], 'trans-unit':[]}
         for event, value, line_number in parser.parse(resource.read()):
@@ -151,13 +201,13 @@ class XLIFF(Text):
                     if local_name == 'file':
                         f = File(body, file_att, notes['header'])
                         state.files.append(f)
-                        file_att, notes['header'] = {}, []
+                        body, file_att, notes['header'] = {}, {}, []
                     elif local_name == 'trans-unit':
                         t = Translation(source, target, trans_att, 
                                         notes['trans-unit'])
-                        body[trans_id] = t
+                        body[t.source] = t
                         trans_att, notes['trans-unit'] = {}, []
-                        source, target, trans_id = None, None, None
+                        source, target = None, None
                     stack.pop()
             elif event == parser.ATTRIBUTE:
                 local_name, data = value[2], value[3]
@@ -168,8 +218,6 @@ class XLIFF(Text):
                 elif stack[-1] == "file":
                     file_att[local_name] = data
                 elif stack[-1] == "trans-unit":
-                    if local_name == 'id':
-                        trans_id = data
                     trans_att[local_name] = data
                 elif stack[-1] == "note":
                     note_att[local_name] = data

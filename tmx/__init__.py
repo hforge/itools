@@ -18,5 +18,5 @@
 # Import from the Standard Library
 import mimetypes
 
-mimetypes.add_type('application/tmx', '.tmx')
+mimetypes.add_type('application/x-tmx', '.tmx')
 

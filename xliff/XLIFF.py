@@ -19,9 +19,14 @@
 from itools.handlers.Text import Text
 from itools.xml import parser
 
-def protect_content(s):
-    return s.replace('<','&lt;').replace('>','&gt;')
 
+def protect_content(s):
+    if s:
+        return s.replace('<','&lt;').replace('>','&gt;')
+    return u''
+
+
+    
 class Note(object):
     
     def __init__(self, text=None, attributes={}):
@@ -111,15 +116,16 @@ class File(object):
                 s.append(l.to_unicode())
             s.append(u'</header>\n')
             
+        s.append(u'<body>\n')
+            
         if self.body:
             mkeys = self.body.keys()
             mkeys.sort()
             
             msgs = u'\n'.join([ self.body[m].to_unicode() for m in mkeys ])
-            
-            s.append(u'<body>\n')
             s.append(msgs)
-            s.append(u'</body>\n')
+            
+        s.append(u'</body>\n')
         
         s.append(u'</file>\n')
 

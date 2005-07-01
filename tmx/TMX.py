@@ -21,7 +21,9 @@ from itools.xml import parser
 
 
 def protect_content(s):
-    return s.replace('<','&lt;').replace('>','&gt;')
+    if s:
+        return s.replace('<','&lt;').replace('>','&gt;')
+    return u''
 
 
 

@@ -97,7 +97,7 @@ class Expression(object):
             c = self.expression[self.index]
             if state == 0:
                 self.index += 1
-                if c.isalnum() or c in ('_', '.'):
+                if c.isalnum() or c in ('_', '.', ':'):
                     lexeme = c
                     state = 1
                 elif c == '/':
@@ -109,7 +109,7 @@ class Expression(object):
                 else:
                     raise STLSyntaxError, 'unexpected character (%s)' % c
             elif state == 1:
-                if c.isalnum() or c in ('_', '.'):
+                if c.isalnum() or c in ('_', '.', ':'):
                     lexeme += c
                     self.index += 1
                 else:

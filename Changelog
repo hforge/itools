@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-07-05 17:06:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-99
+
+    Summary:
+      xml, now the character ":" is allowed in STL expressions
+    Revision:
+      itools--main--0.8--patch-99
+
+
+    modified files:
+     Changelog xml/STL.py
+
+
 2005-06-02 14:29:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-98
 
     Summary:

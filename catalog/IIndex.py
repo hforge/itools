@@ -150,7 +150,7 @@ class IIndexDocuments(File):
     The rest of the file is split into variable size blocks. A block maybe
     busy or free.
 
-    A budy block format is:
+    A busy block format is:
 
     - document number [uint32]
     - frequency [uint32]
@@ -162,9 +162,10 @@ class IIndexDocuments(File):
     A free block format is:
 
     - size [uint32]
+    - next free block [link]
     - free slot (0)
     ...
-    - free slot (size - 1)
+    - free slot (size - 2)
     """
 
     class_version = '20050529'
@@ -416,6 +417,7 @@ class Tree(object):
                     prev_slot_n, prev_slot = docs_slot_n, docs_slot
                 # Next
                 docs_slot_n = next_slot_n
+                docs_slot_r = next_slot_r
 
 
     def search_word(self, word):

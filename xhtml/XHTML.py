@@ -345,6 +345,7 @@ class Document(XML.Document):
                             yield ' '
 
         buffer = StringIO()
+        buffer.write(self.header_to_unicode())
         message = i18n.segment.Message()
         keep_spaces = False
         for node, context in self.traverse2():

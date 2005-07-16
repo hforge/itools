@@ -57,8 +57,8 @@ block_elements = Set([
     'dd', 'dt', 'frameset', 'li', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr',
     ])
 
-# Boolean attributes
-boolean_attributes = Set(['compact'])
+# Boolean attributes (XXX Finish the list)
+boolean_attributes = Set(['compact', 'selected'])
 
 
 class Parser(HTMLParser):

@@ -205,7 +205,7 @@ class URI(object):
 
 
     def to_unicode(cls, value):
-        return unicode(value)
+        return unicode(value).replace(u'&', u'&amp;')
 
     to_unicode = classmethod(to_unicode)
 

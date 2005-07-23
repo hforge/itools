@@ -175,18 +175,6 @@ class Folder(Handler):
         return handler_names
 
 
-    def has_handler(self, path):
-        # Normalize the path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
-
-        path, segment = path[:-1], path[-1]
-        name = segment.name
-
-        container = self.get_handler(path)
-        return name in container.get_handler_names()
-
-
     def get_handler(self, path):
         # Be sure path is a Path
         if not isinstance(path, uri.Path):

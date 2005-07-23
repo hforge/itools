@@ -122,13 +122,13 @@ class Element(object):
 
 
     def get_start_tag(self):
-        s = '<%s' % self.qname
+        s = u'<%s' % self.qname
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
             qname = self.get_attribute_qname(namespace_uri, local_name)
             type = self.get_attribute_type(namespace_uri, local_name)
             value = type.to_unicode(value)
-            s += ' %s="%s"' % (qname, value)
+            s += u' %s="%s"' % (qname, value)
         # Close the start tag
         namespace = namespaces.get_namespace(self.namespace)
         schema = namespace.get_element_schema(self.name)

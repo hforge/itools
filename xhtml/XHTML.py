@@ -274,7 +274,14 @@ class Document(XML.Document):
                 schema = namespace.get_attribute_schema(local_name)
                 type = schema['type']
                 buffer.write(u' %s="%s"' % (qname, type.to_unicode(value)))
-            buffer.write(u'>')
+            # Close the start tag
+            namespace = namespaces.get_namespace(node.namespace)
+            schema = namespace.get_element_schema(node.name)
+            is_empty = schema.get('is_empty', False)
+            if is_empty:
+                buffer.write(u'/>')
+            else:
+                buffer.write(u'>')
 
         def process_message(message, keep_spaces):
             # Normalize the message
@@ -340,6 +347,7 @@ class Document(XML.Document):
                             yield ' '
 
         buffer = StringIO()
+        buffer.write(self.header_to_unicode())
         message = i18n.segment.Message()
         keep_spaces = False
         for node, context in self.traverse2():

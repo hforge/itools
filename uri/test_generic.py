@@ -21,7 +21,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools import uri
+import generic
 
 
 class PathTestCase(TestCase):
@@ -35,7 +35,7 @@ class PathTestCase(TestCase):
         - './a'   = 'a'
         - 'a/'    = 'a'
         """
-        path = uri.generic.Path('./a/./b//c/')
+        path = generic.Path('./a/./b//c/')
         self.assertEqual(str(path), 'a/b/c/')
 
 
@@ -43,7 +43,7 @@ class PathTestCase(TestCase):
         """
         Test the normalization 'a/../b' = 'b'
         """
-        path = uri.generic.Path('a/b/c/../d')
+        path = generic.Path('a/b/c/../d')
         self.assertEqual(str(path), 'a/b/d')
 
 
@@ -51,7 +51,7 @@ class PathTestCase(TestCase):
         """
         Test the normalization '/..' = '/'
         """
-        path = uri.generic.Path('/../../a/b/c')
+        path = generic.Path('/../../a/b/c')
         self.assertEqual(str(path), '/a/b/c')
 
 
@@ -59,7 +59,7 @@ class PathTestCase(TestCase):
         """
         Check that '../' = '../'
         """
-        path = uri.generic.Path('../../a//.//b/c')
+        path = generic.Path('../../a//.//b/c')
         self.assertEqual(str(path), '../../a/b/c')
 
 
@@ -71,7 +71,7 @@ class ParseTestCase(TestCase):
 
     def test_full(self):
         ref = 'http://example.com/a/b/c?query#fragment'
-        ref = uri.generic.decode(ref)
+        ref = generic.decode(ref)
         self.assertEqual(ref.scheme, 'http')
         self.assertEqual(ref.authority, 'example.com')
         self.assertEqual(ref.path, '/a/b/c')
@@ -81,7 +81,7 @@ class ParseTestCase(TestCase):
 
     def test_network(self):
         ref = '//example.com/a/b'
-        ref = uri.generic.decode(ref)
+        ref = generic.decode(ref)
         self.assertEqual(bool(ref.scheme), False)
         self.assertEqual(ref.authority, 'example.com')
         self.assertEqual(ref.path, '/a/b')
@@ -89,7 +89,7 @@ class ParseTestCase(TestCase):
 
     def test_path(self):
         ref = '/a/b/c'
-        ref = uri.generic.decode(ref)
+        ref = generic.decode(ref)
         self.assertEqual(bool(ref.scheme), False)
         self.assertEqual(bool(ref.authority), False)
         self.assertEqual(ref.path, '/a/b/c')
@@ -97,7 +97,7 @@ class ParseTestCase(TestCase):
 
     def test_query(self):
         ref = '?query'
-        ref = uri.generic.decode(ref)
+        ref = generic.decode(ref)
         self.assertEqual(bool(ref.scheme), False)
         self.assertEqual(bool(ref.authority), False)
         self.assertEqual(len(ref.path), 0)
@@ -108,15 +108,15 @@ class SpecialTestCase(TestCase):
     """Test special cases."""
 
     def test_fragment(self):
-        self.assertEqual(str(uri.get_reference('#')), '#')
+        self.assertEqual(str(generic.decode('#')), '#')
 
 
     def test_dot(self):
-        self.assertEqual(str(uri.get_reference('.')), '.')
+        self.assertEqual(str(generic.decode('.')), '.')
 
 
     def test_empty(self):
-        self.assertEqual(str(uri.get_reference('')), '')
+        self.assertEqual(str(generic.decode('')), '')
 
 
 
@@ -126,7 +126,7 @@ class ResolveTestCase(TestCase):
     """
 
     def setUp(self):
-        self.base = uri.generic.decode('http://a/b/c/d;p?q')
+        self.base = generic.decode('http://a/b/c/d;p?q')
 
 
     def test_standard(self):

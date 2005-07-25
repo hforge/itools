@@ -21,7 +21,8 @@ import unittest
 # Import from itools
 from itools.resources import get_resource
 from itools.handlers import get_handler
-from STL import Expression, NamespaceStack, TID, TSLASH, TOPEN, TCLOSE, TEOF, TNONE
+from STL import Expression, NamespaceStack, TID, TSLASH, TOPEN, TCLOSE, TEOF, \
+     TNONE
 
 
 class STLTestCase(unittest.TestCase):

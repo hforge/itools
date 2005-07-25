@@ -52,7 +52,8 @@ class STLTypeError(TypeError):
 # Tokens
 TID, TSLASH, TOPEN, TCLOSE, TEOF, TREPEAT, TNONE = range(7)
 token_name = ['id', 'slash', 'open parentheses', 'close parentheses',
-              'end of expression', 'reserved word "repeat"' 'reserved word "none"']
+              'end of expression', 'reserved word "repeat"',
+              'reserved word "none"']
 
 
 keywords = {'repeat': TREPEAT, 'none': TNONE}
@@ -126,7 +127,8 @@ class Expression(object):
     # Syntax and semantic analysis. Grammar:
     #
     #   parse = TID parser1
-    #           | TREPEAT TSLASH TID TSLASH TID TNONE
+    #           | TREPEAT TSLASH TID TSLASH TID
+    #           | TNONE
     #   parser1 = TEOF
     #             | TSLASH parse
     #             | TOPEN parser2
@@ -135,9 +137,7 @@ class Expression(object):
     ###################################################################
     def parse(self):
         token, lexeme = self.get_token()
-        if token == TNONE:
-            return
-        elif token == TID:
+        if token == TID:
             self.path = self.path + (lexeme,)
             self.parser1()
             return
@@ -154,6 +154,8 @@ class Expression(object):
                         if token == TID:
                             self.path = self.path + (lexeme,)
                             return
+        elif token == TNONE:
+            return
 
         raise STLSyntaxError, 'unexpected %s' % token_name[token]
 
@@ -557,7 +559,7 @@ class STL(object):
             stl_expression = node.get_attribute(stl_uri, 'content')
             content = stl_expression.evaluate(stack, repeat)
             # Coerce
-            if content == None:
+            if content is None:
                 content = []
             elif isinstance(content, unicode):
                 content = [content]

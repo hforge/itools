@@ -69,7 +69,6 @@ class Unicode(object):
 
     def to_unicode(cls, value, encoding='UTF-8'):
         # Escape XML (XXX this is specific to XML)
-        value = unicode(value, encoding)
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value
 

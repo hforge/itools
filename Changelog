@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-07-25 18:54:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-101
+
+    Summary:
+      handlers, fix "IO.Unicode.to_unicode"
+    Revision:
+      itools--main--0.8--patch-101
+
+
+    modified files:
+     Changelog handlers/IO.py
+
+
 2005-07-25 17:49:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-100
 
     Summary:

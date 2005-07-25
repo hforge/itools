@@ -18,5 +18,9 @@
     <p>
       Esto es una prueba (á)
     </p>
+
+    <p>
+      This is <span>not red</span>!
+    </p>
   </body>
 </html>

@@ -50,12 +50,12 @@ class STLTypeError(TypeError):
 ########################################################################
 
 # Tokens
-TID, TSLASH, TOPEN, TCLOSE, TEOF, TREPEAT = range(6)
+TID, TSLASH, TOPEN, TCLOSE, TEOF, TREPEAT, TNONE = range(7)
 token_name = ['id', 'slash', 'open parentheses', 'close parentheses',
-              'end of expression', 'reserved word "repeat"']
+              'end of expression', 'reserved word "repeat"' 'reserved word "none"']
 
 
-keywords = {'repeat': TREPEAT}
+keywords = {'repeat': TREPEAT, 'none': TNONE}
 
 
 class Expression(object):
@@ -64,6 +64,7 @@ class Expression(object):
     
     Examples of allowed expressions:
     
+      none
       a
       a(literal)
       a/b/c
@@ -125,7 +126,7 @@ class Expression(object):
     # Syntax and semantic analysis. Grammar:
     #
     #   parse = TID parser1
-    #           | TREPEAT TSLASH TID TSLASH TID
+    #           | TREPEAT TSLASH TID TSLASH TID TNONE
     #   parser1 = TEOF
     #             | TSLASH parse
     #             | TOPEN parser2
@@ -134,7 +135,9 @@ class Expression(object):
     ###################################################################
     def parse(self):
         token, lexeme = self.get_token()
-        if token == TID:
+        if token == TNONE:
+            return
+        elif token == TID:
             self.path = self.path + (lexeme,)
             self.parser1()
             return
@@ -193,6 +196,9 @@ class Expression(object):
     # API
     ###################################################################
     def evaluate(self, stack, repeat):
+        if not self.path:
+            return None
+
         if self.repeat:
             stack = repeat
 
@@ -223,6 +229,8 @@ class Expression(object):
 
 
     def __str__(self):
+        if not self.path:
+            return 'none'
         s = '/'.join(self.path)
         if self.repeat is True:
             return 'repeat/%s' % s
@@ -549,8 +557,10 @@ class STL(object):
             stl_expression = node.get_attribute(stl_uri, 'content')
             content = stl_expression.evaluate(stack, repeat)
             # Coerce
-            if isinstance(content, unicode):
-                pass
+            if content == None:
+                content = []
+            elif isinstance(content, unicode):
+                content = [content]
             elif isinstance(content, str):
                 content = [unicode(content)]
             elif isinstance(content, (int, long)):

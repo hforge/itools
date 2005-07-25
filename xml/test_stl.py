@@ -21,7 +21,7 @@ import unittest
 # Import from itools
 from itools.resources import get_resource
 from itools.handlers import get_handler
-from STL import Expression, NamespaceStack, TID, TSLASH, TOPEN, TCLOSE, TEOF
+from STL import Expression, NamespaceStack, TID, TSLASH, TOPEN, TCLOSE, TEOF, TNONE
 
 
 class STLTestCase(unittest.TestCase):
@@ -33,6 +33,15 @@ class STLTestCase(unittest.TestCase):
 
         assert expression.path == ('a', 'b', 'c')
         assert expression.parameters == ()
+
+
+    def test_none(self):
+        expression = Expression('none')
+        expected_tokens = [(TNONE, 'none')]
+
+        assert expression.path == ()
+        assert expression.parameters == ()
+        assert expression.evaluate(None, None) == None
 
 
     def test_traversal(self):

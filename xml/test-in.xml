@@ -17,5 +17,11 @@
     <p>
       Esto es una prueba (&aacute;)
     </p>
+    <p stl:if="none">
+      This will only show up in the template file.
+    </p>
+    <p>
+      This is <span style="color: red" stl:attributes="style none">not red</span>!
+    </p>
   </body>
 </html>

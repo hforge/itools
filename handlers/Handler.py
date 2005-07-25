@@ -64,11 +64,14 @@ class Handler(object):
     def load(self, resource=None):
         if resource is None:
             resource = self.resource
+            update = False
         else:
-            self.set_changed()
+            update = True
 
         self._load(resource)
         self.timestamp = resource.get_mtime()
+        if update:
+            self.set_changed()
 
 
     def save(self, resource=None):

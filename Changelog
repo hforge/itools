@@ -2,6 +2,38 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-07-25 17:49:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-100
+
+    Summary:
+      merge fixes from nderam
+    Revision:
+      itools--main--0.8--patch-100
+
+    Patches applied:
+    
+     * nderam@itaapy.com--private/itools--nderam--0.8--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.8--patch-84
+    
+     * nderam@itaapy.com--private/itools--nderam--0.8--patch-1
+       fix bug in to_unicode method in file IO.py
+    
+     * nderam@itaapy.com--private/itools--nderam--0.8--patch-2
+       merge from main
+    
+     * nderam@itaapy.com--private/itools--nderam--0.8--patch-3
+       fix bug with set_changed in load method of Handler.py
+    
+
+    modified files:
+     Changelog handlers/Handler.py handlers/IO.py
+
+    new patches:
+     nderam@itaapy.com--private/itools--nderam--0.8--base-0
+     nderam@itaapy.com--private/itools--nderam--0.8--patch-1
+     nderam@itaapy.com--private/itools--nderam--0.8--patch-2
+     nderam@itaapy.com--private/itools--nderam--0.8--patch-3
+
+
 2005-07-05 17:06:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-99
 
     Summary:

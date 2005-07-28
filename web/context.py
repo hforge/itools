@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,31 +17,33 @@
 
 # Import from the Standard Library
 import datetime
+from thread import get_ident, allocate_lock
 
 # Import from itools
-from Request import Request
-from Response import Response
+from response import Response
 
 
-# User sessions
+# Server-side sessions
 sessions = {}
 
 
-class Context(object):
-    """
-    The Zope context contains the request, the response, the path to be
-    traversed, the authenticated user, the user session, etc.
-    """
 
-    def __init__(self, zope_request):
-        # The request
-        self.request = Request(zope_request)
-        # The response
-        self.response = Response(zope_request.RESPONSE)
-        # The path to be traversed
-        self.path = None
-        # The authenticated user
+class Context(object):
+
+    def __init__(self, request):
+        self.request = request
+        self.response = Response()
+
+        # The user, by default it is not authenticated
         self.user = None
+
+        # Split the path into path and method ("a/b/c/;view")
+        path = request.path
+        self.path = path
+        self.method = None
+        if path and not path[-1].name:
+            self.path = path[:-1]
+            self.method = path[-1].param
 
 
     ########################################################################
@@ -64,3 +66,36 @@ class Context(object):
         return sessions.setdefault(key, {})
 
     session = property(get_session, None, None, "")
+
+
+
+contexts = {}
+contexts_lock = allocate_lock()
+
+
+def set_context(context):
+    ident = get_ident()
+
+    contexts_lock.acquire()
+    try:
+        contexts[ident] = context
+    finally:
+        contexts_lock.release()
+
+
+def has_context():
+    return get_ident() in contexts
+
+
+def get_context():
+    return contexts.get(get_ident())
+
+
+def del_context():
+    ident = get_ident()
+
+    contexts_lock.acquire()
+    try:
+        del contexts[ident]
+    finally:
+        contexts_lock.release()

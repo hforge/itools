@@ -17,18 +17,20 @@
 
 # Import from the Standard Library
 from datetime import datetime
+import thread
 
 # Import from itools
 from itools import uri
 import base
-from itools.zope import get_context
+from itools.web import get_context
 
 # Import from Zope
+from Acquisition import aq_base
 from OFS.Image import File as ZopeFile
 from OFS.Folder import Folder as ZopeFolder
 from AccessControl import User
 import webdav
-
+import Zope2
 
 
 # XXX
@@ -52,6 +54,41 @@ import webdav
 # "resource.bobo_time" variables.
 
 
+# Zope is not an scheme, this means Zope resources only can be accessible
+# within a context.
+roots = {}
+roots_lock = thread.allocate_lock()
+
+
+def get_object(path):
+    """
+    Returns the Zope object in the given path.
+    """
+    # Get the root
+    key = thread.get_ident()
+    if key in roots:
+        root = roots[key]
+    else:
+        root = Zope2.app()
+        root = aq_base(root)
+        roots_lock.acquire()
+        try:
+            roots[key] = root
+        finally:
+            roots_lock.release()
+
+    # Traverse
+    object = root
+    for segment in path:
+        try:
+            object = getattr(object, segment.name)
+        except AttributeError:
+            raise LookupError, 'object "%s" not found' % str(path)
+
+    return object
+
+
+
 class Resource(base.Resource):
 
     uri = None
@@ -60,7 +97,7 @@ class Resource(base.Resource):
         base.Resource.__init__(self, uri_reference)
         # Keep a copy of the path as a plain string, because this is what
         # the 'os.*' and 'os.path.*' expects. Used internally.
-        self._path = str(self.uri.path)
+        self._path = self.uri.path
         # Initialize the modification time with the "bobase modification time"
         object = self._get_object()
         bobo_time = object.bobobase_modification_time()
@@ -69,8 +106,7 @@ class Resource(base.Resource):
 
 
     def _get_object(self):
-        root = get_context().request.zope_request['PARENTS'][-1]
-        return root.unrestrictedTraverse(self._path).aq_base
+        return get_object(self._path)
 
 
     def get_atime(self):
@@ -194,22 +230,21 @@ class Folder(Resource, base.Folder):
         object.mtime = datetime.now()
 
 
+def get_resource(path):
+    """
+    Returns the resource at the given path.
+    """
+    # Check the type
+    if not isinstance(path, uri.Path):
+        path = uri.Path(path)
 
-def get_resource(reference):
-    # Get path
-    if isinstance(reference, uri.Reference):
-        path = str(reference.path)
-    elif isinstance(reference, uri.Path):
-        path = str(reference)
-    else:
-        path = reference
-    # Get object
-    root = get_context().request.zope_request['PARENTS'][-1]
-    object = root.unrestrictedTraverse(path)
-    # Return resource
+    # Get the object
+    object = get_object(path)
+
+    # Check type
     if object.meta_type == 'File':
-        return File(reference)
+        return File(path)
     elif object.meta_type == 'Folder':
-        return Folder(reference)
-    else:
-        raise IOError, 'nor file neither folder at %s' % reference
+        return Folder(path)
+
+    raise IOError, 'nor file neither folder at "%s"' % path

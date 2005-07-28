@@ -37,6 +37,7 @@ Other related RFCs include:
 # Import from the Standard Library
 from copy import copy
 from urlparse import urlsplit, urlunsplit
+import urllib
 
 
 ##########################################################################
@@ -335,6 +336,7 @@ class Query(dict):
 
     def __init__(self, query):
         if query:
+            query = urllib.unquote_plus(query)
             for x in query.split('&'):
                 if x:
                     key, value = x.split('=', 1)

@@ -2,7 +2,6 @@ include *.txt
 include Changelog
 include resources/tests/index.html.en
 recursive-include xml test.rdf test*.xml simple.xml simple.xsd
-recursive-include zope *.dtml
 recursive-include i18n *.txt
 recursive-include doc *.tex *.txt itools.sty Makefile *.dot *.sty *.dia
 include doc/task_tracker.eps

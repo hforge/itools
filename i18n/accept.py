@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2001-2002 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2001-2005 J. David Ibáñez <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -28,11 +28,7 @@ AcceptLanguage. The other four shouldn't be used directly.
 """
 
 
-##from UserDict import UserDict
-from types import StringType
-
-
-class Node:
+class Node(object):
     """
     Base class that represents a node in a tree.
     """
@@ -186,7 +182,7 @@ class LanguageNode(Node):
         """
         Returns the required node. If it doesn't exists it's created.
         """
-        if type(key) == StringType:
+        if isinstance(key, str):
             if key == '*':
                 key = []
             else:

@@ -31,7 +31,6 @@ Make sure the following files are shipped:
   - Changelog
   - Makefile
   - i18n/languages.txt
-  - zope/localroles.dtml
 
 Note the path separator may vary on your platform.
 """
@@ -55,8 +54,6 @@ class install_module_data(install_data):
                                   )
 
 
-# XXX itools.zope.zmi shouldn't be a Python package, but this is the
-# quickest workaround I found to install this directory.
 description = """Itools is a Python package that encapsulates several Python
 tools developed by the Itaapy company and other developers. The provided
 tools are:
@@ -116,7 +113,7 @@ setup(name = "itools",
                   'itools.xhtml',
                   'itools.html',
                   'itools.ical',
-                  'itools.zope'],
+                  'itools.web'],
       classifiers = ['Development Status :: 3 - Alpha',
                      'Intended Audience :: Developers',
                      ('License :: OSI Approved :: GNU Library or Lesser General'
@@ -134,8 +131,6 @@ setup(name = "itools",
                      'Topic :: Text Processing :: Markup',
                      'Topic :: Text Processing :: Markup :: XML'],
       data_files=[('itools', ['Changelog']),
-                  (os.path.join('itools', 'zope'),
-                   [os.path.join('zope', 'localroles.dtml')]),
                   (os.path.join('itools', 'i18n'),
                    [os.path.join('i18n', 'languages.txt')])],
       scripts = [os.path.join('i18n', 'igettext.py')],

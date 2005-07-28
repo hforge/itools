@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,11 +15,8 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Import from the Standard Library
-from thread import get_ident
+# Import from itools
+from context import get_context
+import zope2
 
 
-def get_context():
-    """Returns the context."""
-    from Products.iHotfix import contexts
-    return contexts.get(get_ident())

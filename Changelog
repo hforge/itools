@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-07-30 17:27:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
+
+    Summary:
+      types, fix xml qname decoding
+    Revision:
+      itools--main--0.10--patch-20
+
+
+    modified files:
+     Changelog types/__init__.py
+
+
 2005-07-30 16:56:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-19
 
     Summary:

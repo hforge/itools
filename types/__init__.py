@@ -274,7 +274,7 @@ class QName(object):
 
     def decode(cls, data):
         if ':' in data:
-            return tuple(data.split(':'))
+            return tuple(data.split(':', 1))
 
         return None, data
 

@@ -88,7 +88,7 @@ def init(zope_request):
                 if body.endswith('\r\n'):
                     body = body[:-2]
                 elif body.endswih('\n'):
-                    body = bodyt[:-1]
+                    body = body[:-1]
                 if 'filename' in header_parameters:
                     filename = header_parameters['filename']
                     if filename:

@@ -385,7 +385,9 @@ class Document(Text.Text):
                 stack[-1].set_attribute(namespace_uri, local_name, value,
                                         prefix=prefix)
             elif event == parser.COMMENT:
-                stack[-1].set_comment(Comment(value))
+                # Comments out of the root element are discarded (XXX)
+                if stack:
+                    stack[-1].set_comment(Comment(value))
             elif event == parser.TEXT:
                 if stack:
                     stack[-1].set_text(value, 'UTF-8')

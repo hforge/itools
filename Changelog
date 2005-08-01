@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-01 12:55:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
+
+    Summary:
+      xml, discard comments not included in the root element
+    Revision:
+      itools--main--0.10--patch-25
+
+
+    modified files:
+     Changelog xml/XML.py
+
+
 2005-08-01 12:54:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
 
     Summary:

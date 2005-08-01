@@ -2,6 +2,65 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-01 11:16:31 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-22
+
+    Summary:
+      merge RSS 2.0 code from Piotr
+    Revision:
+      itools--main--0.10--patch-22
+
+    Patches applied:
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.10--patch-11
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-1
+       The new rss package
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-2
+       The new RSS handler.
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-3
+       Spelling and style corrections, modification of the data structure and implementation of the missing to_unicode method.
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-4
+       namespace structure change and implementation of the get_skeleton function
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-5
+       proper get_skeleton function
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-6
+       Parsing all necessary RSS tags.
+    
+
+    new files:
+     rss/.arch-ids/=id rss/.arch-ids/__init__.py.id
+     rss/.arch-ids/rss.py.id rss/.arch-ids/test.html.id
+     rss/.arch-ids/test.rss.id rss/.arch-ids/test.xml.id
+     rss/.arch-ids/test2-out.rss.id rss/.arch-ids/test2.rss.id
+     rss/.arch-ids/test_full.html.id rss/.arch-ids/test_full.rss.id
+     rss/.arch-ids/test_full.xml.id rss/.arch-ids/test_rss.py.id
+     rss/__init__.py rss/rss.py rss/test.html rss/test.rss
+     rss/test.xml rss/test2-out.rss rss/test2.rss
+     rss/test_full.html rss/test_full.rss rss/test_full.xml
+     rss/test_rss.py
+
+    modified files:
+     Changelog
+
+    new directories:
+     rss rss/.arch-ids
+
+    new patches:
+     piotr@macuk.pl--public/itools--rss--0.10--base-0
+     piotr@macuk.pl--public/itools--rss--0.10--patch-1
+     piotr@macuk.pl--public/itools--rss--0.10--patch-2
+     piotr@macuk.pl--public/itools--rss--0.10--patch-3
+     piotr@macuk.pl--public/itools--rss--0.10--patch-4
+     piotr@macuk.pl--public/itools--rss--0.10--patch-5
+     piotr@macuk.pl--public/itools--rss--0.10--patch-6
+
+
 2005-08-01 09:45:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
 
     Summary:

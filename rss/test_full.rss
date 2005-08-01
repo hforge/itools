@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rss version="2.0">
+<channel>
+	<title>CNN.com</title>
+	<link>http://www.cnn.com/rssclick/?section=cnn_topstories</link>
+	<description>CNN.com delivers up-to-the-minute news and information on the latest top stories, weather, entertainment, politics and more.</description>
+	<language>en-us</language>
+	<copyright>© 2005 Cable News Network LP, LLLP.</copyright>
+	<pubDate>Fri, 15 Jul 2005 05:51:35 EDT</pubDate>
+	<ttl>5</ttl>
+	<image>
+		<title>CNN.com</title>
+		<link>http://www.cnn.com/rssclick/?section=cnn_topstories</link>
+		<url>http://i.cnn.net/cnn/.element/img/1.0/logo/cnn.logo.rss.gif</url>
+		<width>144</width>
+		<height>33</height>
+		<description>CNN.com delivers up-to-the-minute news and information on the latest top stories, weather, entertainment, politics and more.</description>
+	</image>
+	<item>
+		<title>Chief Justice Rehnquist says he's staying on</title>
+		<link>http://www.cnn.com/rssclick/2005/LAW/07/14/rehnquist.health/index.html?section=cnn_topstories</link>
+		<description>Chief Justice William Rehnquist says he has no plans to step down from the Supreme Court and will continue to serve as long as he can. "I am not about to announce my retirement. I will continue to perform my duties as chief justice as long as my health permits," Rehnquist said Thursday night in a written statement issued hours after he returned home from a hospital.</description>
+		<pubDate>Thu, 14 Jul 2005 23:42:17 EDT</pubDate>
+	</item>
+	<item>
+		<title>Sources link London bombing to 2004 raid</title>
+		<link>http://www.cnn.com/rssclick/2005/US/07/14/fbi.london.main/index.html?section=cnn_topstories</link>
+		<description>Officials with knowledge of the London terror investigation have told CNN there is evidence of a connection between last week's deadly bombings and a UK police operation last year that led to the arrest of eight British Muslims and the seizure of more than a half-tonne of ammonium nitrate.</description>
+		<pubDate>Fri, 15 Jul 2005 05:00:34 EDT</pubDate>
+	</item>
+</channel>
+</rss>

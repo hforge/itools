@@ -67,8 +67,8 @@ class Parser(object):
         parser.StartNamespaceDeclHandler = self.start_namespace_handler
 ##        parser.EndNamespaceDeclHandler = self.end_namespace_handler
         parser.CommentHandler = self.comment_handler
-##        parser.StartCdataSectionHandler =
-##        parser.EndCdataSectionHandler =
+        parser.StartCdataSectionHandler = self.null_handler
+        parser.EndCdataSectionHandler = self.null_handler
         parser.DefaultHandler = self.default_handler
 ##        parser.DefaultHandlerExpand =
 ##        parser.NotStandaloneHandler =
@@ -172,6 +172,10 @@ class Parser(object):
 
     def comment_handler(self, data):
         self.events.append((COMMENT, data, self.parser.ErrorLineNumber))
+
+
+    def null_handler(self):
+        pass
 
 
     def default_handler(self, data):

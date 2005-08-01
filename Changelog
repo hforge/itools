@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-01 12:54:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
+
+    Summary:
+      xml, correctly deal with CDATA sections
+    Revision:
+      itools--main--0.10--patch-24
+
+
+    modified files:
+     Changelog xml/parser.py
+
+
 2005-08-01 12:22:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-23
 
     Summary:

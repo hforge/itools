@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-01 09:45:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
+
+    Summary:
+      web, accept headers are optional (#89)
+    Revision:
+      itools--main--0.10--patch-21
+
+
+    modified files:
+     Changelog web/zope2.py
+
+
 2005-07-30 17:27:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
 
     Summary:

@@ -124,11 +124,11 @@ def init(zope_request):
     context.uri = uri.get_reference(request_uri)
 
     # Accept charset
-    accept_charset = environ['HTTP_ACCEPT_CHARSET']
+    accept_charset = environ.get('HTTP_ACCEPT_CHARSET', '')
     accept_charset = AcceptCharset(accept_charset)
 
     # Accept language
-    accept_language = environ['HTTP_ACCEPT_LANGUAGE']
+    accept_language = environ.get('HTTP_ACCEPT_LANGUAGE', '')
 
     # Patches for user agents that don't support correctly the protocol
     user_agent = environ['HTTP_USER_AGENT']

@@ -27,8 +27,13 @@ thread_lock = thread.allocate_lock()
 class Transaction(Set):
 
     def rollback(self):
+        # Abort resource layer transactions
+        for handler in self:
+            handler.resource.abort_transaction()
+        # Reset handlers
         for handler in self:
             handler.timestamp = datetime.datetime(1900, 1, 1)
+        # Reset the transaction
         self.clear()
 
 
@@ -42,25 +47,35 @@ class Transaction(Set):
             self.rollback()
             raise
 
-        thread_lock.acquire()
+        self.lock()
+        # Start resource layer transactions
+        for handler in self:
+            handler.resource.start_transaction()
+        # Errors should not happen in this stage.
         try:
-            # Errors should not happen in this stage.
-            try:
-                for handler in self:
-                    if handler.resource.get_mtime() is not None:
-                        handler._save_state(handler.resource)
-                        handler.timestamp = handler.resource.get_mtime()
-            except:
-                # XXX Right now we just rollback the transaction, so handlers
-                # state will be consistent.
-                #
-                # However, it may happen something worse, the resource layer
-                # may be left into an inconsistent state.
-                self.rollback()
-                raise
+            for handler in self:
+                if handler.resource.get_mtime() is not None:
+                    handler._save_state(handler.resource)
+        except:
+            # XXX Right now we just rollback the transaction, so handlers
+            # state will be consistent.
+            #
+            # However, it may happen something worse, the resource layer
+            # may be left into an inconsistent state.
+            self.rollback()
+            self.release()
+            raise
+        else:
+            # Commit resource layer transactions
+            for handler in self:
+                handler.resource.commit_transaction()
+            # Update handlers timestamp
+            for handler in self:
+                handler.timestamp = handler.resource.get_mtime()
+            # Reset the transaction
             self.clear()
-        finally:
-            thread_lock.release()
+            # Release the thread lock
+            self.release()
 
 
     def lock(self):

@@ -33,27 +33,6 @@ import webdav
 import Zope2
 
 
-# XXX
-#
-# Zope 2 resources should use "bobobase_modification_time()", so if a
-# resource is modified through the ZMI (for example) the resource is
-# reloaded the next time.
-#
-# But unfortunately we can't use it.
-#
-# Because the "bobobase_modification_time" is set with the ZODB transaction
-# commit, which happens always at the end, after the handler timestamp has
-# been set. This means that the resource modification time is always newer
-# than the handler's timestamp; so the resource always would be reloaded
-# after a modification, what is unacceptable.
-#
-# This is the reason we keep ourselves the modification time, within the
-# persistent variable 'mtime'. When the resource is loaded for the first
-# time the on memory variable "bobo_time" is initialized; the modification
-# time of a resource is defined as the newer of the "object.mtime" and
-# "resource.bobo_time" variables.
-
-
 # Zope is not an scheme, this means Zope resources only can be accessible
 # within a context.
 roots = {}
@@ -69,7 +48,7 @@ def get_object(path):
     if key in roots:
         root = roots[key]
     else:
-        root = Zope2.app()
+        root = Zope2.DB.open().root()['Application']
         root = aq_base(root)
         roots_lock.acquire()
         try:
@@ -98,11 +77,6 @@ class Resource(base.Resource):
         # Keep a copy of the path as a plain string, because this is what
         # the 'os.*' and 'os.path.*' expects. Used internally.
         self._path = self.uri.path
-        # Initialize the modification time with the "bobase modification time"
-        object = self._get_object()
-        bobo_time = object.bobobase_modification_time()
-        bobo_time = bobo_time.timeTime()
-        self.bobo_time = datetime.fromtimestamp(bobo_time)
 
 
     def _get_object(self):
@@ -115,11 +89,8 @@ class Resource(base.Resource):
 
     def get_mtime(self):
         object = self._get_object()
-        mtime = getattr(object, 'mtime', None)
-
-        if mtime is None or mtime < self.bobo_time:
-            return self.bobo_time
-        return mtime
+        mtime = object.bobobase_modification_time().timeTime()
+        return datetime.fromtimestamp(mtime)
 
 
     def get_ctime(self):
@@ -130,6 +101,9 @@ class Resource(base.Resource):
         raise NotImplementedError
 
 
+    ##########################################################################
+    # Locking (prevent other threads to touch the resource)
+    ##########################################################################
     def lock(self):
         object = self._get_object()
         creator = User.nobody
@@ -150,6 +124,21 @@ class Resource(base.Resource):
         raise NotImplementedError
 
 
+    ##########################################################################
+    # Transactions
+    ##########################################################################
+    def start_transaction(self):
+        get_transaction().begin()
+
+
+    def abort_transaction(self):
+        get_transaction().abort()
+
+
+    def commit_transaction(self):
+        get_transaction().commit()
+
+
 
 class File(Resource, base.File):
 
@@ -166,8 +155,6 @@ class File(Resource, base.File):
     def write(self, data):
         object = self._get_object()
         object.update_data(data)
-        # Set modification time
-        object.mtime = datetime.now()
 
 
     def __setitem__(self, index, value):
@@ -181,8 +168,6 @@ class File(Resource, base.File):
             start, stop = index, index + 1
         data = data[:start] + value + data[stop:]
         object.update_data(data)
-        # Set modification time
-        object.mtime = datetime.now()
 
 
 
@@ -205,29 +190,21 @@ class Folder(Resource, base.Folder):
     def _set_file_resource(self, name, resource):
         object = self._get_object()
         object._setObject(name, ZopeFile(name, '', resource.read()))
-        # Set modification time
-        object.mtime = datetime.now()
 
 
     def _set_folder_resource(self, name, resource):
         object = self._get_object()
         object._setObject(name, ZopeFolder(name))
-        # Set modification time
-        object.mtime = datetime.now()
 
 
     def _del_file_resource(self, name):
         object = self._get_object()
         object._delObject(name)
-        # Set modification time
-        object.mtime = datetime.now()
 
 
     def _del_folder_resource(self, name):
         object = self._get_object()
         object._delObject(name)
-        # Set modification time
-        object.mtime = datetime.now()
 
 
 def get_resource(path):

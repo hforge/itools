@@ -194,15 +194,20 @@ class Handler(Node):
 
         transaction = get_transaction()
         transaction.lock()
+        resource.start_transaction()
         try:
             self._save_state(resource)
+        except:
+            resource.abort_transaction()
+            transaction.release()
+            raise
+        else:
+            resource.commit_transaction()
             if resource is self.resource:
                 if self in transaction:
                     transaction.remove(self)
-        finally:
+                self.timestamp = resource.get_mtime()
             transaction.release()
-
-        self.timestamp = self.resource.get_mtime()
 
 
     def is_outdated(self):

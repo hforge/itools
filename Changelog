@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-01 15:13:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-26
+
+    Summary:
+      resources, use bobobase_modification_time for Zope 2 resources
+    Revision:
+      itools--main--0.10--patch-26
+
+
+    modified files:
+     Changelog handlers/Handler.py handlers/transactions.py
+     resources/base.py resources/zope2.py
+
+
 2005-08-01 12:55:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
 
     Summary:

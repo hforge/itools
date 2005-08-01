@@ -69,6 +69,9 @@ class Resource(object):
         raise NotImplementedError
 
 
+    ##########################################################################
+    # Locking (prevent other threads to touch the resource)
+    ##########################################################################
     def lock(self):
         raise NotImplementedError
 
@@ -79,6 +82,21 @@ class Resource(object):
 
     def is_locked(self):
         raise NotImplementedError
+
+
+    ##########################################################################
+    # Transactions
+    ##########################################################################
+    def start_transaction(self):
+        pass
+
+
+    def abort_transaction(self):
+        pass
+
+
+    def commit_transaction(self):
+        pass
 
 
 

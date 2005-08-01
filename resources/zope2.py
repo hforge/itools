@@ -29,6 +29,7 @@ from Acquisition import aq_base
 from OFS.Image import File as ZopeFile
 from OFS.Folder import Folder as ZopeFolder
 from AccessControl import User
+import transaction
 import webdav
 import Zope2
 
@@ -128,15 +129,15 @@ class Resource(base.Resource):
     # Transactions
     ##########################################################################
     def start_transaction(self):
-        get_transaction().begin()
+        transaction.begin()
 
 
     def abort_transaction(self):
-        get_transaction().abort()
+        transaction.abort()
 
 
     def commit_transaction(self):
-        get_transaction().commit()
+        transaction.commit()
 
 
 

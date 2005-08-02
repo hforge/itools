@@ -525,10 +525,15 @@ class STL(object):
                     value = str(value)
                 changed_attributes[name] = value
 
+        xmlns_uri = namespaces.XMLNSNamespace.class_uri
+
         # Output existing attributes
         for namespace, local_name, value in node.get_attributes():
-            # Ommit stl attributes
+            # Omit stl attributes
             if namespace == stl_uri:
+                continue
+            # Omit stl namespace
+            if namespace == xmlns_uri and local_name == 'stl':
                 continue
 
             qname = node.get_attribute_qname(namespace, local_name)

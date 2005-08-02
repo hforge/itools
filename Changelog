@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-02 09:04:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-28
+
+    Summary:
+      xml, omit STL namespace after processing, from herve (#81)
+    Revision:
+      itools--main--0.10--patch-28
+
+
+    modified files:
+     Changelog xml/STL.py
+
+
 2005-08-01 17:30:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-27
 
     Summary:

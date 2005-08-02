@@ -159,8 +159,18 @@ class Parser(HTMLParser):
         # XXX Copied from 'itools.xml.parser.Parser.skipped_entity_handler'
         if name in htmlentitydefs.name2codepoint:
             codepoint = htmlentitydefs.name2codepoint[name]
-            char = unichr(codepoint).encode(self.encoding)
-            self.events.append((TEXT, char, self.getpos()[0]))
+            char = unichr(codepoint)
+            try:
+                char = char.encode(self.encoding)
+            except UnicodeEncodeError:
+                # XXX Error. Entity references allow to use characters that
+                # can not be represented on the document encoding. But our
+                # policy is to translate these entity references to that
+                # encoding, what is a contradiction. Just try to parse
+                # a document on latin with the entity "&rsquo;".
+                pass
+            else:
+                self.events.append((TEXT, char, self.getpos()[0]))
         else:
             warnings.warn('Unknown entity reference "%s" (ignoring)' % name)
 

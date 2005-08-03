@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-03 13:53:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
+
+    Summary:
+      web, kill server-side sessions, improve cookies API (#96)
+    Revision:
+      itools--main--0.10--patch-30
+
+
+    modified files:
+     Changelog web/context.py web/request.py web/response.py
+
+
 2005-08-03 10:24:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
 
     Summary:

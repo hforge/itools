@@ -23,11 +23,6 @@ from thread import get_ident, allocate_lock
 from response import Response
 
 
-# Server-side sessions
-sessions = {}
-
-
-
 class Context(object):
 
     def __init__(self, request):
@@ -47,25 +42,35 @@ class Context(object):
 
 
     ########################################################################
-    # Sessions
-    def get_session(self):
-        # Get session key
-        cookies = self.request.cookies
-        if cookies.has_key('iSession'):
-            key = cookies['iSession']
-        else:
-            key = datetime.datetime.now().isoformat()
-            # XXX Fix path
-##            path = request.path.split('/')
-##            path = '/'.join(path[:len(request.context)]) or '/'
-            path = '/'
-            self.response.set_cookie('iSession', key, path=path)
+    # High level API for cookies (client side sessions)
+    ########################################################################
+    def get_cookie(self, name):
+        request, response = self.request, self.response
 
-        # Get session
-        global sessions
-        return sessions.setdefault(key, {})
+        cookie = response.get_cookie(name)
+        if cookie is None:
+            return request.get_cookie(name)
 
-    session = property(get_session, None, None, "")
+        # Check expiration time
+        expires = cookie.expires
+        if expires is not None:
+            expires = expires[5:-4]
+            expires = strptime(expires, '%d-%b-%y %H:%M:%S')
+            year, month, day, hour, minute, second, wday, yday, isdst = expires
+            expires = datetime.datetime(year, month, day, hour, minute, second)
+
+            if expires < datetime.datetime.now():
+                return None
+
+        return cookie.value
+
+
+    def set_cookie(self, name, value, **kw):
+        self.response.set_cookie(name, value, **kw)
+
+
+    def del_cookie(self, name):
+        self.response.del_cookie(name)
 
 
 

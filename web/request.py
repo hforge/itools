@@ -161,10 +161,8 @@ class Request(File):
     ########################################################################
     # The Cookies
     ########################################################################
-    def get_cookies(self):
-        return self.state.cookies
-
-    cookies = property(get_cookies, None, None, '')
+    def set_cookie(self, name, value):
+        self.state.cookies[name] = value
 
 
     def get_cookie(self, name):

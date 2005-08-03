@@ -1,3 +1,20 @@
+0.9.3 (2005/08/02)
+
+  Minor features
+  - Now STL expression names accept the character ":".
+  - Implement "has_handler" for files.
+
+  Bugs fixed
+  - Fix "get_abspath" for Windows.
+  - Fix catalog un-indexing.
+  - Fix catalog search when there are objects that have been indexed recently
+    (the changes have not been saved yet).
+  - Fix the translate method of XHTML documents when there are empty elements.
+  - Fix parsing of HTML documents (complete the list of boolean attributes
+    and omit entity references that can not be represented on the source
+    encoding).
+
+
 0.9.2 (2005/06/24)
 
   Several XML fixes, including bug #65

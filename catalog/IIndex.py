@@ -611,8 +611,11 @@ class IIndex(Folder):
         # Add documents
         if word in state.added_terms:
             for doc_number, positions in state.added_terms[word].items():
-                documents.setdefault(doc_number, 0)
-                documents[doc_number] += len(positions)
+                if doc_number in documents:
+                    # XXX We ever reach this case?
+                    documents[doc_number] |= positions
+                else:
+                    documents[doc_number] = positions
 
         return documents
 

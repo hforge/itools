@@ -2,6 +2,35 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-03 13:54:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
+
+    Summary:
+      merge fixes from the 0.9 branch
+    Revision:
+      itools--main--0.10--patch-31
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-103
+       catalog, fix search when objects has been added
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-104
+       html, omit entity references not in the source encoding
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-105
+       get ready to release 0.9.3
+    
+
+    modified files:
+     CHANGES.txt Changelog catalog/IIndex.py html/parser.py
+     setup.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.9--patch-103
+     jdavid@itaapy.com--public/itools--main--0.9--patch-104
+     jdavid@itaapy.com--public/itools--main--0.9--patch-105
+
+
 2005-08-03 13:53:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
 
     Summary:

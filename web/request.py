@@ -169,6 +169,11 @@ class Request(File):
         return self.state.cookies.get(name)
 
 
+    def get_cookies_as_str(self):
+        cookies = self.state.cookies
+        return '; '.join([ '%s="%s"' % (x, cookies[x]) for x in cookies ])
+
+
     ########################################################################
     # High level API
     ########################################################################

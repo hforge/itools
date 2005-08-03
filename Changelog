@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-03 14:22:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-32
+
+    Summary:
+      web, add method "get_cookies_as_str"
+    Revision:
+      itools--main--0.10--patch-32
+
+    It is similar in function to the environment variable HTTP_COOKIE.
+
+    modified files:
+     Changelog web/request.py
+
+
 2005-08-03 13:54:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
 
     Summary:

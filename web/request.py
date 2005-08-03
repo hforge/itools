@@ -203,16 +203,16 @@ class Request(File):
         for key, value in kw.items():
             query.append((key, value))
 
-        # Keep the type
+        # Keep the type (XXX use itools schemas)
         new_query = []
         for key, value in query:
             if isinstance(value, str):
                 new_query.append((key, value))
             elif isinstance(value, unicode):
                 value = value.encode('utf8')
-                new_query.append(('%s:utf8:ustring' % key, value))
+                new_query.append(('%s' % key, value))
             elif isinstance(value, int):
-                new_query.append(('%s:int' % key, str(value)))
+                new_query.append(('%s' % key, str(value)))
             elif isinstance(value, list):
                 for x in value:
                     # XXX Should coerce too

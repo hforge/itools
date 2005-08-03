@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-03 10:24:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
+
+    Summary:
+      web, half fix "build_url" method
+    Revision:
+      itools--main--0.10--patch-29
+
+    It should use itools schemas, yet to be done.
+
+    modified files:
+     Changelog web/request.py
+
+
 2005-08-02 09:04:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-28
 
     Summary:

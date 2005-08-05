@@ -20,7 +20,7 @@ import warnings
 
 # Import from itools
 from itools.xml.exceptions import XMLError
-from itools import types
+from itools.datatypes import String, Unicode
 
 
 
@@ -159,7 +159,7 @@ class DefaultNamespace(AbstractNamespace):
 
 
     def get_attribute_schema(name):
-        return {'type': types.String}
+        return String
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 
@@ -173,8 +173,8 @@ class XMLNamespace(AbstractNamespace):
 
     def get_attribute_schema(name):
         if name == 'lang':
-            return {'type': types.String}
-        return {'type': types.Unicode}
+            return String
+        return Unicode
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 
@@ -187,7 +187,7 @@ class XMLNSNamespace(AbstractNamespace):
 
 
     def get_attribute_schema(name):
-        return {'type': types.String}
+        return String
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 

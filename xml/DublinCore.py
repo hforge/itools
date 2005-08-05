@@ -16,27 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools import types
+from itools.datatypes import Unicode
 from itools.xml import XML, namespaces
+from itools.schemas.dublin_core import DublinCore
 
-
-schema = {
-    'contributor': {},
-    'coverage': {},
-    'creator': {},
-    'date': {'type': types.DateTime},
-    'description': {'type': types.Unicode, 'default': u''},
-    'format': {},
-    'identifier': {'type': types.String},
-    'language': {'type': types.String, 'default': None},
-    'publisher': {'type': types.Unicode},
-    'relation': {},
-    'rights': {},
-    'source': {},
-    'subject': {},
-    'title': {'type': types.Unicode, 'default': u''},
-    'type': {},
-    }
 
 
 class Element(XML.Element):
@@ -55,7 +38,7 @@ class Element(XML.Element):
     def set_text(self, text, encoding='UTF-8'):
         text = text.strip()
         type = schema[self.name]['type']
-        if type is types.Unicode:
+        if type is Unicode:
             self.value = type.decode(text, encoding)
         else:
             self.value = type.decode(text)
@@ -68,22 +51,20 @@ class Namespace(namespaces.AbstractNamespace):
     class_prefix = 'dc'
 
 
+    @staticmethod
     def get_element_schema(name):
         if name not in schema:
             raise XML.XMLError, 'unknown property "%s"' % name
 
         return Element
 
-    get_element_schema = staticmethod(get_element_schema)
 
-
+    @staticmethod
     def get_attribute_schema(name):
         try:
-            return schema[name]
+            return DublinCore.get_datatype(name)
         except KeyError:
             raise XML.XMLError, 'unknown property "%s"' % name
-
-    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 namespaces.set_namespace(Namespace)

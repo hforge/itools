@@ -2,6 +2,77 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-05 13:33:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-34
+
+    Summary:
+      merge new itools.datatypes and itools.schema code from jdavid
+    Revision:
+      itools--main--0.10--patch-34
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--schema--0.10--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.10--patch-32
+    
+     * jdavid@itaapy.com--public/itools--schema--0.10--patch-1
+       types, new types (or schema) model (working on #95)
+    
+     * jdavid@itaapy.com--public/itools--schema--0.10--patch-2
+       types, fix some syntax errors
+    
+     * jdavid@itaapy.com--public/itools--schema--0.10--patch-3
+       rename itools.types to itools.schema
+    
+     * jdavid@itaapy.com--public/itools--schema--0.10--patch-4
+       now packages are "datatypes" and "schemas"
+    
+     * jdavid@itaapy.com--public/itools--schema--0.10--patch-5
+       update code to "itools.datatypes"
+    
+
+    new files:
+     datatypes/.arch-ids/__init__.py.id
+     datatypes/.arch-ids/base.py.id datatypes/__init__.py
+     datatypes/base.py schemas/.arch-ids/=id
+     schemas/.arch-ids/__init__.py.id schemas/.arch-ids/base.py.id
+     schemas/.arch-ids/dublin_core.py.id schemas/__init__.py
+     schemas/base.py schemas/dublin_core.py
+
+    modified files:
+     Changelog datatypes/primitive.py html/HTML.py
+     resources/base.py setup.py web/headers.py web/request.py
+     xhtml/XHTML.py xml/DublinCore.py xml/STL.py xml/Schema.py
+     xml/XML.py xml/namespaces.py
+
+    renamed files:
+     types/.arch-ids/=id
+       ==> datatypes/.arch-ids/=id
+     types/.arch-ids/__init__.py.id
+       ==> datatypes/.arch-ids/primitive.py.id
+     types/.arch-ids/languages.py.id
+       ==> datatypes/.arch-ids/languages.py.id
+     types/__init__.py
+       ==> datatypes/primitive.py
+
+    new directories:
+     datatypes/.arch-ids schemas schemas/.arch-ids
+
+    removed directories:
+     types/.arch-ids
+
+    renamed directories:
+     types
+       ==> datatypes
+
+    new patches:
+     jdavid@itaapy.com--public/itools--schema--0.10--base-0
+     jdavid@itaapy.com--public/itools--schema--0.10--patch-1
+     jdavid@itaapy.com--public/itools--schema--0.10--patch-2
+     jdavid@itaapy.com--public/itools--schema--0.10--patch-3
+     jdavid@itaapy.com--public/itools--schema--0.10--patch-4
+     jdavid@itaapy.com--public/itools--schema--0.10--patch-5
+
+
 2005-08-05 13:31:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-33
 
     Summary:

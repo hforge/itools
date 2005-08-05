@@ -19,7 +19,7 @@
 import warnings
 
 # Import from Python
-from itools import types
+from itools.datatypes import Unicode
 from itools.xml import XML, namespaces
 
 
@@ -56,7 +56,7 @@ class SimpleType(XML.Element):
     def set_text(self, text, encoding='UTF-8'):
         text = text.strip()
         type, default = self.schema[self.name]
-        if type is types.Unicode:
+        if type is Unicode:
             self.value = type.decode(text, encoding)
         else:
             self.value = type.decode(text)

@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools import types
+from itools.datatypes import String, URI
 
 
 #############################################################################
@@ -121,57 +121,57 @@ class ValueWithParameters(object):
 
 headers = {
     # General headers
-    'Cache-Control': types.String,
-    'Connection': types.String,
-    'Date': types.String,
-    'Pragma': types.String,
-    'Trailer': types.String,
-    'Transfer-Encoding': types.String,
-    'Upgrade': types.String,
-    'Via': types.String,
-    'Warning': types.String,
+    'Cache-Control': String,
+    'Connection': String,
+    'Date': String,
+    'Pragma': String,
+    'Trailer': String,
+    'Transfer-Encoding': String,
+    'Upgrade': String,
+    'Via': String,
+    'Warning': String,
     # Request headers
-    'Accept': types.String,
-    'Accept-Charset': types.String,
-    'Accept-Encoding': types.String,
-    'Accept-Language': types.String,
-    'Authorization': types.String,
-    'Expect': types.String,
-    'From': types.String,
-    'Host': types.String,
-    'If-Match': types.String,
-    'If-Modified-Since': types.String,
-    'If-None-Match': types.String,
-    'If-Range': types.String,
-    'If-Unmodified-Since': types.String,
-    'Max-Forwards': types.String,
-    'Proxy-Authorization': types.String,
-    'Range': types.String,
-    'Referer': types.URI,
-    'TE': types.String,
-    'User-Agent': types.String,
+    'Accept': String,
+    'Accept-Charset': String,
+    'Accept-Encoding': String,
+    'Accept-Language': String,
+    'Authorization': String,
+    'Expect': String,
+    'From': String,
+    'Host': String,
+    'If-Match': String,
+    'If-Modified-Since': String,
+    'If-None-Match': String,
+    'If-Range': String,
+    'If-Unmodified-Since': String,
+    'Max-Forwards': String,
+    'Proxy-Authorization': String,
+    'Range': String,
+    'Referer': URI,
+    'TE': String,
+    'User-Agent': String,
     # Response headers
-    'Accept-Ranges': types.String,
-    'Age': types.String,
-    'ETag': types.String,
-    'Location': types.String,
-    'Proxy-Authenticate': types.String,
-    'Retry-After': types.String,
-    'Server': types.String,
-    'Vary': types.String,
-    'WWW-Authenticate': types.String,
+    'Accept-Ranges': String,
+    'Age': String,
+    'ETag': String,
+    'Location': String,
+    'Proxy-Authenticate': String,
+    'Retry-After': String,
+    'Server': String,
+    'Vary': String,
+    'WWW-Authenticate': String,
     # Entity headers
-    'Allow': types.String,
-    'Content-Encoding': types.String,
-    'Content-Language': types.String,
-    'Content-Length': types.String,
-    'Content-Location': types.String,
-    'Content-MD5': types.String,
-    'Content-Range': types.String,
+    'Allow': String,
+    'Content-Encoding': String,
+    'Content-Language': String,
+    'Content-Length': String,
+    'Content-Location': String,
+    'Content-MD5': String,
+    'Content-Range': String,
     'Content-Type': ValueWithParameters,
-    'Expires': types.String,
-    'Last-Modified': types.String,
-    'extension-header': types.String,
+    'Expires': String,
+    'Last-Modified': String,
+    'extension-header': String,
     # Non standard headers
     'Content-Disposition': ValueWithParameters,
     }
@@ -179,4 +179,4 @@ headers = {
 
 
 def get_type(name):
-    return headers.get(name, types.String)
+    return headers.get(name, String)

@@ -23,7 +23,7 @@ import warnings
 
 # Import from itools
 from itools.handlers import File, Text
-from itools import types
+from itools.datatypes import Unicode
 from itools.xml.exceptions import XMLError
 from itools.xml import namespaces
 from itools.xml import parser
@@ -152,7 +152,7 @@ class Element(object):
         s = []
         for node in self.children:
             if isinstance(node, unicode):
-                # XXX This is equivalent to 'types.Unicode.to_unicode',
+                # XXX This is equivalent to 'Unicode.to_unicode',
                 # there should be a single place.
                 s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             else:
@@ -200,8 +200,7 @@ class Element(object):
         Returns the type for the given attribute
         """
         namespace = namespaces.get_namespace(namespace_uri)
-        schema = namespace.get_attribute_schema(local_name)
-        return schema['type']
+        return namespace.get_attribute_schema(local_name)
 
 
     #######################################################################
@@ -215,7 +214,7 @@ class Element(object):
 
 
     def set_text(self, text, encoding='UTF-8'):
-        text = types.Unicode.decode(text, encoding)
+        text = Unicode.decode(text, encoding)
         children = self.children
         if children and isinstance(children[-1], unicode):
             children[-1] = children[-1] + text
@@ -380,8 +379,7 @@ class Document(Text.Text):
                 except XMLError, e:
                     e.line_number = line_number
                     raise e
-                attribute_type = schema['type']
-                value = attribute_type.decode(value)
+                value = schema.decode(value)
                 stack[-1].set_attribute(namespace_uri, local_name, value,
                                         prefix=prefix)
             elif event == parser.COMMENT:

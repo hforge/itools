@@ -22,7 +22,7 @@ from sets import Set
 from StringIO import StringIO
 
 # Import from itools
-from itools import types
+from itools.datatypes import Integer, Unicode, String, URI
 from itools.xml import XML, namespaces
 from itools import i18n
 
@@ -59,7 +59,7 @@ class Element(XML.Element):
         s = []
         for node in self.children:
             if isinstance(node, unicode):
-                # XXX This is equivalent to 'types.Unicode.to_unicode',
+                # XXX This is equivalent to 'Unicode.to_unicode',
                 # there should be a single place.
                 s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             elif isinstance(node, Element):
@@ -180,25 +180,24 @@ elements_schema = {
     }
 
 
-attributes_schema = {
-    'abbr': {'type': types.Unicode},
-    'accept-charsert': {'type': types.String},
-    'accept': {'type': types.String},
-    'accesskey': {'type': types.Unicode},
-    'action': {'type': types.URI},
-    'align': {'type': types.String},
-    'alink': {'type': types.String},
-    'alt': {'type': types.Unicode},
-    'archive': {'type': types.Unicode},
-    'axis': {'type': types.Unicode},
-    'background': {'type': types.URI},
-    'bgcolor': {'type': types.String},
-    'border': {'type': types.Integer},
+attributes_schema = {'abbr': Unicode,
+                     'accept-charsert': String,
+                     'accept': String,
+                     'accesskey': Unicode,
+                     'action': URI,
+                     'align': String,
+                     'alink': String,
+                     'alt': Unicode,
+                     'archive': Unicode,
+                     'axis': Unicode,
+                     'background': URI,
+                     'bgcolor': String,
+                     'border': Integer,
 
-    'href': {'type': types.URI},
-    'src': {'type': types.URI},
-    'title': {'type': types.Unicode},
-    }
+                     'href': URI,
+                     'src': URI,
+                     'title': Unicode,
+                     }
 
 
 class Namespace(namespaces.AbstractNamespace):
@@ -216,7 +215,7 @@ class Namespace(namespaces.AbstractNamespace):
 
 
     def get_attribute_schema(name):
-        return attributes_schema.get(name, {'type': types.Unicode})
+        return attributes_schema.get(name, Unicode)
 
     get_attribute_schema = staticmethod(get_attribute_schema)
 

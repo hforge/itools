@@ -604,12 +604,11 @@ elements_schema = {
     }
 
 
-attributes_schema = {
-    'repeat': {'type': RepeatAttr},
-    'attributes': {'type': AttributesAttr},
-    'content': {'type': ContentAttr},
-    'if': {'type': IfAttr}
-    }
+attributes_schema = {'repeat': RepeatAttr,
+                     'attributes': AttributesAttr,
+                     'content': ContentAttr,
+                     'if': IfAttr,
+                     }
 
 
 class Namespace(namespaces.AbstractNamespace):

@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools import types
+from itools.datatypes import Unicode
 from itools.handlers import File
 from itools.xml import XML
 from itools.xhtml import XHTML
@@ -145,8 +145,7 @@ class Document(XHTML.Document):
                     state.children.append(element)
             elif event == ATTRIBUTE:
                 name, value = value
-                type = types.Unicode
-                value = type.decode(value, parser.encoding)
+                value = Unicode.decode(value, parser.encoding)
                 stack[-1].set_attribute(None, name, value)
             elif event == COMMENT:
                 comment = XML.Comment(value)
@@ -158,7 +157,7 @@ class Document(XHTML.Document):
                 if stack:
                     stack[-1].set_text(value, parser.encoding)
                 else:
-                    value = types.Unicode.decode(value, parser.encoding)
+                    value = Unicode.decode(value, parser.encoding)
                     state.children.append(value)
 
 

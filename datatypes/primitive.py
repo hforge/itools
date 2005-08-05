@@ -22,91 +22,86 @@ import mimetypes
 # Import from itools
 from itools import uri
 from itools import i18n
+from base import DataType
 
 
 
-class Integer(object):
+class Integer(DataType):
 
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         if not value:
             return None
         return int(value)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is None:
             return ''
         return str(value)
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         if value is None:
             return u''
         return unicode(value)
 
-    to_unicode = classmethod(to_unicode)
 
 
+class Unicode(DataType):
 
-class Unicode(object):
+    default = u''
 
-    def decode(cls, value, encoding='UTF-8'):
+
+    @staticmethod
+    def decode(value, encoding='UTF-8'):
         return unicode(value, encoding)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value, encoding='UTF-8'):
+    @staticmethod
+    def encode(value, encoding='UTF-8'):
         # Escape XML (XXX this is specific to XML)
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.encode(encoding)
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         # Escape XML (XXX this is specific to XML)
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value
 
-    to_unicode = classmethod(to_unicode)
 
 
+class String(DataType):
 
-class String(object):
-
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return value
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return value
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         return unicode(value)
 
-    to_unicode = classmethod(to_unicode)
 
 
+class Boolean(DataType):
 
-class Boolean(object):
-
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return bool(int(value))
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is True:
             return '1'
         elif value is False:
@@ -114,10 +109,9 @@ class Boolean(object):
         else:
             raise ValueError, 'value is not a boolean'
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         if value is True:
             return u'1'
         elif value is False:
@@ -125,42 +119,38 @@ class Boolean(object):
         else:
             raise ValueError, 'value is not a boolean'
 
-    to_unicode = classmethod(to_unicode)
 
 
-
-class Date(object):
-
-    def decode(cls, value):
+class Date(DataType):
+ 
+    @staticmethod
+    def decode(value):
         if not value:
             return None
         year, month, day = value.split('-')
         year, month, day = int(year), int(month), int(day)
         return datetime.date(year, month, day)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d')
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         if value is None:
             return u''
         return unicode(value.strftime('%Y-%m-%d'))
 
-    to_unicode = classmethod(to_unicode)
 
 
+class DateTime(DataType):
 
-class DateTime(object):
-
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         if not value:
             return None
         date, time = value.split()
@@ -170,48 +160,41 @@ class DateTime(object):
         hours, minutes = int(hours), int(minutes)
         return datetime.datetime(year, month, day, hours, minutes)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d %H:%M')
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         if value is None:
             return u''
         return unicode(value.strftime('%Y-%m-%d %H:%M'))
 
-    to_unicode = classmethod(to_unicode)
 
 
+class URI(DataType):
 
-class URI(object):
-
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return uri.get_reference(value)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return str(value)
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         return unicode(value).replace(u'&', u'&amp;')
 
-    to_unicode = classmethod(to_unicode)
 
 
-
-class FileName(object):
+class FileName(DataType):
     """
     A filename is tuple consisting of a name, a type and a language.
 
@@ -219,7 +202,8 @@ class FileName(object):
     compression (gzip, bzip, etc.).
     """
 
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         data = data.split('.')
 
         # XXX The encoding (UTF-8, etc.)
@@ -255,10 +239,9 @@ class FileName(object):
 
         return name, type, language
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         name, type, language = value
         if type is not None:
             name = name + '.' + type
@@ -266,45 +249,38 @@ class FileName(object):
             name = name + '.' + language
         return name
 
-    encode = classmethod(encode)
 
 
+class QName(DataType):
 
-class QName(object):
-
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         if ':' in data:
             return tuple(data.split(':', 1))
 
         return None, data
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value[0] is None:
             return value[1]
         return '%s:%s' % value
 
-    encode = classmethod(encode)
 
 
+class Tokens(DataType):
 
-class Tokens(object):
-
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         return tuple(data.split())
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return ' '.join(value)
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         return u' '.join(value)
-
-    to_unicode = classmethod(to_unicode)

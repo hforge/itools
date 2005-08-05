@@ -20,7 +20,7 @@ from urllib import urlencode
 
 # Import from itools
 from itools import uri
-from itools.types import QName
+from itools.datatypes import QName
 from itools.handlers.File import File
 from itools.xml import namespaces
 from itools.web import headers
@@ -146,8 +146,7 @@ class Request(File):
             else:
                 namespace = namespaces.get_namespace_by_prefix(prefix)
                 schema = namespace.get_attribute_schema(local_name)
-                type = schema['type']
-                value = type.decode(value)
+                value = schema.decode(value)
 
         self.state.form[name] = value
 

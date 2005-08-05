@@ -2,6 +2,71 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-05 13:31:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-33
+
+    Summary:
+      merge icalendar improvements by nderam
+    Revision:
+      itools--main--0.10--patch-33
+
+    Patches applied:
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-29
+       merge from main
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-30
+       merge from main
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-31
+       minor changes adding comments
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-32
+       modify PropertyType adding a PropertyValueType
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-33
+       modify to_unicode method of PropertyType to match previous changes
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-34
+       merge from main
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-35
+       modify API according to previous changes into PropertyType
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-36
+       add nb_occurrences method and continue reporting changes on API and tests
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-37
+       use Python 2.4 instead of Python 2.3
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-38
+       merge from main
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-39
+       fix set_property to update more than one value in a single operation
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-40
+       add not ascii characters into test_icalendar
+    
+
+    modified files:
+     Changelog ical/icalendar.py ical/test_icalendar.py
+     ical/types.py
+
+    new patches:
+     nderam@itaapy.com--private/itools--ical--0.10--patch-29
+     nderam@itaapy.com--private/itools--ical--0.10--patch-30
+     nderam@itaapy.com--private/itools--ical--0.10--patch-31
+     nderam@itaapy.com--private/itools--ical--0.10--patch-32
+     nderam@itaapy.com--private/itools--ical--0.10--patch-33
+     nderam@itaapy.com--private/itools--ical--0.10--patch-34
+     nderam@itaapy.com--private/itools--ical--0.10--patch-35
+     nderam@itaapy.com--private/itools--ical--0.10--patch-36
+     nderam@itaapy.com--private/itools--ical--0.10--patch-37
+     nderam@itaapy.com--private/itools--ical--0.10--patch-38
+     nderam@itaapy.com--private/itools--ical--0.10--patch-39
+     nderam@itaapy.com--private/itools--ical--0.10--patch-40
+
+
 2005-08-03 14:22:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-32
 
     Summary:

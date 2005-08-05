@@ -34,7 +34,7 @@ def unfold_lines(data):
     """
     i = 0
     lines = data.splitlines()
-    
+
     line = ''
     while i < len(lines):
         next = lines[i]
@@ -56,54 +56,69 @@ class Parameter(object):
         self.name, self.values = name, values
 
 
-
 class Property(object):
 
     def __init__(self, name, value, parameters={}):
         self.name, self.value, self.parameters = name, value, parameters
 
 
+class PropertyValue(object):
+
+    def __init__(self, value, parameters={}):
+        self.value, self.parameters = value, parameters
+
 
 class Component(object):
     """
         Parses and evaluates a component block.
-        This block is a list of Property items
+        
+        input :   string values for c_type and encoding 
+                  a list of Property objects 
+                  (Property objects can share the same name as a property
+                  name can appear more than one time in a component)
+        
+        output :  string values for c_type and encoding
+                  a dictionnary {'property_name': Property[] } for properties
     """
     # XXX A parse method should be added to test properties inside of current 
     # component-type/properties (for example to test if property can appear more
     # than one time, ...)
 
     def __init__ (self, properties, c_type, encoding='UTF-8'):
-        self.encoding = encoding
         self.properties = properties
         self.c_type = c_type
-
+        self.encoding = encoding
 
     #######################################################################
     # API
     #######################################################################
-            
+
     # Get a property of current component
-    def get_property(self, name):
+    def get_property_values(self, name):
         return self.properties.get(name, None)
 
 
     # Set a property of current component
-    # XXX The property can hold more than one value
-    #     Actually we change the first we find
-    def set_property(self, name, value, parameters={}):
-        prop = Property(name, value, parameters)
-
-        property = self.properties[name][0]
-        property.parameters = prop.parameters
-        property.value = prop.value
+    # The property can hold more than one value.
+    # So we change all values for the property name.
+    # The list "values" must contain couples (value, parameters={})
+    def set_property(self, name, values):
+        occurs = PropertyType.nb_occurrences(name)
+        if occurs == 1:
+            value, parameters = values
+            self.properties[name] = PropertyValue(value, parameters)
+        else:
+            prop_values = []
+            for value, parameters in values:
+                prop_values.append(PropertyValue(value, parameters))
+            self.properties[name] = prop_values
 
 
     # Add a property to current component
     # but do nothing if property is already used and can be used only one time
     def add(self, name, value, parameters={}):
-        prop = Property(name, value, parameters)
-        
+        prop = PropertyValue(value, parameters)
+
         if name in self.properties:
             occurs = 0
             if name in data_properties:
@@ -124,12 +139,12 @@ class Component(object):
         # Get dates of current component
         dtstart, dtend, dtstamp = None, None, None
         if 'DTSTART' in self.properties:
-            date = self.properties['DTSTART'][0].value
+            date = self.properties['DTSTART'].value
             tuple_dtstart = (date.year, date.month, date.day)
             if tuple_date < tuple_dtstart:
                 return False
         if 'DTEND' in self.properties:
-            date = self.properties['DTEND'][0].value
+            date = self.properties['DTEND'].value
             tuple_dtend = (date.year, date.month, date.day)
             if tuple_date > tuple_dtend:
                 return False
@@ -140,13 +155,13 @@ class Component(object):
 class icalendar(Text):
     """
     icalendar structure :
-    
+
         BEGIN:VCALENDAR
-      
+
             --properties
                      required : PRODID, VERSION
                      optionnal : CALSCALE, METHOD, non-standard ones...
-        
+
             --components(min:1)
                      VEVENT, TODO, JOURNAL, FREEBUSY, TIMEZONE,
                      iana component, non-standard component...
@@ -173,9 +188,9 @@ class icalendar(Text):
         return skel
 
 
-    def _load_state(self,resource):
+    def _load_state(self, resource):
         state = self.state
-                
+
         state.properties = {}
         state.components = {}
 
@@ -185,41 +200,42 @@ class icalendar(Text):
 
         value = []
         for line in unfold_lines(data):
-            prop = PropertyType.decode(line, state.encoding)
-            value.append(prop)
+            # Add tuple (name, PropertyValue) to list value keeping order
+            prop_name, prop_value = PropertyType.decode(line, state.encoding)
+            value.append((prop_name, prop_value))
 
         status = 0
         nbproperties = 0
-        optproperties = []  
-    
-        if value[0].name!='BEGIN' or value[0].value!='VCALENDAR' \
-          or len(value[0].parameters)!=0 : 
+        optproperties = []
+
+        if value[0][0]!='BEGIN' or value[0][1].value!='VCALENDAR' \
+          or len(value[0][1].parameters)!=0 : 
             raise ValueError, 'icalendar must begin with BEGIN:VCALENDAR'
 
 
         ##################################
         # GET PROPERTIES INTO properties #
         ##################################
-        
+
         # Get number of properties
-        for prop in value[1:-1]:
-            if prop.name == 'BEGIN':
+        for prop_name, prop_value in value[1:-1]:
+            if prop_name == 'BEGIN':
                 break
             nbproperties = nbproperties + 1
 
         # Get properties
         done = []
-        for prop in value[1:nbproperties+1]:
-            if prop.name == 'VERSION':
+        for prop_name, prop_value in value[1:nbproperties+1]:
+            if prop_name == 'VERSION':
                 if 'VERSION' in done:
                     raise ValueError, 'VERSION can appear only one time'
                 done.append('VERSION')
-            if prop.name == 'PRODID':
+            if prop_name == 'PRODID':
                 if 'PRODID' in done:
                     raise ValueError, 'PRODID can appear only one time'
                 done.append('PRODID')
-            state.properties[prop.name] = prop
-            
+            state.properties[prop_name] = prop_value
+
         # Check if VERSION and PRODID properties don't miss
         if 'VERSION' not in done or 'PRODID' not in done:
             print done
@@ -229,20 +245,20 @@ class icalendar(Text):
         ########################################
         # GET COMPONENTS INTO self.<component> #
         ########################################
-        
         c_type = ''
-        for prop in value[nbproperties+1:-1]:
+        
+        for prop_name, prop_value in value[nbproperties+1:-1]:
 
-            if prop.name in ('PRODID', 'VERSION'):
+            if prop_name in ('PRODID', 'VERSION'):
                 raise ValueError, 'PRODID and VERSION must appear before '\
                                   'any component'
             if c_type == '':
-                if prop.name == 'BEGIN':
-                    c_type = prop.value
+                if prop_name == 'BEGIN':
+                    c_type = prop_value.value
                     component = ()
             else:
-                if prop.name == 'END':
-                    if prop.value == c_type:
+                if prop_name == 'END':
+                    if prop_value.value == c_type:
                         comp = ComponentType.decode(component, c_type, \
                                                     self.state.encoding)
                         # Initialize state for current type if don't exist yet
@@ -250,12 +266,12 @@ class icalendar(Text):
                             state.components[c_type] = []
                         state.components[c_type].append(comp)
                         c_type = ''
-                    elif prop.value in component_list:
+                    elif prop_value.value in component_list:
                         raise ValueError, '%s component can NOT be inserted '\
-                              'into %s component' % (prop.value, c_type)
+                              'into %s component' % (prop_value.value, c_type)
                 else:
-                    component = component + (prop,)
-                        
+                    component = component + ((prop_name, prop_value,),)
+
         if state.components == {}:
             print 'WARNING : '\
                   'an icalendar file should contain at least ONE component'
@@ -269,7 +285,8 @@ class icalendar(Text):
         lines.append(u'BEGIN:VCALENDAR')
         # Calendar properties
         for key in self.state.properties:
-            lines.append(PropertyType.to_unicode(self.state.properties[key]))
+            lines.append(PropertyType.to_unicode(key, 
+                                                 self.state.properties[key]))
         # Calendar components
         for type_component in self.state.components:
             for component in self.state.components[type_component]:
@@ -286,8 +303,8 @@ class icalendar(Text):
     def get_properties(self):
         return self.state.properties
     properties = property(get_properties, None, None, '')
-    
-    
+
+
     def get_components_of(self, type):
         components = []
         if type in self.state.components:
@@ -298,14 +315,14 @@ class icalendar(Text):
                                'VTIMEZONE'):
                     components.append(self.state.components[key])
         return components
-        
+
 
     #######################################################################
     # API
     #######################################################################
-            
+
     # Get a calendar property
-    def get_property(self, name):
+    def get_property_values(self, name):
         return self.properties.get(name, None)
 
     # Get some events corresponding to arguments
@@ -314,7 +331,7 @@ class icalendar(Text):
 
         # Get the list of differents property names used to filter
         filters = kw.keys()
-        
+
         # Get only the events which matches
         if not self.state.components['VEVENT']:
             return []
@@ -325,10 +342,17 @@ class icalendar(Text):
                 values = kw.get(filter)
 
                 next_event = True
-                for item in event.properties[filter]:
-                    if item.value in values:
+
+                occurs = PropertyType.nb_occurrences(filter) 
+                if occurs == 1:
+                    if event.properties[filter].value in values:
                         next_event = False
                         break
+                else:                        
+                    for item in event.properties[filter]:
+                        if item.value in values:
+                            next_event = False
+                            break
 
 #            for property in event.properties:
 #                if next_event:
@@ -342,13 +366,13 @@ class icalendar(Text):
 #                            if item in values:
 #                                next_event = False
 #                                break
-                
+
             if not next_event:
                 res_events.append(event)
 
         return res_events
-        
-        
+
+
     def get_component_by_uid(self, uid):
         components = self.get_events_filtered(UID='%s' %uid)
         if components:
@@ -369,4 +393,4 @@ class icalendar(Text):
                 res_events.append(event)
 
         return res_events
-        
+

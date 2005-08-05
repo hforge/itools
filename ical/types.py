@@ -17,7 +17,6 @@
 
 # Import from Python Standard Library
 from datetime import datetime
-from string import atoi, replace
 
 # Import from itools
 from itools.types import Integer, URI, Unicode, String
@@ -47,29 +46,30 @@ def fold_line(line):
 
 class DateTime(object):
 
+    @classmethod
     def decode(cls, value):
         if value is None:
             return None
-            
+
         year, month, day, hour, min, sec= 0, 0, 0, 0, 0, 0
         date = value[:8]
-        year, month, day = atoi(date[:4]), atoi(date[4:6]), atoi(date[6:8])
-        
+        year, month, day = int(date[:4]), int(date[4:6]), int(date[6:8])
+
         """
         Different formats for date-time :
-          
+
             DTSTART:19970714T133000            ;Local time
             DTSTART:19970714T173000Z           ;UTC time
             DTSTART;TZID=US-Eastern:19970714T133000  ;Local time and time
                                                      ; zone reference
-        
+
         Time can contain a micro-second value but it is facultative.
         """
-        
+
         # Time can be omitted 
         if 'T' in value:
             time = value[9:]
-            
+
             # ignore final Z for now
             if time[-1] == 'Z':
                 time = time[:-1]
@@ -77,44 +77,41 @@ class DateTime(object):
                 pass
                 # a parameter can have be added with utc info
                 # ...
-            
-            hour, min = atoi(time[:2]), atoi(time[2:4])
+
+            hour, min = int(time[:2]), int(time[2:4])
             if len(time) == 6:
-                sec = atoi(time[4:6])
-            
+                sec = int(time[4:6])
+
         return datetime(year, month, day, hour, min, sec)
 
-    decode = classmethod(decode)
 
-
+    @classmethod
     def encode(cls, value):
     # PROBLEM --> 2 formats, with or without final 'Z' 
         if value is None:
             return ''
 
         dt = value.isoformat('T')
-        dt = replace(dt,':','')
-        dt = replace(dt,'-','')
-        
+        dt = dt.replace(':','')
+        dt = dt.replace('-','')
+
         return dt   
 
-    encode = classmethod(encode)
 
-
+    @classmethod
     def to_unicode(cls, value):
     # PROBLEM --> 2 formats, with or without final 'Z' 
         if value is None:
             return u''
 
         dt = value.isoformat('T')
-        dt = replace(dt,u':',u'')
-        dt = replace(dt,u'-',u'')
+        dt = dt.replace(u':',u'')
+        dt = dt.replace(u'-',u'')
 
         return unicode(dt)   
 
-    to_unicode = classmethod(to_unicode)
 
-
+    @classmethod
     def from_str(cls, value):
         if not value:
             return None
@@ -125,81 +122,78 @@ class DateTime(object):
         hours, minutes, seconds = int(hours), int(minutes), int(seconds)
         return datetime(year, month, day, hours, minutes, seconds)
 
-    from_str = classmethod(from_str)
 
-
+    @classmethod
     def to_str(cls, value):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d %H:%M:%S')
 
-    to_str = classmethod(to_str)
 
-    
 
 # Tokens
-TNAME, TPARAM, TVALUE = range(3)
+TPARAM, TVALUE = range(2)
 token_name = ['name', 'parameter', 'value']
 
 # data types for each property
 # --> TO VERIFY AND COMPLETE
 # occurs = 0  means 0..n occurrences
 data_properties = {
-  'BEGIN':{'type': Unicode, 'occurs': 1}, \
-  'END':{'type': Unicode, 'occurs': 1}, \
-  'VERSION':{'type': Unicode, 'occurs': 1}, \
-  'PRODID':{'type': Unicode, 'occurs': 1}, \
-  'METHOD':{'type': Unicode, 'occurs': 1}, \
+  'BEGIN':{'type': Unicode, 'occurs': 1}, 
+  'END':{'type': Unicode, 'occurs': 1}, 
+  'VERSION':{'type': Unicode, 'occurs': 1}, 
+  'PRODID':{'type': Unicode, 'occurs': 1}, 
+  'METHOD':{'type': Unicode, 'occurs': 1}, 
   # Component properties
-  'ATTACH':{'type': URI, 'occurs': 0}, \
-  'CATEGORY':{'type': Unicode, 'occurs': 1}, \
-  'CATEGORIES':{'type': Unicode, 'occurs': 0}, \
-  'CLASS':{'type': Unicode, 'occurs': 1}, \
-  'COMMENT':{'type': Unicode, 'occurs': 0}, \
-  'DESCRIPTION':{'type': Unicode, 'occurs': 1}, \
-  'GEO':{'type': Unicode, 'occurs': 1}, \
-  'LOCATION':{'type': Unicode, 'occurs': 1}, \
-  'PERCENT-COMPLETE':{'type': Integer, 'occurs': 1}, \
-  'PRIORITY':{'type': Integer, 'occurs': 1}, \
-  'RESOURCES':{'type': Unicode, 'occurs': 0}, \
-  'STATUS':{'type': Unicode, 'occurs': 1}, \
-  'SUMMARY':{'type': Unicode, 'occurs': 1}, \
+  'ATTACH':{'type': URI, 'occurs': 0}, 
+  'CATEGORY':{'type': Unicode, 'occurs': 1}, 
+  'CATEGORIES':{'type': Unicode, 'occurs': 0}, 
+  'CLASS':{'type': Unicode, 'occurs': 1}, 
+  'COMMENT':{'type': Unicode, 'occurs': 0}, 
+  'DESCRIPTION':{'type': Unicode, 'occurs': 1}, 
+  'GEO':{'type': Unicode, 'occurs': 1}, 
+  'LOCATION':{'type': Unicode, 'occurs': 1}, 
+  'PERCENT-COMPLETE':{'type': Integer, 'occurs': 1}, 
+  'PRIORITY':{'type': Integer, 'occurs': 1}, 
+  'RESOURCES':{'type': Unicode, 'occurs': 0}, 
+  'STATUS':{'type': Unicode, 'occurs': 1}, 
+  'SUMMARY':{'type': Unicode, 'occurs': 1}, 
   # Date & Time component properties
-  'COMPLETED':{'type': DateTime, 'occurs': 1}, \
-  'DTEND':{'type': DateTime, 'occurs': 1}, \
-  'DUE':{'type': DateTime, 'occurs': 1}, \
-  'DTSTART':{'type': DateTime, 'occurs': 1}, \
-  'DURATION':{'type': Unicode, 'occurs': 1}, \
-  'FREEBUSY':{'type': Unicode, 'occurs': 1}, \
-  'TRANSP':{'type': Unicode, 'occurs': 1}, \
+  'COMPLETED':{'type': DateTime, 'occurs': 1}, 
+  'DTEND':{'type': DateTime, 'occurs': 1}, 
+  'DUE':{'type': DateTime, 'occurs': 1}, 
+  'DTSTART':{'type': DateTime, 'occurs': 1}, 
+  'DURATION':{'type': Unicode, 'occurs': 1}, 
+  'FREEBUSY':{'type': Unicode, 'occurs': 1}, 
+  'TRANSP':{'type': Unicode, 'occurs': 1}, 
   # Time Zone component properties
-  'TZID':{'type': Unicode, 'occurs': 1}, \
-  'TZNAME':{'type': Unicode, 'occurs': 0}, \
-  'TZOFFSETFROM':{'type': Unicode, 'occurs': 1}, \
-  'TZOFFSETTO':{'type': Unicode, 'occurs': 1}, \
-  'TZURL':{'type': URI, 'occurs': 1}, \
+  'TZID':{'type': Unicode, 'occurs': 1}, 
+  'TZNAME':{'type': Unicode, 'occurs': 0}, 
+  'TZOFFSETFROM':{'type': Unicode, 'occurs': 1}, 
+  'TZOFFSETTO':{'type': Unicode, 'occurs': 1}, 
+  'TZURL':{'type': URI, 'occurs': 1}, 
   # Relationship component properties
-  'ATTENDEE':{'type': URI, 'occurs': 0}, \
-  'CONTACT':{'type': Unicode, 'occurs': 0}, \
-  'ORGANIZER':{'type': URI, 'occurs': 1}, \
+  'ATTENDEE':{'type': URI, 'occurs': 0}, 
+  'CONTACT':{'type': Unicode, 'occurs': 0}, 
+  'ORGANIZER':{'type': URI, 'occurs': 1}, 
   # Recurrence component properties
-  'EXDATE':{'type': DateTime, 'occurs': 0}, \
-  'EXRULE':{'type': Unicode, 'occurs': 0}, \
-  'RDATE':{'type': Unicode, 'occurs': 0}, \
-  'RRULE':{'type': Unicode, 'occurs': 0}, \
+  'EXDATE':{'type': DateTime, 'occurs': 0}, 
+  'EXRULE':{'type': Unicode, 'occurs': 0}, 
+  'RDATE':{'type': Unicode, 'occurs': 0}, 
+  'RRULE':{'type': Unicode, 'occurs': 0}, 
   # Alarm component properties
-  'ACTION':{'type': Unicode, 'occurs': 1}, \
-  'REPEAT':{'type': Integer, 'occurs': 1}, \
-  'TRIGGER':{'type': Unicode, 'occurs': 1}, \
+  'ACTION':{'type': Unicode, 'occurs': 1}, 
+  'REPEAT':{'type': Integer, 'occurs': 1}, 
+  'TRIGGER':{'type': Unicode, 'occurs': 1}, 
   # Change management component properties
-  'CREATED':{'type': DateTime, 'occurs': 1}, \
-  'DTSTAMP':{'type': DateTime, 'occurs': 1}, \
-  'LAST-MODIFIED':{'type': DateTime, 'occurs': 1}, \
-  'SEQUENCE':{'type': Integer, 'occurs': 1}, \
+  'CREATED':{'type': DateTime, 'occurs': 1}, 
+  'DTSTAMP':{'type': DateTime, 'occurs': 1}, 
+  'LAST-MODIFIED':{'type': DateTime, 'occurs': 1}, 
+  'SEQUENCE':{'type': Integer, 'occurs': 1}, 
   # Others
-  'RECURRENCE-ID':{'type': DateTime, 'occurs': 1}, \
-  'RELATED-TO':{'type': Unicode, 'occurs': 1}, \
-  'URL':{'type': URI, 'occurs': 1}, \
+  'RECURRENCE-ID':{'type': DateTime, 'occurs': 1}, 
+  'RELATED-TO':{'type': Unicode, 'occurs': 1}, 
+  'URL':{'type': URI, 'occurs': 1}, 
   'UID':{'type': Unicode, 'occurs': 1}}
 
 ################################################################
@@ -217,113 +211,193 @@ class PropertyType(object):
     """
 
     ###################################################################
+    # Cut property line into  name | [parameters]value                #
+    ###################################################################
+    @classmethod
+    def cut_name(cls, property):
+        c, lexeme = property[0], ''
+        
+        # Test first character of name
+        if not c.isalnum() and c != '-':
+            raise SyntaxError, 'unexpected character (%s)' % c
+        # Test if property contains ':'
+        if not ':' in property:
+            raise SyntaxError, 'character (:) must appear at least one time'
+        # Cut name
+        while not c in (';', ':'):
+            property = property[1:]
+            if c.isalnum() or c == '-':
+                lexeme += c
+            else:
+                raise SyntaxError, 'unexpected character (%s)' % c
+            c = property[0]
+            
+        return lexeme, property
+
+
+    ###################################################################
+    # Parse the property line separating as :  
+    #
+    #   property name  >  name
+    #   value          >  value
+    #   parameter list >  parameters
+    # 
+    #   XXX test if the property accepts the given parameters 
+    #       could be a great idea but could be done on Component
+    # 
+    ###################################################################
+    @classmethod
+    def parse(cls, property, encoding='UTF-8'):
+        name, value, parameters = None, None, {}
+
+        name, propertyValue = PropertyType.cut_name(property)
+        value, parameters = PropertyValueType.parse(name, propertyValue,
+                                                    encoding)
+        return name, value, parameters
+
+
+    @classmethod
+    def decode(cls, line, encoding='UTF-8'):
+        name, value, parameters = None, None, {}
+        # Parsing
+        name, value, parameters = PropertyType.parse(line, encoding)
+        from itools.ical.icalendar import PropertyValue
+        return name, PropertyValue(value, parameters)
+
+
+    @classmethod
+    def to_unicode(cls, name, property):
+        # Property name
+        prop = unicode(name)
+        # Property parameters
+        if property.parameters:
+            for key_param in property.parameters:
+                prop = prop + u'\n ' + u';' + \
+                       ParameterType.to_unicode(property.parameters[key_param])
+        else:
+            prop = prop + u'\n'
+        # Property value
+        default_schema = {'type': String, 'occurs': 0 }
+        schema = data_properties.get(name, default_schema)
+        vtype = schema['type']
+        value = vtype.to_unicode(property.value)
+        prop = prop + u' :' + value
+        # Property folded if necessary
+        if len(prop)>75:
+            prop = fold_line(prop)
+        return prop
+
+
+    # Get number of occurrences for given property name
+    @classmethod
+    def nb_occurrences(cls, name):
+        occurs = 0
+        if name in data_properties:
+            occurs = data_properties[name].get('occurs', 0)
+        return occurs
+
+
+
+class PropertyValueType(object):
+    """
+    Manage an icalendar content line value property [with parameters] :
+    
+      *(;param-name=param-value1[, param-value2, ...]) : value CRLF
+      
+    """
+
+    ###################################################################
     # Lexical & syntaxic analysis
     #   status :
-    #     0 --> initial status : (just before property name)
-    #     1 --> property name begun
-    #     2 --> parameter begun (just after ';')
-    #     3 --> param-name begun 
-    #     4 --> param-name ended, param-value beginning
-    #     5 --> param-value quoted begun (just after '"')
-    #     6 --> param-value NOT quoted begun 
-    #     7 --> param-value ended (just after '"' for quoted ones)
-    #     8 --> value to begin (just after ':')
-    #     9 --> value begun 
+    #     1 --> parameter begun (just after ';')
+    #     2 --> param-name begun 
+    #     3 --> param-name ended, param-value beginning
+    #     4 --> param-value quoted begun (just after '"')
+    #     5 --> param-value NOT quoted begun 
+    #     6 --> param-value ended (just after '"' for quoted ones)
+    #     7 --> value to begin (just after ':')
+    #     8 --> value begun 
     ###################################################################
+    @classmethod
     def get_tokens(cls, property):
-        lexeme, status, last = '', 0, ''
+        status, lexeme, last = 0, '', ''
 
+        # Init status
+        c, property = property[0], property[1:]
+        if c == ';':
+            status = 1
+        elif c == ':':
+            status = 7
+            
         for c in property:
-            # initial state : (just before property name)
-            if status == 0:
+            # parameter begun (just after ';')
+            if status == 1:
                 if c.isalnum() or c in ('-'):
-                    lexeme, status = c, 1
-                else:
-                    raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                        % (c, status)
-                    
-            # property name begun
-            elif status == 1:
-                if c.isalnum() or c in ('-'):
-                    lexeme += c
-                elif c == ';':
-                    status = 2
-                    yield TNAME, lexeme
-                elif c == ':':
-                    status = 8
-                    yield TNAME, lexeme
+                    lexeme, status = c, 2
                 else:
                     raise SyntaxError, 'unexpected character (%s) at status %s'\
                                         % (c, status)
 
-            # parameter begun (just after ';')
-            elif status == 2:
-                if c.isalnum() or c in ('-'):
-                    lexeme, status = c, 3
-                else:
-                    raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                        % (c, status)
-                                    
             # param-name begun 
-            elif status == 3:
+            elif status == 2:
                 if c.isalnum() or c in ('-'):
                     lexeme += c
                 elif c == '=':
                     lexeme += c
-                    status = 4
+                    status = 3
                 else:
                     raise SyntaxError, 'unexpected character (%s) at status %s'\
                                         % (c, status)
-                    
+
             # param-name ended, param-value beginning
-            elif status == 4:
+            elif status == 3:
                 if c == '"':
                     lexeme += c
-                    status = 5
+                    status = 4
                 elif c in (';',':',',') :
                     raise SyntaxError, 'unexpected character (%s) at status %s'\
                                         % (c, status)
                 else:    
                     lexeme += c
-                    status = 6
+                    status = 5
 
             # param-value quoted begun (just after '"')
-            elif status == 5:
+            elif status == 4:
                 if c == '"':
                     lexeme += c
-                    status = 7
+                    status = 6
                 else:
                     lexeme += c
-            
+
             # param-value NOT quoted begun 
-            elif status == 6:
+            elif status == 5:
                 if c in (':',';',',') :
-                    status = 7
+                    status = 6
                 elif c=='"':
                     raise SyntaxError, 'unexpected character (%s) at status %s'\
                                         % (c, status)
                 else:    
                     lexeme += c
-                    
+
             # value to begin (just after ':')
-            elif status == 8:
-                lexeme, status = c, 9
+            elif status == 7:
+                lexeme, status = c, 8
 
             # value begun 
-            elif status == 9:
+            elif status == 8:
                 lexeme += c
-                
+
             # param-value ended (just after '"' for quoted ones)
-            if status == 7:
+            if status == 6:
                 if c == ':':
-                    status = 8
+                    status = 7
                     yield TPARAM, lexeme
                 elif c == ';': 
-                    status = 2
+                    status = 1
                     yield TPARAM, lexeme
                 elif c == ',': 
                     lexeme += c
-                    status = 4
+                    status = 3
                 elif c == '"':
                     if last == '"':
                         raise SyntaxError, 'unexpected repeated character (%s)'\
@@ -332,33 +406,22 @@ class PropertyType(object):
                 else:
                     raise SyntaxError, 'unexpected character (%s) at status %s'\
                                         % (c, status)
-                    
-        if status not in (8, 9):
+
+        if status not in (7, 8):
             raise SyntaxError, 'unexpected property (%s)' % property
-            
+
         yield TVALUE, lexeme
 
-    get_tokens = classmethod(get_tokens)
-    
 
     ###################################################################
-    # Semantic analysis. 
-    #
-    #   XXX test if the property accepts the given parameters 
-    #       could be a great idea
-    # 
-    #   property name  >  name
-    #   parameter list >  parameters
-    #   value          >  value
-    # 
+    # Parse parameters and value                                      #
     ###################################################################
-    def parse(cls, property, encoding='UTF-8'):
-        name, value, parameters = None, None, {}
+    @classmethod
+    def parse(cls, name, property, encoding='UTF-8'):
+        value, parameters = None, {}
 
-        for token, lexeme in PropertyType.get_tokens(property):
-            if token == TNAME:
-                name = lexeme
-            elif token == TPARAM:
+        for token, lexeme in PropertyValueType.get_tokens(property):
+            if token == TPARAM:
                 param_name, param_value = lexeme.split('=')
                 parameters[param_name] = ParameterType.decode(lexeme)
             elif token == TVALUE:
@@ -374,41 +437,7 @@ class PropertyType(object):
             else:
                 raise SyntaxError, 'unexpected %s' % token_name[token]
 
-        return name, value, parameters
-
-    parse = classmethod(parse)
-
-
-    def decode(cls, line, encoding='UTF-8'):
-        name, value, parameters = None, None, {}
-        # Parsing
-        name, value, parameters = PropertyType.parse(line, encoding)
-        from itools.ical.icalendar import Property
-        return Property(name, value, parameters)
-
-    decode = classmethod(decode)
-
-
-    def to_unicode(cls, property):
-        # Property name
-        prop = unicode(property.name)
-        # Property parameters
-        if property.parameters:
-            for key_param in property.parameters:
-                prop = prop + u'\n ' + u';' + \
-                       ParameterType.to_unicode(property.parameters[key_param])
-        # Property value
-        default_schema = {'type': String, 'occurs': 0 }
-        schema = data_properties.get(property.name, default_schema)
-        vtype = schema['type']
-        value = vtype.to_unicode(property.value)
-        prop = prop + u'\n :' + value
-        # Property folded if necessary
-        if len(prop)>75:
-            prop = fold_line(prop)
-        return prop
-
-    to_unicode = classmethod(to_unicode)
+        return value, parameters
 
 
 
@@ -430,15 +459,15 @@ class ParameterType(object):
     #   values list    >  values
     # 
     ###################################################################
+    @classmethod
     def parse(cls, parameter, encoding='UTF-8'):
         name, values = None, []
         name, values_str = parameter.split('=')
         values = values_str.split(',')
         return name, values
 
-    parse = classmethod(parse)
 
-
+    @classmethod
     def decode(cls, parameter, encoding='UTF-8'):
         name, values = None, []
 
@@ -447,10 +476,9 @@ class ParameterType(object):
 
         from itools.ical.icalendar import Parameter
         return Parameter(name, values)
-        
-    decode = classmethod(decode)
 
 
+    @classmethod
     def to_unicode(cls, parameter):
         # Parameter name
         param = unicode(parameter.name) + u'='
@@ -459,8 +487,6 @@ class ParameterType(object):
         for value in parameter.values[1:]:
             param = param + u',' + unicode(value)
         return param
-
-    to_unicode = classmethod(to_unicode)
 
 
 
@@ -478,34 +504,32 @@ class ComponentType(object):
     ###################################################################
     # Semantic analysis. 
     #
-    #   - Regroup values of the same property into a list
+    #   - Regroup values of the same property into a list when allowed
     # 
     #   XXX test if number of occurrences of properties is correct
     # 
     ###################################################################
+    @classmethod
     def parse(cls, properties, c_type, encoding='UTF-8'):
         props = {}
-        from pprint import pprint
 
-        for property in properties:
-            if property.name in props:
-                occurs = 0
-                if property.name in data_properties:
-                    occurs = data_properties[property.name].get('occurs', 0)
+        for prop_name, prop_value in properties:
+            occurs = PropertyType.nb_occurrences(prop_name)
+            # If always found
+            if prop_name in props:
                 if occurs == 1:
-                    pprint(props)
-        #            raise SyntaxError, 'Property %s can be assigned only one '\
-        #                               'value' % property.name
+                    raise SyntaxError, 'Property %s can be assigned only one '\
+                                       'value' % prop_name
+                props[prop_name].append(prop_value)
+            elif occurs == 1:
+                props[prop_name] = prop_value
             else:
-                props[property.name] = []
-
-            props[property.name].append(property)
+                props[prop_name] = [prop_value]
 
         return props
 
-    parse = classmethod(parse)
 
-
+    @classmethod
     def decode(cls, properties, c_type, encoding='UTF-8'):
         props = {}
 
@@ -514,22 +538,24 @@ class ComponentType(object):
 
         from itools.ical.icalendar import Component
         return Component(props, c_type)
-        
-    decode = classmethod(decode)
 
 
+    @classmethod
     def to_unicode(cls, component):
         lines = []
-        
+
         lines.append('BEGIN:%s' % component.c_type)
-    
+
         for key in component.properties:
-            for item in component.properties[key]:
-                lines.append(PropertyType.to_unicode(item))
+            occurs = PropertyType.nb_occurrences(key)
+            if occurs == 1:
+                line = PropertyType.to_unicode(key, component.properties[key])
+                lines.append(line)
+            else:
+                for item in component.properties[key]:
+                    lines.append(PropertyType.to_unicode(key, item))
 
         lines.append('END:%s' % component.c_type)
-        
-        return u'\n'.join(lines)
 
-    to_unicode = classmethod(to_unicode)
+        return u'\n'.join(lines)
 

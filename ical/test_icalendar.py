@@ -37,6 +37,7 @@ from icalendar import unfold_lines
 from itools.ical import types as icalTypes
 from itools.ical.types import PropertyType, ParameterType, ComponentType
 
+# Example with 1 event
 content = """ 
 BEGIN:VCALENDAR
 VERSION
@@ -49,7 +50,7 @@ BEGIN:VEVENT
 UID
  :581361a0-1dd2-11b2-9a42-bd3958eeac9a
 SUMMARY
- :Refound
+ :Résumé
 DESCRIPTION
  :all all all
 LOCATION
@@ -72,12 +73,16 @@ ATTENDEE
  ;RSVP=TRUE
  ;MEMBER="MAILTO:DEV-GROUP@host2.com"
  :MAILTO:jdoe@itaapy.com
+ATTENDEE
+ ;MEMBER="MAILTO:DEV-GROUP@host2.com"
+ :MAILTO:jsmith@itaapy.com
 PRIORITY
  :1
 END:VEVENT
 BEGIN:VCALENDAR
 """
 
+# Example with 2 events
 content2 = """ 
 BEGIN:VCALENDAR
 VERSION
@@ -190,11 +195,22 @@ class icalTestCase(unittest.TestCase):
             i = i + 1
 
 
+    def property_to_string(self, prop_name, prop):
+        value, params = prop.value, ''
+        for param_key in prop.parameters:
+            param = u';' + prop.parameters[param_key].name + u'='
+            for val in prop.parameters[param_key].values:
+                param = param + val
+            params = params + param
+        return u'%s%s:%s' % (prop_name, params, value)
+
+
     def test_load(self):
         """Test loading a simple calendar."""
-        
+
         cal = icalendar(memory.File(content))
 
+        # Test icalendar properties
         properties = []
         for name in cal.properties:
             params = cal.properties[name].parameters
@@ -202,34 +218,35 @@ class icalTestCase(unittest.TestCase):
             property = '%s;%s:%s' % (name, params, value)
             properties.append(property)
 
-        # Test properties
         expected_properties = [
             u'VERSION;{}:2.0', 
             u'METHOD;{}:PUBLISH',
             u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ] 
         self.assertEqual(properties, expected_properties)
-        
+
+        # Test component properties
         properties = []
         event = cal.get_components_of('VEVENT')[0]
         for prop_name in event.properties:
-            for prop in event.properties[prop_name]:
-                name, value, params = prop.name, prop.value, ''
-                for param_key in prop.parameters:
-                    param = u';' + prop.parameters[param_key].name + u'='
-                    for val in prop.parameters[param_key].values:
-                        param = param + val
-                    params = params + param
-                property = u'%s%s:%s' % (name, params, value)
+            occurs = PropertyType.nb_occurrences(prop_name)
+            if occurs == 1:
+                prop = event.properties[prop_name]
+                property = self.property_to_string(prop_name, prop)
                 properties.append(property)
+            else:
+                for prop in event.properties[prop_name]:
+                    property = self.property_to_string(prop_name, prop)
+                    properties.append(property)
 
-        # Test events
         expected_event_properties = [
             u'STATUS:TENTATIVE', 
             u'DTSTAMP:2005-06-01 07:46:04',  
             u'DESCRIPTION:all all all', 
             u'ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com"' 
                      ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
-            u'SUMMARY:Refound', 
+            u'ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com"'
+                     ':mailto:jsmith@itaapy.com',
+            u'SUMMARY:Résumé', 
             u'PRIORITY:1', 
             u'LOCATION:France', 
             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0', 
@@ -238,8 +255,7 @@ class icalTestCase(unittest.TestCase):
             u'CLASS:PRIVATE', 
             u'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a']
 
-        self.assertEqual(properties, \
-                         expected_event_properties)
+        self.assertEqual(properties, expected_event_properties)
         self.assertEqual(len(cal.get_components_of('VEVENT')), 1)
 
         # Test journals
@@ -256,7 +272,7 @@ class icalTestCase(unittest.TestCase):
 
     def test_load_2(self):
         """Test loading a 2 events calendar."""
-        
+
         cal = icalendar(memory.File(content2))
 
         properties = []
@@ -272,24 +288,22 @@ class icalTestCase(unittest.TestCase):
             u'METHOD;{}:PUBLISH',
             u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ] 
         self.assertEqual(properties, expected_properties)
-        
+
         events = []
         for event in cal.get_components_of('VEVENT'):
             properties = []
 
             for prop_name in event.properties:
-                for prop in event.properties[prop_name]:
-                    name, params = prop.name, ''
-                    for param_key in prop.parameters:
-                        param = u';' + prop.parameters[param_key].name + u'='
-                        for val in prop.parameters[param_key].values:
-                            param = param + val
-                        params = params + param
-                    value = prop.value
-                  
-                    
-                    property = u'%s%s:%s' % (name, params, value)
+                occurs = PropertyType.nb_occurrences(prop_name)
+                if occurs == 1:
+                    prop = event.properties[prop_name]
+                    property = self.property_to_string(prop_name, prop)
                     properties.append(property)
+                else:
+                    for prop in event.properties[prop_name]:
+                        property = self.property_to_string(prop_name, prop)
+                        properties.append(property)
+
             events.append(properties)
 
         # Test events
@@ -337,7 +351,7 @@ class icalTestCase(unittest.TestCase):
         """Test get events filtered by arguments given."""
 
         cal = icalendar(memory.File(content))
-            
+
 #        events = cal.get_events_filtered(ATTENDEE='MAILTO:jdoe@itaapy.com')
 #        events = cal.get_events_filtered(STATUS='TENTATIVE')
 #        events = cal.get_events_filtered(ATTENDEE='MAILTO:jdoe@itaapy.com', 
@@ -348,10 +362,16 @@ class icalTestCase(unittest.TestCase):
                     URI.decode('MAILTO:jsmith@itaapy.com')],
           STATUS='TENTATIVE', PRIORITY=[1])
 
-        print '\n'
+        print '- events filtered : \n'
         if events:
-            for x in events[0].properties:
-                print PropertyType.to_unicode(events[0].properties[x][0])
+            for name in events[0].properties:
+                occurs = PropertyType.nb_occurrences(name)
+                if occurs == 1:
+                    value = events[0].properties[name]
+                else:
+                    value = events[0].properties[name][0]
+
+                print PropertyType.to_unicode(name, value)
 
         print '\n'
 
@@ -364,11 +384,11 @@ class icalTestCase(unittest.TestCase):
         date = datetime(2005, 5, 29)
         events = cal.get_events_by_date(date)
         self.assertEqual(len(events), 0)
-        
+
         date = datetime(2005, 5, 30)
         events = cal.get_events_by_date(date)
         self.assertEqual(len(events), 1)
-        
+
         date = datetime(2005, 7, 30)
         events = cal.get_events_by_date(date)
         self.assertEqual(len(events), 0)
@@ -377,7 +397,7 @@ class icalTestCase(unittest.TestCase):
     def test_get_skeleton(self):
         """Test get_skeleton"""
         cal = icalendar()
-       
+
         properties = []
         for name in cal.properties:
             params = cal.properties[name].parameters
@@ -390,7 +410,7 @@ class icalTestCase(unittest.TestCase):
             u'VERSION;{}:2.0', 
             u'PRODID;{}:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
         self.assertEqual(properties, expected_properties)
-        
+
         # Test components
         self.assertEqual(len(cal.get_components_of('VEVENT')), 0)
         self.assertEqual(len(cal.get_components_of('TODO')), 0)
@@ -398,34 +418,35 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(len(cal.get_components_of('FREEBUSY')), 0)
         self.assertEqual(len(cal.get_components_of('TIMEZONE')), 0)
         self.assertEqual(len(cal.get_components_of('others')), 0)
-    
-    
+
+
     def test_get_property_calendar(self):
         cal = icalendar(memory.File(content))
 
         expected = '2.0'
-        property = cal.get_property('VERSION')
+        property = cal.get_property_values('VERSION')
         self.assertEqual(property.value, expected)
-        
+
 
     def test_get_property_component(self):
         cal = icalendar(memory.File(content))
         events = cal.get_components_of('VEVENT')
         properties = events[0].properties
-        
-        expected = 'Refound'
-        property = events[0].get_property('SUMMARY')[0]
+
+        expected = u'Résumé'
+        property = events[0].get_property_values('SUMMARY')
         self.assertEqual(property.value, expected)
-    
+
         expected = 1
-        property = events[0].get_property('PRIORITY')[0]
+        property = events[0].get_property_values('PRIORITY')
         self.assertEqual(property.value, expected)
 
 
+    # Not a test, just print
     def test_to_unicode(self):
         """Test get_skeleton"""
         cal = icalendar(memory.File(content2))
-       
+
         print '*** Print calendar to_unicode() ***'
         print cal.to_unicode()
         print '***********************************'
@@ -466,10 +487,16 @@ class icalTestCase(unittest.TestCase):
         cal = icalendar(memory.File(content2))
         event = cal.get_components_of('VEVENT')[1]
 
+        name, value = 'MYADD', [u'Résumé à crêtes']
+        event.add(name, value)
+
+        property = event.get_property_values(name)
+        self.assertEqual(property[0].value, value)
+
         name, value = 'DESCRIPTION', 'Property added by calling add_property'
         event.add(name, value)
 
-        property = event.get_property(name)
+        property = event.get_property_values(name)
         self.assertEqual(property[0].value, value)
 
         param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
@@ -477,7 +504,7 @@ class icalTestCase(unittest.TestCase):
         property = Property(name, value, {'MEMBER': param})
         event.add(name, value, param)
 
-        property = event.get_property(name)
+        property = event.get_property_values(name)
         self.assertEqual(str(property[0].value), 'mailto:jdoe@itaapy.com')
         self.assertEqual(str(property[1].value), value)
 

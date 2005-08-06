@@ -1,25 +1,25 @@
 \chapter{Introduction}
 
-This paper is the official documentation of {\tt itools}.
-
 \section{What is {\tt itools}?}
 
 {\tt itools} is a Python\footnote{\tt http://www.python.org} library, it
 groups a number of packages into a single meta-package for easier
-development and deployment. The packages included as of {\tt itools 0.10}
-are:
+development and deployment. The packages included are:
 
 \begin{quote}
 \begin{tabular}{lll}
   {\tt itools.catalog} & {\tt itools.ical} & {\tt itools.web} \\
   {\tt itools.datatypes} & {\tt itools.resources} & {\tt itools.workflow} \\
-  {\tt itools.handlers} & {\tt itools.rss} & {\tt itools.xhtml} \\
-  {\tt itools.gettext} & {\tt itools.schemas} & {\tt itools.xliff} \\
+  {\tt itools.gettext} & {\tt itools.rss} & {\tt itools.xhtml} \\
+  {\tt itools.handlers} & {\tt itools.schemas} & {\tt itools.xliff} \\
   {\tt itools.html} & {\tt itools.tmx} & {\tt itools.xml} \\
   {\tt itools.i18n} & {\tt itools.uri} & \\
 \end{tabular}
 \end{quote}
 
+The Figure~\ref{Figure: packages} shows the dependencies between the
+different packages. Below a brief description of each package (sorted
+by alphabetical order):
 
 \begin{figure}
   \center
@@ -28,49 +28,71 @@ are:
   \label{Figure: packages}
 \end{figure}
 
-
-It can be seen as an extension of the Python's {\em Standard Library},
-as it provides a set of lightly coupled sub-packages which can be used
-independently; {\tt itools} is split into the following sub-packages:
-
-
-
 \begin{itemize}
-  \item {\tt itools.uri} -- an API to manage URIs, to identify and locate
-    resources.
+  \item {\tt itools.catalog} -- An index and search engine. It provides
+    full text indexing as well as keyword indexing; and boolean, phrase
+    and range search.
 
-  \item {\tt itools.types} -- type marshalers for basic types (integer, date,
-    etc.) and not so basic types (filenames, XML qualified names, etc.).
+  \item {\tt itools.datatypes} -- Type marshalers for basic types (integer,
+    date, etc.) and not so basic types (filenames, XML qualified names, etc.).
 
-  \item {\tt itools.resources} -- an abstraction layer over resources that
-    lets to manage them with a consistent API, independently of where they
-    are stored.
+  \item {\tt itools.gettext} -- Support for the PO and MO file formats of
+    the GNU gettext tools.
 
-  \item {\tt itools.handlers} -- resource handlers infrastructure (resource
-    handlers are non persistent classes that add specific semantics to
-    resources). This package also includes several handlers {\em out of the
-    box}.
+  \item {\tt itools.handlers} -- Resource handlers are non persistent classes
+    responsible to manage a resource (a file or a folder), they represent a
+    resource as a data structure on memory and provide an API to work with
+    the resource.
 
-  \item {\tt itools.gettext} -- resource handlers for PO and MO files.
+    Included are the resource handlers for folders, binary and text files,
+    images, CSV, etc.
 
-  \item {\tt itools.xml} -- includes an intuitive event driven XML parser,
-    a handler for XML documents, and the {\bf S}imple {\bf T}emplate
-    {\bf L}anguage.
+  \item {\tt itools.html} -- Support for HTML documents.
 
-  \item {\tt itools.xhtml} -- resource handlers for XHTML documents.
+  \item {\tt itools.i18n} -- Miscellaneous tools for internationalization
+    and localization (language negotiation, text segmentation, fuzzy
+    matching, etc.).
 
-  \item {\tt itools.html} -- resource handlers for HTML documents.
+  \item {\tt itools.ical} -- Support for the iCalendar standard (RFC 2445).
 
-  \item {\tt itools.i18n} -- tools for language negotiation and text
-    segmentation.
+  \item {\tt itools.resources} -- An abstraction layer over resources (files
+    and folders), provides a the same programming interdace accross different
+    storages.
 
-  \item {\tt itools.workflow} -- represent workflows as automatons, objects
-    can move from one state to another through transitions, classes can add
-    specific semantics to states and transitions.
+  \item {\tt itools.schemas} -- Infrastructure for datatypes schemas. Support
+    for Dublin Core included.
 
-  \item {\tt itools.catalog} -- An index and search engine.
+  \item {\tt itools.tmx} -- Support for the industry standard
+    {\em Translation Memory eXchange}.
+
+  \item {\tt itools.uri} -- Support for {\em Uniform Resource Indentifiers}
+    (RFC 2396).
+
+  \item {\tt itools.web} -- Abstract programming interface for web
+    applications. Proof-of-concept implementations for the CGI protocol
+    and an standalone server.
+
+  \item {\tt itools.workflow} -- Programming interface to implement workflow
+    in applications.
+
+    Workflows are represented as automatons, objects can move from one state
+    to another through transitions, classes can add specific semantics to
+    states and transitions.
+
+  \item {\tt itools.xhtml} -- Support for XHTML documents.
+
+  \item {\tt itools.xliff} -- Support for the industry standard {\em XML
+    Localisation Interchange File Format}.
+
+  \item {\tt itools.xml} -- Support for XML ({\em eXtensible Markup Language}).
+
+    Includes an intuitive event driven parser, a DOM-like representation of
+    XML documents, and the {\bf S}imple {\bf T}emplate {\bf L}anguage.
+
 \end{itemize}
 
+
+\section{Highlights}
 
 \subsection{The resource-handler model}
 
@@ -184,45 +206,89 @@ Though still young, it already provides full text indexing, boolean queries
 and results sorted by weight.
 
 
-
-\section{Who is this document for?}
-
-This document is addressed to Python developers. Though it may be useful
-to software architects in general, as some ideas exposed here could be
-found interesting\footnote{For example, {\tt itools.workflow} inspired
-XXX to write a similar engine in Java, see {\tt http://XXX}}.
-
-It is convenient to have some basic skills with the Python programming
-language to fully understand this document. Probably the best introduction
-to Python is the official tutorial:
-
-\begin{quote}
-  {\tt http://python.org/doc/2.3.5/tut/tut.html}.
-\end{quote}
-
-This document touches many different technologies and standards, such as XML.
-References will be given in the relevant chapters.
-
-
 \section{Project status}
 
-Currently {\tt itools} is in alpha stage of development (at the time of
-this writing the last version available is {\bf 0.8}). This means that the
-API is not yet stable, the documentation is incomplete, and there may be bugs.
+Currently {\tt itools} is under active development. At the time of this
+writing the last version available is {\bf 0.10}, what it provides is
+the scope of this document. Here I want to offer a glance about what is
+comming next:
 
-However, we have been using it on a daily basis for a long time now. It
-fuels the {\em i}Kaaro\footnote{http://www.ikaaro.org} Content Management
-System, and most of our customer projects.
+\begin{itemize}
+  \item SQL. Relying on third party products, we will explore relational
+    databases and see what we can do to simplify its use. Specifically
+    the goal is to provide a programming interface that seemlessly integrates
+    with the rest of {\tt itools}.
+
+  \item Standards support. {\tt itools} is strongly focused on the
+    implemetation of standards. While we will add new standards to the
+    collection, in the short-term the focus will be on improving the
+    support we already provide for some of them, just two spotlights:
+
+     \begin{itemize}
+       \item A native parser for XML would increase the control we have of
+         the parsing process, to allow things like parsing fragments. Also,
+         some rough corners of the XML API must be polished.
+
+       \item CSV is a very common format, hence to have a very good
+         programming interface is more of a priority. Probably a new
+         package, {\tt itools.csv}, will be implemented.
+     \end{itemize}
+
+  \item Performance. While performance is already one of the strong points
+    of {\tt itools}, as the {\em Simple Template Language} illustrates, it
+    is not enough:
+
+    \begin{itemize}
+      \item One thing we need is better benchmarks, so we can better
+        measure how {\tt itools} compares to other alternatives, specially
+        for the catalog.
+
+      \item Support for lazy load will be added to the most important handler
+        classes.
+
+      \item While profiling the CPU usage is easy with the Python profiler,
+        the lack of similar tools to measure the memory consumption makes
+        it hard to optimize this aspect. Anyway some infrastructure must be
+        put in place.
+    \end{itemize}
+
+  \item Documentation, is critical. The target for this document is to cover
+    all of {\tt itools}. Also some changes in the structure may arise, one
+    idea is have one complete reference guide, plus a collection of
+    tutorials.
+
+  \item Lower the entry point, improve the development process. Today we
+    use {\em tla 1} to manage the sources, it is great when you master it,
+    but is hard to get there. It looks like the new version, {\tt tla 2},
+    is addressing this problem; other alternatives like bazaar are worth
+    considering.
+
+    To keep improving the development process of {\tt itools} is a constant
+    we don't stop working on.
+
+\end{itemize}
+
+For further information you are welcome to the {\tt itools} mailing list;
+the bugtracker is available to report bugs and suggestions; the sources
+can be browsed through the web; and don't forget to check the web site
+for last downloads and news:
+
+\begin{itemize}
+  \item Mailing list, {\tt http://in-girum.net/mailman/listinfo/ikaaro}
+  \item Bug Tracker, {\tt http://in-girum.net/cg-bin/bugzilla/index.cgi}
+  \item Brows the sources, {\tt http://in-girum.net/cgi-bin/archzoom}
+  \item The web site, {\tt http://www.ikaaro.org/itools}
+\end{itemize}
+
 
 
 \section{Installation}
 
-Before going further, be sure your system is correctly setup. First you
-will need Python 2.3.4 or later.
+{\tt itools} requires Python 2.4, earlier versions are not supported.
 
-Then download the last {\tt itools} version from {\tt http://www.ikaaro.org},
-unpack it somewhere, and install it; {\tt itools} uses {\em distutils}, so
-just type:
+The last version of {\tt itools} can be downloaded from
+{\tt http://www.ikaaro.org}. It is distributed as tarball, download and
+unpack it somewhere; then install with {\em distutils}, type:
 
 \begin{code}
     $ python setup.py install
@@ -233,9 +299,24 @@ Be sure to have the right permissions.
 
 \section{About this document}
 
-The development keeps ahead of the documentation. I would say the docs cover
-around 60\% of {\tt itools}.
+This paper is the official documentation of {\tt itools}. It is
+addressed to Python developers. Though it may be useful to software
+architects in general, as some ideas exposed here may be found
+interesting\footnote{For example, {\tt itools.workflow} inspired XXX
+to write a similar engine in Java, see {\tt http://XXX}}.
 
+It is convenient to have some basic skills with the Python programming
+language to fully understand this document. Probably the best introduction
+to Python is the official tutorial:
+
+\begin{quote}
+  {\tt http://python.org/doc/2.4.1/tut/tut.html}.
+\end{quote}
+
+This document touches many different technologies and standards, such as XML.
+References will be given in the relevant chapters.
+
+Currently the document covers around 60\% of the {\tt itools} package.
 There are also two appendixes, one explaining the coding style {\tt itools}
 is written in, another one introducing the use of {\em GNU arch}. Both are
 specially addressed to those that want to contribute back to the main tree.

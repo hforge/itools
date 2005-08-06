@@ -20,7 +20,6 @@ import mimetypes
 
 # Import from itools
 from itools import uri
-from itools import i18n
 from itools.datatypes import FileName
 
 

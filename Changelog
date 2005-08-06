@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-06 17:42:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
+
+    Summary:
+      doc, finish review of the introduction
+    Revision:
+      itools--main--0.10--patch-37
+
+
+    modified files:
+     Changelog doc/intro.tex doc/packages.dot resources/base.py
+     resources/file.py resources/zope2.py
+
+
 2005-08-06 14:35:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
 
     Summary:

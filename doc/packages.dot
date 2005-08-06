@@ -8,25 +8,22 @@ digraph G {
 ##  "itools.handlers" -> "itools.uri";
   "itools.handlers" -> "itools.resources";
 
-  "itools.gettext" -> "itools.resources";
-  "itools.gettext" -> "itools.handlers";
-  "itools.gettext" -> "itools.i18n";
-
 ##  "itools.html" -> "itools.datatypes";
 ##  "itools.html" -> "itools.handlers";
 ##  "itools.html" -> "itools.xml";
   "itools.html" -> "itools.xhtml";
 
-  "itools.i18n" -> "itools.resources";
+##  "itools.gettext" -> "itools.resources";
+  "itools.gettext" -> "itools.handlers";
+##  "itools.gettext" -> "itools.i18n";
 
   "itools.ical" -> "itools.handlers";
 ##  "itools.ical" -> "itools.datatypes";
 ##  "itools.ical" -> "itools.resources";
 
 ##  "itools.resources" -> "itools.uri";
-  "itools.resources" -> "itools.i18n";
+##  "itools.resources" -> "itools.i18n";
   "itools.resources" -> "itools.datatypes";
-  "itools.resources" -> "itools.web";
 
 ##  "itools.rss" -> "itools.handlers";
   "itools.rss" -> "itools.xml";
@@ -41,13 +38,13 @@ digraph G {
 ##  "itools.web" -> "itools.datatypes";
   "itools.web" -> "itools.xml";
 ##  "itools.web" -> "itools.resources";
-  "itools.web" -> "itools.i18n";
+##  "itools.web" -> "itools.i18n";
 
   "itools.workflow";
 
 ##  "itools.xhtml" -> "itools.datatypes";
   "itools.xhtml" -> "itools.xml";
-  "itools.xhtml" -> "itools.i18n";
+##  "itools.xhtml" -> "itools.i18n";
 
 ##  "itools.xliff" -> "itools.handlers";
   "itools.xliff" -> "itools.xml";
@@ -55,4 +52,17 @@ digraph G {
 ##  "itools.xml" -> "itools.datatypes";
   "itools.xml" -> "itools.schemas";
   "itools.xml" -> "itools.handlers";
+
+
+##  subgraph cluster_1 {
+##    label="XML";
+##    "itools.html";
+##    "itools.rss";
+##    "itools.tmx";
+##    "itools.xhtml";
+##    "itools.xliff";
+##    "itools.xml";
+##  }
+
+
 }

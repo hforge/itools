@@ -25,7 +25,6 @@ import os
 import time
 
 # Import from itools
-from itools import i18n
 from itools import uri
 import base
 

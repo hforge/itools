@@ -22,7 +22,6 @@ import thread
 # Import from itools
 from itools import uri
 import base
-from itools.web import get_context
 
 # Import from Zope
 from Acquisition import aq_base

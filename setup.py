@@ -135,6 +135,6 @@ setup(name = "itools",
       data_files=[('itools', ['Changelog']),
                   (os.path.join('itools', 'i18n'),
                    [os.path.join('i18n', 'languages.txt')])],
-      scripts = [os.path.join('i18n', 'igettext.py')],
+      scripts = [os.path.join('scripts', 'igettext.py')],
       cmdclass={'install_data': install_module_data},
       )

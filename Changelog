@@ -2,6 +2,32 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-06 14:35:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
+
+    Summary:
+      separate the scripts (igettext so far) from the library
+    Revision:
+      itools--main--0.10--patch-36
+
+    Now the scripts are stored separated from the library, in the folder
+    "scripts".
+
+    new files:
+     scripts/.arch-ids/=id
+
+    modified files:
+     Changelog doc/packages.dot setup.py
+
+    renamed files:
+     i18n/.arch-ids/igettext.py.id
+       ==> scripts/.arch-ids/igettext.py.id
+     i18n/igettext.py
+       ==> scripts/igettext.py
+
+    new directories:
+     scripts scripts/.arch-ids
+
+
 2005-08-06 14:28:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-35
 
     Summary:

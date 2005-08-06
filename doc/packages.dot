@@ -18,9 +18,6 @@ digraph G {
   "itools.html" -> "itools.xhtml";
 
   "itools.i18n" -> "itools.resources";
-  "itools.i18n" -> "itools.handlers";
-  "itools.i18n" -> "itools.gettext";
-  "itools.i18n" -> "itools.xhtml";
 
   "itools.ical" -> "itools.handlers";
 ##  "itools.ical" -> "itools.datatypes";

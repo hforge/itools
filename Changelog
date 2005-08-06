@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-06 14:28:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-35
+
+    Summary:
+      doc, working on the introduction
+    Revision:
+      itools--main--0.10--patch-35
+
+
+    new files:
+     doc/.arch-ids/packages.dot.id doc/packages.dot
+
+    modified files:
+     Changelog doc/Makefile doc/intro.tex
+
+
 2005-08-05 13:33:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-34
 
     Summary:

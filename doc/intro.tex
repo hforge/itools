@@ -4,13 +4,36 @@ This paper is the official documentation of {\tt itools}.
 
 \section{What is {\tt itools}?}
 
-{\tt itools} is a Python\footnote{\tt http://www.python.org} library.
-Originally intended to develop web applications, it has evolved into
-a large framework suitable for a wide range of applications.
+{\tt itools} is a Python\footnote{\tt http://www.python.org} library, it
+groups a number of packages into a single meta-package for easier
+development and deployment. The packages included as of {\tt itools 0.10}
+are:
+
+\begin{quote}
+\begin{tabular}{lll}
+  {\tt itools.catalog} & {\tt itools.ical} & {\tt itools.web} \\
+  {\tt itools.datatypes} & {\tt itools.resources} & {\tt itools.workflow} \\
+  {\tt itools.handlers} & {\tt itools.rss} & {\tt itools.xhtml} \\
+  {\tt itools.gettext} & {\tt itools.schemas} & {\tt itools.xliff} \\
+  {\tt itools.html} & {\tt itools.tmx} & {\tt itools.xml} \\
+  {\tt itools.i18n} & {\tt itools.uri} & \\
+\end{tabular}
+\end{quote}
+
+
+\begin{figure}
+  \center
+  \includegraphics[width=\textwidth]{packages.eps}
+  \caption{Dependency diagram}
+  \label{Figure: packages}
+\end{figure}
+
 
 It can be seen as an extension of the Python's {\em Standard Library},
 as it provides a set of lightly coupled sub-packages which can be used
 independently; {\tt itools} is split into the following sub-packages:
+
+
 
 \begin{itemize}
   \item {\tt itools.uri} -- an API to manage URIs, to identify and locate

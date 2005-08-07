@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-07 18:58:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
+
+    Summary:
+      doc, fix intro, add notes about itools.rss
+    Revision:
+      itools--main--0.10--patch-41
+
+
+    modified files:
+     Changelog doc/intro.tex
+
+
 2005-08-07 18:53:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
 
     Summary:

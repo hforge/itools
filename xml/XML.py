@@ -17,7 +17,6 @@
 
 # Import from the Standard Library
 import logging
-from sets import Set
 import sys
 import warnings
 
@@ -106,7 +105,7 @@ class Element(object):
         if not isinstance(other, self.__class__):
             return 1
         if self.prefix == other.prefix and self.name == other.name:
-            if Set(self.get_attributes()) == Set(other.get_attributes()):
+            if set(self.get_attributes()) == set(other.get_attributes()):
                 if self.children == other.children:
                     return 0
             return 0

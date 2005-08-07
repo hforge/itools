@@ -15,9 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Import from the Standard Library
-import sets
-
 # Import from itools
 from File import File
 from Text import Text
@@ -35,7 +32,7 @@ class KeyValue(Text):
         state = self.state
 
         # Initializes the keys.
-        keys = sets.Set()
+        keys = set()
         for key in self.__keys__:
             if not hasattr(state, key):
                 keys.add(key)

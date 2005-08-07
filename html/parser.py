@@ -18,7 +18,6 @@
 # Import from the Standard Library
 import htmlentitydefs
 from HTMLParser import HTMLParser
-from sets import Set
 import warnings
 
 
@@ -27,7 +26,7 @@ DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, ATTRIBUTE, COMMENT, TEXT = range(6)
 
 # List of empty elements, which don't have a close tag
 # XXX Sentenced to dead, to use namespace schema instead.
-empty_elements = Set([
+empty_elements = set([
     # XHTML 1.0 strict
     'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param',
     # XHTML 1.0 transitional
@@ -39,17 +38,17 @@ empty_elements = Set([
 
 
 # Elements whose end tag is optional
-optional_end_tag_elements = Set(['body', 'colgroup', 'dd', 'dt', 'head',
+optional_end_tag_elements = set(['body', 'colgroup', 'dd', 'dt', 'head',
                                  'html', 'li', 'option', 'p', 'tbody', 'td',
                                  'tfoot', 'th', 'thead', 'tr'])
 
 # Elements whose end tag is optional and which can not contain a block tag
 # (hence must be closed before). XXX Finish.
-close_before_block = Set(['dd', 'dt', 'p'])
+close_before_block = set(['dd', 'dt', 'p'])
 
 
 # Block elements
-block_elements = Set([
+block_elements = set([
     'address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form',
     'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes',
     'noscript', 'ol', 'p', 'pre', 'table', 'ul',
@@ -58,7 +57,7 @@ block_elements = Set([
     ])
 
 # Boolean attributes
-boolean_attributes = Set(['checked', 'compact', 'declare', 'defer',
+boolean_attributes = set(['checked', 'compact', 'declare', 'defer',
                           'disabled', 'ismap', 'multiple', 'nohref',
                           'noresize', 'noshade', 'nowrap', 'readonly',
                           'selected'])

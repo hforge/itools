@@ -17,14 +17,13 @@
 
 # Import from the Standard Library
 import datetime
-from sets import Set
 import thread
 
 
 thread_lock = thread.allocate_lock()
 
 
-class Transaction(Set):
+class Transaction(set):
 
     def rollback(self):
         # Abort resource layer transactions

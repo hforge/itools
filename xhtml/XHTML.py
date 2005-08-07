@@ -18,7 +18,6 @@
 # Import from the Standard Library
 from copy import copy
 import re
-from sets import Set
 from StringIO import StringIO
 
 # Import from itools

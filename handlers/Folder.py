@@ -17,7 +17,6 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from sets import Set
 
 # Import from itools
 from itools.resources import base, memory
@@ -75,7 +74,7 @@ class Folder(Handler):
             state.cache[name] = None
 
         state.added_handlers = {}
-        state.removed_handlers = Set()
+        state.removed_handlers = set()
 
 
     def _save_state(self, resource):
@@ -85,7 +84,7 @@ class Folder(Handler):
             resource.del_resource(name)
             # Update the cache
             del state.cache[name]
-        state.removed_handlers = Set()
+        state.removed_handlers = set()
 
         # Add handlers
         for name, handler in state.added_handlers.items():

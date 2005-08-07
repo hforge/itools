@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-07 17:33:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
+
+    Summary:
+      update to Python 2.4 (use built-in set type)
+    Revision:
+      itools--main--0.10--patch-39
+
+
+    modified files:
+     Changelog handlers/Folder.py handlers/Handler.py
+     handlers/KeyValue.py handlers/test_basic.py
+     handlers/test_po.py handlers/transactions.py html/parser.py
+     html/test_html.py xhtml/XHTML.py xhtml/test_xhtml.py
+     xml/XML.py
+
+
 2005-08-07 17:17:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
 
     Summary:

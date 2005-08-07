@@ -22,7 +22,6 @@ handler class hierarchy.
 
 # Import from the Standard Library
 import datetime
-from sets import Set
 import thread
 
 # Import from itools

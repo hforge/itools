@@ -63,14 +63,14 @@ class File(Handler):
     #########################################################################
     handler_class_registry = []
 
+    @classmethod
     def register_handler_class(cls, handler_class):
         if 'handler_class_registry' not in cls.__dict__:
             cls.handler_class_registry = []
         cls.handler_class_registry.append(handler_class)
 
-    register_handler_class = classmethod(register_handler_class)
 
-
+    @classmethod
     def build_handler(cls, resource):
         mimetype = resource.get_mimetype()
         if mimetype is not None:
@@ -80,9 +80,8 @@ class File(Handler):
                     return handler_class.build_handler(resource)
         return cls(resource)
 
-    build_handler = classmethod(build_handler)
 
-
+    @classmethod
     def is_able_to_handle_mimetype(cls, mimetype):
         # Check wether this class understands this mimetype
         type, subtype = mimetype.split('/')
@@ -99,8 +98,6 @@ class File(Handler):
                 return True
         # Everything failed, we are not able to manage the mimetype
         return False
-
-    is_able_to_handle_mimetype = classmethod(is_able_to_handle_mimetype)
 
 
     #########################################################################

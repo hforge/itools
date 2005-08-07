@@ -16,5 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
+from base import DataType
 from primitive import Integer, Unicode, String, Boolean, Date, DateTime, \
      URI, FileName, QName, Tokens

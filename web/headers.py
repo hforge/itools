@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools.datatypes import String, URI
+from itools.datatypes import DataType, String, URI
 
 
 #############################################################################
@@ -71,32 +71,31 @@ def read_parameters(data):
 
 
 
-class Parameters(object):
+class Parameters(DataType):
 
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         parameters = {}
         for name, value in read_parameters(data):
             parameters[name] = value
 
         return parameters
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, parameters):
+    @staticmethod
+    def encode(parameters):
         parameters = [ '%s=%s' % (attribute, value)
                        for attribute, value in parameters.items() ]
         return '; '.join(parameters)
-
-    encode = classmethod(encode)
 
 
 
 #############################################################################
 # Other
-class ValueWithParameters(object):
+class ValueWithParameters(DataType):
 
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         if ';' in value:
             value, parameters = value.split(';', 1)
             parameters = Parameters.decode(parameters)
@@ -104,14 +103,11 @@ class ValueWithParameters(object):
             parameters = {}
         return value.strip(), parameters
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         value, parameters = value
         return '%s; %s' % (value, Parameters.encode(parameters))
-
-    encode = classmethod(encode)
 
 
 

@@ -15,31 +15,30 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
+# Import from itools
+from base import DataType
 
-class LanguageTag(object):
 
+class LanguageTag(DataType):
 
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         res = value.split('-', 1)
         if len(res) < 2:
             return (res[0].lower(), None)
         else:
             return (res[0].lower(), res[1].upper())
-            
-    decode = classmethod(decode)
 
 
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         language, locality = value
         if locality is None:
             return language.lower()
         return '%s-%s' % (language.lower(), locality.upper())
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         return unicode('-'.join([i for i in value if i != None]))
-
-    to_unicode = classmethod(to_unicode)
     

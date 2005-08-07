@@ -127,16 +127,14 @@ class AbstractNamespace(object):
     class_prefix = None
 
 
+    @staticmethod
     def get_element_schema(name):
         raise XMLError, 'undefined element "%s"' % name
 
-    get_element_schema = staticmethod(get_element_schema)
 
-
+    @staticmethod
     def get_attribute_schema(name):
         raise XMLError, 'undefined attribute "%s"' % name
-
-    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 
@@ -150,18 +148,16 @@ class DefaultNamespace(AbstractNamespace):
     class_prefix = None
 
 
+    @staticmethod
     def get_element_schema(name):
         from XML import Element
         return {'type': Element,
                 'is_empty': False}
 
-    get_element_schema = staticmethod(get_element_schema)
 
-
+    @staticmethod
     def get_attribute_schema(name):
         return String
-
-    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 
@@ -171,12 +167,11 @@ class XMLNamespace(AbstractNamespace):
     class_prefix = 'xml'
 
 
+    @staticmethod
     def get_attribute_schema(name):
         if name == 'lang':
             return String
         return Unicode
-
-    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 
@@ -186,10 +181,9 @@ class XMLNSNamespace(AbstractNamespace):
     class_prefix = 'xmlns'
 
 
+    @staticmethod
     def get_attribute_schema(name):
         return String
-
-    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 

@@ -2,6 +2,27 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-07 17:17:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
+
+    Summary:
+      remove obsolete files, and update to Python 2.4 (use decorators)
+    Revision:
+      itools--main--0.10--patch-38
+
+
+    removed files:
+     handlers/.arch-ids/iCalendar.py.id handlers/iCalendar.py
+     xml/.arch-ids/Schema.py.id xml/.arch-ids/Schema.py.old.id
+     xml/.arch-ids/TODO.txt.id xml/Schema.py xml/Schema.py.old
+     xml/TODO.txt
+
+    modified files:
+     Changelog datatypes/__init__.py datatypes/languages.py
+     gettext/domains.py handlers/File.py handlers/Folder.py
+     handlers/Handler.py handlers/Text.py web/headers.py
+     xhtml/XHTML.py xml/STL.py xml/XML.py xml/namespaces.py
+
+
 2005-08-06 17:42:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
 
     Summary:

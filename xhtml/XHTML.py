@@ -206,18 +206,16 @@ class Namespace(namespaces.AbstractNamespace):
     class_prefix = None
 
 
+    @staticmethod
     def get_element_schema(name):
         default_schema = {'type': BlockElement,
                           'is_empty': False}
         return elements_schema.get(name, default_schema)
 
-    get_element_schema = staticmethod(get_element_schema)
 
-
+    @staticmethod
     def get_attribute_schema(name):
         return attributes_schema.get(name, Unicode)
-
-    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 namespaces.set_namespace(Namespace)

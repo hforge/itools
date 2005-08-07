@@ -232,20 +232,18 @@ class Handler(Node):
     # The factory
     handler_class_registry = {}
 
+    @classmethod
     def register_handler_class(cls, handler_class):
         resource_type = handler_class.class_resource_type
 ##        if resource_type in cls.handler_class_registry:
 ##            log
         cls.handler_class_registry[resource_type] = handler_class
 
-    register_handler_class = classmethod(register_handler_class)
 
-
+    @classmethod
     def build_handler(cls, resource):
         resource_type = resource.class_resource_type
         if resource_type in cls.handler_class_registry:
             handler_class = cls.handler_class_registry[resource_type]
             return handler_class.build_handler(resource)
         raise ValueError, 'unknown resource type "%s"' % resource_type
-
-    build_handler = classmethod(build_handler)

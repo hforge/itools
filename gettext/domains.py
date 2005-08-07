@@ -53,12 +53,12 @@ class DomainAware(object):
     class_domain = None
 
 
+    @classmethod
     def get_languages(cls):
         return NotImplementedError
 
-    get_languages = classmethod(get_languages)
 
-
+    @classmethod
     def select_language(cls, languages=None):
         if languages is None:
             languages = cls.get_languages()
@@ -71,9 +71,8 @@ class DomainAware(object):
         accept_language = AcceptLanguage(language)
         return accept_language.select_language(languages)
 
-    select_language = classmethod(select_language)
 
-
+    @classmethod
     def gettext(cls, message, language=None, domain=None):
         if domain is None:
             domain = cls.class_domain
@@ -90,5 +89,3 @@ class DomainAware(object):
             return message
 
         return domain.gettext(message, language)
-
-    gettext = classmethod(gettext)

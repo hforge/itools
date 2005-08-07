@@ -23,6 +23,7 @@ language I could imagine.
 
 
 # Import from itools
+from itools.datatypes import DataType
 from itools.xml import XML, namespaces
 
 
@@ -335,29 +336,28 @@ class Element(XML.Element):
 ########################################################################
 # Input/Output
 ########################################################################
-class ContentAttr(object):
+class ContentAttr(DataType):
 
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         return Expression(data)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return str(value)
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value, encoding='UTF-8'):
+    @staticmethod
+    def to_unicode(value, encoding='UTF-8'):
         return unicode(value)
 
-    to_unicode = classmethod(to_unicode)
 
 
-class AttributesAttr(object):
+class AttributesAttr(DataType):
 
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         attributes = []
         for x in data.split(';'):
             x = x.strip().split(' ', 1)
@@ -374,64 +374,55 @@ class AttributesAttr(object):
 
         return tuple(attributes)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return ';'.join([ '%s %s' % x for x in value ])
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value, encoding='UTF-8'):
+    @staticmethod
+    def to_unicode(value, encoding='UTF-8'):
         return u';'.join([ u'%s %s' % x for x in value ])
 
-    to_unicode = classmethod(to_unicode)
 
 
+class IfAttr(DataType):
 
-class IfAttr(object):
-
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         if data.startswith('not '):
             return NotExpression(data)
         return Expression(data)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return str(value)
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value, encoding='UTF-8'):
+    @staticmethod
+    def to_unicode(value, encoding='UTF-8'):
         return unicode(value)
 
-    to_unicode = classmethod(to_unicode)
 
 
+class RepeatAttr(DataType):
 
-class RepeatAttr(object):
-
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         name, expression = data.split(' ', 1)
         return name, Expression(expression)
 
-    decode = classmethod(decode)
 
-
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return '%s %s' % value
 
-    encode = classmethod(encode)
 
-
-    def to_unicode(cls, value, encoding='UTF-8'):
+    @staticmethod
+    def to_unicode(value, encoding='UTF-8'):
         return u'%s %s' % value
 
-    to_unicode = classmethod(to_unicode)
 
 
 ########################################################################
@@ -617,22 +608,20 @@ class Namespace(namespaces.AbstractNamespace):
     class_prefix = 'stl'
 
 
+    @staticmethod
     def get_element_schema(name):
         try:
             return elements_schema[name]
         except KeyError:
             raise STLSyntaxError, 'unexpected element name: %s' % name
 
-    get_element_schema = staticmethod(get_element_schema)
 
-
+    @staticmethod
     def get_attribute_schema(name):
         try:
             return attributes_schema[name]
         except KeyError:
             raise STLSyntaxError, 'unexpected attribute name: %s' % name
-
-    get_attribute_schema = staticmethod(get_attribute_schema)
 
 
 namespaces.set_namespace(Namespace)

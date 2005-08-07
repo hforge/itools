@@ -101,14 +101,14 @@ class Folder(Handler):
     #########################################################################
     # The factory
     #########################################################################
+    @classmethod
     def register_handler_class(cls, handler_class):
         raise NotImplementedError
-    register_handler_class = classmethod(register_handler_class)
 
 
+    @classmethod
     def build_handler(cls, resource):
         return cls(resource)
-    build_handler = classmethod(build_handler)
 
 
     #########################################################################

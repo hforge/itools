@@ -314,22 +314,19 @@ class Document(Text.Text):
     doctype_handlers = {}
 
 
+    @classmethod
     def set_doctype_handler(cls, public_id, handler):
         cls.doctype_handlers[public_id] = handler
 
-    set_doctype_handler = classmethod(set_doctype_handler)
 
-
+    @classmethod
     def get_doctype_handler(cls, public_id):
         return cls.doctype_handlers.get(public_id)
 
-    get_doctype_handler = classmethod(get_doctype_handler)
 
-
+    @classmethod
     def has_doctype_handler(cls, public_id):
         return public_id in cls.doctype_handlers
-
-    has_doctype_handler = classmethod(has_doctype_handler)
 
 
     #######################################################################

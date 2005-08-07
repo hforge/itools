@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-07 19:34:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
+
+    Summary:
+      update package description
+    Revision:
+      itools--main--0.10--patch-42
+
+
+    modified files:
+     Changelog setup.py
+
+
 2005-08-07 18:58:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
 
     Summary:

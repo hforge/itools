@@ -51,42 +51,30 @@ class install_module_data(install_data):
                                    ('install_purelib', 'install_dir'),
                                    ('root', 'root'),
                                    ('force', 'force'),
-                                  )
+                                   )
 
 
-description = """Itools is a Python package that encapsulates several Python
-tools developed by the Itaapy company and other developers. The provided
-tools are:
+description = """itools is a Python library, it groups a number of packages
+into a single meta-package for easier development and deployment. The packages
+included are:
 
- * itools.uri -- an API to manage URIs, to identify and locate resources.
-
- * itools.schema -- several type marshalers for basic types (integer, date,
-   etc.) and not so basic types (filenames, XML qualified names, etc.)
-
- * itools.resources -- an abstraction layer over resources that let to
-   manage them with a consistent API, independently of where they are stored.
-
- * itools.handlers -- resource handlers infrastructure (resource
-   handlers are non persistent classes that add specific semantics to
-   resources). This package also includes several handlers out of the
-   box.
-
- * itools.gettext -- resource handlers for PO and MO files.
-
- * itools.xml -- includes an intuitive event driven XML parser, a handler
-   for XML documents, and the Simple Template Language.
-
- * itools.xhtml -- resource handlers for XHTML documents.
-
- * itools.html -- resource handlers for HTML documents.
-
- * itools.i18n -- tools for language negotiation and text segmentation.
-
- * itools.workflow -- represent workflows as automatons, objects can move
-   from one state to another through transitions, classes can add specific
-   semantics to states and transitions.
-
- * itools.catalog -- An Index & Search engine.
+ - itools.catalog
+ - itools.datatypes
+ - itools.gettext
+ - itools.handlers
+ - itools.html
+ - itools.i18n
+ - itools.ical
+ - itools.resources
+ - itools.rss
+ - itools.schemas
+ - itools.tmx
+ - itools.uri
+ - itools.web
+ - itools.workflow
+ - itools.xhtml
+ - itools.xliff
+ - itools.xml
 """
 
 setup(name = "itools",

@@ -24,6 +24,7 @@ language I could imagine.
 
 # Import from itools
 from itools.datatypes import DataType
+from itools import schemas
 from itools.xml import XML, namespaces
 
 
@@ -595,13 +596,6 @@ elements_schema = {
     }
 
 
-attributes_schema = {'repeat': RepeatAttr,
-                     'attributes': AttributesAttr,
-                     'content': ContentAttr,
-                     'if': IfAttr,
-                     }
-
-
 class Namespace(namespaces.AbstractNamespace):
 
     class_uri = 'http://xml.itools.org/namespaces/stl'
@@ -615,13 +609,18 @@ class Namespace(namespaces.AbstractNamespace):
         except KeyError:
             raise STLSyntaxError, 'unexpected element name: %s' % name
 
-
-    @staticmethod
-    def get_attribute_schema(name):
-        try:
-            return attributes_schema[name]
-        except KeyError:
-            raise STLSyntaxError, 'unexpected attribute name: %s' % name
-
-
 namespaces.set_namespace(Namespace)
+
+
+class Schema(schemas.base.Schema):
+
+    class_uri = 'http://xml.itools.org/namespaces/stl'
+    class_prefix = 'stl'
+
+
+    datatypes = {'repeat': RepeatAttr,
+                 'attributes': AttributesAttr,
+                 'content': ContentAttr,
+                 'if': IfAttr}
+
+schemas.registry.set_schema(Schema)

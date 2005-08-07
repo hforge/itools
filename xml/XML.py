@@ -23,6 +23,7 @@ import warnings
 # Import from itools
 from itools.handlers import File, Text
 from itools.datatypes import Unicode
+from itools import schemas
 from itools.xml.exceptions import XMLError
 from itools.xml import namespaces
 from itools.xml import parser
@@ -198,8 +199,8 @@ class Element(object):
         """
         Returns the type for the given attribute
         """
-        namespace = namespaces.get_namespace(namespace_uri)
-        return namespace.get_attribute_schema(local_name)
+        schema = schemas.registry.get_schema(namespace_uri)
+        return schema.get_datatype(local_name)
 
 
     #######################################################################
@@ -369,13 +370,13 @@ class Document(Text.Text):
                     state.root_element = element
             elif event == parser.ATTRIBUTE:
                 namespace_uri, prefix, local_name, value = value
-                namespace = namespaces.get_namespace(namespace_uri)
+                schema = schemas.registry.get_schema(namespace_uri)
                 try:
-                    schema = namespace.get_attribute_schema(local_name)
+                    datatype = schema.get_datatype(local_name)
                 except XMLError, e:
                     e.line_number = line_number
                     raise e
-                value = schema.decode(value)
+                value = datatype.decode(value)
                 stack[-1].set_attribute(namespace_uri, local_name, value,
                                         prefix=prefix)
             elif event == parser.COMMENT:

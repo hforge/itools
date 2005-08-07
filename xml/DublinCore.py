@@ -59,12 +59,4 @@ class Namespace(namespaces.AbstractNamespace):
         return Element
 
 
-    @staticmethod
-    def get_attribute_schema(name):
-        try:
-            return DublinCore.get_datatype(name)
-        except KeyError:
-            raise XML.XMLError, 'unknown property "%s"' % name
-
-
 namespaces.set_namespace(Namespace)

@@ -18,10 +18,15 @@
 # Import from itools
 from itools.datatypes.primitive import Unicode, String, DateTime
 from base import Schema
+import registry
 
 
 
 class DublinCore(Schema):
+
+    class_uri = 'http://purl.org/dc/elements/1.1'
+    class_prefix = 'dc'
+
 
     datatypes = {'contributor': None,
                  'coverage': None,
@@ -39,3 +44,6 @@ class DublinCore(Schema):
                  'title': Unicode,
                  'type': None,
                  }
+
+
+registry.set_schema(DublinCore)

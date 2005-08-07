@@ -22,7 +22,7 @@ from urllib import urlencode
 from itools import uri
 from itools.datatypes import QName
 from itools.handlers.File import File
-from itools.xml import namespaces
+from itools.schemas import registry
 from itools.web import headers
 from itools.web import entities
 
@@ -144,9 +144,9 @@ class Request(File):
                 if not isinstance(value, list):
                     value = [value]
             else:
-                namespace = namespaces.get_namespace_by_prefix(prefix)
-                schema = namespace.get_attribute_schema(local_name)
-                value = schema.decode(value)
+                schema = registry.get_schema_by_prefix(prefix)
+                datatype = schema.get_datatype(local_name)
+                value = datatype.decode(value)
 
         self.state.form[name] = value
 

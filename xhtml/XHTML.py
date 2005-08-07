@@ -22,6 +22,7 @@ from StringIO import StringIO
 
 # Import from itools
 from itools.datatypes import Integer, Unicode, String, URI
+from itools import schemas
 from itools.xml import XML, namespaces
 from itools import i18n
 
@@ -179,26 +180,6 @@ elements_schema = {
     }
 
 
-attributes_schema = {'abbr': Unicode,
-                     'accept-charsert': String,
-                     'accept': String,
-                     'accesskey': Unicode,
-                     'action': URI,
-                     'align': String,
-                     'alink': String,
-                     'alt': Unicode,
-                     'archive': Unicode,
-                     'axis': Unicode,
-                     'background': URI,
-                     'bgcolor': String,
-                     'border': Integer,
-
-                     'href': URI,
-                     'src': URI,
-                     'title': Unicode,
-                     }
-
-
 class Namespace(namespaces.AbstractNamespace):
 
     class_uri = 'http://www.w3.org/1999/xhtml'
@@ -211,13 +192,41 @@ class Namespace(namespaces.AbstractNamespace):
                           'is_empty': False}
         return elements_schema.get(name, default_schema)
 
-
-    @staticmethod
-    def get_attribute_schema(name):
-        return attributes_schema.get(name, Unicode)
-
-
 namespaces.set_namespace(Namespace)
+
+
+
+class Schema(schemas.base.Schema):
+
+    class_uri = 'http://www.w3.org/1999/xhtml'
+    class_prefix = None
+
+    datatypes = {'abbr': Unicode,
+                 'accept-charsert': String,
+                 'accept': String,
+                 'accesskey': Unicode,
+                 'action': URI,
+                 'align': String,
+                 'alink': String,
+                 'alt': Unicode,
+                 'archive': Unicode,
+                 'axis': Unicode,
+                 'background': URI,
+                 'bgcolor': String,
+                 'border': Integer,
+
+                 'href': URI,
+                 'src': URI,
+                 'title': Unicode,
+                 }
+
+
+    @classmethod
+    def get_datatype(cls, name):
+        return cls.datatypes.get(name, Unicode)
+
+schemas.registry.set_schema(Schema)
+
 
 
 #############################################################################
@@ -266,10 +275,9 @@ class Document(XML.Document):
                         value = catalog.get_translation(value)
                         #value = catalog.get_msgstr(value) or value
                 qname = node.get_attribute_qname(namespace, local_name)
-                namespace = namespaces.get_namespace(namespace)
-                schema = namespace.get_attribute_schema(local_name)
-                type = schema['type']
-                buffer.write(u' %s="%s"' % (qname, type.to_unicode(value)))
+                schema = schemas.registry.get_schema(namespace)
+                datatype = schema.get_datatype(local_name)
+                buffer.write(u' %s="%s"' % (qname, datatype.to_unicode(value)))
             # Close the start tag
             namespace = namespaces.get_namespace(node.namespace)
             schema = namespace.get_element_schema(node.name)

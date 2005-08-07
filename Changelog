@@ -2,6 +2,28 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-07 18:53:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
+
+    Summary:
+      schemas, add registry
+    Revision:
+      itools--main--0.10--patch-40
+
+    The XML namespaces registry was used for both attributes and elements,
+    now attributes are dealt with by the new schemas registry.
+    
+    In other words, we have moved this feature from "itools.xml" to
+    "itools.schemas", finishing this first iteration.
+
+    new files:
+     schemas/.arch-ids/registry.py.id schemas/registry.py
+
+    modified files:
+     Changelog doc/packages.dot schemas/dublin_core.py
+     web/request.py xhtml/XHTML.py xml/DublinCore.py xml/STL.py
+     xml/XML.py xml/namespaces.py
+
+
 2005-08-07 17:33:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
 
     Summary:

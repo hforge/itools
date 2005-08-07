@@ -21,6 +21,7 @@ import warnings
 # Import from itools
 from itools.xml.exceptions import XMLError
 from itools.datatypes import String, Unicode
+from itools import schemas
 
 
 
@@ -118,9 +119,6 @@ class AbstractNamespace(object):
 
     get_element_schema(name)
     - Returns a dictionary that defines the schema for the given element.
-
-    get_attribute_schema(name)
-    - Returns a dictionary that defines the schema for the given attribute.
     """
 
     class_uri = None
@@ -130,11 +128,6 @@ class AbstractNamespace(object):
     @staticmethod
     def get_element_schema(name):
         raise XMLError, 'undefined element "%s"' % name
-
-
-    @staticmethod
-    def get_attribute_schema(name):
-        raise XMLError, 'undefined attribute "%s"' % name
 
 
 
@@ -155,39 +148,34 @@ class DefaultNamespace(AbstractNamespace):
                 'is_empty': False}
 
 
-    @staticmethod
-    def get_attribute_schema(name):
-        return String
 
-
-
-class XMLNamespace(AbstractNamespace):
+class XMLNamespace(schemas.base.Schema):
 
     class_uri = 'http://www.w3.org/XML/1998/namespace'
     class_prefix = 'xml'
 
 
     @staticmethod
-    def get_attribute_schema(name):
+    def get_datatype(name):
         if name == 'lang':
             return String
         return Unicode
 
 
 
-class XMLNSNamespace(AbstractNamespace):
+class XMLNSNamespace(schemas.base.Schema):
 
     class_uri = 'http://www.w3.org/2000/xmlns/'
     class_prefix = 'xmlns'
 
 
     @staticmethod
-    def get_attribute_schema(name):
+    def get_datatype(name):
         return String
 
 
 
 # Register the namespaces
 set_namespace(DefaultNamespace)
-set_namespace(XMLNamespace)
-set_namespace(XMLNSNamespace)
+schemas.registry.set_schema(XMLNamespace)
+schemas.registry.set_schema(XMLNSNamespace)

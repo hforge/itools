@@ -33,10 +33,10 @@ digraph G {
 ##  "itools.tmx" -> "itools.handlers";
   "itools.tmx" -> "itools.xml";
 
-##  "itools.web" -> "itools.handlers";
+  "itools.web" -> "itools.handlers";
+  "itools.web" -> "itools.schemas";
 ##  "itools.web" -> "itools.uri";
 ##  "itools.web" -> "itools.datatypes";
-  "itools.web" -> "itools.xml";
 ##  "itools.web" -> "itools.resources";
 ##  "itools.web" -> "itools.i18n";
 
@@ -54,15 +54,15 @@ digraph G {
   "itools.xml" -> "itools.handlers";
 
 
-##  subgraph cluster_1 {
-##    label="XML";
-##    "itools.html";
-##    "itools.rss";
-##    "itools.tmx";
-##    "itools.xhtml";
-##    "itools.xliff";
-##    "itools.xml";
-##  }
+/*  subgraph cluster_1 {
+    label="XML";
+    "itools.html";
+    "itools.rss";
+    "itools.tmx";
+    "itools.xhtml";
+    "itools.xliff";
+    "itools.xml";
+  }*/
 
 
 }

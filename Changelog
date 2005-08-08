@@ -2,6 +2,34 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-08 10:31:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-43
+
+    Summary:
+      merge RSS code from Piotr
+    Revision:
+      itools--main--0.10--patch-43
+
+    Patches applied:
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-7
+       merge from the trunk
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-8
+       <html> xml namespace change in tests
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-9
+       decode and encode rss element values, implementation not finished yet (pubDate is unicode)
+    
+
+    modified files:
+     Changelog rss/rss.py rss/test.html rss/test_full.html
+
+    new patches:
+     piotr@macuk.pl--public/itools--rss--0.10--patch-7
+     piotr@macuk.pl--public/itools--rss--0.10--patch-8
+     piotr@macuk.pl--public/itools--rss--0.10--patch-9
+
+
 2005-08-07 19:34:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
 
     Summary:

@@ -15,9 +15,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
+# Import from the Standard Library
+from datetime import tzinfo, timedelta
+
 # Import from itools
 from itools.handlers.Text import Text
 from itools.xml import parser
+from itools import types
 
 
 # Rss channel elements definition
@@ -44,6 +48,51 @@ rss_item_elements = rss_elements['item']['required'] + \
                     rss_elements['item']['optional']
 rss_all_elements = rss_channel_elements + rss_image_elements + \
                    rss_item_elements
+
+
+# DateTime time zone information
+class TZInfo(tzinfo):
+    pass
+
+        
+# Encode and decode pubDate
+class DateTime(object):
+
+    def decode(cls, value):
+        pass
+
+    decode = classmethod(decode)
+
+    def encode(cls, value):
+        if value is None:
+            return ''
+        return value.strftime('%Y-%m-%d %H:%M')
+
+    encode = classmethod(encode)
+
+    def to_unicode(cls, value):
+        if value is None:
+            return u''
+        return unicode(value.strftime('%Y-%m-%d %H:%M'))
+
+
+# RSS tags types for encode and decode
+schema = {'title': {'type': types.Unicode},
+          'link': {'type': types.URI},
+          'description': {'type': types.Unicode},
+          'language': {'type': types.Unicode},
+          'copyright': {'type': types.Unicode},
+          # 'pubDate': {'type': DateTime},
+          'pubDate': {'type': types.Unicode},
+          'ttl': {'type': types.Integer},
+          # 'lastBuildDate': {'type': DateTime},
+          'lastBuildDate': {'type': types.Unicode},
+          'generatora': {'type': types.Unicode},
+          'url': {'type': types.URI},
+          'width': {'type': types.Integer},
+          'height': {'type': types.Integer},
+          'image': {'type': types.String}
+}
 
 
 class RssChannel(object):
@@ -109,6 +158,14 @@ class RSS(Text):
     class_mimetypes = ['application/rss+xml']
     class_extension = 'rss'
 
+    # Encode rss element according to its type (by schema)
+    def decode_element(self, name, value):
+        return schema[name]['type'].decode(value)
+
+    # Decode rss element according to its type (by schema)
+    def encode_element(self, name, value):
+        return schema[name]['type'].encode(value)
+
     def _load_state(self, resource):
         # Temp fields data
         fields = {}
@@ -162,9 +219,11 @@ class RSS(Text):
                     save_data = 0
             if event == parser.TEXT and save_data == 1:
                 if inside_image == 1 or inside_item == 1:
-                    fields[element_name] = value
+                    fields[element_name] = self.decode_element(
+                                           element_name, value)
                 else:
-                    channel_fields[element_name] = value
+                    channel_fields[element_name] = self.decode_element(
+                                                   element_name, value)
                 save_data = 0
 
         # Fill the internal data structure
@@ -204,21 +263,24 @@ class RSS(Text):
             if self.state.channel.__dict__.has_key(e):
                 # Not None elements (for example channel.image)
                 if self.state.channel.__dict__[e]:
-                    s.append(u'\t<%s>%s</%s>' % (e, self.state.channel.__dict__[e], e))
+                    value = self.encode_element(e, self.state.channel.__dict__[e])
+                    s.append(u'\t<%s>%s</%s>' % (e, value, e))
         # Append channel image data (if exists)
         image = self.state.channel.get_image()
         if image:
             s.append(u'\t<image>')
             for e in rss_image_elements:
                 if image.__dict__.has_key(e):
-                    s.append(u'\t\t<%s>%s</%s>' % (e, image.__dict__[e], e))
+                    value = self.encode_element(e, image.__dict__[e])
+                    s.append(u'\t\t<%s>%s</%s>' % (e, value, e))
             s.append(u'\t</image>')
         # Append channel items data
         for i in self.state.channel.get_items():
             s.append(u'\t<item>')
             for e in rss_item_elements:
                 if i.__dict__.has_key(e):
-                    s.append(u'\t\t<%s>%s</%s>' % (e, i.__dict__[e], e))
+                    value = self.encode_element(e, i.__dict__[e])
+                    s.append(u'\t\t<%s>%s</%s>' % (e, value, e))
             s.append(u'\t</item>')
         s.append(u'</channel>')
         s.append(u'</rss>')

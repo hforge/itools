@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-08 10:43:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-45
+
+    Summary:
+      rss, update code, tests pass again
+    Revision:
+      itools--main--0.10--patch-45
+
+    Use the new "itools.datatypes" module.
+    
+    Upgrade to Python 2.4, use decorators.
+    
+    Style, methods are separated by two blank lines.
+
+    modified files:
+     Changelog rss/rss.py
+
+
 2005-08-08 10:41:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-44
 
     Summary:

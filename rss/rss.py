@@ -21,7 +21,7 @@ from datetime import tzinfo, timedelta
 # Import from itools
 from itools.handlers.Text import Text
 from itools.xml import parser
-from itools import types
+from itools.datatypes import DataType, Unicode, URI, Integer, String, DateTime
 
 
 # Rss channel elements definition
@@ -56,43 +56,44 @@ class TZInfo(tzinfo):
 
         
 # Encode and decode pubDate
-class DateTime(object):
+class DateTime(DataType):
 
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         pass
 
-    decode = classmethod(decode)
 
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d %H:%M')
 
-    encode = classmethod(encode)
 
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
         if value is None:
             return u''
         return unicode(value.strftime('%Y-%m-%d %H:%M'))
 
 
 # RSS tags types for encode and decode
-schema = {'title': {'type': types.Unicode},
-          'link': {'type': types.URI},
-          'description': {'type': types.Unicode},
-          'language': {'type': types.Unicode},
-          'copyright': {'type': types.Unicode},
-          # 'pubDate': {'type': DateTime},
-          'pubDate': {'type': types.Unicode},
-          'ttl': {'type': types.Integer},
-          # 'lastBuildDate': {'type': DateTime},
-          'lastBuildDate': {'type': types.Unicode},
-          'generatora': {'type': types.Unicode},
-          'url': {'type': types.URI},
-          'width': {'type': types.Integer},
-          'height': {'type': types.Integer},
-          'image': {'type': types.String}
-}
+schema = {'title': Unicode,
+          'link': URI,
+          'description': Unicode,
+          'language': Unicode,
+          'copyright': Unicode,
+          # 'pubDate': DateTime,
+          'pubDate': Unicode,
+          'ttl': Integer,
+          # 'lastBuildDate': DateTime,
+          'lastBuildDate': Unicode,
+          'generatora': Unicode,
+          'url': URI,
+          'width': Integer,
+          'height': Integer,
+          'image': String,
+          }
 
 
 class RssChannel(object):
@@ -140,6 +141,8 @@ class RssChannelItem(object):
             if not self.__dict__.has_key(k) and k in rss_item_elements:
                 self.__dict__[k] = elements[k]
 
+
+
 class RssChannelImage(object):
 
     def __init__(self, url, title, link):
@@ -147,11 +150,14 @@ class RssChannelImage(object):
         self.title = title
         self.link = link
 
+
     # Add additional elements
     def add_elements(self, elements):
         for k in elements.keys():
             if not self.__dict__.has_key(k) and k in rss_image_elements:
                 self.__dict__[k] = elements[k]
+
+
 
 class RSS(Text):
 
@@ -160,11 +166,13 @@ class RSS(Text):
 
     # Encode rss element according to its type (by schema)
     def decode_element(self, name, value):
-        return schema[name]['type'].decode(value)
+        return schema[name].decode(value)
+
 
     # Decode rss element according to its type (by schema)
     def encode_element(self, name, value):
-        return schema[name]['type'].encode(value)
+        return schema[name].encode(value)
+
 
     def _load_state(self, resource):
         # Temp fields data
@@ -240,6 +248,7 @@ class RSS(Text):
         for i in items:
             self.state.channel.add_item(i)
 
+
     # only required empty channel elements
     def get_skeleton(self, encoding='UTF-8'):
         s = []
@@ -252,6 +261,7 @@ class RSS(Text):
         s.append('</channel>')
         s.append('</rss>')
         return '\n'.join(s)
+
 
     def to_unicode(self, encoding='UTF-8'):
         s = []
@@ -285,6 +295,7 @@ class RSS(Text):
         s.append(u'</channel>')
         s.append(u'</rss>')
         return '\n'.join(s)
+
 
     # Return namespace to use with STL template
     def get_namespace(self):

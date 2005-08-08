@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-08 11:03:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
+
+    Summary:
+      doc, fix the fonts on l10n figure
+    Revision:
+      itools--main--0.10--patch-47
+
+
+    modified files:
+     Changelog doc/i18n.tex
+
+
 2005-08-08 11:00:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
 
     Summary:

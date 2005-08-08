@@ -78,7 +78,7 @@ included are:
 """
 
 setup(name = "itools",
-      version = "0.9.3",
+      version = "0.10.0",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",

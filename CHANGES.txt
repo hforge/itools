@@ -1,3 +1,51 @@
+0.10.0 (2005/08/08)
+
+  Now Python 2.4 is required.
+
+  Data Types
+  - The module "itools.types" has been renamed to "itools.datatypes", and
+    features a better programming interface. By David Ibáñez.
+
+  Schemas
+  - New module "itools.schemas" provides a registry of schemas (collections
+    of data-types), a feature that has been moved from "itools.xml.namespaces".
+    By David Ibáñez.
+
+  Resources
+  - Now Zope 2 resources use "bobobase_modification_time". By David Ibáñez.
+
+  Catalog
+  - Implement range search. By David Ibáñez.
+
+  Simple Template Language
+  - New keyword "none" in STL expressions (#71). By Hervé Cauwelier.
+  - Omit the STL namespace declaration after processing (#81). By Hervé
+    Cauwelier.
+
+  iCalendar
+  - Added support for RFC 2445 (itools.ical). By Nicolas Deram.
+
+  RSS
+  - Added support for RSS 2.0 (itools.rss). By Piotr Macuk.
+
+  TMX
+  - Added support for the "Translation Memory eXchange" file format
+    (itools.tmx). By Nicolas Oyez.
+
+  XLIFF
+  - Added support for the "XML Localisation Interchange File Format"
+    (itools.xliff). By Nicolas Oyez.
+
+  Web
+  - New package "itools.web" provides high level API to build web
+    applications. Proof-of-concept implementations for CGI and
+    standalone server. Obsoleted package "itools.zope" removed.
+    By David Ibáñez.
+
+  Packaging
+  - Improving unit tests. By Hervé Cauwelier.
+
+
 0.9.3 (2005/08/02)
 
   Minor features

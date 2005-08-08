@@ -17,14 +17,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from Python Standard Library
-import time, sys
 from pprint import pprint
-from datetime import datetime
 
 # Import from itools
 from itools.handlers.Text import Text
-from itools.types import Unicode, String
-from itools.ical.types import DateTime, PropertyType, ComponentType
+from itools.datatypes import Unicode, String
+from itools.ical.types import PropertyType, ComponentType
 from itools.ical.types import data_properties
 
 
@@ -122,7 +120,7 @@ class Component(object):
         if name in self.properties:
             occurs = 0
             if name in data_properties:
-                occurs = data_properties[name].get('occurs', 0)
+                occurs = data_properties[name].occurs
             if occurs == 1:
                 print 'SyntaxError', 'This property can appear only one time.'
                 return
@@ -393,4 +391,8 @@ class icalendar(Text):
                 res_events.append(event)
 
         return res_events
+
+
+    def add_component(self, component, c_type):
+        self.state.components[c_type].append(component)
 

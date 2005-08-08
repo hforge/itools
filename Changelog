@@ -2,6 +2,47 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-08 11:13:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
+
+    Summary:
+      merge icalendar changes by nderam
+    Revision:
+      itools--main--0.10--patch-48
+
+    Patches applied:
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-41
+       add a method add_component to icalendar
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-42
+       merge from main
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-43
+       change imports according to changes on main branch
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-44
+       change data_properties using DataType added on last merge from main
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-45
+       merge from main
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-46
+       merge from main
+    
+
+    modified files:
+     Changelog ical/icalendar.py ical/test_icalendar.py
+     ical/types.py
+
+    new patches:
+     nderam@itaapy.com--private/itools--ical--0.10--patch-41
+     nderam@itaapy.com--private/itools--ical--0.10--patch-42
+     nderam@itaapy.com--private/itools--ical--0.10--patch-43
+     nderam@itaapy.com--private/itools--ical--0.10--patch-44
+     nderam@itaapy.com--private/itools--ical--0.10--patch-45
+     nderam@itaapy.com--private/itools--ical--0.10--patch-46
+
+
 2005-08-08 11:03:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
 
     Summary:

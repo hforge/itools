@@ -19,7 +19,8 @@
 from datetime import datetime
 
 # Import from itools
-from itools.types import Integer, URI, Unicode, String
+from itools.datatypes.base import DataType
+from itools.datatypes import Integer, URI, Unicode, String
 
 
 def fold_line(line):
@@ -44,10 +45,10 @@ def fold_line(line):
 
 
 
-class DateTime(object):
+class DateTime(DataType):
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         if value is None:
             return None
 
@@ -85,8 +86,8 @@ class DateTime(object):
         return datetime(year, month, day, hour, min, sec)
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
     # PROBLEM --> 2 formats, with or without final 'Z' 
         if value is None:
             return ''
@@ -98,8 +99,8 @@ class DateTime(object):
         return dt   
 
 
-    @classmethod
-    def to_unicode(cls, value):
+    @staticmethod
+    def to_unicode(value):
     # PROBLEM --> 2 formats, with or without final 'Z' 
         if value is None:
             return u''
@@ -111,8 +112,8 @@ class DateTime(object):
         return unicode(dt)   
 
 
-    @classmethod
-    def from_str(cls, value):
+    @staticmethod
+    def from_str(value):
         if not value:
             return None
         date, time = value.split()
@@ -123,8 +124,8 @@ class DateTime(object):
         return datetime(year, month, day, hours, minutes, seconds)
 
 
-    @classmethod
-    def to_str(cls, value):
+    @staticmethod
+    def to_str(value):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d %H:%M:%S')
@@ -139,62 +140,63 @@ token_name = ['name', 'parameter', 'value']
 # --> TO VERIFY AND COMPLETE
 # occurs = 0  means 0..n occurrences
 data_properties = {
-  'BEGIN':{'type': Unicode, 'occurs': 1}, 
-  'END':{'type': Unicode, 'occurs': 1}, 
-  'VERSION':{'type': Unicode, 'occurs': 1}, 
-  'PRODID':{'type': Unicode, 'occurs': 1}, 
-  'METHOD':{'type': Unicode, 'occurs': 1}, 
+  'BEGIN': Unicode(occurs=1), 
+  'END': Unicode(occurs=1), 
+  'VERSION': Unicode(occurs=1), 
+  'PRODID': Unicode(occurs=1), 
+  'METHOD': Unicode(occurs=1), 
   # Component properties
-  'ATTACH':{'type': URI, 'occurs': 0}, 
-  'CATEGORY':{'type': Unicode, 'occurs': 1}, 
-  'CATEGORIES':{'type': Unicode, 'occurs': 0}, 
-  'CLASS':{'type': Unicode, 'occurs': 1}, 
-  'COMMENT':{'type': Unicode, 'occurs': 0}, 
-  'DESCRIPTION':{'type': Unicode, 'occurs': 1}, 
-  'GEO':{'type': Unicode, 'occurs': 1}, 
-  'LOCATION':{'type': Unicode, 'occurs': 1}, 
-  'PERCENT-COMPLETE':{'type': Integer, 'occurs': 1}, 
-  'PRIORITY':{'type': Integer, 'occurs': 1}, 
-  'RESOURCES':{'type': Unicode, 'occurs': 0}, 
-  'STATUS':{'type': Unicode, 'occurs': 1}, 
-  'SUMMARY':{'type': Unicode, 'occurs': 1}, 
+  'ATTACH': URI(occurs=0), 
+  'CATEGORY': Unicode(occurs=1), 
+  'CATEGORIES': Unicode(occurs=0), 
+  'CLASS': Unicode(occurs=1), 
+  'COMMENT': Unicode(occurs=0), 
+  'DESCRIPTION': Unicode(occurs=1), 
+  'GEO': Unicode(occurs=1), 
+  'LOCATION': Unicode(occurs=1), 
+  'PERCENT-COMPLETE': Integer(occurs=1), 
+  'PRIORITY': Integer(occurs=1), 
+  'RESOURCES': Unicode(occurs=0), 
+  'STATUS': Unicode(occurs=1), 
+  'SUMMARY': Unicode(occurs=1), 
   # Date & Time component properties
-  'COMPLETED':{'type': DateTime, 'occurs': 1}, 
-  'DTEND':{'type': DateTime, 'occurs': 1}, 
-  'DUE':{'type': DateTime, 'occurs': 1}, 
-  'DTSTART':{'type': DateTime, 'occurs': 1}, 
-  'DURATION':{'type': Unicode, 'occurs': 1}, 
-  'FREEBUSY':{'type': Unicode, 'occurs': 1}, 
-  'TRANSP':{'type': Unicode, 'occurs': 1}, 
+  'COMPLETED': DateTime(occurs=1), 
+  'DTEND': DateTime(occurs=1), 
+  'DUE': DateTime(occurs=1), 
+  'DTSTART': DateTime(occurs=1), 
+  'DURATION': Unicode(occurs=1), 
+  'FREEBUSY': Unicode(occurs=1), 
+  'TRANSP': Unicode(occurs=1), 
   # Time Zone component properties
-  'TZID':{'type': Unicode, 'occurs': 1}, 
-  'TZNAME':{'type': Unicode, 'occurs': 0}, 
-  'TZOFFSETFROM':{'type': Unicode, 'occurs': 1}, 
-  'TZOFFSETTO':{'type': Unicode, 'occurs': 1}, 
-  'TZURL':{'type': URI, 'occurs': 1}, 
+  'TZID': Unicode(occurs=1), 
+  'TZNAME': Unicode(occurs=0), 
+  'TZOFFSETFROM': Unicode(occurs=1), 
+  'TZOFFSETTO': Unicode(occurs=1), 
+  'TZURL': URI(occurs=1),
   # Relationship component properties
-  'ATTENDEE':{'type': URI, 'occurs': 0}, 
-  'CONTACT':{'type': Unicode, 'occurs': 0}, 
-  'ORGANIZER':{'type': URI, 'occurs': 1}, 
+  'ATTENDEE': URI(occurs=0),
+  'CONTACT': Unicode(occurs=0),
+  'ORGANIZER': URI(occurs=1), 
   # Recurrence component properties
-  'EXDATE':{'type': DateTime, 'occurs': 0}, 
-  'EXRULE':{'type': Unicode, 'occurs': 0}, 
-  'RDATE':{'type': Unicode, 'occurs': 0}, 
-  'RRULE':{'type': Unicode, 'occurs': 0}, 
+  'EXDATE': DateTime(occurs=0), 
+  'EXRULE': Unicode(occurs=0), 
+  'RDATE': Unicode(occurs=0), 
+  'RRULE': Unicode(occurs=0), 
   # Alarm component properties
-  'ACTION':{'type': Unicode, 'occurs': 1}, 
-  'REPEAT':{'type': Integer, 'occurs': 1}, 
-  'TRIGGER':{'type': Unicode, 'occurs': 1}, 
+  'ACTION': Unicode(occurs=1), 
+  'REPEAT': Integer(occurs=1), 
+  'TRIGGER': Unicode(occurs=1), 
   # Change management component properties
-  'CREATED':{'type': DateTime, 'occurs': 1}, 
-  'DTSTAMP':{'type': DateTime, 'occurs': 1}, 
-  'LAST-MODIFIED':{'type': DateTime, 'occurs': 1}, 
-  'SEQUENCE':{'type': Integer, 'occurs': 1}, 
+  'CREATED': DateTime(occurs=1), 
+  'DTSTAMP': DateTime(occurs=1), 
+  'LAST-MODIFIED': DateTime(occurs=1), 
+  'SEQUENCE': Integer(occurs=1), 
   # Others
-  'RECURRENCE-ID':{'type': DateTime, 'occurs': 1}, 
-  'RELATED-TO':{'type': Unicode, 'occurs': 1}, 
-  'URL':{'type': URI, 'occurs': 1}, 
-  'UID':{'type': Unicode, 'occurs': 1}}
+  'RECURRENCE-ID': DateTime(occurs=1), 
+  'RELATED-TO': Unicode(occurs=1), 
+  'URL': URI(occurs=1), 
+  'UID': Unicode(occurs=1)
+}
 
 ################################################################
 #                         NOT USED ACTUALLY  
@@ -276,10 +278,9 @@ class PropertyType(object):
                        ParameterType.to_unicode(property.parameters[key_param])
         else:
             prop = prop + u'\n'
+
         # Property value
-        default_schema = {'type': String, 'occurs': 0 }
-        schema = data_properties.get(name, default_schema)
-        vtype = schema['type']
+        vtype = data_properties.get(name, String)
         value = vtype.to_unicode(property.value)
         prop = prop + u' :' + value
         # Property folded if necessary
@@ -293,7 +294,7 @@ class PropertyType(object):
     def nb_occurrences(cls, name):
         occurs = 0
         if name in data_properties:
-            occurs = data_properties[name].get('occurs', 0)
+            occurs = data_properties[name].occurs
         return occurs
 
 
@@ -427,10 +428,8 @@ class PropertyValueType(object):
             elif token == TVALUE:
                 #####################################
                 # Change types of values when needed
-                default_schema = {'type': String, 'occurs': 0 }
-                schema = data_properties.get(name, default_schema)
-                vtype = schema['type']
-                if vtype is Unicode:
+                vtype = data_properties.get(name, String)
+                if isinstance(vtype, Unicode):
                     value = vtype.decode(lexeme, encoding)
                 else:
                     value = vtype.decode(lexeme)

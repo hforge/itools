@@ -29,7 +29,7 @@ sys.path.insert(1, '/'.join(os.getcwd().split('/')[:-1]))
 from itools.resources import get_resource
 from itools.resources import memory
 from itools.handlers.Text import Text
-from itools.types import URI
+from itools.datatypes import URI
 
 # Import from ical
 from icalendar import icalendar, Property

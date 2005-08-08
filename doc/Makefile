@@ -13,6 +13,9 @@ FIGURES = packages.eps state.eps handlers.eps l10n.eps
 	dia --export=$@ $<
 
 
+%.eps: %.fig
+	fig2dev -L eps $< $@
+
 dvi: $(FIGURES) $(SOURCES)
 	latex itools.tex
 	makeindex itools.idx

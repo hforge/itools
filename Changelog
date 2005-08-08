@@ -2,6 +2,32 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-08 11:00:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
+
+    Summary:
+      doc, merge new l10n figure in fig format from luis
+    Revision:
+      itools--main--0.10--patch-46
+
+    Patches applied:
+    
+     * luis@itaapy.com--private/itools--luis--0.8--patch-5
+       improve the l10n.eps figure using fig format and psfrag latex features
+    
+
+    new files:
+     doc/.arch-ids/l10n.fig.id doc/l10n.fig
+
+    removed files:
+     doc/.arch-ids/l10n.dia.id doc/l10n.dia
+
+    modified files:
+     Changelog doc/Makefile doc/i18n.tex doc/itools.tex
+
+    new patches:
+     luis@itaapy.com--private/itools--luis--0.8--patch-5
+
+
 2005-08-08 10:43:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-45
 
     Summary:

@@ -6,15 +6,12 @@ provided by {\tt itools.web} to develop web applications.
 
 \section{The Publisher}
 
-The first and most important user interface within the Web is the URI
-(Uniform Resource Identifier). Even if users reach a site's content by
-clicking links, instead of typing their URIs.
-
- This is how a URI looks
-like with {\tt itools.web}:
+The first and most important interface within the Web is the URI (Uniform
+Resource Identifier), both from the user's and programmer's point of view.
+This is how a URI looks like with {\tt itools.web}:
 
 \begin{code}
-    http://localhost:8000/ikaaro/;about
+    http://localhost:8000/users/toto/;view
 \end{code}
 
 What is of most interest to us is the path, which expressed in a general
@@ -24,31 +21,30 @@ form has the structure:
     <path to resource>/;<method>
 \end{code}
 
-Where {\tt <method>} is a view of the resource, or an action over it.
-Other examples are:
+It is splitted in two parts, a path to a resource, and an action or view
+over that resource. The Figure~\ref{Figure: web tree} shows an excerpt
+of the application's structure, the excerpt that is relevant to our example.
 
-\begin{code}
-    http://localhost:8080/ikaaro/users/toto/;view
-    http://localhost:8080/ikaaro/test/index/;edit_form
-    http://localhost:8080/ikaaro/test/index/;edit
-\end{code}
+\begin{figure}
+  \center
+  \includegraphics[width=5.0cm]{web_tree.eps}
+  \caption{The application tree (an excerpt).}
+  \label{Figure: web tree}
+\end{figure}
 
-The particular aspect of the URL, as I am sure you have already observed,
-is the semicolon ({\tt ;}). It makes the URL more readable by distinguishing
-a resource from a method, hence solving an ambiguity. For example, in the
-URL:
+So, the web application has a graph structure with a root node (an entry
+point to the graph). The URI path goes from the root to another node in
+the graph.
 
-\begin{code}
-    http://localhost:8080/ikaaro/test/index/edit
-\end{code}
+Once the node is reached, the given {\tt <method>} of the resource is called.
+That's what the {\tt itools.web} publisher does, follow the path to reach
+the node and call the method.
 
-You know {\tt edit} is the name of a resource, and not a method, because it
-is not preceeded by a semicolon.
+The use of the semicolon to separate the method from the path makes the
+URI explicit, you look at it and you know what is the path, which nodes
+in the graph the path goes through, and which method is called at the end.
 
-This not only makes the URLs more easy to read for the end user, it also
-simplifies the publishing logic, what is a good thing.
-
-By the way, the character semicolon has been choosen because it is defined
+Note that the character semicolon has been choosen because it is defined
 by the RFC 2396\footnote{http://www.ietf.org/rfc/rfc2396.txt}, which defines
 the URI standard. It is the character that, within a path segment, separates
 the resource name from the segment parameters.

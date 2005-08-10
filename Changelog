@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-10 18:47:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-51
+
+    Summary:
+      doc, working on the web chapter
+    Revision:
+      itools--main--0.10--patch-51
+
+
+    new files:
+     doc/.arch-ids/web_tree.dia.id doc/web_tree.dia
+
+    modified files:
+     Changelog Makefile doc/Makefile doc/web.tex
+
+
 2005-08-10 16:55:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
 
     Summary:

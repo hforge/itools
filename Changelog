@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-10 16:55:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
+
+    Summary:
+      doc, start chapter for the itools.web
+    Revision:
+      itools--main--0.10--patch-50
+
+
+    new files:
+     doc/.arch-ids/web.tex.id doc/web.tex
+
+    modified files:
+     Changelog doc/Makefile doc/itools.tex
+
+
 2005-08-08 16:26:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
 
     Summary:

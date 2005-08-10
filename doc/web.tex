@@ -1,0 +1,153 @@
+\chapter{The Web}
+
+This chapter documents the high-level, cross-protocol, programming interface
+provided by {\tt itools.web} to develop web applications.
+
+
+\section{The Publisher}
+
+The first and most important user interface within the Web is the URI
+(Uniform Resource Identifier). Even if users reach a site's content by
+clicking links, instead of typing their URIs.
+
+ This is how a URI looks
+like with {\tt itools.web}:
+
+\begin{code}
+    http://localhost:8000/ikaaro/;about
+\end{code}
+
+What is of most interest to us is the path, which expressed in a general
+form has the structure:
+
+\begin{code}
+    <path to resource>/;<method>
+\end{code}
+
+Where {\tt <method>} is a view of the resource, or an action over it.
+Other examples are:
+
+\begin{code}
+    http://localhost:8080/ikaaro/users/toto/;view
+    http://localhost:8080/ikaaro/test/index/;edit_form
+    http://localhost:8080/ikaaro/test/index/;edit
+\end{code}
+
+The particular aspect of the URL, as I am sure you have already observed,
+is the semicolon ({\tt ;}). It makes the URL more readable by distinguishing
+a resource from a method, hence solving an ambiguity. For example, in the
+URL:
+
+\begin{code}
+    http://localhost:8080/ikaaro/test/index/edit
+\end{code}
+
+You know {\tt edit} is the name of a resource, and not a method, because it
+is not preceeded by a semicolon.
+
+This not only makes the URLs more easy to read for the end user, it also
+simplifies the publishing logic, what is a good thing.
+
+By the way, the character semicolon has been choosen because it is defined
+by the RFC 2396\footnote{http://www.ietf.org/rfc/rfc2396.txt}, which defines
+the URI standard. It is the character that, within a path segment, separates
+the resource name from the segment parameters.
+
+
+
+\section{The Context}
+
+Wherever in the code there is available a global object named the
+{\em context}, it contains:
+
+\begin{api}
+  {\tt request}\\
+  - The request object.
+
+  {\tt response}\\
+  - The response object.
+
+  {\tt user}\\
+  - The authenticated user, or {\tt None} if it is an anonymous (non
+    authenticated) user.
+
+  {\tt root}\\
+  - The handler for the root resource.
+
+  {\tt handler}\\
+  - The handler of the resource being published (usually it is {\tt self}).
+
+  {\tt path}\\
+  - The path from the root handler to the published handler (an instance
+    of the {\tt itools.uri.Path} class).
+
+  {\tt method}\\
+  - The name of the method being published, or {\tt None} if the url did
+    not specified the method.
+\end{api}
+
+The context can be accessed through the {\tt itools.web.get\_context}
+method. A pattern that is very often found within the ikaaro's code is:
+
+\begin{code}
+    from itools.web import get_context
+
+    context = get_context()
+    request, response = context.request, context.response
+\end{code}
+
+
+\subsection{The Request}
+
+The request object is a wrapper around the Zope's request object, it
+provides a higher level API:
+
+\begin{api}
+    {\tt uri}\\
+    - The requested uri (an {\tt itools.uri} reference).
+
+    {\tt referer}\\
+    - The referer uri (an {\tt itools.uri} reference), or {\tt None} if
+      there is not a referer.
+
+    {\tt accept\_language}\\
+    - An instance of the {\tt itools.i18n.accept.AcceptLanguage} class, it
+      keeps the user preferred languages.
+
+    {\tt form}\\
+    - The request parameters passed either through the query or as form
+      values. It is mapping from key to value.
+
+    {\tt cookies}\\
+    - The cookies, it is a mapping.
+\end{api}
+
+
+\subsection{The Response}
+
+The response object is a wrapper around the Zope's response object, it
+provides a higher level API:
+
+
+\begin{api}
+  {\tt has\_header(name)}\\
+  - 
+
+  {\tt get\_header(name)}\\
+  - 
+
+  {\tt set\_header(value)}\\
+  - 
+
+  {\tt del\_cookie(name)}\\
+  - 
+
+  {\tt set\_cookie(name, value, **kw)}\\
+  - 
+
+  {\tt redirect(uri)}\\
+  - 
+
+  {\tt set\_status(status)}\\
+  - 
+\end{api}

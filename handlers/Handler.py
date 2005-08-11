@@ -110,6 +110,7 @@ class Node(object):
 
 
     def get_handler(self, path):
+        from Folder import build_virtual_handler
         # Be sure path is a Path
         if not isinstance(path, uri.Path):
             path = uri.Path(path)
@@ -131,6 +132,7 @@ class Node(object):
         name = segment.name
 
         handler = self._get_virtual_handler(segment)
+        handler = build_virtual_handler(handler)
         # Set parent and name
         handler.parent = self
         handler.name = name
@@ -180,11 +182,14 @@ class Handler(Node):
     def load_state(self, resource=None):
         if resource is None:
             resource = self.resource
+            update = False
         else:
-            self.set_changed()
+            update = True
 
         self._load_state(resource)
         self.timestamp = resource.get_mtime()
+        if update:
+            self.set_changed()
 
 
     def save_state(self, resource=None):

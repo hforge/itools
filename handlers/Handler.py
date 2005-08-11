@@ -183,11 +183,14 @@ class Handler(Node):
     def load_state(self, resource=None):
         if resource is None:
             resource = self.resource
+            update = False
         else:
-            self.set_changed()
+            update = True
 
         self._load_state(resource)
         self.timestamp = resource.get_mtime()
+        if update:
+            self.set_changed()
 
 
     def save_state(self, resource=None):

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-08-26 10:12:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
+
+    Summary:
+      update the MANIFEST file, include xfig figures
+    Revision:
+      itools--main--0.10--patch-53
+
+
+    modified files:
+     Changelog MANIFEST.in
+
+
 2005-08-11 16:58:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-52
 
     Summary:

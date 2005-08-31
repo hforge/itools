@@ -19,6 +19,8 @@
 
 class Mailto(object):
 
+    scheme = 'mailto'
+
     def __init__(self, username, host):
         self.username = username
         self.host = host

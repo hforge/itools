@@ -2,6 +2,34 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-09-02 20:21:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
+
+    Summary:
+      rss, merge improvements from piotr
+    Revision:
+      itools--main--0.10--patch-55
+
+    Patches applied:
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-10
+       merging
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-11
+       decode and encode datetime with timezone info
+    
+     * piotr@macuk.pl--public/itools--rss--0.10--patch-12
+       added some missing blank lines (conding style)
+    
+
+    modified files:
+     Changelog rss/rss.py rss/test_rss.py
+
+    new patches:
+     piotr@macuk.pl--public/itools--rss--0.10--patch-10
+     piotr@macuk.pl--public/itools--rss--0.10--patch-11
+     piotr@macuk.pl--public/itools--rss--0.10--patch-12
+
+
 2005-08-27 15:39:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-54
 
     Summary:

@@ -202,6 +202,9 @@ class Catalog(Folder):
 
             # Stored fields (hits)
             if field.is_stored:
+                # XXX Coerce lists
+                if isinstance(value, list):
+                    value = ' '.join(value)
                 idoc._set_handler('s%d' % field.number,
                                   StoredField(data=value))
 

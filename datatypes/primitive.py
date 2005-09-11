@@ -212,7 +212,7 @@ class FileName(DataType):
         if n == 1:
             return data[0], None, None
         elif n == 2:
-            if '.%s' % data[-1] in mimetypes.types_map:
+            if '.%s' % data[-1].lower() in mimetypes.types_map:
                 name, type = data
                 return name, type, None
             elif data[-1] in i18n.languages:
@@ -230,7 +230,7 @@ class FileName(DataType):
                 data = data[:-1]
 
             # The type
-            if '.%s' % data[-1] in mimetypes.types_map:
+            if '.%s' % data[-1].lower() in mimetypes.types_map:
                 type = data[-1]
                 data = data[:-1]
 

@@ -16,7 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from the Standard Library
-from datetime import tzinfo, timedelta
+from datetime import tzinfo, timedelta, datetime
+from time import strptime
 
 # Import from itools
 from itools.handlers.Text import Text
@@ -50,24 +51,78 @@ rss_all_elements = rss_channel_elements + rss_image_elements + \
                    rss_item_elements
 
 
+
 # DateTime time zone information
 class TZInfo(tzinfo):
-    pass
+
+    known_time_zones = {
+        'GMT': 0, 'UTC': 0, 'UT': 0, # Greenwich Mean Time
+        'EDT': -4, 'HAE': -4, # Eastern Daylight Time
+        'EST': -5, 'HNE': -5, # Eastern Standard Time
+        'CDT': -5, 'HAC': -5, # Central Daylight Time
+        'CST': -6, 'HNC': -6, # Central Standard Time
+        'MDT': -6, 'HAR': -6, # Mountain Daylight Time
+        'MST': -7, 'HNR': -7, # Mountain Standard Time
+        'PDT': -7, 'HAP': -7, # Pacific Daylight Time
+        'PST': -8, 'HNP': -8  # Pacific Standard Time
+    }
+
+    def __init__(self, offset):
+        # Offset as sign (+, -) and the number HHMM
+        if offset[0] in ('+', '-'):
+            # Strip zeros
+            off = offset[1:].lstrip('0')
+            # Offset in hours with sigh
+            off = int(offset[0] + off) / 100
+        elif self.known_time_zones.has_key(offset):
+            off = self.known_time_zones[offset]
+        else:
+            off = 0
+        self.__offset = timedelta(hours=off)
+        self.__name = None
+
+
+    def utcoffset(self, dt):
+        return self.__offset
+
+
+    def tzname(self, dt):
+        return self.__name
+
+
+    # Implementation without DST
+    def dst(self, dt):
+        return timedelta(0)
+
 
         
-# Encode and decode pubDate
-class DateTime(DataType):
+# Encode and decode pubDate and other RSS dates with or without timezone info
+class TZDateTime(DataType):
 
     @staticmethod
     def decode(value):
-        pass
+        # Remove the day name part if exists
+        str = value.split(',')[-1].strip()
+        # Split date and timezone part if exists
+        datetime_parts = str.split(' ')
+        date = ' '.join(datetime_parts[0:4])
+        if len(datetime_parts) > 4:
+            timezone = datetime_parts[4]
+        else:
+            # UTC is the default timezone
+            timezone = 'UTC'
+        dt = strptime(date, '%d %b %Y %H:%M:%S')
+        tz = TZInfo(timezone)
+        return datetime(dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], 0, tz)
 
 
     @staticmethod
     def encode(value):
         if value is None:
             return ''
-        return value.strftime('%Y-%m-%d %H:%M')
+        else:
+            utc = TZInfo('UTC')
+            return value.astimezone(utc).strftime('%Y-%m-%d %H:%M:%S')
 
 
     @staticmethod
@@ -77,16 +132,17 @@ class DateTime(DataType):
         return unicode(value.strftime('%Y-%m-%d %H:%M'))
 
 
+
 # RSS tags types for encode and decode
 schema = {'title': Unicode,
           'link': URI,
           'description': Unicode,
           'language': Unicode,
           'copyright': Unicode,
-          # 'pubDate': DateTime,
+          # 'pubDate': TZDateTime,
           'pubDate': Unicode,
           'ttl': Integer,
-          # 'lastBuildDate': DateTime,
+          # 'lastBuildDate': TZDateTime,
           'lastBuildDate': Unicode,
           'generatora': Unicode,
           'url': URI,
@@ -94,6 +150,7 @@ schema = {'title': Unicode,
           'height': Integer,
           'image': String,
           }
+
 
 
 class RssChannel(object):
@@ -105,21 +162,26 @@ class RssChannel(object):
         self.items = []
         self.image = None
 
+
     # Add item to the channel
     def add_item(self, item):
         self.items.append(item)
+
 
     # Get channel items
     def get_items(self):
         return self.items
 
+
     # Add image data to the channel
     def add_image(self, image):
         self.image = image
 
+
     # Get channel image data
     def get_image(self):
         return self.image
+
 
     # Add additional elements
     def add_elements(self, elements):
@@ -128,12 +190,14 @@ class RssChannel(object):
                 self.__dict__[k] = elements[k]
 
 
+
 class RssChannelItem(object):
 
     def __init__(self, title, link, description):
         self.title = title
         self.link = link
         self.description = description
+
 
     # Add additional elements
     def add_elements(self, elements):

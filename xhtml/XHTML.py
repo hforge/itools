@@ -354,6 +354,7 @@ class Document(XML.Document):
         buffer.write(self.header_to_unicode())
         message = i18n.segment.Message()
         keep_spaces = False
+        root_element = self.get_root_element()
         for node, context in self.traverse2():
             if isinstance(node, unicode):
                 message.append(node)

@@ -1,5 +1,6 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Nicolas OYEZ <noyez@itaapy.com>
+# Copyright (C) 2005 Nicolas Oyez <noyez@itaapy.com>
+#               2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,15 +16,14 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-#import from itools
+# Import from itools
 from itools.handlers.Text import Text
 from itools.xml import parser
 
 
+
 def protect_content(s):
-    if s:
-        return s.replace('<','&lt;').replace('>','&gt;')
-    return u''
+    return s.replace('<','&lt;').replace('>','&gt;')
 
 
 
@@ -32,6 +32,7 @@ class Note(object):
     def __init__(self, text=None, attributes={}):
         self.text = text
         self.attributes = attributes
+
 
     def to_unicode(self):
         s = []
@@ -46,35 +47,32 @@ class Note(object):
             s.append(u'<note>')
 
         s.append(self.text)
-
         s.append(u'</note>\n')
-
         return u''.join(s)
+
 
 
 class Sentence(object):
 
-    def __init__(self, text='', attributes={}, notes=[]):
+    def __init__(self, attributes):
         self.attributes = attributes
-        self.text = text
-        self.notes = notes
+        self.text = ''
+        self.notes = []
+
 
     def to_unicode(self):
         s = []
-        att_lang = self.attributes['lang']
-        if self.attributes != {}:
-            att = [u'%s="%s"' % (k, self.attributes[k]) 
-                  for k in self.attributes.keys() if k != 'lang']
-            s.append(u'<tuv xml:lang="%s" %s>\n' % (att_lang,' '.join(att)))
-        else:
-            s.append(u'<tuv xml:lang="%s">\n' % att_lang)
-        
-        if self.notes:
-            for l in self.notes:
-                s.append(l.to_unicode())
-        
+        attributes = ['xml:lang="%s"' % self.attributes['lang']]
+        for attr_name in self.attributes:
+            if attr_name != 'lang':
+                attributes.append(u'%s="%s"' % (attr_name,
+                                                self.attributes[attr_name]))
+        s.append(u'<tuv %s>\n' % ' '.join(attributes))
+
+        for note in self.notes:
+            s.append(note.to_unicode())
+
         s.append(u'<seg>%s</seg>\n' % protect_content(self.text))
-        
         s.append(u'</tuv>\n')
         return u''.join(s)
 
@@ -82,10 +80,11 @@ class Sentence(object):
 
 class Message(object):
 
-    def __init__(self, msgstr, attributes={}, notes=[]):
+    def __init__(self, attributes):
         self.attributes = attributes
-        self.msgstr = msgstr
-        self.notes = notes
+        self.msgstr = {}
+        self.notes = []
+
 
     def to_unicode(self):
         s = []
@@ -100,11 +99,10 @@ class Message(object):
             for l in self.notes:
                 s.append(l.to_unicode())
        
-        mkeys = self.msgstr.keys()
-        mkeys.sort()
-        #for l in self.msgstr.keys():
-        for l in mkeys:
-            s.append(self.msgstr[l].to_unicode())
+        languages = self.msgstr.keys()
+        languages.sort()
+        for language in languages:
+            s.append(self.msgstr[language].to_unicode())
             
         s.append(u'</tu>\n')
         return u''.join(s)
@@ -113,134 +111,100 @@ class Message(object):
 
 class TMX(Text):
 
-
     def get_skeleton(self):
-        s = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-             '<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">\n'
-             '<tmx version="1.4">\n'
-             '  <header o-encoding="utf-8" srclang="fr">\n'
-             '  </header>\n'
-             '    <body>\n'
-             '      <tu>\n'
-             '        <tuv xml:lang="fr" >\n'
-             '          <seg>nothing</seg>\n'
-             '        </tuv>\n'
-             '      </tu>\n'
-             '    </body>\n'
-             '</tmx>')
+        return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">\n'
+                '<tmx version="1.4">\n'
+                '  <header o-encoding="utf-8" srclang="fr">\n'
+                '  </header>\n'
+                '    <body>\n'
+                '      <tu>\n'
+                '        <tuv xml:lang="fr" >\n'
+                '          <seg>nothing</seg>\n'
+                '        </tuv>\n'
+                '      </tu>\n'
+                '    </body>\n'
+                '</tmx>')
 
-        return s
-
-    def build(self, xml_header, version, tmx_header, msgs):
-        state = self.state
-        state.standalone = xml_header['standalone']
-        state.xml_version = xml_header['xml_version']
-        state.document_type = xml_header['document_type']
-        state.source_encoding = tmx_header['o-encoding']
-        state.header = tmx_header
-        state.messages = msgs
-        state.version = version
-
-    def get_languages(self):
-        state = self.state
-        languages = []
-        for m in state.messages.values():
-            for l in m.msgstr.keys():
-                if l not in languages:
-                    languages.append(l)
-        return languages
-
-    def get_srclang(self):
-        state = self.state
-        return u'%s' % state.header['srclang']
 
     #######################################################################
     # Load
     #######################################################################
     def _load_state(self, resource):
         state = self.state
-        state.header, state.messages, state.header_notes = {}, {}, {}
-        stack = [] 
-        message = {}
-        tu_attribute, tuv_attribute, note_att = {}, {}, {}
-        srclang, text = None, ''
-        notes = {'tu':[], 'tuv':[], 'header':[]}
+        state.header = {}
+        messages = {}
+        state.header_notes = {}
         for event, value, line_number in parser.parse(resource.read()):
-            if event == parser.XML_DECLARATION:
-                state.xml_version, state.source_encoding = value[:2]
-                state.standalone = value[2]
-            elif event == parser.DOCUMENT_TYPE:
+            if event == parser.DOCUMENT_TYPE:
                 state.document_type = value
             elif event == parser.START_ELEMENT:
-                stack.append(value[2])
+                namespace, local_name, attributes = value
+                # Attributes, get rid of the namespace uri (XXX bad)
+                aux = {}
+                for attr_key in attributes:
+                    attr_name = attr_key[1]
+                    aux[attr_name] = attributes[attr_key]
+                attributes = aux
+
+                if local_name == 'tmx':
+                    state.version = attributes['version']
+                elif local_name == 'header':
+                    state.header = attributes
+                    default_srclang = attributes['srclang']
+                    notes = []
+                elif local_name == 'note':
+                    note = Note(attributes=attributes)
+                elif local_name == 'tu':
+                    tu = Message(attributes)
+                    notes = []
+                elif local_name == 'tuv':
+                    tuv = Sentence(attributes)
+                    notes = []
+                    segment = None
             elif event == parser.END_ELEMENT:
-                local_name = value[2]
-                if stack[-1] == local_name:
-                    if local_name == 'tuv':
-                        if text:
-                            s = Sentence(text, tuv_attribute, notes['tuv'])
-                            message[tuv_attribute['lang']] = s
-                        notes['tuv'], tuv_attribute, text = [], {}, ''
-                    elif local_name == 'header':
-                        state.header_notes = notes['header']
-                        notes['header'] = []
-                    elif local_name == 'tu':
-                        id_lang = srclang or state.header['srclang']
-                        if id_lang == '*all*':
-                            raise NotImplementedError, 'no support yet for '\
-                                                 '"*all*" in srclang attribute.'
-                        id = message['%s' % id_lang]
-                        m = Message(message, tu_attribute, notes['tu'])
-                        state.messages[id.text] = m
-                        message, srclang, tu_attribute = {}, None, {}
-                        notes['tu'] = []
-                    stack.pop()
-            elif event == parser.ATTRIBUTE:
-                local_name, data = value[2], value[3]
-                if stack[-1] == "tmx" and local_name == 'version':
-                    state.version = data
-                elif stack[-1] == "tu":
-                    tu_attribute[local_name] = data 
-                    if local_name == 'srclang':
-                        srclang = data
-                elif stack[-1] == "tuv":
-                    tuv_attribute[local_name] = data 
-                elif stack[-1] == "header":
-                    state.header[local_name] = data
-                elif stack[-1] == "note":
-                    note_att[local_name] = data
+                namespace, local_name = value
+                if local_name == 'header':
+                    state.header_notes = notes
+                elif local_name == 'note':
+                    note.text = text
+                    notes.append(note)
+                elif local_name == 'tu':
+                    tu.notes = notes
+                    srclang = tu.attributes.get('srclang', default_srclang)
+                    if srclang == '*all*':
+                        raise NotImplementedError, \
+                              'no support for "*all*" in srclang attribute.'
+                    msgid = tu.msgstr[srclang].text
+                    messages[msgid] = tu
+                elif local_name == 'tuv':
+                    if segment is not None:
+                        tuv.notes = notes
+                        tuv.text = segment
+                        tu.msgstr[tuv.attributes['lang']] = tuv
+                elif local_name == 'seg':
+                    segment = text
             elif event == parser.COMMENT:
                 pass
             elif event == parser.TEXT:
-                if stack:
-                    if stack[-1] == 'note':
-                        n = Note(unicode(value,'utf8'), note_att)
-                        notes[stack[-2]].append(n)
-                        note_att = {}
-                    elif stack[-1] == 'seg':
-                        text = unicode(value,'utf8')
+                text = unicode(value, 'UTF-8')
+
+        state.messages = messages
 
 
-
+    #######################################################################
+    # Save
+    #######################################################################
     def xml_header_to_unicode(self, encoding='UTF-8'):
         state = self.state
         s = []
         # The XML declaration
-        if state.standalone == 1:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>\n'
-        elif state.standalone == 0:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>\n'
-        else:       
-            pattern = u'<?xml version="%s" encoding="%s"?>\n'
-        s.append(pattern % (state.xml_version, encoding))
+        s.append(u'<?xml version="1.0" encoding="%s"?>\n' % encoding)
         # The document type
         if state.document_type is not None:
-            pattern = u'<!DOCTYPE %s ' \
-                      u'SYSTEM "%s">\n'
-            s.append(pattern % state.document_type[:2])
-                
-        return u''.join(s)
+            s.append(u'<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
 
+        return u''.join(s)
 
 
     def header_to_unicode(self, encoding='UTF-8'):
@@ -252,8 +216,8 @@ class TMX(Text):
             s.append(u'<tmx>\n')
         
         if state.header != {}:
-            attributes = [u'\n%s="%s"' % (k, state.header[k]) 
-                         for k in state.header.keys()]
+            attributes = [ u'\n%s="%s"' % (k, state.header[k])
+                           for k in state.header.keys() ]
             s.append(u'<header %s>\n' % u''.join(attributes))
         else:
             s.append(u'<header>\n')
@@ -263,24 +227,48 @@ class TMX(Text):
                 s.append(n.to_unicode())
 
         s.append(u'</header>\n')
-            
         return u''.join(s)
-
 
 
     def to_unicode(self, encoding=None):
+        s = [self.xml_header_to_unicode(),
+             self.header_to_unicode(),
+             u'<body>']
+        messages = self.state.messages
+        msgids = messages.keys()
+        msgids.sort()
+        for msgid in msgids:
+            s.append(messages[msgid].to_unicode())
+        s.append(u'</body>')
+        s.append(u'</tmx>')
+        return u'\n'.join(s)
+
+
+    #######################################################################
+    # API
+    #######################################################################
+    def get_languages(self):
         state = self.state
-        #msgs = u'\n'.join([ x.to_unicode() for x in state.messages.values() ])
-        idKeys = state.messages.keys()
-        idKeys.sort()
-        msgs = u'\n'.join([state.messages[x].to_unicode() for x in idKeys])
-        s = []
-        s.append(self.xml_header_to_unicode())
-        s.append(self.header_to_unicode())
-        s.append(u'<body>\n')
-        s.append(msgs)
-        s.append(u'</body>\n')
-        s.append(u'</tmx>\n')
-        return u''.join(s)
+        languages = []
+        for m in state.messages.values():
+            for l in m.msgstr.keys():
+                if l not in languages:
+                    languages.append(l)
+        return languages
+
+
+    def get_srclang(self):
+        state = self.state
+        return u'%s' % state.header['srclang']
+
+
+    def build(self, xml_header, version, tmx_header, msgs):
+        state = self.state
+        state.document_type = xml_header['document_type']
+        state.source_encoding = tmx_header['o-encoding']
+        state.header = tmx_header
+        state.messages = msgs
+        state.version = version
+
 
 Text.register_handler_class(TMX)

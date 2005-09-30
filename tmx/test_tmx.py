@@ -15,29 +15,24 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Python
+# Import from the Standard Library
 import unittest
 from unittest import TestCase
 
-# Import from itools.tmx
+# Import from itools
+from itools.resources import get_resource
 from TMX import TMX
 
-# Import from itools.resources
-from itools.resources import get_resource
 
-file = "localizermsgs.tmx"
-#file = "test.tmx"
+src = get_resource('localizermsgs.tmx')
+
 
 class TMXTestCase(TestCase):
 
     def test_input(self):
         """Test input."""
-        
-        src = get_resource(file)
         tmx = TMX(src)
-        fd = open('test.tmx', 'w')
-        fd.write(tmx.to_str())
-        fd.close()
+        open('test.tmx', 'w').write(tmx.to_str())
 
  
 if __name__ == '__main__':

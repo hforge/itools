@@ -76,8 +76,8 @@ class RSSTestCase(TestCase):
         for dt, utc in test_dates.items():
             d = TZDateTime.decode(dt)
             self.assertEqual(TZDateTime.encode(d), utc)
-            
 
-        
+
+
 if __name__ == '__main__':
     unittest.main()

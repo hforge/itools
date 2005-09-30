@@ -20,18 +20,18 @@ from itools.handlers.Text import Text
 from itools.xml import parser
 
 
+
 def protect_content(s):
-    if s:
-        return s.replace('<','&lt;').replace('>','&gt;')
-    return u''
+    return s.replace('<','&lt;').replace('>','&gt;')
 
 
-    
+
 class Note(object):
-    
-    def __init__(self, text=None, attributes={}):
-        self.text = text
+
+    def __init__(self, attributes):
+        self.text = None
         self.attributes = attributes
+
 
     def to_unicode(self):
         s = []
@@ -46,22 +46,19 @@ class Note(object):
             s.append(u'<note>')
             
         s.append(self.text)
-
         s.append(u'</note>\n')
-
         return u''.join(s)
-
 
 
 
 class Translation(object):
 
-    def __init__(self, source=None, target=None, attributes={}, notes=[]):
-        
-        self.source = source
-        self.target = target
+    def __init__(self, attributes):
+        self.source = None
+        self.target = None
         self.attributes = attributes
-        self.notes = notes
+        self.notes = []
+
 
     def to_unicode(self):
         s = []
@@ -74,32 +71,33 @@ class Translation(object):
             s.append(u'>\n')
         else:
             s.append(u'<trans-unit>\n')
-        
+
         if self.source:
             s.append(u' <source>%s</source>\n' % protect_content(self.source))
 
         if self.target:
             s.append(u' <target>%s</target>\n' % protect_content(self.target))
 
-        if self.notes:
-            for l in self.notes:
-                s.append(l.to_unicode())
-                
-        s.append(u'</trans-unit>\n')
+        for l in self.notes:
+            s.append(l.to_unicode())
 
+        s.append(u'</trans-unit>\n')
         return u''.join(s)
 
 
 
 class File(object):
 
-    def __init__(self, body={}, attributes={}, header=[]):
-        self.body = body
+    def __init__(self, attributes):
+        self.body = {}
         self.attributes = attributes
-        self.header = header
+        self.header = []
+
 
     def to_unicode(self):
         s = []
+
+        # Opent tag
         if self.attributes != {}:
             att = [u' %s="%s"' % (k, self.attributes[k]) 
                   for k in self.attributes.keys() if k != 'space']
@@ -109,158 +107,108 @@ class File(object):
             s.append(u'>\n')
         else:
             s.append(u'<file>\n')
-        
+        # The header
         if self.header:
             s.append(u'<header>\n')
             for l in self.header:
                 s.append(l.to_unicode())
             s.append(u'</header>\n')
-            
+        # The body
         s.append(u'<body>\n')
-            
         if self.body:
             mkeys = self.body.keys()
             mkeys.sort()
-            
             msgs = u'\n'.join([ self.body[m].to_unicode() for m in mkeys ])
             s.append(msgs)
-            
         s.append(u'</body>\n')
-        
+        # Close tag
         s.append(u'</file>\n')
 
         return u''.join(s)
-        
+
 
 
 class XLIFF(Text):
 
     def get_skeleton(self):
-        s = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-             '<!DOCTYPE xliff SYSTEM "http://www.oasis-open.org/'
-             'committees/xliff/documents/xliff.dtd">\n'
-             '<xliff version="1.0">\n'
-             '  <file original="/nothing" datatype="plaintext"\n'
-             '        source-language="en">\n'
-             '    <body>\n'
-             '      <trans-unit id="1">\n'
-             '        <source>nothing</source>\n'
-             '      </trans-unit>\n'
-             '    </body>\n'
-             '  </file>\n'
-             '</xliff>\n')
+        return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<!DOCTYPE xliff SYSTEM "http://www.oasis-open.org/'
+                'committees/xliff/documents/xliff.dtd">\n'
+                '<xliff version="1.0">\n'
+                '  <file original="/nothing" datatype="plaintext"\n'
+                '        source-language="en">\n'
+                '    <body>\n'
+                '      <trans-unit id="1">\n'
+                '        <source>nothing</source>\n'
+                '      </trans-unit>\n'
+                '    </body>\n'
+                '  </file>\n'
+                '</xliff>\n')
 
-        return s
-
-
-    def build(self, xml_header, version, files):
-        state = self.state
-        state.standalone = xml_header['standalone']
-        state.xml_version = xml_header['xml_version']
-        state.document_type = xml_header['document_type']
-        state.files = files
-        state.version = version
-
-
-    def get_languages(self):
-        state = self.state
-        
-        files_id, sources, targets = [], [], []
-        for file in state.files:
-            file_id = file.attributes['original']
-            source = file.attributes['source-language']
-            target = file.attributes.get('target-language', '')
-
-            if file_id not in files_id:
-                files_id.append(file_id)
-            if source not in sources:
-                sources.append(source)
-            if target not in targets:
-                targets.append(target)
-                
-        languages = ((files_id, sources, targets))
-
-        return languages
 
     #######################################################################
     # Load
     #######################################################################
     def _load_state(self, resource):
         state = self.state
-        state.files, state.lang = [], u''
-        stack = []
-        file_att, body = {}, {}
-        trans_att, source, target = {}, None, None
-        note_att = {}
-        notes = {'header':[], 'trans-unit':[]}
+        state.files = []
         for event, value, line_number in parser.parse(resource.read()):
-            if event == parser.XML_DECLARATION:
-                state.xml_version, state.source_encoding = value[:2]
-                state.standalone = value[2]
-            elif event == parser.DOCUMENT_TYPE:
+            if event == parser.DOCUMENT_TYPE:
                 state.document_type = value
             elif event == parser.START_ELEMENT:
-                stack.append(value[2])
+                namespace, local_name, attributes = value
+                # Attributes, get rid of the namespace uri (XXX bad)
+                aux = {}
+                for attr_key in attributes:
+                    attr_name = attr_key[1]
+                    aux[attr_name] = attributes[attr_key]
+                attributes = aux
+
+                if local_name == 'xliff':
+                    state.version = attributes['version']
+                    state.lang = attributes.get('lang', None)
+                elif local_name == 'file':
+                    file = File(attributes)
+                elif local_name == 'header':
+                    notes = []
+                elif local_name == 'trans-unit':
+                    translation = Translation(attributes)
+                    notes = []
+                elif local_name == 'note':
+                    note = Note(attributes)
             elif event == parser.END_ELEMENT:
-                local_name = value[2]
-                if stack[-1] == local_name:
-                    if local_name == 'file':
-                        f = File(body, file_att, notes['header'])
-                        state.files.append(f)
-                        body, file_att, notes['header'] = {}, {}, []
-                    elif local_name == 'trans-unit':
-                        t = Translation(source, target, trans_att, 
-                                        notes['trans-unit'])
-                        body[t.source] = t
-                        trans_att, notes['trans-unit'] = {}, []
-                        source, target = None, None
-                    stack.pop()
-            elif event == parser.ATTRIBUTE:
-                local_name, data = value[2], value[3]
-                if stack[-1] == "xliff" and local_name=='version':
-                    state.version = data
-                elif stack[-1] == "xliff" and local_name=='lang':
-                    state.lang = data
-                elif stack[-1] == "file":
-                    file_att[local_name] = data
-                elif stack[-1] == "trans-unit":
-                    trans_att[local_name] = data
-                elif stack[-1] == "note":
-                    note_att[local_name] = data
+                namespace, local_name = value
+
+                if local_name == 'file':
+                    state.files.append(file)
+                elif local_name == 'header':
+                    file.header = notes
+                elif local_name == 'trans-unit':
+                    translation.notes = notes
+                    file.body[translation.source] = translation
+                elif local_name == 'source':
+                    translation.source = text
+                elif local_name == 'target':
+                    translation.target = text
+                elif local_name == 'note':
+                    note.text = text
+                    notes.append(note)
             elif event == parser.COMMENT:
                 pass
             elif event == parser.TEXT:
-                if stack:
-                    if stack[-1] == 'note':
-                        n = Note(unicode(value,'utf8'), note_att)
-                        notes[stack[-2]].append(n)
-                        note_att = {}
-                    elif stack[-1] == 'source':
-                        source = unicode(value,'utf8')
-                    elif stack[-1] == 'target':
-                        target = unicode(value,'utf8')
+                text = unicode(value, 'UTF-8')
 
 
-
+    #######################################################################
+    # Save
+    #######################################################################
     def xml_header_to_unicode(self, encoding='UTF-8'):
         state = self.state
-        s = []
-        # The XML declaration
-        if state.standalone == 1:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>\n'
-        elif state.standalone == 0:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>\n'
-        else:       
-            pattern = u'<?xml version="%s" encoding="%s"?>\n'
-        s.append(pattern % (state.xml_version, encoding))
+        s = [u'<?xml version="1.0" encoding="%s"?>\n' % encoding]
         # The document type
         if state.document_type is not None:
-            pattern = u'<!DOCTYPE %s ' \
-                      u'SYSTEM "%s">\n'
-            s.append(pattern % state.document_type[:2])
-                
+            s.append(u'<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
         return u''.join(s)
-
 
 
     def header_to_unicode(self, encoding='UTF-8'):
@@ -276,17 +224,40 @@ class XLIFF(Text):
         return u' '.join(s)
 
 
-
     def to_unicode(self, encoding=None):
-        state = self.state
-        
-        files = u'\n'.join([ f.to_unicode() for f in state.files])
-
-        s = []
-        s.append(self.xml_header_to_unicode())
-        s.append(self.header_to_unicode())
-        s.append(files)
+        s = [self.xml_header_to_unicode(),
+             self.header_to_unicode()]
+        for file in self.state.files:
+            s.append(file.to_unicode())
         s.append(u'</xliff>')
 
-        return u''.join(s)
+        return u'\n'.join(s)
 
+
+    #######################################################################
+    # API
+    #######################################################################
+    def build(self, xml_header, version, files):
+        state = self.state
+        state.document_type = xml_header['document_type']
+        state.files = files
+        state.version = version
+
+
+    def get_languages(self):
+        state = self.state
+
+        files_id, sources, targets = [], [], []
+        for file in state.files:
+            file_id = file.attributes['original']
+            source = file.attributes['source-language']
+            target = file.attributes.get('target-language', '')
+
+            if file_id not in files_id:
+                files_id.append(file_id)
+            if source not in sources:
+                sources.append(source)
+            if target not in targets:
+                targets.append(target)
+
+        return ((files_id, sources, targets))

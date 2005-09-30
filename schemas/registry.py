@@ -78,6 +78,16 @@ def get_schema_by_prefix(prefix):
     return schemas[None]
 
 
+def get_datatype(schema_uri, name):
+    if schema_uri in schemas:
+        schema = schemas[schema_uri]
+    else:
+        # Use default
+        warnings.warn('Unknown schema "%s" (using default)' % schema_uri)
+        schema = schemas[None]
+    return schema.get_datatype(name)
+
+
 ##############################################################################
 # The default schema, used when the prefix is None
 ##############################################################################

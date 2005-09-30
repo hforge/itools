@@ -95,7 +95,7 @@ class TZInfo(tzinfo):
         return timedelta(0)
 
 
-        
+
 # Encode and decode pubDate and other RSS dates with or without timezone info
 class TZDateTime(DataType):
 
@@ -256,13 +256,18 @@ class RSS(Text):
         # Parse the rss file
         for event, value, line_number in parser.parse(resource.read()):
             if event == parser.START_ELEMENT:
-                namespace, prefix, local_name = value
+                namespace, local_name, attributes = value
                 if local_name == 'image':
                     inside_image = 1
-                if local_name == 'item':
+                elif local_name == 'item':
                     inside_item = 1
-            if event == parser.END_ELEMENT:
-                namespace, prefix, local_name = value
+                if local_name in rss_all_elements:
+                    save_data = 1
+                    element_name = local_name
+                else:
+                    save_data = 0
+            elif event == parser.END_ELEMENT:
+                namespace, local_name = value
                 # Save item data
                 if local_name == 'item':
                     item = RssChannelItem(fields['title'], 
@@ -282,24 +287,17 @@ class RSS(Text):
                     image.add_elements(fields)
                     inside_image = 0
                     fields = {}
-            if event == parser.START_ELEMENT:
-                namespace, prefix, local_name = value
-                if local_name in rss_all_elements:
-                    save_data = 1
-                    element_name = local_name
-                else:
-                    save_data = 0
-            if event == parser.TEXT and save_data == 1:
+            elif event == parser.TEXT and save_data == 1:
                 if inside_image == 1 or inside_item == 1:
-                    fields[element_name] = self.decode_element(
-                                           element_name, value)
+                    fields[element_name] = self.decode_element(element_name,
+                                                               value)
                 else:
                     channel_fields[element_name] = self.decode_element(
-                                                   element_name, value)
+                        element_name, value)
                 save_data = 0
 
         # Fill the internal data structure
-        channel = RssChannel(channel_fields['title'], 
+        channel = RssChannel(channel_fields['title'],
                              channel_fields['link'],
                              channel_fields['description'])
         # Add other (optional) elements

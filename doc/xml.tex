@@ -26,10 +26,10 @@ state is stored in local variables. Let's see a dummy example:
 
     for event, value, line_number in parser.parse(data):
         if event == parser.START_ELEMENT:
-            namespace, prefix, local_name = value
+            namespace, local_name, attributes = value
             print 'START ELEMENT:', local_name
         elif event == parser.END_ELEMENT:
-            namespace, prefix, local_name = value
+            namespace, local_name = value
             print 'END ELEMENT:', local_name
         elif event == parser.TEXT:
             print 'TEXT', value
@@ -39,28 +39,40 @@ The example above just prints a message to standard output each time the
 start of an element, the end of an element or a text node is found.
 
 The parser returns a list of events, where every event is a tuple of three
-valuese: the event type, the value (which depends on the event type) and
-the line number. The types of events implemented are:
+values: the event type, the value (which depends on the event type) and
+the line number. The events implemented are:
 
 \begin{quote}
   \begin{tabular}{ll}
     Event & Value\\\hline
-    {\tt XML\_DECLARATION} & (xml version, encoding, standalone)\\
     {\tt DOCUMENT\_TYPE} & (name, system id, public id, has internal subset)\\
-    {\tt START\_ELEMENT} & (namespace uri, prefix, local name)\\
-    {\tt END\_ELEMENT} & (namespace uri, prefix, local name)\\
-    {\tt ATTRIBUTE} & (namespace uri, prefix, local name, value)\\
+    {\tt START\_ELEMENT} & (namespace uri, local name, attributes)\\
+    {\tt END\_ELEMENT} & (namespace uri, local name)\\
     {\tt COMMENT} & value\\
     {\tt TEXT} & value\\
+    {\tt NAMESPACE} & namespace uri\\
   \end{tabular}
 \end{quote}
 
-As you can appreciate only a subset of the XML standard is supported, though
-it is all what most users need.
+For the {\tt START\_ELEMENT} event, the attributes are passed as a dictionary
+where the key is a tuple of the namespace URI and the local name of the
+attribute, and the value is the value of the attribute. For example:
 
-Another impotant thing to note is that all values returned are normal
-strings, not unicode strings. It is not the job of the low level parser
-to deserialize the values.
+\begin{code}
+  {('http://www.w3.org/1999/xhtml', 'src'): <itools.uri.generic.Reference>,
+   ('http://www.w3.org/1999/xhtml', 'title'): u'Google'}
+\end{code}
+
+Note that the attribute value may not be an string, as the example above
+illustrates. Within {\tt itools.xml} we use namespaces not only to check
+correctness of the XML document, but also to de-serialize values and build
+a higher level data structure.
+
+Note also that the parser does not returns the prefixes used within the
+document, and there is not an event for the XML declaration either. We
+consider this data to be internal to the document, it does not reveal
+any information about the document's logical structure, hence it is not
+valuable for our purposes.
 
 
 \section{Namespaces}

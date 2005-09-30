@@ -61,12 +61,10 @@ class Element(object):
     namespace = None
 
 
-    def __init__(self, prefix, name):
-        self.prefix = prefix
+    def __init__(self, name):
         self.name = name
         # Attributes (including namespace declarations)
         self.attributes = {}
-        self.prefixes = {}
         # Child nodes
         self.children = []
 
@@ -76,10 +74,12 @@ class Element(object):
     #######################################################################
     def get_qname(self):
         """Returns the fully qualified name"""
-        # Returns attribute's qname
-        if self.prefix is None:
+        if self.namespace is None:
             return self.name
-        return '%s:%s' % (self.prefix, self.name)
+        prefix = namespaces.get_namespace(self.namespace).class_prefix
+        if prefix is None:
+            return self.name
+        return '%s:%s' % (prefix, self.name)
 
     qname = property(get_qname, None, None, '')
 
@@ -89,10 +89,9 @@ class Element(object):
         DOM: cloneNode.
         """
         # Build a new node
-        clone = self.__class__(self.prefix, self.name)
+        clone = self.__class__(self.name)
         # Copy the attributes
         clone.attributes = self.attributes.copy()
-        clone.prefixes = self.prefixes.copy()
         # Copy the children
         for child in self.children:
             if isinstance(child, unicode):
@@ -105,7 +104,7 @@ class Element(object):
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        if self.prefix == other.prefix and self.name == other.name:
+        if self.name == other.name:
             if set(self.get_attributes()) == set(other.get_attributes()):
                 if self.children == other.children:
                     return 0
@@ -162,9 +161,8 @@ class Element(object):
 
     #######################################################################
     # Attributes
-    def set_attribute(self, namespace, name, value, prefix=None):
+    def set_attribute(self, namespace, name, value):
         self.attributes[(namespace, name)] = value
-        self.prefixes[namespace] = prefix
 
 
     def get_attribute(self, namespace, local_name):
@@ -182,7 +180,10 @@ class Element(object):
 
     def get_attribute_qname(self, namespace, local_name):
         """Returns the fully qualified name"""
-        prefix = self.prefixes[namespace]
+        if namespace is None:
+            return local_name
+
+        prefix = namespaces.get_namespace(namespace).class_prefix
         if prefix is None:
             return local_name
 
@@ -338,29 +339,24 @@ class Document(Text.Text):
         """
         state = self.state
         # Default values
-        state.xml_version = '1.0'
-        state.source_encoding = 'UTF-8'
-        state.standalone = -1
         state.document_type = None
+        xml_namespaces = set()
         # Parse
         stack = []
         for event, value, line_number in parser.parse(resource.read()):
-            if event == parser.XML_DECLARATION:
-                state.xml_version = value[0]
-                state.source_encoding = value[1]
-                state.standalone = value[2]
-            elif event == parser.DOCUMENT_TYPE:
+            if event == parser.DOCUMENT_TYPE:
                 state.document_type = value
             elif event == parser.START_ELEMENT:
-                namespace, prefix, local_name = value
-                namespace = namespaces.get_namespace(namespace)
+                namespace_uri, element_name, attributes = value
+                namespace = namespaces.get_namespace(namespace_uri)
                 try:
-                    schema = namespace.get_element_schema(local_name)
+                    schema = namespace.get_element_schema(element_name)
                 except XMLError, e:
                     e.line_number = line_number
                     raise e
                 element_type = schema['type']
-                element = element_type(prefix, local_name)
+                element = element_type(element_name)
+                element.attributes = attributes
                 stack.append(element)
             elif event == parser.END_ELEMENT:
                 element = stack.pop()
@@ -368,17 +364,6 @@ class Document(Text.Text):
                     stack[-1].set_element(element)
                 else:
                     state.root_element = element
-            elif event == parser.ATTRIBUTE:
-                namespace_uri, prefix, local_name, value = value
-                schema = schemas.registry.get_schema(namespace_uri)
-                try:
-                    datatype = schema.get_datatype(local_name)
-                except XMLError, e:
-                    e.line_number = line_number
-                    raise e
-                value = datatype.decode(value)
-                stack[-1].set_attribute(namespace_uri, local_name, value,
-                                        prefix=prefix)
             elif event == parser.COMMENT:
                 # Comments out of the root element are discarded (XXX)
                 if stack:
@@ -386,6 +371,15 @@ class Document(Text.Text):
             elif event == parser.TEXT:
                 if stack:
                     stack[-1].set_text(value, 'UTF-8')
+            elif event == parser.NAMESPACE:
+                xml_namespaces.add(value)
+
+        # Add the XML namespaces to the root element
+        root_element = state.root_element
+        xmlns_uri = namespaces.XMLNSNamespace.class_uri
+        for xml_namespace in xml_namespaces:
+            prefix = namespaces.get_namespace(xml_namespace).class_prefix
+            root_element.set_attribute(xmlns_uri, prefix, xml_namespace)
 
         # XXX This is an horrible hack
         from STL import STL
@@ -401,13 +395,7 @@ class Document(Text.Text):
 
         s = []
         # The XML declaration
-        if state.standalone == 1:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="yes"?>\n'
-        elif state.standalone == 0:
-            pattern = u'<?xml version="%s" encoding="%s" standalone="no"?>\n'
-        else:
-            pattern = u'<?xml version="%s" encoding="%s"?>\n'
-        s.append(pattern % (state.xml_version, encoding))
+        s.append(u'<?xml version="1.0" encoding="%s"?>\n' % encoding)
         # The document type
         if state.document_type is not None:
             pattern = '<!DOCTYPE %s\n' \
@@ -419,10 +407,12 @@ class Document(Text.Text):
 
 
     def to_unicode(self, encoding='UTF-8'):
+        state = self.state
+
         s = []
         s.append(self.header_to_unicode(encoding))
         # The children
-        s.append(self.state.root_element.to_unicode(encoding))
+        s.append(state.root_element.to_unicode(encoding))
 
         return u''.join(s)
 

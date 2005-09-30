@@ -22,21 +22,16 @@ from xml.parsers import expat
 
 # Import from itools
 from itools.xml import namespaces
+from itools import schemas
 
 
-XML_DECLARATION, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, ATTRIBUTE, \
-                 COMMENT, TEXT = range(7)
+DOCUMENT_TYPE, NAMESPACE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT = range(6)
 
 
 
 class Parser(object):
 
-    encoding = 'UTF-8'
-
-
     def parse(self, data):
-        self.namespaces = {}
-
         # Create the parser object
         parser = expat.ParserCreate(namespace_separator=' ')
 
@@ -52,7 +47,7 @@ class Parser(object):
         parser.returns_unicode = False
 
         # Set parsing handlers (XXX there are several not yet supported)
-        parser.XmlDeclHandler = self.xml_declaration_handler
+        parser.XmlDeclHandler = self.null_handler
         parser.StartDoctypeDeclHandler = self.start_doctype_handler
 ##        parser.EndDoctypeDeclHandler = self.end_doctype_handler
 ##        parser.ElementDeclHandler =
@@ -84,14 +79,6 @@ class Parser(object):
         return self.events
 
 
-    def xml_declaration_handler(self, version, encoding, standalone):
-        if encoding is None:
-            encoding = 'UTF-8'
-        self.encoding = encoding
-        self.events.append((XML_DECLARATION, (version, encoding, standalone),
-                            self.parser.ErrorLineNumber))
-
-
     def start_doctype_handler(self, name, system_id, public_id,
                               has_internal_subset):
         has_internal_subset = bool(has_internal_subset)
@@ -106,44 +93,31 @@ class Parser(object):
         if n == 2:
             namespace, name, prefix = name.split()
         elif n == 1:
-            prefix = None
             namespace, name = name.split()
         else:
-            prefix = None
             namespace = None
 
-        # Start Element
-        self.events.append((START_ELEMENT, (namespace, prefix, name),
-                            self.parser.ErrorLineNumber))
-        element_uri = namespace
-
-        # Keep the namespace declarations
-        for name, value in self.namespaces.items():
-            xmlns_namespace = namespaces.XMLNSNamespace
-            self.events.append((ATTRIBUTE, (xmlns_namespace.class_uri,
-                                            xmlns_namespace.class_prefix,
-                                            name, value),
-                                self.parser.ErrorLineNumber))
-        self.namespaces = {}
-
         # Attributes
-        for name, value in attrs.items():
+        element_uri = namespace
+        attributes = {}
+        for attr_name, attr_value in attrs.items():
             # Parse the attribute name: namespace_uri, name and prefix
-            n = name.count(' ')
+            n = attr_name.count(' ')
             if n == 2:
-                namespace, name, prefix = name.split()
+                attr_ns, attr_name, prefix = attr_name.split()
             elif n == 1:
-                namespace, name = name.split()
-                if namespace == namespaces.xml:
-                    prefix = 'xml'
-                else:
-                    prefix = None
+                attr_ns, attr_name = attr_name.split()
             else:
-                prefix = None
-                namespace = element_uri
+                attr_ns = element_uri
 
-            self.events.append((ATTRIBUTE, (namespace, prefix, name, value),
-                                self.parser.ErrorLineNumber))
+            # De-serialize
+            datatype = schemas.registry.get_datatype(attr_ns, attr_name)
+            attr_value = datatype.decode(attr_value)
+            attributes[(attr_ns, attr_name)] = attr_value
+
+        # Start Element
+        self.events.append((START_ELEMENT, (namespace, name, attributes),
+                            self.parser.ErrorLineNumber))
 
 
     def end_element_handler(self, name):
@@ -152,18 +126,16 @@ class Parser(object):
         if n == 2:
             namespace, name, prefix = name.split()
         elif n == 1:
-            prefix = None
             namespace, name = name.split()
         else:
-            prefix = None
             namespace = None
 
-        self.events.append((END_ELEMENT, (namespace, prefix, name),
+        self.events.append((END_ELEMENT, (namespace, name),
                             self.parser.ErrorLineNumber))
 
 
     def start_namespace_handler(self, prefix, uri):
-        self.namespaces[prefix] = uri
+        self.events.append((NAMESPACE, uri, self.parser.ErrorLineNumber))
 
 
     def char_data_handler(self, data):
@@ -174,7 +146,7 @@ class Parser(object):
         self.events.append((COMMENT, data, self.parser.ErrorLineNumber))
 
 
-    def null_handler(self):
+    def null_handler(self, *args):
         pass
 
 

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Nicolas OYEZ <noyez@itaapy.com>
+# Copyright (C) 2005 Nicolas Oyez <noyez@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,29 +15,24 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Python
+# Import from the Standard Library
 import unittest
 from unittest import TestCase
 
-# Import from itools.xliff
+# Import from itools
+from itools.resources import get_resource
 from XLIFF import XLIFF
 
-# Import from itools.resources
-from itools.resources import get_resource
 
-file = "gettext_en_fr.xlf"
-#file = "test.xlf"
+src = get_resource('gettext_en_es.xlf')
+
 
 class TMXTestCase(TestCase):
 
     def test_input(self):
         """Test input."""
-        
-        src = get_resource(file)
         xliff = XLIFF(src)
-        fd = open('test.xlf', 'w')
-        fd.write(xliff.to_str())
-        fd.close()
+        open('test.xlf', 'w').write(xliff.to_str())
 
  
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -16,34 +16,34 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from the Standard Library
-import unittest
-from unittest import TestCase
+import profile
+from time import time
 
 # Import from itools
-from itools.resources import memory
-import XML
+import itools
+from itools.resources import get_resource
+from itools.xml import XML
+from itools.xml.parser import parse
 
 
 
-class XMLTestCase(TestCase):
-
-    def test_identity(self):
-        """
-        Tests wether the input and the output match.
-        """
-        data = '<html>\n' \
-               '<head></head>\n' \
-               '<body>\n' \
-               ' this is a <span style="color: red">test</span>\n' \
-               '</body>\n' \
-               '</html>'
-        resource = memory.File(data)
-        h1 = XML.Document(resource)
-        h2 = XML.Document(resource)
-
-        self.assertEqual(h1, h2)
-
+# itools.xml.parser: 0.0062
+##data = open('bench_parser.xml').read()
+##t0 = time()
+##for event, value, line_number in parse(data):
+##    pass
+##print time() - t0
 
 
 if __name__ == '__main__':
-    unittest.main()
+    resource = get_resource('bench_parser.xml')
+    if 1:
+        # The old parser: 0.0234 (reference time)
+        # The new parser: 0.0309
+        t0 = time()
+        XML.Document(resource)
+        t1 = time()
+        print itools.__arch_revision__, t1 - t0
+    else:
+        data = open('bench_parser.xml').read()
+        profile.run('list(parse(data))')

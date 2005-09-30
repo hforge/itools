@@ -1,0 +1,1268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xliff SYSTEM "http://www.oasis-open.org/committees/xliff/documents/xliff.dtd">
+<xliff version="1.0" >
+<file  original="/localizer/gettext"
+ product-version="1.1.x"
+ data-type="plaintext"
+ date="2005-09-26T16:49:46Z"
+ source-language="en"
+ product-name="Localizer"
+ target-language="es">
+<body>
+<trans-unit id="48eb7b441f563736181fc831381c257d" >
+ <source>(Afan) Oromo</source>
+ <target>(Afan) Oromo</target>
+</trans-unit>
+
+<trans-unit id="ca0800d104b1d9c153755130af55e240" >
+ <source>&lt;em&gt;No languages available, please add them using the &lt;a href='manage_languages'&gt;Languages&lt;/a&gt; tab&lt;/em&gt;</source>
+ <target>&lt;em&gt;No languages available, please add them using the &lt;a href='manage_languages'&gt;Languages&lt;/a&gt; tab&lt;/em&gt;</target>
+</trans-unit>
+
+<trans-unit id="f34d640b97acb18b12dc2bc97ea2a5bc" >
+ <source>A Local Content object provides a storage for multilingual (and non multilingual) properties. It also helps you keep your content separated from the logic and the presentation.</source>
+ <target>Un objeto &lt;em&gt;Local Content&lt;/em&gt; proporciona un medio para almacenar propiedades multilingües (y monolingües). También ayuda a mantener el contenido separado de la lógica y la presentación.</target>
+</trans-unit>
+
+<trans-unit id="661cc442876fb5e9e7e9f5d85856d51b" >
+ <source>A Localizer object lets you customize the language negotiation policy. It lets you use cookies, the path or any other criteria to select the user prefered language.</source>
+ <target>A Localizer object lets you customize the language negotiation policy. It lets you use cookies, the path or any other criteria to select the user prefered language.</target>
+</trans-unit>
+
+<trans-unit id="d94760ca335b6c8ee294d03904b52f49" >
+ <source>A local folder is a generic solution to manage any kind of multingual objects, files, images, scripts, etc..</source>
+ <target>Una carpeta local es una solución genérica para gestionar cualquier tipo de objetos multilingües, ficheros, imágenes, guiones de código, etc..</target>
+</trans-unit>
+
+<trans-unit id="79994763661cfe2131800ac7585b789d" >
+ <source>A message catalog stores messages and its translations to different languages. It provides the &lt;tt&gt;gettext&lt;/tt&gt; method to get the right translation for a given message. Message catalogs are useful to translate the application interfaces (labels, buttons, etc..).</source>
+ <target>Un catálogo de mensajes almacena mensajes y sus traducciones a diferentes idiomas. Proporciona el método &lt;tt&gt;gettext&lt;/tt&gt; para obtener la traducción correcta en un idioma dado. Los catálogos de mensajes son útiles para traducir las interfaces de la aplicación (etiquetas, botones, etc..).</target>
+</trans-unit>
+
+<trans-unit id="64db1254fb5a143536cea757f5ef920c" >
+ <source>Abkhazian</source>
+ <target>Abkhazian</target>
+</trans-unit>
+
+<trans-unit id="ec211f7c20af43e742bf2570c3cb84f9" >
+ <source>Add</source>
+ <target>Añadir</target>
+</trans-unit>
+
+<trans-unit id="0fc833c46055061e2bc26db7431144a3" >
+ <source>Add Local Content</source>
+ <target>Añadir contenido localizado</target>
+</trans-unit>
+
+<trans-unit id="2632f0ed5a9a621b56a24e850c1561f9" >
+ <source>Add Local Folder</source>
+ <target>Añadir carpeta local</target>
+</trans-unit>
+
+<trans-unit id="c0fa848e97b02f87b32b52de5e6ef123" >
+ <source>Add Localizer</source>
+ <target>Añadir &lt;em&gt;Localizer&lt;/em&gt;</target>
+</trans-unit>
+
+<trans-unit id="56fd9131e2611140e84432c5bd250eab" >
+ <source>Add Message Catalog</source>
+ <target>Añadir un catálogo de mensajes</target>
+</trans-unit>
+
+<trans-unit id="eaf45172e57fd92a51dfc88f9808c540" >
+ <source>Afar</source>
+ <target>Afar</target>
+</trans-unit>
+
+<trans-unit id="170d296d4201ee1af7a8867e9b0ca3a7" >
+ <source>Afrikaans</source>
+ <target>Afrikaans</target>
+</trans-unit>
+
+<trans-unit id="a716b6a3e8cf5994165d64d712db61d8" >
+ <source>Albanian</source>
+ <target>Albano</target>
+</trans-unit>
+
+<trans-unit id="2822b8f5aac2191afe534140a6629eea" >
+ <source>Amharic</source>
+ <target>Amhárico</target>
+</trans-unit>
+
+<trans-unit id="272ccb8592bafde0baf1dedce0fd3ac2" >
+ <source>Arabic</source>
+ <target>Árabe</target>
+</trans-unit>
+
+<trans-unit id="4e14ef195ab0a4f17d53bf4dc535d59a" >
+ <source>Arabic (Egypt)</source>
+ <target>Árabe (Egipto)</target>
+</trans-unit>
+
+<trans-unit id="48cc95df907bb05517ff84aeb7ceb1e6" >
+ <source>Arabic (Lebanon)</source>
+ <target>Árabe (Líbano)</target>
+</trans-unit>
+
+<trans-unit id="b397edd35777a9f6036119e6ced96ff6" >
+ <source>Armenian</source>
+ <target>Armenian</target>
+</trans-unit>
+
+<trans-unit id="7e832a2236372b3ac5e030c551d90bab" >
+ <source>Assamese</source>
+ <target>Mensajes</target>
+</trans-unit>
+
+<trans-unit id="287234a1ff35a314b5b6bc4e5828e745" >
+ <source>Attributes</source>
+ <target>Atributos</target>
+</trans-unit>
+
+<trans-unit id="fd46bbc3c5ec0bc8f6b071e8581ac381" >
+ <source>Aymara</source>
+ <target>Aymara</target>
+</trans-unit>
+
+<trans-unit id="9f3356b27d0a76cb5f0ceea9e80a6e72" >
+ <source>Azerbaijani</source>
+ <target>Azerbaijaní</target>
+</trans-unit>
+
+<trans-unit id="634e2c69edef2f7a8b287ffe57bffd2d" >
+ <source>Bashkir</source>
+ <target>Bashkir</target>
+</trans-unit>
+
+<trans-unit id="a8a890709b5828879edc68e65a938695" >
+ <source>Basque</source>
+ <target>Vasco</target>
+</trans-unit>
+
+<trans-unit id="a56dcb8443c25f8e14b47b8ff1748331" >
+ <source>Bengali</source>
+ <target>Bengali</target>
+</trans-unit>
+
+<trans-unit id="7685df1f597630fccd40f22fc2ad9434" >
+ <source>Bengali; Bangla</source>
+ <target>Bengali; Bangla</target>
+</trans-unit>
+
+<trans-unit id="34356ee51203c967be60dfdb2e4052df" >
+ <source>Besides the title the header of a PO file stores more information; the name and the email address of the last translator, the email address of the translation team and the charset. The forms below let you modify this information for each language.</source>
+ <target>Además del título las cabeceras de los ficheros PO almacenan más información, el nombre y la dirección de correo electrónico del último traductor, la dirección de correo electrónico del equipo de traducción y el conjunto de caracteres. Los formularios que hay abajo permiten modificar esta información para cada idioma.</target>
+</trans-unit>
+
+<trans-unit id="f596d845f98dfd3dc1393aaa4664c5a2" >
+ <source>Bhutani</source>
+ <target>Bhutani</target>
+</trans-unit>
+
+<trans-unit id="a9d09355260c5e6866cebb8ab206f15f" >
+ <source>Bihari</source>
+ <target>Bihari</target>
+</trans-unit>
+
+<trans-unit id="ad5b3d938c9d00ed73c802be17c40e4e" >
+ <source>Bislama</source>
+ <target>Bislama</target>
+</trans-unit>
+
+<trans-unit id="9dea74f01b9e3ee9ebd867ad7b2d2d18" >
+ <source>Bosnian</source>
+ <target>Bosnio</target>
+</trans-unit>
+
+<trans-unit id="eb2f428f5c2030a6f8e14ac7e8dd1eca" >
+ <source>Breton</source>
+ <target>Breton</target>
+</trans-unit>
+
+<trans-unit id="60bb3bcc6ff535428a38f76f1059b2d2" >
+ <source>Bulgarian</source>
+ <target>Búlgaro</target>
+</trans-unit>
+
+<trans-unit id="c98e06a00f05511df3d6f2cfd610cb70" >
+ <source>Burmese</source>
+ <target>Burmese</target>
+</trans-unit>
+
+<trans-unit id="6028cb3d8dd9e1b1ec01d95d772cb47a" >
+ <source>Byelorussian</source>
+ <target>Byelorussian</target>
+</trans-unit>
+
+<trans-unit id="612cd0b5bdbb5e00249d0ca55b7399b0" >
+ <source>Cambodian</source>
+ <target>Cambodian</target>
+</trans-unit>
+
+<trans-unit id="900a14b115614d9d4d1c47f1d3a3251b" >
+ <source>Catalan</source>
+ <target>Catalán</target>
+</trans-unit>
+
+<trans-unit id="f4ec5f57bd4d31b803312d873be40da9" >
+ <source>Change</source>
+ <target>Cambiar</target>
+</trans-unit>
+
+<trans-unit id="f594c0052b0886932fe51eedb83fb2c3" >
+ <source>Charset</source>
+ <target>Conjunto de caracteres</target>
+</trans-unit>
+
+<trans-unit id="3b261136e3c33f35e0a58611b1f344cb" >
+ <source>Chinese</source>
+ <target>Cambiar</target>
+</trans-unit>
+
+<trans-unit id="307792aac31f786dcbb2435993977ff1" >
+ <source>Chinese (simplified)</source>
+ <target>Chino (simplificado)</target>
+</trans-unit>
+
+<trans-unit id="c6b68c4e8969d26675c31b76c1484096" >
+ <source>Chinese (traditional)</source>
+ <target>Chino (tradicional)</target>
+</trans-unit>
+
+<trans-unit id="0f25ab4c9dc715c304320636cf1ce88c" >
+ <source>Chinese/China</source>
+ <target>Chinese/China</target>
+</trans-unit>
+
+<trans-unit id="7d4a1a8ff5cdaa4654b813260ec87a20" >
+ <source>Chinese/Taiwan</source>
+ <target>Chinese/Taiwan</target>
+</trans-unit>
+
+<trans-unit id="76bcdc357a04d74718e750b1df2a4ba3" >
+ <source>Clear catalog and import all messages</source>
+ <target>Clear catalog and import all messages</target>
+</trans-unit>
+
+<trans-unit id="c1df1da7a1ce305a3b60af9d5733ac1d" >
+ <source>Contents</source>
+ <target>Contenido</target>
+</trans-unit>
+
+<trans-unit id="9b73be92c05e1acec51c6ceba2950291" >
+ <source>Corsican</source>
+ <target>Corsican</target>
+</trans-unit>
+
+<trans-unit id="0c1be09bad2acaa2fa315b88abda8a32" >
+ <source>Croatian</source>
+ <target>Croata</target>
+</trans-unit>
+
+<trans-unit id="83ff4480cdf2900ae83bf30d95774d76" >
+ <source>Czech</source>
+ <target>Checo</target>
+</trans-unit>
+
+<trans-unit id="7bc6f150ce738db3d21cbe0b75aea027" >
+ <source>Danish</source>
+ <target>Danés</target>
+</trans-unit>
+
+<trans-unit id="f2a6c498fb90ee345d997f888fce3b18" >
+ <source>Delete</source>
+ <target>Eliminar</target>
+</trans-unit>
+
+<trans-unit id="68bf367e228f45ba83cb8831a5ee6447" >
+ <source>Dutch</source>
+ <target>Holandés</target>
+</trans-unit>
+
+<trans-unit id="8442311377ca886936049b62949d3386" >
+ <source>Dutch/Belgium</source>
+ <target>Dutch/Belgium</target>
+</trans-unit>
+
+<trans-unit id="78463a384a5aa4fad5fa73e2f506ecfc" >
+ <source>English</source>
+ <target>Inglés</target>
+</trans-unit>
+
+<trans-unit id="db83f72e89df64b79dbc0a33989611cb" >
+ <source>English/United Kingdom</source>
+ <target>English/United Kingdom</target>
+</trans-unit>
+
+<trans-unit id="c338d3550b1140e6960d1af8c3cb5fcb" >
+ <source>English/United States</source>
+ <target>English/United States</target>
+</trans-unit>
+
+<trans-unit id="8981940c0815701fe27adcb03f31a44c" >
+ <source>Esperanto</source>
+ <target>Esperanto</target>
+</trans-unit>
+
+<trans-unit id="28916fc3da67a5190b2b98a7f309857f" >
+ <source>Estonian</source>
+ <target>Estonio</target>
+</trans-unit>
+
+<trans-unit id="0095a9fa74d1713e43e370a7d7846224" >
+ <source>Export</source>
+ <target>Exportar</target>
+</trans-unit>
+
+<trans-unit id="3545d95c294855f32418d43cc19d8435" >
+ <source>Export messages to PO file</source>
+ <target>Export messages to PO file</target>
+</trans-unit>
+
+<trans-unit id="4857f3946083d57fbd68f54da78e3593" >
+ <source>Export messages to TMX file</source>
+ <target>Export messages to TMX file</target>
+</trans-unit>
+
+<trans-unit id="b1bab4ec125bf9209a85ab847b2cd143" >
+ <source>Export messages to XLIFF file</source>
+ <target>Export messages to XLIFF file</target>
+</trans-unit>
+
+<trans-unit id="b4c028653fbdc8076824f8a41dbe25fe" >
+ <source>Faroese</source>
+ <target>Faroese</target>
+</trans-unit>
+
+<trans-unit id="55b0c4d4efa00b59643b2e6a6e7c18c0" >
+ <source>Fiji</source>
+ <target>Fiji</target>
+</trans-unit>
+
+<trans-unit id="0b27918290ff5323bea1e3b78a9cf04e" >
+ <source>File</source>
+ <target>Archivo</target>
+</trans-unit>
+
+<trans-unit id="eeff57e9c6d70e6e8806689eb930f1dd" >
+ <source>File / Language</source>
+ <target>Fichero / Idioma</target>
+</trans-unit>
+
+<trans-unit id="d7778d0c64b6ba21494c97f77a66885a" >
+ <source>Filter</source>
+ <target>Filtrar</target>
+</trans-unit>
+
+<trans-unit id="4cfa6c981549e990fe2344e4c805405e" >
+ <source>Find</source>
+ <target>Buscar</target>
+</trans-unit>
+
+<trans-unit id="9ae099fd082267fa2f2f85664a4f74dc" >
+ <source>Finnish</source>
+ <target>Finlandés</target>
+</trans-unit>
+
+<trans-unit id="ad225f707802ba118c22987186dd38e8" >
+ <source>French</source>
+ <target>Francés</target>
+</trans-unit>
+
+<trans-unit id="225c0e9480a33277c87c3f6877771770" >
+ <source>French/Belgium</source>
+ <target>French/Belgium</target>
+</trans-unit>
+
+<trans-unit id="a1ba249d8b82eaec54096ecdbbd88fe8" >
+ <source>French/Canada</source>
+ <target>French/Canada</target>
+</trans-unit>
+
+<trans-unit id="ce2e5d0329d20a76834f41cb7b1ccdf9" >
+ <source>French/France</source>
+ <target>French/France</target>
+</trans-unit>
+
+<trans-unit id="a0bdc7748e3ba4188adedb0c0fa1a2e1" >
+ <source>French/Switzerland</source>
+ <target>French/Switzerland</target>
+</trans-unit>
+
+<trans-unit id="592e43ed01df94afdd4396a9ab89376d" >
+ <source>Frisian</source>
+ <target>Frisian</target>
+</trans-unit>
+
+<trans-unit id="516a623325ded756f29f124618baabbc" >
+ <source>Galician</source>
+ <target>Gallego</target>
+</trans-unit>
+
+<trans-unit id="adc0753d37641ed117f7b999a0ae79a0" >
+ <source>Georgian</source>
+ <target>Georgian</target>
+</trans-unit>
+
+<trans-unit id="86bc3115eb4e9873ac96904a4a68e19e" >
+ <source>German</source>
+ <target>Alemán</target>
+</trans-unit>
+
+<trans-unit id="a46a60881ae215a887b5530c677ad405" >
+ <source>German/Austria</source>
+ <target>German/Austria</target>
+</trans-unit>
+
+<trans-unit id="05d4c08e8334cc0f0b006320a4e8bf89" >
+ <source>German/Germany</source>
+ <target>German/Germany</target>
+</trans-unit>
+
+<trans-unit id="046b35e9ac376a2311556a3952d41bdb" >
+ <source>German/Switzerland</source>
+ <target>German/Switzerland</target>
+</trans-unit>
+
+<trans-unit id="0aafa497807d5ac9b509656bd13b5283" >
+ <source>Greek</source>
+ <target>Griego</target>
+</trans-unit>
+
+<trans-unit id="1716eb61ffb00fa0d25740da1fff401f" >
+ <source>Greenlandic</source>
+ <target>Greenlandic</target>
+</trans-unit>
+
+<trans-unit id="ee3432876af418b80741fdc6d3b99845" >
+ <source>Guarani</source>
+ <target>Guarani</target>
+</trans-unit>
+
+<trans-unit id="d1a59333c7e56205fed9bda9da34b201" >
+ <source>Gujarati</source>
+ <target>Gujarati</target>
+</trans-unit>
+
+<trans-unit id="7593d697bfa3e798e23becb86cbf3503" >
+ <source>Hausa</source>
+ <target>Hausa</target>
+</trans-unit>
+
+<trans-unit id="c6c1f81a46666385fa7d85df7eaf8763" >
+ <source>Hebrew</source>
+ <target>Hebreo</target>
+</trans-unit>
+
+<trans-unit id="730dff3ac65a97cb7a1b0ff62f2da55d" >
+ <source>Hide this language</source>
+ <target>Ocultar este idioma</target>
+</trans-unit>
+
+<trans-unit id="45c3171ef193c74b402f407fba9d955b" >
+ <source>Hindi</source>
+ <target>Hindi</target>
+</trans-unit>
+
+<trans-unit id="3ad058e79e9fcdb1271d1931700d2eb0" >
+ <source>How much</source>
+ <target>How much</target>
+</trans-unit>
+
+<trans-unit id="7b86112ec6401fd8f06ab5251d1a68fe" >
+ <source>Hungarian</source>
+ <target>Húngaro</target>
+</trans-unit>
+
+<trans-unit id="4c545ca25c8a34a533be19e7a1c44a79" >
+ <source>Icelandic</source>
+ <target>Islandés</target>
+</trans-unit>
+
+<trans-unit id="490aa6e856ccf208a054389e47ce0d06" >
+ <source>Id</source>
+ <target>Id</target>
+</trans-unit>
+
+<trans-unit id="72d6d7a1885885bb55a565fd1070581a" >
+ <source>Import</source>
+ <target>Importar</target>
+</trans-unit>
+
+<trans-unit id="2b68d511cfa2d91c74070cff689e1811" >
+ <source>Import all messages</source>
+ <target>Import all messages</target>
+</trans-unit>
+
+<trans-unit id="30526be3d95da0ceab522de8141f193f" >
+ <source>Import only translations for messages that exist already</source>
+ <target>Import only translations for messages that exist already</target>
+</trans-unit>
+
+<trans-unit id="960bbc22a29b522a5a2fbecae64b0b94" >
+ <source>Import translations from PO file</source>
+ <target>Import translations from PO file</target>
+</trans-unit>
+
+<trans-unit id="dff98dd368e5c8e1a92d83a2a5c30111" >
+ <source>Import translations from TMX file</source>
+ <target>Import translations from TMX file</target>
+</trans-unit>
+
+<trans-unit id="16f56659e1446a0fdbdbcbeeb403d2e5" >
+ <source>Import translations from XLIFF file</source>
+ <target>Import translations from XLIFF file</target>
+</trans-unit>
+
+<trans-unit id="f8d1d022d3f7645b4b0dfe4f6de3efbc" >
+ <source>Import/Export</source>
+ <target>Importar/Exportar</target>
+</trans-unit>
+
+<trans-unit id="3c918c867301d205a96f7ac2d676c20a" >
+ <source>Imported %d messages and %d notes</source>
+ <target>Imported %d messages and %d notes</target>
+</trans-unit>
+
+<trans-unit id="cc1c9b57607b4439578b68074a5e2d80" >
+ <source>Indonesian</source>
+ <target>Indonesio</target>
+</trans-unit>
+
+<trans-unit id="c81722c15756b5cf88ee71c25461da25" >
+ <source>Interlingua</source>
+ <target>Interlingua</target>
+</trans-unit>
+
+<trans-unit id="d9c8d634894ea5648fac4b63b19f1042" >
+ <source>Interlingue</source>
+ <target>Interlingue</target>
+</trans-unit>
+
+<trans-unit id="3be898f3f28c2fbaed9d525c453615b4" >
+ <source>Inuktitut</source>
+ <target>Inuktitut</target>
+</trans-unit>
+
+<trans-unit id="0294254f5787d9911e0ac1ece6d698ce" >
+ <source>Inupiak</source>
+ <target>Inupiak</target>
+</trans-unit>
+
+<trans-unit id="2cfce796f4703d560ae1c3a1b3fb7e74" >
+ <source>Irish</source>
+ <target>Irlandés</target>
+</trans-unit>
+
+<trans-unit id="4be8e06d27bca7e1828f2fa9a49ca985" >
+ <source>Italian</source>
+ <target>Italiano</target>
+</trans-unit>
+
+<trans-unit id="f32ced6a9ba164c4b3c047fd1d7c882e" >
+ <source>Japanese</source>
+ <target>Japonés</target>
+</trans-unit>
+
+<trans-unit id="7d94af6dccead2736bd1d456ba3c750a" >
+ <source>Javanese</source>
+ <target>Javanese</target>
+</trans-unit>
+
+<trans-unit id="6b511fdce48a74274a35e3365e36230c" >
+ <source>Kannada</source>
+ <target>Kannada</target>
+</trans-unit>
+
+<trans-unit id="2fc10ff987c277fc4fd5f440dd8263ab" >
+ <source>Kashmiri</source>
+ <target>Kashmiri</target>
+</trans-unit>
+
+<trans-unit id="d05ae627fcc808e7df1ee341c3d5cbc2" >
+ <source>Kazakh</source>
+ <target>Kazakh</target>
+</trans-unit>
+
+<trans-unit id="e4875932c8cf3d2b423234a1d35b15e0" >
+ <source>Kinyarwanda</source>
+ <target>Kinyarwanda</target>
+</trans-unit>
+
+<trans-unit id="dcc5d0363f05e39853a17020fb43b652" >
+ <source>Kirghiz</source>
+ <target>Kirghiz</target>
+</trans-unit>
+
+<trans-unit id="e6fe82ce0d8402eebb9d8c987e9eb2a3" >
+ <source>Kirundi</source>
+ <target>Kirundi</target>
+</trans-unit>
+
+<trans-unit id="d0bdb3cde477d82e766da05ebda50ccb" >
+ <source>Korean</source>
+ <target>Coreano</target>
+</trans-unit>
+
+<trans-unit id="f33ec0f981dd9410e1e0ebc9da2c4b5e" >
+ <source>Kurdish</source>
+ <target>Kurdish</target>
+</trans-unit>
+
+<trans-unit id="4994a8ffeba4ac3140beb89e8d41f174" >
+ <source>Language</source>
+ <target>Idioma</target>
+</trans-unit>
+
+<trans-unit id="3a08e2e340ab29fd9263af48193cbf8e" >
+ <source>Languages</source>
+ <target>Idiomas</target>
+</trans-unit>
+
+<trans-unit id="2331233896c8488c7398ce0b31c1e5eb" >
+ <source>Laothian</source>
+ <target>Laothian</target>
+</trans-unit>
+
+<trans-unit id="7280578e6a45fd916ed9431425289c9e" >
+ <source>Latin</source>
+ <target>Latin</target>
+</trans-unit>
+
+<trans-unit id="76ad0358e45dd4087c0a26bbf4c160e3" >
+ <source>Latvian</source>
+ <target>Letón</target>
+</trans-unit>
+
+<trans-unit id="87632565f57b7c075076578a7055769e" >
+ <source>Latvian, Lettish</source>
+ <target>Latvian, Lettish</target>
+</trans-unit>
+
+<trans-unit id="d341106c434cc0c07c14eedca7822975" >
+ <source>Lingala</source>
+ <target>Lingala</target>
+</trans-unit>
+
+<trans-unit id="04f605836f660d879bf3fb2b3643d16b" >
+ <source>Lithuanian</source>
+ <target>Lituano</target>
+</trans-unit>
+
+<trans-unit id="d974a92e5a565eeae3f2d5e38e689b6b" >
+ <source>Local properties</source>
+ <target>Propiedades locales</target>
+</trans-unit>
+
+<trans-unit id="880cd3f5fb0804d0a11bb049a08f7ca0" >
+ <source>Locale folders are useful to store special multilingual objects like images and specific logic. If used the &lt;tt&gt;Localizer&lt;/tt&gt; object will transparently add the right locale folder to the url. If you want to use locale folders check the checkbox, otherwise uncheck it, then click the &lt;tt&gt;Change&lt;/tt&gt; button.</source>
+ <target>Las carpetas locales son útiles para almacenar objetos multilingües especiales como imágenes y lógica específica. Si se usan el objeto &lt;tt&gt;Localizer&lt;/tt&gt; de forma transparente añadirá la carpeta local correcta a la &lt;em&gt;url&lt;/em&gt;. Si quieres usar las carpetas locales selecciona el cuadro de selección, si no deseleccionalo, entonces pulsa en botón &lt;tt&gt;Cambiar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="c1e1b1f8bdaab4b0fc183e147887e0e1" >
+ <source>Macedonian</source>
+ <target>Macedonio</target>
+</trans-unit>
+
+<trans-unit id="000f64bbdbbb74aca4355df9f3cfad78" >
+ <source>Malagasy</source>
+ <target>Malagasy</target>
+</trans-unit>
+
+<trans-unit id="fc179207920005b7dca85323ceacf5eb" >
+ <source>Malay</source>
+ <target>Malayo</target>
+</trans-unit>
+
+<trans-unit id="f9b5a275bc456b62ad13e4a537f62a3b" >
+ <source>Malayalam</source>
+ <target>Malayalam</target>
+</trans-unit>
+
+<trans-unit id="4d0c1117e593a084406068a55ab227b9" >
+ <source>Maltese</source>
+ <target>Maltese</target>
+</trans-unit>
+
+<trans-unit id="9c751c711ebc5775246f80308ef4d56e" >
+ <source>Maori</source>
+ <target>Maori</target>
+</trans-unit>
+
+<trans-unit id="529b1c6eafff3f34bcda64708f72586d" >
+ <source>Marathi</source>
+ <target>Marathí</target>
+</trans-unit>
+
+<trans-unit id="41de6d6cfb8953c021bbe4ba0701c8a1" >
+ <source>Messages</source>
+ <target>Mensajes</target>
+</trans-unit>
+
+<trans-unit id="e98fdac8115ef270bce16be095fda623" >
+ <source>Messages imported</source>
+ <target>Mensajes</target>
+</trans-unit>
+
+<trans-unit id="6c90486ddb54c84bb185367ca2f8eb5e" >
+ <source>Moldavian</source>
+ <target>Moldavian</target>
+</trans-unit>
+
+<trans-unit id="28c84f05dbc521ffa52220ce03b16356" >
+ <source>Mongolian</source>
+ <target>Mongol</target>
+</trans-unit>
+
+<trans-unit id="49ee3087348e8d44e1feda1917443987" >
+ <source>Name</source>
+ <target>Nombre</target>
+</trans-unit>
+
+<trans-unit id="d0c5ab6bebe308a495693e990a2947bc" >
+ <source>Nauru</source>
+ <target>Nauru</target>
+</trans-unit>
+
+<trans-unit id="2f53f077d39632f0b325d5eabfc8798b" >
+ <source>Nepali</source>
+ <target>Nepali</target>
+</trans-unit>
+
+<trans-unit id="da550ca06bcacbd30b7c6ed32c864c70" >
+ <source>Norwegian</source>
+ <target>Noruego</target>
+</trans-unit>
+
+<trans-unit id="3b0649c72650c313a357338dcdfb64ec" >
+ <source>Note</source>
+ <target>Nota</target>
+</trans-unit>
+
+<trans-unit id="68a4c100e7b114ab9509c585e7bed39c" >
+ <source>Occitan</source>
+ <target>Occitan</target>
+</trans-unit>
+
+<trans-unit id="22eecf520690cff1060b38e991b91260" >
+ <source>Only untranslated messages</source>
+ <target>Solamente mensajes sin traducción</target>
+</trans-unit>
+
+<trans-unit id="b8dd68572112a40147a59de9b221e5cb" >
+ <source>Original language</source>
+ <target>Ocultar este idioma</target>
+</trans-unit>
+
+<trans-unit id="aa1fbe577ecc29ca7b970d4151dfe682" >
+ <source>Oriya</source>
+ <target>Oriya</target>
+</trans-unit>
+
+<trans-unit id="0de4afdad57ed10d2663be2f84481601" >
+ <source>Ownership</source>
+ <target>Propiedad</target>
+</trans-unit>
+
+<trans-unit id="becccf2d72d70ccd9271bf4b17c5d92b" >
+ <source>Pashto, Pushto</source>
+ <target>Pashto, Pushto</target>
+</trans-unit>
+
+<trans-unit id="8032c149d0e48ad38ef6b60289f910cd" >
+ <source>Persian</source>
+ <target>Persa</target>
+</trans-unit>
+
+<trans-unit id="c730389bc8d99e59c867766babdd48b5" >
+ <source>Polish</source>
+ <target>Polaco</target>
+</trans-unit>
+
+<trans-unit id="30e32c7c4cf434e9c75e60c14c442541" >
+ <source>Portuguese</source>
+ <target>Portugués</target>
+</trans-unit>
+
+<trans-unit id="cf087948c40b5a0ddd06e8044feea069" >
+ <source>Portuguese/Brazil</source>
+ <target>Portuguese/Brazil</target>
+</trans-unit>
+
+<trans-unit id="9fc2d28c05ed9eb1d75ba4465abf15a9" >
+ <source>Properties</source>
+ <target>Propiedades</target>
+</trans-unit>
+
+<trans-unit id="bbc0294ce6177b932fad9c75af2b8563" >
+ <source>Punjabi</source>
+ <target>Punjabi</target>
+</trans-unit>
+
+<trans-unit id="050dc5fb2cedf3eef3310a88820ecaa0" >
+ <source>Quechua</source>
+ <target>Quechua</target>
+</trans-unit>
+
+<trans-unit id="32d8f5d55febbcbb5ef86359b198c297" >
+ <source>Results %d-%d of %d</source>
+ <target>Resultados %d-%d de %d</target>
+</trans-unit>
+
+<trans-unit id="c3746c797600617206c6e7f0e85d973f" >
+ <source>Rhaeto-Romance</source>
+ <target>Rhaeto-Romance</target>
+</trans-unit>
+
+<trans-unit id="efa7394ecaa7fc7076a9da13a77236b8" >
+ <source>Romanian</source>
+ <target>Rumano</target>
+</trans-unit>
+
+<trans-unit id="deba6920e70615401385fe1fb5a379ec" >
+ <source>Russian</source>
+ <target>Ruso</target>
+</trans-unit>
+
+<trans-unit id="5063c7873b7d6f9fbbfd89fe217bf2b5" >
+ <source>Samoan</source>
+ <target>Samoan</target>
+</trans-unit>
+
+<trans-unit id="f4f36932c51247d087203e6e860396c1" >
+ <source>Sangho</source>
+ <target>Español</target>
+</trans-unit>
+
+<trans-unit id="4037f77713990c867a3c53066fbc4dd0" >
+ <source>Sanskrit</source>
+ <target>Sanskrit</target>
+</trans-unit>
+
+<trans-unit id="c9cc8cce247e49bae79f15173ce97354" >
+ <source>Save</source>
+ <target>Guardar</target>
+</trans-unit>
+
+<trans-unit id="daa6b483e9f6ca081ec7e0b4a352f9e9" >
+ <source>Save changes</source>
+ <target>Guardar cambios</target>
+</trans-unit>
+
+<trans-unit id="ccb8c4941ac4b57ac3fed977b30574fd" >
+ <source>Saved changes.</source>
+ <target>Cambios guardados.</target>
+</trans-unit>
+
+<trans-unit id="515d3a1ea1eee23f3eaea7c1b237d35d" >
+ <source>Scots Gaelic</source>
+ <target>Scots Gaelic</target>
+</trans-unit>
+
+<trans-unit id="2fae32629d4ef4fc6341f1751b405e45" >
+ <source>Security</source>
+ <target>Seguridad</target>
+</trans-unit>
+
+<trans-unit id="055301c56abc82dd3a81ea3810ad0599" >
+ <source>Serbian</source>
+ <target>Serbio</target>
+</trans-unit>
+
+<trans-unit id="e9afacccb9533842bb5a087f300e97a1" >
+ <source>Serbo-Croatian</source>
+ <target>Serbo-Croatian</target>
+</trans-unit>
+
+<trans-unit id="32cb9e5dc9631a5fa3882ea7ce27879a" >
+ <source>Sesotho</source>
+ <target>Sesotho</target>
+</trans-unit>
+
+<trans-unit id="4981897578f4b71fa92893e4f7df6aee" >
+ <source>Setswana</source>
+ <target>Setswana</target>
+</trans-unit>
+
+<trans-unit id="6cd16662548644fb2621f46c01701334" >
+ <source>Shona</source>
+ <target>Shona</target>
+</trans-unit>
+
+<trans-unit id="b991c567b4b2b64b360a6890a0002f24" >
+ <source>Show this language</source>
+ <target>Mostrar este idioma</target>
+</trans-unit>
+
+<trans-unit id="ff36f09ce3d926b3772948a4f72144dd" >
+ <source>Sindhi</source>
+ <target>Sindhi</target>
+</trans-unit>
+
+<trans-unit id="d8be732622a4932cc914e5da766f0fb0" >
+ <source>Sinhalese</source>
+ <target>Sinhalese</target>
+</trans-unit>
+
+<trans-unit id="fad8b173a3292c20e9ac145c9ba95745" >
+ <source>Siswati</source>
+ <target>Siswati</target>
+</trans-unit>
+
+<trans-unit id="9accc467b159e7ce158e53209c0cde2a" >
+ <source>Slovak</source>
+ <target>Eslovaco</target>
+</trans-unit>
+
+<trans-unit id="6e9970eac6ca16e34a8eac50070c49ce" >
+ <source>Slovenian</source>
+ <target>Esloveno</target>
+</trans-unit>
+
+<trans-unit id="0b104da57394974764cc7b3a42f2c1de" >
+ <source>Somali</source>
+ <target>Somali</target>
+</trans-unit>
+
+<trans-unit id="cb5480c32e71778852b08ae1e8712775" >
+ <source>Spanish</source>
+ <target>Español</target>
+</trans-unit>
+
+<trans-unit id="99320885a115bdda4663933e5e2f9bd8" >
+ <source>Spanish/Argentina</source>
+ <target>Spanish/Argentina</target>
+</trans-unit>
+
+<trans-unit id="84f8233cde3a1749bafb2eb931b0dbcc" >
+ <source>Spanish/Colombia</source>
+ <target>Español</target>
+</trans-unit>
+
+<trans-unit id="df35665a249098a41a6685d88d4937cd" >
+ <source>Spanish/Mexico</source>
+ <target>Español</target>
+</trans-unit>
+
+<trans-unit id="c6489d81c2d424ea11395171b7dbb176" >
+ <source>Spanish/Spain</source>
+ <target>Español</target>
+</trans-unit>
+
+<trans-unit id="3f43ba0705bf771ea5d74a7a2e8b40c0" >
+ <source>Sundanese</source>
+ <target>Sundanese</target>
+</trans-unit>
+
+<trans-unit id="9af95fb4ee44dce25961e7251072625b" >
+ <source>Swahili</source>
+ <target>Swahili</target>
+</trans-unit>
+
+<trans-unit id="41171a0fcd362ce98b5f0f11398713b6" >
+ <source>Swedish</source>
+ <target>Sueco</target>
+</trans-unit>
+
+<trans-unit id="924cd39c8c1cde74886d1b260284fe2d" >
+ <source>TMX</source>
+ <target>TMX</target>
+</trans-unit>
+
+<trans-unit id="e1c743c0131b09bc2ba277c12686eb2c" >
+ <source>TMX stands for Translation Memory eXchange. The purpose of a translation memory is to gather thousands of translations. Whenever you need a term such as &lt;tt&gt;Home&lt;/tt&gt; for your website chances are it is already translated, and all you have to do is to load a TMX file to get the translations.</source>
+ <target>TMX stands for Translation Memory eXchange. The purpose of a translation memory is to gather thousands of translations. Whenever you need a term such as &lt;tt&gt;Home&lt;/tt&gt; for your website chances are it is already translated, and all you have to do is to load a TMX file to get the translations.</target>
+</trans-unit>
+
+<trans-unit id="fee973126d42389ac96082e9ca6961fa" >
+ <source>Tagalog</source>
+ <target>Tagalog</target>
+</trans-unit>
+
+<trans-unit id="944c84bfafb071ea7f357c4f23cddf53" >
+ <source>Tajik</source>
+ <target>Tajik</target>
+</trans-unit>
+
+<trans-unit id="f0670813020969b39ff8d85744b40400" >
+ <source>Tamil</source>
+ <target>Tamil</target>
+</trans-unit>
+
+<trans-unit id="648f771e3555d5e0d184203f05938581" >
+ <source>Target language</source>
+ <target>No hay idiomas.</target>
+</trans-unit>
+
+<trans-unit id="508b03e01fb5ec10b4d932efde017a26" >
+ <source>Target languages</source>
+ <target>No hay idiomas.</target>
+</trans-unit>
+
+<trans-unit id="4c86bbde578e3648fa0b12aea66fc5f6" >
+ <source>Tatar</source>
+ <target>Tatar</target>
+</trans-unit>
+
+<trans-unit id="dac0559076bb14713648689e66c51d2d" >
+ <source>Team e-mail address</source>
+ <target>Dirección de &lt;em&gt;email&lt;/em&gt; del equipo</target>
+</trans-unit>
+
+<trans-unit id="15b88a88e6cf16a4462c1562fdcb0c19" >
+ <source>Telugu</source>
+ <target>Telugu</target>
+</trans-unit>
+
+<trans-unit id="43ddc789bcea4177a14791f6c9a03b28" >
+ <source>Thai</source>
+ <target>Tailandés</target>
+</trans-unit>
+
+<trans-unit id="644a1c8b4505932b9ac0f75e23d716de" >
+ <source>The message catalog also supports importing TMX files. You can add new messages and translations importing a TMX file in TMX level 1. Enter the filename and click the &lt;tt&gt;Import&lt;/tt&gt; button.</source>
+ <target>Puedes añadir nuevos mensajes y traducciones importando ficheros PO. Introduce el nombre del fichero, selecciona el idioma de las traducciones y pulsa el botón &lt;tt&gt;Importar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="d1274dcfa3a4b4d809cbcb3cb1175a51" >
+ <source>There are no attributes</source>
+ <target>No hay atributos.</target>
+</trans-unit>
+
+<trans-unit id="fb5be953fe50ba6d9fd75b17610c238e" >
+ <source>There are no languages</source>
+ <target>No hay idiomas.</target>
+</trans-unit>
+
+<trans-unit id="da7dd4067def4a79e099269adc9f5d0f" >
+ <source>There are no messages.</source>
+ <target>No hay mensajes.</target>
+</trans-unit>
+
+<trans-unit id="0193e98a14fea6eae4beebe4d8f8472a" >
+ <source>There are no properties.</source>
+ <target>No hay propiedades.</target>
+</trans-unit>
+
+<trans-unit id="1aa81fec702e23c7aa3d65a854a6179c" >
+ <source>This &lt;tt&gt;%s&lt;/tt&gt; object needs to be upgraded</source>
+ <target>Este objeto &lt;tt&gt;%s&lt;/tt&gt; necesita ser actualizado</target>
+</trans-unit>
+
+<trans-unit id="16deb3efbd232115f13d86cc04a8361c" >
+ <source>This &lt;tt&gt;Localizer&lt;/tt&gt; object doesn't need to be upgraded.</source>
+ <target>Este objeto &lt;tt&gt;Localizer&lt;/tt&gt; no necesita actualizarse</target>
+</trans-unit>
+
+<trans-unit id="c911b2e935d62bb0b8de3173658fca37" >
+ <source>This &lt;tt&gt;Localizer&lt;/tt&gt; object needs to be upgraded.</source>
+ <target>Este objeto &lt;tt&gt;Localizer&lt;/tt&gt; debe ser actualizado</target>
+</trans-unit>
+
+<trans-unit id="c00eb46cc9526a2306467cab11d75f5a" >
+ <source>This object doesn't need to be upgraded.</source>
+ <target>Este objeto no necesita ser actualizado.</target>
+</trans-unit>
+
+<trans-unit id="a441f933e0026f55ccff38b534f98a53" >
+ <source>Tibetan</source>
+ <target>Tibetan</target>
+</trans-unit>
+
+<trans-unit id="dea54a29be92f8749275fae518b01457" >
+ <source>Tigrinya</source>
+ <target>Tigrinya</target>
+</trans-unit>
+
+<trans-unit id="b78a3223503896721cca1303f776159b" >
+ <source>Title</source>
+ <target>Título</target>
+</trans-unit>
+
+<trans-unit id="f058e70cf3d89d139eee5e09f178720d" >
+ <source>To add a language select it and click the &lt;tt&gt;Add&lt;/tt&gt; button.</source>
+ <target>Para añadir un idioma seleccionalo y pulsa el botón &lt;tt&gt;Añadir&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="0fc1aa588f97228426129afa45a202ec" >
+ <source>To add a new property enter its name, select its type and click the &lt;tt&gt;Add&lt;/tt&gt; button.</source>
+ <target>Para añadir una nueva propiedad introduce su nombre, selecciona su tipo y pulsa el botón &lt;tt&gt;Añadir&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="aa4474af2a3753f25076f0e392d82bfb" >
+ <source>To add an attribute introduce its id and click the &lt;tt&gt;Add&lt;/tt&gt; button.</source>
+ <target>Para añadir un atributo introduce su id y pulsa el botón &lt;tt&gt;Añadir&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="d60ff856bbd4f5b9431f27fa096c9154" >
+ <source>To change the default language select it and click the &lt;tt&gt;Change&lt;/tt&gt; button.</source>
+ <target>Para añadir un idioma seleccionalo y pulsa el botón &lt;tt&gt;Añadir&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="22af4ded3015f8c1fce9613270da19be" >
+ <source>To delete a language check it and click the &lt;tt&gt;Delete&lt;/tt&gt; button.</source>
+ <target>Para eliminar un atributo seleccionalo y pulsa el botón &lt;tt&gt;Eliminar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="5c8573db4482a7bf7f6ae52e945397dc" >
+ <source>To delete an attribute check it and click the &lt;tt&gt;Delete&lt;/tt&gt; button.</source>
+ <target>Para eliminar un atributo seleccionalo y pulsa el botón &lt;tt&gt;Eliminar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="dd5cb49bc56af9d53f9f9e1e5b425ab0" >
+ <source>Tonga</source>
+ <target>Tonga</target>
+</trans-unit>
+
+<trans-unit id="d634f58fd91b60c8615360fb2075bd03" >
+ <source>Tsonga</source>
+ <target>Tsonga</target>
+</trans-unit>
+
+<trans-unit id="c1612bbdebfa45467e8ab814e08daff1" >
+ <source>Turkish</source>
+ <target>Turco</target>
+</trans-unit>
+
+<trans-unit id="6f1211929eb30a88188af058eb7dbcfb" >
+ <source>Turkmen</source>
+ <target>Turkmen</target>
+</trans-unit>
+
+<trans-unit id="90cf2eaa63dbb0b6796c87dc3d4d7d75" >
+ <source>Twi</source>
+ <target>Twi</target>
+</trans-unit>
+
+<trans-unit id="a1fa27779242b4902f7ae3bdd5c6d508" >
+ <source>Type</source>
+ <target>Tipo</target>
+</trans-unit>
+
+<trans-unit id="f8131f43da1441653f7ecb1fd144eb6a" >
+ <source>Uighur</source>
+ <target>Uighur</target>
+</trans-unit>
+
+<trans-unit id="e78a6fc14ad64f7a78386b20568ce95b" >
+ <source>Ukrainian</source>
+ <target>Ucraniano</target>
+</trans-unit>
+
+<trans-unit id="1cdc076b28f70afac5fcedadf99fa119" >
+ <source>Undo</source>
+ <target>Deshacer</target>
+</trans-unit>
+
+<trans-unit id="f683581d3e75f05f9d9215f9b4696cef" >
+ <source>Upgrade</source>
+ <target>Actualizar</target>
+</trans-unit>
+
+<trans-unit id="f8aa4393427c2f2fd010f7adc5812517" >
+ <source>Urdu</source>
+ <target>Urdu</target>
+</trans-unit>
+
+<trans-unit id="f4d8d39fa01498e102631eea890e81c4" >
+ <source>Use locale folders</source>
+ <target>Usar carpetas locales</target>
+</trans-unit>
+
+<trans-unit id="ca20f547f2f65dbf6d23b0395419dd43" >
+ <source>Uzbek</source>
+ <target>Uzbek</target>
+</trans-unit>
+
+<trans-unit id="7b80fae85640c16cdb0261bef0c27636" >
+ <source>Vietnamese</source>
+ <target>Vietnamita</target>
+</trans-unit>
+
+<trans-unit id="4351cfebe4b61d8aa5efa1d020710005" >
+ <source>View</source>
+ <target>Vista</target>
+</trans-unit>
+
+<trans-unit id="a28c6f221dfa1225107773b13f2c3e2f" >
+ <source>Volapuk</source>
+ <target>Volapuk</target>
+</trans-unit>
+
+<trans-unit id="bbb0fa49b525c4264f4ad7a06adc3e07" >
+ <source>Welsh</source>
+ <target>Galés</target>
+</trans-unit>
+
+<trans-unit id="909b4eed3a5b9549211eb33f9601deb9" >
+ <source>With this form you can change the title of the message catalog. The title also is used as the value of the &lt;tt&gt;Project-Id-Version&lt;/tt&gt; field in the header of the PO files, which are generated when the message catalog is exported.</source>
+ <target>Con este formulario puedes cambiar el título del catálogo de mensajes. El título también se utiliza como valor del campo &lt;tt&gt;Project-Id-Version&lt;/tt&gt; en la cabecera de los ficheros PO, los cuales se generan cuando se exporta el catálogo de mensajes.</target>
+</trans-unit>
+
+<trans-unit id="410d89e3c3647c6332d7412d2d46ef69" >
+ <source>Wolof</source>
+ <target>Wolof</target>
+</trans-unit>
+
+<trans-unit id="66ab19a0e3494a5be5598b106d98d651" >
+ <source>Xhosa</source>
+ <target>Xhosa</target>
+</trans-unit>
+
+<trans-unit id="6d49a35951ace13a6294548e5137157f" >
+ <source>Yiddish</source>
+ <target>Yidish</target>
+</trans-unit>
+
+<trans-unit id="ce9ff4c0410d35afbc2206ab23c8759d" >
+ <source>Yoruba</source>
+ <target>Yoruba</target>
+</trans-unit>
+
+<trans-unit id="461d511bbc2b1c95cb6c4f73add51917" >
+ <source>You can add new messages and translations importing a PO file. Enter the filename, select the language of the translations and click the &lt;tt&gt;Import&lt;/tt&gt; button.</source>
+ <target>Puedes añadir nuevos mensajes y traducciones importando ficheros PO. Introduce el nombre del fichero, selecciona el idioma de las traducciones y pulsa el botón &lt;tt&gt;Importar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="cc86f8a276a4005de05cab836936dda8" >
+ <source>You can export the messages and their translations to PO files. Check &lt;tt&gt;locale.pot&lt;/tt&gt; to get only the messages, without their translations. Check any other option to get a PO file with the messages and their translations to the selected language. Then click the &lt;tt&gt;Export&lt;/tt&gt; button.</source>
+ <target>Puedes exportar los mensajes y sus traducciones a ficheros PO. Selecciona &lt;tt&gt;locale.pot&lt;/tt&gt; para obtener tan solo los mensajes, sin sus traducciones. Selecciona cualquier otra opción para obtener un fichero PO con los mensajes y sus traducciones al idioma seleccionado. Entonces pulsa el botón &lt;tt&gt;Exportar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="0866642d2b4411f396aefaa994cf7456" >
+ <source>You can export the messages and their translations to TMX level 1 files. To do that just click the &lt;tt&gt;Export&lt;/tt&gt; button.</source>
+ <target>Puedes añadir nuevos mensajes y traducciones importando ficheros PO. Introduce el nombre del fichero, selecciona el idioma de las traducciones y pulsa el botón &lt;tt&gt;Importar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="21c3dfc23e6538182a61c961e88cc7a3" >
+ <source>You can export the messages and their translations to XLIFF files. Check any option to get a XLIFF file with the messages and their translations to the selected language. Then click the &lt;tt&gt;Export&lt;/tt&gt; button.</source>
+ <target>Puedes exportar los mensajes y sus traducciones a ficheros PO. Selecciona &lt;tt&gt;locale.pot&lt;/tt&gt; para obtener tan solo los mensajes, sin sus traducciones. Selecciona cualquier otra opción para obtener un fichero PO con los mensajes y sus traducciones al idioma seleccionado. Entonces pulsa el botón &lt;tt&gt;Exportar&lt;/tt&gt;.</target>
+</trans-unit>
+
+<trans-unit id="bc82c84acc0c68f760ecd5bac0dddc7d" >
+ <source>Your e-mail address</source>
+ <target>Tu dirección de &lt;em&gt;email&lt;/em&gt;</target>
+</trans-unit>
+
+<trans-unit id="221e705c06e231636fdbccfdd14f4d5c" >
+ <source>Your name</source>
+ <target>Tu nombre</target>
+</trans-unit>
+
+<trans-unit id="839baadfb724e06eac3b12a431dd8358" >
+ <source>Zhuang</source>
+ <target>Zhuang</target>
+</trans-unit>
+
+<trans-unit id="68046733e4659165a4f59a1918cb1408" >
+ <source>Zulu</source>
+ <target>Zulu</target>
+</trans-unit>
+
+<trans-unit id="d304ba20e96d87411588eeabac850e34" >
+ <source>label</source>
+ <target>label</target>
+</trans-unit>
+</body>
+</file>
+</xliff>

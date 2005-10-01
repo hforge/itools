@@ -175,8 +175,6 @@ class Catalog(Folder):
                 value = document.get(field.name)
             else:
                 value = getattr(document, field.name, None)
-            if callable(value):
-                value = value()
 
             # If value is None, don't go further
             if value is None:

@@ -21,8 +21,9 @@ import unittest
 # Import from itools
 from itools.resources import get_resource
 from itools.handlers import get_handler
-from STL import Expression, NamespaceStack, TID, TSLASH, TOPEN, TCLOSE, TEOF, \
-     TNONE
+from stl import Expression, NamespaceStack
+from stl import TID, TSLASH, TOPEN, TCLOSE, TEOF, TNONE
+from stl import stl
 
 
 class STLTestCase(unittest.TestCase):
@@ -78,7 +79,7 @@ class STLTestCase(unittest.TestCase):
                                  {'id': 'ikaaro', 'title': 'The ikaaro CMS'}]}
 
         template = get_handler('test-in.xml')
-        output = template.stl(namespace)
+        output = stl(template, namespace)
 
         assert output == get_handler('test-out.xml').to_unicode()
 
@@ -86,11 +87,11 @@ class STLTestCase(unittest.TestCase):
     def test_template2(self):
         namespace = {'title': 'hello world'}
         template = get_handler('test21-in.xml')
-        template = template.stl(namespace)
+        template = stl(template, namespace)
 
         namespace = {'body': template}
         template = get_handler('test20-in.xml')
-        output = template.stl(namespace)
+        output = stl(template, namespace)
 
         assert output == get_handler('test2-out.xml').to_unicode()
 
@@ -108,7 +109,7 @@ class STLTestCase(unittest.TestCase):
 ##        resource = memory.File(stl)
 ##        template = XML.Document(resource)
 
-##        print template.stl(namespace)
+##        print stl(template, namespace)
 
 
 

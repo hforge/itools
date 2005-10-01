@@ -381,11 +381,6 @@ class Document(Text.Text):
             prefix = namespaces.get_namespace(xml_namespace).class_prefix
             root_element.set_attribute(xmlns_uri, prefix, xml_namespace)
 
-        # XXX This is an horrible hack
-        from STL import STL
-        self.stl = STL()
-        self.stl.handler = self
-
 
     #######################################################################
     # API

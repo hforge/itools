@@ -429,161 +429,156 @@ class RepeatAttr(DataType):
 ########################################################################
 # The run-time engine
 ########################################################################
-class STL(object):
-    """The stl namespace handler. It is an aspect."""
+def stl(document, namespace={}):
+    # XXX Rewrite with traverse2.
 
-    def __call__(self, namespace={}):
-        # XXX Rewrite with traverse2.
+    # Initialize the namespace stack
+    stack = NamespaceStack()
+    stack.append(namespace)
+    # Initialize the repeat stack (keeps repeat/index, repeat/odd, etc...)
+    repeat = NamespaceStack()
 
-        # Initialize the namespace stack
-        stack = NamespaceStack()
-        stack.append(namespace)
-        # Initialize the repeat stack (keeps repeat/index, repeat/odd, etc...)
-        repeat = NamespaceStack()
-
-        # Get the document
-        document = self.handler
-        s = self.process(document.get_root_element(), stack, repeat)
-
-        return u''.join(s)
+    # Get the document
+    s = process(document.get_root_element(), stack, repeat)
+    return u''.join(s)
 
 
-    def process(self, node, stack, repeat_stack):
-        # Raw nodes
-        if isinstance(node, unicode):
-            return [node]
-        elif isinstance(node, XML.Comment):
-            return [node.to_unicode()]
+def process(node, stack, repeat_stack):
+    # Raw nodes
+    if isinstance(node, unicode):
+        return [node]
+    elif isinstance(node, XML.Comment):
+        return [node.to_unicode()]
 
-        s = []
-        # Process stl:repeat
-        if node.has_attribute(stl_uri, 'repeat'):
-            name, expression = node.get_attribute(stl_uri, 'repeat')
+    s = []
+    # Process stl:repeat
+    if node.has_attribute(stl_uri, 'repeat'):
+        name, expression = node.get_attribute(stl_uri, 'repeat')
 
-            i = 0
-            values = expression.evaluate(stack, repeat_stack)
-            nvalues = len(values)
-            for value in values:
-                # Create the new stack
-                newstack = stack[:]
-                newstack.append({name: value})
+        i = 0
+        values = expression.evaluate(stack, repeat_stack)
+        nvalues = len(values)
+        for value in values:
+            # Create the new stack
+            newstack = stack[:]
+            newstack.append({name: value})
 
-                newrepeat = repeat_stack[:]
-                value = {'index': i,
-                         'start': i == 0,
-                         'end': i == nvalues - 1}
-                newrepeat.append({name: value})
+            newrepeat = repeat_stack[:]
+            value = {'index': i,
+                     'start': i == 0,
+                     'end': i == nvalues - 1}
+            newrepeat.append({name: value})
 
-                # Process and append the clone
-                s.extend(self.process1(node, newstack, newrepeat))
+            # Process and append the clone
+            s.extend(process1(node, newstack, newrepeat))
 
-                # Increment counter
-                i = i + 1
+            # Increment counter
+            i = i + 1
 
-            return s
-
-        s.extend(self.process1(node, stack, repeat_stack))
         return s
 
+    s.extend(process1(node, stack, repeat_stack))
+    return s
 
-    def process1(self, node, stack, repeat):
-        """
-        Process stl:if, stl:attributes and stl:content.
-        """
-        # Remove the element if the given expression evaluates to false
-        if node.has_attribute(stl_uri, 'if'):
-            stl_expression = node.get_attribute(stl_uri, 'if')
-            if not stl_expression.evaluate(stack, repeat):
-                return []
 
-        # Print tag name
-        s = ['<%s' % node.qname]
+def process1(node, stack, repeat):
+    """
+    Process stl:if, stl:attributes and stl:content.
+    """
+    # Remove the element if the given expression evaluates to false
+    if node.has_attribute(stl_uri, 'if'):
+        stl_expression = node.get_attribute(stl_uri, 'if')
+        if not stl_expression.evaluate(stack, repeat):
+            return []
 
-        # Process attributes
-        changed_attributes = {} # qname: value
-        # Evaluate stl:attributes
-        if node.has_attribute(stl_uri, 'attributes'):
-            value = node.get_attribute(stl_uri, 'attributes')
-            for name, expression in value:
-                value = expression.evaluate(stack, repeat)
-                # XXX Do it only if it is an HTML document.
-                if name in boolean_html_attributes:
-                    if bool(value) is True:
-                        value = name
-                    else:
-                        value = None
-                # Coerce
-                elif isinstance(value, int):
-                    value = str(value)
-                changed_attributes[name] = value
+    # Print tag name
+    s = ['<%s' % node.qname]
 
-        xmlns_uri = namespaces.XMLNSNamespace.class_uri
-
-        # Output existing attributes
-        for namespace, local_name, value in node.get_attributes():
-            # Omit stl attributes
-            if namespace == stl_uri:
-                continue
-            # Omit stl namespace
-            if namespace == xmlns_uri and local_name == 'stl':
-                continue
-
-            qname = node.get_attribute_qname(namespace, local_name)
-            # Get the attribute value
-            if qname in changed_attributes:
-                value = changed_attributes.pop(qname)
-            # Output only values different than None
-            if value is not None:
-                s.append(' %s="%s"' % (qname, value))
-
-        # Output remaining attributes
-        for qname, value in changed_attributes.items():
-            if value is not None:
-                s.append(' %s="%s"' % (qname, value))
-
-        # The element schema, we need it
-        namespace = namespaces.get_namespace(node.namespace)
-        schema = namespace.get_element_schema(node.name)
-        is_empty = schema.get('is_empty', False)
-        # Close the open tag
-        if is_empty:
-            s.append('/>')
-        else:
-            s.append('>')
-
-        # Process the content
-        if node.has_attribute(stl_uri, 'content'):
-            stl_expression = node.get_attribute(stl_uri, 'content')
-            content = stl_expression.evaluate(stack, repeat)
+    # Process attributes
+    changed_attributes = {} # qname: value
+    # Evaluate stl:attributes
+    if node.has_attribute(stl_uri, 'attributes'):
+        value = node.get_attribute(stl_uri, 'attributes')
+        for name, expression in value:
+            value = expression.evaluate(stack, repeat)
+            # XXX Do it only if it is an HTML document.
+            if name in boolean_html_attributes:
+                if bool(value) is True:
+                    value = name
+                else:
+                    value = None
             # Coerce
-            if content is None:
-                content = []
-            elif isinstance(content, unicode):
-                content = [content]
-            elif isinstance(content, str):
-                content = [unicode(content)]
-            elif isinstance(content, (int, long)):
-                content = [unicode(content)]
-            else:
-                msg = 'expression "%(expr)s" evaluates to value of' \
-                      ' unexpected type %(type)s'
-                msg = msg % {'expr': str(stl_expression),
-                             'type': content.__class__.__name__}
-                raise STLTypeError, msg
-        else:
+            elif isinstance(value, int):
+                value = str(value)
+            changed_attributes[name] = value
+
+    xmlns_uri = namespaces.XMLNSNamespace.class_uri
+
+    # Output existing attributes
+    for namespace, local_name, value in node.get_attributes():
+        # Omit stl attributes
+        if namespace == stl_uri:
+            continue
+        # Omit stl namespace
+        if namespace == xmlns_uri and local_name == 'stl':
+            continue
+
+        qname = node.get_attribute_qname(namespace, local_name)
+        # Get the attribute value
+        if qname in changed_attributes:
+            value = changed_attributes.pop(qname)
+        # Output only values different than None
+        if value is not None:
+            s.append(' %s="%s"' % (qname, value))
+
+    # Output remaining attributes
+    for qname, value in changed_attributes.items():
+        if value is not None:
+            s.append(' %s="%s"' % (qname, value))
+
+    # The element schema, we need it
+    namespace = namespaces.get_namespace(node.namespace)
+    schema = namespace.get_element_schema(node.name)
+    is_empty = schema.get('is_empty', False)
+    # Close the open tag
+    if is_empty:
+        s.append('/>')
+    else:
+        s.append('>')
+
+    # Process the content
+    if node.has_attribute(stl_uri, 'content'):
+        stl_expression = node.get_attribute(stl_uri, 'content')
+        content = stl_expression.evaluate(stack, repeat)
+        # Coerce
+        if content is None:
             content = []
-            for child in node.children:
-                content.extend(self.process(child, stack, repeat))
+        elif isinstance(content, unicode):
+            content = [content]
+        elif isinstance(content, str):
+            content = [unicode(content)]
+        elif isinstance(content, (int, long)):
+            content = [unicode(content)]
+        else:
+            msg = 'expression "%(expr)s" evaluates to value of unexpected' \
+                  ' type %(type)s'
+            msg = msg % {'expr': str(stl_expression),
+                         'type': content.__class__.__name__}
+            raise STLTypeError, msg
+    else:
+        content = []
+        for child in node.children:
+            content.extend(process(child, stack, repeat))
 
-        # Remove the element but preserves its children if it is a stl:block
-        # or a stl:inline
-        if isinstance(node, Element):
-            return content
+    # Remove the element but preserves its children if it is a stl:block or
+    # a stl:inline
+    if isinstance(node, Element):
+        return content
 
-        s.extend(content)
-        if not is_empty:
-            s.append('</%s>' % node.qname)
-        return s
+    s.extend(content)
+    if not is_empty:
+        s.append('</%s>' % node.qname)
+    return s
 
 
 ########################################################################

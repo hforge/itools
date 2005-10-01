@@ -18,5 +18,5 @@
 
 # Import from itools
 import XML
-import STL
+import stl
 import DublinCore

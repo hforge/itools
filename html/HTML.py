@@ -128,7 +128,7 @@ class Document(XHTML.Document):
             elif event == START_ELEMENT:
                 schema = elements_schema.get(value, {'type': BlockElement})
                 element_class = schema['type']
-                stack.append(element_class(None, value))
+                stack.append(element_class(value))
             elif event == END_ELEMENT:
                 element = stack.pop()
 

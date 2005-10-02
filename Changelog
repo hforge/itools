@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-10-02 19:16:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
+
+    Summary:
+      documentation, get ready to release a new version of the doc
+    Revision:
+      itools--main--0.10--patch-61
+
+
+    removed files:
+     doc/.arch-ids/addendum.tex.id doc/addendum.tex
+
+    modified files:
+     Changelog doc/Makefile doc/intro.tex doc/itools.tex
+
+
 2005-10-02 19:06:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
 
     Summary:

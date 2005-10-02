@@ -1,16 +1,80 @@
 
-\chapter{Type marshalers}
+\chapter{Datatypes and schemas}
 
+This chapter presents two closely related packages: {\tt itools.datatypes}
+and {\tt itools.schema}.
 
-The module {\tt itools.types} provides deserialization and serialization
-code for several simple types, from built-in types like intergers or dates
-to slightly more complex types like URIs or XML qualified names.
+\subsubsection{Introduction}
 
-All of them are implemented as the couple of class methods {\tt decode}
-and {\tt encode}, for example:
+Information stored in a file or sent through a network appears as a chain
+of bytes, but it represents high level information. For example we may
+want to keep some basic data about a master piece book:
+
 
 \begin{code}
-    >>> from itools.types import DateTime
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:title>100 años de soledad</dc:title>
+    <dc:creator>Gabriel Garcia Marquez</dc:creator>
+    <dc:date>1999-07-02</dc:date>
+    <dc:language>es</dc:language>
+  </metadata>
+\end{code}
+
+Above we have used the XML language to keep the title, author, date of
+publication and language of our book; but we may prefer a different
+file format:
+
+\begin{code}
+  BEGIN:RECORD
+    TITLE:100 años de soledad
+    CREATOR:Gabriel Garcia Marquez
+    DATE:1999-07-02
+    LANGUAGE:es
+  END:RECORD
+\end{code}
+
+Indepently of the format used, one thing is sure, we would like to load the
+information with a type:
+
+\begin{code}
+  '100 años de soledad'     -(unicode)->  u'100 años de soledad'
+  'Gabriel Garcia Marquez'  -(unicode)->  u'Gabriel Garcia Marquez'
+  '1999-07-02'              ----(date)->  datetime.date(1999, 7, 2)
+  'es'                      --(string)->  'es'
+\end{code}
+
+This process called {\em deserialization}. The opposite operation, which
+we are also interested in, is called {\em serialization}: to transform a
+value to a chain of bytes.
+
+Other operations we may be interested include:
+
+\begin{itemize}
+  \item To check wether a string value is correct; for example, to check
+    wether the date respects the ISO 8601 standard.
+
+  \item To provide a default value when a field is missing; for example we
+    may assume the language is English if not specified otherwise.
+\end{itemize}
+
+The packages {\tt itools.datatypes} and {\tt itools.schema} provide an
+infrastructure to do all this and more. What is useful not only to serialize
+and deserialize files, but also for other purposes, like validating user
+input data.
+
+
+\section{Datatypes}
+
+In Python there are basic types like {\tt unicode}, {\tt integer} or
+{\tt float}. And the there are more complex types like dates.
+
+The module {\tt itools.datatypes} provides an infrastructure orthogonal to
+the Python types. The basic service provided by this infrastructure is the
+deserialization and serialization of values; which is implemented as the
+couple of class methods {\tt decode} and {\tt encode}, for example:
+
+\begin{code}
+    >>> from itools.datatypes import DateTime
     >>> datetime = DateTime.decode('2005-05-02 16:47')
     >>> datetime
     datetime.datetime(2005, 5, 2, 16, 47)
@@ -27,63 +91,48 @@ different programming aspects should be cleary distinct in the implementation
 and programming interface.
 
 
-\section{Built-in types}
+\subsection{Out of the box}
 
-The Python built-in types supported, including those provided by the
-standard library, are integers, text strings (unicode), byte strings,
-booleans, dates and datetimes.
+Out-of-the-box {\tt itools.datatypes} provides support for the following
+types:
 
-\subsubsection{Integers ({\tt itools.types.Integer})}
+\begin{description}
+  \item [Integers ({\tt Integer})]
+    An integer number is serialized using ASCII characters. This means a
+    call to {\tt Integer.decode(x)} is equivalent to {\tt int(x)}, and
+    {\tt Integer.encode(x)} does the same than {\tt str(x)}.
 
-An integer number is serialized using ASCII characters. This means a call to
-{\tt Integer.decode(x)} is equivalent to {\tt int(x)}, and
-{\tt Integer.encode(x)} does the same than {\tt str(x)}.
+  \item [Text ({\tt Unicode})]
+    Text strings are serialized using the UTF-8 encoding (by default).
 
-\subsubsection{Unicode strings ({\tt itools.types.Unicode})}
+  \item [Byte strings ({\tt String})]
+    A byte string does not needs to be serialized or deserialized, the
+    output is always equal to the input.
 
-Unicode strings are serialized using the UTF-8 encoding (by default).
+  \item [Booleans ({\tt Boolean})]
+     Boolean values are encoded with the ``0'' character for the {\em false}
+     value and with the ``1'' character for the {\em true} value.
 
-\subsubsection{Byte strings ({\tt itools.types.String})}
+  \item [Dates ({\tt Date})]
+    Dates are encoded following the ISO 8601 standard\footnote{http://www.iso.org/iso/en/prods-services/popstds/datesandtime.html}: {\tt YYYY-MM-DD}.
 
-A byte string does not needs to be serialized or deserialized, the
-output is always equal to the input.
+  \item [Datetimes ({\tt DateTime})]
+    Date and time is encoded with the pattern: {\tt YYYY-MM-DD hh:mm}.
 
-\subsubsection{Booleans ({\tt itools.types.Boolean})}
+  \item [URIs ({\tt URI})]
+    The URI decoder will build and return one of the URI reference objects
+    defined in the {\tt itools.uri} package, usually it will be an instance
+    of the class {\tt itools.uri.generic.Reference}.
 
-Boolean values are encoded with the ``0'' character for the {\em false}
-value and with the ``1'' character for the {\em true} value.
-
-\subsubsection{Dates ({\tt itools.types.Date})}
-
-Dates are encoded following the ISO 8601 standard\footnote{http://www.iso.org/iso/en/prods-services/popstds/datesandtime.html}: ``YYYY-MM-DD''.
-
-\subsubsection{Datetimes ({\tt itools.types.DateTime})}
-
-Date and time is encoded with the pattern: ``YYYY-MM-DD hh:mm''.
-
-\section{Other types}
-
-Type marshalers are provided for other three types: URIs, filenames
-and XML qualified names.
-
-
-\subsubsection{URIs ({\tt itools.types.URI})}
-
-The URI decoder will build and return one of the URI reference objects
-defined in the {\tt itools.uri} package, usually it will be an instance
-of the class {\tt itools.uri.generic.Reference}.
-
-
-\subsubsection{Filenames ({\tt itools.types.FileName})}
-
-Usually filenames include extensions to indicate the file type, and
-sometimes other information like the language. The filename decoder
-will parse a filename and return a tuple where the first element is
-the filename, the second element is the file type, and the last element
-is the language. For example:
+  \item [Filenames ({\tt FileName})]
+    Usually filenames include extensions to indicate the file type, and
+    sometimes other information like the language. The filename decoder
+    will parse a filename and return a tuple where the first element is
+    the filename, the second element is the file type, and the last element
+    is the language. For example:
 
 \begin{code}
-    >>> from itools.types import FileName
+    >>> from itools.datatypes import FileName
     >>> FileName.decode('index.html.en')
     ('index', 'html', 'en')
     >>> FileName.decode('index.html')
@@ -92,21 +141,19 @@ is the language. For example:
     ('index', None, None)
 \end{code}
 
-
-\subsubsection{XML qualified names ({\tt itools.types.QName})}
-
-An XML qualified name has two parts, the prefix and the local name, so
-our decoder will return a tuple with these two elements:
+  \item [XML qualified names ({\tt QName})]
+    An XML qualified name has two parts, the prefix and the local name, so
+    our decoder will return a tuple with these two elements:
 
 \begin{code}
-    >>> from itools.types import QName
+    >>> from itools.datatypes import QName
     >>> QName.decode('dc:title')
     ('dc', 'title')
     >>> QName.decode('href')
     (None, 'href')
 \end{code}
 
-The encoder expects a two element tuple:
+    The encoder expects a two element tuple:
 
 \begin{code}
     >>> QName.encode(('dc', 'title'))
@@ -114,3 +161,76 @@ The encoder expects a two element tuple:
     >>> QName.encode((None, 'href'))
     'href'
 \end{code}
+
+\end{description}
+
+
+\subsection{Defining new datatypes}
+
+There are two ways to define a new datatype: subclassing and instanciating.
+
+\subsubsection{Subclassing}
+
+All datatytpes inherit from the abstract class {\tt DataType}. To define a
+new datatype either subclass directly from {\tt DateType}, or from any
+other subclass of it.
+
+As an example we are going to define a datatype that loads mimetypes as
+a two elements tuple:
+
+\begin{code}
+  import mimetypes
+  from itools.datatypes import DateType
+
+  class MimeType(DateType):
+
+      default = None
+
+      @staticmethod
+      def decode(data):
+          return tuple(data.split('/'))
+
+      @staticmethod
+      def encode(value)
+          return '%s/%s' % value
+
+      @staticmethod
+      def is_valid(data):
+          return mimetypes.guess_extension(data) is not None
+\end{code}
+
+Two things to highligth:
+
+\begin{itemize}
+  \item We have set the default value to {\tt None}, though this is
+    not really needed since the {\tt DataType} class already defines this
+    variable to {\tt None}.
+
+    Another good default value maybe {\tt ('application', 'octet-stream')}.
+
+  \item We have added the method {\tt is\_valid}, which is not defined by
+    any other datatype included in {\tt itools}. This illustrates that the 
+    datatypes can be extended with whatever logic, which we could use
+    later in the application code.
+\end{itemize}
+
+
+\subsection{Instanciating}
+
+This is a more compact way to specialize a datatype, when the changes are
+small. For example:
+
+\begin{code}
+  from itools.datatypes import String
+
+  WorkflowState = String(default='private')
+\end{code}
+
+Here we have defined a workflow state as an string, whose default value is
+{\tt private}.
+
+Note that a shortcoming of this approach is that, unlike subclassing, it is
+not possible to instanciate a datatype that already is an instance.
+
+
+\section{Schemas}

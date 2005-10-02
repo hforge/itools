@@ -27,10 +27,10 @@ class DataType(object):
 
 
     @staticmethod
-    def decode(cls, data):
+    def decode(data):
         raise NotImplementedError
 
 
     @staticmethod
-    def encode(cls, value):
+    def encode(value):
         raise NotImplementedError

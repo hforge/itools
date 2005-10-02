@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-10-02 19:06:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
+
+    Summary:
+      datatypes, fix abstract DataType class
+    Revision:
+      itools--main--0.10--patch-59
+
+
+    modified files:
+     Changelog datatypes/base.py
+
+
 2005-10-02 18:09:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
 
     Summary:

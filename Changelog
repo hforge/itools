@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-10-02 18:09:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
+
+    Summary:
+      documentation, updating chapter about datatypes
+    Revision:
+      itools--main--0.10--patch-58
+
+
+    modified files:
+     Changelog doc/types.tex
+
+
 2005-10-02 16:26:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-57
 
     Summary:

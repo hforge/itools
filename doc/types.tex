@@ -167,5 +167,70 @@ types:
 
 \subsection{Defining new datatypes}
 
+There are two ways to define a new datatype: subclassing and instanciating.
+
+\subsubsection{Subclassing}
+
+All datatytpes inherit from the abstract class {\tt DataType}. To define a
+new datatype either subclass directly from {\tt DateType}, or from any
+other subclass of it.
+
+As an example we are going to define a datatype that loads mimetypes as
+a two elements tuple:
+
+\begin{code}
+  import mimetypes
+  from itools.datatypes import DateType
+
+  class MimeType(DateType):
+
+      default = None
+
+      @staticmethod
+      def decode(data):
+          return tuple(data.split('/'))
+
+      @staticmethod
+      def encode(value)
+          return '%s/%s' % value
+
+      @staticmethod
+      def is_valid(data):
+          return mimetypes.guess_extension(data) is not None
+\end{code}
+
+Two things to highligth:
+
+\begin{itemize}
+  \item We have set the default value to {\tt None}, though this is
+    not really needed since the {\tt DataType} class already defines this
+    variable to {\tt None}.
+
+    Another good default value maybe {\tt ('application', 'octet-stream')}.
+
+  \item We have added the method {\tt is\_valid}, which is not defined by
+    any other datatype included in {\tt itools}. This illustrates that the 
+    datatypes can be extended with whatever logic, which we could use
+    later in the application code.
+\end{itemize}
+
+
+\subsection{Instanciating}
+
+This is a more compact way to specialize a datatype, when the changes are
+small. For example:
+
+\begin{code}
+  from itools.datatypes import String
+
+  WorkflowState = String(default='private')
+\end{code}
+
+Here we have defined a workflow state as an string, whose default value is
+{\tt private}.
+
+Note that a shortcoming of this approach is that, unlike subclassing, it is
+not possible to instanciate a datatype that already is an instance.
+
 
 \section{Schemas}

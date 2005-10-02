@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.10
 #
 
+2005-10-02 16:24:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
+
+    Summary:
+      rss, de-serialize pubDate and lastBuildDate
+    Revision:
+      itools--main--0.10--patch-56
+
+
+    modified files:
+     Changelog rss/rss.py
+
+
 2005-09-02 20:21:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
 
     Summary:

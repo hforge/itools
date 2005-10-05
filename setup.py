@@ -23,8 +23,8 @@ This script can be tested with the folowing::
   make clean 
   python setup.py -q clean sdist
   cd dist
-  tar xzf itools-0.7.1.tar.gz
-  cd itools-0.7.1
+  tar xzf itools-0.11.0.tar.gz
+  cd itools-0.11.0
   sudo python setup.py -q install
 
 Make sure the following files are shipped:
@@ -36,22 +36,37 @@ Note the path separator may vary on your platform.
 """
 
 
-# Import Python modules
+# Import from the Standard Library
 from distutils.core import setup
-from distutils.command.install_data import install_data
+from distutils.command.build_py import build_py
 import os
 
+class build_py_fixed(build_py):
+    """http://sourceforge.net/tracker/index.php?func=detail&aid=1183712&group_id=5470&atid=305470"""
+    def get_data_files(self):
+        """Generate list of '(package,src_dir,build_dir,filenames)' tuples"""
+        data = []
+        if not self.packages:
+            return data
+        for package in self.packages:
+            # Locate package source directory
+            src_dir = self.get_package_dir(package)
 
-# XXX make data installed as Python modules
-# In Python 2.4, the new package_data makes it damn easier.
-#
-class install_module_data(install_data):
-    def finalize_options (self):
-        self.set_undefined_options('install',
-                                   ('install_purelib', 'install_dir'),
-                                   ('root', 'root'),
-                                   ('force', 'force'),
-                                   )
+            # Compute package build directory
+            build_dir = os.path.join(*([self.build_lib] + package.split('.')))
+
+            # Length of path to strip from found files
+            if src_dir:
+                plen = len(src_dir)+1
+            else:
+                plen = 0
+
+            # Strip directory from globbed filenames
+            filenames = [
+                file[plen:] for file in self.find_data_files(package, src_dir)
+                ]
+            data.append((package, src_dir, build_dir, filenames))
+        return data
 
 
 description = """itools is a Python library, it groups a number of packages
@@ -78,7 +93,7 @@ included are:
 """
 
 setup(name = "itools",
-      version = "0.10.0",
+      version = "0.11.0",
       author = "J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",
@@ -120,9 +135,15 @@ setup(name = "itools",
                      'Topic :: Text Processing',
                      'Topic :: Text Processing :: Markup',
                      'Topic :: Text Processing :: Markup :: XML'],
-      data_files=[('itools', ['Changelog']),
-                  (os.path.join('itools', 'i18n'),
-                   [os.path.join('i18n', 'languages.txt')])],
+      package_data = {'itools': ['Changelog'],
+                      'itools.catalog': [os.path.join('tests', '*.txt')],
+                      'itools.i18n': ['languages.txt'],
+                      'itools.resources': [os.path.join('tests', 'index.html.en')],
+                      'itools.rss': ['*.html', '*.rss', '*.xml'],
+                      'itools.tmx': ['localizermsgs.tmx'],
+                      'itools.workflow': ['HOWTO.txt', 'TODO.txt'],
+                      'itools.xliff': ['gettext_en_es.xlf'],
+                      'itools.xml': ['bench_parser.xml']},
       scripts = [os.path.join('scripts', 'igettext.py')],
-      cmdclass={'install_data': install_module_data},
+      cmdclass={'build_py': build_py_fixed},
       )

@@ -2,6 +2,38 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-05 11:08:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-9
+
+    Summary:
+      merge new setup from herve (#105)
+    Revision:
+      itools--main--0.11--patch-9
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--setup--0.11--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.11--patch-2
+    
+     * herve@oursours.net--public/itools--setup--0.11--patch-1
+       update setup.py to Python 2.4 API and capabilities.
+    
+     * herve@oursours.net--public/itools--setup--0.11--patch-2
+       append missing and new files to the manifest.
+    
+     * herve@oursours.net--public/itools--setup--0.11--patch-3
+       use a fixed build_py instead of hacking file names.
+    
+
+    modified files:
+     Changelog MANIFEST.in setup.py
+
+    new patches:
+     herve@oursours.net--public/itools--setup--0.11--base-0
+     herve@oursours.net--public/itools--setup--0.11--patch-1
+     herve@oursours.net--public/itools--setup--0.11--patch-2
+     herve@oursours.net--public/itools--setup--0.11--patch-3
+
+
 2005-10-02 19:19:16 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-8
 
     Summary:

@@ -1,27 +1,49 @@
 \chapter{Simple Template Language}
 \label{Chapter: STL}
 
-{\bf STL} is a template language. It is implemented as an XML namespace
-handler, taking advantage of the underlying infrastructure provided by
-{\tt itools.xml}.
+There are many template languages available. The {\em Simple Template
+Language} distinct attributes are:
 
-{\bf STL} process and transforms XML files. It is aimed at presentation,
-for example to produce the web pages that make up the user interface of
-a web application.
+\begin{itemize}
+  \item optimized to work with XML files\footnote{{\bf STL} is implemented
+    as an XML namespace.};
+  \item very easy to learn;
+  \item high productivy;
+  \item fast.
+\end{itemize}
+
+I like to define {\bf STL} as a {\em descriptive} language. It is amazing
+how many template languages are out there that allow to put Python code
+inside a template, and call it a feature.
 
 
-\section{A descriptive language}
+\section{How it works}
 
-Unlike other template languages in the Python world, {\bf STL} does not
-mix Python code within the template. The {\bf STL} statements only describe
-the transformations to be performed on the template.
+The Figure~\ref{Figure: stl} shows how {\bf STL} works. The input for
+{\bf STL} is a source template and a Python namespace, the output is
+a new XML template.
 
-This way the logic and the presentation are really separated.
+\begin{figure}
+  \center
+  \includegraphics[width=\textwidth]{stl.eps}
+  \caption{The Simple Template Language ({\bf STL})}
+  \label{Figure: stl}
+\end{figure}
 
-There are always two sides: the {\em template}, which represents the
-presentation side; and the {\em namespace}, the logic side.
+There are solutions like htmlgen\footnote{XXX} or XX that allow to produce
+the XML or HTML output enterily from Python. While with tools like
+ZPT\footnote{XXX} it is possible to produce a complex web page only from
+a source template.
 
-In five words: {\bf STL} is a {\em descriptive} language.
+We think it is easier to read code when it is written in Python, and it is
+easier to read XML when it is written in XML. This is the reason {\bf STL}
+not just allows, but enforces, the separation between logic and presentation.
+
+The language {\bf STL} don't includes any programming constructions, the
+four statements it provides only describe the transformations to be
+performed on the source template.
+
+Lets see a simple example.
 
 \subsection{The template}
 
@@ -29,9 +51,6 @@ For example, look at the template below ({\tt examples/chapter9/template.xml}):
 
 \begin{code}
     <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE html
-         PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
       <head></head>
@@ -41,7 +60,8 @@ For example, look at the template below ({\tt examples/chapter9/template.xml}):
     </html>
 \end{code}
 
-Note the declaration of the {\em stl} namespace, it is mandatory.
+Note the declaration of the {\em stl} namespace, it is mandatory since
+{\bf STL} is implemented as an XML namespace.
 
 When this template will be processed, the content of the {\tt <h1>} tag
 will be replaced by the value of the variable {\tt title}. But, where will
@@ -49,38 +69,18 @@ we find {\tt title}? Solution: in the namespace.
 
 \subsection{The namespace}
 
-In order to process an {\bf STL} template, you need to pass it a Python
-namespace (a dictionary for example). But first we have to load the template
-as a handler:
+The namespace is a mapping that is built from the Python side. Then with
+the template and the namespace we will just call the {\tt stl} function
+to get the output. See:
 
 \begin{code}
     >>> from itools.handlers import get_handler
-    >>> from itools import xml
-    >>>   
-    >>> template = get_handler('template.xml')
-    >>> 
-    >>> template
-    <itools.xml.XML.Document object at 0x405ea38c>
-\end{code}
-
-Note that so far nothing delates the {\bf STL} presence, but inspecting
-the {\tt template} object shows that the {\em stl} namespace handler has
-been loaded:
-
-\begin{code}
-    >>> template.stl
-    <itools.xml.STL.STL object at 0x406516cc>
-\end{code}
-
-Ok, it is time to build the namespace and process the template:
-
-\begin{code}
-    >>> namespace = {'title': 'hello world'}
-    >>> print template.stl(namespace)
+    >>> from itools.xml.stl import stl
+    >>>
+    >>> namespace = {'title': 'hello world'}     # 1. Build the namespace
+    >>> template = get_handler('template.xml')   # 2. Load the template
+    >>> print stl(template, namespace)           # 3. Go!
     <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE html
-         PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns:stl="http://xml.itools.org/namespaces/stl"
           xmlns="http://www.w3.org/1999/xhtml">
       <head></head>
@@ -90,9 +90,66 @@ Ok, it is time to build the namespace and process the template:
     </html>
 \end{code}
 
+As the output shows, the value of the variable {\tt title} is looked within
+the namespace.
 
-As this example shows, the value of the variable {\tt title} is looked within
-the namespace passed as parameter to {\tt template.stl}.
+
+\section{The Language}
+
+\subsection{STL attributes}
+
+There are four {\bf STL} attributes:
+
+\begin{itemize}
+  \item {\tt stl:content}=``{\em expression}''
+
+    Replaces the element's
+    content by the result of evaluating the given expression.
+
+  \item {\tt stl:attributes}=``{\em name expression}[; {\em name expression}]*''
+
+    For every pair ``{\em name: expression}'', replace the the value of
+    the attribute {\em name} by the result of evaluating {\em expression}.
+
+  \item {\tt stl:if}=``[not ]{\em expression}''
+
+    If the given expression evaluates to {\tt True}, do nothing; if
+    evaluates to {\tt False}, remove the XML element.
+
+  \item {\tt stl:repeat}=``{\em name expression}''
+
+    The given expression is expected to be a sequence or an iterator.
+    For every item in {\em expression}, create an element and add the
+    item to the namespace stack before processing the element.
+\end{itemize}
+
+
+\subsection{Expressions}
+
+The {\bf STL} expressions are pretty simple, their syntax is:
+
+\begin{quote}
+    name[/name]*
+\end{quote}
+
+That is, a sequence of names separated by slashes. The semantics is:
+
+\begin{enumerate}
+  \item Look the first name in the namespace stack.
+
+  \item If there are more names left, the last value found must be a namespace,
+    then look the next name in that namespace.
+
+    Iterate until the last name is consumed.
+
+  \item Once the end of the sequence is reached, we will have a value. If
+    the value is callable, then call it to get a new value.
+
+  \item Finally, we should have a value that is either a string, a boolean
+    or a sequence, depending on which statement ({\tt content}, {\tt repeat},
+    etc.) the expression is being used with.
+\end{enumerate}
+
 
 
 \section{Example: Task Tracker}
@@ -201,59 +258,4 @@ browser.
   \caption{The task tracker view}
   \label{Figure: task tracker}
 \end{figure}
-
-
-
-\section{Language overview}
-
-So far we have seen {\tt stl:content} and {\tt stl:repeat}. Below is the
-summary with all the {\bf STL} statements:
-
-\begin{api}
-    {\tt content}=``{\em expression}''\\
-    - Replaces the element's content by the result of evaluating the given
-    {\bf STL} expression.
-
-    {\tt attributes}=``{\em name expression}[; {\em name expression}]*''\\
-    - For every pair ``{\em name: expression}'', replace the the value of
-    the attribute {\em name} by the result of evaluating {\em expression}.
-
-    {\tt if}=``[not ]{\em expression}''\\
-    - If the given expression evaluates to {\tt True}, do nothing; if
-    evaluates to {\tt False}, remove the XML element.
-
-    {\tt repeat}=``{\em name expression}''\\
-    - The given expression is expected to be a sequence or an iterator.
-    For every item in {\em expression}, create an element and add the
-    item to the namespace stack before processing the element.
-\end{api}
-
-
-\subsection{Expressions}
-
-The {\bf STL} expressions are pretty simple, their syntax is:
-
-\begin{quote}
-    name[/name]*
-\end{quote}
-
-That is, a sequence of names separated by slashes. The semantics is:
-
-\begin{enumerate}
-  \item Look the first name in the namespace stack.
-
-  \item If there are more names left, the last value found must be a namespace,
-    then look the next name in that namespace.
-
-    Iterate until the last name is consumed.
-
-  \item Once the end of the sequence is reached, we will have a value. If
-    the value is callable, then call it to get a new value.
-
-  \item Finally, we should have a value that is either a string, a boolean
-    or a sequence, depending on which statement ({\tt content}, {\tt repeat},
-    etc.) the expression is being used with.
-\end{enumerate}
-
-
 

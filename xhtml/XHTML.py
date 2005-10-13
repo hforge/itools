@@ -23,6 +23,7 @@ from StringIO import StringIO
 # Import from itools
 from itools.datatypes import Integer, Unicode, String, URI
 from itools import schemas
+from itools.resources import memory
 from itools.xml import XML, namespaces
 from itools import i18n
 
@@ -261,7 +262,32 @@ class Document(XML.Document):
 
 
     ########################################################################
-    # i18n API
+    # API
+    ########################################################################
+    def get_head(self):
+        """
+        Returns the head element.
+        """
+        root = self.get_root_element()
+        heads = [ x for x in root.get_elements() if x.name == 'head' ]
+        if heads:
+            return heads[0]
+        return None
+
+
+    def get_body(self):
+        """
+        Returns the body element.
+        """
+        root = self.get_root_element()
+        bodies = [ x for x in root.get_elements() if x.name == 'body' ]
+        if bodies:
+            return bodies[0]
+        return None
+
+
+    ########################################################################
+    # API / i18n
     ########################################################################
     def translate(self, catalog):
         def open_tag(node):
@@ -480,28 +506,62 @@ class Document(XML.Document):
 
 
     ########################################################################
-    # API
+    # API / Change relative links
     ########################################################################
-    def get_head(self):
-        """
-        Returns the head element.
-        """
-        root = self.get_root_element()
-        heads = [ x for x in root.get_elements() if x.name == 'head' ]
-        if heads:
-            return heads[0]
-        return None
+    def resolve_pointer(self, uri, offset):
+        if uri.path.is_relative():
+            # XXX Here we loss the query and fragment.
+            return offset.resolve(uri.path)
+
+        return uri
+##        uri = str(uri)[1:]
+##        return here.get_pathtoroot() + uri
 
 
-    def get_body(self):
-        """
-        Returns the body element.
-        """
-        root = self.get_root_element()
-        bodies = [ x for x in root.get_elements() if x.name == 'body' ]
-        if bodies:
-            return bodies[0]
-        return None
+    def set_template_prefix(self, offset):
+        # Set the prefix
+        data = []
+        data.append(self.header_to_unicode())
+        # Let's go!
+        for node, context in self.traverse2():
+            if isinstance(node, XML.Element):
+                if context.start:
+                    data.append(u'<%s' % node.qname)
+                    for namespace, local_name, value in node.get_attributes():
+                        qname = node.get_attribute_qname(namespace, local_name)
+                        encoded = False
+                        if local_name in ('href', 'src') \
+                               and not value.scheme and not value.authority:
+                            value = self.resolve_pointer(value, offset)
+                            encoded = True
+                        elif node.qname == 'param' and local_name == 'value':
+                            name = node.get_attribute(namespace, 'name')
+                            # Special case for Flash objects
+                            # but others possible (Java, etc.)
+                            if name == 'movie':
+                                uri = URI.decode(value)
+                                if not uri.scheme and not uri.authority:
+                                    value = self.resolve_pointer(uri, offset)
+                                    encoded = True
+                        if not encoded:
+                            type = node.get_attribute_type(namespace,
+                                                           local_name)
+                            value = type.encode(value)
+                        data.append(u' %s="%s"' % (qname, value))
+                    data.append(u'>')
+                else:
+                    data.append(u'</%s>' % node.qname)
+            elif isinstance(node, XML.Comment):
+                data.append(node.to_unicode())
+            elif isinstance(node, unicode):
+                data.append(node)
+            else:
+                raise ValueError, 'unexpected value "%s"' % node
+
+        data = u''.join(data)
+        data = data.encode('utf8')
+        resource = memory.File(data)
+        return Document(resource)
 
 
 XML.Document.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)

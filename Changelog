@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-13 13:13:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
+
+    Summary:
+      xhtml, add "set_template_prefix" (code comes from ikaaro)
+    Revision:
+      itools--main--0.11--patch-11
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-10-07 18:27:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
 
     Summary:

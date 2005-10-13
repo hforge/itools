@@ -248,16 +248,16 @@ class Document(XML.Document):
     # The skeleton
     #########################################################################
     def get_skeleton(self, title=''):
-        data = '<?xml version="1.0" encoding="UTF-8"?>\n' \
-               '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n' \
-               '       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n' \
-               '<html xmlns="http://www.w3.org/1999/xhtml">\n' \
-               '  <head>\n' \
-               '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n' \
-               '    <title>%(title)s</title>\n' \
-               '  </head>\n' \
-               '  <body></body>\n' \
-               '</html>'
+        data = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
+                '       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
+                '<html xmlns="http://www.w3.org/1999/xhtml">\n'
+                '  <head>\n'
+                '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
+                '    <title>%(title)s</title>\n'
+                '  </head>\n'
+                '  <body></body>\n'
+                '</html>')
         return data % {'title': title}
 
 

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-13 14:57:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
+
+    Summary:
+      xhtml, cosmetic change in "get_skeleton"
+    Revision:
+      itools--main--0.11--patch-13
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-10-13 13:25:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
 
     Summary:

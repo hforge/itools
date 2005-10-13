@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-13 13:25:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
+
+    Summary:
+      xhtml, now "set_template_prefix" is a function, instead of a method
+    Revision:
+      itools--main--0.11--patch-12
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-10-13 13:13:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
 
     Summary:

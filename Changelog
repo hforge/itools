@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-15 18:41:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
+
+    Summary:
+      use "HTTP_X_FORWARDED_HOST" (no more "REAL_HOST")
+    Revision:
+      itools--main--0.11--patch-14
+
+
+    modified files:
+     Changelog web/zope2.py
+
+
 2005-10-13 14:57:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
 
     Summary:

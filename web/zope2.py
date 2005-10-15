@@ -114,8 +114,8 @@ def init(zope_request):
     set_context(context)
 
     # The authority
-    if 'REAL_HOST' in query:
-        authority = query.pop('REAL_HOST')
+    if 'HTTP_X_FORWARDED_HOST' in environ:
+        authority = environ['HTTP_X_FORWARDED_HOST']
     else:
         authority = zope_request['HTTP_HOST']
 

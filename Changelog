@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-17 17:18:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
+
+    Summary:
+      web, fix "request.path" (always the real path, never the "virtual")
+    Revision:
+      itools--main--0.11--patch-16
+
+
+    modified files:
+     Changelog web/zope2.py
+
+
 2005-10-17 10:23:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
 
     Summary:

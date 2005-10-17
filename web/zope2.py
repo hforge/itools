@@ -42,10 +42,7 @@ def init(zope_request):
     query = uri.generic.Query(query)
 
     # The path
-    if 'REAL_PATH' in query:
-        path = query.pop('REAL_PATH')
-    else:
-        path = zope_request.environ['PATH_INFO']
+    path = zope_request.environ['PATH_INFO']
     request.set_path(path)
 
     # The header
@@ -120,6 +117,8 @@ def init(zope_request):
         authority = zope_request['HTTP_HOST']
 
     # The URI
+    if 'REAL_PATH' in query:
+        path = query.pop('REAL_PATH')
     request_uri = 'http://%s/%s?%s' % (authority, path, query)
     context.uri = uri.get_reference(request_uri)
 

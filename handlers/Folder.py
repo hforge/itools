@@ -365,9 +365,5 @@ def build_virtual_handler(handler):
     # Keep a reference to the real handler
     virtual_handler.real_handler = handler
 
-    # XXX Horrible hack
-    if hasattr(handler, 'stl'):
-        virtual_handler.stl = handler.stl
-
     return virtual_handler
     

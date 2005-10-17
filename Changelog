@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-17 10:23:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
+
+    Summary:
+      handlers, remove link to "stl"
+    Revision:
+      itools--main--0.11--patch-15
+
+
+    modified files:
+     Changelog handlers/Folder.py
+
+
 2005-10-15 18:41:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
 
     Summary:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-18 11:03:40 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-18
+
+    Summary:
+      schemas, add "get_datatype_by_prefix" to the API
+    Revision:
+      itools--main--0.11--patch-18
+
+
+    modified files:
+     Changelog schemas/registry.py
+
+
 2005-10-18 10:18:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-17
 
     Summary:

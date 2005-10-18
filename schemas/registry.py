@@ -88,6 +88,11 @@ def get_datatype(schema_uri, name):
     return schema.get_datatype(name)
 
 
+def get_datatype_by_prefix(prefix, name):
+    schema = get_schema_by_prefix(prefix)
+    return schema.get_datatype(name)
+
+
 ##############################################################################
 # The default schema, used when the prefix is None
 ##############################################################################

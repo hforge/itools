@@ -464,6 +464,59 @@ class Reference(object):
                          reference.fragment)
 
 
+    def resolve2(self, reference):
+        """
+        This is much like 'resolv', but uses 'Path.resolve2' method instead.
+
+        XXX Too much code is duplicated, the only difference beween 'resolve'
+        and 'resolve2' is one character. Refactor!
+        """
+        if not isinstance(reference, Reference):
+            reference = decode(reference)
+
+        # Absolute URI
+        if reference.scheme:
+            return reference
+
+        # Network path
+        if reference.authority:
+            return Reference(self.scheme,
+                             copy(reference.authority),
+                             copy(reference.path),
+                             copy(reference.query),
+                             reference.fragment)
+
+        # Absolute path
+        if reference.path.is_absolute():
+            return Reference(self.scheme,
+                             copy(self.authority),
+                             copy(reference.path),
+                             copy(reference.query),
+                             reference.fragment)
+
+        # Internal references
+        if isinstance(reference, EmptyReference):
+            return Reference(self.scheme,
+                             copy(self.authority),
+                             copy(self.path),
+                             copy(self.query),
+                             None)
+
+        if reference.fragment and not reference.path and not reference.query:
+            return Reference(self.scheme,
+                             copy(self.authority),
+                             copy(self.path),
+                             copy(self.query),
+                             reference.fragment)
+
+        # Relative path
+        return Reference(self.scheme,
+                         copy(self.authority),
+                         self.path.resolve2(reference.path),
+                         copy(reference.query),
+                         reference.fragment)
+
+
 
 class EmptyReference(Reference):
 

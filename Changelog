@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-18 13:59:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
+
+    Summary:
+      uri, add "Reference.resolve2" method to the API
+    Revision:
+      itools--main--0.11--patch-21
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-18 13:06:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
 
     Summary:

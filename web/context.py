@@ -72,6 +72,10 @@ class Context(object):
         return cookie.value
 
 
+    def has_cookie(self, name):
+        return self.get_cookie(name) is None
+
+
     def set_cookie(self, name, value, **kw):
         self.response.set_cookie(name, value, **kw)
 

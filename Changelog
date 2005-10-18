@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-18 13:06:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
+
+    Summary:
+      web, add "context.redirect" to the API (solves #62)
+    Revision:
+      itools--main--0.11--patch-20
+
+
+    modified files:
+     Changelog web/context.py
+
+
 2005-10-18 11:05:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-19
 
     Summary:

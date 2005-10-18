@@ -42,8 +42,15 @@ class Context(object):
 
 
     ########################################################################
-    # High level API for cookies (client side sessions)
+    # API
     ########################################################################
+    def redirect(self, reference, status=302):
+        reference = self.uri.resolve(reference)
+        self.response.redirect(reference, status)
+
+
+    ########################################################################
+    # API / cookies (client side sessions)
     def get_cookie(self, name):
         request, response = self.request, self.response
 

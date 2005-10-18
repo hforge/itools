@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-18 15:19:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
+
+    Summary:
+      web, fix "context.has_cookie"
+    Revision:
+      itools--main--0.11--patch-24
+
+
+    modified files:
+     Changelog web/context.py
+
+
 2005-10-18 15:01:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-23
 
     Summary:

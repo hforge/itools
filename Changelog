@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-18 10:18:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-17
+
+    Summary:
+      doc, update stl usage in the tasktracker examples
+    Revision:
+      itools--main--0.11--patch-17
+
+
+    modified files:
+     Changelog doc/examples/task_tracker1/TaskTracker.py
+     doc/examples/task_tracker2/TaskTracker.py doc/stl.tex
+
+
 2005-10-17 17:18:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
 
     Summary:

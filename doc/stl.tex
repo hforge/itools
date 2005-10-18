@@ -220,7 +220,7 @@ Basically we have added the method {\tt view} to the class {\tt TaskTracker}:
                                        'is_open': task.state == 'open'})
 
         # Process the template and return the output
-        return handler.stl(namespace)
+        return stl(handler, namespace)
 \end{code}
 
 To try the code run the Python interpreter and type:

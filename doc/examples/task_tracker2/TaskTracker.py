@@ -25,7 +25,7 @@ from itools.resources import get_resource
 from itools.handlers.Text import Text
 from itools.handlers import get_handler
 from itools.gettext.domains import DomainAware, register_domain
-import itools.xml
+from itools.xml.stl import stl
 
 
 mimetypes.add_type('text/x-task-tracker', '.tt')
@@ -153,7 +153,7 @@ class TaskTracker(Text, DomainAware):
                                        'is_open': task.state == 'open'})
 
         # Process the template and return the output
-        return handler.stl(namespace)
+        return stl(handler, namespace)
 
 
 Text.register_handler_class(TaskTracker)

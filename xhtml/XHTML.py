@@ -23,6 +23,7 @@ from StringIO import StringIO
 # Import from itools
 from itools.datatypes import Integer, Unicode, String, URI
 from itools import schemas
+from itools.schemas import get_datatype_by_uri
 from itools.resources import memory
 from itools.xml import XML, namespaces
 from itools import i18n
@@ -50,7 +51,7 @@ class Element(XML.Element):
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
             qname = self.get_attribute_qname(namespace_uri, local_name)
-            type = self.get_attribute_type(namespace_uri, local_name)
+            type = schemas.get_datatype_by_uri(namespace_uri, local_name)
             value = type.to_unicode(value)
             s += u' %s="%s"' % (qname, value)
         return s + u'>'
@@ -226,7 +227,7 @@ class Schema(schemas.base.Schema):
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
 
-schemas.registry.set_schema(Schema)
+schemas.register_schema(Schema)
 
 
 
@@ -301,8 +302,7 @@ class Document(XML.Document):
                         value = catalog.get_translation(value)
                         #value = catalog.get_msgstr(value) or value
                 qname = node.get_attribute_qname(namespace, local_name)
-                schema = schemas.registry.get_schema(namespace)
-                datatype = schema.get_datatype(local_name)
+                datatype = schemas.get_datatype_by_uri(namespace, local_name)
                 buffer.write(u' %s="%s"' % (qname, datatype.to_unicode(value)))
             # Close the start tag
             namespace = namespaces.get_namespace(node.namespace)
@@ -549,8 +549,7 @@ def set_template_prefix(handler, offset):
                                 value = resolve_pointer(uri, offset)
                                 encoded = True
                     if not encoded:
-                        type = node.get_attribute_type(namespace,
-                                                       local_name)
+                        type = get_datatype_by_uri(namespace, local_name)
                         value = type.encode(value)
                     data.append(u' %s="%s"' % (qname, value))
                 data.append(u'>')

@@ -16,5 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-import base
-import registry
+from base import Schema
+from registry import register_schema, get_schema, get_schema_by_uri, \
+     get_datatype, get_datatype_by_uri

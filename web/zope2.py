@@ -20,8 +20,7 @@ import cStringIO
 
 # Import from itools
 from itools import uri
-from itools.datatypes import QName
-from itools import schemas
+from itools.schemas import get_datatype
 from itools.resources import memory
 from itools.i18n.accept import AcceptCharset, AcceptLanguage
 from itools.web.context import Context, set_context
@@ -103,13 +102,12 @@ def init(zope_request):
 
     for name in parameters:
         value = parameters[name]
-        request.set_parameter(name, value)
+        request._set_parameter(name, value)
 
     # The cookies
     for name in zope_request.cookies:
         value = zope_request.cookies[name]
-        prefix, local_name = QName.decode(name)
-        datatype = schemas.registry.get_datatype_by_prefix(prefix, local_name)
+        datatype = get_datatype(name)
         value = datatype.decode(value)
         request.set_cookie(name, value)
 

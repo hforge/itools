@@ -16,8 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools.datatypes import QName
-from itools.schemas.registry import get_datatype_by_prefix
+from itools.schemas import get_datatype
 from itools.handlers.File import File
 from itools.web import headers
 from itools.web import entities
@@ -153,8 +152,7 @@ class Response(File):
             if cookie.secure is not None:
                 parameters.append('; Secure=%s' % cookie.secure)
             # The value
-            prefix, local_name = QName.decode(name)
-            datatype = get_datatype_by_prefix(prefix, local_name)
+            datatype = get_datatype(name)
             value = datatype.encode(cookie.value)
 
             data.append(

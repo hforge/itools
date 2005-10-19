@@ -24,6 +24,7 @@ import warnings
 from itools.handlers import File, Text
 from itools.datatypes import Unicode
 from itools import schemas
+from itools.schemas import get_datatype_by_uri
 from itools.xml.exceptions import XMLError
 from itools.xml import namespaces
 from itools.xml import parser
@@ -125,7 +126,7 @@ class Element(object):
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
             qname = self.get_attribute_qname(namespace_uri, local_name)
-            type = self.get_attribute_type(namespace_uri, local_name)
+            type = get_datatype_by_uri(namespace_uri, local_name)
             value = type.to_unicode(value)
             s += u' %s="%s"' % (qname, value)
         # Close the start tag
@@ -194,14 +195,6 @@ class Element(object):
             return prefix
 
         return '%s:%s' % (prefix, local_name)
-
-
-    def get_attribute_type(self, namespace_uri, local_name):
-        """
-        Returns the type for the given attribute
-        """
-        schema = schemas.registry.get_schema(namespace_uri)
-        return schema.get_datatype(local_name)
 
 
     #######################################################################

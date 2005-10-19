@@ -618,4 +618,4 @@ class Schema(schemas.base.Schema):
                  'content': ContentAttr,
                  'if': IfAttr}
 
-schemas.registry.set_schema(Schema)
+schemas.register_schema(Schema)

@@ -19,16 +19,19 @@
 import warnings
 
 # Import from itools
-from itools.datatypes import String
+from itools.datatypes import String, QName
 from base import Schema
 
 
+##############################################################################
+# The schemas registry
+##############################################################################
 
 schemas = {}
 prefixes = {}
 
 
-def set_schema(schema):
+def register_schema(schema):
     """
     Associates a schema handler to a schema uri. It a prefix is
     given it also associates that that prefix to the given schema.
@@ -42,7 +45,26 @@ def set_schema(schema):
         prefixes[prefix] = schema.class_uri
 
 
-def get_schema(schema_uri):
+##############################################################################
+# API
+##############################################################################
+
+def get_schema(name):
+    """
+    Returns the schema handler associated to the given prefix. If there
+    is none the default schema handler is returned, and a warning message
+    is issued.
+    """
+    if name in prefixes:
+        schema_uri = prefixes[name]
+        return get_schema_by_uri(schema_uri)
+
+    # Use default
+    warnings.warn('Unknown schema prefix "%s" (using default)' % name)
+    return schemas[None]
+
+
+def get_schema_by_uri(schema_uri):
     """
     Returns the schema handler associated to the given uri. If there
     is none the default schema handler will be returned, and a warning
@@ -63,33 +85,23 @@ def has_schema(schema_uri):
     return schema_uri in schemas
 
 
-def get_schema_by_prefix(prefix):
-    """
-    Returns the schema handler associated to the given prefix. If there
-    is none the default schema handler is returned, and a warning message
-    is issued.
-    """
-    if prefix in prefixes:
-        schema_uri = prefixes[prefix]
-        return get_schema(schema_uri)
+##############################################################################
+# API / DataTypes
+def get_datatype(qname):
+    if isinstance(qname, str):
+        qname = QName.decode(qname)
 
-    # Use default
-    warnings.warn('Unknown schema prefix "%s" (using default)' % prefix)
-    return schemas[None]
+    schema = get_schema(qname[0])
+    return schema.get_datatype(qname[1])
 
 
-def get_datatype(schema_uri, name):
+def get_datatype_by_uri(schema_uri, name):
     if schema_uri in schemas:
         schema = schemas[schema_uri]
     else:
         # Use default
         warnings.warn('Unknown schema "%s" (using default)' % schema_uri)
         schema = schemas[None]
-    return schema.get_datatype(name)
-
-
-def get_datatype_by_prefix(prefix, name):
-    schema = get_schema_by_prefix(prefix)
     return schema.get_datatype(name)
 
 
@@ -107,4 +119,4 @@ class DefaultSchema(Schema):
         return String
 
 
-set_schema(DefaultSchema)
+register_schema(DefaultSchema)

@@ -46,4 +46,4 @@ class DublinCore(Schema):
                  }
 
 
-registry.set_schema(DublinCore)
+registry.register_schema(DublinCore)

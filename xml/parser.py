@@ -21,8 +21,8 @@ import warnings
 from xml.parsers import expat
 
 # Import from itools
+from itools.schemas import get_datatype_by_uri
 from itools.xml import namespaces
-from itools import schemas
 
 
 DOCUMENT_TYPE, NAMESPACE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT = range(6)
@@ -111,7 +111,7 @@ class Parser(object):
                 attr_ns = element_uri
 
             # De-serialize
-            datatype = schemas.registry.get_datatype(attr_ns, attr_name)
+            datatype = get_datatype_by_uri(attr_ns, attr_name)
             attr_value = datatype.decode(attr_value)
             attributes[(attr_ns, attr_name)] = attr_value
 

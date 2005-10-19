@@ -2,6 +2,29 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-19 19:15:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-26
+
+    Summary:
+      schemas, improve API
+    Revision:
+      itools--main--0.11--patch-26
+
+    Now the public API is (itools.schemas.*):
+    
+     - Schema
+     - register_schema
+     - get_schema
+     - get_schema_by_uri
+     - get_datatype
+     - get_datatype_by_uri
+
+    modified files:
+     Changelog schemas/__init__.py schemas/dublin_core.py
+     schemas/registry.py web/request.py web/response.py
+     web/zope2.py xhtml/XHTML.py xml/XML.py xml/namespaces.py
+     xml/parser.py xml/stl.py
+
+
 2005-10-18 17:20:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
 
     Summary:

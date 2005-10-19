@@ -21,8 +21,8 @@ from urllib import urlencode
 # Import from itools
 from itools import uri
 from itools.datatypes import QName
+from itools import schemas
 from itools.handlers.File import File
-from itools.schemas import registry
 from itools.web import headers
 from itools.web import entities
 
@@ -60,7 +60,7 @@ class Request(File):
             parameters = uri.generic.Query(data)
 
         for name in parameters:
-            self.set_parameter(name, parameters[name])
+            self._set_parameter(name, parameters[name])
 
 
     def to_str(self):
@@ -134,7 +134,7 @@ class Request(File):
     ########################################################################
     # The Form
     ########################################################################
-    def set_parameter(self, name, value):
+    def _set_parameter(self, name, value):
         prefix, local_name = QName.decode(name)
         if prefix is not None:
             # XXX Horrible exception, kept here for backwards compatibility
@@ -144,13 +144,25 @@ class Request(File):
                 if not isinstance(value, list):
                     value = [value]
             else:
-                schema = registry.get_schema_by_prefix(prefix)
-                datatype = schema.get_datatype(local_name)
+                datatype = schemas.get_datatype(name)
                 value = datatype.decode(value)
 
         self.state.form[name] = value
 
 
+    def get_parameter(self, name):
+        form = self.state.form
+        if name in form:
+            return form[name]
+        datatype = schemas.get_datatype(name)
+        return datatype.default
+
+
+    def has_parameter(self, name):
+        return name in self.state.form
+
+
+    # XXX Remove? Use "get_parameter" instead?
     def get_form(self):
         return self.state.form
 

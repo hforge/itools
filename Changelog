@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.8
 #
 
+2005-10-20 14:59:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-102
+
+    Summary:
+      backport fix from the 0.9 branch
+    Revision:
+      itools--main--0.8--patch-102
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-111
+       uri, add class variable "scheme" to the Mailto scheme
+    
+
+    modified files:
+     Changelog uri/mailto.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.9--patch-111
+
+
 2005-07-25 18:54:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-101
 
     Summary:

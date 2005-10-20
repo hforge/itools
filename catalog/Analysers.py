@@ -73,7 +73,7 @@ def Bool(value):
 
 def Keyword(value):
     if value:
-        if isinstance(value, list) or isinstance(value, set):
+        if isinstance(value, (list, set, frozenset)):
             for x in value:
                 yield unicode(x), 0
         else:

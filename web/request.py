@@ -115,6 +115,10 @@ class Request(File):
         self.state.headers[name] = type.decode(value)
 
 
+    def get_header(self, name):
+        return self.state.headers.get(name)
+
+
     ########################################################################
     # The Content type
     def get_content_type(self):

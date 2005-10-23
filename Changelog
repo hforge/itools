@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-23 08:33:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-28
+
+    Summary:
+      web, fix PUT, LOCK and UNLOCK for Zope 2
+    Revision:
+      itools--main--0.11--patch-28
+
+
+    modified files:
+     Changelog web/request.py web/zope2.py
+
+
 2005-10-20 09:17:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-27
 
     Summary:

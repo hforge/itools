@@ -56,7 +56,7 @@ def init(zope_request):
     # The form
     if request_method in ('GET', 'HEAD'):
         parameters = query
-    else:
+    elif request_method in ('POST', 'PUT', 'LOCK', 'UNLOCK'):
         # Read the standard input
         body = zope_request.stdin.read()
         # Recover the standard input, so Zope can read it again
@@ -97,8 +97,10 @@ def init(zope_request):
                 else:
                     parameters[name] = body
         else:
-            raise ValueError, \
-                  'content type "%s" not yet implemented' % content_type
+            parameters = {'BODY': body}
+    else:
+        message = 'request method "%s" not yet implemented' % request_method
+        raise ValueError, message
 
     for name in parameters:
         value = parameters[name]

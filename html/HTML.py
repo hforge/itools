@@ -41,12 +41,12 @@ class BlockElement(Element, XHTML.BlockElement):
 # XXX This class is almost identical to 'XHTML.Element'
 class HeadElement(BlockElement):
 
-    def to_unicode(self, encoding='UTF-8'):
+    def to_str(self, encoding='UTF-8'):
         head = []
-        head.append(u'<head>\n')
-        head.append(u'    <meta http-equiv="Content-Type" content="text/html; charset=%s" />\n' % encoding)
+        head.append('<head>\n')
+        head.append('    <meta http-equiv="Content-Type" content="text/html; charset=%s" />\n' % encoding)
         head.append(self.get_content(encoding))
-        head.append(u'</head>')
+        head.append('</head>')
         return ''.join(head)
 
 
@@ -161,18 +161,18 @@ class Document(XHTML.Document):
                     state.children.append(value)
 
 
-    def to_unicode(self, encoding='UTF-8'):
+    def to_str(self, encoding='UTF-8'):
         s = []
         # The declaration
         if self.state.document_type is not None:
-            s.append(u'<!%s>' % self.state.document_type)
+            s.append('<!%s>' % self.state.document_type)
         # The children
         for child in self.state.children:
             if isinstance(child, unicode):
                 s.append(child)
             else:
-                s.append(child.to_unicode(encoding))
-        return u''.join(s)
+                s.append(child.to_str(encoding))
+        return ''.join(s)
 
 
     #######################################################################

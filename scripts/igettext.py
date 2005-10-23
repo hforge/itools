@@ -86,10 +86,6 @@ def run():
     else:
         pass
 
-    # Encode to UTF8 if needed
-    if isinstance(output, unicode):
-        output = output.encode('utf8')
-
     if options.output is None:
         print output
     else:

@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-23 19:19:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
+
+    Summary:
+      xml, use "to_str" instead of "to_unicode"
+    Revision:
+      itools--main--0.11--patch-31
+
+
+    modified files:
+     Changelog html/HTML.py scripts/igettext.py tmx/TMX.py
+     web/response.py xhtml/XHTML.py xliff/XLIFF.py xml/XML.py
+     xml/test_stl.py
+
+
 2005-10-23 18:21:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
 
     Summary:

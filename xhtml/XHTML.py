@@ -18,7 +18,7 @@
 # Import from the Standard Library
 from copy import copy
 import re
-from StringIO import StringIO
+from cStringIO import StringIO
 
 # Import from itools
 from itools.datatypes import Integer, Unicode, String, URI
@@ -47,21 +47,21 @@ class Element(XML.Element):
 
 
     def get_start_tag_as_html(self):
-        s = u'<%s' % self.qname
+        s = '<%s' % self.qname
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
             qname = self.get_attribute_qname(namespace_uri, local_name)
             type = schemas.get_datatype_by_uri(namespace_uri, local_name)
-            value = type.to_unicode(value)
-            s += u' %s="%s"' % (qname, value)
-        return s + u'>'
+            value = type.encode(value)
+            s += ' %s="%s"' % (qname, value)
+        return s + '>'
 
 
     def get_content_as_html(self, encoding='UTF-8'):
         s = []
         for node in self.children:
             if isinstance(node, unicode):
-                # XXX This is equivalent to 'Unicode.to_unicode',
+                # XXX This is equivalent to 'Unicode.encode',
                 # there should be a single place.
                 s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             elif isinstance(node, Element):
@@ -69,8 +69,8 @@ class Element(XML.Element):
                 s.append(node.get_content_as_html())
                 s.append(node.get_end_tag())
             else:
-                s.append(node.to_unicode(encoding=encoding))
-        return u''.join(s)
+                s.append(node.to_str(encoding=encoding))
+        return ''.join(s)
 
 
     def is_translatable(self, attribute_name):
@@ -108,12 +108,12 @@ class BlockElement(Element):
 
 class HeadElement(BlockElement):
 
-    def to_unicode(self, encoding='UTF-8'):
+    def to_str(self, encoding='UTF-8'):
         head = []
-        head.append(u'<head>\n')
+        head.append('<head>\n')
 
         # The content type
-        head.append(u'    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />\n' % encoding)
+        head.append('    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />\n' % encoding)
 
         # The rest of the head
         content = self.get_content(encoding)
@@ -122,7 +122,7 @@ class HeadElement(BlockElement):
             lines = lines[1:]
         head.append('\n'.join(lines))
 
-        head.append(u'</head>')
+        head.append('</head>')
         return ''.join(head)
 
 
@@ -293,7 +293,7 @@ class Document(XML.Document):
     def translate(self, catalog):
         def open_tag(node):
             # The open tag
-            buffer.write(u'<%s' % node.qname)
+            buffer.write('<%s' % node.qname)
             # The attributes
             for namespace, local_name, value in node.get_attributes():
                 if node.is_translatable(local_name):
@@ -303,15 +303,15 @@ class Document(XML.Document):
                         #value = catalog.get_msgstr(value) or value
                 qname = node.get_attribute_qname(namespace, local_name)
                 datatype = schemas.get_datatype_by_uri(namespace, local_name)
-                buffer.write(u' %s="%s"' % (qname, datatype.to_unicode(value)))
+                buffer.write(' %s="%s"' % (qname, datatype.encode(value)))
             # Close the start tag
             namespace = namespaces.get_namespace(node.namespace)
             schema = namespace.get_element_schema(node.name)
             is_empty = schema.get('is_empty', False)
             if is_empty:
-                buffer.write(u'/>')
+                buffer.write('/>')
             else:
-                buffer.write(u'>')
+                buffer.write('>')
 
         def process_message(message, keep_spaces):
             # Normalize the message
@@ -358,7 +358,7 @@ class Document(XML.Document):
                             if isinstance(x, unicode):
                                 yield x
                             else:
-                                yield x.to_unicode()
+                                yield x.to_str()
                         raise StopIteration
                     # Something to translate: segmentation
                     for segment in message.get_segments(keep_spaces):
@@ -374,7 +374,7 @@ class Document(XML.Document):
 
                         yield msgstr
                         if keep_spaces is False:
-                            yield ' '
+                            yield u' '
 
         buffer = StringIO()
         buffer.write(self.header_to_str())
@@ -393,7 +393,7 @@ class Document(XML.Document):
                     else:
                         # Process any previous message
                         for x in process_message(message, keep_spaces):
-                            buffer.write(x)
+                            buffer.write(x.encode('utf-8'))
                         message = i18n.segment.Message()
                         # The open tag
                         open_tag(node)
@@ -403,7 +403,7 @@ class Document(XML.Document):
                 else:
                     if node.is_block():
                         for x in process_message(message, keep_spaces):
-                            buffer.write(x)
+                            buffer.write(x.encode('utf-8'))
                         message = i18n.segment.Message()
                         # The close tag
                         buffer.write(node.get_end_tag())
@@ -411,7 +411,7 @@ class Document(XML.Document):
                         if node.name == 'pre':
                             keep_spaces = False
             else:
-                buffer.write(node.to_unicode())
+                buffer.write(node.to_str())
 
         data = buffer.getvalue()
         buffer.close()

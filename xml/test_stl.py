@@ -15,7 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Import from Python
+# Import from the Standard Library
 import unittest
 
 # Import from itools
@@ -81,7 +81,7 @@ class STLTestCase(unittest.TestCase):
         template = get_handler('test-in.xml')
         output = stl(template, namespace)
 
-        assert output == get_handler('test-out.xml').to_unicode()
+        assert output == get_handler('test-out.xml').to_str()
 
 
     def test_template2(self):
@@ -93,7 +93,7 @@ class STLTestCase(unittest.TestCase):
         template = get_handler('test20-in.xml')
         output = stl(template, namespace)
 
-        assert output == get_handler('test2-out.xml').to_unicode()
+        assert output == get_handler('test2-out.xml').to_str()
 
 
 ##    def test_nested(self):

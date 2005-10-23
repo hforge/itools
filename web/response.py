@@ -131,8 +131,8 @@ class Response(File):
         # User defined headers
         for name in state.headers:
             value = state.headers[name]
-            type = headers.get_type(name)
-            value = type.encode(value)
+            datatype = headers.get_type(name)
+            value = datatype.encode(value)
             data.append('%s: %s' % (name, value))
         # Mandatory headers
         data.append('Server: Zope')

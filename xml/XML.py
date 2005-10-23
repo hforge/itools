@@ -42,11 +42,6 @@ class Comment(object):
         self.data = data
 
 
-    # XXX Remove
-    def to_unicode(self, encoding='UTF-8'):
-        return u'<!--%s-->' % self.data
-
-
     def to_str(self, encoding='UTF-8'):
         return '<!--%s-->' % self.data.encode(encoding)
 
@@ -120,28 +115,28 @@ class Element(object):
 
     #######################################################################
     # Serialization
-    def to_unicode(self, encoding='UTF-8'):
+    def to_str(self, encoding='UTF-8'):
         return self.get_start_tag() \
                + self.get_content(encoding) \
                + self.get_end_tag()
 
 
     def get_start_tag(self):
-        s = u'<%s' % self.qname
+        s = '<%s' % self.qname
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
             qname = self.get_attribute_qname(namespace_uri, local_name)
             type = get_datatype_by_uri(namespace_uri, local_name)
-            value = type.to_unicode(value)
-            s += u' %s="%s"' % (qname, value)
+            value = type.encode(value)
+            s += ' %s="%s"' % (qname, value)
         # Close the start tag
         namespace = namespaces.get_namespace(self.namespace)
         schema = namespace.get_element_schema(self.name)
         is_empty = schema.get('is_empty', False)
         if is_empty:
-            return s + u'/>'
+            return s + '/>'
         else:
-            return s + u'>'
+            return s + '>'
 
 
     def get_end_tag(self):
@@ -149,20 +144,21 @@ class Element(object):
         schema = namespace.get_element_schema(self.name)
         is_empty = schema.get('is_empty', False)
         if is_empty:
-            return u''
-        return u'</%s>' % self.qname
+            return ''
+        return '</%s>' % self.qname
 
 
     def get_content(self, encoding='UTF-8'):
         s = []
         for node in self.children:
             if isinstance(node, unicode):
-                # XXX This is equivalent to 'Unicode.to_unicode',
+                node = node.encode(encoding)
+                # XXX This is equivalent to 'Unicode.encode',
                 # there should be a single place.
                 s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
             else:
-                s.append(node.to_unicode(encoding=encoding))
-        return u''.join(s)
+                s.append(node.to_str(encoding=encoding))
+        return ''.join(s)
 
 
     #######################################################################
@@ -383,24 +379,6 @@ class Document(Text.Text):
     #######################################################################
     # API
     #######################################################################
-
-    # XXX Remove
-    def header_to_unicode(self, encoding='UTF-8'):
-        state = self.state
-
-        s = []
-        # The XML declaration
-        s.append(u'<?xml version="1.0" encoding="%s"?>\n' % encoding)
-        # The document type
-        if state.document_type is not None:
-            pattern = '<!DOCTYPE %s\n' \
-                      '     PUBLIC "%s"\n' \
-                      '    "%s">\n'
-            s.append(pattern % state.document_type[:3])
-
-        return u''.join(s)
-
-
     def header_to_str(self, encoding='UTF-8'):
         state = self.state
 
@@ -417,15 +395,11 @@ class Document(Text.Text):
         return ''.join(s)
 
 
-    def to_unicode(self, encoding='UTF-8'):
-        state = self.state
+    def to_str(self, encoding='UTF-8'):
+        data = [self.header_to_str(encoding),
+                self.get_root_element().to_str(encoding)]
 
-        s = []
-        s.append(self.header_to_unicode(encoding))
-        # The children
-        s.append(state.root_element.to_unicode(encoding))
-
-        return u''.join(s)
+        return ''.join(data)
 
 
     def __cmp__(self, other):

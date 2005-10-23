@@ -15,7 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-#import from itools
+# Import from itools
 from itools.handlers.Text import Text
 from itools.xml import parser
 
@@ -33,21 +33,21 @@ class Note(object):
         self.attributes = attributes
 
 
-    def to_unicode(self):
+    def to_str(self):
         s = []
         if self.attributes != {}:
-            att = [u'%s="%s"' % (k, self.attributes[k]) 
+            att = ['%s="%s"' % (k, self.attributes[k]) 
                   for k in self.attributes.keys() if k != 'lang']
-            s.append(u'<note %s ' % u' '.join(att))
+            s.append('<note %s ' % ' '.join(att))
             if 'lang' in self.attributes.keys():
                 s.append('xml:lang="%s"' % self.attributes['lang'])
-            s.append(u'>')
+            s.append('>')
         else:
-            s.append(u'<note>')
+            s.append('<note>')
             
         s.append(self.text)
-        s.append(u'</note>\n')
-        return u''.join(s)
+        s.append('</note>\n')
+        return ''.join(s)
 
 
 
@@ -60,29 +60,29 @@ class Translation(object):
         self.notes = []
 
 
-    def to_unicode(self):
+    def to_str(self):
         s = []
         if self.attributes != {}:
-            att = [u'%s="%s"' % (k, self.attributes[k]) 
+            att = ['%s="%s"' % (k, self.attributes[k]) 
                   for k in self.attributes.keys() if k != 'space']
-            s.append(u'<trans-unit %s ' % u'\n'.join(att))
+            s.append('<trans-unit %s ' % '\n'.join(att))
             if 'space' in self.attributes.keys():
                 s.append('xml:space="%s"' % self.attributes['space'])
-            s.append(u'>\n')
+            s.append('>\n')
         else:
-            s.append(u'<trans-unit>\n')
+            s.append('<trans-unit>\n')
 
         if self.source:
-            s.append(u' <source>%s</source>\n' % protect_content(self.source))
+            s.append(' <source>%s</source>\n' % protect_content(self.source))
 
         if self.target:
-            s.append(u' <target>%s</target>\n' % protect_content(self.target))
+            s.append(' <target>%s</target>\n' % protect_content(self.target))
 
         for l in self.notes:
-            s.append(l.to_unicode())
+            s.append(l.to_str())
 
-        s.append(u'</trans-unit>\n')
-        return u''.join(s)
+        s.append('</trans-unit>\n')
+        return ''.join(s)
 
 
 
@@ -94,37 +94,37 @@ class File(object):
         self.header = []
 
 
-    def to_unicode(self):
+    def to_str(self):
         s = []
 
         # Opent tag
         if self.attributes != {}:
-            att = [u' %s="%s"' % (k, self.attributes[k]) 
+            att = [' %s="%s"' % (k, self.attributes[k]) 
                   for k in self.attributes.keys() if k != 'space']
-            s.append(u'<file %s' % u'\n'.join(att))
+            s.append('<file %s' % '\n'.join(att))
             if 'space' in self.attributes.keys():
                 s.append('xml:space="%s"' % self.attributes['space'])
-            s.append(u'>\n')
+            s.append('>\n')
         else:
-            s.append(u'<file>\n')
+            s.append('<file>\n')
         # The header
         if self.header:
-            s.append(u'<header>\n')
+            s.append('<header>\n')
             for l in self.header:
-                s.append(l.to_unicode())
-            s.append(u'</header>\n')
+                s.append(l.to_str())
+            s.append('</header>\n')
         # The body
-        s.append(u'<body>\n')
+        s.append('<body>\n')
         if self.body:
             mkeys = self.body.keys()
             mkeys.sort()
-            msgs = u'\n'.join([ self.body[m].to_unicode() for m in mkeys ])
+            msgs = '\n'.join([ self.body[m].to_str() for m in mkeys ])
             s.append(msgs)
-        s.append(u'</body>\n')
+        s.append('</body>\n')
         # Close tag
-        s.append(u'</file>\n')
+        s.append('</file>\n')
 
-        return u''.join(s)
+        return ''.join(s)
 
 
 
@@ -202,36 +202,36 @@ class XLIFF(Text):
     #######################################################################
     # Save
     #######################################################################
-    def xml_header_to_unicode(self, encoding='UTF-8'):
+    def xml_header_to_str(self, encoding='UTF-8'):
         state = self.state
-        s = [u'<?xml version="1.0" encoding="%s"?>\n' % encoding]
+        s = ['<?xml version="1.0" encoding="%s"?>\n' % encoding]
         # The document type
         if state.document_type is not None:
-            s.append(u'<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
-        return u''.join(s)
+            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
+        return ''.join(s)
 
 
-    def header_to_unicode(self, encoding='UTF-8'):
+    def header_to_str(self, encoding='UTF-8'):
         state = self.state
         s = []
-        s.append(u'<xliff')
+        s.append('<xliff')
         if state.version:
-            s.append(u'version="%s"' % state.version)
+            s.append('version="%s"' % state.version)
         if state.lang:
-            s.append(u'xml:lang="%s"' % state.lang)
-        s.append(u'>\n') 
+            s.append('xml:lang="%s"' % state.lang)
+        s.append('>\n') 
 
-        return u' '.join(s)
+        return ' '.join(s)
 
 
-    def to_unicode(self, encoding=None):
-        s = [self.xml_header_to_unicode(),
-             self.header_to_unicode()]
+    def to_str(self, encoding=None):
+        s = [self.xml_header_to_str(),
+             self.header_to_str()]
         for file in self.state.files:
-            s.append(file.to_unicode())
-        s.append(u'</xliff>')
+            s.append(file.to_str())
+        s.append('</xliff>')
 
-        return u'\n'.join(s)
+        return '\n'.join(s)
 
 
     #######################################################################

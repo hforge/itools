@@ -34,21 +34,21 @@ class Note(object):
         self.attributes = attributes
 
 
-    def to_unicode(self):
+    def to_str(self):
         s = []
         if self.attributes != {}:
-            att = [u'%s="%s"' % (k, self.attributes[k])
-                  for k in self.attributes.keys() if k != 'lang']
-            s.append(u'<note %s ' % u' '.join(att))
+            att = [ '%s="%s"' % (k, self.attributes[k])
+                    for k in self.attributes.keys() if k != 'lang' ]
+            s.append('<note %s ' % ' '.join(att))
             if 'lang' in self.attributes.keys():
                 s.append('xml:lang="%s"' % self.attributes['lang'])
-            s.append(u'>')
+            s.append('>')
         else:
-            s.append(u'<note>')
+            s.append('<note>')
 
         s.append(self.text)
-        s.append(u'</note>\n')
-        return u''.join(s)
+        s.append('</note>\n')
+        return ''.join(s)
 
 
 
@@ -60,21 +60,21 @@ class Sentence(object):
         self.notes = []
 
 
-    def to_unicode(self):
+    def to_str(self):
         s = []
         attributes = ['xml:lang="%s"' % self.attributes['lang']]
         for attr_name in self.attributes:
             if attr_name != 'lang':
-                attributes.append(u'%s="%s"' % (attr_name,
-                                                self.attributes[attr_name]))
-        s.append(u'<tuv %s>\n' % ' '.join(attributes))
+                attributes.append('%s="%s"' % (attr_name,
+                                               self.attributes[attr_name]))
+        s.append('<tuv %s>\n' % ' '.join(attributes))
 
         for note in self.notes:
-            s.append(note.to_unicode())
+            s.append(note.to_str())
 
-        s.append(u'<seg>%s</seg>\n' % protect_content(self.text))
-        s.append(u'</tuv>\n')
-        return u''.join(s)
+        s.append('<seg>%s</seg>\n' % protect_content(self.text))
+        s.append('</tuv>\n')
+        return ''.join(s)
 
 
 
@@ -86,26 +86,26 @@ class Message(object):
         self.notes = []
 
 
-    def to_unicode(self):
+    def to_str(self):
         s = []
         if self.attributes != {}:
-            att = [u' %s="%s"' %(k, self.attributes[k]) 
+            att = [' %s="%s"' %(k, self.attributes[k]) 
                   for k in self.attributes.keys()]
-            s.append(u'<tu%s>\n' % u''.join(att))
+            s.append('<tu%s>\n' % ''.join(att))
         else:
-            s.append(u'<tu>\n')
+            s.append('<tu>\n')
         
         if self.notes:
             for l in self.notes:
-                s.append(l.to_unicode())
+                s.append(l.to_str())
        
         languages = self.msgstr.keys()
         languages.sort()
         for language in languages:
-            s.append(self.msgstr[language].to_unicode())
+            s.append(self.msgstr[language].to_str())
             
-        s.append(u'</tu>\n')
-        return u''.join(s)
+        s.append('</tu>\n')
+        return ''.join(s)
 
 
 
@@ -195,53 +195,53 @@ class TMX(Text):
     #######################################################################
     # Save
     #######################################################################
-    def xml_header_to_unicode(self, encoding='UTF-8'):
+    def xml_header_to_str(self, encoding='UTF-8'):
         state = self.state
         s = []
         # The XML declaration
-        s.append(u'<?xml version="1.0" encoding="%s"?>\n' % encoding)
+        s.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
         # The document type
         if state.document_type is not None:
-            s.append(u'<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
+            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
 
-        return u''.join(s)
+        return ''.join(s)
 
 
-    def header_to_unicode(self, encoding='UTF-8'):
+    def header_to_str(self, encoding='UTF-8'):
         state = self.state
         s = []
         if state.version:
-            s.append(u'<tmx version="%s">\n' % state.version)
+            s.append('<tmx version="%s">\n' % state.version)
         else:
-            s.append(u'<tmx>\n')
+            s.append('<tmx>\n')
         
         if state.header != {}:
-            attributes = [ u'\n%s="%s"' % (k, state.header[k])
+            attributes = [ '\n%s="%s"' % (k, state.header[k])
                            for k in state.header.keys() ]
-            s.append(u'<header %s>\n' % u''.join(attributes))
+            s.append('<header %s>\n' % ''.join(attributes))
         else:
-            s.append(u'<header>\n')
+            s.append('<header>\n')
 
         if state.header_notes != []:
             for n in state.header_notes:
-                s.append(n.to_unicode())
+                s.append(n.to_str())
 
-        s.append(u'</header>\n')
-        return u''.join(s)
+        s.append('</header>\n')
+        return ''.join(s)
 
 
-    def to_unicode(self, encoding=None):
-        s = [self.xml_header_to_unicode(),
-             self.header_to_unicode(),
-             u'<body>']
+    def to_str(self, encoding=None):
+        s = [self.xml_header_to_str(),
+             self.header_to_str(),
+             '<body>']
         messages = self.state.messages
         msgids = messages.keys()
         msgids.sort()
         for msgid in msgids:
-            s.append(messages[msgid].to_unicode())
-        s.append(u'</body>')
-        s.append(u'</tmx>')
-        return u'\n'.join(s)
+            s.append(messages[msgid].to_str())
+        s.append('</body>')
+        s.append('</tmx>')
+        return '\n'.join(s)
 
 
     #######################################################################

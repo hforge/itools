@@ -15,6 +15,9 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
 from itools.schemas import get_datatype
 from itools.handlers.File import File
@@ -124,16 +127,21 @@ class Response(File):
         # The status
         status_code = state.status
         status_message = status_messages[status_code]
-        data.append('HTTP/1.1 %d %s\n' % (status_code, status_message))
-        # The header
+        data.append('HTTP/1.1 %d %s' % (status_code, status_message))
+        # User defined headers
         for name in state.headers:
             value = state.headers[name]
             type = headers.get_type(name)
             value = type.encode(value)
-            data.append('%s: %s\n' % (name, value))
-        # Content length
+            data.append('%s: %s' % (name, value))
+        # Mandatory headers
+        data.append('Server: Zope')
+        now = datetime.utcnow()
+        data.append('Date: %s' % now.strftime("%a, %d %b %Y %H:%M:%S +0000"))
         if 'content-length' not in state.headers:
-            data.append('Content-Length: %d\n' % len(state.body))
+            data.append('Content-Length: %d' % len(state.body))
+        # Close the connection
+        data.append('Connection: close')
         # The Cookies
         for name in state.cookies:
             cookie = state.cookies[name]
@@ -155,14 +163,14 @@ class Response(File):
             datatype = get_datatype(name)
             value = datatype.encode(cookie.value)
 
-            data.append(
-                'Set-Cookie: %s="%s"%s\n' % (name, value, ''.join(parameters)))
+            data.append('Set-Cookie: %s="%s"%s' % (name, value,
+                                                   ''.join(parameters)))
         # A blank line separates the header from the body
-        data.append('\n')
+        data.append('')
         # The body
         data.append(state.body)
 
-        return ''.join(data)
+        return '\r\n'.join(data)
 
 
     #########################################################################

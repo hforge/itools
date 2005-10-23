@@ -430,25 +430,22 @@ class RepeatAttr(DataType):
 # The run-time engine
 ########################################################################
 def stl(document, namespace={}):
-    # XXX Rewrite with traverse2.
-
     # Initialize the namespace stack
     stack = NamespaceStack()
     stack.append(namespace)
     # Initialize the repeat stack (keeps repeat/index, repeat/odd, etc...)
     repeat = NamespaceStack()
-
     # Get the document
     s = process(document.get_root_element(), stack, repeat)
-    return u''.join(s)
+    return ''.join(s)
 
 
-def process(node, stack, repeat_stack):
+def process(node, stack, repeat_stack, encoding='UTF-8'):
     # Raw nodes
     if isinstance(node, unicode):
-        return [node]
+        return [node.encode(encoding)]
     elif isinstance(node, XML.Comment):
-        return [node.to_unicode()]
+        return [node.to_str()]
 
     s = []
     # Process stl:repeat
@@ -481,7 +478,7 @@ def process(node, stack, repeat_stack):
     return s
 
 
-def process1(node, stack, repeat):
+def process1(node, stack, repeat, encoding='UTF-8'):
     """
     Process stl:if, stl:attributes and stl:content.
     """
@@ -529,12 +526,12 @@ def process1(node, stack, repeat):
             value = changed_attributes.pop(qname)
         # Output only values different than None
         if value is not None:
-            s.append(' %s="%s"' % (qname, value))
+            s.append(' %s="%s"' % (qname, str(value)))
 
     # Output remaining attributes
     for qname, value in changed_attributes.items():
         if value is not None:
-            s.append(' %s="%s"' % (qname, value))
+            s.append(' %s="%s"' % (qname, str(value)))
 
     # The element schema, we need it
     namespace = namespaces.get_namespace(node.namespace)
@@ -554,11 +551,11 @@ def process1(node, stack, repeat):
         if content is None:
             content = []
         elif isinstance(content, unicode):
-            content = [content]
-        elif isinstance(content, str):
-            content = [unicode(content)]
+            content = [content.encode(encoding)]
         elif isinstance(content, (int, long)):
-            content = [unicode(content)]
+            content = [str(content)]
+        elif isinstance(content, str):
+            content = [content]
         else:
             msg = 'expression "%(expr)s" evaluates to value of unexpected' \
                   ' type %(type)s'

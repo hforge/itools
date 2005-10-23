@@ -377,7 +377,7 @@ class Document(XML.Document):
                             yield ' '
 
         buffer = StringIO()
-        buffer.write(self.header_to_unicode())
+        buffer.write(self.header_to_str())
         message = i18n.segment.Message()
         keep_spaces = False
         root_element = self.get_root_element()
@@ -523,15 +523,15 @@ def resolve_pointer(uri, offset):
 ##    return here.get_pathtoroot() + uri
 
 
-def set_template_prefix(handler, offset):
+def set_template_prefix(handler, offset, encoding='UTF-8'):
     # Set the prefix
     data = []
-    data.append(handler.header_to_unicode())
+    data.append(handler.header_to_str())
     # Let's go!
     for node, context in handler.traverse2():
         if isinstance(node, XML.Element):
             if context.start:
-                data.append(u'<%s' % node.qname)
+                data.append('<%s' % node.qname)
                 for namespace, local_name, value in node.get_attributes():
                     qname = node.get_attribute_qname(namespace, local_name)
                     encoded = False
@@ -549,20 +549,19 @@ def set_template_prefix(handler, offset):
                                 value = resolve_pointer(uri, offset)
                                 encoded = True
                     if not encoded:
-                        type = get_datatype_by_uri(namespace, local_name)
-                        value = type.encode(value)
-                    data.append(u' %s="%s"' % (qname, value))
-                data.append(u'>')
+                        datatype = get_datatype_by_uri(namespace, local_name)
+                        value = datatype.encode(value)
+                    data.append(' %s="%s"' % (qname, value))
+                data.append('>')
             else:
-                data.append(u'</%s>' % node.qname)
+                data.append('</%s>' % node.qname)
         elif isinstance(node, XML.Comment):
-            data.append(node.to_unicode())
+            data.append(node.to_str())
         elif isinstance(node, unicode):
-            data.append(node)
+            data.append(node.encode(encoding))
         else:
             raise ValueError, 'unexpected value "%s"' % node
 
-    data = u''.join(data)
-    data = data.encode('utf8')
+    data = ''.join(data)
     resource = memory.File(data)
     return Document(resource)

@@ -42,8 +42,13 @@ class Comment(object):
         self.data = data
 
 
+    # XXX Remove
     def to_unicode(self, encoding='UTF-8'):
         return u'<!--%s-->' % self.data
+
+
+    def to_str(self, encoding='UTF-8'):
+        return '<!--%s-->' % self.data.encode(encoding)
 
 
     def copy(self):
@@ -378,6 +383,8 @@ class Document(Text.Text):
     #######################################################################
     # API
     #######################################################################
+
+    # XXX Remove
     def header_to_unicode(self, encoding='UTF-8'):
         state = self.state
 
@@ -392,6 +399,22 @@ class Document(Text.Text):
             s.append(pattern % state.document_type[:3])
 
         return u''.join(s)
+
+
+    def header_to_str(self, encoding='UTF-8'):
+        state = self.state
+
+        s = []
+        # The XML declaration
+        s.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
+        # The document type
+        if state.document_type is not None:
+            pattern = '<!DOCTYPE %s\n' \
+                      '     PUBLIC "%s"\n' \
+                      '    "%s">\n'
+            s.append(pattern % state.document_type[:3])
+
+        return ''.join(s)
 
 
     def to_unicode(self, encoding='UTF-8'):

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-23 18:21:42 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
+
+    Summary:
+      xml, STL outputs str instead of unicode (idem for set_template_prefix)
+    Revision:
+      itools--main--0.11--patch-30
+
+
+    modified files:
+     Changelog rss/test_rss.py xhtml/XHTML.py xml/XML.py xml/stl.py
+
+
 2005-10-23 16:22:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
 
     Summary:

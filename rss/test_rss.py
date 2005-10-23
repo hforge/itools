@@ -50,11 +50,11 @@ class RSSTestCase(TestCase):
         self.assertEqual(output, html.to_str().strip())
 
 
-    def test_to_unicode(self):
+    def test_to_str(self):
         in_resource = get_resource('test2.rss')
         out_resource = get_handler('test2-out.rss')
         rss = RSS(in_resource)
-        self.assertEqual(rss.to_unicode(), unicode(out_resource.to_str().strip()))
+        self.assertEqual(rss.to_str(), out_resource.to_str().strip())
 
 
     def test_namespace(self):

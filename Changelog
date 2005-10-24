@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-24 14:13:39 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-34
+
+    Summary:
+      merge ical patch from nderam
+    Revision:
+      itools--main--0.11--patch-34
+
+    Patches applied:
+    
+     * nderam@itaapy.com--private/itools--ical--0.10--patch-47
+       add has_event_by_date method
+    
+
+    modified files:
+     Changelog ical/icalendar.py
+
+    new patches:
+     nderam@itaapy.com--private/itools--ical--0.10--patch-47
+
+
 2005-10-24 13:03:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-33
 
     Summary:

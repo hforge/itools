@@ -392,6 +392,17 @@ class icalendar(Text):
         return res_events
 
 
+    # Test if any event corresponds to a given date
+    def has_event_by_date(self, date):
+        if 'VEVENT' not in self.state.components:
+            return False
+        # Get only the events which matches
+        for event in self.state.components['VEVENT']:
+            if event.correspond_to_date(date):
+                return True
+        return False
+
+
     def add_component(self, component, c_type):
         self.state.components[c_type].append(component)
 

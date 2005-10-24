@@ -36,9 +36,5 @@ class LanguageTag(DataType):
         if locality is None:
             return language.lower()
         return '%s-%s' % (language.lower(), locality.upper())
-
-
-    @staticmethod
-    def to_unicode(value):
-        return unicode('-'.join([i for i in value if i != None]))
+##        return '-'.join([i for i in value if i != None])
     

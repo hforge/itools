@@ -71,7 +71,7 @@ class POTestCase(TestCase):
         da = mFile(content)
         po = PO(da)
 
-        assert (po.get_messages())[0].to_unicode() == content
+        assert (po.get_messages())[0].to_str() == content
 
         
     def test_fuzzy(self):

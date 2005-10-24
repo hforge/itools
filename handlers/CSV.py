@@ -84,12 +84,12 @@ class CSV(Text):
     #########################################################################
     # API
     #########################################################################
-    def to_unicode(self, encoding=None):
+    def to_str(self, encoding='UTF-8'):
         lines = []
         for line in self.state.lines:
-            line = [ u'"%s"' % x for x in line ]
-            lines.append(u','.join(line))
-        return u'\n'.join(lines)
+            line = [ '"%s"' % x.encode(encoding) for x in line ]
+            lines.append(','.join(line))
+        return '\n'.join(lines)
 
 
 CSV.register_handler_class(Text)

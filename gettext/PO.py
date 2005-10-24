@@ -107,28 +107,28 @@ class Message(object):
         self.fuzzy = fuzzy
 
 
-    def to_unicode(self):
+    def to_str(self):
         s = []
         # The comments
         for comment in self.comments:
-            s.append(u'#%s\n' % comment)
+            s.append('#%s\n' % comment)
         # The reference comments
         for filename, lines in self.references.items():
             for line in lines:
-                s.append(u'#: %s:%s\n' % (filename, line))
+                s.append('#: %s:%s\n' % (filename, line))
         # The Fuzzy flag
         if self.fuzzy:
-            s.append(u'#, fuzzy\n')
+            s.append('#, fuzzy\n')
         # The msgid
-        s.append(u'msgid "%s"\n' % escape(self.msgid[0]))
+        s.append('msgid "%s"\n' % escape(self.msgid[0]))
         for string in self.msgid[1:]:
-            s.append(u'"%s"\n' % escape(string))
+            s.append('"%s"\n' % escape(string))
         # The msgstr
-        s.append(u'msgstr "%s"\n' % escape(self.msgstr[0]))
+        s.append('msgstr "%s"\n' % escape(self.msgstr[0]))
         for string in self.msgstr[1:]:
-            s.append(u'"%s"\n' % escape(string))
+            s.append('"%s"\n' % escape(string))
         
-        return u''.join(s)
+        return ''.join(s)
 
 
 
@@ -378,11 +378,11 @@ class PO(Text):
         return msgid
 
 
-    def to_unicode(self, encoding=None):
+    def to_str(self, encoding=None):
         messages = self.state.messages
         message_ids = messages.keys()
         message_ids.sort()
-        messages = [ messages[x].to_unicode() for x in message_ids ]
+        messages = [ messages[x].to_str() for x in message_ids ]
         return '\n'.join(messages)
 
 

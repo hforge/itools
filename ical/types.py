@@ -100,19 +100,6 @@ class DateTime(DataType):
 
 
     @staticmethod
-    def to_unicode(value):
-    # PROBLEM --> 2 formats, with or without final 'Z' 
-        if value is None:
-            return u''
-
-        dt = value.isoformat('T')
-        dt = dt.replace(u':',u'')
-        dt = dt.replace(u'-',u'')
-
-        return unicode(dt)   
-
-
-    @staticmethod
     def from_str(value):
         if not value:
             return None
@@ -268,23 +255,23 @@ class PropertyType(object):
 
 
     @classmethod
-    def to_unicode(cls, name, property):
+    def encode(cls, name, property):
         # Property name
-        prop = unicode(name)
+        prop = str(name)
         # Property parameters
         if property.parameters:
             for key_param in property.parameters:
-                prop = prop + u'\n ' + u';' + \
-                       ParameterType.to_unicode(property.parameters[key_param])
+                prop = prop + '\n ;' + \
+                       ParameterType.encode(property.parameters[key_param])
         else:
-            prop = prop + u'\n'
+            prop = prop + '\n'
 
         # Property value
         vtype = data_properties.get(name, String)
-        value = vtype.to_unicode(property.value)
-        prop = prop + u' :' + value
+        value = vtype.encode(property.value)
+        prop = prop + ' :' + value
         # Property folded if necessary
-        if len(prop)>75:
+        if len(prop) > 75:
             prop = fold_line(prop)
         return prop
 
@@ -478,13 +465,13 @@ class ParameterType(object):
 
 
     @classmethod
-    def to_unicode(cls, parameter):
+    def encode(cls, parameter):
         # Parameter name
-        param = unicode(parameter.name) + u'='
+        param = str(parameter.name) + '='
         # Parameter values
-        param = param + unicode(parameter.values[0])
+        param = param + str(parameter.values[0])
         for value in parameter.values[1:]:
-            param = param + u',' + unicode(value)
+            param = param + ',' + str(value)
         return param
 
 
@@ -540,7 +527,7 @@ class ComponentType(object):
 
 
     @classmethod
-    def to_unicode(cls, component):
+    def encode(cls, component):
         lines = []
 
         lines.append('BEGIN:%s' % component.c_type)
@@ -548,13 +535,13 @@ class ComponentType(object):
         for key in component.properties:
             occurs = PropertyType.nb_occurrences(key)
             if occurs == 1:
-                line = PropertyType.to_unicode(key, component.properties[key])
+                line = PropertyType.encode(key, component.properties[key])
                 lines.append(line)
             else:
                 for item in component.properties[key]:
-                    lines.append(PropertyType.to_unicode(key, item))
+                    lines.append(PropertyType.encode(key, item))
 
         lines.append('END:%s' % component.c_type)
 
-        return u'\n'.join(lines)
+        return '\n'.join(lines)
 

@@ -42,13 +42,6 @@ class Integer(DataType):
         return str(value)
 
 
-    @staticmethod
-    def to_unicode(value):
-        if value is None:
-            return u''
-        return unicode(value)
-
-
 
 class Unicode(DataType):
 
@@ -67,13 +60,6 @@ class Unicode(DataType):
         return value.encode(encoding)
 
 
-    @staticmethod
-    def to_unicode(value, encoding='UTF-8'):
-        # Escape XML (XXX this is specific to XML)
-        value = value.replace('&', '&amp;').replace('<', '&lt;')
-        return value
-
-
 
 class String(DataType):
 
@@ -85,11 +71,6 @@ class String(DataType):
     @staticmethod
     def encode(value):
         return value
-
-
-    @staticmethod
-    def to_unicode(value):
-        return unicode(value)
 
 
 
@@ -106,16 +87,6 @@ class Boolean(DataType):
             return '1'
         elif value is False:
             return '0'
-        else:
-            raise ValueError, 'value is not a boolean'
-
-
-    @staticmethod
-    def to_unicode(value):
-        if value is True:
-            return u'1'
-        elif value is False:
-            return u'0'
         else:
             raise ValueError, 'value is not a boolean'
 
@@ -137,13 +108,6 @@ class Date(DataType):
         if value is None:
             return ''
         return value.strftime('%Y-%m-%d')
-
-
-    @staticmethod
-    def to_unicode(value):
-        if value is None:
-            return u''
-        return unicode(value.strftime('%Y-%m-%d'))
 
 
 
@@ -168,13 +132,6 @@ class DateTime(DataType):
         return value.strftime('%Y-%m-%d %H:%M')
 
 
-    @staticmethod
-    def to_unicode(value):
-        if value is None:
-            return u''
-        return unicode(value.strftime('%Y-%m-%d %H:%M'))
-
-
 
 class URI(DataType):
 
@@ -185,12 +142,7 @@ class URI(DataType):
 
     @staticmethod
     def encode(value):
-        return str(value)
-
-
-    @staticmethod
-    def to_unicode(value):
-        return unicode(value).replace(u'&', u'&amp;')
+        return str(value).replace('&', '&amp;')
 
 
 
@@ -279,8 +231,3 @@ class Tokens(DataType):
     @staticmethod
     def encode(value):
         return ' '.join(value)
-
-
-    @staticmethod
-    def to_unicode(value):
-        return u' '.join(value)

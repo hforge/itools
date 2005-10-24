@@ -161,6 +161,11 @@ class Element(object):
         return ''.join(s)
 
 
+    def to_unicode(self):
+        # Used today only by 'itools.i18n.segment' (XHTML translation)
+        return unicode(self.to_str(), 'utf-8')
+
+
     #######################################################################
     # Attributes
     def set_attribute(self, namespace, name, value):

@@ -371,7 +371,7 @@ class icalTestCase(unittest.TestCase):
                 else:
                     value = events[0].properties[name][0]
 
-                print PropertyType.to_unicode(name, value)
+                print PropertyType.encode(name, value)
 
         print '\n'
 
@@ -443,26 +443,26 @@ class icalTestCase(unittest.TestCase):
 
 
     # Not a test, just print
-    def test_to_unicode(self):
+    def test_to_str(self):
         """Test get_skeleton"""
         cal = icalendar(memory.File(content2))
 
-        print '*** Print calendar to_unicode() ***'
-        print cal.to_unicode()
+        print '*** Print calendar to_str() ***'
+        print cal.to_str()
         print '***********************************'
 
 
     def test_ParameterType(self):
         """Test to decode a string value and 
-           compare it with to_unicode returned value
+           compare it with encode returned value
         """   
         param = ParameterType.decode(';RSVP=TRUE')
         expected = ';RSVP=TRUE'
-        self.assertEqual(ParameterType.to_unicode(param), expected)
+        self.assertEqual(ParameterType.encode(param), expected)
 
         param = ParameterType.decode(';MEMBER="MAILTO:DEV-GROUP@host2.com"')
         expected = ';MEMBER="MAILTO:DEV-GROUP@host2.com"'
-        self.assertEqual(ParameterType.to_unicode(param), expected)
+        self.assertEqual(ParameterType.encode(param), expected)
 
 
     def test_correspond_to_date(self):

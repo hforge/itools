@@ -68,19 +68,8 @@ class Text(File):
         return self.state.encoding
 
 
-    def to_unicode(self, encoding='UTF-8'):
-        return self.state.data
-
-
     def to_str(self, encoding='UTF-8'):
-        # XXX Maybe the default behaviour should be to use the original
-        # encoding, but for now I prefer utf8, because we live in a
-        # multilingual world.
-
-        # Warning!! Some files (XML, PO, etc.) store the encoding information
-        # within the document. For them this method should change that
-        # information to the given encoding.
-        return self.to_unicode(encoding).encode(encoding)
+        return self.state.data.encode(encoding)
 
 
 File.register_handler_class(Text)

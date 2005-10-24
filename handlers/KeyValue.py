@@ -74,21 +74,21 @@ class KeyValue(Text):
     #########################################################################
     # API
     #########################################################################
-    def to_unicode(self, encoding=None):
+    def to_str(self, encoding='UTF-8'):
         data = []
         state = self.state
         for key in state.keys:
             value = getattr(state, key)
             t = self.__keys_types__.get(key, 'str')
             if t == 'str':
-                value = unicode(value)
-            elif t == 'unicode':
                 pass
+            elif t == 'unicode':
+                value = value.encode(encoding)
             elif t == 'bool':
-                value = value and u'true' or u'false'
+                value = value and 'true' or 'false'
             else:
                 # XXX Error!!
                 pass
-            data.append(u'%s:%s\n' % (key, value))
-        return u''.join(data)
+            data.append('%s:%s\n' % (key, value))
+        return ''.join(data)
 

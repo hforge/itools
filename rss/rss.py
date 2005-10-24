@@ -125,12 +125,6 @@ class TZDateTime(DataType):
             return value.astimezone(utc).strftime('%Y-%m-%d %H:%M:%S')
 
 
-    @staticmethod
-    def to_unicode(value):
-        if value is None:
-            return u''
-        return unicode(value.strftime('%Y-%m-%d %H:%M'))
-
 
 
 # RSS tags types for encode and decode
@@ -323,37 +317,37 @@ class RSS(Text):
         return '\n'.join(s)
 
 
-    def to_unicode(self, encoding='UTF-8'):
+    def to_str(self, encoding='UTF-8'):
         s = []
-        s.append(u'<?xml version="1.0" encoding="%s"?>' % encoding)
-        s.append(u'<rss version="2.0">')
-        s.append(u'<channel>')
+        s.append('<?xml version="1.0" encoding="%s"?>' % encoding)
+        s.append('<rss version="2.0">')
+        s.append('<channel>')
         # Append channel data
         for e in rss_channel_elements:
             if self.state.channel.__dict__.has_key(e):
                 # Not None elements (for example channel.image)
                 if self.state.channel.__dict__[e]:
                     value = self.encode_element(e, self.state.channel.__dict__[e])
-                    s.append(u'\t<%s>%s</%s>' % (e, value, e))
+                    s.append('\t<%s>%s</%s>' % (e, value, e))
         # Append channel image data (if exists)
         image = self.state.channel.get_image()
         if image:
-            s.append(u'\t<image>')
+            s.append('\t<image>')
             for e in rss_image_elements:
                 if image.__dict__.has_key(e):
                     value = self.encode_element(e, image.__dict__[e])
-                    s.append(u'\t\t<%s>%s</%s>' % (e, value, e))
-            s.append(u'\t</image>')
+                    s.append('\t\t<%s>%s</%s>' % (e, value, e))
+            s.append('\t</image>')
         # Append channel items data
         for i in self.state.channel.get_items():
-            s.append(u'\t<item>')
+            s.append('\t<item>')
             for e in rss_item_elements:
                 if i.__dict__.has_key(e):
                     value = self.encode_element(e, i.__dict__[e])
-                    s.append(u'\t\t<%s>%s</%s>' % (e, value, e))
-            s.append(u'\t</item>')
-        s.append(u'</channel>')
-        s.append(u'</rss>')
+                    s.append('\t\t<%s>%s</%s>' % (e, value, e))
+            s.append('\t</item>')
+        s.append('</channel>')
+        s.append('</rss>')
         return '\n'.join(s)
 
 

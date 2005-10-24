@@ -1,6 +1,6 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Nicolas Deram <nderam@gmail.com> & 
-#                    Nicolas Oyez <nicoyez@gmail.com>
+# Copyright (C) 2005 Nicolas Deram <nderam@gmail.com>
+#               2005 Nicolas Oyez <nicoyez@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -277,22 +277,21 @@ class icalendar(Text):
             #                  'at least ONE component'
 
 
-    def to_unicode(self, encoding='UTF-8'):
+    def to_str(self, encoding='UTF-8'):
         lines = []
 
-        lines.append(u'BEGIN:VCALENDAR')
+        lines.append('BEGIN:VCALENDAR')
         # Calendar properties
         for key in self.state.properties:
-            lines.append(PropertyType.to_unicode(key, 
-                                                 self.state.properties[key]))
+            lines.append(PropertyType.encode(key, self.state.properties[key]))
         # Calendar components
         for type_component in self.state.components:
             for component in self.state.components[type_component]:
-                lines.append(ComponentType.to_unicode(component))
+                lines.append(ComponentType.encode(component))
 
-        lines.append(u'END:VCALENDAR\n')
+        lines.append('END:VCALENDAR\n')
 
-        return u'\n'.join(lines)
+        return '\n'.join(lines)
 
 
     #######################################################################

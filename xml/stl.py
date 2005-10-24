@@ -349,11 +349,6 @@ class ContentAttr(DataType):
         return str(value)
 
 
-    @staticmethod
-    def to_unicode(value, encoding='UTF-8'):
-        return unicode(value)
-
-
 
 class AttributesAttr(DataType):
 
@@ -381,11 +376,6 @@ class AttributesAttr(DataType):
         return ';'.join([ '%s %s' % x for x in value ])
 
 
-    @staticmethod
-    def to_unicode(value, encoding='UTF-8'):
-        return u';'.join([ u'%s %s' % x for x in value ])
-
-
 
 class IfAttr(DataType):
 
@@ -401,11 +391,6 @@ class IfAttr(DataType):
         return str(value)
 
 
-    @staticmethod
-    def to_unicode(value, encoding='UTF-8'):
-        return unicode(value)
-
-
 
 class RepeatAttr(DataType):
 
@@ -418,11 +403,6 @@ class RepeatAttr(DataType):
     @staticmethod
     def encode(value):
         return '%s %s' % value
-
-
-    @staticmethod
-    def to_unicode(value, encoding='UTF-8'):
-        return u'%s %s' % value
 
 
 

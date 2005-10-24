@@ -45,7 +45,7 @@ class Context(object):
     # API
     ########################################################################
     def redirect(self, reference, status=302):
-        reference = self.uri.resolve2(reference)
+        reference = self.uri.resolve(reference)
         self.response.redirect(reference, status)
 
 

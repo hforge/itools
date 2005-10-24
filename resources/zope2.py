@@ -120,8 +120,8 @@ class Resource(base.Resource):
 
 
     def is_locked(self):
-        # XXX Implement! See Zope's "webdav.Resource.LOCK".
-        raise NotImplementedError
+        object = self._get_object()
+        return object.wl_isLocked()
 
 
     ##########################################################################

@@ -15,9 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Import from the Standard Library
-import cStringIO
-
 # Import from itools
 from itools import uri
 from itools.schemas import get_datatype
@@ -60,9 +57,12 @@ def init(zope_request):
         # Read the standard input
         body = zope_request.stdin.read()
         # Recover the standard input, so Zope can read it again
-        zope_request.stdin = cStringIO.StringIO(body)
+        zope_request.stdin.seek(0)
         # Load the parameters
-        type, type_parameters = request.content_type
+        if request.content_type is not None:
+            type, type_parameters = request.content_type
+        else:
+            type = ''
         if type == 'application/x-www-form-urlencoded':
             parameters = uri.generic.Query(body)
         elif type.startswith('multipart/'):

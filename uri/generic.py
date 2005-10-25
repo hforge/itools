@@ -307,8 +307,9 @@ class Path(list):
 
     def get_pathto(self, path):
         """
-        If 'self' and 'path' are absolute, a relative path 'x' is returned
-        so self.resolve(x) = path.
+        Returns the relative path from 'self' to 'path'. This operation is
+        the complement of 'resolve2'. So, if 'x = a.get_pathto(b)', then
+        'b = a.resolve2(x)'.
         """
         if not isinstance(path, Path):
             path = Path(path)

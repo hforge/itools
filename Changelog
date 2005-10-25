@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-25 10:13:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
+
+    Summary:
+      uri, fix documentation string for "Path.get_pathto"
+    Revision:
+      itools--main--0.11--patch-37
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-25 09:46:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
 
     Summary:

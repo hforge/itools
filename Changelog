@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-25 10:20:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
+
+    Summary:
+      uri, fix normalize_path doc string (#30)
+    Revision:
+      itools--main--0.11--patch-39
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-25 10:18:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
 
     Summary:

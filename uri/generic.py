@@ -98,11 +98,11 @@ def normalize_path(path):
 
     Examples:
 
-    a//b/c     : a/b/c
-    a/./b/c    : a/b/c
-    a/b/c/../d : a/b/d
-    /../a/b/c  : /a/b/c
-    .          : XXX ?
+      'a//b/c'     -> 'a/b/c'
+      'a/./b/c'    -> 'a/b/c'
+      'a/b/c/../d' -> 'a/b/d'
+      '/../a/b/c ' -> '/a/b/c'
+      '.'          -> ''
     """
     if not isinstance(path, str) and not isinstance(path, unicode):
         raise TypeError, 'path must be an string, not a %s' % type(path)

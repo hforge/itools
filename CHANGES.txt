@@ -1,3 +1,55 @@
+0.11.0 (2005/10/2X)
+
+  URI
+  - Add "resolve2" to the URI API (just uses "Path.resolve2" instead of
+    "Path.resolve").
+  - Fix path comparison (#30).
+  - Many more unit tests (#30). By Hervé Cauwelier.
+
+  Schemas
+  - Improve programming interface: register_schema, get_schema,
+    get_schema_by_uri, get_datatype and get_datatype_by_uri.
+
+  Resources
+  - New method "traverse2" (a more powerfull version of "traverse").
+  - Implement "is_locked" for Zope 2 resources. By Hervé Cauwelier.
+
+  Handlers
+  - Drop "to_unicode" from the API, now it is only 'to_str'.
+
+  XML
+  - New parser, a little faster and a little simpler (#52).
+
+  STL
+  - Improve API, now it is "stl(handler, namespace)".
+  - Returns a byte string instead of a unicode string.
+
+  XHTML
+  - Add function "set_template_prefix" to the API, it modifies relative
+    links (useful for example to move a document from one place on a
+    tree to another).
+
+  Catalog
+  - Now it does not check for callable fields.
+  - Keyword fields correctly index frozenset objects.
+
+  Web
+  - Use HTTP_X_FORWARDED_HOST (instead of our own REAL_HOST).
+  - Deserialize and serialize cookies (uses itools.schemas).
+  - Add "context.redirect" to the API. To be used instead of the lower
+    level "response.redirect". It makes sure redirects are absolute (#62).
+  - Add "context.has_cookie" to the API.
+  - Fix PUT, LOCK and UNLOCK for Zope 2.
+  - Add the response header fields 'Date', 'Connection' and 'Server'.
+
+  Documentation
+  - Update chapter about STL.
+
+  Packaging
+  - New "setup.py" script optimized for Python 2.4 (#105). By Hervé
+    Cauwelier.
+
+
 0.10.0 (2005/08/08)
 
   Now Python 2.4 is required.

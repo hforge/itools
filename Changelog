@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-25 15:34:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
+
+    Summary:
+      start CHANGES file for the 0.11.0 release
+    Revision:
+      itools--main--0.11--patch-42
+
+
+    modified files:
+     CHANGES.txt Changelog
+
+
 2005-10-25 14:12:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
 
     Summary:

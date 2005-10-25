@@ -2,6 +2,30 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-25 15:45:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-43
+
+    Summary:
+      merge unit test fixes from herve
+    Revision:
+      itools--main--0.11--patch-43
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-13
+       fix misleading variable names.
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-14
+       a path is not the same with a trailing slash.
+    
+
+    modified files:
+     Changelog uri/test_path.py
+
+    new patches:
+     herve@oursours.net--public/itools--uripath--0.11--patch-13
+     herve@oursours.net--public/itools--uripath--0.11--patch-14
+
+
 2005-10-25 15:34:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
 
     Summary:

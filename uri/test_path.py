@@ -36,8 +36,8 @@ class PathComparisonTestCase(unittest.TestCase):
     #
 
     def test_with_eq_without_trailing_slash(self):
-        """A path equals the same with a trailing slash."""
-        self.assertEqual(self.path_wo_slash, self.path_w_slash)
+        """A path is not the same with a trailing slash."""
+        self.assertNotEqual(self.path_wo_slash, self.path_w_slash)
 
 
     def test_wo_to_w_eq_path_dot(self):
@@ -97,9 +97,9 @@ class PathPrefixTestCase(unittest.TestCase):
     # TODO more test cases.
 
     def test1(self):
-        parent = Path('/a/b/c')
-        child = Path('/a/b/d/e')
-        self.assertEqual(parent.get_prefix(child), 'a/b')
+        a = Path('/a/b/c')
+        b = Path('/a/b/d/e')
+        self.assertEqual(a.get_prefix(b), 'a/b')
 
 
 class PathPathToTestCase(unittest.TestCase):

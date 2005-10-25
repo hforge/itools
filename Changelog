@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-25 14:12:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
+
+    Summary:
+      uri, change "str(path)" to return the empty string (#30)
+    Revision:
+      itools--main--0.11--patch-41
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-25 13:31:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
 
     Summary:

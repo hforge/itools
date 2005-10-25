@@ -2,6 +2,53 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-25 13:31:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
+
+    Summary:
+      uri, merge unit tests from herve (#30)
+    Revision:
+      itools--main--0.11--patch-40
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-6
+       Merge from jdavid@itaapy.com--public/itools--main--0.11
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-7
+       unit tests for normalize_path.
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-8
+       add tests for Path.resolve
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-9
+       add tests for Path.resolve2
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-10
+       add tests for Path.get_prefix
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-11
+       add tests for Path.get_pathto
+    
+     * herve@oursours.net--public/itools--uripath--0.11--patch-12
+       add tests for Path.get_pathtoroot
+    
+
+    new files:
+     uri/.arch-ids/test_normalize.py.id uri/test_normalize.py
+
+    modified files:
+     Changelog uri/test_path.py
+
+    new patches:
+     herve@oursours.net--public/itools--uripath--0.11--patch-6
+     herve@oursours.net--public/itools--uripath--0.11--patch-7
+     herve@oursours.net--public/itools--uripath--0.11--patch-8
+     herve@oursours.net--public/itools--uripath--0.11--patch-9
+     herve@oursours.net--public/itools--uripath--0.11--patch-10
+     herve@oursours.net--public/itools--uripath--0.11--patch-11
+     herve@oursours.net--public/itools--uripath--0.11--patch-12
+
+
 2005-10-25 10:20:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
 
     Summary:

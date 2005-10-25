@@ -64,5 +64,94 @@ class PathComparisonTestCase(unittest.TestCase):
         self.assertEqual(self.wo_to_w, '.')
 
 
+
+class PathResolveTestCase(unittest.TestCase):
+
+    def test_resolve_wo_slash(self):
+        before = Path('/a/b')
+        after = Path('/a/c')
+        self.assertEqual(before.resolve('c'), after)
+
+
+    def test_resolve_w_slash(self):
+        before = Path('/a/b/')
+        after = Path('/a/b/c')
+        self.assertEqual(before.resolve('c'), after)
+
+
+class PathResolve2TestCase(unittest.TestCase):
+
+    def test_resolve2_wo_slash(self):
+        before = Path('/a/b')
+        after = Path('/a/b/c')
+        self.assertEqual(before.resolve2('c'), after)
+
+
+    def test_resolve2_w_slash(self):
+        before = Path('/a/b/')
+        after = Path('/a/b/c')
+        self.assertEqual(before.resolve2('c'), after)
+
+
+class PathPrefixTestCase(unittest.TestCase):
+    # TODO more test cases.
+
+    def test1(self):
+        parent = Path('/a/b/c')
+        child = Path('/a/b/d/e')
+        self.assertEqual(parent.get_prefix(child), 'a/b')
+
+
+class PathPathToTestCase(unittest.TestCase):
+
+    def test_pathto_wo_slash(self):
+        before = Path('/a/b')
+        after = Path('/a/b/c')
+        self.assertEqual(before.get_pathto(after), 'c')
+
+
+    def test_pathto_w_slash(self):
+        before = Path('/a/b/')
+        after = Path('/a/b/c')
+        self.assertEqual(before.get_pathto(after), 'c')
+
+
+class PathPathToRootTestCase(unittest.TestCase):
+
+    def test1(self):
+        a = Path('/a')
+        self.assertEqual(a.get_pathtoroot(), '')
+
+
+    def test2(self):
+        a = Path('/a/')
+        self.assertEqual(a.get_pathtoroot(), '')
+
+
+    def test3(self):
+        a = Path('/a/b')
+        self.assertEqual(a.get_pathtoroot(), '../')
+
+
+    def test4(self):
+        a = Path('/a/b/')
+        self.assertEqual(a.get_pathtoroot(), '../')
+
+
+    def test5(self):
+        a = Path('/a/very/long/path')
+        self.assertEqual(a.get_pathtoroot(), '../../../')
+
+
+    def test6(self):
+        a = Path('a/b')
+        self.assertEqual(a.get_pathtoroot(), '../')
+
+
+    def test7(self):
+        a = Path('a/b/')
+        self.assertEqual(a.get_pathtoroot(), '../')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -102,16 +102,20 @@ def normalize_path(path):
     a/./b/c    : a/b/c
     a/b/c/../d : a/b/d
     /../a/b/c  : /a/b/c
+    .          : XXX ?
     """
     if not isinstance(path, str) and not isinstance(path, unicode):
         raise TypeError, 'path must be an string, not a %s' % type(path)
+
     # Does the path start by an slash? i.e.: is it absolute?
     startswith_slash = path.startswith('/')
+
     # Does the path end by an slash? (relevant to resolve URLs)
-    endswith_slash = path.endswith('/') \
-                     or path.endswith('/.')
+    endswith_slash = path.endswith('/') or path.endswith('/.')
+
     # Split the path http://a//
     path = path.split('/')
+
     # Transform '//' and '/./' to '/'
     path = [ x for x in path if x not in ('', '.') ]
 

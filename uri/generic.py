@@ -231,11 +231,17 @@ class Path(list):
 
 
     def __ne__(self, other):
-        return str(self) != normalize_path(str(other))
+        if isinstance(other, str):
+            other = Path(other)
+
+        return str(self) != str(other)
 
 
     def __eq__(self, other):
-        return str(self) == normalize_path(str(other))
+        if isinstance(other, str):
+            other = Path(other)
+
+        return str(self) == str(other)
 
 
     def is_absolute(self):

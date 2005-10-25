@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-25 10:18:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
+
+    Summary:
+      uri, fix comparisons of paths (#30)
+    Revision:
+      itools--main--0.11--patch-38
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-25 10:13:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
 
     Summary:

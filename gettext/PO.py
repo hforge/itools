@@ -107,11 +107,11 @@ class Message(object):
         self.fuzzy = fuzzy
 
 
-    def to_str(self):
+    def to_str(self, encoding='UTF-8'):
         s = []
         # The comments
         for comment in self.comments:
-            s.append('#%s\n' % comment)
+            s.append('#%s\n' % comment.encode(encoding))
         # The reference comments
         for filename, lines in self.references.items():
             for line in lines:
@@ -120,14 +120,14 @@ class Message(object):
         if self.fuzzy:
             s.append('#, fuzzy\n')
         # The msgid
-        s.append('msgid "%s"\n' % escape(self.msgid[0]))
+        s.append('msgid "%s"\n' % escape(self.msgid[0].encode(encoding)))
         for string in self.msgid[1:]:
-            s.append('"%s"\n' % escape(string))
+            s.append('"%s"\n' % escape(string.encode(encoding)))
         # The msgstr
-        s.append('msgstr "%s"\n' % escape(self.msgstr[0]))
+        s.append('msgstr "%s"\n' % escape(self.msgstr[0].encode(encoding)))
         for string in self.msgstr[1:]:
-            s.append('"%s"\n' % escape(string))
-        
+            s.append('"%s"\n' % escape(string.encode(encoding)))
+
         return ''.join(s)
 
 
@@ -378,11 +378,11 @@ class PO(Text):
         return msgid
 
 
-    def to_str(self, encoding=None):
+    def to_str(self, encoding='UTF-8'):
         messages = self.state.messages
         message_ids = messages.keys()
         message_ids.sort()
-        messages = [ messages[x].to_str() for x in message_ids ]
+        messages = [ messages[x].to_str(encoding) for x in message_ids ]
         return '\n'.join(messages)
 
 

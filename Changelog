@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-26 19:19:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
+
+    Summary:
+      handlers, remove "print" statement
+    Revision:
+      itools--main--0.11--patch-48
+
+
+    modified files:
+     Changelog handlers/transactions.py
+
+
 2005-10-26 19:18:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
 
     Summary:

@@ -79,7 +79,6 @@ class Transaction(set):
         else:
             # Commit resource layer transactions
             for transaction in self._get_resource_transactions():
-                print 'COMMIT'
                 # XXX This ('setUser' and 'note' is specific to the ZODB).
                 transaction.setUser(username, '')
                 transaction.note(note)

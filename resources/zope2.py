@@ -35,26 +35,29 @@ import Zope2
 
 # Zope is not an scheme, this means Zope resources only can be accessible
 # within a context.
-roots = {}
-roots_lock = thread.allocate_lock()
+connections = {}
+connections_lock = thread.allocate_lock()
 
 
 def get_object(path):
     """
     Returns the Zope object in the given path.
     """
-    # Get the root
-    key = thread.get_ident()
-    if key in roots:
-        root = roots[key]
+    database = Zope2.DB
+    database_name = database.getName()
+
+    if database_name in connections:
+        connection = connections[database_name]
     else:
-        root = Zope2.DB.open().root()['Application']
-        root = aq_base(root)
-        roots_lock.acquire()
+        connections_lock.acquire()
         try:
-            roots[key] = root
+            connection = database.open()
+            connections[database_name] = connection
         finally:
-            roots_lock.release()
+            connections_lock.release()
+
+    root = connection.root()['Application']
+    root = aq_base(root)
 
     # Traverse
     object = root

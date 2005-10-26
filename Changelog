@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-26 18:17:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-45
+
+    Summary:
+      resources, fix Zope 2 resources
+    Revision:
+      itools--main--0.11--patch-45
+
+    Use a single connection for all Zope 2 resources, this connection is
+    not shared with the Zope pool of connections, it is only for us.
+
+    modified files:
+     Changelog handlers/transactions.py resources/zope2.py
+
+
 2005-10-26 16:06:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-44
 
     Summary:

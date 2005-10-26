@@ -26,6 +26,9 @@ thread_lock = thread.allocate_lock()
 class Transaction(set):
 
     def rollback(self):
+        if not self:
+            return
+
         # Abort resource layer transactions
         for handler in self:
             handler.resource.abort_transaction()
@@ -37,6 +40,9 @@ class Transaction(set):
 
 
     def commit(self):
+        if not self:
+            return
+
         # Event: before commit
         try:
             for handler in list(self):

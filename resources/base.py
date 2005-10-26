@@ -94,15 +94,7 @@ class Resource(object):
     ##########################################################################
     # Transactions
     ##########################################################################
-    def start_transaction(self):
-        pass
-
-
-    def abort_transaction(self):
-        pass
-
-
-    def commit_transaction(self):
+    def get_transaction(self):
         pass
 
 

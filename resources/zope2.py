@@ -130,16 +130,8 @@ class Resource(base.Resource):
     ##########################################################################
     # Transactions
     ##########################################################################
-    def start_transaction(self):
-        transaction.begin()
-
-
-    def abort_transaction(self):
-        transaction.abort()
-
-
-    def commit_transaction(self):
-        transaction.commit()
+    def get_transaction(self):
+        return transaction.get()
 
 
 

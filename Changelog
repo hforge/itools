@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-26 19:18:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
+
+    Summary:
+      resources, change transactions API (just "resource.get_transaction")
+    Revision:
+      itools--main--0.11--patch-47
+
+
+    modified files:
+     Changelog handlers/Handler.py handlers/transactions.py
+     resources/base.py resources/zope2.py
+
+
 2005-10-26 19:15:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
 
     Summary:

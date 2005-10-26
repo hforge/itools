@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-26 16:06:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-44
+
+    Summary:
+      uri, reverte change, "str(path)" returns '.' again (#30)
+    Revision:
+      itools--main--0.11--patch-44
+
+    It broke ikaaro.
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-25 15:45:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-43
 
     Summary:

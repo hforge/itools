@@ -225,8 +225,8 @@ class Path(list):
         path += '/'.join([ str(x) for x in self ])
         if self.endswith_slash:
             path += '/'
-##        if len(path) == 0:
-##            return '.'
+        if len(path) == 0:
+            return '.'
         return path
 
 
@@ -406,8 +406,8 @@ class Reference(object):
 
     def __str__(self):
         path = str(self.path)
-##        if path == '.':
-##            path = ''
+        if path == '.':
+            path = ''
         reference = urlunsplit((self.scheme, str(self.authority), path,
                                 str(self.query), self.fragment))
         if reference == '':

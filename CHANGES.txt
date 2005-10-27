@@ -1,4 +1,4 @@
-0.11.0 (2005/10/2X)
+0.11.0 (2005/10/28)
 
   URI
   - Add "resolve2" to the URI API (just uses "Path.resolve2" instead of
@@ -11,7 +11,7 @@
     get_schema_by_uri, get_datatype and get_datatype_by_uri.
 
   Resources
-  - New method "traverse2" (a more powerfull version of "traverse").
+  - New method "traverse2" (a more powerful version of "traverse").
   - Implement "is_locked" for Zope 2 resources. By Hervé Cauwelier.
 
   Handlers
@@ -28,6 +28,9 @@
   - Add function "set_template_prefix" to the API, it modifies relative
     links (useful for example to move a document from one place on a
     tree to another).
+
+  HTML
+  - Update parser to be in sync with the XML parser.
 
   Catalog
   - Now it does not check for callable fields.

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-27 10:05:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
+
+    Summary:
+      html, remove ATTRIBUTE event in parser (like we do in xml)
+    Revision:
+      itools--main--0.11--patch-49
+
+
+    modified files:
+     Changelog html/HTML.py html/parser.py
+
+
 2005-10-26 19:19:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
 
     Summary:

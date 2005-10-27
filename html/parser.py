@@ -21,7 +21,7 @@ from HTMLParser import HTMLParser
 import warnings
 
 
-DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, ATTRIBUTE, COMMENT, TEXT = range(6)
+DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT = range(5)
 
 
 # List of empty elements, which don't have a close tag
@@ -90,9 +90,6 @@ class Parser(HTMLParser):
                 element_name = self.stack.pop()
                 self.events.append((END_ELEMENT, element_name, line_number))
 
-        # Start element
-        self.events.append((START_ELEMENT, name, line_number))
-
         # Check the encoding
         if name == 'meta':
             if ('http-equiv', 'Content-Type') in attrs:
@@ -103,6 +100,7 @@ class Parser(HTMLParser):
                         break
 
         # Attributes
+        attributes = {}
         for attribute_name, attribute_value in attrs:
             if attribute_value is None:
                 if attribute_name in boolean_attributes:
@@ -110,8 +108,10 @@ class Parser(HTMLParser):
                 else:
                     raise ValueError, \
                           'missing attribute value for "%s"' % attribute_name
-            event = (ATTRIBUTE, (attribute_name, attribute_value), line_number)
-            self.events.append(event)
+                attributes[attribute_name] = attribute_value
+
+        # Start element
+        self.events.append((START_ELEMENT, (name, attributes), line_number))
 
         # End element
         if name in empty_elements:

@@ -21,7 +21,7 @@ from itools.handlers import File
 from itools.xml import XML
 from itools.xhtml import XHTML
 from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \
-     END_ELEMENT, ATTRIBUTE, COMMENT, TEXT
+     END_ELEMENT, COMMENT, TEXT
 
 
 
@@ -126,9 +126,14 @@ class Document(XHTML.Document):
             if event == DOCUMENT_TYPE:
                 state.document_type = value
             elif event == START_ELEMENT:
-                schema = elements_schema.get(value, {'type': BlockElement})
+                name, attributes = value
+                schema = elements_schema.get(name, {'type': BlockElement})
                 element_class = schema['type']
-                stack.append(element_class(value))
+                element = element_class(value)
+                for attr_name in attributes:
+                    attr_value = attributes[attr_name]
+                    element.set_attribute(None, attr_name, attr_value)
+                stack.append(element)
             elif event == END_ELEMENT:
                 element = stack.pop()
 
@@ -143,10 +148,6 @@ class Document(XHTML.Document):
                     stack[-1].set_element(element)
                 else:
                     state.children.append(element)
-            elif event == ATTRIBUTE:
-                name, value = value
-                value = Unicode.decode(value, parser.encoding)
-                stack[-1].set_attribute(None, name, value)
             elif event == COMMENT:
                 comment = XML.Comment(value)
                 if stack:

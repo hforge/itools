@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-27 14:30:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
+
+    Summary:
+      uri, fix query parsing when several values share the same name (#131)
+    Revision:
+      itools--main--0.11--patch-53
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-27 13:25:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-52
 
     Summary:

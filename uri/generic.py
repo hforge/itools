@@ -346,12 +346,24 @@ class Query(dict):
     """
 
     def __init__(self, query):
+        # XXX Right now when we find more than one value with the same
+        # name we store all values as a list, otherwise it will be a
+        # singleton. to Look http://docs.python.org/lib/node472.html
+        # and maybe implement something similar.
         if query:
             for x in query.split('&'):
                 x = urllib.unquote_plus(x)
                 if x:
                     key, value = x.split('=', 1)
-                    dict.__setitem__(self, key, value)
+                    if key in self:
+                        old_value = self[key]
+                        if isinstance(old_value, list):
+                            old_value.append(value)
+                        else:
+                            value = [old_value, value]
+                            dict.__setitem__(self, key, value)
+                    else:
+                        dict.__setitem__(self, key, value)
 
 
     def __str__(self):

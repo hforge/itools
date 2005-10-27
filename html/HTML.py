@@ -129,7 +129,7 @@ class Document(XHTML.Document):
                 name, attributes = value
                 schema = elements_schema.get(name, {'type': BlockElement})
                 element_class = schema['type']
-                element = element_class(value)
+                element = element_class(name)
                 for attr_name in attributes:
                     attr_value = attributes[attr_name]
                     element.set_attribute(None, attr_name, attr_value)

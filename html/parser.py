@@ -108,7 +108,7 @@ class Parser(HTMLParser):
                 else:
                     raise ValueError, \
                           'missing attribute value for "%s"' % attribute_name
-                attributes[attribute_name] = attribute_value
+            attributes[attribute_name] = attribute_value
 
         # Start element
         self.events.append((START_ELEMENT, (name, attributes), line_number))

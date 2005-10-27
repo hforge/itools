@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-27 10:25:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
+
+    Summary:
+      html, fix parser
+    Revision:
+      itools--main--0.11--patch-50
+
+
+    modified files:
+     Changelog html/HTML.py html/parser.py
+
+
 2005-10-27 10:05:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
 
     Summary:

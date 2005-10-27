@@ -347,8 +347,8 @@ class Query(dict):
 
     def __init__(self, query):
         if query:
-            query = urllib.unquote_plus(query)
             for x in query.split('&'):
+                x = urllib.unquote_plus(x)
                 if x:
                     key, value = x.split('=', 1)
                     dict.__setitem__(self, key, value)

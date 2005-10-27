@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-27 18:15:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
+
+    Summary:
+      update the README file
+    Revision:
+      itools--main--0.11--patch-55
+
+
+    modified files:
+     Changelog README.txt
+
+
 2005-10-27 17:51:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-54
 
     Summary:

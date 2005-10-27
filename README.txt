@@ -1,37 +1,14 @@
 
-Itools is a Python package that encapsulates several Python tools
-developed by the Itaapy company and other developers. The provided
-tools are:
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment. The packages included
+are:
 
- * itools.uri -- an API to manage URIs, to identify and locate resources.
-
- * itools.types -- several type marshalers for basic types (integer, date,
-   etc.) and not so basic types (filenames, XML qualified names, etc.)
-
- * itools.resources -- an abstraction layer over resources that let to
-   manage them with a consistent API, independently of where they are stored.
-
- * itools.handlers -- resource handlers infrastructure (resource
-   handlers are non persistent classes that add specific semantics to
-   resources). This package also includes several handlers out of the
-   box.                 
-
- * itools.gettext -- resource handlers for PO and MO files.
-
- * itools.xml -- XML infrastructure, includes resource handlers for XML
-   and the Simple Template Language.
-         
- * itools.xhtml -- resource handlers for XHTML documents.
-
- * itools.html -- resource handlers for HTML documents.
-
- * itools.i18n -- tools for language negotiation and text segmentation.
-
- * itools.workflow -- represent workflows as automatons, objects can move
-   from one state to another through transitions, classes can add specific
-   semantics to states and transitions.
-                
- * itools.catalog -- An Index & Search engine.
+  itools.catalog        itools.ical             itools.web
+  itools.datatypes      itools.resources        itools.workflow
+  itools.gettext        itools.rss              itools.xhtml
+  itools.handlers       itools.schemas          itools.xliff
+  itools.html           itools.tmx              itools.xml
+  itools.i18n           itools.uri
 
 
 Install
@@ -39,6 +16,13 @@ Install
 
 Unpack the package and run "python setup.py install", be sure to have
 the right permissions, maybe you will need to run the command as root.
+
+
+Documentation
+-------------
+
+The documentation sources (in Latex) are included in the 'doc' directory.
+The PDF file can be downloaded from http://www.ikaaro.org/itools
 
 
 Resources
@@ -54,11 +38,24 @@ Bug Tracker
 http://in-girum.net/cgi-bin/bugzilla/index.cgi
 
 
+Credits
+-------
+
+Luis Belmar Letelier <luis@itaapy.com>
+Hervé Cauwelier <herve@oursours.net>
+Nicolas Deram <nderam@gmail.com>
+Thilo Ernst <Thilo.Ernst@dlr.de>
+Thierry Fromon <from.t@free.fr>
+J. David Ibáñez <jdavid@itaapy.com>
+Piotr Macuk <piotr@macuk.pl>
+Nicolas Oyez <noyez@gmail.com>
+
+
 Author and license
 ------------------
 
 Copyright 2002-2005  J. David Ibáñez <jdavid@itaapy.com>
-          2002 Thilo Ernst <Thilo.Ernst@dlr.de>
+                     and others (see Credits section)
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public

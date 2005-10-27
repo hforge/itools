@@ -487,6 +487,8 @@ def process1(node, stack, repeat, encoding='UTF-8'):
             # Coerce
             elif isinstance(value, int):
                 value = str(value)
+            elif isinstance(value, unicode):
+                value = value.encode(encoding)
             changed_attributes[name] = value
 
     xmlns_uri = namespaces.XMLNSNamespace.class_uri

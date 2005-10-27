@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-27 13:25:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-52
+
+    Summary:
+      xml, fix stl:attributes, coerce unicode values to byte strings
+    Revision:
+      itools--main--0.11--patch-52
+
+
+    modified files:
+     Changelog xml/stl.py
+
+
 2005-10-27 13:20:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-51
 
     Summary:

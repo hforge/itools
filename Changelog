@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-28 15:43:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-57
+
+    Summary:
+      uri, fix query serialization (#130)
+    Revision:
+      itools--main--0.11--patch-57
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-10-28 11:26:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
 
     Summary:

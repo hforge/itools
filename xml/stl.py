@@ -508,7 +508,9 @@ def process1(node, stack, repeat, encoding='UTF-8'):
             value = changed_attributes.pop(qname)
         # Output only values different than None
         if value is not None:
-            s.append(' %s="%s"' % (qname, str(value)))
+            datatype = schemas.get_datatype_by_uri(namespace, local_name)
+            value = datatype.encode(value)
+            s.append(' %s="%s"' % (qname, value))
 
     # Output remaining attributes
     for qname, value in changed_attributes.items():

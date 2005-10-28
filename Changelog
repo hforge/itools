@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-10-28 11:26:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
+
+    Summary:
+      xml, fix attributes encoding in STL (#132)
+    Revision:
+      itools--main--0.11--patch-56
+
+
+    modified files:
+     Changelog xml/stl.py
+
+
 2005-10-27 18:15:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
 
     Summary:

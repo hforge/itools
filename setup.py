@@ -94,7 +94,7 @@ included are:
 
 setup(name = "itools",
       version = "0.11.0",
-      author = "J. David Ibáñez",
+      author = u"J. David Ibáñez",
       author_email = "jdavid@itaapy.com",
       license = "GNU Lesser General Public License",
       url = "http://www.ikaaro.org",

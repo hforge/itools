@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-11-01 07:18:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
+
+    Summary:
+      fix setup.py so the command "register" works
+    Revision:
+      itools--main--0.11--patch-60
+
+
+    modified files:
+     Changelog setup.py
+
+
 2005-10-30 20:31:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
 
     Summary:

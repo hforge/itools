@@ -367,7 +367,8 @@ class Query(dict):
 
 
     def __str__(self):
-        return '&'.join([ '%s=%s' % (k, v) for k, v in self.items() ])
+        return '&'.join([ '%s=%s' % (k, urllib.quote_plus(v))
+                          for k, v in self.items() ])
 
 
     def __eq__(self, other):

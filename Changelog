@@ -2,6 +2,66 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-11-01 07:18:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
+
+    Summary:
+      fix setup.py so the command "register" works
+    Revision:
+      itools--main--0.11--patch-60
+
+
+    modified files:
+     Changelog setup.py
+
+
+2005-10-30 20:31:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
+
+    Summary:
+      get ready to release 0.11.0
+    Revision:
+      itools--main--0.11--patch-59
+
+
+    modified files:
+     CHANGES.txt Changelog
+
+
+2005-10-28 17:21:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
+
+    Summary:
+      html, fix serialization
+    Revision:
+      itools--main--0.11--patch-58
+
+
+    modified files:
+     Changelog html/HTML.py
+
+
+2005-10-28 15:43:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-57
+
+    Summary:
+      uri, fix query serialization (#130)
+    Revision:
+      itools--main--0.11--patch-57
+
+
+    modified files:
+     Changelog uri/generic.py
+
+
+2005-10-28 11:26:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
+
+    Summary:
+      xml, fix attributes encoding in STL (#132)
+    Revision:
+      itools--main--0.11--patch-56
+
+
+    modified files:
+     Changelog xml/stl.py
+
+
 2005-10-27 18:15:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
 
     Summary:

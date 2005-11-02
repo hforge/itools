@@ -170,7 +170,7 @@ class Document(XHTML.Document):
         # The children
         for child in self.state.children:
             if isinstance(child, unicode):
-                s.append(child)
+                s.append(child.encode(encoding))
             else:
                 s.append(child.to_str(encoding))
         return ''.join(s)

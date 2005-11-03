@@ -88,6 +88,7 @@ class File(Resource, base.File):
     def append(self, value):
         self.data.seek(0, 2)
         self.data.write(value)
+        self.mtime = datetime.now()
 
 
     def read(self):

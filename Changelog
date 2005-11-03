@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-03 18:12:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-3
+
+    Summary:
+      resources, fix memory files, set mtime on append
+    Revision:
+      itools--main--0.12--patch-3
+
+
+    modified files:
+     Changelog resources/memory.py
+
+
 2005-11-02 06:24:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-2
 
     Summary:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-03 20:09:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-5
+
+    Summary:
+      resources, add transactions to zodb resources
+    Revision:
+      itools--main--0.12--patch-5
+
+
+    modified files:
+     Changelog resources/zodb.py
+
+
 2005-11-03 19:30:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-4
 
     Summary:

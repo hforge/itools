@@ -24,8 +24,8 @@ from itools.uri.generic import Path
 import base
 
 # Import from the ZODB
-from persistent import Persistent
 from BTrees.OOBTree import OOBTree
+import transaction
 import ZODB
 
 
@@ -121,6 +121,10 @@ class Resource(base.Resource):
 
 ##    def set_mtime(self, mtime):
 ##        self.mtime = mtime
+
+
+    def get_transaction(self):
+        return transaction.get()
 
 
 

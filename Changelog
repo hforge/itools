@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-03 19:30:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-4
+
+    Summary:
+      resources, start support for ZODB resources
+    Revision:
+      itools--main--0.12--patch-4
+
+
+    new files:
+     resources/.arch-ids/test_zodb.py.id
+     resources/.arch-ids/zodb.py.id resources/test_zodb.py
+     resources/zodb.py
+
+    modified files:
+     Changelog
+
+
 2005-11-03 18:12:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-3
 
     Summary:

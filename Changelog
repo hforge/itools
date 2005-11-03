@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-03 20:09:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-6
+
+    Summary:
+      resources, improve unit tests for zodb resources
+    Revision:
+      itools--main--0.12--patch-6
+
+
+    modified files:
+     Changelog resources/test_zodb.py
+
+
 2005-11-03 20:09:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-5
 
     Summary:

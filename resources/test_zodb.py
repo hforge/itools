@@ -16,17 +16,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from the Standard Library
+import os
 import unittest
 from unittest import TestCase
 
 # Import from itools
+from __init__ import get_resource
 import memory
 import zodb
 
 # Import from the ZODB
 from ZODB.FileStorage import FileStorage
-from ZODB import DB
-
 
 
 class ZODBTestCase(TestCase):
@@ -36,13 +36,48 @@ class ZODBTestCase(TestCase):
         self.database = zodb.DataBase(storage)
 
 
+    def tearDown(self):
+        os.system('rm test_db.fs*')
+
+
     def test_add_file(self):
         root = self.database.get_resource('/')
-        resource = memory.File('hello')
-        root.set_resource('test.txt', resource)
+        root.set_resource('test.txt', memory.File('hello'))
 
         new_resource = root.get_resource('test.txt')
         self.assertEqual(new_resource.read(), 'hello')
+
+        root.get_transaction().abort()
+
+
+    def test_add_folder(self):
+        root = self.database.get_resource('/')
+        root.set_resource('test', memory.Folder())
+
+        self.assertEqual(root.has_resource('test'), True)
+
+        root.get_transaction().abort()
+
+
+    def test_abort_transaction(self):
+        root = self.database.get_resource('/')
+        root.set_resource('test.txt', memory.File('hello'))
+
+        self.assertEqual(root.has_resource('test.txt'), True)
+
+        transaction = root.get_transaction()
+        transaction.abort()
+
+        self.assertEqual(root.has_resource('test.txt'), False)
+
+
+    def test_populate(self):
+        root = self.database.get_resource('/')
+        tests = get_resource('tests')
+        root.set_resource('tests', tests)
+
+        self.assertEqual(root.has_resource('tests/index.html.en'), True)
+        
 
 
 

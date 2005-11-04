@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-04 17:41:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-7
+
+    Summary:
+      web, rename "test_http" to "test_cgi"
+    Revision:
+      itools--main--0.12--patch-7
+
+
+    modified files:
+     Changelog
+
+    renamed files:
+     web/.arch-ids/test_http.py.id
+       ==> web/.arch-ids/test_cgi.py.id
+     web/test_http.py
+       ==> web/test_cgi.py
+
+
 2005-11-03 20:09:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-6
 
     Summary:

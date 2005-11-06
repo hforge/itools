@@ -2,6 +2,38 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-06 17:16:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-8
+
+    Summary:
+      merge from the webserver branch
+    Revision:
+      itools--main--0.12--patch-8
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.12--patch-7
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-1
+       web, simplify, remove "cgi" and "application", focus on the server
+    
+
+    new files:
+     web/.arch-ids/test_server.py.id web/test_server.py
+
+    removed files:
+     web/.arch-ids/application.py.id web/.arch-ids/cgi.py.id
+     web/.arch-ids/test_cgi.py.id web/application.py web/cgi.py
+     web/test_cgi.py
+
+    modified files:
+     Changelog web/server.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--webserver--0.12--base-0
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-1
+
+
 2005-11-04 17:41:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-7
 
     Summary:

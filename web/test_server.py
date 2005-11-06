@@ -16,17 +16,39 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-"""
-Put this script into the CGI folder to get a feeling
-"""
+# Import from the Standard Library
+import datetime
+import sys
 
 # Import from itools
-from itools.web import cgi
-from itools.web import get_context
+from itools.resources import memory, get_resource
+from itools.handlers.Folder import Folder
+from server import Server
 
 
-# Should be done once, but CGI is a one-shot protocol
-application = cgi.Application('/home/jdavid/test')
+class Time(Folder):
 
-# Done for every request
-application.run()
+    def GET(self):
+        now = datetime.datetime.now()
+        return now.strftime('%Y %m %d %H:%M:%S')
+
+
+class Static(Folder):
+    pass
+
+
+
+if __name__ == '__main__':
+    args = sys.argv
+    if len(args) == 2:
+        arg = args[1]
+        if arg == 'time':
+            # The root of our data
+            root_resource = memory.Folder()
+            root = Time(root_resource)
+
+            # Build and start the server
+            server = Server(root)
+            server.start()
+
+    print 'usage: python test_server.py time'

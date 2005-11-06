@@ -17,28 +17,37 @@
 
 # Import from the Standard Library
 import socket
+import thread
 import traceback
 
 # Import from itools
 from itools.resources import memory
 from itools.web.context import Context, get_context, set_context
 from itools.web.request import Request
-from itools.web import application
 
 
 
-class Application(application.Application):
+class Pool(object):
 
-    def __init__(self, root_reference, address='127.0.0.1', port=8000):
-        self.root_reference = root_reference
-        self.address = address
-        self.port = port
+    def __init__(self, root):
+        self.lock = thread.allocate_lock()
+        self.root = root
 
 
-    def init_context(self):
+    def get_root(self):
+        self.lock.acquire()
+        try:
+            return self.root
+        finally:
+            self.lock.release()
+
+
+
+def handle_request(connection, pool):
+    try:
+        # Start, init context
         # Read socket
-        socket = self.request
-        data = socket.recv(8192)
+        data = connection.recv(8192)
         # Build request
         resource = memory.File(data)
         request = Request(resource)
@@ -46,36 +55,67 @@ class Application(application.Application):
         context = Context(request)
         set_context(context)
 
+        # Get the root handler
+        root = pool.get_root()
 
-    def send_response(self):
-        # Send back the response
+        # Get the handler
+        context = get_context()
+        request, response = context.request, context.response
+
+        path = context.path
+        handler = root.get_handler(path)
+
+        # Get the method
+        method_name = context.method
+        http_method = request.method
+
+        if method_name is None:
+            method_name = http_method
+
+        method = getattr(handler, method_name)
+##        method = handler.get_method(method_name)
+
+        # Check security
+        if method is None:
+            method = handler.forbidden_form
+
+        # Call the method
+        response_body = method()
+        response.set_header('Content-Type', 'text/plain')
+        response.set_body(response_body)
+
+        # Finish, send back the response
         response = get_context().response
         response = response.to_str()
-        self.request.send(response)
+        connection.send(response)
+    except:
+        connection.close()
+        traceback.print_exc()
+    else:
+        connection.close()
 
 
-    def run(self):
+
+class Server(object):
+
+    def __init__(self, root, address='127.0.0.1', port=8000):
+        # The application's root
+        self.pool = Pool(root)
+        # The address and port the server will listen to
+        self.address = address
+        self.port = port
+
+
+    def start(self):
         ear = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ear.bind((self.address, self.port))
         ear.listen(5)
 
         while True:
             try:
-                request, client_address = ear.accept()
+                connection, client_address = ear.accept()
             except socket.error:
                 continue
 
-            self.request = request
-            try:
-                self.handle_request()
-            except:
-                request.close()
-                # Show error
-                traceback.print_exc()
-            request.close()
+            thread.start_new_thread(handle_request, (connection, self.pool))
 
-
-
-if __name__ == '__main__':
-    application = Application('/home/jdavid/test')
-    application.run()

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form name="joinform" action=";join" method="post">
+  <table class="form">
+    <tr>
+      <th colspan="2" class="title">Join the community</th>
+    </tr>
+    <tr>
+      <th>Username</th>
+      <td><input type="text" name="username" /></td>
+    </tr>
+    <tr>
+      <th>Password</th>
+      <td><input type="password" name="password" /></td>
+    </tr>
+    <tr>
+      <th>Repeat Password</th>
+      <td><input type="password" name="password2" /></td>
+    </tr>
+    <tr>
+      <th></th>
+      <td class="submit"><input type="submit" value="OK" /></td>
+    </tr>
+  </table>
+</form>
+
+<script language="javascript">
+  document.joinform.username.focus();
+</script>
+
+</stl:block>

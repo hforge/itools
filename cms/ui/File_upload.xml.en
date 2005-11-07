@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";upload" method="post" enctype="multipart/form-data">
+  <table class="form">
+    <tr>
+      <th class="title" colspan="2">Upload File</th>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <h4>
+          To upload a new version of the file choose it and click the
+          <tt>Upload</tt> button:
+        </h4>
+      </td>
+    </tr>
+    <tr>
+      <th>File</th>
+      <td>
+        <input type="file" name="file" size="50" />
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <td class="submit"><input type="submit" value="Upload" /></td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

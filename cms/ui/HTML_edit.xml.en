@@ -1,0 +1,8 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <form name="edit" action=";edit" method="post">
+    <stl:block content="rte" />
+    <br /><br />
+    <input type="submit" value="Change" />
+  </form>
+</stl:block>

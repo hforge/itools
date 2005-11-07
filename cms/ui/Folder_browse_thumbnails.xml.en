@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <div class="batchcontrol" stl:if="batch/total">
+    <stl:block if="batch/control" content="batch/control" />
+    <a stl:if="batch/previous"
+       stl:attributes="href batch/previous">&lt;&lt;</a>
+    <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
+  </div>
+
+  <dl class="thumb" stl:repeat="object table/objects"
+      stl:attributes="id object/name">
+    <dt class="icon">
+      <a stl:attributes="href object/url">
+       <img border="0"
+            stl:attributes="src object/icon; title object/format" />
+      </a>
+    </dt>
+    <dt class="title">
+      <a stl:attributes="href object/url; title object/title_or_name">
+        <span stl:content="object/short_title"></span>
+      </a>
+    </dt>
+  </dl>
+
+  <p stl:if="not table/objects">
+    This folder is empty.
+  </p>
+
+</stl:block>

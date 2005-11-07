@@ -1,0 +1,27 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2 stl:content="label" />
+
+  <p stl:if="not groups">
+    You don't belong to any group.
+  </p>
+
+  <stl:block if="groups">
+    <p>You are a member of the following groups:</p>
+    <dl class="thumb" stl:repeat="group groups">
+      <dt>
+        <stl:block if="group/logo">
+          <a stl:attributes="href group/url">
+            <img border="0" stl:attributes="src group/logo" />
+          </a>
+        </stl:block>
+      </dt>
+      <dt>
+        <a stl:attributes="href group/url">
+          <span stl:content="group/name"></span>
+        </a>
+      </dt>
+    </dl>
+  </stl:block>
+</stl:block>

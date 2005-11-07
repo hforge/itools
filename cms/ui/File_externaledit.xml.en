@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <table class="form">
+    <tr>
+      <th class="title">External editor</th>
+    </tr>
+    <tr>
+      <td>
+        <p>
+          You can edit your document with a desktop application (MS Word,
+          Photoshop, etc.).
+        </p> 
+        <p>
+          But to use this feature you have to install the client first (you 
+          do not need the server).
+        </p> 
+        <ul>
+          <li>Take the client for <a href="http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe">Windows</a>.</li>
+          <li>Take the client for <a href="http://plope.org/software/ExternalEditor/zopeedit-0.9.1-src.tgz">Unix and MacOSX</a>.</li> 
+        </ul>
+        <p>
+          If you already installed the client just click the button below: 
+        </p> 
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <form action=";external_edit" method="get">
+          <input type="submit" value="External editor.." />
+        </form>
+      </td>
+    </tr>
+  </table>
+</stl:block>

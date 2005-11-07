@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";translate" method="post">
+  <table>
+    <tr stl:repeat="document documents">
+      <td align="right">
+        <input type="hidden" name="names:list"
+               stl:attributes="value document/name" />
+        <stl:block content="document/title_or_name" />
+      </td>
+      <td>
+        <select name="languages:list">
+          <option value="">Choose a language</option>
+          <option stl:repeat="language document/languages"
+                  stl:attributes="value language/code"
+                  stl:content="language/name" />
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <input type="submit" value="Translate" />
+      </td>
+    </tr>
+  </table>
+</form>
+</stl:block>

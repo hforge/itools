@@ -1,0 +1,81 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <p>
+    The list below describes your skills as a translator:
+  </p>
+  <blockquote>
+    <form action=";remove_translator_skills" method="post"
+          stl:if="translator_skills">
+      <table>
+	<tr>
+	  <th></th>
+	  <th align="left">
+	    From
+	  </th>
+	  <th align="left">
+	    To
+	  </th>
+	</tr>
+	<tr stl:repeat="skill translator_skills">
+	  <td>
+	    <input type="checkbox" name="translator_skills:list"
+	           stl:attributes="value skill/index" />
+	  </td>
+	  <td stl:content="skill/from" />
+	  <td stl:content="skill/to" />
+	</tr>
+	<tr>
+	  <td></td>
+	  <td colspan="2">
+	    <input type="submit" value="Remove" />
+	  </td>
+	</tr>
+      </table>
+    </form>
+    <p stl:if="not translator_skills">
+      You are not a translator, <em>woaaahh</em>
+    </p>
+  </blockquote>
+
+  <p>
+    Add a new translator skill:
+  </p>
+  <blockquote>
+    <form action=";add_translator_skill" method="post">
+      <table>
+	<tr>
+	  <th align="right">
+	    From
+	  </th>
+	  <td>
+	    <select name="from_language" style="width: 100%">
+	      <option value="">-- Choose a language --</option>
+	      <option stl:repeat="lang languages"
+		      stl:attributes="value lang/code"
+		      stl:content="lang/name" />
+	    </select>
+	  </td>
+	</tr>
+	<tr>
+	  <th align="right">
+	    To
+	  </th>
+	  <td>
+	    <select name="to_language" style="width: 100%">
+	      <option value="">-- Choose a language --</option>
+	      <option stl:repeat="lang languages"
+		      stl:attributes="value lang/code"
+		      stl:content="lang/name" />
+	    </select>
+	  </td>
+	</tr>
+	<tr>
+	  <td></td>
+	  <td>
+	    <input type="submit" value="Add" />
+	  </td>
+	</tr>
+      </table>
+    </form>
+  </blockquote>
+</stl:block>

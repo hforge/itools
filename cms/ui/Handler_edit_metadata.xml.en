@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";edit_metadata" method="post">
+  <input type="hidden" name="dc:language" stl:attributes="value language" />
+  <table class="form">
+    <tr>
+      <th colspan="2" class="title">Metadata list</th>
+    </tr>
+    <tr>
+      <th>Title</th>
+      <td>
+        <input type="text" size="50" name="dc:title"
+               stl:attributes="value title" />
+      </td>
+    </tr>
+    <tr>
+      <th valign="top">Description</th>
+      <td>
+        <textarea cols="50" rows="8" name="dc:description"
+                  stl:content="description" />
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <td class="submit"><input type="submit" value="OK" /></td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

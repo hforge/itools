@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+This is a preview of your document, it doesnt really look like that
+<br/>
+ <p style="font-family: monospace" 
+      stl:repeat="graph pgraphs" stl:content="graph"/>
+</stl:block>

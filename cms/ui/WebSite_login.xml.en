@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form name="loginform" action=";login" method="post">
+  <input type="hidden" name="referer" value=""
+         stl:if="referer" stl:attributes="value referer" />
+  <table class="form">
+    <tr>
+      <th colspan="2" class="title">Log in</th>
+    </tr>
+    <tr>
+      <th>Username</th>
+      <td>
+        <input type="text" name="username" stl:attributes="value username" />
+      </td>
+    </tr>
+    <tr>
+      <th>Password</th>
+      <td><input type="password" name="password" /></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td class="submit"><input type="submit" value="OK" /></td>
+    </tr>
+  </table>
+</form>
+
+<script language="javascript">
+  <stl:inline if="not username">document.loginform.username.focus();</stl:inline>
+  <stl:inline if="username">document.loginform.password.focus();</stl:inline>
+</script>
+
+</stl:block>

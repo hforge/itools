@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <form name="new_resource" action=";new_resource" method="post">
+    <input type="hidden" name="class_id" stl:attributes="value class_id" />
+    <table class="form">
+      <tr>
+        <th colspan="2" class="title" stl:content="class_title" />
+      </tr>
+      <tr>
+        <th align="right">Name</th>
+        <td><input type="text" name="name" size="50" /></td>
+      </tr>
+      <tr>
+        <th align="right">Title</th>
+        <td><input type="text" name="dc:title" size="50" /></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <p>Choose a template:</p>
+          <stl:block repeat="skin skins">
+            <input type="radio" name="skin_name"
+                   stl:attributes="value skin/name" />
+            <stl:block content="skin/title" />
+            <br/>
+            <img stl:attributes="src skin/image_uri" />
+          </stl:block>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="submit"><input type="submit" value="Add" /></td>
+      </tr>
+    </table>
+  </form>
+
+
+  <a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
+    Details
+  </a>
+  <div id="tip_body">
+    <p>
+      Folders are used to classify documents. To add a folder enter its name
+      and click the <tt>Add</tt> button.
+    </p>
+  </div>
+
+  <script language="javascript">
+    <!--
+    document.new_folder.name.focus();
+    -->
+  </script>
+
+</stl:block>

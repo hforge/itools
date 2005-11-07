@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form name="upload_file" action=";upload_file" method="post"
+      enctype="multipart/form-data">
+  <table class="form">
+    <tr>
+      <th colspan="2" class="title">Upload a File</th>
+    </tr>
+    <tr>
+      <th>File</th>
+      <td><input type="file" name="file" size="50" /></td>
+    </tr>
+    <tr>
+      <th></th>
+      <td class="submit"><input type="submit" value="Upload" /></td>
+    </tr>
+  </table>
+</form>
+
+<a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
+  Details
+</a>
+<div id="tip_body">
+  <p>You can upload a file from the filesystem to create a new document.</p>
+</div>
+
+</stl:block>

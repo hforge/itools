@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";rename" method="post">
+  <table class="form">
+    <tr>
+      <th class="title" colspan="2">Rename objects</th>
+    </tr>
+    <tr stl:repeat="name names">
+      <th>
+        <input type="hidden" name="ids:list" stl:attributes="value name" />
+	"<stl:inline content="name" />" to
+      </th>
+      <td>
+        <input type="text" name="new_ids:list" stl:attributes="value name" />
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <td class="submit"><input type="submit" value="OK" /></td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

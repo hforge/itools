@@ -1,0 +1,325 @@
+/* 
+** Style sheet for CSS2-capable browsers.
+*/
+
+/* FONT START */
+#content h1, #content h2, #content h3, #content h4 {
+  color: #006666;
+  font: normal 12px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content h1 {
+  font: bold 14px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content h2 {
+  font: bold 12px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content h3 {
+  font: bold 12px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content h4 {
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content p {
+  color: #006666;
+  font: normal 10px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content a:link, #content a:visited {
+  color: #819097;
+}
+
+#content a:hover, #content a:active {
+  color: #006666;
+}
+
+#content dl dt {
+  margin: 0px;
+  padding: 5px 0 2px 0;
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+}
+#content dl dd {
+  margin: 0px;
+  padding: 0 0 5px 0;
+  font: normal 10px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content pre {
+  padding: 0;
+  margin: 0;
+  color: #819097;
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+  white-space: pre; 
+}
+
+#content img {
+  border: none;
+}
+/* FONT STOP */
+
+/* IMAGE GALLERY START */
+#content table.gallery {
+  width: 100%;
+}
+
+#content .images td {
+  text-align: center;
+}
+
+#content .images img {
+  margin: 5px;
+  padding: 0;
+  text-align: center;
+}
+
+#content .images .selected img {
+  margin: 1px;
+  padding: 0;
+  border-right: 3px solid #daaf2b;
+  border-bottom: 3px solid #daaf2b;
+  border-left: 3px solid #f9d66b;
+  border-top: 3px solid #f9d66b;
+}
+
+#content .metadata {
+  background-color: #ffffc0;
+  padding: 1px;
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+  border: 1px solid #819097;
+}
+
+#content .metadata th {
+  text-align: left;
+}
+
+#content .preview {
+  text-align: center;
+  border: 1px solid #819097;
+}
+
+#content .preview .title {
+  padding: 0 0 0 3px;
+  text-align: left;
+  color: #ffffff;
+  font: bold 12px Verdana, Helvetica, Arial, sans-serif;
+  background-color: #819097;
+  border: 1px solid #819097;
+}
+/* IMAGE GALLERY STOP */
+
+/* FORM START */
+#content table.form {
+  background-color: #ffffff;
+  padding: 0px;
+  border: 1px solid #819097;
+}
+
+#content .form img {
+  border: none;
+}
+
+#content .form td, #content .form th {
+  color: #819097;
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+  padding: 5px;
+  text-align: right;
+}
+
+#content .form th {
+  text-align: right;
+  white-space:nowrap; 
+}
+
+#content .form td {
+  text-align: left;
+}
+
+#content .form tr.title th {
+  color: #ffffff;
+  background-color: #819097;
+}
+
+#content .form th.title {
+  padding: 2px;
+  text-align: left;
+  color: #ffffff;
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+  background-color: #819097;
+  border-bottom: 1px solid #819097;
+}
+
+#content .form input, #content .form select {
+  padding: 0 0 0 2px;
+/*  height: 1.6em;*/
+  color: #819097; 
+  font: bold 9px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content td.submit {
+  text-align: right;
+}
+
+#content .submit input {
+  height: 18px;
+  padding: 2px;
+  color: #ffffff;
+  background-color: #819097;
+}
+
+#content td.center, #content .center td, #content .center th {
+  text-align: center;
+}
+
+#content tr.header th {
+  text-align: left;
+  color: #ffffff;
+  background-color: #819097;
+}
+
+#content tr.header th a {
+  border: none;
+}
+
+#content input.checkbox {
+  width: 15px;
+  height: 15px; 
+  border: none;
+}
+
+#content .value {
+  padding: 0 0 0 2px;
+  height: 1.2em;
+  color: #819097; 
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+  border: 0px solid #819097;
+  background-color: #cccccc;
+}
+
+#content .batchcontrol {
+  padding: 2px;
+  margin-bottom: 10px;
+  color: #819097;
+  font: bold 10px verdana, arial, helvetica, sans-serif;
+}
+
+/* FORM STOP */
+
+/* TIP START */
+/* WARNING: DON'T TOUCH EXCEPT THE COLORS! VERY UNSTABLE UNDER IE */
+#content div.tip {
+   width: 4em;
+   font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+   text-align: center;
+   border: 1px solid #819097;
+}
+
+#content div.tip a {
+   display: block;
+   padding: 2px;
+}
+
+#content div.tip a:hover {
+   background: transparent;
+}
+
+#content div.tip a div {
+   display: none;
+}
+
+#content div.tip a:hover div {
+   display: block;
+   width: 350px;
+   position: absolute;
+   margin: 15px 0 0 0;
+   padding: 5px;
+   text-align: left;
+   font: 10px Verdana, Helvetica, Arial, sans-serif;
+   border: 1px solid #819097;
+}
+
+#tip_title {
+  padding: 2px;
+  color: #819097; 
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+  border: 1px solid #819097;
+}
+
+#tip_body {
+  width: 350px;
+  font-size: 10px;
+  visibility: hidden;
+  margin: 15px 0 0 0;
+  padding: 5px;
+  border: 1px solid #819097;
+}
+/* TIP STOP */
+
+/* THUMBNAILS START */
+#content dl.thumb {
+  width: 85px;
+  height: 100px;
+  padding: 0;
+  margin: 0 5px 5px 0;
+  float: left;
+  text-align: center;
+}
+
+#content .thumb dt { 
+  margin: 0;
+  padding: 0;
+  font: normal 10px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content .thumb dt img {
+  margin: 0 0 5px 0;
+  padding: 0;
+  width: 48px;
+  height: 48px;
+}
+
+#content .thumb a:link, .thumb a:visited {
+  color: #006666;
+}
+
+#content .thumb a:hover, .thumb a:active {
+  color: orange;
+}
+
+#content .details {
+    visibility: hidden;
+    position: absolute;
+    background: #eeeeee;
+    padding: 5px;
+    border: 1px solid #819097;
+}
+
+/* THUMBNAILS STOP */
+
+/* LAYERS */
+#content .layer {
+  visibility: hidden;
+  position: absolute;
+  background: #eeeeee;
+  padding: 5px;
+  border: 1px solid #819097;
+}
+
+#content .layer input, #content .layer select {
+  margin: 0;
+  padding: 0 0 0 2px;
+  height: 1.6em;
+  color: #006666; 
+  font: bold 10px Verdana, Helvetica, Arial, sans-serif;
+}
+
+#content .layer input {
+  height: 18px;
+  padding: 2px;
+  color: #ffffff;
+  background-color: #819097;
+}
+

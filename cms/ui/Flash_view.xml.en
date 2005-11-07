@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <object codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=4,0,2,0">
+    <param name="quality" value="high"/>
+      <embed quality="high" type="application/x-shockwave-flash" width="530"
+             pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"
+             src="."/>
+  </object>
+</stl:block>

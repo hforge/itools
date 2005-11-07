@@ -1,0 +1,1862 @@
+# Belmar-Letelier <luis@in-girum.net>, 2003.
+# J. David Ibáñez <jdavid@itaapy.com>, 2003, 2004.
+msgid ""
+msgstr ""
+"Project-Id-Version: fr\n"
+"POT-Creation-Date: 2005-07-04 09:07+CET\n"
+"PO-Revision-Date: 2005-07-04 11:38+0100\n"
+"Last-Translator: nderam <nderam@itaapy.com>\n"
+"Language-Team:  <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ui/Folder_rename.xml.en:0
+msgid "\"<stl:inline content=\"name\"></stl:inline>\" to"
+msgstr "\"<stl:inline content=\"name\"></stl:inline>\" vers"
+
+#: utils.py:317
+#, python-format
+msgid "%(start)s-%(end)s of %(total)s"
+msgstr "%(start)s-%(end)s de %(total)s"
+
+#: Root.py:789
+#, python-format
+msgid "%s handlers have been re-indexed."
+msgstr "%s objets ont été réindexés."
+
+#: ui/Root_license.xml.en:0
+msgid "(1) copyright the software, and (2) offer you this license which gives you legal permission to copy, distribute and/or modify the software."
+msgstr "(1) copyright the software, and (2) offer you this license which gives you legal permission to copy, distribute and/or modify the software."
+
+#: ui/Root_license.xml.en:0
+msgid "(Exception:"
+msgstr "(Exception:"
+
+#: ui/Root_license.xml.en:0
+msgid "(Hereinafter, translation is included without limitation in the term \"modification\".) Each licensee is addressed as \"you\"."
+msgstr "(Hereinafter, translation is included without limitation in the term \"modification\".) Each licensee is addressed as \"you\"."
+
+#: ui/Root_license.xml.en:0
+msgid "(Some other Free Software Foundation software is covered by the GNU Library General Public License instead.) You can apply it to your programs, too."
+msgstr "(Some other Free Software Foundation software is covered by the GNU Library General Public License instead.) You can apply it to your programs, too."
+
+#: ui/Root_license.xml.en:0
+msgid "(This alternative is allowed only for noncommercial distribution and only if you received the program in object code or executable form with such an offer, in accord with Subsection b above.)"
+msgstr "(This alternative is allowed only for noncommercial distribution and only if you received the program in object code or executable form with such an offer, in accord with Subsection b above.)"
+
+#: ui/Handler_state.xml.en:0
+msgid ", by <em stl:content=\"transition/user\"></em>."
+msgstr ", par <em stl:content=\"transition/user\"></em>."
+
+#: ui/User_translator.xml.en:0
+msgid "-- Choose a language --"
+msgstr "-- Choisir une langue --"
+
+#: ui/HTML_addimage.xml.en:0
+#: ui/HTML_addlink.xml.en:0
+#: ui/HTML_browsedir.xml.en:0
+msgid "/ <a stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
+msgstr "/ <a stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
+
+#: ui/classic/template.xhtml.en:0
+msgid "/ <a stl:if=\"x/url\" stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
+msgstr "/ <a stl:if=\"x/url\" stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
+
+#: ui/Root_about.xml.en:0
+msgid "<a href=\"http://www.ikaaro.org\">IKAARO.org</a>."
+msgstr "<a href=\"http://www.ikaaro.org\">IKAARO.org</a>."
+
+#: ui/Group_add_users.xml.en:0
+msgid ""
+"<a id=\"tip_title\" onmouseover=\"show_tip()\" onmouseout=\"hide_tip()\">\n"
+"    Details\n"
+"  </a>"
+msgstr ""
+"<a id=\"tip_title\" onmouseover=\"show_tip()\" onmouseout=\"hide_tip()\">\n"
+"    Détails\n"
+"  </a>"
+
+#: ui/surf/template.xhtml.en:0
+msgid "<a stl:content=\"subtab/label\" href=\"#\" stl:attributes=\"href subtab/name;title subtab/name\">Label</a> <span stl:if=\"not repeat/subtab/end\"> | </span>"
+msgstr "<a stl:content=\"subtab/label\" href=\"#\" stl:attributes=\"href subtab/name;title subtab/name\">Label</a> <span stl:if=\"not repeat/subtab/end\"> | </span>"
+
+#: ui/File_download_form.xml.en:0
+msgid "<a stl:content=\"title_or_name\" href=\".\"></a>"
+msgstr "<a stl:content=\"title_or_name\" href=\".\"></a>"
+
+#: ui/Folder_browse_thumbnails.xml.en:0
+msgid "<a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
+msgstr "<a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
+
+#: ui/surf/template.xhtml.en:0
+msgid "<span stl:content=\"metadata/title\">document title</span> (<span stl:content=\"metadata/format\">document format</span> / <span stl:if=\"metadata/language\" stl:content=\"metadata/language\">document language</span>)"
+msgstr "<span stl:content=\"metadata/title\">document title</span> (<span stl:content=\"metadata/format\">document format</span> / <span stl:if=\"metadata/language\" stl:content=\"metadata/language\">document language</span>)"
+
+#: ui/surf/template.xhtml.en:0
+msgid ""
+"<span stl:if=\"user\" stl:content=\"user/name\"></span> <span stl:if=\"not user\">\n"
+"                                <em>not logged in</em>\n"
+"                              </span>"
+msgstr ""
+"<span stl:if=\"user\" stl:content=\"user/name\"></span> <span stl:if=\"not user\">\n"
+"                                <em>non connecté</em>\n"
+"                              </span>"
+
+#: ui/surf/template.xhtml.en:0
+msgid "<stl:block if=\"not repeat/item/start\">»</stl:block> <a stl:if=\"item/url\" stl:content=\"item/short_name\" stl:attributes=\"href item/url\"></a> <span stl:if=\"not item/url\" stl:content=\"item/name\"></span>"
+msgstr "<stl:block if=\"not repeat/item/start\">»</stl:block> <a stl:if=\"item/url\" stl:content=\"item/short_name\" stl:attributes=\"href item/url\"></a> <span stl:if=\"not item/url\" stl:content=\"item/name\"></span>"
+
+#: ui/Handler_state.xml.en:0
+msgid "<stl:inline content=\"state\"></stl:inline>"
+msgstr "<stl:inline content=\"state\"></stl:inline>"
+
+#: ui/Folder_browse_image.xml.en:0
+#: ui/Folder_browse_list.xml.en:0
+msgid "<stl:inline if=\"batch/control\" content=\"batch/control\"></stl:inline> <a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
+msgstr "<stl:inline if=\"batch/control\" content=\"batch/control\"></stl:inline> <a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
+
+#: ui/Folder_new_resource.xml.en:0
+msgid "<strong stl:content=\"row/left/label\"></strong> (<a stl:attributes=\"href row/left/url\">add..</a>)"
+msgstr "<strong stl:content=\"row/left/label\"></strong> (<a stl:attributes=\"href row/left/url\">ajouter...</a>)"
+
+#: ui/Folder_new_resource.xml.en:0
+msgid "<strong stl:content=\"row/right/label\"></strong> (<a stl:attributes=\"href row/right/url\">add..</a>)"
+msgstr "<strong stl:content=\"row/right/label\"></strong> (<a stl:attributes=\"href row/right/url\">ajouter...</a>)"
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>0.</strong> This License applies to any program or other work which contains a notice placed by the copyright holder saying it may be distributed under the terms of this General Public License."
+msgstr "<strong>0.</strong> This License applies to any program or other work which contains a notice placed by the copyright holder saying it may be distributed under the terms of this General Public License."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>1.</strong> You may copy and distribute verbatim copies of the Program's source code as you receive it, in any medium, provided that you conspicuously and appropriately publish on each copy an appropriate copyright notice and disclaimer of warranty;"
+msgstr "<strong>1.</strong> You may copy and distribute verbatim copies of the Program's source code as you receive it, in any medium, provided that you conspicuously and appropriately publish on each copy an appropriate copyright notice and disclaimer of warranty;"
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>10.</strong> If you wish to incorporate parts of the Program into other free programs whose distribution conditions are different, write to the author to ask for permission."
+msgstr "<strong>10.</strong> If you wish to incorporate parts of the Program into other free programs whose distribution conditions are different, write to the author to ask for permission."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>11.</strong> BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW."
+msgstr "<strong>11.</strong> BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>12.</strong> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES."
+msgstr "<strong>12.</strong> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>2.</strong> You may modify your copy or copies of the Program or any portion of it, thus forming a work based on the Program, and copy and distribute such modifications or work under the terms of Section 1 above, provided that you also meet all of these conditions:"
+msgstr "<strong>2.</strong> You may modify your copy or copies of the Program or any portion of it, thus forming a work based on the Program, and copy and distribute such modifications or work under the terms of Section 1 above, provided that you also meet all of these conditions:"
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>3.</strong> You may copy and distribute the Program (or a work based on it, under Section 2) in object code or executable form under the terms of Sections 1 and 2 above provided that you also do one of the following:"
+msgstr "<strong>3.</strong> You may copy and distribute the Program (or a work based on it, under Section 2) in object code or executable form under the terms of Sections 1 and 2 above provided that you also do one of the following:"
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>4.</strong> You may not copy, modify, sublicense, or distribute the Program except as expressly provided under this License."
+msgstr "<strong>4.</strong> You may not copy, modify, sublicense, or distribute the Program except as expressly provided under this License."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>5.</strong> You are not required to accept this License, since you have not signed it."
+msgstr "<strong>5.</strong> You are not required to accept this License, since you have not signed it."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>6.</strong> Each time you redistribute the Program (or any work based on the Program), the recipient automatically receives a license from the original licensor to copy, distribute or modify the Program subject to these terms and conditions."
+msgstr "<strong>6.</strong> Each time you redistribute the Program (or any work based on the Program), the recipient automatically receives a license from the original licensor to copy, distribute or modify the Program subject to these terms and conditions."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>7.</strong> If, as a consequence of a court judgment or allegation of patent infringement or for any other reason (not limited to patent issues), conditions are imposed on you (whether by court order, agreement or otherwise) that contradict the conditions of this License, they do not excuse you from the conditions of this License."
+msgstr "<strong>7.</strong> If, as a consequence of a court judgment or allegation of patent infringement or for any other reason (not limited to patent issues), conditions are imposed on you (whether by court order, agreement or otherwise) that contradict the conditions of this License, they do not excuse you from the conditions of this License."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>8.</strong> If the distribution and/or use of the Program is restricted in certain countries either by patents or by copyrighted interfaces, the original copyright holder who places the Program under this License may add an explicit geographical distribution limitation excluding those countries, so that distribution is permitted only in or among countries not thus excluded."
+msgstr "<strong>8.</strong> If the distribution and/or use of the Program is restricted in certain countries either by patents or by copyrighted interfaces, the original copyright holder who places the Program under this License may add an explicit geographical distribution limitation excluding those countries, so that distribution is permitted only in or among countries not thus excluded."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>9.</strong> The Free Software Foundation may publish revised and/or new versions of the General Public License from time to time."
+msgstr "<strong>9.</strong> The Free Software Foundation may publish revised and/or new versions of the General Public License from time to time."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>a)</strong> Accompany it with the complete corresponding machine-readable source code, which must be distributed under the terms of Sections 1 and 2 above on a medium customarily used for software interchange;"
+msgstr "<strong>a)</strong> Accompany it with the complete corresponding machine-readable source code, which must be distributed under the terms of Sections 1 and 2 above on a medium customarily used for software interchange;"
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>a)</strong> You must cause the modified files to carry prominent notices stating that you changed the files and the date of any change."
+msgstr "<strong>a)</strong> You must cause the modified files to carry prominent notices stating that you changed the files and the date of any change."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>b)</strong> Accompany it with a written offer, valid for at least three years, to give any third party, for a charge no more than your cost of physically performing source distribution, a complete machine-readable copy of the corresponding source code, to be distributed under the terms of Sections 1 and 2 above on a medium customarily used for software interchange;"
+msgstr "<strong>b)</strong> Accompany it with a written offer, valid for at least three years, to give any third party, for a charge no more than your cost of physically performing source distribution, a complete machine-readable copy of the corresponding source code, to be distributed under the terms of Sections 1 and 2 above on a medium customarily used for software interchange;"
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>b)</strong> You must cause any work that you distribute or publish, that in whole or in part contains or is derived from the Program or any part thereof, to be licensed as a whole at no charge to all third parties under the terms of this License."
+msgstr "<strong>b)</strong> You must cause any work that you distribute or publish, that in whole or in part contains or is derived from the Program or any part thereof, to be licensed as a whole at no charge to all third parties under the terms of this License."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>c)</strong> Accompany it with the information you received as to the offer to distribute corresponding source code."
+msgstr "<strong>c)</strong> Accompany it with the information you received as to the offer to distribute corresponding source code."
+
+#: ui/Root_license.xml.en:0
+msgid "<strong>c)</strong> If the modified program normally reads commands interactively when run, you must cause it, when started running for such interactive use in the most ordinary way, to print or display an announcement including an appropriate copyright notice and a notice that there is no warranty (or else, saying that you provide a warranty) and that users may redistribute the program under these conditions, and telling the user how to view a copy of this License."
+msgstr "<strong>c)</strong> If the modified program normally reads commands interactively when run, you must cause it, when started running for such interactive use in the most ordinary way, to print or display an announcement including an appropriate copyright notice and a notice that there is no warranty (or else, saying that you provide a warranty) and that users may redistribute the program under these conditions, and telling the user how to view a copy of this License."
+
+#: ui/Folder_new_link.xml.en:0
+msgid "A link is an object that links to another object."
+msgstr "Un lien est un objet qui relie à un autre objet"
+
+#: WorkflowAware.py:40
+msgid "A pending document awaits review from authorized users to be published."
+msgstr "Un document en attente d'autorisation pour être publié."
+
+#: WorkflowAware.py:37
+msgid "A private document only can be reached by authorized users."
+msgstr "Un document privé ne peut être atteint que par les utilisateurs autorisés."
+
+#: WorkflowAware.py:43
+msgid "A public document can be reached by even anonymous users."
+msgstr "Un document public peut être atteint même par les utilisateurs anonymes."
+
+#: WorkflowAware.py:149
+msgid "A transition must be selected."
+msgstr "Un changement d'état doit être sélectionné."
+
+#: Root.py:696
+#: Root.py:706
+msgid "About"
+msgstr "Au sujet de"
+
+#: WorkflowAware.py:55
+msgid "Accept the document."
+msgstr "Acceptez le document"
+
+#: Handler.py:443
+msgid "Access forbidden, you are not authorized to access this resource."
+msgstr "Accès refusé, vous n'êtes pas autorisé à accéder à cette ressource."
+
+#: ui/File_history.xml.en:0
+msgid "Action"
+msgstr "Action"
+
+#: ui/Root_license.xml.en:0
+msgid "Activities other than copying, distribution and modification are not covered by this License;"
+msgstr "Activities other than copying, distribution and modification are not covered by this License;"
+
+#: ui/Folder_new_link.xml.en:0
+msgid "Actually, it links to a set of resources, where every resource is of a different language."
+msgstr "En fait, cela relie à un ensemble de ressources, ou chaque ressource est une langue différente"
+
+#: Folder.py:839
+#: Group.py:145
+#: Group.py:146
+#: Group.py:254
+#: UserFolder.py:96
+#: ui/Folder_help.xml.en:0
+#: ui/Folder_new_folder.xml.en:0
+#: ui/Folder_new_link.xml.en:0
+#: ui/Group_add_users.xml.en:0
+#: ui/HTML_addlink.xml.en:0
+#: ui/Link_edit.xml.en:0
+#: ui/RootGroup_add_group.xml.en:0
+#: ui/Settings_languages.xml.en:0
+#: ui/Text_new_instance.xml.en:0
+#: ui/UserFolder_new_user.xml.en:0
+#: ui/User_translator.xml.en:0
+msgid "Add"
+msgstr "Ajouter"
+
+#: ui/Group_add_users.xml.en:0
+msgid "Add User<span stl:if=\"nb_users\">s</span>"
+msgstr "Ajouter <span stl:if=\"nb_users\">des utilisateurs</span><span stl:if=\"not nb_users\">un utilisateur</span>"
+
+#: ui/User_translator.xml.en:0
+msgid "Add a new translator skill:"
+msgstr "Ajouter une nouvelle traduction possible"
+
+#: ui/Group_add_users.xml.en:0
+msgid "All users added."
+msgstr "Utilisateur(s) ajouté(s) "
+
+#: ui/Root_license.xml.en:0
+msgid "Also, for each author's protection and ours, we want to make certain that everyone understands that there is no warranty for this free software."
+msgstr "Also, for each author's protection and ours, we want to make certain that everyone understands that there is no warranty for this free software."
+
+#: ui/Root_license.xml.en:0
+msgid "And you must show them these terms so they know their rights."
+msgstr "And you must show them these terms so they know their rights."
+
+#: ui/Settings_general.xml.en:0
+msgid "Anonymous users are allowed to join this web site"
+msgstr "Les utilisateurs anonymes sont autorisés à venir sur ce site web"
+
+#: ui/Root_license.xml.en:0
+msgid "Any attempt otherwise to copy, modify, sublicense or distribute the Program is void, and will automatically terminate your rights under this License."
+msgstr "Any attempt otherwise to copy, modify, sublicense or distribute the Program is void, and will automatically terminate your rights under this License."
+
+#: ui/SiteRoot_error_page.xml.en:0
+msgid "Apologies for the inconvenience."
+msgstr "Veuillez nous excuser pour la gêne occasionée."
+
+#: Folder.py:432
+msgid "As Icons"
+msgstr "Icônes"
+
+#: Folder.py:494
+msgid "As Image Gallery"
+msgstr "Gallerie d'images"
+
+#: Folder.py:449
+msgid "As List"
+msgstr "Liste"
+
+#: ui/File_help.xml.en:0
+#: ui/Folder_help.xml.en:0
+msgid "Available views:"
+msgstr "Vues disponibles"
+
+#: utils.py:424
+msgid "Basque"
+msgstr "Basque"
+
+#: Group.py:182
+#: ui/Folder_help.xml.en:0
+#: ui/Folder_new_link.xml.en:0
+msgid "Browse"
+msgstr "Naviguer"
+
+#: ui/Group_users.xml.en:0
+msgid "Browse users"
+msgstr "Utilisateurs réseaux"
+
+#: ui/HTML_browsedir.xml.en:0
+msgid "Browse-Directories"
+msgstr "Répertoire de navigation"
+
+#: ui/File_externaledit.xml.en:0
+#: ui/Text_externaledit.xml.en:0
+msgid "But to use this feature you have to install the client first (you do not need the server)."
+msgstr "Mais pour utiliser ces caractéristiques , vous devez installer en premier le client  (vous n'avez pas besoin du serveur)"
+
+#: ui/Root_license.xml.en:0
+msgid "But when you distribute the same sections as part of a whole which is a work based on the Program, the distribution of the whole must be on the terms of this License, whose permissions for other licensees extend to the entire whole, and thus to each and every part regardless of who wrote it."
+msgstr "But when you distribute the same sections as part of a whole which is a work based on the Program, the distribution of the whole must be on the terms of this License, whose permissions for other licensees extend to the entire whole, and thus to each and every part regardless of who wrote it."
+
+#: ui/Root_license.xml.en:0
+msgid "By contrast, the GNU General Public License is intended to guarantee your freedom to share and change free software--to make sure the software is free for all its users."
+msgstr "By contrast, the GNU General Public License is intended to guarantee your freedom to share and change free software--to make sure the software is free for all its users."
+
+#: DocumentTypes.py:386
+msgid "Calc"
+msgstr "Classeur"
+
+#: utils.py:425
+msgid "Catalan"
+msgstr "Catalan"
+
+#: Root.py:737
+msgid "Catalog"
+msgstr "Catalogue"
+
+#: ui/Document_translate.xml.en:0
+#: ui/HTML_edit.xml.en:0
+#: ui/PO_edit.xml.en:0
+#: ui/Text_edit.xml.en:0
+msgid "Change"
+msgstr "Ok"
+
+#: ui/Settings_languages.xml.en:0
+msgid "Change default"
+msgstr "Changer l' option par défaut"
+
+#: ui/Folder_translate.xml.en:0
+#: ui/Settings_languages.xml.en:0
+msgid "Choose a language"
+msgstr "Choisir une langue"
+
+#: ui/surf/template.xhtml.en:0
+msgid "Choose language"
+msgstr "Choisir une langue"
+
+#: ui/classic/template.xhtml.en:0
+msgid "Choose your language:"
+msgstr "Choisissez votre langue :"
+
+#: ui/Settings_languages.xml.en:0
+msgid "Code"
+msgstr "Code"
+
+#: ui/Handler_state.xml.en:0
+msgid "Comments:"
+msgstr "Commentaires :"
+
+#: ui/File_history.xml.en:0
+msgid "Compare"
+msgstr "Comparer"
+
+#: ui/surf/template.xhtml.en:0
+msgid "Contents"
+msgstr "Contenus"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Copy"
+msgstr "Copier"
+
+#: ui/File_history.xml.en:0
+msgid "Copy to present"
+msgstr "La version datée est maintenant la version actuelle"
+
+#: ui/Root_license.xml.en:0
+msgid "Copyright (C) 1989, 1991 Free Software Foundation, Inc. 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed."
+msgstr "Copyright (C) 1989, 1991 Free Software Foundation, Inc. 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed."
+
+#: ui/RootGroup_add_group.xml.en:0
+msgid "Create a new group"
+msgstr "Création d'un nouveau group"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Cut"
+msgstr "Couper"
+
+#: ui/File_history.xml.en:0
+msgid "Date"
+msgstr "Date"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Date <stl:inline content=\"table/sortcontrol(mtime_microsecond)\"></stl:inline>"
+msgstr "Date <stl:inline content=\"table/sortcontrol(mtime_microsecond)\"></stl:inline>"
+
+#: ui/Settings_languages.xml.en:0
+msgid "Default"
+msgstr "Défaut"
+
+#: ui/Metadata_edit.xml.en:0
+msgid "Description"
+msgstr "Description"
+
+#: ui/Metadata_edit.xml.en:0
+msgid "Description (<stl:inline content=\"description/lang_name\"></stl:inline>)"
+msgstr "Description (<stl:inline content=\"description/lang_name\"></stl:inline>)"
+
+#: ui/Folder_new_folder.xml.en:0
+#: ui/Folder_new_link.xml.en:0
+#: ui/Folder_upload_file.xml.en:0
+#: ui/Group_add_users.xml.en:0
+#: ui/Settings_general.xml.en:0
+#: ui/Text_new_instance.xml.en:0
+msgid "Details"
+msgstr "Détails"
+
+#: DocumentTypes.py:387
+msgid "Document Calc"
+msgstr "Document Classeur"
+
+#: DocumentTypes.py:235
+msgid "Document Excel"
+msgstr "Document Excel."
+
+#: DocumentTypes.py:64
+msgid "Document Flash"
+msgstr "Document Flash"
+
+#: DocumentTypes.py:404
+msgid "Document Impress"
+msgstr "Document Présentation"
+
+#: DocumentTypes.py:86
+msgid "Document PDF"
+msgstr "Document PDF"
+
+#: DocumentTypes.py:282
+msgid "Document PowerPoint"
+msgstr "Document PowerPoint"
+
+#: DocumentTypes.py:183
+msgid "Document Word"
+msgstr "Document Word"
+
+#: DocumentTypes.py:371
+msgid "Document Writer"
+msgstr "Document Writer"
+
+#: Text.py:134
+msgid "Document edited."
+msgstr "Document édité."
+
+#: Folder.py:832
+msgid "Document translations created."
+msgstr "Document dans une nouvelle langue créée."
+
+#: ui/File_help.xml.en:0
+msgid "Documents are where the data is stored"
+msgstr "Les documents corespondent à des donnée stockés"
+
+#: ui/Text_new_instance.xml.en:0
+msgid "Documents are where the data is stored, they are similar to the files from your filesystem."
+msgstr "Les documents servent à stoker les donnés enregistrées, ils sont semblables à vos fichiers sytèmes."
+
+#: File.py:179
+msgid "Download"
+msgstr "Télécharger"
+
+#: ui/File_download_form.xml.en:0
+msgid "Download :"
+msgstr "Télécharger :"
+
+#: DocumentTypes.py:133
+#, python-format
+msgid "ERROR could not generate preview : %s"
+msgstr "Erreur : impossible de générer la prévisualisation : %s"
+
+#: ui/Root_license.xml.en:0
+msgid "EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+msgstr "EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+
+#: ui/Root_license.xml.en:0
+msgid "Each version is given a distinguishing version number."
+msgstr "Chaque version a un numéro de version différent."
+
+#: File.py:91
+#: File.py:148
+#: Text.py:119
+#: Text.py:281
+#: Text.py:381
+#: User.py:237
+#: User.py:269
+#: User.py:303
+#: ui/File_help.xml.en:0
+#: ui/Link_edit.xml.en:0
+msgid "Edit"
+msgstr "Editer"
+
+#: ui/User_edit_groups.xml.en:0
+msgid "Edit groups for <span stl:content=\"fullname\"></span>"
+msgstr "Edition des groupes pour <span stl:content=\"fullname\"></span>"
+
+#: ui/User_edit.xml.en:0
+msgid "Email"
+msgstr "Email"
+
+#: utils.py:426
+#: ui/classic/template.xhtml.en:0
+#: ui/surf/template.xhtml.en:0
+msgid "English"
+msgstr "Anglais"
+
+#: ui/HTML_addimage.xml.en:0
+#: ui/HTML_addlink.xml.en:0
+msgid "Epoz-Toolbox"
+msgstr "Epoz-Toolbox"
+
+#: DocumentTypes.py:262
+#: DocumentTypes.py:308
+#, python-format
+msgid "Error could not generate preview because : %s"
+msgstr "Erreur : impossible de générer la prévisualisation parce que : %s"
+
+#: DocumentTypes.py:234
+msgid "Excel"
+msgstr "Excel"
+
+#: File.py:92
+msgid "External"
+msgstr "Externe"
+
+#: ui/File_externaledit.xml.en:0
+#: ui/Text_externaledit.xml.en:0
+msgid "External editor"
+msgstr "Editeur externe"
+
+#: ui/File_externaledit.xml.en:0
+#: ui/Text_externaledit.xml.en:0
+msgid "External editor.."
+msgstr "Editeur externe.."
+
+#: File.py:43
+#: ui/File_upload.xml.en:0
+#: ui/Folder_upload_file.xml.en:0
+msgid "File"
+msgstr "Fichier"
+
+#: Folder.py:969
+msgid "File uploaded."
+msgstr "Fichié téléchargé"
+
+#: ui/Root_license.xml.en:0
+msgid "Finally, any free program is threatened constantly by software patents."
+msgstr "Finally, any free program is threatened constantly by software patents."
+
+#: Text.py:245
+#: ui/HTML_fix.xml.en:0
+msgid "Fix"
+msgstr "Réparer"
+
+#: DocumentTypes.py:63
+msgid "Flash"
+msgstr "Flash"
+
+#: Folder.py:64
+msgid "Folder"
+msgstr "Dossier"
+
+#: ui/Folder_help.xml.en:0
+msgid "Folders are used to classify documents"
+msgstr "Les répertoires sont utilisés pour classer des documents"
+
+#: ui/Folder_new_folder.xml.en:0
+msgid "Folders are used to classify documents."
+msgstr "Les répertoires sont utilisés pour classer des documents."
+
+#: ui/Root_license.xml.en:0
+msgid "For an executable work, complete source code means all the source code for all modules it contains, plus any associated interface definition files, plus the scripts used to control compilation and installation of the executable."
+msgstr "For an executable work, complete source code means all the source code for all modules it contains, plus any associated interface definition files, plus the scripts used to control compilation and installation of the executable."
+
+#: ui/Root_license.xml.en:0
+msgid "For example, if a patent license would not permit royalty-free redistribution of the Program by all those who receive copies directly or indirectly through you, then the only way you could satisfy both it and this License would be to refrain entirely from distribution of the Program."
+msgstr "For example, if a patent license would not permit royalty-free redistribution of the Program by all those who receive copies directly or indirectly through you, then the only way you could satisfy both it and this License would be to refrain entirely from distribution of the Program."
+
+#: ui/Root_license.xml.en:0
+msgid "For example, if you distribute copies of such a program, whether gratis or for a fee, you must give the recipients all the rights that you have."
+msgstr "For example, if you distribute copies of such a program, whether gratis or for a fee, you must give the recipients all the rights that you have."
+
+#: ui/Root_license.xml.en:0
+msgid "For software which is copyrighted by the Free Software Foundation, write to the Free Software Foundation;"
+msgstr "For software which is copyrighted by the Free Software Foundation, write to the Free Software Foundation;"
+
+#: ui/Folder_browse_image.xml.en:0
+#: ui/Folder_new_link.xml.en:0
+msgid "Format"
+msgstr "Format"
+
+#: utils.py:427
+msgid "French"
+msgstr "Français"
+
+#: ui/User_translator.xml.en:0
+msgid "From"
+msgstr "A partir de"
+
+#: ui/User_edit.xml.en:0
+msgid "Full name"
+msgstr "Nom complet"
+
+#: ui/Group_users.xml.en:0
+msgid "Fullname <stl:inline content=\"table/sortcontrol(fullname)\"></stl:inline>"
+msgstr "Nom complet <stl:inline content=\"table/sortcontrol(fullname)\"></stl:inline>"
+
+#: ui/Root_license.xml.en:0
+msgid "GNU GENERAL PUBLIC LICENSE"
+msgstr "GNU GENERAL PUBLIC LICENSE"
+
+#: Root.py:605
+msgid "General"
+msgstr "Général"
+
+#: Root.py:620
+msgid "General settings changed"
+msgstr "Réglages généraux changés"
+
+#: utils.py:428
+msgid "German"
+msgstr "Allemand"
+
+#: Group.py:58
+msgid "Group"
+msgstr "Groupe"
+
+#: Group.py:174
+msgid "Group added."
+msgstr "Groupe ajouté"
+
+#: ui/UserFolder_new_user.xml.en:0
+#: ui/User_edit_groups.xml.en:0
+msgid "Group name <stl:inline content=\"table/sortcontrol(name)\"></stl:inline>"
+msgstr "Nom du groupe <stl:inline content=\"table/sortcontrol(name)\"></stl:inline>"
+
+#: Group.py:141
+#: User.py:304
+msgid "Groups"
+msgstr "Groupes"
+
+#: Text.py:265
+msgid "HTML fixed."
+msgstr "HTML réparé."
+
+#: Folder.py:994
+#: ui/File_help.xml.en:0
+#: ui/Folder_help.xml.en:0
+msgid "Help"
+msgstr "Aide"
+
+#: ui/Settings_general.xml.en:0
+msgid "Here, you can configure your web application."
+msgstr "Ici vous pouvez paramétrer votre application iKaaro."
+
+#: VersioningAware.py:70
+#: ui/File_help.xml.en:0
+msgid "History"
+msgstr "Historique"
+
+#: ui/surf/template.xhtml.en:0
+msgid "Home"
+msgstr "Dossier personnel"
+
+#: ui/Root_license.xml.en:0
+msgid "However, as a special exception, the source code distributed need not include anything that is normally distributed (in either source or binary form) with the major components (compiler, kernel, and so on) of the operating system on which the executable runs, unless that component itself accompanies the executable."
+msgstr "However, as a special exception, the source code distributed need not include anything that is normally distributed (in either source or binary form) with the major components (compiler, kernel, and so on) of the operating system on which the executable runs, unless that component itself accompanies the executable."
+
+#: ui/Root_license.xml.en:0
+msgid "However, nothing else grants you permission to modify or distribute the Program or its derivative works."
+msgstr "However, nothing else grants you permission to modify or distribute the Program or its derivative works."
+
+#: ui/Root_license.xml.en:0
+msgid "However, parties who have received copies, or rights, from you under this License will not have their licenses terminated so long as such parties remain in full compliance."
+msgstr "However, parties who have received copies, or rights, from you under this License will not have their licenses terminated so long as such parties remain in full compliance."
+
+#: utils.py:429
+msgid "Hungarian"
+msgstr "Hongrois"
+
+#: ui/Root_about.xml.en:0
+msgid "IKAARO provides state of the art Content Management technology:"
+msgstr "iKaaro fournit une offre complète dans le domaine de la gestion de contenu :"
+
+#: ui/Root_license.xml.en:0
+msgid "If any portion of this section is held invalid or unenforceable under any particular circumstance, the balance of the section is intended to apply and the section as a whole is intended to apply in other circumstances."
+msgstr "If any portion of this section is held invalid or unenforceable under any particular circumstance, the balance of the section is intended to apply and the section as a whole is intended to apply in other circumstances."
+
+#: ui/Root_license.xml.en:0
+msgid "If distribution of executable or object code is made by offering access to copy from a designated place, then offering equivalent access to copy the source code from the same place counts as distribution of the source code, even though third parties are not compelled to copy the source along with the object code."
+msgstr "If distribution of executable or object code is made by offering access to copy from a designated place, then offering equivalent access to copy the source code from the same place counts as distribution of the source code, even though third parties are not compelled to copy the source along with the object code."
+
+#: ui/Root_license.xml.en:0
+msgid "If identifiable sections of that work are not derived from the Program, and can be reasonably considered independent and separate works in themselves, then this License, and its terms, do not apply to those sections when you distribute them as separate works."
+msgstr "If identifiable sections of that work are not derived from the Program, and can be reasonably considered independent and separate works in themselves, then this License, and its terms, do not apply to those sections when you distribute them as separate works."
+
+#: ui/Root_license.xml.en:0
+msgid "If the Program does not specify a version number of this License, you may choose any version ever published by the Free Software Foundation."
+msgstr "If the Program does not specify a version number of this License, you may choose any version ever published by the Free Software Foundation."
+
+#: ui/Root_license.xml.en:0
+msgid "If the Program specifies a version number of this License which applies to it and \"any later version\", you have the option of following the terms and conditions either of that version or of any later version published by the Free Software Foundation."
+msgstr "If the Program specifies a version number of this License which applies to it and \"any later version\", you have the option of following the terms and conditions either of that version or of any later version published by the Free Software Foundation."
+
+#: ui/Root_license.xml.en:0
+msgid "If the software is modified by someone else and passed on, we want its recipients to know that what they have is not the original, so that any problems introduced by others will not reflect on the original authors' reputations."
+msgstr "If the software is modified by someone else and passed on, we want its recipients to know that what they have is not the original, so that any problems introduced by others will not reflect on the original authors' reputations."
+
+#: ui/File_externaledit.xml.en:0
+#: ui/Text_externaledit.xml.en:0
+msgid "If you already installed the client just click the button below:"
+msgstr "Si vous avez déjà installé le client cliquez sur le lien ci-dessous :"
+
+#: ui/Root_license.xml.en:0
+msgid "If you cannot distribute so as to satisfy simultaneously your obligations under this License and any other pertinent obligations, then as a consequence you may not distribute the Program at all."
+msgstr "If you cannot distribute so as to satisfy simultaneously your obligations under this License and any other pertinent obligations, then as a consequence you may not distribute the Program at all."
+
+#: DocumentTypes.py:403
+msgid "Impress"
+msgstr "Présentation"
+
+#: ui/Root_license.xml.en:0
+msgid "In addition, mere aggregation of another work not based on the Program with the Program (or with a work based on the Program) on a volume of a storage or distribution medium does not bring the other work under the scope of this License."
+msgstr "In addition, mere aggregation of another work not based on the Program with the Program (or with a work based on the Program) on a volume of a storage or distribution medium does not bring the other work under the scope of this License."
+
+#: ui/Root_license.xml.en:0
+msgid "In such case, this License incorporates the limitation as if written in the body of this License."
+msgstr "In such case, this License incorporates the limitation as if written in the body of this License."
+
+#: Text.py:120
+#: Text.py:282
+#: Text.py:382
+msgid "Inline"
+msgstr "En ligne"
+
+#: ui/Root_license.xml.en:0
+msgid "It is not the purpose of this section to induce you to infringe any patents or other property right claims or to contest validity of any such claims;"
+msgstr "It is not the purpose of this section to induce you to infringe any patents or other property right claims or to contest validity of any such claims;"
+
+#: utils.py:430
+msgid "Italian"
+msgstr "Italien"
+
+#: ui/Root_about.xml.en:0
+msgid "J. David Ibáñez, lead developer"
+msgstr "J. David Ibáñez, développeur principal"
+
+#: utils.py:431
+msgid "Japanese"
+msgstr "Japonais"
+
+#: Root.py:716
+#: ui/surf/template.xhtml.en:0
+msgid "Join"
+msgstr "Devenir membre"
+
+#: ui/Root_join.xml.en:0
+msgid "Join the community"
+msgstr "Devenir membre"
+
+#: Text.py:57
+msgid "Keep your notes with plain text files."
+msgstr "Conserver vos notes dans des fichiers plein texte."
+
+#: ui/File_help.xml.en:0
+msgid "Keeps an historical record with the changes made, it is possible to come back to an older version."
+msgstr "Un historique des modifications est constitué. Vous pouvez ainsi revenir sur une version antérieure."
+
+#: ui/Folder_browse_image.xml.en:0
+#: ui/Folder_new_link.xml.en:0
+#: ui/Link_edit.xml.en:0
+#: ui/Text_new_instance.xml.en:0
+msgid "Language"
+msgstr "Langue"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Language <stl:inline content=\"table/sortcontrol(language)\"></stl:inline>"
+msgstr "Langage <stl:inline content=\"table/sortcontrol(language)\"></stl:inline>"
+
+#: Root.py:689
+msgid "Language added."
+msgstr "Langue ajoutée."
+
+#: Root.py:627
+#: Root.py:628
+msgid "Languages"
+msgstr "Langues"
+
+#: Root.py:677
+msgid "Languages removed."
+msgstr "Langues supprimées."
+
+#: ui/Settings_languages.xml.en:0
+msgid "Languages settings"
+msgstr "Configurations des langues "
+
+#: ui/Folder_help.xml.en:0
+msgid "Lets to add new content, documents and folders."
+msgstr "Permet d'ajouter de nouveaux contenus (documents et dossiers)."
+
+#: ui/Folder_help.xml.en:0
+msgid "Lets to change the security settings."
+msgstr "Changer les paramètres de sécurité."
+
+#: ui/File_help.xml.en:0
+msgid "Lets to edit the document, it is possible to use an external editor if you install it or to upload a file from the filesystem."
+msgstr "Permet l'édition du document. Il est possible d'utiliser un éditeur externe (votre éditeur habituel par exemple) si celui-ci est installé. Vous pouvez aussi télécharger un document depuis votre disque vers votre application iKaaro."
+
+#: ui/Folder_help.xml.en:0
+msgid "Lets to search documents and folders by name and/or by its full text content."
+msgstr "Permet de rechercher des documents ou dossiers, soit par leur nom, soit par leur contenu (texte)."
+
+#: ui/Folder_help.xml.en:0
+msgid "Lets to see the folder's content, sort it by name or date, and perform different actions (remove, rename, copy, cut and paste)."
+msgstr "Permet de visualiser le contenu d'un dossier, trié par nom ou par date, et d'effectuer des modifications suivantes : effacer, renommer, copier, couper et coller."
+
+#: Root.py:707
+msgid "License"
+msgstr "License"
+
+#: Link.py:35
+#: ui/HTML_addimage.xml.en:0
+#: ui/HTML_addlink.xml.en:0
+#: ui/HTML_browsedir.xml.en:0
+msgid "Link"
+msgstr "Lien"
+
+#: Folder.py:930
+msgid "Link added"
+msgstr "Lien ajouté"
+
+#: Link.py:36
+msgid "Links are ..."
+msgstr "Les liens sont ..."
+
+#: ui/SiteRoot_login.xml.en:0
+#: ui/surf/template.xhtml.en:0
+msgid "Log in"
+msgstr "Authentification"
+
+#: ui/surf/template.xhtml.en:0
+msgid "Log out"
+msgstr "Déconnexion"
+
+#: SiteRoot.py:36
+msgid "Login"
+msgstr "Authentification"
+
+#: ui/Root_license.xml.en:0
+msgid "Many people have made generous contributions to the wide range of software distributed through that system in reliance on consistent application of that system;"
+msgstr "Many people have made generous contributions to the wide range of software distributed through that system in reliance on consistent application of that system;"
+
+#: ui/PO_edit.xml.en:0
+msgid "Message"
+msgstr "Message"
+
+#: ui/Document_translate.xml.en:0
+#: ui/PO_edit.xml.en:0
+msgid "Message <stl:inline content=\"messages_index\"></stl:inline> / <stl:inline content=\"messages_total\"></stl:inline> <a stl:attributes=\"href messages_first\">&lt;&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_previous\">&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_next\">></a> <a stl:attributes=\"href messages_last\">>></a>"
+msgstr "Message <stl:inline content=\"messages_index\"></stl:inline> / <stl:inline content=\"messages_total\"></stl:inline> <a stl:attributes=\"href messages_first\">&lt;&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_previous\">&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_next\">></a> <a stl:attributes=\"href messages_last\">>></a>"
+
+#: ui/Document_translate.xml.en:0
+msgid "Message Translation"
+msgstr "Traduction du message"
+
+#: Document.py:215
+#: Text.py:431
+msgid "Message edited."
+msgstr "Message édité"
+
+#: ui/classic/template.xhtml.en:0
+#: ui/surf/template.xhtml.en:0
+msgid "Message!"
+msgstr "Message!"
+
+#: Handler.py:502
+#: ui/File_help.xml.en:0
+msgid "Metadata"
+msgstr "Méta-données"
+
+#: Handler.py:556
+msgid "Metadata changed."
+msgstr "Méta-données modifiées"
+
+#: ui/Metadata_edit.xml.en:0
+msgid "Metadata list"
+msgstr "listes des méta-données"
+
+#: ui/Root_license.xml.en:0
+msgid "NO WARRANTY"
+msgstr "NO WARRANTY"
+
+#: ui/Folder_browse_image.xml.en:0
+#: ui/Folder_new_folder.xml.en:0
+#: ui/Folder_new_link.xml.en:0
+#: ui/RootGroup_add_group.xml.en:0
+#: ui/Settings_languages.xml.en:0
+#: ui/Text_new_instance.xml.en:0
+msgid "Name"
+msgstr "Nom"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Name <stl:inline content=\"table/sortcontrol(name)\"></stl:inline>"
+msgstr "Nom <stl:inline content=\"table/sortcontrol(name)\"></stl:inline>"
+
+#: ui/Text_new_instance.xml.en:0
+msgid "New Document"
+msgstr "Nouveau document"
+
+#: ui/Folder_new_link.xml.en:0
+msgid "New Link"
+msgstr "Nouveau lien"
+
+#: Folder.py:840
+msgid "New Resource"
+msgstr "Nouvelle Ressource"
+
+#: ui/UserFolder_new_user.xml.en:0
+msgid "New User"
+msgstr "Nouvel utilisateur"
+
+#: Folder.py:905
+msgid "New resource added"
+msgstr "Nouvelle ressource ajoutée"
+
+#: File.py:159
+msgid "No file has been entered."
+msgstr "Aucun fichier n'a été entré."
+
+#: Folder.py:768
+msgid "No objects selected"
+msgstr "Aucun objet sélectionné."
+
+#: Folder.py:543
+#: Folder.py:578
+#: Folder.py:651
+#: Folder.py:673
+msgid "No objects selected."
+msgstr "Aucun objet sélectionné."
+
+#: Group.py:303
+msgid "No user added"
+msgstr "Pas d'utilisateur ajouté "
+
+#: ui/Group_add_users.xml.en:0
+msgid "No users to add in <b stl:content=\"name\"></b>."
+msgstr "Aucun utilisateur à ajouter dans <b stl:content=\"name\"></b>."
+
+#: ui/Folder_rename.xml.en:0
+#: ui/Metadata_edit.xml.en:0
+#: ui/Root_join.xml.en:0
+#: ui/Settings_general.xml.en:0
+#: ui/SiteRoot_login.xml.en:0
+#: ui/User_edit.xml.en:0
+#: ui/User_edit_password.xml.en:0
+msgid "OK"
+msgstr "OK"
+
+#: Folder.py:661
+msgid "Objects copied."
+msgstr "Objets copiés."
+
+#: Folder.py:683
+msgid "Objects cut."
+msgstr "Objets coupés."
+
+#: Folder.py:751
+msgid "Objects pasted."
+msgstr "Objets collés."
+
+#: Folder.py:565
+#, python-format
+msgid "Objects removed: %s."
+msgstr "Objets suprimés: %s."
+
+#: Folder.py:639
+msgid "Objects renamed."
+msgstr "Objets renommés."
+
+#: ui/Handler_state.xml.en:0
+#: ui/classic/template.xhtml.en:0
+msgid "Ok"
+msgstr "Ok"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "On field"
+msgstr "Sur le champ"
+
+#: Folder.py:65
+msgid "Organize your files and documents with folders."
+msgstr "Organisez vos fichiers et documents dans des dossiers."
+
+#: ui/Root_license.xml.en:0
+msgid "Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for this service if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs;"
+msgstr "Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for this service if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs;"
+
+#: ui/Root_license.xml.en:0
+msgid "Our decision will be guided by the two goals of preserving the free status of all derivatives of our free software and of promoting the sharing and reuse of software generally."
+msgstr "Our decision will be guided by the two goals of preserving the free status of all derivatives of our free software and of promoting the sharing and reuse of software generally."
+
+#: DocumentTypes.py:85
+msgid "PDF"
+msgstr "PDF"
+
+#: User.py:270
+#: ui/Root_join.xml.en:0
+#: ui/SiteRoot_login.xml.en:0
+#: ui/UserFolder_new_user.xml.en:0
+#: ui/User_edit_password.xml.en:0
+msgid "Password"
+msgstr "Mot de passe"
+
+#: User.py:296
+msgid "Password changed."
+msgstr "Mot de passe modifié"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Paste"
+msgstr "Coller"
+
+#: User.py:238
+msgid "Personal"
+msgstr "Personnel"
+
+#: ui/User_edit.xml.en:0
+msgid "Personal information"
+msgstr "Informations générales"
+
+#: Link.py:46
+#: Text.py:56
+msgid "Plain Text"
+msgstr "Text intégral"
+
+#: utils.py:432
+msgid "Portuguese"
+msgstr "Portugais"
+
+#: DocumentTypes.py:281
+msgid "PowerPoint"
+msgstr "PowerPoint"
+
+#: ui/Root_license.xml.en:0
+msgid "Preamble"
+msgstr "Préambule"
+
+#: File.py:255
+#: ui/Folder_browse_image.xml.en:0
+msgid "Preview"
+msgstr "Aperçu"
+
+#: WorkflowAware.py:47
+msgid "Publish the document."
+msgstr "Publier le document"
+
+#: Text.py:176
+msgid "Publish your own web pages."
+msgstr "Publiez vos propre pages web."
+
+#: Link.py:116
+msgid "Record added."
+msgstr "Enregistrement ajouté. "
+
+#: Link.py:96
+msgid "Record edited."
+msgstr "Enregistrement édité."
+
+#: Link.py:105
+msgid "Record removed."
+msgstr "Enregistrement suprimé."
+
+#: ui/Root_catalog.xml.en:0
+msgid "Reindex"
+msgstr "Reindexation"
+
+#: WorkflowAware.py:53
+msgid "Reject the document."
+msgstr "Rejeter le document"
+
+#: ui/Root_about.xml.en:0
+msgid "Released to the world under the terms and conditions of the <a href=\";license\">GNU General Public License</a>, IKAARO is a free software project, built by its community:"
+msgstr "Released to the world under the terms and conditions of the <a href=\";license\">GNU General Public License</a>, IKAARO is a free software project, built by its community:"
+
+#: ui/Folder_browse_list.xml.en:0
+#: ui/Group_users.xml.en:0
+#: ui/Link_edit.xml.en:0
+#: ui/Settings_languages.xml.en:0
+#: ui/User_translator.xml.en:0
+msgid "Remove"
+msgstr "Supprimer"
+
+#: ui/Folder_rename.xml.en:0
+msgid "Rename objects"
+msgstr "Renommer les objets "
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Rename.."
+msgstr "Renommer."
+
+#: ui/Root_join.xml.en:0
+#: ui/UserFolder_new_user.xml.en:0
+#: ui/User_edit_password.xml.en:0
+msgid "Repeat Password"
+msgstr "Confirmer le mot de passe"
+
+#: WorkflowAware.py:49
+msgid "Request the document publication."
+msgstr "Demande de publication du document."
+
+#: WorkflowAware.py:51
+#: WorkflowAware.py:57
+msgid "Retire the document."
+msgstr "Retirer le document"
+
+#: VersioningAware.py:105
+msgid "Revision copied to present."
+msgstr "La version datée est maintenant la version actuelle"
+
+#: ui/Root_license.xml.en:0
+msgid "SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION."
+msgstr "SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION."
+
+#: ui/Document_translate.xml.en:0
+msgid "Save the translation"
+msgstr "Sauvegarder la traduction"
+
+#: ui/Folder_browse_list.xml.en:0
+#: ui/Folder_help.xml.en:0
+msgid "Search"
+msgstr "Recherche"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Search subfolders"
+msgstr "Recherche dans les sous-dossiers"
+
+#: ui/Folder_help.xml.en:0
+msgid "Security"
+msgstr "Sécurité"
+
+#: ui/Group_add_users.xml.en:0
+msgid "Select user name(s) you want to add in group <b stl:content=\"name\"></b> :"
+msgstr "Sélectionner le( s) noms d'utilisateurs que vous voulez ajouter au groupe <b stl:content=\"name\"></b> :"
+
+#: Root.py:604
+#: ui/Settings_general.xml.en:0
+msgid "Settings"
+msgstr "Configuration"
+
+#: ui/File_history.xml.en:0
+#: ui/Folder_browse_image.xml.en:0
+#: ui/Folder_browse_list.xml.en:0
+msgid "Size"
+msgstr "Taille"
+
+#: utils.py:433
+msgid "Spanish"
+msgstr "Espagnol"
+
+#: WorkflowAware.py:116
+msgid "State"
+msgstr "Etat"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "State <stl:inline content=\"table/sortcontrol(workflow_state)\"></stl:inline>"
+msgstr "Etat <stl:inline content=\"table/sortcontrol(workflow_state)\"></stl:inline>"
+
+#: ui/Handler_state.xml.en:0
+msgid "State:"
+msgstr "Etat : "
+
+#: ui/Root_license.xml.en:0
+msgid "Such new versions will be similar in spirit to the present version, but may differ in detail to address new problems or concerns."
+msgstr "Such new versions will be similar in spirit to the present version, but may differ in detail to address new problems or concerns."
+
+#: ui/Root_license.xml.en:0
+msgid "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
+msgstr "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
+
+#: ui/File_externaledit.xml.en:0
+#: ui/Text_externaledit.xml.en:0
+msgid "Take the client for <a href=\"http://zope.org/Members/Caseman/ExternalEditor/0.8/zopeedit-0.8-src.tgz\">Unix and MacOSX</a>."
+msgstr "Prendre le client pour <a href=\"http://zope.org/Members/Caseman/ExternalEditor/0.8/zopeedit-0.8-src.tgz\">Unix and MacOSX</a>."
+
+#: ui/File_externaledit.xml.en:0
+#: ui/Text_externaledit.xml.en:0
+msgid "Take the client for <a href=\"http://zope.org/Members/Caseman/ExternalEditor/0.8/zopeedit-win32-0.8.exe\">windows</a>."
+msgstr "Prendre le client pour <a href=\"http://zope.org/Members/Caseman/ExternalEditor/0.8/zopeedit-win32-0.8.exe\">windows</a>."
+
+#: User.py:348
+#: doc/examples/TaskTracker/TaskTracker.py:128
+msgid "Tasks"
+msgstr "Tâches"
+
+#: ui/Root_license.xml.en:0
+msgid "Terms and Conditions for Copying, Distribution and Modification"
+msgstr "Terms and Conditions for Copying, Distribution and Modification"
+
+#: ui/Document_translate.xml.en:0
+msgid "Text being translated"
+msgstr "Texte en cours de traduction"
+
+#: Root.py:728
+msgid "Thanks for joining us, please log in"
+msgstr "Bienvenue, s'il vous plaît connectez vous"
+
+#: ui/Root_license.xml.en:0
+msgid "The \"Program\", below, refers to any such program or work, and a \"work based on the Program\" means either the Program or any derivative work under copyright law:"
+msgstr "The \"Program\", below, refers to any such program or work, and a \"work based on the Program\" means either the Program or any derivative work under copyright law:"
+
+#: ui/Root_license.xml.en:0
+msgid "The act of running the Program is not restricted, and the output from the Program is covered only if its contents constitute a work based on the Program (independent of having been made by running the Program). Whether that is true depends on what the Program does."
+msgstr "The act of running the Program is not restricted, and the output from the Program is covered only if its contents constitute a work based on the Program (independent of having been made by running the Program). Whether that is true depends on what the Program does."
+
+#: ui/HTML_fix.xml.en:0
+msgid "The content of this HTML document is broken, it is not valid HTML."
+msgstr "Le contenu de ce document est endommagé. Il ne contient pas du HTML valide."
+
+#: Root.py:664
+msgid "The default language has been changed."
+msgstr "La langue par défaut a été changée."
+
+#: Folder.py:608
+#: Folder.py:888
+#: Folder.py:951
+msgid "The document name contains illegal characters, choose another one."
+msgstr "Le nom du document contient des caractères interdits, choisissez en un autre."
+
+#: ui/User_tasks.xml.en:0
+msgid "The documents below await review for publication:"
+msgstr "Les documents ci-dessous nécessitent une validation pour être publiés :"
+
+#: ui/SiteRoot_error_page.xml.en:0
+msgid "The error should have been automatically reported to the system administrator."
+msgstr "Cette anomalie vient d'être notifiée à l'administrateur système. "
+
+#: Folder.py:945
+msgid "The file must be entered"
+msgstr "Le fichier doit être entré"
+
+#: ui/Root_license.xml.en:0
+msgid "The licenses for most software are designed to take away your freedom to share and change it."
+msgstr "The licenses for most software are designed to take away your freedom to share and change it."
+
+#: ui/User_translator.xml.en:0
+msgid "The list below describes your skills as a translator:"
+msgstr "La liste suivante décrit les traductions que vous êtes suceptible d'effectuer :"
+
+#: ui/File_help.xml.en:0
+msgid "The metadata describes the document (title, subject, description, etc..)."
+msgstr "Les méta-données décrivent le document (titre, sujet, description, etc)."
+
+#: Group.py:164
+msgid "The name contains illegal characters, choose another one."
+msgstr "Le nom contient des caractères interdits, choisissez en un autre."
+
+#: Folder.py:884
+#: Group.py:158
+msgid "The name must be entered"
+msgstr "Le nom doit être entré"
+
+#: SiteRoot.py:61
+msgid "The password is wrong"
+msgstr "Le mot de passe est incorrect"
+
+#: User.py:279
+#: UserFolder.py:128
+msgid "The password is wrong, please try again."
+msgstr "Le mot de passe est incorrect, essayez encore."
+
+#: ui/Root_license.xml.en:0
+msgid "The precise terms and conditions for copying, distribution and modification follow."
+msgstr "The precise terms and conditions for copying, distribution and modification follow"
+
+#: Folder.py:781
+msgid "The selected objects can not be translated."
+msgstr "Les documents sélectionnés ne peuvent pas être traduits ou sont déjà traduits."
+
+#: ui/Root_license.xml.en:0
+msgid "The source code for a work means the preferred form of the work for making modifications to it."
+msgstr "The source code for a work means the preferred form of the work for making modifications to it."
+
+#: ui/classic/template.xhtml.en:0
+#: ui/surf/template.xhtml.en:0
+msgid "The title"
+msgstr "Le titre"
+
+#: SiteRoot.py:57
+#, python-format
+msgid "The user \"%s\" does not exist"
+msgstr "L'utilisateur \"%s\" n'existe pas"
+
+#: UserFolder.py:122
+msgid "The username is wrong, please try again."
+msgstr "Le nom d'utilisateur est incorrect, essayez encore."
+
+#: ui/User_edit.xml.en:0
+msgid "Theme"
+msgstr "Thème"
+
+#: ui/Folder_browse_image.xml.en:0
+msgid "There are no images."
+msgstr "Ils n'y a pas d'images"
+
+#: ui/PO_edit.xml.en:0
+msgid "There aren't messages."
+msgstr "Ils n'y a pas de messages."
+
+#: ui/SiteRoot_error_page.xml.en:0
+msgid "There has been a system error, nothing serious."
+msgstr "Votre demande a provoqué une erreur."
+
+#: Group.py:170
+msgid "There is already another group with this name."
+msgstr "Il existe déjà un autre groupe avec ce nom."
+
+#: Folder.py:892
+msgid "There is already another object with this name"
+msgstr "Il existe déjà un autre objet avec ce nom"
+
+#: Folder.py:957
+msgid "There is already another resource with this name."
+msgstr "Il existe déjà une autre ressource avec ce nom."
+
+#: UserFolder.py:125
+#, python-format
+msgid "There is another user with the username \"%s\", please try again"
+msgstr "Il existe déjà un autre utilisateur avec le nom \"%s\",essayez encore"
+
+#: ui/Root_license.xml.en:0
+msgid "Therefore, by modifying or distributing the Program (or any work based on the Program), you indicate your acceptance of this License to do so, and all its terms and conditions for copying, distributing or modifying the Program or works based on it."
+msgstr "Therefore, by modifying or distributing the Program (or any work based on the Program), you indicate your acceptance of this License to do so, and all its terms and conditions for copying, distributing or modifying the Program or works based on it."
+
+#: ui/Root_license.xml.en:0
+msgid "These actions are prohibited by law if you do not accept this License."
+msgstr "These actions are prohibited by law if you do not accept this License."
+
+#: ui/Root_license.xml.en:0
+msgid "These requirements apply to the modified work as a whole."
+msgstr "These requirements apply to the modified work as a whole."
+
+#: ui/Root_license.xml.en:0
+msgid "These restrictions translate to certain responsibilities for you if you distribute copies of the software, or if you modify it."
+msgstr "These restrictions translate to certain responsibilities for you if you distribute copies of the software, or if you modify it."
+
+#: ui/Root_license.xml.en:0
+msgid "This General Public License applies to most of the Free Software Foundation's software and to any other program whose authors commit to using it."
+msgstr "This General Public License applies to most of the Free Software Foundation's software and to any other program whose authors commit to using it."
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "This folder or query is empty."
+msgstr "Ce répertoire ou cette requête est vide."
+
+#: ui/Group_users.xml.en:0
+msgid "This group is empty."
+msgstr "Ce groupe est vide."
+
+#: ui/File_help.xml.en:0
+#: ui/Folder_help.xml.en:0
+msgid "This help screen."
+msgstr "Cet onglet d'aide."
+
+#: ui/DocumentTypes_view.xml.en:0
+#: ui/OOffice_view.xml.en:0
+msgid "This is a preview of your document, it doesnt really look like that"
+msgstr "Ceci est un aperçu du document, il ne ressemble pas vraiment à celà"
+
+#: ui/Tar_untar.xml.en:0
+msgid "This is a tar file, you can untar it by clicking the button below:"
+msgstr "Ceci est un fichier d'archive (.tar), vous pouvez le transformer en répertoire utilisable en cliquant sur le boutton ci-dessous."
+
+#: ui/Root_license.xml.en:0
+msgid "This section is intended to make thoroughly clear what is believed to be a consequence of the rest of this License."
+msgstr "This section is intended to make thoroughly clear what is believed to be a consequence of the rest of this License."
+
+#: ui/Root_license.xml.en:0
+msgid "Thus, it is not the intent of this section to claim rights or contest your rights to work written entirely by you;"
+msgstr "Thus, it is not the intent of this section to claim rights or contest your rights to work written entirely by you;"
+
+#: ui/Folder_browse_list.xml.en:0
+#: ui/Folder_new_folder.xml.en:0
+#: ui/Metadata_edit.xml.en:0
+#: ui/Text_new_instance.xml.en:0
+msgid "Title"
+msgstr "Titre"
+
+#: ui/Metadata_edit.xml.en:0
+msgid "Title (<stl:inline content=\"title/lang_name\"></stl:inline>)"
+msgstr "Titre (<stl:inline content=\"title/lang_name\"></stl:inline>)s"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Title <stl:inline content=\"table/sortcontrol(title)\"></stl:inline>"
+msgstr "Titre <stl:inline content=\"table/sortcontrol(title)\"></stl:inline>"
+
+#: ui/User_translator.xml.en:0
+msgid "To"
+msgstr "Pour"
+
+#: ui/Folder_new_folder.xml.en:0
+msgid "To add a folder enter its name and click the <tt>Add</tt> button."
+msgstr "Pour ajouter un répertoire, entrez son nom et cliquez sur le bouton <tt>Ajouter</tt>."
+
+#: ui/HTML_fix.xml.en:0
+msgid "To fix it (with tidy) click the button below."
+msgstr "Pour le réparer, cliquez sur le bouton ci-dessous."
+
+#: ui/Root_license.xml.en:0
+msgid "To prevent this, we have made it clear that any patent must be licensed for everyone's free use or not licensed at all."
+msgstr "To prevent this, we have made it clear that any patent must be licensed for everyone's free use or not licensed at all."
+
+#: ui/Root_license.xml.en:0
+msgid "To protect your rights, we need to make restrictions that forbid anyone to deny you these rights or to ask you to surrender the rights."
+msgstr "To protect your rights, we need to make restrictions that forbid anyone to deny you these rights or to ask you to surrender the rights."
+
+#: ui/Root_catalog.xml.en:0
+msgid "To reindex the whole site click the button below:"
+msgstr "Pour réindexer tout le site cliquez sur le bouton ci-dessous."
+
+#: ui/Document_translate.xml.en:0
+msgid "To save the translation above click the button below:"
+msgstr "Pour sauvegarder la traduction au-dessus, cliquez sur le bouton ci-dessous."
+
+#: ui/File_upload.xml.en:0
+msgid "To upload a new version of the file choose it and click the <tt>Upload</tt> button:"
+msgstr "Pour télécharger une nouvelle version, sélectionnez-là et cliquez sur le bouton <tt>télécharger</tt>."
+
+#: WorkflowAware.py:166
+msgid "Transition done."
+msgstr "Transition accomplie."
+
+#: Document.py:141
+#: ui/Folder_translate.xml.en:0
+msgid "Translate"
+msgstr "Traduire"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Translate.."
+msgstr "Traduction.."
+
+#: Document.py:203
+msgid "Translation saved."
+msgstr "Traduction sauvegardée."
+
+#: ui/Link_edit.xml.en:0
+msgid "Type"
+msgstr "Type"
+
+#: ui/Folder_browse_list.xml.en:0
+msgid "Type <stl:inline content=\"table/sortcontrol(format)\"></stl:inline>"
+msgstr "Type <stl:inline content=\"table/sortcontrol(format)\"></stl:inline>"
+
+#: ui/Folder_new_link.xml.en:0
+#: ui/Link_edit.xml.en:0
+msgid "URI"
+msgstr "URI"
+
+#: ui/Tar_untar.xml.en:0
+msgid "Unpack"
+msgstr "Décompresser"
+
+#: File.py:149
+#: ui/File_upload.xml.en:0
+#: ui/Folder_upload_file.xml.en:0
+msgid "Upload"
+msgstr "Télécharger"
+
+#: ui/File_upload.xml.en:0
+msgid "Upload File"
+msgstr "Télécharger un fichier"
+
+#: ui/Folder_upload_file.xml.en:0
+msgid "Upload a File"
+msgstr "Télécharger un fichier"
+
+#: File.py:169
+#, python-format
+msgid "Upload failed: either the file does not match this document type (%s) or it contains errors."
+msgstr "Erreur lors du téléchargement : soit le fichier ne correspond pas à ce type de document (%s) soit il contient des erreurs."
+
+#: File.py:44
+msgid "Upload office documents, images, media files, etc."
+msgstr "Téléchargez des documents office, des images, des fichiers de média, etc."
+
+#: ui/Group_add_users.xml.en:0
+msgid "Use CTRL or Maj if you want add more than one user."
+msgstr "Utilisez CTRL ou Maj si vous voulez ajouter plus d'un utlisateur "
+
+#: ui/File_history.xml.en:0
+msgid "User"
+msgstr "Utilisateur"
+
+#: Group.py:305
+#: UserFolder.py:138
+msgid "User added"
+msgstr "Utilisateur(s) ajouté(s) "
+
+#: User.py:262
+msgid "User data changed."
+msgstr "Données utilisateur modifiées."
+
+#: User.py:341
+msgid "User groups edited"
+msgstr "Groupes d'utilisateurs édités"
+
+#: Group.py:234
+msgid "User removed."
+msgstr "Utilisateur supprimé."
+
+#: ui/Root_join.xml.en:0
+#: ui/SiteRoot_login.xml.en:0
+#: ui/UserFolder_new_user.xml.en:0
+msgid "Username"
+msgstr "Nom"
+
+#: ui/Group_users.xml.en:0
+msgid "Username <stl:inline content=\"table/sortcontrol(name)\"></stl:inline>"
+msgstr "Nom d'utilisateur <stl:inline content=\"table/sortcontrol(name)\"></stl:inline>"
+
+#: Group.py:181
+#: Group.py:253
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: ui/Group_add_users.xml.en:0
+msgid "Users List :"
+msgstr "Liste des utilisateurs :"
+
+#: Group.py:307
+msgid "Users added"
+msgstr "Utilisateur(s) ajouté(s) "
+
+#: Group.py:236
+msgid "Users removed."
+msgstr "Utilisateurs supprimés."
+
+#: ui/Root_license.xml.en:0
+msgid "Version 2, June 1991"
+msgstr "Version 2, June 1991"
+
+#: Text.py:316
+msgid "Version edited."
+msgstr "Version éditée."
+
+#: File.py:171
+msgid "Version uploaded."
+msgstr "Version téléchargée."
+
+#: DocumentTypes.py:70
+#: DocumentTypes.py:71
+#: DocumentTypes.py:118
+#: DocumentTypes.py:203
+#: DocumentTypes.py:246
+#: DocumentTypes.py:292
+#: DocumentTypes.py:352
+#: File.py:178
+#: Folder.py:431
+#: Folder.py:448
+#: Folder.py:493
+#: Root.py:588
+#: Text.py:111
+#: Text.py:272
+#: User.py:195
+msgid "View"
+msgstr "Vue"
+
+#: DocumentTypes.py:119
+#: DocumentTypes.py:204
+#: DocumentTypes.py:247
+#: DocumentTypes.py:293
+#: DocumentTypes.py:353
+msgid "View_as_html"
+msgstr "Vue comme du html"
+
+#: DocumentTypes.py:194
+msgid "Warning text of file not indexed"
+msgstr "Attention texte du fichier non indexé"
+
+#: DocumentTypes.py:165
+#, python-format
+msgid "Warning text of file not indexed : %s"
+msgstr "Attention texte du fichier non indexé : %s"
+
+#: DocumentTypes.py:103
+#, python-format
+msgid "Warning text of file not indexed because : %s"
+msgstr "Attention texte du fichier non indexé parce que : %s"
+
+#: ui/Root_license.xml.en:0
+msgid "We protect your rights with two steps:"
+msgstr "We protect your rights with two steps:"
+
+#: ui/Root_license.xml.en:0
+msgid "We wish to avoid the danger that redistributors of a free program will individually obtain patent licenses, in effect making the program proprietary."
+msgstr "We wish to avoid the danger that redistributors of a free program will individually obtain patent licenses, in effect making the program proprietary."
+
+#: Text.py:175
+msgid "Web Page"
+msgstr "Page Web"
+
+#: ui/Root_about.xml.en:0
+msgid "Welcome to the IKAARO Content Management System"
+msgstr "Bienvenu dans iKaaro Système de Gestion de Contenu"
+
+#: ui/Folder_new_link.xml.en:0
+msgid "When the link is asked for the resource it points to, the language negotiation takes place, and depending on it one resource or another is returned."
+msgstr "Quand le lien est demandé pour la ressource, il pointe vers cette ressource, la langue de travail s'installe et depend de cette ressource sinon une autre est renvoyée"
+
+#: ui/Root_license.xml.en:0
+msgid "When we speak of free software, we are referring to freedom, not price."
+msgstr "When we speak of free software, we are referring to freedom, not price."
+
+#: DocumentTypes.py:182
+msgid "Word"
+msgstr "Word"
+
+#: DocumentTypes.py:370
+msgid "Writer"
+msgstr "Ecrire"
+
+#: ui/User_view.xml.en:0
+msgid "You are a member of the following groups:"
+msgstr "Vous êtes membre des groupes suivants :"
+
+#: ui/User_translator.xml.en:0
+msgid "You are not a translator, <em>woaaahh</em>"
+msgstr "Vous n'êtes pas un traducteur, <em>woaaahh</em>"
+
+#: ui/Root_license.xml.en:0
+msgid "You are not responsible for enforcing compliance by third parties to this License."
+msgstr "You are not responsible for enforcing compliance by third parties to this License."
+
+#: ui/File_externaledit.xml.en:0
+#: ui/Text_externaledit.xml.en:0
+msgid "You can edit your document with a desktop application (MS Word, Photoshop, etc.)."
+msgstr "Vous pouvez éditer votre document avec des applications bureautiques telles que MS-WORD, Photoshop, etc"
+
+#: Root.py:671
+msgid "You can not remove the default language."
+msgstr "Vous ne pouvez pas supprimer la langue par défaut."
+
+#: ui/Text_new_instance.xml.en:0
+msgid "You can upload a file from the filesystem or create a new empty document."
+msgstr "Vous pouvez charger un fichier à partir de votre disque ou créer un document vide."
+
+#: ui/Folder_upload_file.xml.en:0
+msgid "You can upload a file from the filesystem to create a new document."
+msgstr "Vous pouvez charger un fichier à partir de votre disque ou créer un document vide."
+
+#: ui/User_view.xml.en:0
+msgid "You don't belong to any group."
+msgstr "Vous n'appartenez à aucun groupe."
+
+#: ui/Root_license.xml.en:0
+msgid "You may charge a fee for the physical act of transferring a copy, and you may at your option offer warranty protection in exchange for a fee."
+msgstr "You may charge a fee for the physical act of transferring a copy, and you may at your option offer warranty protection in exchange for a fee."
+
+#: ui/Root_license.xml.en:0
+msgid "You may not impose any further restrictions on the recipients' exercise of the rights granted herein."
+msgstr "You may not impose any further restrictions on the recipients' exercise of the rights granted herein."
+
+#: ui/Group_add_users.xml.en:0
+msgid "You must add user(s) in parent group:"
+msgstr "Vous devez ajouter le(s) utilisateur(s) dans un groupe"
+
+#: Root.py:684
+msgid "You must choose a language"
+msgstr "Vous devez choisir une langue"
+
+#: ui/Root_license.xml.en:0
+msgid "You must make sure that they, too, receive or can get the source code."
+msgstr "You must make sure that they, too, receive or can get the source code."
+
+#: Root.py:657
+msgid "You must select one and only one language."
+msgstr "Vous devez sélectionner une et seulement une langue."
+
+#: VersioningAware.py:98
+msgid "You must select one and only one revision."
+msgstr "Vous devez sélectionner une et seulement une révision."
+
+#: Text.py:143
+msgid "You must select one or two revisions."
+msgstr "Vous devez sélectionner une ou deux révisions."
+
+#: Group.py:217
+msgid "You must select the members to remove."
+msgstr "Vous devez sélectionner les membres à supprimer."
+
+#: DocumentTypes.py:38
+#, python-format
+msgid "You need to install : %s"
+msgstr "Vous devez installer : %s"
+
+#: ui/Root_about.xml.en:0
+msgid "a friendly user interface, high end multilingual features, powerful versioning system, desktop integration, web services support and more."
+msgstr "Une interface utilisateur conviviale et paramétrable en plusieurs langues, un puissant sytème de gestion de versions, une intégration aux outils bureautiques, un support d'aide en ligne, etc."
+
+#: ui/Root_license.xml.en:0
+msgid "and give any other recipients of the Program a copy of this License along with the Program."
+msgstr "and give any other recipients of the Program a copy of this License along with the Program."
+
+#: ui/Root_license.xml.en:0
+msgid "and that you know you can do these things."
+msgstr "and that you know you can do these things."
+
+#: ui/classic/template.xhtml.en:0
+msgid "format:"
+msgstr "format:"
+
+#: Root.py:101
+#: Root.py:697
+msgid "iKaaro"
+msgstr "iKaaro"
+
+#: ui/Root_license.xml.en:0
+msgid "if the Program itself is interactive but does not normally print such an announcement, your work based on the Program is not required to print an announcement.)"
+msgstr "if the Program itself is interactive but does not normally print such an announcement, your work based on the Program is not required to print an announcement.)"
+
+#: ui/Root_license.xml.en:0
+msgid "it is up to the author/donor to decide if he or she is willing to distribute software through any other system and a licensee cannot impose that choice."
+msgstr "it is up to the author/donor to decide if he or she is willing to distribute software through any other system and a licensee cannot impose that choice."
+
+#: ui/Root_license.xml.en:0
+msgid "keep intact all the notices that refer to this License and to the absence of any warranty;"
+msgstr "keep intact all the notices that refer to this License and to the absence of any warranty;"
+
+#: ui/classic/template.xhtml.en:0
+msgid "language:"
+msgstr "langue:"
+
+#: ui/classic/template.xhtml.en:0
+msgid "modified:"
+msgstr "modifié:"
+
+#: Root.py:646
+msgid "name"
+msgstr "nom"
+
+#: ui/classic/template.xhtml.en:0
+msgid "not logged in"
+msgstr "non authentifié"
+
+#: ui/User_edit_groups.xml.en:0
+msgid "ok"
+msgstr "ok"
+
+#: ui/Root_license.xml.en:0
+msgid "or,"
+msgstr "or,"
+
+#: WorkflowAware.py:39
+msgid "pending"
+msgstr "En attente de publication"
+
+#: WorkflowAware.py:36
+msgid "private"
+msgstr "privé"
+
+#: WorkflowAware.py:42
+msgid "public"
+msgstr "publié"
+
+#: ui/Root_license.xml.en:0
+msgid "rather, the intent is to exercise the right to control the distribution of derivative or collective works based on the Program."
+msgstr "rather, the intent is to exercise the right to control the distribution of derivative or collective works based on the Program."
+
+#: ui/Root_license.xml.en:0
+msgid "that is to say, a work containing the Program or a portion of it, either verbatim or with modifications and/or translated into another language."
+msgstr "that is to say, a work containing the Program or a portion of it, either verbatim or with modifications and/or translated into another language."
+
+#: ui/Root_license.xml.en:0
+msgid "they are outside its scope."
+msgstr "they are outside its scope."
+
+#: ui/Root_license.xml.en:0
+msgid "this section has the sole purpose of protecting the integrity of the free software distribution system, which is implemented by public license practices."
+msgstr "this section has the sole purpose of protecting the integrity of the free software distribution system, which is implemented by public license practices."
+
+#: ui/PO_edit.xml.en:0
+msgid "translation"
+msgstr "traduction"
+
+#: ui/Root_license.xml.en:0
+msgid "we sometimes make exceptions for this."
+msgstr "we sometimes make exceptions for this."
+
+#: ui/Folder_browse_image.xml.en:0
+msgid "x"
+msgstr "x"
+
+#: ui/classic/template.xhtml.en:0
+msgid "|"
+msgstr "|"
+
+#: ui/Settings_languages.xml.en:0
+msgid "«"
+msgstr "«"
+
+#: ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href join_url\">Join</a>"
+msgstr "» <a stl:attributes=\"href join_url\">Devenir membre</a>"
+
+#: ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href login_url\">Login</a>"
+msgstr "» <a stl:attributes=\"href login_url\">Connexion</a>"
+
+#: ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href user/home\">Home</a>"
+msgstr "» <a stl:attributes=\"href user/home\">Mon espace</a>"
+
+#: ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href user/logout\">Log out</a>"
+msgstr "» <a stl:attributes=\"href user/logout\"> Quitter</a>"
+
+#: ui/HTML_addimage.xml.en:0
+#: ui/HTML_addlink.xml.en:0
+msgid "» Browse and link an image from the workspace:"
+msgstr "» Parcourir les documents iKaaro et sélectionner une image :"
+
+#: ui/HTML_browsedir.xml.en:0
+msgid "» Browse and link an object from the workspace:"
+msgstr "» Parcourir  et lier un document à partir de l'espace de travail:"
+
+#: ui/HTML_addlink.xml.en:0
+msgid "» Type the url to add:"
+msgstr "» Entrer l'URL à ajouter :"
+

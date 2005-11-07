@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <title></title>
+    <!-- Changed by: , 12-May-2005 -->
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <table cellpadding="0" width="789" cellspacing="0" border="0">
+      <tbody>
+        <tr>
+          <td style="padding: 0px;" width="219" height="86"
+              class="logo"><img width="219" height="86" border="0"
+                                src="logo.png" /></td>
+
+          <td colspan="2" class="text">
+            <a href="../index.xhtml">Home</a>
+            | <a href="../download.xhtml">Download</a>
+            | <a href="../roadmap.xhtml">Roadmap</a>
+            <br/>
+            Products: <a href="../itools.xhtml">itools</a>
+            | <a href="../ikaaro.xhtml">iKaaro</a>
+            | <a href="../localizer.xhtml">Localizer</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- BODY -->
+    <div style="padding: 12px" stl:content="body" />
+  </body>
+</html>

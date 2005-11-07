@@ -1,0 +1,11 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <p>
+    This is a tar file, you can untar it by clicking the button below:
+  </p>
+  <blockquote>
+    <form action=";untar" method="post">
+      <input type="submit" value="Unpack" />
+    </form>
+  </blockquote>
+</stl:block>

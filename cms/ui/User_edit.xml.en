@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";edit" method="post">
+  <table class="form">
+    <tr>
+      <th colspan="2" class="title">Personal information</th>
+    </tr>
+    <tr>
+      <th>Full name</th>
+      <td>
+        <input type="text" name="dc:title"
+               stl:attributes="value fullname" />
+      </td>
+    </tr>
+    <tr>
+      <th>Email</th>
+      <td>
+        <input type="text" name="email" stl:attributes="value email" />
+      </td>
+    </tr>
+    <tr>
+      <th>Language</th>
+      <td>
+        <select name="ikaaro:user_language">
+          <option stl:repeat="language languages"
+                  stl:attributes="value language/code;
+                                  selected language/is_selected"
+                  stl:content="language/name" />
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>Theme</th>
+      <td>
+        <select name="ikaaro:user_theme">
+          <option stl:repeat="theme themes"
+                  stl:attributes="value theme/value;
+                                  selected theme/is_selected"
+                  stl:content="theme/value" />
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td class="submit"><input type="submit" value="OK" /></td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:stl="http://xml.itools.org/namespaces/stl">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  <script language="javascript" type="text/javascript" src="browser.js" />
+  <script language="javascript" type="text/javascript">
+<!--
+// This script allows to use several Epoz WYSIWYG fields.
+// Copyright (C) 2005 Benoit PIN <mailto:pin@cri.ensmp.fr>
+
+var IFramePrefix = "Iframe_";
+var IFramePrefixLength = IFramePrefix.length;
+var DocPrefix = "doc_";
+var DocPrefixLength = DocPrefix.length;
+
+function raiseEpozRedirect() {
+    docid = document.id;
+    if (!docid) {
+     return; // single mode
+    }
+    docid = document.id.slice(DocPrefixLength);
+    frameId = IFramePrefix + docid;
+    iframe = window.parent.document.getElementById(frameId);
+    if (iframe) {
+        raiseEvent(iframe, "click");
+    }
+}
+
+function raiseEvent(ob, eventName) {
+    if (browser.isIE55 || browser.isIE6up) {
+        eventName = "on" + eventName;
+        ob.fireEvent(eventName);
+    }
+    else if (browser.isGecko) {
+        event = document.createEvent("MouseEvents");
+        event.initEvent(eventName, true, true);
+        ob.dispatchEvent(event);
+    }
+
+}
+
+function addMouseDownListener() {
+    if (browser.isIE55 || browser.isIE6up) {
+        document.attachEvent("onmousedown", raiseEpozRedirect);
+    }
+    else if (browser.isGecko) {
+        document.addEventListener("mousedown", raiseEpozRedirect, false);
+    }
+}
+
+window.onload = addMouseDownListener;
+-->
+  </script>
+</head>
+<body class="visualFontSizeCorrection" contenteditable="true"
+      style="height:100%" stl:content="data">
+</body>
+</html>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1st August 2004), see www.w3.org" />
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=iso-8859-1" />
+
+  <!-- Changed by: , 12-May-2005 -->
+  <link href="../../style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+  <table width="100%">
+    <tr>
+      <td valign="top">
+        Community build-up:<br/>
+        - <a href="#ep2005">EuroPython 2005</a><br/>
+        - <a href="#packaging">Packaging</a><br/>
+        - <a href="#ikaaro.org">ikaaro.org</a><br/>
+      </td>
+      <td valign="top">
+        Inter-operability:<br/>
+        - <a href="#zope3">Support Zope 3</a><br/>
+        - <a href="#rdb">Relational Databases</a><br/>
+      </td>
+      <td valign="top">
+        Functional scope:<br/>
+        - <a href="#calendar">Calendar</a><br/>
+        - <a href="#xul">XUL interfaces</a><br/>
+        - <a href="#ftp">FTP import/export</a><br/>
+      </td>
+    </tr>
+  </table>
+  <hr/>
+
+  <a name="ep2005"></a>
+  <h4>EuroPython 2005</h4>
+  <p>Five talks have been proposed:</p>
+  <ul>
+    <li>
+    A Virtual File System for Python
+    (<a href="http://www.python-in-business.org/ep2005/listtrack.chtml?track=692">Python Frameworks</a>)
+    <strong>[jdavid]</strong>
+    </li>
+    <li>
+    The itools XML infrastructure
+    (<a href="http://www.python-in-business.org/ep2005/listtrack.chtml?track=692">Python Frameworks</a>)
+    <strong>[jdavid]</strong>
+    </li>
+    <li>
+    Building a Zope application with iKaaro
+    (<a href="http://www.python-in-business.org/ep2005/listtrack.chtml?track=694">Zope and Zope related</a>)
+    <strong>[luis]</strong>
+    </li>
+    <li>
+    iKaaro Case Study: Traveluni
+    (<a href="http://www.python-in-business.org/ep2005/listtrack.chtml?track=694">Zope and Zope related</a>)
+    <strong>[luis]</strong>
+    </li>
+    <li>
+    Localizer 1.1, and Case Studies
+    (<a href="http://www.python-in-business.org/ep2005/listtrack.chtml?track=694">Zope and Zope related</a>)
+    <strong>[jdavid]</strong>
+    </li>
+  </ul>
+  <p>
+  Now we are waiting for the reply from the track chairs to know which ones
+  will be accepted.
+  </p>
+
+  <a name="zope3"></a>
+  <h4>Support for Zope 3</h4>
+  <ul>
+    <li>
+    <a href="http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=20">#20 itools.resources.zope3</a> <strong>[???]</strong>
+    </li>
+    <li>
+    <a href="http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=26">#26 itools.tmx</a> <strong>[???]</strong>
+    </li>
+    <li>
+    <a href="http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=27">#27 itools.xliff</a> <strong>[???]</strong>
+    </li>
+  </ul>
+
+  <a name="packaging"></a>
+  <h4>Packaging</h4>
+  <ul>
+    <li>
+    Debian/Ununtu <strong>[hervé]</strong>. See
+    <a href="http://deb.oursours.net/debian/">http://deb.oursours.net/debian/</a>
+    </li>
+  </ul>
+
+
+</body>
+</html>

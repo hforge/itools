@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1st August 2004), see www.w3.org" />
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=utf-8" />
+
+  <!-- Changed by: , 03-May-2005 -->
+  <link href="../style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <table cellpadding="0" width="789" border="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td colspan="2" class="text">
+          <table cellpadding="7" width="100%">
+            <tbody>
+              <tr>
+                <td style=
+                "border-right: 1px dashed rgb(102, 102, 51);"
+                width="50%" valign="top">
+                  <p><img src="../ikaaro.jpg" /> is a
+                  Content Management System.</p>
+
+                  <h4>Download</h4>- <a href=
+                  "../download/ikaaro-0.12.3-metapackage.tar.gz">The
+                  meta-package</a> (<a href=
+                  "../download/itools/itools-0.7.4.tar.gz">itools
+                  0.7.4</a>, <a href=
+                  "../download/ihotfix/iHotfix-0.5.2.tar.gz">iHotfix
+                  0.5.2</a> and <a href=
+                  "../download/ikaaro/ikaaro-0.12.3.tar.gz">iKaaro
+                  M12-3</a>).<br />
+                  - <a href=
+                  "../download/ikaaro/ikaaro-0.11.0.tar.gz">iKaaro
+                  M11</a><br />
+                  - <a href=
+                  "../download/ikaaro/ikaaro-0.10.4.tar.gz">iKaaro
+                  M10-4</a><br />
+                  - <a href=
+                  "../download/ikaaro/ikaaro-m9r1.tar.gz">iKaaro
+                  M9-1</a><br />
+                  - <a href=
+                  "http://deb.oursours.net/unstable/">Debian
+                  Packages</a>
+
+                  <h4>Documentation and Support</h4>- <a href=
+                  "../download/ikaaro/ikaaro-20050223.pdf">The
+                  official iKaaro documentation</a> (PDF).<br />
+                  - The <a href=
+                  "http://in-girum.net/mailman/listinfo/ikaaro">Mailing
+                  list</a><br />
+
+                  <h4>Source archives</h4>- <a href=
+                  "http://in-girum.net/cgi-bin/archzoom.cgi/jdavid@itaapy.com--public/ikaaro?expand">
+                  The trunk</a><br />
+                  - <a href=
+                  "http://arch.oursours.net/zoom/herve@oursours.net--public/ikaaro?expand">
+                  Hervé's branch</a>
+                </td>
+
+                <td width="50%" valign="top">
+                  <h4>Demo</h4>- Try the <a href=
+                  "http://demo.ikaaro.org/">demo</a> (username and
+                  password "super")
+
+                  <h4>Some sites made with iKaaro</h4>- <a href=
+                  "http://www.drei.cnrs.fr/">CNRS / DREI</a><br />
+                  - <a href=
+                  "http://www.idtrack.org">IDTrack</a><br />
+                  - <a href=
+                  "http://www.traveluni.com">Traveluni</a><br />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

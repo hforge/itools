@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title>Epoz-Toolbox</title>
+    <link rel="stylesheet" type="text/css" stl:attributes="href bc/style" />
+  </head>
+
+  <body>
+    <script type="text/javascript" stl:if="bc/object">
+      window.opener.CreateLink('<stl:inline content="bc/object" />');
+      window.close();
+    </script>
+
+    <table width="100%">
+      <tr>
+        <td width="20"></td>
+        <td bgcolor="#ffffff">
+          <p> 
+            &raquo;
+            Type the url to add:
+          </p>
+          <blockquote>
+            <form action=";addlink_form" method="get"
+                  enctype="multipart/form-data">
+              <input type="text" name="object" size="50" value="http://" />
+              <br />
+              <input type="submit" value="Add" />
+            </form>
+          </blockquote>
+          <p>
+            &raquo; Browse and link an image from the workspace:
+          </p>
+          <blockquote>
+            <stl:inline repeat="x bc/path">
+              / <a stl:attributes="href x/url" stl:content="x/name" />
+            </stl:inline>
+            <br />
+            <form action=";addlink_form" method="get">
+              <table>
+                <tr stl:repeat="object bc/objects">
+                  <td>
+                    <input type="radio" name="object"
+                           stl:if="not object/is_folder"
+                           stl:attributes="value object/path" />
+                  </td>
+                  <td>
+                    <img src="icon16" border="0"
+                         stl:attributes="src object/icon; 
+                                         alt object/object_type" />
+                  </td>
+                  <td>
+                    <a stl:if="object/is_folder"
+                       stl:attributes="href object/url"
+                       stl:content="object/name" />
+                    <stl:inline if="not object/is_folder"
+                                content="object/name"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td colspan="2">
+                    <input stl:if="bc/is_submit" type="submit" value="Link" />
+                  </td>
+                </tr>
+              </table>
+            </form>
+          </blockquote>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

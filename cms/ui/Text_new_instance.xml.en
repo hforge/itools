@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form name="new_document" action=";new_resource" method="post">
+  <input type="hidden" name="class_id" stl:attributes="value class_id" />
+  <table class="form">
+    <tr>
+      <th colspan="2" class="title">New Document</th>
+    </tr>
+    <tr>
+      <th>Name</th>
+      <td>
+        <input type="text" name="name" size="50"
+               stl:attributes="value name" />
+      </td>
+    </tr>
+    <tr>
+      <th>Title</th>
+      <td><input type="text" name="dc:title" size="50" /></td>
+    </tr>
+    <tr>
+      <th>Language</th>
+      <td>
+        <select name="dc:language" style="width: 100%">
+          <option stl:repeat="lang languages"
+                  stl:attributes="value lang/code; selected lang/isdefault"
+                  stl:content="lang/name" />
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td class="submit"><input type="submit" value="Add" /></td>
+    </tr>
+  </table>
+</form>
+
+<a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
+  Details
+</a>
+<div id="tip_body">
+  <p>
+  Documents are where the data is stored, they are similar to the files
+  from your filesystem. You can upload a file from the filesystem or
+  create a new empty document.
+  </p>
+</div>
+
+</stl:block>

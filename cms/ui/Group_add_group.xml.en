@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";add_group" method="post">
+  <table class="form">
+    <tr>
+      <th colspan="2" class="title">Create a new group</th>
+    </tr>
+    <tr>
+      <th align="right">Name</th>
+      <td><input type="text" name="name" /></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td class="submit"><input type="submit" value="Add" /></td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

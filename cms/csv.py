@@ -1,0 +1,108 @@
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+# Import from itools
+from itools.handlers.CSV import CSV as iCSV, Row as iRow, parse
+from itools.xml.stl import stl
+
+# Import from ikaaro
+from Handler import Node
+from text import Text
+from utils import comeback
+
+
+class Row(iRow, Node):
+
+    class_title = u'CSV Row'
+
+
+    def get_title_or_name(self):
+        return self.name
+
+
+    def get_mtime(self):
+        return self.parent.get_mtime()
+
+
+    def get_views(self):
+        return ['view', 'edit_form']
+
+
+    view__access__ = Node.is_allowed_to_view
+    view__label__ = u'View'
+    def view(self):
+        namespace = {}
+        namespace['row'] = self
+
+        handler = self.get_handler('/ui/CSVRow_view.xml')
+        return stl(handler, namespace)
+
+
+    edit_form__access__ = Node.is_allowed_to_edit
+    edit_form__label__ = u'Edit'
+    def edit_form(self):
+        namespace = {}
+        namespace['row'] = self
+
+        handler = self.get_handler('/ui/CSVRow_edit.xml')
+        return stl(handler, namespace)
+
+
+    edit__access__ = Node.is_allowed_to_edit
+    def edit(self, column, **kw):
+        self.__init__(column)
+        self.parent.set_changed()
+
+        message = self.gettext(u'Changes saved.')
+        comeback(message)
+
+
+
+class CSV(Text, iCSV):
+
+    class_id = 'text/comma-separated-values'
+
+
+    def _load_state(self, resource):
+        data = resource.read()
+
+        lines = []
+        index = 0
+        for line in parse(data, self.schema):
+            row = Row(line)
+            row.index = index
+            lines.append(row)
+            index = index + 1
+
+        self.state.lines = lines
+        self.state.encoding = self.guess_encoding(data)
+
+
+    def get_views(self):
+        return ['view', 'externaledit', 'edit_metadata_form', 'history_form']
+
+
+    edit_form__access__ = None
+
+
+    def view(self):
+        namespace = {}
+        namespace['rows'] = self.state.lines
+        handler = self.get_handler('/ui/CSV_view.xml')
+        return stl(handler, namespace)
+
+Text.register_handler_class(CSV)

@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title stl:content="title">The title</title>
+    <!-- Changed by: , 06-Nov-2005 -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="../menu.js" />
+    <script type="text/javascript" src="../main.js" />
+    <script type="text/javascript" src="../browser.js" />
+
+    <!-- Regular ikaaro stylesheets -->
+    <link rel="stylesheet" type="text/css" href="../content.css" />
+    <link rel="stylesheet" type="text/css" href="../main.css" />
+    <link rel="stylesheet" type="text/css" href="surf.css" />
+
+    <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
+    <link rel="stylesheet" type="text/css"
+          href="../calendar/calendar-win2k-1.css" />
+    <script type="text/javascript" src="../calendar/calendar.js" />
+    <script type="text/javascript" src="../calendar/lang/calendar-en.js" />
+    <script type="text/javascript" src="../calendar/calendar-setup.js" />
+
+    <!-- Epoz -->
+    <link rel="stylesheet" type="text/css" href="../epoz.css" />
+    <script type="text/javascript" src="../epoz.js" />
+
+    <!-- Additional resources that maybe needed to render the page -->
+    <link rel="stylesheet" type="text/css" stl:repeat="style styles" 
+          stl:attributes="href style" />
+    <script type="text/javascript" stl:repeat="script scripts"
+            stl:attributes="src script" />
+  </head>
+
+  <body>
+
+    <div id="container">
+
+      <table cellspacing="0" cellpadding="0" border="0" class="container">
+
+        <!--// TOP START //-->
+        <tr>
+          <td colspan="2">
+            <div id="top"><div id="topimg" /><div id="logo" /></div>
+          </td>
+          <td width="1"></td>
+        </tr>
+        <!--// TOP END //-->
+
+        <tr>
+
+          <!--// COLUMN LEFT START //-->
+          <td width="1">
+            <div id="column1">
+              <div class="boxtop">
+                <div class="boxtitle">
+                  <div class="boxtitleend" />
+                </div>
+
+                <div class="boxcontent">
+                  <table border="0" valign="top" cellspacing="0" 
+                         cellpadding="0">
+                    <tr>
+                      <td valign="top">
+                        <div id="usermenu">
+                          <ul class="listvert">
+                            <li class="listvert">
+                              <span stl:if="user" stl:content="user/name" />
+                              <span stl:if="not user">
+                                <em>not logged in</em>
+                              </span>
+                            </li>
+
+                            <stl:block if="not user">
+                              <li class="listvert" stl:if="joinisopen">
+                                <a stl:attributes="href join_url">Join</a>
+                              </li>
+                              <li class="listvert">
+                                <a stl:attributes="href login_url">
+                                  Log in</a>
+                              </li>
+                            </stl:block>
+
+                            <stl:block if="user">
+                              <li class="listvert">
+                                <a stl:attributes="href user/home">Home</a>
+                              </li>
+                              <li class="listvert">
+                                <a stl:attributes="href user/logout">
+                                  Log out</a>
+                              </li>
+                            </stl:block>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="box">
+                <div class="boxtitle">
+                  <div class="boxtitleend">
+                    <span></span>
+                  </div>
+                </div>
+                <div class="boxcontent">
+                  <table border="0" valign="top" cellspacing="0"
+                         cellpadding="0">
+                    <tr>
+                      <td valign="top">
+                        <div>
+                          <ul class="listvert">
+                            <li class="listvert">
+                              <div id="navmenu">
+                                <dl>
+                                  <dt stl:if="navigation/root/active">
+                                    <img src="../images/Root16.png" width="16" height="16" alt="" />
+                                    <strong>
+                                      <a href="#" stl:attributes="href navigation/root/path"
+                                        stl:content="navigation/root/title">The active root</a>
+                                    </strong>
+                                  </dt>
+                                  <dt stl:if="not navigation/root/active">
+                                    <img src="../images/Root16.png" width="16" height="16" alt="" />
+                                    <a href="#" stl:attributes="href navigation/root/path"
+                                      stl:content="navigation/root/title">The inactive root</a>
+                                  </dt>
+                                  <dd>
+                                    <dl>
+                                      <stl:block repeat="item navigation/menu">
+                                        <dt stl:if="item/active">
+                                          <img src="../images/Folder16.png" width="16" height="16"
+                                               stl:attributes="src item/icon" />
+                                          <strong stl:if="item/active">
+                                            <a href="#"
+                                                stl:attributes="href item/path"
+                                                stl:content="item/title">Active Item</a>
+                                          </strong>
+                                        </dt>
+                                        <dt stl:if="not item/active">
+                                          <img src="../images/User16.png" width="16" height="16"
+                                               stl:attributes="src item/icon" />
+                                          <a href="#"
+                                            stl:attributes="href item/path"
+                                            stl:content="item/title">Inactive Item</a>
+                                        </dt>
+                                      </stl:block>
+                                    </dl>
+                                  </dd>
+                                </dl>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="box">
+                <div class="boxtitle">
+                  <div class="boxtitleend">
+                    <span></span>
+                  </div>
+                </div>
+
+                <div class="boxcontent">
+                  <table border="0" valign="top" cellspacing="0"
+                         cellpadding="0">
+                    <tr>
+                      <td valign="top">
+                        <ul class="listvert">
+                          <li class="listvert">
+                            <!--// METADATA START //-->
+                            <div id="metadata">
+                              Title: <stl:block content="metadata/title" />
+                              <br/>
+                              Type: <stl:block content="metadata/format" />
+                              <br/>
+                              Language:
+                              <form action=";change_content_language"
+                                    method="get">
+                                <select name="dc:language">
+                                  <option stl:repeat="language metadata/languages"
+                                          stl:attributes="value language/code;
+                                                          selected language/is_selected"
+                                          stl:content="language/name" />
+                                </select>
+                                <input type="image" src="../images/px.png"
+                                       class="searchbutton" value="OK"
+                                       alt="OK"/>
+                              </form>
+                            </div>
+                            <!--// METADATA END //-->
+                          </li>
+                        </ul>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </td>
+          <!--// COLUMN LEFT END //-->
+
+          <td>
+
+            <!--// HEADER START //-->
+            <div class="pageheader">
+
+              <img stl:if="message" class="bulletinformation" src="images/bullet_message_anime.gif" />
+
+              <!-- XXX
+              <div class="searchbox">
+                <form name="searchform" action="search">
+                  <input class="searchfield" name="SearchableText"
+                         type="text" size="40" alt="Search" title="Search" value="search"/>
+                  <input type="image" src="../images/px.png" class="searchbutton" value="OK" alt="OK"/>
+                </form>
+              </div>
+              -->
+            </div>
+            <!--// HEADER END //-->
+
+            <!--// BREADCRUMB START //-->
+            <div id="breadcrumb">
+              <span class="breadcrumb">
+                <ul>
+                  <li stl:repeat="item breadcrumb">
+                    <stl:block if="not repeat/item/start">&raquo;</stl:block> 
+                    <a stl:if="item/url" stl:attributes="href item/url" stl:content="item/short_name"/>
+                    <span stl:if="not item/url" stl:content="item/name"/>
+                  </li>
+                </ul>
+              </span>
+            </div>
+            <!--// BREADCRUMB END //-->
+
+            <!--// WORKSPACE START //-->
+            <div id="workspace">
+              <!--// TABS START //-->
+              <ul id="tabs">
+                 <li stl:repeat="tab tabs" stl:attributes="class tab/style">
+                    <a href="#" stl:attributes="href tab/name; title tab/label" stl:content="tab/label" />
+                 </li>
+              </ul>
+              <span id="navclear" />
+              <ul id="subtabs">
+                <li class="subtab" stl:repeat="subtab subtabs">
+                  <a href="#" stl:attributes="href subtab/name; title subtab/label" stl:content="subtab/label">Label</a>
+                  <span stl:if="not repeat/subtab/end"> | </span>
+                </li>
+              </ul>
+              <!--// TABS END //-->
+
+              <!--// MESSAGE START //-->
+              <div class="message" stl:if="message" stl:content="message">Message!</div>
+              <!--// MESSAGE STOP //-->
+
+              <!--// CONTENT START //-->
+              <div id="content">
+
+                <table class="content" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td valign="top">
+                      <stl:block content="body">Contents</stl:block>
+                    </td>
+                  </tr>
+                </table>
+
+            </div>
+            <!--// CONTENT END //-->
+
+            <!--// rounded bottom corners start //-->
+            <div id="downleft"><div id="downright"></div></div>
+            <!--// rounded bottom corners end //-->
+
+          </div>
+          <!--// WORKSPACE END //-->
+
+        </td>
+
+        <td width="1">
+           <!--// EXTRA BUTTONS START //-->
+           <!--//
+           <div id="extrabutton">
+              <a href="#" target="_blank">
+                 <img src="images/extra_button.png" class="extrabutton"/>
+              </a>
+              <a href="#" target="_blank">
+                 <img src="images/extra_button.png" class="extrabutton"/>
+              </a>
+           </div>
+           //-->
+           <!--// EXTRA BUTTONS END //-->
+        </td>
+      </tr>
+
+      <tr>
+        <td><img src="../images/px.png" height="1" width="125"/></td>
+        <td><img src="../images/px.png" height="1" width="555"/></td>
+        <td width="1"><img src="../images/px.png" height="1" width="1"/></td>
+      </tr>
+    </table>
+
+  </div>
+
+</body>
+
+</html>

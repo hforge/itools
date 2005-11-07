@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <table class="form">
+    <tr> 
+      <th class="title">Documents are where the data is stored</th>
+    </tr>
+    <tr>
+      <td>
+        <h3>Available views:</h3>
+        <dl>
+          <dt>Edit</dt>
+          <dd>
+            Lets to edit the document, it is possible to use an external editor
+            if you install it or to upload a file from the filesystem.
+          </dd>
+          <dt>Metadata</dt>
+          <dd>
+            The metadata describes the document (title, subject, description,
+            etc..).
+          </dd>
+          <dt>History</dt>
+          <dd>
+            Keeps an historical record with the changes made, it is possible to
+            come back to an older version.
+          </dd>
+          <dt>Help</dt>
+          <dd>
+            This help screen.
+          </dd>
+        </dl>
+      </td>
+    </tr>  
+  </table>
+</stl:block>

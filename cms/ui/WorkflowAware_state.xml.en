@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";edit_state" method="post">
+  <table class="form" width="500">
+    <tr>
+      <th colspan="2" class="title">State: <stl:inline content="state" /></th>
+    </tr>
+    <stl:block if="transitions">
+      <tr stl:repeat="transition transitions">
+        <td>
+          <input type="radio" name="transition"
+                 stl:attributes="value transition/name" />
+        </td>
+        <td width="100%" stl:content="transition/description" />
+      </tr>
+      <tr>
+        <td colspan="2">
+          Comments:<br/>
+          <textarea name="comments" cols="66" rows="7" />
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="submit"><input type="submit" value="Ok" /></td>
+      </tr>
+    </stl:block>
+  </table>
+</form>
+
+<stl:block repeat="transition history">
+  <p>
+  <strong stl:content="transition/date" />
+  <stl:block content="transition/name" />,
+  by <em stl:content="transition/user" />.
+  </p>
+  <pre style="margin: 0px 0px 20px 20px" stl:content="transition/comments" />
+</stl:block>
+
+</stl:block>

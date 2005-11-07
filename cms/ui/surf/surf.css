@@ -1,0 +1,142 @@
+#top {
+  width: 100%;
+  height: 90px;
+  padding: 0;
+  margin: 0px;               /* to get the all wave */
+  margin: -50px 0px 0px 0px; /* to get half the wave */ 
+  background: #819097 url(images/wave_texture.jpg) repeat 100% 0%;
+}
+
+
+#topimg {
+  width: 100%;
+  height: 90px;
+  margin: 0;
+  padding: 0;
+  background: transparent url(images/wave.jpg) no-repeat 0% 0%;
+}
+
+
+#logo {
+  margin: 0px 0px 0px 0px;
+  height: 40px;
+  width: 150px;
+  padding: 0;
+  margin: -35px 0px 0px 0px;
+  background: transparent url(images/logo_ikaaro.png) no-repeat 0% 0%;
+  border: 0px solid #667c11;
+}
+
+
+.selectbutton {
+  width: 25px;
+  height: 25px;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  background: transparent url('images/ok.png') no-repeat 0 0;
+  margin: 0; /* IE bug fix */
+  vertical-align: top;
+  border: 0px solid #006666;
+}
+
+
+.boxcontent {
+  padding: 5px 5px 5px 5px;
+  background:#ededed url(images/box_round_down_left.png) no-repeat bottom left;
+  font-family: Verdana, Helvetica, Arial sans-serif;
+  font-size: 10px;
+  font-weight: normal;
+  border: 0px solid #00cccc;
+}
+
+
+#downleft {
+  height: 12px;
+  background: #ffffff url(images/round_down_left.png) no-repeat bottom left;
+}
+
+
+#downright {
+  height: 12px;
+  background: transparent url(images/round_down_right.png) no-repeat bottom
+    right;
+}
+
+
+.searchbutton {
+  width: 25px;
+  height: 14px;
+  margin: 10px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  background: transparent url('images/ok.png') no-repeat 0 0;
+  margin: 0; /* IE bug fix */
+  vertical-align: top;
+  border: 0px solid #006666;
+}
+
+
+.box {
+  margin: 0px 0px 4px 0px;
+}
+
+
+.boxtop {
+  margin: 0px 0px 4px 0px;
+}
+
+
+.boxtop .boxcontent {
+  margin: 0px 0px 0px 0px;
+  background : #ededed url(images/roundup.png) no-repeat top left;
+  border: 0px solid red;
+}
+
+
+.boxtop .boxtitle {
+  height: 28px;
+}
+
+
+.boxtitle {
+  height: 20px;
+  padding: 0px 0px 0px 5px;
+  background : #819097 url(images/header_texture.jpg) repeat 100% 0%;
+  border: 0px solid red;
+}
+
+
+.boxtitle span {
+  color: #000000
+  font: bold 12px Verdana, Arial, Helvetica, sans-serif;
+}
+
+
+.boxtitleend {
+  margin: 0px 0px 0px 0px;
+  background: transparent;
+}
+
+
+.pageheader {
+  top: 0;
+  left: 0;
+  height: 28px;
+  margin: 0;
+  margin: 0px 0px 0px 4px;
+  background: #819097 url(images/header_texture.jpg) repeat 100% 0%;
+  color: #006666;
+  font: bold 12px Verdana, Helvetica, Arial, sans-serif;
+  border: 0px solid black;
+}
+
+#navmenu dl, #navmenu dt, #navmenu dd {
+  margin: 0;
+}
+
+#navmenu dt {
+  overflow: hidden;
+}
+
+#navmenu dd {
+  margin-left: 8px;
+}

@@ -2,6 +2,468 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-07 13:18:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
+
+    Summary:
+      add new itools.cms package (ikaaro)
+    Revision:
+      itools--main--0.12--patch-10
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--cms--0.12--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.12--patch-9
+    
+     * jdavid@itaapy.com--public/itools--cms--0.12--patch-1
+       new package "itools.cms" (ikaaro)
+    
+     * jdavid@itaapy.com--public/itools--cms--0.12--patch-2
+       cms, add missing file
+    
+     * jdavid@itaapy.com--public/itools--cms--0.12--patch-3
+       cms, add the makefile
+    
+     * jdavid@itaapy.com--public/itools--cms--0.12--patch-4
+       cms, add zmi screens
+    
+
+    new files:
+     cms/.arch-ids/=id cms/.arch-ids/Document.py.id
+     cms/.arch-ids/File.py.id cms/.arch-ids/Folder.py.id
+     cms/.arch-ids/Group.py.id cms/.arch-ids/Handler.py.id
+     cms/.arch-ids/LocaleAware.py.id cms/.arch-ids/Makefile.id
+     cms/.arch-ids/Metadata.py.id cms/.arch-ids/Root.py.id
+     cms/.arch-ids/User.py.id cms/.arch-ids/UserFolder.py.id
+     cms/.arch-ids/VersioningAware.py.id
+     cms/.arch-ids/WebSite.py.id cms/.arch-ids/WorkflowAware.py.id
+     cms/.arch-ids/__init__.py.id cms/.arch-ids/csv.py.id
+     cms/.arch-ids/exceptions.py.id cms/.arch-ids/flash.py.id
+     cms/.arch-ids/html.py.id cms/.arch-ids/images.py.id
+     cms/.arch-ids/logging.conf.id cms/.arch-ids/msoffice.py.id
+     cms/.arch-ids/openoffice.py.id cms/.arch-ids/pdf.py.id
+     cms/.arch-ids/skins.py.id cms/.arch-ids/text.py.id
+     cms/.arch-ids/utils.py.id cms/.arch-ids/widgets.py.id
+     cms/Document.py cms/File.py cms/Folder.py cms/Group.py
+     cms/Handler.py cms/LocaleAware.py cms/Makefile cms/Metadata.py
+     cms/Root.py cms/User.py cms/UserFolder.py
+     cms/VersioningAware.py cms/WebSite.py cms/WorkflowAware.py
+     cms/__init__.py cms/csv.py cms/exceptions.py cms/flash.py
+     cms/html.py cms/images.py cms/locale/.arch-ids/=id
+     cms/locale/.arch-ids/en.po.id cms/locale/.arch-ids/es.po.id
+     cms/locale/.arch-ids/fr.po.id cms/locale/.arch-ids/it.po.id
+     cms/locale/.arch-ids/locale.pot.id
+     cms/locale/.arch-ids/zh.po.id cms/locale/en.po
+     cms/locale/es.po cms/locale/fr.po cms/locale/it.po
+     cms/locale/locale.pot cms/locale/zh.po cms/logging.conf
+     cms/msoffice.py cms/openoffice.py cms/pdf.py cms/skins.py
+     cms/text.py cms/ui/.arch-ids/=id
+     cms/ui/.arch-ids/CSVRow_edit.xml.en.id
+     cms/ui/.arch-ids/CSVRow_view.xml.en.id
+     cms/ui/.arch-ids/CSV_view.xml.en.id
+     cms/ui/.arch-ids/Document_translate.xml.en.id
+     cms/ui/.arch-ids/File_download_form.xml.en.id
+     cms/ui/.arch-ids/File_externaledit.xml.en.id
+     cms/ui/.arch-ids/File_help.xml.en.id
+     cms/ui/.arch-ids/File_history.xml.en.id
+     cms/ui/.arch-ids/File_new_instance.xml.en.id
+     cms/ui/.arch-ids/File_upload.xml.en.id
+     cms/ui/.arch-ids/Flash_view.xml.en.id
+     cms/ui/.arch-ids/Folder_browse_image.xml.en.id
+     cms/ui/.arch-ids/Folder_browse_list.xml.en.id
+     cms/ui/.arch-ids/Folder_browse_thumbnails.xml.en.id
+     cms/ui/.arch-ids/Folder_browsedir.xml.en.id
+     cms/ui/.arch-ids/Folder_new_instance.xml.en.id
+     cms/ui/.arch-ids/Folder_new_resource.xml.en.id
+     cms/ui/.arch-ids/Folder_rename.xml.en.id
+     cms/ui/.arch-ids/Folder_translate.xml.en.id
+     cms/ui/.arch-ids/Group_add_group.xml.en.id
+     cms/ui/.arch-ids/Group_add_users.xml.en.id
+     cms/ui/.arch-ids/Group_browse_users.xml.en.id
+     cms/ui/.arch-ids/HTML_addimage.xml.en.id
+     cms/ui/.arch-ids/HTML_addlink.xml.en.id
+     cms/ui/.arch-ids/HTML_edit.xml.en.id
+     cms/ui/.arch-ids/Handler_edit_metadata.xml.en.id
+     cms/ui/.arch-ids/Image_view.xml.en.id
+     cms/ui/.arch-ids/OOffice_view.xml.en.id
+     cms/ui/.arch-ids/PO_edit.xml.en.id
+     cms/ui/.arch-ids/Root_about.xml.en.id
+     cms/ui/.arch-ids/Root_catalog.xml.en.id
+     cms/ui/.arch-ids/Root_general.xml.en.id
+     cms/ui/.arch-ids/Root_join.xml.en.id
+     cms/ui/.arch-ids/Root_languages.xml.en.id
+     cms/ui/.arch-ids/Root_license.xml.en.id
+     cms/ui/.arch-ids/Tar_untar.xml.en.id
+     cms/ui/.arch-ids/Text_edit.xml.en.id
+     cms/ui/.arch-ids/Text_externaledit.xml.en.id
+     cms/ui/.arch-ids/Text_new_instance.xml.en.id
+     cms/ui/.arch-ids/UserFolder_new_user.xml.en.id
+     cms/ui/.arch-ids/User_edit.xml.en.id
+     cms/ui/.arch-ids/User_edit_groups.xml.en.id
+     cms/ui/.arch-ids/User_edit_password.xml.en.id
+     cms/ui/.arch-ids/User_tasks.xml.en.id
+     cms/ui/.arch-ids/User_translator.xml.en.id
+     cms/ui/.arch-ids/User_view.xml.en.id
+     cms/ui/.arch-ids/WebSite_error_page.xml.en.id
+     cms/ui/.arch-ids/WebSite_login.xml.en.id
+     cms/ui/.arch-ids/WebSite_new_instance.xml.en.id
+     cms/ui/.arch-ids/WorkflowAware_state.xml.en.id
+     cms/ui/.arch-ids/browser.js.id cms/ui/.arch-ids/content.css.id
+     cms/ui/.arch-ids/epoz.css.id cms/ui/.arch-ids/epoz.js.id
+     cms/ui/.arch-ids/epoz.xml.id
+     cms/ui/.arch-ids/epoz_iframe.xml.id
+     cms/ui/.arch-ids/main.css.id cms/ui/.arch-ids/main.js.id
+     cms/ui/.arch-ids/menu.js.id cms/ui/CSVRow_edit.xml.en
+     cms/ui/CSVRow_view.xml.en cms/ui/CSV_view.xml.en
+     cms/ui/Document_translate.xml.en
+     cms/ui/File_download_form.xml.en
+     cms/ui/File_externaledit.xml.en cms/ui/File_help.xml.en
+     cms/ui/File_history.xml.en cms/ui/File_new_instance.xml.en
+     cms/ui/File_upload.xml.en cms/ui/Flash_view.xml.en
+     cms/ui/Folder_browse_image.xml.en
+     cms/ui/Folder_browse_list.xml.en
+     cms/ui/Folder_browse_thumbnails.xml.en
+     cms/ui/Folder_browsedir.xml.en
+     cms/ui/Folder_new_instance.xml.en
+     cms/ui/Folder_new_resource.xml.en cms/ui/Folder_rename.xml.en
+     cms/ui/Folder_translate.xml.en cms/ui/Group_add_group.xml.en
+     cms/ui/Group_add_users.xml.en cms/ui/Group_browse_users.xml.en
+     cms/ui/HTML_addimage.xml.en cms/ui/HTML_addlink.xml.en
+     cms/ui/HTML_edit.xml.en cms/ui/Handler_edit_metadata.xml.en
+     cms/ui/Image_view.xml.en cms/ui/OOffice_view.xml.en
+     cms/ui/PO_edit.xml.en cms/ui/Root_about.xml.en
+     cms/ui/Root_catalog.xml.en cms/ui/Root_general.xml.en
+     cms/ui/Root_join.xml.en cms/ui/Root_languages.xml.en
+     cms/ui/Root_license.xml.en cms/ui/Tar_untar.xml.en
+     cms/ui/Text_edit.xml.en cms/ui/Text_externaledit.xml.en
+     cms/ui/Text_new_instance.xml.en
+     cms/ui/UserFolder_new_user.xml.en cms/ui/User_edit.xml.en
+     cms/ui/User_edit_groups.xml.en
+     cms/ui/User_edit_password.xml.en cms/ui/User_tasks.xml.en
+     cms/ui/User_translator.xml.en cms/ui/User_view.xml.en
+     cms/ui/WebSite_error_page.xml.en cms/ui/WebSite_login.xml.en
+     cms/ui/WebSite_new_instance.xml.en
+     cms/ui/WorkflowAware_state.xml.en cms/ui/browser.js
+     cms/ui/calendar/.arch-ids/=id
+     cms/ui/calendar/.arch-ids/README.id
+     cms/ui/calendar/.arch-ids/calendar-setup.js.id
+     cms/ui/calendar/.arch-ids/calendar-win2k-1.css.id
+     cms/ui/calendar/.arch-ids/calendar.js.id
+     cms/ui/calendar/README cms/ui/calendar/calendar-setup.js
+     cms/ui/calendar/calendar-win2k-1.css
+     cms/ui/calendar/calendar.js cms/ui/calendar/lang/.arch-ids/=id
+     cms/ui/calendar/lang/.arch-ids/calendar-af.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-br.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-ca.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-cs-win.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-da.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-de.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-du.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-el.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-en.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-es.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-fi.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-fr.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-hr-utf8.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-hr.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-hu.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-it.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-jp.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-ko-utf8.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-ko.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-lt-utf8.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-lt.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-nl.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-no.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-pl-utf8.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-pl.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-pt.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-ro.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-ru.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-si.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-sk.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-sp.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-sv.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-tr.js.id
+     cms/ui/calendar/lang/.arch-ids/calendar-zh.js.id
+     cms/ui/calendar/lang/calendar-af.js
+     cms/ui/calendar/lang/calendar-br.js
+     cms/ui/calendar/lang/calendar-ca.js
+     cms/ui/calendar/lang/calendar-cs-win.js
+     cms/ui/calendar/lang/calendar-da.js
+     cms/ui/calendar/lang/calendar-de.js
+     cms/ui/calendar/lang/calendar-du.js
+     cms/ui/calendar/lang/calendar-el.js
+     cms/ui/calendar/lang/calendar-en.js
+     cms/ui/calendar/lang/calendar-es.js
+     cms/ui/calendar/lang/calendar-fi.js
+     cms/ui/calendar/lang/calendar-fr.js
+     cms/ui/calendar/lang/calendar-hr-utf8.js
+     cms/ui/calendar/lang/calendar-hr.js
+     cms/ui/calendar/lang/calendar-hu.js
+     cms/ui/calendar/lang/calendar-it.js
+     cms/ui/calendar/lang/calendar-jp.js
+     cms/ui/calendar/lang/calendar-ko-utf8.js
+     cms/ui/calendar/lang/calendar-ko.js
+     cms/ui/calendar/lang/calendar-lt-utf8.js
+     cms/ui/calendar/lang/calendar-lt.js
+     cms/ui/calendar/lang/calendar-nl.js
+     cms/ui/calendar/lang/calendar-no.js
+     cms/ui/calendar/lang/calendar-pl-utf8.js
+     cms/ui/calendar/lang/calendar-pl.js
+     cms/ui/calendar/lang/calendar-pt.js
+     cms/ui/calendar/lang/calendar-ro.js
+     cms/ui/calendar/lang/calendar-ru.js
+     cms/ui/calendar/lang/calendar-si.js
+     cms/ui/calendar/lang/calendar-sk.js
+     cms/ui/calendar/lang/calendar-sp.js
+     cms/ui/calendar/lang/calendar-sv.js
+     cms/ui/calendar/lang/calendar-tr.js
+     cms/ui/calendar/lang/calendar-zh.js
+     cms/ui/classic/.arch-ids/=id
+     cms/ui/classic/.arch-ids/content.css.id
+     cms/ui/classic/.arch-ids/main.css.id
+     cms/ui/classic/.arch-ids/template.xhtml.en.id
+     cms/ui/classic/content.css cms/ui/classic/images/.arch-ids/=id
+     cms/ui/classic/images/.arch-ids/background.png.id
+     cms/ui/classic/images/.arch-ids/logo.png.id
+     cms/ui/classic/images/.arch-ids/space.png.id
+     cms/ui/classic/images/.arch-ids/tar48.png.id
+     cms/ui/classic/images/background.png
+     cms/ui/classic/images/logo.png cms/ui/classic/images/space.png
+     cms/ui/classic/images/tar48.png cms/ui/classic/main.css
+     cms/ui/classic/template.xhtml.en cms/ui/content.css
+     cms/ui/epoz.css cms/ui/epoz.js cms/ui/epoz.xml
+     cms/ui/epoz_iframe.xml cms/ui/images/.arch-ids/=id
+     cms/ui/images/.arch-ids/CSS16.png.id
+     cms/ui/images/.arch-ids/CSS48.png.id
+     cms/ui/images/.arch-ids/Excel16.png.id
+     cms/ui/images/.arch-ids/Excel48.png.id
+     cms/ui/images/.arch-ids/File16.png.id
+     cms/ui/images/.arch-ids/File48.png.id
+     cms/ui/images/.arch-ids/Flash16.png.id
+     cms/ui/images/.arch-ids/Flash48.png.id
+     cms/ui/images/.arch-ids/Folder16.png.id
+     cms/ui/images/.arch-ids/Folder48.png.id
+     cms/ui/images/.arch-ids/Group16.png.id
+     cms/ui/images/.arch-ids/Group48.png.id
+     cms/ui/images/.arch-ids/HTML16.png.id
+     cms/ui/images/.arch-ids/HTML48.png.id
+     cms/ui/images/.arch-ids/Image16.png.id
+     cms/ui/images/.arch-ids/Image48.png.id
+     cms/ui/images/.arch-ids/Info16.png.id
+     cms/ui/images/.arch-ids/Info48.png.id
+     cms/ui/images/.arch-ids/Link16.png.id
+     cms/ui/images/.arch-ids/Link48.png.id
+     cms/ui/images/.arch-ids/OOCalc16.png.id
+     cms/ui/images/.arch-ids/OOCalc48.png.id
+     cms/ui/images/.arch-ids/OOImpress16.png.id
+     cms/ui/images/.arch-ids/OOImpress48.png.id
+     cms/ui/images/.arch-ids/OOWriter16.png.id
+     cms/ui/images/.arch-ids/OOWriter48.png.id
+     cms/ui/images/.arch-ids/Pdf16.png.id
+     cms/ui/images/.arch-ids/Pdf48.png.id
+     cms/ui/images/.arch-ids/PowerPoint16.png.id
+     cms/ui/images/.arch-ids/PowerPoint48.png.id
+     cms/ui/images/.arch-ids/Python16.png.id
+     cms/ui/images/.arch-ids/Python48.png.id
+     cms/ui/images/.arch-ids/Root16.png.id
+     cms/ui/images/.arch-ids/Root48.png.id
+     cms/ui/images/.arch-ids/Skin16.png.id
+     cms/ui/images/.arch-ids/Skin48.png.id
+     cms/ui/images/.arch-ids/Text16.png.id
+     cms/ui/images/.arch-ids/Text48.png.id
+     cms/ui/images/.arch-ids/User16.png.id
+     cms/ui/images/.arch-ids/User48.png.id
+     cms/ui/images/.arch-ids/UserFolder16.png.id
+     cms/ui/images/.arch-ids/UserFolder48.png.id
+     cms/ui/images/.arch-ids/WebSite16.png.id
+     cms/ui/images/.arch-ids/WebSite48.png.id
+     cms/ui/images/.arch-ids/Word16.png.id
+     cms/ui/images/.arch-ids/Word48.png.id
+     cms/ui/images/.arch-ids/batch-next.png.id
+     cms/ui/images/.arch-ids/batch-previous.png.id
+     cms/ui/images/.arch-ids/ikaaro_powered.png.id
+     cms/ui/images/.arch-ids/order-down.gif.id
+     cms/ui/images/.arch-ids/order-none.gif.id
+     cms/ui/images/.arch-ids/order-up.gif.id
+     cms/ui/images/.arch-ids/px.png.id cms/ui/images/CSS16.png
+     cms/ui/images/CSS48.png cms/ui/images/Excel16.png
+     cms/ui/images/Excel48.png cms/ui/images/File16.png
+     cms/ui/images/File48.png cms/ui/images/Flash16.png
+     cms/ui/images/Flash48.png cms/ui/images/Folder16.png
+     cms/ui/images/Folder48.png cms/ui/images/Group16.png
+     cms/ui/images/Group48.png cms/ui/images/HTML16.png
+     cms/ui/images/HTML48.png cms/ui/images/Image16.png
+     cms/ui/images/Image48.png cms/ui/images/Info16.png
+     cms/ui/images/Info48.png cms/ui/images/Link16.png
+     cms/ui/images/Link48.png cms/ui/images/OOCalc16.png
+     cms/ui/images/OOCalc48.png cms/ui/images/OOImpress16.png
+     cms/ui/images/OOImpress48.png cms/ui/images/OOWriter16.png
+     cms/ui/images/OOWriter48.png cms/ui/images/Pdf16.png
+     cms/ui/images/Pdf48.png cms/ui/images/PowerPoint16.png
+     cms/ui/images/PowerPoint48.png cms/ui/images/Python16.png
+     cms/ui/images/Python48.png cms/ui/images/Root16.png
+     cms/ui/images/Root48.png cms/ui/images/Skin16.png
+     cms/ui/images/Skin48.png cms/ui/images/Text16.png
+     cms/ui/images/Text48.png cms/ui/images/User16.png
+     cms/ui/images/User48.png cms/ui/images/UserFolder16.png
+     cms/ui/images/UserFolder48.png cms/ui/images/WebSite16.png
+     cms/ui/images/WebSite48.png cms/ui/images/Word16.png
+     cms/ui/images/Word48.png cms/ui/images/batch-next.png
+     cms/ui/images/batch-previous.png
+     cms/ui/images/epoz/.arch-ids/=id
+     cms/ui/images/epoz/.arch-ids/epoz_button_anchor.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_bgcolor.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_bold.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_centre.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_hr.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_hyperlink.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_image.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_indent.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_italic.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_left_just.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_list.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_numbered_list.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_outdent.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_redo.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_right_just.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_space.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_strikethrough.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_subscript.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_superscript.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_table.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_textcolor.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_tools.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_underline.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_undo.gif.id
+     cms/ui/images/epoz/.arch-ids/epoz_button_unformat.gif.id
+     cms/ui/images/epoz/epoz_button_anchor.gif
+     cms/ui/images/epoz/epoz_button_bgcolor.gif
+     cms/ui/images/epoz/epoz_button_bold.gif
+     cms/ui/images/epoz/epoz_button_centre.gif
+     cms/ui/images/epoz/epoz_button_hr.gif
+     cms/ui/images/epoz/epoz_button_hyperlink.gif
+     cms/ui/images/epoz/epoz_button_image.gif
+     cms/ui/images/epoz/epoz_button_indent.gif
+     cms/ui/images/epoz/epoz_button_italic.gif
+     cms/ui/images/epoz/epoz_button_left_just.gif
+     cms/ui/images/epoz/epoz_button_list.gif
+     cms/ui/images/epoz/epoz_button_numbered_list.gif
+     cms/ui/images/epoz/epoz_button_outdent.gif
+     cms/ui/images/epoz/epoz_button_redo.gif
+     cms/ui/images/epoz/epoz_button_right_just.gif
+     cms/ui/images/epoz/epoz_button_space.gif
+     cms/ui/images/epoz/epoz_button_strikethrough.gif
+     cms/ui/images/epoz/epoz_button_subscript.gif
+     cms/ui/images/epoz/epoz_button_superscript.gif
+     cms/ui/images/epoz/epoz_button_table.gif
+     cms/ui/images/epoz/epoz_button_textcolor.gif
+     cms/ui/images/epoz/epoz_button_tools.gif
+     cms/ui/images/epoz/epoz_button_underline.gif
+     cms/ui/images/epoz/epoz_button_undo.gif
+     cms/ui/images/epoz/epoz_button_unformat.gif
+     cms/ui/images/ikaaro_powered.png cms/ui/images/order-down.gif
+     cms/ui/images/order-none.gif cms/ui/images/order-up.gif
+     cms/ui/images/px.png cms/ui/main.css cms/ui/main.js
+     cms/ui/menu.js cms/ui/surf/.arch-ids/=id
+     cms/ui/surf/.arch-ids/surf.css.id
+     cms/ui/surf/.arch-ids/template.xhtml.en.id
+     cms/ui/surf/images/.arch-ids/=id
+     cms/ui/surf/images/.arch-ids/box_round_down_left.png.id
+     cms/ui/surf/images/.arch-ids/bullet1.gif.id
+     cms/ui/surf/images/.arch-ids/bullet_message_anime.gif.id
+     cms/ui/surf/images/.arch-ids/extra_button.png.id
+     cms/ui/surf/images/.arch-ids/header_texture.jpg.id
+     cms/ui/surf/images/.arch-ids/logo_ikaaro.png.id
+     cms/ui/surf/images/.arch-ids/ok.png.id
+     cms/ui/surf/images/.arch-ids/round_down_left.png.id
+     cms/ui/surf/images/.arch-ids/round_down_right.png.id
+     cms/ui/surf/images/.arch-ids/roundup.png.id
+     cms/ui/surf/images/.arch-ids/topbox.jpg.id
+     cms/ui/surf/images/.arch-ids/wave.jpg.id
+     cms/ui/surf/images/.arch-ids/wave_texture.jpg.id
+     cms/ui/surf/images/box_round_down_left.png
+     cms/ui/surf/images/bullet1.gif
+     cms/ui/surf/images/bullet_message_anime.gif
+     cms/ui/surf/images/extra_button.png
+     cms/ui/surf/images/header_texture.jpg
+     cms/ui/surf/images/logo_ikaaro.png cms/ui/surf/images/ok.png
+     cms/ui/surf/images/round_down_left.png
+     cms/ui/surf/images/round_down_right.png
+     cms/ui/surf/images/roundup.png cms/ui/surf/images/topbox.jpg
+     cms/ui/surf/images/wave.jpg
+     cms/ui/surf/images/wave_texture.jpg cms/ui/surf/surf.css
+     cms/ui/surf/template.xhtml.en
+     cms/ui/web_site_templates/.arch-ids/=id
+     cms/ui/web_site_templates/community/.arch-ids/=id
+     cms/ui/web_site_templates/community/.arch-ids/download.xhtml.en.id
+     cms/ui/web_site_templates/community/.arch-ids/ikaaro.jpg.id
+     cms/ui/web_site_templates/community/.arch-ids/ikaaro.xhtml.en.id
+     cms/ui/web_site_templates/community/.arch-ids/index.xhtml.en.id
+     cms/ui/web_site_templates/community/.arch-ids/itools.xhtml.en.id
+     cms/ui/web_site_templates/community/.arch-ids/localizer.jpg.id
+     cms/ui/web_site_templates/community/.arch-ids/localizer.xhtml.en.id
+     cms/ui/web_site_templates/community/.arch-ids/noepatents_liberty120.png.id
+     cms/ui/web_site_templates/community/.arch-ids/roadmap.xhtml.en.id
+     cms/ui/web_site_templates/community/.arch-ids/thumbnail.png.id
+     cms/ui/web_site_templates/community/download.xhtml.en
+     cms/ui/web_site_templates/community/ikaaro.jpg
+     cms/ui/web_site_templates/community/ikaaro.xhtml.en
+     cms/ui/web_site_templates/community/index.xhtml.en
+     cms/ui/web_site_templates/community/itools.xhtml.en
+     cms/ui/web_site_templates/community/localizer.jpg
+     cms/ui/web_site_templates/community/localizer.xhtml.en
+     cms/ui/web_site_templates/community/noepatents_liberty120.png
+     cms/ui/web_site_templates/community/roadmap.xhtml.en
+     cms/ui/web_site_templates/community/skin/.arch-ids/=id
+     cms/ui/web_site_templates/community/skin/.arch-ids/background.png.id
+     cms/ui/web_site_templates/community/skin/.arch-ids/logo.png.id
+     cms/ui/web_site_templates/community/skin/.arch-ids/style.css.id
+     cms/ui/web_site_templates/community/skin/.arch-ids/template.xhtml.en.id
+     cms/ui/web_site_templates/community/skin/background.png
+     cms/ui/web_site_templates/community/skin/logo.png
+     cms/ui/web_site_templates/community/skin/style.css
+     cms/ui/web_site_templates/community/skin/template.xhtml.en
+     cms/ui/web_site_templates/community/thumbnail.png cms/utils.py
+     cms/widgets.py cms/zmi/.arch-ids/=id
+     cms/zmi/.arch-ids/add.xml.id cms/zmi/.arch-ids/file.png.id
+     cms/zmi/.arch-ids/file_data.dtml.id
+     cms/zmi/.arch-ids/folder.png.id
+     cms/zmi/.arch-ids/handler.dtml.id
+     cms/zmi/.arch-ids/inspect.dtml.id
+     cms/zmi/.arch-ids/objects.dtml.id
+     cms/zmi/.arch-ids/update.dtml.id cms/zmi/add.xml
+     cms/zmi/file.png cms/zmi/file_data.dtml cms/zmi/folder.png
+     cms/zmi/handler.dtml cms/zmi/inspect.dtml cms/zmi/objects.dtml
+     cms/zmi/update.dtml
+
+    modified files:
+     Changelog setup.py
+
+    new directories:
+     cms cms/.arch-ids cms/locale cms/locale/.arch-ids cms/ui
+     cms/ui/.arch-ids cms/ui/calendar cms/ui/calendar/.arch-ids
+     cms/ui/calendar/lang cms/ui/calendar/lang/.arch-ids
+     cms/ui/classic cms/ui/classic/.arch-ids cms/ui/classic/images
+     cms/ui/classic/images/.arch-ids cms/ui/images
+     cms/ui/images/.arch-ids cms/ui/images/epoz
+     cms/ui/images/epoz/.arch-ids cms/ui/surf cms/ui/surf/.arch-ids
+     cms/ui/surf/images cms/ui/surf/images/.arch-ids
+     cms/ui/web_site_templates cms/ui/web_site_templates/.arch-ids
+     cms/ui/web_site_templates/community
+     cms/ui/web_site_templates/community/.arch-ids
+     cms/ui/web_site_templates/community/skin
+     cms/ui/web_site_templates/community/skin/.arch-ids cms/zmi
+     cms/zmi/.arch-ids
+
+    new patches:
+     jdavid@itaapy.com--public/itools--cms--0.12--base-0
+     jdavid@itaapy.com--public/itools--cms--0.12--patch-1
+     jdavid@itaapy.com--public/itools--cms--0.12--patch-2
+     jdavid@itaapy.com--public/itools--cms--0.12--patch-3
+     jdavid@itaapy.com--public/itools--cms--0.12--patch-4
+
+
 2005-11-07 10:58:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-9
 
     Summary:

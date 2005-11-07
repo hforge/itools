@@ -1,0 +1,147 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+
+<div style="display: none" stl:attributes="id widget_id">
+  <div stl:attributes="id toolbar_id">
+    <select id="formatblock" onchange="SelectFormat(this);"
+            style="margin-bottom: 2px;">
+      <option value="">Normal</option>
+      <option value="&lt;p&gt;">Paragraph</option>
+      <option value="&lt;h1&gt;">Heading 1</option>
+      <option value="&lt;h2&gt;">Heading 2</option>
+      <option value="&lt;h3&gt;">Heading 3</option>
+      <option value="&lt;h4&gt;">Heading 4</option>
+      <option value="&lt;h5&gt;">Heading 5</option>
+      <option value="&lt;h6&gt;">Heading 6</option>
+      <option value="&lt;pre&gt;">Formatted</option>
+    </select>
+    <br />
+    <img class="button" id="epoz_button_bold" name="epoz_button_bold"
+         src="images/epoz/epoz_button_bold.gif" alt="Bold" title="Bold"
+         onclick="FormatText('bold', '');" /><img id="epoz_button_italic"
+    class="button"
+    src="images/epoz/epoz_button_italic.gif" width="23" height="22"
+    alt="Italic" title="Italic" onclick="FormatText('italic', '');"
+    name="epoz_button_italic" /><img id="epoz_button_underline"
+    class="button"
+    src="images/epoz/epoz_button_underline.gif" width="23" height=
+    "22" alt="Underline" title="Underline" onclick=
+    "FormatText('underline', '');" name=
+    "epoz_button_underline" /><img id="epoz_button_strikethrough"
+    class="button"
+    src="images/epoz/epoz_button_strikethrough.gif" width="23"
+    height="22" alt="Strikethrough" title="Strikethrough" onclick=
+    "FormatText('strikethrough', '');" name=
+    "epoz_button_strikethrough" /><img src=
+    "images/epoz/epoz_button_space.gif" width="2" height=
+    "1" /><img id="epoz_button_subscript" class="button"
+    src="images/epoz/epoz_button_subscript.gif" width="23" height=
+    "22" alt="Subscript" title="Subscript" onclick=
+    "FormatText('subscript', '');" name=
+    "epoz_button_subscript" /><img id="epoz_button_superscript"
+    class="button"
+    src="images/epoz/epoz_button_superscript.gif" width="23"
+    height="22" alt="Superscript" title="Superscript" onclick=
+    "FormatText('superscript', '');" name=
+    "epoz_button_superscript" /><img src=
+    "images/epoz/epoz_button_space.gif" width="2" height=
+    "1" /><img id="epoz_button_unformat" class="button"
+    src="images/epoz/epoz_button_unformat.gif" width="23" height=
+    "22" alt="Remove Format" title="Remove Format" onclick=
+    "FormatText('removeformat', '');" name=
+    "epoz_button_unformat" /><img src=
+    "images/epoz/epoz_button_space.gif" width="2" height=
+    "1" /><img id="epoz_button_textcolor" class="button"
+    src="images/epoz/epoz_button_textcolor.gif" width="23" height=
+    "22" alt="Text Color" title="Text Color" onclick=
+    "SetTextColor();" name="epoz_button_textcolor" /><img id=
+    "epoz_button_bgcolor" class="button"
+    src="images/epoz/epoz_button_bgcolor.gif" width="23" height=
+    "22" alt="Background Color" title="Background Color" onclick=
+    "SetBackColor();" name="epoz_button_bgcolor" /><img src=
+    "images/epoz/epoz_button_space.gif" width="2" height=
+    "1" /><img id="epoz_button_left_just" class="button"
+    src="images/epoz/epoz_button_left_just.gif" width="23" height=
+    "22" alt="Align Left" title="Align Left" onclick=
+    "FormatText('justifyleft', '');" name=
+    "epoz_button_left_just" /><img id="epoz_button_centre" class="button"
+    src="images/epoz/epoz_button_centre.gif" width="23" height="22"
+    alt="Center" title="Center" onclick=
+    "FormatText('justifycenter', '');" name=
+    "epoz_button_centre" /><img id="epoz_button_right_just" class="button"
+    src="images/epoz/epoz_button_right_just.gif" width="23" height=
+    "22" alt="Align Right" title="Align Right" onclick=
+    "FormatText('justifyright', '');" name=
+    "epoz_button_right_just" /><img src=
+    "images/epoz/epoz_button_space.gif" width="2" height=
+    "1" /><img id="epoz_button_numbered_list" class="button"
+    src="images/epoz/epoz_button_numbered_list.gif" width="23"
+    height="22" alt="Ordered List" title="Ordered List" onclick=
+    "FormatText('insertorderedlist', '');" name=
+    "epoz_button_numbered_list" /><img id="epoz_button_list" class="button"
+    src="images/epoz/epoz_button_list.gif" width="23" height="22"
+    alt="Unordered List" title="Unordered List" onclick=
+    "FormatText('insertunorderedlist', '');" name=
+    "epoz_button_list" /><img id="epoz_button_outdent" class="button"
+    src="images/epoz/epoz_button_outdent.gif" width="23" height=
+    "22" alt="Outdent" title="Outdent" onclick=
+    "FormatText('outdent', '');" name=
+    "epoz_button_outdent" /><img id="epoz_button_indent" class="button"
+    src="images/epoz/epoz_button_indent.gif" width="23" height="22"
+    alt="Indent" title="Indent" onclick="FormatText('indent', '');"
+    name="epoz_button_indent" /><img src=
+    "images/epoz/epoz_button_space.gif" width="2" height=
+    "1" /><img id="epoz_button_hyperlink" class="button"
+    src="images/epoz/epoz_button_hyperlink.gif" width="23" height=
+    "22" alt="Insert Link" title="Insert Link" onclick=
+    "window.open(';addlink_form','EpozToolbox','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
+    name="epoz_button_hyperlink" /><img id="epoz_button_anchor"
+    class="button"
+    src="images/epoz/epoz_button_anchor.gif" width="23" height="22"
+    alt="Insert Anchor" title="Insert Anchor" onclick=
+    "CreateAnchor();" name="epoz_button_anchor" /><img id=
+    "epoz_button_image" class="button"
+    src="images/epoz/epoz_button_image.gif" width="23" height="22"
+    alt="Insert Image" title="Insert Image" onclick=
+    "window.open(';addimage_form','EpozToolbox','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
+    name="epoz_button_image" /><img id="epoz_button_hr" class="button"
+    src="images/epoz/epoz_button_hr.gif" width="23" height="22"
+    alt="Insert Rule" title="Insert Rule" onclick=
+    "FormatText('inserthorizontalrule', '');" name=
+    "epoz_button_hr" /><img id="epoz_button_table" class="button"
+    src="images/epoz/epoz_button_table.gif" width="23" height="22"
+    alt="Insert Table" title="Insert Table" onclick=
+    "window.open('images/epoz/epoz_script_table.html','EpozTable','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=520');"
+    name="epoz_button_table" /><img src=
+    "images/epoz/epoz_button_space.gif" width="2" height=
+    "1" /><img id="epoz_button_undo" class="button"
+    src="images/epoz/epoz_button_undo.gif" width="23" height="22"
+    alt="Undo" title="Undo" onclick="FormatText('undo', '');" name=
+    "epoz_button_undo" /><img id="epoz_button_redo" class="button"
+    src="images/epoz/epoz_button_redo.gif" width="23" height="22"
+    alt="Redo" title="Redo" onclick="FormatText('redo', '');" name=
+    "epoz_button_redo" />
+    <br />
+    <iframe stl:attributes="src iframe; id frame_id" frameborder="0"
+            style="width: 100%; height: 300px; border: 1px grey solid"
+            onload="InitDocument(this);" name="EpozEditor"></iframe>
+  </div>
+
+  <textarea style="display: none; width: 100%; height: 300px" disabled="1"
+            stl:content="js_data"
+            stl:attributes="name form_name; id textarea_id" />
+
+  <input type="checkbox" style="margin: 0px; width: 10px; height: 10px"
+         onclick="redirectAndSwitchViewMode(this);"
+         stl:attributes="id switch_id" />
+  <span style="font-size: 10px;">HTML</span>
+</div>
+
+  <script type="text/javascript" stl:content="js_code" />
+  <noscript>
+    <textarea style="width: 100%; height: 300px" stl:content="js_data"
+              stl:attributes="name form_name" />
+  </noscript>
+
+</stl:block>

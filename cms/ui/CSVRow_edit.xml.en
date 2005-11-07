@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <form action=";edit" method="post">
+    <table>
+      <tr stl:repeat="column row">
+        <th align="right"></th>
+        <td>
+          <input type="text" name="column:list" size="40"
+                 stl:attributes="value column" />
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td>
+          <input type="submit" value="Save Changes" />
+        </td>
+      </tr>
+    </table>
+  </form>
+</stl:block>

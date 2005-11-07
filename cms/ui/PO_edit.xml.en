@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <form action=";edit" method="post"
+        stl:if="msgid">
+    <input type="hidden" name="messages_index"
+           stl:attributes="value messages_index" />
+    <table>
+      <tr>
+        <td>
+	  <p style="display: inline">
+	    Message
+          </p>
+	  <stl:inline content="messages_index" />
+	  /
+	  <stl:inline content="messages_total" />
+	  &nbsp;
+	  <a stl:attributes="href messages_first">&lt;&lt;</a>
+	  <a stl:attributes="href messages_previous"
+	     style="font-size: 10px">&lt;</a>
+	  <a stl:attributes="href messages_next"
+	     style="font-size: 10px">&gt;</a>
+	  <a stl:attributes="href messages_last">&gt;&gt;</a>
+          <textarea name="msgid:utf8:ustring" cols="65" rows="8" readonly=""
+	            stl:content="msgid"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td>
+	  translation<br />
+          <textarea name="msgstr:utf8:ustring" cols="65" rows="8"
+	            stl:content="msgstr"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="submit" value="Change" />
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <p stl:if="not msgid">
+    There aren't messages.
+  </p>
+</stl:block>

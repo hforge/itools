@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <fieldset>
+    <legend>Text being translated</legend>
+    <stl:block content="text" />
+  </fieldset>
+  <p>To save the translation above click the button below:</p>
+  <blockquote>
+    <form action=";save_translation" method="post">
+      <input type="submit" value="Save the translation" />
+    </form>
+  </blockquote>
+
+  <form action=";translate_message" method="post">
+    <input type="hidden" name="messages_index"
+           stl:attributes="value messages_index" />
+    <fieldset>
+      <legend>
+        Message
+        <stl:inline content="messages_index" />
+        / <stl:inline content="messages_total" />
+        &nbsp;
+        <a stl:attributes="href messages_first">&lt;&lt;</a>
+        <a stl:attributes="href messages_previous"
+           style="font-size: 10px">&lt;</a>
+        <a stl:attributes="href messages_next"
+           style="font-size: 10px">&gt;</a>
+        <a stl:attributes="href messages_last">&gt;&gt;</a>
+      </legend>
+      <input type="hidden" name="msgid:utf8:ustring"
+             stl:attributes="value msgid"/>
+      <div style="font-family: monospace" stl:content="msgid" />
+    </fieldset>
+
+    <fieldset>
+      <legend>Message Translation</legend>
+      <textarea name="msgstr:utf8:ustring" cols="65" rows="8"
+                stl:content="msgstr"></textarea>
+      <br/>
+      <input type="submit" value="Change" />
+    </fieldset>
+  </form>
+</stl:block>

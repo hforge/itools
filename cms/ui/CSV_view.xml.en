@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <table border="1">
+    <tr stl:repeat="row rows">
+      <td valign="top">
+        <a stl:attributes="href row/index" stl:content="row/index" />
+      </td>
+      <td valign="top" stl:repeat="column row" stl:content="column" />
+    </tr>
+  </table>
+</stl:block>

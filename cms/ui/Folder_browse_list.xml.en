@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form id="search_form" action=";browse_list" method="get">
+  <table class="form">
+    <tr>
+      <th class="title">Search</th>
+    </tr>
+    <tr>
+      <td>
+        Search
+        <input type="text" name="search_value" size="30"
+               stl:attributes="value search_value"/>
+        on field
+        <select name="search_criteria">
+	  <stl:block repeat="criteria search_criteria">
+	    <option stl:attributes="value criteria/id;
+	                            selected criteria/selected"
+                    stl:content="criteria/title">Title</option>
+          </stl:block>
+        </select>
+	<input type="submit" value="Go" />
+        <br/>
+	<input type="checkbox" name="search_subfolders"
+         id="search_subfolders"
+	       stl:attributes="checked search_subfolders;
+			       value self_path" />
+	<label for="search_subfolders">Search subfolders</label>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<div class="batchcontrol" stl:if="batch/total">
+  <stl:inline if="batch/control" content="batch/control" />
+  <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>
+  <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
+</div>
+
+<form action="." method="post">
+  <table class="form">
+    <tr stl:if="not table/objects">
+      <td></td>
+      <td></td>
+      <td colspan="4">
+        <em>This folder or query is empty.</em>
+      </td>
+    </tr>
+
+    <stl:block if="table/objects">
+      <tr class="header">
+        <th></th>
+        <th></th>
+        <th>
+          Name <stl:inline content="table/sortcontrol(name)" />
+        </th>
+        <th>
+          Title <stl:inline content="table/sortcontrol(title)" />
+        </th>
+        <th>
+          Type <stl:inline content="table/sortcontrol(format)" />
+        </th>
+        <th>
+          Date <stl:inline content="table/sortcontrol(mtime_microsecond)" />
+        </th>
+        <th>Size</th>
+        <th>
+          State <stl:inline content="table/sortcontrol(workflow_state)" />
+        </th>
+      </tr>
+      <tr stl:repeat="object table/objects">
+        <td>
+          <input class="checkbox" type="checkbox" name="ids:list"
+                 stl:if="object/checkbox" stl:attributes="value object/name" />
+        </td>
+        <td>
+          <a stl:attributes="href object/url">
+            <img stl:attributes="src object/icon; title object/format"
+                 border="0" />
+          </a>
+        </td>
+        <td>
+          <a stl:attributes="href object/url" stl:content="object/name" />
+        </td>
+        <td>
+          <a stl:attributes="href object/url" stl:content="object/title" />
+        </td>
+        <td stl:content="object/class_title" nowrap="physical" />
+        <td stl:content="object/mtime" nowrap="physical" />
+        <td style="text-align: right" nowrap="physical"
+            stl:content="object/size" />
+        <td  nowrap="physical">
+          <stl:block if="object/workflow_state" 
+		     content="object/workflow_state" />
+        </td>
+      </tr>
+    </stl:block>
+    <tr>
+      <td></td>
+      <td colspan="7" class="submit">
+        <stl:block if="table/objects">
+          <input type="submit" name=";remove" value="Remove"
+                 onclick="return confirmation();"  />
+          <input type="submit" name=";rename_form" value="Rename.."/>
+          <input type="submit" name=";copy" value="Copy" />
+          <input type="submit" name=";cut" value="Cut" />
+        </stl:block>
+        <input type="submit" name=";paste" value="Paste" stl:if="paste"/>
+        <stl:block if="table/objects">
+          <input type="submit" name=";translate_form" value="Translate.." />
+        </stl:block>
+      </td>
+    </tr>
+    <tr>
+      <td><img src="images/px.png" height="1" width="10"/></td>
+      <td><img src="images/px.png" height="1" width="16" /></td>
+      <td><img src="images/px.png" height="1" width="50" /></td>
+      <td><img src="images/px.png" height="1" width="133" /></td>
+      <td><img src="images/px.png" height="1" width="70" /></td>
+      <td><img src="images/px.png" height="1" width="40" /></td>
+      <td><img src="images/px.png" height="1" width="90" /></td>
+      <td><img src="images/px.png" height="1" width="40" /></td>
+    </tr>
+  </table>
+</form>
+
+
+</stl:block>

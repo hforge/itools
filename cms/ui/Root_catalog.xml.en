@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <p>
+    To reindex the whole site click the button below:
+  </p>
+  <blockquote>
+    <form action=";update_catalog" method="post">
+      <input type="submit" value="Reindex" />
+    </form>
+  </blockquote>
+</stl:block>

@@ -1,0 +1,87 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <p stl:if="not batch/total">There are no images.</p>
+
+  <stl:block if="batch/total">
+    <div class="batchcontrol" stl:if="batch/total">
+      <stl:inline if="batch/control" content="batch/control" />
+      <a stl:if="batch/previous"
+         stl:attributes="href batch/previous">&lt;&lt;</a>
+      <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
+    </div>
+
+    <table class="images" width="100%">
+      <tr>
+        <td width="34%">
+          <dl class="thumb" stl:repeat="object table/objects">
+            <dt class="icon" stl:attributes="id object/css_id">
+              <a stl:attributes="href object/url">
+                <img border="0"
+                     stl:attributes="src object/icon; title object/format" />
+              </a>
+            </dt>
+            <dt class="title">
+              <a stl:attributes="href object/url; title object/title">
+                <span stl:content="object/short_title"></span>
+              </a>
+            </dt>
+          </dl>
+        </td>
+        <td width="66%" valign="top">
+          <table class="preview" stl:if="selected">
+            <tr>
+              <th class="title">
+                Preview
+              </th>
+            </tr>
+            <tr>
+              <td>
+                <a stl:attributes="href selected/url">
+                  <img border="0" stl:attributes="src selected/preview" />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                <table class="metadata">
+                  <tr>
+                    <th>
+                      Name
+                    </th>
+                    <td>
+                      <a stl:attributes="href selected/url"
+                         stl:content="selected/name" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>
+                      Size
+                    </th>
+                    <td>
+                      <stl:block content="selected/width" />
+                      x
+                      <stl:block content="selected/height" />
+                    </td>
+                  </tr>
+                  <tr stl:if="selected/format">
+                    <th>
+                      Format
+                    </th>
+                    <td stl:content="selected/format" />
+                  </tr>
+                  <tr stl:if="selected/lang">
+                    <th>
+                      Language
+                    </th>
+                    <td stl:content="selected/lang" />
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </stl:block>
+</stl:block>

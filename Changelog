@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-07 10:58:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-9
+
+    Summary:
+      merge from the webserver branch
+    Revision:
+      itools--main--0.12--patch-9
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-2
+       web, fix server, be sure only one thread uses a root at a time
+    
+
+    modified files:
+     Changelog web/server.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-2
+
+
 2005-11-06 17:16:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-8
 
     Summary:

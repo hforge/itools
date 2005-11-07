@@ -28,18 +28,21 @@ from itools.web.request import Request
 
 
 class Pool(object):
+    # XXX Right now we only support one handler tree (may use semaphores)
 
     def __init__(self, root):
         self.lock = thread.allocate_lock()
-        self.root = root
+        self.pool = [root]
 
 
-    def get_root(self):
+    def pop(self):
         self.lock.acquire()
-        try:
-            return self.root
-        finally:
-            self.lock.release()
+        return self.pool.pop()
+
+
+    def push(self, root):
+        self.pool.append(root)
+        self.lock.release()
 
 
 
@@ -56,7 +59,7 @@ def handle_request(connection, pool):
         set_context(context)
 
         # Get the root handler
-        root = pool.get_root()
+        root = pool.pop()
 
         # Get the handler
         context = get_context()
@@ -84,6 +87,9 @@ def handle_request(connection, pool):
         response.set_header('Content-Type', 'text/plain')
         response.set_body(response_body)
 
+        # Free the root object
+        pool.push(root)
+
         # Finish, send back the response
         response = get_context().response
         response = response.to_str()
@@ -93,7 +99,6 @@ def handle_request(connection, pool):
         traceback.print_exc()
     else:
         connection.close()
-
 
 
 class Server(object):

@@ -2,6 +2,131 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-15 19:19:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
+
+    Summary:
+      merge work on csv from piotr
+    Revision:
+      itools--main--0.12--patch-11
+
+    Patches applied:
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-1
+       Move the CSV code from "itools.handlers" to "itools.csv"
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-2
+       Remove the handlers CSV code and its unit tests
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-3
+       New 'columns' class variable and the schema structure change
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-4
+       Move test_csv.py to test_itools_csv.py
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-5
+       to_unicode method can use schema information (the 'schema' and 'columns' class variables)
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-6
+       Read API for CSV handler
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-8
+       remove to_unicode function
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-9
+       The CSV API implementation
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-10
+       The new CSV API (higher level one) and doc strings to the API methods
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-11
+       Parameter descriptions in docstrings
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-12
+       Change the API (get_named_columns and get_indexed_columns)
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-13
+       Proper set_changed invocation
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-14
+       The csv data handler indexer
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-15
+       The csv data search API
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-16
+       Change "var is None" instead of "var == None" for performace reasons
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-17
+       Index added rows and unindex deleted rows
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-18
+       Documentation chapter about the CSV handler (csv.tex as standalone document for fast review).
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-19
+       The new API method: get_rows(indexes)
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-20
+       Change "array" to "list". Array is not Python terminology.
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-21
+       advanced_search method -- multiple columns and boolean operators
+    
+     * piotr@macuk.pl--public/itools--csv--0.11--patch-22
+       Additional csv file for advanced_search tests
+    
+
+    new files:
+     csv/.arch-ids/=id csv/.arch-ids/__init__.py.id
+     csv/.arch-ids/itools_csv.py.id csv/.arch-ids/test.csv.id
+     csv/.arch-ids/test_adv.csv.id
+     csv/.arch-ids/test_itools_csv.py.id csv/__init__.py
+     csv/itools_csv.py csv/test.csv csv/test_adv.csv
+     csv/test_itools_csv.py doc/.arch-ids/csv.tex.id doc/csv.tex
+     doc/examples/csv_handler/.arch-ids/=id
+     doc/examples/csv_handler/.arch-ids/clients.csv.id
+     doc/examples/csv_handler/.arch-ids/example.py.id
+     doc/examples/csv_handler/.arch-ids/my_clients.py.id
+     doc/examples/csv_handler/.arch-ids/my_system.py.id
+     doc/examples/csv_handler/clients.csv
+     doc/examples/csv_handler/example.py
+     doc/examples/csv_handler/my_clients.py
+     doc/examples/csv_handler/my_system.py
+
+    removed files:
+     handlers/.arch-ids/CSV.py.id handlers/.arch-ids/test_csv.py.id
+     handlers/CSV.py handlers/test_csv.py
+
+    modified files:
+     Changelog
+
+    new directories:
+     csv csv/.arch-ids doc/examples/csv_handler
+     doc/examples/csv_handler/.arch-ids
+
+    new patches:
+     piotr@macuk.pl--public/itools--csv--0.11--patch-1
+     piotr@macuk.pl--public/itools--csv--0.11--patch-2
+     piotr@macuk.pl--public/itools--csv--0.11--patch-3
+     piotr@macuk.pl--public/itools--csv--0.11--patch-4
+     piotr@macuk.pl--public/itools--csv--0.11--patch-5
+     piotr@macuk.pl--public/itools--csv--0.11--patch-6
+     piotr@macuk.pl--public/itools--csv--0.11--patch-8
+     piotr@macuk.pl--public/itools--csv--0.11--patch-9
+     piotr@macuk.pl--public/itools--csv--0.11--patch-10
+     piotr@macuk.pl--public/itools--csv--0.11--patch-11
+     piotr@macuk.pl--public/itools--csv--0.11--patch-12
+     piotr@macuk.pl--public/itools--csv--0.11--patch-13
+     piotr@macuk.pl--public/itools--csv--0.11--patch-14
+     piotr@macuk.pl--public/itools--csv--0.11--patch-15
+     piotr@macuk.pl--public/itools--csv--0.11--patch-16
+     piotr@macuk.pl--public/itools--csv--0.11--patch-17
+     piotr@macuk.pl--public/itools--csv--0.11--patch-18
+     piotr@macuk.pl--public/itools--csv--0.11--patch-19
+     piotr@macuk.pl--public/itools--csv--0.11--patch-20
+     piotr@macuk.pl--public/itools--csv--0.11--patch-21
+     piotr@macuk.pl--public/itools--csv--0.11--patch-22
+
+
 2005-11-07 13:18:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
 
     Summary:

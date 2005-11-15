@@ -1,0 +1,194 @@
+\documentclass[a4paper]{book}
+\usepackage[latin1]{inputenc}
+\usepackage{color}
+\usepackage{psboxit}
+\usepackage{verbatim}
+\usepackage{psfrag}
+\usepackage{itools}
+\usepackage{makeidx}
+
+\makeindex
+\begin{document}
+
+
+
+
+\chapter{The CSV file handler}
+\index{CSV}
+
+In that chapter you will learn how to work with CSV files using
+{\tt itools.csv} handler. We will try to build the example system.
+
+Let's assume that you are the owner of small ISP (Internet Service
+Provider) company. You have about 250 clients and all information
+about your clients are stored in {\tt clients.csv} file.
+
+You need the small system to store/change/remove the clients information
+and to generate some reports (for example to send the payment email 
+remainders to the clients). We will try to build that system from 
+scratch.
+
+Take a look at the structure of {\tt clients.csv} file:
+\begin{description}
+    \item [client\_id] client ID
+    \item [surname] 
+    \item [name] 
+    \item [address]
+    \item [email] 
+    \item [last\_pay\_date] the date of the last pay 
+    \item [num\_of\_computers] how many computers are connected to the network
+    \item [register\_date] the registration date
+    \item [discount] discount rate
+\end{description}
+
+The system should allow us to:
+\begin{itemize}
+    \item get the list of clients
+    \item add a new clients
+    \item remove clients 
+    \item modify the information about clients
+    \item get info about sending payment reminders 
+\end{itemize}
+
+How to do that tasks with {\tt itools.csv}? To work with the
+database we should create the csv file handler:
+\begin{code}
+    >>> import itools.csv
+    >>> from itools.resources import get_resource
+    >>> resource = get_resource('clients.csv')
+    >>> clients = itools.csv.CSV(resource)
+\end{code}
+
+How can we view the client from the first file row?
+\begin{code}
+    >>> clients.get_row(0)
+    [u'1', u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia',
+    u'piotr@macuk.pl', u'2004-11-30', u'2', u'2001-01-05', u'35']
+\end{code}
+    
+We can add the new client to the {\tt clients.csv} database:
+\begin{code}
+    >>> clients.add_row([4, 'Hanna', 'Nowak', 'Dlugi Targ 32 80-112 Gdansk',
+    'hanka@onet.pl', '2005-11-12', 1, '2005-11-12', 0])
+\end{code}
+
+To remove the client from the third row (indexes start with 0) lest's try:
+\begin{code}
+    >>> clients.del_row(2)
+\end{code}
+As you can realize to do the above tasks, we should know the row index 
+which the client's data are stored in the {\tt clients.csv} file database. 
+We have the client\_id, but the csv handler have no idea about that. 
+We should inform the handler about the structure of the database. To do that 
+we define the columns and the schema of our clients' data and load the file 
+content again:
+\begin{code}
+    >>> from itools.datatypes import *
+    >>> columns = ['client_id', 'surname', 'name', 'address', 'email',
+    ... 'last_pay_date', 'num_of_computers', 'register_date',
+    ... 'discount']
+    >>> schema = {'client_id': Integer(index=True), 'surname': Unicode(index=True),
+    ... 'name': Unicode, 'address': Unicode, 'email': Unicode(index=True),
+    ... 'last_pay_date': Date(index=True), 'num_of_computers': Integer,
+    ... 'register_date': Date, 'discount': Integer}
+    >>> clients.columns = columns
+    >>> clients.schema = schema
+    >>> clients.load_state(resource)
+\end{code}
+
+And now when we get the first row from our database, the data will have the 
+appropriate types (the above get\_row(0) function call returned data as unicode 
+strings).
+\begin{code}
+    >>> clients.get_row(0)
+    [1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia',
+    u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
+    datetime.date(2001, 1, 5), 35] 
+\end{code}
+
+The index parameter (for example: 'client\_id': Integer(index=True)) will 
+tell the handler to index that column. We want to index client\_id, surname,
+email and last\_pay\_date.
+
+Now, when we have the indexed client\_id column we can get the client
+by the ID. We should find the row index with the appropriate client\_id,
+and get that row from {\tt clients.csv} file.
+\begin{code}
+    >>> indexes = clients.search('client_id', 1)
+    >>> clients.get_row(indexes[0])
+    [1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia', 
+    u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
+    datetime.date(2001, 1, 5), 35]
+\end{code}
+The search method returns the list of rows which include client\_id = 1.
+That column is our uniq client ID number thus we have to get the first
+element from that list ({\tt indexes[0]}).
+
+How we can find clients to send the payment reminder? Let's try:
+\begin{code}
+    >>> indexes = clients.search('last_pay_date', Date.decode('2004-11-30'))
+    >>> clients.get_rows(indexes)
+    [[1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia', 
+    u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
+    datetime.date(2001, 1, 5), 35], [2, u'Adam', u'Nowak', 
+    u'Grunwaldzka 117/3 80-334 Sopot', u'adam.nowak@yahoo.com', 
+    datetime.date(2004, 11, 30), 1, datetime.date(2002, 8, 2), 25]]
+\end{code}
+
+To build mentioned system you should define the class which will use the
+{\tt itools.csv} module and give you some simple API to your problem. After
+that you should write some scripts that use defined class.
+
+You can find the example system in the 
+{\tt examples/csv\_handler/my\_clients.py} and 
+{\tt examples/csv\_handler/my\_system.py} files. The first file is the class
+definition with: get, add, delete, modify, reminders and save method. 
+All methods use the client\_id column to indicate the client. The second one
+is the example system script. It uses the MyClients class. 
+The source code has a lot of comments and you shuold analyze it.
+
+Of course the above example system is not complete. System should register
+payments and change the last\_payment\_date value and probably modify 
+the discount rate accordingly. It is simple enhancement and you could do it 
+by yourself if you need the system for small ISP company.
+
+The source code used in that chapter is placed in 
+{\tt examples/csv\_handler/example.py} file.
+
+And the full csv file handle API:
+\begin{api}
+  {\tt get\_row(index)}\\
+  - Return row indexed by index.
+
+  {\tt get\_rows(indexes)}\\
+  - Return rows indexed by indexes.
+
+  {\tt get\_all\_rows()}\\
+  - Return all csv file rows.
+
+  {\tt add\_row(row)}\\
+  - Append the new row.
+
+  {\tt del\_row(index)}\\
+  - Delete row indexed by index.
+
+  {\tt del\_rows(indexes)}\\
+  - Delete rows indexed by indexes.
+
+  {\tt get\_columns\_by\_names(columns)}\\
+  - Return only selected columns by its names (names in self.columns).
+
+  {\tt get\_columns\_by\_indexes(columns)}\\
+  - Return only selected columns by numerical indexes.
+
+  {\tt search(column\_name, value)}\\
+  - Return list of row indexes where the value is in the column\_name
+  or None when the index is not set for that column
+\end{api}
+
+
+
+
+\printindex
+
+\end{document}

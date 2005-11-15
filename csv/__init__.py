@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,24 +15,10 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
-# Import from Python
-import unittest
-from unittest import TestCase
+# Import from the Standard Library
+import mimetypes
 
 # Import from itools
-from itools.resources import memory
-import CSV
+from itools_csv import *
 
-
-class CSVTestCase(TestCase):
-    def test_unicode(self):
-        data = '"Martin von Löwis","Marc André Lemburg","Guido van Rossum"\n'
-        resource = memory.File(data)
-        handler = CSV.CSV(resource)
-        self.assertEqual(handler.lines, [[u"Martin von Löwis",
-                                          u"Marc André Lemburg",
-                                          u"Guido van Rossum"]])
-
-
-if __name__ == '__main__':
-    unittest.main()
+mimetypes.add_type('text/comma-separated-values', '.csv')

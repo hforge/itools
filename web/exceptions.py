@@ -16,16 +16,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
-class ClientError(Exception):
-    pass
-
-
-class Forbidden(ClientError):
+class Forbidden(Exception):
     pass
 
 
 class UserError(Exception):
-    """
-    The application must be robust to the user mistakes, this exception
-    should be raised when the user submits invalid data.
-    """
+    pass

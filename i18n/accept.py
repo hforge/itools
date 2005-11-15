@@ -256,6 +256,16 @@ class AcceptLanguage(Root, LanguageNode):
 
 
 
+class AcceptLanguageType(object):
+
+    @staticmethod
+    def decode(data):
+        return AcceptLanguage(data)
+
+
+    @staticmethod
+    def encode(value):
+        return str(value)
 
 
 

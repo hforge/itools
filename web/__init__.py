@@ -17,6 +17,4 @@
 
 # Import from itools
 from context import get_context
-import zope2
-
-
+##import zope2

@@ -2,6 +2,206 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-15 19:45:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
+
+    Summary:
+      merge the work from the webserver branch
+    Revision:
+      itools--main--0.12--patch-12
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-3
+       merge from the trunk
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-4
+       cms, add test for itools.web
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-5
+       web, fix the response when it has not a body
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-6
+       web, fix the server so "context" always has an uri
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-7
+       web, add support for Accept-Language
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-8
+       web, get itools.cms to work!
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-9
+       web, get cookies working
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-10
+       web, close the socket on interrupts
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-11
+       cms, fix browse list (remove reference to inexistent image)
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-12
+       web, fix when there are not cookies
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-13
+       resources, add support for mtime to ZODB resources
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-14
+       resources, fix "__setitem__" in ZODB file resources
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-15
+       cms, use the ZODB as storage in the test script
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-16
+       scripts, new script "icms.py"
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-17
+       cms, start debugging interface
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-18
+       cms, start new "access" module to keep access control code
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-19
+       cms, add missing file "access", new module "debug"
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-20
+       cms, fixing access and debug code, add missing templates
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-21
+       cms, rename the VersioningAware module to versioning
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-22
+       cms, rename the module "WorkflowAware" to "workflow"
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-23
+       cms, implement access control within a class (AccessControl)
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-24
+       cms, new module "catalog" contains class "CatalogAware"
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-25
+       cms, get the debug interface to work on metadata handlers
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-26
+       resources, fix ZODB resources (get_name)
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-27
+       web, fix the load of headers, strip the value
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-28
+       cms, debugging interface, finish edit of a text file
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-29
+       resources, ctime not supported by ZODB resources
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-30
+       scripts.icms, log the errors in a file, improve interface
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-31
+       scripts.icms, write the pid (process id) in a file
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-32
+       web.server, deal with file uploads
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-33
+       web, move "cms.Root.publish" to "web.server.handle_request"
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-34
+       resources, add optional 'size' parameter to the 'read' method
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-35
+       catalog, fix test and profile scripts
+    
+     * jdavid@itaapy.com--public/itools--webserver--0.12--patch-36
+       resources, open/close/seek operations added (web file upload works)
+    
+
+    new files:
+     cms/.arch-ids/access.py.id cms/.arch-ids/catalog.py.id
+     cms/.arch-ids/debug.py.id cms/access.py cms/catalog.py
+     cms/debug.py cms/ui/.arch-ids/Folder_manage_content.xml.en.id
+     cms/ui/.arch-ids/Text_manage_content.xml.en.id
+     cms/ui/Folder_manage_content.xml.en
+     cms/ui/Text_manage_content.xml.en
+     resources/.arch-ids/socket.py.id resources/socket.py
+     scripts/.arch-ids/icms.py.id scripts/icms.py
+     web/.arch-ids/exceptions.py.id web/exceptions.py
+
+    removed files:
+     cms/.arch-ids/exceptions.py.id cms/.arch-ids/logging.conf.id
+     cms/exceptions.py cms/logging.conf
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/IDocument.py
+     catalog/IIndex.py catalog/prof.py catalog/test.py
+     cms/Document.py cms/File.py cms/Folder.py cms/Group.py
+     cms/Handler.py cms/Metadata.py cms/Root.py cms/User.py
+     cms/UserFolder.py cms/WebSite.py cms/__init__.py cms/csv_.py
+     cms/html.py cms/skins.py cms/text.py
+     cms/ui/Folder_browse_list.xml.en
+     cms/ui/Root_internal_server_error.xml.en
+     cms/ui/WebSite_login.xml.en cms/utils.py cms/versioning.py
+     cms/workflow.py handlers/Handler.py handlers/KeyValue.py
+     handlers/Var.py i18n/accept.py resources/base.py
+     resources/file.py resources/http.py resources/memory.py
+     resources/test_zodb.py resources/zodb.py resources/zope2.py
+     setup.py web/__init__.py web/context.py web/entities.py
+     web/headers.py web/request.py web/response.py web/server.py
+     web/test_server.py xml/XML.py
+
+    renamed files:
+     cms/.arch-ids/VersioningAware.py.id
+       ==> cms/.arch-ids/versioning.py.id
+     cms/.arch-ids/WorkflowAware.py.id
+       ==> cms/.arch-ids/workflow.py.id
+     cms/.arch-ids/csv.py.id
+       ==> cms/.arch-ids/csv_.py.id
+     cms/VersioningAware.py
+       ==> cms/versioning.py
+     cms/WorkflowAware.py
+       ==> cms/workflow.py
+     cms/csv.py
+       ==> cms/csv_.py
+     cms/ui/.arch-ids/WebSite_error_page.xml.en.id
+       ==> cms/ui/.arch-ids/Root_internal_server_error.xml.en.id
+     cms/ui/WebSite_error_page.xml.en
+       ==> cms/ui/Root_internal_server_error.xml.en
+
+    new patches:
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-3
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-4
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-5
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-6
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-7
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-8
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-9
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-10
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-11
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-12
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-13
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-14
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-15
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-16
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-17
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-18
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-19
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-20
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-21
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-22
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-23
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-24
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-25
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-26
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-27
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-28
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-29
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-30
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-31
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-32
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-33
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-34
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-35
+     jdavid@itaapy.com--public/itools--webserver--0.12--patch-36
+
+
 2005-11-15 19:19:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
 
     Summary:

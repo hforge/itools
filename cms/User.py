@@ -26,9 +26,10 @@ from itools import i18n
 from itools.handlers.KeyValue import KeyValue
 from itools.xml.stl import stl
 from itools.web import get_context
+from itools.web.exceptions import UserError
 
 # Import from ikaaro
-from exceptions import UserError
+from access import AccessControl
 from utils import comeback
 from widgets import Table
 from Folder import Folder
@@ -133,19 +134,10 @@ class User(Folder):
 
     #########################################################################
     # Access control
-    def is_allowed_to_remove(self):
-        """Only admins can remove users."""
-        return self.is_admin()
+    is_allowed_to_remove = AccessControl.is_admin
+    is_allowed_to_move = AccessControl.is_admin
+    is_allowed_to_copy = AccessControl.is_admin
 
-
-    def is_allowed_to_move(self):
-        """Only admins can move users."""
-        return self.is_admin()
-
-
-    def is_allowed_to_copy(self):
-        """Only admins can copy users."""
-        return self.is_admin()
 
     #######################################################################
     # User interface
@@ -182,7 +174,7 @@ class User(Folder):
 
     #######################################################################
     # View
-    view__access__ = Handler.is_allowed_to_view
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self):
         root = self.get_root()
@@ -226,7 +218,7 @@ class User(Folder):
 
     #######################################################################
     # Edit
-    edit_form__access__ = is_self_or_superuser
+    edit_form__access__ = 'is_self_or_superuser'
     edit_form__label__ = u'Edit'
     edit_form__sublabel__ = u'Personal'
     def edit_form(self):
@@ -254,7 +246,7 @@ class User(Folder):
         return stl(handler, namespace)
 
 
-    edit__access__ = is_self_or_superuser
+    edit__access__ = 'is_self_or_superuser'
     def edit(self, email, **kw):
         self.set_property('dc:title', kw['dc:title'], language='en')
         email = unicode(email, 'utf-8')
@@ -268,7 +260,7 @@ class User(Folder):
 
     #######################################################################
     # Edit / Password
-    edit_password_form__access__ = is_self_or_superuser
+    edit_password_form__access__ = 'is_self_or_superuser'
     edit_password_form__label__ = u'Edit'
     edit_password_form__sublabel__ = u'Password'
     def edit_password_form(self):
@@ -276,7 +268,7 @@ class User(Folder):
         return stl(handler)
 
 
-    edit_password__access__ = is_self_or_superuser
+    edit_password__access__ = 'is_self_or_superuser'
     def edit_password(self, password, password2, **kw):
         if not password or password != password2:
             raise UserError, \
@@ -303,7 +295,7 @@ class User(Folder):
 
     #######################################################################
     # Edit user groups
-    edit_groups_form__access__ = Handler.is_admin
+    edit_groups_form__access__ = 'is_admin'
     edit_groups_form__label__ = u'Edit'
     edit_groups_form__sublabel__ = u'Groups'
     def edit_groups_form(self):
@@ -331,7 +323,7 @@ class User(Folder):
         return stl(handler, namespace)
 
 
-    edit_groups__access__ = Handler.is_admin
+    edit_groups__access__ = 'is_admin'
     def edit_groups(self, groups=[], **kw):
         # Add user in groups
         root = self.get_root()
@@ -349,7 +341,7 @@ class User(Folder):
 
     #######################################################################
     # Tasks
-    tasks_list__access__ = is_self_or_superuser
+    tasks_list__access__ = 'is_self_or_superuser'
     tasks_list__label__ = u'Tasks'
     def tasks_list(self):
         context = get_context()

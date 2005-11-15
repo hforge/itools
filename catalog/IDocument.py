@@ -34,10 +34,10 @@ class IndexedField(File):
     def _load_state(self, resource):
         state = self.state
 
-        state.number_of_terms = IO.decode_uint32(resource[:4])
+        state.number_of_terms = IO.decode_uint32(resource.read(4))
         state.terms = []
 
-        data = resource[4:]
+        data = resource.read()
         for i in range(state.number_of_terms):
             term, data = IO.decode_string(data)
             state.terms.append(term)
@@ -49,7 +49,7 @@ class IndexedField(File):
         state.number_of_terms += 1
         state.terms.append(term)
         # Update the resource
-        self.resource[:4] = IO.encode_uint32(state.number_of_terms)
+        self.resource.write(IO.encode_uint32(state.number_of_terms))
         self.resource.append(IO.encode_string(term))
         # Set timestamp
         self.timestamp = self.resource.get_mtime()

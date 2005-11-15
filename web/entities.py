@@ -20,40 +20,27 @@ from itools.handlers.File import File
 from itools.web import headers
 
 
-def read_line(data):
-    size = len(data)
-    index = 0
-    while index < size:
-        byte = data[index]
-        index += 1
-        if byte == '\n':
-            line = data[:index]
-            line = line.strip()
-            return line, data[index:]
 
-    return data, ''
-        
-
-
-def read_headers(data):
-    size = len(data)
+def read_headers(resource):
     index = 0
 
     entity_headers = {}
     body = None
 
     # The headers
-    while data:
-        line, data = read_line(data)
+    while True:
+        line = resource.readline()
+        line = line.strip()
         if line:
             name, value = line.split(':', 1)
             name = name.strip()
+            value = value.strip()
             type = headers.get_type(name)
             entity_headers[name] = type.decode(value)
         else:
             break
 
-    return entity_headers, data
+    return entity_headers
 
 
 
@@ -62,10 +49,8 @@ class Entity(File):
     def _load_state(self, resource):
         state = self.state
 
-        data = resource.read()
-        entity_headers, data = read_headers(data)
-        state.headers = entity_headers
-        state.body = data
+        state.headers = read_headers(resource)
+        state.body = resource.read()
 
 
     def has_header(self, name):

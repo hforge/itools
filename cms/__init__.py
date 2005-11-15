@@ -17,8 +17,6 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 # Import from the Standard Library
-import logging
-import logging.config
 import os
 
 # Import from itools
@@ -30,7 +28,7 @@ import Root
 from Folder import Folder
 import Document
 import File
-import csv
+import csv_
 import flash
 import html
 import images
@@ -39,13 +37,6 @@ import openoffice
 import pdf
 import text
 
-
-
-#############################################################################
-# Logging facilities
-#############################################################################
-filename = get_abspath(globals(), 'logging.conf')
-logging.config.fileConfig(filename)
 
 
 ###########################################################################

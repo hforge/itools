@@ -56,8 +56,7 @@ class Fields(Text):
         # Keeps a mapping from field name to field number
         state.field_numbers = {}
 
-        data = resource.read()
-        for line in data.split('\n'):
+        for line in resource.readlines():
             line = line.strip()
             if line:
                 number, name, type, is_indexed, is_stored = line.split('#')
@@ -71,13 +70,13 @@ class Fields(Text):
                 state.field_numbers[name] = number
 
 
-    def unicode(self):
+    def to_str(self):
         data = []
-        for field in fields:
-            data.append(u'%d#%s#%s#%d#%d\n' % (field.number, field.name,
-                                               field.type, field.is_indexed,
-                                               field.is_stored))
-        return u''.join(data)
+        for field in self.state.fields:
+            data.append('%d#%s#%s#%d#%d\n' % (field.number, field.name,
+                                              field.type, field.is_indexed,
+                                              field.is_stored))
+        return ''.join(data)
 
 
 

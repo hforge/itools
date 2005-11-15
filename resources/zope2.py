@@ -142,9 +142,12 @@ class File(Resource, base.File):
         return object.content_type
 
 
-    def read(self):
+    def read(self, size=None):
         object = self._get_object()
-        return str(object.data)
+        data = str(object.data)
+        if size is None:
+            return data
+        return data[:size]
 
 
     def write(self, data):

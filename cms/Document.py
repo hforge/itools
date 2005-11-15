@@ -24,13 +24,14 @@ from itools.gettext import PO
 from itools.xml import XML
 from itools.xml.stl import stl
 from itools.web import get_context
+from itools.web.exceptions import Forbidden
 
 # Import from ikaaro
 from utils import get_parameters, comeback
 from Handler import Handler
 import html
 from LocaleAware import LocaleAware
-from WorkflowAware import WorkflowAware
+from workflow import WorkflowAware
 
 
 

@@ -22,6 +22,10 @@ from itools import schemas
 from itools.xml import namespaces, parser, XML
 from itools.web import get_context
 
+# Import from itools.cms
+import debug
+from Handler import Node
+
 
 #############################################################################
 # Namespace
@@ -79,7 +83,11 @@ schemas.register_schema(Schema)
 #############################################################################
 # Handler
 #############################################################################
-class Metadata(File.File):
+class Metadata(Node, debug.Text, File.File):
+
+    class_title = u'Metadata'
+    class_icon48 = 'images/File48.png'
+
 
     def get_skeleton(self, handler_class=None, **kw):
         # Initialize the properties to add

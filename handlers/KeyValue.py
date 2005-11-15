@@ -40,8 +40,7 @@ class KeyValue(Text):
 
         # Parses the input data, stores the keys in self.keys and the values
         # as attributes.
-        data = resource.read()
-        for line in data.split('\n'):
+        for line in resource.readlines():
             line = line.strip()
             if line:
                 try:

@@ -27,12 +27,12 @@ from itools import i18n
 from itools.resources import memory
 from itools.xml.stl import stl
 from itools.web import get_context
+from itools.web.exceptions import UserError
 
 # Import from iKaaro
-from exceptions import UserError
 from utils import get_parameters, comeback
 from widgets import Breadcrumb
-from VersioningAware import VersioningAware
+from versioning import VersioningAware
 from Handler import Handler
 from File import File
 

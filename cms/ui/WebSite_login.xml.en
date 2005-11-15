@@ -2,9 +2,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form name="loginform" action=";login" method="post">
-  <input type="hidden" name="referer" value=""
-         stl:if="referer" stl:attributes="value referer" />
+<form name="loginform" action=";login" method="post"
+      stl:attributes="action action">
   <table class="form">
     <tr>
       <th colspan="2" class="title">Log in</th>

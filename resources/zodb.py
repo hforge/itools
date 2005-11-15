@@ -16,6 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from the Standard Library
+from datetime import datetime
 import thread
 import weakref
 
@@ -30,7 +31,7 @@ import ZODB
 
 
 
-class DataBase(object):
+class Database(object):
 
     def __init__(self, storage):
         self.database = ZODB.DB(storage)
@@ -70,7 +71,7 @@ class DataBase(object):
         # Build and return the resource
         if isinstance(object, OOBTree):
             return Folder(connection, path)
-        elif isinstance(object, str):
+        elif isinstance(object, tuple):
             return File(connection, path)
 
         # Unexpected object
@@ -101,22 +102,17 @@ class Resource(base.Resource):
     # API
     #######################################################################
     def get_name(self):
-        return self.path[-1]
+        return self.path[-1].name
 
     name = property(get_name, None, None, '')
 
 
-##    def get_ctime(self):
-##        return self.ctime
+    def get_ctime(self):
+        return None
 
 
-##    def get_mtime(self):
-##        return self.mtime
-
-
-##    def get_atime(self):
-##        # XXX Should we correctly keep the real access time??
-##        return self.mtime
+    def get_atime(self):
+        return None
 
 
 ##    def set_mtime(self, mtime):
@@ -130,6 +126,9 @@ class Resource(base.Resource):
 
 class File(Resource, base.File):
 
+    offset = 0
+
+
     def _get_parent(self):
         connection = self.connection()
         object = connection.root()
@@ -142,31 +141,103 @@ class File(Resource, base.File):
         return object
 
 
-    def read(self):
-        return self._get_object()
+    def get_mtime(self):
+        mtime, data = self._get_object()
+        return mtime
+
+
+    def get_size(self):
+        mtime, data = self._get_object()
+        return len(data)
+
+
+    def open(self):
+        self.offset = 0
+
+
+    def close(self):
+        self.offset = 0
+
+
+    def is_open(self):
+        return True
+
+
+    def seek(self, offset, whence=0):
+        if whence == 0:
+            self.offset = offset
+        elif whence == 1:
+            self.offset += offset
+        elif whence == 2:
+            self.offset = self.get_size() + offset
+        else:
+            message = 'unsupported value "%s" for "whence" parameter' % whence
+            raise ValueError, message
+
+
+    def read(self, size=None):
+        mtime, data = self._get_object()
+        if size is None:
+            data = data[self.offset:]
+        else:
+            data = data[self.offset:self.offset+size]
+        self.offset += len(data)
+        return data
+
+
+    def readline(self):
+        mtime, data = self._get_object()
+        end = data.find('\n', self.offset)
+        if end == -1:
+            data = data[self.offset:]
+        else:
+            data = data[self.offset:end+1]
+        self.offset += len(data)
+        return data
 
 
     def write(self, data):
+        mtime, old_data = self._get_object()
+
+        old_offset = self.offset
+        self.offset += len(data)
+        new_data = old_data[:old_offset] + data + old_data[self.offset:]
+
         parent = self._get_parent()
-        parent[self.name] = data
+        parent[self.name] = (datetime.now(), data)
 
 
     def __setitem__(self, index, value):
         # Read
-        data = self._get_object()
-        # Modify
-        if isinstance(index, slice):
-            # XXX So far 'step' is not supported
-            start, stop = index.start, index.stop
-        else:
-            start, stop = index, index + 1
-        data = data[:start] + value + data[stop:]
+        parent = self._get_parent()
+        mtime, data = parent[self.name]
         # Write
-        self.write(data)
+        data = data[:index] + value + data[index+1:]
+        parent[self.name] = (datetime.now(), data)
+        self.offset += 1
+
+
+    def __setslice__(self, start, stop, value):
+        # Read
+        parent = self._get_parent()
+        mtime, data = parent[self.name]
+        # Write
+        data = data[:start] + value + data[stop:]
+        parent[self.name] = (datetime.now(), data)
+        self.offset = stop
+      
 
 
 
 class Folder(Resource, base.Folder):
+
+    def get_mtime(self):
+        object = self._get_object()
+        mtime = object._p_mtime
+        if mtime is None:
+            return datetime.now()
+        return datetime.fromtimestamp(mtime)
+
 
     def _get_resource_names(self):
         object = self._get_object()
@@ -180,7 +251,7 @@ class Folder(Resource, base.Folder):
         path = Path('%s/%s' % (self.path, name))
         if isinstance(object, OOBTree):
             return Folder(self.connection(), path)
-        elif isinstance(object, str):
+        elif isinstance(object, tuple):
             return File(self.connection(), path)
 
         raise IOError, 'nor file neither folder at %s' % path
@@ -193,7 +264,7 @@ class Folder(Resource, base.Folder):
 
     def _set_file_resource(self, name, resource):
         object = self._get_object()
-        object[name] = resource.read()
+        object[name] = (datetime.now(), resource.read())
 
 
     def _set_folder_resource(self, name, resource):

@@ -20,20 +20,24 @@ import datetime
 from thread import get_ident, allocate_lock
 
 # Import from itools
+from itools import uri
 from response import Response
 
 
 class Context(object):
 
-    def __init__(self, request):
+    def __init__(self, request, authority):
         self.request = request
         self.response = Response()
+
+        # The requested uri
+        path = request.path
+        self.uri = uri.get_reference('http://%s/%s' % (authority, path))
 
         # The user, by default it is not authenticated
         self.user = None
 
         # Split the path into path and method ("a/b/c/;view")
-        path = request.path
         self.path = path
         self.method = None
         if path and not path[-1].name:

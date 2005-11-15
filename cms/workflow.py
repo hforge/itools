@@ -23,11 +23,10 @@ from itools.workflow.workflow import Workflow
 from itools.workflow.workflow import WorkflowAware as iWorkflowAware
 from itools.xml.stl import stl
 from itools.web import get_context
+from itools.web.exceptions import UserError
 
 # Import from iKaaro
-from exceptions import UserError
 from utils import comeback
-from Handler import Handler
 
 
 # Workflow definition
@@ -112,7 +111,7 @@ class WorkflowAware(iWorkflowAware):
     ########################################################################
     # User Interface
     ########################################################################
-    state_form__access__ = Handler.is_authenticated
+    state_form__access__ = 'is_authenticated'
     state_form__label__ = u'State'
     def state_form(self):
         namespace = {}
@@ -145,7 +144,7 @@ class WorkflowAware(iWorkflowAware):
         return stl(handler, namespace)
 
 
-    edit_state__access__ = Handler.is_authenticated
+    edit_state__access__ = 'is_authenticated'
     def edit_state(self, transition=None, comments="", **kw):
         # Check input data
         if transition is None:

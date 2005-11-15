@@ -31,7 +31,7 @@ from itools.xhtml import XHTML
 from itools import i18n
 from itools.web import get_context
 
-# Import from ikaaro
+# Import from itools.cms
 from Folder import Folder
 from utils import reduce_string
 

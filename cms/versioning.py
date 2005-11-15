@@ -22,9 +22,9 @@ import warnings
 # Import from itools
 from itools.handlers.Folder import Folder
 from itools.xml.stl import stl
+from itools.web.exceptions import UserError
 
 # Import from iKaaro
-from exceptions import UserError
 from Handler import Handler
 from utils import comeback
 

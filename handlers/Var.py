@@ -92,8 +92,7 @@ class Var(Text):
 
         i = 1
         state = 0
-        data = resource.read()
-        for line in data.split('\n'):
+        for line in resource.readlines():
             line = line.strip()
 
             if line.startswith('#'):

@@ -451,7 +451,10 @@ Text.Text.register_handler_class(Document)
 # XML Factory
 #############################################################################
 def guess_doctype(resource):
-    for event, value, line_number in parser.parse(resource.read()):
+    resource.open()
+    data = resource.read()
+    resource.close()
+    for event, value, line_number in parser.parse(data):
         if event == parser.DOCUMENT_TYPE:
             return value
         elif event == parser.START_ELEMENT:

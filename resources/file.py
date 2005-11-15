@@ -71,70 +71,38 @@ class Resource(base.Resource):
 
 class File(Resource, base.File):
 
-##    def get_mimetype(self):
-##        name = self._path.split('/')[-1]
-##        name = name.split('.')
-##        if name[-1] in i18n.languages.keys():
-##            name = '.'.join(name[:-1])
-##        else:
-##            name = '.'.join(name)
+    _file = None
 
-##        # Try to use a mime types database, the default if none is given
-##        if database is None:
-##            mimetype, encoding = mimetypes.guess_type(name)
-##        else:
-##            mimetype, encoding = database.guess_type(name)
-
-##        # If it failed try 'file -i' (only works on Unix systems)
-##        if mimetype is None:
-##            x = os.popen('file -i %s' % self._path).read()
-##            if x:
-##                # Only if the command 'file' is installed
-##                mimetype = x.split(':', 1)[1].split(';')[0].split(',')[0].strip()
-
-##        return mimetype
+    def open(self):
+        try:
+            self._file = open(self._path, 'r+b')
+        except IOError:
+            self._file = open(self._path, 'rb')
 
 
-    def read(self):
-        return file(self._path, 'rb').read()
+    def close(self):
+        self._file.close()
+        self._file = None
 
 
-    def __getitem__(self, index):
-        f = file(self._path, 'rb')
-        f.seek(index)
-        byte = f.read(1)
-        f.close()
-        return byte
+    def is_open(self):
+        return self._file is not None
 
 
-    def __setitem__(self, index, value):
-        if isinstance(index, slice):
-            index = index.start
-        f = file(self._path, 'r+b')
-        f.seek(index)
-        f.write(value)
-        f.close()
+    def seek(self, offset, whence=0):
+        self._file.seek(offset, whence)
 
 
-    def __getslice__(self, a, b):
-        if b > self.get_size():
-            b = self.get_size()
-
-        f = file(self._path, 'rb')
-        f.seek(a)
-        slice = f.read(b-a)
-        f.close()
-        return slice
+    def read(self, size=-1):
+        return self._file.read(size)
 
 
-    def append(self, data):
-        f = file(self._path, 'ab')
-        f.write(data)
-        f.close()
+    def readline(self):
+        return self._file.readline()
 
 
     def write(self, data):
-        file(self._path, 'wb').write(data)
+        self._file.write(data)
 
 
     def get_size(self):

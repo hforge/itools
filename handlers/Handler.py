@@ -186,7 +186,9 @@ class Handler(Node):
         else:
             update = True
 
+        resource.open()
         self._load_state(resource)
+        resource.close()
         self.timestamp = resource.get_mtime()
         if update:
             self.set_changed()

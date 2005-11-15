@@ -18,9 +18,9 @@
 # Import from itools
 from itools import handlers
 from itools.xml.stl import stl
+from itools.web.exceptions import UserError
 
 # Import from ikaaro
-from exceptions import UserError
 from utils import comeback
 from widgets import Table
 from Folder import Folder
@@ -93,7 +93,7 @@ class UserFolder(Folder):
 
     #######################################################################
     # Add
-    new_user_form__access__ = Handler.is_admin
+    new_user_form__access__ = 'is_admin'
     new_user_form__label__ = u'Add'
     def new_user_form(self):
         root = self.get_root()
@@ -117,7 +117,7 @@ class UserFolder(Folder):
         return stl(handler, namespace)
 
 
-    new_user__access__ = Handler.is_admin
+    new_user__access__ = 'is_admin'
     def new_user(self, username, password, password2, groups=[], **kw):
         # Check the values
         if not username:
@@ -141,7 +141,7 @@ class UserFolder(Folder):
             group.set_user(username)
 
         message = self.gettext(u'User added')
-        comeback(message, goto='browse_thumbnails')
+        comeback(message, goto=';browse_thumbnails')
 
 
     def on_del_handler(self, segment):

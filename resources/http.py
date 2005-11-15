@@ -33,8 +33,23 @@ class Resource(base.Resource):
 
 class File(Resource, base.File):
 
-    def read(self):
-        return urlopen(str(self.uri)).read()
+    _file = None
+
+    def open(self):
+        self._file = urlopen(str(self.uri))
+
+
+    def close(self):
+        self._file.close()
+        self._file = None
+
+
+    def is_open(self):
+        return self._file is not None
+
+
+    def read(self, size=None):
+        return self._file.read(size)
 
 
     def get_mimetype(self):

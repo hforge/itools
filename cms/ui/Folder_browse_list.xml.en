@@ -113,14 +113,14 @@
       </td>
     </tr>
     <tr>
-      <td><img src="images/px.png" height="1" width="10"/></td>
-      <td><img src="images/px.png" height="1" width="16" /></td>
-      <td><img src="images/px.png" height="1" width="50" /></td>
-      <td><img src="images/px.png" height="1" width="133" /></td>
-      <td><img src="images/px.png" height="1" width="70" /></td>
-      <td><img src="images/px.png" height="1" width="40" /></td>
-      <td><img src="images/px.png" height="1" width="90" /></td>
-      <td><img src="images/px.png" height="1" width="40" /></td>
+      <td width="10"></td>
+      <td width="16"></td>
+      <td width="50"></td>
+      <td width="133"></td>
+      <td width="70"></td>
+      <td width="40"></td>
+      <td width="90"></td>
+      <td width="40"></td>
     </tr>
   </table>
 </form>

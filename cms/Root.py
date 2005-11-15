@@ -16,7 +16,6 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 # Import from the Standard Library
-from base64 import decodestring
 from copy import copy
 import cStringIO
 import datetime
@@ -24,11 +23,12 @@ import logging
 import smtplib
 import tempfile
 from time import time
-from urllib import quote, unquote
+import traceback
+from urllib import quote
 
 # Import from itools
 from itools import get_abspath
-from itools.resources import zope2, get_resource
+from itools.resources import get_resource
 from itools import handlers
 from itools.handlers import get_handler
 from itools.handlers import transactions
@@ -37,10 +37,9 @@ from itools.xml.stl import stl
 from itools.catalog.Catalog import Catalog
 from itools.web import get_context
 
-# Import from ikaaro
+# Import from itools.cms
 from Group import Group
 from Handler import Handler
-from exceptions import Forbidden, UserError
 from Metadata import Metadata, Record
 from text import PO
 from skins import ui
@@ -132,126 +131,45 @@ class Root(Group, WebSite):
     ########################################################################
     # Publish
     ########################################################################
-    def publish(self):
+    def before_traverse(self):
+        context = get_context()
+        # Language negotiation
+        user = context.user
+        if user is not None:
+            language = user.get_property('ikaaro:user_language')
+            context.request.accept_language.set(language, 2.0)
+
+
+    def after_traverse(self):
         context = get_context()
         request, response = context.request, context.response
-        path = context.path
 
-        # Set the application's root in the context
-        context.root = self
-        segment, path = path[0], path[1:]
-        self.name = segment.name
-
-        # Traverse
-        handler = self.get_handler(path)
-        context.handler = handler
-
-        # Create the security context
-        cname = '__ac'
-        cookie = context.get_cookie(cname)
-        if cookie is not None:
-            cookie = unquote(cookie)
-            cookie = decodestring(cookie)
-            username, password = cookie.split(':', 1)
-            # 
-            user = self.get_user(username)
-            if user.authenticate(password):
-                context.user = user
-
-        # Hook (used to set the language)
-        self.before_traverse()
-
-        # Get the method
-        method_name = context.method
-        http_method = request.method
-
-        if method_name is None:
-            method_name = http_method
-
-        method = handler.get_method(method_name)
-
-        # Check security
-        if method is None:
-            method = handler.forbidden_form
-
-        # Set the list of needed resources. The method we are going to
-        # call may need external resources to be rendered properly, for
-        # example it could need an style sheet or a javascript file to
-        # be included in the html head (which it can not control). This
-        # attribute lets the interface to add those resources.
-        context.styles = []
-        context.scripts = []
-
-        try:
-            # Call the method
-            if method.im_func.func_code.co_flags & 8:
-                response_body = method(**request.form)
-            else:
-                response_body = method()
-        except UserError, exception:
-            message = exception.args[0]
-            comeback(message)
-        except Forbidden:
-            # XXX Add referrer
-            goto = ('../' * (len(path))) + ';login_form'
-            context.redirect(goto, status=403)
-        except:
-            # Rollback changes to handlers
-            transaction = transactions.get_transaction()
-            transaction.rollback()
-            if self.has_handler('.catalog'):
-                catalog = self.get_handler('.catalog')
-                catalog.timestamp = datetime.datetime(1900, 1, 1)
-            # Log error
-            error_log = self.log_error()
-            error_log = quote(error_log)
-            # Redirect to error page
-            # XXX
-            path = ('../' * (len(path)))
-            context.redirect(path + ';error_page?error_log=%s' % error_log)
-        else:
-            # Save changes
-            transaction = transactions.get_transaction()
-            username = context.user and context.user.name or 'NONE'
-            note = str(context.request.path)
-            transaction.commit(username, note)
-            # If there is not content type and the body is not None,
-            # wrap it in the skin template
-            if http_method == 'GET' and response_body is not None:
-                if not response.has_header('Content-Type'):
-                    skin = self.get_skin()
-                    response_body = skin.template(response_body)
-
-                # Set the response body
+        # If there is not content type and the body is not None,
+        # wrap it in the skin template
+        response_body = response.state.body
+        if request.method == 'GET' and response_body is not None:
+            if not response.has_header('Content-Type'):
+                skin = self.get_skin()
+                response_body = skin.template(response_body)
                 response.set_body(response_body)
 
 
-    def log_error(self):
-        context = get_context()
-        request, user = context.request, context.user
-        # Log error
-        error = '\n' \
-                '[iKaaro Error]\n' \
-                'date   : %(date)s\n' \
-                'uri    : %(uri)s\n' \
-                'referrer: %(referrer)s\n' \
-                'user   : %(user)s\n' \
-                '\n'
-        user = context.user
-        error = error % {'date': str(datetime.datetime.now()),
-                         'uri': str(context.uri),
-                         'referrer': str(request.referrer),
-                         'user': user and user.name or None}
-        # log on the root logger (std_out and ./log/ikaaro.log)
-        logging.getLogger().exception(error)
+    def forbidden(self):
+        message = (u'Access forbidden, you are not authorized to access'
+                   u' this resource.')
+        return self.gettext(message)
 
-        # log on the local logger
-        error_page_logger.exception(error)
-        traceback = error_page_logger_buffer.getvalue()
 
-        # empty the error_page_logger_buffer
-        error_page_logger_buffer.truncate(0)
-        return traceback
+    def internal_server_error(self):
+        namespace = {}
+        namespace['traceback'] = traceback.format_exc()
+
+        handler = self.get_handler('/ui/Root_internal_server_error.xml')
+
+
+    def not_found(self):
+        message = u'The requested resource has not been found.'
+        return self.gettext(message)
 
 
     ########################################################################
@@ -281,15 +199,6 @@ class Root(Group, WebSite):
     ########################################################################
     # Zope registry metatype (replaces bootstrap)
     ########################################################################
-    def before_traverse(self):
-        context = get_context()
-        # Language negotiation
-        user = context.user
-        if user is not None:
-            language = user.get_property('ikaaro:user_language')
-            context.request.accept_language.set(language, 2.0)
-
-
     @classmethod
     def get_dummy_user(cls, username, password):
         return User(password=password)
@@ -310,7 +219,8 @@ class Root(Group, WebSite):
 
     @classmethod
     def manage_add(cls, container):
-        from VersioningAware import VersioningAware
+        from itools.resources import zope2
+        from versioning import VersioningAware
 
         context = get_context()
         request = context.request
@@ -559,14 +469,14 @@ class Root(Group, WebSite):
         return website_is_open
 
 
-    join_form__access__ = is_allowed_to_join
+    join_form__access__ = 'is_allowed_to_join'
     join_form__label__ = u'Join'
     def join_form(self):
         handler = self.get_handler('/ui/Root_join.xml')
         return stl(handler)
 
 
-    join__access__ = is_allowed_to_join
+    join__access__ = 'is_allowed_to_join'
     def join(self, username, password, password2, **kw):
         users = self.get_handler('users')
         error = users.new_user(username, password, password2)
@@ -579,14 +489,14 @@ class Root(Group, WebSite):
     ########################################################################
     # Catalog
     ########################################################################
-    catalog_form__access__ = Handler.is_admin
+    catalog_form__access__ = 'is_admin'
     catalog_form__label__ = u'Catalog'
     def catalog_form(self):
         handler = self.get_handler('/ui/Root_catalog.xml')
         return stl(handler)
 
 
-    update_catalog__access__ = Handler.is_admin
+    update_catalog__access__ = 'is_admin'
     def update_catalog(self):
         # Initialize a new empty catalog
         t0 = time()
@@ -697,7 +607,7 @@ class Root(Group, WebSite):
     #######################################################################
     # Import
     #######################################################################
-    ximport__access__ = Handler.is_admin
+    ximport__access__ = 'is_admin'
     def ximport(self, path):
         from itools.handlers import get_handler
         for resource_name in self.resource.get_resource_names():

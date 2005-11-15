@@ -31,22 +31,23 @@ from itools.resources import base, memory
 from itools import uri
 from itools.xml.stl import stl
 from itools.web import get_context
+from itools.web.exceptions import UserError
 
-# Import from ikaaro
-from exceptions import UserError
+# Import from itools.cms
+import debug
 import File
 from images import Image
 from Handler import Handler
 from LocaleAware import LocaleAware
 from Metadata import Metadata
-from VersioningAware import VersioningAware
-from WorkflowAware import WorkflowAware
+from versioning import VersioningAware
+from workflow import WorkflowAware
 from utils import comeback, checkid, reduce_string
 from widgets import Breadcrumb, Table
 
 
 
-class Folder(Handler, handlers.Folder.Folder):
+class Folder(Handler, debug.Folder, handlers.Folder.Folder):
 
     #########################################################################
     # Class metadata
@@ -229,8 +230,11 @@ class Folder(Handler, handlers.Folder.Folder):
         path. Also some handlers are not VersioningAware.
         """
         if owner is None:
-            user = get_context().user
-            owner = user is not None and user.name or ''
+            owner = ''
+            context = get_context()
+            if context is not None:
+                if context.user is not None:
+                    owner = context.user.name
             
         if format is None:
             format = handler.class_id
@@ -443,7 +447,7 @@ class Folder(Handler, handlers.Folder.Folder):
         return namespace
 
 
-    browse_thumbnails__access__ = Handler.is_authenticated
+    browse_thumbnails__access__ = 'is_authenticated'
     browse_thumbnails__label__ = u'View'
     browse_thumbnails__sublabel__ = u'As Icons'
     def browse_thumbnails(self):
@@ -460,7 +464,7 @@ class Folder(Handler, handlers.Folder.Folder):
         return stl(handler, namespace)
 
 
-    browse_list__access__ = Handler.is_allowed_to_edit
+    browse_list__access__ = 'is_allowed_to_edit'
     browse_list__label__ = u'View'
     browse_list__sublabel__ = u'As List'
     def browse_list(self, **kw):
@@ -506,7 +510,7 @@ class Folder(Handler, handlers.Folder.Folder):
         return stl(handler, namespace)
 
 
-    browse_image__access__ = Handler.is_allowed_to_edit
+    browse_image__access__ = 'is_allowed_to_edit'
     browse_image__label__ = u'View'
     browse_image__sublabel__ = u'As Image Gallery'
     def browse_image(self, selected_image=None, **kw):
@@ -553,7 +557,7 @@ class Folder(Handler, handlers.Folder.Folder):
         return stl(handler, namespace)
 
 
-    remove__access__ = Handler.is_allowed_to_remove
+    remove__access__ = 'is_allowed_to_remove'
     def remove(self, ids=[], **kw):
         if not ids:
             raise UserError, self.gettext(u'No objects selected.')
@@ -582,7 +586,7 @@ class Folder(Handler, handlers.Folder.Folder):
         comeback(message)
 
 
-    rename_form__access__ = Handler.is_allowed_to_move
+    rename_form__access__ = 'is_allowed_to_move'
     def rename_form(self, ids=[], **kw):
         # Filter names which the authenticated user is not allowed to move
         handlers = [ self.get_handler(x) for x in ids ]
@@ -610,7 +614,7 @@ class Folder(Handler, handlers.Folder.Folder):
         return stl(handler, namespace)
 
 
-    rename__access__ = Handler.is_allowed_to_move
+    rename__access__ = 'is_allowed_to_move'
     def rename(self, ids, new_ids, **kw):
         # Process input data
         for i, old_name in enumerate(ids):
@@ -651,10 +655,10 @@ class Folder(Handler, handlers.Folder.Folder):
                                             language=handler.get_language())
 
         message = self.gettext(u'Objects renamed.')
-        comeback(message, goto=self.get_firstview())
+        comeback(message, goto=';%s' % self.get_firstview())
 
 
-    copy__access__ = Handler.is_allowed_to_copy
+    copy__access__ = 'is_allowed_to_copy'
     def copy(self, ids=[], **kw):
         # Filter names which the authenticated user is not allowed to copy
         handlers = [ self.get_handler(x) for x in ids ]
@@ -674,7 +678,7 @@ class Folder(Handler, handlers.Folder.Folder):
         comeback(message)
 
 
-    cut__access__ = Handler.is_allowed_to_move
+    cut__access__ = 'is_allowed_to_move'
     def cut(self, ids=[], **kw):
         # Filter names which the authenticated user is not allowed to move
         handlers = [ self.get_handler(x) for x in ids ]
@@ -694,7 +698,7 @@ class Folder(Handler, handlers.Folder.Folder):
         comeback(message)
 
 
-    paste__access__ = Handler.is_allowed_to_add
+    paste__access__ = 'is_allowed_to_add'
     def paste(self):
         context = get_context()
 
@@ -762,7 +766,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
     #######################################################################
     # Browse / Translate
-    translate_form__access__ = Handler.is_allowed_to_translate
+    translate_form__access__ = 'is_allowed_to_translate'
     def translate_form(self, ids=[], **kw):
         if not ids:
             raise UserError, self.gettext(u'No objects selected')
@@ -812,7 +816,7 @@ class Folder(Handler, handlers.Folder.Folder):
         return stl(handler, namespace)
 
 
-    translate__access__ = Handler.is_allowed_to_translate
+    translate__access__ = 'is_allowed_to_translate'
     def translate(self, names, languages, **kw):
         context = get_context()
         request = context.request
@@ -838,12 +842,12 @@ class Folder(Handler, handlers.Folder.Folder):
             trans_metadata.set_property('isVersionOf', name)
 
         message = self.gettext(u'Document translations created.')
-        comeback(message, goto=self.get_firstview())
+        comeback(message, goto=';%s' % self.get_firstview())
 
 
     #######################################################################
     # Add / New Resource
-    new_resource_form__access__ = Handler.is_allowed_to_add
+    new_resource_form__access__ = 'is_allowed_to_add'
     new_resource_form__label__ = u'Add'
     new_resource_form__sublabel__ = u'New Resource'
     def new_resource_form(self, type=None, **kw):
@@ -881,7 +885,7 @@ class Folder(Handler, handlers.Folder.Folder):
             return handler_class.new_instance_form()
 
 
-    new_resource__access__ = Handler.is_allowed_to_add
+    new_resource__access__ = 'is_allowed_to_add'
     def new_resource(self, class_id, name, **kw):
         context = get_context()
         request = context.request
@@ -918,10 +922,10 @@ class Folder(Handler, handlers.Folder.Folder):
         self.set_handler(name, handler, **kw)
 
         message = self.gettext(u'New resource added')
-        comeback(message, goto=self.get_firstview())
+        comeback(message, goto=';%s' % self.get_firstview())
 
 
-    browse_dir__access__ = Handler.is_authenticated
+    browse_dir__access__ = 'is_authenticated'
     def browse_dir(self, id=None):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=File.File, start=self)
@@ -936,7 +940,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
     #######################################################################
     # Add / Upload File
-    upload_file__access__ = Handler.is_allowed_to_add
+    upload_file__access__ = 'is_allowed_to_add'
     def upload_file(self, file=None, **kw):
         if file is None:
             raise UserError, self.gettext(u'The file must be entered')
@@ -949,7 +953,9 @@ class Folder(Handler, handlers.Folder.Folder):
         if mimetype.startswith('text/'):
             name, type, language = FileName.decode(name)
             if language is None:
+                file.open()
                 data = file.read()
+                file.close()
                 encoding = Text.guess_encoding(data)
                 data = unicode(data, encoding)
                 language = i18n.oracle.guess_language(data)
@@ -973,7 +979,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
         # Come back
         message = self.gettext(u'File uploaded.')
-        comeback(message, goto=self.get_firstview())
+        comeback(message, goto=';%s' % self.get_firstview())
 
 
     #######################################################################

@@ -32,12 +32,13 @@ from itools.xml.stl import stl
 from itools.xhtml import XHTML
 from itools.gettext import domains
 from itools.web import get_context
+from itools.web.exceptions import Forbidden
 
-# Import from ikaaro
-from exceptions import Forbidden
+# Import from itools.cms
+from access import AccessControl
+from catalog import CatalogAware
 from utils import comeback
 from LocaleAware import LocaleAware
-
 
 
 # Initialize logger
@@ -48,122 +49,12 @@ logger.addHandler(handler)
 
 
 
-class Node(iNode):
-
-    ########################################################################
-    # Security
-    ########################################################################
-    def is_ingroup(self, name):
-        """
-        Checks wether the authenticated user is in the given group (e.g.
-        admins, reviewers) within the context of this resource.
-        """
-        context = get_context()
-
-        user = context.user
-        if user is None:
-            return False
-
-        root = context.root
-        users = root.get_handler(name).get_usernames()
-        if user.name in users:
-            return True
-
-        return False
-
-
-    def is_admin(self):
-        return self.is_ingroup('admins')
-
-
-    def is_reviewer(self):
-        return self.is_ingroup('reviewers')
-
-
-    def is_authenticated(self):
-        context = get_context()
-        return context.user is not None
-
-
-    def is_allowed_to_view(self):
-        from WorkflowAware import WorkflowAware
-
-        if isinstance(self, WorkflowAware):
-            user = get_context().user
-            if user is None:
-                if self.workflow_state != 'public':
-                    return False
-
-        return True
-
-
-    def is_allowed_to_edit(self):
-        from User import User
-
-        context = get_context()
-
-        user = context.user
-        if user is None:
-            return False
-
-        if self.is_admin():
-            return True
-
-        here = self
-        while here is not None:
-            if isinstance(here, User):
-                return here.name == user.name
-            here = here.parent
-
-        return True
-
-
-    is_allowed_to_add = is_allowed_to_edit
-    is_allowed_to_remove = is_allowed_to_edit
-    is_allowed_to_copy = is_allowed_to_edit
-    is_allowed_to_move = is_allowed_to_edit
-    is_allowed_to_translate = is_allowed_to_edit
-
-
-    def get_method(self, name):
-        method = getattr(self, name)
-
-        # Check access
-        access = getattr(self, '%s__access__' % name, None)
-
-        # Private methods
-        if access is None or access is False:
-            return None
-
-        # Public methods
-        if access is True:
-            return method
-
-        # Is it an aspect?
-        if access.im_func(self) is True:
-            return method
-
-        return None
-
-
-    def forbidden_form(self):
-        context = get_context()
-        if context.user is None:
-            here = context.handler
-            site_root = here.get_site_root()
-            # XXX Add referrer
-            message = self.gettext(u'Access restricted, please log in.')
-            goto = '%s/;login_form' % here.get_pathto(site_root)
-            context.redirect(goto)
-        else:
-            return self.gettext(u'Access forbidden, you are not authorized to'
-                                u' access this resource.')
-
+class Node(AccessControl, iNode):
 
     ########################################################################
     # HTTP
     ########################################################################
-    GET__access__ = is_allowed_to_view
+    GET__access__ = 'is_allowed_to_view'
     def GET(self):
         method = self.get_firstview()
         # Check access
@@ -175,7 +66,7 @@ class Node(iNode):
         context.redirect(goto)
 
 
-    POST__access__ = is_authenticated
+    POST__access__ = 'is_authenticated'
     def POST(self, **kw):
         for name in kw:
             if name.startswith(';'):
@@ -210,6 +101,25 @@ class Node(iNode):
     ########################################################################
     def get_property(self, name, language=None):
         return schemas.get_datatype(name).default
+
+
+    def get_title_or_name(self):
+        return self.name
+
+
+    def get_mtime(self):
+        return self.resource.get_mtime()
+
+    mtime = property(get_mtime, None, None, "")
+
+
+    def get_path_to_icon(self, size=16, from_handler=None):
+        if hasattr(self, 'icon%s' % size):
+            return ';icon%s' % size
+        path_to_icon = getattr(self.__class__, 'class_icon%s' % size)
+        if from_handler is None:
+            from_handler = self
+        return '%sui/%s' % (from_handler.get_pathtoroot(), path_to_icon)
 
 
     ########################################################################
@@ -268,19 +178,11 @@ class Node(iNode):
 
 
 
-class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
+class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
+              CatalogAware):
 
     # Needed by the classic skin
     is_image = False
-
-
-    def get_path_to_icon(self, size=16, from_handler=None):
-        if hasattr(self, 'icon%s' % size):
-            return ';icon%s' % size
-        path_to_icon = getattr(self.__class__, 'class_icon%s' % size)
-        if from_handler is None:
-            from_handler = self
-        return '%sui/%s' % (from_handler.get_pathtoroot(), path_to_icon)
 
 
     def before_commit(self):
@@ -384,12 +286,6 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
         return self.metadata.get_property('owner')
 
 
-    def get_mtime(self):
-        return self.resource.get_mtime()
-
-    mtime = property(get_mtime, None, None, "")
-
-
     def get_language(self):
         return self.metadata.get_property('dc:language')
 
@@ -410,38 +306,6 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
     ########################################################################
     def to_text(self):
         return u''
-
-
-    def get_catalog_indexes(self):
-        from WorkflowAware import WorkflowAware
-
-        name = self.name
-        abspath = self.get_abspath()
-        get_property = self.get_metadata().get_property
-        title = get_property('dc:title')
-
-        document = {
-            'name': name,
-            'abspath': abspath,
-            'format': get_property('format'),
-            'title': title,
-            'text': self.to_text(),
-            'owner': get_property('owner'),
-            'title_or_name': title or name,
-            'mtime_microsecond': str(self.resource.get_mtime().microsecond),
-            }
-
-        parent = self.parent
-        if parent is not None:
-            if parent.parent is None:
-                document['parent_path'] = '/'
-            else:
-                document['parent_path'] = parent.get_abspath()
-
-        if isinstance(self, WorkflowAware):
-            document['workflow_state'] = self.get_workflow_state()
-
-        return document
 
 
     ########################################################################
@@ -493,7 +357,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
     ########################################################################
     # HTTP
     ########################################################################
-    PUT__access__ = Node.is_authenticated
+    PUT__access__ = 'is_authenticated'
     def PUT(self):
         context = get_context()
         request, response = context.request, context.response
@@ -507,7 +371,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
         return response
 
 
-    LOCK__access__ = Node.is_authenticated
+    LOCK__access__ = 'is_authenticated'
     def LOCK(self):
         context = get_context()
         request, response = context.request, context.response
@@ -522,7 +386,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
         return response
 
 
-    UNLOCK__access__ = Node.is_authenticated
+    UNLOCK__access__ = 'is_authenticated'
     def UNLOCK(self):
         context = get_context()
         request, response = context.request, context.response
@@ -539,7 +403,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
     ########################################################################
     # User interface
     ########################################################################
-    change_content_language__access__ = Node.is_allowed_to_view
+    change_content_language__access__ = 'is_allowed_to_view'
     def change_content_language(self, **kw):
         context = get_context()
         request = context.request
@@ -572,7 +436,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
     metadata = property(get_metadata, None, None, "")
 
 
-    edit_metadata_form__access__ = Node.is_allowed_to_edit
+    edit_metadata_form__access__ = 'is_allowed_to_edit'
     edit_metadata_form__label__ = u'Metadata'
     def edit_metadata_form(self):
         context = get_context()
@@ -596,7 +460,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = Node.is_allowed_to_edit
+    edit_metadata__access__ = 'is_allowed_to_edit'
     def edit_metadata(self, **kw):
         context = get_context()
         root = context.root
@@ -650,7 +514,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware):
         return stl(handler, namespace)
 
 
-    epoz_iframe__access__ = Node.is_allowed_to_edit
+    epoz_iframe__access__ = 'is_allowed_to_edit'
     def epoz_iframe(self):
         context = get_context()
         response = context.response

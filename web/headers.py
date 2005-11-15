@@ -16,7 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from itools
-from itools.datatypes import DataType, String, URI
+from itools.datatypes import DataType, Integer, String, URI
+from itools.i18n import accept
 
 
 #############################################################################
@@ -110,6 +111,27 @@ class ValueWithParameters(DataType):
         return '%s; %s' % (value, Parameters.encode(parameters))
 
 
+#############################################################################
+# Cookies
+#############################################################################
+class Cookie(DataType):
+    # XXX Not robust
+
+    @staticmethod
+    def decode(data):
+        cookies = {}
+        for x in data.split(';'):
+            name, value = x.strip().split('=')
+            cookies[name] = value[1:-1]
+
+        return cookies
+
+
+    @staticmethod
+    def encode(value):
+        return '; '.join([ '%s="%s"' % (name, value)
+                           for name, value in value.items() ])
+
 
 #############################################################################
 # Headers
@@ -130,7 +152,7 @@ headers = {
     'Accept': String,
     'Accept-Charset': String,
     'Accept-Encoding': String,
-    'Accept-Language': String,
+    'Accept-Language': accept.AcceptLanguageType,
     'Authorization': String,
     'Expect': String,
     'From': String,
@@ -160,7 +182,7 @@ headers = {
     'Allow': String,
     'Content-Encoding': String,
     'Content-Language': String,
-    'Content-Length': String,
+    'Content-Length': Integer,
     'Content-Location': String,
     'Content-MD5': String,
     'Content-Range': String,
@@ -170,6 +192,7 @@ headers = {
     'extension-header': String,
     # Non standard headers
     'Content-Disposition': ValueWithParameters,
+    'Cookie': Cookie,
     }
 
 

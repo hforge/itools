@@ -61,7 +61,7 @@ def checkid(id):
     return str(id)
 
 
-def comeback(message, goto=None, **kw):
+def comeback(message, goto=None):
     """Redirects to a document view."""
     context = get_context()
     request = context.request
@@ -72,10 +72,8 @@ def comeback(message, goto=None, **kw):
 
     if isinstance(goto, uri.Reference):
         goto = copy(goto)
-        goto.query['message'] = message.encode('utf8')
     else:
-        goto = ';' + goto
-        goto = request.build_url(goto, message=message, **kw)
+        goto = uri.get_reference(goto)
 
     context.redirect(goto)
 

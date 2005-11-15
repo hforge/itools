@@ -26,6 +26,7 @@ from itools.xml.stl import stl
 from itools.xhtml import XHTML
 from itools.html import HTML
 from itools.web import get_context
+from itools.web.exceptions import UserError
 
 # Import from ikaaro
 from Handler import Handler
@@ -33,7 +34,6 @@ from File import File
 from images import Image
 from text import Text
 from utils import comeback
-from exceptions import UserError
 from widgets import Breadcrumb
 
 

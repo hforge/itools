@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";manage_edit" method="post">
+  <textarea name="data" cols="75" rows="15" stl:content="data" />
+  <br/>
+  <input type="submit" value="Save Changes" />
+</form>
+
+</stl:block>

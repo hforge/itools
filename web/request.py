@@ -22,6 +22,7 @@ from urllib import urlencode
 from itools import uri
 from itools.datatypes import QName
 from itools import schemas
+from itools.resources import memory
 from itools.handlers.File import File
 from itools.web import headers
 from itools.web import entities
@@ -36,12 +37,9 @@ class Request(File):
     def _load_state(self, resource):
         state = self.state
         state.form = {}
-        state.cookies = {}
-
-        data = resource.read()
 
         # The request line
-        line, data = entities.read_line(data)
+        line = resource.readline()
         method, path, http_version = line.split()
         self.set_method(method)
         reference = uri.get_reference(path)
@@ -49,15 +47,61 @@ class Request(File):
         state.http_version = http_version
 
         # The headers
-        request_headers, data = entities.read_headers(data)
-        state.headers = request_headers
+        state.headers = entities.read_headers(resource)
+
+        # The body
+        if 'Content-Length' in state.headers:
+            size = state.headers['Content-Length']
+            body = resource.read(size)
+        else:
+            body = ''
+
+        # Cookies
+        state.headers.setdefault('Cookie', {})
 
         # The Form
-        if method == 'GET':
+        if method in ('GET', 'HEAD'):
             parameters = reference.query
+        elif method in ('POST', 'PUT', 'LOCK', 'UNLOCK'):
+            type, type_parameters = state.headers['Content-Type']
+            if type == 'application/x-www-form-urlencoded':
+                parameters = uri.generic.Query(body)
+            elif type.startswith('multipart/'):
+                boundary = type_parameters.get('boundary')
+                boundary = '--%s' % boundary
+                parameters = {}
+                for part in body.split(boundary)[1:-1]:
+                    if part.startswith('\r\n'):
+                        part = part[2:]
+                    elif part.startswith('\n'):
+                        part = part[1:]
+                    # Parse the entity
+                    resource = memory.File(part)
+                    entity = entities.Entity(resource)
+                    # Find out the parameter name
+                    header = entity.get_header('Content-Disposition')
+                    value, header_parameters = header
+                    name = header_parameters['name']
+                    # Load the value
+                    body = entity.get_body()
+                    if body.endswith('\r\n'):
+                        body = body[:-2]
+                    elif body.endswith('\n'):
+                        body = body[:-1]
+                    if 'filename' in header_parameters:
+                        filename = header_parameters['filename']
+                        if filename:
+                            # Strip the path (for IE). XXX Test this.
+                            filename = filename.split('\\')[-1]
+                            resource = memory.File(body, name=filename)
+                            parameters[name] = resource
+                    else:
+                        parameters[name] = body
+            else:
+                raise ValueError, u'content type "%s" not supported' % type
         else:
-            # XXX Only works if Content-Type: application/x-www-form-urlencoded
-            parameters = uri.generic.Query(data)
+            message = u'request method "%s" not yet implemented' % method
+            raise ValueError, message
 
         for name in parameters:
             self._set_parameter(name, parameters[name])
@@ -136,6 +180,14 @@ class Request(File):
 
 
     ########################################################################
+    # Accept Language
+    def get_accept_language(self):
+        return self.state.headers.get('Accept-Language', None)
+
+    accept_language = property(get_accept_language, None, None, '')
+
+
+    ########################################################################
     # The Form
     ########################################################################
     def _set_parameter(self, name, value):
@@ -177,16 +229,16 @@ class Request(File):
     # The Cookies
     ########################################################################
     def set_cookie(self, name, value):
-        self.state.cookies[name] = value
+        self.state.headers['Cookie'][name] = value
 
 
     def get_cookie(self, name):
-        return self.state.cookies.get(name)
+        return self.state.headers['Cookie'].get(name)
 
 
-    def get_cookies_as_str(self):
-        cookies = self.state.cookies
-        return '; '.join([ '%s="%s"' % (x, cookies[x]) for x in cookies ])
+##    def get_cookies_as_str(self):
+##        cookies = self.state.cookies
+##        return '; '.join([ '%s="%s"' % (x, cookies[x]) for x in cookies ])
 
 
     ########################################################################

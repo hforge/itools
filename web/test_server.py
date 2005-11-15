@@ -21,7 +21,7 @@ import datetime
 import sys
 
 # Import from itools
-from itools.resources import memory, get_resource
+from itools.resources import get_resource
 from itools.handlers.Folder import Folder
 from server import Server
 
@@ -44,8 +44,7 @@ if __name__ == '__main__':
         arg = args[1]
         if arg == 'time':
             # The root of our data
-            root_resource = memory.Folder()
-            root = Time(root_resource)
+            root = Time()
 
             # Build and start the server
             server = Server(root)

@@ -75,6 +75,7 @@ def load_documents():
         except:
             pass
         else:
+            doc = {'title': doc.title(), 'body': doc.body()}
             documents.append(doc)
     print 'done'
 

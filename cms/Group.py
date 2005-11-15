@@ -22,9 +22,10 @@ from time import time
 from itools import handlers
 from itools.xml.stl import stl
 from itools.web import get_context
+from itools.web.exceptions import UserError
 
 # Import from ikaaro
-from exceptions import UserError
+from access import AccessControl
 from utils import comeback, checkid
 from widgets import Table
 from Folder import Folder
@@ -38,7 +39,7 @@ class ListOfUsers(handlers.File.File):
         state = self.state
 
         state.usernames = set()
-        for username in resource.read().split('\n'):
+        for username in resource.readlines():
             username = username.strip()
             if username:
                 state.usernames.add(username)
@@ -134,7 +135,7 @@ class Group(Folder):
         return Folder.get_subviews(self, name)
 
 
-    is_allowed_to_view = Handler.is_admin
+    is_allowed_to_view = AccessControl.is_admin
     
 
     #######################################################################
@@ -142,7 +143,7 @@ class Group(Folder):
     browse_thumbnails__label__ = u'Groups'
 
 
-    add_group_form__access__ = Handler.is_admin
+    add_group_form__access__ = 'is_admin'
     add_group_form__label__ = u'Add'
     add_group_form__sublabel__ = u'Add'
     def add_group_form(self):
@@ -150,7 +151,7 @@ class Group(Folder):
         return stl(handler)
 
 
-    add_group__access__ = Handler.is_admin
+    add_group__access__ = 'is_admin'
     def add_group(self, name, **kw):
         # Process input data
         name = name.strip()
@@ -173,12 +174,12 @@ class Group(Folder):
         self.set_handler(name, Group())
 
         message = self.gettext(u'Group added.')
-        comeback(message, goto='browse_thumbnails')
+        comeback(message, goto=';browse_thumbnails')
 
 
     #######################################################################
     # Users / Browse
-    browse_users__access__ = Handler.is_admin
+    browse_users__access__ = 'is_admin'
     browse_users__label__ = u'Users'
     browse_users__sublabel__ = u'Browse'
     def browse_users(self):
@@ -211,7 +212,7 @@ class Group(Folder):
         return stl(handler, namespace)
 
 
-    remove_users__access__ = Handler.is_admin
+    remove_users__access__ = 'is_admin'
     def remove_users(self, ids=[], **kw):
         context = get_context()
         request, response = context.request, context.response
@@ -254,7 +255,7 @@ class Group(Folder):
 
     #######################################################################
     # Users / Add
-    add_users_form__access__ = Handler.is_admin
+    add_users_form__access__ = 'is_admin'
     add_users_form__label__ = u'Users'
     add_users_form__sublabel__ = u'Add'
     def add_users_form(self):
@@ -291,7 +292,7 @@ class Group(Folder):
         return stl(handler, namespace)
 
 
-    add_users__access__ = Handler.is_admin
+    add_users__access__ = 'is_admin'
     def add_users(self, names=[], **kw):
         """
         Form action that adds new members to the group.
@@ -311,7 +312,7 @@ class Group(Folder):
         else:
              message = u'Users added'
         message = self.gettext(message)
-        comeback(message, goto='browse_users')
+        comeback(message, goto=';browse_users')
 
 
 Folder.register_handler_class(Group)

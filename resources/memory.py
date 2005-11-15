@@ -58,48 +58,53 @@ class File(Resource, base.File):
         self.ctime = self.mtime = datetime.now()
 
 
-    def __getitem__(self, i):
-        self.data.seek(i)
-        return self.data.read(1)
+    def open(self):
+        self.data.seek(0)
 
 
-    def __getslice__(self, a, b):
-        self.data.seek(a)
-        return self.data.read(b-a)
+    def close(self):
+        self.data.seek(0)
+
+
+    def is_open(self):
+        return True
+
+
+    def read(self, size=-1):
+        return self.data.read(size)
+
+
+    def readline(self):
+        return self.data.readline()
+
+
+    def write(self, data):
+        self.data.write(data)
+        self.mtime = datetime.now()
+
+
+    ######################################################################
+    # API / Direct access
+    ######################################################################
+    def seek(self, offset, whence=0):
+        self.data.seek(offset, whence)
 
 
     def __setitem__(self, index, value):
-        if isinstance(index, slice):
-            index = index.start
         self.data.seek(index)
         self.data.write(value)
         self.mtime = datetime.now()
 
 
     def __setslice__(self, start, stop, value):
-        rest = self[stop:]
         self.data.seek(start)
-        self.data.truncate()
         self.data.write(value)
-        self.data.write(rest)
         self.mtime = datetime.now()
 
 
     def append(self, value):
         self.data.seek(0, 2)
         self.data.write(value)
-        self.mtime = datetime.now()
-
-
-    def read(self):
-        self.data.seek(0)
-        return self.data.read()
-
-
-    def write(self, data):
-        self.data.seek(0)
-        self.data.truncate()
-        self.data.write(data)
         self.mtime = datetime.now()
 
 
@@ -125,8 +130,7 @@ class Folder(Resource, base.Folder):
 
 
     def _set_file_resource(self, name, resource):
-        data = resource.read()
-        self.resources[name] = File(data, name=name)
+        self.resources[name] = File(resource.read(), name=name)
         self.mtime = datetime.now()
 
 

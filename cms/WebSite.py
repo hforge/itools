@@ -23,16 +23,16 @@ from urllib import quote
 from itools import i18n
 from itools.xml.stl import stl
 from itools.web import get_context
+from itools.web.exceptions import UserError
 
 # Import from ikaaro
-from exceptions import UserError
 from Handler import Handler
 from Folder import Folder
 from LocaleAware import LocaleAware
 from Metadata import Metadata
 from skins import Skin
 from utils import comeback
-from WorkflowAware import WorkflowAware
+from workflow import WorkflowAware
 
 
 
@@ -128,7 +128,7 @@ class WebSite(Folder):
 
     ######################################################################
     # Settings / General
-    general_form__access__ = Handler.is_admin
+    general_form__access__ = 'is_admin'
     general_form__label__ = u'Settings'
     general_form__sublabel__ = u'General'
     def general_form(self):
@@ -141,7 +141,7 @@ class WebSite(Folder):
         return stl(handler, namespace)
 
 
-    change_general__access__ = Handler.is_admin
+    change_general__access__ = 'is_admin'
     def change_general(self, **kw):
         self.set_property('ikaaro:website_is_open',
                           kw.get('ikaaro:website_is_open', False))
@@ -152,7 +152,7 @@ class WebSite(Folder):
 
     ######################################################################
     # Settings / Languages
-    languages_form__access__ = Handler.is_admin
+    languages_form__access__ = 'is_admin'
     languages_form__label__ = u'Languages'
     languages_form__sublabel__ = u'Languages'
     def languages_form(self):
@@ -183,7 +183,7 @@ class WebSite(Folder):
         return stl(handler, namespace)
 
 
-    change_default_language__access__ = Handler.is_allowed_to_edit
+    change_default_language__access__ = 'is_allowed_to_edit'
     def change_default_language(self, codes=[], **kw):
         if len(codes) != 1:
             message = u'You must select one and only one language.'
@@ -199,7 +199,7 @@ class WebSite(Folder):
         comeback(message)
 
 
-    remove_languages__access__ = Handler.is_allowed_to_edit
+    remove_languages__access__ = 'is_allowed_to_edit'
     def remove_languages(self, codes=[], **kw):
         website_languages = self.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
@@ -216,7 +216,7 @@ class WebSite(Folder):
         comeback(message)
 
 
-    add_language__access__ = Handler.is_allowed_to_edit
+    add_language__access__ = 'is_allowed_to_edit'
     def add_language(self, code=None, **kw):
         if not code:
             raise UserError, self.gettext(u'You must choose a language')
@@ -234,17 +234,21 @@ class WebSite(Folder):
     # XXX Fix the spelling: "referer" -> "referrer"
     login_form__access__ = True
     login_form__label__ = u'Login'
-    def login_form(self):
-        request = get_context().request
-        namespace = {'referer': request.form.get('referer', ''),
-                     'username': request.form.get('username', '')}
+    def login_form(self, **kw):
+        context = get_context()
+
+        namespace = {}
+        here = context.handler
+        site_root = here.get_site_root()
+        namespace['action'] = '%s/;login' % here.get_pathto(site_root)
+        namespace['username'] = kw.get('username', '')
 
         handler = self.get_handler('/ui/WebSite_login.xml')
         return stl(handler, namespace)
 
 
     login__access__ = True
-    def login(self, username, password, referer=None, **kw):
+    def login(self, username, password, **kw):
         context = get_context()
         request = context.request
 
@@ -274,8 +278,9 @@ class WebSite(Folder):
         # Set context
         context.user = user
 
-        if referer:
-            goto = referer
+        referrer = request.referrer
+        if referrer and referrer.path[-1].param != 'login_form':
+            goto = referrer
         else:
             goto = 'users/%s/;%s' % (user.name, user.get_firstview())
         context.redirect(goto)

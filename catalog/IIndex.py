@@ -105,10 +105,10 @@ class IIndexTree(File):
     def _load_state(self, resource):
         state = self.state
         # The header
-        state.version = IO.decode_version(resource[:4])
-        state.number_of_slots = IO.decode_uint32(resource[4:8])
-        state.first_slot = IO.decode_link(resource[8:12])
-        state.first_empty = IO.decode_link(resource[12:16])
+        state.version = IO.decode_version(resource.read(4))
+        state.number_of_slots = IO.decode_uint32(resource.read(4))
+        state.first_slot = IO.decode_link(resource.read(4))
+        state.first_empty = IO.decode_link(resource.read(4))
 
 
     def _get_free_slot(self):
@@ -121,19 +121,19 @@ class IIndexTree(File):
         resource becomes consistent.
         """
         state = self.state
-        r = self.resource
+        resource = self.resource
         if state.first_empty is None:
             slot_number = state.number_of_slots
             # Increment number of slots
             state.number_of_slots += 1
-            r[4:8] = IO.encode_uint32(state.number_of_slots)
+            resource[4:8] = IO.encode_uint32(state.number_of_slots)
         else:
             slot_number = state.first_empty
             # Update first empty
             base = 16 + slot_number * 16
-            first_empty_link = r[base+12:base+16]
+            first_empty_link = resource[base+12:base+16]
             state.first_empty = IO.decode_link(first_empty_link)
-            r[12:16] = first_empty_link
+            resource[12:16] = first_empty_link
 
         return slot_number
 
@@ -181,9 +181,9 @@ class IIndexDocuments(File):
     def _load_state(self, resource):
         state = self.state
         # The header
-        state.version = IO.decode_version(resource[:4])
-        state.number_of_slots = IO.decode_uint32(resource[4:8])
-        state.first_empty = IO.decode_link(resource[8:12])
+        state.version = IO.decode_version(resource.read(4))
+        state.number_of_slots = IO.decode_uint32(resource.read(4))
+        state.first_empty = IO.decode_link(resource.read(4))
 
 
 
@@ -562,14 +562,21 @@ class IIndex(Folder):
         # XXX We don't use the given resource!!!
 
         state = self.state
+        # Open resources
+        state.tree_handler.resource.open()
+        state.docs_handler.resource.open()
         # Removed terms
         for term, documents in state.removed_terms.items():
             state.root._unindex_term(term, documents)
         self.removed_terms = {}
         # Added terms
+        _index_term = state.root._index_term
         for term, documents in self.state.added_terms.items():
-            state.root._index_term(term, documents)
+            _index_term(term, documents)
         state.added_terms = {}
+        # Close resources
+        state.tree_handler.resource.close()
+        state.docs_handler.resource.close()
 
 
     ########################################################################
@@ -601,6 +608,9 @@ class IIndex(Folder):
 
     def search_word(self, word):
         state = self.state
+        # Open resources
+        state.tree_handler.resource.open()
+        state.docs_handler.resource.open()
 
         documents = state.root.search_word(word)
         # Remove documents
@@ -617,14 +627,25 @@ class IIndex(Folder):
                 else:
                     documents[doc_number] = positions
 
+        # Close resources
+        state.tree_handler.resource.close()
+        state.docs_handler.resource.close()
+
         return documents
 
 
     def search_range(self, left, right):
         state = self.state
+        # Open resources
+        state.tree_handler.resource.open()
+        state.docs_handler.resource.open()
 
         documents = state.root.search_range(left, right)
         # XXX We still need to consider removed and added terms, otherwise
         # we may get inaccurate results.
+
+        # Close resources
+        state.tree_handler.resource.close()
+        state.docs_handler.resource.close()
 
         return documents

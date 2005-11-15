@@ -93,29 +93,26 @@ class Response(File):
 
     def get_skeleton(self, status_code=200, **kw):
         status_message = status_messages[status_code]
-        skeleton = ['HTTP/1.1 %s %s\n' % (status_code, status_message)]
+        skeleton = ['HTTP/1.1 %s %s' % (status_code, status_message)]
         for name in kw:
-            skeleton.append('%s: %s\n' % (name, kw[name]))
+            skeleton.append('%s: %s' % (name, kw[name]))
 
-        skeleton.append('\n')
-        skeleton.append('Welcome to itools\n')
-        return ''.join(skeleton)
+        skeleton.append('')
+        return '\r\n'.join(skeleton)
 
 
     def _load_state(self, resource):
         state = self.state
 
-        data = resource.read()
         # The status line
-        line, data = entities.read_line(data)
+        line = resource.readline()
         http_version, status_code, status_message = line.split()
         status_code = int(status_code)
         self.set_status(status_code)
         # The headers
-        response_headers, data = entities.read_headers(data)
-        state.headers = response_headers
+        state.headers = entities.read_headers(resource)
         # The body
-        state.body = data
+        state.body = resource.read()
         # The cookies
         state.cookies = {}
 
@@ -135,11 +132,14 @@ class Response(File):
             value = datatype.encode(value)
             data.append('%s: %s' % (name, value))
         # Mandatory headers
-        data.append('Server: Zope')
+        data.append('Server: itools.web')
         now = datetime.utcnow()
         data.append('Date: %s' % now.strftime("%a, %d %b %Y %H:%M:%S +0000"))
         if 'content-length' not in state.headers:
-            data.append('Content-Length: %d' % len(state.body))
+            if state.body is None:
+                data.append('Content-Length: 0')
+            else:
+                data.append('Content-Length: %d' % len(state.body))
         # Close the connection
         data.append('Connection: close')
         # The Cookies
@@ -168,7 +168,8 @@ class Response(File):
         # A blank line separates the header from the body
         data.append('')
         # The body
-        data.append(state.body)
+        if state.body is not None:
+            data.append(state.body)
 
         return '\r\n'.join(data)
 

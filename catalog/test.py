@@ -22,9 +22,9 @@ from unittest import TestCase
 # Import from itools
 from itools.handlers import get_handler
 from itools.handlers.Text import Text
-from Catalog import Catalog
-from IIndex import IIndex
-import Query
+from itools.catalog.Catalog import Catalog
+from itools.catalog.IIndex import IIndex
+from itools.catalog import Query
 
 
 class IITestCase(TestCase):
@@ -90,6 +90,7 @@ resource_names.sort()
 for resource_name in resource_names:
     resource = tests.resource.get_resource(resource_name)
     document = Document(resource)
+    document = {'title': document.state.title, 'body': document.state.body}
     catalog.index_document(document)
 catalog.save_state()
 

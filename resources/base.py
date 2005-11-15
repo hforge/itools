@@ -57,8 +57,8 @@ class Resource(object):
         elif isinstance(uri_reference, (str, unicode)):
             uri_reference = uri.get_reference(uri_reference)
         else:
-            raise TypeError, \
-                  'unexpected value of type "%s"' % type(uri_reference)
+            message = 'unexpected value of type "%s"' % type(uri_reference)
+            raise TypeError, message
 
         self.uri = uri_reference
 
@@ -73,6 +73,21 @@ class Resource(object):
 
 
     def get_mtime(self):
+        raise NotImplementedError
+
+
+    ##########################################################################
+    # Open/Close
+    ##########################################################################
+    def open(self):
+        raise NotImplementedError
+
+
+    def close(self):
+        raise NotImplementedError
+
+
+    def is_open(self):
         raise NotImplementedError
 
 
@@ -139,32 +154,66 @@ class File(Resource):
         return 'application/octet-stream'
 
 
-    def __getitem__(self, index):
-        return self.read()[index]
-
-
-    def __setitem__(self, index, value):
+    ######################################################################
+    # API / Information
+    ######################################################################
+    def get_size(self):
         raise NotImplementedError
 
 
-    def __getslice__(self, a, b):
-        return self.read()[a:b]
-
-
-    def read(self):
+    ######################################################################
+    # API / Sequential access
+    ######################################################################
+    def read(self, size=None):
         raise NotImplementedError
+
+
+    def readline(self):
+        raise NotImplementedError
+
+
+    def readlines(self):
+        while True:
+            line = self.readline()
+            if line:
+                yield line
+            else:
+                break
 
 
     def write(self, data):
         raise NotImplementedError
 
 
-    def get_size(self):
-        return len(self.read())
+    ######################################################################
+    # API / Direct access
+    ######################################################################
+    def seek(self, offset, whence=0):
+        raise NotImplementedError
 
 
-    # XXX Backwards compatibility with itools < 0.9
-    def set_data(self, data):
+    def __getitem__(self, index):
+        self.seek(index)
+        return self.read(1)
+
+
+    def __setitem__(self, index, value):
+        self.seek(index)
+        self.write(value)
+
+
+    def __getslice__(self, a, b):
+        self.seek(a)
+        return self.read(b-a)
+
+
+    def __setslice__(self, start, stop, value):
+        self.seek(start)
+        self.write(value)
+
+
+    def append(self, data):
+        self.seek(0, 2)
         self.write(data)
 
 
@@ -176,6 +225,18 @@ class Folder(Resource):
 
     def get_mimetype(self):
         return 'application/x-not-regular-file'
+
+
+    def open(self):
+        pass
+
+
+    def close(self):
+        pass
+
+
+    def is_open(self):
+        return True
 
 
     ######################################################################
@@ -249,7 +310,9 @@ class Folder(Resource):
         be if there is a good reason.
         """
         if isinstance(resource, File):
+            resource.open()
             self._set_file_resource(name, resource)
+            resource.close()
         elif isinstance(resource, Folder):
             self._set_folder_resource(name, resource)
             # Recursively add sub-resources

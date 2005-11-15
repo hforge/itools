@@ -16,6 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 
 # Import from the Standard Library
+from datetime import datetime
 import os
 import unittest
 from unittest import TestCase
@@ -33,7 +34,7 @@ class ZODBTestCase(TestCase):
 
     def setUp(self):
         storage = FileStorage('test_db.fs')
-        self.database = zodb.DataBase(storage)
+        self.database = zodb.Database(storage)
 
 
     def tearDown(self):
@@ -77,7 +78,16 @@ class ZODBTestCase(TestCase):
         root.set_resource('tests', tests)
 
         self.assertEqual(root.has_resource('tests/index.html.en'), True)
-        
+
+
+    def test_mtime(self):
+        root = self.database.get_resource('/')
+        tests = get_resource('tests')
+        root.set_resource('tests', tests)
+        root.get_transaction().commit()
+        now = datetime.now()
+        mtime = root.get_resource('tests/index.html.en').get_mtime()
+        self.assertEqual(mtime.toordinal(), now.toordinal())
 
 
 

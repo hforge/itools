@@ -30,10 +30,6 @@ class Row(iRow, Node):
     class_title = u'CSV Row'
 
 
-    def get_title_or_name(self):
-        return self.name
-
-
     def get_mtime(self):
         return self.parent.get_mtime()
 

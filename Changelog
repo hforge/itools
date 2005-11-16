@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 12:33:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
+
+    Summary:
+      handlers, don't import old CSV handler
+    Revision:
+      itools--main--0.12--patch-14
+
+
+    modified files:
+     Changelog handlers/__init__.py
+
+
 2005-11-16 12:32:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
 
     Summary:

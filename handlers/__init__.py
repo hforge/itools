@@ -37,7 +37,6 @@ import mimetypes
 # Import from itools
 from itools.resources import get_resource
 import Handler
-import CSV
 import File
 import Folder
 import Image

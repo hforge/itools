@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 18:53:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
+
+    Summary:
+      csv, add method "get_nrows" to the API
+    Revision:
+      itools--main--0.12--patch-21
+
+    And use it to show that the "set_state_in_file_resource" test case
+    is broken.
+
+    modified files:
+     Changelog csv/itools_csv.py csv/test_itools_csv.py
+
+
 2005-11-16 18:40:46 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
 
     Summary:

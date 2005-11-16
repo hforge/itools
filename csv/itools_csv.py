@@ -202,6 +202,10 @@ class CSV(Text):
             return False
 
 
+    def get_nrows(self):
+        return len(self.state.lines)
+
+
     def get_row(self, index):
         """Return row indexed by index.
 

@@ -163,6 +163,10 @@ class CSVTestCase(TestCase):
         handler2.del_row(3)
         handler2.save_state()
 
+        resource = get_resource('test.csv')
+        handler = itools_csv.CSV(resource)
+        self.assertEqual(handler.get_nrows(), 3)
+
 
     def test_indexes_hit_in_one_row(self):
         data = TEST_DATA_1

@@ -310,6 +310,19 @@ class CSVTestCase(TestCase):
         self.assertEqual(result6, None)
 
 
+    def test_access_by_name(self):
+        resource = memory.File(TEST_DATA_1)
+        handler = itools_csv.CSV()
+        handler.columns = ['name', 'url', 'number', 'date']
+        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
+                          'date': Date}
+        handler.load_state(resource)
+
+        row = handler.get_row(1)
+        self.assertEqual(row.name, u'ruby')
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,6 +2,31 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 17:25:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
+
+    Summary:
+      csv, define class variable "row_class" to simplify specialization
+    Revision:
+      itools--main--0.12--patch-16
+
+    So a sub-class may be:
+    
+      from itools.csv.itools_csv import Row, CSV
+    
+      class MyRow(Row):
+        
+          def max(self):
+              return max(self)
+    
+    
+      class MyCSV(CSV):
+    
+          class_row = MyRow
+
+    modified files:
+     Changelog csv/itools_csv.py
+
+
 2005-11-16 17:07:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
 
     Summary:

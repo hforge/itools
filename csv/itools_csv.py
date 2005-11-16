@@ -48,6 +48,8 @@ class CSV(Text):
     # Example: ['firstname', 'lastname', 'age']
     columns = None
 
+    # The class to use for each row (this allows easy specialization)
+    row_class = Row
 
     #########################################################################
     # Parsing
@@ -147,7 +149,7 @@ class CSV(Text):
         lines = []
         index = 0
         for line in self._parse(data):
-            row = Row(line)
+            row = self.row_class(line)
             row.index = index
             lines.append(row)
             index = index + 1
@@ -222,7 +224,7 @@ class CSV(Text):
            row -- list with new row values
         """
         self.set_changed()
-        new_row = Row(row)
+        new_row = self.row_class(row)
         self.state.lines.append(new_row)
 
         if self.is_schema_defined():

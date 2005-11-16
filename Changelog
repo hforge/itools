@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 18:12:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-19
+
+    Summary:
+      csv, add unit test for "csv.get_handler"
+    Revision:
+      itools--main--0.12--patch-19
+
+
+    modified files:
+     Changelog csv/test_itools_csv.py
+
+
 2005-11-16 17:58:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-18
 
     Summary:

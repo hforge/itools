@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 18:40:46 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
+
+    Summary:
+      csv, add "Row.__getattr__" method (not working yet)
+    Revision:
+      itools--main--0.12--patch-20
+
+    This shows how to solve the "access by name" test case (e.g. "row.name"),
+    but does not works yet because it requires a change in the design, and I
+    am not sure how it should be.
+
+    modified files:
+     Changelog csv/itools_csv.py
+
+
 2005-11-16 18:12:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-19
 
     Summary:

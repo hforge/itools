@@ -26,7 +26,15 @@ from itools.handlers.Text import Text
 
 
 class Row(list):
-    pass
+
+    def __getattr__(self, name):
+        try:
+            index = columns.index(name)
+        except ValueError:
+            message = "'%s' object has no attribute '%s'"
+            raise AttributeError, message % (self.__class__.name, name)
+
+        return self[index]
 
 
 
@@ -87,7 +95,7 @@ class CSV(Text):
         """Initialize csv values index list"""
         if self.state.indexes is None:
             self.state.indexes = [ None for i in self.columns ]
-        
+
 
     def _index_all(self):
         """Index parsed lines from the csv data according to the schema. 
@@ -185,7 +193,7 @@ class CSV(Text):
                 lines.append(','.join(line))
         return '\n'.join(lines)
 
-    
+
     def is_schema_defined(self):
         """Check if the handler schema is defined. Returns True of False"""
         if self.schema and self.columns:
@@ -334,7 +342,6 @@ class CSV(Text):
                     result = self._or(result, right)
 
         return result
-    
 
 
 Text.register_handler_class(CSV)

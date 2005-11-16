@@ -197,14 +197,23 @@ class File(Resource, base.File):
 
 
     def write(self, data):
-        mtime, old_data = self._get_object()
+        parent = self._get_parent()
+        mtime, old_data = parent[self.name]
 
         old_offset = self.offset
         self.offset += len(data)
-        new_data = old_data[:old_offset] + data + old_data[self.offset:]
+        data = old_data[:old_offset] + data + old_data[self.offset:]
+        parent[self.name] = (datetime.now(), data)
+
+
+    def truncate(self, size=None):
+        if size is None:
+            size = self.offset
 
         parent = self._get_parent()
-        parent[self.name] = (datetime.now(), data)
+        mtime, data = parent[self.name]
+
+        parent[self.name] = (datetime.now(), data[:size])
 
 
     def __setitem__(self, index, value):

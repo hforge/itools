@@ -105,6 +105,13 @@ class File(Resource, base.File):
         self._file.write(data)
 
 
+    def truncate(self, size=None):
+        if size is None:
+            self._file.truncate()
+        else:
+            self._file.truncate(size)
+
+
     def get_size(self):
         return os.path.getsize(self._path)
 

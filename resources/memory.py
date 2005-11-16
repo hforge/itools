@@ -83,6 +83,14 @@ class File(Resource, base.File):
         self.mtime = datetime.now()
 
 
+    def truncate(self, size=None):
+        if size is None:
+            self.data.truncate()
+        else:
+            self.data.truncate(size)
+        self.mtime = datetime.now()
+
+
     ######################################################################
     # API / Direct access
     ######################################################################

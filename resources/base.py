@@ -185,6 +185,10 @@ class File(Resource):
         raise NotImplementedError
 
 
+    def truncate(self, size=None):
+        raise NotImplementedError
+
+
     ######################################################################
     # API / Direct access
     ######################################################################

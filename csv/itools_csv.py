@@ -170,6 +170,7 @@ class CSV(Text):
             self._index_all()
 
 
+    # XXX This can't work until the virtual handler overhaul is done
     def _get_virtual_handler(self, segment):
         index = int(segment.name)
         return self.state.lines[index]

@@ -92,6 +92,7 @@ included are:
  - itools.xhtml
  - itools.xliff
  - itools.xml
+ - itools.csv
 """
 
 setup(
@@ -122,7 +123,8 @@ setup(
                 'itools.workflow',
                 'itools.xhtml',
                 'itools.xliff',
-                'itools.xml'],
+                'itools.xml',
+                'itools.csv'],
     classifiers = ['Development Status :: 3 - Alpha',
                    'Intended Audience :: Developers',
                    ('License :: OSI Approved :: GNU Library or Lesser General'
@@ -181,7 +183,8 @@ setup(
     'itools.tmx': ['localizermsgs.tmx'],
     'itools.workflow': ['HOWTO.txt', 'TODO.txt'],
     'itools.xliff': ['gettext_en_es.xlf'],
-    'itools.xml': ['bench_parser.xml']},
+    'itools.xml': ['bench_parser.xml'],
+    'itools.csv': ['*.csv']},
     scripts = [join('scripts', 'igettext.py'),
                join('scripts', 'icms.py'),],
     cmdclass={'build_py': build_py_fixed},

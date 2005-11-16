@@ -114,7 +114,7 @@ Now, when we have the indexed client\_id column we can get the client
 by the ID. We should find the row index with the appropriate client\_id,
 and get that row from {\tt clients.csv} file.
 \begin{code}
-    >>> indexes = clients.search('client_id', 1)
+    >>> indexes = clients.search([('client_id', 1)])
     >>> clients.get_row(indexes[0])
     [1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia', 
     u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
@@ -126,7 +126,7 @@ element from that list ({\tt indexes[0]}).
 
 How we can find clients to send the payment reminder? Let's try:
 \begin{code}
-    >>> indexes = clients.search('last_pay_date', Date.decode('2004-11-30'))
+    >>> indexes = clients.search([('last_pay_date', Date.decode('2004-11-30'))])
     >>> clients.get_rows(indexes)
     [[1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia', 
     u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
@@ -181,9 +181,25 @@ And the full csv file handle API:
   {\tt get\_columns\_by\_indexes(columns)}\\
   - Return only selected columns by numerical indexes.
 
-  {\tt search(column\_name, value)}\\
-  - Return list of row indexes where the value is in the column\_name
-  or None when the index is not set for that column
+  {\tt search(query)}\\
+  - Return list of row indexes returned by executing the query
+    or None when one or more query items is None (query item
+    is None when the query item column is not indexed).
+    The query item can be: 
+    \begin{itemize}
+        \item the (column\_name, value) tuple 
+        \item the operator:  'or' or 'and'
+        \item the list of the previous advanced\_search result.
+    \end{itemize}
+    
+    The query parameter is list of query items for example:
+    \begin{code}
+    - [('name', 'dde')]
+    - [('name', 'dde'), 'and', ('country', 'Sweden')]
+    - [('name', 'dde'), 'or', ('name', 'fse'), 
+       'and', ('country', 'France')]
+    - [result1, 'and', result2, 'or', result3]
+    \end{code}
 \end{api}
 
 

@@ -31,8 +31,8 @@ print clients.get_row(0)
 # [1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia',
 # u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, datetime.date(2001, 1, 5), 35] 
 
-indexes = clients.search('client_id', 1)
+indexes = clients.search([('client_id', 1)])
 print clients.get_row(indexes[0])
 
-indexes = clients.search('last_pay_date', Date.decode('2004-11-30'))
+indexes = clients.search([('last_pay_date', Date.decode('2004-11-30'))])
 print clients.get_rows(indexes)

@@ -2,6 +2,48 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 12:32:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
+
+    Summary:
+      merge from piotr (csv)
+    Revision:
+      itools--main--0.12--patch-13
+
+    Patches applied:
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.12--patch-11
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-1
+       Drop the get_all_rows method, the get_rows method is enhanced.
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-2
+       get_columns_by_name and get_columns_by_indexes methods dropped
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-3
+       One search method: search(query)
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-4
+       CSV handler installed by setup.py installation script
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-5
+       Copyright information
+    
+
+    modified files:
+     Changelog csv/itools_csv.py csv/test_itools_csv.py doc/csv.tex
+     doc/examples/csv_handler/example.py
+     doc/examples/csv_handler/my_clients.py setup.py
+
+    new patches:
+     piotr@macuk.pl--public/itools--csv--0.12--base-0
+     piotr@macuk.pl--public/itools--csv--0.12--patch-1
+     piotr@macuk.pl--public/itools--csv--0.12--patch-2
+     piotr@macuk.pl--public/itools--csv--0.12--patch-3
+     piotr@macuk.pl--public/itools--csv--0.12--patch-4
+     piotr@macuk.pl--public/itools--csv--0.12--patch-5
+
+
 2005-11-15 19:45:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
 
     Summary:

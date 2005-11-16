@@ -1,5 +1,6 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#                    2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -34,22 +35,22 @@ class CSVTestCase(TestCase):
         data = '"Martin von Löwis","Marc André Lemburg","Guido van Rossum"\n'
         resource = memory.File(data)
         handler = itools_csv.CSV(resource)
-        self.assertEqual(handler.get_all_rows(), [[u"Martin von Löwis",
-                                                 u"Marc André Lemburg",
-                                                 u"Guido van Rossum"]])
+        self.assertEqual(handler.get_rows(), [[u"Martin von Löwis",
+                                               u"Marc André Lemburg",
+                                               u"Guido van Rossum"]])
 
 
     def test_num_of_lines(self):
         resource = memory.File(TEST_DATA_2)
         handler = itools_csv.CSV(resource)
-        self.assertEqual(len(handler.get_all_rows()), 3)
+        self.assertEqual(len(handler.get_rows()), 3)
 
 
     def test_num_of_lines_with_last_new_line(self):
         data = TEST_DATA_2 + '\r\n'
         resource = memory.File(data)
         handler = itools_csv.CSV(resource)
-        self.assertEqual(len(handler.get_all_rows()), 3)
+        self.assertEqual(len(handler.get_rows()), 3)
 
     
     def test_load_state_with_schema(self):
@@ -58,7 +59,7 @@ class CSVTestCase(TestCase):
         handler.columns = ['name', 'url', 'number', 'date']
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer, 'date': Date}
         handler.load_state(resource)
-        self.assertEqual(handler.get_all_rows(), [
+        self.assertEqual(handler.get_rows(), [
             [u"python", URI.decode('http://python.org'), 52343, Date.decode('2003-10-23')], 
             [u"ruby", URI.decode('http://ruby-lang.org'), 42352, Date.decode('2001-03-28')]])
 
@@ -68,7 +69,7 @@ class CSVTestCase(TestCase):
         handler = itools_csv.CSV()
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer, 'date': Date}
         handler.load_state(resource)
-        self.assertEqual(handler.get_all_rows(), [
+        self.assertEqual(handler.get_rows(), [
             [u"python", u'http://python.org', u'52343', u'2003-10-23'], 
             [u"ruby", u'http://ruby-lang.org', u'42352', u'2001-03-28']])
 
@@ -128,34 +129,6 @@ class CSVTestCase(TestCase):
         self.assertEqual(handler.get_row(0), ['seven', 'eight', 'nine'])
         
 
-    def test_get_columns_by_indexes(self):
-        resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
-        self.assertEqual(handler.get_columns_by_indexes((2,0)), [
-            ['three', 'one'],
-            ['six', 'four'],
-            ['nine', 'seven']])
-
-
-    def test_get_columns_by_indexes(self):
-        resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
-        self.assertEqual(handler.get_columns_by_indexes((2,0))[1:], [
-            ['six', 'four'],
-            ['nine', 'seven']])
-
-
-    def test_get_columns_by_names(self):
-        resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
-        handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer, 'date': Date}
-        handler.load_state(resource)
-        self.assertEqual(handler.get_columns_by_names(('date', 'url')), [
-            [Date.decode('2003-10-23'), URI.decode('http://python.org')],
-            [Date.decode('2001-03-28'), URI.decode('http://ruby-lang.org')]])
-
-
     def test_set_state_in_memory_resource(self):
         resource = memory.File(TEST_DATA_2)
         handler = itools_csv.CSV(resource)
@@ -186,9 +159,9 @@ class CSVTestCase(TestCase):
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer(index=True), 'date': Date(index=True)}
         handler.load_state(resource)
         self.assertEqual(len(handler.state.indexes), 4)
-        self.assertEqual(handler.search('url', URI.decode('http://slashdot.org/')), None)
-        self.assertEqual(handler.search('number', 52343), [0])
-        self.assertEqual(handler.search('date', Date.decode('2001-03-28')), [1])
+        self.assertEqual(handler.search([('url', URI.decode('http://slashdot.org/'))]), None)
+        self.assertEqual(handler.search([('number', 52343)]), [0])
+        self.assertEqual(handler.search([('date', Date.decode('2001-03-28'))]), [1])
     
 
     def test_indexes_hit_in_many_rows(self):
@@ -198,9 +171,9 @@ class CSVTestCase(TestCase):
         handler.columns = ['name', 'date']
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
-        self.assertEqual(handler.search('name', Unicode.decode('house')), None)
-        self.assertEqual(handler.search('date', Date.decode('2005-01-01')), [])
-        self.assertEqual(handler.search('date', Date.decode('2005-10-10')), [0, 2])
+        self.assertEqual(handler.search([('name', Unicode.decode('house'))]), None)
+        self.assertEqual(handler.search([('date', Date.decode('2005-01-01'))]), [])
+        self.assertEqual(handler.search([('date', Date.decode('2005-10-10'))]), [0, 2])
     
 
     def test_index_new_row(self):
@@ -211,7 +184,7 @@ class CSVTestCase(TestCase):
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
         handler.add_row(['flower', Date.decode('2005-05-10')])
-        self.assertEqual(handler.search('date', Date.decode('2005-05-10')), [1, 3])
+        self.assertEqual(handler.search([('date', Date.decode('2005-05-10'))]), [1, 3])
         
 
     def test_index_del_row(self):
@@ -221,13 +194,13 @@ class CSVTestCase(TestCase):
         handler.columns = ['name', 'date']
         handler.schema = {'name': Unicode(index=True), 'date': Date(index=True)}
         handler.load_state(resource)
-        self.assertEqual(handler.search('name', 'window'), [1])
+        self.assertEqual(handler.search([('name', 'window')]), [1])
         handler.del_row(1)
-        self.assertEqual(handler.search('name', 'window'), [])
+        self.assertEqual(handler.search([('name', 'window')]), [])
         
-        self.assertEqual(handler.search('name', 'computer'), [1])
+        self.assertEqual(handler.search([('name', 'computer')]), [1])
         handler.del_row(1)
-        self.assertEqual(handler.search('name', 'computer'), [])
+        self.assertEqual(handler.search([('name', 'computer')]), [])
         
 
     def test_build_csv_data(self):
@@ -238,13 +211,13 @@ class CSVTestCase(TestCase):
         handler.load_state(resource)
         handler.add_row(['Piotr', 'Macuk', '1975-12-08'])
         handler.add_row(['Basia', 'Macuk', '2002-02-14'])
-        self.assertEqual(handler.search('surname', 'Macuk'), [0, 1])
+        self.assertEqual(handler.search([('surname', 'Macuk')]), [0, 1])
         handler.add_row(['Pawe³', 'Macuk', '1977-05-13'])
-        self.assertEqual(handler.search('surname', 'Macuk'), [0, 1, 2])
+        self.assertEqual(handler.search([('surname', 'Macuk')]), [0, 1, 2])
         handler.del_row(2)
-        self.assertEqual(handler.search('surname', 'Macuk'), [0, 1])
+        self.assertEqual(handler.search([('surname', 'Macuk')]), [0, 1])
         handler.del_row(0)
-        self.assertEqual(handler.search('surname', 'Macuk'), [0])
+        self.assertEqual(handler.search([('surname', 'Macuk')]), [0])
 
 
     def test_and_operator(self):
@@ -283,12 +256,12 @@ class CSVTestCase(TestCase):
             'name': Unicode(index=True), 'country': Unicode(index=True),
             'date': Date(index=True)}
         handler.load_state(resource)
-        result1 = handler.advanced_search([
+        result1 = handler.search([
             ('name', 'dde'), 'and', ('country', 'Sweden')
         ])
         self.assertEqual(result1, [5, 6])
 
-        result2 = handler.advanced_search([
+        result2 = handler.search([
             ('name', 'dde'), 
             'or', 
             ('name', 'fse'),
@@ -298,17 +271,17 @@ class CSVTestCase(TestCase):
         self.assertEqual(result2, [4])
 
         # previous results as query items
-        result3 = handler.advanced_search([
+        result3 = handler.search([
             ('name', 'dde'), 'or', ('name', 'fse'),
         ])
-        result4 = handler.advanced_search([
+        result4 = handler.search([
             ('country', 'Poland'), 'or', ('country', 'France'),
         ])
-        result5 = handler.advanced_search([result3, 'and', result4])
+        result5 = handler.search([result3, 'and', result4])
         self.assertEqual(result5, [1, 4])
 
         # id is not indexed -- return None
-        result6 = handler.advanced_search([
+        result6 = handler.search([
             ('id', 3), 'or', ('country', 'Poland')
         ])
         self.assertEqual(result6, None)

@@ -1,5 +1,6 @@
 # -*- coding: ISO-8859-1 -*-
 # Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#                    2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -199,11 +200,16 @@ class CSV(Text):
         return self.state.lines[index]
 
 
-    def get_rows(self, indexes):
+    def get_rows(self, indexes=None):
         """Return rows indexed by indexex.
+           If indexes is not set (default None) the all rows 
+           are returned.
 
            indexes -- list or tuple of numbers
         """
+        if indexes is None:
+            return self.state.lines
+
         rows = []
         for i in indexes:
             rows.append(self.state.lines[i])
@@ -252,34 +258,7 @@ class CSV(Text):
             index_offset = index_offset - 1
 
 
-    def get_all_rows(self):
-        """Return all csv rows as list of the Row objects."""
-        return self.state.lines
-
-
-    def get_columns_by_names(self, columns):
-        """Return only selected columns by its names (names in self.columns)
-           
-           columns -- tuple or list of column names
-        """
-        out = []
-        for line in self.state.lines:
-            out.append(Row([ line[self.columns.index(c)] for c in columns ]))
-        return out
-
-    
-    def get_columns_by_indexes(self, columns):
-        """Return only selected columns by numerical indexes
-           
-           columns -- tuple or list of numbers
-        """
-        out = []
-        for line in self.state.lines:
-            out.append(Row([ line[i] for i in columns ]))
-        return out
-
-
-    def search(self, column_name, value):
+    def _search(self, column_name, value):
         """Return list of row indexes where the value is in the column_name
            or None when the index is not set for that column
 
@@ -315,8 +294,8 @@ class CSV(Text):
         return list(l)
 
 
-    def advanced_search(self, query):
-        """Return list of row indexes after executing the query
+    def search(self, query):
+        """Return list of row indexes returned by executing the query
            or None when one or more query items is None (query item
            is None when the query item column is not indexed).
            The query item can be: 
@@ -325,17 +304,18 @@ class CSV(Text):
            - the list of the previous advanced_search result.
 
            query -- list of query items for example:
-           1) [('name', 'dde'), 'and', ('country', 'Sweden')]
-           2) [('name', 'dde'), 'or', ('name', 'fse'), 
+           1) [('name', 'dde')]
+           2) [('name', 'dde'), 'and', ('country', 'Sweden')]
+           3) [('name', 'dde'), 'or', ('name', 'fse'), 
                'and', ('country', 'France')]
-           3) [result1, 'and', result2, 'or', result3]
+           4) [result1, 'and', result2, 'or', result3]
         """
         result = []
         operator = 'or'
         right = None
         for item in query:
             if type(item) is TupleType:
-                right = self.search(item[0], item[1])
+                right = self._search(item[0], item[1])
                 # The column is not indexed -- return None
                 if right is None: 
                     return None

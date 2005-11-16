@@ -46,7 +46,7 @@ class MyClients:
 
     # Get data for client_id
     def get(self, client_id):
-        indexes = self.clients.search('client_id', client_id)
+        indexes = self.clients.search([('client_id', client_id)])
         # Shoult be only one client with ID = client_id
         return self.clients.get_row(indexes[0])
 
@@ -64,7 +64,7 @@ class MyClients:
 
     # Delete client with client_id 
     def delete(self, client_id):
-        indexes = self.clients.search('client_id', client_id)
+        indexes = self.clients.search([('client_id', client_id)])
         # Shoult be only one client with ID = client_id
         self.clients.del_row(indexes[0])
 
@@ -79,7 +79,7 @@ class MyClients:
 
     # Get data to send payment email reminders for date (default today)
     def reminders(self, date=None):
-        indexes = self.clients.search('last_pay_date', Date.decode(date))
+        indexes = self.clients.search([('last_pay_date', Date.decode(date))])
         reminders = self.clients.get_rows(indexes)
         reminders_with_price = []
         for r in reminders:

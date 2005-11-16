@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 17:51:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-17
+
+    Summary:
+      csv, fix coding style for the unit test file
+    Revision:
+      itools--main--0.12--patch-17
+
+    Style fixes: columns of 80 characters maximum; use explicit imports (not
+    "import *"); and remove/add some spaces.
+
+    modified files:
+     Changelog csv/test_itools_csv.py
+
+
 2005-11-16 17:25:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
 
     Summary:

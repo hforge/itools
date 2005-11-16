@@ -24,13 +24,19 @@ from unittest import TestCase
 from itools.resources import memory
 from itools.resources import get_resource
 import itools_csv
-from itools.datatypes import *
+from itools.datatypes import Date, Integer, Unicode, URI
 from datetime import date
 
-TEST_DATA_1 = 'python,http://python.org,52343,2003-10-23\nruby,http://ruby-lang.org,42352,2001-03-28'
+
+TEST_DATA_1 = """python,http://python.org,52343,2003-10-23
+ruby,http://ruby-lang.org,42352,2001-03-28"""
+
 TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 
+
+
 class CSVTestCase(TestCase):
+
     def test_unicode(self):
         data = '"Martin von Löwis","Marc André Lemburg","Guido van Rossum"\n'
         resource = memory.File(data)
@@ -57,17 +63,21 @@ class CSVTestCase(TestCase):
         resource = memory.File(TEST_DATA_1)
         handler = itools_csv.CSV()
         handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer, 'date': Date}
+        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
+                          'date': Date}
         handler.load_state(resource)
         self.assertEqual(handler.get_rows(), [
-            [u"python", URI.decode('http://python.org'), 52343, Date.decode('2003-10-23')], 
-            [u"ruby", URI.decode('http://ruby-lang.org'), 42352, Date.decode('2001-03-28')]])
+            [u"python", URI.decode('http://python.org'), 52343,
+             Date.decode('2003-10-23')], 
+            [u"ruby", URI.decode('http://ruby-lang.org'), 42352,
+             Date.decode('2001-03-28')]])
 
 
     def test_load_state_without_schema(self):
         resource = memory.File(TEST_DATA_1)
         handler = itools_csv.CSV()
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer, 'date': Date}
+        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
+                          'date': Date}
         handler.load_state(resource)
         self.assertEqual(handler.get_rows(), [
             [u"python", u'http://python.org', u'52343', u'2003-10-23'], 
@@ -78,10 +88,12 @@ class CSVTestCase(TestCase):
         resource = memory.File(TEST_DATA_1)
         handler = itools_csv.CSV()
         handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer, 'date': Date}
+        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
+                          'date': Date}
         handler.load_state(resource)
-        self.assertEqual(handler.to_str(), 
-            u'"python","http://python.org","52343","2003-10-23"\n' + 
+        self.assertEqual(
+            handler.to_str(),
+            u'"python","http://python.org","52343","2003-10-23"\n'
             u'"ruby","http://ruby-lang.org","42352","2001-03-28"')
 
 
@@ -89,8 +101,9 @@ class CSVTestCase(TestCase):
         resource = memory.File(TEST_DATA_1)
         handler = itools_csv.CSV()
         handler.load_state(resource)
-        self.assertEqual(handler.to_str(), 
-            u'"python","http://python.org","52343","2003-10-23"\n' + 
+        self.assertEqual(
+            handler.to_str(),
+            u'"python","http://python.org","52343","2003-10-23"\n'
             u'"ruby","http://ruby-lang.org","42352","2001-03-28"')
 
 
@@ -113,21 +126,21 @@ class CSVTestCase(TestCase):
         handler = itools_csv.CSV(resource)
         handler.add_row(['a', 'b', 'c'])
         self.assertEqual(handler.get_row(3), ['a', 'b', 'c'])
-        
+
 
     def test_del_row(self):
         resource = memory.File(TEST_DATA_2)
         handler = itools_csv.CSV(resource)
         handler.del_row(1)
         self.assertEqual(handler.get_row(1), ['seven', 'eight', 'nine'])
-        
+
 
     def test_del_rows(self):
         resource = memory.File(TEST_DATA_2)
         handler = itools_csv.CSV(resource)
         handler.del_rows([0, 1])
         self.assertEqual(handler.get_row(0), ['seven', 'eight', 'nine'])
-        
+
 
     def test_set_state_in_memory_resource(self):
         resource = memory.File(TEST_DATA_2)
@@ -156,12 +169,16 @@ class CSVTestCase(TestCase):
         resource = memory.File(data)
         handler = itools_csv.CSV()
         handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer(index=True), 'date': Date(index=True)}
+        handler.schema = {'name': Unicode, 'url': URI,
+                          'number': Integer(index=True),
+                          'date': Date(index=True)}
         handler.load_state(resource)
         self.assertEqual(len(handler.state.indexes), 4)
-        self.assertEqual(handler.search([('url', URI.decode('http://slashdot.org/'))]), None)
+        self.assertEqual(
+            handler.search([('url', URI.decode('http://slashdot.org/'))]),None)
         self.assertEqual(handler.search([('number', 52343)]), [0])
-        self.assertEqual(handler.search([('date', Date.decode('2001-03-28'))]), [1])
+        self.assertEqual(
+            handler.search([('date', Date.decode('2001-03-28'))]), [1])
     
 
     def test_indexes_hit_in_many_rows(self):
@@ -171,10 +188,13 @@ class CSVTestCase(TestCase):
         handler.columns = ['name', 'date']
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
-        self.assertEqual(handler.search([('name', Unicode.decode('house'))]), None)
-        self.assertEqual(handler.search([('date', Date.decode('2005-01-01'))]), [])
-        self.assertEqual(handler.search([('date', Date.decode('2005-10-10'))]), [0, 2])
-    
+        self.assertEqual(
+            handler.search([('name', Unicode.decode('house'))]), None)
+        self.assertEqual(
+            handler.search([('date', Date.decode('2005-01-01'))]), [])
+        self.assertEqual(
+            handler.search([('date', Date.decode('2005-10-10'))]), [0, 2])
+
 
     def test_index_new_row(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
@@ -184,15 +204,17 @@ class CSVTestCase(TestCase):
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
         handler.add_row(['flower', Date.decode('2005-05-10')])
-        self.assertEqual(handler.search([('date', Date.decode('2005-05-10'))]), [1, 3])
-        
+        self.assertEqual(
+            handler.search([('date', Date.decode('2005-05-10'))]), [1, 3])
+
 
     def test_index_del_row(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
         resource = memory.File(data)
         handler = itools_csv.CSV()
         handler.columns = ['name', 'date']
-        handler.schema = {'name': Unicode(index=True), 'date': Date(index=True)}
+        handler.schema = {'name': Unicode(index=True),
+                          'date': Date(index=True)}
         handler.load_state(resource)
         self.assertEqual(handler.search([('name', 'window')]), [1])
         handler.del_row(1)
@@ -207,7 +229,8 @@ class CSVTestCase(TestCase):
         resource = memory.File('')
         handler = itools_csv.CSV()
         handler.columns = ['name', 'surname', 'date']
-        handler.schema = {'name': Unicode, 'surname': Unicode(index=True), 'date': Date(index=True)}
+        handler.schema = {'name': Unicode, 'surname': Unicode(index=True),
+                          'date': Date(index=True)}
         handler.load_state(resource)
         handler.add_row(['Piotr', 'Macuk', '1975-12-08'])
         handler.add_row(['Basia', 'Macuk', '2002-02-14'])
@@ -252,9 +275,9 @@ class CSVTestCase(TestCase):
         resource = get_resource('test_adv.csv')
         handler = itools_csv.CSV()
         handler.columns = ['id', 'name', 'country', 'date']
-        handler.schema = {'id': Integer, 
-            'name': Unicode(index=True), 'country': Unicode(index=True),
-            'date': Date(index=True)}
+        handler.schema = {'id': Integer, 'name': Unicode(index=True),
+                          'country': Unicode(index=True),
+                          'date': Date(index=True)}
         handler.load_state(resource)
         result1 = handler.search([
             ('name', 'dde'), 'and', ('country', 'Sweden')
@@ -285,7 +308,8 @@ class CSVTestCase(TestCase):
             ('id', 3), 'or', ('country', 'Poland')
         ])
         self.assertEqual(result6, None)
-        
+
+
 
 if __name__ == '__main__':
     unittest.main()

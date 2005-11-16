@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-16 17:07:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
+
+    Summary:
+      handlers, fix "save_state" (open the resource)
+    Revision:
+      itools--main--0.12--patch-15
+
+
+    modified files:
+     Changelog handlers/Handler.py
+
+
 2005-11-16 12:33:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
 
     Summary:

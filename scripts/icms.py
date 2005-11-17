@@ -26,7 +26,7 @@ from ZODB.FileStorage import FileStorage
 
 # Import from itools
 import itools
-from itools.resources import zodb
+from itools.resources import base, get_resource, zodb
 from itools.web.server import Server
 from itools.cms.Root import Root
 
@@ -37,11 +37,23 @@ if __name__ == '__main__':
     version = revision.split('--')[2]
     parser = OptionParser(usage='usage: %prog [options] directory',
                           version='itools %s [%s]' % (version, revision))
-    parser.add_option('-p', '--port', type='int', help='log errors to file')
+    parser.add_option('-p', '--port', type='int', help='listen to port number')
+    parser.add_option('-i', '--import', dest='import_resource',
+                      help='import instance from directory')
 
     options, args = parser.parse_args()
     if len(args) != 1:
         parser.error('incorrect number of arguments')
+
+    # If the user wants to import, check wether there is really an ikaaro
+    # instance in the import directory
+    import_resource = options.import_resource
+    if import_resource is not None:
+        import_resource = get_resource(import_resource)
+        if not isinstance(import_resource, base.Folder):
+            parser.error('can not import instance (not a folder)')
+        if not import_resource.has_resource('.metadata'):
+            parser.error('can not import instance (bad folder)')
 
     # Create the instance
     path = args[0]
@@ -54,13 +66,23 @@ if __name__ == '__main__':
     storage = FileStorage('%s/database.fs' % path)
     database = zodb.Database(storage)
     root_resource = database.get_resource('/')
+
+    # Check wether the user wants to import an instance to a non-empty database
+    if import_resource and root_resource.get_resource_names():
+        parser.error('can not import instance (database not empty)')
+
     # Create an instance if there is not
     if not root_resource.has_resource('.metadata'):
-        root = Root(username='a', password='a')
-        for name in root.resource.get_resource_names():
-            resource = root.resource.get_resource(name)
+        if import_resource:
+            source = import_resource
+        else:
+            source = Root(username='a', password='a').resource
+
+        for name in source.get_resource_names():
+            resource = source.get_resource(name)
             root_resource.set_resource(name, resource)
         root_resource.get_transaction().commit()
+
     # Load the root handler
     root = Root(root_resource)
     root.name = 'root'

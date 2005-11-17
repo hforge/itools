@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-17 20:22:54 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
+
+    Summary:
+      scripts.icms, add option to import an instance from a directory
+    Revision:
+      itools--main--0.12--patch-29
+
+    So the migration chain from ikaaro 0.15 to itools.cms is closed.
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-11-17 19:24:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-28
 
     Summary:

@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-17 15:00:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
+
+    Summary:
+      merge csv documentation work from piotr
+    Revision:
+      itools--main--0.12--patch-24
+
+    Patches applied:
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-6
+       Sections added, more schema description, file structure table
+    
+
+    modified files:
+     Changelog doc/csv.tex
+
+    new patches:
+     piotr@macuk.pl--public/itools--csv--0.12--patch-6
+
+
 2005-11-16 19:12:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-23
 
     Summary:

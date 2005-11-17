@@ -19,27 +19,46 @@
 In that chapter you will learn how to work with CSV files using
 {\tt itools.csv} handler. We will try to build the example system.
 
+
+\section{What we want to do}
+
 Let's assume that you are the owner of small ISP (Internet Service
 Provider) company. You have about 250 clients and all information
 about your clients are stored in {\tt clients.csv} file.
+
+In the file you have the clinent's personal data as name, surname
+and address and your business data: when the last payment was, how many
+computers the client connects to the network and when the client was
+registered. In the file there is also the client's discount rate. 
+Its value depend on number of computers and registration date
+and it is change after payment.
 
 You need the small system to store/change/remove the clients information
 and to generate some reports (for example to send the payment email 
 remainders to the clients). We will try to build that system from 
 scratch.
 
-Take a look at the structure of {\tt clients.csv} file:
-\begin{description}
-    \item [client\_id] client ID
-    \item [surname] 
-    \item [name] 
-    \item [address]
-    \item [email] 
-    \item [last\_pay\_date] the date of the last pay 
-    \item [num\_of\_computers] how many computers are connected to the network
-    \item [register\_date] the registration date
-    \item [discount] discount rate
-\end{description}
+Take a closer look at the structure of {\tt clients.csv} file. 
+The column names (defined in handler schema, more info about it later) 
+and its type. The types are defined in {\tt itools.datatypes} module.
+
+\begin{quote}
+\begin{tabular}{|l|l|l|}
+    \hline
+    Column name & Data type & Description \\
+    \hline
+    client\_id & Integer & client ID \\
+    surname & Unicode & client's surname \\
+    name & Unicode & client's name \\
+    address & Unicode & client's address \\
+    email & Unicode & clients's email address \\
+    last\_pay\_date & Date & the date of the last pay \\
+    num\_of\_computers & Integer & how many computers are connected \\
+    register\_date & Date & the registration date \\
+    discount & Integer & discount rate \\
+    \hline
+\end{tabular}
+\end{quote}
 
 The system should allow us to:
 \begin{itemize}
@@ -49,6 +68,9 @@ The system should allow us to:
     \item modify the information about clients
     \item get info about sending payment reminders 
 \end{itemize}
+
+
+\section{Building the system}
 
 How to do that tasks with {\tt itools.csv}? To work with the
 database we should create the csv file handler:
@@ -81,14 +103,17 @@ which the client's data are stored in the {\tt clients.csv} file database.
 We have the client\_id, but the csv handler have no idea about that. 
 We should inform the handler about the structure of the database. To do that 
 we define the columns and the schema of our clients' data and load the file 
-content again:
+content again. The csv file schema is column: datatype dictionary. We can 
+also define columns to index. Indexed columns can be used to search data 
+by the column values.
 \begin{code}
     >>> from itools.datatypes import *
     >>> columns = ['client_id', 'surname', 'name', 'address', 'email',
     ... 'last_pay_date', 'num_of_computers', 'register_date',
     ... 'discount']
-    >>> schema = {'client_id': Integer(index=True), 'surname': Unicode(index=True),
-    ... 'name': Unicode, 'address': Unicode, 'email': Unicode(index=True),
+    >>> schema = {'client_id': Integer(index=True), 
+    ... 'surname': Unicode(index=True), 'name': Unicode, 
+    ... 'address': Unicode, 'email': Unicode(index=True),
     ... 'last_pay_date': Date(index=True), 'num_of_computers': Integer,
     ... 'register_date': Date, 'discount': Integer}
     >>> clients.columns = columns
@@ -126,7 +151,8 @@ element from that list ({\tt indexes[0]}).
 
 How we can find clients to send the payment reminder? Let's try:
 \begin{code}
-    >>> indexes = clients.search([('last_pay_date', Date.decode('2004-11-30'))])
+    >>> indexes = clients.search([
+    ... ('last_pay_date', Date.decode('2004-11-30'))])
     >>> clients.get_rows(indexes)
     [[1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia', 
     u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
@@ -152,10 +178,12 @@ payments and change the last\_payment\_date value and probably modify
 the discount rate accordingly. It is simple enhancement and you could do it 
 by yourself if you need the system for small ISP company.
 
-The source code used in that chapter is placed in 
+The source code used in that chapter is placed in \\
 {\tt examples/csv\_handler/example.py} file.
 
-And the full csv file handle API:
+
+\section{CSV handler API}
+
 \begin{api}
   {\tt get\_row(index)}\\
   - Return row indexed by index.
@@ -204,7 +232,5 @@ And the full csv file handle API:
 
 
 
-
-\printindex
 
 \end{document}

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-17 16:29:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
+
+    Summary:
+      cms, fix import of csv handler
+    Revision:
+      itools--main--0.12--patch-25
+
+
+    modified files:
+     Changelog cms/csv_.py
+
+
 2005-11-17 15:00:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-24
 
     Summary:

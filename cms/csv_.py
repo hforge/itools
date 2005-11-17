@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 # Import from itools
-from itools.handlers.CSV import CSV as iCSV, Row as iRow, parse
+from itools.csv.itools_csv import CSV as iCSV, Row as iRow
 from itools.xml.stl import stl
 
 # Import from ikaaro
@@ -73,19 +73,21 @@ class CSV(Text, iCSV):
     class_id = 'text/comma-separated-values'
 
 
-    def _load_state(self, resource):
-        data = resource.read()
+    row_class = iRow
 
-        lines = []
-        index = 0
-        for line in parse(data, self.schema):
-            row = Row(line)
-            row.index = index
-            lines.append(row)
-            index = index + 1
+##    def _load_state(self, resource):
+##        data = resource.read()
 
-        self.state.lines = lines
-        self.state.encoding = self.guess_encoding(data)
+##        lines = []
+##        index = 0
+##        for line in parse(data, self.schema):
+##            row = Row(line)
+##            row.index = index
+##            lines.append(row)
+##            index = index + 1
+
+##        self.state.lines = lines
+##        self.state.encoding = self.guess_encoding(data)
 
 
     def get_views(self):

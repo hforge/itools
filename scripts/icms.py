@@ -66,6 +66,6 @@ if __name__ == '__main__':
     root.name = 'root'
 
     # Start the server
-    server = Server(root, port=options.port, error_log='%s/error_log' % path,
-                    pid_file='%s/pid' % path)
+    server = Server(root, port=options.port, access_log='%s/access_log' % path,
+                    error_log='%s/error_log' % path, pid_file='%s/pid' % path)
     server.start()

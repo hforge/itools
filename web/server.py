@@ -18,10 +18,11 @@
 # Import from the Standard Library
 from base64 import decodestring
 from copy import copy
-import datetime
+from datetime import datetime
 import os
 import socket
 import thread
+import time
 import traceback
 from urllib import unquote
 
@@ -59,7 +60,21 @@ def handle_request(connection, server):
     resource = File(connection)
     try:
         request = Request(resource)
-    except BadRequest:
+    except BadRequest, exception:
+        request = None
+        request_line = exception.args[0]
+    else:
+        # Keep here (though redundant) to be used later in the access log
+        request_line = request.state.request_line
+
+    # Access Log
+    if server.access_log is not None:
+        peer_address, peer_port = connection.getpeername()
+        now = time.strftime('%d/%b/%Y:%H:%M:%S %Z')
+        server.access_log.write('%s - - [%s] "%s"  \n'
+                                % (peer_address, now, request_line))
+
+    if request is None:
         response = Response(status_code=400)
         response.set_body('Bad Request')
         response = response.to_str()
@@ -184,8 +199,8 @@ def handle_request(connection, server):
 
 class Server(object):
 
-    def __init__(self, root, address='127.0.0.1', port=None, error_log=None,
-                 pid_file=None):
+    def __init__(self, root, address='127.0.0.1', port=None, access_log=None,
+                 error_log=None, pid_file=None):
         if port is None:
             port = 8000
         # The application's root
@@ -193,9 +208,12 @@ class Server(object):
         # The address and port the server will listen to
         self.address = address
         self.port = port
-        # The error and access logs
+        # The access and error logs
+        if access_log is not None:
+            access_log = open(access_log, 'a+')
         if error_log is not None:
             error_log = open(error_log, 'a+')
+        self.access_log = access_log
         self.error_log = error_log
         # The pid file
         self.pid_file = pid_file
@@ -218,6 +236,8 @@ class Server(object):
                 continue
             except:
                 ear.close()
+                if self.access_log is not None:
+                    self.access_log.close()
                 if self.error_log is not None:
                     self.error_log.close()
                 break
@@ -235,7 +255,7 @@ class Server(object):
         error_log = self.error_log
         error_log.write('\n')
         error_log.write('[Error]\n')
-        error_log.write('date    : %s\n' % str(datetime.datetime.now()))
+        error_log.write('date    : %s\n' % str(datetime.now()))
         error_log.write('uri     : %s\n' % str(context.uri))
         error_log.write('referrer: %s\n' % str(request.referrer))
         error_log.write('user    : %s\n' % (user and user.name or None))

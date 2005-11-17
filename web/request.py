@@ -42,10 +42,13 @@ class Request(File):
 
         # The request line
         line = resource.readline()
+        line = line.strip()
         try:
             method, path, http_version = line.split()
         except ValueError:
-            raise BadRequest
+            raise BadRequest, line
+        else:
+            state.request_line = line
 
         self.set_method(method)
         reference = uri.get_reference(path)

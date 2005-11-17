@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-17 17:39:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-26
+
+    Summary:
+      web, fix to get "Apache Benchmark" working
+    Revision:
+      itools--main--0.12--patch-26
+
+    Fix when the status line is wrong. Fix when there is not an
+    Accept-Language header.
+
+    modified files:
+     Changelog web/exceptions.py web/request.py web/response.py
+     web/server.py
+
+
 2005-11-17 16:29:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-25
 
     Summary:

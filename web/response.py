@@ -106,7 +106,7 @@ class Response(File):
 
         # The status line
         line = resource.readline()
-        http_version, status_code, status_message = line.split()
+        http_version, status_code, status_message = line.split(' ', 2)
         status_code = int(status_code)
         self.set_status(status_code)
         # The headers

@@ -28,9 +28,10 @@ from urllib import unquote
 # Import from itools
 from itools.resources.socket import File
 from itools.handlers import transactions
-from itools.web.exceptions import Forbidden, UserError
+from itools.web.exceptions import BadRequest, Forbidden, UserError
 from itools.web.context import Context, get_context, set_context
 from itools.web.request import Request
+from itools.web.response import Response
 
 
 
@@ -56,7 +57,15 @@ class Pool(object):
 def handle_request(connection, server):
     # Build the request object
     resource = File(connection)
-    request = Request(resource)
+    try:
+        request = Request(resource)
+    except BadRequest:
+        response = Response(status_code=400)
+        response.set_body('Bad Request')
+        response = response.to_str()
+        connection.send(response)
+        return
+
     # Build and set the context
     context = Context(request, '%s:%s' % (server.address, server.port))
     set_context(context)

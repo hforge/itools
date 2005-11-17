@@ -24,14 +24,16 @@ from itools.datatypes import QName
 from itools import schemas
 from itools.resources import memory
 from itools.handlers.File import File
+from itools.i18n.accept import AcceptLanguage
+from itools.web.exceptions import BadRequest
 from itools.web import headers
 from itools.web import entities
 
 
 class Request(File):
 
-    def get_skeleton(self):
-        return 'GET / HTTP/1.1'
+    def get_skeleton(self, path='/'):
+        return 'GET %s HTTP/1.1' % path
 
 
     def _load_state(self, resource):
@@ -40,7 +42,11 @@ class Request(File):
 
         # The request line
         line = resource.readline()
-        method, path, http_version = line.split()
+        try:
+            method, path, http_version = line.split()
+        except ValueError:
+            raise BadRequest
+
         self.set_method(method)
         reference = uri.get_reference(path)
         self.set_path(reference.path)
@@ -182,7 +188,10 @@ class Request(File):
     ########################################################################
     # Accept Language
     def get_accept_language(self):
-        return self.state.headers.get('Accept-Language', None)
+        headers = self.state.headers
+        if 'Accept-Language' in headers:
+            return headers['Accept-Language']
+        return AcceptLanguage('')
 
     accept_language = property(get_accept_language, None, None, '')
 

@@ -248,9 +248,9 @@ class Request(File):
         return self.state.headers['Cookie'].get(name)
 
 
-##    def get_cookies_as_str(self):
-##        cookies = self.state.cookies
-##        return '; '.join([ '%s="%s"' % (x, cookies[x]) for x in cookies ])
+    def get_cookies_as_str(self):
+        cookies = self.state.headers['Cookie']
+        return '; '.join([ '%s="%s"' % (x, cookies[x]) for x in cookies ])
 
 
     ########################################################################

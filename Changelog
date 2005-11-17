@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-17 20:37:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
+
+    Summary:
+      cms, fixing the external editor
+    Revision:
+      itools--main--0.12--patch-30
+
+
+    modified files:
+     Changelog cms/File.py web/request.py
+
+
 2005-11-17 20:22:54 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-29
 
     Summary:

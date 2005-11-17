@@ -136,10 +136,7 @@ class Response(File):
         now = datetime.utcnow()
         data.append('Date: %s' % now.strftime("%a, %d %b %Y %H:%M:%S +0000"))
         if 'content-length' not in state.headers:
-            if state.body is None:
-                data.append('Content-Length: 0')
-            else:
-                data.append('Content-Length: %d' % len(state.body))
+            data.append('Content-Length: %d' % self.get_content_length())
         # Close the connection
         data.append('Connection: close')
         # The Cookies
@@ -202,6 +199,15 @@ class Response(File):
 
     def has_header(self, name):
         return name in self.state.headers
+
+
+    #########################################################################
+    # Content-Length
+    def get_content_length(self):
+        body = self.state.body
+        if body is None:
+            return 0
+        return len(body)
 
 
     #########################################################################

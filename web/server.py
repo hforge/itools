@@ -67,16 +67,14 @@ def handle_request(connection, server):
         # Keep here (though redundant) to be used later in the access log
         request_line = request.state.request_line
 
-    # Access Log
-    if server.access_log is not None:
-        peer_address, peer_port = connection.getpeername()
-        now = time.strftime('%d/%b/%Y:%H:%M:%S %Z')
-        server.access_log.write('%s - - [%s] "%s"  \n'
-                                % (peer_address, now, request_line))
-
     if request is None:
+        # Build response for the 400 error
         response = Response(status_code=400)
         response.set_body('Bad Request')
+        # Access Log
+        content_length = response.get_content_length()
+        server.log_access(connection, request_line, 400, content_length)
+        # Send response
         response = response.to_str()
         connection.send(response)
         return
@@ -190,6 +188,11 @@ def handle_request(connection, server):
 
     # Free the root object
     server.pool.push(root)
+
+    # Access Log
+    server.log_access(connection, request_line, response.state.status,
+                      response.get_content_length())
+
     # Finish, send back the response
     response = response.to_str()
     connection.send(response)
@@ -243,6 +246,24 @@ class Server(object):
                 break
             else:
                 thread.start_new_thread(handle_request, (connection, self))
+
+
+    def log_access(self, connection, request_line, status, size):
+        # Common Log Format
+        #  - IP address of the client
+        #  - RFC 1413 identity (not available)
+        #  - username (XXX not provided right now should we?)
+        #  - time (XXX we use the timezone name, while we should use the
+        #    offset, e.g. +0100)
+        #  - the request line
+        #  - the status code
+        #  - content length of the response
+        if self.access_log is not None:
+            host, port = connection.getpeername()
+            now = time.strftime('%d/%b/%Y:%H:%M:%S %Z')
+            self.access_log.write(
+                '%s - - [%s] "%s" %s %s\n' % (host, now, request_line, status,
+                                              size))
 
 
     def log_error(self):

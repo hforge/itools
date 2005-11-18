@@ -30,7 +30,7 @@ from itools.web import get_context
 #############################################################################
 
 src = ur""" @¹,;:!¡?ª$£¤+&/\"*#()[]{}'ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûİ~ıÿ~^°"""
-dst = ur"""___________________________AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuY_yy__-"""
+dst = ur"""---------------------------AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuY-yy---"""
 
 transmap = {}
 for i in range(len(src)):
@@ -46,7 +46,7 @@ def checkid(id):
     """
     if isinstance(id, str):
         id = unicode(id, 'utf8')
-    id = id.strip().translate(transmap).strip('_')
+    id = id.strip().translate(transmap).strip('-')
 
     # Check wether the id is empty
     if len(id) == 0:

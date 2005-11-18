@@ -2,6 +2,71 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-18 23:31:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-34
+
+    Summary:
+      fix FSF address (#180)
+    Revision:
+      itools--main--0.12--patch-34
+
+
+    modified files:
+     Changelog LGPL-2.1 README.txt __init__.py catalog/Analysers.py
+     catalog/Catalog.py catalog/IDocument.py catalog/IIndex.py
+     catalog/IO.py catalog/Query.py catalog/__init__.py
+     catalog/prof.py catalog/test.py catalog/test_analysers.py
+     catalog/test_io.py cms/Document.py cms/File.py cms/Folder.py
+     cms/Group.py cms/Handler.py cms/LocaleAware.py cms/Metadata.py
+     cms/Root.py cms/User.py cms/UserFolder.py cms/WebSite.py
+     cms/__init__.py cms/access.py cms/catalog.py cms/csv_.py
+     cms/debug.py cms/examples/portal1/Root.py
+     cms/examples/portal1/__init__.py cms/examples/portal1/setup.py
+     cms/flash.py cms/html.py cms/images.py cms/msoffice.py
+     cms/openoffice.py cms/pdf.py cms/skins.py cms/text.py
+     cms/utils.py cms/versioning.py cms/widgets.py cms/workflow.py
+     csv/__init__.py csv/itools_csv.py csv/test_itools_csv.py
+     datatypes/__init__.py datatypes/base.py datatypes/languages.py
+     datatypes/primitive.py doc/examples/chapter8/namespaces.py
+     doc/examples/chapter8/parser.py
+     doc/examples/csv_handler/my_clients.py
+     doc/examples/csv_handler/my_system.py
+     doc/examples/task_tracker0/TaskTracker.py
+     doc/examples/task_tracker1/TaskTracker.py
+     doc/examples/task_tracker2/TaskTracker.py doc/style.tex
+     gettext/MO.py gettext/PO.py gettext/__init__.py
+     gettext/domains.py handlers/File.py handlers/Folder.py
+     handlers/Handler.py handlers/Image.py handlers/KeyValue.py
+     handlers/Python.py handlers/Text.py handlers/Var.py
+     handlers/__init__.py handlers/test_basic.py
+     handlers/test_ical.py handlers/test_po.py handlers/test_var.py
+     handlers/transactions.py html/HTML.py html/__init__.py
+     html/parser.py html/test_html.py i18n/__init__.py
+     i18n/accept.py i18n/fuzzy.py i18n/oracle.py i18n/segment.py
+     i18n/test_accept.py i18n/test_fuzzy.py i18n/test_oracle.py
+     i18n/test_parsers.py i18n/test_segment.py ical/icalendar.py
+     ical/test_icalendar.py ical/types.py resources/__init__.py
+     resources/base.py resources/file.py resources/http.py
+     resources/memory.py resources/socket.py resources/test.py
+     resources/test_zodb.py resources/zodb.py resources/zope2.py
+     rss/__init__.py rss/rss.py rss/test_rss.py schemas/__init__.py
+     schemas/base.py schemas/dublin_core.py schemas/registry.py
+     scripts/icms.py scripts/igettext.py setup.py tmx/TMX.py
+     tmx/__init__.py tmx/test_tmx.py upgrade.py uri/__init__.py
+     uri/generic.py uri/mailto.py uri/test_generic.py
+     uri/test_mailto.py uri/test_normalize.py uri/test_path.py
+     uri/test_reference.py web/__init__.py web/context.py
+     web/entities.py web/exceptions.py web/headers.py
+     web/request.py web/response.py web/server.py
+     web/test_server.py web/zope2.py workflow/__init__.py
+     workflow/test_workflow.py workflow/workflow.py xhtml/XHTML.py
+     xhtml/__init__.py xhtml/test_xhtml.py xliff/XLIFF.py
+     xliff/__init__.py xliff/test_xliff.py xml/DublinCore.py
+     xml/XML.py xml/__init__.py xml/bench_parser.py
+     xml/exceptions.py xml/namespaces.py xml/parser.py xml/stl.py
+     xml/test_rdf.py xml/test_stl.py xml/test_xml.py
+     xml/test_xsd.py
+
+
 2005-11-18 22:25:46 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-33
 
     Summary:

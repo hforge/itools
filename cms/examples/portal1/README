@@ -1,0 +1,184 @@
+.. $ more README *.py ui/portal/*.xml > all.txt; a2ps all.txt -o all.ps
+.. $ rest2html --stylesheet-path=../main.css README a.html 
+.. $ rest2latex README a.latex; pdflatex a.latex; acroread a.pdf
+
+==========
+Portal 1
+==========
+
+The target of this first portal is to illustrate the simplicity of creating a
+full application based on iKaaro.
+
+Here the "iKaaro Tax" is very small in comparison of the one needed to setup 
+a full Zope product and even smaller in comparison with a Plone file system 
+product.
+
+By the way we give a full exemple of the STL templating language.
+
+
+
+Files
+=====
+::
+ 
+  .
+  |-- README
+  |-- __init__.py
+  |-- Root.py
+  `-- ui
+      `-- portal
+          `-- Root_view.xml
+
+__init__
+========
+
+Register the product as a Zope Product 
+---------------------------------------
+
+Key points :
+
+- The root of our new portal will be an instance for one of our class : **Root**
+- All the "Zope tax" (the needed code to create a new Zope product) is done by
+  iKaaro, we only need to write an *initialize* method who call the
+  *register_in_zope*.
+
+Method that register our product as a Zope product::
+
+  # Import from our product
+  from Root import Root
+
+  def initialize(context):
+      Root.register_in_zope(context)
+
+Register interfaces of our iKaaro based product 
+------------------------------------------------
+
+**iKaaro** as out of the box two interfaces : `classic` and `surf`. It is very
+easy to add a new one, for that we only need:
+
+- to create a folder, here `ui/portal`, containing templates (`XML` and `XHTML`
+  files), images, CSS etc.
+- to register in the iKaaro **ui** module, the folder as an interface with
+  the method `register_interface`.
+
+::
+
+  # Import from ikaaro
+  from Products.ikaaro import ui
+
+  path = get_abspath(globals(), 'ui/portal')
+  ui.register_theme('portal', path)
+
+
+`portal` is a minimal Interface. It only contain the template for the method
+`view` of the class **Root**.
+
+
+Root.py
+=========
+
+For our first application, we only take care of the iKaaro back office.  We will
+focus on controlling tabs.
+
+Controlling Tabs system
+-----------------------
+
+Tabs are controlled with a simple method who return a list of strings, this
+strings are method names::
+
+  def get_views(self):
+      return ['help', 'view']
+
+
+The order matters since the tabs are displayed in this order. All the names you
+return are excepted to be methods of your Root instance, including the ones
+inherited. Here our own are 'help' and 'view'. 
+
+- Our first tab correspond to a very simple method who only return a string of
+  text. Let's focus on the  `__label__` and `__access__` attribute.
+- The second tab will illustrate how to use Simple Template Language STL as
+  template language. 
+
+
+Label name and security access for methods
+---------------------------------------------
+
+Such methods use three pieces of information:
+
+- The method's name is also the name used in the URL. Make it short but clear
+  enough.
+- The <method name>__label__ attribute is the friendly name the tab will show to
+  the user. You will later learn how to translate it.
+- The <method name>___access__ attribute is a boolean or some function (without
+  the calling `()`) returning a boolean. A `True` value means the user can call
+  your method and a `False` value will spawn the login form.  Don't worry too
+  much about forgetting to set an access rule, they are set to `False` by
+  default, hence such methods will be protected.
+
+:: 
+
+  help__label__ = u'help'
+  help__access__ = True
+  def help(self):
+      """ """
+      return u"Read the doc in README file."  
+
+
+These methods are expected to return a Unicode string -- remember Ikaaro uses
+Unicode internally -- that the interface handler will put in its master template
+before sending the result. For now, all templating will be displayed in iKaaro's
+back office interface.
+
+STL for templating
+--------------------
+
+The **view** method is an example of calling a template and filling in it with
+variables stored in a namespace. See the itools documentation for help on
+templates and namespaces.
+
+The special point here is the usage of **ui** to automatically take the good 
+template between all the registered one.
+::
+
+  def view(self):
+      ns = {...}
+      # find the hander for our template
+      handler = ui.get_handler('portal/Root_view.xml')
+      
+      # return the rendered handler 
+      return stl(handler, ns)
+
+Name convention
+~~~~~~~~~~~~~~~~
+
+Why is the template **Root_view.xml** named that way? 
+
+We think the best is to prefix a template with the name of the class it is used
+by (`Root`) and append the name of the method to it (`view`). 
+
+Though this template in a excerpt of XHTML, it is not a valid XHTML document, so
+we use the generic `.xml` extension. You will later see that valid XHTML
+templates use the `.xhtml` extension. Please use this naming scheme in your
+future applications to keep consistent with iKaaro and tools around it.
+
+
+Conclusion
+===========
+
+With only 7 lines of python in the __init__.py file and 15 in the 
+Root.py we launch a portal.
+
+We get full control of the root because it is our product class.  
+We start the use of the iKaaro API to be connected to the iKaaro back-office::
+
+by the mean of the class attributes::
+
+  view__label__ 
+  view__access__ 
+  
+by the mean of the methods ``get_views``::
+ 
+  def get_views(self):
+      # who return a list of the method we want to see as strings
+
+

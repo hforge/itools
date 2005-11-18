@@ -2,6 +2,44 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-18 19:19:54 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-31
+
+    Summary:
+      cms, get portal1 working!
+    Revision:
+      itools--main--0.12--patch-31
+
+    To achieve it:
+    
+      - added configuration file "config.ini" (per instance)
+      - now the script "icms.py" has two commands: "init" and "start"
+      - added option "--root" to the "icms.py" script
+      - and portal1 has become a Python package (added "setup.py")
+
+    new files:
+     cms/examples/.arch-ids/=id cms/examples/portal1/.arch-ids/=id
+     cms/examples/portal1/.arch-ids/README.id
+     cms/examples/portal1/.arch-ids/Root.py.id
+     cms/examples/portal1/.arch-ids/__init__.py.id
+     cms/examples/portal1/.arch-ids/setup.py.id
+     cms/examples/portal1/README cms/examples/portal1/Root.py
+     cms/examples/portal1/__init__.py cms/examples/portal1/setup.py
+     cms/examples/portal1/ui/.arch-ids/=id
+     cms/examples/portal1/ui/portal/.arch-ids/=id
+     cms/examples/portal1/ui/portal/.arch-ids/Root_view.xml.id
+     cms/examples/portal1/ui/portal/Root_view.xml
+
+    modified files:
+     Changelog scripts/icms.py
+
+    new directories:
+     cms/examples cms/examples/.arch-ids cms/examples/portal1
+     cms/examples/portal1/.arch-ids cms/examples/portal1/ui
+     cms/examples/portal1/ui/.arch-ids
+     cms/examples/portal1/ui/portal
+     cms/examples/portal1/ui/portal/.arch-ids
+
+
 2005-11-17 20:37:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-30
 
     Summary:

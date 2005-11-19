@@ -170,6 +170,7 @@ def handle_request(connection, server):
             # Forbidden (403)
             response_body = root.forbidden()
     except:
+        server.log_error()
         transaction.rollback()
         response_body = root.internal_server_error()
     else:

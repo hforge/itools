@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-19 17:25:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
+
+    Summary:
+      web, forgot to log some errors; cms, fix "internal_server_error"
+    Revision:
+      itools--main--0.12--patch-38
+
+
+    modified files:
+     Changelog cms/Root.py web/server.py
+
+
 2005-11-19 17:10:16 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
 
     Summary:

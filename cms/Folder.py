@@ -965,11 +965,14 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         name = checkid(name)
         if name is None:
             # Invalid name
-            raise UserError, self.gettext(u'The document name contains illegal characters, choose another one.')
+            message = (u'The document name contains illegal characters,'
+                       u' choose another one.')
+            raise UserError, self.gettext(message)
 
         if self.has_handler(name):
             # Name already used
-            raise UserError, self.gettext(u'There is already another resource with this name.')
+            message = u'There is already another resource with this name.'
+            raise UserError, self.gettext(message)
 
         # Build the handler
         handler = Handler.build_handler(file, mimetype)

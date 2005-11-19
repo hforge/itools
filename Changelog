@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-19 17:46:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-40
+
+    Summary:
+      cms, minor coding style fix (80 columns)
+    Revision:
+      itools--main--0.12--patch-40
+
+
+    modified files:
+     Changelog cms/Folder.py
+
+
 2005-11-19 17:37:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
 
     Summary:

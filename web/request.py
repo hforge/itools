@@ -23,6 +23,7 @@ from itools import uri
 from itools.datatypes import QName
 from itools import schemas
 from itools.resources import memory
+from itools.handlers.Handler import Handler
 from itools.handlers.File import File
 from itools.i18n.accept import AcceptLanguage
 from itools.web.exceptions import BadRequest
@@ -107,7 +108,9 @@ class Request(File):
                     else:
                         parameters[name] = body
             else:
-                raise ValueError, u'content type "%s" not supported' % type
+                resource = memory.File(body)
+                handler = Handler.build_handler(resource)
+                parameters = {'body': handler}
         else:
             message = u'request method "%s" not yet implemented' % method
             raise ValueError, message

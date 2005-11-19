@@ -17,7 +17,9 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from random import random
 import thread
+from time import time
 import weakref
 
 # Import from itools
@@ -142,12 +144,12 @@ class File(Resource, base.File):
 
 
     def get_mtime(self):
-        mtime, data = self._get_object()
+        mtime, data, lock = self._get_object()
         return mtime
 
 
     def get_size(self):
-        mtime, data = self._get_object()
+        mtime, data, lock = self._get_object()
         return len(data)
 
 
@@ -176,7 +178,7 @@ class File(Resource, base.File):
 
 
     def read(self, size=None):
-        mtime, data = self._get_object()
+        mtime, data, lock = self._get_object()
         if size is None:
             data = data[self.offset:]
         else:
@@ -186,7 +188,7 @@ class File(Resource, base.File):
 
 
     def readline(self):
-        mtime, data = self._get_object()
+        mtime, data, lock = self._get_object()
         end = data.find('\n', self.offset)
         if end == -1:
             data = data[self.offset:]
@@ -198,12 +200,12 @@ class File(Resource, base.File):
 
     def write(self, data):
         parent = self._get_parent()
-        mtime, old_data = parent[self.name]
+        mtime, old_data, lock = parent[self.name]
 
         old_offset = self.offset
         self.offset += len(data)
         data = old_data[:old_offset] + data + old_data[self.offset:]
-        parent[self.name] = (datetime.now(), data)
+        parent[self.name] = (datetime.now(), data, lock)
 
 
     def truncate(self, size=None):
@@ -211,30 +213,58 @@ class File(Resource, base.File):
             size = self.offset
 
         parent = self._get_parent()
-        mtime, data = parent[self.name]
+        mtime, data, lock = parent[self.name]
 
-        parent[self.name] = (datetime.now(), data[:size])
+        parent[self.name] = (datetime.now(), data[:size], lock)
 
 
     def __setitem__(self, index, value):
         # Read
         parent = self._get_parent()
-        mtime, data = parent[self.name]
+        mtime, data, lock = parent[self.name]
         # Write
         data = data[:index] + value + data[index+1:]
-        parent[self.name] = (datetime.now(), data)
+        parent[self.name] = (datetime.now(), data, lock)
         self.offset += 1
 
 
     def __setslice__(self, start, stop, value):
         # Read
         parent = self._get_parent()
-        mtime, data = parent[self.name]
+        mtime, data, lock = parent[self.name]
         # Write
         data = data[:start] + value + data[stop:]
-        parent[self.name] = (datetime.now(), data)
+        parent[self.name] = (datetime.now(), data, lock)
         self.offset = stop
-      
+
+
+    ##########################################################################
+    # Locking
+    def lock(self):
+        # Read
+        parent = self._get_parent()
+        mtime, data, lock = parent[self.name]
+        # Lock
+        lock = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
+        parent[self.name] = (mtime, data, lock)
+        return lock
+
+
+    def unlock(self, key):
+        # Read
+        parent = self._get_parent()
+        mtime, data, lock = parent[self.name]
+        # Unlock
+        if lock is None:
+            raise ValueError, 'resource is not locked'
+        if key != lock:
+            raise ValueError, 'can not unlock resource, wrong key'
+        parent[self.name] = (mtime, data, None)
+
+
+    def is_locked(self):
+        mtime, data, lock = self._get_object()
+        return lock is not None
 
 
 
@@ -273,7 +303,7 @@ class Folder(Resource, base.Folder):
 
     def _set_file_resource(self, name, resource):
         object = self._get_object()
-        object[name] = (datetime.now(), resource.read())
+        object[name] = (datetime.now(), resource.read(), None)
 
 
     def _set_folder_resource(self, name, resource):

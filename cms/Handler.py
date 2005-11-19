@@ -39,6 +39,7 @@ from access import AccessControl
 from catalog import CatalogAware
 from utils import comeback
 from LocaleAware import LocaleAware
+import webdav
 
 
 # Initialize logger
@@ -378,11 +379,15 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
         # Lock the resource
         resource = self.resource
-        lock, key = resource.lock()
-        # Build response
+        lock = resource.lock()
+        # Build response        
         response.set_header('Content-Type', 'text/xml; charset="utf-8"')
-        response.set_header('Lock-Token', 'opaquelocktoken:%s' % key)
-        response.set_body(lock.asXML())
+        response.set_header('Lock-Token', 'opaquelocktoken:%s' % lock)
+
+        user = context.user
+        body = webdav.lock_body % {'owner': user.name, 'locktoken': lock}
+        response.set_body(body)
+
         return response
 
 

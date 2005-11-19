@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-19 19:20:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
+
+    Summary:
+      resources.zodb, implement locking (only in files for now)
+    Revision:
+      itools--main--0.12--patch-42
+
+
+    modified files:
+     Changelog cms/Handler.py resources/zodb.py
+
+
 2005-11-19 18:00:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-41
 
     Summary:

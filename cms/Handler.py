@@ -364,16 +364,16 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         request, response = context.request, context.response
 
         # Save the data
-        data = request.get_parameter('BODY')
-        resource = memory.File(data)
+        resource = request.get_parameter('body')
         self.load_state(resource)
         # Build the response
         response.set_status(204)
-        return response
 
 
     LOCK__access__ = 'is_authenticated'
     def LOCK(self):
+        # XXX This action is not persitent, the lock is not stored in the
+        # database.
         context = get_context()
         request, response = context.request, context.response
 
@@ -385,24 +385,22 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         response.set_header('Lock-Token', 'opaquelocktoken:%s' % lock)
 
         user = context.user
-        body = webdav.lock_body % {'owner': user.name, 'locktoken': lock}
-        response.set_body(body)
-
-        return response
+        return webdav.lock_body % {'owner': user.name, 'locktoken': lock}
 
 
     UNLOCK__access__ = 'is_authenticated'
     def UNLOCK(self):
+        # XXX This action is not persitent, the lock is not stored in the
+        # database.
         context = get_context()
         request, response = context.request, context.response
 
         # Unlock the resource
-        resource = self.resource
         key = request.get_header('Lock-Token')
-        resource.unlock(key)
+        key = key[len('opaquelocktoken:'):]
+        self.resource.unlock(key)
 
         response.set_status(204)
-        return response
 
 
     ########################################################################

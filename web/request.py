@@ -73,44 +73,44 @@ class Request(File):
         if method in ('GET', 'HEAD'):
             parameters = reference.query
         elif method in ('POST', 'PUT', 'LOCK', 'UNLOCK'):
-            type, type_parameters = state.headers['Content-Type']
-            if type == 'application/x-www-form-urlencoded':
-                parameters = uri.generic.Query(body)
-            elif type.startswith('multipart/'):
-                boundary = type_parameters.get('boundary')
-                boundary = '--%s' % boundary
-                parameters = {}
-                for part in body.split(boundary)[1:-1]:
-                    if part.startswith('\r\n'):
-                        part = part[2:]
-                    elif part.startswith('\n'):
-                        part = part[1:]
-                    # Parse the entity
-                    resource = memory.File(part)
-                    entity = entities.Entity(resource)
-                    # Find out the parameter name
-                    header = entity.get_header('Content-Disposition')
-                    value, header_parameters = header
-                    name = header_parameters['name']
-                    # Load the value
-                    body = entity.get_body()
-                    if body.endswith('\r\n'):
-                        body = body[:-2]
-                    elif body.endswith('\n'):
-                        body = body[:-1]
-                    if 'filename' in header_parameters:
-                        filename = header_parameters['filename']
-                        if filename:
-                            # Strip the path (for IE). XXX Test this.
-                            filename = filename.split('\\')[-1]
-                            resource = memory.File(body, name=filename)
-                            parameters[name] = resource
-                    else:
-                        parameters[name] = body
-            else:
-                resource = memory.File(body)
-                handler = Handler.build_handler(resource)
-                parameters = {'body': handler}
+            parameters = {}
+            if 'Content-Type' in state.headers:
+                type, type_parameters = state.headers['Content-Type']
+                if type == 'application/x-www-form-urlencoded':
+                    parameters = uri.generic.Query(body)
+                elif type.startswith('multipart/'):
+                    boundary = type_parameters.get('boundary')
+                    boundary = '--%s' % boundary
+                    for part in body.split(boundary)[1:-1]:
+                        if part.startswith('\r\n'):
+                            part = part[2:]
+                        elif part.startswith('\n'):
+                            part = part[1:]
+                        # Parse the entity
+                        resource = memory.File(part)
+                        entity = entities.Entity(resource)
+                        # Find out the parameter name
+                        header = entity.get_header('Content-Disposition')
+                        value, header_parameters = header
+                        name = header_parameters['name']
+                        # Load the value
+                        body = entity.get_body()
+                        if body.endswith('\r\n'):
+                            body = body[:-2]
+                        elif body.endswith('\n'):
+                            body = body[:-1]
+                        if 'filename' in header_parameters:
+                            filename = header_parameters['filename']
+                            if filename:
+                                # Strip the path (for IE). XXX Test this.
+                                filename = filename.split('\\')[-1]
+                                resource = memory.File(body, name=filename)
+                                parameters[name] = resource
+                        else:
+                            parameters[name] = body
+                else:
+                    resource = memory.File(body)
+                    parameters['body'] = resource
         else:
             message = u'request method "%s" not yet implemented' % method
             raise ValueError, message

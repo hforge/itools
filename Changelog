@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-19 17:10:16 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-37
+
+    Summary:
+      scripts.icms, index and archive everything on initialization
+    Revision:
+      itools--main--0.12--patch-37
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-11-19 09:35:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
 
     Summary:

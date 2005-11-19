@@ -28,9 +28,12 @@ from ZODB.FileStorage import FileStorage
 # Import from itools
 import itools
 from itools.resources import base, get_resource, zodb
+from itools.handlers import transactions
 from itools.web.server import Server
+from itools.cms.Handler import Handler
 from itools.cms.Metadata import Metadata
 from itools.cms.Root import Root
+from itools.cms.versioning import VersioningAware
 
 
 def init(parser, options, target):
@@ -71,6 +74,24 @@ def init(parser, options, target):
         resource = source.get_resource(name)
         root_resource.set_resource(name, resource)
     root_resource.get_transaction().commit()
+
+    # Index and archive everything (only for new instances, not imported)
+    if options.source is None:
+        root = root_class(root_resource)
+        catalog = root.get_handler('.catalog')
+        for handler, context in root.traverse2():
+            abspath = handler.get_abspath()
+            if handler.name.startswith('.'):
+                context.skip = True
+            elif abspath == '/ui':
+                context.skip = True
+            elif isinstance(handler, Handler):
+                catalog.index_document(handler)
+                if isinstance(handler, VersioningAware):
+                    handler.add_to_archive()
+
+        transaction = transactions.get_transaction()
+        transaction.commit()
 
     # Bravo!
     print 'To start the new instance type:'

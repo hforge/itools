@@ -617,3 +617,6 @@ class Root(Group, WebSite):
             resource = source.get_resource(resource_name)
             self.resource.set_resource(resource_name, resource)
         print 'importing, done'
+
+
+Group.register_handler_class(Root)

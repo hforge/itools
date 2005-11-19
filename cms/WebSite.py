@@ -297,8 +297,9 @@ class WebSite(Folder):
         context.del_cookie('__ac')
         # Remove the user from the context
         context.user = None
-        # Redirect
-        context.redirect(';' + self.get_firstview())
+        # Say goodbye
+        handler = self.get_handler('/ui/WebSite_logout.xml')
+        return stl(handler)
 
 
     ########################################################################

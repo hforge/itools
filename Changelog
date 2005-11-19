@@ -2,6 +2,30 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-19 09:35:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-36
+
+    Summary:
+      merge logout page from herve (#164)
+    Revision:
+      itools--main--0.12--patch-36
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-24
+       provide a logout page.
+    
+
+    new files:
+     cms/ui/.arch-ids/WebSite_logout.xml.en.id
+     cms/ui/WebSite_logout.xml.en
+
+    modified files:
+     Changelog cms/WebSite.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-24
+
+
 2005-11-19 09:30:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-35
 
     Summary:

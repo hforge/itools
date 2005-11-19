@@ -51,6 +51,8 @@ def init(parser, options, target):
     config.add_section('instance')
     if options.root:
         config.set('instance', 'root', options.root)
+    if options.port:
+        config.set('instance', 'port', options.port)
     config.write(open('%s/config.ini' % target, 'w'))
 
     # Load the source
@@ -128,8 +130,14 @@ def start(parser, options, target):
     root.name = root.class_title
 
     # Start the server
-    server = Server(root, port=options.port,
-                    access_log='%s/access_log' % target,
+    if options.port:
+        port = options.port
+    elif config.has_option('instance', 'port'):
+        port = config.getint('instance', 'port')
+    else:
+        port = None
+
+    server = Server(root, port=port, access_log='%s/access_log' % target,
                     error_log='%s/error_log' % target,
                     pid_file='%s/pid' % target)
     server.start()

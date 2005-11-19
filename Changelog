@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-19 20:01:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-43
+
+    Summary:
+      cms, fixing external edit, pass a dummy meta-type
+    Revision:
+      itools--main--0.12--patch-43
+
+
+    modified files:
+     Changelog cms/File.py
+
+
 2005-11-19 19:20:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-42
 
     Summary:

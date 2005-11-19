@@ -133,7 +133,7 @@ class File(Handler, itools.handlers.File.File):
         uri_string = '%s://%s/%s' % (uri.scheme, uri.authority, uri.path[:-1])
         uri = get_reference(uri_string)
         r = ['url:%s' % str(uri),
-##             'meta_type:%s' % object.meta_type,
+             'meta_type:toto', ##% object.meta_type,
              'content_type:%s' % resource.get_mimetype(),
              'cookie:%s' % request.get_cookies_as_str()]
 

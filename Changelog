@@ -2,6 +2,20 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-19 17:37:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-39
+
+    Summary:
+      csv, fix "to_str" when there is not an schema
+    Revision:
+      itools--main--0.12--patch-39
+
+    By default (when there is not an schema) we deserialize columns as
+    unicode values. Then we must encode the values on serialization.
+
+    modified files:
+     Changelog csv/itools_csv.py
+
+
 2005-11-19 17:25:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-38
 
     Summary:

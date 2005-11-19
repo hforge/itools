@@ -190,7 +190,7 @@ class CSV(Text):
                 lines.append(','.join(line))
         else:
             for line in self.state.lines:
-                line = [ '"%s"' % x for x in line ]
+                line = [ '"%s"' % x.encode(encoding) for x in line ]
                 lines.append(','.join(line))
         return '\n'.join(lines)
 

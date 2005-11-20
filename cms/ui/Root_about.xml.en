@@ -1,20 +1,19 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <h4>Welcome to the IKAARO Content Management System</h4>
-
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <h2>Welcome to the iKaaro Content Management System</h2>
   <p>
-  IKAARO provides state of the art Content Management technology: a friendly
-  user interface, high end multilingual features, powerful versioning system,
-  desktop integration, web services support and more.
+    iKaaro provides state of the art Content Management technology: a
+    friendly user interface, high end multilingual features, powerful
+    versioning system, desktop integration, web services support and more.
   </p>
   <p>
-  Released to the world under the terms and conditions of the
-  <a href=";license">GNU General Public License</a>, IKAARO is a free
-  software project, built by its community:
-  <a href="http://www.ikaaro.org">IKAARO.org</a>.
+    Released to the world under the terms and conditions of the
+    <a href=";license">GNU General Public License</a>, iKaaro is a free
+    software project, built by its community:
+    <a href="http://www.ikaaro.org">ikaaro.org</a>.
   </p>
   <p>
-  <em>J. David Ibáñez, lead developer</em>
+    <em>J. David IbÃ¡Ã±ez, lead developer</em>
   </p>
 </stl:block>

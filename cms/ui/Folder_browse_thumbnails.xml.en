@@ -9,8 +9,7 @@
     <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
   </div>
 
-  <dl class="thumb" stl:repeat="object table/objects"
-      stl:attributes="id object/name">
+  <dl class="thumb" stl:repeat="object table/objects">
     <dt class="icon">
       <a stl:attributes="href object/url">
        <img border="0"

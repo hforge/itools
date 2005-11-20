@@ -62,6 +62,8 @@ class Root(Group, WebSite):
     class_id = 'iKaaro'
     class_title = u'iKaaro'
     class_version = '20051025'
+    class_icon16 = 'images/Root16.png'
+    class_icon48 = 'images/Root48.png'
 
     __fixed_handlers__ = ['users', 'admins', 'reviewers', 'ui']
 

@@ -2,6 +2,40 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-20 11:49:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
+
+    Summary:
+      merge from herve (minor fixes)
+    Revision:
+      itools--main--0.12--patch-46
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-5
+       generating ids like that is a bad idea.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-19
+       reworked the about page.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-23
+       fix the icon for the root.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-28
+       fix the 48 px user icon.
+    
+
+    modified files:
+     Changelog cms/Root.py cms/User.py
+     cms/ui/Folder_browse_thumbnails.xml.en
+     cms/ui/Root_about.xml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-5
+     herve@oursours.net--public/itools--aruni--0.12--patch-19
+     herve@oursours.net--public/itools--aruni--0.12--patch-23
+     herve@oursours.net--public/itools--aruni--0.12--patch-28
+
+
 2005-11-19 20:29:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-45
 
     Summary:

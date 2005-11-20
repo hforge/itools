@@ -60,7 +60,7 @@ class User(Folder):
     class_version = '20040625'
     class_title = 'User'
     class_icon16 = 'images/User16.png'
-    class_icon48 = 'images/UserFolder48.png'
+    class_icon48 = 'images/User48.png'
 
 
     #########################################################################

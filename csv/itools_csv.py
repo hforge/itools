@@ -22,6 +22,7 @@ from types import StringType, TupleType, ListType
 
 # Import from itools
 from itools.handlers.Text import Text
+from itools.catalog import Query
 
 
 
@@ -35,6 +36,14 @@ class Row(list):
             raise AttributeError, message % (self.__class__.name, name)
 
         return self[index]
+
+
+class Index(dict):
+
+    def search_word(self, word):
+        if word in self:
+            return self[word].copy()
+        return {}
 
 
 
@@ -112,35 +121,53 @@ class CSV(Text):
         """Index one line"""
         indexes = self.state.indexes
         for i, value in enumerate(row):
-            if self.schema[self.columns[i]].index is True:
+            datatype = self.schema[self.columns[i]]
+            if getattr(datatype, 'index', False) is True:
                 if indexes[i] is None:
-                    indexes[i] = {}
+                    indexes[i] = Index()
                 index = indexes[i]
-                if value in index:
-                    index[value].append(row_index)
-                else:
-                    index[value] = [row_index]
+                # XXX We should parse the value with itools.catalog.Analysers
+                # and store the positions instead of an empty list, as
+                # itools.catalog does.
+                index.setdefault(value, {})
+                index[value][row_index] = []
 
 
     def _unindex_row(self, row_index):
         """Unindex deleted row"""
-        for i, reverse_index in enumerate(self.state.indexes):
+        # XXX We should un-index directly looking from the row values, as
+        # the commented code below shows. The difficulty comes from the
+        # fact that row indexes change when a row before is deleted; in
+        # other words, when we remove a row, we must re-index all rows
+        # after. The solution is to use internal ids, different from the
+        # row number, which don't change through the handler's live.
+##        indexes = self.state.indexes
+##        for i, value in enumerate(row):
+##            index = indexes[i]
+##            if index is not None:
+##                del index[value][row_index]
+
+        indexes = self.state.indexes
+        for reverse_index in indexes:
             if reverse_index is not None:
                 for key in reverse_index.keys():
-                    idx = self.state.indexes[i][key]
+                    idx = reverse_index[key]
                     # Remove deleted row index
                     try:
-                        idx.remove(row_index)
-                    except ValueError:
+                        del idx[row_index]
+                    except KeyError:
                         pass
-                    if idx == []:
-                        del self.state.indexes[i][key]
-                    else:
+                    if idx:
                         # Reindex remaining row indexes
-                        idx1 = [j for j in idx if j < row_index]
-                        idx2 = [j - 1 for j in idx if j > row_index]
-                        self.state.indexes[i][key] = idx1 + idx2
-    
+                        new_idx = {}
+                        for j in idx:
+                            if j > row_index:
+                                j = j - 1
+                            new_idx[j] = {}
+                        reverse_index[key] = new_idx
+                    else:
+                        del reverse_index[key]
+
 
     def _load_state(self, resource):
         data = resource.read()
@@ -170,9 +197,20 @@ class CSV(Text):
 
 
     # XXX This can't work until the virtual handler overhaul is done
-    def _get_virtual_handler(self, segment):
-        index = int(segment.name)
-        return self.state.lines[index]
+##    def _get_virtual_handler(self, segment):
+##        index = int(segment.name)
+##        return self.state.lines[index]
+
+
+    def get_index(self, name):
+        if name not in self.schema:
+            raise ValueError, 'the field "%s" is not defined' % name
+
+        datatype = self.schema[name]
+        if getattr(datatype, 'index', False) is False:
+            raise ValueError, 'the field "%s" is not indexed' % name
+
+        return self.state.indexes[self.columns.index(name)]
 
 
     #########################################################################
@@ -251,6 +289,7 @@ class CSV(Text):
            index -- number
         """
         self.set_changed()
+        row = self.state.lines[index]
         del self.state.lines[index]
 
         if self.is_schema_defined():
@@ -272,43 +311,7 @@ class CSV(Text):
             index_offset = index_offset - 1
 
 
-    def _search(self, column_name, value):
-        """Return list of row indexes where the value is in the column_name
-           or None when the index is not set for that column
-
-           column_name -- string with column name where the value will be search
-           value -- itools.datatypes object to search
-        """
-        if self.state.indexes is None:
-            return None
-
-        reverse_index = self.state.indexes[self.columns.index(column_name)]
-        if reverse_index is None:
-            return None
-
-        if not reverse_index.has_key(value):
-            return []
-        else:
-            return reverse_index[value]
-
-
-    # And operator for lists used in advanced_search
-    def _and(self, left, right):
-        l = set(left)
-        r = set(right)
-        l.intersection_update(r)
-        return list(l)
-
-
-    # Or operator for lists used in advanced_search
-    def _or(self, left, right):
-        l = set(left)
-        r = set(right)
-        l.update(r)
-        return list(l)
-
-
-    def search(self, query):
+    def search(self, query=None, **kw):
         """Return list of row indexes returned by executing the query
            or None when one or more query items is None (query item
            is None when the query item column is not indexed).
@@ -324,28 +327,22 @@ class CSV(Text):
                'and', ('country', 'France')]
            4) [result1, 'and', result2, 'or', result3]
         """
-        result = []
-        operator = 'or'
-        right = None
-        for item in query:
-            if type(item) is TupleType:
-                right = self._search(item[0], item[1])
-                # The column is not indexed -- return None
-                if right is None: 
-                    return None
-            elif type(item) is ListType:
-                right = item
-            elif type(item) is StringType and item in ('and', 'or'):
-                operator = item
-                right = None
+        if query is None:
+            if kw:
+                atoms = []
+                for key, value in kw.items():
+                    atoms.append(Query.Equal(key, value))
 
-            if right is not None:
-                if operator == 'and':
-                    result = self._and(result, right)
-                else:
-                    result = self._or(result, right)
+                query = Query.And(*atoms)
+            else:
+                raise ValueError, "expected a query"
 
-        return result
+        documents = query.search(self)
+        # Sort by weight
+        documents = documents.keys()
+        documents.sort()
+
+        return documents
 
 
 Text.register_handler_class(CSV)

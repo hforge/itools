@@ -17,15 +17,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from datetime import date
 import unittest
 from unittest import TestCase
 
 # Import from itools
 from itools.resources import memory
 from itools.resources import get_resource
-import itools_csv
 from itools.datatypes import Date, Integer, Unicode, URI
-from datetime import date
+from itools.catalog import Query
+import itools_csv
 
 
 TEST_DATA_1 = """python,http://python.org,52343,2003-10-23
@@ -178,12 +179,9 @@ class CSVTestCase(TestCase):
                           'date': Date(index=True)}
         handler.load_state(resource)
         self.assertEqual(len(handler.state.indexes), 4)
-        self.assertEqual(
-            handler.search([('url', URI.decode('http://slashdot.org/'))]),None)
-        self.assertEqual(handler.search([('number', 52343)]), [0])
-        self.assertEqual(
-            handler.search([('date', Date.decode('2001-03-28'))]), [1])
-    
+        self.assertEqual(handler.search(number=52343), [0])
+        self.assertEqual(handler.search(date=Date.decode('2001-03-28')), [1])
+
 
     def test_indexes_hit_in_many_rows(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
@@ -192,12 +190,8 @@ class CSVTestCase(TestCase):
         handler.columns = ['name', 'date']
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
-        self.assertEqual(
-            handler.search([('name', Unicode.decode('house'))]), None)
-        self.assertEqual(
-            handler.search([('date', Date.decode('2005-01-01'))]), [])
-        self.assertEqual(
-            handler.search([('date', Date.decode('2005-10-10'))]), [0, 2])
+        self.assertEqual(handler.search(date=Date.decode('2005-01-01')), [])
+        self.assertEqual(handler.search(date=Date.decode('2005-10-10')), [0,2])
 
 
     def test_index_new_row(self):
@@ -208,8 +202,7 @@ class CSVTestCase(TestCase):
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
         handler.add_row(['flower', Date.decode('2005-05-10')])
-        self.assertEqual(
-            handler.search([('date', Date.decode('2005-05-10'))]), [1, 3])
+        self.assertEqual(handler.search(date=Date.decode('2005-05-10')), [1,3])
 
 
     def test_index_del_row(self):
@@ -220,14 +213,13 @@ class CSVTestCase(TestCase):
         handler.schema = {'name': Unicode(index=True),
                           'date': Date(index=True)}
         handler.load_state(resource)
-        self.assertEqual(handler.search([('name', 'window')]), [1])
+        self.assertEqual(handler.search(name='window'), [1])
         handler.del_row(1)
-        self.assertEqual(handler.search([('name', 'window')]), [])
-        
-        self.assertEqual(handler.search([('name', 'computer')]), [1])
+        self.assertEqual(handler.search(name='window'), [])
+        self.assertEqual(handler.search(name='computer'), [1])
         handler.del_row(1)
-        self.assertEqual(handler.search([('name', 'computer')]), [])
-        
+        self.assertEqual(handler.search(name='computer'), [])
+
 
     def test_build_csv_data(self):
         resource = memory.File('')
@@ -238,41 +230,13 @@ class CSVTestCase(TestCase):
         handler.load_state(resource)
         handler.add_row(['Piotr', 'Macuk', '1975-12-08'])
         handler.add_row(['Basia', 'Macuk', '2002-02-14'])
-        self.assertEqual(handler.search([('surname', 'Macuk')]), [0, 1])
+        self.assertEqual(handler.search(surname='Macuk'), [0, 1])
         handler.add_row(['Pawe³', 'Macuk', '1977-05-13'])
-        self.assertEqual(handler.search([('surname', 'Macuk')]), [0, 1, 2])
+        self.assertEqual(handler.search(surname='Macuk'), [0, 1, 2])
         handler.del_row(2)
-        self.assertEqual(handler.search([('surname', 'Macuk')]), [0, 1])
+        self.assertEqual(handler.search(surname='Macuk'), [0, 1])
         handler.del_row(0)
-        self.assertEqual(handler.search([('surname', 'Macuk')]), [0])
-
-
-    def test_and_operator(self):
-        left = [0, 1, 3, 5, 6, 8]
-        right = [1, 2, 3, 9]
-        handler = itools_csv.CSV()
-        self.assertEqual(handler._and(left, right), [1, 3])
-
-
-    def test_and_operator2(self):
-        left = [0, 1, 3, 5, 6, 8]
-        right = []
-        handler = itools_csv.CSV()
-        self.assertEqual(handler._and(left, right), [])
-
-
-    def test_or_operator(self):
-        left = [0, 1, 3, 5, 6, 8]
-        right = [1, 2, 3, 9]
-        handler = itools_csv.CSV()
-        self.assertEqual(handler._or(left, right), [0, 1, 2, 3, 5, 6, 8, 9])
-
-
-    def test_or_operator2(self):
-        left = []
-        right = [1, 2]
-        handler = itools_csv.CSV()
-        self.assertEqual(handler._or(left, right), [1, 2])
+        self.assertEqual(handler.search(surname='Macuk'), [0])
 
 
     def test_advanced_search(self):
@@ -283,35 +247,24 @@ class CSVTestCase(TestCase):
                           'country': Unicode(index=True),
                           'date': Date(index=True)}
         handler.load_state(resource)
-        result1 = handler.search([
-            ('name', 'dde'), 'and', ('country', 'Sweden')
-        ])
+        result1 = handler.search(name='dde', country='Sweden')
         self.assertEqual(result1, [5, 6])
 
-        result2 = handler.search([
-            ('name', 'dde'), 
-            'or', 
-            ('name', 'fse'),
-            'and',
-            ('country', 'France')
-        ])
+        q1 = Query.Or(Query.Equal('name', 'dde'),
+                      Query.Equal('name', 'fse'))
+        q2 = Query.Equal('country', 'France')
+        q3 = Query.And(q1, q2)
+        result2 = handler.search(q3)
         self.assertEqual(result2, [4])
 
         # previous results as query items
-        result3 = handler.search([
-            ('name', 'dde'), 'or', ('name', 'fse'),
-        ])
-        result4 = handler.search([
-            ('country', 'Poland'), 'or', ('country', 'France'),
-        ])
-        result5 = handler.search([result3, 'and', result4])
+        q1 = Query.Or(Query.Equal('name', 'dde'),
+                     Query.Equal('name', 'fse'))
+        q2 = Query.Or(Query.Equal('country', 'Poland'),
+                     Query.Equal('country', 'France'))
+        q = Query.And(q1, q2)
+        result5 = handler.search(q)
         self.assertEqual(result5, [1, 4])
-
-        # id is not indexed -- return None
-        result6 = handler.search([
-            ('id', 3), 'or', ('country', 'Poland')
-        ])
-        self.assertEqual(result6, None)
 
 
     def test_access_by_name(self):

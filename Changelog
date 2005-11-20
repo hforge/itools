@@ -2,6 +2,25 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-20 23:36:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-50
+
+    Summary:
+      csv, now search uses "itools.catalog" to provide similar interface
+    Revision:
+      itools--main--0.12--patch-50
+
+    Now the prototype for "search" is:
+    
+      search(query=None, **kw)
+    
+    This is equivalent to what "itools.catalog" offers. This way users only
+    need to learn one API.
+
+    modified files:
+     Changelog catalog/Query.py csv/itools_csv.py
+     csv/test_itools_csv.py
+
+
 2005-11-20 19:45:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
 
     Summary:

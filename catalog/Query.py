@@ -41,7 +41,7 @@ class Equal(object):
     def search(self, catalog):
         # A simple query
         index = catalog.get_index(self.name)
-        documents = tree.search_word(self.value)
+        documents = index.search_word(self.value)
         # Calculate the weight
         for doc_number in documents:
             documents[doc_number] = len(documents[doc_number])
@@ -115,7 +115,7 @@ class And(object):
         documents = self.atoms[0].search(catalog)
         for atom in self.atoms[1:]:
             sub_results = atom.search(catalog)
-            for id in documents:
+            for id in documents.keys():
                 if id in sub_results:
                     documents[id] += sub_results[id]
                 else:
@@ -139,6 +139,6 @@ class Or(object):
                 if id in documents:
                     documents[id] += sub_results[id]
                 else:
-                    documents[id] += sub_results[id]
+                    documents[id] = sub_results[id]
 
         return documents

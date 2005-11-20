@@ -154,6 +154,20 @@ class Catalog(Folder):
         return document_number
 
 
+    def get_index(self, name):
+        fields = self.get_handler('fields')
+
+        field_numbers = fields.state.field_numbers
+        if name not in field_numbers:
+            raise ValueError, 'the field "%s" is not defined' % name
+
+        field_number = field_numbers[name]
+        if field_number not in fields.state.indexed_fields:
+            raise ValueError, 'the field "%s" is not indexed' % name
+
+        return self.get_handler('f%d' % field_number)
+
+
     #########################################################################
     # Public API
     #########################################################################
@@ -230,20 +244,14 @@ class Catalog(Folder):
     def _search(self, query=None, **kw):
         # Build the query if it is passed through keyword parameters
         if query is None:
-            field_numbers = self.get_handler('fields').state.field_numbers
-            for key, value in kw.items():
-                if key in field_numbers:
-                    atom = Query.Phrase(key, value)
-                    if query is None:
-                        query = atom
-                    else:
-                        query = Query.And(query, atom)
-                else:
-                    # Output a warning, case the field is not in the catalog
-                    warnings.warn('unknown field "%s"' % key)
-        # Check wether there is a query at all
-        if query is None:
-            raise ValueError, "expected a query"
+            if kw:
+                atoms = []
+                for key, value in kw.items():
+                    atoms.append(Query.Phrase(key, value))
+
+                query = Query.And(*atoms)
+            else:
+                raise ValueError, "expected a query"
         # Search
         return query.search(self)
 

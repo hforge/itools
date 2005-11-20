@@ -2,6 +2,33 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-20 19:24:39 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
+
+    Summary:
+      catalog, more powerful "and/or" queries, new "Catalog.get_index"
+    Revision:
+      itools--main--0.12--patch-48
+
+    Now "Query.Or" and "Query.And" accept any number of arguments. So now
+    we can write:
+    
+      Query.And(q1, q2, q3)
+    
+    When before we had to write:
+    
+      Query.And(q1, Query.And(q2, q3))
+    
+    
+    Also, the catalog class has a new method:
+    
+      Catalog.get_index(name)
+    
+    It returns the index handler for the given field name.
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/Query.py
+
+
 2005-11-20 18:29:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
 
     Summary:

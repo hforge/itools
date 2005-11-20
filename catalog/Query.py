@@ -40,15 +40,11 @@ class Equal(object):
 
     def search(self, catalog):
         # A simple query
-        fields = catalog.get_handler('fields')
-        field_number = fields.state.field_numbers[self.name]
-        field = fields.state.fields[field_number]
-        if field_number in fields.state.indexed_fields:
-            tree = catalog.get_handler('f%d' % field_number)
-            documents = tree.search_word(self.value)
-            # Calculate the weight
-            for doc_number in documents:
-                documents[doc_number] = len(documents[doc_number])
+        index = catalog.get_index(self.name)
+        documents = tree.search_word(self.value)
+        # Calculate the weight
+        for doc_number in documents:
+            documents[doc_number] = len(documents[doc_number])
 
         return documents
 
@@ -63,13 +59,9 @@ class Range(object):
 
 
     def search(self, catalog):
-        fields = catalog.get_handler('fields')
-        field_number = fields.state.field_numbers[self.name]
-        field = fields.state.fields[field_number]
-        if field_number in fields.state.indexed_fields:
-            tree = catalog.get_handler('f%d' % field_number)
-            return tree.search_range(self.left, self.right)
-        return {}
+        index = catalog.get_index(self.name)
+        documents = index.search_range(self.left, self.right)
+        return documents
 
 
 
@@ -81,30 +73,31 @@ class Phrase(object):
 
 
     def search(self, catalog):
-        # A simple query
+        # Get the index
+        index = catalog.get_index(self.name)
+        # Get the analyser
         fields = catalog.get_handler('fields')
         field_number = fields.state.field_numbers[self.name]
         field = fields.state.fields[field_number]
-        if field_number in fields.state.indexed_fields:
-            tree = catalog.get_handler('f%d' % field_number)
-            analyser = get_analyser(field.type)
-            documents = {}
-            for value, offset in analyser(self.value):
-                result = tree.search_word(value)
-                if offset == 0:
-                    documents = result
-                else:
-                    aux = {}
-                    for doc_number in documents:
-                        if doc_number in result:
-                            pos = [ x for x in documents[doc_number]
-                                    if x + offset in result[doc_number] ]
-                            if pos:
-                                aux[doc_number] = set(pos)
-                    documents = aux
-            # Calculate the weight
-            for doc_number in documents:
-                documents[doc_number] = len(documents[doc_number])
+        analyser = get_analyser(field.type)
+
+        documents = {}
+        for value, offset in analyser(self.value):
+            result = index.search_word(value)
+            if offset == 0:
+                documents = result
+            else:
+                aux = {}
+                for doc_number in documents:
+                    if doc_number in result:
+                        pos = [ x for x in documents[doc_number]
+                                if x + offset in result[doc_number] ]
+                        if pos:
+                            aux[doc_number] = set(pos)
+                documents = aux
+        # Calculate the weight
+        for doc_number in documents:
+            documents[doc_number] = len(documents[doc_number])
 
         return documents
 
@@ -114,35 +107,38 @@ class Phrase(object):
 ############################################################################
 class And(object):
 
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
+    def __init__(self, *args):
+        self.atoms = args
 
 
     def search(self, catalog):
-        r1 = self.left.search(catalog)
-        r2 = self.right.search(catalog)
-        documents = {}
-        for number in r1:
-            if number in r2:
-                documents[number] = r1[number] + r2[number]
+        documents = self.atoms[0].search(catalog)
+        for atom in self.atoms[1:]:
+            sub_results = atom.search(catalog)
+            for id in documents:
+                if id in sub_results:
+                    documents[id] += sub_results[id]
+                else:
+                    del documents[id]
+
         return documents
 
 
 
 class Or(object):
 
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
+    def __init__(self, *args):
+        self.atoms = args
 
 
     def search(self, catalog):
-        r1 = self.left.search(catalog)
-        r2 = self.right.search(catalog)
-        for number in r2:
-            if number in r1:
-                r1[number] += r2[number]
-            else:
-                r1[number] = r2[number]
-        return r1
+        documents = self.atoms[0].search(catalog)
+        for atom in self.atoms[1:]:
+            sub_results = atom.search(catalog)
+            for id in sub_results:
+                if id in documents:
+                    documents[id] += sub_results[id]
+                else:
+                    documents[id] += sub_results[id]
+
+        return documents

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-20 18:29:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-47
+
+    Summary:
+      doc, improve a little english grammar/style in the csv chapter
+    Revision:
+      itools--main--0.12--patch-47
+
+
+    modified files:
+     Changelog doc/csv.tex
+
+
 2005-11-20 11:49:47 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-46
 
     Summary:

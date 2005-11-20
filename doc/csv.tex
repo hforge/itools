@@ -16,30 +16,30 @@
 \chapter{The CSV file handler}
 \index{CSV}
 
-In that chapter you will learn how to work with CSV files using
-{\tt itools.csv} handler. We will try to build the example system.
+In this chapter you will learn how to work with CSV files using the
+{\tt itools.csv} handler. The explanation will be driven by an example.
 
 
 \section{What we want to do}
 
-Let's assume that you are the owner of small ISP (Internet Service
+Let's assume that you are the owner of a small ISP (Internet Service
 Provider) company. You have about 250 clients and all information
-about your clients are stored in {\tt clients.csv} file.
+about your clients is stored in a file named {\tt clients.csv}.
 
-In the file you have the clinent's personal data as name, surname
-and address and your business data: when the last payment was, how many
+In this file you have the client's personal data as name, surname
+and address and his business data: when the last payment was, how many
 computers the client connects to the network and when the client was
 registered. In the file there is also the client's discount rate. 
-Its value depend on number of computers and registration date
+Its value depends on the number of computers, the registration date
 and it is change after payment.
 
-You need the small system to store/change/remove the clients information
+You need an small system to store/change/remove the clients information
 and to generate some reports (for example to send the payment email 
-remainders to the clients). We will try to build that system from 
-scratch.
+remainders to the clients). We will build that system from scratch
+with {\tt itools.csv}.
 
-Take a closer look at the structure of {\tt clients.csv} file. 
-The column names (defined in handler schema, more info about it later) 
+Take a closer look at the structure of the {\tt clients.csv} file.
+The column names (defined in handler schema, more info about it later)
 and its type. The types are defined in {\tt itools.datatypes} module.
 
 \begin{quote}
@@ -72,7 +72,7 @@ The system should allow us to:
 
 \section{Building the system}
 
-How to do that tasks with {\tt itools.csv}? To work with the
+How to do this task with {\tt itools.csv}? To work with the
 database we should create the csv file handler:
 \begin{code}
     >>> import itools.csv
@@ -88,7 +88,7 @@ How can we view the client from the first file row?
     u'piotr@macuk.pl', u'2004-11-30', u'2', u'2001-01-05', u'35']
 \end{code}
     
-We can add the new client to the {\tt clients.csv} database:
+We can add a new client to the {\tt clients.csv} database:
 \begin{code}
     >>> clients.add_row([4, 'Hanna', 'Nowak', 'Dlugi Targ 32 80-112 Gdansk',
     'hanka@onet.pl', '2005-11-12', 1, '2005-11-12', 0])
@@ -100,12 +100,12 @@ To remove the client from the third row (indexes start with 0) lest's try:
 \end{code}
 As you can realize to do the above tasks, we should know the row index 
 which the client's data are stored in the {\tt clients.csv} file database. 
-We have the client\_id, but the csv handler have no idea about that. 
+We have the {\em client\_id}, but the csv handler has no idea about that. 
 We should inform the handler about the structure of the database. To do that 
 we define the columns and the schema of our clients' data and load the file 
-content again. The csv file schema is column: datatype dictionary. We can 
-also define columns to index. Indexed columns can be used to search data 
-by the column values.
+content again. The csv file schema is dictionary mapping from column name to
+datatype. We can also define columns to index. Indexed columns can be used
+to search data by the column values.
 \begin{code}
     >>> from itools.datatypes import *
     >>> columns = ['client_id', 'surname', 'name', 'address', 'email',
@@ -131,9 +131,9 @@ strings).
     datetime.date(2001, 1, 5), 35] 
 \end{code}
 
-The index parameter (for example: 'client\_id': Integer(index=True)) will 
-tell the handler to index that column. We want to index client\_id, surname,
-email and last\_pay\_date.
+The index parameter (for example: {\tt 'client\_id': Integer(index=True)})
+will  tell the handler to index that column. We want to index {\em client\_id},
+{\em surname}, {\em email} and {\em last\_pay\_date}.
 
 Now, when we have the indexed client\_id column we can get the client
 by the ID. We should find the row index with the appropriate client\_id,
@@ -146,7 +146,7 @@ and get that row from {\tt clients.csv} file.
     datetime.date(2001, 1, 5), 35]
 \end{code}
 The search method returns the list of rows which include client\_id = 1.
-That column is our uniq client ID number thus we have to get the first
+That column is our unique client ID number thus we have to get the first
 element from that list ({\tt indexes[0]}).
 
 How we can find clients to send the payment reminder? Let's try:

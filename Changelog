@@ -2,6 +2,27 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-20 19:45:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-49
+
+    Summary:
+      csv, remove dangerous "except:" clause (and other minor cleaning)
+    Revision:
+      itools--main--0.12--patch-49
+
+    The expression:
+    
+      try:
+          ...
+      except:
+          pass
+    
+    Is very dangerous. Usually we should never catch all exceptions, and if
+    we do we must at least treat the exceptions, not just ignore them.
+
+    modified files:
+     Changelog csv/itools_csv.py
+
+
 2005-11-20 19:24:39 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-48
 
     Summary:

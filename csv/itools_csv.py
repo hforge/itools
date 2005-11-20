@@ -110,17 +110,16 @@ class CSV(Text):
 
     def _index_row(self, row, row_index):
         """Index one line"""
+        indexes = self.state.indexes
         for i, value in enumerate(row):
-            try:
-                if self.schema[self.columns[i]].index == True:
-                    if self.state.indexes[i] is None:
-                        self.state.indexes[i] = {}
-                    if self.state.indexes[i].has_key(value):
-                        self.state.indexes[i][value].append(row_index)
-                    else:
-                        self.state.indexes[i][value] = [row_index]
-            except:
-                pass
+            if self.schema[self.columns[i]].index is True:
+                if indexes[i] is None:
+                    indexes[i] = {}
+                index = indexes[i]
+                if value in index:
+                    index[value].append(row_index)
+                else:
+                    index[value] = [row_index]
 
 
     def _unindex_row(self, row_index):

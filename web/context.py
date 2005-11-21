@@ -32,7 +32,12 @@ class Context(object):
 
         # The requested uri
         path = request.path
-        self.uri = uri.get_reference('http://%s/%s' % (authority, path))
+        if request.has_parameter('REAL_PATH'):
+            real_path = request.get_parameter('REAL_PATH')
+            reference = 'http://%s/%s' % (authority, real_path)
+        else:
+            reference = 'http://%s/%s' % (authority, path)
+        self.uri = uri.get_reference(reference)
 
         # The user, by default it is not authenticated
         self.user = None

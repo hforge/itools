@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-21 20:28:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-54
+
+    Summary:
+      web, fixing when behind Apache (the REAL_PATH)
+    Revision:
+      itools--main--0.12--patch-54
+
+
+    modified files:
+     Changelog web/context.py
+
+
 2005-11-21 20:05:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
 
     Summary:

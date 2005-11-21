@@ -215,6 +215,8 @@ class Skin(Folder):
                 continue
             elif not isinstance(handler, Folder):
                 continue
+            elif handler.get_firstview() is None:
+                continue
             item = {}
             item['title'] = handler.get_title_or_name()
             item['icon'] = handler.get_path_to_icon(size=16, from_handler=here)

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-21 18:08:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-52
+
+    Summary:
+      web, fix when working behind Apache (interpret "X-Forwarded-Host")
+    Revision:
+      itools--main--0.12--patch-52
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-11-21 10:01:40 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-51
 
     Summary:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-21 20:05:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-53
+
+    Summary:
+      scripts.icms, add new command "update"
+    Revision:
+      itools--main--0.12--patch-53
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-11-21 18:08:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-52
 
     Summary:

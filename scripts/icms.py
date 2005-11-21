@@ -36,24 +36,48 @@ from itools.cms.Root import Root
 from itools.cms.versioning import VersioningAware
 
 
+
+def get_config(target=None):
+    config = RawConfigParser()
+    config.add_section('instance')
+    if target is not None:
+        config.read(['%s/config.ini' % target])
+    return config
+
+
+def get_database(target):
+    storage = FileStorage('%s/database.fs' % target)
+    return zodb.Database(storage)
+
+
+def get_root(database):
+    # Get the root resource
+    root_resource = database.get_resource('/')
+    # Find out the format (look into the metadata)
+    metadata = root_resource.get_resource('.metadata')
+    metadata = Metadata(metadata)
+    format = metadata.get_property('format')
+    # Build and return the root handler
+    return Root.build_handler(root_resource, format=format)
+
+
+
 def init(parser, options, target):
     try:
         os.mkdir(target)
     except OSError:
         parser.error('can not create the instance (check permissions)')
 
-    # Create the database
-    storage = FileStorage('%s/database.fs' % target)
-    database = zodb.Database(storage)
-
     # Create the config file
-    config = RawConfigParser()
-    config.add_section('instance')
+    config = get_config()
     if options.root:
         config.set('instance', 'root', options.root)
     if options.port:
         config.set('instance', 'port', options.port)
     config.write(open('%s/config.ini' % target, 'w'))
+
+    # Create the database
+    database = get_database(target)
 
     # Load the source
     if options.source is None:
@@ -97,36 +121,21 @@ def init(parser, options, target):
 
     # Bravo!
     print 'To start the new instance type:'
-    print '  icms.py start %s' % target
+    print '  %s start %s' % (parser.get_prog_name(), target)
 
 
 
 def start(parser, options, target):
-    if options.source is not None:
-        parser.error('option --import not allowed in this context')
-
-    if options.root is not None:
-        parser.error('option --root not allowed in this context')
-
     # Load the config
-    config = RawConfigParser()
-    config.add_section('instance')
-    config.read(['%s/config.ini' % target])
-
-    # Load the root resource
-    storage = FileStorage('%s/database.fs' % target)
-    database = zodb.Database(storage)
-    root_resource = database.get_resource('/')
+    config = get_config(target)
 
     # Import the root class if is not the default
     if config.has_option('instance', 'root'):
         exec('import %s' % config.get('instance', 'root'))
 
-    # Load the root handler and start the server
-    metadata = root_resource.get_resource('.metadata')
-    metadata = Metadata(metadata)
-    format = metadata.get_property('format')
-    root = Root.build_handler(root_resource, format=format)
+    # Load the root handler
+    database = get_database(target)
+    root = get_root(database)
     root.name = root.class_title
 
     # Start the server
@@ -143,22 +152,51 @@ def start(parser, options, target):
     server.start()
 
 
+def update(parser, options, target):
+    # Load the config
+    config = get_config(target)
+
+    # Import the root class if is not the default
+    if config.has_option('instance', 'root'):
+        exec('import %s' % config.get('instance', 'root'))
+
+    # Load the root resource
+    database = get_database(target)
+    root = get_root(database)
+
+    instance_version = root.get_property('version')
+    class_version = root.class_version
+    if instance_version == class_version:
+        print 'The instance is up-to-date (version: %s).' % instance_version
+    elif instance_version > class_version:
+        print 'WARNING: the instance (%s) is newer! than the class (%s)' \
+              % (instance_version, class_version)
+    else:
+        print 'Update instance from version %s to version %s (y/N)? ' \
+              % (instance_version, class_version),
+        line = sys.stdin.readline()
+        line = line.strip().lower()
+        if line == 'y':
+            print 'Updating...'
+            root.update()
+
+
 
 if __name__ == '__main__':
     # The command line parser
     usage = ('%prog COMMAND [OPTIONS] TARGET\n'
              '\n'
              'commands:\n'
-             '  icms.py init          creates a new instance\n'
-             '  icms.py start         starts the web server')
+             '  %prog init          creates a new instance\n'
+             '  %prog start         starts the web server\n'
+             '  %prog update        updates the instance (if needed)')
     revision = itools.__arch_revision__
     version = 'itools %s [%s]' % (revision.split('--')[2], revision)
     parser = OptionParser(usage, version=version)
     parser.add_option(
         '-p', '--port', type='int', help='listen to port number')
     parser.add_option(
-        '-i', '--import', help='use the SOURCE directory to init the database',
-        dest='source')
+        '-s', '--source', help='use the SOURCE directory to init the database')
     parser.add_option(
         '-r', '--root', help='use the ROOT handler class to init the instance')
 
@@ -166,11 +204,23 @@ if __name__ == '__main__':
     if len(args) != 2:
         parser.error('incorrect number of arguments')
 
-    command, target = args
+    command_name, target = args
 
-    if command == 'init':
-        init(parser, options, target)
-    elif command == 'start':
-        start(parser, options, target)
-    else:
-        parser.error('unexpected command "%s"' % command)
+    # Mapping from command name to command function and list of allowed options
+    commands = {'init': (init, ['source', 'root', 'port']),
+                'start': (start, ['port']),
+                'update': (update, [])}
+
+    # Check wether the command exists
+    if command_name not in commands:
+        parser.error('unexpected command "%s"' % command_name)
+
+    # Check wether a forbidden option (in this context) was used
+    command, allowed_options = commands[command_name]
+    for key, value in options.__dict__.items():
+        if key not in allowed_options and value is not None:
+            parser.error('the command "%s" does not accept the option -%s/--%s'
+                         % (command_name, key[0], key))
+
+    # Action!
+    command(parser, options, target)

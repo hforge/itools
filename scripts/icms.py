@@ -85,7 +85,7 @@ def init(parser, options, target):
             root_class = Root
         else:
             exec('import %s' % options.root)
-            exec('root_class = %s' % options.root)
+            exec('root_class = %s.Root' % options.root)
         source = root_class(username='a', password='a').resource
     else:
         source = get_resource(options.source)

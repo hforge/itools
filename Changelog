@@ -2,6 +2,61 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-22 13:57:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
+
+    Summary:
+      scripts.icms, fix for itools.cms based applications
+    Revision:
+      itools--main--0.12--patch-55
+
+    Example, if an application based in itools.cms is called "my_app", this
+    code must work:
+    
+      >>> from itools.cms.Root import Root
+      >>> import my_app
+      >>> isinstance(my_app.Root, Root)
+      True
+    
+    Then the instance will be created with:
+    
+      $ icms.py init --root=my_app my_app
+    
+    
+    The recommended way to do this is to have a Python package with the files:
+    
+      my_app/
+        __init__.py
+        base.py
+        root.py
+        setup.py
+    
+    Where:
+    
+    __init__.py:
+    
+      from root import Root
+    
+    base.py:
+    
+      from itools.cms.Handler import Handler as iHandler
+    
+      class Handler(iHandler):
+          pass
+    
+    root.py:
+    
+      from itools.cms.Root import Root as iRoot
+      form base import Handler
+    
+      class Root(Handler, iRoot):
+         class_id = 'my_app'
+    
+      Handler.register_handler_class(Root)
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-11-21 20:28:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-54
 
     Summary:

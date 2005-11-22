@@ -43,6 +43,7 @@ class XMLFile(Text, XML.Document):
 
 
 Text.register_handler_class(XMLFile)
+Text.register_handler_class(XMLFile, format='application/xml')
 
 
 

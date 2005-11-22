@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-22 15:52:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
+
+    Summary:
+      cms, register the handler for XML documents with 'application/xml' too
+    Revision:
+      itools--main--0.12--patch-56
+
+
+    modified files:
+     Changelog cms/Handler.py cms/html.py
+
+
 2005-11-22 13:57:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-55
 
     Summary:

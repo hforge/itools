@@ -200,8 +200,10 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
     handler_class_registry = {}
 
     @classmethod
-    def register_handler_class(cls, handler_class):
-        cls.handler_class_registry[handler_class.class_id] = handler_class
+    def register_handler_class(cls, handler_class, format=None):
+        if format is None:
+            format = handler_class.class_id
+        cls.handler_class_registry[format] = handler_class
 
 
     @classmethod

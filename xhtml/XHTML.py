@@ -514,13 +514,13 @@ XML.Document.register_handler_class(Document)
 # API / Change relative links
 ########################################################################
 def resolve_pointer(uri, offset):
-    if uri.path.is_relative():
-        # XXX Here we loss the query and fragment.
-        return offset.resolve(uri.path)
+    if not uri.scheme and not uri.authority:
+        if uri.path.is_relative():
+            if uri.path or str(uri) == '.':
+                # XXX Here we loss the query and fragment.
+                return offset.resolve(uri.path)
 
-    return uri
-##    uri = str(uri)[1:]
-##    return here.get_pathtoroot() + uri
+    return URI.encode(uri)
 
 
 def set_template_prefix(handler, offset, encoding='UTF-8'):
@@ -534,22 +534,19 @@ def set_template_prefix(handler, offset, encoding='UTF-8'):
                 data.append('<%s' % node.qname)
                 for namespace, local_name, value in node.get_attributes():
                     qname = node.get_attribute_qname(namespace, local_name)
-                    encoded = False
+                    datatype = get_datatype_by_uri(namespace, local_name)
                     if local_name in ('href', 'src'):
-                        if not value.scheme and not value.authority:
-                            value = resolve_pointer(value, offset)
-                            encoded = True
+                        value = resolve_pointer(value, offset)
                     elif node.qname == 'param' and local_name == 'value':
                         name = node.get_attribute(namespace, 'name')
                         # Special case for Flash objects
                         # but others possible (Java, etc.)
                         if name == 'movie':
-                            uri = URI.decode(value)
-                            if not uri.scheme and not uri.authority:
-                                value = resolve_pointer(uri, offset)
-                                encoded = True
-                    if not encoded:
-                        datatype = get_datatype_by_uri(namespace, local_name)
+                            value = URI.decode(value)
+                            value = resolve_pointer(value, offset)
+                        else:
+                            value = datatype.encode(value)
+                    else:
                         value = datatype.encode(value)
                     data.append(' %s="%s"' % (qname, value))
                 data.append('>')

@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-24 20:16:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
+
+    Summary:
+      xhtml, fix set_template_prefix (same-document references, #175)
+    Revision:
+      itools--main--0.12--patch-61
+
+    See RFC2396, section 4.2
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-11-24 17:18:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
 
     Summary:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-24 20:30:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
+
+    Summary:
+      web, fix "internal server errors" responses (#190)
+    Revision:
+      itools--main--0.12--patch-62
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-11-24 20:16:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-61
 
     Summary:

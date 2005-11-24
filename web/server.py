@@ -123,6 +123,7 @@ def handle_request(connection, server):
     except:
         server.log_error()
         # Internal Server Error (500)
+        response.set_status(500)
         method = root.internal_server_error
     else:
         context.handler = handler
@@ -187,6 +188,9 @@ def handle_request(connection, server):
     try:
         root.after_traverse()
     except:
+        response.set_status(500)
+        body = root.internal_server_error()
+        response.set_body(body)
         server.log_error()
 
     # Free the root object

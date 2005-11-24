@@ -34,9 +34,9 @@
         </td>
       </tr>
       <tr>
-         <td><img src="images/px.png" height="1" width="10"/></td>
-         <td><img src="images/px.png" height="1" width="150" /></td>
-         <td><img src="images/px.png" height="1" width="150" /></td>
+         <td height="1" width="10"></td>
+         <td height="1" width="150"></td>
+         <td height="1" width="150"></td>
       </tr>
     </table>
   </form>

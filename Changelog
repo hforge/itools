@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-24 17:18:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-60
+
+    Summary:
+      cms, remove broken reference to px.png image (#187)
+    Revision:
+      itools--main--0.12--patch-60
+
+
+    modified files:
+     Changelog cms/ui/Group_browse_users.xml.en
+
+
 2005-11-24 17:04:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
 
     Summary:

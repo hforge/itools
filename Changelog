@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-24 17:04:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-59
+
+    Summary:
+      cms, get epoz color palette to work (#188)
+    Revision:
+      itools--main--0.12--patch-59
+
+
+    new files:
+     cms/ui/.arch-ids/epoz_script_color.xml.en.id
+     cms/ui/epoz_script_color.xml.en
+
+    modified files:
+     Changelog cms/ui/epoz.js
+
+
 2005-11-24 16:05:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-58
 
     Summary:

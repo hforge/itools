@@ -222,20 +222,19 @@ function SelectFormat(selectname)
 
 function SetTextColor() {
     EpozColorCommand='forecolor';
-    window.open(form_path+'epoz_script_color.html','EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
+    window.open('/ui/epoz_script_color.xml','EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
 }
 
 // Sets background-color
 
 function SetBackColor() {
     EpozColorCommand='backcolor';
-    window.open(form_path+'epoz_script_color.html','EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
+    window.open('/ui/epoz_script_color.xml','EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
 }
 
 // Submit color-command to Rich-Text-Controls
 
 function SetColor(color) {
-
     if (browser.isGecko) {
        EpozElement.contentWindow.document.execCommand('useCSS',false, false);
     }
@@ -520,5 +519,11 @@ function addListener(ob, eventName, functionReference){
     else if (browser.isGecko) {
         ob.addEventListener(eventName, functionReference, false);
     }
+}
 
+
+/* Color Palette */
+function pickcolor(color) {
+  window.opener.SetColor(color);
+  window.close();
 }

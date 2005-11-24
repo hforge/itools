@@ -80,10 +80,7 @@ def handle_request(connection, server):
         return
 
     # Build and set the context
-    address = request.get_header('X-Forwarded-Host')
-    if address is None:
-        address = '%s:%s' % (server.address, server.port)
-    context = Context(request, address)
+    context = Context(request)
     set_context(context)
 
     # Get the root handler

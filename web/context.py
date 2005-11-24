@@ -26,17 +26,21 @@ from response import Response
 
 class Context(object):
 
-    def __init__(self, request, authority):
+    def __init__(self, request):
         self.request = request
         self.response = Response()
+
+        host = request.get_header('X-Forwarded-Host')
+        if host is None:
+            host = request.get_header('Host')
 
         # The requested uri
         path = request.path
         if request.has_parameter('REAL_PATH'):
             real_path = request.get_parameter('REAL_PATH')
-            reference = 'http://%s/%s' % (authority, real_path)
+            reference = 'http://%s/%s' % (host, real_path)
         else:
-            reference = 'http://%s/%s' % (authority, path)
+            reference = 'http://%s/%s' % (host, path)
         self.uri = uri.get_reference(reference)
 
         # The user, by default it is not authenticated

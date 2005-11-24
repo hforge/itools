@@ -114,12 +114,15 @@ def handle_request(connection, server):
     except:
         server.log_error()
 
+    response = context.response
     # Traverse
     try:
         handler = root.get_handler(context.path)
     except LookupError:
         # Not Found (response code 404)
+        response.set_status(404)
         method = root.not_found
+        context.handler = root
     except:
         server.log_error()
         # Internal Server Error (500)
@@ -181,7 +184,6 @@ def handle_request(connection, server):
         transaction.commit(user and user.name or 'NONE', str(request.path))
 
     # Set the response body
-    response = context.response
     response.set_body(response_body)
 
     # After traverse hook

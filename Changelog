@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-24 15:44:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-57
+
+    Summary:
+      web, fix not-found errors (#196)
+    Revision:
+      itools--main--0.12--patch-57
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-11-22 15:52:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-56
 
     Summary:

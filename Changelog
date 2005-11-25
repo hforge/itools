@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-25 19:02:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
+
+    Summary:
+      web, allow to reuse the address (#199)
+    Revision:
+      itools--main--0.12--patch-67
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-11-25 17:46:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-66
 
     Summary:

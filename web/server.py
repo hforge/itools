@@ -21,7 +21,7 @@ from copy import copy
 from datetime import datetime
 import os
 import socket
-import thread
+from threading import Lock, Thread
 import time
 import traceback
 from urllib import unquote
@@ -40,7 +40,7 @@ class Pool(object):
     # XXX Right now we only support one handler tree (may use semaphores)
 
     def __init__(self, root):
-        self.lock = thread.allocate_lock()
+        self.lock = Lock()
         self.pool = [root]
 
 
@@ -235,24 +235,29 @@ class Server(object):
             open(self.pid_file, 'w').write(str(pid))
 
         ear = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Allow to reuse the address, this solves bug #199 ("icms.py won't
+        # close its connection properly"), but is probably not the right
+        # solution (XXX).
+        ear.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
-        ear.listen(5)
         print 'Listen port %s' % self.port
+        ear.listen(5)
 
-        while True:
-            try:
-                connection, client_address = ear.accept()
-            except socket.error:
-                continue
-            except:
-                ear.close()
-                if self.access_log is not None:
-                    self.access_log.close()
-                if self.error_log is not None:
-                    self.error_log.close()
-                break
-            else:
-                thread.start_new_thread(handle_request, (connection, self))
+        try:
+            while True:
+                try:
+                    connection, client_address = ear.accept()
+                except socket.error:
+                    continue
+
+                thread = Thread(target=handle_request, args=(connection, self))
+                thread.start()
+        except:
+            ear.close()
+            if self.access_log is not None:
+                self.access_log.close()
+            if self.error_log is not None:
+                self.error_log.close()
 
 
     def log_access(self, connection, request_line, status, size):

@@ -2,6 +2,48 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-25 15:24:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
+
+    Summary:
+      merge csv code from Piotr
+    Revision:
+      itools--main--0.12--patch-63
+
+    Patches applied:
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-7
+       merging from the main tree
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-8
+       Search method doc string changed.
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-9
+       Schema and columns as variable of CSV subclass in csv.tex and csv examples
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-10
+       The new search method used in CSV documentation and examples
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-11
+       Using misleading LessOrEqual class in itools.catalog.Query
+    
+     * piotr@macuk.pl--public/itools--csv--0.12--patch-12
+       get_nrows into the API table
+    
+
+    modified files:
+     Changelog csv/itools_csv.py doc/csv.tex
+     doc/examples/csv_handler/example.py
+     doc/examples/csv_handler/my_clients.py
+
+    new patches:
+     piotr@macuk.pl--public/itools--csv--0.12--patch-7
+     piotr@macuk.pl--public/itools--csv--0.12--patch-8
+     piotr@macuk.pl--public/itools--csv--0.12--patch-9
+     piotr@macuk.pl--public/itools--csv--0.12--patch-10
+     piotr@macuk.pl--public/itools--csv--0.12--patch-11
+     piotr@macuk.pl--public/itools--csv--0.12--patch-12
+
+
 2005-11-24 20:30:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
 
     Summary:

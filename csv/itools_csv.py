@@ -312,20 +312,7 @@ class CSV(Text):
 
 
     def search(self, query=None, **kw):
-        """Return list of row indexes returned by executing the query
-           or None when one or more query items is None (query item
-           is None when the query item column is not indexed).
-           The query item can be: 
-           - the (column_name, value) tuple 
-           - the operator:  'or' or 'and'
-           - the list of the previous advanced_search result.
-
-           query -- list of query items for example:
-           1) [('name', 'dde')]
-           2) [('name', 'dde'), 'and', ('country', 'Sweden')]
-           3) [('name', 'dde'), 'or', ('name', 'fse'), 
-               'and', ('country', 'France')]
-           4) [result1, 'and', result2, 'or', result3]
+        """Return list of row indexes returned by executing the query.
         """
         if query is None:
             if kw:

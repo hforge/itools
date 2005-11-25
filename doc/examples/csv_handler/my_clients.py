@@ -16,9 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-import itools.csv
+from itools.csv import CSV
 from itools.resources import get_resource
-from itools.datatypes import *
+from itools.datatypes import Integer, Unicode, Date
 
 
 class MyClients:
@@ -38,7 +38,7 @@ class MyClients:
 
     def __init__(self, file_name):
         self.resource = get_resource(file_name)
-        self.clients = itools.csv.CSV()
+        self.clients = CSV()
         self.clients.columns = self.columns
         self.clients.schema = self.schema
         self.clients.load_state(self.resource)
@@ -46,7 +46,7 @@ class MyClients:
 
     # Get data for client_id
     def get(self, client_id):
-        indexes = self.clients.search([('client_id', client_id)])
+        indexes = self.clients.search(client_id=client_id)
         # Shoult be only one client with ID = client_id
         return self.clients.get_row(indexes[0])
 
@@ -64,7 +64,7 @@ class MyClients:
 
     # Delete client with client_id 
     def delete(self, client_id):
-        indexes = self.clients.search([('client_id', client_id)])
+        indexes = self.clients.search(client_id=client_id)
         # Shoult be only one client with ID = client_id
         self.clients.del_row(indexes[0])
 
@@ -79,7 +79,7 @@ class MyClients:
 
     # Get data to send payment email reminders for date (default today)
     def reminders(self, date=None):
-        indexes = self.clients.search([('last_pay_date', Date.decode(date))])
+        indexes = self.clients.search(last_pay_date=Date.decode(date))
         reminders = self.clients.get_rows(indexes)
         reminders_with_price = []
         for r in reminders:

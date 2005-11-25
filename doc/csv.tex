@@ -75,10 +75,10 @@ The system should allow us to:
 How to do this task with {\tt itools.csv}? To work with the
 database we should create the csv file handler:
 \begin{code}
-    >>> import itools.csv
+    >>> from itools.csv import CSV
     >>> from itools.resources import get_resource
     >>> resource = get_resource('clients.csv')
-    >>> clients = itools.csv.CSV(resource)
+    >>> clients = CSV(resource)
 \end{code}
 
 How can we view the client from the first file row?
@@ -107,25 +107,26 @@ content again. The csv file schema is dictionary mapping from column name to
 datatype. We can also define columns to index. Indexed columns can be used
 to search data by the column values.
 \begin{code}
-    >>> from itools.datatypes import *
-    >>> columns = ['client_id', 'surname', 'name', 'address', 'email',
-    ... 'last_pay_date', 'num_of_computers', 'register_date',
-    ... 'discount']
-    >>> schema = {'client_id': Integer(index=True), 
-    ... 'surname': Unicode(index=True), 'name': Unicode, 
-    ... 'address': Unicode, 'email': Unicode(index=True),
-    ... 'last_pay_date': Date(index=True), 'num_of_computers': Integer,
-    ... 'register_date': Date, 'discount': Integer}
-    >>> clients.columns = columns
-    >>> clients.schema = schema
-    >>> clients.load_state(resource)
+    >>> from itools.datatypes import Integer, Unicode, Date
+    >>> class MyClients(CSV):
+    ...     columns = ['client_id', 'surname', 'name', 'address', 'email',
+    ...                'last_pay_date', 'num_of_computers', 'register_date',
+    ...                'discount']
+    ...     schema = {'client_id': Integer(index=True), 
+    ...               'surname': Unicode(index=True),
+    ...               'name': Unicode, 'address': Unicode, 
+    ...               'email': Unicode(index=True),
+    ...               'last_pay_date': Date(index=True), 
+    ...               'num_of_computers': Integer,
+    ...               'register_date': Date, 'discount': Integer}
+    >>> my_clients = MyClients(resource)
 \end{code}
 
 And now when we get the first row from our database, the data will have the 
 appropriate types (the above get\_row(0) function call returned data as unicode 
 strings).
 \begin{code}
-    >>> clients.get_row(0)
+    >>> my_clients.get_row(0)
     [1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia',
     u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
     datetime.date(2001, 1, 5), 35] 
@@ -135,25 +136,27 @@ The index parameter (for example: {\tt 'client\_id': Integer(index=True)})
 will  tell the handler to index that column. We want to index {\em client\_id},
 {\em surname}, {\em email} and {\em last\_pay\_date}.
 
-Now, when we have the indexed client\_id column we can get the client
-by the ID. We should find the row index with the appropriate client\_id,
+Now, when we have the indexed {\em client\_id} column we can get the client
+by the ID. We should find the row index with the appropriate {\em client\_id},
 and get that row from {\tt clients.csv} file.
 \begin{code}
-    >>> indexes = clients.search([('client_id', 1)])
-    >>> clients.get_row(indexes[0])
+    >>> indexes = my_clients.search(client_id=1)
+    >>> my_clients.get_row(indexes[0])
     [1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia', 
     u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
     datetime.date(2001, 1, 5), 35]
 \end{code}
-The search method returns the list of rows which include client\_id = 1.
+The search method returns the list of rows which include {\tt client\_id = 1}.
 That column is our unique client ID number thus we have to get the first
 element from that list ({\tt indexes[0]}).
 
 How we can find clients to send the payment reminder? Let's try:
 \begin{code}
-    >>> indexes = clients.search([
-    ... ('last_pay_date', Date.decode('2004-11-30'))])
-    >>> clients.get_rows(indexes)
+    >>> from itools.catalog import Query
+    >>> query = Query.LessOrEqual('last_pay_date', 
+    ...                           Date.decode('2004-11-30'))
+    >>> indexes = my_clients.search(query)
+    >>> my_clients.get_rows(indexes)
     [[1, u'Piotr', u'Macuk', u'Starowiejska 25/2 81-465 Gdynia', 
     u'piotr@macuk.pl', datetime.date(2004, 11, 30), 2, 
     datetime.date(2001, 1, 5), 35], [2, u'Adam', u'Nowak', 
@@ -190,6 +193,9 @@ The source code used in that chapter is placed in \\
 
   {\tt get\_rows(indexes)}\\
   - Return rows indexed by indexes.
+
+  {\tt get\_nrows()}\\
+  - Return number of rows in csv file.
 
   {\tt get\_all\_rows()}\\
   - Return all csv file rows.

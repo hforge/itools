@@ -60,7 +60,8 @@ def get_schema(name):
         return get_schema_by_uri(schema_uri)
 
     # Use default
-    warnings.warn('Unknown schema prefix "%s" (using default)' % name)
+    if name is not None:
+        warnings.warn('Unknown schema prefix "%s" (using default)' % name)
     return schemas[None]
 
 

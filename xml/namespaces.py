@@ -177,7 +177,7 @@ class XMLNSNamespace(schemas.base.Schema):
 
 # Register the namespaces
 set_namespace(DefaultNamespace)
-##schemas.register_schema(XMLNamespace)
-##schemas.register_schema(XMLNSNamespace)
+schemas.register_schema(XMLNamespace)
+schemas.register_schema(XMLNSNamespace)
 set_namespace(XMLNamespace)
 set_namespace(XMLNSNamespace)

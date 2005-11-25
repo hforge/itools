@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-25 17:15:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
+
+    Summary:
+      schema, avoid some warnings (#176)
+    Revision:
+      itools--main--0.12--patch-64
+
+
+    modified files:
+     Changelog schemas/registry.py xml/namespaces.py
+
+
 2005-11-25 15:24:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
 
     Summary:

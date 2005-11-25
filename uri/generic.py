@@ -354,7 +354,11 @@ class Query(dict):
             for x in query.split('&'):
                 x = urllib.unquote_plus(x)
                 if x:
-                    key, value = x.split('=', 1)
+                    if '=' in x:
+                        key, value = x.split('=', 1)
+                    else:
+                        key, value = x, None
+
                     if key in self:
                         old_value = self[key]
                         if isinstance(old_value, list):
@@ -367,8 +371,13 @@ class Query(dict):
 
 
     def __str__(self):
-        return '&'.join([ '%s=%s' % (k, urllib.quote_plus(v))
-                          for k, v in self.items() ])
+        line = []
+        for key, value in self.items():
+            if value is None:
+                line.append(key)
+            else:
+                line.append('%s=%s' % (key, urllib.quote_plus(value)))
+        return '&'.join(line)
 
 
     def __eq__(self, other):

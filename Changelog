@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-25 17:28:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
+
+    Summary:
+      uri, now queries accepts non-value parameters (#174)
+    Revision:
+      itools--main--0.12--patch-65
+
+    For example, "a=2&b" will be parsed as:
+    
+      {'a': '2', 'b': None}
+
+    modified files:
+     Changelog uri/generic.py
+
+
 2005-11-25 17:15:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
 
     Summary:

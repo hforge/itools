@@ -55,7 +55,7 @@ class File(Handler):
 
 
     def _save_state(self, resource):
-        resource.truncate()
+        resource.truncate(0)
         resource.write(self.to_str())
 
 

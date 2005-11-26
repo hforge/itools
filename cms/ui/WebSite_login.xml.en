@@ -2,32 +2,35 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form name="loginform" action=";login" method="post"
+<form id="loginform" name="loginform" action=";login" method="post"
       stl:attributes="action action">
-  <table class="form">
-    <tr>
-      <th colspan="2" class="title">Log in</th>
-    </tr>
-    <tr>
-      <th>Username</th>
-      <td>
-        <input type="text" name="username" stl:attributes="value username" />
-      </td>
-    </tr>
-    <tr>
-      <th>Password</th>
-      <td><input type="password" name="password" /></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="submit"><input type="submit" value="OK" /></td>
-    </tr>
-  </table>
+  <fieldset>
+    <legend>Please provide your username and password in order to log in</legend>
+    <dl>
+      <dt>
+        <label for="username">Username</label>
+      </dt>
+      <dd>
+        <input type="text" id="username" name="username" stl:attributes="value username" />
+      </dd>
+      <dt>
+        <label for="password">Password</label>
+      </dt>
+      <dd>
+        <input type="password" id="password" name="password" />
+      </dd>
+      <dt>
+      </dt>
+      <dd>
+        <input type="submit" value="Log in" />
+      </dd>
+    </dl>
+  </fieldset>
 </form>
 
 <script language="javascript">
-  <stl:inline if="not username">document.loginform.username.focus();</stl:inline>
-  <stl:inline if="username">document.loginform.password.focus();</stl:inline>
+  <stl:inline if="not username">focus("username");</stl:inline>
+  <stl:inline if="username">focus("password");</stl:inline>
 </script>
 
 </stl:block>

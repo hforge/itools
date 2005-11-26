@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title stl:content="title">The title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <!-- IE7 http://dean.edwards.name/IE7/ -->
+    <!--[if lt IE 7]>
+      <html:script src="ie7/ie7-core.js" type="text/javascript">
+      </html:script>
+      <html:script src="ie7/ie7-graphics.js" type="text/javascript">
+      </html:script>
+    <![endif]-->
+
+    <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
+    <link rel="stylesheet" type="text/css"
+          href="../calendar/calendar-win2k-1.css" />
+    <script type="text/javascript" src="../calendar/calendar.js" />
+    <script type="text/javascript" src="../calendar/lang/calendar-en.js" />
+    <script type="text/javascript" src="../calendar/calendar-setup.js" />
+
+    <!-- Epoz -->
+    <link rel="stylesheet" type="text/css" href="../epoz.css" />
+    <script type="text/javascript" src="../epoz.js" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="onetruelayout.css" />
+    <link rel="stylesheet" type="text/css" href="aruni.css" />
+
+    <script type="text/javascript" src="../browser.js" />
+    <script type="text/javascript" src="../main.js" />
+
+    <!-- Additional resources that maybe needed to render the page -->
+    <link rel="stylesheet" type="text/css" stl:repeat="style styles" 
+          stl:attributes="href style" />
+    <script type="text/javascript" stl:repeat="script scripts"
+            stl:attributes="src script" />
+  </head>
+  <body>
+    <div id="header" class="clearfix">
+      <form id="search_form" action="" method="get">
+        <input type="text" id="SearchableText" name="SearchableText"
+          value="" />
+        <input type="submit" value="Search" />
+        <a href="#">advanced</a>
+      </form>
+      <div id="actions">
+        <strong stl:if="user/info" stl:content="user/info/title">
+          The user
+        </strong>
+        <strong stl:if="not user/info">
+          not logged in
+        </strong>
+        <stl:block if="not user/info">
+          <a id="action_login" href="#" class="icon_login"
+            stl:attributes="href user/login_url">
+            Log in
+          </a>
+          <a id="action_join" href="#" class="icon_join" stl:if="user/joinisopen"
+            stl:attributes="href user/join_url">
+            Join
+          </a>
+        </stl:block>
+        <stl:block if="user/info">
+          <a id="action_home" href="#" class="icon_home"
+            stl:attributes="href user/info/home">
+            Home
+          </a>
+          <a id="action_logout" href="#" class="icon_logout"
+            stl:attributes="href user/logout">
+            Log out
+          </a>
+        </stl:block>
+      </div>
+    </div>
+    <!-- http://www.fu2k.org/alex/css/onetruelayout/ -->
+    <div id="wrapper_extra">
+      <div id="wrapper">
+        <div id="block_1">
+          <div id="maintitle">
+            <img src="../images/Root48.png" width="48" height="48"
+              alt="" style="float: left; margin-right: 9px"
+              stl:if="metadata/icon" stl:attributes="src metadata/icon" />
+            <h1 stl:content="metadata/title">The resource title</h1>
+          </div>
+          <div class="clear"></div>
+          <div id="breadcrumbs">
+            <label>Location:</label>
+            <ul>
+              <li stl:repeat="item breadcrumb">
+                <a stl:if="item/url" stl:attributes="href item/url; title item/name"
+                  stl:content="item/short_name">The path entry</a>
+                <span stl:if="not item/url" stl:attributes="title item/name"
+                  stl:content="item/short_name" />
+                <stl:inline if="not repeat/item/end">&raquo;</stl:inline> 
+              </li>
+            </ul>
+          </div>
+          <ul id="tabs">
+             <li stl:repeat="tab tabs" stl:attributes="class tab/style">
+                <a href="#" stl:attributes="href tab/name; title tab/name"
+                  stl:content="tab/label">The view</a>
+             </li>
+             <li stl:if="none" class="tab_active">
+               <a href="#">Active view</a>
+             </li>
+          </ul>
+          <div class="clear"></div>
+          <ul id="subtabs">
+            <li stl:repeat="subtab subtabs" stl:attributes="class subtab/style">
+              <a href="#" stl:attributes="href subtab/name; title subtab/name"
+                stl:content="subtab/label">The subview</a>
+            </li>
+            <li stl:if="none" class="tab_active">
+              <a href="#">Active subview</a>
+            </li>
+          </ul>
+          <div id="body">
+            <div id="message" stl:if="message" stl:content="message">The message</div>
+            <div id="content" stl:content="body">
+              <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+              Phasellus varius eleifend tellus. Suspendisse potenti. Class
+              aptent taciti sociosqu ad litora torquent per conubia nostra, per
+              inceptos hymenaeos. Nulla facilisi. Sed wisi lectus, placerat
+              nec, mollis quis, posuere eget, arcu.</p>
+            </div>
+          </div>
+        </div>
+        <div id="block_2">
+          <label>Navigation</label>
+          <dl>
+            <dt stl:if="navigation/root/active">
+              <img src="../images/Root16.png" width="16" height="16" alt="" />
+              <strong>
+                <a href="#" stl:attributes="href navigation/root/path"
+                  stl:content="navigation/root/title">The active root</a>
+              </strong>
+            </dt>
+            <dt stl:if="not navigation/root/active">
+              <img src="../images/Root16.png" width="16" height="16" alt="" />
+              <a href="#" stl:attributes="href navigation/root/path"
+                stl:content="navigation/root/title">The inactive root</a>
+            </dt>
+            <dd>
+              <dl>
+                <stl:block repeat="item navigation/menu">
+                  <dt stl:if="item/active">
+                    <img src="../images/Folder16.png" width="16"
+                      height="16" alt="" stl:attributes="src item/icon" />
+                    <strong stl:if="item/active">
+                      <a href="#"
+                          stl:attributes="href item/path"
+                          stl:content="item/title">The active item</a>
+                    </strong>
+                  </dt>
+                  <dt stl:if="not item/active">
+                    <img src="../images/User16.png" width="16" height="16"
+                      alt="" stl:attributes="src item/icon" />
+                    <a href="#"
+                      stl:attributes="href item/path"
+                      stl:content="item/title">The inactive item</a>
+                  </dt>
+                </stl:block>
+              </dl>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <a id="powered" href="http://ikaaro.org/"><img title="Powered by ikaaro!"
+        alt="Powered by ikaaro!" src="../images/ikaaro_powered.png" /></a>
+      Copyright information?
+    </div>
+  </body>
+</html>

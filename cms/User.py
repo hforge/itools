@@ -219,7 +219,7 @@ class User(Folder):
     #######################################################################
     # Edit
     edit_form__access__ = 'is_self_or_superuser'
-    edit_form__label__ = u'Edit'
+    edit_form__label__ = u'Preferences'
     edit_form__sublabel__ = u'Personal'
     def edit_form(self):
         root = get_context().root
@@ -261,7 +261,7 @@ class User(Folder):
     #######################################################################
     # Edit / Password
     edit_password_form__access__ = 'is_self_or_superuser'
-    edit_password_form__label__ = u'Edit'
+    edit_password_form__label__ = u'Preferences'
     edit_password_form__sublabel__ = u'Password'
     def edit_password_form(self):
         handler = self.get_handler('/ui/User_edit_password.xml')

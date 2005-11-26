@@ -362,7 +362,7 @@ class Root(Group, WebSite):
     ########################################################################
     # Skins and themes (themes are a sub-set of the skins)
     def get_themes(self):
-        return ['classic', 'surf']
+        return ['aruni']
 
 
     def get_skin(self):
@@ -376,7 +376,7 @@ class Root(Group, WebSite):
         # Check the user preferences
         user = context.user
         if user is None:
-            return self.get_handler('ui/surf')
+            return self.get_handler('ui/aruni')
 
         theme = user.get_property('ikaaro:user_theme')
         return self.get_handler('ui/%s' % theme)

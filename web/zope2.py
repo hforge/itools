@@ -113,15 +113,15 @@ def init(zope_request):
         value = datatype.decode(value)
         request.set_cookie(name, value)
 
-    # Build the context
-    context = Context(request)
-    set_context(context)
-
     # The authority
     if 'HTTP_X_FORWARDED_HOST' in environ:
         authority = environ['HTTP_X_FORWARDED_HOST']
     else:
         authority = zope_request['HTTP_HOST']
+
+    # Build the context
+    context = Context(request, authority)
+    set_context(context)
 
     # The URI
     if 'REAL_PATH' in query:

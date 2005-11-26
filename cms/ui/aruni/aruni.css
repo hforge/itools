@@ -1,0 +1,279 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  font-size: 90%;
+  font-family: Arial, "Bitstream Vera Sans", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0.3em;
+  font-family: "Georgia", "Bitstream Charter", serif;
+}
+
+h1 { font-size: 18pt; }
+h2 { font-size: 16pt; }
+h3 { font-size: 14pt; }
+h4 { font-size: 12pt; }
+h5 { font-size: 10pt; }
+h6 { font-size: 8pt; }
+
+p {
+  font-size: 11pt;
+  font-family: "Bitstream Vera Sans", Arial, sans-serif;
+}
+
+select, input, textarea {
+  border: 2px ridge #000;
+  background: #fff;
+}
+
+a {
+  color: #336c99;
+}
+
+a img {
+  border: 0;
+}
+
+dt {
+  font-weight: bold;
+}
+
+#header {
+  margin-bottom: 3px;
+  padding: 3px;
+  background: #c9c99f;
+  font-size: 90%;
+}
+
+#search_form {
+  float: right;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+
+#search_form input {
+  font-size: 80%;
+}
+
+#SearchableText {
+  padding-left: 16px;
+  background: #fff url(images/search.png) left center no-repeat;
+}
+
+#actions {
+  margin-left: 9px;
+}
+
+#actions a {
+  margin-left: 6px;
+  padding-left: 16px;
+}
+
+#action_login {
+  background: url(images/action_login.png) left center no-repeat;
+}
+
+#action_join {
+  background: url(images/action_join.png) left center no-repeat;
+}
+
+#action_home {
+  background: url(images/action_home.png) left center no-repeat;
+}
+
+#action_logout {
+  background: url(images/action_logout.png) left center no-repeat;
+}
+
+#message {
+  margin: 3px;
+  padding: 5px 20px;
+  border: 2px solid #000;
+  background: #fc0 url(../images/Info16.png) left center no-repeat;
+}
+
+#breadcrumbs {
+  font-size: 8pt;
+  margin: 3px;
+}
+
+#breadcrumbs ul {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+#breadcrumbs li {
+  display: inline;
+}
+
+#breadcrumbs a, #breadcrumbs span {
+  color: #333;
+}
+
+#tabs {
+  height: 1.2em;
+  margin: 0;
+  padding: 0;
+  list-style: none outside;
+  text-align: center;
+  font-size: 8pt;
+}
+
+#tabs li {
+  position: relative;
+  display: block;
+  float: left;
+  min-width: 4em;
+  margin: 0;
+  border-top: 1px solid #336c99;
+  border-right: 1px solid #336c99;
+  border-bottom: 0;
+  border-left: 1px solid #336c99;
+  padding: 2px 9px;
+  background: #fff;
+  white-space: nowrap;
+  -moz-border-radius-topleft: 9px;
+}
+
+#tabs a {
+  color: #333;
+  text-decoration: none;
+}
+
+#tabs .tab_active, #tabs .tab:hover {
+  background: #336c99;
+}
+
+#tabs .tab_active a, #tabs .tab:hover a {
+  color: #fff;
+}
+
+#subtabs {
+  height: 1.2em;
+  margin: 0;
+  border: 0;
+  padding: 3px 0;
+  background: #336c99;
+  font-size: 80%;
+}
+
+#subtabs li {
+  display: inline;
+  margin: 0;
+  padding: 2px 9px;
+  list-style: none outside;
+  -moz-border-radius-topleft: 9px;
+}
+
+#subtabs a {
+  color: #eee;
+  text-decoration: none;
+}
+
+#subtabs .tab_active, #subtabs .tab:hover {
+  background: #c9c99f;
+}
+
+#subtabs .tab_active a, #subtabs .tab:hover a {
+  color: #000;
+}
+
+#body {
+  margin-top: -1px;
+  border: 1px solid #c9c99f;
+  padding: 3px;
+}
+
+#block_2 {
+  font-size: 90%;
+}
+
+#block_2 a, #block_2 a:link, #block_2 a:visited, #block_2 a:hover,
+#block_2 a:active {
+  text-decoration: none;
+  color: #336c99;
+}
+
+#block_2 label {
+  margin: 3px;
+  padding: 2px 5px;
+  color: #fff;
+  background: #c9c99f;
+  -moz-border-radius-topleft: 9px;
+}
+
+#block_2 ul, #block_2 dl {
+  margin: 2px 6px 10px 3px;
+  border: 1px solid #c9c99f;
+}
+
+#block_2 ul {
+  padding: 1px 1px 1px 1.2em;
+}
+
+#block_2 dl dl {
+  margin: 0;
+  border: 0;
+}
+
+#block_2 dt, #block_2 dd {
+  margin: 0;
+}
+
+#block_2 dt {
+  overflow: hidden;
+}
+
+#block_2 dd {
+  margin-left: 8px;
+}
+
+#footer {
+  margin-top: 3px;
+  padding: 3px;
+  background: #c9c99f;
+  font-size: 90%;
+}
+
+#powered {
+  float: right;
+}
+
+#powered img {
+  clear: both;
+  vertical-align: bottom;
+}
+
+.clear {
+  clear: both;
+}
+
+/* http://www.positioniseverything.net/easyclearing.html */
+.clearfix:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+.clearfix {display: inline-table;}
+/* Hides from IE-mac \*/
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}
+/* End hide from IE-mac */
+
+form fieldset {
+  color: #333;
+}
+
+form label {
+  color: #000;
+}
+
+form dl dd {
+  margin: 3px;
+  padding: 0;
+}

@@ -2,6 +2,175 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-26 09:34:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
+
+    Summary:
+      merging aruni skin from herve
+    Revision:
+      itools--main--0.12--patch-68
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-4
+       aruni is now the default and only one (until others are sync).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-6
+       récupération du travail sur aruni 0.15.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-7
+       integrating action icons.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-9
+       split css layout from design rules.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-10
+       call the css layout (an import rule would be better).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-11
+       rework the fonts.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-13
+       Import IE7 by Dean Edwars but don't use it for now (see #176 and #177).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-14
+       remove main.js for now, intrusive.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-15
+       merge menu.js in main.js, use DOM API, and normalise coding style.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-16
+       fix the floating search form and margins/paddings.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-17
+       rework the login form and bases for form layout.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-18
+       move the message above the content.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-21
+       display a magnifying glass in the search input.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-22
+       move user variables to a subset of the template namespace.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-25
+       preferences in a user context is much more convenient that edit.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-36
+       make icms.py an executable script.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-37
+       follow the change in Context's constructor arguments.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-38
+       make icms.py an executable script.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-40
+       deploy aruni skin at installation.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-41
+       login referer now obsolete.
+    
+
+    new files:
+     cms/ui/aruni/.arch-ids/=id cms/ui/aruni/.arch-ids/aruni.css.id
+     cms/ui/aruni/.arch-ids/onetruelayout.css.id
+     cms/ui/aruni/.arch-ids/template.xhtml.en.id
+     cms/ui/aruni/aruni.css cms/ui/aruni/ie7/.arch-ids/=id
+     cms/ui/aruni/ie7/.arch-ids/README.txt.id
+     cms/ui/aruni/ie7/.arch-ids/blank.gif.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-base64.php.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-content.htc.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-core.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-css-strict.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-css2-selectors.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-css3-selectors.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-dhtml.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-dynamic-attributes.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-fixed.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-graphics.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-html4.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-ie5.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-layout.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-load.htc.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-object.htc.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-overflow.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-quirks.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-recalc.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-server.css.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-squish.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-standard-p.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-xml-extras.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7.gif.id
+     cms/ui/aruni/ie7/.arch-ids/test-trans.png.id
+     cms/ui/aruni/ie7/.arch-ids/test.html.id
+     cms/ui/aruni/ie7/README.txt cms/ui/aruni/ie7/blank.gif
+     cms/ui/aruni/ie7/ie7-base64.php
+     cms/ui/aruni/ie7/ie7-content.htc cms/ui/aruni/ie7/ie7-core.js
+     cms/ui/aruni/ie7/ie7-css-strict.js
+     cms/ui/aruni/ie7/ie7-css2-selectors.js
+     cms/ui/aruni/ie7/ie7-css3-selectors.js
+     cms/ui/aruni/ie7/ie7-dhtml.js
+     cms/ui/aruni/ie7/ie7-dynamic-attributes.js
+     cms/ui/aruni/ie7/ie7-fixed.js cms/ui/aruni/ie7/ie7-graphics.js
+     cms/ui/aruni/ie7/ie7-html4.js cms/ui/aruni/ie7/ie7-ie5.js
+     cms/ui/aruni/ie7/ie7-layout.js cms/ui/aruni/ie7/ie7-load.htc
+     cms/ui/aruni/ie7/ie7-object.htc
+     cms/ui/aruni/ie7/ie7-overflow.js
+     cms/ui/aruni/ie7/ie7-quirks.js cms/ui/aruni/ie7/ie7-recalc.js
+     cms/ui/aruni/ie7/ie7-server.css cms/ui/aruni/ie7/ie7-squish.js
+     cms/ui/aruni/ie7/ie7-standard-p.js
+     cms/ui/aruni/ie7/ie7-xml-extras.js cms/ui/aruni/ie7/ie7.gif
+     cms/ui/aruni/ie7/test-trans.png cms/ui/aruni/ie7/test.html
+     cms/ui/aruni/images/.arch-ids/=id
+     cms/ui/aruni/images/.arch-ids/action_home.png.id
+     cms/ui/aruni/images/.arch-ids/action_join.png.id
+     cms/ui/aruni/images/.arch-ids/action_login.png.id
+     cms/ui/aruni/images/.arch-ids/action_logout.png.id
+     cms/ui/aruni/images/.arch-ids/search.png.id
+     cms/ui/aruni/images/action_home.png
+     cms/ui/aruni/images/action_join.png
+     cms/ui/aruni/images/action_login.png
+     cms/ui/aruni/images/action_logout.png
+     cms/ui/aruni/images/search.png cms/ui/aruni/onetruelayout.css
+     cms/ui/aruni/template.xhtml.en
+
+    removed files:
+     cms/ui/.arch-ids/menu.js.id cms/ui/menu.js
+
+    modified files:
+     Changelog cms/Root.py cms/User.py cms/skins.py
+     cms/ui/WebSite_login.xml.en cms/ui/main.js scripts/icms.py
+     setup.py web/zope2.py
+
+    new directories:
+     cms/ui/aruni cms/ui/aruni/.arch-ids cms/ui/aruni/ie7
+     cms/ui/aruni/ie7/.arch-ids cms/ui/aruni/images
+     cms/ui/aruni/images/.arch-ids
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-4
+     herve@oursours.net--public/itools--aruni--0.12--patch-6
+     herve@oursours.net--public/itools--aruni--0.12--patch-7
+     herve@oursours.net--public/itools--aruni--0.12--patch-9
+     herve@oursours.net--public/itools--aruni--0.12--patch-10
+     herve@oursours.net--public/itools--aruni--0.12--patch-11
+     herve@oursours.net--public/itools--aruni--0.12--patch-13
+     herve@oursours.net--public/itools--aruni--0.12--patch-14
+     herve@oursours.net--public/itools--aruni--0.12--patch-15
+     herve@oursours.net--public/itools--aruni--0.12--patch-16
+     herve@oursours.net--public/itools--aruni--0.12--patch-17
+     herve@oursours.net--public/itools--aruni--0.12--patch-18
+     herve@oursours.net--public/itools--aruni--0.12--patch-21
+     herve@oursours.net--public/itools--aruni--0.12--patch-22
+     herve@oursours.net--public/itools--aruni--0.12--patch-25
+     herve@oursours.net--public/itools--aruni--0.12--patch-36
+     herve@oursours.net--public/itools--aruni--0.12--patch-37
+     herve@oursours.net--public/itools--aruni--0.12--patch-38
+     herve@oursours.net--public/itools--aruni--0.12--patch-40
+     herve@oursours.net--public/itools--aruni--0.12--patch-41
+
+
 2005-11-25 19:02:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
 
     Summary:

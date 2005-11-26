@@ -178,15 +178,15 @@ class Skin(Folder):
         path_to_root = here.get_pathto(root)
         if user is None:
             joinisopen = root.get_property('ikaaro:website_is_open')
+            info = None
         else:
-            joinisopen = None
+            joinisopen = False
             home = '%s/;%s' % (here.get_pathto(user), user.get_firstview())
-            user = {'name': user.name,
+            info = {'name': user.name,
                     'title': user.title or user.name,
                     'home': home,
                     'logout': '%s/;logout' % path_to_root}
-        return {'user_icon': '%s/user16' % path_to_root,
-                'user': user,
+        return {'info': info,
                 'joinisopen': joinisopen,
                 'login_url': '%s/;login_form' % path_to_root,
                 'join_url': '%s/;join_form' % path_to_root}
@@ -266,11 +266,7 @@ class Skin(Folder):
         namespace['scripts'] = [ x for x in context.scripts ]
 
         # User menu
-        namespace['user_icon'] = self.get_user_menu()['user_icon']
-        namespace['user'] = self.get_user_menu()['user']
-        namespace['joinisopen'] = self.get_user_menu()['joinisopen']
-        namespace['login_url'] = self.get_user_menu()['login_url']
-        namespace['join_url'] = self.get_user_menu()['join_url']
+        namespace['user']= self.get_user_menu()
 
         # Navigation menu
         namespace['navigation'] = self.get_navigation_menu()
@@ -345,8 +341,7 @@ def register_skin(name, skin):
 
 # Register the built-in skins
 path = get_abspath(globals(), 'ui')
-register_skin('classic', '%s/classic' % path)
-register_skin('surf', '%s/surf' % path)
+register_skin('aruni', '%s/aruni' % path)
 
 
 class UI(Folder):

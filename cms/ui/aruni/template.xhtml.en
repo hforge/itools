@@ -69,7 +69,7 @@
             Home
           </a>
           <a id="action_logout" href="#" class="icon_logout"
-            stl:attributes="href user/logout">
+            stl:attributes="href user/info/logout">
             Log out
           </a>
         </stl:block>

@@ -70,7 +70,7 @@ class Schema(schemas.base.Schema):
         # Archive
 ##        'id': String,
         # Users
-        'user_theme': String(default='surf'),
+        'user_theme': String(default='aruni'),
         'user_language': String(default='en'),
         'website_is_open': Boolean(default=False),
         'website_languages': Tokens(default=('en',))}

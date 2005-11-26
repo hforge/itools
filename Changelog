@@ -2,6 +2,71 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-26 09:47:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-69
+
+    Summary:
+      merging the aruni skin from herve
+    Revision:
+      itools--main--0.12--patch-69
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-42
+       spacing the tabs, so they are more noticeable.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-43
+       use a lighter color for the subtab, more noticeable. keep the light brown for decoration.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-44
+       black easier to read on a light brown background.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-45
+       apply the new tab spacing to the subtabs as well.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-46
+       try with bigger tabs and links underlined.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-47
+       na, really too big.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-48
+       fix CSS error in Epoz.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-49
+       height was indeed needed by IE.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-50
+       the default skin in aruni.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-51
+       forgot to change an STL expression after a namespace move.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-52
+       new colors\!
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-53
+       spacing the navigation box on the left.
+    
+
+    modified files:
+     Changelog cms/Metadata.py cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en cms/ui/epoz.css
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-42
+     herve@oursours.net--public/itools--aruni--0.12--patch-43
+     herve@oursours.net--public/itools--aruni--0.12--patch-44
+     herve@oursours.net--public/itools--aruni--0.12--patch-45
+     herve@oursours.net--public/itools--aruni--0.12--patch-46
+     herve@oursours.net--public/itools--aruni--0.12--patch-47
+     herve@oursours.net--public/itools--aruni--0.12--patch-48
+     herve@oursours.net--public/itools--aruni--0.12--patch-49
+     herve@oursours.net--public/itools--aruni--0.12--patch-50
+     herve@oursours.net--public/itools--aruni--0.12--patch-51
+     herve@oursours.net--public/itools--aruni--0.12--patch-52
+     herve@oursours.net--public/itools--aruni--0.12--patch-53
+
+
 2005-11-26 09:34:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
 
     Summary:

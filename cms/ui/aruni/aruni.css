@@ -42,7 +42,7 @@ dt {
 #header {
   margin-bottom: 3px;
   padding: 3px;
-  background: #c9c99f;
+  background: #ccf;
   font-size: 90%;
 }
 
@@ -127,24 +127,22 @@ dt {
   display: block;
   float: left;
   min-width: 4em;
-  margin: 0;
-  border-top: 1px solid #336c99;
-  border-right: 1px solid #336c99;
+  margin: 0 9px 0 0;
+  border-top: 1px solid #69f;
+  border-right: 1px solid #69f;
   border-bottom: 0;
-  border-left: 1px solid #336c99;
-  padding: 2px 9px;
+  border-left: 1px solid #69f;
+  padding: 3px 9px;
   background: #fff;
   white-space: nowrap;
-  -moz-border-radius-topleft: 9px;
 }
 
 #tabs a {
   color: #333;
-  text-decoration: none;
 }
 
 #tabs .tab_active, #tabs .tab:hover {
-  background: #336c99;
+  background: #69f;
 }
 
 #tabs .tab_active a, #tabs .tab:hover a {
@@ -155,35 +153,33 @@ dt {
   height: 1.2em;
   margin: 0;
   border: 0;
-  padding: 3px 0;
-  background: #336c99;
+  padding: 9px 0 3px 3px;
+  background: #69f;
   font-size: 80%;
 }
 
 #subtabs li {
   display: inline;
-  margin: 0;
-  padding: 2px 9px;
-  list-style: none outside;
-  -moz-border-radius-topleft: 9px;
+  margin: 0 9px 0 0;
+  padding: 3px 9px;
+  white-space: nowrap;
 }
 
 #subtabs a {
   color: #eee;
-  text-decoration: none;
 }
 
 #subtabs .tab_active, #subtabs .tab:hover {
-  background: #c9c99f;
+  background: #f60;
 }
 
 #subtabs .tab_active a, #subtabs .tab:hover a {
-  color: #000;
+  color: #fff;
 }
 
 #body {
   margin-top: -1px;
-  border: 1px solid #c9c99f;
+  border: 1px solid #f60;
   padding: 3px;
 }
 
@@ -199,19 +195,23 @@ dt {
 
 #block_2 label {
   margin: 3px;
-  padding: 2px 5px;
+  padding: 3px 6px;
   color: #fff;
-  background: #c9c99f;
-  -moz-border-radius-topleft: 9px;
+  background: #69f;
 }
 
 #block_2 ul, #block_2 dl {
-  margin: 2px 6px 10px 3px;
-  border: 1px solid #c9c99f;
+  margin: 3px 6px 10px 3px;
+  border: 1px solid #69f;
 }
 
 #block_2 ul {
-  padding: 1px 1px 1px 1.2em;
+  padding: 3px;
+  list-style: none;
+}
+
+#block_2 dl {
+  padding: 3px;
 }
 
 #block_2 dl dl {
@@ -228,13 +228,13 @@ dt {
 }
 
 #block_2 dd {
-  margin-left: 8px;
+  margin-left: 9px;
 }
 
 #footer {
   margin-top: 3px;
   padding: 3px;
-  background: #c9c99f;
+  background: #ccf;
   font-size: 90%;
 }
 

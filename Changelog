@@ -2,6 +2,40 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-26 14:42:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-72
+
+    Summary:
+      merging the aruni skin from herve
+    Revision:
+      itools--main--0.12--patch-72
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-99
+       another batch of killing png transparency for IE.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-100
+       the light is coming from the top, no kidding.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-101
+       compactify the browsing filter and put it back at the top (#201).
+    
+
+    modified files:
+     Changelog cms/ui/Folder_browse_list.xml.en
+     cms/ui/aruni/images/action_home.png
+     cms/ui/aruni/images/action_join.png
+     cms/ui/aruni/images/action_login.png
+     cms/ui/aruni/images/action_logout.png
+     cms/ui/aruni/images/search.png
+     cms/ui/aruni/images/subtab_bg.png
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-99
+     herve@oursours.net--public/itools--aruni--0.12--patch-100
+     herve@oursours.net--public/itools--aruni--0.12--patch-101
+
+
 2005-11-26 10:08:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-71
 
     Summary:

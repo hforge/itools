@@ -2,18 +2,37 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<div class="batchcontrol" stl:if="batch/total">
-  <stl:inline if="batch/control" content="batch/control" />
-  <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>
-  <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
-</div>
-
 <p stl:if="not table/objects">
   This folder or query is empty.
 </p>
 
 <form action=";browse_list" method="get">
-
+  <dl>
+    <dt>Display only contents with the following terms:</dt>
+    <dd>
+      <label for="search_value">Search term</label>
+      <input type="text" name="search_value" size="30"
+        stl:attributes="value search_value"/>
+      <label for="search_criteria">Field</label>
+      <select name="search_criteria">
+        <stl:block repeat="criteria search_criteria">
+          <option stl:attributes="value criteria/id;
+            selected criteria/selected"
+            stl:content="criteria/title">Title</option>
+        </stl:block>
+      </select>
+      <label for="search_subfolders">Search subfolders</label>
+      <input type="checkbox" name="search_subfolders"
+        id="search_subfolders"
+        stl:attributes="checked search_subfolders; value self_path" />
+      <input type="submit" value="Search" />
+    </dd>
+  </dl>
+  <div class="batchcontrol" stl:if="batch/total">
+    <stl:inline if="batch/control" content="batch/control" />
+    <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>
+    <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
+  </div>
   <table border="0" cellspacing="2" cellpadding="2"
     summary="listing of folder content or query result" stl:if="table/objects">
     <thead>
@@ -57,8 +76,7 @@
       </tr>
     </tbody>
   </table>
-
-  <div>
+  <p>
     <stl:block if="table/objects">
       <input type="submit" name=";remove" value="Remove"
              onclick="return confirmation();"  />
@@ -70,40 +88,7 @@
     <stl:block if="table/objects">
       <input type="submit" name=";translate_form" value="Translate.." />
     </stl:block>
-  </div>
-
-  <dl>
-    <dt>Display only contents with the following terms</dt>
-    <dd>
-      <label for="search_value">Search term</label>
-      <input type="text" name="search_value" size="30"
-        stl:attributes="value search_value"/>
-    </dd>
-    <dt>On the selected field</dt>
-    <dd>
-      <label for="search_criteria">Field</label>
-      <select name="search_criteria">
-        <stl:block repeat="criteria search_criteria">
-          <option stl:attributes="value criteria/id;
-            selected criteria/selected"
-            stl:content="criteria/title">Title</option>
-        </stl:block>
-      </select>
-    </dd>
-    <dt>Search also in subfolders</dt>
-    <dd>
-      <label for="search_subfolders">Search subfolders</label>
-      <input type="checkbox" name="search_subfolders"
-        id="search_subfolders"
-        stl:attributes="checked search_subfolders; value self_path" />
-    </dd>
-    <dt>
-    </dt>
-    <dd>
-      <input type="submit" value="Search" />
-    </dd>
-  </dl>
-
+  </p>
 </form>
 
 </stl:block>

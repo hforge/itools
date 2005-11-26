@@ -174,6 +174,7 @@ setup(
     join('ui', 'aruni', 'ie7', '*.js'),
     join('ui', 'aruni', 'ie7', '*.txt'),
     join('ui', 'aruni', 'images', '*.png'),
+    join('ui', 'aruni', 'images', '*.jpg'),
     join('ui', 'web_site_templates', 'community', '*.x*ml.??'),
     join('ui', 'web_site_templates', 'community', '*.jpg'),
     join('ui', 'web_site_templates', 'community', '*.png'),

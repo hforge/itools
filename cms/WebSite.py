@@ -282,7 +282,7 @@ class WebSite(Folder):
         if referrer and referrer.path[-1].param != 'login_form':
             goto = referrer
         else:
-            goto = 'users/%s/;%s' % (user.name, user.get_firstview())
+            goto = 'users/' + user.name
         context.redirect(goto)
 
 

@@ -1,8 +1,7 @@
 body {
   margin: 0px;
   padding: 0px;
-  font-size: 90%;
-  font-family: Arial, "Bitstream Vera Sans", sans-serif;
+  font: 90% Arial, "Bitstream Vera Sans", sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -10,16 +9,15 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Georgia", "Bitstream Charter", serif;
 }
 
-h1 { font-size: 18pt; }
-h2 { font-size: 16pt; }
-h3 { font-size: 14pt; }
-h4 { font-size: 12pt; }
-h5 { font-size: 10pt; }
-h6 { font-size: 8pt; }
+h1 { font-size: 16pt; }
+h2 { font-size: 14pt; }
+h3 { font-size: 12pt; }
+h4 { font-size: 10pt; }
+h5 { font-size: 8pt; }
+h6 { font-size: 6pt; }
 
 p {
-  font-size: 11pt;
-  font-family: "Bitstream Vera Sans", Arial, sans-serif;
+  font: 11pt "Bitstream Vera Sans", Arial, sans-serif;
 }
 
 select, input, textarea {
@@ -40,30 +38,34 @@ dt {
 }
 
 #header {
-  margin-bottom: 3px;
-  padding: 3px;
-  background: #ccf;
+  padding: 30px 3px 3px;
+  background: #fff url(images/banner.jpg) left top no-repeat;
   font-size: 90%;
 }
 
-#search_form {
+#header_shadow {
+  height: 13px;
+  background: #fff url(images/shadow.png) left top repeat-x;
+}
+
+#global_search_form {
   float: right;
   margin: 0;
   padding: 0;
   color: #fff;
 }
 
-#search_form input {
+#global_search_form input {
   font-size: 80%;
 }
 
-#SearchableText {
+#global_search_form .submit {
   padding-left: 16px;
   background: #fff url(images/search.png) left center no-repeat;
 }
 
 #actions {
-  margin-left: 9px;
+  margin: 0 0 9px 9px;
 }
 
 #actions a {
@@ -87,13 +89,6 @@ dt {
   background: url(images/action_logout.png) left center no-repeat;
 }
 
-#message {
-  margin: 3px;
-  padding: 5px 20px;
-  border: 2px solid #000;
-  background: #fc0 url(../images/Info16.png) left center no-repeat;
-}
-
 #breadcrumbs {
   font-size: 8pt;
   margin: 3px;
@@ -113,27 +108,23 @@ dt {
   color: #333;
 }
 
-#tabs {
+#tabs, #subtabs {
   height: 1.2em;
-  margin: 0;
-  padding: 0;
-  list-style: none outside;
-  text-align: center;
-  font-size: 8pt;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  padding: 6px 0px;
+  list-style: none;
 }
 
-#tabs li {
-  position: relative;
-  display: block;
-  float: left;
-  min-width: 4em;
-  margin: 0 9px 0 0;
-  border-top: 1px solid #69f;
-  border-right: 1px solid #69f;
-  border-bottom: 0;
-  border-left: 1px solid #69f;
-  padding: 3px 9px;
-  background: #fff;
+#tabs {
+  margin: 3px 0 0 0;
+}
+
+#tabs li, #subtabs li {
+  display: inline;
+  margin: 0;
+  border-right: 1px solid #ccc;
+  padding: 6px;
   white-space: nowrap;
 }
 
@@ -142,27 +133,17 @@ dt {
 }
 
 #tabs .tab_active, #tabs .tab:hover {
-  background: #69f;
+  background: #69f url(images/tab_bg.png) left top repeat-x;
 }
 
-#tabs .tab_active a, #tabs .tab:hover a {
+#tabs .tab_active a, #tabs .tab:hover a,
+#subtabs .tab_active a, #subtabs .tab:hover a {
   color: #fff;
 }
 
 #subtabs {
-  height: 1.2em;
-  margin: 0;
-  border: 0;
-  padding: 9px 0 3px 3px;
+  margin: -1px 0 0;
   background: #69f;
-  font-size: 80%;
-}
-
-#subtabs li {
-  display: inline;
-  margin: 0 9px 0 0;
-  padding: 3px 9px;
-  white-space: nowrap;
 }
 
 #subtabs a {
@@ -170,16 +151,19 @@ dt {
 }
 
 #subtabs .tab_active, #subtabs .tab:hover {
-  background: #f60;
+  background: #9c3 url(images/subtab_bg.png) left top repeat-x;
 }
 
-#subtabs .tab_active a, #subtabs .tab:hover a {
-  color: #fff;
+#message {
+  margin: 3px;
+  padding: 5px 20px;
+  border: 2px solid #000;
+  background: #fc0 url(../images/Info16.png) left center no-repeat;
 }
 
 #body {
   margin-top: -1px;
-  border: 1px solid #f60;
+  border: 1px solid #9c3;
   padding: 3px;
 }
 
@@ -197,7 +181,7 @@ dt {
   margin: 3px;
   padding: 3px 6px;
   color: #fff;
-  background: #69f;
+  background: #69f url(images/tab_bg.png) left bottom repeat-x;
 }
 
 #block_2 ul, #block_2 dl {

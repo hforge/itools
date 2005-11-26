@@ -2,6 +2,156 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-26 10:08:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-71
+
+    Summary:
+      merging aruni skin from herve
+    Revision:
+      itools--main--0.12--patch-71
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-81
+       on login, also let redirect decide the view.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-83
+       doesn't seem necessary anymore, I may have dreamt (still broken).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-84
+       reduce the titles size and move up the breadcrumbs.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-85
+       move the user actions to the left column (which has the nice side effect to move the noise after the content).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-86
+       also deploy jpeg images.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-87
+       move to a blue/green design, more to come.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-88
+       new shiny, glossy tabs.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-90
+       optimize the css, remove redundancy.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-91
+       remove redundant declarations.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-92
+       remove the IE7 patch, it won't fix IE but breaks what works.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-93
+       white background on 24-bit PNG for IE.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-95
+       merge the two forms in what they are, a single one. it will ease fixing #21.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-96
+       add a shadow under the header/banner.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-97
+       fix the shadow image that changed name.
+    
+
+    new files:
+     cms/ui/aruni/images/.arch-ids/banner.jpg.id
+     cms/ui/aruni/images/.arch-ids/shadow.png.id
+     cms/ui/aruni/images/.arch-ids/subtab_bg.png.id
+     cms/ui/aruni/images/.arch-ids/tab_bg.png.id
+     cms/ui/aruni/images/banner.jpg cms/ui/aruni/images/shadow.png
+     cms/ui/aruni/images/subtab_bg.png
+     cms/ui/aruni/images/tab_bg.png
+
+    removed files:
+     cms/ui/aruni/ie7/.arch-ids/=id
+     cms/ui/aruni/ie7/.arch-ids/README.txt.id
+     cms/ui/aruni/ie7/.arch-ids/blank.gif.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-base64.php.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-content.htc.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-core.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-css-strict.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-css2-selectors.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-css3-selectors.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-dhtml.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-dynamic-attributes.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-fixed.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-graphics.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-html4.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-ie5.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-layout.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-load.htc.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-object.htc.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-overflow.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-quirks.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-recalc.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-server.css.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-squish.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-standard-p.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7-xml-extras.js.id
+     cms/ui/aruni/ie7/.arch-ids/ie7.gif.id
+     cms/ui/aruni/ie7/.arch-ids/test-trans.png.id
+     cms/ui/aruni/ie7/.arch-ids/test.html.id
+     cms/ui/aruni/ie7/README.txt cms/ui/aruni/ie7/blank.gif
+     cms/ui/aruni/ie7/ie7-base64.php
+     cms/ui/aruni/ie7/ie7-content.htc cms/ui/aruni/ie7/ie7-core.js
+     cms/ui/aruni/ie7/ie7-css-strict.js
+     cms/ui/aruni/ie7/ie7-css2-selectors.js
+     cms/ui/aruni/ie7/ie7-css3-selectors.js
+     cms/ui/aruni/ie7/ie7-dhtml.js
+     cms/ui/aruni/ie7/ie7-dynamic-attributes.js
+     cms/ui/aruni/ie7/ie7-fixed.js cms/ui/aruni/ie7/ie7-graphics.js
+     cms/ui/aruni/ie7/ie7-html4.js cms/ui/aruni/ie7/ie7-ie5.js
+     cms/ui/aruni/ie7/ie7-layout.js cms/ui/aruni/ie7/ie7-load.htc
+     cms/ui/aruni/ie7/ie7-object.htc
+     cms/ui/aruni/ie7/ie7-overflow.js
+     cms/ui/aruni/ie7/ie7-quirks.js cms/ui/aruni/ie7/ie7-recalc.js
+     cms/ui/aruni/ie7/ie7-server.css cms/ui/aruni/ie7/ie7-squish.js
+     cms/ui/aruni/ie7/ie7-standard-p.js
+     cms/ui/aruni/ie7/ie7-xml-extras.js cms/ui/aruni/ie7/ie7.gif
+     cms/ui/aruni/ie7/test-trans.png cms/ui/aruni/ie7/test.html
+
+    modified files:
+     Changelog cms/WebSite.py cms/skins.py
+     cms/ui/Folder_browse_list.xml.en cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en cms/ui/images/CSS16.png
+     cms/ui/images/CSS48.png cms/ui/images/File16.png
+     cms/ui/images/File48.png cms/ui/images/Flash16.png
+     cms/ui/images/Flash48.png cms/ui/images/Folder16.png
+     cms/ui/images/Folder48.png cms/ui/images/Group16.png
+     cms/ui/images/Group48.png cms/ui/images/HTML16.png
+     cms/ui/images/HTML48.png cms/ui/images/Image48.png
+     cms/ui/images/Info16.png cms/ui/images/Link16.png
+     cms/ui/images/Link48.png cms/ui/images/Python16.png
+     cms/ui/images/Python48.png cms/ui/images/Root16.png
+     cms/ui/images/Root48.png cms/ui/images/Skin16.png
+     cms/ui/images/Skin48.png cms/ui/images/Text16.png
+     cms/ui/images/Text48.png cms/ui/images/User16.png
+     cms/ui/images/User48.png cms/ui/images/UserFolder16.png
+     cms/ui/images/UserFolder48.png cms/ui/images/WebSite16.png
+     cms/ui/images/WebSite48.png cms/ui/images/batch-next.png
+     cms/ui/images/batch-previous.png setup.py
+
+    removed directories:
+     cms/ui/aruni/ie7 cms/ui/aruni/ie7/.arch-ids
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-81
+     herve@oursours.net--public/itools--aruni--0.12--patch-83
+     herve@oursours.net--public/itools--aruni--0.12--patch-84
+     herve@oursours.net--public/itools--aruni--0.12--patch-85
+     herve@oursours.net--public/itools--aruni--0.12--patch-86
+     herve@oursours.net--public/itools--aruni--0.12--patch-87
+     herve@oursours.net--public/itools--aruni--0.12--patch-88
+     herve@oursours.net--public/itools--aruni--0.12--patch-90
+     herve@oursours.net--public/itools--aruni--0.12--patch-91
+     herve@oursours.net--public/itools--aruni--0.12--patch-92
+     herve@oursours.net--public/itools--aruni--0.12--patch-93
+     herve@oursours.net--public/itools--aruni--0.12--patch-95
+     herve@oursours.net--public/itools--aruni--0.12--patch-96
+     herve@oursours.net--public/itools--aruni--0.12--patch-97
+
+
 2005-11-26 09:59:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-70
 
     Summary:

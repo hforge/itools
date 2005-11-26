@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <div class="batchcontrol" stl:if="batch/total">
   <stl:inline if="batch/control" content="batch/control" />
@@ -8,10 +8,12 @@
   <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
 </div>
 
-<form action="." method="post">
-  <p stl:if="not table/objects">
-    This folder or query is empty.
-  </p>
+<p stl:if="not table/objects">
+  This folder or query is empty.
+</p>
+
+<form action=";browse_list" method="get">
+
   <table border="0" cellspacing="2" cellpadding="2"
     summary="listing of folder content or query result" stl:if="table/objects">
     <thead>
@@ -55,6 +57,7 @@
       </tr>
     </tbody>
   </table>
+
   <div>
     <stl:block if="table/objects">
       <input type="submit" name=";remove" value="Remove"
@@ -68,9 +71,7 @@
       <input type="submit" name=";translate_form" value="Translate.." />
     </stl:block>
   </div>
-</form>
 
-<form action=";browse_list" method="get">
   <dl>
     <dt>Display only contents with the following terms</dt>
     <dd>
@@ -102,6 +103,7 @@
       <input type="submit" value="Search" />
     </dd>
   </dl>
+
 </form>
 
 </stl:block>

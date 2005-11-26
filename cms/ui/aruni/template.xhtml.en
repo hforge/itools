@@ -7,14 +7,6 @@
     <title stl:content="title">The title</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-    <!-- IE7 http://dean.edwards.name/IE7/ -->
-    <!--[if lt IE 7]>
-      <html:script src="ie7/ie7-core.js" type="text/javascript">
-      </html:script>
-      <html:script src="ie7/ie7-graphics.js" type="text/javascript">
-      </html:script>
-    <![endif]-->
-
     <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
     <link rel="stylesheet" type="text/css"
           href="../calendar/calendar-win2k-1.css" />
@@ -40,41 +32,13 @@
   </head>
   <body>
     <div id="header" class="clearfix">
-      <form id="search_form" action="" method="get">
-        <input type="text" id="SearchableText" name="SearchableText"
+      <form id="global_search_form" action="" method="get">
+        <input type="text" name="SearchableText"
           value="" />
-        <input type="submit" value="Search" />
+        <input type="submit" class="submit" value="Search" />
         <a href="#">advanced</a>
       </form>
-      <div id="actions">
-        <strong stl:if="user/info" stl:content="user/info/title">
-          The user
-        </strong>
-        <strong stl:if="not user/info">
-          not logged in
-        </strong>
-        <stl:block if="not user/info">
-          <a id="action_login" href="#" class="icon_login"
-            stl:attributes="href user/login_url">
-            Log in
-          </a>
-          <a id="action_join" href="#" class="icon_join" stl:if="user/joinisopen"
-            stl:attributes="href user/join_url">
-            Join
-          </a>
-        </stl:block>
-        <stl:block if="user/info">
-          <a id="action_home" href="#" class="icon_home"
-            stl:attributes="href user/info/home">
-            Home
-          </a>
-          <a id="action_logout" href="#" class="icon_logout"
-            stl:attributes="href user/info/logout">
-            Log out
-          </a>
-        </stl:block>
-      </div>
-    </div>
+    </div><div id="header_shadow"></div>
     <!-- http://www.fu2k.org/alex/css/onetruelayout/ -->
     <div id="wrapper_extra">
       <div id="wrapper">
@@ -84,19 +48,19 @@
               alt="" style="float: left; margin-right: 9px"
               stl:if="metadata/icon" stl:attributes="src metadata/icon" />
             <h1 stl:content="metadata/title">The resource title</h1>
-          </div>
-          <div class="clear"></div>
-          <div id="breadcrumbs">
-            <label>Location:</label>
-            <ul>
-              <li stl:repeat="item breadcrumb">
-                <a stl:if="item/url" stl:attributes="href item/url; title item/name"
-                  stl:content="item/short_name">The path entry</a>
-                <span stl:if="not item/url" stl:attributes="title item/name"
-                  stl:content="item/short_name" />
-                <stl:inline if="not repeat/item/end">&raquo;</stl:inline> 
-              </li>
-            </ul>
+            <div id="breadcrumbs">
+              <label>Location:</label>
+              <ul>
+                <li stl:repeat="item breadcrumb">
+                  <a stl:if="item/url" stl:attributes="href item/url; title item/name"
+                    stl:content="item/short_name">The path entry</a>
+                  <span stl:if="not item/url" stl:attributes="title item/name"
+                    stl:content="item/short_name" />
+                  <stl:inline if="not repeat/item/end">&raquo;</stl:inline> 
+                </li>
+              </ul>
+            </div>
+            <div class="clear"></div>
           </div>
           <ul id="tabs">
              <li stl:repeat="tab tabs" stl:attributes="class tab/style">
@@ -129,6 +93,34 @@
           </div>
         </div>
         <div id="block_2">
+          <div id="actions">
+            <strong stl:if="user/info" stl:content="user/info/title">
+              The user
+            </strong>
+            <strong stl:if="not user/info">
+              not logged in
+            </strong>
+            <stl:block if="not user/info">
+              <a id="action_login" href="#" class="icon_login"
+                stl:attributes="href user/login_url">
+                Log in
+              </a>
+              <a id="action_join" href="#" class="icon_join" stl:if="user/joinisopen"
+                stl:attributes="href user/join_url">
+                Join
+              </a>
+            </stl:block>
+            <stl:block if="user/info">
+              <a id="action_home" href="#" class="icon_home"
+                stl:attributes="href user/info/home">
+                Home
+              </a>
+              <a id="action_logout" href="#" class="icon_logout"
+                stl:attributes="href user/info/logout">
+                Log out
+              </a>
+            </stl:block>
+          </div>
           <label>Navigation</label>
           <dl>
             <dt stl:if="navigation/root/active">

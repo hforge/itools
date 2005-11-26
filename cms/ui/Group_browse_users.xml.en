@@ -2,56 +2,38 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<stl:block stl:if="table/objects">
-  <form action=";remove_users" method="post">
-    <table class="form" border="0">
-      <tr>
-        <th class="title" colspan="3">Browse users</th>
-      </tr>
-      <tr class="header">
-        <th></th>
-        <th style="text-align: left;">
-          Username <stl:inline content="table/sortcontrol(name)" />
-        </th>
-        <th style="text-align: left;">
-          Fullname <stl:inline content="table/sortcontrol(fullname)" />
-        </th>
-      </tr>
-      <tr stl:repeat="user table/objects">
-        <td width="10">
-          <input type="checkbox" class="checkbox" name="ids:list" value=""
-                 stl:attributes="value user/name" />
-        </td>
-        <td>
-          <a stl:attributes="href user/url" stl:content="user/name" />
-        </td>
-        <td stl:content="user/fullname" />
-      </tr>
-      <tr>
-        <td colspan="2"></td>
-        <td class="submit">
-          <input type="submit" value="Remove" />
-        </td>
-      </tr>
-      <tr>
-         <td height="1" width="10"></td>
-         <td height="1" width="150"></td>
-         <td height="1" width="150"></td>
-      </tr>
+  <form action=";remove_users" method="post" stl:if="table/objects">
+    <table border="0" cellpadding="2" cellspacing="2" summary="group members with fullname">
+      <thead>
+        <tr>
+          <th></th>
+          <th style="text-align: left;">
+            Username <stl:inline content="table/sortcontrol(name)" />
+          </th>
+          <th style="text-align: left;">
+            Fullname <stl:inline content="table/sortcontrol(fullname)" />
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr stl:repeat="user table/objects">
+          <td width="10">
+            <input type="checkbox" class="checkbox" name="ids:list" value=""
+              stl:attributes="value user/name" />
+          </td>
+          <td>
+            <a stl:attributes="href user/url" stl:content="user/name" />
+          </td>
+          <td stl:content="user/fullname" />
+        </tr>
+      </tbody>
     </table>
+    <div>
+      <input type="submit" value="Remove" />
+    </div>
   </form>
 
-  <!--
-  <a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
-    Details
-  </a>
-  <div id="tip_body">
-  </div>
-  -->
-</stl:block>
-
-<p stl:if="not table/objects">
-  This group is empty.
-</p>
+  <p stl:if="not table/objects">
+    This group is empty.
 
 </stl:block>

@@ -4,28 +4,23 @@
 
 <form id="loginform" name="loginform" action=";login" method="post"
       stl:attributes="action action">
-  <fieldset>
-    <legend>Please provide your username and password in order to log in</legend>
-    <dl>
-      <dt>
-        <label for="username">Username</label>
-      </dt>
-      <dd>
-        <input type="text" id="username" name="username" stl:attributes="value username" />
-      </dd>
-      <dt>
-        <label for="password">Password</label>
-      </dt>
-      <dd>
-        <input type="password" id="password" name="password" />
-      </dd>
-      <dt>
-      </dt>
-      <dd>
-        <input type="submit" value="Log in" />
-      </dd>
-    </dl>
-  </fieldset>
+  <dl>
+    <dt>Please enter your login (e.g. jsmith).</dt>
+    <dd>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" stl:attributes="value username" />
+    </dd>
+    <dt>Please enter your password (it will not be displayed in clear
+      text).</dt>
+    <dd>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" />
+    </dd>
+    <dt></dt>
+    <dd>
+      <input type="submit" value="Log in" />
+    </dd>
+  </dl>
 </form>
 
 <script language="javascript">

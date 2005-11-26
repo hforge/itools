@@ -181,10 +181,9 @@ class Skin(Folder):
             info = None
         else:
             joinisopen = False
-            home = '%s/;%s' % (here.get_pathto(user), user.get_firstview())
             info = {'name': user.name,
                     'title': user.title or user.name,
-                    'home': home,
+                    'home': here.get_pathto(user),
                     'logout': '%s/;logout' % path_to_root}
         return {'info': info,
                 'joinisopen': joinisopen,

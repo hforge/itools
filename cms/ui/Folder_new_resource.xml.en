@@ -1,40 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <table cellpadding="15" cellspacing="0" border="0">
-    <tr stl:repeat="row rows">
-      <td style="border-right: 1px solid #888888" width="50%">
-        <table stl:if="row/left">
-          <tr>
-            <th valign="top">
-              <img border="0" stl:attributes="src row/left/path_to_icon" />
-            </th>
-            <td rowspan="2"></td>
-            <td valign="top">
-              <strong stl:content="row/left/label" />
-              (<a stl:attributes="href row/left/url">add..</a>)
-              <br/>
-              <stl:block content="row/left/description" />
-            </td>
-          </tr>
-        </table>
-      </td>
-      <td style="border-left: 1px solid #888888" width="50%">
-        <table stl:if="row/right">
-          <tr>
-            <th valign="top">
-              <img border="0" stl:attributes="src row/right/path_to_icon" />
-            </th>
-            <td rowspan="2"></td>
-            <td valign="top">
-              <strong stl:content="row/right/label" />
-              (<a stl:attributes="href row/right/url">add..</a>)
-              <br/>
-              <stl:block content="row/right/description" />
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+
+  <stl:block repeat="type types">
+    <dl class="thumb new_resource_thumb">
+      <dt>
+        <a stl:attributes="href type/url">
+          <img alt="" stl:attributes="src type/icon" />
+        </a>
+      </dt>
+      <dd>
+        <a stl:attributes="href type/url"
+          stl:content="type/title"></a>
+      </dd>
+      <dd stl:content="type/description"></dd>
+    </dl>
+  </stl:block>
+  <div class="clear"></div>
+
 </stl:block>

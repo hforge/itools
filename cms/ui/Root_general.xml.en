@@ -1,32 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>General settings for the application.</h2>
 
 <form action=";change_general" method="post">
-  <table class="form">
-    <tr>
-      <th class="title" colspan="2">Settings</th>
-    </tr>
-    <tr>
-      <th></th>
-      <td>
-        <input class="checkbox" type="checkbox" name="ikaaro:website_is_open"
-               value="1" stl:attributes="checked website_is_open" />
-        Anonymous users are allowed to join this web site
-      </td>
-    </tr>
-    <tr>
-      <th></th>
-      <td class="submit"><input type="submit" value="OK" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Anonymous users allowed to join this web site</dt>
+    <dd>
+      <label>Allow joining</label>
+      <input class="checkbox" type="checkbox" name="ikaaro:website_is_open"
+        value="1" stl:attributes="checked website_is_open" />
+    </dd>
+    <dt></dt>
+    <dd>
+      <td class="submit"><input type="submit" value="Change" /></td>
+    </dd>
+  </dl>
 </form>
-
-<a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
-  Details
-</a>
-<div id="tip_body">
-  <p>Here, you can configure your web application.</p>
-</div>
 
 </stl:block>

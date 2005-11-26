@@ -854,32 +854,25 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         if type is None:
             # Build the namespace
             namespace = {}
+            namespace['types'] = []
 
-            rows = []
             for handler_class in self.get_document_types():
-                # Get the row
-                if not rows or rows[-1]['right'] is not None:
-                    rows.append({'left': None, 'right': None})
-                row = rows[-1]
-                # Get the column namespace
-                if row['left'] is None:
-                    ns = row['left'] = {}
-                else:
-                    ns = row['right'] = {}
-                # Fill the column
+                type_ns = {}
+                gettext = handler_class.gettext
                 format = urllib.quote(handler_class.class_id)
-                path_to_icon = '%sui/%s' % (self.get_pathtoroot(),
-                                            handler_class.class_icon48)
-                ns['format'] = format
-                ns['label'] = handler_class.gettext(handler_class.class_title)
+                type_ns['format'] = format
+                icon = handler_class.class_icon48
+                type_ns['icon'] = self.get_pathtoroot() + 'ui/' + icon
+                title = handler_class.class_title
+                type_ns['title'] = gettext(title)
                 description = handler_class.class_description
-                ns['description'] = handler_class.gettext(description)
-                ns['url'] = ';new_resource_form?type=' + format
-                ns['path_to_icon'] = path_to_icon
-            namespace['rows'] = rows
+                type_ns['description'] = gettext(description)
+                type_ns['url'] = ';new_resource_form?type=' + format
+                namespace['types'].append(type_ns)
 
             handler = self.get_handler('/ui/Folder_new_resource.xml')
             return stl(handler, namespace)
+
         else:
             handler_class = self.get_handler_class(type)
             return handler_class.new_instance_form()

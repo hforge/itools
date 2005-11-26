@@ -3,69 +3,36 @@
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <stl:block if="not users">
-  <p>No users to add in <b stl:content="name"/>.</p>
+  <p>No users to add in this group.</p>
 
-  <a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
-    Details
-  </a>
-
-  <div id="tip_body" stl:if="parent">
-    <p>
+  <p stl:if="parent">
     You must add user(s) in parent group: <quote stl:content="parent"/>
-    </p>
-  </div>
+  </p>
 
-  <div id="tip_body" stl:if="not parent">
-    <p>All users added.</p>
-  </div>
+  <p stl:if="not parent">All users are already added.</p>
 </stl:block>
 
 <stl:block if="users">
   <p>
-    Select user name(s) you want to add in group <b stl:content="name"/> :
+    Select users you want to add in this group.
   </p>
 
   <form action=";add_users" method="post">
-    <table class="form">
-      <tr>
-        <th colspan="2" class="title">
-          Add User<span stl:if="nb_users">s</span>
-        </th>
-      </tr>
-
-      <tr stl:if="nb_users">
-        <th style="text-align: left;">Users List :</th>
-        <td></td>
-      </tr>
-
-      <tr>
-        <td>
-          <select multiple="" stl:attributes="size size" name="names:list" style="width: 150px">
-            <option stl:repeat="user users"
-                    stl:attributes="value user/name"
-                    stl:content="user/title" />
-          </select>
-        </td>
-        <td></td>
-      </tr>
-
-      <tr>
-        <td class="submit">
-          <input type="submit" value="Add"/>
-        </td>
-      </tr>
-      <tr>
-         <td><img src="images/px.png" height="1" width="150" /></td>
-      </tr>
-    </table>
+    <dl>
+      <dd>
+        <select multiple="" name="names:list" stl:attributes="size size">
+          <option stl:repeat="user users"
+            stl:attributes="value user/name"
+            stl:content="user/title" />
+        </select>
+      </dd>
+      <dd>
+        <input type="submit" value="Add"/>
+      </dd>
+    </dl>
   </form>
 
-  <a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
-    Details
-  </a>
-  <div id="tip_body">
-    <p>Use CTRL or Maj if you want add more than one user.</p>
-  </div>
+  <p>Tip: use CTRL to select or unselected a user, use shift to select contiguous users.</p>
 </stl:block>
 
 </stl:block>

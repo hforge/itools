@@ -1,37 +1,35 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Edit groups</h2>
+
 <form name="user_groups" action=";edit_groups" method="post">
-  <table class="form" border="0">
-    <tr>
-      <th colspan="2" class="title">Edit groups for <span stl:content="fullname" /></th>
-    </tr>
-    <tr class="header">
-      <th></th>
-      <th style="text-align: left;">
-        Group name <stl:inline content="table/sortcontrol(name)" />
-      </th>
-    </tr>
-    <tr stl:repeat="object table/objects">
-      <td>
-        <input class="checkbox" name="groups:list" 
-               type="checkbox" stl:attributes="value object/name; checked object/checked"/>
-      </td>
-      <td>
-        <a stl:attributes="href object/url" 
-             stl:content="object/name" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" class="submit">
-        <input type="submit" value="ok" />
-      </td>
-    </tr>
-    <tr>
-       <td><img src="images/px.png" height="1" width="10" /></td>
-       <td><img src="images/px.png" height="1" width="300" /></td>
-    </tr>
+  <table border="0" cellpadding="2" cellspacing="2">
+    <thead>
+      <tr>
+        <th></th>
+        <th style="text-align: left;">
+          Group name <stl:inline content="table/sortcontrol(name)" />
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr stl:repeat="object table/objects">
+        <td>
+          <input class="checkbox" name="groups:list" 
+            type="checkbox"
+            stl:attributes="value object/name; checked object/checked"/>
+        </td>
+        <td>
+          <a stl:attributes="href object/url" 
+            stl:content="object/name" />
+        </td>
+      </tr>
+    </tbody>
   </table>
+  <p>
+    <input type="submit" value="Change" />
+  </p>
 </form>
 
 </stl:block>

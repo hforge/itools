@@ -2,26 +2,28 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <div class="batchcontrol" stl:if="batch/total">
+  <p class="batchcontrol" stl:if="batch/total">
     <stl:block if="batch/control" content="batch/control" />
     <a stl:if="batch/previous"
        stl:attributes="href batch/previous">&lt;&lt;</a>
     <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
-  </div>
+  </p>
 
-  <dl class="thumb" stl:repeat="object table/objects">
-    <dt class="icon">
-      <a stl:attributes="href object/url">
-       <img border="0"
-            stl:attributes="src object/icon; title object/format" />
-      </a>
-    </dt>
-    <dt class="title">
-      <a stl:attributes="href object/url; title object/title_or_name">
-        <span stl:content="object/short_title"></span>
-      </a>
-    </dt>
-  </dl>
+  <stl:block repeat="object table/objects">
+    <dl class="thumb">
+      <dt>
+        <a stl:attributes="href object/url">
+          <img alt="" stl:attributes="src object/icon" />
+        </a>
+      </dt>
+      <dd>
+        <a stl:attributes="href object/url; title object/title_or_name"
+          stl:content="object/short_title">
+        </a>
+      </dd>
+    </dl>
+  </stl:block>
+  <div class="clear"></div>
 
   <p stl:if="not table/objects">
     This folder is empty.

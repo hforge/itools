@@ -5,49 +5,55 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Language settings</h2>
+
 <form action="." method="post">
-  <table width="300" class="form">
-    <tr>
-      <th class="title" colspan="4">Languages settings</th>
-    </tr>
-    <tr class="header">
-      <th></th>
-      <th>Name</th>
-      <th>Code</th>
-      <th>Default</th>
-    </tr>
-    <tr stl:repeat="language active_languages">
-      <td>
-        <input class="checkbox" type="checkbox" name="codes:list"
-               stl:attributes="value language/code" />
-      </td>
-      <td stl:content="language/name" />
-      <td stl:content="language/code" />
-      <td align="center">
-        <stl:block if="language/isdefault">&laquo;</stl:block>
-      </td>
-          </tr>
-          <tr stl:if="non_active_languages">
-      <td></td>
-      <td colspan="3" class="submit">
-        <select name="code">
-          <option value="">Choose a language</option>
-          <option stl:repeat="language non_active_languages"
-                  stl:attributes="value language/code"
-                  stl:content="language/name" />
-        </select>
-        <input type="submit" name=";add_language" value="Add" />
-      </td>
-          </tr>
-          <tr>
-      <td></td>
-      <td width="100%" colspan="3" class="submit">
-        <input type="submit" name=";change_default_language"
-               value="Change default" />
-        <input type="submit" name=";remove_languages" value="Remove" />
-      </td>
+
+  <table cellpadding="2" cellspacing="2" summary="Language settings">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Default</th>
       </tr>
-    </table>
-  </form>
+    </thead>
+    <tbody>
+      <tr stl:repeat="language active_languages">
+        <td>
+          <input class="checkbox" type="checkbox" name="codes:list"
+            stl:attributes="value language/code" />
+        </td>
+        <td stl:content="language/name" />
+        <td stl:content="language/code" />
+        <td align="center">
+          <stl:block if="language/isdefault">Yes</stl:block>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div>
+    <input type="submit" name=";change_default_language"
+      value="Change default for the selected one" />
+    <input type="submit" name=";remove_languages" value="Remove selected ones" />
+  </div>
+
+  <dl stl:if="non_active_languages">
+    <dt>You can add other languages support to your application</dt>
+    <dd>
+      <select name="code">
+        <option value="">Choose a language</option>
+        <option stl:repeat="language non_active_languages"
+          stl:attributes="value language/code"
+          stl:content="language/name" />
+      </select>
+    </dd>
+    <dt></dt>
+    <dd>
+      <input type="submit" name=";add_language" value="Add" />
+    </dd>
+  </dl>
+
+</form>
 
 </stl:block>

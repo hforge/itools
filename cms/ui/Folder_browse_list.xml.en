@@ -2,36 +2,6 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form id="search_form" action=";browse_list" method="get">
-  <table class="form">
-    <tr>
-      <th class="title">Search</th>
-    </tr>
-    <tr>
-      <td>
-        Search
-        <input type="text" name="search_value" size="30"
-               stl:attributes="value search_value"/>
-        on field
-        <select name="search_criteria">
-	  <stl:block repeat="criteria search_criteria">
-	    <option stl:attributes="value criteria/id;
-	                            selected criteria/selected"
-                    stl:content="criteria/title">Title</option>
-          </stl:block>
-        </select>
-	<input type="submit" value="Go" />
-        <br/>
-	<input type="checkbox" name="search_subfolders"
-         id="search_subfolders"
-	       stl:attributes="checked search_subfolders;
-			       value self_path" />
-	<label for="search_subfolders">Search subfolders</label>
-      </td>
-    </tr>
-  </table>
-</form>
-
 <div class="batchcontrol" stl:if="batch/total">
   <stl:inline if="batch/control" content="batch/control" />
   <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>
@@ -39,45 +9,33 @@
 </div>
 
 <form action="." method="post">
-  <table class="form">
-    <tr stl:if="not table/objects">
-      <td></td>
-      <td></td>
-      <td colspan="4">
-        <em>This folder or query is empty.</em>
-      </td>
-    </tr>
-
-    <stl:block if="table/objects">
-      <tr class="header">
+  <p stl:if="not table/objects">
+    This folder or query is empty.
+  </p>
+  <table border="0" cellspacing="2" cellpadding="2"
+    summary="listing of folder content or query result" stl:if="table/objects">
+    <thead>
+      <tr>
         <th></th>
         <th></th>
-        <th>
-          Name <stl:inline content="table/sortcontrol(name)" />
-        </th>
-        <th>
-          Title <stl:inline content="table/sortcontrol(title)" />
-        </th>
-        <th>
-          Type <stl:inline content="table/sortcontrol(format)" />
-        </th>
-        <th>
-          Date <stl:inline content="table/sortcontrol(mtime_microsecond)" />
-        </th>
+        <th>Name <stl:inline content="table/sortcontrol(name)" /></th>
+        <th>Title <stl:inline content="table/sortcontrol(title)" /></th>
+        <th>Type <stl:inline content="table/sortcontrol(format)" /></th>
+        <th>Date <stl:inline content="table/sortcontrol(mtime_microsecond)" /></th>
         <th>Size</th>
-        <th>
-          State <stl:inline content="table/sortcontrol(workflow_state)" />
-        </th>
+        <th>State <stl:inline content="table/sortcontrol(workflow_state)" /></th>
       </tr>
+    </thead>
+    <tbody>
       <tr stl:repeat="object table/objects">
         <td>
           <input class="checkbox" type="checkbox" name="ids:list"
-                 stl:if="object/checkbox" stl:attributes="value object/name" />
+            stl:if="object/checkbox" stl:attributes="value object/name" />
         </td>
         <td>
           <a stl:attributes="href object/url">
             <img stl:attributes="src object/icon; title object/format"
-                 border="0" />
+              border="0" />
           </a>
         </td>
         <td>
@@ -86,44 +44,64 @@
         <td>
           <a stl:attributes="href object/url" stl:content="object/title" />
         </td>
-        <td stl:content="object/class_title" nowrap="physical" />
-        <td stl:content="object/mtime" nowrap="physical" />
-        <td style="text-align: right" nowrap="physical"
-            stl:content="object/size" />
-        <td  nowrap="physical">
+        <td stl:content="object/class_title" />
+        <td stl:content="object/mtime" />
+        <td style="text-align: right"
+          stl:content="object/size" />
+        <td>
           <stl:block if="object/workflow_state" 
-		     content="object/workflow_state" />
+            content="object/workflow_state" />
         </td>
       </tr>
-    </stl:block>
-    <tr>
-      <td></td>
-      <td colspan="7" class="submit">
-        <stl:block if="table/objects">
-          <input type="submit" name=";remove" value="Remove"
-                 onclick="return confirmation();"  />
-          <input type="submit" name=";rename_form" value="Rename.."/>
-          <input type="submit" name=";copy" value="Copy" />
-          <input type="submit" name=";cut" value="Cut" />
-        </stl:block>
-        <input type="submit" name=";paste" value="Paste" stl:if="paste"/>
-        <stl:block if="table/objects">
-          <input type="submit" name=";translate_form" value="Translate.." />
-        </stl:block>
-      </td>
-    </tr>
-    <tr>
-      <td width="10"></td>
-      <td width="16"></td>
-      <td width="50"></td>
-      <td width="133"></td>
-      <td width="70"></td>
-      <td width="40"></td>
-      <td width="90"></td>
-      <td width="40"></td>
-    </tr>
+    </tbody>
   </table>
+  <div>
+    <stl:block if="table/objects">
+      <input type="submit" name=";remove" value="Remove"
+             onclick="return confirmation();"  />
+      <input type="submit" name=";rename_form" value="Rename.."/>
+      <input type="submit" name=";copy" value="Copy" />
+      <input type="submit" name=";cut" value="Cut" />
+    </stl:block>
+    <input type="submit" name=";paste" value="Paste" stl:if="paste"/>
+    <stl:block if="table/objects">
+      <input type="submit" name=";translate_form" value="Translate.." />
+    </stl:block>
+  </div>
 </form>
 
+<form action=";browse_list" method="get">
+  <dl>
+    <dt>Display only contents with the following terms</dt>
+    <dd>
+      <label for="search_value">Search term</label>
+      <input type="text" name="search_value" size="30"
+        stl:attributes="value search_value"/>
+    </dd>
+    <dt>On the selected field</dt>
+    <dd>
+      <label for="search_criteria">Field</label>
+      <select name="search_criteria">
+        <stl:block repeat="criteria search_criteria">
+          <option stl:attributes="value criteria/id;
+            selected criteria/selected"
+            stl:content="criteria/title">Title</option>
+        </stl:block>
+      </select>
+    </dd>
+    <dt>Search also in subfolders</dt>
+    <dd>
+      <label for="search_subfolders">Search subfolders</label>
+      <input type="checkbox" name="search_subfolders"
+        id="search_subfolders"
+        stl:attributes="checked search_subfolders; value self_path" />
+    </dd>
+    <dt>
+    </dt>
+    <dd>
+      <input type="submit" value="Search" />
+    </dd>
+  </dl>
+</form>
 
 </stl:block>

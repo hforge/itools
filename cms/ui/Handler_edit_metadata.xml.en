@@ -2,31 +2,26 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
         xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Edit metadata in the current language</h2>
+
 <form action=";edit_metadata" method="post">
-  <input type="hidden" name="dc:language" stl:attributes="value language" />
-  <table class="form">
-    <tr>
-      <th colspan="2" class="title">Metadata list</th>
-    </tr>
-    <tr>
-      <th>Title</th>
-      <td>
-        <input type="text" size="50" name="dc:title"
-               stl:attributes="value title" />
-      </td>
-    </tr>
-    <tr>
-      <th valign="top">Description</th>
-      <td>
-        <textarea cols="50" rows="8" name="dc:description"
-                  stl:content="description" />
-      </td>
-    </tr>
-    <tr>
-      <th></th>
-      <td class="submit"><input type="submit" value="OK" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt><label>Title</label></dt>
+    <dd>
+      <input type="text" size="57" name="dc:title"
+        stl:attributes="value title" />
+    </dd>
+    <dt><label>Description</label></dt>
+    <dd>
+      <textarea cols="50" rows="8" name="dc:description"
+        stl:content="description" />
+    </dd>
+    <dt></dt>
+    <dd>
+      <input type="hidden" name="dc:language" stl:attributes="value language" />
+      <input type="submit" value="Change" />
+    </dd>
+  </dl>
 </form>
 
 </stl:block>

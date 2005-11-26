@@ -234,7 +234,6 @@ dt {
 #footer {
   margin-top: 3px;
   padding: 3px;
-  background: #ccf;
   font-size: 90%;
 }
 
@@ -265,15 +264,45 @@ dt {
 .clearfix {display: block;}
 /* End hide from IE-mac */
 
-form fieldset {
+form dt {
   color: #333;
+  font-weight: normal;
+}
+
+form dd {
+  margin: 3px;
+  padding: 0;
 }
 
 form label {
   color: #000;
+  font-weight: bold;
 }
 
-form dl dd {
-  margin: 3px;
+dl.thumb
+{
+  float: left;
+  width: 100px;
+  margin: 0 1em 1em 0;
+  text-align: center;
+}
+
+dl.thumb dt {
+  font-weight: bold;
+}
+
+dl.thumb dt img
+{
+  width: 48px;
+  height: 48px;
+}
+
+dl.thumb dd
+{
+  margin: 0;
   padding: 0;
+}
+
+dl.new_resource_thumb {
+  width: 300px;
 }

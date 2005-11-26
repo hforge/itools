@@ -1,65 +1,49 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Add a new user</h2>
+
 <form name="addform" action=";new_user" method="post">
-  <table class="form" border="0">
-    <tr>
-      <th colspan="2" class="title">New User</th>
-    </tr>
-    <tr>
-      <th align="right">
-        Username
-      </th>
-      <td>
-        <input type="text" name="username" />
-      </td>
-    </tr>
-    <tr>
-      <th align="right">
-        Password
-      </th>
-      <td>
-        <input type="password" name="password" />
-      </td>
-    </tr>
-    <tr>
-      <th align="right">
-        Repeat Password
-      </th>
-      <td>
-        <input type="password" name="password2" />
-      </td>
-    </tr>
-    <tr class="header">
-      <th></th>
-      <th style="text-align: left;">
-        Group name <stl:inline content="table/sortcontrol(name)" />
-      </th>
-    </tr>
-    <tr stl:repeat="object table/objects">
-      <td style="text-align: right">
-        <input class="checkbox" name="groups:list" 
-               type="checkbox" stl:attributes="value object/name"/>
-      </td>
-      <td>
-        <a stl:attributes="href object/url" 
-             stl:content="object/name" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" class="submit">
-        <input type="submit" value="Add" />
-      </td>
-    </tr>
-    <tr>
-       <td><img src="images/px.png" height="1" width="10" /></td>
-       <td><img src="images/px.png" height="1" width="300" /></td>
-    </tr>
-    </table>
-  </form>
+  <dl>
+    <dt>Username</dt>
+    <dd>
+      <input type="text" id="username" name="username" />
+    </dd>
+    <dt>Password</dt>
+    <dd>
+      <input type="password" name="password" />
+    </dd>
+    <dt>Repeat Password</dt>
+    <dd>
+      <input type="password" name="password2" />
+    </dd>
+  </dl>
+  <table border="0" cellpadding="2" cellspacing="2">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Group name <stl:inline content="table/sortcontrol(name)" /></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr stl:repeat="object table/objects">
+        <td>
+          <input class="checkbox" name="groups:list" 
+            type="checkbox" stl:attributes="value object/name"/>
+        </td>
+        <td>
+          <a stl:attributes="href object/url" stl:content="object/name" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    <input type="submit" value="Add" />
+  </p>
+</form>
 
 <script language="javascript">
-  document.addform.username.focus();
+  focus("username");
 </script>
 
 </stl:block>

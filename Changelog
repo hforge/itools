@@ -2,6 +2,124 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-26 09:59:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-70
+
+    Summary:
+      merging aruni skin from herve
+    Revision:
+      itools--main--0.12--patch-70
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-54
+       refactor login form UI (base for all forms).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-55
+       refactor the browse thumbnails template.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-56
+       remove obsolete fieldset.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-57
+       refactor the folder list template.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-58
+       remove useless noborder on link images (already in css).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-59
+       refactor the new resource form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-60
+       drop useless copyright stuff.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-61
+       leave space for long titles.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-62
+       refactor the edit metadata form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-63
+       carriage return was a bit exagerated.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-64
+       refactor the general settings form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-65
+       refactor the language settings form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-66
+       a paragraph introduces too much white space, find another tag.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-67
+       refactor the catalog form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-68
+       refactor the browse users form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-69
+       refactor the add user in group form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-70
+       refactor the group add group form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-71
+       refactor the user add form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-74
+       refactor the user edit groups form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-75
+       this indeed was a table.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-76
+       and this was a table.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-77
+       and these were *titles* too.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-78
+       let the home link lead to either the home page or browsing the home.
+    
+
+    modified files:
+     Changelog cms/Folder.py cms/skins.py
+     cms/ui/Folder_browse_list.xml.en
+     cms/ui/Folder_browse_thumbnails.xml.en
+     cms/ui/Folder_new_resource.xml.en
+     cms/ui/Group_add_group.xml.en cms/ui/Group_add_users.xml.en
+     cms/ui/Group_browse_users.xml.en
+     cms/ui/Handler_edit_metadata.xml.en cms/ui/Root_catalog.xml.en
+     cms/ui/Root_general.xml.en cms/ui/Root_languages.xml.en
+     cms/ui/UserFolder_new_user.xml.en
+     cms/ui/User_edit_groups.xml.en cms/ui/WebSite_login.xml.en
+     cms/ui/aruni/aruni.css cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-54
+     herve@oursours.net--public/itools--aruni--0.12--patch-55
+     herve@oursours.net--public/itools--aruni--0.12--patch-56
+     herve@oursours.net--public/itools--aruni--0.12--patch-57
+     herve@oursours.net--public/itools--aruni--0.12--patch-58
+     herve@oursours.net--public/itools--aruni--0.12--patch-59
+     herve@oursours.net--public/itools--aruni--0.12--patch-60
+     herve@oursours.net--public/itools--aruni--0.12--patch-61
+     herve@oursours.net--public/itools--aruni--0.12--patch-62
+     herve@oursours.net--public/itools--aruni--0.12--patch-63
+     herve@oursours.net--public/itools--aruni--0.12--patch-64
+     herve@oursours.net--public/itools--aruni--0.12--patch-65
+     herve@oursours.net--public/itools--aruni--0.12--patch-66
+     herve@oursours.net--public/itools--aruni--0.12--patch-67
+     herve@oursours.net--public/itools--aruni--0.12--patch-68
+     herve@oursours.net--public/itools--aruni--0.12--patch-69
+     herve@oursours.net--public/itools--aruni--0.12--patch-70
+     herve@oursours.net--public/itools--aruni--0.12--patch-71
+     herve@oursours.net--public/itools--aruni--0.12--patch-74
+     herve@oursours.net--public/itools--aruni--0.12--patch-75
+     herve@oursours.net--public/itools--aruni--0.12--patch-76
+     herve@oursours.net--public/itools--aruni--0.12--patch-77
+     herve@oursours.net--public/itools--aruni--0.12--patch-78
+
+
 2005-11-26 09:47:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-69
 
     Summary:

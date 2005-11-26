@@ -3,19 +3,17 @@
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <form action=";add_group" method="post">
-  <table class="form">
-    <tr>
-      <th colspan="2" class="title">Create a new group</th>
-    </tr>
-    <tr>
-      <th align="right">Name</th>
-      <td><input type="text" name="name" /></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="submit"><input type="submit" value="Add" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Create a new group</dt>
+    <dd>
+      <label>Name</label>
+      <input type="text" name="name" />
+    </dd>
+    <dt></dt>
+    <dd>
+      <input type="submit" value="Add" />
+    </dd>
+  </dl>
 </form>
 
 </stl:block>

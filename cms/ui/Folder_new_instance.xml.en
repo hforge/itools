@@ -1,43 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Add a folder</h2>
 
 <form name="new_folder" action=";new_resource" method="post">
-  <input type="hidden" name="class_id" stl:attributes="value class_id" />
-  <table class="form">
-    <tr>
-      <th colspan="2" class="title" stl:content="class_title" />
-    </tr>
-    <tr>
-      <th align="right">Name</th>
-      <td><input type="text" name="name" size="50" /></td>
-    </tr>
-    <tr>
-      <th align="right">Title</th>
-      <td><input type="text" name="dc:title" size="50" /></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="submit"><input type="submit" value="Add" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Please type the folder name, it will be used to store it and it will
+      appear in the URL.</dt>
+    <dd>
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" size="50" />
+    </dd>
+    <dt>Please give a title to your folder.</dt>
+    <dd>
+      <label for="dc_title">Title</label>
+      <input type="text" id="dc_title" name="dc:title" size="50" />
+    </dd>
+    <dd>
+      <input type="hidden" name="class_id" stl:attributes="value class_id" />
+      <input type="submit" value="Add" />
+    </dd>
+  </dl>
 </form>
 
-
-<a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
-  Details
-</a>
-<div id="tip_body">
-  <p>
-    Folders are used to classify documents. To add a folder enter its name
-    and click the <tt>Add</tt> button.
-  </p>
-</div>
-
-<script language="javascript">
-  <!--
-  document.new_folder.name.focus();
-  -->
+<script type="text/javascript">
+  focus("name")
 </script>
 
 </stl:block>

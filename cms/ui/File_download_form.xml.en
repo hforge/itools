@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
-Download :
-<a href="." stl:content="title_or_name"/> 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <p>
+    To download this file, click on <a href="" stl:content="title_or_name" />.
+  </p>
 
 </stl:block>

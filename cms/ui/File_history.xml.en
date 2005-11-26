@@ -2,43 +2,39 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Document History</h2>
+           
 <form action="." method="post">
-  <table class="form">
-    <tr class="header">
-      <th></th>
-      <th>Date</th>
-      <th>User</th>
-      <th>Action</th>
-      <th>Size</th>
-    </tr>
-    <tr stl:repeat="revision revisions">
-      <td>
-        <input class="checkbox" type="checkbox" name="names:list"
-               stl:if="not repeat/revision/start"
-               stl:attributes="value revision/name" />
-      </td>
-      <td stl:content="revision/date" />
-      <td stl:content="revision/username" />
-      <td stl:content="revision/action" />
-      <td stl:content="revision/size" />
-     </tr>
-     <tr>
-       <td></td>
-       <td colspan="4" class="submit">
-         <input type="submit" name=";compare" value="Compare"
-                stl:if="compare" />
-         <input type="submit" name=";copy_to_present"
-                value="Copy to present" />
-       </td>
-    </tr>
-    <tr>
-      <td><img src="images/px.png" height="1" width="10"/></td>
-      <td><img src="images/px.png" height="1" width="50" /></td>
-      <td><img src="images/px.png" height="1" width="50" /></td>
-      <td><img src="images/px.png" height="1" width="100" /></td>
-      <td><img src="images/px.png" height="1" width="30" /></td>
-    </tr>
+  <table border="0" cellpadding="2" cellspacing="2">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Date</th>
+        <th>User</th>
+        <th>Action</th>
+        <th>Size</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr stl:repeat="revision revisions">
+        <td>
+          <input class="checkbox" type="checkbox" name="names:list"
+            stl:if="not repeat/revision/start"
+            stl:attributes="value revision/name" />
+        </td>
+        <td stl:content="revision/date" />
+        <td stl:content="revision/username" />
+        <td stl:content="revision/action" />
+        <td stl:content="revision/size" />
+      </tr>
+    </tbody>
   </table>
+  <p>
+    <input type="submit" name=";compare" value="Compare two selected revisions"
+      stl:if="compare" />
+    <input type="submit" name=";copy_to_present"
+      value="Copy to present the selected revision" />
+  </p>
 </form>
 
 </stl:block>

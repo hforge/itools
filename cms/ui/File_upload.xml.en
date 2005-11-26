@@ -1,31 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Upload File</h2>
+
+<p>
+  You can upload a new file to replace the current one. Note the name and title
+  won't change.
+</p>
 
 <form action=";upload" method="post" enctype="multipart/form-data">
-  <table class="form">
-    <tr>
-      <th class="title" colspan="2">Upload File</th>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <h4>
-          To upload a new version of the file choose it and click the
-          <tt>Upload</tt> button:
-        </h4>
-      </td>
-    </tr>
-    <tr>
-      <th>File</th>
-      <td>
-        <input type="file" name="file" size="50" />
-      </td>
-    </tr>
-    <tr>
-      <th></th>
-      <td class="submit"><input type="submit" value="Upload" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Please select a file from your system using the
+      <strong>Browse...</strong> button below.</dt>
+    <dd>
+      <label for="file">File</label>
+      <input type="file" id="file" name="file" size="50" />
+    </dd>
+    <dt>Please click the <strong>Upload</strong> button below to import the new
+      file.</dt>
+    <dd>
+      <input type="submit" value="Upload" />
+    </dd>
+  </dl>
 </form>
 
 </stl:block>

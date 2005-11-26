@@ -2,49 +2,42 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Add a document</h2>
+
 <form name="new_document" action=";new_resource" method="post">
-  <input type="hidden" name="class_id" stl:attributes="value class_id" />
-  <table class="form">
-    <tr>
-      <th colspan="2" class="title">New Document</th>
-    </tr>
-    <tr>
-      <th>Name</th>
-      <td>
-        <input type="text" name="name" size="50"
-               stl:attributes="value name" />
-      </td>
-    </tr>
-    <tr>
-      <th>Title</th>
-      <td><input type="text" name="dc:title" size="50" /></td>
-    </tr>
-    <tr>
-      <th>Language</th>
-      <td>
-        <select name="dc:language" style="width: 100%">
-          <option stl:repeat="lang languages"
-                  stl:attributes="value lang/code; selected lang/isdefault"
-                  stl:content="lang/name" />
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="submit"><input type="submit" value="Add" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Please type the name, this is not the title of your document but the
+      file name.</dt>
+    <dd>
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" size="50"
+        stl:attributes="value name" />
+    </dd>
+    <dt>Please type the title of your document.</dt>
+    <dd>
+      <label for="dc_title">Title</label>
+      <input type="text" id="dc_title" name="dc:title" size="50" />
+    </dd>
+    <dt>Please select the source language of your document.</dt>
+    <dd>
+      <label for="dc_language">Language</label>
+      <select id="dc_language" name="dc:language">
+        <option stl:repeat="lang languages"
+          stl:attributes="value lang/code; selected lang/isdefault"
+          stl:content="lang/name" />
+      </select>
+    </dd>
+    <dt></dt>
+    <dd>
+      <input type="hidden" name="class_id" stl:attributes="value class_id" />
+      <input type="submit" value="Add" />
+    </dd>
+  </dl>
 </form>
 
-<a id="tip_title" onmouseover="show_tip()" onmouseout="hide_tip()">
-  Details
-</a>
-<div id="tip_body">
-  <p>
-  Documents are where the data is stored, they are similar to the files
-  from your filesystem. You can upload a file from the filesystem or
-  create a new empty document.
-  </p>
-</div>
+<p>
+  Note: administrators can add new languages at the root of the application,
+  tab "Settings", subtab "Languages".
+</p>
 
 </stl:block>

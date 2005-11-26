@@ -1,44 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html
-     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Document State</h2>
+
+<p>
+  Current state: <strong stl:content="state" />
+</p>
 
 <form action=";edit_state" method="post">
-  <table class="form" width="500">
-    <tr>
-      <th colspan="2" class="title">State: <stl:inline content="state" /></th>
-    </tr>
-    <stl:block if="transitions">
-      <tr stl:repeat="transition transitions">
-        <td>
-          <input type="radio" name="transition"
-                 stl:attributes="value transition/name" />
-        </td>
-        <td width="100%" stl:content="transition/description" />
-      </tr>
-      <tr>
-        <td colspan="2">
-          Comments:<br/>
-          <textarea name="comments" cols="66" rows="7" />
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td class="submit"><input type="submit" value="Ok" /></td>
-      </tr>
-    </stl:block>
-  </table>
+  <dl>
+    <dt>You can do the following actions:</dt>
+    <dd stl:repeat="transition transitions">
+      <input type="radio" name="transition"
+        stl:attributes="value transition/name" />
+      <label stl:content="transition/description" />
+    </dd>
+    <dt>Comments (optional):</dt>
+    <dd>
+      <textarea name="comments" cols="66" rows="7" />
+    </dd>
+    <dt></dt>
+    <dd>
+      <input type="submit" value="Change" />
+    </dd>
+  </dl>
 </form>
 
-<stl:block repeat="transition history">
-  <p>
-  <strong stl:content="transition/date" />
-  <stl:block content="transition/name" />,
-  by <em stl:content="transition/user" />.
-  </p>
-  <pre style="margin: 0px 0px 20px 20px" stl:content="transition/comments" />
-</stl:block>
+<h2>State History</h2>
 
+<p stl:if="not history">
+  No history.
+</p>
+
+<table border="0" cellpadding="2" cellspacing="2" stl:if="history">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Action</th>
+      <th>By</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr stl:repeat="transition history">
+      <td stl:content="transition/date" />
+      <td stl:content="transition/name" />
+      <td stl:content="transition/user" />
+      <td stl:content="transition/comments" />
+    </tr>
+  </tbody>
+</table>
+      
 </stl:block>

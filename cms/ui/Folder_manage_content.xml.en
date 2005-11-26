@@ -2,13 +2,9 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<table>
-  <tr stl:repeat="resource resources">
-    <td>
-      <a stl:attributes="href resource/href" stl:content="resource/name" />
-    </td>
-  </tr>
-</table>
-
+<ul>
+  <li stl:repeat="resource resources">
+    <a stl:attributes="href resource/href" stl:content="resource/name" />
+</ul>
 
 </stl:block>

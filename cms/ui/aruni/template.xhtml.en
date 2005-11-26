@@ -56,7 +56,7 @@
                     stl:content="item/short_name">The path entry</a>
                   <span stl:if="not item/url" stl:attributes="title item/name"
                     stl:content="item/short_name" />
-                  <stl:inline if="not repeat/item/end">&raquo;</stl:inline> 
+                  <stl:inline if="not repeat/item/end">/</stl:inline> 
                 </li>
               </ul>
             </div>

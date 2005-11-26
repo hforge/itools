@@ -90,8 +90,7 @@ dt {
 }
 
 #breadcrumbs {
-  font-size: 8pt;
-  margin: 3px;
+  font-size: 9pt;
 }
 
 #breadcrumbs ul {
@@ -126,6 +125,10 @@ dt {
   border-right: 1px solid #ccc;
   padding: 6px;
   white-space: nowrap;
+}
+
+#tabs a, #subtabs a {
+  font-size: 90%;
 }
 
 #tabs a {
@@ -288,5 +291,5 @@ dl.thumb dd
 }
 
 dl.new_resource_thumb {
-  width: 300px;
+  width: 250px;
 }

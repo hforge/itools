@@ -2,10 +2,6 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<p stl:if="not table/objects">
-  This folder or query is empty.
-</p>
-
 <form action=";browse_list" method="get">
   <dl>
     <dt>Display only contents with the following terms:</dt>
@@ -90,5 +86,9 @@
     </stl:block>
   </p>
 </form>
+
+<p stl:if="not table/objects">
+  This folder or query is empty.
+</p>
 
 </stl:block>

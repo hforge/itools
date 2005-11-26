@@ -2,6 +2,104 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-26 20:35:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-73
+
+    Summary:
+      merging the aruni skin from herve
+    Revision:
+      itools--main--0.12--patch-73
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-102
+       increase the breadcrumbs font size.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-103
+       250 px per ressource block for 800x600 displays, and easier to read in the end.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-104
+       refactor the tasks page.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-105
+       refactor the folder add form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-106
+       refactor the new file form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-107
+       refactor the new document form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-108
+       reduce the tab font size.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-109
+       keep the filter above in all cases.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-110
+       Rearrange the file download page.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-111
+       refactor the external editor form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-112
+       refactor the file upload form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-113
+       add a note about how to make more languages available for documents.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-114
+       clean the text edit tagging.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-115
+       refactor the text external edit form based on the file one (is the encoding option really needed?).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-116
+       fix the tagging of management templates.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-117
+       refactor the history page.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-118
+       use slash for separating the breacrumbs.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-119
+       refactor the workflow state form.
+    
+
+    modified files:
+     Changelog cms/ui/File_download_form.xml.en
+     cms/ui/File_externaledit.xml.en cms/ui/File_history.xml.en
+     cms/ui/File_new_instance.xml.en cms/ui/File_upload.xml.en
+     cms/ui/Folder_browse_list.xml.en
+     cms/ui/Folder_manage_content.xml.en
+     cms/ui/Folder_new_instance.xml.en cms/ui/Text_edit.xml.en
+     cms/ui/Text_externaledit.xml.en
+     cms/ui/Text_manage_content.xml.en
+     cms/ui/Text_new_instance.xml.en cms/ui/User_tasks.xml.en
+     cms/ui/WorkflowAware_state.xml.en cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-102
+     herve@oursours.net--public/itools--aruni--0.12--patch-103
+     herve@oursours.net--public/itools--aruni--0.12--patch-104
+     herve@oursours.net--public/itools--aruni--0.12--patch-105
+     herve@oursours.net--public/itools--aruni--0.12--patch-106
+     herve@oursours.net--public/itools--aruni--0.12--patch-107
+     herve@oursours.net--public/itools--aruni--0.12--patch-108
+     herve@oursours.net--public/itools--aruni--0.12--patch-109
+     herve@oursours.net--public/itools--aruni--0.12--patch-110
+     herve@oursours.net--public/itools--aruni--0.12--patch-111
+     herve@oursours.net--public/itools--aruni--0.12--patch-112
+     herve@oursours.net--public/itools--aruni--0.12--patch-113
+     herve@oursours.net--public/itools--aruni--0.12--patch-114
+     herve@oursours.net--public/itools--aruni--0.12--patch-115
+     herve@oursours.net--public/itools--aruni--0.12--patch-116
+     herve@oursours.net--public/itools--aruni--0.12--patch-117
+     herve@oursours.net--public/itools--aruni--0.12--patch-118
+     herve@oursours.net--public/itools--aruni--0.12--patch-119
+
+
 2005-11-26 14:42:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-72
 
     Summary:

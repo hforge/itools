@@ -19,7 +19,9 @@
 # Import from the Standard Library
 from ConfigParser import RawConfigParser
 import os
+import signal
 import sys
+from threading import Thread
 
 # Import from ZODB
 from optparse import OptionParser
@@ -138,7 +140,7 @@ def start(parser, options, target):
     root = get_root(database)
     root.name = root.class_title
 
-    # Start the server
+    # Find out the port to listen
     if options.port:
         port = options.port
     elif config.has_option('instance', 'port'):
@@ -146,10 +148,23 @@ def start(parser, options, target):
     else:
         port = None
 
+    # Start the server
     server = Server(root, port=port, access_log='%s/access_log' % target,
                     error_log='%s/error_log' % target,
                     pid_file='%s/pid' % target)
-    server.start()
+    if options.debug is True:
+        server.start()
+    else:
+        # XXX To implement: detach from the console
+        server.start()
+
+
+
+def stop(parser, options, target):
+    pid = open('%s/pid' % target).read()
+    pid = int(pid)
+    os.kill(pid, signal.SIGTERM)
+
 
 
 def update(parser, options, target):
@@ -196,17 +211,21 @@ if __name__ == '__main__':
              'commands:\n'
              '  %prog init          creates a new instance\n'
              '  %prog start         starts the web server\n'
+             '  %prog stop          stops the web server\n'
              '  %prog update        updates the instance (if needed)\n'
              '  %prog pack          packs the database')
     revision = itools.__arch_revision__
     version = 'itools %s [%s]' % (revision.split('--')[2], revision)
     parser = OptionParser(usage, version=version)
     parser.add_option(
+        '-d', '--debug', action="store_true", default=False,
+        help="start the server on debug mode (don't detach from the console)")
+    parser.add_option(
         '-p', '--port', type='int', help='listen to port number')
     parser.add_option(
-        '-s', '--source', help='use the SOURCE directory to init the database')
-    parser.add_option(
         '-r', '--root', help='use the ROOT handler class to init the instance')
+    parser.add_option(
+        '-s', '--source', help='use the SOURCE directory to init the instance')
 
     options, args = parser.parse_args()
     if len(args) != 2:
@@ -215,8 +234,9 @@ if __name__ == '__main__':
     command_name, target = args
 
     # Mapping from command name to command function and list of allowed options
-    commands = {'init': (init, ['source', 'root', 'port']),
-                'start': (start, ['port']),
+    commands = {'init': (init, ['port', 'source', 'root']),
+                'start': (start, ['debug', 'port']),
+                'stop': (stop, []),
                 'update': (update, []),
                 'pack': (pack, [])}
 
@@ -225,11 +245,15 @@ if __name__ == '__main__':
         parser.error('unexpected command "%s"' % command_name)
 
     # Check wether a forbidden option (in this context) was used
+    error_message = 'the command "%s" does not accept the option -%s/--%s'
     command, allowed_options = commands[command_name]
     for key, value in options.__dict__.items():
-        if key not in allowed_options and value is not None:
-            parser.error('the command "%s" does not accept the option -%s/--%s'
-                         % (command_name, key[0], key))
+        if key not in allowed_options:
+            if key == 'debug':
+                if value is True:
+                    parser.error(error_message % (command_name, key[0], key))
+            elif value is not None:
+                parser.error(error_message % (command_name, key[0], key))
 
     # Action!
     command(parser, options, target)

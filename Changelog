@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-28 18:41:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-77
+
+    Summary:
+      scripts.icms, add "stop" command; and "debug" option (not working yet)
+    Revision:
+      itools--main--0.12--patch-77
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-11-28 16:46:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-76
 
     Summary:

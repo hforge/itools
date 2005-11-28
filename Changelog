@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-28 16:46:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-76
+
+    Summary:
+      scripts.icms, add command to pack the database
+    Revision:
+      itools--main--0.12--patch-76
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-11-28 12:02:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-75
 
     Summary:

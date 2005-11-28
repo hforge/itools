@@ -181,6 +181,13 @@ def update(parser, options, target):
             root.update()
 
 
+def pack(parser, options, target):
+    database = get_database(target).database
+    print 'Packing...', 
+    database.pack()
+    print 'done.'
+
+
 
 if __name__ == '__main__':
     # The command line parser
@@ -189,7 +196,8 @@ if __name__ == '__main__':
              'commands:\n'
              '  %prog init          creates a new instance\n'
              '  %prog start         starts the web server\n'
-             '  %prog update        updates the instance (if needed)')
+             '  %prog update        updates the instance (if needed)\n'
+             '  %prog pack          packs the database')
     revision = itools.__arch_revision__
     version = 'itools %s [%s]' % (revision.split('--')[2], revision)
     parser = OptionParser(usage, version=version)
@@ -209,7 +217,8 @@ if __name__ == '__main__':
     # Mapping from command name to command function and list of allowed options
     commands = {'init': (init, ['source', 'root', 'port']),
                 'start': (start, ['port']),
-                'update': (update, [])}
+                'update': (update, []),
+                'pack': (pack, [])}
 
     # Check wether the command exists
     if command_name not in commands:

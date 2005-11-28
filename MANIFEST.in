@@ -3,10 +3,6 @@ include Changelog
 include resources/tests/index.html.en
 recursive-include xml test.rdf test*.xml simple.xml simple.xsd
 recursive-include i18n *.txt
-recursive-include doc *.tex *.txt itools.sty Makefile *.dot *.sty *.dia *.fig
-include doc/task_tracker.eps
-recursive-include doc/examples *.py *.xml *.txt *.xhtml
-recursive-include doc/examples/task_tracker? *.tt *.en Makefile *.po *.pot
 include LGPL-2.1
 recursive-include catalog/tests *.txt
 recursive-include rss *.html *.rss *.xml

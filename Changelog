@@ -2,6 +2,104 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-28 12:02:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-75
+
+    Summary:
+      move the documentation to another package (itools-docs)
+    Revision:
+      itools--main--0.12--patch-75
+
+
+    removed files:
+     doc/.arch-ids/=id doc/.arch-ids/Makefile.id
+     doc/.arch-ids/arch.tex.id doc/.arch-ids/csv.tex.id
+     doc/.arch-ids/files.tex.id doc/.arch-ids/files2.tex.id
+     doc/.arch-ids/folders.tex.id doc/.arch-ids/handlers.dot.id
+     doc/.arch-ids/i18n.tex.id doc/.arch-ids/intro.tex.id
+     doc/.arch-ids/itools.sty.id doc/.arch-ids/itools.tex.id
+     doc/.arch-ids/l10n.fig.id doc/.arch-ids/latex2stx.txt.id
+     doc/.arch-ids/packages.dot.id doc/.arch-ids/resources.tex.id
+     doc/.arch-ids/state.dia.id doc/.arch-ids/stl.dia.id
+     doc/.arch-ids/stl.tex.id doc/.arch-ids/style.tex.id
+     doc/.arch-ids/task_tracker.eps.id doc/.arch-ids/types.tex.id
+     doc/.arch-ids/uri.tex.id doc/.arch-ids/web.tex.id
+     doc/.arch-ids/web_tree.dia.id doc/.arch-ids/workflow.tex.id
+     doc/.arch-ids/xml.tex.id doc/Makefile doc/arch.tex doc/csv.tex
+     doc/examples/.arch-ids/=id doc/examples/.arch-ids/hello.txt.id
+     doc/examples/.arch-ids/hello.xhtml.id
+     doc/examples/chapter8/.arch-ids/=id
+     doc/examples/chapter8/.arch-ids/hello.xml.id
+     doc/examples/chapter8/.arch-ids/namespaces.py.id
+     doc/examples/chapter8/.arch-ids/parser.py.id
+     doc/examples/chapter8/hello.xml
+     doc/examples/chapter8/namespaces.py
+     doc/examples/chapter8/parser.py
+     doc/examples/chapter9/.arch-ids/=id
+     doc/examples/chapter9/.arch-ids/template.xml.id
+     doc/examples/chapter9/template.xml
+     doc/examples/csv_handler/.arch-ids/=id
+     doc/examples/csv_handler/.arch-ids/clients.csv.id
+     doc/examples/csv_handler/.arch-ids/example.py.id
+     doc/examples/csv_handler/.arch-ids/my_clients.py.id
+     doc/examples/csv_handler/.arch-ids/my_system.py.id
+     doc/examples/csv_handler/clients.csv
+     doc/examples/csv_handler/example.py
+     doc/examples/csv_handler/my_clients.py
+     doc/examples/csv_handler/my_system.py doc/examples/hello.txt
+     doc/examples/hello.xhtml
+     doc/examples/task_tracker0/.arch-ids/=id
+     doc/examples/task_tracker0/.arch-ids/TaskTracker.py.id
+     doc/examples/task_tracker0/.arch-ids/itools.tt.id
+     doc/examples/task_tracker0/TaskTracker.py
+     doc/examples/task_tracker0/itools.tt
+     doc/examples/task_tracker1/.arch-ids/=id
+     doc/examples/task_tracker1/.arch-ids/TaskTracker.py.id
+     doc/examples/task_tracker1/.arch-ids/TaskTracker_view.xml.id
+     doc/examples/task_tracker1/.arch-ids/itools.tt.id
+     doc/examples/task_tracker1/TaskTracker.py
+     doc/examples/task_tracker1/TaskTracker_view.xml
+     doc/examples/task_tracker1/itools.tt
+     doc/examples/task_tracker2/.arch-ids/=id
+     doc/examples/task_tracker2/.arch-ids/Makefile.id
+     doc/examples/task_tracker2/.arch-ids/TaskTracker.py.id
+     doc/examples/task_tracker2/.arch-ids/TaskTracker_view.xml.en.id
+     doc/examples/task_tracker2/.arch-ids/itools.tt.id
+     doc/examples/task_tracker2/Makefile
+     doc/examples/task_tracker2/TaskTracker.py
+     doc/examples/task_tracker2/TaskTracker_view.xml.en
+     doc/examples/task_tracker2/itools.tt
+     doc/examples/task_tracker2/locale/.arch-ids/=id
+     doc/examples/task_tracker2/locale/.arch-ids/en.po.id
+     doc/examples/task_tracker2/locale/.arch-ids/es.po.id
+     doc/examples/task_tracker2/locale/.arch-ids/locale.pot.id
+     doc/examples/task_tracker2/locale/en.po
+     doc/examples/task_tracker2/locale/es.po
+     doc/examples/task_tracker2/locale/locale.pot doc/files.tex
+     doc/files2.tex doc/folders.tex doc/handlers.dot doc/i18n.tex
+     doc/intro.tex doc/itools.sty doc/itools.tex doc/l10n.fig
+     doc/latex2stx.txt doc/packages.dot doc/resources.tex
+     doc/state.dia doc/stl.dia doc/stl.tex doc/style.tex
+     doc/task_tracker.eps doc/types.tex doc/uri.tex doc/web.tex
+     doc/web_tree.dia doc/workflow.tex doc/xml.tex
+
+    modified files:
+     Changelog MANIFEST.in
+
+    removed directories:
+     doc doc/.arch-ids doc/examples doc/examples/.arch-ids
+     doc/examples/chapter8 doc/examples/chapter8/.arch-ids
+     doc/examples/chapter9 doc/examples/chapter9/.arch-ids
+     doc/examples/csv_handler doc/examples/csv_handler/.arch-ids
+     doc/examples/task_tracker0
+     doc/examples/task_tracker0/.arch-ids
+     doc/examples/task_tracker1
+     doc/examples/task_tracker1/.arch-ids
+     doc/examples/task_tracker2
+     doc/examples/task_tracker2/.arch-ids
+     doc/examples/task_tracker2/locale
+     doc/examples/task_tracker2/locale/.arch-ids
+
+
 2005-11-28 11:39:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-74
 
     Summary:

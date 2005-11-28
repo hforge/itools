@@ -30,6 +30,7 @@
     <dt>You may need to change the character encoding if your application
       doesn't support UTF-8 (not recommended).</dt>
     <dd>
+      <label>Character encoding</label>
       <select name="encoding">
         <option stl:repeat="encoding encodings"
           stl:attributes="value encoding/value;

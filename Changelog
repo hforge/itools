@@ -2,6 +2,46 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-28 11:39:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-74
+
+    Summary:
+      merging aruni from herve
+    Revision:
+      itools--main--0.12--patch-74
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-120
+       first step of fixing #205.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-122
+       add the missing label for encoding.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-123
+       fix naming the functionality, it would also compare one selected with the current revision.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-124
+       fix missing end tag.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-125
+       first solution for fixing no li:hover with IE.
+    
+
+    modified files:
+     Changelog cms/ui/File_history.xml.en
+     cms/ui/Folder_browse_list.xml.en
+     cms/ui/Folder_manage_content.xml.en
+     cms/ui/Text_externaledit.xml.en cms/ui/aruni/template.xhtml.en
+     cms/ui/main.js
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-120
+     herve@oursours.net--public/itools--aruni--0.12--patch-122
+     herve@oursours.net--public/itools--aruni--0.12--patch-123
+     herve@oursours.net--public/itools--aruni--0.12--patch-124
+     herve@oursours.net--public/itools--aruni--0.12--patch-125
+
+
 2005-11-26 20:35:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-73
 
     Summary:

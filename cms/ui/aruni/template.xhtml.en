@@ -30,7 +30,7 @@
     <script type="text/javascript" stl:repeat="script scripts"
             stl:attributes="src script" />
   </head>
-  <body>
+  <body onload="onMainLoad()">
     <div id="header" class="clearfix">
       <form id="global_search_form" action="" method="get">
         <input type="text" name="SearchableText"

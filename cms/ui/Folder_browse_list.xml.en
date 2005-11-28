@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form action=";browse_list" method="get">
+<form action="." method="get">
   <dl>
     <dt>Display only contents with the following terms:</dt>
     <dd>
@@ -18,8 +18,7 @@
         </stl:block>
       </select>
       <label for="search_subfolders">Search subfolders</label>
-      <input type="checkbox" name="search_subfolders"
-        id="search_subfolders"
+      <input type="checkbox" name="search_subfolders" id="search_subfolders"
         stl:attributes="checked search_subfolders; value self_path" />
       <input type="submit" value="Search" />
     </dd>

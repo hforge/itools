@@ -5,6 +5,7 @@
 <ul>
   <li stl:repeat="resource resources">
     <a stl:attributes="href resource/href" stl:content="resource/name" />
+  </li>
 </ul>
 
 </stl:block>

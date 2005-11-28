@@ -30,7 +30,7 @@
     </tbody>
   </table>
   <p>
-    <input type="submit" name=";compare" value="Compare two selected revisions"
+    <input type="submit" name=";compare" value="Compare selected revisions"
       stl:if="compare" />
     <input type="submit" name=";copy_to_present"
       value="Copy to present the selected revision" />

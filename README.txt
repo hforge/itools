@@ -1,14 +1,21 @@
 
 itools is a Python library, it groups a number of packages into a single
-meta-package for easier development and deployment. The packages included
-are:
+meta-package for easier development and deployment.
 
-  itools.catalog        itools.ical             itools.web
-  itools.datatypes      itools.resources        itools.workflow
-  itools.gettext        itools.rss              itools.xhtml
-  itools.handlers       itools.schemas          itools.xliff
-  itools.html           itools.tmx              itools.xml
-  itools.i18n           itools.uri
+The packages included are:
+
+  itools.catalog        itools.i18n             itools.web
+  itools.cms            itools.ical             itools.workflow
+  itools.csv            itools.resources        itools.xhtml
+  itools.datatypes      itools.rss              itools.xliff
+  itools.gettext        itools.schemas          itools.xml
+  itools.handlers       itools.tmx            
+  itools.html           itools.uri            
+
+The scripts included are:
+
+  icms.py
+  igettext.py
 
 
 Install
@@ -38,24 +45,45 @@ Bug Tracker
 http://in-girum.net/cgi-bin/bugzilla/index.cgi
 
 
-Credits
--------
-
-Luis Belmar Letelier <luis@itaapy.com>
-Hervé Cauwelier <herve@oursours.net>
-Nicolas Deram <nderam@gmail.com>
-Thilo Ernst <Thilo.Ernst@dlr.de>
-Thierry Fromon <from.t@free.fr>
-J. David Ibáñez <jdavid@itaapy.com>
-Piotr Macuk <piotr@macuk.pl>
-Nicolas Oyez <noyez@gmail.com>
-
-
-Author and license
-------------------
+Copyritght
+----------
 
 Copyright 2002-2005  J. David Ibáñez <jdavid@itaapy.com>
-                     and others (see Credits section)
+
+And:
+
+ - Luis Belmar Letelier <luis@itaapy.com>
+ - Hervé Cauwelier <herve@oursours.net>
+ - Nicolas Deram <nderam@gmail.com>
+ - Alexandre Fernandez <>
+ - Thilo Ernst <Thilo.Ernst@dlr.de>
+ - Thierry Fromon <from.t@free.fr>
+ - J. David Ibáñez <jdavid@itaapy.com>
+ - Piotr Macuk <piotr@macuk.pl>
+ - Cedric Moliard <>
+ - Nicolas Oyez <noyez@gmail.com>
+
+
+License: itools.cms
+-------------------
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+
+License: itools (all but itools.cms)
+------------------------------------
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public

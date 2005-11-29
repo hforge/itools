@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-11-29 14:23:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-78
+
+    Summary:
+      update copyright/license information (#178)
+    Revision:
+      itools--main--0.12--patch-78
+
+
+    new files:
+     .arch-ids/GPL-2.id GPL-2
+
+    modified files:
+     Changelog README.txt cms/Folder.py
+
+
 2005-11-28 18:41:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-77
 
     Summary:

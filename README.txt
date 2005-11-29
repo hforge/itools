@@ -55,8 +55,8 @@ And:
  - Luis Belmar Letelier <luis@itaapy.com>
  - Hervé Cauwelier <herve@oursours.net>
  - Nicolas Deram <nderam@gmail.com>
- - Alexandre Fernandez <>
  - Thilo Ernst <Thilo.Ernst@dlr.de>
+ - Alexandre Fernandez <>
  - Thierry Fromon <from.t@free.fr>
  - J. David Ibáñez <jdavid@itaapy.com>
  - Piotr Macuk <piotr@macuk.pl>

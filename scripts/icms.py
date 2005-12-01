@@ -176,7 +176,7 @@ def stop(parser, options, target):
     pid = open('%s/pid' % target).read()
     pid = int(pid)
     os.kill(pid, signal.SIGTERM)
-    print 'Stopped.
+    print 'Stopped.'
 
 
 

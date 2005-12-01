@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-01 17:02:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
+
+    Summary:
+      scripts.icms, now "icms.py start" detaches from the console
+    Revision:
+      itools--main--0.12--patch-81
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-12-01 10:00:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
 
     Summary:

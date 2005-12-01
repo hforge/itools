@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-01 17:14:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-83
+
+    Summary:
+      web.server, send "NotFound" when a method (";method") does not exists
+    Revision:
+      itools--main--0.12--patch-83
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-12-01 17:12:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-82
 
     Summary:

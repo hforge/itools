@@ -127,19 +127,28 @@ def handle_request(connection, server):
         method = root.internal_server_error
     else:
         context.handler = handler
-        # Get the method
-        if context.method is None:
-            method = handler.get_method(request.method)
+        # Get the method name
+        method_name = context.method
+        if method_name is None:
+            method_name = request.method
+        # Check the method exists
+        try:
+            getattr(handler, method_name)
+        except AttributeError:
+            # Not Found (response code 404)
+            response.set_status(404)
+            method = root.not_found
         else:
-            method = handler.get_method(context.method)
-        # Check security
-        if method is None:
-            if user is None:
-                # Unauthorized (401)
-                method = root.login_form
-            else:
-                # Forbidden (403)
-                method = root.forbidden
+            # Get the method
+            method = handler.get_method(method_name)
+            # Check security
+            if method is None:
+                if user is None:
+                    # Unauthorized (401)
+                    method = root.login_form
+                else:
+                    # Forbidden (403)
+                    method = root.forbidden
 
     # Set the list of needed resources. The method we are going to
     # call may need external resources to be rendered properly, for

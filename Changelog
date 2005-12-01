@@ -2,6 +2,51 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-01 10:00:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
+
+    Summary:
+      merging aruni from herve
+    Revision:
+      itools--main--0.12--patch-80
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-126
+       help diffing HTML files by removing the header.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-129
+       fix changed variable name.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-130
+       optimised PNG images (smaller).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-132
+       fix browse actions for now.
+    
+
+    modified files:
+     Changelog cms/text.py cms/ui/Folder_browse_list.xml.en
+     cms/ui/images/Excel16.png cms/ui/images/File16.png
+     cms/ui/images/Flash16.png cms/ui/images/Flash48.png
+     cms/ui/images/Group16.png cms/ui/images/HTML16.png
+     cms/ui/images/Info16.png cms/ui/images/Info48.png
+     cms/ui/images/OOCalc16.png cms/ui/images/OOWriter16.png
+     cms/ui/images/OOWriter48.png cms/ui/images/Pdf16.png
+     cms/ui/images/Pdf48.png cms/ui/images/Python16.png
+     cms/ui/images/Root16.png cms/ui/images/Root48.png
+     cms/ui/images/Skin16.png cms/ui/images/Skin48.png
+     cms/ui/images/Text16.png cms/ui/images/UserFolder16.png
+     cms/ui/images/WebSite16.png cms/ui/images/Word16.png
+     cms/ui/images/batch-next.png cms/ui/images/batch-previous.png
+     cms/ui/images/px.png web/request.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-126
+     herve@oursours.net--public/itools--aruni--0.12--patch-129
+     herve@oursours.net--public/itools--aruni--0.12--patch-130
+     herve@oursours.net--public/itools--aruni--0.12--patch-132
+
+
 2005-11-29 14:55:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-79
 
     Summary:

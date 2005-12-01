@@ -159,6 +159,8 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
     # History
     compare__access__ = Handler.is_allowed_to_view
     def compare(self, names=[], **kw):
+        from html import XHTMLFile
+
         if len(names) == 0 or len(names) > 2:
             message = u'You must select one or two revisions.'
             raise UserError, self.gettext(message)
@@ -176,12 +178,21 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
         revisions = archives.get_handler(self.get_property('id'))
 
         r0 = revisions.resource.get_resource(names[0])
-        r0 = self.__class__(r0).to_str()
+        r0_obj = self.__class__(r0)
+        if isinstance(r0_obj, XHTMLFile):
+            r0 = r0_obj.to_xhtml_body()
+        else:
+            r0 = r0_obj.to_str()
+
         if len(names) == 2:
             r1 = revisions.resource.get_resource(names[1])
-            r1 = self.__class__(r1).to_str()
+            r1_obj = self.__class__(r1)
         else:
-            r1 = self.to_str()
+            r1_obj = self
+        if isinstance(r1_obj, XHTMLFile):
+            r1 = r1_obj.to_xhtml_body()
+        else:
+            r1 = r1_obj.to_str()
 
         htmldiff = HtmlDiff(wrapcolumn=48)
         return htmldiff.make_table(r0.splitlines(), r1.splitlines())

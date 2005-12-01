@@ -124,7 +124,7 @@ class Request(File):
 
         data = []
         # Request line
-        data.append('%s %s %s\n' % (state.method, state.uri,
+        data.append('%s %s %s\n' % (state.method, state.path,
                                     state.http_version))
         # Headers
         for name in state.headers:

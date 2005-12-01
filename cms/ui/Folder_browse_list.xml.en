@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form action="." method="get">
+<form action="." method="post">
   <dl>
     <dt>Display only contents with the following terms:</dt>
     <dd>

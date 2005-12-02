@@ -254,12 +254,22 @@ class User(Folder):
             themes.append({'value': theme, 'is_selected': theme == user_theme})
         namespace['themes'] = themes
 
+        if self.is_admin():
+            namespace['must_confirm'] = False
+        else:
+            namespace['must_confirm'] = True
+
         handler = self.get_handler('/ui/User_edit.xml')
         return stl(handler, namespace)
 
 
     edit__access__ = 'is_self_or_superuser'
     def edit(self, email, **kw):
+        if not self.is_admin():
+            if not self.authenticate(kw['confirm']):
+                message = u"You mistyped your password, \
+                    your preferences were not changed."
+                raise UserError, self.gettext(message)
         self.set_property('dc:title', kw['dc:title'], language='en')
         email = unicode(email, 'utf-8')
         self.set_email(email)
@@ -276,15 +286,26 @@ class User(Folder):
     edit_password_form__label__ = u'Preferences'
     edit_password_form__sublabel__ = u'Password'
     def edit_password_form(self):
+        namespace = {}
+        if self.is_admin():
+            namespace['must_confirm'] = False
+        else:
+            namespace['must_confirm'] = True
+
         handler = self.get_handler('/ui/User_edit_password.xml')
-        return stl(handler)
+        return stl(handler, namespace)
 
 
     edit_password__access__ = 'is_self_or_superuser'
     def edit_password(self, password, password2, **kw):
+        if not self.is_admin():
+            if not self.authenticate(kw['confirm']):
+                message = u"You mistyped your actual password, \
+                    it will not be changed for the new password."
+                raise UserError, self.gettext(message)
         if not password or password != password2:
-            raise UserError, \
-                  self.gettext(u'The password is wrong, please try again.')
+            message = u"The password is wrong, please try again."
+            raise UserError, self.gettext(message)
 
         self.set_password(base64.encodestring(sha.new(password).digest()))
         # Update the cookie if we updated our own password
@@ -295,7 +316,7 @@ class User(Folder):
             cname = '__ac'
             cookie = base64.encodestring('%s:%s' % (self.name, password))
             cookie = urllib.quote(cookie)
-            expires = request.get('iAuthExpires', None)
+            expires = request.form.get('iAuthExpires', None)
             if expires is None:
                 context.set_cookie(cname, cookie)
             else:

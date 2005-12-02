@@ -334,7 +334,7 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         search_subfolders = query.get('search_subfolders')
 
         if search_subfolders is not None:
-            query['search_subfolders'] = ''
+            del query['search_subfolders']
         else:
             query['parent_path'] = self.get_abspath()
 

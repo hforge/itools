@@ -34,7 +34,6 @@ from itools.web import get_context
 from itools.web.exceptions import UserError
 
 # Import from itools.cms
-import debug
 import File
 from images import Image
 from Handler import Handler
@@ -47,7 +46,7 @@ from widgets import Breadcrumb, Table
 
 
 
-class Folder(Handler, debug.Folder, handlers.Folder.Folder):
+class Folder(Handler, handlers.Folder.Folder):
 
     #########################################################################
     # Class metadata

@@ -2,6 +2,25 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-02 15:20:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-88
+
+    Summary:
+      cms, remove broken debug code
+    Revision:
+      itools--main--0.12--patch-88
+
+
+    removed files:
+     cms/.arch-ids/debug.py.id cms/debug.py
+     cms/ui/.arch-ids/Folder_manage_content.xml.en.id
+     cms/ui/.arch-ids/Text_manage_content.xml.en.id
+     cms/ui/Folder_manage_content.xml.en
+     cms/ui/Text_manage_content.xml.en
+
+    modified files:
+     Changelog cms/Folder.py cms/Metadata.py
+
+
 2005-12-02 14:53:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-87
 
     Summary:

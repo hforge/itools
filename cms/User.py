@@ -143,20 +143,15 @@ class User(Folder):
     # User interface
     #######################################################################
     def get_views(self):
-        context = get_context()
-        root = context.root
-
-        views = ['browse_thumbnails', 'new_resource_form', 'edit_form']
+        views = ['welcome', 'browse_thumbnails', 'new_resource_form',
+                 'edit_form']
+        # Task list only for reviewers and admins (for now).
+        root = get_context().root
         is_admin = self.name in root.get_handler('admins').get_usernames()
-        # XXX Add update method to add the reviewers group
-        try:
-            reviewers = root.get_handler('reviewers')
-        except LookupError:
-            is_rev = False
-        else:
-            is_rev = self.name in reviewers.get_usernames()
+        is_rev = self.name in root.get_handler('reviewers').get_usernames()
         if is_admin or is_rev:
             views.append('tasks_list')
+
         return views
 
 
@@ -170,6 +165,23 @@ class User(Folder):
 
     def clear_group_cache(self):
         self._groups = None
+
+
+    #######################################################################
+    # Welcome
+    welcome__access__ = 'is_allowed_to_view'
+    welcome__label__ = u'Welcome'
+    def welcome(self):
+        namespace = {}
+        namespace['title'] = self.get_property('dc:title') or self.name
+        # Tasks? (for now).
+        root = get_context().root
+        is_admin = self.name in root.get_handler('admins').get_usernames()
+        is_rev = self.name in root.get_handler('reviewers').get_usernames()
+        namespace['tasks'] = is_admin or is_rev
+
+        handler = self.get_handler('/ui/User_welcome.xml')
+        return stl(handler, namespace)
 
 
     #######################################################################

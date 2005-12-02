@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-02 14:35:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-84
+
+    Summary:
+      cms, add welcome page, template by herve (#163)
+    Revision:
+      itools--main--0.12--patch-84
+
+
+    new files:
+     cms/ui/.arch-ids/User_welcome.xml.en.id
+     cms/ui/User_welcome.xml.en
+
+    modified files:
+     Changelog cms/User.py
+
+
 2005-12-01 17:14:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-83
 
     Summary:

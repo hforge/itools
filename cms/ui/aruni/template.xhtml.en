@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="../epoz.css" />
     <script type="text/javascript" src="../epoz.js" />
 
-    <link rel="stylesheet" type="text/css" media="screen" href="onetruelayout.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="../onetruelayout.css" />
     <link rel="stylesheet" type="text/css" href="aruni.css" />
 
     <script type="text/javascript" src="../browser.js" />

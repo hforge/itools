@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form action="." method="post">
+<form action=";browse_list" method="get">
   <dl>
     <dt>Display only contents with the following terms:</dt>
     <dd>
@@ -23,6 +23,9 @@
       <input type="submit" value="Search" class="button_search"/>
     </dd>
   </dl>
+</form>
+
+<form action="." method="post">
   <div class="batchcontrol" stl:if="batch/total">
     <stl:inline if="batch/control" content="batch/control" />
     <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>

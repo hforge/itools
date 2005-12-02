@@ -156,7 +156,7 @@ class Table(object):
             value = self.sortorder
         else:
             value = 'none'
-        img = context.root.get_handler('ui/images/order-%s.gif' % value)
+        img = context.root.get_handler('ui/images/order-%s.png' % value)
         src = context.handler.get_pathto(img)
 
         return pattern % {'href': href, 'src': src}

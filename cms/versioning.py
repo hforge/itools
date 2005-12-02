@@ -53,8 +53,12 @@ class VersioningAware(object):
         return self.metadata.get_property('id')
 
 
+    def get_archive_folder(self):
+        return self.get_root().get_handler('.archive')
+
+
     def add_to_archive(self):
-        archive = self.get_root().get_handler('.archive')
+        archive_folder = self.get_archive_folder()
 
         archive_id = self.get_archive_id()
         if archive_id is None:
@@ -64,9 +68,9 @@ class VersioningAware(object):
         path = archive_id.split('/')
         for i in range(len(path)):
             x = '/'.join(path[:i+1])
-            if not archive.has_handler(x):
-                archive.set_handler(x, Folder())
-        archive.get_handler(archive_id).set_handler(path[-1], self)
+            if not archive_folder.has_handler(x):
+                archive_folder.set_handler(x, Folder())
+        archive_folder.get_handler(archive_id).set_handler(path[-1], self)
 
 
     def commit_revision(self):
@@ -78,14 +82,14 @@ class VersioningAware(object):
                           % self.abspath)
             return
 
-        archive = self.get_root().get_handler('.archive')
+        archive_folder = self.get_archive_folder()
         path = archive_id.split('/')
         for i in range(len(path)):
             x = '/'.join(path[:i+1])
-            if not archive.has_handler(x):
-                archive.set_handler(x, Folder())
-        # Store revision in the archive
-        revisions = archive.get_handler(archive_id)
+            if not archive_folder.has_handler(x):
+                archive_folder.set_handler(x, Folder())
+        # Store revision in the archive folder
+        revisions = archive_folder.get_handler(archive_id)
         seconds_since_the_epoch = mktime(self.mtime.timetuple())
         revision_name = str(seconds_since_the_epoch)
         while revisions.resource.has_resource(revision_name):
@@ -108,19 +112,23 @@ class VersioningAware(object):
     def history_form(self):
         namespace = {}
         # Revisions
-        root = self.get_root()
+        archive_folder = self.get_archive_folder()
         archive_id = self.get_archive_id()
-        archive = root.get_handler('.archive').get_handler(archive_id)
-        revisions = archive.resource.get_resource_names()
-        revisions = [ (name, archive.resource.get_resource(name))
-                      for name in sorted(revisions, reverse=True) ]
-        revisions = [{'name': name,
-                      'date': revision.get_mtime().strftime('%Y/%m/%d %H:%M:%S'),
-                      'username': '', # XXX revision.username,
-                      'action': '-',
-                      'size': revision.get_size()}
-                     for name, revision in revisions ]
+        archive = archive_folder.get_handler(archive_id)
+
+        revisions = []
+        for revision in sorted(archive.get_handlers(), reverse=True):
+            resource = revision.resource
+            info = {
+                'name': revision.name,
+                'date': resource.get_mtime().strftime('%Y/%m/%d %H:%M:%S'),
+                'username': '', # TODO
+                'action': '-', # TODO
+                'size': resource.get_size(),
+            }
+            revisions.append(info)
         namespace['revisions'] = revisions
+
         # Compare
         namespace['compare'] = hasattr(self, 'compare')
 
@@ -135,8 +143,9 @@ class VersioningAware(object):
             raise UserError, self.gettext(message)
                   
 
-        archive = self.get_root().get_handler('.archive')
-        revisions = archive.get_handler(self.get_archive_id())
+        archive_folder = self.get_archive_folder()
+        archive_id = self.get_archive_id()
+        revisions = archive_folder.get_handler(archive_id)
         revision = revisions.get_handler(names[0])
         self.load_state(revision.resource)
 

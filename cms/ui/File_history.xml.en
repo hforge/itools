@@ -31,8 +31,8 @@
   </table>
   <p>
     <input type="submit" name=";compare" value="Compare selected revisions"
-      stl:if="compare" />
-    <input type="submit" name=";copy_to_present"
+      class="button_compare" stl:if="compare" />
+    <input type="submit" name=";copy_to_present" class="button_copy"
       value="Copy to present the selected revision" />
   </p>
 </form>

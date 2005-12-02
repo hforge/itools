@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <div xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <p>
-    There has been an internal server error. It has been logged and a
-    report sent to the system administrator.
-  </p>
-  <p>
-    Please try again later. If the error persits contact directly with
-    the system administrator.
-  </p>
-  <p>
-    Apologies for the inconvenience.
-  </p>
-  <pre style="color: white;" stl:content="traceback" />
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<p>
+  There has been an internal server error. It has been logged and a
+  report sent to the system administrator.
+</p>
+<p>
+  Please try again later. If the error persits contact directly with
+  the system administrator.
+</p>
+<p>
+  Apologies for the inconvenience.
+</p>
+<pre style="color: white;" stl:content="traceback" />
+
 </div>

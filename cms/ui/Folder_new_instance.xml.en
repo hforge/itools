@@ -17,11 +17,11 @@
       <label for="dc_title">Title</label>
       <input type="text" id="dc_title" name="dc:title" size="50" />
     </dd>
-    <dd>
-      <input type="hidden" name="class_id" stl:attributes="value class_id" />
-      <input type="submit" value="Add" />
-    </dd>
   </dl>
+  <p>
+    <input type="hidden" name="class_id" stl:attributes="value class_id" />
+    <input type="submit" value="Add" class="button_ok"/>
+  </p>
 </form>
 
 <script type="text/javascript">

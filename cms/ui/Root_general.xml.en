@@ -12,11 +12,10 @@
       <input class="checkbox" type="checkbox" name="ikaaro:website_is_open"
         value="1" stl:attributes="checked website_is_open" />
     </dd>
-    <dt></dt>
-    <dd>
-      <td class="submit"><input type="submit" value="Change" /></td>
-    </dd>
   </dl>
+  <p>
+    <input type="submit" value="Change" class="button_ok"/>
+  </p>
 </form>
 
 </stl:block>

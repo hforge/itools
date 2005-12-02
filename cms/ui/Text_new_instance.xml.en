@@ -27,12 +27,11 @@
           stl:content="lang/name" />
       </select>
     </dd>
-    <dt></dt>
-    <dd>
-      <input type="hidden" name="class_id" stl:attributes="value class_id" />
-      <input type="submit" value="Add" />
-    </dd>
   </dl>
+  <p>
+    <input type="hidden" name="class_id" stl:attributes="value class_id" />
+    <input type="submit" value="Add" class="button_ok"/>
+  </p>
 </form>
 
 <p>

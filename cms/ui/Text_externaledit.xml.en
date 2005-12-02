@@ -41,7 +41,7 @@
     <dt>To open this document with External Editor, please click the
       <strong>External Editor...</strong> button.</dt>
     <dd>
-      <input type="submit" value="External Editor.." />
+      <input type="submit" value="External Editor.." class="button_external"/>
     </dd>
   </dl>
 </form>

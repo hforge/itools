@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Join the community</h2>
 
 <form name="joinform" action=";join" method="post">
-  <table class="form">
-    <tr>
-      <th colspan="2" class="title">Join the community</th>
-    </tr>
-    <tr>
-      <th>Username</th>
-      <td><input type="text" name="username" /></td>
-    </tr>
-    <tr>
-      <th>Password</th>
-      <td><input type="password" name="password" /></td>
-    </tr>
-    <tr>
-      <th>Repeat Password</th>
-      <td><input type="password" name="password2" /></td>
-    </tr>
-    <tr>
-      <th></th>
-      <td class="submit"><input type="submit" value="OK" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Please enter the username you want to use on this website, e.g.
+      jsmith.</dt>
+    <dd>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" />
+    </dd>
+    <dt>Please enter a password for protecting your account.</dt>
+    <dd>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" />
+    </dd>
+    <dt>Please repeat your password to prevent any typing mistake.</dt>
+    <dd>
+      <label for="password2">Repeat Password</label>
+      <input type="password" id="password2" name="password2" />
+    </dd>
+  </dl>
+  <p>
+    <input type="submit" value="Join" class="button_ok"/>
+  </p>
 </form>
 
 <script language="javascript">
-  document.joinform.username.focus();
+  focus("username")
 </script>
 
 </stl:block>

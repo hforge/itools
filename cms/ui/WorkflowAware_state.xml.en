@@ -23,11 +23,10 @@
     <dd>
       <textarea name="comments" cols="66" rows="7" />
     </dd>
-    <dt></dt>
-    <dd>
-      <input type="submit" value="Change" />
-    </dd>
   </dl>
+  <p>
+    <input type="submit" value="Change" class="button_ok" />
+  </p>
 </form>
 
 <h2>State History</h2>

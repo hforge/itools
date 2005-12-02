@@ -59,11 +59,6 @@ dt {
   font-size: 80%;
 }
 
-#global_search_form .submit {
-  padding-left: 16px;
-  background: #fff url(images/search.png) left center no-repeat;
-}
-
 #actions {
   margin: 0 0 9px 9px;
 }
@@ -293,3 +288,16 @@ dl.thumb dd
 dl.new_resource_thumb {
   width: 250px;
 }
+
+.button_ok { padding-left: 16px; background: #fff url(../images/button_ok.png) left center no-repeat; }
+.button_cancel { padding-left: 16px; background: #fff url(../images/button_cancel.png) left center no-repeat; }
+.button_search { padding-left: 16px; background: #fff url(../images/button_search.png) left center no-repeat; }
+.button_upload { padding-left: 16px; background: #fff url(../images/button_upload.png) left center no-repeat; }
+.button_external { padding-left: 16px; background: #fff url(../images/button_external.png) left center no-repeat; }
+.button_rename { padding-left: 16px; background: #fff url(../images/button_rename.png) left center no-repeat; }
+.button_delete { padding-left: 16px; background: #fff url(../images/button_delete.png) left center no-repeat; }
+.button_copy { padding-left: 16px; background: #fff url(../images/button_copy.png) left center no-repeat; }
+.button_cut { padding-left: 16px; background: #fff url(../images/button_cut.png) left center no-repeat; }
+.button_paste { padding-left: 16px; background: #fff url(../images/button_paste.png) left center no-repeat; }
+.button_translate { padding-left: 16px; background: #fff url(../images/button_translate.png) left center no-repeat; }
+.button_compare { padding-left: 16px; background: #fff url(../images/button_compare.png) left center no-repeat; }

@@ -28,7 +28,7 @@
     </tbody>
   </table>
   <p>
-    <input type="submit" value="Change" />
+    <input type="submit" value="Change" class="button_ok"/>
   </p>
 </form>
 

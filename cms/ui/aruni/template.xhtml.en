@@ -35,7 +35,7 @@
       <form id="global_search_form" action="" method="get">
         <input type="text" name="SearchableText"
           value="" />
-        <input type="submit" class="submit" value="Search" />
+        <input type="submit" class="button_search" value="Search" />
         <a href="#">advanced</a>
       </form>
     </div><div id="header_shadow"></div>

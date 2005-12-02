@@ -16,11 +16,10 @@
       <label for="password">Password</label>
       <input type="password" id="password" name="password" />
     </dd>
-    <dt></dt>
-    <dd>
-      <input type="submit" value="Log in" />
-    </dd>
   </dl>
+  <p>
+    <input type="submit" value="Log in" class="button_ok"/>
+  </p>
 </form>
 
 <script language="javascript">

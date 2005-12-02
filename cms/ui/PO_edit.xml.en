@@ -37,7 +37,7 @@
       </tr>
       <tr>
         <td>
-          <input type="submit" value="Change" />
+          <input type="submit" value="Change" class="button_ok" />
         </td>
       </tr>
     </table>

@@ -11,7 +11,9 @@
   <p>To save the translation above click the button below:</p>
   <blockquote>
     <form action=";save_translation" method="post">
-      <input type="submit" value="Save the translation" />
+      <p>
+        <input type="submit" value="Save the translation" class="button_ok"/>
+      </p>
     </form>
   </blockquote>
 
@@ -40,8 +42,9 @@
       <legend>Message Translation</legend>
       <textarea name="msgstr:utf8:ustring" cols="65" rows="8"
                 stl:content="msgstr"></textarea>
-      <br/>
-      <input type="submit" value="Change" />
+      <p>
+        <input type="submit" value="Change" class="button_ok"/>
+      </p>
     </fieldset>
   </form>
 </stl:block>

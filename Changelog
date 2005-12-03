@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-03 19:40:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-92
+
+    Summary:
+      resources, fix zodb when asked for a non-existent resource
+    Revision:
+      itools--main--0.12--patch-92
+
+
+    modified files:
+     Changelog resources/zodb.py
+
+
 2005-12-03 19:35:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-91
 
     Summary:

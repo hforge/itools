@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-03 19:35:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-91
+
+    Summary:
+      cms, fix add new object when there is a name clash (#220)
+    Revision:
+      itools--main--0.12--patch-91
+
+
+    modified files:
+     Changelog cms/Folder.py
+
+
 2005-12-03 19:27:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-90
 
     Summary:

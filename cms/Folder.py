@@ -874,17 +874,17 @@ class Folder(Handler, handlers.Folder.Folder):
                        u' choose another one.')
             raise UserError, self.gettext(message)
 
+        # Build the name
+        handler_class = self.get_handler_class(class_id)
+        name = FileName.encode((name, handler_class.class_extension,
+                                kw.get('dc:language')))
         if self.has_handler(name):
             message = u'There is already another object with this name'
             raise UserError, self.gettext(message)
 
         # Build the handler
-        handler_class = self.get_handler_class(class_id)
         handler = handler_class.new_instance(**kw)
 
-        # Build the name
-        name = FileName.encode((name, handler.class_extension,
-                                kw.get('dc:language')))
         # Calculate title
         root = self.get_root()
         languages = root.get_property('ikaaro:website_languages')

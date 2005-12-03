@@ -603,10 +603,14 @@ class Folder(Handler, handlers.Folder.Folder):
         if context.request.method == 'POST':
             ids_list =  '&'.join([ 'ids:list=%s' % x for x in names ])
             context.redirect(';rename_form?%s' % ids_list)
+            return
 
         # Build the namespace
         namespace = {}
-        namespace['names'] = names
+        namespace['objects'] = []
+        for real_name in names:
+            name, extension, language = FileName.decode(real_name)
+            namespace['objects'].append({'real_name': real_name, 'name': name})
 
         # Process the template
         handler = self.get_handler('/ui/Folder_rename.xml')
@@ -614,10 +618,11 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     rename__access__ = 'is_allowed_to_move'
-    def rename(self, ids, new_ids, **kw):
+    def rename(self, names, new_names, **kw):
         # Process input data
-        for i, old_name in enumerate(ids):
-            new_name = new_ids[i]
+        for i, old_name in enumerate(names):
+            xxx, extension, language = FileName.decode(old_name)
+            new_name = FileName.encode((new_names[i], extension, language))
             new_name = checkid(new_name)
             if new_name is None:
                 # Invalid name
@@ -638,20 +643,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 self.set_handler(new_name, handler, move=True)
                 self.del_handler('.%s.metadata' % new_name)
                 self.set_handler('.%s.metadata' % new_name, handler_metadata)
-
                 self.del_handler(old_name)
-                # Update isVersionOf/hasVersion
-                handler = self.get_handler(new_name)
-                if isinstance(handler, LocaleAware):
-                    if is_master:
-                        translations = getattr(handler.metadata.properties,
-                                               'hasVersion', {})
-                        for language, name in translations.items():
-                            translation = handler.parent.get_handler(name)
-                            translation.set_property('isVersionOf', new_name)
-                    else:
-                        master.set_property('hasVersion', new_name,
-                                            language=handler.get_language())
 
         message = self.gettext(u'Objects renamed.')
         comeback(message, goto=';%s' % self.get_firstview())

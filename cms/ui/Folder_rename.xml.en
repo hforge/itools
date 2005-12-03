@@ -6,12 +6,14 @@
 
 <form action=";rename" method="post">
   <dl>
-    <stl:block repeat="name names">
-      <dt stl:content="name"/>
+    <stl:block repeat="object objects">
+      <dt stl:content="object/name"/>
       <dd>
-        <input type="hidden" name="ids:list" stl:attributes="value name" />
+        <input type="hidden" name="names:list"
+               stl:attributes="value object/real_name" />
         to
-        <input type="text" name="new_ids:list" stl:attributes="value name" />
+        <input type="text" name="new_names:list"
+               stl:attributes="value object/name" />
       </dd>
     </stl:block>
   </dl>

@@ -57,10 +57,6 @@ class Schema(schemas.base.Schema):
 ##        'format': String,
 ##        'version': String,
 ##        'owner': String,
-        # LocaleAware
-        'language': String,
-        'isVersionOf': String,
-        'hasVersion': String,
         # Workflow
         'wf_transition': Record,
 ##        'name': String,

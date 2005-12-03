@@ -61,12 +61,6 @@ workflow.set_initstate('private')
 
 
 class WorkflowAware(iWorkflowAware):
-    """
-    This is a mixin class that represent documents, or content. It has two
-    special characteristics, it is multilingual (hence its metadata keeps
-    the isVersionOf/hasVersion properties), and it is workflow aware
-    (private/pending/public).
-    """
 
     workflow = workflow
 

@@ -744,12 +744,6 @@ class Folder(Handler, handlers.Folder.Folder):
                             metadata.set_property('state', handler.workflow.initstate)
                         # Fix owner
                         metadata.set_property('owner', context.user.name)
-                        # Fix hasVersion
-                        if metadata.has_property('hasVersion'):
-                            metadata.del_property('hasVersion')
-                        # Fix isVersionOf
-                        if metadata.has_property('isVersionOf'):
-                            metadata.del_property('isVersionOf')
 
         message = self.gettext(u'Objects pasted.')
         comeback(message)
@@ -825,12 +819,6 @@ class Folder(Handler, handlers.Folder.Folder):
             trans_handler = handler_class()
             self.set_handler(trans_name, trans_handler,
                              **{'dc:language': language})
-            # Fix the original metadata (hasVersion)
-            metadata.set_property('hasVersion', trans_name, language=language)
-            # Fix the translation metadata (isVersionOf)
-            trans_handler = self.get_handler(trans_name)
-            trans_metadata = trans_handler.get_metadata()
-            trans_metadata.set_property('isVersionOf', name)
 
         message = self.gettext(u'Document translations created.')
         comeback(message, goto=';%s' % self.get_firstview())

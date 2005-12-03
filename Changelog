@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-03 19:27:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-90
+
+    Summary:
+      cms, removing obsolete i18n code
+    Revision:
+      itools--main--0.12--patch-90
+
+
+    modified files:
+     Changelog cms/Folder.py cms/LocaleAware.py cms/Metadata.py
+     cms/Root.py cms/workflow.py
+
+
 2005-12-03 18:50:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-89
 
     Summary:

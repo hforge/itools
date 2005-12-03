@@ -1,3 +1,32 @@
+0.12.0 (200/12/XX)
+
+  Resources
+  - Implement support for ZODB resources (itools.resources.zodb).
+  - More file-like API. New methods "open", "close", "is_open", "truncate",
+    "readline", "readlines", "seek".
+
+  Catalog
+  - More powerful "And/Or" queries, accept more than two parameters.
+
+  CSV
+  - New package "itools.csv" provides a higher level API to work with CSV
+    files, by Piotr Macuk.
+
+  CMS (a.k.a. ikaaro)
+  - The ikaaro CMS before distributed as a Zope product has been moved
+    to itools as the new package "itools.cms".
+  - Don't requires Zope anymore, works with "itools.web.server".
+  - Integrate the epoz richt text editor into "itools.cms".
+  - New main skin Aruni, by Hervé Cauwelier.
+  - Many user interface inprovements by Hervé Cauwelier.
+
+  Scripts
+  - New script "icms.py" for easy deployment of "itools.cms".
+
+  Packaging
+  - Move the documentation to a different package "itools-docs".
+
+
 0.11.0 (2005/10/30)
 
   URI

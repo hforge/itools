@@ -20,11 +20,11 @@
 """
 This script can be tested with the folowing::
 
-  make clean 
+  make clean
   python setup.py -q clean sdist
   cd dist
-  tar xzf itools-0.11.0.tar.gz
-  cd itools-0.11.0
+  tar xzf itools-0.12.0.tar.gz
+  cd itools-0.12.0
   sudo python setup.py -q install
 
 Make sure the following files are shipped:
@@ -76,6 +76,8 @@ into a single meta-package for easier development and deployment. The packages
 included are:
 
  - itools.catalog
+ - itools.cms
+ - itools.csv
  - itools.datatypes
  - itools.gettext
  - itools.handlers
@@ -92,12 +94,11 @@ included are:
  - itools.xhtml
  - itools.xliff
  - itools.xml
- - itools.csv
 """
 
 setup(
     name = "itools",
-    version = "0.11.0",
+    version = "0.12.0",
     author = u"J. David Ibáñez",
     author_email = "jdavid@itaapy.com",
     license = "GNU Lesser General Public License",

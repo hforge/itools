@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-03 20:07:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-93
+
+    Summary:
+      start working on the release files (CHANGES.txt, setup.py)
+    Revision:
+      itools--main--0.12--patch-93
+
+
+    modified files:
+     CHANGES.txt Changelog setup.py
+
+
 2005-12-03 19:40:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-92
 
     Summary:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-03 20:22:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-94
+
+    Summary:
+      move distutils fix out of "setup.py", for easier re-use
+    Revision:
+      itools--main--0.12--patch-94
+
+
+    modified files:
+     Changelog __init__.py cms/examples/portal1/setup.py setup.py
+
+
 2005-12-03 20:07:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-93
 
     Summary:

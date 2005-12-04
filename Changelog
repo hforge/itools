@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 19:26:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-100
+
+    Summary:
+      cms, fix group template
+    Revision:
+      itools--main--0.12--patch-100
+
+
+    modified files:
+     Changelog cms/ui/Group_browse_users.xml.en
+
+
 2005-12-04 19:15:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-99
 
     Summary:

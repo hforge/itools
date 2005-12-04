@@ -35,5 +35,6 @@
 
   <p stl:if="not table/objects">
     This group is empty.
+  </p>
 
 </stl:block>

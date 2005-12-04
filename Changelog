@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 18:57:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-98
+
+    Summary:
+      cms, keep metadata on copy&paste (#230)
+    Revision:
+      itools--main--0.12--patch-98
+
+
+    modified files:
+     Changelog cms/Folder.py handlers/Folder.py
+
+
 2005-12-04 18:49:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-97
 
     Summary:

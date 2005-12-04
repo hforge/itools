@@ -159,8 +159,8 @@ class Folder(Handler, handlers.Folder.Folder):
         return handlers.Folder.Folder._get_virtual_handler(self, segment)
 
 
-    def on_set_handler(self, segment, handler, format=None, id=None,
-                       move=False, **kw):
+    def before_set_handler(self, segment, handler, format=None, id=None,
+                           move=False, **kw):
         from Root import Root
 
         name = segment.name
@@ -172,6 +172,15 @@ class Folder(Handler, handlers.Folder.Folder):
         if metadata is None:
             metadata = self.build_metadata(handler, format=format, **kw)
         self.set_handler('.%s.metadata' % name, metadata)
+
+
+    def after_set_handler(self, segment, handler, format=None, id=None,
+                          move=False, **kw):
+        from Root import Root
+
+        name = segment.name
+        if name.startswith('.'):
+            return
 
         root = self.get_root()
         if isinstance(root, Root):

@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 19:58:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-101
+
+    Summary:
+      add the release notes for 0.12 (new RELEASE.txt file)
+    Revision:
+      itools--main--0.12--patch-101
+
+
+    new files:
+     .arch-ids/RELEASE.txt.id RELEASE.txt
+
+    modified files:
+     Changelog README.txt
+
+
 2005-12-04 19:26:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-100
 
     Summary:

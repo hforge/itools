@@ -384,7 +384,7 @@ class User(Folder):
             group = root.get_handler(group_path)
             group.set_user(self.name)
 
-        message = self.gettext(u'User groups edited')
+        message = self.gettext(u'User groups edited.')
         comeback(message)
 
 

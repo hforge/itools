@@ -149,7 +149,7 @@ class Table(object):
         data['%s_sortorder' % self.name] = value
 
         request = context.request
-        href = request.build_url(preserve=[self.name], **data)
+        href = request.build_url(preserve=['search', self.name], **data)
 
         # Calculate the src
         if self.sortby == column:

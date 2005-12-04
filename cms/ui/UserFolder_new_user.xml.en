@@ -38,7 +38,8 @@
     </tbody>
   </table>
   <p>
-    <input type="submit" value="Add" class="button_ok"/>
+    <input type="submit" name="add_and_view" value="Add and view" class="button_ok"/>
+    <input type="submit" name="add_and_return" value="Add and return"/>
   </p>
 </form>
 

@@ -148,7 +148,7 @@ class WebSite(Folder):
         self.set_property('ikaaro:website_is_open',
                           kw.get('ikaaro:website_is_open', False))
 
-        message = self.gettext(u'General settings changed')
+        message = self.gettext(u'General settings changed.')
         comeback(message)
 
 
@@ -260,12 +260,12 @@ class WebSite(Folder):
             user = users.get_handler(username)
         else:
             # XXX We lost the referrer if any
-            message = u'The user "%s" does not exist'
+            message = u'The user "%s" does not exist.'
             raise UserError, self.gettext(message) % username
 
         if not user.authenticate(password):
             # XXX We lost the referrer if any
-            raise UserError, self.gettext(u'The password is wrong')
+            raise UserError, self.gettext(u'The password is wrong.')
 
         # Set cookie
         cname = '__ac'

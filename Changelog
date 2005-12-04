@@ -2,6 +2,46 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 22:09:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-102
+
+    Summary:
+      merge from herve (#21, #214, #215)
+    Revision:
+      itools--main--0.12--patch-102
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-133
+       transmit the message when coming back.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-134
+       redirect to the new resource after creation.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-137
+       normalize messages (translated, end with a period).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-142
+       propagate the search query to the sort actions (#21).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-169
+       after adding the resource, either display it or return to the container (#214).
+    
+
+    modified files:
+     Changelog cms/Folder.py cms/User.py cms/UserFolder.py
+     cms/WebSite.py cms/ui/File_new_instance.xml.en
+     cms/ui/Folder_new_instance.xml.en
+     cms/ui/Text_new_instance.xml.en
+     cms/ui/UserFolder_new_user.xml.en cms/utils.py cms/widgets.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-133
+     herve@oursours.net--public/itools--aruni--0.12--patch-134
+     herve@oursours.net--public/itools--aruni--0.12--patch-137
+     herve@oursours.net--public/itools--aruni--0.12--patch-142
+     herve@oursours.net--public/itools--aruni--0.12--patch-169
+
+
 2005-12-04 19:58:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-101
 
     Summary:

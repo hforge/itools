@@ -292,6 +292,18 @@ class Folder(Handler, handlers.Folder.Folder):
     #######################################################################
     # User interface
     #######################################################################
+    def get_browse_view(self):
+        context = get_context()
+        options = {
+            'thumb': 'browse_thumbnails',
+            'list': 'browse_list',
+            'image_gallery': 'browse_image',
+        }
+        key = context.get_cookie('browse')
+        return options.get(key, 'browse_thumbnails')
+        
+        
+    
     def get_firstview(self):
         """
         Returns the first allowed object view url, or None if there aren't.
@@ -301,13 +313,7 @@ class Folder(Handler, handlers.Folder.Folder):
             method = self.get_method(name)
             if method is not None:
                 if name in ['browse_thumbnails', 'browse_list']:
-                    options = {None: 'browse_thumbnails',
-                               'thumb': 'browse_thumbnails',
-                               'list': 'browse_list',
-                               'image_gallery': 'browse_image'}
-                    key = context.get_cookie('browse')
-                    name = options[key]
-
+                    name = self.get_browse_view()
                 return name
         return None
 
@@ -467,16 +473,16 @@ class Folder(Handler, handlers.Folder.Folder):
 
         context.set_cookie('browse', 'list')
 
-        search_subfolders = kw.get('search_subfolders')
         if 'search_value' in kw:
             search_value = unicode(kw['search_value'], 'utf8').strip()
         else:
             search_value = u''
 
+        search_subfolders = kw.get('search_subfolders')
         if search_subfolders and not search_value:
             message = (u'Please put a value for your search criteria if you'
-                       u' include subfolders')
-            comeback(message)
+                       u' include subfolders.')
+            comeback(self.gettext(message))
             return
 
         selected_criteria = kw.get('search_criteria')
@@ -576,7 +582,7 @@ class Folder(Handler, handlers.Folder.Folder):
             else:
                 not_allowed.append(name)
 
-        message = self.gettext(u'Objects removed: %s.') % ','.join(removed)
+        message = self.gettext(u'Objects removed: %s.') % ', '.join(removed)
         comeback(message)
 
 
@@ -874,7 +880,7 @@ class Folder(Handler, handlers.Folder.Folder):
         name = FileName.encode((name, handler_class.class_extension,
                                 kw.get('dc:language')))
         if self.has_handler(name):
-            message = u'There is already another object with this name'
+            message = u'There is already another object with this name.'
             raise UserError, self.gettext(message)
 
         # Build the handler
@@ -888,8 +894,12 @@ class Folder(Handler, handlers.Folder.Folder):
         # Add the handler
         self.set_handler(name, handler, **kw)
 
-        message = self.gettext(u'New resource added')
-        comeback(message, goto=';%s' % self.get_firstview())
+        message = self.gettext(u'New resource added.')
+        if kw.has_key('add_and_return'):
+            goto = ';%s' % self.get_browse_view()
+        else:
+            goto='./%s/;%s' % (name, handler.get_firstview())
+        comeback(message, goto=goto)
 
 
     browse_dir__access__ = 'is_authenticated'

@@ -16,7 +16,8 @@
     <dt>Please click the <strong>Upload</strong> button below to import the
       file and create a new resource.</dt>
     <dd>
-      <input type="submit" value="Upload" class="button_upload"/>
+      <input type="submit" name="add_and_view" value="Upload and view" class="button_upload"/>
+      <input type="submit" name="add_and_return" value="Upload and return" />
     </dd>
   </dl>
 </form>

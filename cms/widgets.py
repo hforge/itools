@@ -133,7 +133,7 @@ class Table(object):
         if isinstance(column, (str, unicode)):
             column = [column]
         # The html snippet, variables: href and src
-        pattern = '<a href="%(href)s"><img src="%(src)s" border="0"></a>'
+        pattern = '<a href="%(href)s"><img src="%(src)s"></a>'
 
         # Calculate the href
         data = {}

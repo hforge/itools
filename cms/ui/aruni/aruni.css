@@ -20,7 +20,7 @@ p {
   font: 11pt "Bitstream Vera Sans", Arial, sans-serif;
 }
 
-select, input, textarea {
+select, input, textarea, button {
   border: 2px ridge #000;
   background: #fff;
 }
@@ -284,6 +284,7 @@ dl.new_resource_thumb {
 .button_translate { padding-left: 16px; background: #fff url(../images/button_translate.png) left center no-repeat; }
 .button_compare { padding-left: 16px; background: #fff url(../images/button_compare.png) left center no-repeat; }
 
+.results li { margin: 3px 3px 6px; }
 .result_control { background: #deeff1; }
 .result_url,  .result_type, .result_size {
   font-size: 80%;

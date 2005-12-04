@@ -183,7 +183,8 @@ class Skin(Folder):
             joinisopen = False
             info = {'name': user.name,
                     'title': user.title or user.name,
-                    'home':  '%s/' % here.get_pathto(user),
+                    'home':  '%s/;%s' % (here.get_pathto(user),
+                        user.get_firstview()),
                     'logout': '%s/;logout' % path_to_root}
         return {'info': info,
                 'joinisopen': joinisopen,
@@ -258,11 +259,11 @@ class Skin(Folder):
 
         if request.has_parameter('site_search_criteria'):
             criteria = request.get_parameter('site_search_criteria')
-            namespace['on_title'] = (criteria == 'title')
-            namespace['on_text'] = (criteria == 'text')
+            namespace['in_title'] = (criteria == 'title')
+            namespace['in_text'] = (criteria == 'text')
         else:
-            namespace['on_title'] = True
-            namespace['on_text'] = False
+            namespace['in_title'] = True
+            namespace['in_text'] = False
 
         return namespace
 

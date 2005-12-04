@@ -234,11 +234,15 @@ class User(Folder):
     edit_form__label__ = u'Preferences'
     edit_form__sublabel__ = u'Personal'
     def edit_form(self):
-        root = get_context().root
+        context = get_context()
+        root = context.root
+        user = context.user
+
         # Build the namespace
         namespace = {}
         namespace['fullname'] = self.get_property('dc:title')
         namespace['email'] = self.get_email()
+
         # Languages
         languages = []
         user_language = self.get_property('ikaaro:user_language')
@@ -247,6 +251,7 @@ class User(Folder):
                               'name': i18n.get_language_name(language_code),
                               'is_selected': language_code == user_language})
         namespace['languages'] = languages
+
         # Themes
         themes = []
         user_theme = self.get_property('ikaaro:user_theme')
@@ -254,7 +259,7 @@ class User(Folder):
             themes.append({'value': theme, 'is_selected': theme == user_theme})
         namespace['themes'] = themes
 
-        if self.is_admin():
+        if self.is_admin() and self.name != user.name:
             namespace['must_confirm'] = False
         else:
             namespace['must_confirm'] = True
@@ -265,11 +270,15 @@ class User(Folder):
 
     edit__access__ = 'is_self_or_superuser'
     def edit(self, email, **kw):
-        if not self.is_admin():
+        context = get_context()
+        user = context.user
+
+        if not self.is_admin() or self.name == user.name:
             if not self.authenticate(kw['confirm']):
                 message = u"You mistyped your password, \
                     your preferences were not changed."
                 raise UserError, self.gettext(message)
+
         self.set_property('dc:title', kw['dc:title'], language='en')
         email = unicode(email, 'utf-8')
         self.set_email(email)
@@ -286,8 +295,11 @@ class User(Folder):
     edit_password_form__label__ = u'Preferences'
     edit_password_form__sublabel__ = u'Password'
     def edit_password_form(self):
+        context = get_context()
+        user = context.user
+
         namespace = {}
-        if self.is_admin():
+        if self.is_admin() or self.name != user.name:
             namespace['must_confirm'] = False
         else:
             namespace['must_confirm'] = True
@@ -298,11 +310,15 @@ class User(Folder):
 
     edit_password__access__ = 'is_self_or_superuser'
     def edit_password(self, password, password2, **kw):
-        if not self.is_admin():
+        context = get_context()
+        user = context.user
+
+        if not self.is_admin() or user.name != self.name:
             if not self.authenticate(kw['confirm']):
                 message = u"You mistyped your actual password, \
                     it will not be changed for the new password."
                 raise UserError, self.gettext(message)
+
         if not password or password != password2:
             message = u"The password is wrong, please try again."
             raise UserError, self.gettext(message)

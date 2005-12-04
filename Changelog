@@ -2,6 +2,64 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 16:46:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-96
+
+    Summary:
+      merge from herve
+    Revision:
+      itools--main--0.12--patch-96
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-160
+       we search *in* the title, not *on*.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-161
+       forgotten 'on_title' to 'in_title' change.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-162
+       remove obsolete border attribute (done in the CSS).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-163
+       add the forgotten result icon.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-164
+       argh... in, not on title...
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-165
+       add a 'results' page to ease styling.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-166
+       the admin must confirm his account changes.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-168
+       reintroduce the first view to the home folder, now it is no longer bound to the index.html trick.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-170
+       don't display the (broken) batch controls whitout results.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-171
+       applying the input style to the button element.
+    
+
+    modified files:
+     Changelog cms/User.py cms/skins.py
+     cms/ui/WebSite_search.xml.en cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en cms/widgets.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-160
+     herve@oursours.net--public/itools--aruni--0.12--patch-161
+     herve@oursours.net--public/itools--aruni--0.12--patch-162
+     herve@oursours.net--public/itools--aruni--0.12--patch-163
+     herve@oursours.net--public/itools--aruni--0.12--patch-164
+     herve@oursours.net--public/itools--aruni--0.12--patch-165
+     herve@oursours.net--public/itools--aruni--0.12--patch-166
+     herve@oursours.net--public/itools--aruni--0.12--patch-168
+     herve@oursours.net--public/itools--aruni--0.12--patch-170
+     herve@oursours.net--public/itools--aruni--0.12--patch-171
+
+
 2005-12-04 09:01:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-95
 
     Summary:

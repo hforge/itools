@@ -646,10 +646,10 @@ class Folder(Handler, handlers.Folder.Folder):
 
         context = get_context()
         request, response = context.request, context.response
-        path = str(context.path[1:])
+        path = self.get_abspath()
         cp = (False, [ '%s/%s' % (path, x) for x in names ])
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
-        context.set_cookie('ikaaro_cp', cp)
+        context.set_cookie('ikaaro_cp', cp, path='/')
 
         message = self.gettext(u'Objects copied.')
         comeback(message)
@@ -666,10 +666,10 @@ class Folder(Handler, handlers.Folder.Folder):
 
         context = get_context()
         request, response = context.request, context.response
-        path = str(context.path[1:])
+        path = self.get_abspath()
         cp = (True, [ '%s/%s' % (path, x) for x in names ])
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
-        context.set_cookie('ikaaro_cp', cp)
+        context.set_cookie('ikaaro_cp', cp, path='/')
 
         message = self.gettext(u'Objects cut.')
         comeback(message)
@@ -697,16 +697,16 @@ class Folder(Handler, handlers.Folder.Folder):
                         try:   # tests if id ends with a number
                             index = int(index)
                         except ValueError:
-                            id.append('copy_1') 
+                            id.append('copy_1')
                         else:
                             try:  # tests if the pattern is '_copy_x'
                                if id[-2] == 'copy':
                                   index = str(index + 1) # increment index
                                   id[-1] = index
                                else:
-                                  id.append('copy_1') 
+                                  id.append('copy_1')
                             except IndexError:
-                               id.append('copy_1') 
+                               id.append('copy_1')
                             else:
                                pass
                         id = '_'.join(id)

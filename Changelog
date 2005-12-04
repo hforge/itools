@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 18:49:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-97
+
+    Summary:
+      cms, fixing cookies in copy and cut
+    Revision:
+      itools--main--0.12--patch-97
+
+
+    modified files:
+     Changelog cms/Folder.py
+
+
 2005-12-04 16:46:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-96
 
     Summary:

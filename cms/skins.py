@@ -242,6 +242,31 @@ class Skin(Folder):
             return None
 
 
+    def get_site_search(self):
+
+        context = get_context()
+        request = context.request
+        namespace = {}
+
+        path = context.handler.get_pathtoroot()
+        namespace['action'] = path + ';site_search'
+
+        if request.has_parameter('site_search_text'):
+            namespace['text'] = request.get_parameter('site_search_text')
+        else:
+            namespace['text'] = ''
+
+        if request.has_parameter('site_search_criteria'):
+            criteria = request.get_parameter('site_search_criteria')
+            namespace['on_title'] = (criteria == 'title')
+            namespace['on_text'] = (criteria == 'text')
+        else:
+            namespace['on_title'] = True
+            namespace['on_text'] = False
+
+        return namespace
+
+
     def get_template_title(self):
         """Return the title to give to the template document."""
         context = get_context()
@@ -288,6 +313,9 @@ class Skin(Folder):
 
         # Message
         namespace['message'] = self.get_message()
+
+        # Root search
+        namespace['site_search'] = self.get_site_search()
 
         return namespace
 

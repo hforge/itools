@@ -375,28 +375,14 @@ class Folder(Handler, handlers.Folder.Folder):
                 line['format'] = document.get_property('format')
                 line['class_title'] = document.class_title
                 line['title'] = document.get_property('dc:title')
-                is_file = isinstance(resource, base.File)
-                is_folder = isinstance(resource, base.Folder)
-                line['is_file'] = is_file
-                line['is_folder'] = is_folder
+                line['is_file'] = isinstance(resource, base.File)
+                line['is_folder'] = isinstance(resource, base.Folder)
                 line['ctime'] = resource.get_ctime()
                 line['mtime'] = resource.get_mtime()
                 line['atime'] = resource.get_atime()
 
                 # compute size
-                line['size'] = ''
-                if is_file:
-                    bytes = resource.get_size()
-                    kbytes = bytes / 1024.0
-                    if kbytes >= 1000:
-                        mbytes = kbytes / 1024.0
-                        line['size'] = '%.01f Mb' % mbytes
-                    else:
-                        line['size'] = '%.01f Kb' % kbytes
-                else:
-                    size = len([ x for x in resource.get_resource_names()
-                                 if not x.startswith('.') ])
-                    line['size'] = self.gettext(u'%d obs') % size
+                line['size'] = self.get_human_size()
                 line['url'] = '%s/;%s' % (line['name'],
                                           document.get_firstview())
                 path_to_icon = document.get_path_to_icon(icon_size,

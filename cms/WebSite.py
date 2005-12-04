@@ -20,6 +20,7 @@ from base64 import encodestring
 from urllib import quote
 
 # Import from itools
+from itools import uri
 from itools import i18n
 from itools.xml.stl import stl
 from itools.web import get_context
@@ -33,6 +34,7 @@ from Metadata import Metadata
 from skins import Skin
 from utils import comeback
 from workflow import WorkflowAware
+from widgets import Table
 
 
 
@@ -326,6 +328,82 @@ class WebSite(Folder):
             goto = context.request.referrer
 
         context.redirect(goto)
+
+    
+    ########################################################################
+    # User search UI
+    site_search__access__ = True
+    def site_search(self, **kw):
+        context = get_context()
+        root = context.root
+
+        criteria = kw.get('site_search_criteria', 'title')
+        if criteria not in ('title', 'text'):
+            raise UserError, "Search criteria '%s' unsupported." % criteria
+
+        text = kw.get('site_search_text', '').strip()
+        if not text:
+            raise UserError, "Empty search value."
+
+        results = self.search(**{criteria: text})
+
+        # put the metadatas in a dictionary list to be managed with Table
+        fields = root.get_catalog_metadata_fields()
+        table_content = []
+        for result in results:
+            line = {}
+            for field in fields:
+                # put a '' if the brain doesn't have the given field
+                line[field] = getattr(result, field, '')
+            table_content.append(line)
+
+        # Build the table
+        path_to_root = context.path.get_pathtoroot()
+        table = Table(path_to_root, 'site_search', table_content, sortby=None,
+            batchstart='0', batchsize='10')
+
+        # get the handler for the visibles documents and extracts values
+        objects = []
+        for object in table.objects:
+            abspath = object['abspath']
+            document = root.get_handler(abspath)
+            
+            if not document.is_allowed_to_view():
+                continue
+
+            info = {}
+            info['abspath'] = abspath
+            info['title'] = document.title_or_name
+            info['type'] = self.gettext(document.class_title)
+            info['size'] = document.get_human_size()
+            info['url'] = '%s/;%s' % (self.get_pathto(document),
+                    document.get_firstview())
+
+            path_to_icon = document.get_path_to_icon(16, from_handler=self)
+            if path_to_icon.startswith(';'):
+                path_to_icon = uri.Path('%s/' % document.name).resolve(path_to_icon)
+            info['icon'] = path_to_icon
+
+            language = object.get('language')
+            if language:
+                language_name = i18n.get_language_name(language)
+                line['language'] = self.gettext(language_name)
+            else:
+                line['language'] = ''
+            objects.append(info)
+
+        table.objects = objects
+
+        namespace = {}
+        namespace['table'] = table
+        namespace['batch'] = table.batch_control()
+
+        if not objects:
+            message = u'We did not find results for "%s".'
+            namespace['not_found'] = self.gettext(message) % text
+
+        hander = self.get_handler('/ui/WebSite_search.xml')
+        return stl(hander, namespace)
 
 
 Folder.register_handler_class(WebSite)

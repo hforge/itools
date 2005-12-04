@@ -2,6 +2,64 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 09:01:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-95
+
+    Summary:
+      merge search from herve (#208)
+    Revision:
+      itools--main--0.12--patch-95
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-150
+       use the Python 2.4 sorted function.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-151
+       use the field prefix practice, for a later convenient use (see web.request.build_url, argument 'preserve').
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-152
+       renamed root_search to site_search, specific to a website, not the root application (searching a front-office site for instance).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-153
+       the new site_search namespace used by the top-right search form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-154
+       isolate the human-readable algorithm for reuse.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-155
+       dumb errors.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-156
+       compact the css a bit.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-157
+       simple result page for simple site search.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-158
+       styling the result page.
+    
+
+    new files:
+     cms/ui/.arch-ids/WebSite_search.xml.en.id
+     cms/ui/WebSite_search.xml.en
+
+    modified files:
+     Changelog catalog/Catalog.py cms/Folder.py cms/Handler.py
+     cms/WebSite.py cms/skins.py cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-150
+     herve@oursours.net--public/itools--aruni--0.12--patch-151
+     herve@oursours.net--public/itools--aruni--0.12--patch-152
+     herve@oursours.net--public/itools--aruni--0.12--patch-153
+     herve@oursours.net--public/itools--aruni--0.12--patch-154
+     herve@oursours.net--public/itools--aruni--0.12--patch-155
+     herve@oursours.net--public/itools--aruni--0.12--patch-156
+     herve@oursours.net--public/itools--aruni--0.12--patch-157
+     herve@oursours.net--public/itools--aruni--0.12--patch-158
+
+
 2005-12-03 20:22:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-94
 
     Summary:

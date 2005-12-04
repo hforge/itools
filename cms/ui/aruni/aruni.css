@@ -25,17 +25,10 @@ select, input, textarea {
   background: #fff;
 }
 
-a {
-  color: #336c99;
-}
+a { color: #336c99; }
+a img { border: 0; }
 
-a img {
-  border: 0;
-}
-
-dt {
-  font-weight: bold;
-}
+dt { font-weight: bold; }
 
 #header {
   padding: 30px 3px 3px;
@@ -48,14 +41,14 @@ dt {
   background: #fff url(images/shadow.png) left top repeat-x;
 }
 
-#global_search_form {
+#site_search_form {
   float: right;
   margin: 0;
   padding: 0;
   color: #fff;
 }
 
-#global_search_form input {
+#site_search_form input {
   font-size: 80%;
 }
 
@@ -68,21 +61,10 @@ dt {
   padding-left: 16px;
 }
 
-#action_login {
-  background: url(images/action_login.png) left center no-repeat;
-}
-
-#action_join {
-  background: url(images/action_join.png) left center no-repeat;
-}
-
-#action_home {
-  background: url(images/action_home.png) left center no-repeat;
-}
-
-#action_logout {
-  background: url(images/action_logout.png) left center no-repeat;
-}
+#action_login { background: url(images/action_login.png) left center no-repeat; }
+#action_join { background: url(images/action_join.png) left center no-repeat; }
+#action_home { background: url(images/action_home.png) left center no-repeat; }
+#action_logout { background: url(images/action_logout.png) left center no-repeat; }
 
 #breadcrumbs {
   font-size: 9pt;
@@ -301,3 +283,9 @@ dl.new_resource_thumb {
 .button_paste { padding-left: 16px; background: #fff url(../images/button_paste.png) left center no-repeat; }
 .button_translate { padding-left: 16px; background: #fff url(../images/button_translate.png) left center no-repeat; }
 .button_compare { padding-left: 16px; background: #fff url(../images/button_compare.png) left center no-repeat; }
+
+.result_control { background: #deeff1; }
+.result_url,  .result_type, .result_size {
+  font-size: 80%;
+}
+.result_url { color: #008000; }

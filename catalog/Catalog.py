@@ -264,18 +264,16 @@ class Catalog(Folder):
 
 
     def search(self, query=None, **kw):
+        from operator import itemgetter
+
         # Search
         documents = self._search(query, **kw)
-        # Sort by weight
-        documents = [ (weight, doc_number)
-                      for doc_number, weight in documents.items() ]
-        documents.sort()
-        documents.reverse()
         # Build the document objects
         state = self.state
         fields = self.get_handler('fields')
-        for document in documents:
-            weight, doc_number = document
+        # iterate on sorted by weight in decrease order
+        for document in sorted(documents.iteritems(), key=itemgetter(1), reverse=True):
+            doc_number, weight = document
             # Load the IDocument
             if doc_number in state.added_documents:
                 doc_handler = state.added_documents[doc_number]

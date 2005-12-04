@@ -19,7 +19,9 @@
 # Import from the Standard Library
 from ConfigParser import RawConfigParser
 import os
+import random
 import signal
+import string
 import sys
 from threading import Thread
 
@@ -88,7 +90,10 @@ def init(parser, options, target):
         else:
             exec('import %s' % options.root)
             exec('root_class = %s.Root' % options.root)
-        source = root_class(username='a', password='a').resource
+        password = [ random.choice(string.ascii_letters + string.digits)
+                     for x in range(8) ]
+        password = ''.join(password)
+        source = root_class(username='admin', password=password).resource
     else:
         source = get_resource(options.source)
         if not isinstance(source, base.Folder):
@@ -122,8 +127,16 @@ def init(parser, options, target):
         transaction.commit()
 
     # Bravo!
-    print 'To start the new instance type:'
-    print '  %s start %s' % (parser.get_prog_name(), target)
+    print '****************************************************************'
+    print '* Welcome to itools.cms'
+    print '* A user with administration rights has been created for you:'
+    print '*   username: admin'
+    print '*   password: %s' % password
+    print '*'
+    print '* To start the new instance type:'
+    print '*   %s start %s' % (parser.get_prog_name(), target)
+    print '*'
+
 
 
 

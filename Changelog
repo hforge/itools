@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-04 19:15:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-99
+
+    Summary:
+      scripts.icms, (on init) create a user admin with a "secure" password
+    Revision:
+      itools--main--0.12--patch-99
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2005-12-04 18:57:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-98
 
     Summary:

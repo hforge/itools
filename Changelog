@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-05 11:03:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-104
+
+    Summary:
+      web, change default port to 8080
+    Revision:
+      itools--main--0.12--patch-104
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-12-05 08:36:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-103
 
     Summary:

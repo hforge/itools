@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-05 17:59:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-105
+
+    Summary:
+      csv, remove unused import
+    Revision:
+      itools--main--0.12--patch-105
+
+
+    modified files:
+     Changelog csv/itools_csv.py
+
+
 2005-12-05 11:03:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-104
 
     Summary:

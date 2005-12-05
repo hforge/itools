@@ -2,6 +2,60 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-05 08:36:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-103
+
+    Summary:
+      merge aruni from herve
+    Revision:
+      itools--main--0.12--patch-103
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-173
+       drop the shadow.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-174
+       move the search form in a paragraph for semantic (and validity).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-175
+       reduce the font size, looks less vulgar.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-176
+       use the default button look and feel.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-177
+       drop the 'personal site' banner for a stylish uniform background and a logo that always fits in the right place.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-178
+       compacting the CSS for production.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-179
+       dropping the advanced search for 0.12.
+    
+
+    new files:
+     cms/ui/aruni/images/.arch-ids/logo.png.id
+     cms/ui/aruni/images/logo.png
+
+    removed files:
+     cms/ui/aruni/images/.arch-ids/banner.jpg.id
+     cms/ui/aruni/images/.arch-ids/shadow.png.id
+     cms/ui/aruni/images/banner.jpg cms/ui/aruni/images/shadow.png
+
+    modified files:
+     Changelog cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-173
+     herve@oursours.net--public/itools--aruni--0.12--patch-174
+     herve@oursours.net--public/itools--aruni--0.12--patch-175
+     herve@oursours.net--public/itools--aruni--0.12--patch-176
+     herve@oursours.net--public/itools--aruni--0.12--patch-177
+     herve@oursours.net--public/itools--aruni--0.12--patch-178
+     herve@oursours.net--public/itools--aruni--0.12--patch-179
+
+
 2005-12-04 22:09:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-102
 
     Summary:

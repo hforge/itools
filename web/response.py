@@ -154,7 +154,7 @@ class Response(File):
             else:
                 parameters.append('; path=/')
             if cookie.max_age is not None:
-                parameters.append('; max-Age=%s' % cookie.max_age)
+                parameters.append('; max-age=%s' % cookie.max_age)
             if cookie.comment is not None:
                 parameters.append('; comment=%s' % cookie.comment)
             if cookie.secure is not None:

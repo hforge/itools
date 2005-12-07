@@ -127,7 +127,7 @@ class Response(File):
         # The status
         status_code = state.status
         status_message = status_messages[status_code]
-        data.append('HTTP/1.1 %d %s' % (status_code, status_message))
+        data.append('HTTP/1.0 %d %s' % (status_code, status_message))
         # User defined headers
         for name in state.headers:
             value = state.headers[name]
@@ -140,25 +140,25 @@ class Response(File):
         data.append('Date: %s' % now.strftime("%a, %d %b %Y %H:%M:%S +0000"))
         if 'content-length' not in state.headers:
             data.append('Content-Length: %d' % len(state.body))
-        # Close the connection
-        data.append('Connection: close')
         # The Cookies
         for name in state.cookies:
             cookie = state.cookies[name]
             # The parameters
             parameters = []
             if cookie.expires is not None:
-                parameters.append('; Expires=%s' % cookie.expires)
+                parameters.append('; expires=%s' % cookie.expires)
             if cookie.domain is not None:
-                parameters.append('; Domain=%s' % cookie.domain)
+                parameters.append('; domain=%s' % cookie.domain)
             if cookie.path is not None:
-                parameters.append('; Path=%s' % cookie.path)
+                parameters.append('; path=%s' % cookie.path)
+            else:
+                parameters.append('; path=/')
             if cookie.max_age is not None:
-                parameters.append('; Max-Age=%s' % cookie.max_age)
+                parameters.append('; max-Age=%s' % cookie.max_age)
             if cookie.comment is not None:
-                parameters.append('; Comment=%s' % cookie.comment)
+                parameters.append('; comment=%s' % cookie.comment)
             if cookie.secure is not None:
-                parameters.append('; Secure=%s' % cookie.secure)
+                parameters.append('; secure=%s' % cookie.secure)
             # The value
             datatype = get_datatype(name)
             value = datatype.encode(cookie.value)

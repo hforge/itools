@@ -397,7 +397,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 line['atime'] = resource.get_atime()
 
                 # compute size
-                line['size'] = self.get_human_size()
+                line['size'] = document.get_human_size()
                 line['url'] = '%s/;%s' % (line['name'],
                                           document.get_firstview())
                 path_to_icon = document.get_path_to_icon(icon_size,
@@ -959,7 +959,11 @@ class Folder(Handler, handlers.Folder.Folder):
 
         # Come back
         message = self.gettext(u'File uploaded.')
-        comeback(message, goto=';%s' % self.get_firstview())
+        if kw.has_key('add_and_return'):
+            goto = ';%s' % self.get_browse_view()
+        else:
+            goto='./%s/;%s' % (name, handler.get_firstview())
+        comeback(message, goto=goto)
 
 
     #######################################################################

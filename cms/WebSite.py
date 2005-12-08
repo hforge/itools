@@ -334,18 +334,19 @@ class WebSite(Folder):
     # User search UI
     site_search__access__ = True
     def site_search(self, **kw):
+        from itools.catalog import Query
+
         context = get_context()
         root = context.root
-
-        criteria = kw.get('site_search_criteria', 'title')
-        if criteria not in ('title', 'text'):
-            raise UserError, "Search criteria '%s' unsupported." % criteria
 
         text = kw.get('site_search_text', '').strip()
         if not text:
             raise UserError, "Empty search value."
 
-        results = self.search(**{criteria: text})
+        on_title = Query.Equal('title', text)
+        on_text = Query.Equal('text', text)
+        query = Query.Or(on_title, on_text)
+        results = self.search(query=query)
 
         # put the metadatas in a dictionary list to be managed with Table
         fields = root.get_catalog_metadata_fields()

@@ -37,10 +37,6 @@
         <p>
           <input type="text" name="site_search_text"
             value="" stl:attributes="value site_search/text" />
-          <select name="site_search_criteria">
-            <option value="title" stl:attributes="selected site_search/in_title">in title</option>
-            <option value="text" stl:attributes="selected site_search/in_text">in text</option>
-          </select>
           <input type="submit" class="button_search" value="Search" />
         </p>
       </form>

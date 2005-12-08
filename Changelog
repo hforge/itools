@@ -2,6 +2,44 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-08 16:05:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-106
+
+    Summary:
+      merge fixes from herve (#233)
+    Revision:
+      itools--main--0.12--patch-106
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-181
+       apply the same 'either view or return' pattern to file upload (#233).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-184
+       search in both title and text for simple searches.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-185
+       remove obsolete code.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-187
+       position the focus on the password field.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-189
+       fix what we compute the size of in a listing.
+    
+
+    modified files:
+     Changelog cms/Folder.py cms/WebSite.py cms/skins.py
+     cms/ui/User_edit_password.xml.en
+     cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-181
+     herve@oursours.net--public/itools--aruni--0.12--patch-184
+     herve@oursours.net--public/itools--aruni--0.12--patch-185
+     herve@oursours.net--public/itools--aruni--0.12--patch-187
+     herve@oursours.net--public/itools--aruni--0.12--patch-189
+
+
 2005-12-05 17:59:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-105
 
     Summary:

@@ -257,14 +257,6 @@ class Skin(Folder):
         else:
             namespace['text'] = ''
 
-        if request.has_parameter('site_search_criteria'):
-            criteria = request.get_parameter('site_search_criteria')
-            namespace['in_title'] = (criteria == 'title')
-            namespace['in_text'] = (criteria == 'text')
-        else:
-            namespace['in_title'] = True
-            namespace['in_text'] = False
-
         return namespace
 
 

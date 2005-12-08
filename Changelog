@@ -2,6 +2,30 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-12-08 14:11:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
+
+    Summary:
+      merge fix from the 0.10 branch
+    Revision:
+      itools--main--0.11--patch-63
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-114
+       resources, fix for Windows
+    
+     * jdavid@itaapy.com--public/itools--main--0.10--patch-62
+       merge fix from the 0.9 branch
+    
+
+    modified files:
+     Changelog resources/__init__.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.9--patch-114
+     jdavid@itaapy.com--public/itools--main--0.10--patch-62
+
+
 2005-12-07 17:23:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-62
 
     Summary:

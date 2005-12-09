@@ -2,6 +2,42 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-09 17:30:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-107
+
+    Summary:
+      merge fixes from the 0.11 branch
+    Revision:
+      itools--main--0.12--patch-107
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-114
+       resources, fix for Windows
+    
+     * jdavid@itaapy.com--public/itools--main--0.10--patch-62
+       merge fix from the 0.9 branch
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-61
+       web, downgrade to HTTP 1.0; now cookies always include the path
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-62
+       web, lowercase Set-Cookie parameter names
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-63
+       merge fix from the 0.10 branch
+    
+
+    modified files:
+     Changelog resources/__init__.py web/response.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.9--patch-114
+     jdavid@itaapy.com--public/itools--main--0.10--patch-62
+     jdavid@itaapy.com--public/itools--main--0.11--patch-61
+     jdavid@itaapy.com--public/itools--main--0.11--patch-62
+     jdavid@itaapy.com--public/itools--main--0.11--patch-63
+
+
 2005-12-08 16:05:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-106
 
     Summary:

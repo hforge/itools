@@ -1,7 +1,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Edit groups</h2>
+<h2>Edit Groups</h2>
 
 <form name="user_groups" action=";edit_groups" method="post">
   <table border="0" cellpadding="2" cellspacing="2">

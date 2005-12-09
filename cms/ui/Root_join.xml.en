@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
 xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Join the community</h2>
+<h2>Join the Community</h2>
 
 <form name="joinform" action=";join" method="post">
   <dl>

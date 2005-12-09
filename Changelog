@@ -2,6 +2,85 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-09 17:50:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-108
+
+    Summary:
+      merge from herve (includes #234)
+    Revision:
+      itools--main--0.12--patch-108
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-182
+       fix file download link (#234).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-191
+       fix form titles with regard to English typography.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-193
+       seems to fix " writing in po(t) files (#244).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-194
+       regenerating the po(t) files with regard to all of the code/templates changes. The translation can begin.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-195
+       and now without the website_templates mess...
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-196
+       and without the classic and surf string for the next time.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-197
+       re-regenerated the pot without classic and surf.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-198
+       restored the po files before my mess.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-199
+       revert the gettext.PO change, the bug is in raw strings handling. removing utils.py to bypass it.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-200
+       remove parasitic character.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-203
+       more noise to filter.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-204
+       my French translation.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-205
+       things left after my po(t), I don't really what to do with it.
+    
+
+    modified files:
+     Changelog cms/File.py cms/Makefile cms/locale/es.po
+     cms/locale/fr.po cms/locale/it.po cms/locale/locale.pot
+     cms/locale/zh.po cms/ui/File_download_form.xml.en
+     cms/ui/File_new_instance.xml.en
+     cms/ui/Folder_new_instance.xml.en cms/ui/Folder_rename.xml.en
+     cms/ui/Group_add_group.xml.en cms/ui/Group_add_users.xml.en
+     cms/ui/Handler_edit_metadata.xml.en cms/ui/OOffice_view.xml.en
+     cms/ui/Root_catalog.xml.en cms/ui/Root_general.xml.en
+     cms/ui/Root_join.xml.en cms/ui/Root_languages.xml.en
+     cms/ui/Text_new_instance.xml.en
+     cms/ui/UserFolder_new_user.xml.en
+     cms/ui/User_edit_groups.xml.en cms/ui/WebSite_logout.xml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-182
+     herve@oursours.net--public/itools--aruni--0.12--patch-191
+     herve@oursours.net--public/itools--aruni--0.12--patch-193
+     herve@oursours.net--public/itools--aruni--0.12--patch-194
+     herve@oursours.net--public/itools--aruni--0.12--patch-195
+     herve@oursours.net--public/itools--aruni--0.12--patch-196
+     herve@oursours.net--public/itools--aruni--0.12--patch-197
+     herve@oursours.net--public/itools--aruni--0.12--patch-198
+     herve@oursours.net--public/itools--aruni--0.12--patch-199
+     herve@oursours.net--public/itools--aruni--0.12--patch-200
+     herve@oursours.net--public/itools--aruni--0.12--patch-203
+     herve@oursours.net--public/itools--aruni--0.12--patch-204
+     herve@oursours.net--public/itools--aruni--0.12--patch-205
+
+
 2005-12-09 17:30:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-107
 
     Summary:

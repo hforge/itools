@@ -3,8 +3,8 @@ IGETTEXT=$(shell if [ -f igettext.txt ]; then cat igettext.txt; else echo igette
 
 
 
-PY = $(shell find ./ -name "*.py"|grep -v "^./{arch}")
-EN = $(shell find ui -name "*.x*ml.en"|grep -v "Root_license.xml")
+PY = $(shell find ./ -name "*.py"|grep -v "^./utils.py"|grep -v "^./examples"|grep -v "^./{arch}")
+EN = $(shell find ui -name "*.x*ml.en"|grep -v "^./examples"|grep -v ui/classic|grep -v ui/surf|grep -v ui/web_site_templates|grep -v "Root_license.xml")
 
 ES = $(subst .en,.es,$(EN))
 

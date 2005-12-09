@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
         xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Edit metadata in the current language</h2>
+<h2>Edit Metadata in Current Language</h2>
 
 <form action=";edit_metadata" method="post">
   <dl>

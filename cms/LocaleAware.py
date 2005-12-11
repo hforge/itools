@@ -18,15 +18,14 @@
 # Import from itools
 from itools.web import get_context
 
+# XXX Old versions of ikaaro implemented multilingual content with the
+# metadata properties 'isVersionOf' and 'hasVersion'. These are obsoleted
+# since ikaaro 0.14
+#
+# The new multilingual code is not finished.
 
 
 class LocaleAware(object):
-    """
-    This is a mixin class that represent documents, or content. It has two
-    special characteristics, it is multilingual (hence its metadata keeps
-    the isVersionOf/hasVersion properties), and it is workflow aware
-    (private/pending/public).
-    """
 
     def get_available_languages(self):
         master = self.get_master_handler()

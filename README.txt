@@ -9,8 +9,8 @@ The packages included are:
   itools.csv            itools.resources        itools.xhtml
   itools.datatypes      itools.rss              itools.xliff
   itools.gettext        itools.schemas          itools.xml
-  itools.handlers       itools.tmx            
-  itools.html           itools.uri            
+  itools.handlers       itools.tmx
+  itools.html           itools.uri
 
 The scripts included are:
 
@@ -24,11 +24,13 @@ Install
 Unpack the package and run "python setup.py install", be sure to have
 the right permissions, maybe you will need to run the command as root.
 
+Note that itools.cms requires the ZODB and PIL Python packages.
+
 
 Documentation
 -------------
 
-The documentation sources (in Latex) are included in the 'doc' directory.
+The documentation is distributed as a separate package, itools-docs.
 The PDF file can be downloaded from http://www.ikaaro.org/itools
 
 

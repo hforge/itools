@@ -5,7 +5,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Language settings</h2>
+<h2>Language Settings</h2>
 
 <form action="." method="post">
 
@@ -32,11 +32,12 @@
       </tr>
     </tbody>
   </table>
-  <div>
+  <p>
     <input type="submit" name=";change_default_language"
-      value="Change default for the selected one" />
-    <input type="submit" name=";remove_languages" value="Remove selected ones" />
-  </div>
+      value="Change default for the selected one" class="button_ok"/>
+    <input type="submit" name=";remove_languages" value="Remove selected ones"
+      class="button_delete"/>
+  </p>
 
   <dl stl:if="non_active_languages">
     <dt>You can add other languages support to your application</dt>
@@ -48,11 +49,10 @@
           stl:content="language/name" />
       </select>
     </dd>
-    <dt></dt>
-    <dd>
-      <input type="submit" name=";add_language" value="Add" />
-    </dd>
   </dl>
+  <p>
+    <input type="submit" name=";add_language" value="Add" class="button_ok"/>
+  </p>
 
 </form>
 

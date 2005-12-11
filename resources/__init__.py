@@ -35,11 +35,16 @@ def get_resource(reference):
     - http (only file resources, no language negotiation)
     """
     if not isinstance(reference, uri.generic.Reference):
+        # Make it working with Windows
+        if os.path.sep == '\\':
+            if len(reference) > 1 and reference[1] == ':':
+                reference = 'file://%s' % reference
         reference = uri.get_reference(reference)
 
     base = os.getcwd()
-    # Make it working with Windows. Internally we use always the "/".
+    # Make it working with Windows
     if os.path.sep == '\\':
+        # Internally we use always the "/"
         base = base.replace(os.path.sep, '/')
 
     base = uri.generic.decode('file://%s/' % base)

@@ -2,6 +2,849 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-09 17:50:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-108
+
+    Summary:
+      merge from herve (includes #234)
+    Revision:
+      itools--main--0.12--patch-108
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-182
+       fix file download link (#234).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-191
+       fix form titles with regard to English typography.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-193
+       seems to fix " writing in po(t) files (#244).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-194
+       regenerating the po(t) files with regard to all of the code/templates changes. The translation can begin.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-195
+       and now without the website_templates mess...
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-196
+       and without the classic and surf string for the next time.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-197
+       re-regenerated the pot without classic and surf.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-198
+       restored the po files before my mess.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-199
+       revert the gettext.PO change, the bug is in raw strings handling. removing utils.py to bypass it.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-200
+       remove parasitic character.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-203
+       more noise to filter.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-204
+       my French translation.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-205
+       things left after my po(t), I don't really what to do with it.
+    
+
+    modified files:
+     Changelog cms/File.py cms/Makefile cms/locale/es.po
+     cms/locale/fr.po cms/locale/it.po cms/locale/locale.pot
+     cms/locale/zh.po cms/ui/File_download_form.xml.en
+     cms/ui/File_new_instance.xml.en
+     cms/ui/Folder_new_instance.xml.en cms/ui/Folder_rename.xml.en
+     cms/ui/Group_add_group.xml.en cms/ui/Group_add_users.xml.en
+     cms/ui/Handler_edit_metadata.xml.en cms/ui/OOffice_view.xml.en
+     cms/ui/Root_catalog.xml.en cms/ui/Root_general.xml.en
+     cms/ui/Root_join.xml.en cms/ui/Root_languages.xml.en
+     cms/ui/Text_new_instance.xml.en
+     cms/ui/UserFolder_new_user.xml.en
+     cms/ui/User_edit_groups.xml.en cms/ui/WebSite_logout.xml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-182
+     herve@oursours.net--public/itools--aruni--0.12--patch-191
+     herve@oursours.net--public/itools--aruni--0.12--patch-193
+     herve@oursours.net--public/itools--aruni--0.12--patch-194
+     herve@oursours.net--public/itools--aruni--0.12--patch-195
+     herve@oursours.net--public/itools--aruni--0.12--patch-196
+     herve@oursours.net--public/itools--aruni--0.12--patch-197
+     herve@oursours.net--public/itools--aruni--0.12--patch-198
+     herve@oursours.net--public/itools--aruni--0.12--patch-199
+     herve@oursours.net--public/itools--aruni--0.12--patch-200
+     herve@oursours.net--public/itools--aruni--0.12--patch-203
+     herve@oursours.net--public/itools--aruni--0.12--patch-204
+     herve@oursours.net--public/itools--aruni--0.12--patch-205
+
+
+2005-12-09 17:30:33 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-107
+
+    Summary:
+      merge fixes from the 0.11 branch
+    Revision:
+      itools--main--0.12--patch-107
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.9--patch-114
+       resources, fix for Windows
+    
+     * jdavid@itaapy.com--public/itools--main--0.10--patch-62
+       merge fix from the 0.9 branch
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-61
+       web, downgrade to HTTP 1.0; now cookies always include the path
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-62
+       web, lowercase Set-Cookie parameter names
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-63
+       merge fix from the 0.10 branch
+    
+
+    modified files:
+     Changelog resources/__init__.py web/response.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.9--patch-114
+     jdavid@itaapy.com--public/itools--main--0.10--patch-62
+     jdavid@itaapy.com--public/itools--main--0.11--patch-61
+     jdavid@itaapy.com--public/itools--main--0.11--patch-62
+     jdavid@itaapy.com--public/itools--main--0.11--patch-63
+
+
+2005-12-08 16:05:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-106
+
+    Summary:
+      merge fixes from herve (#233)
+    Revision:
+      itools--main--0.12--patch-106
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-181
+       apply the same 'either view or return' pattern to file upload (#233).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-184
+       search in both title and text for simple searches.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-185
+       remove obsolete code.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-187
+       position the focus on the password field.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-189
+       fix what we compute the size of in a listing.
+    
+
+    modified files:
+     Changelog cms/Folder.py cms/WebSite.py cms/skins.py
+     cms/ui/User_edit_password.xml.en
+     cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-181
+     herve@oursours.net--public/itools--aruni--0.12--patch-184
+     herve@oursours.net--public/itools--aruni--0.12--patch-185
+     herve@oursours.net--public/itools--aruni--0.12--patch-187
+     herve@oursours.net--public/itools--aruni--0.12--patch-189
+
+
+2005-12-05 17:59:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-105
+
+    Summary:
+      csv, remove unused import
+    Revision:
+      itools--main--0.12--patch-105
+
+
+    modified files:
+     Changelog csv/itools_csv.py
+
+
+2005-12-05 11:03:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-104
+
+    Summary:
+      web, change default port to 8080
+    Revision:
+      itools--main--0.12--patch-104
+
+
+    modified files:
+     Changelog web/server.py
+
+
+2005-12-05 08:36:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-103
+
+    Summary:
+      merge aruni from herve
+    Revision:
+      itools--main--0.12--patch-103
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-173
+       drop the shadow.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-174
+       move the search form in a paragraph for semantic (and validity).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-175
+       reduce the font size, looks less vulgar.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-176
+       use the default button look and feel.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-177
+       drop the 'personal site' banner for a stylish uniform background and a logo that always fits in the right place.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-178
+       compacting the CSS for production.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-179
+       dropping the advanced search for 0.12.
+    
+
+    new files:
+     cms/ui/aruni/images/.arch-ids/logo.png.id
+     cms/ui/aruni/images/logo.png
+
+    removed files:
+     cms/ui/aruni/images/.arch-ids/banner.jpg.id
+     cms/ui/aruni/images/.arch-ids/shadow.png.id
+     cms/ui/aruni/images/banner.jpg cms/ui/aruni/images/shadow.png
+
+    modified files:
+     Changelog cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-173
+     herve@oursours.net--public/itools--aruni--0.12--patch-174
+     herve@oursours.net--public/itools--aruni--0.12--patch-175
+     herve@oursours.net--public/itools--aruni--0.12--patch-176
+     herve@oursours.net--public/itools--aruni--0.12--patch-177
+     herve@oursours.net--public/itools--aruni--0.12--patch-178
+     herve@oursours.net--public/itools--aruni--0.12--patch-179
+
+
+2005-12-04 22:09:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-102
+
+    Summary:
+      merge from herve (#21, #214, #215)
+    Revision:
+      itools--main--0.12--patch-102
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-133
+       transmit the message when coming back.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-134
+       redirect to the new resource after creation.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-137
+       normalize messages (translated, end with a period).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-142
+       propagate the search query to the sort actions (#21).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-169
+       after adding the resource, either display it or return to the container (#214).
+    
+
+    modified files:
+     Changelog cms/Folder.py cms/User.py cms/UserFolder.py
+     cms/WebSite.py cms/ui/File_new_instance.xml.en
+     cms/ui/Folder_new_instance.xml.en
+     cms/ui/Text_new_instance.xml.en
+     cms/ui/UserFolder_new_user.xml.en cms/utils.py cms/widgets.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-133
+     herve@oursours.net--public/itools--aruni--0.12--patch-134
+     herve@oursours.net--public/itools--aruni--0.12--patch-137
+     herve@oursours.net--public/itools--aruni--0.12--patch-142
+     herve@oursours.net--public/itools--aruni--0.12--patch-169
+
+
+2005-12-04 19:58:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-101
+
+    Summary:
+      add the release notes for 0.12 (new RELEASE.txt file)
+    Revision:
+      itools--main--0.12--patch-101
+
+
+    new files:
+     .arch-ids/RELEASE.txt.id RELEASE.txt
+
+    modified files:
+     Changelog README.txt
+
+
+2005-12-04 19:26:49 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-100
+
+    Summary:
+      cms, fix group template
+    Revision:
+      itools--main--0.12--patch-100
+
+
+    modified files:
+     Changelog cms/ui/Group_browse_users.xml.en
+
+
+2005-12-04 19:15:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-99
+
+    Summary:
+      scripts.icms, (on init) create a user admin with a "secure" password
+    Revision:
+      itools--main--0.12--patch-99
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
+2005-12-04 18:57:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-98
+
+    Summary:
+      cms, keep metadata on copy&paste (#230)
+    Revision:
+      itools--main--0.12--patch-98
+
+
+    modified files:
+     Changelog cms/Folder.py handlers/Folder.py
+
+
+2005-12-04 18:49:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-97
+
+    Summary:
+      cms, fixing cookies in copy and cut
+    Revision:
+      itools--main--0.12--patch-97
+
+
+    modified files:
+     Changelog cms/Folder.py
+
+
+2005-12-04 16:46:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-96
+
+    Summary:
+      merge from herve
+    Revision:
+      itools--main--0.12--patch-96
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-160
+       we search *in* the title, not *on*.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-161
+       forgotten 'on_title' to 'in_title' change.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-162
+       remove obsolete border attribute (done in the CSS).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-163
+       add the forgotten result icon.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-164
+       argh... in, not on title...
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-165
+       add a 'results' page to ease styling.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-166
+       the admin must confirm his account changes.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-168
+       reintroduce the first view to the home folder, now it is no longer bound to the index.html trick.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-170
+       don't display the (broken) batch controls whitout results.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-171
+       applying the input style to the button element.
+    
+
+    modified files:
+     Changelog cms/User.py cms/skins.py
+     cms/ui/WebSite_search.xml.en cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en cms/widgets.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-160
+     herve@oursours.net--public/itools--aruni--0.12--patch-161
+     herve@oursours.net--public/itools--aruni--0.12--patch-162
+     herve@oursours.net--public/itools--aruni--0.12--patch-163
+     herve@oursours.net--public/itools--aruni--0.12--patch-164
+     herve@oursours.net--public/itools--aruni--0.12--patch-165
+     herve@oursours.net--public/itools--aruni--0.12--patch-166
+     herve@oursours.net--public/itools--aruni--0.12--patch-168
+     herve@oursours.net--public/itools--aruni--0.12--patch-170
+     herve@oursours.net--public/itools--aruni--0.12--patch-171
+
+
+2005-12-04 09:01:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-95
+
+    Summary:
+      merge search from herve (#208)
+    Revision:
+      itools--main--0.12--patch-95
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-150
+       use the Python 2.4 sorted function.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-151
+       use the field prefix practice, for a later convenient use (see web.request.build_url, argument 'preserve').
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-152
+       renamed root_search to site_search, specific to a website, not the root application (searching a front-office site for instance).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-153
+       the new site_search namespace used by the top-right search form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-154
+       isolate the human-readable algorithm for reuse.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-155
+       dumb errors.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-156
+       compact the css a bit.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-157
+       simple result page for simple site search.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-158
+       styling the result page.
+    
+
+    new files:
+     cms/ui/.arch-ids/WebSite_search.xml.en.id
+     cms/ui/WebSite_search.xml.en
+
+    modified files:
+     Changelog catalog/Catalog.py cms/Folder.py cms/Handler.py
+     cms/WebSite.py cms/skins.py cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-150
+     herve@oursours.net--public/itools--aruni--0.12--patch-151
+     herve@oursours.net--public/itools--aruni--0.12--patch-152
+     herve@oursours.net--public/itools--aruni--0.12--patch-153
+     herve@oursours.net--public/itools--aruni--0.12--patch-154
+     herve@oursours.net--public/itools--aruni--0.12--patch-155
+     herve@oursours.net--public/itools--aruni--0.12--patch-156
+     herve@oursours.net--public/itools--aruni--0.12--patch-157
+     herve@oursours.net--public/itools--aruni--0.12--patch-158
+
+
+2005-12-03 20:22:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-94
+
+    Summary:
+      move distutils fix out of "setup.py", for easier re-use
+    Revision:
+      itools--main--0.12--patch-94
+
+
+    modified files:
+     Changelog __init__.py cms/examples/portal1/setup.py setup.py
+
+
+2005-12-03 20:07:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-93
+
+    Summary:
+      start working on the release files (CHANGES.txt, setup.py)
+    Revision:
+      itools--main--0.12--patch-93
+
+
+    modified files:
+     CHANGES.txt Changelog setup.py
+
+
+2005-12-03 19:40:21 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-92
+
+    Summary:
+      resources, fix zodb when asked for a non-existent resource
+    Revision:
+      itools--main--0.12--patch-92
+
+
+    modified files:
+     Changelog resources/zodb.py
+
+
+2005-12-03 19:35:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-91
+
+    Summary:
+      cms, fix add new object when there is a name clash (#220)
+    Revision:
+      itools--main--0.12--patch-91
+
+
+    modified files:
+     Changelog cms/Folder.py
+
+
+2005-12-03 19:27:18 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-90
+
+    Summary:
+      cms, removing obsolete i18n code
+    Revision:
+      itools--main--0.12--patch-90
+
+
+    modified files:
+     Changelog cms/Folder.py cms/LocaleAware.py cms/Metadata.py
+     cms/Root.py cms/workflow.py
+
+
+2005-12-03 18:50:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-89
+
+    Summary:
+      cms, fix rename (#150)
+    Revision:
+      itools--main--0.12--patch-89
+
+
+    modified files:
+     Changelog cms/Folder.py cms/ui/Folder_rename.xml.en
+
+
+2005-12-02 15:20:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-88
+
+    Summary:
+      cms, remove broken debug code
+    Revision:
+      itools--main--0.12--patch-88
+
+
+    removed files:
+     cms/.arch-ids/debug.py.id cms/debug.py
+     cms/ui/.arch-ids/Folder_manage_content.xml.en.id
+     cms/ui/.arch-ids/Text_manage_content.xml.en.id
+     cms/ui/Folder_manage_content.xml.en
+     cms/ui/Text_manage_content.xml.en
+
+    modified files:
+     Changelog cms/Folder.py cms/Metadata.py
+
+
+2005-12-02 14:53:05 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-87
+
+    Summary:
+      merge skin improvements from herve
+    Revision:
+      itools--main--0.12--patch-87
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-138
+       clarify the versioning module prior to fixing #48.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-140
+       the layout is generic and meant to be reusable, that's why I split it from my design.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-141
+       fix browse_list, we really need two forms, with different needs and behaviours (#205).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-143
+       don't force Info16.png with the message background, it's not the same use.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-144
+       replace the batch icons with arrows.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-145
+       replace the yellow mess with readable icons (#224).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-146
+       square the order-non icon.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-147
+       use the new message icon created for that purpose.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-148
+       a tour on the icons: white background and optimise.
+    
+
+    new files:
+     cms/ui/images/.arch-ids/message.png.id
+     cms/ui/images/message.png
+
+    modified files:
+     Changelog cms/ui/Folder_browse_list.xml.en
+     cms/ui/aruni/aruni.css cms/ui/aruni/template.xhtml.en
+     cms/ui/images/Info16.png cms/ui/images/batch-next.png
+     cms/ui/images/batch-previous.png
+     cms/ui/images/button_cancel.png
+     cms/ui/images/button_compare.png cms/ui/images/button_copy.png
+     cms/ui/images/button_cut.png cms/ui/images/button_delete.png
+     cms/ui/images/button_external.png cms/ui/images/button_ok.png
+     cms/ui/images/button_paste.png cms/ui/images/button_rename.png
+     cms/ui/images/button_search.png
+     cms/ui/images/button_translate.png
+     cms/ui/images/button_upload.png cms/ui/images/order-down.png
+     cms/ui/images/order-none.png cms/ui/images/order-up.png
+     cms/versioning.py cms/widgets.py
+
+    renamed files:
+     cms/ui/aruni/.arch-ids/onetruelayout.css.id
+       ==> cms/ui/.arch-ids/onetruelayout.css.id
+     cms/ui/aruni/onetruelayout.css
+       ==> cms/ui/onetruelayout.css
+     cms/ui/images/.arch-ids/order-down.gif.id
+       ==> cms/ui/images/.arch-ids/order-down.png.id
+     cms/ui/images/.arch-ids/order-none.gif.id
+       ==> cms/ui/images/.arch-ids/order-none.png.id
+     cms/ui/images/.arch-ids/order-up.gif.id
+       ==> cms/ui/images/.arch-ids/order-up.png.id
+     cms/ui/images/order-down.gif
+       ==> cms/ui/images/order-down.png
+     cms/ui/images/order-none.gif
+       ==> cms/ui/images/order-none.png
+     cms/ui/images/order-up.gif
+       ==> cms/ui/images/order-up.png
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-138
+     herve@oursours.net--public/itools--aruni--0.12--patch-140
+     herve@oursours.net--public/itools--aruni--0.12--patch-141
+     herve@oursours.net--public/itools--aruni--0.12--patch-143
+     herve@oursours.net--public/itools--aruni--0.12--patch-144
+     herve@oursours.net--public/itools--aruni--0.12--patch-145
+     herve@oursours.net--public/itools--aruni--0.12--patch-146
+     herve@oursours.net--public/itools--aruni--0.12--patch-147
+     herve@oursours.net--public/itools--aruni--0.12--patch-148
+
+
+2005-12-02 14:50:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-86
+
+    Summary:
+      merge buttons from herve (#211)
+    Revision:
+      itools--main--0.12--patch-86
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-135
+       provide a button to each submit button.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-136
+       cleaned up the last files I wanted to clean for 0.12, fixed my own form template.
+    
+
+    new files:
+     cms/ui/images/.arch-ids/button_cancel.png.id
+     cms/ui/images/.arch-ids/button_compare.png.id
+     cms/ui/images/.arch-ids/button_copy.png.id
+     cms/ui/images/.arch-ids/button_cut.png.id
+     cms/ui/images/.arch-ids/button_delete.png.id
+     cms/ui/images/.arch-ids/button_external.png.id
+     cms/ui/images/.arch-ids/button_ok.png.id
+     cms/ui/images/.arch-ids/button_paste.png.id
+     cms/ui/images/.arch-ids/button_rename.png.id
+     cms/ui/images/.arch-ids/button_translate.png.id
+     cms/ui/images/.arch-ids/button_upload.png.id
+     cms/ui/images/button_cancel.png
+     cms/ui/images/button_compare.png cms/ui/images/button_copy.png
+     cms/ui/images/button_cut.png cms/ui/images/button_delete.png
+     cms/ui/images/button_external.png cms/ui/images/button_ok.png
+     cms/ui/images/button_paste.png cms/ui/images/button_rename.png
+     cms/ui/images/button_translate.png
+     cms/ui/images/button_upload.png
+
+    modified files:
+     Changelog cms/ui/CSVRow_edit.xml.en cms/ui/CSVRow_view.xml.en
+     cms/ui/CSV_view.xml.en cms/ui/Document_translate.xml.en
+     cms/ui/File_externaledit.xml.en cms/ui/File_history.xml.en
+     cms/ui/File_new_instance.xml.en cms/ui/File_upload.xml.en
+     cms/ui/Flash_view.xml.en cms/ui/Folder_browse_list.xml.en
+     cms/ui/Folder_new_instance.xml.en cms/ui/Folder_rename.xml.en
+     cms/ui/Folder_translate.xml.en cms/ui/Group_add_group.xml.en
+     cms/ui/Group_add_users.xml.en cms/ui/Group_browse_users.xml.en
+     cms/ui/HTML_edit.xml.en cms/ui/Handler_edit_metadata.xml.en
+     cms/ui/OOffice_view.xml.en cms/ui/PO_edit.xml.en
+     cms/ui/Root_about.xml.en cms/ui/Root_catalog.xml.en
+     cms/ui/Root_general.xml.en
+     cms/ui/Root_internal_server_error.xml.en
+     cms/ui/Root_join.xml.en cms/ui/Root_languages.xml.en
+     cms/ui/Text_edit.xml.en cms/ui/Text_externaledit.xml.en
+     cms/ui/Text_manage_content.xml.en
+     cms/ui/Text_new_instance.xml.en
+     cms/ui/UserFolder_new_user.xml.en cms/ui/User_edit.xml.en
+     cms/ui/User_edit_groups.xml.en
+     cms/ui/User_edit_password.xml.en cms/ui/User_translator.xml.en
+     cms/ui/WebSite_login.xml.en cms/ui/WebSite_new_instance.xml.en
+     cms/ui/WorkflowAware_state.xml.en cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en
+
+    renamed files:
+     cms/ui/aruni/images/.arch-ids/search.png.id
+       ==> cms/ui/images/.arch-ids/button_search.png.id
+     cms/ui/aruni/images/search.png
+       ==> cms/ui/images/button_search.png
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-135
+     herve@oursours.net--public/itools--aruni--0.12--patch-136
+
+
+2005-12-02 14:45:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-85
+
+    Summary:
+      merge "confirm changes with password" from herve (#179)
+    Revision:
+      itools--main--0.12--patch-85
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-33
+       type your password to confirm your account changes.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-34
+       the admin doesn't need the password.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-72
+       refactor the user edit form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-73
+       refactor the user password form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-94
+       fix search folder with search_subfolders.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-127
+       don't bother the admin with password confirmation.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-128
+       forgotten changes for the previous commit.
+    
+
+    modified files:
+     Changelog cms/Folder.py cms/User.py cms/ui/User_edit.xml.en
+     cms/ui/User_edit_password.xml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-33
+     herve@oursours.net--public/itools--aruni--0.12--patch-34
+     herve@oursours.net--public/itools--aruni--0.12--patch-72
+     herve@oursours.net--public/itools--aruni--0.12--patch-73
+     herve@oursours.net--public/itools--aruni--0.12--patch-94
+     herve@oursours.net--public/itools--aruni--0.12--patch-127
+     herve@oursours.net--public/itools--aruni--0.12--patch-128
+
+
+2005-12-02 14:35:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-84
+
+    Summary:
+      cms, add welcome page, template by herve (#163)
+    Revision:
+      itools--main--0.12--patch-84
+
+
+    new files:
+     cms/ui/.arch-ids/User_welcome.xml.en.id
+     cms/ui/User_welcome.xml.en
+
+    modified files:
+     Changelog cms/User.py
+
+
+2005-12-01 17:14:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-83
+
+    Summary:
+      web.server, send "NotFound" when a method (";method") does not exists
+    Revision:
+      itools--main--0.12--patch-83
+
+
+    modified files:
+     Changelog web/server.py
+
+
+2005-12-01 17:12:35 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-82
+
+    Summary:
+      scripts.icms, fix typo
+    Revision:
+      itools--main--0.12--patch-82
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
+2005-12-01 17:02:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-81
+
+    Summary:
+      scripts.icms, now "icms.py start" detaches from the console
+    Revision:
+      itools--main--0.12--patch-81
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
+2005-12-01 10:00:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-80
+
+    Summary:
+      merging aruni from herve
+    Revision:
+      itools--main--0.12--patch-80
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-126
+       help diffing HTML files by removing the header.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-129
+       fix changed variable name.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-130
+       optimised PNG images (smaller).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-132
+       fix browse actions for now.
+    
+
+    modified files:
+     Changelog cms/text.py cms/ui/Folder_browse_list.xml.en
+     cms/ui/images/Excel16.png cms/ui/images/File16.png
+     cms/ui/images/Flash16.png cms/ui/images/Flash48.png
+     cms/ui/images/Group16.png cms/ui/images/HTML16.png
+     cms/ui/images/Info16.png cms/ui/images/Info48.png
+     cms/ui/images/OOCalc16.png cms/ui/images/OOWriter16.png
+     cms/ui/images/OOWriter48.png cms/ui/images/Pdf16.png
+     cms/ui/images/Pdf48.png cms/ui/images/Python16.png
+     cms/ui/images/Root16.png cms/ui/images/Root48.png
+     cms/ui/images/Skin16.png cms/ui/images/Skin48.png
+     cms/ui/images/Text16.png cms/ui/images/UserFolder16.png
+     cms/ui/images/WebSite16.png cms/ui/images/Word16.png
+     cms/ui/images/batch-next.png cms/ui/images/batch-previous.png
+     cms/ui/images/px.png web/request.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-126
+     herve@oursours.net--public/itools--aruni--0.12--patch-129
+     herve@oursours.net--public/itools--aruni--0.12--patch-130
+     herve@oursours.net--public/itools--aruni--0.12--patch-132
+
+
 2005-11-29 14:55:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-79
 
     Summary:

@@ -133,7 +133,7 @@ class Table(object):
         if isinstance(column, (str, unicode)):
             column = [column]
         # The html snippet, variables: href and src
-        pattern = '<a href="%(href)s"><img src="%(src)s" border="0"></a>'
+        pattern = '<a href="%(href)s"><img src="%(src)s"></a>'
 
         # Calculate the href
         data = {}
@@ -149,14 +149,14 @@ class Table(object):
         data['%s_sortorder' % self.name] = value
 
         request = context.request
-        href = request.build_url(preserve=[self.name], **data)
+        href = request.build_url(preserve=['search', self.name], **data)
 
         # Calculate the src
         if self.sortby == column:
             value = self.sortorder
         else:
             value = 'none'
-        img = context.root.get_handler('ui/images/order-%s.gif' % value)
+        img = context.root.get_handler('ui/images/order-%s.png' % value)
         src = context.handler.get_pathto(img)
 
         return pattern % {'href': href, 'src': src}

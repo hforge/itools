@@ -259,15 +259,16 @@ class Folder(Handler):
         # Clean the 'removed_handlers' data structure if needed
         if name in container.state.removed_handlers:
             container.state.removed_handlers.remove(name)
+        # Event: before set handler
+        container.before_set_handler(segment, handler, **kw)
         # Make a copy of the handler
         handler = handler.copy_handler()
         handler.parent = container
         handler.name = name
         # Add the handler
         container.state.added_handlers[name] = handler
-        # Event, on set handler
-        if hasattr(container, 'on_set_handler'):
-            container.on_set_handler(segment, handler, **kw)
+        # Event: after set handler
+        container.after_set_handler(segment, handler, **kw)
         # Set timestamp
         container.timestamp = datetime.now()
 
@@ -310,6 +311,14 @@ class Folder(Handler):
                 resource.set_resource(path, handler.resource)
         self.save_state(resource)
         return self.__class__(resource)
+
+
+    def before_set_handler(self, segment, handler, **kw):
+        pass
+
+
+    def after_set_handler(self, segment, handler, **kw):
+        pass
 
 
     ########################################################################

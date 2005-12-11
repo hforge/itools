@@ -23,7 +23,6 @@ from itools.xml import namespaces, parser, XML
 from itools.web import get_context
 
 # Import from itools.cms
-import debug
 from Handler import Node
 
 
@@ -58,10 +57,6 @@ class Schema(schemas.base.Schema):
 ##        'format': String,
 ##        'version': String,
 ##        'owner': String,
-        # LocaleAware
-        'language': String,
-        'isVersionOf': String,
-        'hasVersion': String,
         # Workflow
         'wf_transition': Record,
 ##        'name': String,
@@ -83,7 +78,7 @@ schemas.register_schema(Schema)
 #############################################################################
 # Handler
 #############################################################################
-class Metadata(Node, debug.Text, File.File):
+class Metadata(Node, File.File):
 
     class_title = u'Metadata'
     class_icon48 = 'images/File48.png'

@@ -143,20 +143,15 @@ class User(Folder):
     # User interface
     #######################################################################
     def get_views(self):
-        context = get_context()
-        root = context.root
-
-        views = ['browse_thumbnails', 'new_resource_form', 'edit_form']
+        views = ['welcome', 'browse_thumbnails', 'new_resource_form',
+                 'edit_form']
+        # Task list only for reviewers and admins (for now).
+        root = get_context().root
         is_admin = self.name in root.get_handler('admins').get_usernames()
-        # XXX Add update method to add the reviewers group
-        try:
-            reviewers = root.get_handler('reviewers')
-        except LookupError:
-            is_rev = False
-        else:
-            is_rev = self.name in reviewers.get_usernames()
+        is_rev = self.name in root.get_handler('reviewers').get_usernames()
         if is_admin or is_rev:
             views.append('tasks_list')
+
         return views
 
 
@@ -170,6 +165,23 @@ class User(Folder):
 
     def clear_group_cache(self):
         self._groups = None
+
+
+    #######################################################################
+    # Welcome
+    welcome__access__ = 'is_allowed_to_view'
+    welcome__label__ = u'Welcome'
+    def welcome(self):
+        namespace = {}
+        namespace['title'] = self.get_property('dc:title') or self.name
+        # Tasks? (for now).
+        root = get_context().root
+        is_admin = self.name in root.get_handler('admins').get_usernames()
+        is_rev = self.name in root.get_handler('reviewers').get_usernames()
+        namespace['tasks'] = is_admin or is_rev
+
+        handler = self.get_handler('/ui/User_welcome.xml')
+        return stl(handler, namespace)
 
 
     #######################################################################
@@ -222,11 +234,15 @@ class User(Folder):
     edit_form__label__ = u'Preferences'
     edit_form__sublabel__ = u'Personal'
     def edit_form(self):
-        root = get_context().root
+        context = get_context()
+        root = context.root
+        user = context.user
+
         # Build the namespace
         namespace = {}
         namespace['fullname'] = self.get_property('dc:title')
         namespace['email'] = self.get_email()
+
         # Languages
         languages = []
         user_language = self.get_property('ikaaro:user_language')
@@ -235,6 +251,7 @@ class User(Folder):
                               'name': i18n.get_language_name(language_code),
                               'is_selected': language_code == user_language})
         namespace['languages'] = languages
+
         # Themes
         themes = []
         user_theme = self.get_property('ikaaro:user_theme')
@@ -242,12 +259,26 @@ class User(Folder):
             themes.append({'value': theme, 'is_selected': theme == user_theme})
         namespace['themes'] = themes
 
+        if self.is_admin() and self.name != user.name:
+            namespace['must_confirm'] = False
+        else:
+            namespace['must_confirm'] = True
+
         handler = self.get_handler('/ui/User_edit.xml')
         return stl(handler, namespace)
 
 
     edit__access__ = 'is_self_or_superuser'
     def edit(self, email, **kw):
+        context = get_context()
+        user = context.user
+
+        if not self.is_admin() or self.name == user.name:
+            if not self.authenticate(kw['confirm']):
+                message = u"You mistyped your password, \
+                    your preferences were not changed."
+                raise UserError, self.gettext(message)
+
         self.set_property('dc:title', kw['dc:title'], language='en')
         email = unicode(email, 'utf-8')
         self.set_email(email)
@@ -264,15 +295,33 @@ class User(Folder):
     edit_password_form__label__ = u'Preferences'
     edit_password_form__sublabel__ = u'Password'
     def edit_password_form(self):
+        context = get_context()
+        user = context.user
+
+        namespace = {}
+        if self.is_admin() or self.name != user.name:
+            namespace['must_confirm'] = False
+        else:
+            namespace['must_confirm'] = True
+
         handler = self.get_handler('/ui/User_edit_password.xml')
-        return stl(handler)
+        return stl(handler, namespace)
 
 
     edit_password__access__ = 'is_self_or_superuser'
     def edit_password(self, password, password2, **kw):
+        context = get_context()
+        user = context.user
+
+        if not self.is_admin() or user.name != self.name:
+            if not self.authenticate(kw['confirm']):
+                message = u"You mistyped your actual password, \
+                    it will not be changed for the new password."
+                raise UserError, self.gettext(message)
+
         if not password or password != password2:
-            raise UserError, \
-                  self.gettext(u'The password is wrong, please try again.')
+            message = u"The password is wrong, please try again."
+            raise UserError, self.gettext(message)
 
         self.set_password(base64.encodestring(sha.new(password).digest()))
         # Update the cookie if we updated our own password
@@ -283,7 +332,7 @@ class User(Folder):
             cname = '__ac'
             cookie = base64.encodestring('%s:%s' % (self.name, password))
             cookie = urllib.quote(cookie)
-            expires = request.get('iAuthExpires', None)
+            expires = request.form.get('iAuthExpires', None)
             if expires is None:
                 context.set_cookie(cname, cookie)
             else:
@@ -335,7 +384,7 @@ class User(Folder):
             group = root.get_handler(group_path)
             group.set_user(self.name)
 
-        message = self.gettext(u'User groups edited')
+        message = self.gettext(u'User groups edited.')
         comeback(message)
 
 

@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Add a document</h2>
+<h2>Add a Document</h2>
 
 <form name="new_document" action=";new_resource" method="post">
   <dl>
@@ -27,12 +27,12 @@
           stl:content="lang/name" />
       </select>
     </dd>
-    <dt></dt>
-    <dd>
-      <input type="hidden" name="class_id" stl:attributes="value class_id" />
-      <input type="submit" value="Add" />
-    </dd>
   </dl>
+  <p>
+    <input type="hidden" name="class_id" stl:attributes="value class_id" />
+    <input type="submit" name="add_and_view" value="Add and view" class="button_ok"/>
+    <input type="submit" name="add_and_return" value="Add and return"/>
+  </p>
 </form>
 
 <p>

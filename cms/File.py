@@ -82,6 +82,7 @@ class File(Handler, itools.handlers.File.File):
     download_form__sublabel__ = u'Download'
     def download_form(self):
         namespace = {}
+        namespace['url'] = '../' + self.name
         namespace['title_or_name'] = self.get_title_or_name()
         handler = self.get_handler('/ui/File_download_form.xml')
         return stl(handler, namespace)

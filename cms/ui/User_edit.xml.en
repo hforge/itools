@@ -2,51 +2,44 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Personal information</h2>
+
 <form action=";edit" method="post">
-  <table class="form">
-    <tr>
-      <th colspan="2" class="title">Personal information</th>
-    </tr>
-    <tr>
-      <th>Full name</th>
-      <td>
-        <input type="text" name="dc:title"
-               stl:attributes="value fullname" />
-      </td>
-    </tr>
-    <tr>
-      <th>Email</th>
-      <td>
-        <input type="text" name="email" stl:attributes="value email" />
-      </td>
-    </tr>
-    <tr>
-      <th>Language</th>
-      <td>
-        <select name="ikaaro:user_language">
-          <option stl:repeat="language languages"
-                  stl:attributes="value language/code;
-                                  selected language/is_selected"
-                  stl:content="language/name" />
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <th>Theme</th>
-      <td>
-        <select name="ikaaro:user_theme">
-          <option stl:repeat="theme themes"
-                  stl:attributes="value theme/value;
-                                  selected theme/is_selected"
-                  stl:content="theme/value" />
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <td></td>
-      <td class="submit"><input type="submit" value="OK" /></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Full name</dt>
+    <dd>
+      <input type="text" name="dc:title" stl:attributes="value fullname" />
+    </dd>
+    <dt>Email</dt>
+    <dd>
+      <input type="text" name="email" stl:attributes="value email" />
+    </dd>
+    <dt>Language</dt>
+    <dd>
+      <select name="ikaaro:user_language">
+        <option stl:repeat="language languages"
+          stl:attributes="value language/code; selected language/is_selected"
+          stl:content="language/name" />
+      </select>
+    </dd>
+    <dt>Theme</dt>
+    <dd>
+      <select name="ikaaro:user_theme">
+        <option stl:repeat="theme themes"
+          stl:attributes="value theme/value; selected theme/is_selected"
+          stl:content="theme/value" />
+      </select>
+    </dd>
+    <stl:block if="must_confirm">
+      <dt>To confirm these changes, you must type your password.</dt>
+      <dd>
+        <input type="password" name="confirm" />
+      </dd>
+    </stl:block>
+  </dl>
+  <p>
+    <input type="submit" value="Change preferences" class="button_ok"/>
+  </p>
 </form>
 
 </stl:block>

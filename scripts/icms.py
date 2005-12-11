@@ -19,7 +19,9 @@
 # Import from the Standard Library
 from ConfigParser import RawConfigParser
 import os
+import random
 import signal
+import string
 import sys
 from threading import Thread
 
@@ -88,7 +90,10 @@ def init(parser, options, target):
         else:
             exec('import %s' % options.root)
             exec('root_class = %s.Root' % options.root)
-        source = root_class(username='a', password='a').resource
+        password = [ random.choice(string.ascii_letters + string.digits)
+                     for x in range(8) ]
+        password = ''.join(password)
+        source = root_class(username='admin', password=password).resource
     else:
         source = get_resource(options.source)
         if not isinstance(source, base.Folder):
@@ -122,8 +127,16 @@ def init(parser, options, target):
         transaction.commit()
 
     # Bravo!
-    print 'To start the new instance type:'
-    print '  %s start %s' % (parser.get_prog_name(), target)
+    print '****************************************************************'
+    print '* Welcome to itools.cms'
+    print '* A user with administration rights has been created for you:'
+    print '*   username: admin'
+    print '*   password: %s' % password
+    print '*'
+    print '* To start the new instance type:'
+    print '*   %s start %s' % (parser.get_prog_name(), target)
+    print '*'
+
 
 
 
@@ -148,15 +161,27 @@ def start(parser, options, target):
     else:
         port = None
 
-    # Start the server
+    # Set-up the server object
     server = Server(root, port=port, access_log='%s/access_log' % target,
                     error_log='%s/error_log' % target,
                     pid_file='%s/pid' % target)
-    if options.debug is True:
-        server.start()
-    else:
-        # XXX To implement: detach from the console
-        server.start()
+
+    # Debuggin mode (XXX does not works on Windows)
+    if options.debug is False:
+        # Detach from the console (this code derives from the Python
+        # Cookbook, see section "Forking a Daemon on Unix").
+        pid = os.fork()
+        if pid > 0:
+            sys.exit(0)
+        os.setsid()
+        pid = os.fork()
+        if pid > 0:
+            sys.exit(0)
+        # XXX What to do with the stdout and stderr?
+        sys.stdin.close()
+
+    # Start the server
+    server.start()
 
 
 
@@ -164,6 +189,7 @@ def stop(parser, options, target):
     pid = open('%s/pid' % target).read()
     pid = int(pid)
     os.kill(pid, signal.SIGTERM)
+    print 'Stopped.'
 
 
 

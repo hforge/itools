@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Search Results</h2>
+
+<p class="result_control" stl:if="table/objects">
+  <stl:inline if="batch/control" content="batch/control" />
+</p>
+
+<ol class="results" stl:if="table/objects">
+  <li stl:repeat="object table/objects">
+    <img stl:attributes="src object/icon" width="16" height="16" />
+    <a class="result_title" stl:content="object/title" stl:attributes="href object/url" /><br />
+    <span class="result_url" stl:content="object/abspath" />&nbsp;-
+    <span class="result_type" stl:content="object/type" />&nbsp;-
+    <span class="result_size" stl:content="object/size" />
+  </li>
+</ol>
+
+<p class="result_browse" stl:if="batch/total">
+  <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>
+  <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
+</p>
+
+<p stl:if="not table/objects"
+  stl:content="not_found" />
+
+</stl:block>

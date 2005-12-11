@@ -20,11 +20,11 @@
 """
 This script can be tested with the folowing::
 
-  make clean 
+  make clean
   python setup.py -q clean sdist
   cd dist
-  tar xzf itools-0.11.0.tar.gz
-  cd itools-0.11.0
+  tar xzf itools-0.12.0.tar.gz
+  cd itools-0.12.0
   sudo python setup.py -q install
 
 Make sure the following files are shipped:
@@ -38,37 +38,11 @@ Note the path separator may vary on your platform.
 
 # Import from the Standard Library
 from distutils.core import setup
-from distutils.command.build_py import build_py
 from os.path import join
 
+# Import from itools
+from __init__ import build_py_fixed
 
-
-class build_py_fixed(build_py):
-    """http://sourceforge.net/tracker/index.php?func=detail&aid=1183712&group_id=5470&atid=305470"""
-    def get_data_files(self):
-        """Generate list of '(package,src_dir,build_dir,filenames)' tuples"""
-        data = []
-        if not self.packages:
-            return data
-        for package in self.packages:
-            # Locate package source directory
-            src_dir = self.get_package_dir(package)
-
-            # Compute package build directory
-            build_dir = join(*([self.build_lib] + package.split('.')))
-
-            # Length of path to strip from found files
-            if src_dir:
-                plen = len(src_dir)+1
-            else:
-                plen = 0
-
-            # Strip directory from globbed filenames
-            filenames = [
-                file[plen:] for file in self.find_data_files(package, src_dir)
-                ]
-            data.append((package, src_dir, build_dir, filenames))
-        return data
 
 
 description = """itools is a Python library, it groups a number of packages
@@ -76,6 +50,8 @@ into a single meta-package for easier development and deployment. The packages
 included are:
 
  - itools.catalog
+ - itools.cms
+ - itools.csv
  - itools.datatypes
  - itools.gettext
  - itools.handlers
@@ -92,12 +68,11 @@ included are:
  - itools.xhtml
  - itools.xliff
  - itools.xml
- - itools.csv
 """
 
 setup(
     name = "itools",
-    version = "0.11.0",
+    version = "0.12.0",
     author = u"J. David Ibáñez",
     author_email = "jdavid@itaapy.com",
     license = "GNU Lesser General Public License",

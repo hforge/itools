@@ -18,7 +18,6 @@
 
 # Import from the Standard Library
 import csv as python_csv
-from types import StringType, TupleType, ListType
 
 # Import from itools
 from itools.handlers.Text import Text

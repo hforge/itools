@@ -67,6 +67,7 @@ class UserFolder(Folder):
     def set_user(self, username, password):
         user = User(password=password)
         self.set_handler(username, user)
+        return user
 
 
     def get_usernames(self):
@@ -132,7 +133,7 @@ class UserFolder(Folder):
             message = self.gettext(u'The password is wrong, please try again.')
             raise UserError, message
 
-        self.set_user(username, password)
+        user = self.set_user(username, password)
 
         # Add user in groups
         root = self.get_root()
@@ -140,8 +141,12 @@ class UserFolder(Folder):
             group = root.get_handler(group_path)
             group.set_user(username)
 
-        message = self.gettext(u'User added')
-        comeback(message, goto=';browse_thumbnails')
+        message = self.gettext(u'User added.')
+        if kw.has_key('add_and_return'):
+            goto = ';%s' % self.get_browse_view()
+        else:
+            goto='./%s/;%s' % (username, user.get_firstview())
+        comeback(message, goto=goto)
 
 
     def on_del_handler(self, segment):

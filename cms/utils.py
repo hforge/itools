@@ -63,18 +63,31 @@ def checkid(id):
 
 def comeback(message, goto=None):
     """Redirects to a document view."""
+    from itools.datatypes import Unicode
+
     context = get_context()
-    request = context.request
 
     # Default to referrer
     if goto is None:
+        request = context.request
         goto = request.referrer
 
-    if isinstance(goto, uri.Reference):
-        goto = copy(goto)
-    else:
+    if not isinstance(goto, uri.Reference):
         goto = uri.get_reference(goto)
 
+    if goto.query:
+        # XXX this demonstrate a lack in the API when you want to manipulate
+        # the query as a mapping
+        query = copy(goto.query)
+        query['message'] = Unicode.encode(message)
+        query = str(query)
+    else:
+        query = 'message=' + Unicode.encode(message)
+
+    # XXX an API?
+    goto = uri.Reference(goto.scheme, goto.authority, goto.path, query,
+        goto.fragment)
+    
     context.redirect(goto)
 
 

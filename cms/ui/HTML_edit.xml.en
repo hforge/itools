@@ -1,8 +1,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <form name="edit" action=";edit" method="post">
-    <stl:block content="rte" />
-    <br /><br />
-    <input type="submit" value="Change" />
-  </form>
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form name="edit" action=";edit" method="post">
+  <stl:block content="rte" />
+  <p>
+    <input type="submit" value="Change" class="button_ok" />
+  </p>
+</form>
+
 </stl:block>

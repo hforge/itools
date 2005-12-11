@@ -95,7 +95,7 @@ class Resource(base.Resource):
             try:
                 object = object[segment.name]
             except KeyError:
-                raise LookupError, 'object "%s" not found' % str(path)
+                raise LookupError, 'object "%s" not found' % str(self.path)
 
         return object
 
@@ -138,7 +138,7 @@ class File(Resource, base.File):
             try:
                 object = object[segment.name]
             except KeyError:
-                raise LookupError, 'object "%s" not found' % str(path)
+                raise LookupError, 'object "%s" not found' % str(self.path)
 
         return object
 

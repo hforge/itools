@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form action="." method="get">
+<form action=";browse_list" method="get">
   <dl>
     <dt>Display only contents with the following terms:</dt>
     <dd>
@@ -20,9 +20,12 @@
       <label for="search_subfolders">Search subfolders</label>
       <input type="checkbox" name="search_subfolders" id="search_subfolders"
         stl:attributes="checked search_subfolders; value self_path" />
-      <input type="submit" value="Search" />
+      <input type="submit" value="Search" class="button_search"/>
     </dd>
   </dl>
+</form>
+
+<form action="." method="post">
   <div class="batchcontrol" stl:if="batch/total">
     <stl:inline if="batch/control" content="batch/control" />
     <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>
@@ -73,15 +76,15 @@
   </table>
   <p>
     <stl:block if="table/objects">
-      <input type="submit" name=";remove" value="Remove"
+      <input type="submit" name=";remove" value="Remove" class="button_delete"
              onclick="return confirmation();"  />
-      <input type="submit" name=";rename_form" value="Rename.."/>
-      <input type="submit" name=";copy" value="Copy" />
-      <input type="submit" name=";cut" value="Cut" />
+      <input type="submit" name=";rename_form" value="Rename.." class="button_rename"/>
+      <input type="submit" name=";copy" value="Copy" class="button_copy"/>
+      <input type="submit" name=";cut" value="Cut" class="button_cut"/>
     </stl:block>
-    <input type="submit" name=";paste" value="Paste" stl:if="paste"/>
+    <input type="submit" name=";paste" value="Paste" stl:if="paste" class="button_paste"/>
     <stl:block if="table/objects">
-      <input type="submit" name=";translate_form" value="Translate.." />
+      <input type="submit" name=";translate_form" value="Translate.." class="button_translate"/>
     </stl:block>
   </p>
 </form>

@@ -2,18 +2,18 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>Create a New Group</h2>
 <form action=";add_group" method="post">
   <dl>
-    <dt>Create a new group</dt>
+    <dt>Please choose a name for this new group.</dt>
     <dd>
       <label>Name</label>
       <input type="text" name="name" />
     </dd>
-    <dt></dt>
-    <dd>
-      <input type="submit" value="Add" />
-    </dd>
   </dl>
+  <p>
+    <input type="submit" value="Add" class="button_ok" />
+  </p>
 </form>
 
 </stl:block>

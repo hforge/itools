@@ -40,7 +40,7 @@ from itools.web import get_context
 # Import from itools.cms
 from Group import Group
 from Handler import Handler
-from Metadata import Metadata, Record
+from Metadata import Metadata
 from text import PO
 from skins import ui
 from User import User
@@ -565,26 +565,6 @@ class Root(Group, WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20050509(self):
-        # Move settings to metadata
-        settings = self.get_handler('.settings')
-        if settings.state.join is True:
-            self.set_property('ikaaro:website_is_open', True)
-        self.set_property('ikaaro:website_languages',
-                          tuple(settings.state.languages))
-        self.metadata.save_state()
-
-        self.resource.del_resource('.settings')
-
-
-    def update_20050728(self):
-        resource = self.resource
-        object = resource._get_object().aq_base
-        delattr(object, '__before_publishing_traverse__')
-        delattr(object, '__browser_default__')
-        resource.get_transaction().commit()
-
-
     def update_20051025(self):
         """Folders now wear the 'folder' format in their metadata."""
         from Folder import Folder

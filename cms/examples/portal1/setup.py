@@ -20,34 +20,9 @@ from distutils.core import setup
 from distutils.command.build_py import build_py
 from os.path import join
 
+# Import from itools
+from itools import build_py_fixed
 
-
-class build_py_fixed(build_py):
-    """http://sourceforge.net/tracker/index.php?func=detail&aid=1183712&group_id=5470&atid=305470"""
-    def get_data_files(self):
-        """Generate list of '(package,src_dir,build_dir,filenames)' tuples"""
-        data = []
-        if not self.packages:
-            return data
-        for package in self.packages:
-            # Locate package source directory
-            src_dir = self.get_package_dir(package)
-
-            # Compute package build directory
-            build_dir = join(*([self.build_lib] + package.split('.')))
-
-            # Length of path to strip from found files
-            if src_dir:
-                plen = len(src_dir)+1
-            else:
-                plen = 0
-
-            # Strip directory from globbed filenames
-            filenames = [
-                file[plen:] for file in self.find_data_files(package, src_dir)
-                ]
-            data.append((package, src_dir, build_dir, filenames))
-        return data
 
 
 setup(

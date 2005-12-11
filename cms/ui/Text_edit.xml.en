@@ -3,15 +3,13 @@
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <form action=";edit" method="post">
-  <dl>
-    <dd>
-      <textarea name="data" cols="69" rows="19" stl:content="data"
-        wrap="physical" />
-    </dd>
-    <dd>
-     <input type="submit" value="Change" />
-   </dd>
- </dl>
+  <p>
+    <textarea name="data" cols="69" rows="19" stl:content="data"
+      wrap="physical" />
+  </p>
+  <p>
+    <input type="submit" value="Change" class="button_ok" />
+  </p>
 </form>
 
 </stl:block>

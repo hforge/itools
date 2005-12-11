@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
         xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Edit metadata in the current language</h2>
+<h2>Edit Metadata in Current Language</h2>
 
 <form action=";edit_metadata" method="post">
   <dl>
@@ -16,12 +16,11 @@
       <textarea cols="50" rows="8" name="dc:description"
         stl:content="description" />
     </dd>
-    <dt></dt>
-    <dd>
-      <input type="hidden" name="dc:language" stl:attributes="value language" />
-      <input type="submit" value="Change" />
-    </dd>
   </dl>
+  <p>
+    <input type="hidden" name="dc:language" stl:attributes="value language" />
+    <input type="submit" value="Change" class="button_ok"/>
+  </p>
 </form>
 
 </stl:block>

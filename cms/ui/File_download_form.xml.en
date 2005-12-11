@@ -3,7 +3,8 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <p>
-    To download this file, click on <a href="" stl:content="title_or_name" />.
+    To download this file, click on <a href="" stl:content="title_or_name"
+      stl:attributes="href url" />
   </p>
 
 </stl:block>

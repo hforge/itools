@@ -34,7 +34,6 @@ from itools.web import get_context
 from itools.web.exceptions import UserError
 
 # Import from itools.cms
-import debug
 import File
 from images import Image
 from Handler import Handler
@@ -47,7 +46,7 @@ from widgets import Breadcrumb, Table
 
 
 
-class Folder(Handler, debug.Folder, handlers.Folder.Folder):
+class Folder(Handler, handlers.Folder.Folder):
 
     #########################################################################
     # Class metadata
@@ -160,8 +159,8 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         return handlers.Folder.Folder._get_virtual_handler(self, segment)
 
 
-    def on_set_handler(self, segment, handler, format=None, id=None,
-                       move=False, **kw):
+    def before_set_handler(self, segment, handler, format=None, id=None,
+                           move=False, **kw):
         from Root import Root
 
         name = segment.name
@@ -173,6 +172,15 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         if metadata is None:
             metadata = self.build_metadata(handler, format=format, **kw)
         self.set_handler('.%s.metadata' % name, metadata)
+
+
+    def after_set_handler(self, segment, handler, format=None, id=None,
+                          move=False, **kw):
+        from Root import Root
+
+        name = segment.name
+        if name.startswith('.'):
+            return
 
         root = self.get_root()
         if isinstance(root, Root):
@@ -284,6 +292,18 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
     #######################################################################
     # User interface
     #######################################################################
+    def get_browse_view(self):
+        context = get_context()
+        options = {
+            'thumb': 'browse_thumbnails',
+            'list': 'browse_list',
+            'image_gallery': 'browse_image',
+        }
+        key = context.get_cookie('browse')
+        return options.get(key, 'browse_thumbnails')
+        
+        
+    
     def get_firstview(self):
         """
         Returns the first allowed object view url, or None if there aren't.
@@ -293,13 +313,7 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
             method = self.get_method(name)
             if method is not None:
                 if name in ['browse_thumbnails', 'browse_list']:
-                    options = {None: 'browse_thumbnails',
-                               'thumb': 'browse_thumbnails',
-                               'list': 'browse_list',
-                               'image_gallery': 'browse_image'}
-                    key = context.get_cookie('browse')
-                    name = options[key]
-
+                    name = self.get_browse_view()
                 return name
         return None
 
@@ -334,7 +348,7 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         search_subfolders = query.get('search_subfolders')
 
         if search_subfolders is not None:
-            query['search_subfolders'] = ''
+            del query['search_subfolders']
         else:
             query['parent_path'] = self.get_abspath()
 
@@ -376,28 +390,14 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
                 line['format'] = document.get_property('format')
                 line['class_title'] = document.class_title
                 line['title'] = document.get_property('dc:title')
-                is_file = isinstance(resource, base.File)
-                is_folder = isinstance(resource, base.Folder)
-                line['is_file'] = is_file
-                line['is_folder'] = is_folder
+                line['is_file'] = isinstance(resource, base.File)
+                line['is_folder'] = isinstance(resource, base.Folder)
                 line['ctime'] = resource.get_ctime()
                 line['mtime'] = resource.get_mtime()
                 line['atime'] = resource.get_atime()
 
                 # compute size
-                line['size'] = ''
-                if is_file:
-                    bytes = resource.get_size()
-                    kbytes = bytes / 1024.0
-                    if kbytes >= 1000:
-                        mbytes = kbytes / 1024.0
-                        line['size'] = '%.01f Mb' % mbytes
-                    else:
-                        line['size'] = '%.01f Kb' % kbytes
-                else:
-                    size = len([ x for x in resource.get_resource_names()
-                                 if not x.startswith('.') ])
-                    line['size'] = self.gettext(u'%d obs') % size
+                line['size'] = document.get_human_size()
                 line['url'] = '%s/;%s' % (line['name'],
                                           document.get_firstview())
                 path_to_icon = document.get_path_to_icon(icon_size,
@@ -473,16 +473,16 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
 
         context.set_cookie('browse', 'list')
 
-        search_subfolders = kw.get('search_subfolders')
         if 'search_value' in kw:
             search_value = unicode(kw['search_value'], 'utf8').strip()
         else:
             search_value = u''
 
+        search_subfolders = kw.get('search_subfolders')
         if search_subfolders and not search_value:
             message = (u'Please put a value for your search criteria if you'
-                       u' include subfolders')
-            comeback(message)
+                       u' include subfolders.')
+            comeback(self.gettext(message))
             return
 
         selected_criteria = kw.get('search_criteria')
@@ -582,7 +582,7 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
             else:
                 not_allowed.append(name)
 
-        message = self.gettext(u'Objects removed: %s.') % ','.join(removed)
+        message = self.gettext(u'Objects removed: %s.') % ', '.join(removed)
         comeback(message)
 
 
@@ -604,10 +604,14 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         if context.request.method == 'POST':
             ids_list =  '&'.join([ 'ids:list=%s' % x for x in names ])
             context.redirect(';rename_form?%s' % ids_list)
+            return
 
         # Build the namespace
         namespace = {}
-        namespace['names'] = names
+        namespace['objects'] = []
+        for real_name in names:
+            name, extension, language = FileName.decode(real_name)
+            namespace['objects'].append({'real_name': real_name, 'name': name})
 
         # Process the template
         handler = self.get_handler('/ui/Folder_rename.xml')
@@ -615,10 +619,11 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
 
 
     rename__access__ = 'is_allowed_to_move'
-    def rename(self, ids, new_ids, **kw):
+    def rename(self, names, new_names, **kw):
         # Process input data
-        for i, old_name in enumerate(ids):
-            new_name = new_ids[i]
+        for i, old_name in enumerate(names):
+            xxx, extension, language = FileName.decode(old_name)
+            new_name = FileName.encode((new_names[i], extension, language))
             new_name = checkid(new_name)
             if new_name is None:
                 # Invalid name
@@ -639,20 +644,7 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
                 self.set_handler(new_name, handler, move=True)
                 self.del_handler('.%s.metadata' % new_name)
                 self.set_handler('.%s.metadata' % new_name, handler_metadata)
-
                 self.del_handler(old_name)
-                # Update isVersionOf/hasVersion
-                handler = self.get_handler(new_name)
-                if isinstance(handler, LocaleAware):
-                    if is_master:
-                        translations = getattr(handler.metadata.properties,
-                                               'hasVersion', {})
-                        for language, name in translations.items():
-                            translation = handler.parent.get_handler(name)
-                            translation.set_property('isVersionOf', new_name)
-                    else:
-                        master.set_property('hasVersion', new_name,
-                                            language=handler.get_language())
 
         message = self.gettext(u'Objects renamed.')
         comeback(message, goto=';%s' % self.get_firstview())
@@ -669,10 +661,10 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
 
         context = get_context()
         request, response = context.request, context.response
-        path = str(context.path[1:])
+        path = self.get_abspath()
         cp = (False, [ '%s/%s' % (path, x) for x in names ])
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
-        context.set_cookie('ikaaro_cp', cp)
+        context.set_cookie('ikaaro_cp', cp, path='/')
 
         message = self.gettext(u'Objects copied.')
         comeback(message)
@@ -689,10 +681,10 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
 
         context = get_context()
         request, response = context.request, context.response
-        path = str(context.path[1:])
+        path = self.get_abspath()
         cp = (True, [ '%s/%s' % (path, x) for x in names ])
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
-        context.set_cookie('ikaaro_cp', cp)
+        context.set_cookie('ikaaro_cp', cp, path='/')
 
         message = self.gettext(u'Objects cut.')
         comeback(message)
@@ -720,16 +712,16 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
                         try:   # tests if id ends with a number
                             index = int(index)
                         except ValueError:
-                            id.append('copy_1') 
+                            id.append('copy_1')
                         else:
                             try:  # tests if the pattern is '_copy_x'
                                if id[-2] == 'copy':
                                   index = str(index + 1) # increment index
                                   id[-1] = index
                                else:
-                                  id.append('copy_1') 
+                                  id.append('copy_1')
                             except IndexError:
-                               id.append('copy_1') 
+                               id.append('copy_1')
                             else:
                                pass
                         id = '_'.join(id)
@@ -753,12 +745,6 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
                             metadata.set_property('state', handler.workflow.initstate)
                         # Fix owner
                         metadata.set_property('owner', context.user.name)
-                        # Fix hasVersion
-                        if metadata.has_property('hasVersion'):
-                            metadata.del_property('hasVersion')
-                        # Fix isVersionOf
-                        if metadata.has_property('isVersionOf'):
-                            metadata.del_property('isVersionOf')
 
         message = self.gettext(u'Objects pasted.')
         comeback(message)
@@ -834,12 +820,6 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
             trans_handler = handler_class()
             self.set_handler(trans_name, trans_handler,
                              **{'dc:language': language})
-            # Fix the original metadata (hasVersion)
-            metadata.set_property('hasVersion', trans_name, language=language)
-            # Fix the translation metadata (isVersionOf)
-            trans_handler = self.get_handler(trans_name)
-            trans_metadata = trans_handler.get_metadata()
-            trans_metadata.set_property('isVersionOf', name)
 
         message = self.gettext(u'Document translations created.')
         comeback(message, goto=';%s' % self.get_firstview())
@@ -895,17 +875,17 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
                        u' choose another one.')
             raise UserError, self.gettext(message)
 
+        # Build the name
+        handler_class = self.get_handler_class(class_id)
+        name = FileName.encode((name, handler_class.class_extension,
+                                kw.get('dc:language')))
         if self.has_handler(name):
-            message = u'There is already another object with this name'
+            message = u'There is already another object with this name.'
             raise UserError, self.gettext(message)
 
         # Build the handler
-        handler_class = self.get_handler_class(class_id)
         handler = handler_class.new_instance(**kw)
 
-        # Build the name
-        name = FileName.encode((name, handler.class_extension,
-                                kw.get('dc:language')))
         # Calculate title
         root = self.get_root()
         languages = root.get_property('ikaaro:website_languages')
@@ -914,8 +894,12 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
         # Add the handler
         self.set_handler(name, handler, **kw)
 
-        message = self.gettext(u'New resource added')
-        comeback(message, goto=';%s' % self.get_firstview())
+        message = self.gettext(u'New resource added.')
+        if kw.has_key('add_and_return'):
+            goto = ';%s' % self.get_browse_view()
+        else:
+            goto='./%s/;%s' % (name, handler.get_firstview())
+        comeback(message, goto=goto)
 
 
     browse_dir__access__ = 'is_authenticated'
@@ -975,7 +959,11 @@ class Folder(Handler, debug.Folder, handlers.Folder.Folder):
 
         # Come back
         message = self.gettext(u'File uploaded.')
-        comeback(message, goto=';%s' % self.get_firstview())
+        if kw.has_key('add_and_return'):
+            goto = ';%s' % self.get_browse_view()
+        else:
+            goto='./%s/;%s' % (name, handler.get_firstview())
+        comeback(message, goto=goto)
 
 
     #######################################################################

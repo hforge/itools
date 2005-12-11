@@ -28,12 +28,13 @@
         </tr>
       </tbody>
     </table>
-    <div>
-      <input type="submit" value="Remove" />
-    </div>
+    <p>
+      <input type="submit" value="Remove" class="button_delete"/>
+    </p>
   </form>
 
   <p stl:if="not table/objects">
     This group is empty.
+  </p>
 
 </stl:block>

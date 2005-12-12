@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-12 15:45:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-113
+
+    Summary:
+      cms, fix text files download
+    Revision:
+      itools--main--0.12--patch-113
+
+
+    modified files:
+     Changelog cms/text.py
+
+
 2005-12-12 15:24:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-112
 
     Summary:

@@ -103,7 +103,13 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
         context = get_context()
         request, response = context.request, context.response
 
-        mimetype = self.get_mimetype()
+        # XXX Code duplicated from File.File.download
+        metadata = self.get_metadata()
+        if metadata is None:
+            mimetype = self.get_mimetype()
+        else:
+            mimetype = self.get_property('format')
+
         response.set_header('Content-Type', '%s; charset=UTF-8' % mimetype)
         return self.to_str()
 

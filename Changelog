@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-12 15:54:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-114
+
+    Summary:
+      trying to fix setup.py
+    Revision:
+      itools--main--0.12--patch-114
+
+
+    modified files:
+     Changelog setup.py
+
+
 2005-12-12 15:45:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-113
 
     Summary:

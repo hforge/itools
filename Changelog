@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-12 15:24:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-112
+
+    Summary:
+      cms, fix "Root.get_skin"
+    Revision:
+      itools--main--0.12--patch-112
+
+
+    modified files:
+     Changelog cms/Root.py
+
+
 2005-12-12 14:40:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-111
 
     Summary:

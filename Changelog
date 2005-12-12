@@ -2,6 +2,63 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-12 13:48:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-110
+
+    Summary:
+      merge from herve (#179, #232)
+    Revision:
+      itools--main--0.12--patch-110
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-172
+       saving the search form, just a mock-up.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-186
+       I'm bad at boolean logic, drop the is_admin comparison, assuming an admin is the only one that could modify other's acounts.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-188
+       fix registring of the _ac cookie, particulary after password editing (#232).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-190
+       Split application preferences and user information that must be confirmed (#179).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-192
+       update the link to account/password form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-201
+       avoid a long space in the msgid and url.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-202
+       <encolpe>grmphf</encolpe>
+    
+
+    new files:
+     cms/ui/.arch-ids/WebSite_search_form.xml.en.id
+     cms/ui/WebSite_search_form.xml.en
+     cms/ui/images/.arch-ids/button_calendar.png.id
+     cms/ui/images/button_calendar.png
+
+    modified files:
+     Changelog cms/User.py cms/WebSite.py cms/ui/User_edit.xml.en
+     cms/ui/User_edit_account.xml.en cms/ui/User_welcome.xml.en
+
+    renamed files:
+     cms/ui/.arch-ids/User_edit_password.xml.en.id
+       ==> cms/ui/.arch-ids/User_edit_account.xml.en.id
+     cms/ui/User_edit_password.xml.en
+       ==> cms/ui/User_edit_account.xml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-172
+     herve@oursours.net--public/itools--aruni--0.12--patch-186
+     herve@oursours.net--public/itools--aruni--0.12--patch-188
+     herve@oursours.net--public/itools--aruni--0.12--patch-190
+     herve@oursours.net--public/itools--aruni--0.12--patch-192
+     herve@oursours.net--public/itools--aruni--0.12--patch-201
+     herve@oursours.net--public/itools--aruni--0.12--patch-202
+
+
 2005-12-11 19:07:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-109
 
     Summary:

@@ -268,16 +268,12 @@ class Group(Folder):
             parent = parent.parent
         pusernames = parent.get_usernames()
         usernames = pusernames.difference(self.get_usernames())
-        # Users
-        users = root.get_handler('users')
-        users = [ users.get_handler(x) for x in usernames ]
-        users.sort(lambda x, y: cmp(x.name, y.name))
+        usernames = list(usernames)
+        usernames.sort()
 
         # Build the namespace
         namespace = {}
-        namespace['users'] = [ {'name': user.name,
-                                'title': user.title or user.name}
-                               for user in users ]
+        namespace['users'] = [ {'name': x, 'title': x} for x in usernames ]
         namespace['nb_users'] = len(usernames) - 1
         if len(usernames)  > 10 :
              namespace['size'] = 10

@@ -65,7 +65,7 @@ class Skin(Folder):
             # The link
             view = handler.get_firstview()
             if view is None:
-                url = here.get_pathto(handler)
+                url = None
             else:
                 url = '%s/;%s' % (here.get_pathto(handler), view)
             # The title

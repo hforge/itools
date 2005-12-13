@@ -195,8 +195,11 @@ class Response(File):
     #########################################################################
     # Headers
     def set_header(self, name, value):
-        type = headers.get_type(name)
-        self.state.headers[name] = type.decode(value)
+        if isinstance(value, str):
+            type = headers.get_type(name)
+            value = type.decode(value)
+        self.state.headers[name] = value
+        
 
 
     def has_header(self, name):

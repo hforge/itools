@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-12-13 11:34:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
+
+    Summary:
+      web, interpret the "Location" header as a URI reference
+    Revision:
+      itools--main--0.11--patch-64
+
+
+    modified files:
+     Changelog web/headers.py web/response.py
+
+
 2005-12-08 14:11:53 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-63
 
     Summary:

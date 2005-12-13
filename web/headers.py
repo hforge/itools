@@ -150,7 +150,7 @@ headers = {
     'Accept-Ranges': String,
     'Age': String,
     'ETag': String,
-    'Location': String,
+    'Location': URI,
     'Proxy-Authenticate': String,
     'Retry-After': String,
     'Server': String,

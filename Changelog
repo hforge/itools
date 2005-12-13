@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-13 14:55:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-115
+
+    Summary:
+      catalog, fix for big-endian machines in UCS-2 encoding (#186)
+    Revision:
+      itools--main--0.12--patch-115
+
+
+    modified files:
+     Changelog catalog/IO.py
+
+
 2005-12-12 15:54:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-114
 
     Summary:

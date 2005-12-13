@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-12-13 11:36:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-65
+
+    Summary:
+      merge fix from the 0.12 branch (#174)
+    Revision:
+      itools--main--0.11--patch-65
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-65
+       uri, now queries accepts non-value parameters (#174)
+    
+
+    modified files:
+     Changelog uri/generic.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.12--patch-65
+
+
 2005-12-13 11:34:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-64
 
     Summary:

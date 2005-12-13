@@ -375,6 +375,9 @@ class Query(dict):
         for key, value in self.items():
             if value is None:
                 line.append(key)
+            elif isinstance(value, list):
+                for x in value:
+                    line.append('%s=%s' % (key, urllib.quote_plus(x)))
             else:
                 line.append('%s=%s' % (key, urllib.quote_plus(value)))
         return '&'.join(line)

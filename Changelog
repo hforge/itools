@@ -2,6 +2,35 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-13 15:13:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-116
+
+    Summary:
+      merge fixes from the 0.11 branch
+    Revision:
+      itools--main--0.12--patch-116
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-64
+       web, interpret the "Location" header as a URI reference
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-66
+       uri, make query work with multiple values for a single name
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-67
+       datatypes, add XML encoder/decoder (a medium, not a value)
+    
+
+    modified files:
+     Changelog datatypes/__init__.py datatypes/primitive.py
+     uri/generic.py web/headers.py web/response.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.11--patch-64
+     jdavid@itaapy.com--public/itools--main--0.11--patch-66
+     jdavid@itaapy.com--public/itools--main--0.11--patch-67
+
+
 2005-12-13 14:55:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-115
 
     Summary:

@@ -55,8 +55,6 @@ class Unicode(DataType):
 
     @staticmethod
     def encode(value, encoding='UTF-8'):
-        # Escape XML (XXX this is specific to XML)
-        value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.encode(encoding)
 
 
@@ -142,7 +140,7 @@ class URI(DataType):
 
     @staticmethod
     def encode(value):
-        return str(value).replace('&', '&amp;')
+        return str(value)
 
 
 
@@ -231,3 +229,19 @@ class Tokens(DataType):
     @staticmethod
     def encode(value):
         return ' '.join(value)
+
+
+
+############################################################################
+# Medium decoder/encoders (not for values)
+
+class XML(object):
+
+    @staticmethod
+    def encode(value):
+        return value.replace('&', '&amp;').replace('<', '&lt;')
+
+
+    @staticmethod
+    def decode(value):
+        return value.replace('&amp;', '&').replace('&lt;', '<')

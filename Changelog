@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-12-13 14:02:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
+
+    Summary:
+      datatypes, add XML encoder/decoder (a medium, not a value)
+    Revision:
+      itools--main--0.11--patch-67
+
+
+    modified files:
+     Changelog datatypes/__init__.py datatypes/primitive.py
+
+
 2005-12-13 13:39:00 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-66
 
     Summary:

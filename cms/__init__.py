@@ -55,7 +55,7 @@ domains.register_domain('ikaaro', get_abspath(globals(), 'locale'))
 # Check for required software
 ###########################################################################
 cmds = ['xlhtml', 'pdftotext', 'catdoc', 'ppthtml', 'iconv', 'links',
-        'unzip', 'pdftohtml', 'wvHtml']
+        'unzip', 'pdftohtml', 'wvHtml', 'tidy']
 
 paths = os.getenv('PATH').split(':')
 all_names = set()

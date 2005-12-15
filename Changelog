@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-15 11:29:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-121
+
+    Summary:
+      cms, add "tidy" to the list of commands to check
+    Revision:
+      itools--main--0.12--patch-121
+
+
+    modified files:
+     Changelog cms/__init__.py
+
+
 2005-12-15 10:29:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-120
 
     Summary:

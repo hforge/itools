@@ -23,11 +23,10 @@ from Analysers import get_analyser
 To build a query:
 
   from itools.catalog import Query
-  s1 = Query.Simple('format', 'Actu')
-  s2 = Query.Simple('archive', True)
-  c1 = Query.Complex(s1, 'and', s2)
-  s3 = Query.Simple('workflow_state', 'public')
-  query = Query.Complex(c1, 'and', s3)
+  s1 = Query.Equal('format', 'Actu')
+  s2 = Query.Equal('archive', True)
+  s3 = Query.Equal('workflow_state', 'public')
+  query = Query.And(s1, s2, s3)
 """
 
 

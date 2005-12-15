@@ -2,6 +2,206 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-13 15:55:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-117
+
+    Summary:
+      cms, manually merge patches from ikaaro 0.14, 0.15
+    Revision:
+      itools--main--0.12--patch-117
+
+    The patches merged are:
+    
+      ikaaro--main--0.14--patch-141
+      - groups, speed up add user form (too slow when many users)
+    
+      ikaaro--main--0.15--patch-110
+      - skins, fix breadcrumb (no link if user not allowed to click)
+    
+      ikaaro--main--0.15--patch-114
+      - use the itools.datatypes.XML encoder/decoder
+
+    modified files:
+     Changelog cms/Group.py cms/Metadata.py cms/skins.py
+
+
+2005-12-13 15:13:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-116
+
+    Summary:
+      merge fixes from the 0.11 branch
+    Revision:
+      itools--main--0.12--patch-116
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-64
+       web, interpret the "Location" header as a URI reference
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-66
+       uri, make query work with multiple values for a single name
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-67
+       datatypes, add XML encoder/decoder (a medium, not a value)
+    
+
+    modified files:
+     Changelog datatypes/__init__.py datatypes/primitive.py
+     uri/generic.py web/headers.py web/response.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.11--patch-64
+     jdavid@itaapy.com--public/itools--main--0.11--patch-66
+     jdavid@itaapy.com--public/itools--main--0.11--patch-67
+
+
+2005-12-13 14:55:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-115
+
+    Summary:
+      catalog, fix for big-endian machines in UCS-2 encoding (#186)
+    Revision:
+      itools--main--0.12--patch-115
+
+
+    modified files:
+     Changelog catalog/IO.py
+
+
+2005-12-12 15:54:07 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-114
+
+    Summary:
+      trying to fix setup.py
+    Revision:
+      itools--main--0.12--patch-114
+
+
+    modified files:
+     Changelog setup.py
+
+
+2005-12-12 15:45:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-113
+
+    Summary:
+      cms, fix text files download
+    Revision:
+      itools--main--0.12--patch-113
+
+
+    modified files:
+     Changelog cms/text.py
+
+
+2005-12-12 15:24:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-112
+
+    Summary:
+      cms, fix "Root.get_skin"
+    Revision:
+      itools--main--0.12--patch-112
+
+
+    modified files:
+     Changelog cms/Root.py
+
+
+2005-12-12 14:40:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-111
+
+    Summary:
+      scripts.icms, fix "init --source"
+    Revision:
+      itools--main--0.12--patch-111
+
+
+    modified files:
+     Changelog scripts/icms.py
+
+
+2005-12-12 13:48:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-110
+
+    Summary:
+      merge from herve (#179, #232)
+    Revision:
+      itools--main--0.12--patch-110
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-172
+       saving the search form, just a mock-up.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-186
+       I'm bad at boolean logic, drop the is_admin comparison, assuming an admin is the only one that could modify other's acounts.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-188
+       fix registring of the _ac cookie, particulary after password editing (#232).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-190
+       Split application preferences and user information that must be confirmed (#179).
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-192
+       update the link to account/password form.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-201
+       avoid a long space in the msgid and url.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-202
+       <encolpe>grmphf</encolpe>
+    
+
+    new files:
+     cms/ui/.arch-ids/WebSite_search_form.xml.en.id
+     cms/ui/WebSite_search_form.xml.en
+     cms/ui/images/.arch-ids/button_calendar.png.id
+     cms/ui/images/button_calendar.png
+
+    modified files:
+     Changelog cms/User.py cms/WebSite.py cms/ui/User_edit.xml.en
+     cms/ui/User_edit_account.xml.en cms/ui/User_welcome.xml.en
+
+    renamed files:
+     cms/ui/.arch-ids/User_edit_password.xml.en.id
+       ==> cms/ui/.arch-ids/User_edit_account.xml.en.id
+     cms/ui/User_edit_password.xml.en
+       ==> cms/ui/User_edit_account.xml.en
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-172
+     herve@oursours.net--public/itools--aruni--0.12--patch-186
+     herve@oursours.net--public/itools--aruni--0.12--patch-188
+     herve@oursours.net--public/itools--aruni--0.12--patch-190
+     herve@oursours.net--public/itools--aruni--0.12--patch-192
+     herve@oursours.net--public/itools--aruni--0.12--patch-201
+     herve@oursours.net--public/itools--aruni--0.12--patch-202
+
+
+2005-12-11 19:07:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-109
+
+    Summary:
+      cms, move the examples (portal1) to "itools-docs"
+    Revision:
+      itools--main--0.12--patch-109
+
+
+    removed files:
+     cms/examples/.arch-ids/=id cms/examples/portal1/.arch-ids/=id
+     cms/examples/portal1/.arch-ids/README.id
+     cms/examples/portal1/.arch-ids/Root.py.id
+     cms/examples/portal1/.arch-ids/__init__.py.id
+     cms/examples/portal1/.arch-ids/setup.py.id
+     cms/examples/portal1/README cms/examples/portal1/Root.py
+     cms/examples/portal1/__init__.py cms/examples/portal1/setup.py
+     cms/examples/portal1/ui/.arch-ids/=id
+     cms/examples/portal1/ui/portal/.arch-ids/=id
+     cms/examples/portal1/ui/portal/.arch-ids/Root_view.xml.id
+     cms/examples/portal1/ui/portal/Root_view.xml
+
+    modified files:
+     Changelog
+
+    removed directories:
+     cms/examples cms/examples/.arch-ids cms/examples/portal1
+     cms/examples/portal1/.arch-ids cms/examples/portal1/ui
+     cms/examples/portal1/ui/.arch-ids
+     cms/examples/portal1/ui/portal
+     cms/examples/portal1/ui/portal/.arch-ids
+
+
 2005-12-09 17:50:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-108
 
     Summary:

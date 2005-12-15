@@ -157,7 +157,7 @@ class User(Folder):
 
     def get_subviews(self, name):
         # The edit menu
-        subviews = ['edit_form', 'edit_password_form', 'edit_groups_form']
+        subviews = ['edit_form', 'edit_account_form', 'edit_groups_form']
         if name in subviews:
             return subviews
         return Folder.get_subviews(self, name)
@@ -232,7 +232,7 @@ class User(Folder):
     # Edit
     edit_form__access__ = 'is_self_or_superuser'
     edit_form__label__ = u'Preferences'
-    edit_form__sublabel__ = u'Personal'
+    edit_form__sublabel__ = u'Application'
     def edit_form(self):
         context = get_context()
         root = context.root
@@ -240,8 +240,6 @@ class User(Folder):
 
         # Build the namespace
         namespace = {}
-        namespace['fullname'] = self.get_property('dc:title')
-        namespace['email'] = self.get_email()
 
         # Languages
         languages = []
@@ -259,86 +257,82 @@ class User(Folder):
             themes.append({'value': theme, 'is_selected': theme == user_theme})
         namespace['themes'] = themes
 
-        if self.is_admin() and self.name != user.name:
-            namespace['must_confirm'] = False
-        else:
-            namespace['must_confirm'] = True
-
         handler = self.get_handler('/ui/User_edit.xml')
         return stl(handler, namespace)
 
 
     edit__access__ = 'is_self_or_superuser'
-    def edit(self, email, **kw):
+    def edit(self, **kw):
         context = get_context()
         user = context.user
 
-        if not self.is_admin() or self.name == user.name:
+        self.set_property('ikaaro:user_theme', kw['ikaaro:user_theme'])
+        self.set_property('ikaaro:user_language', kw['ikaaro:user_language'])
+
+        message = self.gettext(u'Application preferences changed.')
+        comeback(message)
+
+
+    #######################################################################
+    # Edit account
+    edit_account_form__access__ = 'is_self_or_superuser'
+    edit_account_form__label__ = u'Preferences'
+    edit_account_form__sublabel__ = u'Account'
+    def edit_account_form(self):
+        context = get_context()
+        user = context.user
+
+        # Build the namespace
+        namespace = {}
+        namespace['fullname'] = self.get_property('dc:title')
+        namespace['email'] = self.get_email()
+
+        if self.name != user.name:
+            namespace['must_confirm'] = False
+        else:
+            namespace['must_confirm'] = True
+
+        handler = self.get_handler('/ui/User_edit_account.xml')
+        return stl(handler, namespace)
+
+
+    edit_account__access__ = 'is_self_or_superuser'
+    def edit_account(self, email, password, password2, **kw):
+        context = get_context()
+        user = context.user
+
+        if self.name == user.name:
             if not self.authenticate(kw['confirm']):
-                message = u"You mistyped your password, \
-                    your preferences were not changed."
+                message = (u"You mistyped your actual password, "
+                           u"you account is not changed.")
                 raise UserError, self.gettext(message)
 
         self.set_property('dc:title', kw['dc:title'], language='en')
         email = unicode(email, 'utf-8')
         self.set_email(email)
-        self.set_property('ikaaro:user_theme', kw['ikaaro:user_theme'])
-        self.set_property('ikaaro:user_language', kw['ikaaro:user_language'])
 
-        message = self.gettext(u'User data changed.')
-        comeback(message)
-
-
-    #######################################################################
-    # Edit / Password
-    edit_password_form__access__ = 'is_self_or_superuser'
-    edit_password_form__label__ = u'Preferences'
-    edit_password_form__sublabel__ = u'Password'
-    def edit_password_form(self):
-        context = get_context()
-        user = context.user
-
-        namespace = {}
-        if self.is_admin() or self.name != user.name:
-            namespace['must_confirm'] = False
-        else:
-            namespace['must_confirm'] = True
-
-        handler = self.get_handler('/ui/User_edit_password.xml')
-        return stl(handler, namespace)
-
-
-    edit_password__access__ = 'is_self_or_superuser'
-    def edit_password(self, password, password2, **kw):
-        context = get_context()
-        user = context.user
-
-        if not self.is_admin() or user.name != self.name:
-            if not self.authenticate(kw['confirm']):
-                message = u"You mistyped your actual password, \
-                    it will not be changed for the new password."
+        if password.strip():
+            if not password or password != password2:
+                message = u"Passwords mismatch, please try again."
                 raise UserError, self.gettext(message)
 
-        if not password or password != password2:
-            message = u"The password is wrong, please try again."
-            raise UserError, self.gettext(message)
+            self.set_password(base64.encodestring(sha.new(password).digest()))
+            # Update the cookie if we updated our own password
+            context = get_context()
+            if self.name == context.user.name:
+                request = context.request
+                # XXX This is a copy of the code in WebSite.login, should refactor
+                cname = '__ac'
+                cookie = base64.encodestring('%s:%s' % (self.name, password))
+                cookie = urllib.quote(cookie)
+                path = '/'
+                expires = request.form.get('iAuthExpires', None)
+                if expires is None:
+                    context.set_cookie(cname, cookie, path=path)
+                else:
+                    context.set_cookie(cname, cookie, path=path, expires=expires)
 
-        self.set_password(base64.encodestring(sha.new(password).digest()))
-        # Update the cookie if we updated our own password
-        context = get_context()
-        if self.name == context.user.name:
-            request = context.request
-            # XXX This is a copy of the code in WebSite.login, should refactor
-            cname = '__ac'
-            cookie = base64.encodestring('%s:%s' % (self.name, password))
-            cookie = urllib.quote(cookie)
-            expires = request.form.get('iAuthExpires', None)
-            if expires is None:
-                context.set_cookie(cname, cookie)
-            else:
-                context.set_cookie(cname, cookie, expires=expires)
-
-        message = self.gettext(u'Password changed.')
+        message = self.gettext(u'Account changed.')
         comeback(message)
 
 

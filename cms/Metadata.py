@@ -16,10 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from itools
-from itools.datatypes import String, Unicode, Boolean, Tokens, QName
+from itools.datatypes import String, Unicode, Boolean, Tokens, QName, XML
 from itools.handlers import File
 from itools import schemas
-from itools.xml import namespaces, parser, XML
+from itools.xml import namespaces, parser
 from itools.web import get_context
 
 # Import from itools.cms
@@ -41,6 +41,7 @@ class Record(object):
             prefix, local_name = key
             datatype = schemas.get_datatype(key)
             value = datatype.encode(value)
+            value = XML.encode(value)
             qname = QName.encode(key)
             lines.append('\n    <%s>%s</%s>' % (qname, value, qname))
         return ''.join(lines) + '\n'
@@ -107,10 +108,12 @@ class Metadata(Node, File.File):
                 if isinstance(value, dict):
                     for lang, value in value.items():
                         value = datatype.encode(value)
+                        value = XML.encode(value)
                         skeleton.append('  <%s xml:lang="%s">%s</%s>'
                                         % (name, lang, value, name))
                 else:
                     value = datatype.encode(value)
+                    value = XML.encode(value)
                     skeleton.append('  <%s>%s</%s>' % (name, value, name))
 
         # Insert open root element with the required namespace declarations
@@ -226,14 +229,17 @@ class Metadata(Node, File.File):
             if isinstance(value, dict):
                 for language, value in value.items():
                     value = datatype.encode(value)
+                    value = XML.encode(value)
                     lines.append('  <%s xml:lang="%s">%s</%s>'
                                  % (qname, language, value, qname))
             elif isinstance(value, list):
                 for value in value:
                     value = datatype.encode(value)
+                    value = XML.encode(value)
                     lines.append('  <%s>%s</%s>' % (qname, value, qname))
             else:
                 value = datatype.encode(value)
+                value = XML.encode(value)
                 lines.append('  <%s>%s</%s>' % (qname, value, qname))
 
         lines.append('</metadata>')

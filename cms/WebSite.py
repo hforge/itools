@@ -271,11 +271,12 @@ class WebSite(Folder):
         cname = '__ac'
         cookie = encodestring('%s:%s' % (username, password))
         cookie = quote(cookie)
+        path = '/'
         expires = request.form.get('iAuthExpires', None)
         if expires is None:
-            context.set_cookie(cname, cookie)
+            context.set_cookie(cname, cookie, path=path)
         else:
-            context.set_cookie(cname, cookie, expires=expires)
+            context.set_cookie(cname, cookie, path=path, expires=expires)
 
         # Set context
         context.user = user
@@ -406,5 +407,26 @@ class WebSite(Folder):
         hander = self.get_handler('/ui/WebSite_search.xml')
         return stl(hander, namespace)
 
+
+    site_search_form__access__ = True
+    def site_search_form(self, **kw):
+        context = get_context()
+
+        namespace = {}
+
+        states = []
+        if context.user is not None:
+            workflow = WorkflowAware.workflow
+            for name, state in workflow.states.items():
+                title = state['title'] or name
+                states.append({'key': name, 'value': title})
+        namespace['states'] = states
+
+        icon = self.get_handler('/ui/images/button_calendar.png')
+        namespace['button_calendar'] = self.get_pathto(icon)
+
+        handler = self.get_handler('/ui/WebSite_search_form.xml')
+        return stl(handler, namespace)
+      
 
 Folder.register_handler_class(WebSite)

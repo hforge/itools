@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" 
-      xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
   <body>
-    <h2 stl:content="title">John Doe's home</h2>
+    <h2 stl:content="title"></h2>
     <p>
       Welcome to your home folder. This is your personal space where you can
       manage your own documents and publish them.
@@ -16,10 +16,10 @@
     <p>You can do the following actions in your home folder:</p>
     <ul>
       <li>
-        <a href=";edit_form">Change your account information;</a>
+        <a href=";edit_form">Change your preferences;</a>
       </li>
       <li>
-        <a href=";edit_password_form">Change your password;</a>
+        <a href=";edit_account_form">Change your account;</a>
       </li>
       <li>
         <a href=";browse_thumbnails">Manage your personal content;</a>

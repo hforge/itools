@@ -148,7 +148,7 @@ else:
 
 
         def decode_character(data):
-            return unicode(data[:2:-1], 'unicode_internal')
+            return unicode(data[:2][::-1], 'unicode_internal')
     else:
         # UCS 4
         def encode_character(value):

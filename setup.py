@@ -73,7 +73,9 @@ included are:
 setup(
     name = "itools",
     version = "0.12.0",
-    author = u"J. David Ibáñez",
+    # XXX Broken distutils, "sdist" don't likes unicode strings, and "register"
+    # don't likes normal strings.
+    author = u"J. David Ibáñez".encode('UTF-8'),
     author_email = "jdavid@itaapy.com",
     license = "GNU Lesser General Public License",
     url = "http://www.ikaaro.org",

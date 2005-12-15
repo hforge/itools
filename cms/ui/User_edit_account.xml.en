@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+          
+<h2>Account Change</h2>
+
+<form action=";edit_account" method="post">
+  <dl>
+    <dt>Full name</dt>
+    <dd>
+      <input type="text" id="dc_title" name="dc:title"
+        stl:attributes="value fullname" />
+    </dd>
+    <dt>E-mail</dt>
+    <dd>
+      <input type="text" id="email" name="email"
+        stl:attributes="value email" />
+    </dd>
+    <dt>You can change your password by typing a new one.</dt>
+    <dd>
+      <input type="password" id="password" name="password" />
+    </dd>
+    <dt>If you type a new password, you must confirm it.</dt>
+    <dd>
+      <input type="password" id="password2" name="password2" />
+    </dd>
+    <stl:block if="must_confirm">
+      <dt><strong>To confirm these changes, you must type your actual
+          password.</strong></dt>
+      <dd>
+        <input type="password" id="confirm" name="confirm" />
+      </dd>
+    </stl:block>
+  </dl>
+  <p>
+    <input type="submit" value="Change account" class="button_ok" />
+  </p>
+</form>
+
+<script type="text/javascript">
+  focus("dc_title");
+</script>
+
+</stl:block>

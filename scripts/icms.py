@@ -127,15 +127,17 @@ def init(parser, options, target):
         transaction.commit()
 
     # Bravo!
-    print '****************************************************************'
+    print '*'
     print '* Welcome to itools.cms'
-    print '* A user with administration rights has been created for you:'
-    print '*   username: admin'
-    print '*   password: %s' % password
+    if options.source is None:
+        print '* A user with administration rights has been created for you:'
+        print '*   username: admin'
+        print '*   password: %s' % password
     print '*'
     print '* To start the new instance type:'
     print '*   %s start %s' % (parser.get_prog_name(), target)
     print '*'
+        
 
 
 

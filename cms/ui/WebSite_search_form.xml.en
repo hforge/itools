@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Advanced Search</h2>
+
+<form action=";site_search" method="post">
+  <dl>
+    <dd>
+      <label for="site_search_name">Name contains</label>
+      <input type="text" id="site_search_name" name="site_search_name"
+        size="50" />
+    </dd>
+    <dd>
+      <label for="site_search_title">Title contains</label>
+      <input type="text" id="site_search_title" name="site_search_title"
+        size="50" />
+    </dd>
+    <dd>
+      <label for="site_search_text">Text contains</label>
+      <input type="text" id="site_search_text" name="site_search_text"
+       size="50" />
+    </dd>
+    <dd>
+      <label for="site_search_after">Modified after</label>
+      <input type="text" id="site_search_after" name="site_search_after" size="10"/>
+      <button id="site_search_after_button"><img width="16" height="16"
+        stl:attributes="src button_calendar"/></button>
+      <span id="site_search_after_text" />
+    </dd>
+    <dd>
+      <label for="site_search_before">Modified before</label>
+      <input type="text" id="site_search_before" name="site_search_before" size="10"/>
+      <button id="site_search_before_button"><img width="16" height="16"
+        stl:attributes="src button_calendar"/></button>
+      <span id="site_search_before_text" />
+    </dd>
+    <dd stl:if="states">
+      <label for="site_search_state">Workflow state</label>
+      <select id="site_search_state" name="site_search_state">
+        <option value="">Any</option>
+        <option stl:repeat="state states" stl:content="state/value"
+          stl:attributes="value state/key" />
+      </select>
+    </dd>
+  </dl>
+  <p>
+    <input type="submit" value="Search" class="button_search" />
+  </p>
+</form>
+
+<script type="text/javascript">
+  focus("site_search_name");
+  Calendar.setup({"inputField": "site_search_after",
+                  "displayArea": "site_search_after_text",
+                  "button": "site_search_after_button",
+                  "daFormat": Calendar._TT["TT_DATE_FORMAT"]});
+  Calendar.setup({"inputField": "site_search_before",
+                  "displayArea": "site_search_before_text",
+                  "button": "site_search_before_button",
+                  "daFormat": Calendar._TT["TT_DATE_FORMAT"]});
+</script>
+
+</stl:block>

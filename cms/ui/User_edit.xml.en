@@ -2,18 +2,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Personal information</h2>
+<h2>Application Preferences</h2>
 
 <form action=";edit" method="post">
   <dl>
-    <dt>Full name</dt>
-    <dd>
-      <input type="text" name="dc:title" stl:attributes="value fullname" />
-    </dd>
-    <dt>Email</dt>
-    <dd>
-      <input type="text" name="email" stl:attributes="value email" />
-    </dd>
     <dt>Language</dt>
     <dd>
       <select name="ikaaro:user_language">
@@ -30,12 +22,6 @@
           stl:content="theme/value" />
       </select>
     </dd>
-    <stl:block if="must_confirm">
-      <dt>To confirm these changes, you must type your password.</dt>
-      <dd>
-        <input type="password" name="confirm" />
-      </dd>
-    </stl:block>
   </dl>
   <p>
     <input type="submit" value="Change preferences" class="button_ok"/>

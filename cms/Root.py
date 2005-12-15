@@ -368,17 +368,22 @@ class Root(Group, WebSite):
     def get_skin(self):
         context = get_context()
 
-        # Check the request
+        # Check the request (designed to be used from Apache)
         form = context.request.form
         if form.has_key('skin_path'):
             return self.get_handler(form['skin_path'])
 
+        # Default
+        themes = self.get_themes()
+        theme = themes[0]
+
         # Check the user preferences
         user = context.user
-        if user is None:
-            return self.get_handler('ui/aruni')
+        if user is not None:
+            theme = user.get_property('ikaaro:user_theme')
+            if theme not in themes:
+                theme = themes[0]
 
-        theme = user.get_property('ikaaro:user_theme')
         return self.get_handler('ui/%s' % theme)
 
 

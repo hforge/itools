@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-15 10:29:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-120
+
+    Summary:
+      xhtml, fix "set_template_prefix" (#245)
+    Revision:
+      itools--main--0.12--patch-120
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-12-15 10:16:39 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-119
 
     Summary:

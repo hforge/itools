@@ -21,6 +21,7 @@ import re
 from cStringIO import StringIO
 
 # Import from itools
+from itools import datatypes
 from itools.datatypes import Integer, Unicode, String, URI
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
@@ -518,7 +519,8 @@ def resolve_pointer(uri, offset):
         if uri.path.is_relative():
             if uri.path or str(uri) == '.':
                 # XXX Here we loss the query and fragment.
-                return offset.resolve(uri.path)
+                value = offset.resolve(uri.path)
+                return str(value)
 
     return URI.encode(uri)
 
@@ -548,6 +550,7 @@ def set_template_prefix(handler, offset, encoding='UTF-8'):
                             value = datatype.encode(value)
                     else:
                         value = datatype.encode(value)
+                    value = datatypes.XML.encode(value)
                     data.append(' %s="%s"' % (qname, value))
                 data.append('>')
             else:

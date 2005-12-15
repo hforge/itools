@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-15 10:13:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-118
+
+    Summary:
+      fix release notes
+    Revision:
+      itools--main--0.12--patch-118
+
+
+    modified files:
+     Changelog RELEASE.txt
+
+
 2005-12-13 15:55:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-117
 
     Summary:

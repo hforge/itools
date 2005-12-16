@@ -2,6 +2,61 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-16 08:00:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-122
+
+    Summary:
+      merge from herve (#203, #209)
+    Revision:
+      itools--main--0.12--patch-122
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-207
+       add doctype to every template, we'll need them for itools 0.12 not to crash translations and HTML injection with entities.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-209
+       use a 20/80 ratio for 800x600 screens.
+    
+
+    modified files:
+     Changelog cms/ui/CSVRow_edit.xml.en cms/ui/CSVRow_view.xml.en
+     cms/ui/CSV_view.xml.en cms/ui/Document_translate.xml.en
+     cms/ui/File_download_form.xml.en
+     cms/ui/File_externaledit.xml.en cms/ui/File_help.xml.en
+     cms/ui/File_history.xml.en cms/ui/File_new_instance.xml.en
+     cms/ui/File_upload.xml.en cms/ui/Flash_view.xml.en
+     cms/ui/Folder_browse_image.xml.en
+     cms/ui/Folder_browse_list.xml.en
+     cms/ui/Folder_browse_thumbnails.xml.en
+     cms/ui/Folder_browsedir.xml.en
+     cms/ui/Folder_new_instance.xml.en
+     cms/ui/Folder_new_resource.xml.en cms/ui/Folder_rename.xml.en
+     cms/ui/Folder_translate.xml.en cms/ui/Group_add_group.xml.en
+     cms/ui/Group_add_users.xml.en cms/ui/Group_browse_users.xml.en
+     cms/ui/HTML_addimage.xml.en cms/ui/HTML_addlink.xml.en
+     cms/ui/HTML_edit.xml.en cms/ui/Handler_edit_metadata.xml.en
+     cms/ui/OOffice_view.xml.en cms/ui/PO_edit.xml.en
+     cms/ui/Root_about.xml.en cms/ui/Root_catalog.xml.en
+     cms/ui/Root_general.xml.en
+     cms/ui/Root_internal_server_error.xml.en
+     cms/ui/Root_join.xml.en cms/ui/Root_languages.xml.en
+     cms/ui/Root_license.xml.en cms/ui/Tar_untar.xml.en
+     cms/ui/Text_edit.xml.en cms/ui/Text_externaledit.xml.en
+     cms/ui/Text_new_instance.xml.en
+     cms/ui/UserFolder_new_user.xml.en cms/ui/User_edit.xml.en
+     cms/ui/User_edit_account.xml.en cms/ui/User_edit_groups.xml.en
+     cms/ui/User_tasks.xml.en cms/ui/User_translator.xml.en
+     cms/ui/User_view.xml.en cms/ui/WebSite_login.xml.en
+     cms/ui/WebSite_logout.xml.en
+     cms/ui/WebSite_new_instance.xml.en
+     cms/ui/WorkflowAware_state.xml.en
+     cms/ui/epoz_script_color.xml.en cms/ui/onetruelayout.css
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-207
+     herve@oursours.net--public/itools--aruni--0.12--patch-209
+
+
 2005-12-15 11:29:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-121
 
     Summary:

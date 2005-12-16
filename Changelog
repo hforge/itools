@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.11
 #
 
+2005-12-16 13:51:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-68
+
+    Summary:
+      xhtml, fix ".translate" when there is non-ascii in the source
+    Revision:
+      itools--main--0.11--patch-68
+
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+
 2005-12-13 14:02:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-67
 
     Summary:

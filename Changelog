@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-16 14:04:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-123
+
+    Summary:
+      merge fix from the 0.11 branch
+    Revision:
+      itools--main--0.12--patch-123
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.11--patch-68
+       xhtml, fix ".translate" when there is non-ascii in the source
+    
+
+    modified files:
+     Changelog xhtml/XHTML.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.11--patch-68
+
+
 2005-12-16 08:00:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-122
 
     Summary:

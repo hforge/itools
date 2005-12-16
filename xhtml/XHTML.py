@@ -359,7 +359,7 @@ class Document(XML.Document):
                             if isinstance(x, unicode):
                                 yield x
                             else:
-                                yield x.to_str()
+                                yield x.to_unicode()
                         raise StopIteration
                     # Something to translate: segmentation
                     for segment in message.get_segments(keep_spaces):

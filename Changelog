@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-18 17:34:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-126
+
+    Summary:
+      cms, comment code specific to Zope
+    Revision:
+      itools--main--0.12--patch-126
+
+
+    modified files:
+     Changelog cms/File.py cms/Root.py
+
+
 2005-12-18 17:29:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-125
 
     Summary:

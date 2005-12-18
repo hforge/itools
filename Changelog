@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-18 17:29:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-125
+
+    Summary:
+      cms, fix copy and paste
+    Revision:
+      itools--main--0.12--patch-125
+
+
+    modified files:
+     Changelog cms/Folder.py cms/versioning.py
+
+
 2005-12-18 17:08:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-124
 
     Summary:

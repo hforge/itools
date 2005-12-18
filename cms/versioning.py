@@ -58,12 +58,15 @@ class VersioningAware(object):
 
 
     def add_to_archive(self):
+        """
+        Add an object to the archive. This method only must be called after
+        creation time, once the object is created calling this method will
+        destroy its history.
+        """
         archive_folder = self.get_archive_folder()
 
-        archive_id = self.get_archive_id()
-        if archive_id is None:
-            archive_id = self.new_archive_id()
-            self.set_archive_id(archive_id)
+        archive_id = self.new_archive_id()
+        self.set_archive_id(archive_id)
 
         path = archive_id.split('/')
         for i in range(len(path)):

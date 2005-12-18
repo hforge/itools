@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-18 17:08:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-124
+
+    Summary:
+      cms, change welcome page to profile page (#235)
+    Revision:
+      itools--main--0.12--patch-124
+
+
+    modified files:
+     Changelog cms/User.py cms/ui/User_profile.xml.en
+
+    renamed files:
+     cms/ui/.arch-ids/User_welcome.xml.en.id
+       ==> cms/ui/.arch-ids/User_profile.xml.en.id
+     cms/ui/User_welcome.xml.en
+       ==> cms/ui/User_profile.xml.en
+
+
 2005-12-16 14:04:08 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-123
 
     Summary:

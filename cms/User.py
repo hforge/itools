@@ -143,7 +143,7 @@ class User(Folder):
     # User interface
     #######################################################################
     def get_views(self):
-        views = ['welcome', 'browse_thumbnails', 'new_resource_form',
+        views = ['profile', 'browse_thumbnails', 'new_resource_form',
                  'edit_form']
         # Task list only for reviewers and admins (for now).
         root = get_context().root
@@ -168,19 +168,24 @@ class User(Folder):
 
 
     #######################################################################
-    # Welcome
-    welcome__access__ = 'is_allowed_to_view'
-    welcome__label__ = u'Welcome'
-    def welcome(self):
+    # Profile
+    profile__access__ = 'is_allowed_to_view'
+    profile__label__ = u'Profile'
+    def profile(self):
+        context = get_context()
+        root = context.root
+        user = context.user
+
         namespace = {}
         namespace['title'] = self.get_property('dc:title') or self.name
-        # Tasks? (for now).
-        root = get_context().root
-        is_admin = self.name in root.get_handler('admins').get_usernames()
-        is_rev = self.name in root.get_handler('reviewers').get_usernames()
-        namespace['tasks'] = is_admin or is_rev
+        # Owner
+        is_owner = user is not None and user.name == self.name
+        namespace['is_owner'] = is_owner
+        # Owner or Admin
+        is_admin = user.name in root.get_handler('admins').get_usernames()
+        namespace['is_owner_or_admin'] = is_owner or is_admin
 
-        handler = self.get_handler('/ui/User_welcome.xml')
+        handler = self.get_handler('/ui/User_profile.xml')
         return stl(handler, namespace)
 
 

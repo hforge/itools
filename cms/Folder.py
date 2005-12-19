@@ -166,7 +166,7 @@ class Folder(Handler, handlers.Folder.Folder):
         name = segment.name
         if name.startswith('.'):
             return
-        
+
         # Set metadata
         metadata = handler.get_metadata()
         if metadata is None:
@@ -243,7 +243,7 @@ class Folder(Handler, handlers.Folder.Folder):
             if context is not None:
                 if context.user is not None:
                     owner = context.user.name
-            
+
         if format is None:
             format = handler.class_id
 

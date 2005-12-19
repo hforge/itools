@@ -5,15 +5,15 @@
 
 #block_1 {
 	float: left;
-	width: 75%;
-	margin-left: 25%;
+	width: 80%;
+	margin-left: 20%;
 }
 * html #block_1 {
 	display: inline;
 }
 #block_2 {
 	float: left;
-	width: 25%;
+	width: 20%;
 	margin-left: -100%;
 }
 /* Start Mac IE5 filter \*/
@@ -43,10 +43,10 @@ bottom value by -1px or as required */
 	bottom: 0;
 }
 #block_1 .verticalalign {
-	width: 75%;
+	width: 80%;
 }
 #block_2 .verticalalign {
-	width: 25%;
+	width: 20%;
 }
 /* hack for Opera 7+ */
 @media all and (min-width: 0px) {
@@ -55,10 +55,10 @@ bottom value by -1px or as required */
 	}
   /* But Opera 9 does it right, so CSS3 hax to the max */
   div[id^="wrapper"] #block_1 .verticalalign {
-    width: 75% !important;
+    width: 80% !important;
 	}
   div[id^="wrapper"] #block_2 .verticalalign {
-    width: 25% !important;
+    width: 20% !important;
 	}
 }
 /* hack for IEs of all persuasions */

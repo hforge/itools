@@ -43,7 +43,7 @@ Resources
 ---------
 
 Download
-http://www.ikaaro.org/XXX
+http://www.ikaaro.org/download/itools/itools-0.12.0.tar.gz
 
 Home
 http://www.ikaaro.org/itools

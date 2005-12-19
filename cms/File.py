@@ -116,11 +116,6 @@ class File(Handler, itools.handlers.File.File):
 
     external_edit__access__ = Handler.is_allowed_to_edit
     def external_edit(self, encoding=None, **kw):
-        # XXX This code depends too much on Zope, while the ExternalEditor
-        # client doesn't (using the HTTP+WebDAV protocol).
-        # TODO extend the lock API of resources, and move the code below
-        # playing with the Zope object to itools.resources.zope2. Think of an
-        # implementation for the other types of ressources.
         # TODO check if zopeedit really needs the meta_type.
 
         # Get the context, request and response

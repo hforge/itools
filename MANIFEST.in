@@ -9,3 +9,12 @@ recursive-include rss *.html *.rss *.xml
 include tmx/localizermsgs.tmx
 recursive-include workflow *.txt
 include xliff/gettext_en_es.xlf
+recursive-include cms/ui *.x*ml.??
+recursive-include cms/ui *.css
+recursive-include cms/ui *.js
+recursive-include cms/ui *.png
+recursive-include cms/ui *.gif
+recursive-include cms/ui *.jpg
+recursive-include cms/locale *.mo
+recursive-include cms/locale *.po
+recursive-include cms/locale *.pot

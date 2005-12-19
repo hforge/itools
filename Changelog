@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-19 09:07:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-128
+
+    Summary:
+      update the manifest file
+    Revision:
+      itools--main--0.12--patch-128
+
+
+    modified files:
+     Changelog MANIFEST.in
+
+
 2005-12-19 08:44:57 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-127
 
     Summary:

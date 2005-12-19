@@ -1,4 +1,4 @@
-0.12.0 (200/12/XX)
+0.12.0 (200/12/19)
 
   Resources
   - Implement support for ZODB resources (itools.resources.zodb).
@@ -19,6 +19,7 @@
   - Integrate the epoz richt text editor into "itools.cms".
   - New main skin Aruni, by Hervé Cauwelier.
   - Many user interface inprovements by Hervé Cauwelier.
+  - Updated the french translation, by Hervé Cauwelier.
 
   Scripts
   - New script "icms.py" for easy deployment of "itools.cms".

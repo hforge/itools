@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-20 13:42:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-129
+
+    Summary:
+      cms, fix metadata serialization (workflow transitions)
+    Revision:
+      itools--main--0.12--patch-129
+
+
+    modified files:
+     Changelog cms/Metadata.py
+
+
 2005-12-19 09:07:28 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-128
 
     Summary:

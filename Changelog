@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-20 17:01:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-130
+
+    Summary:
+      cms, fix external edit, changes were not persistent
+    Revision:
+      itools--main--0.12--patch-130
+
+    It is a work-around implemented in "itools.web.server.handle_request".
+    See the inline comment:
+    
+      XXX Since the lock and unlock operations don't modify any handler,
+      they are not commited in the database, so we do here explicitly.
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-12-20 13:42:10 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-129
 
     Summary:

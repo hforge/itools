@@ -61,7 +61,7 @@ class IOTestCase(TestCase):
             self.assertEqual(IO.decode_link(encoded_value), value)
 
 
-    def test_varsion(self):
+    def test_version(self):
         value = '20050217'
         encoded_value = IO.encode_version(value)
         self.assertEqual(IO.decode_version(encoded_value), value)

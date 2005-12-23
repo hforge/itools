@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-23 18:28:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-131
+
+    Summary:
+      catalog, fix typo in unit test
+    Revision:
+      itools--main--0.12--patch-131
+
+
+    modified files:
+     Changelog catalog/test_io.py
+
+
 2005-12-20 17:01:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-130
 
     Summary:

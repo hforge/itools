@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-23 18:42:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-132
+
+    Summary:
+      web, implement HTTP-Date as of RFC 1945 (HTTP 1.0)
+    Revision:
+      itools--main--0.12--patch-132
+
+
+    new files:
+     web/.arch-ids/test_headers.py.id web/test_headers.py
+
+    modified files:
+     Changelog web/headers.py
+
+
 2005-12-23 18:28:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-131
 
     Summary:

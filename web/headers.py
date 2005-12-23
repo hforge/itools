@@ -15,6 +15,10 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+from datetime import datetime
+import time
+
 # Import from itools
 from itools.datatypes import DataType, Integer, String, URI
 from itools.i18n import accept
@@ -23,6 +27,37 @@ from itools.i18n import accept
 #############################################################################
 # Types
 #############################################################################
+
+class HTTPDate(DataType):
+    # XXX As specified by RFC 1945 (HTTP 1.0), should check HTTP 1.1
+    # XXX The '%a', '%A' and '%b' format variables depend on the locale
+    # (that's what the Python docs say), so what happens if the locale
+    # in the server is not in English?
+
+    @staticmethod
+    def decode(data):
+        try:
+            # RFC 822
+            tm = time.strptime(data, '%a, %d %b %Y %H:%M:%S GMT')
+        except ValueError:
+            try:
+                # RFC 850
+                tm = time.strptime(data, '%A, %d-%b-%y %H:%M:%S GMT')
+            except ValueError:
+                # ANSI C's asctime() format
+                try:
+                    tm = time.strptime(data, '%a %b  %d %H:%M:%S %Y')
+                except ValueError:
+                    raise ValueError, 'date "%s" is not an HTTP-Date' % data
+
+        year, mon, mday, hour, min, sec, wday, yday, isdst = tm
+        return datetime(year, mon, mday, hour, min, sec)
+
+
+    @staticmethod
+    def encode(value):
+        return value.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
 
 
 #############################################################################
@@ -138,58 +173,61 @@ class Cookie(DataType):
 #############################################################################
 
 headers = {
-    # General headers
+    # General headers (HTTP 1.0)
+    'Date': HTTPDate,
+    'Pragma': String,
+    # General headers (HTTP 1.1)
     'Cache-Control': String,
     'Connection': String,
-    'Date': String,
-    'Pragma': String,
     'Trailer': String,
     'Transfer-Encoding': String,
     'Upgrade': String,
     'Via': String,
     'Warning': String,
-    # Request headers
+    # Request headers (HTTP 1.0)
+    'Authorization': String,
+    'From': String,
+    'If-Modified-Since': HTTPDate,
+    'Referer': URI,
+    'User-Agent': String,
+    # Request headers (HTTP 1.1)
     'Accept': String,
     'Accept-Charset': String,
     'Accept-Encoding': String,
     'Accept-Language': accept.AcceptLanguageType,
-    'Authorization': String,
     'Expect': String,
-    'From': String,
     'Host': String,
     'If-Match': String,
-    'If-Modified-Since': String,
     'If-None-Match': String,
     'If-Range': String,
-    'If-Unmodified-Since': String,
+    'If-Unmodified-Since': HTTPDate,
     'Max-Forwards': String,
     'Proxy-Authorization': String,
     'Range': String,
-    'Referer': URI,
     'TE': String,
-    'User-Agent': String,
-    # Response headers
+    # Response headers (HTTP 1.0)
+    'Location': URI,
+    'Server': String,
+    'WWW-Authenticate': String,
+    # Response headers (HTTP 1.1)
     'Accept-Ranges': String,
     'Age': String,
     'ETag': String,
-    'Location': URI,
     'Proxy-Authenticate': String,
     'Retry-After': String,
-    'Server': String,
     'Vary': String,
-    'WWW-Authenticate': String,
-    # Entity headers
+    # Entity headers (HTTP 1.0)
     'Allow': String,
     'Content-Encoding': String,
-    'Content-Language': String,
     'Content-Length': Integer,
+    'Content-Type': ValueWithParameters,
+    'Expires': HTTPDate,
+    'Last-Modified': HTTPDate,
+    # Entity headers (HTTP 1.1)
+    'Content-Language': String,
     'Content-Location': String,
     'Content-MD5': String,
     'Content-Range': String,
-    'Content-Type': ValueWithParameters,
-    'Expires': String,
-    'Last-Modified': String,
-    'extension-header': String,
     # Non standard headers
     'Content-Disposition': ValueWithParameters,
     'Cookie': Cookie,

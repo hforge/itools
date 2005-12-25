@@ -20,9 +20,9 @@ from datetime import datetime
 
 # Import from itools
 from itools.schemas import get_datatype
-from itools.handlers.File import File
 from itools.web import headers
 from itools.web.headers import HTTPDate
+from itools.web.message import Message
 from itools.web import entities
 
 
@@ -90,7 +90,7 @@ class Cookie(object):
 
 
 
-class Response(File):
+class Response(Message):
 
     def get_skeleton(self, status_code=200, **kw):
         status_message = status_messages[status_code]
@@ -134,19 +134,19 @@ class Response(File):
         # Server:
         data.append('Server: itools.web')
         # Last-Modified:
-        if 'Last-Modified' in state.headers:
-            date = state.headers['Last-Modified']
+        if self.has_header('last-modified'):
+            date = self.get_header('last-modified')
             date = HTTPDate.encode(date)
         data.append('Last-Modified: %s' % date)
         # User defined headers
         for name in state.headers:
-            if name not in ['Date', 'Server', 'Last-Modified']:
-                value = state.headers[name]
+            if name not in ['date', 'server', 'last-modified']:
                 datatype = headers.get_type(name)
+                value = state.headers[name]
                 value = datatype.encode(value)
-                data.append('%s: %s' % (name, value))
-        # Last-Modified:
-        if 'content-length' not in state.headers:
+                data.append('%s: %s' % (name.title(), value))
+        # Content-Length:
+        if not self.has_header('content-length'):
             data.append('Content-Length: %d' % self.get_content_length())
         # The Cookies
         for name in state.cookies:
@@ -199,20 +199,6 @@ class Response(File):
     def redirect(self, location, status=302):
         self.set_status(status)
         self.set_header('Location', location)
-
-
-    #########################################################################
-    # Headers
-    def set_header(self, name, value):
-        if isinstance(value, str):
-            type = headers.get_type(name)
-            value = type.decode(value)
-        self.state.headers[name] = value
-        
-
-
-    def has_header(self, name):
-        return name in self.state.headers
 
 
     #########################################################################

@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-25 16:20:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-136
+
+    Summary:
+      web, message headers are case-insensitive
+    Revision:
+      itools--main--0.12--patch-136
+
+
+    new files:
+     web/.arch-ids/message.py.id web/message.py
+
+    modified files:
+     Changelog cms/File.py web/context.py web/entities.py
+     web/headers.py web/request.py web/response.py
+
+
 2005-12-25 15:48:50 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-135
 
     Summary:

@@ -94,7 +94,7 @@ class File(Handler, itools.handlers.File.File):
         request, response = context.request, context.response
 
         # Last-Modified (XXX Use the handler timestamp instead?)
-        response.set_header('Last-Modified', self.resource.get_mtime())
+        response.set_header('last-modified', self.resource.get_mtime())
         # Content-Type
         metadata = self.get_metadata()
         if metadata is None:

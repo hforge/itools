@@ -154,10 +154,12 @@ def handle_request(connection, server):
                 if mtime is not None:
                     mtime = mtime()
                     response.set_header('last-modified', mtime)
-                    if request.has_header('if-modified-since'):
-                        if mtime <= request.get_header('if-modified-since'):
-                            # Not modified (304)
-                            response.set_status(304)
+                    if request.method == 'GET':
+                        if request.has_header('if-modified-since'):
+                            msince = request.get_header('if-modified-since')
+                            if mtime <= msince:
+                                # Not modified (304)
+                                response.set_status(304)
 
     if response.get_status() != 304:
         # Set the list of needed resources. The method we are going to
@@ -229,6 +231,11 @@ def handle_request(connection, server):
     # Access Log
     server.log_access(connection, request_line, response.state.status,
                       response.get_content_length())
+
+    # HEAD
+    if request.method == 'HEAD':
+        response.set_header('content-length', response.get_content_length())
+        response.set_body(None)
 
     # Finish, send back the response
     response = response.to_str()

@@ -207,7 +207,7 @@ headers = {
     'te': String,
     # Response headers (HTTP 1.0)
     'location': URI,
-    'server': String, # XXX To implement
+    'server': String,
     'www-authenticate': String,
     # Response headers (HTTP 1.1)
     'accept-ranges': String,

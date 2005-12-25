@@ -27,31 +27,34 @@ from itools.web import entities
 
 
 status_messages = {
-    # Informational
+    # Informational (HTTP 1.1)
     100: 'Continue',
     101: 'Switching Protocols',
-    # Success
+    # Success (HTTP 1.0)
     200: 'OK',
     201: 'Created',
     202: 'Accepted',
-    203: 'Non-Authoritative Information',
     204: 'No Content',
+    # Success (HTTP 1.1)
+    203: 'Non-Authoritative Information',
     205: 'Reset Content',
     206: 'Partial Content',
-    # Redirection
-    300: 'Multiple Choices',
+    # Redirection (HTTP 1.0)
     301: 'Moved Permanently',
     302: 'Found',
-    303: 'See Other',
     304: 'Not Modified',
+    # Redirection (HTTP 1.1)
+    300: 'Multiple Choices',
+    303: 'See Other',
     305: 'Use Proxy',
     307: 'Temporary Redirect',
-    # Client error
+    # Client error (HTTP 1.0)
     400: 'Bad Request',
     401: 'Unauthorized',
-    402: 'Payment Required',
     403: 'Forbidden',
     404: 'Not Found',
+    # Client error (HTTP 1.1)
+    402: 'Payment Required',
     405: 'Method Not Allowed',
     406: 'Not Acceptable',
     407: 'Proxy Authentication Required',
@@ -65,11 +68,12 @@ status_messages = {
     415: 'Unsupported Media Type',
     416: 'Requested Range Not Satisfiable',
     417: 'Expectation Failed',
-    # Server error
+    # Server error (HTTP 1.0)
     500: 'Internal error',
     501: 'Not Implemented',
     502: 'Bad Gateway',
     503: 'Service Unavailable',
+    # Server error (HTTP 1.1)
     504: 'Gateway Timeout',
     505: 'HTTP Version Not Supported',
     }

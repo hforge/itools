@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-25 18:00:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-138
+
+    Summary:
+      web, implement the HEAD method
+    Revision:
+      itools--main--0.12--patch-138
+
+
+    modified files:
+     Changelog web/headers.py web/response.py web/server.py
+
+
 2005-12-25 17:08:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-137
 
     Summary:

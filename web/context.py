@@ -30,8 +30,9 @@ class Context(object):
         self.request = request
         self.response = Response()
 
-        host = request.get_header('X-Forwarded-Host')
-        if host is None:
+        if request.has_header('X-Forwarded-Host'):
+            host = request.get_header('X-Forwarded-Host')
+        else:
             host = request.get_header('Host')
 
         # The requested uri

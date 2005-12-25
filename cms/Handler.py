@@ -109,6 +109,7 @@ class Node(AccessControl, iNode):
 
 
     def get_mtime(self):
+        # XXX Should use the handler timestamp instead?
         return self.resource.get_mtime()
 
     mtime = property(get_mtime, None, None, "")

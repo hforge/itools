@@ -24,14 +24,14 @@ from itools.datatypes import QName
 from itools import schemas
 from itools.resources import memory
 from itools.handlers.Handler import Handler
-from itools.handlers.File import File
 from itools.i18n.accept import AcceptLanguage
 from itools.web.exceptions import BadRequest
 from itools.web import headers
 from itools.web import entities
+from itools.web.message import Message
 
 
-class Request(File):
+class Request(Message):
 
     def get_skeleton(self, path='/'):
         return 'GET %s HTTP/1.1' % path
@@ -60,22 +60,22 @@ class Request(File):
         state.headers = entities.read_headers(resource)
 
         # The body
-        if 'Content-Length' in state.headers:
-            size = state.headers['Content-Length']
+        if self.has_header('content-length'):
+            size = self.get_header('content-length')
             body = resource.read(size)
         else:
             body = ''
 
         # Cookies
-        state.headers.setdefault('Cookie', {})
+        state.headers.setdefault('cookie', {})
 
         # The Form
         if method in ('GET', 'HEAD'):
             parameters = reference.query
         elif method in ('POST', 'PUT', 'LOCK', 'UNLOCK'):
             parameters = {}
-            if 'Content-Type' in state.headers:
-                type, type_parameters = state.headers['Content-Type']
+            if self.has_header('content-type'):
+                type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
                     parameters = uri.generic.Query(body)
                 elif type.startswith('multipart/'):
@@ -128,10 +128,10 @@ class Request(File):
                                     state.http_version))
         # Headers
         for name in state.headers:
+            datatype = headers.get_type(name)
             value = state.headers[name]
-            type = headers.get_type(name)
-            value = type.encode(value)
-            data.append('%s: %s\n' % (name, value))
+            value = datatype.encode(value)
+            data.append('%s: %s\n' % (name.title(), value))
         return ''.join(data)
 
 
@@ -164,35 +164,20 @@ class Request(File):
 
 
     ########################################################################
-    # The Header
+    # API
     ########################################################################
-    def set_header(self, name, value):
-        type = headers.get_type(name)
-        self.state.headers[name] = type.decode(value)
-
-
-    def get_header(self, name):
-        return self.state.headers.get(name)
-
-
-    ########################################################################
-    # The Content type
     def get_content_type(self):
         return self.state.headers.get('Content-Type', None)
 
     content_type = property(get_content_type, None, None, '')
 
 
-    ########################################################################
-    # The Referrer
     def get_referrer(self):
         return self.state.headers.get('Referer', None)
 
     referrer = property(get_referrer, None, None, '')
 
 
-    ########################################################################
-    # Accept Language
     def get_accept_language(self):
         headers = self.state.headers
         if 'Accept-Language' in headers:
@@ -204,7 +189,6 @@ class Request(File):
 
     ########################################################################
     # The Form
-    ########################################################################
     def _set_parameter(self, name, value):
         prefix, local_name = QName.decode(name)
         if prefix is not None:
@@ -242,17 +226,17 @@ class Request(File):
 
     ########################################################################
     # The Cookies
-    ########################################################################
     def set_cookie(self, name, value):
         self.state.headers['Cookie'][name] = value
 
 
     def get_cookie(self, name):
-        return self.state.headers['Cookie'].get(name)
+        cookies = self.get_header('cookie')
+        return cookies.get(name)
 
 
     def get_cookies_as_str(self):
-        cookies = self.state.headers['Cookie']
+        cookies = self.get_header('cookie')
         return '; '.join([ '%s="%s"' % (x, cookies[x]) for x in cookies ])
 
 

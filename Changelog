@@ -2,6 +2,73 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2005-12-25 18:56:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-5
+
+    Summary:
+      merge fixes from the 0.12 branch
+    Revision:
+      itools--main--0.13--patch-5
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-129
+       cms, fix metadata serialization (workflow transitions)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-130
+       cms, fix external edit, changes were not persistent
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-131
+       catalog, fix typo in unit test
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-132
+       web, implement HTTP-Date as of RFC 1945 (HTTP 1.0)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-133
+       web, fix the format of the "Date" header in the response
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-134
+       web, implement the "Last-Modified" header
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-135
+       web, implement the "Last-Modified" header
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-136
+       web, message headers are case-insensitive
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-137
+       web, implement the "If-Modified-Since" request header
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-138
+       web, implement the HEAD method
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-139
+       update "CHANGES.txt" and "setup.py" (on the track for 0.12.1)
+    
+
+    new files:
+     web/.arch-ids/message.py.id web/.arch-ids/test_headers.py.id
+     web/message.py web/test_headers.py
+
+    modified files:
+     CHANGES.txt Changelog catalog/test_io.py cms/File.py
+     cms/Handler.py cms/Metadata.py setup.py web/context.py
+     web/entities.py web/headers.py web/request.py web/response.py
+     web/server.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.12--patch-129
+     jdavid@itaapy.com--public/itools--main--0.12--patch-130
+     jdavid@itaapy.com--public/itools--main--0.12--patch-131
+     jdavid@itaapy.com--public/itools--main--0.12--patch-132
+     jdavid@itaapy.com--public/itools--main--0.12--patch-133
+     jdavid@itaapy.com--public/itools--main--0.12--patch-134
+     jdavid@itaapy.com--public/itools--main--0.12--patch-135
+     jdavid@itaapy.com--public/itools--main--0.12--patch-136
+     jdavid@itaapy.com--public/itools--main--0.12--patch-137
+     jdavid@itaapy.com--public/itools--main--0.12--patch-138
+     jdavid@itaapy.com--public/itools--main--0.12--patch-139
+
+
 2005-12-19 14:38:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-4
 
     Summary:

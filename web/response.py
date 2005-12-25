@@ -20,37 +20,41 @@ from datetime import datetime
 
 # Import from itools
 from itools.schemas import get_datatype
-from itools.handlers.File import File
 from itools.web import headers
+from itools.web.headers import HTTPDate
+from itools.web.message import Message
 from itools.web import entities
 
 
 status_messages = {
-    # Informational
+    # Informational (HTTP 1.1)
     100: 'Continue',
     101: 'Switching Protocols',
-    # Success
+    # Success (HTTP 1.0)
     200: 'OK',
     201: 'Created',
     202: 'Accepted',
-    203: 'Non-Authoritative Information',
     204: 'No Content',
+    # Success (HTTP 1.1)
+    203: 'Non-Authoritative Information',
     205: 'Reset Content',
     206: 'Partial Content',
-    # Redirection
-    300: 'Multiple Choices',
+    # Redirection (HTTP 1.0)
     301: 'Moved Permanently',
     302: 'Found',
-    303: 'See Other',
     304: 'Not Modified',
+    # Redirection (HTTP 1.1)
+    300: 'Multiple Choices',
+    303: 'See Other',
     305: 'Use Proxy',
     307: 'Temporary Redirect',
-    # Client error
+    # Client error (HTTP 1.0)
     400: 'Bad Request',
     401: 'Unauthorized',
-    402: 'Payment Required',
     403: 'Forbidden',
     404: 'Not Found',
+    # Client error (HTTP 1.1)
+    402: 'Payment Required',
     405: 'Method Not Allowed',
     406: 'Not Acceptable',
     407: 'Proxy Authentication Required',
@@ -64,11 +68,12 @@ status_messages = {
     415: 'Unsupported Media Type',
     416: 'Requested Range Not Satisfiable',
     417: 'Expectation Failed',
-    # Server error
+    # Server error (HTTP 1.0)
     500: 'Internal error',
     501: 'Not Implemented',
     502: 'Bad Gateway',
     503: 'Service Unavailable',
+    # Server error (HTTP 1.1)
     504: 'Gateway Timeout',
     505: 'HTTP Version Not Supported',
     }
@@ -89,7 +94,7 @@ class Cookie(object):
 
 
 
-class Response(File):
+class Response(Message):
 
     def get_skeleton(self, status_code=200, **kw):
         status_message = status_messages[status_code]
@@ -121,21 +126,25 @@ class Response(File):
         state = self.state
 
         data = []
-        # The status
+        # The status line
         status_code = state.status
         status_message = status_messages[status_code]
         data.append('HTTP/1.0 %d %s' % (status_code, status_message))
+        # Headers
+        # Date:
+        date = datetime.utcnow()
+        data.append('Date: %s' % HTTPDate.encode(date))
+        # Server:
+        data.append('Server: itools.web')
         # User defined headers
         for name in state.headers:
-            value = state.headers[name]
-            datatype = headers.get_type(name)
-            value = datatype.encode(value)
-            data.append('%s: %s' % (name, value))
-        # Mandatory headers
-        data.append('Server: itools.web')
-        now = datetime.utcnow()
-        data.append('Date: %s' % now.strftime("%a, %d %b %Y %H:%M:%S +0000"))
-        if 'content-length' not in state.headers:
+            if name not in ['date', 'server']:
+                datatype = headers.get_type(name)
+                value = state.headers[name]
+                value = datatype.encode(value)
+                data.append('%s: %s' % (name.title(), value))
+        # Content-Length:
+        if not self.has_header('content-length'):
             data.append('Content-Length: %d' % self.get_content_length())
         # The Cookies
         for name in state.cookies:
@@ -178,6 +187,10 @@ class Response(File):
         self.state.status = status
 
 
+    def get_status(self):
+        return self.state.status
+
+
     def set_body(self, body):
         state = self.state
         if isinstance(body, unicode):
@@ -188,20 +201,6 @@ class Response(File):
     def redirect(self, location, status=302):
         self.set_status(status)
         self.set_header('Location', location)
-
-
-    #########################################################################
-    # Headers
-    def set_header(self, name, value):
-        if isinstance(value, str):
-            type = headers.get_type(name)
-            value = type.decode(value)
-        self.state.headers[name] = value
-        
-
-
-    def has_header(self, name):
-        return name in self.state.headers
 
 
     #########################################################################

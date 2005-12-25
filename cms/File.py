@@ -43,6 +43,7 @@ class File(Handler, itools.handlers.File.File):
         return stl(handler)
 
 
+    GET__mtime__ = Handler.get_mtime
     def GET(self):
         return self.download()
 
@@ -89,18 +90,19 @@ class File(Handler, itools.handlers.File.File):
 
 
     download__access__ = Handler.is_allowed_to_view
+    download__mtime__ = Handler.get_mtime
     def download(self):
         context = get_context()
         request, response = context.request, context.response
 
+        # Content-Type
         metadata = self.get_metadata()
         if metadata is None:
             mimetype = self.get_mimetype()
         else:
             mimetype = self.get_property('format')
         response.set_header('Content-Type', mimetype)
-##        response.set_header('Content-Disposition',
-##                            'inline; filename="%s"' % self.name)
+
         return self.to_str()
 
 

@@ -235,7 +235,8 @@ class Metadata(Node, File.File):
             elif isinstance(value, list):
                 for value in value:
                     value = datatype.encode(value)
-                    value = XML.encode(value)
+                    if datatype is not Record:
+                        value = XML.encode(value)
                     lines.append('  <%s>%s</%s>' % (qname, value, qname))
             else:
                 value = datatype.encode(value)
@@ -243,6 +244,7 @@ class Metadata(Node, File.File):
                 lines.append('  <%s>%s</%s>' % (qname, value, qname))
 
         lines.append('</metadata>')
+        open('/tmp/kk', 'w').write('\n'.join(lines))
         return '\n'.join(lines)
 
 

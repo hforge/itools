@@ -149,58 +149,81 @@ def handle_request(connection, server):
                 else:
                     # Forbidden (403)
                     method = root.forbidden
+            else:
+                mtime = getattr(handler, '%s__mtime__' % method_name, None)
+                if mtime is not None:
+                    mtime = mtime()
+                    response.set_header('last-modified', mtime)
+                    if request.method == 'GET':
+                        if request.has_header('if-modified-since'):
+                            msince = request.get_header('if-modified-since')
+                            if mtime <= msince:
+                                # Not modified (304)
+                                response.set_status(304)
 
-    # Set the list of needed resources. The method we are going to
-    # call may need external resources to be rendered properly, for
-    # example it could need an style sheet or a javascript file to
-    # be included in the html head (which it can not control). This
-    # attribute lets the interface to add those resources.
-    context.styles = []
-    context.scripts = []
+    if response.get_status() != 304:
+        # Set the list of needed resources. The method we are going to
+        # call may need external resources to be rendered properly, for
+        # example it could need an style sheet or a javascript file to
+        # be included in the html head (which it can not control). This
+        # attribute lets the interface to add those resources.
+        context.styles = []
+        context.scripts = []
 
-    # Get the transaction object
-    transaction = transactions.get_transaction()
+        # Get the transaction object
+        transaction = transactions.get_transaction()
 
-    try:
-        # Call the method
-        if method.im_func.func_code.co_flags & 8:
-            response_body = method(**request.form)
+        try:
+            # Call the method
+            if method.im_func.func_code.co_flags & 8:
+                response_body = method(**request.form)
+            else:
+                response_body = method()
+        except UserError, exception:
+            # Redirection
+            transaction.rollback()
+            goto = copy(request.referrer)
+            goto.query['message'] = exception.args[0].encode('utf8')
+            context.redirect(goto)
+            response_body = None
+        except Forbidden:
+            transaction.rollback()
+            if user is None:
+                # Unauthorized (401)
+                response_body = root.login_form()
+            else:
+                # Forbidden (403)
+                response_body = root.forbidden()
+        except:
+            server.log_error()
+            transaction.rollback()
+            response_body = root.internal_server_error()
         else:
-            response_body = method()
-    except UserError, exception:
-        # Redirection
-        transaction.rollback()
-        goto = copy(request.referrer)
-        goto.query['message'] = exception.args[0].encode('utf8')
-        context.redirect(goto)
-        response_body = None
-    except Forbidden:
-        transaction.rollback()
-        if user is None:
-            # Unauthorized (401)
-            response_body = root.login_form()
-        else:
-            # Forbidden (403)
-            response_body = root.forbidden()
-    except:
-        server.log_error()
-        transaction.rollback()
-        response_body = root.internal_server_error()
-    else:
-        # Save changes
-        transaction.commit(user and user.name or 'NONE', str(request.path))
+            # Save changes
+            username = user and user.name or 'NONE'
+            note = str(request.path)
+            transaction.commit(username, note)
+            # XXX Since the lock and unlock operations don't modify any
+            # handler, they are not commited in the database, so we do here
+            # explicitly.
+            if request.method == 'LOCK' or request.method == 'UNLOCK':
+                from transaction import get as get_zodb_transaction
+                zodb_transaction = get_zodb_transaction()
+                zodb_transaction.setUser(username, '')
+                zodb_transaction.note(note)
+                zodb_transaction.commit()
 
-    # Set the response body
-    response.set_body(response_body)
+        # Set the response body
+        response.set_body(response_body)
 
-    # After traverse hook
-    try:
-        root.after_traverse()
-    except:
-        response.set_status(500)
-        body = root.internal_server_error()
-        response.set_body(body)
-        server.log_error()
+        # After traverse hook
+        try:
+            root.after_traverse()
+        except:
+            response.set_status(500)
+            body = root.internal_server_error()
+            response.set_body(body)
+            server.log_error()
 
     # Free the root object
     server.pool.push(root)
@@ -208,6 +231,11 @@ def handle_request(connection, server):
     # Access Log
     server.log_access(connection, request_line, response.state.status,
                       response.get_content_length())
+
+    # HEAD
+    if request.method == 'HEAD':
+        response.set_header('content-length', response.get_content_length())
+        response.set_body(None)
 
     # Finish, send back the response
     response = response.to_str()

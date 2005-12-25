@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-25 17:08:52 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-137
+
+    Summary:
+      web, implement the "If-Modified-Since" request header
+    Revision:
+      itools--main--0.12--patch-137
+
+
+    modified files:
+     Changelog cms/File.py cms/Handler.py web/headers.py
+     web/response.py web/server.py
+
+
 2005-12-25 16:20:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-136
 
     Summary:

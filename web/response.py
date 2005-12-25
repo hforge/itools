@@ -129,18 +129,12 @@ class Response(Message):
         # Headers
         # Date:
         date = datetime.utcnow()
-        date = HTTPDate.encode(date)
-        data.append('Date: %s' % date)
+        data.append('Date: %s' % HTTPDate.encode(date))
         # Server:
         data.append('Server: itools.web')
-        # Last-Modified:
-        if self.has_header('last-modified'):
-            date = self.get_header('last-modified')
-            date = HTTPDate.encode(date)
-        data.append('Last-Modified: %s' % date)
         # User defined headers
         for name in state.headers:
-            if name not in ['date', 'server', 'last-modified']:
+            if name not in ['date', 'server']:
                 datatype = headers.get_type(name)
                 value = state.headers[name]
                 value = datatype.encode(value)
@@ -187,6 +181,10 @@ class Response(Message):
     #########################################################################
     def set_status(self, status):
         self.state.status = status
+
+
+    def get_status(self):
+        return self.state.status
 
 
     def set_body(self, body):

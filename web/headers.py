@@ -187,7 +187,7 @@ headers = {
     # Request headers (HTTP 1.0)
     'authorization': String,
     'from': String,
-    'if-modified-since': HTTPDate, # XXX To implement
+    'if-modified-since': HTTPDate,
     'referer': URI,
     'user-agent': String,
     # Request headers (HTTP 1.1)

@@ -43,6 +43,7 @@ class File(Handler, itools.handlers.File.File):
         return stl(handler)
 
 
+    GET__mtime__ = Handler.get_mtime
     def GET(self):
         return self.download()
 
@@ -89,12 +90,11 @@ class File(Handler, itools.handlers.File.File):
 
 
     download__access__ = Handler.is_allowed_to_view
+    download__mtime__ = Handler.get_mtime
     def download(self):
         context = get_context()
         request, response = context.request, context.response
 
-        # Last-Modified (XXX Use the handler timestamp instead?)
-        response.set_header('last-modified', self.resource.get_mtime())
         # Content-Type
         metadata = self.get_metadata()
         if metadata is None:

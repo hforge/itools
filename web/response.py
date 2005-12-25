@@ -122,20 +122,30 @@ class Response(File):
         state = self.state
 
         data = []
-        # The status
+        # The status line
         status_code = state.status
         status_message = status_messages[status_code]
         data.append('HTTP/1.0 %d %s' % (status_code, status_message))
+        # Headers
+        # Date:
+        date = datetime.utcnow()
+        date = HTTPDate.encode(date)
+        data.append('Date: %s' % date)
+        # Server:
+        data.append('Server: itools.web')
+        # Last-Modified:
+        if 'Last-Modified' in state.headers:
+            date = state.headers['Last-Modified']
+            date = HTTPDate.encode(date)
+        data.append('Last-Modified: %s' % date)
         # User defined headers
         for name in state.headers:
-            value = state.headers[name]
-            datatype = headers.get_type(name)
-            value = datatype.encode(value)
-            data.append('%s: %s' % (name, value))
-        # Mandatory headers
-        data.append('Server: itools.web')
-        now = datetime.utcnow()
-        data.append('Date: %s' % HTTPDate.encode(now))
+            if name not in ['Date', 'Server', 'Last-Modified']:
+                value = state.headers[name]
+                datatype = headers.get_type(name)
+                value = datatype.encode(value)
+                data.append('%s: %s' % (name, value))
+        # Last-Modified:
         if 'content-length' not in state.headers:
             data.append('Content-Length: %d' % self.get_content_length())
         # The Cookies

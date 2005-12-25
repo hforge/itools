@@ -93,14 +93,16 @@ class File(Handler, itools.handlers.File.File):
         context = get_context()
         request, response = context.request, context.response
 
+        # Last-Modified (XXX Use the handler timestamp instead?)
+        response.set_header('Last-Modified', self.resource.get_mtime())
+        # Content-Type
         metadata = self.get_metadata()
         if metadata is None:
             mimetype = self.get_mimetype()
         else:
             mimetype = self.get_property('format')
         response.set_header('Content-Type', mimetype)
-##        response.set_header('Content-Disposition',
-##                            'inline; filename="%s"' % self.name)
+
         return self.to_str()
 
 

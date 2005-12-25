@@ -187,7 +187,7 @@ headers = {
     # Request headers (HTTP 1.0)
     'Authorization': String,
     'From': String,
-    'If-Modified-Since': HTTPDate,
+    'If-Modified-Since': HTTPDate, # XXX To implement
     'Referer': URI,
     'User-Agent': String,
     # Request headers (HTTP 1.1)
@@ -207,7 +207,7 @@ headers = {
     'TE': String,
     # Response headers (HTTP 1.0)
     'Location': URI,
-    'Server': String,
+    'Server': String, # XXX To implement
     'WWW-Authenticate': String,
     # Response headers (HTTP 1.1)
     'Accept-Ranges': String,

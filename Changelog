@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-25 15:48:29 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-134
+
+    Summary:
+      web, implement the "Last-Modified" header
+    Revision:
+      itools--main--0.12--patch-134
+
+
+    modified files:
+     Changelog cms/File.py web/headers.py
+
+
 2005-12-25 15:25:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-133
 
     Summary:

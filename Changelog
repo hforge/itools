@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-25 18:52:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-139
+
+    Summary:
+      update "CHANGES.txt" and "setup.py" (on the track for 0.12.1)
+    Revision:
+      itools--main--0.12--patch-139
+
+
+    modified files:
+     CHANGES.txt Changelog setup.py
+
+
 2005-12-25 18:00:25 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-138
 
     Summary:

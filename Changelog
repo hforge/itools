@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-25 15:25:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-133
+
+    Summary:
+      web, fix the format of the "Date" header in the response
+    Revision:
+      itools--main--0.12--patch-133
+
+
+    modified files:
+     Changelog web/response.py
+
+
 2005-12-23 18:42:01 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-132
 
     Summary:

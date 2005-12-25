@@ -22,6 +22,7 @@ from datetime import datetime
 from itools.schemas import get_datatype
 from itools.handlers.File import File
 from itools.web import headers
+from itools.web.headers import HTTPDate
 from itools.web import entities
 
 
@@ -134,7 +135,7 @@ class Response(File):
         # Mandatory headers
         data.append('Server: itools.web')
         now = datetime.utcnow()
-        data.append('Date: %s' % now.strftime("%a, %d %b %Y %H:%M:%S +0000"))
+        data.append('Date: %s' % HTTPDate.encode(now))
         if 'content-length' not in state.headers:
             data.append('Content-Length: %d' % self.get_content_length())
         # The Cookies

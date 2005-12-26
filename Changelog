@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-26 16:58:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-140
+
+    Summary:
+      web, fix "if-modified-since" header (its precision is in seconds)
+    Revision:
+      itools--main--0.12--patch-140
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2005-12-25 18:52:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-139
 
     Summary:

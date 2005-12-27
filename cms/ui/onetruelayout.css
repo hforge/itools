@@ -72,24 +72,15 @@ bottom value by -1px or as required */
 	margin: 0;
 	padding: 0;
 }
-#wrapper_extra {
-	position: relative;
-}
-* html #wrapper {
-	position: relative;
-}
 #wrapper {
+	position: relative;
 	overflow: hidden; /* This hides the excess padding in non-IE browsers */
-}
-/* we need this for IE 5.01 - otherwise the columns vanish */
-* html #wrapper_extra {
-	float: left;
-	width: 100%;
 }
 /* we need this for IE 5.01 - otherwise the wrapper does not expand to the
 necessary height (unless fixed, this problem becomes even more acute 
 weirdness as the method is enhanced */
-#wrapper {
+#wrapper
+{
 /* Normally a Holly-style hack height: 1% would suffice but that causes 
 IE 5.01 to completely collapse the wrapper - instead we float it */
 	float: left;
@@ -100,7 +91,7 @@ the float: none with the comment is ignored by 5.01,
 It's probably fine to just remove it, but it's left here 
 just in case that many moons ago problem rears its head again */
 	float/**/: none;
-	}
+}
 /* easy clearing */
 #wrapper:after {
 	content: '[DO NOT LEAVE IT IS NOT REAL]'; 

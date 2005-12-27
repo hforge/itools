@@ -2,6 +2,31 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-27 14:05:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-142
+
+    Summary:
+      merge from herve (#248)
+    Revision:
+      itools--main--0.12--patch-142
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-212
+       update from the One True Layout example.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-213
+       better specify the text color on buttons.
+    
+
+    modified files:
+     Changelog cms/ui/aruni/aruni.css
+     cms/ui/aruni/template.xhtml.en cms/ui/onetruelayout.css
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-212
+     herve@oursours.net--public/itools--aruni--0.12--patch-213
+
+
 2005-12-27 12:24:09 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-141
 
     Summary:

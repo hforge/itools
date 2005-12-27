@@ -59,7 +59,11 @@ class Folder(Handler, handlers.Folder.Folder):
     class_icon48 = 'images/Folder48.png'
 
 
-    search_criteria =  ['title', 'text', 'name']
+    search_criteria =  [
+        {'id': 'title', 'title': u"Title"},
+        {'id': 'text', 'title': u"Text"},
+        {'id': 'name', 'title': u"Name"},
+    ]
 
 
     #########################################################################
@@ -500,9 +504,9 @@ class Folder(Handler, handlers.Folder.Folder):
         namespace['self_path'] = self.get_abspath()
 
         search_criteria = [
-            {'id': x,
-             'title': self.gettext(x.capitalize().replace('_', ' ')),
-             'selected': x == selected_criteria or None}
+            {'id': x['id'],
+             'title': self.gettext(x['title']),
+             'selected': x['id'] == selected_criteria or None}
             for x in self.get_search_criteria() ]
         namespace['search_criteria'] = search_criteria
 

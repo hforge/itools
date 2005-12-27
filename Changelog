@@ -2,6 +2,26 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-27 15:23:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-143
+
+    Summary:
+      merge from herve (#249)
+    Revision:
+      itools--main--0.12--patch-143
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-214
+       better format for search criteria (and respects the docstring) (#249).
+    
+
+    modified files:
+     Changelog cms/Folder.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-214
+
+
 2005-12-27 14:05:36 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-142
 
     Summary:

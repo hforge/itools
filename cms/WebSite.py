@@ -233,7 +233,6 @@ class WebSite(Folder):
 
     ########################################################################
     # Login and logout
-    # XXX Fix the spelling: "referer" -> "referrer"
     login_form__access__ = True
     login_form__label__ = u'Login'
     def login_form(self, **kw):

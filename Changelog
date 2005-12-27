@@ -2,6 +2,30 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2005-12-27 15:38:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-144
+
+    Summary:
+      merge from herve (#254)
+    Revision:
+      itools--main--0.12--patch-144
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-218
+       referer -> referrer once for all.
+    
+     * herve@oursours.net--public/itools--aruni--0.12--patch-219
+       HTTP headers are not case-insensitive in the end, but lowercase.
+    
+
+    modified files:
+     Changelog cms/WebSite.py web/request.py
+
+    new patches:
+     herve@oursours.net--public/itools--aruni--0.12--patch-218
+     herve@oursours.net--public/itools--aruni--0.12--patch-219
+
+
 2005-12-27 15:23:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-143
 
     Summary:

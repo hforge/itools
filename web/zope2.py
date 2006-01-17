@@ -45,7 +45,10 @@ def init(zope_request):
 
     # The header
     for name, key in [('Referer', 'HTTP_REFERER'),
-                      ('Content-Type', 'CONTENT_TYPE')]:
+                      ('Content-Type', 'CONTENT_TYPE'),
+                      ('Host', 'HTTP_X_FORWARDED_HOST'),
+                      ('Host', 'HTTP_HOST'),
+                      ('Accept-Language', 'HTTP_ACCEPT_LANGUAGE')]:
         if environ.has_key(key):
             value = environ[key]
             request.set_header(name, value)
@@ -113,40 +116,18 @@ def init(zope_request):
         value = datatype.decode(value)
         request.set_cookie(name, value)
 
+    # Build the context
+    context = Context(request)
+    set_context(context)
+
     # The authority
     if 'HTTP_X_FORWARDED_HOST' in environ:
         authority = environ['HTTP_X_FORWARDED_HOST']
     else:
         authority = zope_request['HTTP_HOST']
 
-    # Build the context
-    context = Context(request, authority)
-    set_context(context)
-
     # The URI
     if 'REAL_PATH' in query:
         path = query.pop('REAL_PATH')
     request_uri = 'http://%s/%s?%s' % (authority, path, query)
     context.uri = uri.get_reference(request_uri)
-
-    # Accept charset
-    accept_charset = environ.get('HTTP_ACCEPT_CHARSET', '')
-    accept_charset = AcceptCharset(accept_charset)
-
-    # Accept language
-    accept_language = environ.get('HTTP_ACCEPT_LANGUAGE', '')
-
-    # Patches for user agents that don't support correctly the protocol
-    user_agent = environ['HTTP_USER_AGENT']
-    if user_agent.startswith('Mozilla/4') and user_agent.find('MSIE') == -1:
-        # Netscape 4.x
-        q = 1.0
-        langs = []
-        for lang in [ x.strip() for x in accept_language.split(',') ]:
-            langs.append('%s;q=%f' % (lang, q))
-            q = q/2
-        accept_language = ','.join(langs)
-
-    accept_language = AcceptLanguage(accept_language)
-    request.accept_language = accept_language
-

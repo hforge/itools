@@ -2,6 +2,47 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-17 16:01:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-145
+
+    Summary:
+      merge from herve (fixes for iKaaro on Zope)
+    Revision:
+      itools--main--0.12--patch-145
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--zope2--0.12--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.12--patch-142
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-1
+       Moved to ikaaro.Root.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-2
+       the global context no longer takes an authority.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-3
+       prefill the Host header, needed in Context initialisation.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-4
+       let Accept-Language be parsed by web.headers.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-5
+       let Accept-Charset be parsed either.
+    
+
+    modified files:
+     Changelog cms/Root.py i18n/accept.py web/headers.py
+     web/zope2.py
+
+    new patches:
+     herve@oursours.net--public/itools--zope2--0.12--base-0
+     herve@oursours.net--public/itools--zope2--0.12--patch-1
+     herve@oursours.net--public/itools--zope2--0.12--patch-2
+     herve@oursours.net--public/itools--zope2--0.12--patch-3
+     herve@oursours.net--public/itools--zope2--0.12--patch-4
+     herve@oursours.net--public/itools--zope2--0.12--patch-5
+
+
 2005-12-27 15:38:19 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-144
 
     Summary:

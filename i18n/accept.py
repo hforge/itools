@@ -234,6 +234,19 @@ class AcceptCharset(Root, CharsetNode):
 
 
 
+class AcceptLanguageType(object):
+
+    @staticmethod
+    def decode(data):
+        return AcceptCharset(data)
+
+
+    @staticmethod
+    def encode(value):
+        return str(value)
+
+
+
 class AcceptLanguage(Root, LanguageNode):
     """
     Implements the Accept-Language tree.

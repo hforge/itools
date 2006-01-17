@@ -269,6 +269,8 @@ class Folder(Handler, handlers.Folder.Folder):
 
         format = kw.get('format')
         state = kw.get('state')
+        handler_class = kw.get('handler_class')
+        
         for name in container.get_handler_names():
             # Skip hidden handlers
             if name.startswith('.'):
@@ -281,6 +283,10 @@ class Folder(Handler, handlers.Folder.Folder):
             handler = container.get_handler(name)
             if isinstance(handler, LocaleAware):
                 if not handler.is_master():
+                    continue
+
+            if handler_class is not None:
+                if not isinstance(handler, handler_class):
                     continue
 
             get_property = getattr(handler, 'get_property', lambda x: None)
@@ -340,7 +346,9 @@ class Folder(Handler, handlers.Folder.Folder):
         pass
 
 
-    def browse_namespace(self, icon_size, sortby='title_or_name', query={}):
+    def browse_namespace(self, icon_size, sortby='title_or_name',
+                sortorder='up', batchstart='0', batchsize='20', query={},
+                results=None):
         context = get_context()
         request = context.request
 
@@ -356,7 +364,8 @@ class Folder(Handler, handlers.Folder.Folder):
         else:
             query['parent_path'] = self.get_abspath()
 
-        results = self.search(**query)
+        if not results:
+            results = self.search(**query)
 
         # if search in subfolders is active we filter on path
         if search_subfolders is not None:
@@ -377,7 +386,8 @@ class Folder(Handler, handlers.Folder.Folder):
         # Build the table
         tablename = 'content'
         table = Table(path_to_root, tablename, table_content, sortby=sortby,
-                      sortorder='up', batchstart='0', batchsize='20')
+                      sortorder=sortorder, batchstart=batchstart,
+                      batchsize=batchsize)
 
         # get the handler for the visibles documents and extracts values
         objects = []
@@ -394,6 +404,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 line['format'] = document.get_property('format')
                 line['class_title'] = document.class_title
                 line['title'] = document.get_property('dc:title')
+                line['description'] = document.get_property('dc:description')
                 line['is_file'] = isinstance(resource, base.File)
                 line['is_folder'] = isinstance(resource, base.Folder)
                 line['ctime'] = resource.get_ctime()

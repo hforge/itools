@@ -2,6 +2,42 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-17 17:10:46 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-147
+
+    Summary:
+      merge minor improvements to "itools.cms.Folder" from herve
+    Revision:
+      itools--main--0.12--patch-147
+
+    Patches applied:
+    
+     * herve@itaapy.com--private/itools--drire-herve--0.12--patch-1
+       fixing browse icons rendering.
+    
+     * herve@itaapy.com--private/itools--drire-herve--0.12--patch-2
+       allowing search_handler using handler class.
+    
+     * herve@itaapy.com--private/itools--drire-herve--0.12--patch-3
+       allow more control from browse_namespace.
+    
+     * herve@itaapy.com--private/itools--drire-herve--0.12--patch-4
+       also reading the description in listings.
+    
+     * herve@itaapy.com--private/itools--drire-herve--0.12--patch-5
+       allow browsing a search of your own.
+    
+
+    modified files:
+     Changelog cms/Folder.py cms/ui/aruni/aruni.css
+
+    new patches:
+     herve@itaapy.com--private/itools--drire-herve--0.12--patch-1
+     herve@itaapy.com--private/itools--drire-herve--0.12--patch-2
+     herve@itaapy.com--private/itools--drire-herve--0.12--patch-3
+     herve@itaapy.com--private/itools--drire-herve--0.12--patch-4
+     herve@itaapy.com--private/itools--drire-herve--0.12--patch-5
+
+
 2006-01-17 16:11:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-146
 
     Summary:

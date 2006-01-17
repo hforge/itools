@@ -48,7 +48,8 @@ def init(zope_request):
                       ('Content-Type', 'CONTENT_TYPE'),
                       ('Host', 'HTTP_X_FORWARDED_HOST'),
                       ('Host', 'HTTP_HOST'),
-                      ('Accept-Language', 'HTTP_ACCEPT_LANGUAGE')]:
+                      ('Accept-Language', 'HTTP_ACCEPT_LANGUAGE'),
+                      ('Lock-Token', 'HTTP_LOCK_TOKEN')]:
         if environ.has_key(key):
             value = environ[key]
             request.set_header(name, value)

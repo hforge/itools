@@ -2,6 +2,75 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-17 16:11:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-146
+
+    Summary:
+      merge from herve (fixes for iKaaro on Zope)
+    Revision:
+      itools--main--0.12--patch-146
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-7
+       bad copy/paste.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-9
+       moved to ikaaro
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-10
+       moved to ikaaro.Root not used in itools.cms.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-11
+       update resources.zope2 to the new resource API.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-12
+       more file resource API.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-15
+       *blush* really respect the file resource API...
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-18
+       try harder to give an offset to the zope2 file resource...
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-19
+       and know respects the lock API...
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-20
+       fix the transmit of the lock token for unlocking in Zope.
+    
+
+    removed files:
+     cms/zmi/.arch-ids/=id cms/zmi/.arch-ids/add.xml.id
+     cms/zmi/.arch-ids/file.png.id
+     cms/zmi/.arch-ids/file_data.dtml.id
+     cms/zmi/.arch-ids/folder.png.id
+     cms/zmi/.arch-ids/handler.dtml.id
+     cms/zmi/.arch-ids/inspect.dtml.id
+     cms/zmi/.arch-ids/objects.dtml.id
+     cms/zmi/.arch-ids/update.dtml.id cms/zmi/add.xml
+     cms/zmi/file.png cms/zmi/file_data.dtml cms/zmi/folder.png
+     cms/zmi/handler.dtml cms/zmi/inspect.dtml cms/zmi/objects.dtml
+     cms/zmi/update.dtml
+
+    modified files:
+     Changelog cms/Root.py i18n/accept.py resources/zope2.py
+     web/zope2.py
+
+    removed directories:
+     cms/zmi cms/zmi/.arch-ids
+
+    new patches:
+     herve@oursours.net--public/itools--zope2--0.12--patch-7
+     herve@oursours.net--public/itools--zope2--0.12--patch-9
+     herve@oursours.net--public/itools--zope2--0.12--patch-10
+     herve@oursours.net--public/itools--zope2--0.12--patch-11
+     herve@oursours.net--public/itools--zope2--0.12--patch-12
+     herve@oursours.net--public/itools--zope2--0.12--patch-15
+     herve@oursours.net--public/itools--zope2--0.12--patch-18
+     herve@oursours.net--public/itools--zope2--0.12--patch-19
+     herve@oursours.net--public/itools--zope2--0.12--patch-20
+
+
 2006-01-17 16:01:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-145
 
     Summary:

@@ -234,7 +234,7 @@ class AcceptCharset(Root, CharsetNode):
 
 
 
-class AcceptLanguageType(object):
+class AcceptCharsetType(object):
 
     @staticmethod
     def decode(data):

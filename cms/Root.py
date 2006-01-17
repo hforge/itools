@@ -48,15 +48,6 @@ from UserFolder import UserFolder
 from utils import comeback
 from WebSite import WebSite
 
-# Initialize the local logger for error_page
-error_page_logger = logging.getLogger('error_page')
-error_page_logger.setLevel(logging.ERROR)
-error_page_logger_buffer = cStringIO.StringIO()
-error_page_logger_handler = logging.StreamHandler(error_page_logger_buffer)
-error_page_logger.addHandler(error_page_logger_handler)
-
-
-
 class Root(Group, WebSite):
 
     class_id = 'iKaaro'

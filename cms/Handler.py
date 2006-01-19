@@ -530,6 +530,11 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         document.getElementById('%(textarea_id)s').disabled = 0;
         -->"""
         namespace['js_code'] = js_code % namespace
+        color_template = self.get_pathtoroot() + 'ui/epoz_script_color.xml'
+        namespace['SetTextColor_call'] = "SetTextColor('%s')" % color_template
+        namespace['SetBackColor_call'] = "SetBackColor('%s')" % color_template
+        table_template = self.get_pathtoroot() + 'ui/images/epoz/epoz_script_table.html'
+        namespace['SetTable_call'] = "SetTable('%s')" % table_template
 
         handler = self.get_handler('/ui/epoz.xml')
         here = uri.generic.Path(self.get_abspath())

@@ -2,6 +2,35 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-19 11:39:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-148
+
+    Summary:
+      merge fixes from herve (#256)
+    Revision:
+      itools--main--0.12--patch-148
+
+    Patches applied:
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-13
+       delete obsolete method error_page, the template was already deleted.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-16
+       fix opening the Epoz palette when ui is not at the root.
+    
+     * herve@oursours.net--public/itools--zope2--0.12--patch-17
+       prepare the call of the table helper for the time it will be ready.
+    
+
+    modified files:
+     Changelog cms/Handler.py cms/WebSite.py cms/ui/epoz.js
+     cms/ui/epoz.xml
+
+    new patches:
+     herve@oursours.net--public/itools--zope2--0.12--patch-13
+     herve@oursours.net--public/itools--zope2--0.12--patch-16
+     herve@oursours.net--public/itools--zope2--0.12--patch-17
+
+
 2006-01-17 17:10:46 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-147
 
     Summary:

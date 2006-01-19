@@ -55,11 +55,13 @@
     "1" /><img id="epoz_button_textcolor" class="button"
     src="images/epoz/epoz_button_textcolor.gif" width="23" height=
     "22" alt="Text Color" title="Text Color" onclick=
-    "SetTextColor();" name="epoz_button_textcolor" /><img id=
+    "SetTextColor();" name="epoz_button_textcolor"
+    stl:attributes="onclick SetTextColor_call" /><img id=
     "epoz_button_bgcolor" class="button"
     src="images/epoz/epoz_button_bgcolor.gif" width="23" height=
     "22" alt="Background Color" title="Background Color" onclick=
-    "SetBackColor();" name="epoz_button_bgcolor" /><img src=
+    "SetBackColor();" name="epoz_button_bgcolor"
+    stl:attributes="onclick SetBackColor_call" /><img src=
     "images/epoz/epoz_button_space.gif" width="2" height=
     "1" /><img id="epoz_button_left_just" class="button"
     src="images/epoz/epoz_button_left_just.gif" width="23" height=
@@ -111,9 +113,8 @@
     "FormatText('inserthorizontalrule', '');" name=
     "epoz_button_hr" /><img id="epoz_button_table" class="button"
     src="images/epoz/epoz_button_table.gif" width="23" height="22"
-    alt="Insert Table" title="Insert Table" onclick=
-    "window.open('images/epoz/epoz_script_table.html','EpozTable','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=520');"
-    name="epoz_button_table" /><img src=
+    alt="Insert Table" title="Insert Table" onclick="SetTable()"
+    stl:attributes="onclick SetTable_call" name="epoz_button_table" /><img src=
     "images/epoz/epoz_button_space.gif" width="2" height=
     "1" /><img id="epoz_button_undo" class="button"
     src="images/epoz/epoz_button_undo.gif" width="23" height="22"

@@ -305,18 +305,6 @@ class WebSite(Folder):
 
 
     ########################################################################
-    # Error page
-    error_page__access__ = True
-    def error_page(self):
-        context = get_context()
-        form = context.request.form
-        handler = self.get_handler('/ui/WebSite_error_page.xml')
-        namespace = {}
-        namespace['error_log'] = form.get('error_log')
-        return stl(handler, namespace)
-
-
-    ########################################################################
     # Languages
     change_language__access__ = True
     def change_language(self, lang, goto=None, **kw):

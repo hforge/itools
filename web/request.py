@@ -167,21 +167,21 @@ class Request(Message):
     # API
     ########################################################################
     def get_content_type(self):
-        return self.state.headers.get('Content-Type', None)
+        return self.state.headers.get('content-type', None)
 
     content_type = property(get_content_type, None, None, '')
 
 
     def get_referrer(self):
-        return self.state.headers.get('Referer', None)
+        return self.state.headers.get('referer', None)
 
     referrer = property(get_referrer, None, None, '')
 
 
     def get_accept_language(self):
         headers = self.state.headers
-        if 'Accept-Language' in headers:
-            return headers['Accept-Language']
+        if 'accept-language' in headers:
+            return headers['accept-language']
         return AcceptLanguage('')
 
     accept_language = property(get_accept_language, None, None, '')
@@ -227,7 +227,7 @@ class Request(Message):
     ########################################################################
     # The Cookies
     def set_cookie(self, name, value):
-        self.state.headers['Cookie'][name] = value
+        self.state.headers['cookie'][name] = value
 
 
     def get_cookie(self, name):

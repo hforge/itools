@@ -113,7 +113,7 @@ class Resource(base.Resource):
         lock = webdav.LockItem.LockItem(creator)
         key = lock.getLockToken()
         object.wl_setLock(key, lock)
-        return lock, key
+        return key
 
 
     def unlock(self, key):
@@ -137,35 +137,104 @@ class Resource(base.Resource):
 
 class File(Resource, base.File):
 
+    offset = 0
+
+
     def get_mimetype(self):
         object = self._get_object()
         return object.content_type
+
+
+    def get_size(self):
+        object = self._get_object()
+        data = str(object.data)
+        return len(data)
+
+
+    def open(self):
+        self.offset = 0
+
+
+    def close(self):
+        self.offset = 0
+
+
+    def is_open(self):
+        return True
+
+
+    def seek(self, offset, whence=0):
+        if whence == 0:
+            self.offset = offset
+        elif whence == 1:
+            self.offset += offset
+        elif whence == 2:
+            self.offset = self.get_size() + offset
+        else:
+            message = 'unsupported value "%s" for "whence" parameter' % whence
+            raise ValueError, message
 
 
     def read(self, size=None):
         object = self._get_object()
         data = str(object.data)
         if size is None:
-            return data
-        return data[:size]
+            data = data[self.offset:]
+        else:
+            data = data[self.offset:self.offset+size]
+        self.offset += len(data)
+        return data
+
+
+    def readline(self):
+        object = self._get_object()
+        data = str(object.data)
+        end = data.find('\n', self.offset)
+        if end == -1:
+            data = data[self.offset:]
+        else:
+            data = data[self.offset:end+1]
+        self.offset += len(data)
+        return data
 
 
     def write(self, data):
         object = self._get_object()
+        old_data = str(object.data)
+        old_offset = self.offset
+        self.offset += len(data)
+        data = old_data[:old_offset] + data + old_data[self.offset:]
         object.update_data(data)
 
 
-    def __setitem__(self, index, value):
+    def truncate(self, size=None):
+        if size is None:
+            size = self.offset
+
         object = self._get_object()
         data = str(object.data)
 
-        if isinstance(index, slice):
-            # XXX So far 'step' is not supported
-            start, stop = index.start, index.stop
-        else:
-            start, stop = index, index + 1
+        object.update_data(data[:size])
+
+
+    def __setitem__(self, index, value):
+        # Read
+        object = self._get_object()
+        data = str(object.data)
+        # Write
+        data = data[:index] + value + data[index+1:]
+        object.update_data(data)
+        self.offset += 1
+
+
+    def __setslice__(self, start, stop, value):
+        # Read
+        object = self._get_object()
+        data = str(object.data)
+        # Write
         data = data[:start] + value + data[stop:]
         object.update_data(data)
+        self.offset = stop
 
 
 

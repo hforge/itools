@@ -192,7 +192,7 @@ headers = {
     'user-agent': String,
     # Request headers (HTTP 1.1)
     'accept': String,
-    'accept-charset': String,
+    'accept-charset': accept.AcceptCharsetType,
     'accept-encoding': String,
     'accept-language': accept.AcceptLanguageType,
     'expect': String,

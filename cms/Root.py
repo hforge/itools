@@ -48,15 +48,6 @@ from UserFolder import UserFolder
 from utils import comeback
 from WebSite import WebSite
 
-# Initialize the local logger for error_page
-error_page_logger = logging.getLogger('error_page')
-error_page_logger.setLevel(logging.ERROR)
-error_page_logger_buffer = cStringIO.StringIO()
-error_page_logger_handler = logging.StreamHandler(error_page_logger_buffer)
-error_page_logger.addHandler(error_page_logger_handler)
-
-
-
 class Root(Group, WebSite):
 
     class_id = 'iKaaro'
@@ -197,114 +188,6 @@ class Root(Group, WebSite):
         if name == 'ui':
             return ui
         return Group._get_virtual_handler(self, segment)
-
-
-##    ########################################################################
-##    # Zope registry metatype (replaces bootstrap)
-##    ########################################################################
-##    @classmethod
-##    def get_dummy_user(cls, username, password):
-##        return User(password=password)
-
-
-##    @classmethod
-##    def manage_addForm(cls, container):
-##        # Load the template
-##        path = get_abspath(globals(), 'zmi/add.xml')
-##        template = get_handler(path)
-##        # Build the namespace
-##        namespace = {}
-##        namespace['title'] = cls.class_title
-##        namespace['message'] = get_context().request.form.get('message')
-##        # Process the template
-##        return stl(template, namespace)
-
-
-##    @classmethod
-##    def manage_add(cls, container):
-##        from itools.resources import zope2
-##        from versioning import VersioningAware
-
-##        context = get_context()
-##        request = context.request
-##        zope_response = container.REQUEST.RESPONSE
-
-##        # Pre-process input parameters
-##        form = request.form
-##        name = form['name'].strip()
-##        title = form['title']
-##        username = form['username'].strip()
-##        password = form['password']
-##        password2 = form['password2']
-##        # Check the input data
-##        error_message = None
-##        if not name:
-##            error_message = 'You must enter the name'
-##        elif not username:
-##            error_message = 'You must enter the username'
-##        elif not password:
-##            error_message = 'You must enter the password'
-##        elif not password2:
-##            error_message = 'You must enter the password twice'
-##        elif password != password2:
-##            error_message = 'The passwords differ'
-
-##        if error_message is not None:
-##            referrer = request.referrer
-##            zope_response.redirect('%s?message=%s' % (referrer.path,
-##                                                      error_message))
-##            return None, None
-
-##        # Create new handler
-##        root_handler = cls(username=username, password=password)
-
-##        # Build the user handler, and set it in the request
-##        user = cls.get_dummy_user(username, password)
-##        context.user = user
-
-##        # Index and archive where appropriate
-##        catalog = root_handler.get_handler('.catalog')
-##        for handler, context in root_handler.traverse2():
-##            abspath = handler.get_abspath()
-##            if handler.name.startswith('.'):
-##                context.skip = True
-##            elif abspath == '/ui':
-##                context.skip = True
-##            elif isinstance(handler, Handler):
-##                print handler.get_abspath()
-##                catalog.index_document(handler)
-##                if isinstance(handler, VersioningAware):
-##                    handler.add_to_archive()
-
-##        transaction = transactions.get_transaction()
-##        transaction.commit()
-
-##        # Copy the handler tree from memory the Zope 2 database
-##        container_path = '/'.join(container.getPhysicalPath()) or '/'
-##        container_resource = zope2.get_resource(container_path)
-##        container_resource.set_resource(name, root_handler.resource)
-
-##        # Come back
-##        zope_response.redirect('manage_main')
-
-
-##    metatypes_registry = {}
-
-
-##    @classmethod
-##    def register_in_zope(cls, context):
-##        cls.metatypes_registry[cls.class_id] = cls
-
-##        def manage_addForm(container, cls=cls):
-##            """ """
-##            return cls.manage_addForm(container)
-
-##        def manage_add(container, cls=cls):
-##            """ """
-##            cls.manage_add(container)
-
-##        context.registerClass(cls, meta_type=cls.class_id,
-##                              constructors=(manage_addForm, manage_add))
 
 
     ########################################################################

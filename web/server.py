@@ -152,7 +152,7 @@ def handle_request(connection, server):
             else:
                 mtime = getattr(handler, '%s__mtime__' % method_name, None)
                 if mtime is not None:
-                    mtime = mtime()
+                    mtime = mtime().replace(microsecond=0)
                     response.set_header('last-modified', mtime)
                     if request.method == 'GET':
                         if request.has_header('if-modified-since'):

@@ -233,7 +233,6 @@ class WebSite(Folder):
 
     ########################################################################
     # Login and logout
-    # XXX Fix the spelling: "referer" -> "referrer"
     login_form__access__ = True
     login_form__label__ = u'Login'
     def login_form(self, **kw):
@@ -303,18 +302,6 @@ class WebSite(Folder):
         # Say goodbye
         handler = self.get_handler('/ui/WebSite_logout.xml')
         return stl(handler)
-
-
-    ########################################################################
-    # Error page
-    error_page__access__ = True
-    def error_page(self):
-        context = get_context()
-        form = context.request.form
-        handler = self.get_handler('/ui/WebSite_error_page.xml')
-        namespace = {}
-        namespace['error_log'] = form.get('error_log')
-        return stl(handler, namespace)
 
 
     ########################################################################

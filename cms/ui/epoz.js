@@ -220,16 +220,22 @@ function SelectFormat(selectname)
 
 // Sets foreground-color
 
-function SetTextColor() {
+function SetTextColor(template) {
     EpozColorCommand='forecolor';
-    window.open('/ui/epoz_script_color.xml','EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
+    window.open(template,'EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
 }
 
 // Sets background-color
 
-function SetBackColor() {
+function SetBackColor(template) {
     EpozColorCommand='backcolor';
-    window.open('/ui/epoz_script_color.xml','EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
+    window.open(template,'EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
+}
+
+// Sets new table
+
+function SetTable(template) {
+    window.open(template,'EpozTable','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=520');
 }
 
 // Submit color-command to Rich-Text-Controls

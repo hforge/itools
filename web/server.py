@@ -21,7 +21,6 @@ from copy import copy
 from datetime import datetime
 import os
 import socket
-from threading import Lock, Thread
 import time
 import traceback
 from urllib import unquote
@@ -260,14 +259,13 @@ class Server(object):
 
         try:
             while True:
+                # XXX Use "select" or "asyncore" to improve performance.
                 try:
                     connection, client_address = ear.accept()
                 except socket.error:
                     continue
 
-                thread = Thread(target=handle_request, args=(connection, self))
-                thread.start()
-                thread.join()
+                handle_request(connection, self)
         except:
             ear.close()
             if self.access_log is not None:

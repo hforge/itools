@@ -36,25 +36,6 @@ from itools.web.response import Response
 
 
 
-class Pool(object):
-    # XXX Right now we only support one handler tree (may use semaphores)
-
-    def __init__(self, root):
-        self.lock = Lock()
-        self.pool = [root]
-
-
-    def pop(self):
-        self.lock.acquire()
-        return self.pool.pop()
-
-
-    def push(self, root):
-        self.pool.append(root)
-        self.lock.release()
-
-
-
 def handle_request(connection, server):
     # Build the request object
     resource = File(connection)
@@ -84,7 +65,7 @@ def handle_request(connection, server):
     set_context(context)
 
     # Get the root handler
-    root = server.pool.pop()
+    root = server.root
     context.root = root
 
     # Authenticate
@@ -225,9 +206,6 @@ def handle_request(connection, server):
             response.set_body(body)
             server.log_error()
 
-    # Free the root object
-    server.pool.push(root)
-
     # Access Log
     server.log_access(connection, request_line, response.state.status,
                       response.get_content_length())
@@ -251,7 +229,7 @@ class Server(object):
         if port is None:
             port = 8080
         # The application's root
-        self.pool = Pool(root)
+        self.root = root
         # The address and port the server will listen to
         self.address = address
         self.port = port
@@ -289,6 +267,7 @@ class Server(object):
 
                 thread = Thread(target=handle_request, args=(connection, self))
                 thread.start()
+                thread.join()
         except:
             ear.close()
             if self.access_log is not None:

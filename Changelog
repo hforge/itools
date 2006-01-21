@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-21 17:14:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-149
+
+    Summary:
+      web.server, only one worker thread (faster and more robust)
+    Revision:
+      itools--main--0.12--patch-149
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2006-01-19 11:39:44 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-148
 
     Summary:

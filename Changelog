@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-22 19:38:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-151
+
+    Summary:
+      updating the CHANGES file (in the way to the 0.12.2 release)
+    Revision:
+      itools--main--0.12--patch-151
+
+
+    modified files:
+     CHANGES.txt Changelog
+
+
 2006-01-21 17:42:11 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-150
 
     Summary:

@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-22 20:08:02 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-152
+
+    Summary:
+      web.server, start making it asynchronous
+    Revision:
+      itools--main--0.12--patch-152
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2006-01-22 19:38:34 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-151
 
     Summary:

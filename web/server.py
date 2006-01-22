@@ -20,6 +20,7 @@ from base64 import decodestring
 from copy import copy
 from datetime import datetime
 import os
+from select import select
 import socket
 import time
 import traceback
@@ -257,15 +258,32 @@ class Server(object):
         print 'Listen port %s' % self.port
         ear.listen(5)
 
+        iwtd = [ear]
+        owtd = []
+        ewtd = []
         try:
             while True:
-                # XXX Use "select" or "asyncore" to improve performance.
-                try:
-                    connection, client_address = ear.accept()
-                except socket.error:
-                    continue
+                iready, oready, eready = select(iwtd, owtd, ewtd)
 
-                handle_request(connection, self)
+                for x in iready:
+                    if x is ear:
+                        # New connection
+                        try:
+                            connection, client_address = ear.accept()
+                        except socket.error:
+                            continue
+
+                        iwtd.append(connection)
+                    else:
+                        # Connection is ready
+                        # XXX To further improve performance, the request
+                        # object should be built as the information arrives,
+                        # giving the control back to the main loop while
+                        # waiting for new bytes. This probably means
+                        # "load_state" should be a generator, what will
+                        # require changes in the handlers design.
+                        iwtd.remove(x)
+                        handle_request(x, self)
         except:
             ear.close()
             if self.access_log is not None:

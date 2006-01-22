@@ -72,14 +72,14 @@ included are:
 
 setup(
     name = "itools",
-    version = "0.12.1",
+    version = "0.12.2",
     # XXX Broken distutils, "sdist" don't likes unicode strings, and "register"
     # don't likes normal strings.
     author = u"J. David Ibáñez".encode('UTF-8'),
     author_email = "jdavid@itaapy.com",
     license = "GNU Lesser General Public License",
     url = "http://www.ikaaro.org",
-    description="Misc. tools: uri, resources, handlers, i18n, workflow",
+    description="A Python library which provides a wide range of capabilities",
     long_description=description,
     package_dir = {'itools': ''},
     packages = ['itools',

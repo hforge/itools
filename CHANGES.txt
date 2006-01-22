@@ -1,7 +1,9 @@
-0.12.2 (2006/01/XX)
+0.12.2 (2006/01/23)
 
   Web
-  - Go to a single-thread mode. It simplifies the implementation.
+  - Fix the request methods "get_content_type", "get_referrer",
+    "get_accept_language" and "set_cookie".
+  - Now the server is asynchronous, single-thread.
 
   CMS (a.k.a. ikaaro)
   - Now "Folder.search_handlers" accepts optional parameter "handler_class",

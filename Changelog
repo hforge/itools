@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-23 11:41:58 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-154
+
+    Summary:
+      resources, add "tell" to the files API
+    Revision:
+      itools--main--0.12--patch-154
+
+    Only implemented in memory resources for now.
+
+    modified files:
+     Changelog resources/base.py resources/memory.py
+
+
 2006-01-22 20:21:03 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-153
 
     Summary:

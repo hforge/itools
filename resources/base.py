@@ -196,6 +196,10 @@ class File(Resource):
         raise NotImplementedError
 
 
+    def tell(self):
+        raise NotImplementedError
+
+
     def __getitem__(self, index):
         self.seek(index)
         return self.read(1)

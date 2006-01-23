@@ -2,6 +2,39 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-01-23 19:16:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-9
+
+    Summary:
+      normalizing filenames (#154)
+    Revision:
+      itools--main--0.13--patch-9
+
+    Rename:
+    
+      - "itools.catalog.Analysers" to "itools.catalog.analysers"
+      - "itools.catalog.Query" to "itools.catalog.queries"
+      - "itools.xml.DublinCore" to "itools.xml.dublin_core"
+
+    modified files:
+     Changelog catalog/Catalog.py catalog/queries.py
+     catalog/test.py catalog/test_analysers.py cms/WebSite.py
+     csv/itools_csv.py csv/test_itools_csv.py xml/__init__.py
+
+    renamed files:
+     catalog/.arch-ids/Analysers.py.id
+       ==> catalog/.arch-ids/analysers.py.id
+     catalog/.arch-ids/Query.py.id
+       ==> catalog/.arch-ids/queries.py.id
+     catalog/Analysers.py
+       ==> catalog/analysers.py
+     catalog/Query.py
+       ==> catalog/queries.py
+     xml/.arch-ids/DublinCore.py.id
+       ==> xml/.arch-ids/dublin_core.py.id
+     xml/DublinCore.py
+       ==> xml/dublin_core.py
+
+
 2006-01-23 18:56:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-8
 
     Summary:

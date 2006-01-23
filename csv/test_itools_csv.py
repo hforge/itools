@@ -25,7 +25,7 @@ from unittest import TestCase
 from itools.resources import memory
 from itools.resources import get_resource
 from itools.datatypes import Date, Integer, Unicode, URI
-from itools.catalog import Query
+from itools.catalog import queries
 import itools_csv
 
 
@@ -250,19 +250,19 @@ class CSVTestCase(TestCase):
         result1 = handler.search(name='dde', country='Sweden')
         self.assertEqual(result1, [5, 6])
 
-        q1 = Query.Or(Query.Equal('name', 'dde'),
-                      Query.Equal('name', 'fse'))
-        q2 = Query.Equal('country', 'France')
-        q3 = Query.And(q1, q2)
+        q1 = queries.Or(queries.Equal('name', 'dde'),
+                        queries.Equal('name', 'fse'))
+        q2 = queries.Equal('country', 'France')
+        q3 = queries.And(q1, q2)
         result2 = handler.search(q3)
         self.assertEqual(result2, [4])
 
         # previous results as query items
-        q1 = Query.Or(Query.Equal('name', 'dde'),
-                     Query.Equal('name', 'fse'))
-        q2 = Query.Or(Query.Equal('country', 'Poland'),
-                     Query.Equal('country', 'France'))
-        q = Query.And(q1, q2)
+        q1 = queries.Or(queries.Equal('name', 'dde'),
+                        queries.Equal('name', 'fse'))
+        q2 = queries.Or(queries.Equal('country', 'Poland'),
+                        queries.Equal('country', 'France'))
+        q = queries.And(q1, q2)
         result5 = handler.search(q)
         self.assertEqual(result5, [1, 4])
 

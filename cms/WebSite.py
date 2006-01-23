@@ -22,6 +22,7 @@ from urllib import quote
 # Import from itools
 from itools import uri
 from itools import i18n
+from itools.catalog import queries
 from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import UserError
@@ -322,8 +323,6 @@ class WebSite(Folder):
     # User search UI
     site_search__access__ = True
     def site_search(self, **kw):
-        from itools.catalog import Query
-
         context = get_context()
         root = context.root
 
@@ -331,9 +330,9 @@ class WebSite(Folder):
         if not text:
             raise UserError, "Empty search value."
 
-        on_title = Query.Equal('title', text)
-        on_text = Query.Equal('text', text)
-        query = Query.Or(on_title, on_text)
+        on_title = queries.Equal('title', text)
+        on_text = queries.Equal('text', text)
+        query = queries.Or(on_title, on_text)
         results = self.search(query=query)
 
         # put the metadatas in a dictionary list to be managed with Table

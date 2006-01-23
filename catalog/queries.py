@@ -16,17 +16,17 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from Analysers import get_analyser
+from analysers import get_analyser
 
 
 """
 To build a query:
 
-  from itools.catalog import Query
-  s1 = Query.Equal('format', 'Actu')
-  s2 = Query.Equal('archive', True)
-  s3 = Query.Equal('workflow_state', 'public')
-  query = Query.And(s1, s2, s3)
+  from itools.catalog import queries
+  s1 = queries.Equal('format', 'Actu')
+  s2 = queries.Equal('archive', True)
+  s3 = queries.Equal('workflow_state', 'public')
+  query = queries.And(s1, s2, s3)
 """
 
 

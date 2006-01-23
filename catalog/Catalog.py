@@ -21,10 +21,10 @@ import warnings
 # Import from itools
 from itools.handlers.Folder import Folder
 from itools.handlers.Text import Text
-from Analysers import get_analyser
+from analysers import get_analyser
 from IDocument import IDocument, IndexedField, StoredField
 from IIndex import IIndex
-import Query
+import queries
 
 
 class Field(object):
@@ -247,9 +247,9 @@ class Catalog(Folder):
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    atoms.append(Query.Phrase(key, value))
+                    atoms.append(queries.Phrase(key, value))
 
-                query = Query.And(*atoms)
+                query = queries.And(*atoms)
             else:
                 raise ValueError, "expected a query"
         # Search

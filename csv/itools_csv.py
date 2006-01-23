@@ -21,7 +21,7 @@ import csv as python_csv
 
 # Import from itools
 from itools.handlers.Text import Text
-from itools.catalog import Query
+from itools.catalog import queries
 
 
 
@@ -125,7 +125,7 @@ class CSV(Text):
                 if indexes[i] is None:
                     indexes[i] = Index()
                 index = indexes[i]
-                # XXX We should parse the value with itools.catalog.Analysers
+                # XXX We should parse the value with itools.catalog.analysers
                 # and store the positions instead of an empty list, as
                 # itools.catalog does.
                 index.setdefault(value, {})
@@ -317,9 +317,9 @@ class CSV(Text):
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    atoms.append(Query.Equal(key, value))
+                    atoms.append(queries.Equal(key, value))
 
-                query = Query.And(*atoms)
+                query = queries.And(*atoms)
             else:
                 raise ValueError, "expected a query"
 

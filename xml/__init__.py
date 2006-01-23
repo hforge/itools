@@ -17,4 +17,4 @@
 
 # Import from itools
 import XML
-import DublinCore
+import dublin_core

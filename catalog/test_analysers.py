@@ -20,25 +20,25 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-import Analysers
+import analysers
 
 
 class TextTestCase(TestCase):
 
     def test_hello(self):
-        words = list(Analysers.Text(u'Hello world'))
+        words = list(analysers.Text(u'Hello world'))
         self.assertEqual(words, [(u'hello', 0), (u'world', 1)])
 
 
     def test_accents(self):
-        words = list(Analysers.Text(u'Te doy una canción'))
+        words = list(analysers.Text(u'Te doy una canción'))
         self.assertEqual(words, [(u'te', 0), (u'doy', 1), (u'una', 2),
                                  (u'canción', 3)])
 
 
     def test_russian(self):
         text = u'Это наш дом'
-        words = list(Analysers.Text(text))
+        words = list(analysers.Text(text))
         self.assertEqual(words, [(u'это', 0), (u'наш', 1),  (u'дом', 2)])
 
 

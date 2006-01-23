@@ -24,7 +24,7 @@ from itools.handlers import get_handler
 from itools.handlers.Text import Text
 from itools.catalog.Catalog import Catalog
 from itools.catalog.IIndex import IIndex
-from itools.catalog import Query
+from itools.catalog import queries
 
 
 class IITestCase(TestCase):
@@ -117,7 +117,7 @@ class CatalogTestCase(TestCase):
 
 
     def test_range(self):
-        query = Query.Range('body', 'home', 'horse')
+        query = queries.Range('body', 'home', 'horse')
         documents = catalog.search(query)
         doc_numbers = [ x.__number__ for x in documents ]
         self.assertEqual(doc_numbers,

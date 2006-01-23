@@ -24,7 +24,7 @@ from itools import get_abspath
 from itools.gettext import domains
 
 # Import from itools
-import Root
+import root
 from Folder import Folder
 import Document
 import File

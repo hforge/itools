@@ -97,7 +97,7 @@ class AccessControl(object):
 
 
     def is_allowed_to_edit(self):
-        from User import User
+        from users import User
 
         context = get_context()
 

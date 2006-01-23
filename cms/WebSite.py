@@ -31,7 +31,6 @@ from itools.web.exceptions import UserError
 from Handler import Handler
 from Folder import Folder
 from LocaleAware import LocaleAware
-from Metadata import Metadata
 from skins import Skin
 from utils import comeback
 from workflow import WorkflowAware

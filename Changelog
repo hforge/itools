@@ -2,6 +2,40 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-01-23 19:40:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
+
+    Summary:
+      normalizing filenames in "itools.cms"
+    Revision:
+      itools--main--0.13--patch-10
+
+     - rename "itools.cms.Root" to "itools.cms.root"
+     - rename "itools.cms.Metadata" to "itools.cms.metadata"
+     - merge "itools.cms.User" and "itools.cms.UserFolder" into "itools.cms.users"
+
+    removed files:
+     cms/.arch-ids/UserFolder.py.id cms/UserFolder.py
+
+    modified files:
+     Changelog cms/Folder.py cms/Handler.py cms/WebSite.py
+     cms/__init__.py cms/access.py cms/root.py cms/users.py
+     cms/versioning.py scripts/icms.py
+
+    renamed files:
+     cms/.arch-ids/Metadata.py.id
+       ==> cms/.arch-ids/metadata.py.id
+     cms/.arch-ids/Root.py.id
+       ==> cms/.arch-ids/root.py.id
+     cms/.arch-ids/User.py.id
+       ==> cms/.arch-ids/users.py.id
+     cms/Metadata.py
+       ==> cms/metadata.py
+     cms/Root.py
+       ==> cms/root.py
+     cms/User.py
+       ==> cms/users.py
+
+
 2006-01-23 19:16:26 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-9
 
     Summary:

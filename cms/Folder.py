@@ -38,7 +38,7 @@ import File
 from images import Image
 from Handler import Handler
 from LocaleAware import LocaleAware
-from Metadata import Metadata
+from metadata import Metadata
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import comeback, checkid, reduce_string
@@ -165,7 +165,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
     def before_set_handler(self, segment, handler, format=None, id=None,
                            move=False, **kw):
-        from Root import Root
+        from root import Root
 
         name = segment.name
         if name.startswith('.'):
@@ -180,7 +180,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
     def after_set_handler(self, segment, handler, format=None, id=None,
                           move=False, **kw):
-        from Root import Root
+        from root import Root
 
         name = segment.name
         if name.startswith('.'):
@@ -214,7 +214,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     def on_del_handler(self, segment):
-        from Root import Root
+        from root import Root
 
         name = segment.name
         if not name.startswith('.'):

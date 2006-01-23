@@ -206,7 +206,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
 
     def before_commit(self):
-        from Root import Root
+        from root import Root
 
         root = self.get_root()
         if isinstance(root, Root):

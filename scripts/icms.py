@@ -35,8 +35,8 @@ from itools.resources import base, get_resource, zodb
 from itools.handlers import transactions
 from itools.web.server import Server
 from itools.cms.Handler import Handler
-from itools.cms.Metadata import Metadata
-from itools.cms.Root import Root
+from itools.cms.metadata import Metadata
+from itools.cms.root import Root
 from itools.cms.versioning import VersioningAware
 
 

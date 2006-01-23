@@ -33,7 +33,7 @@ from utils import comeback
 class VersioningAware(object):
 
     def new_archive_id(self):
-        from Root import Root
+        from root import Root
 
         parent = self.parent
         if isinstance(parent, Root):

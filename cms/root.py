@@ -40,11 +40,10 @@ from itools.web import get_context
 # Import from itools.cms
 from Group import Group
 from Handler import Handler
-from Metadata import Metadata
+from metadata import Metadata
 from text import PO
 from skins import ui
-from User import User
-from UserFolder import UserFolder
+from users import User, UserFolder
 from utils import comeback
 from WebSite import WebSite
 

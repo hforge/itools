@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools import handlers
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.web.exceptions import UserError
 
 # Import from ikaaro

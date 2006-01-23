@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.csv.itools_csv import CSV as iCSV, Row as iRow
-from itools.xml.stl import stl
+from itools.stl import stl
 
 # Import from ikaaro
 from Handler import Node

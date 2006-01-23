@@ -28,7 +28,7 @@ from itools.resources import base, memory
 from itools.handlers.Handler import Node as iNode
 from itools.handlers.transactions import get_transaction
 from itools import schemas
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.gettext import domains
 from itools.web import get_context

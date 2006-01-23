@@ -25,7 +25,7 @@ import itools
 from itools import gettext
 from itools import i18n
 from itools.resources import memory
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import UserError
 

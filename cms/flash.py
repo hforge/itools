@@ -15,9 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 # Import from itools
-from itools.xml.stl import stl
+from itools.stl import stl
 
 # Import from ikaaro
 from Handler import Handler

@@ -33,7 +33,7 @@ from itools import handlers
 from itools.handlers import get_handler
 from itools.handlers import transactions
 from itools.xml import namespaces
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.catalog.Catalog import Catalog
 from itools.web import get_context
 

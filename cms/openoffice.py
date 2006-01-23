@@ -23,7 +23,7 @@ import tempfile
 
 # Import from itools
 from itools.handlers import get_handler
-from itools.xml.stl import stl
+from itools.stl import stl
 
 # Import from ikaaro
 from File import File

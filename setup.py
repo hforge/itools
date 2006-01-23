@@ -94,6 +94,7 @@ setup(
                 'itools.resources',
                 'itools.rss',
                 'itools.schemas',
+                'itools.stl',
                 'itools.tmx',
                 'itools.uri',
                 'itools.web',

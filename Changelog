@@ -2,6 +2,38 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-01-23 18:56:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-8
+
+    Summary:
+      move "itools.xml.stl" to "itools.stl" (STL deserves its own package)
+    Revision:
+      itools--main--0.13--patch-8
+
+
+    new files:
+     stl/.arch-ids/=id stl/.arch-ids/__init__.py.id stl/__init__.py
+
+    modified files:
+     Changelog cms/Document.py cms/File.py cms/Folder.py
+     cms/Group.py cms/Handler.py cms/Root.py cms/User.py
+     cms/UserFolder.py cms/WebSite.py cms/csv_.py cms/flash.py
+     cms/html.py cms/openoffice.py cms/skins.py cms/text.py
+     cms/versioning.py cms/workflow.py setup.py xml/__init__.py
+
+    renamed files:
+     xml/.arch-ids/stl.py.id
+       ==> stl/.arch-ids/stl.py.id
+     xml/.arch-ids/test_stl.py.id
+       ==> stl/.arch-ids/test_stl.py.id
+     xml/stl.py
+       ==> stl/stl.py
+     xml/test_stl.py
+       ==> stl/test_stl.py
+
+    new directories:
+     stl stl/.arch-ids
+
+
 2006-01-23 18:32:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-7
 
     Summary:

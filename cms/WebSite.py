@@ -22,7 +22,7 @@ from urllib import quote
 # Import from itools
 from itools import uri
 from itools import i18n
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import UserError
 

@@ -26,7 +26,7 @@ from itools import get_abspath
 from itools.datatypes import URI
 from itools.resources import get_resource, memory
 from itools.xml import XML
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.xhtml import XHTML
 from itools import i18n
 from itools.web import get_context

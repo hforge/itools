@@ -22,7 +22,7 @@ import re
 # Import from itools
 from itools.resources import memory
 from itools.xml import XML
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.html import HTML
 from itools.web import get_context

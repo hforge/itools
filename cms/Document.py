@@ -22,7 +22,7 @@ import cgi
 from itools.resources import memory
 from itools.gettext import PO
 from itools.xml import XML
-from itools.xml.stl import stl
+from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import Forbidden
 

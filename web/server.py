@@ -20,8 +20,8 @@ from base64 import decodestring
 from copy import copy
 from datetime import datetime
 import os
+from select import select
 import socket
-from threading import Lock, Thread
 import time
 import traceback
 from urllib import unquote
@@ -33,25 +33,6 @@ from itools.web.exceptions import BadRequest, Forbidden, UserError
 from itools.web.context import Context, get_context, set_context
 from itools.web.request import Request
 from itools.web.response import Response
-
-
-
-class Pool(object):
-    # XXX Right now we only support one handler tree (may use semaphores)
-
-    def __init__(self, root):
-        self.lock = Lock()
-        self.pool = [root]
-
-
-    def pop(self):
-        self.lock.acquire()
-        return self.pool.pop()
-
-
-    def push(self, root):
-        self.pool.append(root)
-        self.lock.release()
 
 
 
@@ -84,7 +65,7 @@ def handle_request(connection, server):
     set_context(context)
 
     # Get the root handler
-    root = server.pool.pop()
+    root = server.root
     context.root = root
 
     # Authenticate
@@ -225,9 +206,6 @@ def handle_request(connection, server):
             response.set_body(body)
             server.log_error()
 
-    # Free the root object
-    server.pool.push(root)
-
     # Access Log
     server.log_access(connection, request_line, response.state.status,
                       response.get_content_length())
@@ -251,7 +229,7 @@ class Server(object):
         if port is None:
             port = 8080
         # The application's root
-        self.pool = Pool(root)
+        self.root = root
         # The address and port the server will listen to
         self.address = address
         self.port = port
@@ -280,15 +258,32 @@ class Server(object):
         print 'Listen port %s' % self.port
         ear.listen(5)
 
+        iwtd = [ear]
+        owtd = []
+        ewtd = []
         try:
             while True:
-                try:
-                    connection, client_address = ear.accept()
-                except socket.error:
-                    continue
+                iready, oready, eready = select(iwtd, owtd, ewtd)
 
-                thread = Thread(target=handle_request, args=(connection, self))
-                thread.start()
+                for x in iready:
+                    if x is ear:
+                        # New connection
+                        try:
+                            connection, client_address = ear.accept()
+                        except socket.error:
+                            continue
+
+                        iwtd.append(connection)
+                    else:
+                        # Connection is ready
+                        # XXX To further improve performance, the request
+                        # object should be built as the information arrives,
+                        # giving the control back to the main loop while
+                        # waiting for new bytes. This probably means
+                        # "load_state" should be a generator, what will
+                        # require changes in the handlers design.
+                        iwtd.remove(x)
+                        handle_request(x, self)
         except:
             ear.close()
             if self.access_log is not None:

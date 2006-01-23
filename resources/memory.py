@@ -98,6 +98,10 @@ class File(Resource, base.File):
         self.data.seek(offset, whence)
 
 
+    def tell(self):
+        return self.data.tell()
+
+
     def __setitem__(self, index, value):
         self.data.seek(index)
         self.data.write(value)

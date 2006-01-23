@@ -2,6 +2,47 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-01-23 18:32:30 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-7
+
+    Summary:
+      merge from the 0.12 branch
+    Revision:
+      itools--main--0.13--patch-7
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-149
+       web.server, only one worker thread (faster and more robust)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-150
+       web.server, only one thread (worker and listener are the same)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-151
+       updating the CHANGES file (in the way to the 0.12.2 release)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-152
+       web.server, start making it asynchronous
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-153
+       get ready to release 0.12.2
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-154
+       resources, add "tell" to the files API
+    
+
+    modified files:
+     CHANGES.txt Changelog resources/base.py resources/memory.py
+     setup.py web/server.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.12--patch-149
+     jdavid@itaapy.com--public/itools--main--0.12--patch-150
+     jdavid@itaapy.com--public/itools--main--0.12--patch-151
+     jdavid@itaapy.com--public/itools--main--0.12--patch-152
+     jdavid@itaapy.com--public/itools--main--0.12--patch-153
+     jdavid@itaapy.com--public/itools--main--0.12--patch-154
+
+
 2006-01-19 17:40:14 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-6
 
     Summary:

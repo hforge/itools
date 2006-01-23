@@ -1,4 +1,22 @@
-0.12.1 (200/12/27)
+0.12.2 (2006/01/23)
+
+  Web
+  - Fix the request methods "get_content_type", "get_referrer",
+    "get_accept_language" and "set_cookie".
+  - Now the server is asynchronous, single-thread.
+
+  CMS (a.k.a. ikaaro)
+  - Now "Folder.search_handlers" accepts optional parameter "handler_class",
+    to filter objects that are instance of the given handler class. By
+    Hervé Cauwelier.
+  - Now it is possible to better control the behaviour of the method
+    "Folder.browse_namespace" with the help of a few new optional parameters:
+    "sortorder", "batchstart", "batchsize" and "results". By Hervé Cauwelier.
+  - Minor style improvements, by Hervé Cauwelier.
+  - Fixes to make "itools.cms" to work on Zope again, by Hervé Cauwelier.
+
+
+0.12.1 (2005/12/27)
 
   Web
   - Message headers are case-insensitive.
@@ -12,7 +30,7 @@
   - Fix external edit, the lock/unlock operations were not persistent.
 
 
-0.12.0 (200/12/19)
+0.12.0 (2005/12/19)
 
   Resources
   - Implement support for ZODB resources (itools.resources.zodb).

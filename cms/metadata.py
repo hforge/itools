@@ -15,7 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from the Standard Library
+import base64
+import urllib
+
 # Import from itools
+from itools.datatypes import DataType
 from itools.datatypes import String, Unicode, Boolean, Tokens, QName, XML
 from itools.handlers import File
 from itools import schemas
@@ -29,6 +34,21 @@ from Handler import Node
 #############################################################################
 # Namespace
 #############################################################################
+
+class Password(DataType):
+
+    @staticmethod
+    def decode(data):
+        data = urllib.unquote(data)
+        return base64.decodestring(data)
+
+
+    @staticmethod
+    def encode(value):
+        value = base64.encodestring(value)
+        return urllib.quote(value)
+
+
 
 class Record(object):
 
@@ -66,6 +86,8 @@ class Schema(schemas.base.Schema):
         # Archive
 ##        'id': String,
         # Users
+        'email': Unicode,
+        'password': Password,
         'user_theme': String(default='aruni'),
         'user_language': String(default='en'),
         'website_is_open': Boolean(default=False),

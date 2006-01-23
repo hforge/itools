@@ -38,21 +38,16 @@ from Handler import Handler
 
 
 
+### XXX To remove by itools 0.14
 class UserData(KeyValue):
 
     __keys__ = ['password', 'email']
     __keys_types__ = {'email': 'unicode'}
 
 
-    def get_skeleton(self, password=None):
-        # Encode with a digest method
-        password = sha.new(password).digest()
-        # Transform to an ascci string
-        password = base64.encodestring(password)
-        # Quote the newlines
-        password = urllib.quote(password)
-        return 'password:%s\n' % password
 
+def crypt_password(password):
+    return sha.new(password).digest()
 
 
 class User(Folder):
@@ -67,11 +62,7 @@ class User(Folder):
     #########################################################################
     # The skeleton
     #########################################################################
-    def get_skeleton(self, password=None):
-        user_data = UserData(password=password)
-        return {'.data': user_data}
-
-
+    # XXX To be removed for itools 0.14
     def _get_handler(self, segment, resource):
         name = segment.name
         if name == '.data':
@@ -82,37 +73,12 @@ class User(Folder):
     #########################################################################
     # API
     #########################################################################
-    def get_password(self):
-        user_data = self.get_handler('.data')
-        return user_data.state.password
-
-
     def set_password(self, value):
-        user_data = self.get_handler('.data')
-        user_data.set_changed()
-        user_data.state.password = value            
-
-
-    def get_email(self):
-        user_data = self.get_handler('.data')
-        return user_data.state.email
-
-
-    def set_email(self, value):
-        user_data = self.get_handler('.data')
-        user_data.set_changed()
-        user_data.state.email = value
+        self.set_property('ikaaro:password', crypt_password(value))
 
 
     def authenticate(self, password):
-        # Encode with a digest method
-        password = sha.new(password).digest()
-        # Load the users password (unquote and decode)
-        # XXX Should be done when loading the handler
-        self_password = self.get_password()
-        self_password = base64.decodestring(urllib.unquote(self_password))
-        # Transform to an ascci string
-        return password == self_password
+        return crypt_password(password) == self.get_property('ikaaro:password')
 
 
     #########################################################################
@@ -291,7 +257,7 @@ class User(Folder):
         # Build the namespace
         namespace = {}
         namespace['fullname'] = self.get_property('dc:title')
-        namespace['email'] = self.get_email()
+        namespace['email'] = self.get_property('ikaaro:email')
 
         if self.name != user.name:
             namespace['must_confirm'] = False
@@ -315,19 +281,20 @@ class User(Folder):
 
         self.set_property('dc:title', kw['dc:title'], language='en')
         email = unicode(email, 'utf-8')
-        self.set_email(email)
+        self.set_property('ikaaro:email', email)
 
         if password.strip():
             if not password or password != password2:
                 message = u"Passwords mismatch, please try again."
                 raise UserError, self.gettext(message)
 
-            self.set_password(base64.encodestring(sha.new(password).digest()))
+            self.set_password(password)
             # Update the cookie if we updated our own password
             context = get_context()
             if self.name == context.user.name:
                 request = context.request
-                # XXX This is a copy of the code in WebSite.login, should refactor
+                # XXX This is a copy of the code in WebSite.login, should
+                # refactor
                 cname = '__ac'
                 cookie = base64.encodestring('%s:%s' % (self.name, password))
                 cookie = urllib.quote(cookie)
@@ -336,7 +303,8 @@ class User(Folder):
                 if expires is None:
                     context.set_cookie(cname, cookie, path=path)
                 else:
-                    context.set_cookie(cname, cookie, path=path, expires=expires)
+                    context.set_cookie(cname, cookie, path=path,
+                                       expires=expires)
 
         message = self.gettext(u'Account changed.')
         comeback(message)
@@ -431,9 +399,11 @@ class UserFolder(Folder):
     def get_skeleton(self, users=[]):
         skeleton = {}
         for username, password in users:
-            user = User(password=password)
+            password = crypt_password(password)
+            user = User()
             skeleton[username] = user
-            metadata = self.build_metadata(user, owner=username)
+            metadata = {'owner': username, 'ikaaro:password': password}
+            metadata = self.build_metadata(user, **metadata)
             skeleton['.%s.metadata' % username] = metadata
         return skeleton
 
@@ -449,8 +419,9 @@ class UserFolder(Folder):
 
 
     def set_user(self, username, password):
-        user = User(password=password)
-        self.set_handler(username, user)
+        user = User()
+        password = crypt_password(password)
+        self.set_handler(username, user, **{'ikaaro:password': password})
         return user
 
 

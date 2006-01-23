@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-01-23 20:36:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
+
+    Summary:
+      cms, moving user's email and password to the metadata (#160)
+    Revision:
+      itools--main--0.13--patch-11
+
+    Remains to writhe the upgrade code.
+
+    modified files:
+     Changelog cms/metadata.py cms/users.py
+
+
 2006-01-23 19:40:48 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-10
 
     Summary:

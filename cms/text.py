@@ -295,7 +295,7 @@ Text.register_handler_class(CSS)
 
 
 
-class Python(itools.handlers.Python.Python):
+class Python(itools.handlers.python.Python):
 
     class_id = 'text/x-python'
     class_icon48 = 'images/Python48.png'

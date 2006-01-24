@@ -2,6 +2,262 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-01-24 14:38:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
+
+    Summary:
+      merge "class diagram" tool from the 0.12 branch (#219)
+    Revision:
+      itools--main--0.13--patch-12
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-155
+       merge "class diagram" tool from luis (#219), not finished
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--base-0
+       tag of jdavid@itaapy.com--public/itools--main--0.12--patch-56
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-1
+       merge classDiagram work form itools--luis--0.10
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-2
+       clean import in test_python.py
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-3
+       refactor get_visitor in python.py
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-4
+       add a cache to the get_visitor method
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-5
+       for now we deal with only one python file
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-6
+       scripts/itaapyTools_classDiagram.py work again
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-7
+       add the package_name attribute to the python handler
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-8
+       add the get_package_name method to the python handler
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-9
+       add a new test test_package_name_in_dot
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-10
+       comment the second test in scripts/test_classDiagram.py
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-11
+       rename class in the test_classDiagram first test
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-12
+       now we take into account the module_name if any
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-13
+       prepare the next step (detect the same package base classes)
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-14
+       finish the first iteration all unit test pass
+    
+     * luis@itaapy.com--private/itools--classDiagram--0.12--patch-15
+       fix the import of python handler to make cms work again
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-8
+       first step for the new itaapyTools_classDiagramme.py using the compile python module
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-9
+       rename Visitor classes
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-10
+       add the ability to get "from xx import yy as zz" to the python.py parser
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-11
+       rename local variable const as node
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-12
+       add the ability to get   "class X(YY, ZZ)" to the python.py parser
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-13
+       prepar futur tests
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-14
+       improve from_imports test
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-15
+       allow "import A, B, C as CC"
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-16
+       add the skeleton of itaapyTools_classDiagram.py and enough to test it
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-17
+       now itaapyTools_classDiagram write a fake dot file
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-18
+       fix the test_python.py
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-19
+       now we use the new python module in itools
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-20
+       First real test working for itaapyTools_classDiagram.py. 
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-21
+       add PY2DOT test
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-22
+       add frogotten scripts/__init__.py
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-23
+       fix the tests of get_imports
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-24
+       improve the constructor in PY2DOT
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-25
+       now scripts is no more a module we create test_classDiagram.py in scripts instade
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-26
+       now make an absolute name A.B instade of B
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-27
+       now get_classes for a structure like 'class F(D.E.T, EEasE)' return  ('F', [['D', 'E', 'T'], ['EEasE']])
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-28
+       fix a bug show by test3_get_classes (more than one class in a python file)
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-29
+       now with "from A import B" and "class M(B)" we make "M -> A.B"
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-30
+       now with "from A import B" and "class M(B.C)" we make "M -> A.B.C"
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-31
+       change the order we get base_list from "class F(D.E.T)" we return ("F", [["T", "E", "D"]) 
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-32
+       impact last patch in test_classDiagram
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-33
+       add a new test who failed
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-34
+       add a reverse dict for the get_from_import structure
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-35
+       make work the last test (multiples from xx import yy lines bug
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-36
+       fix a small bug
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-37
+       make a test more complexe
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-38
+       make get_imports_dic work (a reverse dic for import structure)
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-39
+       use imports reverse dic to simplify make_dot
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-40
+       add a new test test5_PY2DOT
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-41
+       add a dot handler
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-42
+       refactor classDiagram machinery so now we use a dot.Dot handler to make the dot file from a python file handler
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-43
+       move some test from scripts/test_classDiagram.py to handlers/test_dot.py
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-44
+       add a test for the "import A.B.C as ABC" structure
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-45
+       in class_diagram_from_python handle multiples inputs python files [start]
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-46
+       manage name of modules in the case of a list of python file is given to dot.class_diagram_from_python
+    
+     * luis@itaapy.com--private/itools--luis--0.10--patch-47
+       impact last patch on itaapyTools_classDiagram.py script
+    
+
+    new files:
+     handlers/.arch-ids/dot.py.id handlers/.arch-ids/python.py.id
+     handlers/.arch-ids/test_dot.py.id
+     handlers/.arch-ids/test_python.py.id handlers/dot.py
+     handlers/python.py handlers/test_dot.py
+     handlers/test_python.py
+     scripts/.arch-ids/itaapyTools_classDiagram.py.id
+     scripts/.arch-ids/test_classDiagram.py.id
+     scripts/itaapyTools_classDiagram.py
+     scripts/test_classDiagram.py
+
+    modified files:
+     Changelog Makefile cms/text.py handlers/__init__.py
+     scripts/igettext.py setup.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.12--patch-155
+     luis@itaapy.com--private/itools--classDiagram--0.12--base-0
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-1
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-2
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-3
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-4
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-5
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-6
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-7
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-8
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-9
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-10
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-11
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-12
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-13
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-14
+     luis@itaapy.com--private/itools--classDiagram--0.12--patch-15
+     luis@itaapy.com--private/itools--luis--0.10--patch-8
+     luis@itaapy.com--private/itools--luis--0.10--patch-9
+     luis@itaapy.com--private/itools--luis--0.10--patch-10
+     luis@itaapy.com--private/itools--luis--0.10--patch-11
+     luis@itaapy.com--private/itools--luis--0.10--patch-12
+     luis@itaapy.com--private/itools--luis--0.10--patch-13
+     luis@itaapy.com--private/itools--luis--0.10--patch-14
+     luis@itaapy.com--private/itools--luis--0.10--patch-15
+     luis@itaapy.com--private/itools--luis--0.10--patch-16
+     luis@itaapy.com--private/itools--luis--0.10--patch-17
+     luis@itaapy.com--private/itools--luis--0.10--patch-18
+     luis@itaapy.com--private/itools--luis--0.10--patch-19
+     luis@itaapy.com--private/itools--luis--0.10--patch-20
+     luis@itaapy.com--private/itools--luis--0.10--patch-21
+     luis@itaapy.com--private/itools--luis--0.10--patch-22
+     luis@itaapy.com--private/itools--luis--0.10--patch-23
+     luis@itaapy.com--private/itools--luis--0.10--patch-24
+     luis@itaapy.com--private/itools--luis--0.10--patch-25
+     luis@itaapy.com--private/itools--luis--0.10--patch-26
+     luis@itaapy.com--private/itools--luis--0.10--patch-27
+     luis@itaapy.com--private/itools--luis--0.10--patch-28
+     luis@itaapy.com--private/itools--luis--0.10--patch-29
+     luis@itaapy.com--private/itools--luis--0.10--patch-30
+     luis@itaapy.com--private/itools--luis--0.10--patch-31
+     luis@itaapy.com--private/itools--luis--0.10--patch-32
+     luis@itaapy.com--private/itools--luis--0.10--patch-33
+     luis@itaapy.com--private/itools--luis--0.10--patch-34
+     luis@itaapy.com--private/itools--luis--0.10--patch-35
+     luis@itaapy.com--private/itools--luis--0.10--patch-36
+     luis@itaapy.com--private/itools--luis--0.10--patch-37
+     luis@itaapy.com--private/itools--luis--0.10--patch-38
+     luis@itaapy.com--private/itools--luis--0.10--patch-39
+     luis@itaapy.com--private/itools--luis--0.10--patch-40
+     luis@itaapy.com--private/itools--luis--0.10--patch-41
+     luis@itaapy.com--private/itools--luis--0.10--patch-42
+     luis@itaapy.com--private/itools--luis--0.10--patch-43
+     luis@itaapy.com--private/itools--luis--0.10--patch-44
+     luis@itaapy.com--private/itools--luis--0.10--patch-45
+     luis@itaapy.com--private/itools--luis--0.10--patch-46
+     luis@itaapy.com--private/itools--luis--0.10--patch-47
+
+
 2006-01-23 20:36:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-11
 
     Summary:

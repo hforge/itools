@@ -40,7 +40,7 @@ import Handler
 import File
 import Folder
 import Image
-import Python
+import python
 import Text
 
 

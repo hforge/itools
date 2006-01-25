@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-25 16:42:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-156
+
+    Summary:
+      resources, add comment to signal a change to be made to the API
+    Revision:
+      itools--main--0.12--patch-156
+
+
+    modified files:
+     Changelog resources/base.py
+
+
 2006-01-24 13:12:41 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-155
 
     Summary:

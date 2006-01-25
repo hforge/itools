@@ -200,6 +200,11 @@ class File(Resource):
         raise NotImplementedError
 
 
+    # XXX To be removed, because it makes the behaviour of file resources
+    # different from the behaviour of Python files (#151). In particular
+    # "for x in resource" iterates over each character in the resource,
+    # while it should iterate over each line. This breaks the "csv" Python
+    # module, for instance.
     def __getitem__(self, index):
         self.seek(index)
         return self.read(1)

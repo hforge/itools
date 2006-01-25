@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-25 17:08:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-157
+
+    Summary:
+      csv, trying to work-around the Python's crappy csv parser
+    Revision:
+      itools--main--0.12--patch-157
+
+
+    modified files:
+     Changelog csv/itools_csv.py
+
+
 2006-01-25 16:42:23 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-156
 
     Summary:

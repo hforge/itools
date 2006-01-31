@@ -2,6 +2,19 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-01-31 15:29:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-158
+
+    Summary:
+      web.server, catch exceptions in the commit phase
+    Revision:
+      itools--main--0.12--patch-158
+
+    Instead of failing silently.
+
+    modified files:
+     Changelog web/server.py
+
+
 2006-01-25 17:08:43 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-157
 
     Summary:

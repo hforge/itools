@@ -178,21 +178,29 @@ def handle_request(connection, server):
         except:
             server.log_error()
             transaction.rollback()
+            response.set_status(500)
             response_body = root.internal_server_error()
         else:
             # Save changes
             username = user and user.name or 'NONE'
             note = str(request.path)
-            transaction.commit(username, note)
-            # XXX Since the lock and unlock operations don't modify any
-            # handler, they are not commited in the database, so we do here
-            # explicitly.
-            if request.method == 'LOCK' or request.method == 'UNLOCK':
-                from transaction import get as get_zodb_transaction
-                zodb_transaction = get_zodb_transaction()
-                zodb_transaction.setUser(username, '')
-                zodb_transaction.note(note)
-                zodb_transaction.commit()
+            try:
+                transaction.commit(username, note)
+            except:
+                server.log_error()
+                transaction.rollback()
+                response.set_status(500)
+                response_body = root.internal_server_error()
+            else:
+                # XXX Since the lock and unlock operations don't modify any
+                # handler, they are not commited in the database, so we do here
+                # explicitly.
+                if request.method == 'LOCK' or request.method == 'UNLOCK':
+                    from transaction import get as get_zodb_transaction
+                    zodb_transaction = get_zodb_transaction()
+                    zodb_transaction.setUser(username, '')
+                    zodb_transaction.note(note)
+                    zodb_transaction.commit()
 
         # Set the response body
         response.set_body(response_body)

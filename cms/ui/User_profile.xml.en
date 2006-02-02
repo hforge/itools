@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" 
-  xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <body>
-    <h2 stl:content="title"></h2>
-    <p stl:if="is_owner">
-      Welcome to your home folder. This is your personal space where you can
-      manage your own documents and publish them.
-    </p>
-    <stl:block if="is_owner_or_admin">
-      <p>You can do the following actions:</p>
-      <ul>
-        <li>
-          <a href=";edit_form">Edit preferences;</a>
-        </li>
-        <li>
-          <a href=";edit_account_form">Edit account details;</a>
-        </li>
-        <li>
-          <a href=";browse_thumbnails">Manage personal content;</a>
-        </li>
-        <li>
-          <a href=";tasks_list">Pending tasks.</a>
-        </li>
-      </ul>
-    </stl:block>
-  </body>
-</html>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2 stl:content="title"></h2>
+  <p stl:if="is_owner">
+    Welcome to your home folder. This is your personal space where you can
+    manage your own documents and publish them.
+  </p>
+  <stl:block if="is_owner_or_admin">
+    <p>You can do the following actions:</p>
+    <ul>
+      <li>
+        <a href=";edit_form">Edit preferences;</a>
+      </li>
+      <li>
+        <a href=";edit_account_form">Edit account details;</a>
+      </li>
+      <li>
+        <a href=";browse_thumbnails">Manage personal content;</a>
+      </li>
+      <li>
+        <a href=";tasks_list">Pending tasks.</a>
+      </li>
+    </ul>
+  </stl:block>
+
+</stl:block>

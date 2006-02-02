@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-02 13:15:46 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-159
+
+    Summary:
+      cms, fix user profile template (it is a content template)
+    Revision:
+      itools--main--0.12--patch-159
+
+
+    modified files:
+     Changelog cms/ui/User_profile.xml.en
+
+
 2006-01-31 15:29:20 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-158
 
     Summary:

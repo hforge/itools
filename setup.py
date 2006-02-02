@@ -23,8 +23,8 @@ This script can be tested with the folowing::
   make clean
   python setup.py -q clean sdist
   cd dist
-  tar xzf itools-0.12.1.tar.gz
-  cd itools-0.12.1
+  tar xzf itools-0.12.3.tar.gz
+  cd itools-0.12.3
   sudo python setup.py -q install
 
 Make sure the following files are shipped:
@@ -72,7 +72,7 @@ included are:
 
 setup(
     name = "itools",
-    version = "0.12.2",
+    version = "0.12.3",
     # XXX Broken distutils, "sdist" don't likes unicode strings, and "register"
     # don't likes normal strings.
     author = u"J. David Ibáñez".encode('UTF-8'),

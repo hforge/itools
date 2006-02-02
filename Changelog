@@ -2,6 +2,28 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-02 15:48:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-161
+
+    Summary:
+      scripts, rename "itaapyTools_classDiagram" to "igraph" (#219)
+    Revision:
+      itools--main--0.12--patch-161
+
+
+    modified files:
+     Changelog setup.py
+
+    renamed files:
+     scripts/.arch-ids/itaapyTools_classDiagram.py.id
+       ==> scripts/.arch-ids/igraph.py.id
+     scripts/.arch-ids/test_classDiagram.py.id
+       ==> scripts/.arch-ids/test_igraph.py.id
+     scripts/itaapyTools_classDiagram.py
+       ==> scripts/igraph.py
+     scripts/test_classDiagram.py
+       ==> scripts/test_igraph.py
+
+
 2006-02-02 14:19:22 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-160
 
     Summary:

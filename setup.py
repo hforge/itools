@@ -173,6 +173,6 @@ setup(
     'itools.csv': ['*.csv']},
     scripts = [join('scripts', 'igettext.py'),
                join('scripts', 'icms.py'),
-               join('scripts', 'itaapyTools_classDiagram.py'),],
+               join('scripts', 'igraph.py'),],
     cmdclass={'build_py': build_py_fixed},
     )

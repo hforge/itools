@@ -11,7 +11,7 @@
 
   Scripts
   - Add "igraph" to the collection of scripts; it draws a class diagram
-    with the inheritance hierarchy. [#219]
+    with the inheritance hierarchy. By Luis Belmar-Letelier [#219]
 
 
 0.12.2 (2006/01/23)

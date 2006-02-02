@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-02 16:09:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-163
+
+    Summary:
+      fix the credits in the changes file (igraph by Luis)
+    Revision:
+      itools--main--0.12--patch-163
+
+
+    modified files:
+     CHANGES.txt Changelog
+
+
 2006-02-02 16:04:06 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-162
 
     Summary:

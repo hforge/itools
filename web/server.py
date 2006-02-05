@@ -121,26 +121,33 @@ def handle_request(connection, server):
             method = root.not_found
         else:
             # Get the method
-            method = handler.get_method(method_name)
-            # Check security
-            if method is None:
-                if user is None:
-                    # Unauthorized (401)
-                    method = root.login_form
-                else:
-                    # Forbidden (403)
-                    method = root.forbidden
+            try:
+                method = handler.get_method(method_name)
+            except:
+                server.log_error()
+                # Internal Server Error (500)
+                response.set_status(500)
+                method = root.internal_server_error
             else:
-                mtime = getattr(handler, '%s__mtime__' % method_name, None)
-                if mtime is not None:
-                    mtime = mtime().replace(microsecond=0)
-                    response.set_header('last-modified', mtime)
-                    if request.method == 'GET':
-                        if request.has_header('if-modified-since'):
-                            msince = request.get_header('if-modified-since')
-                            if mtime <= msince:
-                                # Not modified (304)
-                                response.set_status(304)
+                # Check security
+                if method is None:
+                    if user is None:
+                        # Unauthorized (401)
+                        method = root.login_form
+                    else:
+                        # Forbidden (403)
+                        method = root.forbidden
+                else:
+                    mtime = getattr(handler, '%s__mtime__' % method_name, None)
+                    if mtime is not None:
+                        mtime = mtime().replace(microsecond=0)
+                        response.set_header('last-modified', mtime)
+                        if request.method == 'GET':
+                            if request.has_header('if-modified-since'):
+                                msince = request.get_header('if-modified-since')
+                                if mtime <= msince:
+                                    # Not modified (304)
+                                    response.set_status(304)
 
     if response.get_status() != 304:
         # Set the list of needed resources. The method we are going to
@@ -178,21 +185,29 @@ def handle_request(connection, server):
         except:
             server.log_error()
             transaction.rollback()
+            response.set_status(500)
             response_body = root.internal_server_error()
         else:
             # Save changes
             username = user and user.name or 'NONE'
             note = str(request.path)
-            transaction.commit(username, note)
-            # XXX Since the lock and unlock operations don't modify any
-            # handler, they are not commited in the database, so we do here
-            # explicitly.
-            if request.method == 'LOCK' or request.method == 'UNLOCK':
-                from transaction import get as get_zodb_transaction
-                zodb_transaction = get_zodb_transaction()
-                zodb_transaction.setUser(username, '')
-                zodb_transaction.note(note)
-                zodb_transaction.commit()
+            try:
+                transaction.commit(username, note)
+            except:
+                server.log_error()
+                transaction.rollback()
+                response.set_status(500)
+                response_body = root.internal_server_error()
+            else:
+                # XXX Since the lock and unlock operations don't modify any
+                # handler, they are not commited in the database, so we do here
+                # explicitly.
+                if request.method == 'LOCK' or request.method == 'UNLOCK':
+                    from transaction import get as get_zodb_transaction
+                    zodb_transaction = get_zodb_transaction()
+                    zodb_transaction.setUser(username, '')
+                    zodb_transaction.note(note)
+                    zodb_transaction.commit()
 
         # Set the response body
         response.set_body(response_body)

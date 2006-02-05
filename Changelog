@@ -2,6 +2,65 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-05 18:51:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
+
+    Summary:
+      merge from the 0.12 branch
+    Revision:
+      itools--main--0.13--patch-13
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-156
+       resources, add comment to signal a change to be made to the API
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-157
+       csv, trying to work-around the Python's crappy csv parser
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-158
+       web.server, catch exceptions in the commit phase
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-159
+       cms, fix user profile template (it is a content template)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-160
+       web.server, catch exceptions in the "get_method" block
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-161
+       scripts, rename "itaapyTools_classDiagram" to "igraph" (#219)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-162
+       get ready to release 0.12.3
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-163
+       fix the credits in the changes file (igraph by Luis)
+    
+
+    modified files:
+     CHANGES.txt Changelog cms/ui/User_profile.xml.en
+     csv/itools_csv.py resources/base.py setup.py web/server.py
+
+    renamed files:
+     scripts/.arch-ids/itaapyTools_classDiagram.py.id
+       ==> scripts/.arch-ids/igraph.py.id
+     scripts/.arch-ids/test_classDiagram.py.id
+       ==> scripts/.arch-ids/test_igraph.py.id
+     scripts/itaapyTools_classDiagram.py
+       ==> scripts/igraph.py
+     scripts/test_classDiagram.py
+       ==> scripts/test_igraph.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.12--patch-156
+     jdavid@itaapy.com--public/itools--main--0.12--patch-157
+     jdavid@itaapy.com--public/itools--main--0.12--patch-158
+     jdavid@itaapy.com--public/itools--main--0.12--patch-159
+     jdavid@itaapy.com--public/itools--main--0.12--patch-160
+     jdavid@itaapy.com--public/itools--main--0.12--patch-161
+     jdavid@itaapy.com--public/itools--main--0.12--patch-162
+     jdavid@itaapy.com--public/itools--main--0.12--patch-163
+
+
 2006-01-24 14:38:12 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-12
 
     Summary:

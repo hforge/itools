@@ -1,3 +1,19 @@
+0.12.3 (2006/02/02)
+
+  Resources
+  - Add "tell" to the API of file resources (only implemented by memory
+    resources for now). [#151]
+
+  Web
+  - Improved stability for the web server. We catch unexpected exceptions
+    in a couple of places more, and send an "Internal Server Error" response
+    to the browser; instead of crashing the server.
+
+  Scripts
+  - Add "igraph" to the collection of scripts; it draws a class diagram
+    with the inheritance hierarchy. By Luis Belmar-Letelier [#219]
+
+
 0.12.2 (2006/01/23)
 
   Web

@@ -72,10 +72,13 @@ class CSV(Text):
     #########################################################################
     def _get_csv_reader(self, data):
         """Build and return the csv file reader."""
-        dialect = python_csv.Sniffer().sniff('\n'.join(data.splitlines()[:10]))
+        lines = data.splitlines()
+        dialect = python_csv.Sniffer().sniff('\n'.join(lines[:10]))
+        # Fix the fucking sniffer
+        dialect.doublequote = True
         if dialect.delimiter == '':
             dialect.delimiter = ','
-        return python_csv.reader(data.splitlines(), dialect)
+        return python_csv.reader(lines, dialect)
 
 
     def _parse(self, data):

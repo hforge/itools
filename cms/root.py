@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ from itools.web import get_context
 # Import from itools.cms
 from Group import Group
 from Handler import Handler
-from metadata import Metadata
+from metadata import Metadata, Password
 from text import PO
 from skins import ui
 from users import User, UserFolder
@@ -51,7 +51,7 @@ class Root(Group, WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20051025'
+    class_version = '20060205'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
 
@@ -472,6 +472,18 @@ class Root(Group, WebSite):
                     print abspath
                     handler.set_property('format', Folder.class_id)
                     reindex_handler(handler)
+
+
+    def update_20060205(self):
+        users = self.get_handler('users')
+        for user in users.search_handlers(handler_class=User):
+            data = user.get_handler('.data')
+            # Move email and password to the metadata
+            user.set_property('ikaaro:email', data.state.email)
+            password = Password.decode(data.state.password)
+            user.set_property('ikaaro:password', password)
+            # Remove obsolete resource
+            user.resource.del_resource('.data')
 
 
     #######################################################################

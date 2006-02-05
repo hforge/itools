@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-05 19:37:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
+
+    Summary:
+      cms, add upgrade method (#160)
+    Revision:
+      itools--main--0.13--patch-15
+
+
+    modified files:
+     Changelog cms/root.py
+
+
 2006-02-05 19:20:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
 
     Summary:

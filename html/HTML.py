@@ -117,7 +117,7 @@ class Document(XHTML.Document):
         state = self.state
         state.encoding = 'UTF-8'
         state.document_type = None
-        state.children = []
+        children = []
 
         stack = []
         data = resource.read()
@@ -147,43 +147,45 @@ class Document(XHTML.Document):
                 if stack:
                     stack[-1].set_element(element)
                 else:
-                    state.children.append(element)
+                    children.append(element)
             elif event == COMMENT:
                 comment = XML.Comment(value)
                 if stack:
                     stack[-1].set_comment(comment)
                 else:
-                    state.children.append(comment)
+                    children.append(comment)
             elif event == TEXT:
                 if stack:
                     stack[-1].set_text(value, parser.encoding)
                 else:
                     value = Unicode.decode(value, parser.encoding)
-                    state.children.append(value)
+                    children.append(value)
+
+        # Semantically, the root of an HTML document is always the "<html>"
+        # element.
+        for element in children:
+            if isinstance(element, Element) and element.name == 'html':
+                state.root_element = element
+                # XXX We loss any comment or text node that is before or
+                # after the "<html>" tag.
+                break
+        else:
+            schema = elements_schema.get('html', {'type': BlockElement})
+            element_class = schema['type']
+            element = element_class('html')
+            element.children = children
+            state.root_element = element
 
 
     def to_str(self, encoding='UTF-8'):
-        s = []
+        data = []
         # The declaration
         if self.state.document_type is not None:
-            s.append('<!%s>' % self.state.document_type)
-        # The children
-        for child in self.state.children:
-            if isinstance(child, unicode):
-                s.append(child.encode(encoding))
-            else:
-                s.append(child.to_str(encoding))
-        return ''.join(s)
+            data.append('<!%s>' % self.state.document_type)
+        # The document itself
+        data.append(self.get_root_element().to_str(encoding))
 
-
-    #######################################################################
-    # API
-    #######################################################################
-    def get_root_element(self):
-        # XXX Probably this should work like XML
-        for child in self.state.children:
-            if isinstance(child, Element):
-                return child
+        return ''.join(data)
 
 
 XHTML.Document.register_handler_class(Document)

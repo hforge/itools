@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-05 19:20:24 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-14
+
+    Summary:
+      html, now HTML documents have a root element, like XML documents
+    Revision:
+      itools--main--0.13--patch-14
+
+
+    modified files:
+     Changelog html/HTML.py
+
+
 2006-02-05 18:51:13 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-13
 
     Summary:

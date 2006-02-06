@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <Description about="http://www.example.org/index.html">
-    <dc:title>The itools reference manual</dc:title>
-    <dc:description></dc:description>
-  </Description>
-</RDF>

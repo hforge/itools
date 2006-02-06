@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-06 11:22:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
+
+    Summary:
+      xml, remove obsolete files
+    Revision:
+      itools--main--0.13--patch-16
+
+
+    removed files:
+     xml/.arch-ids/simple.xml.id xml/.arch-ids/simple.xsd.id
+     xml/.arch-ids/test.rdf.id xml/.arch-ids/test_rdf.py.id
+     xml/.arch-ids/test_xsd.py.id xml/simple.xml xml/simple.xsd
+     xml/test.rdf xml/test_rdf.py xml/test_xsd.py
+
+    modified files:
+     Changelog MANIFEST.in
+
+
 2006-02-05 19:37:17 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-15
 
     Summary:

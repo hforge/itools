@@ -75,7 +75,7 @@ def init(parser, options, target):
     # Create the config file
     config = get_config()
     if options.root:
-        config.set('instance', 'root', options.root)
+        config.set('instance', 'modules', options.root)
     if options.port:
         config.set('instance', 'port', options.port)
     config.write(open('%s/config.ini' % target, 'w'))
@@ -146,7 +146,13 @@ def start(parser, options, target):
     # Load the config
     config = get_config(target)
 
-    # Import the root class if is not the default
+    # Load Python packages and modules
+    if config.has_option('instance', 'modules'):
+        for name in config.get('instance', 'modules').split():
+            name = name.strip()
+            exec('import %s' % name)
+
+    # XXX Backwards compatibility (obsolete since 0.13)
     if config.has_option('instance', 'root'):
         exec('import %s' % config.get('instance', 'root'))
 
@@ -199,7 +205,13 @@ def update(parser, options, target):
     # Load the config
     config = get_config(target)
 
-    # Import the root class if is not the default
+    # Load Python packages and modules
+    if config.has_option('instance', 'modules'):
+        for name in config.get('instance', 'modules').split():
+            name = name.strip()
+            exec('import %s' % name)
+
+    # XXX Backwards compatibility (obsolete since 0.13)
     if config.has_option('instance', 'root'):
         exec('import %s' % config.get('instance', 'root'))
 

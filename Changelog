@@ -2,6 +2,21 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-06 17:22:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-17
+
+    Summary:
+      cms, new configuration variable "modules" (replaces "root")
+    Revision:
+      itools--main--0.13--patch-17
+
+    With "modules" it is possible to define a list of Python packages or
+    modules to be loaded (imported) on start-up. So now we can develop
+    and deploy packages that extend "itools.cms" functional scope.
+
+    modified files:
+     Changelog scripts/icms.py
+
+
 2006-02-06 11:22:55 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-16
 
     Summary:

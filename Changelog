@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-07 10:44:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-164
+
+    Summary:
+      web.server, catch all errors so the server never stops (and log them)
+    Revision:
+      itools--main--0.12--patch-164
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2006-02-02 16:09:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-163
 
     Summary:

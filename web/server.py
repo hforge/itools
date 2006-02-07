@@ -44,6 +44,10 @@ def handle_request(connection, server):
     except BadRequest, exception:
         request = None
         request_line = exception.args[0]
+    except:
+        server.log_error()
+        request = None
+        request_line = 'XXX'
     else:
         # Keep here (though redundant) to be used later in the access log
         request_line = request.state.request_line

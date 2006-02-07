@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-07 19:16:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-165
+
+    Summary:
+      web.server, catch any errors in request parsing (returns bad request)
+    Revision:
+      itools--main--0.12--patch-165
+
+
+    modified files:
+     Changelog web/server.py
+
+
 2006-02-07 10:44:15 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-164
 
     Summary:

@@ -2,6 +2,23 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-08 11:47:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-166
+
+    Summary:
+      web, work-around browsers with non-compliant If-Modified-Since header
+    Revision:
+      itools--main--0.12--patch-166
+
+    Some browsers add a "length" parameter to the "If-Modified-Since"
+    header, it is an extension to the HTTP 1.0 protocol by Netscape,
+    see:
+    
+      http://www.squid-cache.org/mail-archive/squid-users/200307/0122.html
+
+    modified files:
+     Changelog web/headers.py
+
+
 2006-02-07 19:16:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-165
 
     Summary:

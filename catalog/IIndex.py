@@ -544,6 +544,7 @@ class IIndex(Folder):
         state.root.children = {}
 
         tree_rsrc = tree_handler.resource
+        tree_rsrc.open()
         child_n = tree_handler.state.first_slot
         while child_n is not None:
             child = 16 + child_n * 16
@@ -552,6 +553,7 @@ class IIndex(Folder):
             state.root.children[c] = tree
             # Next
             child_n = IO.decode_link(tree_rsrc[child+12:child+16])
+        tree_rsrc.close()
 
         # The state
         state.added_terms = {}

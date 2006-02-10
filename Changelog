@@ -2,6 +2,34 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-10 17:49:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-167
+
+    Summary:
+      merge fixes from the 0.13 branch (open/close resource protocol)
+    Revision:
+      itools--main--0.12--patch-167
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.13--patch-19
+       merge fixes from the "nozodb" branch (open/close resource protocol)
+    
+     * jdavid@itaapy.com--public/itools--nozodb--0.13--patch-1
+       handlers, fix transactions commit (open and close resources)
+    
+     * jdavid@itaapy.com--public/itools--nozodb--0.13--patch-3
+       catalog, fix loading indexes (follow the open/close resource protocol)
+    
+
+    modified files:
+     Changelog catalog/IIndex.py handlers/transactions.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.13--patch-19
+     jdavid@itaapy.com--public/itools--nozodb--0.13--patch-1
+     jdavid@itaapy.com--public/itools--nozodb--0.13--patch-3
+
+
 2006-02-08 11:47:04 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-166
 
     Summary:

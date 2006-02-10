@@ -66,7 +66,9 @@ class Transaction(set):
             # Errors should not happen in this stage.
             for handler in self:
                 if handler.resource.get_mtime() is not None:
+                    handler.resource.open()
                     handler._save_state(handler.resource)
+                    handler.resource.close()
         except:
             # XXX Right now we just rollback the transaction, so handlers
             # state will be consistent.

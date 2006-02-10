@@ -44,6 +44,10 @@ def handle_request(connection, server):
     except BadRequest, exception:
         request = None
         request_line = exception.args[0]
+    except:
+        server.log_error()
+        request = None
+        request_line = 'XXX'
     else:
         # Keep here (though redundant) to be used later in the access log
         request_line = request.state.request_line
@@ -276,8 +280,8 @@ class Server(object):
         iwtd = [ear]
         owtd = []
         ewtd = []
-        try:
-            while True:
+        while True:
+            try:
                 iready, oready, eready = select(iwtd, owtd, ewtd)
 
                 for x in iready:
@@ -299,12 +303,15 @@ class Server(object):
                         # require changes in the handlers design.
                         iwtd.remove(x)
                         handle_request(x, self)
-        except:
-            ear.close()
-            if self.access_log is not None:
-                self.access_log.close()
-            if self.error_log is not None:
-                self.error_log.close()
+            except KeyboardInterrupt:
+                ear.close()
+                if self.access_log is not None:
+                    self.access_log.close()
+                if self.error_log is not None:
+                    self.error_log.close()
+                break
+            except:
+                self.log_error()
 
 
     def log_access(self, connection, request_line, status, size):
@@ -326,21 +333,21 @@ class Server(object):
 
 
     def log_error(self):
-        context = get_context()
-        request, user = context.request, context.user
-
-        user = context.user
-
-        # Log request
         error_log = self.error_log
         error_log.write('\n')
         error_log.write('[Error]\n')
         error_log.write('date    : %s\n' % str(datetime.now()))
-        error_log.write('uri     : %s\n' % str(context.uri))
-        error_log.write('referrer: %s\n' % str(request.referrer))
-        error_log.write('user    : %s\n' % (user and user.name or None))
-        error_log.write('\n')
+
+        # The request data
+        context = get_context()
+        if context is not None:
+            request = context.request
+            user = context.user
+            error_log.write('uri     : %s\n' % str(context.uri))
+            error_log.write('referrer: %s\n' % str(request.referrer))
+            error_log.write('user    : %s\n' % (user and user.name or None))
 
         # The traceback
+        error_log.write('\n')
         traceback.print_exc(file=error_log)
         error_log.flush()

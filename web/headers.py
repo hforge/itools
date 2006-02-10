@@ -60,6 +60,19 @@ class HTTPDate(DataType):
 
 
 
+class If_Modified_Since(HTTPDate):
+
+    @staticmethod
+    def decode(data):
+        # Some browsers add a "length" parameter to the "If-Modified-Since"
+        # header, it is an extension to the HTTP 1.0 protocol by Netscape,
+        # http://www.squid-cache.org/mail-archive/squid-users/200307/0122.html
+        if ';' in data:
+            data = data.split(';')[0]
+        return HTTPDate.decode(data)
+
+
+
 #############################################################################
 # Parameters
 
@@ -187,7 +200,7 @@ headers = {
     # Request headers (HTTP 1.0)
     'authorization': String,
     'from': String,
-    'if-modified-since': HTTPDate,
+    'if-modified-since': If_Modified_Since,
     'referer': URI,
     'user-agent': String,
     # Request headers (HTTP 1.1)

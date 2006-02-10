@@ -2,6 +2,34 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-10 16:29:54 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-18
+
+    Summary:
+      merge from the 0.12 branch
+    Revision:
+      itools--main--0.13--patch-18
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-164
+       web.server, catch all errors so the server never stops (and log them)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-165
+       web.server, catch any errors in request parsing (returns bad request)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-166
+       web, work-around browsers with non-compliant If-Modified-Since header
+    
+
+    modified files:
+     Changelog web/headers.py web/server.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.12--patch-164
+     jdavid@itaapy.com--public/itools--main--0.12--patch-165
+     jdavid@itaapy.com--public/itools--main--0.12--patch-166
+
+
 2006-02-06 17:22:56 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-17
 
     Summary:

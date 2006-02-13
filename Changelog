@@ -2,6 +2,22 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-13 20:01:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-170
+
+    Summary:
+      cms, fix tables in the html editor (epoz)
+    Revision:
+      itools--main--0.12--patch-170
+
+
+    new files:
+     cms/ui/.arch-ids/epoz_script_table.xml.en.id
+     cms/ui/epoz_script_table.xml.en
+
+    modified files:
+     Changelog cms/Handler.py
+
+
 2006-02-13 19:26:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-169
 
     Summary:

@@ -533,7 +533,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         color_template = self.get_pathtoroot() + 'ui/epoz_script_color.xml'
         namespace['SetTextColor_call'] = "SetTextColor('%s')" % color_template
         namespace['SetBackColor_call'] = "SetBackColor('%s')" % color_template
-        table_template = self.get_pathtoroot() + 'ui/images/epoz/epoz_script_table.html'
+        table_template = self.get_pathtoroot() + 'ui/epoz_script_table.xml'
         namespace['SetTable_call'] = "SetTable('%s')" % table_template
 
         handler = self.get_handler('/ui/epoz.xml')

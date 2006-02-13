@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-13 19:26:32 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-169
+
+    Summary:
+      fix manifest file to include "cms/ui/epoz.xml"
+    Revision:
+      itools--main--0.12--patch-169
+
+
+    modified files:
+     Changelog MANIFEST.in
+
+
 2006-02-13 11:23:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-168
 
     Summary:

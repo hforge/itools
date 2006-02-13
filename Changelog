@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-13 11:23:27 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-168
+
+    Summary:
+      cms, remove debugging line
+    Revision:
+      itools--main--0.12--patch-168
+
+
+    modified files:
+     Changelog cms/Metadata.py
+
+
 2006-02-10 17:49:59 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-167
 
     Summary:

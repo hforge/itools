@@ -244,7 +244,6 @@ class Metadata(Node, File.File):
                 lines.append('  <%s>%s</%s>' % (qname, value, qname))
 
         lines.append('</metadata>')
-        open('/tmp/kk', 'w').write('\n'.join(lines))
         return '\n'.join(lines)
 
 

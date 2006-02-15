@@ -2,6 +2,18 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.12
 #
 
+2006-02-15 13:19:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-171
+
+    Summary:
+      cms, beautify the "search_handlers" method (#103)
+    Revision:
+      itools--main--0.12--patch-171
+
+
+    modified files:
+     Changelog cms/Folder.py
+
+
 2006-02-13 20:01:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-170
 
     Summary:

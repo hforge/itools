@@ -2,6 +2,39 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-16 11:02:37 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-21
+
+    Summary:
+      merge the "nozodb" branch
+    Revision:
+      itools--main--0.13--patch-21
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--nozodb--0.13--patch-2
+       cms, drop the ZODB, store resources directly in the filesystem
+    
+     * jdavid@itaapy.com--public/itools--nozodb--0.13--patch-4
+       cms, add upgrade code to move away from the ZODB
+    
+     * jdavid@itaapy.com--public/itools--nozodb--0.13--patch-5
+       cms, refuse to start if the instance is still in the ZODB
+    
+     * jdavid@itaapy.com--public/itools--nozodb--0.13--patch-6
+       [resources, cms] Move locking mechanism to "itools.cms"
+    
+
+    modified files:
+     Changelog cms/File.py cms/Folder.py cms/Handler.py
+     resources/zodb.py scripts/icms.py web/server.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--nozodb--0.13--patch-2
+     jdavid@itaapy.com--public/itools--nozodb--0.13--patch-4
+     jdavid@itaapy.com--public/itools--nozodb--0.13--patch-5
+     jdavid@itaapy.com--public/itools--nozodb--0.13--patch-6
+
+
 2006-02-16 10:51:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
 
     Summary:

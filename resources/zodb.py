@@ -238,35 +238,6 @@ class File(Resource, base.File):
         self.offset = stop
 
 
-    ##########################################################################
-    # Locking
-    def lock(self):
-        # Read
-        parent = self._get_parent()
-        mtime, data, lock = parent[self.name]
-        # Lock
-        lock = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
-        parent[self.name] = (mtime, data, lock)
-        return lock
-
-
-    def unlock(self, key):
-        # Read
-        parent = self._get_parent()
-        mtime, data, lock = parent[self.name]
-        # Unlock
-        if lock is None:
-            raise ValueError, 'resource is not locked'
-        if key != lock:
-            raise ValueError, 'can not unlock resource, wrong key'
-        parent[self.name] = (mtime, data, None)
-
-
-    def is_locked(self):
-        mtime, data, lock = self._get_object()
-        return lock is not None
-
-
 
 class Folder(Resource, base.Folder):
 

@@ -36,7 +36,7 @@ from itools.web.exceptions import UserError
 # Import from itools.cms
 import File
 from images import Image
-from Handler import Handler
+from Handler import Handler, Lock
 from LocaleAware import LocaleAware
 from metadata import Metadata
 from versioning import VersioningAware
@@ -114,6 +114,8 @@ class Folder(Handler, handlers.Folder.Folder):
         if name.startswith('.'):
             if name.endswith('.metadata'):
                 return Metadata(resource)
+            elif name.endswith('.lock'):
+                return Lock(resource)
         # Get the format
         if self.has_handler('.%s.metadata' % name):
             metadata = self.get_handler('.%s.metadata' % name)

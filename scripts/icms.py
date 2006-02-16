@@ -18,6 +18,7 @@
 
 # Import from the Standard Library
 from ConfigParser import RawConfigParser
+from optparse import OptionParser
 import os
 import random
 import signal
@@ -25,13 +26,9 @@ import string
 import sys
 from threading import Thread
 
-# Import from ZODB
-from optparse import OptionParser
-from ZODB.FileStorage import FileStorage
-
 # Import from itools
 import itools
-from itools.resources import base, get_resource, zodb
+from itools.resources import base, get_resource
 from itools.handlers import transactions
 from itools.web.server import Server
 from itools.cms.Handler import Handler
@@ -49,14 +46,10 @@ def get_config(target=None):
     return config
 
 
-def get_database(target):
-    storage = FileStorage('%s/database.fs' % target)
-    return zodb.Database(storage)
 
-
-def get_root(database):
+def get_root(target):
     # Get the root resource
-    root_resource = database.get_resource('/')
+    root_resource = get_resource('%s/database' % target)
     # Find out the format (look into the metadata)
     metadata = root_resource.get_resource('.metadata')
     metadata = Metadata(metadata)
@@ -80,9 +73,6 @@ def init(parser, options, target):
         config.set('instance', 'port', options.port)
     config.write(open('%s/config.ini' % target, 'w'))
 
-    # Create the database
-    database = get_database(target)
-
     # Load the source
     if options.source is None:
         if options.root is None:
@@ -102,11 +92,9 @@ def init(parser, options, target):
             parser.error('can not import instance (bad folder)')
 
     # Initialize the database
-    root_resource = database.get_resource('/')
-    for name in source.get_resource_names():
-        resource = source.get_resource(name)
-        root_resource.set_resource(name, resource)
-    root_resource.get_transaction().commit()
+    instance = get_resource(target)
+    instance.set_resource('database', source)
+    root_resource = instance.get_resource('database')
 
     # Index and archive everything (only for new instances, not imported)
     if options.source is None:
@@ -137,12 +125,21 @@ def init(parser, options, target):
     print '* To start the new instance type:'
     print '*   %s start %s' % (parser.get_prog_name(), target)
     print '*'
-        
-
 
 
 
 def start(parser, options, target):
+    # Check wether the instance uses the filesystem (not ZODB) (XXX, to be
+    # removed by 0.14).
+    instance = get_resource(target)
+    if instance.has_resource('database.fs'):
+        print ('The database must be moved from the ZODB to the filesystem,'
+               ' type:')
+        print
+        print '    $ icms.py update <instance>'
+        print
+        return
+
     # Load the config
     config = get_config(target)
 
@@ -157,8 +154,7 @@ def start(parser, options, target):
         exec('import %s' % config.get('instance', 'root'))
 
     # Load the root handler
-    database = get_database(target)
-    root = get_root(database)
+    root = get_root(target)
     root.name = root.class_title
 
     # Find out the port to listen
@@ -202,6 +198,29 @@ def stop(parser, options, target):
 
 
 def update(parser, options, target):
+    # Move from the ZODB to the filesystem. Upgrade code from 0.12 to 0.13,
+    # it must be removed as of 0.14 (XXX).
+    instance = get_resource(target)
+    if instance.has_resource('database.fs'):
+        print 'Move database from the ZODB to the filesystem (y/N)? ',
+        line = sys.stdin.readline()
+        line = line.strip().lower()
+        if line != 'y':
+            return
+
+        from itools.resources import zodb
+        from ZODB.FileStorage import FileStorage
+        # Load root resource
+        storage = FileStorage('%s/database.fs' % target)
+        database = zodb.Database(storage)
+        root_resource = database.get_resource('/')
+        # Copy to the filesystem
+        instance.set_resource('database', root_resource)
+        # Remove "database.*"
+        for name in instance.get_resource_names():
+            if name.startswith('database.'):
+                instance.del_resource(name)
+
     # Load the config
     config = get_config(target)
 
@@ -216,8 +235,7 @@ def update(parser, options, target):
         exec('import %s' % config.get('instance', 'root'))
 
     # Load the root resource
-    database = get_database(target)
-    root = get_root(database)
+    root = get_root(target)
 
     instance_version = root.get_property('version')
     class_version = root.class_version
@@ -236,13 +254,6 @@ def update(parser, options, target):
             root.update()
 
 
-def pack(parser, options, target):
-    database = get_database(target).database
-    print 'Packing...', 
-    database.pack()
-    print 'done.'
-
-
 
 if __name__ == '__main__':
     # The command line parser
@@ -252,8 +263,7 @@ if __name__ == '__main__':
              '  %prog init          creates a new instance\n'
              '  %prog start         starts the web server\n'
              '  %prog stop          stops the web server\n'
-             '  %prog update        updates the instance (if needed)\n'
-             '  %prog pack          packs the database')
+             '  %prog update        updates the instance (if needed)\n')
     revision = itools.__arch_revision__
     version = 'itools %s [%s]' % (revision.split('--')[2], revision)
     parser = OptionParser(usage, version=version)
@@ -277,8 +287,7 @@ if __name__ == '__main__':
     commands = {'init': (init, ['port', 'source', 'root']),
                 'start': (start, ['debug', 'port']),
                 'stop': (stop, []),
-                'update': (update, []),
-                'pack': (pack, [])}
+                'update': (update, [])}
 
     # Check wether the command exists
     if command_name not in commands:

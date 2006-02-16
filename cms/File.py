@@ -125,13 +125,12 @@ class File(Handler, itools.handlers.File.File):
         request, response = context.request, context.response
         # Get the resource
         resource = self.resource
-        object = resource._get_object()
 
         uri = context.uri
         uri_string = '%s://%s/%s' % (uri.scheme, uri.authority, uri.path[:-1])
         uri = get_reference(uri_string)
         r = ['url:%s' % str(uri),
-             'meta_type:toto', ##% object.meta_type,
+             'meta_type:toto', # XXX Maybe something more meaningful than toto?
              'content_type:%s' % resource.get_mimetype(),
              'cookie:%s' % request.get_cookies_as_str()]
 
@@ -142,20 +141,17 @@ class File(Handler, itools.handlers.File.File):
             title = self.name
         r.append('title:%s' % title)
 
-        if resource.is_locked():
-            # Object is locked, send down the lock token 
-            # owned by this user (if any)
-            user = context.user
-            for lock in object.wl_lockValues():
-                if not lock.isValid():
-                    continue # Skip invalid/expired locks
-                creator = lock.getCreator()
-                if creator and creator[1] == user.name:
-                    # Found a lock for this user, so send it
-                    r.append('lock-token:%s' % lock.getLockToken())
-                    if request.get('borrow_lock'):
-                        r.append('borrow_lock:1')
-                    break
+        if self.is_locked():
+            lock = self.get_lock()
+            if lock.username == context.user.name:
+                # XXX Check "lock.key" is the right value to send; in Zope
+                # this is a call to "lock.getLockToken()".
+                r.append('lock-token:%s' % lock.key)
+                if request.get('borrow_lock'):
+                    r.append('borrow_lock:1')
+            else:
+                # XXX The operation should fail
+                pass
 
         r.append('')
 

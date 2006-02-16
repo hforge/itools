@@ -17,7 +17,10 @@
 
 # Import from the Standard Library
 import cgi
+import datetime
 import logging
+from random import random
+from time import time
 
 # Import from itools
 import itools
@@ -27,6 +30,7 @@ from itools.datatypes import QName
 from itools.resources import base, memory
 from itools.handlers.Handler import Node as iNode
 from itools.handlers.transactions import get_transaction
+from itools.handlers.Text import Text
 from itools import schemas
 from itools.stl import stl
 from itools.xhtml import XHTML
@@ -47,6 +51,27 @@ logger = logging.getLogger('update')
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
 logger.addHandler(handler)
+
+
+
+class Lock(Text):
+
+    def get_skeleton(self, username=None, **kw):
+        key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
+        return '%s\n%s\n%s' % (username, datetime.datetime.now(), key)
+
+
+    def _load_state(self, resource):
+        state = self.state
+        username, timestamp, key = resource.read().strip().split('\n')
+        state.username = username
+        state.timestamp = timestamp
+        state.key = key
+
+
+    def to_str(self):
+        state = self.state
+        return '%s\n%s\n%s' % (state.username, state.timestamp, state.key)
 
 
 
@@ -377,6 +402,58 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
 
     ########################################################################
+    # Locking
+    ########################################################################
+    def get_real_handler(self):
+        if self.real_handler is None:
+            return self
+
+        return self.real_handler
+
+
+    def lock(self):
+        lock = Lock(username=get_context().user.name)
+
+        handler = self.get_real_handler()
+        if handler.parent is None:
+            handler.set_handler('.lock', lock)
+        else:
+            parent = handler.parent
+            parent.set_handler('.%s.lock' % handler.name, lock)
+
+        return lock.state.key
+
+
+    def unlock(self):
+        handler = self.get_real_handler()
+        if handler.parent is None:
+            handler.del_handler('.lock')
+        else:
+            parent = handler.parent
+            parent.del_handler('.%s.lock' % handler.name)
+
+
+    def is_locked(self):
+        handler = self.get_real_handler()
+        if handler.parent is None:
+            return handler.has_handler('.lock')
+        else:
+            parent = handler.parent
+            return parent.has_handler('.%s.lock' % handler.name)
+
+
+    def get_lock(self):
+        handler = self.get_real_handler()
+        if handler.parent is None:
+            lock = handler.get_handler('.lock')
+        else:
+            parent = handler.parent
+            lock = parent.get_handler('.%s.lock' % handler.name)
+
+        return lock.state
+
+
+    ########################################################################
     # HTTP
     ########################################################################
     PUT__access__ = 'is_authenticated'
@@ -393,15 +470,12 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
     LOCK__access__ = 'is_authenticated'
     def LOCK(self):
-        # XXX This action is not persitent, the lock is not stored in the
-        # database.
         context = get_context()
         request, response = context.request, context.response
 
         # Lock the resource
-        resource = self.resource
-        lock = resource.lock()
-        # Build response        
+        lock = self.lock()
+        # Build response
         response.set_header('Content-Type', 'text/xml; charset="utf-8"')
         response.set_header('Lock-Token', 'opaquelocktoken:%s' % lock)
 
@@ -411,15 +485,25 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
     UNLOCK__access__ = 'is_authenticated'
     def UNLOCK(self):
-        # XXX This action is not persitent, the lock is not stored in the
-        # database.
         context = get_context()
         request, response = context.request, context.response
 
-        # Unlock the resource
+        # Check wether the resource is locked
+        if not self.is_locked():
+            # XXX Send some nice response to the client
+            raise ValueError, 'resource is not locked'
+
+        # Check wether we have the right key
         key = request.get_header('Lock-Token')
         key = key[len('opaquelocktoken:'):]
-        self.resource.unlock(key)
+
+        lock = self.get_lock()
+        if lock.key != key:
+            # XXX Send some nice response to the client
+            raise ValueError, 'can not unlock resource, wrong key'
+
+        # Unlock the resource
+        self.unlock()
 
         response.set_status(204)
 

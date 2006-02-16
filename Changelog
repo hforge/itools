@@ -2,6 +2,43 @@
 # arch-tag: automatic-ChangeLog--jdavid@itaapy.com--public/itools--main--0.13
 #
 
+2006-02-16 10:51:51 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-20
+
+    Summary:
+      merge fixes from the 0.12 branch
+    Revision:
+      itools--main--0.13--patch-20
+
+    Patches applied:
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-168
+       cms, remove debugging line
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-169
+       fix manifest file to include "cms/ui/epoz.xml"
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-170
+       cms, fix tables in the html editor (epoz)
+    
+     * jdavid@itaapy.com--public/itools--main--0.12--patch-171
+       cms, beautify the "search_handlers" method (#103)
+    
+
+    new files:
+     cms/ui/.arch-ids/epoz_script_table.xml.en.id
+     cms/ui/epoz_script_table.xml.en
+
+    modified files:
+     Changelog MANIFEST.in cms/Folder.py cms/Handler.py
+     cms/metadata.py
+
+    new patches:
+     jdavid@itaapy.com--public/itools--main--0.12--patch-168
+     jdavid@itaapy.com--public/itools--main--0.12--patch-169
+     jdavid@itaapy.com--public/itools--main--0.12--patch-170
+     jdavid@itaapy.com--public/itools--main--0.12--patch-171
+
+
 2006-02-10 17:48:38 GMT	J. David Ibanez <jdavid@itaapy.com>	patch-19
 
     Summary:

@@ -264,13 +264,10 @@ class Folder(Handler, handlers.Folder.Folder):
     #######################################################################
     # API
     #######################################################################
-    def search_handlers(self, path='.', **kw):
+    def search_handlers(self, path='.', format=None, state=None,
+                        handler_class=None):
         container = self.get_handler(path)
 
-        format = kw.get('format')
-        state = kw.get('state')
-        handler_class = kw.get('handler_class')
-        
         for name in container.get_handler_names():
             # Skip hidden handlers
             if name.startswith('.'):

@@ -86,6 +86,7 @@ def get_abspath(globals_namespace, local_path):
 def get_arch_revision():
     """
     Get the arch revision name from the Changelog file.
+    TODO switch to git.
     """
     changelog_path = get_abspath(globals(), 'Changelog')
 

@@ -83,9 +83,9 @@ def get_abspath(globals_namespace, local_path):
 
 
 
-def get_arch_revision():
+def get_git_revision():
     """
-    Get the arch revision name from the Changelog file.
+    Get the git revision name from the Changelog file.
     """
     changelog_path = get_abspath(globals(), 'Changelog')
 
@@ -93,15 +93,15 @@ def get_arch_revision():
     try:
         file = open(changelog_path, 'r')
     except IOError:
-        print 'arch revision of itools: not found '
+        print 'git revision of itools: not found '
         tla_revision = None
     else:
         line = ''
-        while not line.startswith('Revision:'):
+        while not line.startswith('commit'):
             line = file.readline().strip()
-        tla_revision = file.readline().strip()
+        tla_revision = line[len('commit '):]
 
     return tla_revision
 
 
-__arch_revision__ = get_arch_revision()
+__git_revision__ = get_git_revision()

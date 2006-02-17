@@ -115,7 +115,10 @@ def handle_request(connection, server):
         # Get the method name
         method_name = context.method
         if method_name is None:
-            method_name = request.method
+            if request.method == 'HEAD':
+                method_name = 'GET'
+            else:
+                method_name = request.method
         # Check the method exists
         try:
             getattr(handler, method_name)

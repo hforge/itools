@@ -1,3 +1,9 @@
+commit e066077ef5847b24d8fa7d9dd0adf0608c281cfa
+Author: J. David Ibanez <jdavid@itaapy.com>
+Date:   Fri Feb 17 15:39:42 2006 +0100
+
+    Get ready to release 0.12.4
+
 commit 84c9a7c74d2c1e0c75bef9b3e1bab673914b9162
 Author: J. David Ibanez <jdavid@itaapy.com>
 Date:   Fri Feb 17 15:38:23 2006 +0100

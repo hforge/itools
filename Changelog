@@ -1,3 +1,11 @@
+commit 82ecf43e0565d0253b3b4c02a5f99134cb694fa3
+Author: J. David Ibanez <jdavid@itaapy.com>
+Date:   Sun Feb 19 15:45:28 2006 +0100
+
+    Change "itools.__arch_revision__" to "itools.__git_revision__", though
+    the commit id may not be very useful for our purpuses...
+    (cherry picked from 84c9a7c74d2c1e0c75bef9b3e1bab673914b9162 commit)
+
 commit 390a25ede61b253d1998547797ec0bca9bbe37f0
 Author: J. David Ibanez <jdavid@itaapy.com>
 Date:   Fri Feb 17 14:12:54 2006 +0100

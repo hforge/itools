@@ -72,7 +72,7 @@ included are:
 
 setup(
     name = "itools",
-    version = "0.12.3",
+    version = "0.12.4",
     # XXX Broken distutils, "sdist" don't likes unicode strings, and "register"
     # don't likes normal strings.
     author = u"J. David Ibáñez".encode('UTF-8'),

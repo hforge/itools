@@ -1,3 +1,25 @@
+0.12.4 (2006/02/17)
+
+  Handlers
+  - Now the transacion code follows the open/close protocol of resources.
+
+  Catalog
+  - Now the index load code follows the open/close protocol of resources.
+
+  Web
+  - Add a global "try..except" clause to catch any error that may reach
+    the main loop, so the server never stops.
+  - Return "400 Bad Request" whenever the parsing of the request fails.
+  - Ignore parameters added to the If-Modified-Since header. Since some
+    some browsers do append extra-information (what does not respects the
+    RFC).
+  - Fix HEAD requests, call GET first, then send only the headers.
+
+  CMS
+  - Remove a debugging line that slipped in the previous release.
+  - Fix the Epoz editor (a couple of files were missing).
+
+
 0.12.3 (2006/02/02)
 
   Resources

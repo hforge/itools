@@ -1,3 +1,10 @@
+commit 2c16a5f099dc1090e7bce1789b34b55032406fc3
+Author: J. David Ibanez <jdavid@itaapy.com>
+Date:   Sun Feb 19 15:46:56 2006 +0100
+
+    Get ready to release 0.12.4
+    (cherry picked from e066077ef5847b24d8fa7d9dd0adf0608c281cfa commit)
+
 commit 82ecf43e0565d0253b3b4c02a5f99134cb694fa3
 Author: J. David Ibanez <jdavid@itaapy.com>
 Date:   Sun Feb 19 15:45:28 2006 +0100

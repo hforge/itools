@@ -264,8 +264,9 @@ if __name__ == '__main__':
              '  %prog start         starts the web server\n'
              '  %prog stop          stops the web server\n'
              '  %prog update        updates the instance (if needed)\n')
-    revision = itools.__arch_revision__
-    version = 'itools %s [%s]' % (revision.split('--')[2], revision)
+    # XXX Fix this!!
+    revision = itools.__git_revision__
+    version = 'itools 0.12.4 [%s]' % revision
     parser = OptionParser(usage, version=version)
     parser.add_option(
         '-d', '--debug', action="store_true", default=False,

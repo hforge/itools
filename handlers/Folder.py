@@ -217,6 +217,12 @@ class Folder(Handler):
                     # handler.resource are the same or not)
                     if handler.is_outdated():
                         handler.load_state()
+                    # If we are virtual, propagate our virtual condition (#158)
+                    if self.real_handler is not None:
+                        handler = build_virtual_handler(handler)
+                        # Set parent and name
+                        handler.parent = self
+                        handler.name = name
             else:
                 # Virtual handler
                 if name in state.cache:

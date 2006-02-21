@@ -61,7 +61,7 @@ def get_abspath(globals_namespace, local_path):
     """
     mname = globals_namespace['__name__']
 
-    if mname == '__main__':
+    if mname == '__main__' or mname == '__init__':
         mpath = os.getcwd()
     else:
         module = sys.modules[mname]
@@ -83,25 +83,5 @@ def get_abspath(globals_namespace, local_path):
 
 
 
-def get_git_revision():
-    """
-    Get the git revision name from the Changelog file.
-    """
-    changelog_path = get_abspath(globals(), 'Changelog')
+__version__ = open(get_abspath(globals(), 'version.txt')).read().strip()
 
-    # Open Changelog file and take the first line after the first 'Revision:'
-    try:
-        file = open(changelog_path, 'r')
-    except IOError:
-        print 'git revision of itools: not found '
-        tla_revision = None
-    else:
-        line = ''
-        while not line.startswith('commit'):
-            line = file.readline().strip()
-        tla_revision = line[len('commit '):]
-
-    return tla_revision
-
-
-__git_revision__ = get_git_revision()

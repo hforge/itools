@@ -43,7 +43,7 @@ if __name__ == '__main__':
         t0 = time()
         XML.Document(resource)
         t1 = time()
-        print itools.__git_revision__, t1 - t0
+        print itools.__version__, t1 - t0
     else:
         data = open('bench_parser.xml').read()
         profile.run('list(parse(data))')

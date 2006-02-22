@@ -148,6 +148,10 @@ class Server(object):
         error_log.flush()
 
 
+    def after_commit(self):
+        pass
+
+
     def handle_request(self, connection):
         # Build the request object
         resource = File(connection)
@@ -307,16 +311,19 @@ class Server(object):
                 response.set_status(500)
                 response_body = root.internal_server_error()
             else:
-                # Save changes
-                username = user and user.name or 'NONE'
-                note = str(request.path)
-                try:
-                    transaction.commit(username, note)
-                except:
-                    self.log_error()
-                    transaction.rollback()
-                    response.set_status(500)
-                    response_body = root.internal_server_error()
+                if transaction:
+                    # Save changes
+                    username = user and user.name or 'NONE'
+                    note = str(request.path)
+                    try:
+                        transaction.commit(username, note)
+                    except:
+                        self.log_error()
+                        transaction.rollback()
+                        response.set_status(500)
+                        response_body = root.internal_server_error()
+                    else:
+                        self.after_commit()
 
             # Set the response body
             response.set_body(response_body)

@@ -30,11 +30,53 @@ from threading import Thread
 import itools
 from itools.resources import base, get_resource
 from itools.handlers import transactions
-from itools.web.server import Server
+from itools import web
 from itools.cms.Handler import Handler
 from itools.cms.metadata import Metadata
 from itools.cms.root import Root
 from itools.cms.versioning import VersioningAware
+
+
+class Server(web.server.Server):
+
+    def __init__(self, target, port=None):
+        self.target = target
+
+        # Load the config
+        config = get_config(target)
+
+        # Load Python packages and modules
+        if config.has_option('instance', 'modules'):
+            for name in config.get('instance', 'modules').split():
+                name = name.strip()
+                exec('import %s' % name)
+
+        # XXX Backwards compatibility (obsolete since 0.13)
+        if config.has_option('instance', 'root'):
+            exec('import %s' % config.get('instance', 'root'))
+
+        # Load the root handler
+        root = get_root(target)
+        root.name = root.class_title
+
+        # Find out the port to listen
+        if port:
+            pass
+        elif config.has_option('instance', 'port'):
+            port = config.getint('instance', 'port')
+        else:
+            port = None
+
+        # Initialize
+        web.server.Server.__init__(self, root, port=port,
+                                   access_log='%s/access_log' % target,
+                                   error_log='%s/error_log' % target,
+                                   pid_file='%s/pid' % target)
+
+
+    def after_commit(self):
+        target = self.target
+        os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
 
 
 
@@ -114,6 +156,9 @@ def init(parser, options, target):
         transaction = transactions.get_transaction()
         transaction.commit()
 
+    # Backup
+    os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+
     # Bravo!
     print '*'
     print '* Welcome to itools.cms'
@@ -140,35 +185,8 @@ def start(parser, options, target):
         print
         return
 
-    # Load the config
-    config = get_config(target)
-
-    # Load Python packages and modules
-    if config.has_option('instance', 'modules'):
-        for name in config.get('instance', 'modules').split():
-            name = name.strip()
-            exec('import %s' % name)
-
-    # XXX Backwards compatibility (obsolete since 0.13)
-    if config.has_option('instance', 'root'):
-        exec('import %s' % config.get('instance', 'root'))
-
-    # Load the root handler
-    root = get_root(target)
-    root.name = root.class_title
-
-    # Find out the port to listen
-    if options.port:
-        port = options.port
-    elif config.has_option('instance', 'port'):
-        port = config.getint('instance', 'port')
-    else:
-        port = None
-
     # Set-up the server object
-    server = Server(root, port=port, access_log='%s/access_log' % target,
-                    error_log='%s/error_log' % target,
-                    pid_file='%s/pid' % target)
+    server = Server(target, port=options.port)
 
     # Debuggin mode (XXX does not works on Windows)
     if options.debug is False:
@@ -211,15 +229,21 @@ def update(parser, options, target):
         from itools.resources import zodb
         from ZODB.FileStorage import FileStorage
         # Load root resource
+        print '  * Loading ZODB...'
         storage = FileStorage('%s/database.fs' % target)
         database = zodb.Database(storage)
         root_resource = database.get_resource('/')
         # Copy to the filesystem
+        print '  * Copying resources to the filesystem...'
         instance.set_resource('database', root_resource)
         # Remove "database.*"
+        print '  * Cleaning old ZODB files...'
         for name in instance.get_resource_names():
             if name.startswith('database.'):
                 instance.del_resource(name)
+        # Backup
+        print '  * Backup database...'
+        os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
 
     # Load the config
     config = get_config(target)

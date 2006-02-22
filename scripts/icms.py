@@ -74,9 +74,23 @@ class Server(web.server.Server):
                                    pid_file='%s/pid' % target)
 
 
+    def before_commit(self):
+        open('%s/state' % self.target, 'w').write('START')
+
+
     def after_commit(self):
         target = self.target
+        open('%s/state' % target, 'w').write('END')
         os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+        open('%s/state' % target, 'w').write('OK')
+
+
+
+def ask_confirmation(message):
+    print message,
+    line = sys.stdin.readline()
+    line = line.strip().lower()
+    return line == 'y'
 
 
 
@@ -159,6 +173,9 @@ def init(parser, options, target):
     # Backup
     os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
 
+    # Transaction state
+    open('%s/state' % target, 'w').write('OK')
+
     # Bravo!
     print '*'
     print '* Welcome to itools.cms'
@@ -182,6 +199,15 @@ def start(parser, options, target):
                ' type:')
         print
         print '    $ icms.py update <instance>'
+        print
+        return
+
+    # Check for database consistency
+    state = open('%s/state' % target).read()
+    if state != 'OK':
+        print 'The database is not in a consistent state, to fix it up type:'
+        print
+        print '    $ icms.py restore <instance>'
         print
         return
 
@@ -220,10 +246,8 @@ def update(parser, options, target):
     # it must be removed as of 0.14 (XXX).
     instance = get_resource(target)
     if instance.has_resource('database.fs'):
-        print 'Move database from the ZODB to the filesystem (y/N)? ',
-        line = sys.stdin.readline()
-        line = line.strip().lower()
-        if line != 'y':
+        message = 'Move database from the ZODB to the filesystem (y/N)? '
+        if ask_confirmation(message) is False:
             return
 
         from itools.resources import zodb
@@ -244,6 +268,8 @@ def update(parser, options, target):
         # Backup
         print '  * Backup database...'
         os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+        # Transaction state
+        open('%s/state' % target, 'w').write('OK')
 
     # Load the config
     config = get_config(target)
@@ -269,13 +295,34 @@ def update(parser, options, target):
         print 'WARNING: the instance (%s) is newer! than the class (%s)' \
               % (instance_version, class_version)
     else:
-        print 'Update instance from version %s to version %s (y/N)? ' \
-              % (instance_version, class_version),
-        line = sys.stdin.readline()
-        line = line.strip().lower()
-        if line == 'y':
+        message = 'Update instance from version %s to version %s (y/N)? ' \
+                  % (instance_version, class_version)
+        if ask_confirmation(message) is True:
             print 'Updating...'
             root.update()
+
+
+
+def restore(parser, options, target):
+    state = open('%s/state' % target).read()
+    if state == 'OK':
+        print 'Everything seems fine.'
+    elif state == 'START':
+        message = 'Restore database from backup (y/N)? '
+        if ask_confirmation(message) is True:
+            print '  * Restoring...',
+            os.system('rsync -a %s/database.bak/ %s/database'% (target,target))
+            open('%s/state' % target, 'w').write('OK')
+            print 'DONE'
+    elif state == 'END':
+        message = 'Backup disrupted, update backup from database (y/N)? '
+        if ask_confirmation(message) is True:
+            print '  * Backup...',
+            os.system('rsync -a %s/database/ %s/database.bak'% (target,target))
+            open('%s/state' % target, 'w').write('OK')
+            print 'DONE'
+    else:
+        print 'PANIC: unknown database state'
 
 
 
@@ -287,7 +334,8 @@ if __name__ == '__main__':
              '  %prog init          creates a new instance\n'
              '  %prog start         starts the web server\n'
              '  %prog stop          stops the web server\n'
-             '  %prog update        updates the instance (if needed)\n')
+             '  %prog update        updates the instance (if needed)\n'
+             '  %prog restore       fix-up the database')
     version = 'itools %s' % itools.__version__
     parser = OptionParser(usage, version=version)
     parser.add_option(
@@ -310,7 +358,8 @@ if __name__ == '__main__':
     commands = {'init': (init, ['port', 'source', 'root']),
                 'start': (start, ['debug', 'port']),
                 'stop': (stop, []),
-                'update': (update, [])}
+                'update': (update, []),
+                'restore': (restore, [])}
 
     # Check wether the command exists
     if command_name not in commands:

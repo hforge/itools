@@ -148,6 +148,10 @@ class Server(object):
         error_log.flush()
 
 
+    def before_commit(self):
+        pass
+
+
     def after_commit(self):
         pass
 
@@ -315,6 +319,7 @@ class Server(object):
                     # Save changes
                     username = user and user.name or 'NONE'
                     note = str(request.path)
+                    self.before_commit()
                     try:
                         transaction.commit(username, note)
                     except:

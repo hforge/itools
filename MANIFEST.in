@@ -1,7 +1,7 @@
 include *.txt
 include Changelog
 include resources/tests/index.html.en
-include LGPL-2.1
+include GPL-2
 include tmx/localizermsgs.tmx
 include xliff/gettext_en_es.xlf
 recursive-include xml *.xml

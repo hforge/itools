@@ -3,19 +3,19 @@
 #                    2005 Luis Belmar Leteliet <luis@itaapy.com>
 #                    2005 Hervé Cauwelier <herve@oursours.net>
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-# This library is distributed in the hope that it will be useful,
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
 This script can be tested with the folowing::
@@ -77,7 +77,7 @@ setup(
     # don't likes normal strings.
     author = u"J. David Ibáñez".encode('UTF-8'),
     author_email = "jdavid@itaapy.com",
-    license = "GNU Lesser General Public License",
+    license = "GNU General Public License (GPL)",
     url = "http://www.ikaaro.org",
     description="A Python library which provides a wide range of capabilities",
     long_description=description,
@@ -105,8 +105,7 @@ setup(
                 'itools.csv'],
     classifiers = ['Development Status :: 3 - Alpha',
                    'Intended Audience :: Developers',
-                   ('License :: OSI Approved :: GNU Library or Lesser General'
-                    ' Public License (LGPL)'),
+                   ('License :: OSI Approved :: GNU General Public License (GPL)'),
                    'Programming Language :: Python',
                    'Topic :: Internet',
                    'Topic :: Internet :: WWW/HTTP',

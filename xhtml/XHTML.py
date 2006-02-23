@@ -21,7 +21,7 @@ import re
 from cStringIO import StringIO
 
 # Import from itools
-from itools.datatypes import Integer, Unicode, String, URI
+from itools.datatypes import Integer, Unicode, String, URI, XML as XML_encoder
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.resources import memory
@@ -61,9 +61,7 @@ class Element(XML.Element):
         s = []
         for node in self.children:
             if isinstance(node, unicode):
-                # XXX This is equivalent to 'Unicode.encode',
-                # there should be a single place.
-                s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
+                s.append(XML_encoder.encode(Unicode.encode(node, encoding)))
             elif isinstance(node, Element):
                 s.append(node.get_start_tag_as_html())
                 s.append(node.get_content_as_html())

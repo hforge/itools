@@ -26,6 +26,7 @@ from itools.handlers import get_handler
 from itools.handlers.python import Python
 from itools.gettext import PO
 from itools.xhtml import XHTML
+import itools.stl
 
 
 def run():

@@ -1,3 +1,31 @@
+0.13.0 (2006/XX/XX)
+
+  Handlers
+  - Fix virtual handlers (#158).
+
+  HTML
+  - Now HTML documents always have a root element, like XML documents
+   (#153, not finished).
+
+  CMS
+  (Note: Instances must be updated with "icms.py update")
+  - Keep the resources directly in the filesystem, drop the ZODB.
+  - Move users password and email to the metadata (#160).
+  - New configuration variable "modules" allows to load multiple Python
+    modules on start-up (obsoletes the variable "root").
+
+  Coding style
+  - Normalize some filenames (lowercase), packages affected: "catalog",
+    "xml" and "cms" (#154, not finished).
+
+  Packaging
+  - Move STL to its own package, "itools.stl".
+  - Remove the Changelog file.
+
+  Licensing
+  - Switch to the GPL.
+
+
 0.12.4 (2006/02/17)
 
   Handlers

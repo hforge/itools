@@ -22,7 +22,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools import datatypes
-from itools.datatypes import Integer, Unicode, String, URI, XML as XML_encoder
+from itools.datatypes import Boolean, Integer, Unicode, String, URI
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.resources import memory
@@ -33,6 +33,20 @@ from itools import i18n
 #############################################################################
 # Types
 #############################################################################
+
+
+class Boolean(Boolean):
+
+    @staticmethod
+    def decode(value):
+        return value
+
+
+    @staticmethod
+    def encode(value):
+        return value
+
+
 
 class Element(XML.Element):
 
@@ -62,7 +76,7 @@ class Element(XML.Element):
         s = []
         for node in self.children:
             if isinstance(node, unicode):
-                s.append(XML_encoder.encode(Unicode.encode(node, encoding)))
+                s.append(datatypes.XML.encode(Unicode.encode(node, encoding)))
             elif isinstance(node, Element):
                 s.append(node.get_start_tag_as_html())
                 s.append(node.get_content_as_html())
@@ -215,10 +229,112 @@ class Schema(schemas.base.Schema):
                  'background': URI,
                  'bgcolor': String,
                  'border': Integer,
-
+                 # XXX Check, http://www.w3.org/TR/html4/index/attributes.html
+                 'cellpadding': Unicode,
+                 'cellspacing': Unicode,
+                 'char': Unicode,
+                 'charoff': Unicode,
+                 'charset': Unicode,
+                 'checked': Boolean,
+                 'cite': Unicode,
+                 'class': Unicode,
+                 'classid': Unicode,
+                 'clear': Unicode,
+                 'code': Unicode,
+                 'codebase': Unicode,
+                 'codetype': Unicode,
+                 'color': Unicode,
+                 'cols': Unicode,
+                 'colspan': Unicode,
+                 'compact': Boolean,
+                 'content': Unicode,
+                 'coords': Unicode,
+                 'data': Unicode,
+                 'datetime': Unicode,
+                 'declare': Boolean,
+                 'defer': Boolean,
+                 'dir': Unicode,
+                 'disabled': Boolean,
+                 'enctype': Unicode,
+                 'face': Unicode,
+                 'for': Unicode,
+                 'frame': Unicode,
+                 'frameborder': Unicode,
+                 'headers': Unicode,
+                 'height': Unicode,
                  'href': URI,
+                 'hreflang': Unicode,
+                 'hspace': Unicode,
+                 'http-equiv': Unicode,
+                 'id': Unicode,
+                 'ismap': Boolean,
+                 'label': Unicode,
+                 'lang': Unicode,
+                 'language': Unicode,
+                 'link': Unicode,
+                 'longdesc': Unicode,
+                 'marginheight': Unicode,
+                 'marginwidth': Unicode,
+                 'media': Unicode,
+                 'method': Unicode,
+                 'multiple': Boolean,
+                 'name': Unicode,
+                 'nohref': Unicode,
+                 'noresize': Boolean,
+                 'noshade': Boolean,
+                 'nowrap': Boolean,
+                 'object': Unicode,
+                 'onblur': Unicode,
+                 'onchange': Unicode,
+                 'onclick': Unicode,
+                 'ondblclick': Unicode,
+                 'onfocus': Unicode,
+                 'onkeydown': Unicode,
+                 'onkeypress': Unicode,
+                 'onkeyup': Unicode,
+                 'onload': Unicode,
+                 'onmousedown': Unicode,
+                 'onmousemove': Unicode,
+                 'onmouseout': Unicode,
+                 'onmouseover': Unicode,
+                 'onmouseup': Unicode,
+                 'onreset': Unicode,
+                 'onselect': Unicode,
+                 'onsubmit': Unicode,
+                 'onunload': Unicode,
+                 'profile': Unicode,
+                 'prompt': Unicode,
+                 'readonly': Boolean,
+                 'rel': Unicode,
+                 'rev': Unicode,
+                 'rows': Unicode,
+                 'rowspan': Unicode,
+                 'rules': Unicode,
+                 'scheme': Unicode,
+                 'scope': Unicode,
+                 'scrolling': Unicode,
+                 'selected': Boolean,
+                 'shape': Unicode,
+                 'size': Unicode,
+                 'span': Unicode,
                  'src': URI,
+                 'standby': Unicode,
+                 'start': Unicode,
+                 'style': Unicode,
+                 'summary': Unicode,
+                 'tabindex': Unicode,
+                 'target': Unicode,
+                 'text': Unicode,
                  'title': Unicode,
+                 'type': Unicode,
+                 'usemap': Unicode,
+                 'valign': Unicode,
+                 'value': Unicode,
+                 'valuetype': Unicode,
+                 'version': Unicode,
+                 'vlink': Unicode,
+                 'vspace': Unicode,
+                 'width': Unicode,
                  }
 
 

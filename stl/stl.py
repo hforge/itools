@@ -23,7 +23,7 @@ language I could imagine.
 
 
 # Import from itools
-from itools.datatypes import DataType
+from itools.datatypes import Boolean, DataType
 from itools import schemas
 from itools.xml import XML, namespaces
 
@@ -309,18 +309,6 @@ class NamespaceStack(list):
 # The tree
 ###########################################################################
 
-
-# List of Boolean attributes in HTML that should be rendered in
-# minimized form (e.g. <img ismap> rather than <img ismap="">)
-# From http://www.w3.org/TR/xhtml1/#guidelines (C.10)
-boolean_html_attributes = ['compact', 'nowrap', 'ismap', 'declare', 'noshade',
-                           'checked', 'disabled', 'readonly', 'multiple',
-                           'selected', 'noresize', 'defer']
-
-
-
-########################################################################
-# STL elements
 class Element(XML.Element):
 
     namespace = stl_uri
@@ -334,9 +322,6 @@ class Element(XML.Element):
 
 
 
-########################################################################
-# Input/Output
-########################################################################
 class ContentAttr(DataType):
 
     @staticmethod
@@ -478,17 +463,6 @@ def process1(node, stack, repeat, encoding='UTF-8'):
         value = node.get_attribute(stl_uri, 'attributes')
         for name, expression in value:
             value = expression.evaluate(stack, repeat)
-            # XXX Do it only if it is an HTML document.
-            if name in boolean_html_attributes:
-                if bool(value) is True:
-                    value = name
-                else:
-                    value = None
-            # Coerce
-            elif isinstance(value, int):
-                value = str(value)
-            elif isinstance(value, unicode):
-                value = value.encode(encoding)
             changed_attributes[name] = value
 
     xmlns_uri = namespaces.XMLNSNamespace.class_uri
@@ -507,15 +481,25 @@ def process1(node, stack, repeat, encoding='UTF-8'):
         if qname in changed_attributes:
             value = changed_attributes.pop(qname)
         # Output only values different than None
-        if value is not None:
-            datatype = schemas.get_datatype_by_uri(namespace, local_name)
+        datatype = schemas.get_datatype_by_uri(namespace, local_name)
+        if issubclass(datatype, Boolean):
+            # XXX This representation of boolean attributes is specfic to HTML
+            if bool(value) is True:
+                s.append(' %s="%s"' % (qname, local_name))
+        elif value is not None:
             value = datatype.encode(value)
             s.append(' %s="%s"' % (qname, value))
 
     # Output remaining attributes
-    for qname, value in changed_attributes.items():
-        if value is not None:
-            s.append(' %s="%s"' % (qname, str(value)))
+    for local_name, value in changed_attributes.items():
+        datatype = schemas.get_datatype_by_uri(node.namespace, local_name)
+        if issubclass(datatype, Boolean):
+            # XXX This representation of boolean attributes is specfic to HTML
+            if bool(value) is True:
+                s.append(' %s="%s"' % (local_name, local_name))
+        elif value is not None:
+            value = datatype.encode(value)
+            s.append(' %s="%s"' % (local_name, value))
 
     # The element schema, we need it
     namespace = namespaces.get_namespace(node.namespace)

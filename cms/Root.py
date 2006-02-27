@@ -322,7 +322,8 @@ class Root(Group, WebSite):
     def get_subviews(self, name):
         views = [['browse_thumbnails', 'browse_list'],
                  ['general_form', 'languages_form'],
-                 ['about', 'license']]
+                 ['about', 'license'],
+                 ['catalog_form', 'check_groups']]
         for subviews in views:
             if name in subviews:
                 return subviews
@@ -378,10 +379,14 @@ class Root(Group, WebSite):
 
 
     ########################################################################
-    # Catalog
+    # Maintenance
     ########################################################################
+
+    ########################################################################
+    # Catalog
     catalog_form__access__ = 'is_admin'
-    catalog_form__label__ = u'Catalog'
+    catalog_form__label__ = u'Maintenance'
+    catalog_form__sublabel__ = u'Update Catalog'
     def catalog_form(self):
         handler = self.get_handler('/ui/Root_catalog.xml')
         return stl(handler)
@@ -439,15 +444,41 @@ class Root(Group, WebSite):
         comeback(message)
 
 
-##    export_catalog__access__ = True
-##    def export_catalog(self):
-##        from itools.handlers import get_handler
-##        tmp = get_handler('/tmp')
-##        catalog = self.get_handler('.catalog')
-##        tmp.set_handler('catalog', catalog)
-##        tmp.save_state()
+    #######################################################################
+    # Check groups
+    check_groups__access__ = 'is_admin'
+    check_groups__label__ = u'Maintenance'
+    check_groups__sublabel__ = u'Check Groups'
+    def check_groups(self):
+        namespace = {}
 
-##        return 'ok'
+        groups = []
+        root_users = self.get_handler('users').get_usernames()
+        for path in self.get_groups():
+            group = self.get_handler(path)
+            group_users = group.get_usernames()
+            if not group_users.issubset(root_users):
+                missing = list(group_users - root_users)
+                missing.sort()
+                missing = ' '.join(missing)
+                groups.append({'path': path, 'users': missing})
+        namespace['groups'] = groups
+
+        handler = self.get_handler('/ui/Root_check_groups.xml')
+        return stl(handler, namespace)
+
+
+    fix_groups__access__ = 'is_admin'
+    def fix_groups(self):
+        root_users = self.get_handler('users').get_usernames()
+        for path in self.get_groups():
+            group = self.get_handler(path)
+            group_users = group.get_usernames()
+            for username in group_users - root_users:
+                group.remove_user(username)
+
+        message = u'Groups fixed.'
+        comeback(self.gettext(message))
 
 
     #######################################################################

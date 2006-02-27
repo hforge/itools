@@ -102,11 +102,7 @@ class Group(Folder):
 
 
     def get_usernames(self):
-        usernames = self.get_handler('.users').state.usernames
-
-        # XXX This reliability check slows down too much
-        user_folder = self.get_site_root().get_handler('users')
-        return usernames & user_folder.get_usernames()
+        return self.get_handler('.users').state.usernames
 
 
     def get_subgroups(self):

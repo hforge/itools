@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Check groups for <em>phantom</em> users</h2>
+
+<form action=";fix_groups" method="post" stl:if="groups">
+  <p>The following groups contain users that don't exist anymore:</p>
+  <ul>
+    <li stl:repeat="group groups">
+      <stl:block content="group/path" />: <stl:block content="group/users" />
+    </li>
+  </ul>
+  <p>
+    <input type="submit" value="Fix" class="button_ok" />
+  </p>
+</form>
+
+<p stl:if="not groups">
+Everything is alright.
+</p>
+
+</stl:block>

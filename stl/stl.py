@@ -394,6 +394,25 @@ class RepeatAttr(DataType):
 ########################################################################
 # The run-time engine
 ########################################################################
+def encode_attribute(namespace, local_name, value, encoding='UTF-8'):
+    datatype = schemas.get_datatype_by_uri(namespace, local_name)
+    if issubclass(datatype, Boolean):
+        # XXX This representation of boolean attributes is specfic to HTML
+        if bool(value) is True:
+            return local_name
+    elif value is not None:
+        # XXX This type-checking maybe should be replaced by something more
+        # deterministic, like "datatype.encode(value)"
+        if isinstance(value, int):
+            value = str(value)
+        elif isinstance(value, unicode):
+            value = value.encode(encoding)
+        return value
+
+    return None
+
+
+
 def stl(document, namespace={}):
     # Initialize the namespace stack
     stack = NamespaceStack()
@@ -481,24 +500,14 @@ def process1(node, stack, repeat, encoding='UTF-8'):
         if qname in changed_attributes:
             value = changed_attributes.pop(qname)
         # Output only values different than None
-        datatype = schemas.get_datatype_by_uri(namespace, local_name)
-        if issubclass(datatype, Boolean):
-            # XXX This representation of boolean attributes is specfic to HTML
-            if bool(value) is True:
-                s.append(' %s="%s"' % (qname, local_name))
-        elif value is not None:
-            value = datatype.encode(value)
+        value = encode_attribute(namespace, local_name, value, encoding)
+        if value is not None:
             s.append(' %s="%s"' % (qname, value))
 
     # Output remaining attributes
     for local_name, value in changed_attributes.items():
-        datatype = schemas.get_datatype_by_uri(node.namespace, local_name)
-        if issubclass(datatype, Boolean):
-            # XXX This representation of boolean attributes is specfic to HTML
-            if bool(value) is True:
-                s.append(' %s="%s"' % (local_name, local_name))
-        elif value is not None:
-            value = datatype.encode(value)
+        value = encode_attribute(node.namespace, local_name, value, encoding)
+        if value is not None:
             s.append(' %s="%s"' % (local_name, value))
 
     # The element schema, we need it

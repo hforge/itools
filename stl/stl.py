@@ -23,7 +23,7 @@ language I could imagine.
 
 
 # Import from itools
-from itools.datatypes import Boolean, DataType
+from itools.datatypes import Boolean, DataType, XMLAttribute
 from itools import schemas
 from itools.xml import XML, namespaces
 
@@ -403,11 +403,12 @@ def encode_attribute(namespace, local_name, value, encoding='UTF-8'):
     elif value is not None:
         # XXX This type-checking maybe should be replaced by something more
         # deterministic, like "datatype.encode(value)"
-        if isinstance(value, int):
-            value = str(value)
-        elif isinstance(value, unicode):
+        if isinstance(value, unicode):
             value = value.encode(encoding)
-        return value
+        else:
+            value = str(value)
+
+        return XMLAttribute.encode(value)
 
     return None
 

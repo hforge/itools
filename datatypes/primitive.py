@@ -245,3 +245,11 @@ class XML(object):
     @staticmethod
     def decode(value):
         return value.replace('&amp;', '&').replace('&lt;', '<')
+
+
+
+class XMLAttribute(object):
+
+    @staticmethod
+    def encode(value):
+        return value.replace('"', '&quot;')

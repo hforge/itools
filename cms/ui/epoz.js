@@ -140,7 +140,7 @@ function InsertHTML(html) {
 // Create an anchor - no browser supports this directly
 
 function CreateAnchor(name) {
-  name = prompt(EpozLang["EnterAnchorName"], "");
+  name = prompt("Enter Anchor Name", "");
   if (name) {
     anchorhtml = '<a name="' + name + '" title="' + name + '"></a>';
     InsertHTML(anchorhtml);

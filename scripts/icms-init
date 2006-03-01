@@ -48,14 +48,20 @@ def init(parser, options, target):
 
     # Load the source
     if options.source is None:
+        # Load the root class
         if options.root is None:
             root_class = Root
         else:
             exec('import %s' % options.root)
             exec('root_class = %s.Root' % options.root)
-        password = [ random.choice(string.ascii_letters + string.digits)
-                     for x in range(8) ]
-        password = ''.join(password)
+        # Get the password
+        if options.password is None:
+            password = [ random.choice(string.ascii_letters + string.digits)
+                         for x in range(8) ]
+            password = ''.join(password)
+        else:
+            password = options.password
+        # Build the instance on memory
         source = root_class(username='admin', password=password).resource
     else:
         source = get_resource(options.source)
@@ -119,6 +125,8 @@ if __name__ == '__main__':
         '-r', '--root', help='use the ROOT handler class to init the instance')
     parser.add_option(
         '-s', '--source', help='use the SOURCE directory to init the instance')
+    parser.add_option(
+        '-w', '--password', help='use the given PASSWORD for the admin user')
 
     options, args = parser.parse_args()
     if len(args) != 1:

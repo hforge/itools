@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Import from the Standard Library
+from optparse import OptionParser
+import os
+
+# Import from itools
+import itools
+from itools.cms.server import ask_confirmation
+
+
+
+def restore(parser, options, target):
+    state = open('%s/state' % target).read()
+    if state == 'OK':
+        print 'Everything seems fine.'
+    elif state == 'START':
+        message = 'Restore database from backup (y/N)? '
+        if ask_confirmation(message) is True:
+            print '  * Restoring...',
+            os.system('rsync -a %s/database.bak/ %s/database'% (target,target))
+            open('%s/state' % target, 'w').write('OK')
+            print 'DONE'
+    elif state == 'END':
+        message = 'Backup disrupted, update backup from database (y/N)? '
+        if ask_confirmation(message) is True:
+            print '  * Backup...',
+            os.system('rsync -a %s/database/ %s/database.bak'% (target,target))
+            open('%s/state' % target, 'w').write('OK')
+            print 'DONE'
+    else:
+        print 'PANIC: unknown database state'
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog TARGET'
+    version = 'itools %s' % itools.__version__
+    description = ('Restore the TARGET itools.cms instance if broken. To be'
+                   ' used after a crash.')
+    parser = OptionParser(usage, version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    restore(parser, options, target)

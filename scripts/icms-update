@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Import from the Standard Library
+from optparse import OptionParser
+import os
+
+# Import from itools
+import itools
+from itools.resources import get_resource
+from itools.cms.server import get_config, get_root, ask_confirmation
+
+
+def update(parser, options, target):
+    # Move from the ZODB to the filesystem. Upgrade code from 0.12 to 0.13,
+    # it must be removed as of 0.14 (XXX).
+    instance = get_resource(target)
+    if instance.has_resource('database.fs'):
+        message = 'Move database from the ZODB to the filesystem (y/N)? '
+        if ask_confirmation(message) is False:
+            return
+
+        from itools.resources import zodb
+        from ZODB.FileStorage import FileStorage
+        # Load root resource
+        print '  * Loading ZODB...'
+        storage = FileStorage('%s/database.fs' % target)
+        database = zodb.Database(storage)
+        root_resource = database.get_resource('/')
+        # Copy to the filesystem
+        print '  * Copying resources to the filesystem...'
+        instance.set_resource('database', root_resource)
+        # Remove "database.*"
+        print '  * Cleaning old ZODB files...'
+        for name in instance.get_resource_names():
+            if name.startswith('database.'):
+                instance.del_resource(name)
+        # Backup
+        print '  * Backup database...'
+        os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+        # Transaction state
+        open('%s/state' % target, 'w').write('OK')
+
+    # Load the config
+    config = get_config(target)
+
+    # Load Python packages and modules
+    if config.has_option('instance', 'modules'):
+        for name in config.get('instance', 'modules').split():
+            name = name.strip()
+            exec('import %s' % name)
+
+    # XXX Backwards compatibility (obsolete since 0.13)
+    if config.has_option('instance', 'root'):
+        exec('import %s' % config.get('instance', 'root'))
+
+    # Load the root resource
+    root = get_root(target)
+
+    instance_version = root.get_property('version')
+    class_version = root.class_version
+    if instance_version == class_version:
+        print 'The instance is up-to-date (version: %s).' % instance_version
+    elif instance_version > class_version:
+        print 'WARNING: the instance (%s) is newer! than the class (%s)' \
+              % (instance_version, class_version)
+    else:
+        message = 'Update instance from version %s to version %s (y/N)? ' \
+                  % (instance_version, class_version)
+        if ask_confirmation(message) is True:
+            print 'Updating...'
+            root.update()
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog TARGET'
+    version = 'itools %s' % itools.__version__
+    description = ('Updates the TARGET itools.cms instance (if needed). Use'
+                   ' this command when upgrading to a new version of itools.')
+    parser = OptionParser(usage, version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    update(parser, options, target)

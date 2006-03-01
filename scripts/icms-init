@@ -1,0 +1,130 @@
+#!/usr/bin/env python
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Import from the Standard Library
+from optparse import OptionParser
+import os
+import random
+import string
+
+# Import from itools
+import itools
+from itools.resources import get_resource
+from itools.handlers import transactions
+from itools.cms.Handler import Handler
+from itools.cms.root import Root
+from itools.cms.server import get_config
+from itools.cms.versioning import VersioningAware
+
+
+def init(parser, options, target):
+    try:
+        os.mkdir(target)
+    except OSError:
+        parser.error('can not create the instance (check permissions)')
+
+    # Create the config file
+    config = get_config()
+    if options.root:
+        config.set('instance', 'modules', options.root)
+    if options.port:
+        config.set('instance', 'port', options.port)
+    config.write(open('%s/config.ini' % target, 'w'))
+
+    # Load the source
+    if options.source is None:
+        if options.root is None:
+            root_class = Root
+        else:
+            exec('import %s' % options.root)
+            exec('root_class = %s.Root' % options.root)
+        password = [ random.choice(string.ascii_letters + string.digits)
+                     for x in range(8) ]
+        password = ''.join(password)
+        source = root_class(username='admin', password=password).resource
+    else:
+        source = get_resource(options.source)
+        if not isinstance(source, base.Folder):
+            parser.error('can not import instance (not a folder)')
+        if not source.has_resource('.metadata'):
+            parser.error('can not import instance (bad folder)')
+
+    # Initialize the database
+    instance = get_resource(target)
+    instance.set_resource('database', source)
+    root_resource = instance.get_resource('database')
+
+    # Index and archive everything (only for new instances, not imported)
+    if options.source is None:
+        root = root_class(root_resource)
+        catalog = root.get_handler('.catalog')
+        for handler, context in root.traverse2():
+            abspath = handler.get_abspath()
+            if handler.name.startswith('.'):
+                context.skip = True
+            elif abspath == '/ui':
+                context.skip = True
+            elif isinstance(handler, Handler):
+                catalog.index_document(handler)
+                if isinstance(handler, VersioningAware):
+                    handler.add_to_archive()
+
+        transaction = transactions.get_transaction()
+        transaction.commit()
+
+    # Backup
+    os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+
+    # Transaction state
+    open('%s/state' % target, 'w').write('OK')
+
+    # Bravo!
+    print '*'
+    print '* Welcome to itools.cms'
+    if options.source is None:
+        print '* A user with administration rights has been created for you:'
+        print '*   username: admin'
+        print '*   password: %s' % password
+    print '*'
+    print '* To start the new instance type:'
+    print '*   %s start %s' % (parser.get_prog_name(), target)
+    print '*'
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog [OPTIONS] TARGET'
+    version = 'itools %s' % itools.__version__
+    description = 'Creates a new instance of itools.cms with the name TARGET.'
+    parser = OptionParser(usage, version=version, description=description)
+    parser.add_option(
+        '-p', '--port', type='int', help='listen to port number')
+    parser.add_option(
+        '-r', '--root', help='use the ROOT handler class to init the instance')
+    parser.add_option(
+        '-s', '--source', help='use the SOURCE directory to init the instance')
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    init(parser, options, target)

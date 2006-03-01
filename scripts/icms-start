@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Import from the Standard Library
+from optparse import OptionParser
+import os
+import sys
+
+# Import from itools
+import itools
+from itools.resources import get_resource
+from itools.cms.server import Server
+
+
+
+def start(parser, options, target):
+    # Check wether the instance uses the filesystem (not ZODB) (XXX, to be
+    # removed by 0.14).
+    instance = get_resource(target)
+    if instance.has_resource('database.fs'):
+        print ('The database must be moved from the ZODB to the filesystem,'
+               ' type:')
+        print
+        print '    $ icms-update <instance>'
+        print
+        return
+
+    # Check for database consistency
+    state = open('%s/state' % target).read()
+    if state != 'OK':
+        print 'The database is not in a consistent state, to fix it up type:'
+        print
+        print '    $ icms-restore <instance>'
+        print
+        return
+
+    # Set-up the server object
+    server = Server(target, port=options.port)
+
+    # Debuggin mode (XXX does not works on Windows)
+    if options.debug is False:
+        # Detach from the console (this code derives from the Python
+        # Cookbook, see section "Forking a Daemon on Unix").
+        pid = os.fork()
+        if pid > 0:
+            sys.exit(0)
+        os.setsid()
+        pid = os.fork()
+        if pid > 0:
+            sys.exit(0)
+        # XXX What to do with the stdout and stderr?
+        sys.stdin.close()
+
+    # Start the server
+    server.start()
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog [OPTIONS] TARGET'
+    version = 'itools %s' % itools.__version__
+    description = ('Starts a web server that publishes the TARGET itools.cms'
+                   ' instance to the world.')
+    parser = OptionParser(usage, version=version, description=description)
+    parser.add_option(
+        '-d', '--debug', action="store_true", default=False,
+        help="start the server on debug mode (don't detach from the console)")
+    parser.add_option(
+        '-p', '--port', type='int', help='listen to port number')
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    start(parser, options, target)

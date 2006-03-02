@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #                    2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This library is free software; you can redistribute it and/or
@@ -29,10 +29,10 @@ class Row(list):
 
     def __getattr__(self, name):
         try:
-            index = columns.index(name)
+            index = self.columns.index(name)
         except ValueError:
             message = "'%s' object has no attribute '%s'"
-            raise AttributeError, message % (self.__class__.name, name)
+            raise AttributeError, message % (self.__class__.__name__, name)
 
         return self[index]
 
@@ -187,6 +187,7 @@ class CSV(Text):
         for line in self._parse(data):
             row = self.row_class(line)
             row.index = index
+            row.columns = self.columns
             lines.append(row)
             index = index + 1
 

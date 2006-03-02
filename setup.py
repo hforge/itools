@@ -119,11 +119,11 @@ setup(
                    'Topic :: Text Processing :: Markup',
                    'Topic :: Text Processing :: Markup :: XML'],
     package_data = {
-    'itools': ['version.txt'],
+    'itools': ['version.txt',
+               join('locale', '*.po'),
+               join('locale', '*.mo'),
+               join('locale', 'locale.pot')],
     'itools.cms': [
-    join('locale', '*.po'),
-    join('locale', '*.mo'),
-    join('locale', 'locale.pot'),
     join('ui', '*.x*ml.??'),
     join('ui', '*.js'),
     join('ui', '*.css'),

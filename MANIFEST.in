@@ -16,7 +16,6 @@ recursive-include cms/ui *.js
 recursive-include cms/ui *.png
 recursive-include cms/ui *.gif
 recursive-include cms/ui *.jpg
-recursive-include cms/locale *.mo
-recursive-include cms/locale *.po
-recursive-include cms/locale *.pot
-prune cms/ui/.arch-ids
+recursive-include locale *.mo
+recursive-include locale *.po
+recursive-include locale *.pot

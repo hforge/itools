@@ -23,7 +23,7 @@ import os
 from itools import get_abspath
 from itools.gettext import domains
 
-# Import from itools
+# Import from itools.cms
 import root
 from Folder import Folder
 import Document
@@ -48,7 +48,8 @@ Folder.register_document_type(text.Text)
 Folder.register_document_type(Document.HTML)
 
 # Register domain (i18n)
-domains.register_domain('ikaaro', get_abspath(globals(), 'locale'))
+path = os.path.join(os.path.split(globals()['__path__'][0])[0], 'locale')
+domains.register_domain('itools', path)
 
 
 ###########################################################################

@@ -361,7 +361,7 @@ class Folder(Handler, handlers.Folder.Folder):
         else:
             query['parent_path'] = self.get_abspath()
 
-        if not results:
+        if results is None:
             results = self.search(**query)
 
         # if search in subfolders is active we filter on path

@@ -1,8 +1,4 @@
 
-IGETTEXT=$(shell if [ -f igettext.txt ]; then cat igettext.txt; else echo igettext.py; fi)
-
-
-
 PY = $(shell find ./ -name "*.py" | grep -v "^./ikaaro/utils.py" | grep -v "^./build" | grep -v "^./dist")
 
 EN = $(shell find cms/ui -name "*.x*ml.en" | grep -v web_site_templates | grep -v "Root_license.xml")
@@ -23,19 +19,19 @@ MO = locale/en.mo locale/es.mo locale/fr.mo locale/zh.mo locale/it.mo
 
 # Binary
 %.es: %.en
-	$(IGETTEXT) --output=$@ --xhtml $< locale/es.po
+	igettext-build --output=$@ $< locale/es.po
 
 %.eu: %.en
-	$(IGETTEXT) --output=$@ --xhtml $< locale/eu.po
+	igettext-build --output=$@ $< locale/eu.po
 
 %.fr: %.en
-	$(IGETTEXT) --output=$@ --xhtml $< locale/fr.po
+	igettext-build --output=$@ $< locale/fr.po
 
 %.zh: %.en
-	$(IGETTEXT) --output=$@ --xhtml $< locale/zh.po
+	igettext-build --output=$@ $< locale/zh.po
 
 %.it: %.en
-	$(IGETTEXT) --output=$@ --xhtml $< locale/it.po
+	igettext-build --output=$@ $< locale/it.po
 
 %.mo: %.po
 	msgfmt $< -o $@
@@ -46,15 +42,15 @@ bin: $(ES) $(FR) $(ZH) $(IT) $(MO)
 
 # POT/PO
 pot: $(PY) $(EN)
-	$(IGETTEXT) --output=locale/locale.pot --pot $(PY) $(EN) 
+	igettext-extract --output=locale/locale.pot $(PY) $(EN) 
 	touch pot
 
 
 po: pot
-	$(IGETTEXT) --output=locale/es.po --po locale/locale.pot locale/es.po
-	$(IGETTEXT) --output=locale/fr.po --po locale/locale.pot locale/fr.po
-	$(IGETTEXT) --output=locale/zh.po --po locale/locale.pot locale/zh.po
-	$(IGETTEXT) --output=locale/it.po --po locale/locale.pot locale/it.po
+	igettext-merge --output=locale/es.po locale/locale.pot locale/es.po
+	igettext-merge --output=locale/fr.po locale/locale.pot locale/fr.po
+	igettext-merge --output=locale/zh.po locale/locale.pot locale/zh.po
+	igettext-merge --output=locale/it.po locale/locale.pot locale/it.po
 	touch po
 
 

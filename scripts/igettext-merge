@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2003-2006 J. David Ibáñez <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Import from the Standard Library
+from optparse import OptionParser
+import os
+import sys
+
+# Import from itools
+import itools
+
+
+
+if __name__ == '__main__':
+    version = 'itools %s' % itools.__version__
+    description = ('Merges the given POT file into the PO file. Preserves'
+                   ' the translations already present in the PO file.')
+    parser = OptionParser('%prog [OPTIONS] <POT file> <PO file>',
+                          version=version, description=description)
+
+    parser.add_option('-o', '--output',
+                      help="The output will be written to the given file,"
+                           " instead of printed to the standard output.")
+
+    options, args = parser.parse_args()
+
+    if len(args) != 2:
+        parser.error('incorrect number of arguments')
+
+    if options.output is None:
+        output = sys.stdout
+    else:
+        output = open(options.output, 'w')
+
+    try:
+        pot, po = args
+        if os.path.exists(po):
+            # a .po file already exist, merge it with locale.pot
+            output.write(os.popen('msgmerge -s %s %s' % (po, pot)).read())
+        else:
+            # po doesn't exist, just copy locale.pot
+            output.write(open(pot).read())
+    finally:
+        if options.output is not None:
+            output.close()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2005 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2006 J. David Ibáñez <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,83 +16,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from the Standard Library
-import optparse
-import os
-
 # Import from itools
-from itools.resources import get_resource
-from itools.handlers import get_handler
-from itools.handlers.python import Python
-from itools.gettext import PO
-from itools.xhtml import XHTML
-import itools.stl
-
-
-def run():
-    """
-    Return PO file.
-    """
-    # Parse the options
-    parser = optparse.OptionParser()
-    parser.add_option('-o', '--output',
-                      dest='output',
-                      help="The output will be sent to the given file,"
-                           " instead of to the standard output.")
-    parser.add_option('--pot',
-                      action="store_const", const=0, dest='action',
-                      help="Extracts the translatable messages from the"
-                           " given list of files and outputs the POT file")
-    parser.add_option('--po',
-                      action="store_const", const=1, dest='action',
-                      help="Updates the po file with the messages from the"
-                           " POT file")
-    parser.add_option('--xhtml',
-                      action="store_const", const=2, dest='action',
-                      help="Outputs a new XHTML file from the original source"
-                           " and a PO file")
-    options, args = parser.parse_args()
-
-    # Action
-    root_resource = get_resource('/')
-    if options.action == 0:
-        po = PO.PO()
-        for source_file in args:
-            # Load the source handler
-            resource = get_resource(source_file)
-            if source_file.endswith('.py'):
-                handler = Python(resource)
-            else:
-                # XXX Suppose it is XHTML
-                handler = XHTML.Document(resource)
-            # Extract the messages
-            for msgid, line_number in handler.get_messages():
-                po.set_message(msgid, references={source_file: [line_number]})
-            # XXX Should omit the header?
-            output = po.to_str()
-    elif options.action == 1:
-        pot = args[0]
-        po = args[1]
-        if os.path.exists(po):
-            # a .po file already exist, merge it with locale.pot
-            output = os.popen('msgmerge -s %s %s' % (po, pot)).read()
-        else:
-            # po doesn't exist, just copy locale.pot
-            output = open(pot).read()
-    elif options.action == 2:
-        resource = get_resource(args[0])
-        xhtml = XHTML.Document(resource)
-        po = get_handler(args[1])
-        output = xhtml.translate(po)
-    else:
-        pass
-
-    if options.output is None:
-        print output
-    else:
-        open(options.output, 'w').write(output)
-
+import itools
 
 
 if __name__ == '__main__':
-    run()
+    print 'Welcome to: itools %s' % itools.__version__
+    print
+    print 'Type:'
+    print
+    print '  igettext-extract <source file>...'
+    print '  - To build a message catalog (POT file) with the translatable'
+    print '    messages from the given source files.'
+    print
+    print '  igettext-merge <POT file> <PO file>'
+    print '  - To build a new message catalog, result of merging the messages'
+    print '    in the given files.'
+    print
+    print '  igettext-build <source file> <PO file>'
+    print '  - To build a new file from the source file, but replacing the'
+    print '    translatable messages by the translations found in the PO file.'
+    print
+    print 'For more help on any command type: "igettext-<command> --help"'
+    print

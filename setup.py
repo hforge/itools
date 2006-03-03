@@ -181,6 +181,7 @@ setup(
                join('scripts', 'icms-stop'),
                join('scripts', 'icms-update'),
                join('scripts', 'icms-restore'),
+               join('scripts', 'isetup-update-locale'),
                join('scripts', 'igraph.py'),],
     cmdclass={'build_py': build_py_fixed},
     )

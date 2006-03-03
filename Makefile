@@ -1,6 +1,4 @@
 
-PY = $(shell find ./ -name "*.py" | grep -v "^./ikaaro/utils.py" | grep -v "^./build" | grep -v "^./dist")
-
 EN = $(shell find cms/ui -name "*.x*ml.en" | grep -v web_site_templates | grep -v "Root_license.xml")
 
 ES = $(subst .en,.es,$(EN))
@@ -38,20 +36,6 @@ MO = locale/en.mo locale/es.mo locale/fr.mo locale/zh.mo locale/it.mo
 
 bin: $(ES) $(FR) $(ZH) $(IT) $(MO)
 	touch bin
-
-
-# POT/PO
-pot: $(PY) $(EN)
-	igettext-extract --output=locale/locale.pot $(PY) $(EN) 
-	touch pot
-
-
-po: pot
-	igettext-merge --output=locale/es.po locale/locale.pot locale/es.po
-	igettext-merge --output=locale/fr.po locale/locale.pot locale/fr.po
-	igettext-merge --output=locale/zh.po locale/locale.pot locale/zh.po
-	igettext-merge --output=locale/it.po locale/locale.pot locale/it.po
-	touch po
 
 
 clean:

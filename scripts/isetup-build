@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Import from the Standard Library
+from optparse import OptionParser
+import os
+import sys
+
+# Import from itools
+import itools
+from itools.resources import get_resource
+from itools.handlers import get_handler
+import itools.gettext
+from itools.xhtml import XHTML
+import itools.stl
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    version = 'itools %s' % itools.__version__
+    description = ('Builds the package.')
+    parser = OptionParser('%prog',
+                          version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) != 0:
+        parser.error('incorrect number of arguments')
+
+    # Get languages to translate
+    languages = []
+    cmd = 'find locale -name "*.po"'
+    for path in os.popen(cmd).readlines():
+        path = path.strip()
+        languages.append(path[7:-3])
+
+    # Source language (XXX hardcoded)
+    source_language = 'en'
+
+    # Target languages
+    target_languages = [ x for x in languages if x != source_language ]
+
+    # Build MO files
+    print '(1) Compiling message catalogs:',
+    sys.stdout.flush()
+    for language in languages:
+        print language,
+        sys.stdout.flush()
+        os.system('msgfmt locale/%s.po -o locale/%s.mo' % (language, language))
+    print 'OK'
+
+    # Load message catalogs
+    message_catalogs = {}
+    for language in languages:
+        message_catalogs[language] = get_handler('locale/%s.po' % language)
+
+    # Build the templates in the target languages
+    print '(2) Building XHTML files',
+    sys.stdout.flush()
+    cmd = 'find -name "*.x*ml.en" | grep -v "^./build" | grep -v "^./dist"'
+    for path in os.popen(cmd).readlines():
+        # Load the handler
+        path = path.strip()
+        resource = get_resource(path)
+        handler = XHTML.Document(resource)
+        # Build the translation
+        n = path.rfind('.')
+        for language in target_languages:
+            message_catalog = message_catalogs[language]
+            target = '%s.%s' % (path[:n], language)
+            open(target, 'w').write(handler.translate(message_catalog))
+        # Done
+        sys.stdout.write('.')
+        sys.stdout.flush()
+    print ' OK'

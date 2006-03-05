@@ -28,8 +28,6 @@ This script can be tested with the folowing::
   sudo python setup.py -q install
 
 Make sure the following files are shipped:
-  - Changelog
-  - Makefile
   - i18n/languages.txt
 
 Note the path separator may vary on your platform.
@@ -182,6 +180,7 @@ setup(
                join('scripts', 'icms-update'),
                join('scripts', 'icms-restore'),
                join('scripts', 'isetup-update-locale'),
+               join('scripts', 'isetup-build'),
                join('scripts', 'igraph.py'),],
     cmdclass={'build_py': build_py_fixed},
     )

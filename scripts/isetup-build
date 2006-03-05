@@ -23,7 +23,8 @@ import sys
 
 # Import from itools
 import itools
-from itools.resources import get_resource
+from itools.uri.generic import Path
+from itools.resources import get_resource, memory
 from itools.handlers import get_handler
 import itools.gettext
 from itools.xhtml import XHTML
@@ -41,6 +42,40 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     if len(args) != 0:
         parser.error('incorrect number of arguments')
+
+    # Copy source files to build directory
+    print '(1) Copying source files',
+    sys.stdout.flush()
+    # Create the build directory
+    here = get_resource('.')
+    empty_folder = memory.Folder()
+    if not here.has_resource('build'):
+        here.set_resource('build', empty_folder)
+    build = here.get_resource('build')
+    # Copy the source files
+    cmd = 'git-ls-files'
+    for path in os.popen(cmd).readlines():
+        path = path.strip()
+        path = Path(path)
+        # Create the directories
+        for i in range(len(path) - 1):
+            dir_path = str(path[:i+1])
+            if not build.has_resource(dir_path):
+                build.set_resource(dir_path, empty_folder)
+        # Copy the file
+        source = here.get_resource(path)
+        if build.has_resource(path):
+            if build.get_resource(path).get_mtime() < source.get_mtime():
+                build.set_resource(path, source)
+        else:
+            build.set_resource(path, source)
+        # Done
+        sys.stdout.write('.')
+        sys.stdout.flush()
+    print 'OK'
+
+    # Change to the build directory
+    os.chdir('build')
 
     # Get languages to translate
     languages = []

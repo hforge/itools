@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #                    2005 Luis Belmar Leteliet <luis@itaapy.com>
 #                    2005 Hervé Cauwelier <herve@oursours.net>
 #
@@ -17,30 +17,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-"""
-This script can be tested with the folowing::
-
-  make clean
-  python setup.py -q clean sdist
-  cd dist
-  tar xzf itools-0.12.3.tar.gz
-  cd itools-0.12.3
-  sudo python setup.py -q install
-
-Make sure the following files are shipped:
-  - i18n/languages.txt
-
-Note the path separator may vary on your platform.
-"""
-
-
 # Import from the Standard Library
 from distutils.core import setup
 from os.path import join
 
 # Import from itools
 from __init__ import build_py_fixed, __version__
+from resources import get_resource
+from handlers.config import Config
 
+
+config = Config(get_resource('config'))
 
 
 description = """itools is a Python library, it groups a number of packages
@@ -68,119 +55,71 @@ included are:
  - itools.xml
 """
 
-setup(
-    name = "itools",
-    version = __version__,
-    # XXX Broken distutils, "sdist" don't likes unicode strings, and "register"
-    # don't likes normal strings.
-    author = u"J. David Ibáñez".encode('UTF-8'),
-    author_email = "jdavid@itaapy.com",
-    license = "GNU General Public License (GPL)",
-    url = "http://www.ikaaro.org",
-    description="A Python library which provides a wide range of capabilities",
-    long_description=description,
-    package_dir = {'itools': ''},
-    packages = ['itools',
-                'itools.catalog',
-                'itools.cms',
-                'itools.datatypes',
-                'itools.handlers',
-                'itools.gettext',
-                'itools.html',
-                'itools.i18n',
-                'itools.ical',
-                'itools.resources',
-                'itools.rss',
-                'itools.schemas',
-                'itools.stl',
-                'itools.tmx',
-                'itools.uri',
-                'itools.web',
-                'itools.workflow',
-                'itools.xhtml',
-                'itools.xliff',
-                'itools.xml',
-                'itools.csv'],
-    classifiers = ['Development Status :: 3 - Alpha',
-                   'Intended Audience :: Developers',
-                   ('License :: OSI Approved :: GNU General Public License (GPL)'),
-                   'Programming Language :: Python',
-                   'Topic :: Internet',
-                   'Topic :: Internet :: WWW/HTTP',
-                   'Topic :: Software Development',
-                   'Topic :: Software Development :: Internationalization',
-                   'Topic :: Software Development :: Libraries',
-                   ('Topic :: Software Development :: Libraries :: Python'
-                    ' Modules'),
-                   'Topic :: Software Development :: Localization',
-                   'Topic :: Text Processing',
-                   'Topic :: Text Processing :: Markup',
-                   'Topic :: Text Processing :: Markup :: XML'],
-    package_data = {
-    'itools': ['version.txt',
-               join('locale', '*.po'),
-               join('locale', '*.mo'),
-               join('locale', 'locale.pot')],
-    'itools.cms': [
-    join('ui', '*.x*ml.??'),
-    join('ui', '*.js'),
-    join('ui', '*.css'),
-    join('ui', '*.xml'),
-    join('ui', 'calendar', '*.js'),
-    join('ui', 'calendar', '*.css'),
-    join('ui', 'calendar', 'README'),
-    join('ui', 'calendar', 'lang', '*.js'),
-    join('ui', 'classic', '*.css'),
-    join('ui', 'classic', '*.x*ml.??'),
-    join('ui', 'classic', 'images', '*.png'),
-    join('ui', 'images', '*.png'),
-    join('ui', 'images', '*.gif'),
-    join('ui', 'images', 'epoz', '*.gif'),
-    join('ui', 'surf', '*.css'),
-    join('ui', 'surf', '*.x*ml.??'),
-    join('ui', 'surf', 'images', '*.gif'),
-    join('ui', 'surf', 'images', '*.jpg'),
-    join('ui', 'surf', 'images', '*.png'),
-    join('ui', 'aruni', '*.css'),
-    join('ui', 'aruni', '*.js'),
-    join('ui', 'aruni', '*.x*ml.??'),
-    join('ui', 'aruni', 'ie7', '*.gif'),
-    join('ui', 'aruni', 'ie7', '*.htc'),
-    join('ui', 'aruni', 'ie7', '*.js'),
-    join('ui', 'aruni', 'ie7', '*.txt'),
-    join('ui', 'aruni', 'images', '*.png'),
-    join('ui', 'aruni', 'images', '*.jpg'),
-    join('ui', 'web_site_templates', 'community', '*.x*ml.??'),
-    join('ui', 'web_site_templates', 'community', '*.jpg'),
-    join('ui', 'web_site_templates', 'community', '*.png'),
-    join('ui', 'web_site_templates', 'community', 'skin', '*.x*ml.??'),
-    join('ui', 'web_site_templates', 'community', 'skin', '*.css'),
-    join('ui', 'web_site_templates', 'community', 'skin', '*.png'),
-    join('zmi', '*.dtml'),
-    join('zmi', '*.png'),
-    join('zmi', '*.xml'),
-    ],
-    'itools.catalog': [join('tests', '*.txt')],
-    'itools.i18n': ['languages.txt'],
-    'itools.resources': [join('tests', 'index.html.en')],
-    'itools.rss': ['*.html', '*.rss', '*.xml'],
-    'itools.tmx': ['localizermsgs.tmx'],
-    'itools.workflow': ['HOWTO.txt', 'TODO.txt'],
-    'itools.xliff': ['gettext_en_es.xlf'],
-    'itools.xml': ['bench_parser.xml'],
-    'itools.csv': ['*.csv']},
-    scripts = [join('scripts', 'igettext.py'),
-               join('scripts', 'igettext-extract'),
-               join('scripts', 'igettext-merge'),
-               join('scripts', 'igettext-build'),
-               join('scripts', 'icms.py'),
-               join('scripts', 'icms-init'),
-               join('scripts', 'icms-start'),
-               join('scripts', 'icms-stop'),
-               join('scripts', 'icms-update'),
-               join('scripts', 'icms-restore'),
-               join('scripts', 'isetup-update-locale'),
-               join('scripts', 'isetup-build'),
-               join('scripts', 'igraph.py'),],
-    cmdclass={'build_py': build_py_fixed},
-    )
+
+# The package name
+package_name = config.get_value('name')
+
+# The list of sub-packages
+subpackages = config.get_value('packages').split()
+
+# The data in the packages
+packages = [package_name]
+package_data = {package_name: []}
+for subpackage_name in subpackages:
+    packages.append('%s.%s' % (package_name, subpackage_name))
+
+for line in open('MANIFEST').readlines():
+    line = line.strip()
+    # Python files are included by default
+    if line.endswith('.py'):
+        continue
+
+    path = line.split('/')
+    n = len(path)
+    if n == 1:
+        package_data[package_name].append(line)
+    elif path[0] == 'locale':
+        package_data[package_name].append(line)
+    elif path[0] in subpackages:
+        files = package_data.setdefault('%s.%s' % (package_name, path[0]), [])
+        files.append(join(*path[1:]))
+
+# The scripts
+scripts = config.get_value('scripts').split()
+scripts = [ join(*['scripts', x]) for x in scripts ]
+
+
+setup(name = package_name,
+      version = __version__,
+      # Metadata
+      # XXX Broken distutils, "sdist" don't likes unicode strings, and
+      # "register" don't likes normal strings.
+      author = config.get_value('author_name'),
+      author_email = config.get_value('author_email'),
+      license = config.get_value('license'),
+      url = config.get_value('url'),
+      description = config.get_value('description'),
+      long_description = description,
+      classifiers = ['Development Status :: 3 - Alpha',
+                     'Intended Audience :: Developers',
+                     'License :: OSI Approved :: GNU General Public License (GPL)',
+                     'Programming Language :: Python',
+                     'Topic :: Internet',
+                     'Topic :: Internet :: WWW/HTTP',
+                     'Topic :: Software Development',
+                     'Topic :: Software Development :: Internationalization',
+                     'Topic :: Software Development :: Libraries',
+                     'Topic :: Software Development :: Libraries :: Python Modules',
+                     'Topic :: Software Development :: Localization',
+                     'Topic :: Text Processing',
+                     'Topic :: Text Processing :: Markup',
+                     'Topic :: Text Processing :: Markup :: XML'],
+      # Packages
+      package_dir = {package_name: ''},
+      packages = packages,
+      package_data = package_data,
+      # Scripts
+      scripts = scripts,
+      # XXX broken distutils
+      cmdclass={'build_py': build_py_fixed},
+      )

@@ -318,7 +318,7 @@ class Server(object):
                 if transaction:
                     # Save changes
                     username = user and user.name or 'NONE'
-                    note = str(request.path)
+                    note = str(request.uri.path)
                     self.before_commit()
                     try:
                         transaction.commit(username, note)

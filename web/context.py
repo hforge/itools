@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
+from copy import deepcopy
 import datetime
 from thread import get_ident, allocate_lock
 
@@ -36,18 +37,19 @@ class Context(object):
             host = request.get_header('Host')
 
         # The requested uri
-        path = request.path
+        request_uri = request.uri
+        path = request.uri.path
         if request.has_parameter('REAL_PATH'):
-            real_path = request.get_parameter('REAL_PATH')
-            reference = 'http://%s/%s' % (host, real_path)
-        else:
-            reference = 'http://%s/%s' % (host, path)
+            request_uri = deepcopy(request.uri)
+            request_uri.path = uri.Path(request.get_parameter('REAL_PATH'))
+        reference = 'http://%s%s' % (host, request_uri)
         self.uri = uri.get_reference(reference)
 
         # The user, by default it is not authenticated
         self.user = None
 
         # Split the path into path and method ("a/b/c/;view")
+        path = request_uri.path
         self.path = path
         self.method = None
         if path and not path[-1].name:

@@ -197,7 +197,7 @@ def handle_request(connection, server):
         else:
             # Save changes
             username = user and user.name or 'NONE'
-            note = str(request.path)
+            note = str(request.uri.path)
             try:
                 transaction.commit(username, note)
             except:

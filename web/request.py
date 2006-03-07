@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -45,15 +45,15 @@ class Request(Message):
         line = resource.readline()
         line = line.strip()
         try:
-            method, path, http_version = line.split()
+            method, request_uri, http_version = line.split()
         except ValueError:
             raise BadRequest, line
         else:
             state.request_line = line
 
         self.set_method(method)
-        reference = uri.get_reference(path)
-        self.set_path(reference.path)
+        reference = uri.get_reference(request_uri)
+        self.set_uri(reference)
         state.http_version = http_version
 
         # The headers
@@ -124,7 +124,7 @@ class Request(Message):
 
         data = []
         # Request line
-        data.append('%s %s %s\n' % (state.method, state.path,
+        data.append('%s %s %s\n' % (state.method, state.uri,
                                     state.http_version))
         # Headers
         for name in state.headers:
@@ -149,18 +149,18 @@ class Request(Message):
 
 
     ########################################################################
-    # The Path
-    def get_path(self):
-        return self.state.path
+    # The Request URI
+    def get_uri(self):
+        return self.state.uri
 
 
-    def set_path(self, path):
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
-        self.state.path = path
+    def set_uri(self, reference):
+        if not isinstance(reference, uri.Reference):
+            reference = uri.get_reference(reference)
+        self.state.uri = reference
 
 
-    path = property(get_path, set_path, None, '')
+    uri = property(get_uri, set_uri, None, '')
 
 
     ########################################################################
@@ -253,7 +253,7 @@ class Request(Message):
         modify query parameters.
         """
         if url is None:
-            url = self.path[-1]
+            url = self.uri.path[-1]
 
         query = []
         # Preserve request parameters that start with any of the prefixes.

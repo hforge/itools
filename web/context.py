@@ -41,7 +41,8 @@ class Context(object):
         path = request.uri.path
         if request.has_parameter('REAL_PATH'):
             request_uri = deepcopy(request.uri)
-            request_uri.path = uri.Path(request.get_parameter('REAL_PATH'))
+            real_path = request.get_parameter('REAL_PATH')
+            request_uri.path = uri.Path('/' + real_path)
         reference = 'http://%s%s' % (host, request_uri)
         self.uri = uri.get_reference(reference)
 

@@ -588,6 +588,8 @@ def decode(data):
         if data == '#':
             return Reference('', Authority(''), Path(''), Query(''), '')
 
+        data = urllib.unquote_plus(data)
+
         # All other cases, split the reference in its components
         scheme, authority, path, query, fragment = urlsplit(data)
         if fragment == '':

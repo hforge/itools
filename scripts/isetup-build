@@ -43,39 +43,12 @@ if __name__ == '__main__':
     if len(args) != 0:
         parser.error('incorrect number of arguments')
 
-    # Copy source files to build directory
-    print '(1) Copying source files',
-    sys.stdout.flush()
-    # Create the build directory
-    here = get_resource('.')
-    empty_folder = memory.Folder()
-    if not here.has_resource('build'):
-        here.set_resource('build', empty_folder)
-    build = here.get_resource('build')
-    # Copy the source files
+    # Initialize the list of files to install (the MANIFEST)
+    manifest = ['MANIFEST']
     cmd = 'git-ls-files'
     for path in os.popen(cmd).readlines():
         path = path.strip()
-        path = Path(path)
-        # Create the directories
-        for i in range(len(path) - 1):
-            dir_path = str(path[:i+1])
-            if not build.has_resource(dir_path):
-                build.set_resource(dir_path, empty_folder)
-        # Copy the file
-        source = here.get_resource(path)
-        if build.has_resource(path):
-            if build.get_resource(path).get_mtime() < source.get_mtime():
-                build.set_resource(path, source)
-        else:
-            build.set_resource(path, source)
-        # Done
-        sys.stdout.write('.')
-        sys.stdout.flush()
-    print 'OK'
-
-    # Change to the build directory
-    os.chdir('build')
+        manifest.append(path)
 
     # Get languages to translate
     languages = []
@@ -97,6 +70,8 @@ if __name__ == '__main__':
         print language,
         sys.stdout.flush()
         os.system('msgfmt locale/%s.po -o locale/%s.mo' % (language, language))
+        # Add to the manifest
+        manifest.append('locale/%s.mo' % language)
     print 'OK'
 
     # Load message catalogs
@@ -119,7 +94,16 @@ if __name__ == '__main__':
             message_catalog = message_catalogs[language]
             target = '%s.%s' % (path[:n], language)
             open(target, 'w').write(handler.translate(message_catalog))
+            # Add to the manifest
+            manifest.append(target[2:])
         # Done
         sys.stdout.write('.')
         sys.stdout.flush()
     print ' OK'
+
+    # Build the manifest file
+    print '(3) Building list of files to install',
+    sys.stdout.flush()
+    manifest.sort()
+    open('MANIFEST', 'w').write('\n'.join(manifest))
+    print 'OK'

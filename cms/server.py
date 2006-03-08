@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 from ConfigParser import RawConfigParser
+import os
 import sys
 
 # Import from itools

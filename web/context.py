@@ -40,8 +40,9 @@ class Context(object):
         request_uri = request.uri
         path = request_uri.path
         if 'REAL_PATH' in request_uri.query:
-            request_uri = deepcopy(request.uri)
-            request_uri.path = uri.Path('/' + request_uri.query['REAL_PATH'])
+            real_path = request_uri.query.pop('REAL_PATH')
+            request_uri = deepcopy(request_uri)
+            request_uri.path = uri.Path('/' + real_path)
         reference = 'http://%s%s' % (host, request_uri)
         self.uri = uri.get_reference(reference)
 
@@ -49,7 +50,7 @@ class Context(object):
         self.user = None
 
         # Split the path into path and method ("a/b/c/;view")
-        path = request_uri.path
+        path = request.uri.path
         self.path = path
         self.method = None
         if path and not path[-1].name:

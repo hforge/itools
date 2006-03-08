@@ -19,7 +19,6 @@
 import datetime
 
 # Import from itools
-from itools import uri
 from itools.resources import base, memory
 from Handler import Handler, State
 

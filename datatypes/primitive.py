@@ -20,8 +20,8 @@ import datetime
 import mimetypes
 
 # Import from itools
-from itools import uri
-from itools import i18n
+from itools.uri import get_reference
+from itools.i18n import languages as i18n_languages
 from base import DataType
 
 
@@ -135,7 +135,7 @@ class URI(DataType):
 
     @staticmethod
     def decode(value):
-        return uri.get_reference(value)
+        return get_reference(value)
 
 
     @staticmethod
@@ -165,7 +165,7 @@ class FileName(DataType):
             if '.%s' % data[-1].lower() in mimetypes.types_map:
                 name, type = data
                 return name, type, None
-            elif data[-1] in i18n.languages:
+            elif data[-1] in i18n_languages:
                 name, language = data
                 return name, None, language
             else:
@@ -175,7 +175,7 @@ class FileName(DataType):
             type = language = None
 
             # The language
-            if data[-1] in i18n.languages:
+            if data[-1] in i18n_languages:
                 language = data[-1]
                 data = data[:-1]
 

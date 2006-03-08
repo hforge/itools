@@ -21,7 +21,8 @@ import os
 from urlparse import urlsplit
 
 # Import from itools
-from itools import uri
+from itools.uri import get_reference
+from itools.uri.generic import Reference, decode as uri_decode
 import file
 import http
 
@@ -34,12 +35,12 @@ def get_resource(reference):
 
     - http (only file resources, no language negotiation)
     """
-    if not isinstance(reference, uri.generic.Reference):
+    if not isinstance(reference, Reference):
         # Make it working with Windows
         if os.path.sep == '\\':
             if len(reference) > 1 and reference[1] == ':':
                 reference = 'file://%s' % reference
-        reference = uri.get_reference(reference)
+        reference = get_reference(reference)
 
     base = os.getcwd()
     # Make it working with Windows
@@ -47,7 +48,7 @@ def get_resource(reference):
         # Internally we use always the "/"
         base = base.replace(os.path.sep, '/')
 
-    base = uri.generic.decode('file://%s/' % base)
+    base = uri_decode('file://%s/' % base)
     reference = base.resolve(reference)
 
     scheme = reference.scheme

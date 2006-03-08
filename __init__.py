@@ -18,9 +18,10 @@
 
 # Import from the Standard Library
 from distutils.command.build_py import build_py
-import os
 from os.path import join
-import sys
+
+# Import from itools
+from utils import get_abspath
 
 
 # XXX To be removed once distutils works again:
@@ -54,34 +55,4 @@ class build_py_fixed(build_py):
 
 
 
-
-def get_abspath(globals_namespace, local_path):
-    """
-    Returns the absolute path to the required file.
-    """
-    mname = globals_namespace['__name__']
-
-    if mname == '__main__' or mname == '__init__':
-        mpath = os.getcwd()
-    else:
-        module = sys.modules[mname]
-        if hasattr(module, '__path__'):
-            mpath = module.__path__[0]
-        elif '.' in mname:
-            mpath = sys.modules[mname[:mname.rfind('.')]].__path__[0]
-        else:
-            mpath = mname
-
-    drive, mpath = os.path.splitdrive(mpath)
-    mpath = drive + os.path.join(mpath, local_path)
-
-    # Make it working with Windows. Internally we use always the "/".
-    if os.path.sep == '\\':
-        mpath = mpath.replace(os.path.sep, '/')
-
-    return mpath
-
-
-
 __version__ = open(get_abspath(globals(), 'version.txt')).read().strip()
-

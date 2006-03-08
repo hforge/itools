@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from itools
-from itools import get_abspath
+from itools.utils import get_abspath
 import accept
 import oracle
 import segment

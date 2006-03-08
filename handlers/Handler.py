@@ -25,7 +25,7 @@ import datetime
 import thread
 
 # Import from itools
-from itools import uri
+from itools.uri import Path
 from itools.resources import base
 from itools.handlers.transactions import get_transaction
 
@@ -43,7 +43,7 @@ class State(object):
 class Node(object):
 
     def get_abspath(self):
-        # XXX Should return a uri.Path instance
+        # XXX Should return a Path instance
         if self.parent is None:
             return '/'
 
@@ -78,7 +78,7 @@ class Node(object):
 
 
     def get_pathto(self, handler):
-        path = uri.Path(self.get_abspath())
+        path = Path(self.get_abspath())
         return path.get_pathto(handler.get_abspath())
 
 
@@ -99,8 +99,8 @@ class Node(object):
 
     def has_handler(self, path):
         # Normalize the path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         path, segment = path[:-1], path[-1]
         name = segment.name
@@ -112,8 +112,8 @@ class Node(object):
     def get_handler(self, path):
         from Folder import build_virtual_handler
         # Be sure path is a Path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         if path.is_absolute():
             root = self.get_root()

@@ -23,8 +23,30 @@ from os.path import join
 
 # Import from itools
 from __init__ import build_py_fixed, __version__
+############################################################################
+# START HACK
+# XXX Work-around the fact that Python does not implements (yet) relative
+# imports (see PEP 328).
+# Re-define __import__
+def fixed_import(name, globals={}, locals={}, fromlist=[]):
+    if name.startswith('itools.'):
+        name = name[7:]
+    return pythons_import(name, globals, locals, fromlist)
+# Plug our __import__
+pythons_import = __import__
+__builtins__.__import__ = fixed_import
+
+############################################################################
+# The imports needed
 from resources import get_resource
 from handlers.config import Config
+############################################################################
+
+# Get back the Python's __import__
+__builtins__.__import__ = pythons_import
+# END HACK
+############################################################################
+
 
 
 config = Config(get_resource('config'))

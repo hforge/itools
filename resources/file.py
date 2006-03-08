@@ -25,7 +25,7 @@ import os
 import time
 
 # Import from itools
-from itools import uri
+from itools.uri.generic import decode as uri_decode
 import base
 
 
@@ -157,6 +157,6 @@ def get_resource(reference):
         return File(reference)
     elif os.path.isdir(path):
         if not str(reference).endswith('/'):
-            reference = uri.generic.decode(str(reference) + '/')
+            reference = uri_decode(str(reference) + '/')
         return Folder(reference)
     raise IOError, 'nor file neither folder at %s' % reference

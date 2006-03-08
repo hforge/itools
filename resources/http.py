@@ -22,7 +22,6 @@ import time
 
 # Import from itools
 import base
-from itools import uri
 
 
 

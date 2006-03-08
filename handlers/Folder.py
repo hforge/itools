@@ -20,7 +20,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.resources import base, memory
-from itools import uri
+from itools.uri import Path
 from itools.handlers.Handler import Handler, State
 from itools.handlers.transactions import get_transaction
 
@@ -176,8 +176,8 @@ class Folder(Handler):
 
     def get_handler(self, path):
         # Be sure path is a Path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         if path.is_absolute():
             root = self.get_root()
@@ -249,8 +249,8 @@ class Folder(Handler):
 
 
     def set_handler(self, path, handler, **kw):
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         path, segment = path[:-1], path[-1]
         name = segment.name
@@ -280,8 +280,8 @@ class Folder(Handler):
 
 
     def del_handler(self, path):
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         path, segment = path[:-1], path[-1]
         name = segment.name

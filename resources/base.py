@@ -19,7 +19,7 @@
 import mimetypes
 
 # Import from itools
-from itools import uri
+from itools.uri import Path, Reference, get_reference
 from itools.datatypes import FileName
 
 
@@ -50,12 +50,12 @@ class Resource(object):
     uri = None
 
     def __init__(self, uri_reference):
-        if isinstance(uri_reference, uri.Reference):
+        if isinstance(uri_reference, Reference):
             pass
-        elif isinstance(uri_reference, uri.Path):
-            uri_reference = uri.get_reference(str(uri_reference))
+        elif isinstance(uri_reference, Path):
+            uri_reference = get_reference(str(uri_reference))
         elif isinstance(uri_reference, (str, unicode)):
-            uri_reference = uri.get_reference(uri_reference)
+            uri_reference = get_reference(uri_reference)
         else:
             message = 'unexpected value of type "%s"' % type(uri_reference)
             raise TypeError, message
@@ -270,8 +270,8 @@ class Folder(Resource):
         Returns the required resource, or None if it does not exists.
         """
         # Normalize the path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         # Special case: '.'
         if len(path) == 0:
@@ -288,8 +288,8 @@ class Folder(Resource):
 
     def has_resource(self, path):
         # Normalize and split the path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         # Traverse
         folder = self
@@ -302,8 +302,8 @@ class Folder(Resource):
 
     def set_resource(self, path, resource):
         # Normalize and split the path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         # Traverse
         folder = self
@@ -338,8 +338,8 @@ class Folder(Resource):
 
     def del_resource(self, path):
         # Normalize and split the path
-        if not isinstance(path, uri.Path):
-            path = uri.Path(path)
+        if not isinstance(path, Path):
+            path = Path(path)
 
         # Traverse
         resource = self

@@ -127,7 +127,7 @@ body {
 .searchbox {
   margin: 0px 5px 0px 0px;
   padding: 7px 0px 0px 0px;
-  font-family: normal 10px Verdana, Arial, Helvetica, sans-serif;
+  font: normal 10px Verdana, Arial, Helvetica, sans-serif;
   text-align: right;
   border: 0px solid white;
 }

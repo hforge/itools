@@ -37,6 +37,20 @@ class Row(list):
         return self[index]
 
 
+    def __setattr__(self, name, value):
+        if name == 'index' or name == 'columns':
+            list.__setattr__(self, name, value)
+        else:
+            try:
+                index = self.columns.index(name)
+            except ValueError:
+                message = "'%s' object has no attribute '%s'"
+                raise AttributeError, message % (self.__class__.__name__, name)
+
+            self[index] = value
+
+
+
 class Index(dict):
 
     def search_word(self, word):

@@ -41,7 +41,7 @@ from distutils.core import setup
 from os.path import join
 
 # Import from itools
-from __init__ import build_py_fixed
+from __init__ import build_py_fixed, __version__
 
 
 
@@ -72,7 +72,7 @@ included are:
 
 setup(
     name = "itools",
-    version = "0.12.4",
+    version = __version__,
     # XXX Broken distutils, "sdist" don't likes unicode strings, and "register"
     # don't likes normal strings.
     author = u"J. David Ibáñez".encode('UTF-8'),
@@ -119,7 +119,7 @@ setup(
                    'Topic :: Text Processing :: Markup',
                    'Topic :: Text Processing :: Markup :: XML'],
     package_data = {
-    'itools': ['Changelog'],
+    'itools': ['version.txt'],
     'itools.cms': [
     join('locale', '*.po'),
     join('locale', '*.mo'),

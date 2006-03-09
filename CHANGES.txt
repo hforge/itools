@@ -1,3 +1,37 @@
+0.12.5 (2006/03/09)
+
+  URI
+  - Unquote escaped characters when decoding a url.
+
+  Handlers
+  - Fix virtual handlers (#158).
+
+  CSV
+  - Now access by attribute works on rows, e.g. "row.<name>", where name
+    is the column name (of course only works when the schema is defined).
+
+  XHTML
+  - Fix "get_content_as_html" when there are non-ascii characters in text
+    nodes, by encoding them.
+
+  Web
+  - Now the request handler keeps the whole request uri (not only the path),
+    this is: "request.uri" instead of "request.path".
+  - For virtual hosting, use the request header "X-Base-Path" instead of
+    the query variable REAL_PATH. So rewrite rules must be updated (in
+    Apache this is done with the "RequestHeader set X-Base-Path <value>"
+    line).
+
+  CMS
+  - Remove consistency check in "Group.get_usernames" (it was an scalability
+    bottleneck). Instead add a view in the user interface to check and fix
+    groups with users that don't exist anymore.
+
+  Packaging
+  - Provide "itools.__version__" (replaces "itools.__git_revision__").
+  - Drop the Changelog file.
+
+
 0.12.4 (2006/02/17)
 
   Handlers

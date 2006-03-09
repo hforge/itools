@@ -19,7 +19,7 @@
 
 # Import from the Standard Library
 from distutils.core import setup
-from os.path import join
+import os
 
 # Import from itools
 from __init__ import build_py_fixed, __version__
@@ -90,6 +90,10 @@ package_data = {package_name: []}
 for subpackage_name in subpackages:
     packages.append('%s.%s' % (package_name, subpackage_name))
 
+
+if not os.path.exists('MANIFEST'):
+    os.system('git-ls-files > MANIFEST')
+
 for line in open('MANIFEST').readlines():
     line = line.strip()
     # Python files are included by default
@@ -104,11 +108,11 @@ for line in open('MANIFEST').readlines():
         package_data[package_name].append(line)
     elif path[0] in subpackages:
         files = package_data.setdefault('%s.%s' % (package_name, path[0]), [])
-        files.append(join(*path[1:]))
+        files.append(os.path.join(*path[1:]))
 
 # The scripts
 scripts = config.get_value('scripts').split()
-scripts = [ join(*['scripts', x]) for x in scripts ]
+scripts = [ os.path.join(*['scripts', x]) for x in scripts ]
 
 
 setup(name = package_name,

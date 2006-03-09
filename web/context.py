@@ -40,9 +40,10 @@ class Context(object):
         request_uri = request.uri
         path = request_uri.path
         if request.has_header('X-Base-Path'):
-            base_path = request.get_header('X-Base-Path')
+            base_path = uri.Path(request.get_header('X-Base-Path'))
             request_uri = deepcopy(request_uri)
-            request_uri.path = uri.Path('/%s%s' % (base_path,request_uri.path))
+            diff_path = base_path.get_pathto(request_uri.path)
+            request_uri.path = uri.Path('/%s' % diff_path)
         reference = 'http://%s%s' % (host, request_uri)
         self.uri = uri.get_reference(reference)
 

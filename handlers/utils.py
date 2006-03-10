@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002, 2003 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -15,28 +15,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from the Standard Library
-import unittest
-from unittest import TestCase
-
 # Import from itools
-from itools.i18n.accept import AcceptLanguage
-
-# Import from itools.handlers
-from utils import get_handler
+from itools.resources import get_resource
+import Handler
 
 
-class BasicTestCase(TestCase):
-    def test_get(self):
-        handler = get_handler('../examples/hello.txt.en')
-        assert handler.serialize() == 'hello world\n'
 
-
-    def test_lang(self):
-        accept = AcceptLanguage('es')
-        handler = get_handler('../examples/hello.txt', accept=accept)
-        assert handler.serialize() == 'hola mundo\n'
-
-
-if __name__ == '__main__':
-    unittest.main()
+def get_handler(uri):
+    """
+    Returns a resource handler from a uri reference.
+    """
+    # Get the resource
+    resource = get_resource(uri)
+    # Build the handler
+    return Handler.Handler.build_handler(resource)

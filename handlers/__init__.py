@@ -35,23 +35,15 @@ files, etc...
 import mimetypes
 
 # Import from itools
-from itools.resources import get_resource
 import Handler
 import File
 import Folder
 import Image
 import python
 import Text
+from utils import get_handler
 
 
 mimetypes.add_type('text/comma-separated-values', '.csv')
 
 
-def get_handler(uri):
-    """
-    Returns a resource handler from a uri reference.
-    """
-    # Get the resource
-    resource = get_resource(uri)
-    # Build the handler
-    return Handler.Handler.build_handler(resource)

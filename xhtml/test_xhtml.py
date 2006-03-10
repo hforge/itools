@@ -98,7 +98,92 @@ class SegmentationTestCase(TestCase):
 
         messages = doc.get_messages()
         self.assertEqual(messages, [u'Change'])
+
+
+
+class TranslationTestCase(TestCase):
+
+    def setUp(self):
+        template ="""<?xml version="1.0" encoding="UTF-8"?>
+                     <!DOCTYPE html
+                      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                      <html xmlns="http://www.w3.org/1999/xhtml"
+                      xmlns:stl="http://xml.itools.org/namespaces/stl">
+                     <head></head>
+                      <body>%s</body>
+                     </html>
+                  """
+        self.template = template
+  
+              
+    def test_case1(self):
+        """Test element content."""
+        data = self.template % '<p>hello litle world</p>'
+        data = memory.File(data)
+        xhtml = parsers.XHTML.Document(data)
+        messages = list(xhtml.get_messages())
+
+        assert messages == [u'hello litle world']
+
+
+    def test_case2(self):
+        """Test simple attribute."""
+        data = self.template % '<img alt="The beach" src="beach.jpg" />' 
+        data = memory.File(data)
+        xhtml = parsers.XHTML.Document(data)
+        messages = list(xhtml.get_messages())
+
+        assert messages == [u'The beach']
+
+
+    def test_case3(self):
+        """Test complex attribute."""
+        data = self.template % """<input type="text" name="id" />
+                                  <input type="submit" value="Change" />""" 
+        data = memory.File(data)
+        xhtml = parsers.XHTML.Document(data)
+        messages = list(xhtml.get_messages())
+
+        assert messages == [u'Change']
+
+
+    def test_case4(self):
+        """Test translation of an element content"""
+        html = self.template % '<p>hello world</p>'
+
+        po = 'msgid "hello world"\n' \
+             'msgstr "hola mundo"\n'
+
+        p = parsers.PO.PO(memory.File(po))
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+
+        html = xhtml.translate(p)
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
         
+        data = list(xhtml.get_messages())
+        assert data == [u'hola mundo']
+
+
+    def test_case5(self):
+        """Test translation of an element content"""
+        html =  self.template  % '<img alt="The beach" src="beach.jpg" />'
+        po = 'msgid "The beach"\n' \
+             'msgstr "La playa"'
+
+        p = parsers.PO.PO(memory.File(po))
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+
+        html = xhtml.translate(p)
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+
+        data = list(xhtml.get_messages())
+        assert data == [u'La playa']
+
 
 
 

@@ -94,6 +94,101 @@ class HMLTestCase(TestCase):
 
 
 
+class TranslationTestCase(TestCase):
+    def setUp(self):
+        template ="""<?xml version="1.0" encoding="UTF-8"?>
+                     <!DOCTYPE html
+                      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                      <html xmlns="http://www.w3.org/1999/xhtml"
+                      xmlns:stl="http://xml.itools.org/namespaces/stl">
+                     <head></head>
+                      <body>%s</body>
+                     </html>
+                  """
+        self.template = template
+
+
+    def test_case1(self):
+        """Test element content."""
+        html = self.template % '<p>hello world</p>'
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+        messages = list(xhtml.get_messages())
+        assert messages == [u'hello world']
+
+
+    def test_case2(self):
+        """Test simple attribute."""
+        html = self.template % '<img alt="The beach" src="beach.jpg"/>'
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+        messages = list(xhtml.get_messages())
+        assert messages == [u'The beach']
+
+
+    def test_case3(self):
+        """Test complex attribute."""
+        html = self.template % '<input type="text" name="id"/>\n' \
+                               '<input type="submit" value="Change"/>\n'
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+        messages = list(xhtml.get_messages())
+        assert messages == [u'Change']
+
+
+    def test_case4(self):
+        """Test translation of an element content"""
+        html = self.template % '<p>hello world</p>'
+        po = 'msgid "hello world"\n' \
+             'msgstr "hola mundo"'
+         
+        p = parsers.PO.PO(memory.File(po))
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+        
+        html = xhtml.translate(p)
+        result = self.template % '<p>hola mundo </p>'
+        assert html == result
+        
+
+    def test_case5(self):
+        """Test translation of an element content"""
+        html = '<img alt="The beach" src="beach.jpg"/>'
+        po = 'msgid "The beach"\n' \
+             'msgstr "La playa"'
+
+
+        p = parsers.PO.PO(memory.File(po))
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+         
+        #print '-----------------', xhtml
+        #html = xhtml.translate(p)
+        #result = self.template % '<img src="beach.jpg" alt="La playa">'
+        #assert html == result
+
+
+
+    def test_case6(self):
+        """Test translation of an element content"""
+        html = self.template % '<input type="text" name="id"/>\n' \
+                               '<input type="submit" value="Change"/>'
+        po = 'msgid "Change"\n' \
+             'msgstr "Cambiar"'
+
+        p = parsers.PO.PO(memory.File(po))
+        html = memory.File(html)
+        xhtml = parsers.XHTML.Document(html)
+  
+        html = xhtml.translate(p)
+        result = self.template % '<input type="text" name="id"/>\n' \
+                                 '<input type="submit" value="Cambiar/">'
+
+        assert html == result
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -18,7 +18,7 @@
 
 # Import from the Standard Library
 from distutils.command.build_py import build_py
-from os.path import join
+import os
 
 # Import from itools
 from utils import get_abspath
@@ -38,7 +38,7 @@ class build_py_fixed(build_py):
             src_dir = self.get_package_dir(package)
 
             # Compute package build directory
-            build_dir = join(*([self.build_lib] + package.split('.')))
+            build_dir = os.path.join(*([self.build_lib] + package.split('.')))
 
             # Length of path to strip from found files
             if src_dir:
@@ -54,5 +54,8 @@ class build_py_fixed(build_py):
         return data
 
 
-
-__version__ = open(get_abspath(globals(), 'version.txt')).read().strip()
+path = get_abspath(globals(), 'version.txt')
+if os.path.exists(path):
+    __version__ = open(path).read().strip()
+else:
+    __version__ = None

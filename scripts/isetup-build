@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
+from datetime import datetime
 from optparse import OptionParser
 import os
 import sys
@@ -29,6 +30,48 @@ from itools.handlers import get_handler
 import itools.gettext
 from itools.xhtml import XHTML
 import itools.stl
+
+
+
+def get_commit_metadata(reference):
+    lines = os.popen('git-cat-file commit %s' % reference).readlines()
+    # The commit id
+    commit_id = lines[0].strip().split()[1]
+    # The timestamp
+    timestamp = datetime.fromtimestamp(int(lines[2].strip().split()[-2]))
+
+    return commit_id, timestamp
+
+
+
+def get_version():
+    here = get_resource('.')
+    if not here.has_resource('.git'):
+        return None
+
+    # Find out the version name
+    if os.path.islink('.git/HEAD'):
+        branch_name = os.readlink('.git/HEAD').split('/')[-1]
+    else:
+        branch_name = open('.git/HEAD').read().split('/')[-1].strip()
+    tags = [ x for x in here.get_resource_names('.git/refs/tags')
+             if x.startswith(branch_name) ]
+
+    if tags:
+        tags.sort()
+        version_name = tags[-1]
+    else:
+        version_name = branch_name
+
+    # Get the timestamp
+    head_id, head_timestamp = get_commit_metadata('HEAD')
+    tag_id, tag_timestamp = get_commit_metadata(version_name)
+
+    if not tags or tag_id != head_id:
+        timestamp = head_timestamp.strftime('%Y%m%d%H%M')
+        return '%s-%s' % (version_name, timestamp)
+
+    return version_name
 
 
 
@@ -101,8 +144,19 @@ if __name__ == '__main__':
         sys.stdout.flush()
     print ' OK'
 
+    # Find out the version string
+    manifest.append('version.txt')
+    print '(3) Find out the version string',
+    sys.stdout.flush()
+    version = get_version()
+    if version is None:
+        print 'ERROR: Not a git repository'
+    else:
+        open('version.txt', 'w').write(version)
+        print 'OK'
+
     # Build the manifest file
-    print '(3) Building list of files to install',
+    print '(4) Building list of files to install',
     sys.stdout.flush()
     manifest.sort()
     open('MANIFEST', 'w').write('\n'.join(manifest))

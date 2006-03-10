@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
+from distutils.command.build_py import build_py
 import os
 import sys
 
@@ -46,3 +47,56 @@ def get_abspath(globals_namespace, local_path):
         mpath = mpath.replace(os.path.sep, '/')
 
     return mpath
+
+
+
+############################################################################
+# XXX To be removed once distutils works again:
+# http://sourceforge.net/tracker/index.php?func=detail&aid=1183712&group_id=5470&atid=305470
+class build_py_fixed(build_py):
+
+    def get_data_files(self):
+        """Generate list of '(package,src_dir,build_dir,filenames)' tuples"""
+        data = []
+        if not self.packages:
+            return data
+        for package in self.packages:
+            # Locate package source directory
+            src_dir = self.get_package_dir(package)
+
+            # Compute package build directory
+            build_dir = os.path.join(*([self.build_lib] + package.split('.')))
+
+            # Length of path to strip from found files
+            if src_dir:
+                plen = len(src_dir)+1
+            else:
+                plen = 0
+
+            # Strip directory from globbed filenames
+            filenames = [
+                file[plen:] for file in self.find_data_files(package, src_dir)
+                ]
+            data.append((package, src_dir, build_dir, filenames))
+        return data
+
+
+
+############################################################################
+# XXX Work-around the fact that Python does not implements (yet) relative
+# imports (see PEP 328).
+
+pythons_import = __import__
+
+def local_import(name, globals={}, locals={}, fromlist=[]):
+    if name.startswith('itools.'):
+        name = name[7:]
+    return pythons_import(name, globals, locals, fromlist)
+
+
+def start_local_import():
+    __builtins__['__import__'] = local_import
+
+
+def end_local_import():
+    __builtins__['__import__'] = pythons_import

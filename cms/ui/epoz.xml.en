@@ -5,7 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <div style="display: none" stl:attributes="id widget_id">
     <div stl:attributes="id toolbar_id">
-      <select class="formatblock" onchange="SelectFormat(this);"
+      <select id="formatblock" onchange="SelectFormat(this);"
               style="margin-bottom: 2px;">
         <option value="">Normal</option>
         <option value="&lt;p&gt;">Paragraph</option>

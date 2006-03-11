@@ -25,19 +25,6 @@ var Epoz = "EpozEditor";
 var EpozElement;
 var EpozTextArea;
 
-// Global storages
-
-var form_data;  // the document-data
-var form_name;  // the name of the form-element
-var form_path;  // path to buttons, font-selectors, ...
-var form_toolbox; // path to optional toolbox
-var form_area_style; // css-definition for wysiwyg-area
-var form_button_style; // css-definition for buttons
-var form_css; // css-style for iframe
-var form_customcss; // customized css-style for iframe
-var form_charset; // charset for iframe
-var form_pageurl; // real url for the edited page
-
 
 // Returns the current HTML.
 
@@ -357,81 +344,6 @@ if (!formDatas) {
     var formDatas = new Array();
 }
 
-function InitIframe(name, data, path, toolbox, style, button, css, customcss, charset, pageurl) {
-    form_name = name;
-    form_data = data;
-    form_path = path;
-    form_toolbox = toolbox;
-    form_area_style = style;
-    form_button_style = button;
-    form_css = css;
-    form_customcss = customcss;
-    form_charset = charset;
-    form_pageurl = pageurl;
-
-    var richText;
-
-    if (browser.isIE55 || browser.isIE6up) {
-        // Mac-IE doesn't support RichText-Edit at the moment
-        if (browser.isMac) {
-            CreateTextarea();
-            richText = false;
-        } else {
-            CreateEpoz();
-            richText = true;
-        }
-    }
-    else if (browser.isGecko) {
-        //check to see if midas is enabled
-        try {
-            // Just a few cleanups for Mozilla
-
-            form_data = form_data.replace(/<strong>/ig,'<b>');
-            form_data = form_data.replace(/<strong(\s[^>]*)>/ig,'<b$1>');
-            form_data = form_data.replace(/<\/strong>/ig,'</b>');
-
-            form_data = form_data.replace(/<em>/ig,'<i>');
-            form_data = form_data.replace(/<em(\s[^>]*)>/ig,'<i$1>');
-            form_data = form_data.replace(/<\/em>/ig,'</i>');
-
-            CreateEpoz();
-            richText = true;
-        } catch (e) {
-          CreateTextarea();
-          richText = false;
-        }
-    }
-    else {
-        CreateTextarea();
-        richText = false;
-    }
-
-    if (richText) {
-        // change iframe id
-        formDatas[name] = form_data;
-        var iframe = document.getElementById(Epoz);
-        iframe.id = IFramePrefix + name;
-
-        // change EpozToolbar id
-        var toolBar = document.getElementById("EpozToolbar");
-        toolBar.id = ToolBarPrefix + name;
-
-        // Retrieve the switch HTML mode checkbox and change id and onclick function.
-        nodes = iframe.parentNode.nextSibling.nextSibling.childNodes;
-        var i;
-        for (i=0 ; i<nodes.length ; i++ ) {
-            if (nodes[i].nodeType == 1 && nodes[i].nodeName == 'INPUT')
-                break;
-        }
-        var checkbox = nodes[i];
-        checkbox.id = CheckBoxPrefix + name;
-
-        changeBorderStyle(iframe, "dashed");
-    }
-}
-
-
-
 function HandleEpozRedirect() {
     if (browser.isIE55 || browser.isIE6up) {
         iframe = event.srcElement;
@@ -482,7 +394,7 @@ function SyncEpoz() {
         if (html=="<br />" || html=="<br>" || html=="<p></p>") {
             html = "";
         }
-        form_name = EpozElement.contentWindow.document.id.slice(DocPrefixLength);
+        var form_name = EpozElement.contentWindow.document.id.slice(DocPrefixLength);
         document.getElementById(form_name).value = html;
     }
 

@@ -290,7 +290,7 @@ class Server(object):
         status, method = self.traverse(context)
         if status == 200:
             # Check modification time
-            mtime = getattr(object, '%s__mtime__' % context.method, None)
+            mtime = getattr(context.handler, '%s__mtime__' % context.method, None)
             if mtime is not None:
                 mtime = mtime().replace(microsecond=0)
                 response.set_header('last-modified', mtime)

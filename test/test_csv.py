@@ -26,7 +26,7 @@ from itools.resources import memory
 from itools.resources import get_resource
 from itools.datatypes import Date, Integer, Unicode, URI
 from itools.catalog import queries
-import itools_csv
+from itools.csv import itools_csv
 
 
 TEST_DATA_1 = """python,http://python.org,52343,2003-10-23

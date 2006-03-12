@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from rss import RSS, TZDateTime
+from itools.rss.rss import RSS, TZDateTime
 from itools.resources import get_resource
 from itools.handlers import get_handler
 from itools.stl import stl

@@ -16,13 +16,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from the Standard Library
+import unittest
+from unittest import TestCase
 
-
-# Python unit test
-##import unittest
-##from unittest import TestCase
-
-from workflow import Workflow, WorkflowAware
+# Import from itools
+from itools.workflow.workflow import Workflow, WorkflowAware
 
 
 # Definition of the workflow

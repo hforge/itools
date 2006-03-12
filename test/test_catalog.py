@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ib��ez Palomar <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,9 +22,77 @@ from unittest import TestCase
 # Import from itools
 from itools.handlers import get_handler
 from itools.handlers.Text import Text
+from itools.catalog import IO
+from itools.catalog import analysers
 from itools.catalog.Catalog import Catalog
 from itools.catalog.IIndex import IIndex
 from itools.catalog import queries
+
+
+
+class IOTestCase(TestCase):
+
+    def test_byte(self):
+        value = 27
+        encoded_value = IO.encode_byte(value)
+        self.assertEqual(IO.decode_byte(encoded_value), value)
+
+
+    def test_unit32(self):
+        value = 1234
+        encoded_value = IO.encode_uint32(value)
+        self.assertEqual(IO.decode_uint32(encoded_value), value)
+
+
+    def test_vint(self):
+        value = 1234567890
+        encoded_value = IO.encode_vint(value)
+        self.assertEqual(IO.decode_vint(encoded_value)[0], value)
+
+
+    def test_character(self):
+        value = u'X'
+        encoded_value = IO.encode_character(value)
+        self.assertEqual(IO.decode_character(encoded_value), value)
+
+
+    def test_string(self):
+        value = u'aquilas non captis muscas'
+        encoded_value = IO.encode_string(value)
+        self.assertEqual(IO.decode_string(encoded_value)[0], value)
+
+
+    def test_link(self):
+        for value in [0, 513]:
+            encoded_value = IO.encode_link(value)
+            self.assertEqual(IO.decode_link(encoded_value), value)
+
+
+    def test_version(self):
+        value = '20050217'
+        encoded_value = IO.encode_version(value)
+        self.assertEqual(IO.decode_version(encoded_value), value)
+
+
+
+class TextTestCase(TestCase):
+
+    def test_hello(self):
+        words = list(analysers.Text(u'Hello world'))
+        self.assertEqual(words, [(u'hello', 0), (u'world', 1)])
+
+
+    def test_accents(self):
+        words = list(analysers.Text(u'Te doy una canción'))
+        self.assertEqual(words, [(u'te', 0), (u'doy', 1), (u'una', 2),
+                                 (u'canción', 3)])
+
+
+    def test_russian(self):
+        text = u'Это наш дом'
+        words = list(analysers.Text(text))
+        self.assertEqual(words, [(u'это', 0), (u'наш', 1),  (u'дом', 2)])
+
 
 
 class IITestCase(TestCase):
@@ -74,7 +142,7 @@ class Document(Text):
 
 
 # Build a catalog on memory
-tests = get_handler('tests')
+tests = get_handler('fables')
 if tests.has_handler('catalog'):
     tests.del_handler('catalog')
 catalog = Catalog(fields=[('title', 'text', True, True),

@@ -15,12 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-# Import from Python
+# Import from the Standard Library
 import unittest
 from unittest import TestCase
 
 # Import from itools.handlers
+from itools.resources import memory
 from Var import Var
 
 
@@ -41,24 +41,27 @@ Content-type: text/html; charset=ISO-8859-1
 
 
 class VarTestCase(TestCase):
+
     def setUp(self):
-        self.var = Var(data)
+        resource = memory.File(data)
+        self.var = Var(resource)
 
 
     def test_nrecords(self):
-        assert len(self.var.records) == 3
+        self.assertEqual(len(self.var.state.records), 3)
 
 
     def test_uri(self):
-        assert self.var.records[0].uri == 'upgrading.html.de'
+        self.assertEqual(self.var.state.records[0].uri, 'upgrading.html.de')
 
 
     def test_type(self):
-        assert self.var.records[0].type == 'text/html; charset=ISO-8859-1'
+        self.assertEqual(self.var.state.records[0].type,
+                         'text/html; charset=ISO-8859-1')
 
 
     def test_language(self):
-        assert self.var.records[0].language == 'de'
+        self.assertEqual(self.var.state.records[0].language, 'de')
 
 
 

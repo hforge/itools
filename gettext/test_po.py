@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002, 2003 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2002-2006 J. David Ibáñez <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ class POTestCase(TestCase):
         da = mFile(content)
         po = PO(da)
 
-        self.assertEqual(po._messages['Add'].msgstr, [u'Ajouter\n'])
+        self.assertEqual(po.get_msgstr('Add'), u'Ajouter\n')
 
 
     def test_case2(self):
@@ -47,7 +47,7 @@ class POTestCase(TestCase):
         da = mFile(content)
         po = PO(da)
 
-        assert po._messages['Hello world'].msgstr == ['', u'Hola ', u'mundo']
+        self.assertEqual(po.get_msgstr('Hello world'), u'Hola mundo')
 
 
     def test_case3(self):
@@ -57,7 +57,7 @@ class POTestCase(TestCase):
         da = mFile(content)
         po = PO(da)
 
-        assert po._messages['test'].msgstr == [u'Esto es una "prueba"']
+        self.assertEqual(po.get_msgstr('test'), u'Esto es una "prueba"')
 
 
     def test_output(self):
@@ -71,7 +71,7 @@ class POTestCase(TestCase):
         da = mFile(content)
         po = PO(da)
 
-        assert (po.get_messages())[0].to_str() == content
+        self.assertEqual((po.get_messages())[0].to_str(), content)
 
         
     def test_fuzzy(self):
@@ -86,7 +86,8 @@ class POTestCase(TestCase):
         po = PO(da)
         translation = po.get_translation('Hello')
 
-        assert translation == 'Hello'
+        self.assertEqual(translation, 'Hello')
+
 
     def test_end_comment(self):
         """Test end comment."""
@@ -97,7 +98,9 @@ class POTestCase(TestCase):
         po = PO(da)
         translation = po.get_translation('Hello')
 
-        assert translation == 'Hello'
+        self.assertEqual(translation,'Hello')
+
+
 
 if __name__ == '__main__':
     unittest.main()

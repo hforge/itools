@@ -34,7 +34,7 @@ class BasicTestCase(TestCase):
 
     def test_lang(self):
         accept = AcceptLanguage('es')
-        handler = get_handler('../examples/hello.txt', accept=accept)
+        handler = get_handler('../examples/hello.txt')
         assert handler.serialize() == 'hola mundo\n'
 
 

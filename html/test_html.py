@@ -25,6 +25,7 @@ import HTML
 
 
 class HMLTestCase(TestCase):
+
     def test_case1(self):
         """Test element content."""
         data = '<p>hello world</p>'

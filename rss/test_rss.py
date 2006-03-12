@@ -22,7 +22,8 @@ from unittest import TestCase
 # Import from itools
 from rss import RSS, TZDateTime
 from itools.resources import get_resource
-from itools.handlers import get_handler 
+from itools.handlers import get_handler
+from itools.stl import stl
 
 
 
@@ -34,7 +35,7 @@ class RSSTestCase(TestCase):
         rss = RSS(in_resource)
         html = get_handler('test.html')
 
-        output = template.stl(rss.get_namespace())
+        output = stl(template, rss.get_namespace())
 
         self.assertEqual(output, html.to_str().strip())
 
@@ -45,7 +46,7 @@ class RSSTestCase(TestCase):
         rss = RSS(in_resource)
         html = get_handler('test_full.html')
 
-        output = template.stl(rss.get_namespace())
+        output = stl(template, rss.get_namespace())
 
         self.assertEqual(output, html.to_str().strip())
 

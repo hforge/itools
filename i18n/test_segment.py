@@ -1,5 +1,4 @@
 # -*- coding: ISO-8859-1 -*-
-#!/usr/bin/env python
 # Copyright (C) 2004 J. Thierry Fromon <from.t@free.fr>
 #
 # This program is free software; you can redistribute it and/or
@@ -16,117 +15,116 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from Python
+# Import from the Standard Library
 import unittest
 
 # Import from itools
-import segment
+from segment import Message
 
 
-class SentenceTest(unittest.TestCase):
+class SentenceTestCase(unittest.TestCase):
 
-    
     def test_simple(self):
         text = u"This is a sentence. A very little sentence."
         result = [u'This is a sentence.', 'A very little sentence.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
-            
+
     def test_single_character(self):
         text = u"""I am T. From."""
         result =  [u'I am T. From.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
- 
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
+
 
     def test_abrevations(self):
         text = u"This is Toto Inc. a big compagny."
         result = [u'This is Toto Inc. a big compagny.']
         text2 = u"Mr. From"
         result2 =  [u'Mr. From']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
-        p = sentence.Parser(text2)
-        self.assertEqual(p.parse(), result2)
-        
-        
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
+        segments = Message(text2).get_segments()
+        self.assertEqual(list(segments), result2)
+
+
     def test_between_number(self):
         text = u"Price: -12.25 Euro."
         result = [u'Price: -12.25 Euro.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
-        
-        
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
+
+
     def test_unknown_abrevations(self):
         text = u"E.T. is beautiful."
         result =  [u'E.T. is beautiful.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_bad_abrevations(self):
         text = u"E.T is beautiful."
         result =  [u'E.T is beautiful.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_number(self):
         text = u"The 12.54 and 12,54 and 152."
         result = [u'The 12.54 and 12,54 and 152.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
-        
-        
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
+
+
     def test_punctuation(self):
         text = u"A Ph.D in          mathematics?!!!!"
         result = [u'A Ph.D in mathematics?!!!!']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
-        
-       
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
+
+
     def test_etc(self):
         text = u"A lot of animals... And no man"
         result = [u'A lot of animals...', u'And no man']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
-        #self.assertRaises((AttributeError, TypeError), sentence.parse, 1)  
-    
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
+        #self.assertRaises((AttributeError, TypeError), sentence.get_segments, 1)
+
 
     def test_HTML(self):
         text = u""" <a ref="; t. ffff">hello </a>      GOGO """
         result = [u'<a ref="; t. ffff">hello </a> GOGO']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_HTMLbis(self):
         text = u"""<em>J.  David</em>"""
         result = [u'<em>J. David</em>']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
-                                    
+
     def test_HTML3(self):
         text = u"""-- toto is here-- *I am*"""
         result = [u'-- toto is here-- *I am*']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_HTML3(self):
         text = u""" <a href="http://www.debian.org/"> Debian </a> Hello. Toto"""
         result = [u'<a href="http://www.debian.org/"> Debian </a> Hello.', u'Toto']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_word(self):
         text = 'Hello. '
         result = ['Hello.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_parentheses1(self):
@@ -136,8 +134,8 @@ class SentenceTest(unittest.TestCase):
         result = ['(Exception: if the Program itself is interactive but does'
                   ' not normally print such an announcement, your work based'
                   ' on the Program is not required to print an announcement.)']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_parentheses2(self):
@@ -147,15 +145,15 @@ class SentenceTest(unittest.TestCase):
         result = ['(Hereinafter, translation is included without limitation'
                   ' in the term "modification".)',
                   'Each licensee is addressed as "you".']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_tab(self):
         text = '\n\t   <em>This folder is empty.</em>\n\t   '
         result = ['<em>This folder is empty.</em>']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_semicolon(self):
@@ -163,8 +161,8 @@ class SentenceTest(unittest.TestCase):
                ' exceptions for this.'
         result = ['Write to the Free Software Foundation;',
                   'we sometimes make exceptions for this.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
     def test_newline(self):
@@ -172,9 +170,8 @@ class SentenceTest(unittest.TestCase):
                'rights.\n'
         result = ['And you must show them these terms so they know their'
                   'rights.']
-        p = sentence.Parser(text)
-        self.assertEqual(p.parse(), result)
-
+        segments = Message(text).get_segments()
+        self.assertEqual(list(segments), result)
 
 
 

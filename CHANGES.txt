@@ -1,8 +1,20 @@
-0.13.0 (2006/XX/XX)
+0.13.0 (2006/0X/XX)
+
+  Internationalization
+  - Overhaul programming interface for "itools.i18n.fuzzy". Now made
+    of the functions: get_distance, get_similarity, is_similar and
+    get_most_similar. Drop support for abbreviations (for now).
+
+  Handlers
+  - New handler class "itools.handlers.config.Config", to manage Unix-like
+    configuration files.
 
   HTML
   - Now HTML documents always have a root element, like XML documents
-   (#153, not finished).
+    (#153, not finished).
+
+  STL
+  - Several fixes for "stl:attributes", including #268.
 
   CMS
   (Note: Instances must be updated with "icms.py update")
@@ -10,13 +22,37 @@
   - Move users password and email to the metadata (#160).
   - New configuration variable "modules" allows to load multiple Python
     modules on start-up (obsoletes the variable "root").
+  - Several fixes, including #272.
 
   Coding style
   - Normalize some filenames (lowercase), packages affected: "catalog",
     "xml" and "cms" (#154, not finished).
 
+  Command Line Interface
+  - Split the "icms.py" script into: icms-init, icms-start, icms-stop,
+    icms-update and icms-restore.
+  - Split "igettext.py" into: igettext-extract, igettext-merge and
+    igettext-build.
+  - Add the option "-w/--password" to icms-init.
+  - New script "isetup-update-locale", used to extract translatable
+    messages from the source files, and to update the message catalogs
+    (PO files) in the locale directory.
+  - New script "isetup-build", automatizes the build process (replaces
+    the Makefile).
+  - New script "isetup-test", to run all tests in one shot.
+
   Packaging
   - Move STL to its own package, "itools.stl".
+  - Move the locale folder from the "cms" sub-package to the root.
+  - Add configuration file "config", it is intended to centralize the
+    package metadata and other information required to build and install
+    "itools".
+  - Drop the files "MANIFEST.in" and "Makefile", don't needed with the
+    new build process.
+  - Now the file "version.txt" is automatically generated, drop from the
+    archive.
+  - Centralize all unit tests in the new folder "test". Update many of
+    them.
 
   Licensing
   - Switch to the GPL.

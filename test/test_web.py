@@ -21,7 +21,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from headers import HTTPDate
+from itools.web.headers import HTTPDate
 
 
 class DateTestCase(TestCase):

@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from Python
+# Import from the Standard Library
 import unittest, tempfile, os
 from unittest import TestCase
 from pprint import pprint 
@@ -24,15 +24,12 @@ from pprint import pprint
 from itools.resources import memory
 import itools.handlers.python 
 from itools.handlers import get_handler
-
-# Import from itools.handlers
 from itools.handlers.python import Python
 from itools.handlers.Folder import Folder 
 from itools.handlers.dot import Dot 
 
 
 class itaapyTools_classDiagramTestCase(TestCase):
-
 
     def setUp(self):
         self.here = os.getcwd()
@@ -44,8 +41,8 @@ class itaapyTools_classDiagramTestCase(TestCase):
 
     def test_itaapyTools_classDiagram(self):
         data = ('from a import A\n'
-                  'class B(A):\n'
-                  '  pass\n')
+                'class B(A):\n'
+                '  pass\n')
         # make a tmp directory with test.py in it
         handler = Python(memory.File(data))
         temp = tempfile.mkdtemp('.test_itools')
@@ -156,4 +153,3 @@ class itaapyTools_classDiagramTestCase(TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

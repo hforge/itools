@@ -19,11 +19,10 @@
 import unittest
 from unittest import TestCase
 
-# Import from itools.handlers
-from PO import PO
-
-# Import from itools.resources
+# Import from itools
 from itools.resources.memory import File as mFile
+from itools.gettext.PO import PO
+
 
 
 class POTestCase(TestCase):

@@ -16,8 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-import sys, os, unittest
-from pprint import pprint
+import os
+import sys
+import unittest
 from datetime import datetime
 
 # Import from itools
@@ -136,55 +137,54 @@ END:VEVENT
 BEGIN:VCALENDAR
 """
 
+
 class icalTestCase(unittest.TestCase):
 
     def test_unfolding(self):
         """Test unfolding lines."""
-        
         input = (
-        'BEGIN:VCALENDAR\n'
-        'VERSION\n'
-        ' :2.0\n'
-        'PRODID\n'
-        ' :-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN\n'
-        'BEGIN:VEVENT\n'
-        'UID\n'
-        ' :581361a0-1dd2-11b2-9a42-bd3958eeac9a\n'
-        'X-MOZILLA-RECUR-DEFAULT-INTERVAL\n'
-        ' :0\n'
-        'DTSTART\n'
-        ' ;VALUE=DATE\n'
-        ' :20050530\n'
-        'DTEND\n'
-        ' ;VALUE=DATE\n'
-        ' :20050531\n'
-        'DTSTAMP\n'
-        ' :20050601T074604Z\n'
-        'DESCRIPTION\n'
-        ' :opps !!! this is a really big information, ..., but does '
-        'it change \n'
-        ' anything in reality ?? We should see a radical change in the next \n'
-        ' 3 months, shouldn\'t we ???\\nAaah !!!\n' )
+            'BEGIN:VCALENDAR\n'
+            'VERSION\n'
+            ' :2.0\n'
+            'PRODID\n'
+            ' :-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN\n'
+            'BEGIN:VEVENT\n'
+            'UID\n'
+            ' :581361a0-1dd2-11b2-9a42-bd3958eeac9a\n'
+            'X-MOZILLA-RECUR-DEFAULT-INTERVAL\n'
+            ' :0\n'
+            'DTSTART\n'
+            ' ;VALUE=DATE\n'
+            ' :20050530\n'
+            'DTEND\n'
+            ' ;VALUE=DATE\n'
+            ' :20050531\n'
+            'DTSTAMP\n'
+            ' :20050601T074604Z\n'
+            'DESCRIPTION\n'
+            ' :opps !!! this is a really big information, ..., but does '
+            'it change \n'
+            ' anything in reality ?? We should see a radical change in the next \n'
+            ' 3 months, shouldn\'t we ???\\nAaah !!!\n' )
                   
         expected = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN',
-        'BEGIN:VEVENT',
-        'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a',
-        'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-        'DTSTART;VALUE=DATE:20050530',
-        'DTEND;VALUE=DATE:20050531',
-        'DTSTAMP:20050601T074604Z',
-        ('DESCRIPTION:opps !!! this is a really big information, ..., but does'
-        ' it change anything in reality ?? We should see a radical change in'
-        ' the next 3 months, shouldn\'t we ???\\nAaah !!!') ]
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN',
+            'BEGIN:VEVENT',
+            'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a',
+            'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+            'DTSTART;VALUE=DATE:20050530',
+            'DTEND;VALUE=DATE:20050531',
+            'DTSTAMP:20050601T074604Z',
+            ('DESCRIPTION:opps !!! this is a really big information, ..., but does'
+             ' it change anything in reality ?? We should see a radical change in'
+             ' the next 3 months, shouldn\'t we ???\\nAaah !!!') ]
 
         output = unfold_lines(input)
 
         i = 0
         for line in output:
-            #print 'input:|%s|\nexpec:|%s|' % (line,expected[i])
             self.assertEqual(line, expected[i])
             i = i + 1
 
@@ -201,7 +201,6 @@ class icalTestCase(unittest.TestCase):
 
     def test_load(self):
         """Test loading a simple calendar."""
-
         cal = icalendar(memory.File(content))
 
         # Test icalendar properties
@@ -266,7 +265,6 @@ class icalTestCase(unittest.TestCase):
 
     def test_load_2(self):
         """Test loading a 2 events calendar."""
-
         cal = icalendar(memory.File(content2))
 
         properties = []
@@ -343,7 +341,6 @@ class icalTestCase(unittest.TestCase):
 
     def test_get_events_filtered(self):
         """Test get events filtered by arguments given."""
-
         cal = icalendar(memory.File(content))
 
 #        events = cal.get_events_filtered(ATTENDEE='MAILTO:jdoe@itaapy.com')
@@ -352,11 +349,10 @@ class icalTestCase(unittest.TestCase):
 #                                          STATUS='TENTATIVE')
 #        events = cal.get_events_filtered(STATUS='TENTATIVE', PRIORITY=[1])
         events = cal.get_events_filtered(
-          ATTENDEE=[URI.decode('MAILTO:jdoe@itaapy.com'),
-                    URI.decode('MAILTO:jsmith@itaapy.com')],
-          STATUS='TENTATIVE', PRIORITY=[1])
+            ATTENDEE=[URI.decode('MAILTO:jdoe@itaapy.com'),
+                      URI.decode('MAILTO:jsmith@itaapy.com')],
+            STATUS='TENTATIVE', PRIORITY=[1])
 
-        print '- events filtered : \n'
         if events:
             for name in events[0].properties:
                 occurs = PropertyType.nb_occurrences(name)
@@ -364,12 +360,9 @@ class icalTestCase(unittest.TestCase):
                     value = events[0].properties[name]
                 else:
                     value = events[0].properties[name][0]
+##                print PropertyType.encode(name, value)
 
-                print PropertyType.encode(name, value)
 
-        print '\n'
-
-   
     def test_get_events_by_date(self):
         """Test get events filtered by date."""
 
@@ -440,10 +433,7 @@ class icalTestCase(unittest.TestCase):
     def test_to_str(self):
         """Test get_skeleton"""
         cal = icalendar(memory.File(content2))
-
-        print '*** Print calendar to_str() ***'
-        print cal.to_str()
-        print '***********************************'
+        cal.to_str()
 
 
     def test_ParameterType(self):
@@ -461,7 +451,6 @@ class icalTestCase(unittest.TestCase):
 
     def test_correspond_to_date(self):
         """ Test if a component corresponds to a given date. """
-
         cal = icalendar(memory.File(content))
         event = cal.get_components_of('VEVENT')[0]
 

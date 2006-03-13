@@ -32,7 +32,7 @@ class TMXTestCase(TestCase):
     def test_input(self):
         """Test input."""
         xliff = XLIFF(src)
-        open('test.xlf', 'w').write(xliff.to_str())
+        xliff.to_str()
 
  
 if __name__ == '__main__':

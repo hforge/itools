@@ -32,7 +32,8 @@ class TMXTestCase(TestCase):
     def test_input(self):
         """Test input."""
         tmx = TMX(src)
-        open('test.tmx', 'w').write(tmx.to_str())
+        tmx.to_str()
+
 
 
 if __name__ == '__main__':

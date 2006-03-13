@@ -21,7 +21,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.resources import memory
-import HTML
+from itools.html import HTML
 
 
 class HMLTestCase(TestCase):
@@ -116,7 +116,7 @@ class TranslationTestCase(TestCase):
         html = memory.File(html)
         xhtml = parsers.XHTML.Document(html)
         messages = list(xhtml.get_messages())
-        assert messages == [u'hello world']
+        self.assertEqual(messages, [u'hello world'])
 
 
     def test_case2(self):
@@ -125,7 +125,7 @@ class TranslationTestCase(TestCase):
         html = memory.File(html)
         xhtml = parsers.XHTML.Document(html)
         messages = list(xhtml.get_messages())
-        assert messages == [u'The beach']
+        self.assertEqual(messages, [u'The beach'])
 
 
     def test_case3(self):
@@ -135,7 +135,7 @@ class TranslationTestCase(TestCase):
         html = memory.File(html)
         xhtml = parsers.XHTML.Document(html)
         messages = list(xhtml.get_messages())
-        assert messages == [u'Change']
+        self.assertEqual(messages, [u'Change'])
 
 
     def test_case4(self):
@@ -150,7 +150,7 @@ class TranslationTestCase(TestCase):
         
         html = xhtml.translate(p)
         result = self.template % '<p>hola mundo </p>'
-        assert html == result
+        self.assertEqual(html, result)
         
 
     def test_case5(self):
@@ -167,7 +167,7 @@ class TranslationTestCase(TestCase):
         #print '-----------------', xhtml
         #html = xhtml.translate(p)
         #result = self.template % '<img src="beach.jpg" alt="La playa">'
-        #assert html == result
+        #self.assertEqual(html, result)
 
 
 
@@ -186,8 +186,7 @@ class TranslationTestCase(TestCase):
         result = self.template % '<input type="text" name="id"/>\n' \
                                  '<input type="submit" value="Cambiar/">'
 
-        assert html == result
-
+        self.assertEqual(html, result)
 
 
 

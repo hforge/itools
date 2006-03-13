@@ -21,11 +21,12 @@ from unittest import TestCase
 
 # Import from itools
 from itools.resources import memory
-import XHTML
+import itools.xhtml import XHTML
 
 
 
 class SegmentationTestCase(TestCase):
+
     def test_paragraph(self):
         """Test formatted paragraph"""
         data = '<p xmlns="http://www.w3.org/1999/xhtml">\n' \
@@ -124,7 +125,7 @@ class TranslationTestCase(TestCase):
         xhtml = parsers.XHTML.Document(data)
         messages = list(xhtml.get_messages())
 
-        assert messages == [u'hello litle world']
+        self.assertEqual(messages, [u'hello litle world'])
 
 
     def test_case2(self):
@@ -134,7 +135,7 @@ class TranslationTestCase(TestCase):
         xhtml = parsers.XHTML.Document(data)
         messages = list(xhtml.get_messages())
 
-        assert messages == [u'The beach']
+        self.assertEqual(messages, [u'The beach'])
 
 
     def test_case3(self):
@@ -145,7 +146,7 @@ class TranslationTestCase(TestCase):
         xhtml = parsers.XHTML.Document(data)
         messages = list(xhtml.get_messages())
 
-        assert messages == [u'Change']
+        self.assertEqual(messages, [u'Change'])
 
 
     def test_case4(self):
@@ -164,7 +165,7 @@ class TranslationTestCase(TestCase):
         xhtml = parsers.XHTML.Document(html)
         
         data = list(xhtml.get_messages())
-        assert data == [u'hola mundo']
+        self.assertEqual(data, [u'hola mundo'])
 
 
     def test_case5(self):
@@ -182,8 +183,7 @@ class TranslationTestCase(TestCase):
         xhtml = parsers.XHTML.Document(html)
 
         data = list(xhtml.get_messages())
-        assert data == [u'La playa']
-
+        self.assertEqual(data, [u'La playa'])
 
 
 

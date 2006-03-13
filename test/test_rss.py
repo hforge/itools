@@ -62,7 +62,7 @@ class RSSTestCase(TestCase):
         in_resource = get_resource('test.rss')
         rss = RSS(in_resource)
         ns = rss.get_namespace()
-        assert len(ns['channel']['items']) == 2
+        self.assertEqual(len(ns['channel']['items']), 2)
 
 
     def test_datetime(self):

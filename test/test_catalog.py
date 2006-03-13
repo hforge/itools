@@ -100,20 +100,20 @@ class IITestCase(TestCase):
     def test_hit(self):
         ii = IIndex()
         ii.index_term(u'hello', 0, 0)
-        assert bool(ii.search_word(u'hello')) is True
+        self.assertEqual(bool(ii.search_word(u'hello')), True)
 
 
     def test_miss(self):
         ii = IIndex()
         ii.index_term(u'hello', 0, 0)
-        assert bool(ii.search_word(u'bye')) is False
+        self.assertEqual(bool(ii.search_word(u'bye')), False)
 
 
     def test_unindex(self):
         ii = IIndex()
         ii.index_term(u'hello', 0, 0)
         ii.unindex_term(u'hello', 0)
-        assert bool(ii.search_word(u'hello')) is False
+        self.assertEqual(bool(ii.search_word(u'hello')), False)
 
 
 

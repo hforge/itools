@@ -21,7 +21,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.resources import memory
-import itools.xml import XML
+from itools.xml import XML
 
 
 

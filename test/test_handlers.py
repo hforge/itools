@@ -24,7 +24,7 @@ from itools.resources import memory
 from itools.handlers import get_handler
 from itools.handlers.python import Python
 from itools.handlers.dot import Dot
-from itools.handler.Var import Var
+from itools.handlers.Var import Var
 
 
 

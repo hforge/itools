@@ -33,17 +33,17 @@ class STLTestCase(unittest.TestCase):
         expected_tokens = [(TID, 'a'), (TSLASH, None), (TID, 'b'),
                            (TSLASH, None), (TID, 'c')]
 
-        assert expression.path == ('a', 'b', 'c')
-        assert expression.parameters == ()
+        self.assertEqual(expression.path, ('a', 'b', 'c'))
+        self.assertEqual(expression.parameters, ())
 
 
     def test_none(self):
         expression = Expression('none')
         expected_tokens = [(TNONE, 'none')]
 
-        assert expression.path == ()
-        assert expression.parameters == ()
-        assert expression.evaluate(None, None) == None
+        self.assertEqual(expression.path, ())
+        self.assertEqual(expression.parameters, ())
+        self.assertEqual(expression.evaluate(None, None), None)
 
 
     def test_traversal(self):
@@ -54,7 +54,7 @@ class STLTestCase(unittest.TestCase):
         expression = Expression('a/b/c')
         value = expression.evaluate(stack, repeat)
 
-        assert value == 'hello world'
+        self.assertEqual(value, 'hello world')
 
 
     def test_function(self):
@@ -70,7 +70,7 @@ class STLTestCase(unittest.TestCase):
         expression = Expression('sum(5)')
         value = expression.evaluate(stack, repeat)
 
-        assert value == '15'
+        self.assertEqual(value, '15')
 
 
     def test_template(self):
@@ -81,7 +81,7 @@ class STLTestCase(unittest.TestCase):
         template = get_handler('test-in.xml')
         output = stl(template, namespace)
 
-        assert output == get_handler('test-out.xml').to_str()
+        self.assertEqual(output, get_handler('test-out.xml').to_str())
 
 
     def test_template2(self):
@@ -93,7 +93,7 @@ class STLTestCase(unittest.TestCase):
         template = get_handler('test20-in.xml')
         output = stl(template, namespace)
 
-        assert output == get_handler('test2-out.xml').to_str()
+        self.assertEqual(output, get_handler('test2-out.xml').to_str())
 
 
 ##    def test_nested(self):

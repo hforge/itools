@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Nicolas OYEZ <noyez@itaapy.com>
+# Copyright (C) 2005 Nicolas Oyez <noyez@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,18 +21,18 @@ from unittest import TestCase
 
 # Import from itools
 from itools.resources import get_resource
-from TMX import TMX
+from itools.xliff.XLIFF import XLIFF
 
 
-src = get_resource('localizermsgs.tmx')
+src = get_resource('gettext_en_es.xlf')
 
 
 class TMXTestCase(TestCase):
 
     def test_input(self):
         """Test input."""
-        tmx = TMX(src)
-        open('test.tmx', 'w').write(tmx.to_str())
+        xliff = XLIFF(src)
+        open('test.xlf', 'w').write(xliff.to_str())
 
  
 if __name__ == '__main__':

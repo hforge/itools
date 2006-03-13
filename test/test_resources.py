@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,12 +22,47 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from __init__ import get_resource
-import memory
-import zodb
+from itools.resources import file, http, memory, zodb, get_resource
 
 # Import from the ZODB
 from ZODB.FileStorage import FileStorage
+
+
+
+class FileTestCase(TestCase):
+
+    def setUp(self):
+        self.tests = get_resource('tests')
+
+
+    def test_has_resource(self):
+        self.assertEqual(self.tests.has_resource('index.html.en'), True)
+
+
+    def test_has_not_resource(self):
+        self.assertEqual(self.tests.has_resource('index.html.es'), False)
+
+
+    def test_link(self):
+        c = self.tests.get_resource('c')
+        tests = c.get_resource('..')
+        self.assertEqual('c' in tests.get_resource_names(), True)
+
+
+##    def test_python(self):
+##        resource = get_resource('base.py')
+##        self.assertEqual(resource.get_mimetype(), 'text/x-python')
+
+
+##    def test_html(self):
+##        resource = get_resource('tests/index.html.en')
+##        self.assertEqual(resource.get_mimetype(), 'text/html')
+
+
+##    def test_folder(self):
+##        folder = get_resource('tests')
+##        self.assertEqual(folder.get_mimetype(), 'application/x-not-regular-file')
+
 
 
 class ZODBTestCase(TestCase):

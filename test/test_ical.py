@@ -15,27 +15,21 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-# Import from Python
+# Import from the Standard Library
 import sys, os, unittest
 from pprint import pprint
 from datetime import datetime
-
-# To enable to have tests in a test folder
-sys.path.insert(1, os.getcwd())
-sys.path.insert(1, '/'.join(os.getcwd().split('/')[:-1]))
 
 # Import from itools
 from itools.resources import get_resource
 from itools.resources import memory
 from itools.handlers.Text import Text
 from itools.datatypes import URI
-
-# Import from ical
-from icalendar import icalendar, Property
-from icalendar import unfold_lines
+from itools.ical.icalendar import icalendar, Property
+from itools.ical.icalendar import unfold_lines
 from itools.ical import types as icalTypes
 from itools.ical.types import PropertyType, ParameterType, ComponentType
+
 
 # Example with 1 event
 content = """ 

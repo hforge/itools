@@ -47,6 +47,8 @@ from users import User, UserFolder
 from utils import comeback
 from WebSite import WebSite
 
+
+
 class Root(Group, WebSite):
 
     class_id = 'iKaaro'
@@ -283,24 +285,26 @@ class Root(Group, WebSite):
     # Email
     def send_email(self, from_addr, to_addr, subject, body, **kw):
         context = get_context()
-        handler_path = context.handler.get_abspath()
-        method = context.method
-        
+        response = context.response
+
+        # Hard coded encoding, to UTF-8
+        encoding = 'UTF-8'
         # Build the message
-        message_pattern = u'To: %(to_addr)s\n' \
-                          u'From: %(from_addr)s\n' \
-                          u'Subject: %(subject)s\n' \
-                          u'\n' \
-                          u'%(body)s\n'
+        message_pattern = (
+            u'To: %(to_addr)s\n'
+            u'From: %(from_addr)s\n'
+            u'Subject: %(subject)s\n'
+            u'Content-Transfer-Encoding: 8bit\n'
+            u'Content-Type: text/plain; charset="%(encoding)s"\n'
+            u'\n'
+            u'%(body)s\n')
         message = message_pattern % {'to_addr': to_addr,
                                      'from_addr': from_addr,
                                      'subject': subject,
-                                     'body': body}
-        message = message.encode('UTF-8')
+                                     'body': body,
+                                     'encoding': encoding}
+        message = message.encode(encoding)
         # Send email
-        now = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-        uri = "%s/;%s" % (handler_path , method)
-
         smtp_host = self.smtp_host
         smtp = smtplib.SMTP(smtp_host)
         smtp.sendmail(from_addr, to_addr, message)

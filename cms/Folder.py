@@ -401,7 +401,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 line['title_or_name'] = document.title_or_name
                 line['name'] = str(self.get_pathto(document))
                 line['format'] = document.get_property('format')
-                line['class_title'] = document.class_title
+                line['class_title'] = self.gettext(document.class_title)
                 line['title'] = document.get_property('dc:title')
                 line['description'] = document.get_property('dc:description')
                 line['is_file'] = isinstance(resource, base.File)
@@ -431,9 +431,9 @@ class Folder(Handler, handlers.Folder.Folder):
                 line['mtime'] = document.mtime.strftime('%Y-%m-%d %H:%M')
 
                 line['workflow_state'] = ''
-                if hasattr(document, 'workflow_state'):
-                    state = document.workflow_state
-                    line['workflow_state'] = self.gettext(state)
+                if isinstance(document, WorkflowAware):
+                    state = document.get_state()
+                    line['workflow_state'] = self.gettext(state['title'])
 
                 # Document details
                 line['details'] = '%s-details' % name

@@ -75,18 +75,12 @@ def comeback(message, goto=None):
     if not isinstance(goto, uri.Reference):
         goto = uri.get_reference(goto)
 
-    if goto.query:
-        # XXX this demonstrate a lack in the API when you want to manipulate
-        # the query as a mapping
-        query = copy(goto.query)
-        query['message'] = Unicode.encode(message)
-        query = str(query)
-    else:
-        query = 'message=' + Unicode.encode(message)
-
-    # XXX an API?
+    # XXX This code would be simpler if the URI references were inmutable
+    # and provided an API ala datetime to build new references from others.
+    query = copy(goto.query)
+    query['message'] = Unicode.encode(message)
     goto = uri.Reference(goto.scheme, goto.authority, goto.path, query,
-        goto.fragment)
+                         goto.fragment)
     
     context.redirect(goto)
 

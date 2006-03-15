@@ -337,42 +337,53 @@ class Path(list):
 # Query
 ##########################################################################
 
-class Query(dict):
+class Query(object):
     """
-    (XXX) RFC2396 does not specifies a format for the query component,
-    however we assume it is a sequence of 'key=value' separated by '&',
-    like 'width=800&height=600'. Search for more details about queries,
-    maybe in the HTTP spec.
+    Implements the 'application/x-www-form-urlencoded' content type (see
+    http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1). The
+    information decode as a dictionary.
+
+    XXX This is not specified by RFC2396, so maybe we should not parse the
+    query for the generic case.
+
+    XXX The Python functions 'cgi.parse_qs' and 'urllib.urlencode' provide
+    similar functionality, maybe we should just be a thin wrapper around
+    them.
     """
 
-    def __init__(self, query):
-        # XXX Right now when we find more than one value with the same
-        # name we store all values as a list, otherwise it will be a
-        # singleton. to Look http://docs.python.org/lib/node472.html
-        # and maybe implement something similar.
-        if query:
-            for x in query.split('&'):
-                x = urllib.unquote_plus(x)
+    default = {}
+
+
+    @staticmethod
+    def decode(data):
+        query = {}
+        if data:
+            for x in data.split('&'):
                 if x:
                     if '=' in x:
                         key, value = x.split('=', 1)
+                        value = urllib.unquote_plus(value)
                     else:
                         key, value = x, None
 
-                    if key in self:
-                        old_value = self[key]
+                    key = urllib.unquote_plus(key)
+                    if key in query:
+                        old_value = query[key]
                         if isinstance(old_value, list):
                             old_value.append(value)
                         else:
                             value = [old_value, value]
-                            dict.__setitem__(self, key, value)
+                            query[key] = value
                     else:
-                        dict.__setitem__(self, key, value)
+                        query[key] = value
+        return query
 
 
-    def __str__(self):
+    @staticmethod
+    def encode(query):
         line = []
-        for key, value in self.items():
+        for key, value in query.items():
+            key = urllib.quote_plus(key)
             if value is None:
                 line.append(key)
             elif isinstance(value, list):
@@ -381,10 +392,6 @@ class Query(dict):
             else:
                 line.append('%s=%s' % (key, urllib.quote_plus(value)))
         return '&'.join(line)
-
-
-    def __eq__(self, other):
-        return str(self) == str(other)
 
 
 
@@ -433,8 +440,9 @@ class Reference(object):
         path = str(self.path)
         if path == '.':
             path = ''
-        reference = urlunsplit((self.scheme, str(self.authority), path,
-                                str(self.query), self.fragment))
+        query = Query.encode(self.query)
+        reference = urlunsplit((self.scheme, str(self.authority), path, query,
+                                self.fragment))
         if reference == '':
             if self.fragment is not None:
                 return '#'
@@ -577,31 +585,32 @@ class EmptyReference(Reference):
 
 def decode(data):
     if isinstance(data, Path):
-        return Reference('', Authority(''), data, Query(''), None)
+        return Reference('', Authority(''), data, {}, None)
 
-    if isinstance(data, (str, unicode)):
-        # Special case, the empty reference
-        if data == '':
-            return EmptyReference()
+    if not isinstance(data, (str, unicode)):
+        raise TypeError, 'unexpected %s' % type(reference)
 
-        # Special case, the empty fragment
-        if data == '#':
-            return Reference('', Authority(''), Path(''), Query(''), '')
+    # Special case, the empty reference
+    if data == '':
+        return EmptyReference()
 
-        data = urllib.unquote_plus(data)
+    # Special case, the empty fragment
+    if data == '#':
+        return Reference('', Authority(''), Path(''), {}, '')
 
-        # All other cases, split the reference in its components
-        scheme, authority, path, query, fragment = urlsplit(data)
-        if fragment == '':
-            fragment = None
+    # All other cases, split the reference in its components
+    scheme, authority, path, query, fragment = urlsplit(data)
+    # The authority
+    authority = urllib.unquote(authority)
+    # The path
+    path = urllib.unquote(path)
+    # The query
+    try:
+        query = Query.decode(query)
+    except ValueError:
+        pass
+    # The fragment
+    if fragment == '':
+        fragment = None
 
-        # Parse the query
-        try:
-            query = Query(query)
-        except ValueError:
-            pass
-
-        return Reference(scheme, Authority(authority), Path(path), query,
-                         fragment)
-
-    raise TypeError, 'unexpected %s' % type(reference)
+    return Reference(scheme, Authority(authority), Path(path), query, fragment)

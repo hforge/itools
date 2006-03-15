@@ -93,6 +93,10 @@ class File(Resource, base.File):
         self._file.seek(offset, whence)
 
 
+    def tell(self):
+        return self._file.tell()
+
+
     def read(self, size=-1):
         return self._file.read(size)
 

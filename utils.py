@@ -88,26 +88,29 @@ class build_py_fixed(build_py):
 ############################################################################
 def setup(description='', classifiers=[]):
     from __init__ import __version__
-    # START HACK
-    start_local_import()
-    from resources import get_resource
-    from handlers.config import Config
-    end_local_import()
-    # END HACK
+    try:
+        from itools.resources import get_resource
+        from handlers.config import Config
+    except ImportError:
+        # Are we trying to install itools?
+        # XXX This is ugly, because Python does not support relative imports
+        start_local_import()
+        from resources import get_resource
+        from handlers.config import Config
+        end_local_import()
 
     config = Config(get_resource('setup.conf'))
 
-    # The package name
+    # Initialize variables
     package_name = config.get_value('name')
-
-    # The list of sub-packages
-    subpackages = config.get_value('packages').split()
-
-    # The data in the packages
     packages = [package_name]
     package_data = {package_name: []}
-    for subpackage_name in subpackages:
-        packages.append('%s.%s' % (package_name, subpackage_name))
+
+    # The sub-packages
+    if config.has_value('packages'):
+        subpackages = config.get_value('packages').split()
+        for subpackage_name in subpackages:
+            packages.append('%s.%s' % (package_name, subpackage_name))
 
     # Write the manifest file if it does not exists
     if not os.path.exists('MANIFEST'):
@@ -132,8 +135,11 @@ def setup(description='', classifiers=[]):
             files.append(os.path.join(*path[1:]))
 
     # The scripts
-    scripts = config.get_value('scripts').split()
-    scripts = [ os.path.join(*['scripts', x]) for x in scripts ]
+    if config.has_value('scripts'):
+        scripts = config.get_value('scripts').split()
+        scripts = [ os.path.join(*['scripts', x]) for x in scripts ]
+    else:
+        scripts = []
 
     core.setup(name = package_name,
                version = __version__,

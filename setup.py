@@ -18,22 +18,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-from distutils import core
 import os
 
 # Import from itools
-from __init__ import __version__
-from utils import start_local_import, end_local_import, build_py_fixed
-############################################################################
-# START HACK
-start_local_import()
-from resources import get_resource
-from handlers.config import Config
-end_local_import()
-# END HACK
-############################################################################
+from utils import setup
 
 
+# XXX Information to be moved to setup.conf
 description = """itools is a Python library, it groups a number of packages
 into a single meta-package for easier development and deployment. The packages
 included are:
@@ -77,68 +68,5 @@ classifiers = ['Development Status :: 3 - Alpha',
 
 
 
-def setup():
-    config = Config(get_resource('setup.conf'))
-
-    # The package name
-    package_name = config.get_value('name')
-
-    # The list of sub-packages
-    subpackages = config.get_value('packages').split()
-
-    # The data in the packages
-    packages = [package_name]
-    package_data = {package_name: []}
-    for subpackage_name in subpackages:
-        packages.append('%s.%s' % (package_name, subpackage_name))
-
-    # Write the manifest file if it does not exists
-    if not os.path.exists('MANIFEST'):
-        os.system('git-ls-files > MANIFEST')
-
-    # The data files
-    for line in open('MANIFEST').readlines():
-        line = line.strip()
-        # Python files are included by default
-        if line.endswith('.py'):
-            continue
-
-        path = line.split('/')
-        n = len(path)
-        if n == 1:
-            package_data[package_name].append(line)
-        elif path[0] == 'locale':
-            package_data[package_name].append(line)
-        elif path[0] in subpackages:
-            subpackage = '%s.%s' % (package_name, path[0])
-            files = package_data.setdefault(subpackage, [])
-            files.append(os.path.join(*path[1:]))
-
-    # The scripts
-    scripts = config.get_value('scripts').split()
-    scripts = [ os.path.join(*['scripts', x]) for x in scripts ]
-
-    core.setup(name = package_name,
-               version = __version__,
-               # Metadata
-               # XXX Broken distutils, "sdist" don't likes unicode strings,
-               # and "register" don't likes normal strings.
-               author = config.get_value('author_name'),
-               author_email = config.get_value('author_email'),
-               license = config.get_value('license'),
-               url = config.get_value('url'),
-               description = config.get_value('description'),
-               long_description = description,
-               classifiers = classifiers,
-               # Packages
-               package_dir = {package_name: ''},
-               packages = packages,
-               package_data = package_data,
-               # Scripts
-               scripts = scripts,
-               # XXX broken distutils
-               cmdclass={'build_py': build_py_fixed})
-
-
 if __name__ == '__main__':
-    setup()
+    setup(description= description, classifiers=classifiers)

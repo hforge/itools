@@ -191,9 +191,8 @@ dl.thumb
   margin: 0 1em 1em 0;
   text-align: center;
 }
-dl.thumb dt { font-weight: bold; }
-dl.thumb dt img {
-  width: 48px;
+dl.thumb dt {
+  font-weight: bold;
   height: 48px;
 }
 dl.thumb dd {

@@ -67,7 +67,9 @@ class Image(File):
         self.resource.open()
         im = PILImage.open(self.resource)
         if self.state.width > width or self.state.height > height:
-            im.thumbnail((width, height))
+            # XXX Improve the quality of the thumbnails by cropping? The
+            # only problem would be the loss of information.
+            im.thumbnail((width, height), PILImage.ANTIALIAS)
             thumbnail = StringIO()
             im.save(thumbnail, im.format)
             data = thumbnail.getvalue()

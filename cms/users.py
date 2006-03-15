@@ -89,7 +89,7 @@ class User(AccessControl, Folder):
             return True
 
         # The all-powerfull
-        return self.is_admin()
+        return self.is_admin(user)
 
 
     is_allowed_to_edit = is_self_or_admin

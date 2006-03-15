@@ -28,7 +28,7 @@ from Folder import Folder
 
 class AccessControl(AccessControlBase):
 
-    def is_admin(self, user=None, object=None):
+    def is_admin(self, user, object=None):
         if user is None:
             return False
         return get_context().root.is_in_role('admins', user.name)
@@ -52,7 +52,7 @@ class AccessControl(AccessControlBase):
 
     def is_allowed_to_edit(self, user, object):
         # By default only the admin can touch stuff
-        return self.is_admin()
+        return self.is_admin(user)
 
 
     # By default all other change operations (add, remove, copy, etc.)
@@ -93,7 +93,7 @@ class RoleAware(AccessControl, Folder):
             return False
 
         # Admins are all powerfull
-        if self.is_admin():
+        if self.is_admin(user):
             return True
 
         # Reviewers and Members are allowed to edit
@@ -111,7 +111,7 @@ class RoleAware(AccessControl, Folder):
             return False
 
         # Admins are all powerfull
-        if self.is_admin():
+        if self.is_admin(user):
             return True
 
         # Reviewers can do everything

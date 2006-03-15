@@ -108,7 +108,7 @@ def init(parser, options, target):
         print '*   password: %s' % password
     print '*'
     print '* To start the new instance type:'
-    print '*   %s start %s' % (parser.get_prog_name(), target)
+    print '*   icms-start %s' % target
     print '*'
 
 

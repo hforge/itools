@@ -77,7 +77,7 @@ class Request(Message):
             if self.has_header('content-type'):
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
-                    parameters = uri.generic.Query(body)
+                    parameters = uri.generic.Query.decode(body)
                 elif type.startswith('multipart/'):
                     boundary = type_parameters.get('boundary')
                     boundary = '--%s' % boundary

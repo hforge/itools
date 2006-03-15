@@ -64,15 +64,17 @@ class Image(File):
         if PILImage is None:
             return None
 
-        data = self.to_str()
-        file = StringIO(data)
-        im = PILImage.open(file)
+        self.resource.open()
+        im = PILImage.open(self.resource)
         if self.state.width > width or self.state.height > height:
             im.thumbnail((width, height))
             thumbnail = StringIO()
             im.save(thumbnail, im.format)
             data = thumbnail.getvalue()
             thumbnail.close()
+        else:
+            data = self.to_str()
+        self.resource.close()
 
         return data, im.format
 

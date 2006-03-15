@@ -28,7 +28,6 @@ from itools.uri.mailto import Mailto
 
 
 
-
 class PathNormalizeTestCase(unittest.TestCase):
     """These tests come from the uri.generic.normalize_path docstring."""
 
@@ -240,7 +239,7 @@ class ParseTestCase(TestCase):
         self.assertEqual(ref.scheme, 'http')
         self.assertEqual(ref.authority, 'example.com')
         self.assertEqual(ref.path, '/a/b/c')
-        self.assertEqual(ref.query, 'query')
+        self.assertEqual(ref.query, {'query': None})
         self.assertEqual(ref.fragment, 'fragment')
 
 
@@ -266,7 +265,7 @@ class ParseTestCase(TestCase):
         self.assertEqual(bool(ref.scheme), False)
         self.assertEqual(bool(ref.authority), False)
         self.assertEqual(len(ref.path), 0)
-        self.assertEqual(ref.query, 'query')
+        self.assertEqual(ref.query, {'query': None})
 
 
 

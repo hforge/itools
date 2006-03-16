@@ -156,6 +156,10 @@ class Server(object):
         pass
 
 
+    def after_rollback(self):
+        pass
+
+
     def handle_request(self, connection):
         # Build the request object
         resource = File(connection)
@@ -325,6 +329,7 @@ class Server(object):
                     except:
                         self.log_error()
                         transaction.rollback()
+                        self.after_rollback()
                         response.set_status(500)
                         response_body = root.internal_server_error()
                     else:

@@ -34,14 +34,16 @@ def restore(parser, options, target):
         message = 'Restore database from backup (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Restoring...',
-            os.system('rsync -a %s/database.bak/ %s/database'% (target,target))
+            cmd = 'rsync -a --delete %s/database.bak/ %s/database'
+            os.system(cmd % (target, target))
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     elif state == 'END':
         message = 'Backup disrupted, update backup from database (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Backup...',
-            os.system('rsync -a %s/database/ %s/database.bak'% (target,target))
+            cmd = 'rsync -a --delete %s/database/ %s/database.bak'
+            os.system(cmd % (target, target))
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     else:

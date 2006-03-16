@@ -100,6 +100,13 @@ class Server(web.server.Server):
     def after_commit(self):
         target = self.target
         open('%s/state' % target, 'w').write('END')
-        os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+        cmd = 'rsync -a --delete %s/database/ %s/database.bak'
+        os.system(cmd % (target, target))
         open('%s/state' % target, 'w').write('OK')
 
+
+    def after_rollback(self):
+        target = self.target
+        cmd = 'rsync -a --delete %s/database.bak/ %s/database'
+        os.system(cmd % (target, target))
+        open('%s/state' % target, 'w').write('OK')

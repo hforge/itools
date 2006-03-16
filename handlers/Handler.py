@@ -200,20 +200,15 @@ class Handler(Node):
 
         transaction = get_transaction()
         transaction.lock()
-        resource_transaction = resource.get_transaction()
         try:
             resource.open()
             self._save_state(resource)
         except:
             resource.close()
-            if resource_transaction is not None:
-                resource_transaction.abort()
             transaction.release()
             raise
         else:
             resource.close()
-            if resource_transaction is not None:
-                resource_transaction.commit()
             if resource is self.resource:
                 if self in transaction:
                     transaction.remove(self)

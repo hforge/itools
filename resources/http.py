@@ -57,6 +57,8 @@ class File(Resource, base.File):
 
     def get_mtime(self):
         mtime = urlopen(str(self.uri)).info().getdate('Last-Modified')
+        if mtime is None:
+            return None
         mtime = datetime.fromtimestamp(time.mktime(mtime))
         return mtime
 

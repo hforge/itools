@@ -25,22 +25,10 @@ thread_lock = thread.allocate_lock()
 
 class Transaction(set):
 
-    def _get_resource_transactions(self):
-        transactions = set()
-        for handler in self:
-            transaction = handler.resource.get_transaction()
-            if transaction is not None:
-                transactions.add(transaction)
-        return transactions
-
-
     def rollback(self):
         if not self:
             return
 
-        # Abort resource layer transactions
-        for transaction in self._get_resource_transactions():
-            transaction.abort()
         # Reset handlers
         for handler in self:
             handler.timestamp = datetime.datetime(1900, 1, 1)
@@ -79,12 +67,6 @@ class Transaction(set):
             self.release()
             raise
         else:
-            # Commit resource layer transactions
-            for transaction in self._get_resource_transactions():
-                # XXX This ('setUser' and 'note' is specific to the ZODB).
-                transaction.setUser(username, '')
-                transaction.note(note)
-                transaction.commit()
             # Update handlers timestamp
             for handler in self:
                 handler.timestamp = handler.resource.get_mtime()

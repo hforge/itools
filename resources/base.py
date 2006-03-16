@@ -106,13 +106,6 @@ class Resource(object):
         raise NotImplementedError
 
 
-    ##########################################################################
-    # Transactions
-    ##########################################################################
-    def get_transaction(self):
-        pass
-
-
 
 class File(Resource):
 

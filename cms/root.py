@@ -239,6 +239,8 @@ class Root(Group, WebSite):
 
 
     def reindex_handler(self, handler):
+        if handler.real_handler is not None:
+            handler = handler.real_handler
         self.unindex_handler(handler)
         self.index_handler(handler)
 

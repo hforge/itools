@@ -92,12 +92,15 @@ class Parser(HTMLParser):
 
         # Check the encoding
         if name == 'meta':
-            if ('http-equiv', 'Content-Type') in attrs:
-                for attribute_name, attribute_value in attrs:
-                    if attribute_name == 'content':
-                        encoding = attribute_value.split(';')[-1].strip()[8:]
-                        self.encoding = encoding
-                        break
+            is_content_type = False
+            for attribute_name, attribute_value in attrs:
+                if attribute_name == 'http-equiv':
+                    if attribute_value.lower() == 'content-type':
+                        is_content_type = True
+                elif attribute_name == 'content':
+                    content_value = attribute_value
+            if is_content_type is True:
+                self.encoding = attribute_value.split(';')[-1].strip()[8:]
 
         # Attributes
         attributes = {}

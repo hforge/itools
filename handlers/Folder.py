@@ -156,13 +156,6 @@ class Folder(Handler):
         self.timestamp = self.resource.get_mtime()
 
 
-    # XXX To be removed
-    def _del_handler(self, name):
-        self.resource.del_resource(name)
-        del self.state.cache[name]
-        self.timestamp = self.resource.get_mtime()
-
-
     #########################################################################
     # API (public)
     #########################################################################

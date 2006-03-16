@@ -194,6 +194,8 @@ class Server(object):
 
         # Get the root handler
         root = self.root
+        if root.is_outdated():
+            root.load_state()
         context.root = root
 
         # Authenticate

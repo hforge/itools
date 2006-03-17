@@ -1,9 +1,12 @@
-0.13.0 (2006/0X/XX)
+0.13.0 (2006/03/2X)
 
   Internationalization
   - Overhaul programming interface for "itools.i18n.fuzzy". Now made
     of the functions: get_distance, get_similarity, is_similar and
     get_most_similar. Drop support for abbreviations (for now).
+
+  Resources
+  - Implement "tell" in file resources.
 
   Handlers
   - New handler class "itools.handlers.config.Config", to manage Unix-like
@@ -22,7 +25,8 @@
   - Move users password and email to the metadata (#160).
   - New configuration variable "modules" allows to load multiple Python
     modules on start-up (obsoletes the variable "root").
-  - Several fixes, including #272.
+  - Several fixes (including #255, #266, #272) and user interface
+    improvements.
 
   Coding style
   - Normalize some filenames (lowercase), packages affected: "catalog",
@@ -44,7 +48,7 @@
   Packaging
   - Move STL to its own package, "itools.stl".
   - Move the locale folder from the "cms" sub-package to the root.
-  - Add configuration file "config", it is intended to centralize the
+  - Add configuration file "setup.conf", it is intended to centralize the
     package metadata and other information required to build and install
     "itools".
   - Drop the files "MANIFEST.in" and "Makefile", don't needed with the

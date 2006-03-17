@@ -48,7 +48,7 @@ Bug Tracker
 http://in-girum.net/cgi-bin/bugzilla/index.cgi
 
 
-Copyritght
+Copyright
 ----------
 
 Copyright 2002-2005  J. David Ibáñez <jdavid@itaapy.com>
@@ -65,6 +65,10 @@ And:
  - Piotr Macuk <piotr@macuk.pl>
  - Cedric Moliard <>
  - Nicolas Oyez <noyez@gmail.com>
+
+Most icons used are copyrighted by the Tango Desktop Project, and licensed
+under the Creative Commons Attribution Share-Alike license, including the
+modifications to them. (http://creativecommons.org/licenses/by-sa/2.5/)
 
 
 License

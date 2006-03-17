@@ -28,7 +28,7 @@ dt { font-weight: bold; }
 
 #header {
   margin-bottom: 6px;
-  padding-top: 30px;
+  padding: 21px 6px 0 0;
   background: #729fcf url(images/logo.png) left bottom no-repeat;
   font-size: 80%;
 }

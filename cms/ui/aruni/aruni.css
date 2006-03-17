@@ -21,7 +21,7 @@ p {
 
 select, input, textarea, button { color: #000; background: #fff; }
 
-a { color: #336c99; }
+a { color: #3465a4; }
 a img { border: 0; }
 
 dt { font-weight: bold; }
@@ -29,7 +29,7 @@ dt { font-weight: bold; }
 #header {
   margin-bottom: 6px;
   padding-top: 30px;
-  background: #deeff1 url(images/logo.png) left bottom no-repeat;
+  background: #729fcf url(images/logo.png) left bottom no-repeat;
   font-size: 80%;
 }
 
@@ -57,12 +57,12 @@ dt { font-weight: bold; }
 }
 #breadcrumbs li { display: inline; }
 #breadcrumbs a,
-#breadcrumbs span { color: #333; }
+#breadcrumbs span { color: #888a85; }
 
 #tabs, #subtabs {
   height: 1.2em;
-  border-top: 1px solid #ccc;
-  border-left: 1px solid #ccc;
+  border-top: 1px solid #d3d7cf;
+  border-left: 1px solid #d3d7cf;
   padding: 6px 0px;
   list-style: none;
 }
@@ -70,7 +70,7 @@ dt { font-weight: bold; }
 #subtabs li {
   display: inline;
   margin: 0;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #d3d7cf;
   padding: 6px;
   white-space: nowrap;
 }
@@ -85,31 +85,31 @@ dt { font-weight: bold; }
 #subtabs .tab:hover a { color: #fff; }
 
 #tabs { margin: 3px 0 0 0; }
-#tabs a { color: #333; }
+#tabs a { color: #2e3436; }
 #tabs .tab_active,
 #tabs .tab:hover {
-  background: #69f url(images/tab_bg.png) left top repeat-x;
+  background: #3465a4 url(images/tab_bg.png) left top repeat-x;
 }
 #subtabs {
   margin: -1px 0 0;
-  background: #69f;
+  background: #3465a4 url(images/tab_bg.png) left top repeat-x;
 }
 #subtabs a { color: #eee; }
 #subtabs .tab_active,
 #subtabs .tab:hover {
-  background: #9c3 url(images/subtab_bg.png) left top repeat-x;
+  background: #f57900 url(images/subtab_bg.png) left top repeat-x;
 }
 
 #message {
   margin: 3px;
   padding: 5px 20px;
   border: 2px solid #000;
-  background: #fc0 url(../images/message.png) left center no-repeat;
+  background: #fcaf3e url(../images/message.png) left center no-repeat;
 }
 
 #body {
   margin-top: -1px;
-  border: 1px solid #9c3;
+  border: 1px solid #f57900;
   padding: 3px;
 }
 
@@ -120,18 +120,18 @@ dt { font-weight: bold; }
 #block_2 a:hover,
 #block_2 a:active {
   text-decoration: none;
-  color: #336c99;
+  color: #3465a4;
 }
 #block_2 label {
   margin: 3px;
   padding: 3px 6px;
   color: #fff;
-  background: #69f url(images/tab_bg.png) left bottom repeat-x;
+  background: #729fcf;
 }
 #block_2 ul,
 #block_2 dl {
   margin: 3px 6px 10px 3px;
-  border: 1px solid #69f;
+  border: 1px solid #729fcf;
 }
 #block_2 ul {
   padding: 3px;
@@ -186,8 +186,8 @@ form label {
 dl.thumb
 {
   float: left;
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   margin: 0 1em 1em 0;
   text-align: center;
 }

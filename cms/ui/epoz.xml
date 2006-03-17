@@ -18,19 +18,19 @@
     </select>
     <br />
     <img class="button" id="epoz_button_bold" name="epoz_button_bold"
-         src="images/epoz/epoz_button_bold.gif" alt="Bold" title="Bold"
+         src="images/epoz/epoz_button_bold.png" alt="Bold" title="Bold"
          onclick="FormatText('bold', '');" /><img id="epoz_button_italic"
     class="button"
-    src="images/epoz/epoz_button_italic.gif" width="23" height="22"
+    src="images/epoz/epoz_button_italic.png" width="23" height="22"
     alt="Italic" title="Italic" onclick="FormatText('italic', '');"
     name="epoz_button_italic" /><img id="epoz_button_underline"
     class="button"
-    src="images/epoz/epoz_button_underline.gif" width="23" height=
+    src="images/epoz/epoz_button_underline.png" width="23" height=
     "22" alt="Underline" title="Underline" onclick=
     "FormatText('underline', '');" name=
     "epoz_button_underline" /><img id="epoz_button_strikethrough"
     class="button"
-    src="images/epoz/epoz_button_strikethrough.gif" width="23"
+    src="images/epoz/epoz_button_strikethrough.png" width="23"
     height="22" alt="Strikethrough" title="Strikethrough" onclick=
     "FormatText('strikethrough', '');" name=
     "epoz_button_strikethrough" /><img src=
@@ -47,32 +47,32 @@
     "epoz_button_superscript" /><img src=
     "images/epoz/epoz_button_space.gif" width="2" height=
     "1" /><img id="epoz_button_unformat" class="button"
-    src="images/epoz/epoz_button_unformat.gif" width="23" height=
+    src="images/epoz/epoz_button_unformat.png" width="23" height=
     "22" alt="Remove Format" title="Remove Format" onclick=
     "FormatText('removeformat', '');" name=
     "epoz_button_unformat" /><img src=
     "images/epoz/epoz_button_space.gif" width="2" height=
     "1" /><img id="epoz_button_textcolor" class="button"
-    src="images/epoz/epoz_button_textcolor.gif" width="23" height=
+    src="images/epoz/epoz_button_textcolor.png" width="23" height=
     "22" alt="Text Color" title="Text Color" onclick=
     "SetTextColor();" name="epoz_button_textcolor"
     stl:attributes="onclick SetTextColor_call" /><img id=
     "epoz_button_bgcolor" class="button"
-    src="images/epoz/epoz_button_bgcolor.gif" width="23" height=
+    src="images/epoz/epoz_button_bgcolor.png" width="23" height=
     "22" alt="Background Color" title="Background Color" onclick=
     "SetBackColor();" name="epoz_button_bgcolor"
     stl:attributes="onclick SetBackColor_call" /><img src=
     "images/epoz/epoz_button_space.gif" width="2" height=
     "1" /><img id="epoz_button_left_just" class="button"
-    src="images/epoz/epoz_button_left_just.gif" width="23" height=
+    src="images/epoz/epoz_button_left_just.png" width="23" height=
     "22" alt="Align Left" title="Align Left" onclick=
     "FormatText('justifyleft', '');" name=
     "epoz_button_left_just" /><img id="epoz_button_centre" class="button"
-    src="images/epoz/epoz_button_centre.gif" width="23" height="22"
+    src="images/epoz/epoz_button_centre.png" width="23" height="22"
     alt="Center" title="Center" onclick=
     "FormatText('justifycenter', '');" name=
     "epoz_button_centre" /><img id="epoz_button_right_just" class="button"
-    src="images/epoz/epoz_button_right_just.gif" width="23" height=
+    src="images/epoz/epoz_button_right_just.png" width="23" height=
     "22" alt="Align Right" title="Align Right" onclick=
     "FormatText('justifyright', '');" name=
     "epoz_button_right_just" /><img src=
@@ -86,25 +86,25 @@
     alt="Unordered List" title="Unordered List" onclick=
     "FormatText('insertunorderedlist', '');" name=
     "epoz_button_list" /><img id="epoz_button_outdent" class="button"
-    src="images/epoz/epoz_button_outdent.gif" width="23" height=
+    src="images/epoz/epoz_button_outdent.png" width="23" height=
     "22" alt="Outdent" title="Outdent" onclick=
     "FormatText('outdent', '');" name=
     "epoz_button_outdent" /><img id="epoz_button_indent" class="button"
-    src="images/epoz/epoz_button_indent.gif" width="23" height="22"
+    src="images/epoz/epoz_button_indent.png" width="23" height="22"
     alt="Indent" title="Indent" onclick="FormatText('indent', '');"
     name="epoz_button_indent" /><img src=
     "images/epoz/epoz_button_space.gif" width="2" height=
     "1" /><img id="epoz_button_hyperlink" class="button"
-    src="images/epoz/epoz_button_hyperlink.gif" width="23" height=
+    src="images/epoz/epoz_button_hyperlink.png" width="23" height=
     "22" alt="Insert Link" title="Insert Link" onclick=
     "window.open(';addlink_form','EpozToolbox','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
     name="epoz_button_hyperlink" /><img id="epoz_button_anchor"
     class="button"
-    src="images/epoz/epoz_button_anchor.gif" width="23" height="22"
+    src="images/epoz/epoz_button_anchor.png" width="23" height="22"
     alt="Insert Anchor" title="Insert Anchor" onclick=
     "CreateAnchor();" name="epoz_button_anchor" /><img id=
     "epoz_button_image" class="button"
-    src="images/epoz/epoz_button_image.gif" width="23" height="22"
+    src="images/epoz/epoz_button_image.png" width="23" height="22"
     alt="Insert Image" title="Insert Image" onclick=
     "window.open(';addimage_form','EpozToolbox','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
     name="epoz_button_image" /><img id="epoz_button_hr" class="button"
@@ -117,10 +117,10 @@
     stl:attributes="onclick SetTable_call" name="epoz_button_table" /><img src=
     "images/epoz/epoz_button_space.gif" width="2" height=
     "1" /><img id="epoz_button_undo" class="button"
-    src="images/epoz/epoz_button_undo.gif" width="23" height="22"
+    src="images/epoz/epoz_button_undo.png" width="23" height="22"
     alt="Undo" title="Undo" onclick="FormatText('undo', '');" name=
     "epoz_button_undo" /><img id="epoz_button_redo" class="button"
-    src="images/epoz/epoz_button_redo.gif" width="23" height="22"
+    src="images/epoz/epoz_button_redo.png" width="23" height="22"
     alt="Redo" title="Redo" onclick="FormatText('redo', '');" name=
     "epoz_button_redo" />
     <br />

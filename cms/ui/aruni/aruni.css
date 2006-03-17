@@ -140,7 +140,10 @@ dt { font-weight: bold; }
 #block_2 dl { padding: 3px; }
 #block_2 dl dl { margin: 0; border: 0; }
 #block_2 dt, #block_2 dd { margin: 0; }
-#block_2 dt { overflow: hidden; }
+#block_2 dt {
+  overflow: hidden;
+  font-size: normal;
+}
 #block_2 dd { margin-left: 9px; }
 
 #footer {

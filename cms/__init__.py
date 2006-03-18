@@ -56,7 +56,7 @@ domains.register_domain('itools', path)
 # Check for required software
 ###########################################################################
 cmds = ['xlhtml', 'pdftotext', 'catdoc', 'ppthtml', 'iconv', 'links',
-        'unzip', 'pdftohtml', 'wvHtml', 'tidy']
+        'unzip', 'pdftohtml', 'wvHtml', 'tidy', 'rsync']
 
 paths = os.getenv('PATH').split(':')
 all_names = set()

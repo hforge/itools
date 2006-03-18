@@ -100,7 +100,7 @@ class Parser(HTMLParser):
                 elif attribute_name == 'content':
                     content_value = attribute_value
             if is_content_type is True:
-                self.encoding = attribute_value.split(';')[-1].strip()[8:]
+                self.encoding = content_value.split(';')[-1].strip()[8:]
 
         # Attributes
         attributes = {}

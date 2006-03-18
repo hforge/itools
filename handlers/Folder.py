@@ -147,15 +147,6 @@ class Folder(Handler):
         raise LookupError, 'the resource "%s" does not exist' % segment.name
 
 
-    # XXX To be removed
-    def _set_handler(self, name, handler):
-        if handler.has_changed():
-            handler.save_state()
-        self.resource.set_resource(name, handler.resource)
-        self.state.cache[name] = None
-        self.timestamp = self.resource.get_mtime()
-
-
     #########################################################################
     # API (public)
     #########################################################################

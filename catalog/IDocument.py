@@ -92,3 +92,12 @@ class IDocument(Folder):
     def _load_state(self, resource):
         Folder._load_state(self, resource)
         self.document = None
+
+
+    # Used by Catalog.index_document, may be removed (XXX).
+    def _set_handler(self, name, handler):
+        self.resource.set_resource(name, handler.resource)
+        self.state.cache[name] = None
+        self.timestamp = self.resource.get_mtime()
+
+

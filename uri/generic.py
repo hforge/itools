@@ -588,7 +588,7 @@ def decode(data):
         return Reference('', Authority(''), data, {}, None)
 
     if not isinstance(data, (str, unicode)):
-        raise TypeError, 'unexpected %s' % type(reference)
+        raise TypeError, 'unexpected %s' % type(data)
 
     # Special case, the empty reference
     if data == '':

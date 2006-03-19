@@ -45,18 +45,19 @@ def get_commit_metadata(reference):
 
 
 def get_version():
-    here = get_resource('.')
-    if not here.has_resource('.git'):
+    # Find out the current branch
+    for line in os.popen('git-branch').readlines():
+        if line.startswith('*'):
+            branch_name = line[2:-1]
+            break
+    else:
         return None
 
-    # Find out the version name
-    if os.path.islink('.git/HEAD'):
-        branch_name = os.readlink('.git/HEAD').split('/')[-1]
-    else:
-        branch_name = open('.git/HEAD').read().split('/')[-1].strip()
-    tags = [ x for x in here.get_resource_names('.git/refs/tags')
-             if x.startswith(branch_name) ]
+    # Look for tags
+    cmd = 'git-ls-remote -t . %s*' % branch_name
+    tags = [ x.strip().split('/')[-1] for x in os.popen(cmd).readlines() ]
 
+    # And the version name is...
     if tags:
         tags.sort()
         version_name = tags[-1]

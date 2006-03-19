@@ -111,6 +111,8 @@ def setup(description='', classifiers=[]):
         subpackages = config.get_value('packages').split()
         for subpackage_name in subpackages:
             packages.append('%s.%s' % (package_name, subpackage_name))
+    else:
+        subpackages = []
 
     # Write the manifest file if it does not exists
     if not os.path.exists('MANIFEST'):
@@ -125,14 +127,12 @@ def setup(description='', classifiers=[]):
 
         path = line.split('/')
         n = len(path)
-        if n == 1:
-            package_data[package_name].append(line)
-        elif path[0] == 'locale':
-            package_data[package_name].append(line)
-        elif path[0] in subpackages:
+        if path[0] in subpackages:
             subpackage = '%s.%s' % (package_name, path[0])
             files = package_data.setdefault(subpackage, [])
             files.append(os.path.join(*path[1:]))
+        elif path[0] not in ('scripts', 'test'):
+            package_data[package_name].append(line)
 
     # The scripts
     if config.has_value('scripts'):

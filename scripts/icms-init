@@ -24,7 +24,7 @@ import string
 
 # Import from itools
 import itools
-from itools.resources import get_resource
+from itools.resources import base, get_resource
 from itools.handlers import transactions
 from itools.cms.Handler import Handler
 from itools.cms.root import Root

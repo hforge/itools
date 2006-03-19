@@ -141,12 +141,15 @@ def setup(description='', classifiers=[]):
     else:
         scripts = []
 
+    author_name = config.get_value('author_name')
+    # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
+    # and "register" don't likes normal strings).
+    if sys.argv == ['setup.py', 'register']:
+        author_name = unicode(author_name, 'utf-8')
     core.setup(name = package_name,
                version = __version__,
                # Metadata
-               # XXX Broken distutils, "sdist" don't likes unicode strings,
-               # and "register" don't likes normal strings.
-               author = config.get_value('author_name'),
+               author = author_name,
                author_email = config.get_value('author_email'),
                license = config.get_value('license'),
                url = config.get_value('url'),

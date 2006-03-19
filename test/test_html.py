@@ -58,7 +58,7 @@ class HMLTestCase(TestCase):
 
     def test_case4(self):
         """Test translation of an element content"""
-        html = '<p>hello world</p>'
+        data = '<p>hello world</p>'
         resource = memory.File(data)
         doc = HTML.Document(resource)
 

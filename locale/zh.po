@@ -1546,7 +1546,7 @@ msgid "Version uploaded."
 msgstr "版本上载."
 
 #: text.py:114
-msgid "Contents"
+msgid "View"
 msgstr "浏览"
 
 #: examples/portal1/Root.py:44

@@ -1532,7 +1532,7 @@ msgid "Version uploaded."
 msgstr "Version téléchargée."
 
 #: text.py:114
-msgid "Contents"
+msgid "View"
 msgstr "Voir"
 
 #: examples/portal1/Root.py:44

@@ -462,7 +462,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     browse_thumbnails__access__ = 'is_authenticated'
-    browse_thumbnails__label__ = u'View'
+    browse_thumbnails__label__ = u'Contents'
     browse_thumbnails__sublabel__ = u'As Icons'
     def browse_thumbnails(self):
         context = get_context()
@@ -479,7 +479,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     browse_list__access__ = 'is_allowed_to_edit'
-    browse_list__label__ = u'View'
+    browse_list__label__ = u'Contents'
     browse_list__sublabel__ = u'As List'
     def browse_list(self, **kw):
         context = get_context()
@@ -525,7 +525,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     browse_image__access__ = 'is_allowed_to_edit'
-    browse_image__label__ = u'View'
+    browse_image__label__ = u'Contents'
     browse_image__sublabel__ = u'As Image Gallery'
     def browse_image(self, selected_image=None, **kw):
         context = get_context()

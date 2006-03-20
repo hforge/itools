@@ -1392,7 +1392,7 @@ msgid "Version uploaded."
 msgstr ""
 
 #: ./text.py:114
-msgid "View"
+msgid "Contents"
 msgstr ""
 
 #: ./examples/portal1/Root.py:44

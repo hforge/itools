@@ -335,7 +335,7 @@ class Root(Group, WebSite):
         return Group.get_subviews(self, name)
 
 
-    browse_thumbnails__label__ = u'View'
+    browse_thumbnails__label__ = u'Contents'
 
 
     ########################################################################

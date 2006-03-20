@@ -910,6 +910,7 @@ class Folder(Handler, handlers.Folder.Folder):
         if kw.has_key('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
+            handler = self.get_handler(name)
             goto='./%s/;%s' % (name, handler.get_firstview())
         comeback(message, goto=goto)
 

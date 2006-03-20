@@ -462,14 +462,14 @@ def guess_doctype(resource):
     return None
 
 
-def get_handler(resource):
-    """
-    Factory for XML handlers. From a given resource, try to guess its document
-    type, and return the proper XML handler.
-    """
-    doctype = guess_doctype(resource)
-    if registry.has_doctype(doctype):
-        handler_class = registry.get_doctype(doctype)
-    else:
-        handler_class = Document
-    return handler_class(resource)
+##def get_handler(resource):
+##    """
+##    Factory for XML handlers. From a given resource, try to guess its document
+##    type, and return the proper XML handler.
+##    """
+##    doctype = guess_doctype(resource)
+##    if registry.has_doctype(doctype):
+##        handler_class = registry.get_doctype(doctype)
+##    else:
+##        handler_class = Document
+##    return handler_class(resource)

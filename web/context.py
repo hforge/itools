@@ -19,6 +19,7 @@
 from copy import deepcopy
 import datetime
 from thread import get_ident, allocate_lock
+from time import strptime
 
 # Import from itools
 from itools import uri

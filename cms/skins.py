@@ -202,7 +202,7 @@ class Skin(Folder):
         root_menu = {}
         root_menu['title'] = root.get_title_or_name()
         root_menu['icon'] = root.get_path_to_icon(size=16, from_handler=here)
-        root_menu['path'] = here.get_pathtoroot()
+        root_menu['path'] = '%s/;%s' % (here.get_pathto(root), here.get_firstview())
         root_menu['active'] = (here is root)
 
         namespace['root'] = root_menu
@@ -220,7 +220,7 @@ class Skin(Folder):
             item = {}
             item['title'] = handler.get_title_or_name()
             item['icon'] = handler.get_path_to_icon(size=16, from_handler=here)
-            item['path'] = here.get_pathto(handler)
+            item['path'] = '%s/;%s' % (here.get_pathto(handler), handler.get_firstview())
             item['active'] = (handler is here)
             menu.append(item)
 

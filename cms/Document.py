@@ -209,7 +209,7 @@ class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
 
 
     translate_message__access__ = Handler.is_allowed_to_edit
-    def translate_message(self, msgid, msgstr, mesages_index=None, **kw):
+    def translate_message(self, msgid, msgstr, messages_index=None, **kw):
         msgid = PO.escape(msgid.replace('\r', ''))
         msgstr = PO.escape(msgstr.replace('\r', ''))
 

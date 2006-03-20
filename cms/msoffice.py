@@ -161,7 +161,7 @@ class MSPowerPoint(MSOffice):
             print "Error could not generate preview because: %s" % err
             text = u''
         else:
-            text = unicode(out.read(), 'utf8')
+            text = unicode(stdout.read(), 'utf8')
 
         os.system('rm -fr %s' % doc_tmp)
         os.chdir(here)

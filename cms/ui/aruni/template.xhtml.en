@@ -5,6 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title stl:content="title">The title</title>
+    <!-- Changed by: , 21-Mar-2006 -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
@@ -109,7 +110,7 @@
               </a>
               <a id="action_join" href="#" class="icon_join" stl:if="user/joinisopen"
                 stl:attributes="href user/join_url">
-                Join
+                Register
               </a>
             </stl:block>
             <stl:block if="user/info">

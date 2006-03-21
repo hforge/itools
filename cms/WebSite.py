@@ -230,6 +230,31 @@ class WebSite(Folder):
 
 
     ########################################################################
+    # Register
+    def is_allowed_to_register(self):
+        context = get_context()
+        website_is_open = context.root.get_property('ikaaro:website_is_open')
+        return website_is_open
+
+
+    register_form__access__ = 'is_allowed_to_register'
+    register_form__label__ = u'Register'
+    def register_form(self):
+        handler = self.get_handler('/ui/WebSite_register.xml')
+        return stl(handler)
+
+
+    register__access__ = 'is_allowed_to_register'
+    def register(self, email, password, password2, **kw):
+        users = self.get_handler('users')
+        error = users.new_user(email, password, password2)
+
+        message = self.gettext(u'Thanks for register, please log in')
+        get_context().redirect(';login_form?username=%s&message=%s'
+                               % (email, quote(message.encode('utf8'))))
+
+
+    ########################################################################
     # Login and logout
     login_form__access__ = True
     login_form__label__ = u'Login'

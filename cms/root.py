@@ -319,7 +319,7 @@ class Root(Group, WebSite):
     def get_views(self):
         user = get_context().user
         if user is None:
-            return ['about', 'login_form', 'join_form']
+            return ['about', 'login_form', 'register_form']
         return ['browse_thumbnails', 'new_resource_form',
                 'edit_metadata_form', 'general_form', 'catalog_form', 'about']
 
@@ -356,31 +356,6 @@ class Root(Group, WebSite):
     def license(self):
         handler = self.get_handler('/ui/Root_license.xml')
         return stl(handler)
-
-
-    ########################################################################
-    # Join
-    def is_allowed_to_join(self):
-        context = get_context()
-        website_is_open = context.root.get_property('ikaaro:website_is_open')
-        return website_is_open
-
-
-    join_form__access__ = 'is_allowed_to_join'
-    join_form__label__ = u'Join'
-    def join_form(self):
-        handler = self.get_handler('/ui/Root_join.xml')
-        return stl(handler)
-
-
-    join__access__ = 'is_allowed_to_join'
-    def join(self, username, password, password2, **kw):
-        users = self.get_handler('users')
-        error = users.new_user(username, password, password2)
-
-        message = self.gettext(u'Thanks for joining us, please log in')
-        get_context().redirect(';login_form?username=%s&message=%s'
-                               % (username, quote(message.encode('utf8'))))
 
 
     ########################################################################

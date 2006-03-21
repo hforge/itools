@@ -6,13 +6,12 @@
 
 <h2>Join the Community</h2>
 
-<form name="joinform" action=";join" method="post">
+<form name="joinform" action=";register" method="post">
   <dl>
-    <dt>Please enter the username you want to use on this website, e.g.
-      jsmith.</dt>
+    <dt>Please enter your email address.</dt>
     <dd>
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" />
+      <label for="username">Email address</label>
+      <input type="text" id="username" name="email" />
     </dd>
     <dt>Please enter a password for protecting your account.</dt>
     <dd>
@@ -26,7 +25,7 @@
     </dd>
   </dl>
   <p>
-    <input type="submit" value="Join" class="button_ok"/>
+    <input type="submit" value="Register" class="button_ok"/>
   </p>
 </form>
 

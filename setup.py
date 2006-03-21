@@ -41,6 +41,7 @@ included are:
  - itools.resources
  - itools.rss
  - itools.schemas
+ - itools.stl
  - itools.tmx
  - itools.uri
  - itools.web
@@ -64,7 +65,7 @@ classifiers = ['Development Status :: 3 - Alpha',
                'Topic :: Software Development :: Localization',
                'Topic :: Text Processing',
                'Topic :: Text Processing :: Markup',
-               'Topic :: Text Processing :: Markup :: XML'],
+               'Topic :: Text Processing :: Markup :: XML']
 
 
 

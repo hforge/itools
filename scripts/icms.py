@@ -173,14 +173,25 @@ def start(parser, options, target):
         # Detach from the console (this code derives from the Python
         # Cookbook, see section "Forking a Daemon on Unix").
         pid = os.fork()
+        # The father exits
         if pid > 0:
             sys.exit(0)
+        # The child becomes its own session leader with its own tty
+        # that doesn't exist for now but may be affected later
         os.setsid()
+        # So forking again to decouple for good
         pid = os.fork()
+        # the new father exits
         if pid > 0:
             sys.exit(0)
-        # XXX What to do with the stdout and stderr?
+        # Redirect standard file descriptors to '/dev/null' (see Bugzilla #284)
+        devnull = os.open(os.devnull, os.O_RDWR)
         sys.stdin.close()
+        os.dup2(devnull, 0)
+        sys.stdout.flush()
+        os.dup2(devnull, 1)
+        sys.stderr.flush()
+        os.dup2(devnull, 2)
 
     # Start the server
     server.start()

@@ -1,4 +1,4 @@
-0.13.0 (2006/03/2X)
+0.13.0 (2006/03/21)
 
   Internationalization
   - Overhaul programming interface for "itools.i18n.fuzzy". Now made

@@ -14,7 +14,7 @@ meta-package for easier development and deployment:
   itools.html           itools.tmx
 
 
-From most to less relevant...
+The most relevant news in this release are...
 
 The "itools.cms" package does not depends on the ZODB anymore, now it
 stores the information directly in the filesystem, as files and folders.
@@ -35,17 +35,21 @@ into the "test" directory. The new family of "isetup" scripts
 localization, build and test processes, hence helping us to deliver a
 better product.
 
-While only visible to us developers of itools, the switch from GNU arch [1]
-to GIT [2] to manage the source code, will streamline the development
+While only visible to us developers of itools, the switch from GNU arch
+to GIT [1] to manage the source code, will streamline the development
 process, reduce the entry barrier to new contributors, and in the end
 help us to get out a better product.
 
 Last, but probably most important, we have changed the licensing of itools
 from LGPL to GPL. While this change may not be for the taste of many Python
 developers, we believe that itools belongs to the group of libraries that
-"make a difference", hence it is better served by the GPL license [3].
+"make a difference", hence it is better served by the GPL license [2].
 
 For a more detailed list of the changes see the CHANGES.txt file.
+
+[1] http://git.or.cz/
+[2] http://www.gnu.org/licenses/why-not-lgpl.html
+
 
 
 Resources
@@ -62,6 +66,7 @@ http://in-girum.net/mailman/listinfo/ikaaro
 
 Bug Tracker
 http://bugs.lleu.org
+
 
 
 

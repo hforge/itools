@@ -11,7 +11,7 @@
     <dt>Please enter your email address.</dt>
     <dd>
       <label for="username">Email address</label>
-      <input type="text" id="username" name="email" />
+      <input type="text" id="username" name="ikaaro:email" />
     </dd>
     <dt>Please enter a password for protecting your account.</dt>
     <dd>

@@ -245,7 +245,9 @@ class WebSite(Folder):
 
 
     register__access__ = 'is_allowed_to_register'
-    def register(self, email, password, password2, **kw):
+    def register(self, password, password2, **kw):
+        email = kw['ikaaro:email']
+
         users = self.get_handler('users')
         error = users.new_user(email, password, password2)
 

@@ -167,6 +167,13 @@ class URI(DataType):
 
 
 
+class Email(String):
+
+    def is_valid(value):
+        return '@' in value
+
+
+
 class FileName(DataType):
     """
     A filename is tuple consisting of a name, a type and a language.

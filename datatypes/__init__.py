@@ -18,4 +18,5 @@
 # Import from itools
 from base import DataType
 from primitive import (Integer, Decimal, Unicode, String, Boolean, Date,
-        DateTime, URI, FileName, QName, Tokens, XML, XMLAttribute)
+                       DateTime, Email, URI, FileName, QName, Tokens, XML,
+                       XMLAttribute)

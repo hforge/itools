@@ -34,3 +34,8 @@ class DataType(object):
     @staticmethod
     def encode(value):
         raise NotImplementedError
+
+
+    @staticmethod
+    def is_valid(value):
+        return True

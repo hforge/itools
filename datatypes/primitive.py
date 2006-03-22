@@ -169,6 +169,7 @@ class URI(DataType):
 
 class Email(String):
 
+    @staticmethod
     def is_valid(value):
         return '@' in value
 

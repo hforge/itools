@@ -209,7 +209,7 @@ class Skin(Folder):
         return {'info': info,
                 'joinisopen': joinisopen,
                 'login_url': '%s/;login_form' % path_to_root,
-                'join_url': '%s/;join_form' % path_to_root}
+                'join_url': '%s/;register_form' % path_to_root}
 
 
     def get_navigation_menu(self):

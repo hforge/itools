@@ -20,17 +20,17 @@
     </dd>
     <dt>You can change your password by typing a new one.</dt>
     <dd>
-      <input type="password" id="password" name="password" />
+      <input type="password" id="newpass" name="newpass" />
     </dd>
     <dt>If you type a new password, you must confirm it.</dt>
     <dd>
-      <input type="password" id="password2" name="password2" />
+      <input type="password" id="newpass2" name="newpass2" />
     </dd>
     <stl:block if="must_confirm">
       <dt><strong>To confirm these changes, you must type your actual
           password.</strong></dt>
       <dd>
-        <input type="password" id="confirm" name="confirm" />
+        <input type="password" id="password" name="password" />
       </dd>
     </stl:block>
   </dl>

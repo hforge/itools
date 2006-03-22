@@ -269,12 +269,12 @@ class User(Folder):
 
 
     edit_account__access__ = 'is_self_or_superuser'
-    def edit_account(self, email, password, password2, **kw):
+    def edit_account(self, email, newpass, newpass2, password, **kw):
         context = get_context()
         user = context.user
 
         if self.name == user.name:
-            if not self.authenticate(kw['confirm']):
+            if not self.authenticate(password):
                 message = (u"You mistyped your actual password, "
                            u"you account is not changed.")
                 raise UserError, self.gettext(message)
@@ -283,12 +283,13 @@ class User(Folder):
         email = unicode(email, 'utf-8')
         self.set_property('ikaaro:email', email)
 
-        if password.strip():
-            if not password or password != password2:
+        newpass = newpass.strip()
+        if newpass:
+            if newpass != newpass2:
                 message = u"Passwords mismatch, please try again."
                 raise UserError, self.gettext(message)
 
-            self.set_password(password)
+            self.set_password(newpass)
             # Update the cookie if we updated our own password
             context = get_context()
             if self.name == context.user.name:
@@ -296,7 +297,7 @@ class User(Folder):
                 # XXX This is a copy of the code in WebSite.login, should
                 # refactor
                 cname = '__ac'
-                cookie = base64.encodestring('%s:%s' % (self.name, password))
+                cookie = base64.encodestring('%s:%s' % (self.name, newpass))
                 cookie = urllib.quote(cookie)
                 path = '/'
                 expires = request.form.get('iAuthExpires', None)

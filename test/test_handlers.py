@@ -36,24 +36,20 @@ class BasicTestCase(TestCase):
 
 
 
-data = """\
-URI: upgrading.html.de
-Content-Language: de
-Content-type: text/html; charset=ISO-8859-1
-
-URI: upgrading.html.en
-Content-Language: en
-Content-type: text/html; charset=ISO-8859-1
-
-URI: upgrading.html.fr
-Content-Language: fr
-Content-type: text/html; charset=ISO-8859-1
-"""
-
-
 class VarTestCase(TestCase):
 
     def setUp(self):
+        data = ('URI: upgrading.html.de\n'
+                'Content-Language: de\n'
+                'Content-type: text/html; charset=ISO-8859-1\n'
+                '\n'
+                'URI: upgrading.html.en\n'
+                'Content-Language: en\n'
+                'Content-type: text/html; charset=ISO-8859-1\n'
+                '\n'
+                'URI: upgrading.html.fr\n'
+                'Content-Language: fr\n'
+                'Content-type: text/html; charset=ISO-8859-1\n')
         resource = memory.File(data)
         self.var = Var(resource)
 

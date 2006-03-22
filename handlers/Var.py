@@ -90,7 +90,6 @@ class Var(Text):
     def _load_state(self, resource):
         records = []
 
-        i = 1
         state = 0
         for line in resource.readlines():
             line = line.strip()
@@ -100,17 +99,14 @@ class Var(Text):
 
             if state == 0:
                 if line:
-                    record = Record()
-                    record.set_header(line)
+                    records.append(Record())
+                    records[-1].set_header(line)
                     state = 1
             else:
                 if line:
-                    record.set_header(line)
+                    records[-1].set_header(line)
                 else:
-                    records.append(record)
                     state = 0
-
-            i = i + 1
 
         # Set state
         self.state.records = records

@@ -33,6 +33,7 @@ from workflow import WorkflowAware
 from users import crypt_password
 from widgets import Table
 from metadata import Password
+from skins import ui
 
 
 
@@ -55,6 +56,13 @@ class WebSite(Folder):
         skeleton['.skin.metadata'] = self.build_metadata(skin, **kw)
 
         return skeleton
+
+
+    def _get_virtual_handler(self, segment):
+        name = segment.name
+        if name == 'ui':
+            return ui
+        return Folder._get_virtual_handler(self, segment)
 
 
     ########################################################################

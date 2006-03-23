@@ -42,7 +42,6 @@ from Group import Group
 from Handler import Handler
 from metadata import Metadata, Password
 from text import PO
-from skins import ui
 from users import User, UserFolder
 from utils import comeback
 from WebSite import WebSite
@@ -182,13 +181,6 @@ class Root(Group, WebSite):
         elif name == '.archive':
             return handlers.Folder.Folder(resource)
         return Group._get_handler(self, segment, resource)
-
-
-    def _get_virtual_handler(self, segment):
-        name = segment.name
-        if name == 'ui':
-            return ui
-        return Group._get_virtual_handler(self, segment)
 
 
     ########################################################################

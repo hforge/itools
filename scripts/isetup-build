@@ -37,8 +37,16 @@ def get_commit_metadata(reference):
     lines = os.popen('git-cat-file commit %s' % reference).readlines()
     # The commit id
     commit_id = lines[0].strip().split()[1]
+    # The author
+    author = None
+    for line in lines:
+        if line.startswith('author'):
+            author = line
+    if author is None:
+        raise ValueError, ("cannot find the commit author, "
+            "please report the output of 'git-cat-file commit %s'" % reference)
     # The timestamp
-    timestamp = datetime.fromtimestamp(int(lines[2].strip().split()[-2]))
+    timestamp = datetime.fromtimestamp(int(author.strip().split()[-2]))
 
     return commit_id, timestamp
 

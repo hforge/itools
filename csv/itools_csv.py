@@ -81,6 +81,14 @@ class CSV(Text):
     # The class to use for each row (this allows easy specialization)
     row_class = Row
 
+    # Internal parser value
+    # Number of columns in parsed file
+    __number_of_columns = 0
+
+    # Internal parser value
+    # Number of currently parsed line
+    __curr_parsed_line_no = 0
+
     #########################################################################
     # Parsing
     #########################################################################
@@ -102,12 +110,27 @@ class CSV(Text):
         # columns definition is ignored (schema is hash now and has no order)
         if self.is_schema_defined():
             for line in reader:
+                self._syntax_check(line)
                 decoded_line = self._decode_line(line)
                 yield decoded_line
         else:
             encoding = Text.guess_encoding(data)
             for line in reader:
+                self._syntax_check(line)
                 yield [ unicode(x, encoding) for x in line ]
+
+
+    def _syntax_check(self, line):
+        """Syntax check of the parsed line"""
+        if self.__curr_parsed_line_no == 0:
+            if self.is_schema_defined():
+                self.__number_of_columns = len(self.columns)
+            else:
+                self.__number_of_columns = len(line)
+        self.__curr_parsed_line_no += 1
+        if len(line) != self.__number_of_columns:
+            msg = 'CSV file syntax error: wrong number of columns at line %d'
+            raise ValueError, msg % self.__curr_parsed_line_no
 
 
     def _decode_line(self, line):

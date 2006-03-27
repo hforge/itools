@@ -34,6 +34,8 @@ ruby,http://ruby-lang.org,42352,2001-03-28"""
 
 TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 
+TEST_SYNTAX_ERROR = 'one,,\n,two,,\n,,three'
+
 
 
 class CSVTestCase(TestCase):
@@ -302,6 +304,20 @@ class CSVTestCase(TestCase):
 
         row = handler.get_handler('0')
         self.assertEqual(row.name, u'ruby')
+
+
+    def test_bad_syntax_csv_file(self):
+        resource = memory.File(TEST_SYNTAX_ERROR)
+        self.assertRaises(ValueError, itools_csv.CSV, resource)
+
+
+    def test_bad_syntax_csv_file_with_schema(self):
+        resource = memory.File(TEST_SYNTAX_ERROR)
+        handler = itools_csv.CSV()
+        handler.columns = ['one', 'two', 'three']
+        handler.schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
+        self.assertRaises(ValueError, handler.load_state, resource)
+
 
 
 if __name__ == '__main__':

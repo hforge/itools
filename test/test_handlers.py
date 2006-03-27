@@ -360,6 +360,29 @@ class DotTestCase(TestCase):
         self.assertEqual(expect, res)
 
 
+    def test8_crossed_imports(self):
+        data = ("from A.B import C as CC\n"
+                "from D.E import F as FF\n"
+                "class G(CC):\n"
+                "    pass\n"
+                "\n"
+                "class H(G, FF):\n"
+                "    pass\n")
+        handler = Python(memory.File(data))
+        handler.name = 'test'
+        dot = Dot()
+        dot.class_diagram_from_python([handler])
+        res = dot.to_str()
+        expect = ('digraph G {\n'
+                  'rankdir=BT;\n'
+                  '  "test.G" -> "A.B.C"\n'
+                  '  "test.H" -> "A.B.C.G"\n'
+                  '  "test.H" -> "D.E.F"\n'
+                  '}'
+                  )
+        self.assertEqual(expect, res)
+
+
 
 if __name__ == '__main__':
     unittest.main()

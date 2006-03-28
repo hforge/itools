@@ -38,7 +38,7 @@ class Row(list):
 
 
     def __setattr__(self, name, value):
-        if name == 'number' or name == 'columns':
+        if name in ('number', 'columns', 'parent', 'name'):
             list.__setattr__(self, name, value)
         else:
             try:
@@ -283,9 +283,9 @@ class CSV(Text):
 
 
     # XXX This can't work until the virtual handler overhaul is done
-##    def _get_virtual_handler(self, segment):
-##        index = int(segment.name)
-##        return self.state.lines[index]
+    def _get_virtual_handler(self, segment):
+        index = int(segment.name)
+        return self.state.lines[index]
 
 
     #########################################################################

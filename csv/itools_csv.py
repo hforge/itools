@@ -27,30 +27,20 @@ from itools.catalog import queries, analysers
 
 class Row(list):
 
-    def __getattr__(self, name):
-        message = "'%s' object has no attribute '%s'"
+    def get_value(self, name):
         if self.columns is None:
-            raise AttributeError, message % (self.__class__.__name__, name)
+            raise ValueError, 'schema not defined'
 
-        try:
-            column = self.columns.index(name)
-        except ValueError:
-            raise AttributeError, message % (self.__class__.__name__, name)
-
+        column = self.columns.index(name)
         return self[column]
 
 
-    def __setattr__(self, name, value):
-        if name in ('number', 'columns', 'parent', 'name'):
-            list.__setattr__(self, name, value)
-        else:
-            try:
-                column = self.columns.index(name)
-            except ValueError:
-                message = "'%s' object has no attribute '%s'"
-                raise AttributeError, message % (self.__class__.__name__, name)
+    def set_value(self, name, value):
+        if self.columns is None:
+            raise ValueError, 'schema not defined'
 
-            self[column] = value
+        column = self.columns.index(name)
+        self[column] = value
 
 
     def copy(self):

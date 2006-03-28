@@ -278,20 +278,7 @@ class CSVTestCase(TestCase):
         handler.load_state(resource)
 
         row = handler.get_row(1)
-        self.assertEqual(row.name, u'ruby')
-
-
-
-    def test_access_by_name(self):
-        resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
-        handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
-                          'date': Date}
-        handler.load_state(resource)
-
-        row = handler.get_row(1)
-        self.assertEqual(row.name, u'ruby')
+        self.assertEqual(row.get_value('name'), u'ruby')
 
 
     def test_get_row_as_handler(self):
@@ -303,7 +290,8 @@ class CSVTestCase(TestCase):
         handler.load_state(resource)
 
         row = handler.get_handler('0')
-        self.assertEqual(row.name, u'ruby')
+        self.assertEqual(row.get_value('name'), u'python')
+
 
 
     def test_bad_syntax_csv_file(self):

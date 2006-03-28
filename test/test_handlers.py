@@ -31,7 +31,7 @@ from itools.handlers.Var import Var
 class BasicTestCase(TestCase):
 
     def test_get(self):
-        handler = get_handler('../examples/hello.txt.en')
+        handler = get_handler('hello.txt')
         self.assertEqual(handler.to_str(), 'hello world\n')
 
 
@@ -70,40 +70,6 @@ class VarTestCase(TestCase):
     def test_language(self):
         self.assertEqual(self.var.state.records[0].language, 'de')
 
-
-
-data = """
-import A
-import A.B as AB
-from B.E import F
-from A.B import C as CC
-
-class E(AA, C):
-  pass
-"""
-
-
-
-code_0 = """
-import A
-import A.B as AB
-from A.B import C as CC
-
-class D(A.B.C):
-    pass
-class E(AB.C):
-    pass
-class F(CC):
-    pass 
-"""
-
-dot_0 = """
-digraph G {
-rankdir=BT;
-  "D" -> "A.B.C"
-  "E" -> "A.B.C"
-  "F" -> "A.B.C"
-}"""
 
 
 class PythonTestCase(TestCase):
@@ -214,9 +180,9 @@ class DotTestCase(TestCase):
 
     def test0_class_diagram_from_python(self):
         data = ('from A import B\n'
-                  'class N(B):\n'
-                  '  pass\n'
-                  )
+                'class N(B):\n'
+                '  pass\n'
+                )
         handler = Python(memory.File(data))
         dot = Dot()
         dot.class_diagram_from_python([handler])
@@ -228,13 +194,13 @@ class DotTestCase(TestCase):
 
 
     def test1_class_diagram_from_python(self):
-        data = (  'from A.B import C\n'
-                  'from D import E\n'  
-                  'class M(C.D):\n'
-                  '  pass\n'
-                  'class N(M, E.F.H):\n'
-                  '  pass\n'
-                  )
+        data = ('from A.B import C\n'
+                'from D import E\n'  
+                'class M(C.D):\n'
+                '  pass\n'
+                'class N(M, E.F.H):\n'
+                '  pass\n'
+                )
         dot = Dot()
         handler = Python(memory.File(data))
         dot.class_diagram_from_python([handler])
@@ -251,11 +217,11 @@ class DotTestCase(TestCase):
 
     def test2_class_diagram_from_python(self):
         data = ('from A import B\n'
-                  'class M(B):\n'
-                  '  pass\n'
-                  'class N(B):\n'
-                  '  pass\n'
-                  )
+                'class M(B):\n'
+                '  pass\n'
+                'class N(B):\n'
+                '  pass\n'
+                )
         handler = Python(memory.File(data))
         dot = Dot()
         dot.class_diagram_from_python([handler])
@@ -286,11 +252,11 @@ class DotTestCase(TestCase):
 
         
     def test4_class_diagram_from_python(self):
-        data = (  'from A.B import C\n'
-                  'from D import E\n'  
-                  'class M(C.D):\n'
-                  '  pass\n'
-                  )
+        data = ('from A.B import C\n'
+                'from D import E\n'  
+                'class M(C.D):\n'
+                '  pass\n'
+                )
         handler = Python(memory.File(data))
         dot = Dot()
         dot.class_diagram_from_python([handler])

@@ -28,10 +28,13 @@ from itools.catalog import queries, analysers
 class Row(list):
 
     def __getattr__(self, name):
+        message = "'%s' object has no attribute '%s'"
+        if self.columns is None:
+            raise AttributeError, message % (self.__class__.__name__, name)
+
         try:
             column = self.columns.index(name)
         except ValueError:
-            message = "'%s' object has no attribute '%s'"
             raise AttributeError, message % (self.__class__.__name__, name)
 
         return self[column]

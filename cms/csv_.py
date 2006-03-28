@@ -28,6 +28,7 @@ from utils import comeback
 class Row(iRow, Node):
 
     class_title = u'CSV Row'
+    class_icon48 = 'images/Text48.png'
 
 
     def get_mtime(self):
@@ -71,9 +72,10 @@ class Row(iRow, Node):
 class CSV(Text, iCSV):
 
     class_id = 'text/comma-separated-values'
+    class_title = u'Comma Separated Values'
 
 
-    row_class = iRow
+    row_class = Row
 
 ##    def _load_state(self, resource):
 ##        data = resource.read()

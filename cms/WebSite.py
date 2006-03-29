@@ -62,6 +62,8 @@ class WebSite(Folder):
         name = segment.name
         if name == 'ui':
             return ui
+        elif name in ('users', '.users.metadata'):
+            return self.get_handler('/%s' % name)
         return Folder._get_virtual_handler(self, segment)
 
 
@@ -104,11 +106,9 @@ class WebSite(Folder):
 ##                context.skip = True
 ##            elif handler is template:
 ##                pass
-##            elif name.endswith('~'):
-##                pass
-##            elif handler.real_handler is not None:
+##            elif getattr(handler, 'is_phantom', False):
 ##                context.skip = True
-##            else: 
+##            else:
 ##                path = template.get_pathto(handler)
 ##                properties = {}
 ##                if not web_site.has_handler(path):

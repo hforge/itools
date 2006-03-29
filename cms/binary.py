@@ -19,16 +19,14 @@
 # Import from the Standard Library
 import mimetypes
 from os.path import join as path_join
-from tarfile import TarFile
 import tempfile
 from zipfile import ZipFile, BadZipfile
 from subprocess import call
+from cStringIO import StringIO
 
 # Import from itools
 from itools.handlers.Image import Image as iImage
-from itools.handlers.archive import (Archive as iArchive, ZipArchive as
-                                     iZipArchive, TarArchive as iTarArchive,
-                                     BZ2Proxy)
+from itools.handlers.archive import Archive as iArchive
 from itools.xml import XML
 from itools.html import HTML
 from itools.stl import stl
@@ -273,11 +271,11 @@ class OOffice(OfficeDocument):
         if self.__text_output__ is not None:
             return self.__text_output__
 
-        data = self.to_str()
+        file = StringIO(self.to_str())
         try:
-            archive = ZipFile()
-            archive.load_state_from_string(data)
+            archive = ZipFile(file)
             content = archive.read('content.xml')
+            archive.close()
             handler = XML.Document()
             handler.load_state_from_string(content)
             text = handler.to_text()

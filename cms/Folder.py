@@ -341,7 +341,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
     #######################################################################
     # Browse
-    def _browse_namespace(self, object):
+    def _browse_namespace(self, line, object):
         pass
 
 
@@ -445,7 +445,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 # Objects that should not be removed/renamed/etc
                 line['checkbox'] = name not in self.__fixed_handlers__
                 #
-                self._browse_namespace(line)
+                self._browse_namespace(line, document)
                 objects.append(line)
                 
         table.objects = objects

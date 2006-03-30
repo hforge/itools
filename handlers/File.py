@@ -48,9 +48,16 @@ class File(Handler):
     #########################################################################
     # Load / Save
     #########################################################################
-    def _load_state(self, resource):
+    def _load_data(self):
         state = self.state
+        resource = self.resource
+        resource.open()
         state.data = resource.read()
+        resource.close()
+
+
+    def _load_state(self, resource):
+        self.state.data = None
 
 
     def _save_state(self, resource):
@@ -111,7 +118,11 @@ class File(Handler):
     # Serialization
     #########################################################################
     def to_str(self):
-        return self.state.data
+        state = self.state
+        if state.data is None:
+            self._load_data()
+
+        return state.data
 
 
     #########################################################################

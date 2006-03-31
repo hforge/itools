@@ -72,6 +72,16 @@ class Context(object):
 
 
     ########################################################################
+    # API / parameters
+    def get_parameter(self, name):
+        return self.request.get_parameter(name)
+
+
+    def has_parameter(self, name):
+        return self.request.has_parameter(name)
+
+
+    ########################################################################
     # API / cookies (client side sessions)
     def get_cookie(self, name):
         request, response = self.request, self.response

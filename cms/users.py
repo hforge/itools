@@ -37,14 +37,6 @@ from metadata import Password
 
 
 
-### XXX To remove by itools 0.14
-class UserData(KeyValue):
-
-    __keys__ = ['password', 'email']
-    __keys_types__ = {'email': 'unicode'}
-
-
-
 def crypt_password(password):
     return sha.new(password).digest()
 
@@ -56,17 +48,6 @@ class User(Folder):
     class_title = 'User'
     class_icon16 = 'images/User16.png'
     class_icon48 = 'images/User48.png'
-
-
-    #########################################################################
-    # The skeleton
-    #########################################################################
-    # XXX To be removed for itools 0.14
-    def _get_handler(self, segment, resource):
-        name = segment.name
-        if name == '.data':
-            return UserData(resource)
-        return Folder._get_handler(self, segment, resource)
 
 
     #########################################################################

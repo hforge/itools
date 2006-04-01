@@ -20,7 +20,7 @@
     <tbody>
       <tr stl:repeat="revision revisions">
         <td>
-          <input class="checkbox" type="checkbox" name="names:list"
+          <input class="checkbox" type="checkbox" name="names"
             stl:if="not repeat/revision/start"
             stl:attributes="value revision/name" />
         </td>

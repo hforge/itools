@@ -35,7 +35,7 @@ class Flash(File):
     view__label__ = u'View'
     view__sublabel__ = u'View'
     view__access__ = 'is_allowed_to_view'
-    def view(self):
+    def view(self, context):
         handler = self.get_handler('/ui/Flash_view.xml')
         return stl(handler)
 

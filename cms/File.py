@@ -84,7 +84,7 @@ class File(Handler, itools.handlers.File.File):
     download_form__access__ = 'is_allowed_to_view'
     download_form__label__ = u'View'
     download_form__sublabel__ = u'Download'
-    def download_form(self):
+    def download_form(self, context):
         namespace = {}
         namespace['url'] = '../' + self.name
         namespace['title_or_name'] = self.get_title_or_name()
@@ -94,16 +94,15 @@ class File(Handler, itools.handlers.File.File):
 
     download__access__ = 'is_allowed_to_view'
     download__mtime__ = Handler.get_mtime
-    def download(self):
-        context = get_context()
-        request, response = context.request, context.response
-
+    def download(self, context):
         # Content-Type
         metadata = self.get_metadata()
         if metadata is None:
             mimetype = self.get_mimetype()
         else:
             mimetype = self.get_property('format')
+
+        response = context.response
         response.set_header('Content-Type', mimetype)
 
         return self.to_str()
@@ -114,17 +113,17 @@ class File(Handler, itools.handlers.File.File):
     externaledit__access__ = 'is_allowed_to_edit'
     externaledit__label__ = u'Edit'
     externaledit__sublabel__ = u'External'
-    def externaledit(self):
+    def externaledit(self, context):
         handler = self.get_handler('/ui/File_externaledit.xml')
         return stl(handler)
 
 
     external_edit__access__ = 'is_allowed_to_edit'
-    def external_edit(self, encoding=None, **kw):
+    def external_edit(self, context):
         # TODO check if zopeedit really needs the meta_type.
+        encoding = context.get_form_value('encoding')
 
         # Get the context, request and response
-        context = get_context()
         request, response = context.request, context.response
         # Get the resource
         resource = self.resource
@@ -186,13 +185,15 @@ class File(Handler, itools.handlers.File.File):
     upload_form__access__ = 'is_allowed_to_edit'
     upload_form__label__ = u'Edit'
     upload_form__sublabel__ = u'Upload'
-    def upload_form(self):
+    def upload_form(self, context):
         handler = self.get_handler('/ui/File_upload.xml')
         return stl(handler)
 
 
     upload__access__ = 'is_allowed_to_edit'
-    def upload(self, file=None, **kw):
+    def upload(self, context):
+        file = context.get_form_value('file')
+
         if file is None:
             raise UserError, self.gettext(u'No file has been entered.')
 

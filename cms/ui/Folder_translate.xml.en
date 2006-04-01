@@ -17,12 +17,12 @@
     <tbody>
       <tr stl:repeat="document documents">
         <td align="right">
-          <input type="hidden" name="names:list"
+          <input type="hidden" name="names"
             stl:attributes="value document/name" />
           <stl:block content="document/title_or_name" />
         </td>
         <td>
-          <select name="languages:list">
+          <select name="languages">
             <option value="">Choose a language</option>
             <option stl:repeat="language document/languages"
               stl:attributes="value language/code"

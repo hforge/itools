@@ -112,7 +112,7 @@ class VersioningAware(object):
     # History
     history_form__access__ = Handler.is_allowed_to_edit
     history_form__label__ = u'History'
-    def history_form(self):
+    def history_form(self, context):
         namespace = {}
         # Revisions
         archive_folder = self.get_archive_folder()
@@ -128,7 +128,7 @@ class VersioningAware(object):
                 'username': '', # TODO
                 'action': '-', # TODO
                 'size': resource.get_size(),
-            }
+                }
             revisions.append(info)
         namespace['revisions'] = revisions
 
@@ -140,7 +140,8 @@ class VersioningAware(object):
 
 
     copy_to_present__access__ = Handler.is_allowed_to_edit
-    def copy_to_present(self, names=[], **kw):
+    def copy_to_present(self, context):
+        names = context.get_form_values('names')
         if len(names) != 1:
             message = u'You must select one and only one revision.'
             raise UserError, self.gettext(message)

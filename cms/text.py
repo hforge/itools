@@ -99,10 +99,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
     #######################################################################
     # Download
-    def download(self):
-        context = get_context()
-        request, response = context.request, context.response
-
+    def download(self, context):
         # XXX Code duplicated from File.File.download
         metadata = self.get_metadata()
         if metadata is None:
@@ -110,6 +107,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
         else:
             mimetype = self.get_property('format')
 
+        response = context.response
         response.set_header('Content-Type', '%s; charset=UTF-8' % mimetype)
         return self.to_str()
 
@@ -118,7 +116,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
     # View
     view__access__ = Handler.is_allowed_to_view
     view__label__ = u'View'
-    def view(self):
+    def view(self, context):
         return '<pre>%s</pre>' % cgi.escape(self.to_str())
 
 
@@ -127,7 +125,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
     edit_form__access__ = Handler.is_allowed_to_edit
     edit_form__label__ = u'Edit'
     edit_form__sublabel__ = u'Inline'
-    def edit_form(self):
+    def edit_form(self, context):
         namespace = {}
         namespace['data'] = self.to_str()
 
@@ -136,8 +134,8 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
 
     edit__access__ = Handler.is_allowed_to_edit
-    def edit(self, **kw):
-        data = unicode(kw['data'], 'UTF-8')
+    def edit(self, context):
+        data = unicode(context.get_form_value('data'), 'UTF-8')
         self.set_data(data)
 
         message = self.gettext(u'Document edited.')
@@ -146,7 +144,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
     #######################################################################
     # Edit / External
-    def externaledit(self):
+    def externaledit(self, context):
         namespace = {}
         # XXX This list should be built from a txt file with all the encodings,
         # or better, from a Python module that tells us which encodings Python
@@ -164,9 +162,10 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
     #######################################################################
     # History
     compare__access__ = Handler.is_allowed_to_view
-    def compare(self, names=[], **kw):
+    def compare(self, context):
         from html import XHTMLFile
 
+        names = context.get_form_values('names')
         if len(names) == 0 or len(names) > 2:
             message = u'You must select one or two revisions.'
             raise UserError, self.gettext(message)
@@ -175,7 +174,6 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
         # forces the rename_form to be called as a form action, hence
         # with the POST method, but is should be a GET method. Maybe
         # it will be solved after the needed folder browse overhaul.
-        context = get_context()
         if context.request.method == 'POST':
             context.redirect(';compare?%s' % '&'.join([ 'names:list=%s' % x
                                                         for x in names ]))
@@ -225,7 +223,7 @@ class PO(Text, gettext.PO.PO):
     edit_form__access__ = Handler.is_allowed_to_edit
     edit_form__label__ = u'Edit'
     edit_form__sublabel__ = u'Inline'
-    def edit_form(self):
+    def edit_form(self, context):
         namespace = {}
 
         # Get the messages, all but the header
@@ -242,7 +240,7 @@ class PO(Text, gettext.PO.PO):
         index = int(index)
 
         # Set first, last, previous and next
-        request = get_context().request
+        request = context.request
         namespace['messages_first'] = request.build_url(messages_index=1)
         namespace['messages_last'] = request.build_url(messages_index=total)
         previous = max(index - 1, 1)
@@ -266,7 +264,11 @@ class PO(Text, gettext.PO.PO):
 
 
     edit__access__ = Handler.is_allowed_to_edit
-    def edit(self, msgid, msgstr, messages_index):
+    def edit(self, context):
+        msgid = context.get_form_value('msgid')
+        msgstr = context.get_form_value('msgstr')
+        messages_index = context.get_form_value('messages_index')
+
         self.set_changed()
         msgid = msgid.replace('\r', '')
         msgstr = msgstr.replace('\r', '')

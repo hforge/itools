@@ -41,7 +41,7 @@ class Row(iRow, Node):
 
     view__access__ = Node.is_allowed_to_view
     view__label__ = u'View'
-    def view(self):
+    def view(self, context):
         namespace = {}
         namespace['row'] = self
 
@@ -51,7 +51,7 @@ class Row(iRow, Node):
 
     edit_form__access__ = Node.is_allowed_to_edit
     edit_form__label__ = u'Edit'
-    def edit_form(self):
+    def edit_form(self, context):
         namespace = {}
         namespace['row'] = self
 
@@ -60,7 +60,8 @@ class Row(iRow, Node):
 
 
     edit__access__ = Node.is_allowed_to_edit
-    def edit(self, column, **kw):
+    def edit(self, context):
+        column = context.get_form_value('column')
         self.__init__(column)
         self.parent.set_changed()
 
@@ -99,7 +100,7 @@ class CSV(Text, iCSV):
     edit_form__access__ = None
 
 
-    def view(self):
+    def view(self, context):
         namespace = {}
         namespace['rows'] = self.state.lines
         handler = self.get_handler('/ui/CSV_view.xml')

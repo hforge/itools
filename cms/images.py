@@ -18,7 +18,6 @@
 # Import from itools
 from itools.handlers.Image import Image as iImage
 from itools.stl import stl
-from itools.web import get_context
 
 # Import from ikaaro
 from Handler import Handler
@@ -42,10 +41,12 @@ class Image(File, iImage):
     # User interface
     #######################################################################
     icon48__access__ = True
-    def icon48(self, width=48, height=48, **kw):
-        context = get_context()
+    def icon48(self, context):
+        width = context.get_form_value('width')
+        height = context.get_form_value('height')
 
         width, height = int(width), int(height)
+
         if not hasattr(self, '_icon'):
             self._icon = {}
 
@@ -72,7 +73,7 @@ class Image(File, iImage):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     view__sublabel__ = u'View'
-    def view(self):
+    def view(self, context):
         handler = self.get_handler('/ui/Image_view.xml')
         return handler.to_str()
 

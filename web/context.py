@@ -73,12 +73,30 @@ class Context(object):
 
     ########################################################################
     # API / parameters
-    def get_parameter(self, name):
-        return self.request.get_parameter(name)
+    def get_form_keys(self):
+        return self.request.form.keys()
+
+
+    def get_form_value(self, name, default=None):
+        value = self.request.get_parameter(name)
+        if isinstance(value, list):
+            return value[0]
+        return value
+
+
+    def get_form_values(self, name):
+        value = self.request.get_parameter(name)
+        if isinstance(value, list):
+            return value
+        return [value]
 
 
     def has_parameter(self, name):
         return self.request.has_parameter(name)
+
+
+##    def get_parameters(self):
+##        return self.request.
 
 
     ########################################################################

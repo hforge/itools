@@ -139,7 +139,7 @@ class WebSite(Folder):
     general_form__access__ = 'is_admin'
     general_form__label__ = u'Settings'
     general_form__sublabel__ = u'General'
-    def general_form(self):
+    def general_form(self, context):
         # Build the namespace
         namespace = {}
         website_is_open = self.get_property('ikaaro:website_is_open')
@@ -150,9 +150,9 @@ class WebSite(Folder):
 
 
     change_general__access__ = 'is_admin'
-    def change_general(self, **kw):
-        self.set_property('ikaaro:website_is_open',
-                          kw.get('ikaaro:website_is_open', False))
+    def change_general(self, context):
+        key = 'ikaaro:website_is_open'
+        self.set_property(key, context.get_form_value(key, False))
 
         message = self.gettext(u'General settings changed.')
         comeback(message)
@@ -163,7 +163,7 @@ class WebSite(Folder):
     languages_form__access__ = 'is_admin'
     languages_form__label__ = u'Languages'
     languages_form__sublabel__ = u'Languages'
-    def languages_form(self):
+    def languages_form(self, context):
         namespace = {}
 
         # List of active languages
@@ -192,7 +192,8 @@ class WebSite(Folder):
 
 
     change_default_language__access__ = 'is_allowed_to_edit'
-    def change_default_language(self, codes=[], **kw):
+    def change_default_language(self, context):
+        codes = context.get_form_values('codes')
         if len(codes) != 1:
             message = u'You must select one and only one language.'
             raise UserError, self.gettext(message)
@@ -208,7 +209,8 @@ class WebSite(Folder):
 
 
     remove_languages__access__ = 'is_allowed_to_edit'
-    def remove_languages(self, codes=[], **kw):
+    def remove_languages(self, context):
+        codes = context.get_form_values('codes')
         website_languages = self.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
 
@@ -225,7 +227,8 @@ class WebSite(Folder):
 
 
     add_language__access__ = 'is_allowed_to_edit'
-    def add_language(self, code=None, **kw):
+    def add_language(self, context):
+        code = context.get_form_value('code')
         if not code:
             raise UserError, self.gettext(u'You must choose a language')
 
@@ -240,51 +243,49 @@ class WebSite(Folder):
     ########################################################################
     # Register
     def is_allowed_to_register(self):
-        context = get_context()
-        website_is_open = context.root.get_property('ikaaro:website_is_open')
-        return website_is_open
+        return get_context().root.get_property('ikaaro:website_is_open')
 
 
     register_form__access__ = 'is_allowed_to_register'
     register_form__label__ = u'Register'
-    def register_form(self):
+    def register_form(self, context):
         handler = self.get_handler('/ui/WebSite_register.xml')
         return stl(handler)
 
 
     register__access__ = 'is_allowed_to_register'
-    def register(self, password, password2, **kw):
-        email = kw['ikaaro:email']
+    def register(self, context):
+        password = context.get_form_value('password')
+        password2 = context.get_form_value('password2')
+        email = context.get_form_value('ikaaro:email')
 
         users = self.get_handler('users')
         error = users.new_user(email, password, password2)
 
         message = self.gettext(u'Thanks for register, please log in')
-        get_context().redirect(';login_form?username=%s&message=%s'
-                               % (email, quote(message.encode('utf8'))))
+        context.redirect(';login_form?username=%s&message=%s'
+                         % (email, quote(message.encode('utf8'))))
 
 
     ########################################################################
     # Login and logout
     login_form__access__ = True
     login_form__label__ = u'Login'
-    def login_form(self, **kw):
-        context = get_context()
-
+    def login_form(self, context):
         namespace = {}
         here = context.handler
         site_root = here.get_site_root()
         namespace['action'] = '%s/;login' % here.get_pathto(site_root)
-        namespace['username'] = kw.get('username', '')
+        namespace['username'] = context.get_form_value('username')
 
         handler = self.get_handler('/ui/WebSite_login.xml')
         return stl(handler, namespace)
 
 
     login__access__ = True
-    def login(self, username, password, **kw):
-        context = get_context()
-        request = context.request
+    def login(self, context):
+        username = context.get_form_value('username')
+        password = context.get_form_value('password')
 
         root = context.root
         users = root.get_handler('users')
@@ -302,6 +303,7 @@ class WebSite(Folder):
 
         # Set cookie
         cookie = Password.encode('%s:%s' % (username, password))
+        request = context.request
         expires = request.form.get('iAuthExpires', None)
         if expires is None:
             context.set_cookie('__ac', cookie, path='/')
@@ -320,12 +322,8 @@ class WebSite(Folder):
 
 
     logout__access__ = True
-    def logout(self):
-        """
-        Logs out of the application.
-        """
-        context = get_context()
-
+    def logout(self, context):
+        """Logs out of the application."""
         # Remove the cookie
         context.del_cookie('__ac')
         # Remove the user from the context
@@ -338,25 +336,19 @@ class WebSite(Folder):
     ########################################################################
     # Languages
     change_language__access__ = True
-    def change_language(self, lang, goto=None, **kw):
-        context = get_context()
+    def change_language(self, context):
+        lang = context.get_form_value('lang')
+        goto = context.get_form_value('goto', context.request.referrer)
+
         context.set_cookie('language', lang)
-
-        # Comes back
-        if goto is None:
-            goto = context.request.referrer
-
         context.redirect(goto)
 
     
     ########################################################################
     # User search UI
     site_search__access__ = True
-    def site_search(self, **kw):
-        context = get_context()
-        root = context.root
-
-        text = kw.get('site_search_text', '').strip()
+    def site_search(self, context):
+        text = context.get_form_value('site_search_text').strip()
         if not text:
             raise UserError, "Empty search value."
 
@@ -366,6 +358,7 @@ class WebSite(Folder):
         results = self.search(query=query)
 
         # put the metadatas in a dictionary list to be managed with Table
+        root = context.root
         fields = root.get_catalog_metadata_fields()
         table_content = []
         for result in results:
@@ -425,9 +418,7 @@ class WebSite(Folder):
 
 
     site_search_form__access__ = True
-    def site_search_form(self, **kw):
-        context = get_context()
-
+    def site_search_form(self, context):
         namespace = {}
 
         states = []

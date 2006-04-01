@@ -20,7 +20,7 @@
       <tbody>
         <tr stl:repeat="user table/objects">
           <td width="10">
-            <input type="checkbox" class="checkbox" name="ids:list" value=""
+            <input type="checkbox" class="checkbox" name="ids" value=""
               stl:attributes="value user/name" />
           </td>
           <td>

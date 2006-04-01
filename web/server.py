@@ -336,10 +336,7 @@ class Server(object):
 
             try:
                 # Call the method
-                if method.im_func.func_code.co_flags & 8:
-                    response_body = method(**request.form)
-                else:
-                    response_body = method()
+                response_body = method(context)
             except UserError, exception:
                 # Redirection
                 transaction.rollback()

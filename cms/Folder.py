@@ -95,16 +95,15 @@ class Folder(Handler, handlers.Folder.Folder):
     # Traverse
     #######################################################################
     GET__access__ = True
-    def GET(self):
+    def GET(self, context):
         # Try index
         for name in ['index.xhtml', 'index.html']:
             if self.has_handler(name):
-                context = get_context()
                 goto = context.uri.resolve2(name)
                 context.redirect(goto)
                 return
 
-        return Handler.GET(self)
+        return Handler.GET(self, context)
 
 
     def _get_handler(self, segment, resource):
@@ -464,8 +463,7 @@ class Folder(Handler, handlers.Folder.Folder):
     browse_thumbnails__access__ = 'is_authenticated'
     browse_thumbnails__label__ = u'Contents'
     browse_thumbnails__sublabel__ = u'As Icons'
-    def browse_thumbnails(self):
-        context = get_context()
+    def browse_thumbnails(self, context):
         context.set_cookie('browse', 'thumb')
 
         parent_path = self.get_abspath()
@@ -481,25 +479,26 @@ class Folder(Handler, handlers.Folder.Folder):
     browse_list__access__ = 'is_allowed_to_edit'
     browse_list__label__ = u'Contents'
     browse_list__sublabel__ = u'As List'
-    def browse_list(self, **kw):
+    def browse_list(self, context):
         context = get_context()
         request = context.request
 
         context.set_cookie('browse', 'list')
 
-        if 'search_value' in kw:
-            search_value = unicode(kw['search_value'], 'utf8').strip()
+        if context.has_parameter('search_value'):
+            search_value = context.get_form_value('search_value')
+            search_value = unicode(search_value, 'utf8').strip()
         else:
             search_value = u''
 
-        search_subfolders = kw.get('search_subfolders')
+        search_subfolders = context.get_form_value('search_subfolders')
         if search_subfolders and not search_value:
             message = (u'Please put a value for your search criteria if you'
                        u' include subfolders.')
             comeback(self.gettext(message))
             return
 
-        selected_criteria = kw.get('search_criteria')
+        selected_criteria = context.get_form_value('search_criteria')
 
         query = {}
         if search_value:
@@ -527,9 +526,8 @@ class Folder(Handler, handlers.Folder.Folder):
     browse_image__access__ = 'is_allowed_to_edit'
     browse_image__label__ = u'Contents'
     browse_image__sublabel__ = u'As Image Gallery'
-    def browse_image(self, selected_image=None, **kw):
-        context = get_context()
-        request = context.request
+    def browse_image(self, context):
+        selected_image = context.get_form_value('selected_image')
         selected_index = None
 
         # check selected image
@@ -596,14 +594,14 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     remove__access__ = 'is_allowed_to_remove'
-    def remove(self, ids=[], **kw):
+    def remove(self, context):
+        ids = context.get_form_values('ids')
         if not ids:
             raise UserError, self.gettext(u'No objects selected.')
 
         removed = []
         not_allowed = []
 
-        context = get_context()
         for name in ids:
             handler = self.get_handler(name)
             if handler.is_allowed_to_remove():
@@ -625,7 +623,8 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     rename_form__access__ = 'is_allowed_to_move'
-    def rename_form(self, ids=[], **kw):
+    def rename_form(self, context):
+        ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to move
         handlers = [ self.get_handler(x) for x in ids ]
         names = [ x.name for x in handlers if x.is_allowed_to_move() ]
@@ -638,7 +637,6 @@ class Folder(Handler, handlers.Folder.Folder):
         # forces the rename_form to be called as a form action, hence
         # with the POST method, but it should be a GET method. Maybe
         # it will be solved after the needed folder browse overhaul.
-        context = get_context()
         if context.request.method == 'POST':
             ids_list =  '&'.join([ 'ids:list=%s' % x for x in names ])
             context.redirect(';rename_form?%s' % ids_list)
@@ -657,7 +655,9 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     rename__access__ = 'is_allowed_to_move'
-    def rename(self, names, new_names, **kw):
+    def rename(self, context):
+        names = context.get_form_value('names')
+        new_names = context.get_form_value('new_names')
         # Process input data
         for i, old_name in enumerate(names):
             xxx, extension, language = FileName.decode(old_name)
@@ -689,7 +689,8 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     copy__access__ = 'is_allowed_to_copy'
-    def copy(self, ids=[], **kw):
+    def copy(self, context):
+        ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to copy
         handlers = [ self.get_handler(x) for x in ids ]
         names = [ x.name for x in handlers if x.is_allowed_to_copy() ]
@@ -697,8 +698,6 @@ class Folder(Handler, handlers.Folder.Folder):
         if not names:
             raise UserError, self.gettext(u'No objects selected.')
 
-        context = get_context()
-        request, response = context.request, context.response
         path = self.get_abspath()
         cp = (False, [ '%s/%s' % (path, x) for x in names ])
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
@@ -709,7 +708,8 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     cut__access__ = 'is_allowed_to_move'
-    def cut(self, ids=[], **kw):
+    def cut(self, context):
+        ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to move
         handlers = [ self.get_handler(x) for x in ids ]
         names = [ x.name for x in handlers if x.is_allowed_to_move() ]
@@ -717,8 +717,6 @@ class Folder(Handler, handlers.Folder.Folder):
         if not names:
             raise UserError, self.gettext(u'No objects selected.')
 
-        context = get_context()
-        request, response = context.request, context.response
         path = self.get_abspath()
         cp = (True, [ '%s/%s' % (path, x) for x in names ])
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
@@ -729,9 +727,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     paste__access__ = 'is_allowed_to_add'
-    def paste(self):
-        context = get_context()
-
+    def paste(self, context):
         cp = context.get_cookie('ikaaro_cp')
         if cp is not None:
             root = context.root
@@ -791,7 +787,8 @@ class Folder(Handler, handlers.Folder.Folder):
     #######################################################################
     # Browse / Translate
     translate_form__access__ = 'is_allowed_to_translate'
-    def translate_form(self, ids=[], **kw):
+    def translate_form(self, context):
+        context.get_form_values('ids')
         if not ids:
             raise UserError, self.gettext(u'No objects selected')
 
@@ -814,7 +811,6 @@ class Folder(Handler, handlers.Folder.Folder):
         # forces the translate_form to be called as a form action, hence
         # with the POST method, but is should be a GET method. Maybe
         # it will be solved after the needed folder browse overhaul.
-        context = get_context()
         if context.request.method == 'POST':
             ids_list =  '&'.join([ 'ids:list=%s' % x for x in names ])
             context.redirect(';translate_form?%s' % ids_list)
@@ -841,9 +837,9 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     translate__access__ = 'is_allowed_to_translate'
-    def translate(self, names, languages, **kw):
-        context = get_context()
-        request = context.request
+    def translate(self, context):
+        names = context.get_form_value('names')
+        languages = context.get_form_value('languages')
 
         for i in range(len(names)):
             name, type, language = FileName.decode(names[i])
@@ -868,8 +864,9 @@ class Folder(Handler, handlers.Folder.Folder):
     new_resource_form__access__ = 'is_allowed_to_add'
     new_resource_form__label__ = u'Add'
     new_resource_form__sublabel__ = u'New Resource'
-    def new_resource_form(self, type=None, **kw):
-        if type is None:
+    def new_resource_form(self, context):
+        type = context.get_form_value('type')
+        if type is not None:
             # Build the namespace
             namespace = {}
             namespace['types'] = []
@@ -897,9 +894,9 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     new_resource__access__ = 'is_allowed_to_add'
-    def new_resource(self, class_id, name, **kw):
-        context = get_context()
-        request = context.request
+    def new_resource(self, context):
+        class_id = context.get_form_value('class_id')
+        name = context.get_form_value('name')
 
         # Check for errors
         name = name.strip()
@@ -916,7 +913,7 @@ class Folder(Handler, handlers.Folder.Folder):
         # Build the name
         handler_class = self.get_handler_class(class_id)
         name = FileName.encode((name, handler_class.class_extension,
-                                kw.get('dc:language')))
+                                context.get_form_value('dc:language')))
         if self.has_handler(name):
             message = u'There is already another object with this name.'
             raise UserError, self.gettext(message)
@@ -928,12 +925,12 @@ class Folder(Handler, handlers.Folder.Folder):
         root = self.get_root()
         languages = root.get_property('ikaaro:website_languages')
         default_language = languages[0]
-        kw['dc:title'] = {default_language: kw['dc:title']}
+        kw['dc:title'] = {default_language: context.get_form_value('dc:title')}
         # Add the handler
         self.set_handler(name, handler, **kw)
 
         message = self.gettext(u'New resource added.')
-        if kw.has_key('add_and_return'):
+        if context.has_parameter('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             handler = self.get_handler(name)
@@ -942,12 +939,12 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     browse_dir__access__ = 'is_authenticated'
-    def browse_dir(self, id=None):
+    def browse_dir(self, context):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=File.File, start=self)
 
         # Avoid general template
-        response = get_context().response
+        response = context.response
         response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
         handler = self.get_handler('/ui/Folder_browsedir.xml')
@@ -957,7 +954,8 @@ class Folder(Handler, handlers.Folder.Folder):
     #######################################################################
     # Add / Upload File
     upload_file__access__ = 'is_allowed_to_add'
-    def upload_file(self, file=None, **kw):
+    def upload_file(self, context):
+        file = context.get_form_value('file')
         if file is None:
             raise UserError, self.gettext(u'The file must be entered')
 

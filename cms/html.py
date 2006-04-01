@@ -24,7 +24,6 @@ from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.html import HTML
-from itools.web import get_context
 from itools.web.exceptions import UserError
 
 # Import from ikaaro
@@ -103,7 +102,7 @@ class XHTMLFile(Text, XHTML.Document):
     # View
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
-    def view(self):
+    def view(self, context):
         return self.to_xhtml_body()
 
 
@@ -116,7 +115,7 @@ class XHTMLFile(Text, XHTML.Document):
     edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     edit_form__sublabel__ = u'Inline'
-    def edit_form(self):
+    def edit_form(self, context):
         """WYSIWYG editor for HTML documents."""
         # If the document has not a body (e.g. a frameset), edit as plain text
         body = self.get_body()
@@ -134,13 +133,13 @@ class XHTMLFile(Text, XHTML.Document):
 
 
     edit__access__ = 'is_allowed_to_edit'
-    def edit(self, **kw):
+    def edit(self, context):
         # XXX This code is ugly. We must: (1) write our own XML parser, with
         # support for fragments, and (2) use the commented code.
 ##        body = self.get_body()
 ##        body.set_content(data)
 
-        new_body = kw['data']
+        new_body = context.get_form_value('data')
         # Epoz returns HTML, coerce to XHTML (by tidy)
         stdin, stdout, stderr = os.popen3('tidy -i -utf8 -asxhtml')
         stdin.write(new_body)
@@ -167,7 +166,7 @@ class XHTMLFile(Text, XHTML.Document):
     #######################################################################
     # Edit / Inline / toolbox: add images
     addimage_form__access__ = 'is_allowed_to_edit'
-    def addimage_form(self):
+    def addimage_form(self, context):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=Image, start=self.parent)
 
@@ -178,7 +177,7 @@ class XHTMLFile(Text, XHTML.Document):
     #######################################################################
     # Edit / Inline / toolbox: add links
     addlink_form__access__ = 'is_allowed_to_edit'
-    def addlink_form(self):
+    def addlink_form(self, context):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=File, start=self.parent)
 
@@ -218,10 +217,10 @@ class HTMLFile(HTML.Document, XHTMLFile):
 
 
     edit__access__ = 'is_allowed_to_edit'
-    def edit(self, **kw):
+    def edit(self, context):
         # XXX This is copy and paste from XHTMLFile.edit (except for the
         # tidy part)
-        new_body = kw['data']
+        new_body = context.get_form_value('data')
         # Parse the new data
         resource = memory.File(new_body)
         doc = HTML.Document(resource)

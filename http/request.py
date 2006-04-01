@@ -243,25 +243,22 @@ class Request(Message):
     def _set_parameter(self, name, value):
         prefix, local_name = QName.decode(name)
         if prefix is not None:
-            # XXX Horrible exception, kept here for backwards compatibility
-            # with Zope, until we get the right solution.
-            if local_name == 'list':
-                name = prefix
-                if not isinstance(value, list):
-                    value = [value]
-            else:
-                datatype = schemas.get_datatype(name)
-                value = datatype.decode(value)
+            datatype = schemas.get_datatype(name)
+            value = datatype.decode(value)
 
         self.state.form[name] = value
 
 
-    def get_parameter(self, name):
+    def get_parameter(self, name, default=None):
         form = self.state.form
         if name in form:
             return form[name]
-        datatype = schemas.get_datatype(name)
-        return datatype.default
+
+        if default is None:
+            datatype = schemas.get_datatype(name)
+            return datatype.default
+
+        return default
 
 
     def has_parameter(self, name):

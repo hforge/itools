@@ -107,7 +107,7 @@ class WorkflowAware(iWorkflowAware):
     ########################################################################
     state_form__access__ = 'is_authenticated'
     state_form__label__ = u'State'
-    def state_form(self):
+    def state_form(self, context):
         namespace = {}
         # State
         state = self.get_state()
@@ -139,14 +139,12 @@ class WorkflowAware(iWorkflowAware):
 
 
     edit_state__access__ = 'is_authenticated'
-    def edit_state(self, transition=None, comments="", **kw):
+    def edit_state(self, context):
+        transition = context.get_form_value('transition')
+        comments = context.get_form_value('comments')
         # Check input data
         if transition is None:
             raise UserError, self.gettext(u'A transition must be selected.')
-
-        context = get_context()
-        root = context.root
-        user = context.user
 
         # Keep workflow history
         property = {('dc', 'date'): datetime.datetime.now(),
@@ -158,6 +156,7 @@ class WorkflowAware(iWorkflowAware):
         # Change the state, through the itools.workflow way
         self.do_trans(transition)
         # Re-index
+        root = context.root
         root.reindex_handler(self)
         # Comeback
         message = self.gettext(u'Transition done.')

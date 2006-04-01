@@ -119,8 +119,7 @@ class User(Folder):
     # Profile
     profile__access__ = 'is_allowed_to_view'
     profile__label__ = u'Profile'
-    def profile(self):
-        context = get_context()
+    def profile(self, context):
         root = context.root
         user = context.user
 
@@ -141,8 +140,8 @@ class User(Folder):
     # View
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
-    def view(self):
-        root = self.get_root()
+    def view(self, context):
+        root = context.root
 
         namespace = {}
         namespace['label'] = self.title_or_name
@@ -186,8 +185,7 @@ class User(Folder):
     edit_form__access__ = 'is_self_or_superuser'
     edit_form__label__ = u'Preferences'
     edit_form__sublabel__ = u'Application'
-    def edit_form(self):
-        context = get_context()
+    def edit_form(self, context):
         root = context.root
         user = context.user
 
@@ -215,12 +213,9 @@ class User(Folder):
 
 
     edit__access__ = 'is_self_or_superuser'
-    def edit(self, **kw):
-        context = get_context()
-        user = context.user
-
-        self.set_property('ikaaro:user_theme', kw['ikaaro:user_theme'])
-        self.set_property('ikaaro:user_language', kw['ikaaro:user_language'])
+    def edit(self, context):
+        for key in ['ikaaro:user_theme', 'ikaaro:user_language']:
+            self.set_property(key, context.get_form_value(key))
 
         message = self.gettext(u'Application preferences changed.')
         comeback(message)
@@ -231,16 +226,13 @@ class User(Folder):
     edit_account_form__access__ = 'is_self_or_superuser'
     edit_account_form__label__ = u'Preferences'
     edit_account_form__sublabel__ = u'Account'
-    def edit_account_form(self):
-        context = get_context()
-        user = context.user
-
+    def edit_account_form(self, context):
         # Build the namespace
         namespace = {}
         namespace['fullname'] = self.get_property('dc:title')
         namespace['email'] = self.get_property('ikaaro:email')
 
-        if self.name != user.name:
+        if self.name != context.user.name:
             namespace['must_confirm'] = False
         else:
             namespace['must_confirm'] = True
@@ -250,18 +242,20 @@ class User(Folder):
 
 
     edit_account__access__ = 'is_self_or_superuser'
-    def edit_account(self, email, password='', **kw):
-        context = get_context()
-        user = context.user
+    def edit_account(self, context):
+        title = context.get_form_value('dc:title')
+        email = context.get_form_value('email')
+        password = context.get_form_value('password')
 
+        user = context.user
         if self.name == user.name:
             password = crypt_password(password)
             if not self.authenticate(password):
                 message = (u"You mistyped your actual password, "
-                           u"you account is not changed.")
+                           u"your account is not changed.")
                 raise UserError, self.gettext(message)
 
-        self.set_property('dc:title', kw['dc:title'], language='en')
+        self.set_property('dc:title', title, language='en')
         email = unicode(email, 'utf-8')
         self.set_property('ikaaro:email', email)
         message = self.gettext(u'Account changed.')
@@ -331,8 +325,8 @@ class User(Folder):
     edit_groups_form__access__ = 'is_admin'
     edit_groups_form__label__ = u'Edit'
     edit_groups_form__sublabel__ = u'Groups'
-    def edit_groups_form(self):
-        root = self.get_root()
+    def edit_groups_form(self, context):
+        root = context.root
 
         tablename = 'groups_list'
         namespace = {}
@@ -357,9 +351,10 @@ class User(Folder):
 
 
     edit_groups__access__ = 'is_admin'
-    def edit_groups(self, groups=[], **kw):
+    def edit_groups(self, context):
+        groups = context.get_form_values('groups')
         # Add user in groups
-        root = self.get_root()
+        root = context.root
         all_groups = root.get_groups()
         for group_path in all_groups:
             group = root.get_handler(group_path)
@@ -376,8 +371,7 @@ class User(Folder):
     # Tasks
     tasks_list__access__ = 'is_self_or_superuser'
     tasks_list__label__ = u'Tasks'
-    def tasks_list(self):
-        context = get_context()
+    def tasks_list(self, context):
         root = context.root
 
         namespace = {}
@@ -469,8 +463,8 @@ class UserFolder(Folder):
     # Add
     new_user_form__access__ = 'is_admin'
     new_user_form__label__ = u'Add'
-    def new_user_form(self):
-        root = self.get_root()
+    def new_user_form(self, context):
+        root = context.root
 
         tablename = 'groups_list'
         namespace = {}
@@ -492,7 +486,12 @@ class UserFolder(Folder):
 
 
     new_user__access__ = 'is_admin'
-    def new_user(self, username, password, password2, groups=[], **kw):
+    def new_user(self, context):
+        username = context.get_form_value('username')
+        password = context.get_form_value('password')
+        password2 = context.get_form_value('password2')
+        groups = context.get_form_values('groups')
+
         # Check the values
         if not username:
             message = self.gettext(u'The username is wrong, please try again.')
@@ -509,13 +508,13 @@ class UserFolder(Folder):
         user = self.set_user(username, password)
 
         # Add user in groups
-        root = self.get_root()
+        root = context.root
         for group_path in groups:
             group = root.get_handler(group_path)
             group.set_user(username)
 
         message = self.gettext(u'User added.')
-        if kw.has_key('add_and_return'):
+        if context.has_parameter('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             goto='./%s/;%s' % (username, user.get_firstview())

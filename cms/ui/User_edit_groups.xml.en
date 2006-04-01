@@ -19,7 +19,7 @@
     <tbody>
       <tr stl:repeat="object table/objects">
         <td>
-          <input class="checkbox" name="groups:list" 
+          <input class="checkbox" name="groups" 
             type="checkbox"
             stl:attributes="value object/name; checked object/checked"/>
         </td>

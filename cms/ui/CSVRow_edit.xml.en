@@ -8,7 +8,7 @@
       <stl:block repeat="column row">
         <dt></dt>
         <dd>
-          <input type="text" name="column:list" size="40"
+          <input type="text" name="column" size="40"
             stl:attributes="value column" />
         </dd>
       </stl:block>

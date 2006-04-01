@@ -131,7 +131,7 @@ class OfficeDocument(File):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     view__sublabel__ = u'Preview'
-    def view(self):
+    def view(self, context):
         return self.to_html()
 
 
@@ -217,7 +217,7 @@ class OOffice(OfficeDocument):
         raise NotImplementedError
 
 
-    def view(self):
+    def view(self, context):
         namespace = {}
         pgraphs = self.to_text()
         pgraphs = [ l for l in pgraphs.split('\n') if l and len(l) > 1 ]

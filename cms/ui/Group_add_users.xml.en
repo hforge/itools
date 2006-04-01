@@ -24,7 +24,7 @@
   <form action=";add_users" method="post">
     <dl>
       <dd>
-        <select multiple="" name="names:list" stl:attributes="size size">
+        <select multiple="" name="names" stl:attributes="size size">
           <option stl:repeat="user users"
             stl:attributes="value user/name"
             stl:content="user/title" />

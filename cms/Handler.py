@@ -85,7 +85,7 @@ class Node(AccessControl, iNode):
     # HTTP
     ########################################################################
     GET__access__ = 'is_allowed_to_view'
-    def GET(self):
+    def GET(self, context):
         method = self.get_firstview()
         # Check access
         if method is None:
@@ -97,8 +97,8 @@ class Node(AccessControl, iNode):
 
 
     POST__access__ = 'is_authenticated'
-    def POST(self, **kw):
-        for name in kw:
+    def POST(self, context):
+        for name in context.get_form_keys():
             if name.startswith(';'):
                 # Get the method
                 method_name = name[1:]
@@ -107,10 +107,7 @@ class Node(AccessControl, iNode):
                 if method is None:
                     method = self.forbidden_form
                 # Call the method
-                if method.im_func.func_code.co_flags & 8:
-                    return method(**kw)
-                else:
-                    return method()
+                return method(context)
 
         raise Exception, 'the form did not define the action to do'
 
@@ -465,25 +462,20 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
     # HTTP
     ########################################################################
     PUT__access__ = 'is_authenticated'
-    def PUT(self):
-        context = get_context()
-        request, response = context.request, context.response
-
+    def PUT(self, context):
         # Save the data
-        resource = request.get_parameter('body')
+        resource = context.get_form_value('body')
         self.load_state(resource)
         # Build the response
-        response.set_status(204)
+        context.response.set_status(204)
 
 
     LOCK__access__ = 'is_authenticated'
-    def LOCK(self):
-        context = get_context()
-        request, response = context.request, context.response
-
+    def LOCK(self, context):
         # Lock the resource
         lock = self.lock()
         # Build response
+        response = context.response
         response.set_header('Content-Type', 'text/xml; charset="utf-8"')
         response.set_header('Lock-Token', 'opaquelocktoken:%s' % lock)
 
@@ -492,16 +484,14 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
 
     UNLOCK__access__ = 'is_authenticated'
-    def UNLOCK(self):
-        context = get_context()
-        request, response = context.request, context.response
-
+    def UNLOCK(self, context):
         # Check wether the resource is locked
         if not self.is_locked():
             # XXX Send some nice response to the client
             raise ValueError, 'resource is not locked'
 
         # Check wether we have the right key
+        request = context.request
         key = request.get_header('Lock-Token')
         key = key[len('opaquelocktoken:'):]
 
@@ -513,18 +503,18 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         # Unlock the resource
         self.unlock()
 
-        response.set_status(204)
+        context.response.set_status(204)
 
 
     ########################################################################
     # User interface
     ########################################################################
     change_content_language__access__ = 'is_allowed_to_view'
-    def change_content_language(self, **kw):
-        context = get_context()
-        request = context.request
+    def change_content_language(self, context):
+        language = context.get_form_value('dc:language')
+        context.set_cookie('content_language', language)
 
-        context.set_cookie('content_language', kw['dc:language'])
+        request = context.request
         context.redirect(request.referrer)
 
 ##        handler = self.get_version_handler(language=kw['dc:language'])
@@ -554,10 +544,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
     edit_metadata_form__access__ = 'is_allowed_to_edit'
     edit_metadata_form__label__ = u'Metadata'
-    def edit_metadata_form(self):
-        context = get_context()
-        request = context.request
-
+    def edit_metadata_form(self, context):
         # Build the namespace
         namespace = {}
         # Language
@@ -577,20 +564,20 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
 
     edit_metadata__access__ = 'is_allowed_to_edit'
-    def edit_metadata(self, **kw):
-        context = get_context()
-        root = context.root
+    def edit_metadata(self, context):
+        title = context.get_form_value('dc:title')
+        description = context.get_form_value('dc:description')
+        language = context.get_form_value('dc:language')
 
-        language = kw['dc:language']
         if isinstance(self, LocaleAware):
-            self.set_property('dc:title', kw['dc:title'])
-            self.set_property('dc:description', kw['dc:description'])
+            self.set_property('dc:title', title)
+            self.set_property('dc:description', description)
         else:
-            self.set_property('dc:title', kw['dc:title'], language=language)
-            self.set_property('dc:description', kw['dc:description'],
-                              language=language)
+            self.set_property('dc:title', title, language=language)
+            self.set_property('dc:description', description, language=language)
 
         # Reindex
+        root = context.root
         root.reindex_handler(self)
 
         message = self.gettext(u'Metadata changed.')
@@ -635,17 +622,14 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
 
     epoz_iframe__access__ = 'is_allowed_to_edit'
-    def epoz_iframe(self):
-        context = get_context()
-        response = context.response
-        response.set_header('Content-Type', 'text/html; charset=UTF-8')
-
+    def epoz_iframe(self, context):
         namespace = {}
         namespace['data'] = self.get_epoz_data()
 
-        here = uri.Path(self.get_abspath())
+        response = context.response
+        response.set_header('Content-Type', 'text/html; charset=UTF-8')
         handler = self.get_handler('/ui/epoz_iframe.xml')
-        there = uri.Path(handler.get_abspath())
-        prefix = here.get_pathto(there)
-        handler = XHTML.set_template_prefix(handler, prefix)
+        here = uri.generic.Path(self.get_abspath())
+        there = uri.generic.Path(handler.get_abspath())
+        handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
         return stl(handler, namespace)

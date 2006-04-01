@@ -147,13 +147,13 @@ class Root(Group, WebSite):
                 response.set_body(response_body)
 
 
-    def forbidden(self):
+    def forbidden(self, context):
         message = (u'Access forbidden, you are not authorized to access'
                    u' this resource.')
         return self.gettext(message)
 
 
-    def internal_server_error(self):
+    def internal_server_error(self, context):
         namespace = {}
         namespace['traceback'] = traceback.format_exc()
 
@@ -161,7 +161,7 @@ class Root(Group, WebSite):
         return stl(handler, namespace)
 
 
-    def not_found(self):
+    def not_found(self, context):
         message = u'The requested resource has not been found.'
         return self.gettext(message)
 
@@ -335,7 +335,7 @@ class Root(Group, WebSite):
     about__access__ = True
     about__label__ = u'About'
     about__sublabel__ = u'iKaaro'
-    def about(self):
+    def about(self, context):
         handler = self.get_handler('/ui/Root_about.xml')
         return stl(handler)
 
@@ -345,7 +345,7 @@ class Root(Group, WebSite):
     license__access__ = True
     license__label__ = u'About'
     license__sublabel__ = u'License'
-    def license(self):
+    def license(self, context):
         handler = self.get_handler('/ui/Root_license.xml')
         return stl(handler)
 
@@ -359,13 +359,14 @@ class Root(Group, WebSite):
     catalog_form__access__ = 'is_admin'
     catalog_form__label__ = u'Maintenance'
     catalog_form__sublabel__ = u'Update Catalog'
-    def catalog_form(self):
+    def catalog_form(self, context):
         handler = self.get_handler('/ui/Root_catalog.xml')
         return stl(handler)
 
 
     update_catalog__access__ = 'is_admin'
-    def update_catalog(self):
+    def update_catalog(self, context):
+        # Initialize a new empty catalog
         t0 = time()
         transaction = get_transaction()
         # Init transaction (because we use sub-transactions)
@@ -423,7 +424,7 @@ class Root(Group, WebSite):
     check_groups__access__ = 'is_admin'
     check_groups__label__ = u'Maintenance'
     check_groups__sublabel__ = u'Check Groups'
-    def check_groups(self):
+    def check_groups(self, context):
         namespace = {}
 
         groups = []
@@ -443,7 +444,7 @@ class Root(Group, WebSite):
 
 
     fix_groups__access__ = 'is_admin'
-    def fix_groups(self):
+    def fix_groups(self, context):
         root_users = self.get_handler('users').get_usernames()
         for path in self.get_groups():
             group = self.get_handler(path)
@@ -495,16 +496,16 @@ class Root(Group, WebSite):
     #######################################################################
     # Import
     #######################################################################
-    ximport__access__ = 'is_admin'
-    def ximport(self, path):
-        from itools.handlers import get_handler
-        for resource_name in self.resource.get_resource_names():
-            self.resource.del_resource(resource_name)
-        source = get_resource(path)
-        for resource_name in source.get_resource_names():
-            resource = source.get_resource(resource_name)
-            self.resource.set_resource(resource_name, resource)
-        print 'importing, done'
+##    ximport__access__ = 'is_admin'
+##    def ximport(self, path):
+##        from itools.handlers import get_handler
+##        for resource_name in self.resource.get_resource_names():
+##            self.resource.del_resource(resource_name)
+##        source = get_resource(path)
+##        for resource_name in source.get_resource_names():
+##            resource = source.get_resource(resource_name)
+##            self.resource.set_resource(resource_name, resource)
+##        print 'importing, done'
 
 
 Group.register_handler_class(Root)

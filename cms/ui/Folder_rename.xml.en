@@ -11,10 +11,10 @@
     <stl:block repeat="object objects">
       <dt stl:content="object/name"/>
       <dd>
-        <input type="hidden" name="names:list"
+        <input type="hidden" name="names"
                stl:attributes="value object/real_name" />
         to
-        <input type="text" name="new_names:list"
+        <input type="text" name="new_names"
                stl:attributes="value object/name" />
       </dd>
     </stl:block>

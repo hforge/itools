@@ -20,7 +20,7 @@
     <tbody>
       <tr stl:repeat="language active_languages">
         <td>
-          <input class="checkbox" type="checkbox" name="codes:list"
+          <input class="checkbox" type="checkbox" name="codes"
             stl:attributes="value language/code" />
         </td>
         <td stl:content="language/name" />

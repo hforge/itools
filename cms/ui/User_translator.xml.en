@@ -21,7 +21,7 @@
 	</tr>
 	<tr stl:repeat="skill translator_skills">
 	  <td>
-	    <input type="checkbox" name="translator_skills:list"
+	    <input type="checkbox" name="translator_skills"
 	           stl:attributes="value skill/index" />
 	  </td>
 	  <td stl:content="skill/from" />

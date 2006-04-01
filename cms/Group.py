@@ -18,7 +18,6 @@
 # Import from itools
 from itools import handlers
 from itools.stl import stl
-from itools.web import get_context
 from itools.web.exceptions import UserError
 
 # Import from ikaaro
@@ -151,15 +150,15 @@ class Group(Folder):
     add_group_form__access__ = 'is_admin'
     add_group_form__label__ = u'Add'
     add_group_form__sublabel__ = u'Add'
-    def add_group_form(self):
+    def add_group_form(self, context):
         handler = self.get_handler('/ui/Group_add_group.xml')
         return stl(handler)
 
 
     add_group__access__ = 'is_admin'
-    def add_group(self, name, **kw):
+    def add_group(self, context):
         # Process input data
-        name = name.strip()
+        name = context.get_form_value('name').strip()
         if not name:
             # Empty name
             raise UserError, self.gettext(u'The name must be entered')
@@ -187,15 +186,13 @@ class Group(Folder):
     browse_users__access__ = 'is_admin'
     browse_users__label__ = u'Users'
     browse_users__sublabel__ = u'Browse'
-    def browse_users(self):
-        context = get_context()
+    def browse_users(self, context):
         root = context.root
 
         namespace = {}
         tablename = 'users'
 
         # Get the objects
-        context = get_context()
         path_to_root = self.get_pathto(root)
         objects = []
         for username in self.get_usernames():
@@ -218,15 +215,14 @@ class Group(Folder):
 
 
     remove_users__access__ = 'is_admin'
-    def remove_users(self, ids=[], **kw):
-        context = get_context()
-        request, response = context.request, context.response
-        root = self.get_root()
+    def remove_users(self, context):
+        ids = context.get_form_values('ids')
 
         if not ids:
             message = self.gettext(u'You must select the members to remove.')
             raise UserError, message
 
+        root = context.root
         user_folder = root.get_handler('users')
         # Remove users in sub-groups
         for subgroup in self.get_subgroups():
@@ -262,10 +258,7 @@ class Group(Folder):
     add_users_form__access__ = 'is_admin'
     add_users_form__label__ = u'Users'
     add_users_form__sublabel__ = u'Add'
-    def add_users_form(self):
-        context = get_context()
-        root = context.root
-
+    def add_users_form(self, context):
         # Users owned by my parent.
         parent = self.parent
         while not isinstance(parent, Group):
@@ -293,11 +286,11 @@ class Group(Folder):
 
 
     add_users__access__ = 'is_admin'
-    def add_users(self, names=[], **kw):
-        """
-        Form action that adds new members to the group.
-        """
-        userfolder = self.get_root().get_handler('users')
+    def add_users(self, context):
+        """Form action that adds new members to the group."""
+        names = context.get_form_values('names')
+
+        userfolder = context.root.get_object('users')
         for name in names:
             group_id = self.get_abspath().split('/')[3:]
             self.set_user(name)

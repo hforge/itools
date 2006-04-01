@@ -135,8 +135,9 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
     edit__access__ = Handler.is_allowed_to_edit
     def edit(self, context):
-        data = unicode(context.get_form_value('data'), 'UTF-8')
-        self.set_data(data)
+        data = context.get_form_value('data')
+        resource = memory.File(data)
+        self.load_state(resource)
 
         message = self.gettext(u'Document edited.')
         comeback(message)

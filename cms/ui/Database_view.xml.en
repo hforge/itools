@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <table border="0" cellpadding="2" cellspacing="2">
+    <tr stl:repeat="object objects">
+      <td valign="top">
+        <a stl:attributes="href object" stl:content="object" />
+      </td>
+    </tr>
+  </table>
+</stl:block>

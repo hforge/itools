@@ -356,7 +356,7 @@ class Server(object):
                 self.log_error()
                 transaction.rollback()
                 response.set_status(500)
-                response_body = root.internal_server_error()
+                response_body = root.internal_server_error(context)
             else:
                 if transaction:
                     try:
@@ -365,7 +365,7 @@ class Server(object):
                         self.log_error()
                         transaction.rollback()
                         response.set_status(500)
-                        response_body = root.internal_server_error()
+                        response_body = root.internal_server_error(context)
                     else:
                         username = user and user.name or 'NONE'
                         note = str(request.uri.path)
@@ -390,7 +390,7 @@ class Server(object):
                 root.after_traverse()
             except:
                 response.set_status(500)
-                body = root.internal_server_error()
+                body = root.internal_server_error(context)
                 response.set_body(body)
                 self.log_error()
 

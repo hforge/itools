@@ -47,8 +47,8 @@ class File(Handler, itools.handlers.File.File):
 
 
     GET__mtime__ = Handler.get_mtime
-    def GET(self):
-        return self.download()
+    def GET(self, context):
+        return self.download(context)
 
 
     #######################################################################

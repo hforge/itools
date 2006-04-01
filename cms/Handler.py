@@ -289,7 +289,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
 
 
     @classmethod
-    def new_instance(cls, **kw):
+    def new_instance(cls):
         return cls()
 
 

@@ -37,13 +37,12 @@ from workflow import WorkflowAware
 
 class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
 
-    def GET(self):
+    def GET(self, context):
         method = self.get_firstview()
         # Check access
         if method is None:
             raise Forbidden
         # Redirect
-        context = get_context()
         goto = context.uri.resolve2(';%s' % method)
         context.redirect(goto)
 

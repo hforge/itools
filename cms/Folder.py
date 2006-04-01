@@ -866,7 +866,7 @@ class Folder(Handler, handlers.Folder.Folder):
     new_resource_form__sublabel__ = u'New Resource'
     def new_resource_form(self, context):
         type = context.get_form_value('type')
-        if type is not None:
+        if type is None:
             # Build the namespace
             namespace = {}
             namespace['types'] = []
@@ -919,12 +919,13 @@ class Folder(Handler, handlers.Folder.Folder):
             raise UserError, self.gettext(message)
 
         # Build the handler
-        handler = handler_class.new_instance(**kw)
+        handler = handler_class.new_instance()
 
         # Calculate title
         root = self.get_root()
         languages = root.get_property('ikaaro:website_languages')
         default_language = languages[0]
+        kw = {}
         kw['dc:title'] = {default_language: context.get_form_value('dc:title')}
         # Add the handler
         self.set_handler(name, handler, **kw)

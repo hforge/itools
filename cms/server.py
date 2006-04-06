@@ -93,6 +93,18 @@ class Server(web.server.Server):
                                    pid_file='%s/pid' % target)
 
 
+    def get_pid(self):
+        pid = open('%s/pid' % self.target).read()
+        pid = int(pid)
+        try:
+            # XXX This only works on Unix
+            os.getpgid(pid)
+        except OSError:
+            return None
+
+        return pid
+
+
     def before_commit(self):
         open('%s/state' % self.target, 'w').write('START')
 

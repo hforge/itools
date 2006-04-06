@@ -52,6 +52,12 @@ def start(parser, options, target):
     # Set-up the server object
     server = Server(target, port=options.port)
 
+    # Check the server is not running
+    pid = server.get_pid()
+    if pid is not None:
+        print 'The server is already running.'
+        return
+
     # Debuggin mode (XXX does not works on Windows)
     if options.debug is False:
         # Detach from the console (this code derives from the Python

@@ -23,13 +23,17 @@ import signal
 
 # Import from itools
 import itools
+from itools.cms.server import Server
 
 
 def stop(parser, options, target):
-    pid = open('%s/pid' % target).read()
-    pid = int(pid)
-    os.kill(pid, signal.SIGTERM)
-    print 'Stopped.'
+    server = Server(target)
+    pid = server.get_pid()
+    if pid is None:
+        print 'The server is not running.'
+    else:
+        os.kill(pid, signal.SIGTERM)
+        print 'Stopped.'
 
 
 if __name__ == '__main__':

@@ -36,7 +36,7 @@ class CatalogAware(object):
             'text': self.to_text(),
             'owner': get_property('owner'),
             'title_or_name': title or name,
-            'mtime_microsecond': str(self.resource.get_mtime().microsecond),
+            'mtime': str(self.resource.get_mtime().strftime('%Y%m%d%H%M')),
             }
 
         parent = self.parent

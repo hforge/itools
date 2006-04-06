@@ -42,7 +42,7 @@
         <th>Name <stl:inline content="table/sortcontrol(name)" /></th>
         <th>Title <stl:inline content="table/sortcontrol(title)" /></th>
         <th>Type <stl:inline content="table/sortcontrol(format)" /></th>
-        <th>Date <stl:inline content="table/sortcontrol(mtime_microsecond)" /></th>
+        <th>Date <stl:inline content="table/sortcontrol(mtime)" /></th>
         <th>Size</th>
         <th>State <stl:inline content="table/sortcontrol(workflow_state)" /></th>
       </tr>

@@ -75,7 +75,7 @@ class Root(Group, WebSite):
                        ('parent_path', 'keyword', True, True),
                        ('name', 'keyword', True, True),
                        ('title_or_name', 'keyword', True, True),
-                       ('mtime_microsecond', 'keyword', False, True),
+                       ('mtime', 'keyword', False, True),
                        ]
 
 

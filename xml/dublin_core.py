@@ -37,7 +37,7 @@ class Element(XML.Element):
 
     def set_text(self, text, encoding='UTF-8'):
         text = text.strip()
-        type = schema[self.name]['type']
+        type = DublinCore.datatypes[self.name]
         if type is Unicode:
             self.value = type.decode(text, encoding)
         else:

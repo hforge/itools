@@ -110,11 +110,11 @@ class WorkflowAware(iWorkflowAware):
     def state_form(self):
         namespace = {}
         # State
-        state = self.get_statename()
-        namespace['state'] = state
+        state = self.get_state()
+        namespace['state'] = self.gettext(state['title'])
         # Posible transitions
         transitions = []
-        for name, trans in self.workflow.states[state].transitions.items():
+        for name, trans in state.transitions.items():
             if self.is_allowed_to_trans(name) is True:
                 description = trans['description']
                 transitions.append({'name': name,

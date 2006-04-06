@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ from datetime import datetime
 # Import from itools
 from itools.resources import base, memory
 from itools.uri import Path
-from itools.handlers.Handler import Handler, State
+from itools.handlers.Handler import Handler
 from itools.handlers import registry
 
 
@@ -243,6 +243,7 @@ class Folder(Handler):
         container.cache[name] = handler
         # Event: after set handler
         container.after_set_handler(segment, handler, **kw)
+        return handler
 
 
     def del_handler(self, path):

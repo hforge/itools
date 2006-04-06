@@ -111,11 +111,11 @@ class Var(Text):
                     state = 0
 
         # Set state
-        self.state.records = records
+        self.records = records
 
 
     #######################################################################
     # API
     #######################################################################
     def to_str(self, encoding=None):
-        return '\n'.join([ x.to_str() for x in self.state.records ])
+        return '\n'.join([ x.to_str() for x in self.records ])

@@ -43,18 +43,17 @@ class Config(Text):
                 value = value.strip()
                 values[name] = value
 
-        state = self.state
-        state.lines = lines
-        state.values = values
+        self.lines = lines
+        self.values = values
 
 
     def to_str(self):
-        values = self.state.values
+        values = self.values
 
         names = values.keys()
 
         lines = []
-        for line in self.state.lines:
+        for line in self.lines:
             if line and not line.startswith('#'):
                 name, value = line.split('=', 1)
                 name = name.strip()
@@ -79,12 +78,12 @@ class Config(Text):
     #########################################################################
     def set_value(self, name, value):
         self.set_changed()
-        self.state.values[name] = value
+        self.values[name] = value
 
 
     def get_value(self, name):
-        return self.state.values.get(name)
+        return self.values.get(name)
 
 
     def has_value(self, name):
-        return name in self.state.values
+        return name in self.values

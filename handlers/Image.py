@@ -35,12 +35,11 @@ class Image(File):
 
 
     def _load_state(self, resource):
-        state = self.state
         # Data
         data = resource.read()
-        state.data = data
+        self.data = data
         # Size
-        state.size = 0, 0
+        self.size = 0, 0
         if PILImage is not None:
             f = StringIO(data)
             try:
@@ -48,24 +47,20 @@ class Image(File):
             except IOError:
                 pass
             else:
-                state.size = im.size
+                self.size = im.size
         # Thumbnails
-        state.thumbnails = {}
+        self.thumbnails = {}
 
 
     #########################################################################
     # API
     #########################################################################
-    def get_size(self):
-        return self.state.size
-
-
     def get_thumbnail(self, width, height):
         if PILImage is None:
             return None, None
 
         # Check the cache
-        thumbnails = self.state.thumbnails
+        thumbnails = self.thumbnails
         key = (width, height)
         if key in thumbnails:
             return thumbnails[key]
@@ -76,7 +71,7 @@ class Image(File):
         im = PILImage.open(f)
 
         # Create the thumbnail if needed
-        state_width, state_height = self.get_size()
+        state_width, state_height = self.size
         if state_width > width or state_height > height:
             # XXX Improve the quality of the thumbnails by cropping? The
             # only problem would be the loss of information.

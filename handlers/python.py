@@ -103,8 +103,7 @@ class Python(Text):
 
     def _load_state(self, resource):
         Text._load_state(self, resource)
-        state = self.state
-        state.visitor = None 
+        self.visitor = None 
 
 
     #########################################################################
@@ -126,12 +125,12 @@ class Python(Text):
 
 
     def get_visitor(self):
-        visitor = self.state.visitor 
+        visitor = self.visitor 
         if visitor is None:
             ast = compiler.parse(self.to_str())
             visitor = Visitor()
             compiler.walk(ast, visitor)
-            self.state.visitor = visitor
+            self.visitor = visitor
         return visitor
 
 

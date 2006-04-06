@@ -32,10 +32,9 @@ class Text(File):
 
 
     def _load_state(self, resource):
-        state = self.state
         data = resource.read()
-        state.encoding = self.guess_encoding(data)
-        state.data = unicode(data, state.encoding)
+        self.encoding = self.guess_encoding(data)
+        self.data = unicode(data, self.encoding)
 
 
     @staticmethod
@@ -68,11 +67,11 @@ class Text(File):
     # API
     #########################################################################
     def get_encoding(self):
-        return self.state.encoding
+        return self.encoding
 
 
     def to_str(self, encoding='UTF-8'):
-        return self.state.data.encode(encoding)
+        return self.data.encode(encoding)
 
 
 register_handler_class(Text)

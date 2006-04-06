@@ -29,14 +29,12 @@ class KeyValue(Text):
     __keys_types__ = {}
 
     def _load_state(self, resource):
-        state = self.state
-
         # Initializes the keys.
         keys = set()
         for key in self.__keys__:
-            if not hasattr(state, key):
+            if not hasattr(self, key):
                 keys.add(key)
-                setattr(state, key, '')
+                setattr(self, key, '')
 
         # Parses the input data, stores the keys in self.keys and the values
         # as attributes.
@@ -49,11 +47,11 @@ class KeyValue(Text):
                     pass
                 else:
                     keys.add(key)
-                    setattr(state, key, value)
+                    setattr(self, key, value)
 
         # Convert the values to the right type.
         for key in keys:
-            value = getattr(state, key)
+            value = getattr(self, key)
             type = self.__keys_types__.get(key, 'str')
             if type == 'str':
                 pass
@@ -64,10 +62,10 @@ class KeyValue(Text):
             else:
                 # XXX Error!!
                 pass
-            setattr(state, key, value)
+            setattr(self, key, value)
 
-        # Set state
-        state.keys = keys
+        # Set keys
+        self.keys = keys
 
 
     #########################################################################
@@ -75,9 +73,8 @@ class KeyValue(Text):
     #########################################################################
     def to_str(self, encoding='UTF-8'):
         data = []
-        state = self.state
-        for key in state.keys:
-            value = getattr(state, key)
+        for key in self.keys:
+            value = getattr(self, key)
             t = self.__keys_types__.get(key, 'str')
             if t == 'str':
                 pass

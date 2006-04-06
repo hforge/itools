@@ -69,7 +69,6 @@ class Server(object):
         # solution (XXX).
         ear.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
-        print 'Listen port %s' % self.port
         ear.listen(5)
 
         iwtd = [ear]

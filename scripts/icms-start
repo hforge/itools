@@ -58,6 +58,8 @@ def start(parser, options, target):
         print 'The server is already running.'
         return
 
+    print 'Listen port %s' % server.port
+
     # Debuggin mode (XXX does not works on Windows)
     if options.debug is False:
         # Detach from the console (this code derives from the Python

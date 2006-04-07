@@ -124,7 +124,7 @@ class Root(WebSite):
 
         # If there is not content type and the body is not None,
         # wrap it in the skin template
-        response_body = response.state.body
+        response_body = response.body
         if request.method == 'GET' and response_body is not None:
             if not response.has_header('Content-Type'):
                 skin = self.get_skin()

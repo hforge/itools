@@ -53,21 +53,19 @@ def read_headers(resource):
 class Entity(File):
 
     def _load_state(self, resource):
-        state = self.state
-
-        state.headers = read_headers(resource)
-        state.body = resource.read()
+        self.headers = read_headers(resource)
+        self.body = resource.read()
 
 
     def has_header(self, name):
         name = name.lower()
-        return name in self.state.headers
+        return name in self.headers
 
 
     def get_header(self, name):
         name = name.lower()
-        return self.state.headers[name]
+        return self.headers[name]
 
 
     def get_body(self):
-        return self.state.body
+        return self.body

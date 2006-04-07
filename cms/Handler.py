@@ -383,7 +383,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
             parent = handler.parent
             parent.set_handler('.%s.lock' % handler.name, lock)
 
-        return lock.state.key
+        return lock.key
 
 
     def unlock(self):
@@ -412,7 +412,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
             parent = handler.parent
             lock = parent.get_handler('.%s.lock' % handler.name)
 
-        return lock.state
+        return lock
 
 
     ########################################################################

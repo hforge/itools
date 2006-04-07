@@ -143,11 +143,10 @@ class XLIFF(Text):
     #######################################################################
     # Load
     def _load_state(self, resource):
-        state = self.state
-        state.files = []
+        self.files = []
         for event, value, line_number in parser.parse(resource.read()):
             if event == parser.DOCUMENT_TYPE:
-                state.document_type = value
+                self.document_type = value
             elif event == parser.START_ELEMENT:
                 namespace, local_name, attributes = value
                 # Attributes, get rid of the namespace uri (XXX bad)
@@ -158,8 +157,8 @@ class XLIFF(Text):
                 attributes = aux
 
                 if local_name == 'xliff':
-                    state.version = attributes['version']
-                    state.lang = attributes.get('lang', None)
+                    self.version = attributes['version']
+                    self.lang = attributes.get('lang', None)
                 elif local_name == 'file':
                     file = File(attributes)
                 elif local_name == 'header':
@@ -173,7 +172,7 @@ class XLIFF(Text):
                 namespace, local_name = value
 
                 if local_name == 'file':
-                    state.files.append(file)
+                    self.files.append(file)
                 elif local_name == 'header':
                     file.header = notes
                 elif local_name == 'trans-unit':
@@ -196,31 +195,28 @@ class XLIFF(Text):
     # Save
     #######################################################################
     def xml_header_to_str(self, encoding='UTF-8'):
-        state = self.state
         s = ['<?xml version="1.0" encoding="%s"?>\n' % encoding]
         # The document type
-        if state.document_type is not None:
-            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
+        if self.document_type is not None:
+            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % self.document_type[:2])
         return ''.join(s)
 
 
     def header_to_str(self, encoding='UTF-8'):
-        state = self.state
         s = []
         s.append('<xliff')
-        if state.version:
-            s.append('version="%s"' % state.version)
-        if state.lang:
-            s.append('xml:lang="%s"' % state.lang)
+        if self.version:
+            s.append('version="%s"' % self.version)
+        if self.lang:
+            s.append('xml:lang="%s"' % self.lang)
         s.append('>\n') 
 
         return ' '.join(s)
 
 
     def to_str(self, encoding=None):
-        s = [self.xml_header_to_str(),
-             self.header_to_str()]
-        for file in self.state.files:
+        s = [self.xml_header_to_str(), self.header_to_str()]
+        for file in self.files:
             s.append(file.to_str())
         s.append('</xliff>')
 
@@ -231,17 +227,14 @@ class XLIFF(Text):
     # API
     #######################################################################
     def build(self, xml_header, version, files):
-        state = self.state
-        state.document_type = xml_header['document_type']
-        state.files = files
-        state.version = version
+        self.document_type = xml_header['document_type']
+        self.files = files
+        self.version = version
 
 
     def get_languages(self):
-        state = self.state
-
         files_id, sources, targets = [], [], []
-        for file in state.files:
+        for file in self.files:
             file_id = file.attributes['original']
             source = file.attributes['source-language']
             target = file.attributes.get('target-language', '')

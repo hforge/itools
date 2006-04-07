@@ -92,8 +92,8 @@ class CSV(Text, iCSV):
 ##            lines.append(row)
 ##            index = index + 1
 
-##        self.state.lines = lines
-##        self.state.encoding = self.guess_encoding(data)
+##        self.lines = lines
+##        self.encoding = self.guess_encoding(data)
 
 
     #########################################################################
@@ -104,7 +104,7 @@ class CSV(Text, iCSV):
 
     def view(self, context):
         namespace = {}
-        namespace['rows'] = self.state.lines
+        namespace['rows'] = self.lines
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)
 

@@ -53,11 +53,11 @@ class IndexedFields(File):
 
             fields[field_number] = terms
 
-        self.state.fields = fields
+        self.fields = fields
 
 
     def to_str(self):
-        fields = self.state.fields
+        fields = self.fields
 
         field_numbers = fields.keys()
         field_numbers.sort()
@@ -74,7 +74,7 @@ class IndexedFields(File):
 
 
     def add_field(self, number, terms):
-        self.state.fields[number] = terms
+        self.fields[number] = terms
 
 
 
@@ -111,14 +111,14 @@ class StoredFields(File):
             field_value, data = IO.decode_string(data)
             values[field_number] = field_value
 
-        self.state.values = values
+        self.values = values
 
         # Cache (XXX To be replaced by the built-in state)
         self.document = None
 
 
     def to_str(self):
-        values = self.state.values
+        values = self.values
 
         # Field numbers
         field_numbers = values.keys()
@@ -138,9 +138,9 @@ class StoredFields(File):
 
 
     def set_value(self, number, value):
-        self.state.values[number] = value
+        self.values[number] = value
 
 
     def get_value(self, number):
-        return self.state.values.get(number)
+        return self.values.get(number)
 

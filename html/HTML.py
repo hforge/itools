@@ -116,9 +116,8 @@ class Document(XHTML.Document):
     # Load/Save
     #######################################################################
     def _load_state(self, resource):
-        state = self.state
-        state.encoding = 'UTF-8'
-        state.document_type = None
+        self.encoding = 'UTF-8'
+        self.document_type = None
         children = []
 
         stack = []
@@ -126,7 +125,7 @@ class Document(XHTML.Document):
         parser = Parser()
         for event, value, line_number in parser.parse(data):
             if event == DOCUMENT_TYPE:
-                state.document_type = value
+                self.document_type = value
             elif event == START_ELEMENT:
                 name, attributes = value
                 schema = elements_schema.get(name, {'type': BlockElement})
@@ -167,7 +166,7 @@ class Document(XHTML.Document):
         # element.
         for element in children:
             if isinstance(element, Element) and element.name == 'html':
-                state.root_element = element
+                self.root_element = element
                 # XXX We loss any comment or text node that is before or
                 # after the "<html>" tag.
                 break
@@ -176,14 +175,14 @@ class Document(XHTML.Document):
             element_class = schema['type']
             element = element_class('html')
             element.children = children
-            state.root_element = element
+            self.root_element = element
 
 
     def to_str(self, encoding='UTF-8'):
         data = []
         # The declaration
-        if self.state.document_type is not None:
-            data.append('<!%s>' % self.state.document_type)
+        if self.document_type is not None:
+            data.append('<!%s>' % self.document_type)
         # The document itself
         data.append(self.get_root_element().to_str(encoding))
 

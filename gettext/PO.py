@@ -173,7 +173,7 @@ class PO(Text):
     # Parsing
     #######################################################################
     def next_line(self):
-        lines = self.state.lines
+        lines = self.lines
         line_number = 0
         while line_number <= len(lines):
             # Check for end of file
@@ -327,27 +327,26 @@ class PO(Text):
         file, like the Project-Id-Version or the PO-Revision-Date.
         """
         # Initialize messages
-        state = self.state
-        state.messages = {}
+        self.messages = {}
 
         # Defaults, XXX guess it instead?
-        state.encoding = 'utf8'
+        self.encoding = 'utf8'
 
         # Split the data by lines and intialize the line index
         data = resource.read()
-        state.lines = data.split('\n') + ['']
+        self.lines = data.split('\n') + ['']
 
         # Add entries
         for entry in self.next_entry():
             entry_id, comments, msgid, msgstr, fuzzy, line_number = entry
             # Check for duplicated messages
-            if entry_id in state.messages:
+            if entry_id in self.messages:
                 raise POError, 'msgid at line %d is duplicated' % line_number
 
             # Get the comments and the msgstr in unicode
-            comments = [ unicode(x, state.encoding) for x in comments ]
-            msgid = [ unicode(x, state.encoding) for x in msgid ]
-            msgstr = [ unicode(x, state.encoding) for x in msgstr ]
+            comments = [ unicode(x, self.encoding) for x in comments ]
+            msgid = [ unicode(x, self.encoding) for x in msgid ]
+            msgstr = [ unicode(x, self.encoding) for x in msgstr ]
 
             # Add the message
             self._set_message(msgid, msgstr, comments, {}, fuzzy)
@@ -357,19 +356,19 @@ class PO(Text):
     # API
     #######################################################################
     def get_msgids(self):
-        return self.state.messages.keys()
+        return self.messages.keys()
 
     msgids = property(get_msgids, None, None, "")
 
 
     def get_messages(self):
-        return self.state.messages.values()
+        return self.messages.values()
 
     messages = property(get_messages, None, None, "")
 
 
     def get_msgstr(self, msgid):
-        message = self.state.messages.get(msgid)
+        message = self.messages.get(msgid)
         if message:
             return ''.join(message.msgstr)
         return None
@@ -377,7 +376,7 @@ class PO(Text):
 
     # Same as precedent but do not translate fuzzy messages
     def get_translation(self, msgid):
-        message = self.state.messages.get(msgid)
+        message = self.messages.get(msgid)
         if message and not message.fuzzy:
             msgstr = ''.join(message.msgstr)
             if msgstr:
@@ -386,7 +385,7 @@ class PO(Text):
 
 
     def to_str(self, encoding='UTF-8'):
-        messages = self.state.messages
+        messages = self.messages
         message_ids = messages.keys()
         message_ids.sort()
         messages = [ messages[x].to_str(encoding) for x in message_ids ]
@@ -408,8 +407,7 @@ class PO(Text):
             msgstr = [msgstr]
 
         id = ''.join(msgid)
-        self.state.messages[id] = Message(comments, msgid, msgstr, references,
-                                          fuzzy)
+        self.messages[id] = Message(comments, msgid, msgstr, references, fuzzy)
 
 
 register_handler_class(PO)

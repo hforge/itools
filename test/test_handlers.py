@@ -55,20 +55,20 @@ class VarTestCase(TestCase):
 
 
     def test_nrecords(self):
-        self.assertEqual(len(self.var.state.records), 3)
+        self.assertEqual(len(self.var.records), 3)
 
 
     def test_uri(self):
-        self.assertEqual(self.var.state.records[0].uri, 'upgrading.html.de')
+        self.assertEqual(self.var.records[0].uri, 'upgrading.html.de')
 
 
     def test_type(self):
-        self.assertEqual(self.var.state.records[0].type,
+        self.assertEqual(self.var.records[0].type,
                          'text/html; charset=ISO-8859-1')
 
 
     def test_language(self):
-        self.assertEqual(self.var.state.records[0].language, 'de')
+        self.assertEqual(self.var.records[0].language, 'de')
 
 
 

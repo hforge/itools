@@ -298,13 +298,13 @@ class RSS(Text):
                              channel_fields['description'])
         # Add other (optional) elements
         channel.add_elements(channel_fields)
-        self.state.channel = channel
+        self.channel = channel
         # Add image element data
         if image:
-            self.state.channel.add_image(image)
+            self.channel.add_image(image)
         # Add channel items
         for i in items:
-            self.state.channel.add_item(i)
+            self.channel.add_item(i)
 
 
     def to_str(self, encoding='UTF-8'):
@@ -314,13 +314,13 @@ class RSS(Text):
         s.append('<channel>')
         # Append channel data
         for e in rss_channel_elements:
-            if self.state.channel.__dict__.has_key(e):
+            if self.channel.__dict__.has_key(e):
                 # Not None elements (for example channel.image)
-                if self.state.channel.__dict__[e]:
-                    value = encode_element(e, self.state.channel.__dict__[e])
+                if self.channel.__dict__[e]:
+                    value = encode_element(e, self.channel.__dict__[e])
                     s.append('\t<%s>%s</%s>' % (e, value, e))
         # Append channel image data (if exists)
-        image = self.state.channel.get_image()
+        image = self.channel.get_image()
         if image:
             s.append('\t<image>')
             for e in rss_image_elements:
@@ -329,7 +329,7 @@ class RSS(Text):
                     s.append('\t\t<%s>%s</%s>' % (e, value, e))
             s.append('\t</image>')
         # Append channel items data
-        for i in self.state.channel.get_items():
+        for i in self.channel.get_items():
             s.append('\t<item>')
             for e in rss_item_elements:
                 if i.__dict__.has_key(e):
@@ -344,7 +344,7 @@ class RSS(Text):
     # Return namespace to use with STL template
     def get_namespace(self):
         namespace = {}
-        namespace['channel'] = self.state.channel.__dict__
+        namespace['channel'] = self.channel.__dict__
         return namespace
 
 

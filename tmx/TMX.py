@@ -124,13 +124,12 @@ class TMX(Text):
     #######################################################################
     # Load
     def _load_state(self, resource):
-        state = self.state
-        state.header = {}
+        self.header = {}
         messages = {}
-        state.header_notes = {}
+        self.header_notes = {}
         for event, value, line_number in parser.parse(resource.read()):
             if event == parser.DOCUMENT_TYPE:
-                state.document_type = value
+                self.document_type = value
             elif event == parser.START_ELEMENT:
                 namespace, local_name, attributes = value
                 # Attributes, get rid of the namespace uri (XXX bad)
@@ -141,9 +140,9 @@ class TMX(Text):
                 attributes = aux
 
                 if local_name == 'tmx':
-                    state.version = attributes['version']
+                    self.version = attributes['version']
                 elif local_name == 'header':
-                    state.header = attributes
+                    self.header = attributes
                     default_srclang = attributes['srclang']
                     notes = []
                 elif local_name == 'note':
@@ -158,7 +157,7 @@ class TMX(Text):
             elif event == parser.END_ELEMENT:
                 namespace, local_name = value
                 if local_name == 'header':
-                    state.header_notes = notes
+                    self.header_notes = notes
                 elif local_name == 'note':
                     note.text = text
                     notes.append(note)
@@ -182,40 +181,38 @@ class TMX(Text):
             elif event == parser.TEXT:
                 text = unicode(value, 'UTF-8')
 
-        state.messages = messages
+        self.messages = messages
 
 
     #######################################################################
     # Save
     def xml_header_to_str(self, encoding='UTF-8'):
-        state = self.state
         s = []
         # The XML declaration
         s.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
         # The document type
-        if state.document_type is not None:
-            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % state.document_type[:2])
+        if self.document_type is not None:
+            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % self.document_type[:2])
 
         return ''.join(s)
 
 
     def header_to_str(self, encoding='UTF-8'):
-        state = self.state
         s = []
-        if state.version:
-            s.append('<tmx version="%s">\n' % state.version)
+        if self.version:
+            s.append('<tmx version="%s">\n' % self.version)
         else:
             s.append('<tmx>\n')
         
-        if state.header != {}:
-            attributes = [ '\n%s="%s"' % (k, state.header[k])
-                           for k in state.header.keys() ]
+        if self.header != {}:
+            attributes = [ '\n%s="%s"' % (k, self.header[k])
+                           for k in self.header.keys() ]
             s.append('<header %s>\n' % ''.join(attributes))
         else:
             s.append('<header>\n')
 
-        if state.header_notes != []:
-            for n in state.header_notes:
+        if self.header_notes != []:
+            for n in self.header_notes:
                 s.append(n.to_str())
 
         s.append('</header>\n')
@@ -226,7 +223,7 @@ class TMX(Text):
         s = [self.xml_header_to_str(),
              self.header_to_str(),
              '<body>']
-        messages = self.state.messages
+        messages = self.messages
         msgids = messages.keys()
         msgids.sort()
         for msgid in msgids:
@@ -240,9 +237,8 @@ class TMX(Text):
     # API
     #######################################################################
     def get_languages(self):
-        state = self.state
         languages = []
-        for m in state.messages.values():
+        for m in self.messages.values():
             for l in m.msgstr.keys():
                 if l not in languages:
                     languages.append(l)
@@ -250,17 +246,15 @@ class TMX(Text):
 
 
     def get_srclang(self):
-        state = self.state
-        return u'%s' % state.header['srclang']
+        return u'%s' % self.header['srclang']
 
 
     def build(self, xml_header, version, tmx_header, msgs):
-        state = self.state
-        state.document_type = xml_header['document_type']
-        state.source_encoding = tmx_header['o-encoding']
-        state.header = tmx_header
-        state.messages = msgs
-        state.version = version
+        self.document_type = xml_header['document_type']
+        self.source_encoding = tmx_header['o-encoding']
+        self.header = tmx_header
+        self.messages = msgs
+        self.version = version
 
 
 register_handler_class(TMX)

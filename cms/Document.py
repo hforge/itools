@@ -51,7 +51,7 @@ class HTML(LocaleAware, html.XHTMLFile):
             master = self.get_master_handler()
             master_language = master.metadata.get_property('dc:language')
             # Build the mapping: {language: handler}
-            versions = getattr(master.metadata.state.properties, 'hasVersion', {})
+            versions = getattr(master.metadata.properties, 'hasVersion', {})
             versions = versions.copy()
             for key, value in versions.items():
                 handler = master.parent.get_handler(value)

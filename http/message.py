@@ -33,14 +33,14 @@ class Message(File):
         if isinstance(value, str):
             type = headers.get_type(name)
             value = type.decode(value)
-        self.state.headers[name] = value
+        self.headers[name] = value
 
 
     def has_header(self, name):
         name = name.lower()
-        return name in self.state.headers
+        return name in self.headers
 
 
     def get_header(self, name):
         name = name.lower()
-        return self.state.headers[name]
+        return self.headers[name]

@@ -180,7 +180,7 @@ class CSVTestCase(TestCase):
                           'number': Integer(index=True),
                           'date': Date(index=True)}
         handler.load_state(resource)
-        self.assertEqual(len(handler.state.indexes), 4)
+        self.assertEqual(len(handler.indexes), 4)
         self.assertEqual(handler.search(number=52343), [0])
         self.assertEqual(handler.search(date=Date.decode('2001-03-28')), [1])
 

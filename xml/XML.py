@@ -336,15 +336,14 @@ class Document(Text.Text):
         """
         Builds a tree made of elements and raw data.
         """
-        state = self.state
         # Default values
-        state.document_type = None
+        self.document_type = None
         xml_namespaces = set()
         # Parse
         stack = []
         for event, value, line_number in parser.parse(resource.read()):
             if event == parser.DOCUMENT_TYPE:
-                state.document_type = value
+                self.document_type = value
             elif event == parser.START_ELEMENT:
                 namespace_uri, element_name, attributes = value
                 namespace = namespaces.get_namespace(namespace_uri)
@@ -362,7 +361,7 @@ class Document(Text.Text):
                 if stack:
                     stack[-1].set_element(element)
                 else:
-                    state.root_element = element
+                    self.root_element = element
             elif event == parser.COMMENT:
                 # Comments out of the root element are discarded (XXX)
                 if stack:
@@ -374,7 +373,7 @@ class Document(Text.Text):
                 xml_namespaces.add(value)
 
         # Add the XML namespaces to the root element
-        root_element = state.root_element
+        root_element = self.root_element
         xmlns_uri = namespaces.XMLNSNamespace.class_uri
         for xml_namespace in xml_namespaces:
             prefix = namespaces.get_namespace(xml_namespace).class_prefix
@@ -385,17 +384,15 @@ class Document(Text.Text):
     # API
     #######################################################################
     def header_to_str(self, encoding='UTF-8'):
-        state = self.state
-
         s = []
         # The XML declaration
         s.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
         # The document type
-        if state.document_type is not None:
+        if self.document_type is not None:
             pattern = '<!DOCTYPE %s\n' \
                       '     PUBLIC "%s"\n' \
                       '    "%s">\n'
-            s.append(pattern % state.document_type[:3])
+            s.append(pattern % self.document_type[:3])
 
         return ''.join(s)
 
@@ -410,14 +407,14 @@ class Document(Text.Text):
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        return cmp(self.state.__dict__, other.state.__dict__)
+        return cmp(self.__dict__, other.__dict__)
 
 
     def get_root_element(self):
         """
         Returns the root element (XML documents have one root element).
         """
-        return self.state.root_element
+        return self.root_element
 
 
     def traverse(self):

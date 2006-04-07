@@ -30,7 +30,7 @@ class LocaleAware(object):
     def get_available_languages(self):
         master = self.get_master_handler()
         key = (None, 'hasVersion')
-        translations = master.metadata.state.properties.get(key, {})
+        translations = master.metadata.properties.get(key, {})
         translations = translations.keys()
         return [master.get_language()] + translations
 
@@ -67,7 +67,7 @@ class LocaleAware(object):
         # Get the handler
         master = self.get_master_handler()
         key = (None, 'hasVersion')
-        versions = master.metadata.state.properties.get(key, {})
+        versions = master.metadata.properties.get(key, {})
         if language in versions:
             handler = master.parent.get_handler(versions[language])
         else:
@@ -94,8 +94,8 @@ class LocaleAware(object):
         if self.is_master():
             # XXX Removing the master destroys the group of translations
             # Update translations
-            if hasattr(self.metadata.state.properties, 'hasVersion'):
-                has_version = getattr(self.metadata.state.properties, 'hasVersion')
+            if hasattr(self.metadata.properties, 'hasVersion'):
+                has_version = getattr(self.metadata.properties, 'hasVersion')
                 for language in has_version.keys():
                     handler = self.get_version_handler(language)
                     handler.metadata.del_property('isVersionOf')
@@ -115,7 +115,7 @@ class LocaleAware(object):
             master = self.get_master_handler()
             master_language = master.metadata.get_property('dc:language')
             # Build the mapping: {language: handler}
-            versions = getattr(master.metadata.state.properties, 'hasVersion', {})
+            versions = getattr(master.metadata.properties, 'hasVersion', {})
             versions = versions.copy()
             for key, value in versions.items():
                 handler = master.parent.get_handler(value)
@@ -148,7 +148,7 @@ class LocaleAware(object):
             return self.metadata.get_property(name)
         else:
             master = self.get_master_handler()
-            versions = getattr(master.metadata.state.properties, 'hasVersion', {})
+            versions = getattr(master.metadata.properties, 'hasVersion', {})
             if language in versions:
                 handler = master.parent.get_handler(versions[language])
                 return handler.metadata.get_property(name)

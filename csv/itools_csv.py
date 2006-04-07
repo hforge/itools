@@ -196,13 +196,13 @@ class CSV(Text):
            The index keys are decoded data.
         """
         self._index_init()
-        for row_number, line in enumerate(self.state.lines):
+        for row_number, line in enumerate(self.lines):
             self._index_row(line, row_number)
 
 
     def _index_row(self, row, row_number):
         """Index one line"""
-        indexes = self.state.indexes
+        indexes = self.indexes
         for i, value in enumerate(row):
             datatype = self.schema[self.columns[i]]
             analyser_name = getattr(datatype, 'index', None)
@@ -226,13 +226,13 @@ class CSV(Text):
         # other words, when we remove a row, we must re-index all rows
         # after. The solution is to use internal ids, different from the
         # row number, which don't change through the handler's live.
-##        indexes = self.state.indexes
+##        indexes = self.indexes
 ##        for i, value in enumerate(row):
 ##            index = indexes[i]
 ##            if index is not None:
 ##                del index[value][row_number]
 
-        indexes = self.state.indexes
+        indexes = self.indexes
         for reverse_index in indexes:
             if reverse_index is not None:
                 for key in reverse_index.keys():
@@ -263,7 +263,7 @@ class CSV(Text):
         # When there is no index associate with column, the None value
         # is placed into self.indexes list at the non indexed column position.
         # Example (with above indexed schema): [None, None, <reverse index>] 
-        self.state.indexes = None
+        self.indexes = None
 
         lines = []
         for row_number, line in enumerate(self._parse(data)):
@@ -272,8 +272,8 @@ class CSV(Text):
             row.columns = self.columns
             lines.append(row)
 
-        self.state.lines = lines
-        self.state.encoding = self.guess_encoding(data)
+        self.lines = lines
+        self.encoding = self.guess_encoding(data)
 
         if self.is_schema_defined():
             # Index lines data
@@ -283,7 +283,7 @@ class CSV(Text):
     # XXX This can't work until the virtual handler overhaul is done
     def _get_virtual_handler(self, segment):
         index = int(segment.name)
-        return self.state.lines[index]
+        return self.lines[index]
 
 
     #########################################################################
@@ -296,7 +296,7 @@ class CSV(Text):
         if getattr(datatype, 'index', False) is False:
             raise ValueError, 'the field "%s" is not indexed' % name
 
-        return self.state.indexes[self.columns.index(name)]
+        return self.indexes[self.columns.index(name)]
 
 
     #########################################################################
@@ -310,12 +310,12 @@ class CSV(Text):
         columns = self.columns
         if schema and columns:
             datatypes = [ (i, schema[x]) for i, x in enumerate(columns) ]
-            for row in self.state.lines:
+            for row in self.lines:
                 line = [ '"%s"' % datatype.encode(row[i]).replace('"', '""')
                          for i, datatype in datatypes ]
                 lines.append(','.join(line))
         else:
-            for line in self.state.lines:
+            for line in self.lines:
                 line = [ '"%s"' % x.encode(encoding).replace('"', '""')
                          for x in line ]
                 lines.append(','.join(line))
@@ -332,7 +332,7 @@ class CSV(Text):
 
     def is_indexed(self):
         """Check if at least one index is available for searching, etc."""
-        indexes = self.state.indexes
+        indexes = self.indexes
         if indexes is None:
             return False
         indexes = [i for i in indexes if i is not None]
@@ -343,7 +343,7 @@ class CSV(Text):
 
 
     def get_nrows(self):
-        return len(self.state.lines)
+        return len(self.lines)
 
 
     def get_row(self, number):
@@ -351,7 +351,7 @@ class CSV(Text):
 
         Count begins at 0.
         """
-        return self.state.lines[number]
+        return self.lines[number]
 
 
     def get_rows(self, numbers=None):
@@ -361,11 +361,11 @@ class CSV(Text):
         Count begins at 0.
         """
         if numbers is None:
-            for row in self.state.lines:
+            for row in self.lines:
                 yield row
         else:
             for i in numbers:
-                yield self.state.lines[i]
+                yield self.lines[i]
 
 
     def add_row(self, row):
@@ -375,7 +375,7 @@ class CSV(Text):
         number = self.get_nrows()
         new_row.number = number
         new_row.columns = self.columns
-        self.state.lines.append(new_row)
+        self.lines.append(new_row)
 
         if self.is_schema_defined():
             # Index the new line
@@ -388,8 +388,8 @@ class CSV(Text):
         Count begins at 0.
         """
         self.set_changed()
-        row = self.state.lines[number]
-        del self.state.lines[number]
+        row = self.lines[number]
+        del self.lines[number]
 
         if self.is_schema_defined():
             # Unindex deleted row

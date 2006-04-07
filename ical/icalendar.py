@@ -418,7 +418,6 @@ class icalendar(Text):
     #######################################################################
     # API
     #######################################################################
-
     def add(self, element):
         """
         Add an element to the current icalendar object.

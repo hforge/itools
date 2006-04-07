@@ -104,27 +104,23 @@ class Response(Message):
 
 
     def _load_state(self, resource):
-        state = self.state
-
         # The status line
         line = resource.readline()
         http_version, status_code, status_message = line.split(' ', 2)
         status_code = int(status_code)
         self.set_status(status_code)
         # The headers
-        state.headers = entities.read_headers(resource)
+        self.headers = entities.read_headers(resource)
         # The body
-        state.body = resource.read()
+        self.body = resource.read()
         # The cookies
-        state.cookies = {}
+        self.cookies = {}
 
 
     def to_str(self):
-        state = self.state
-
         data = []
         # The status line
-        status_code = state.status
+        status_code = self.status
         status_message = status_messages[status_code]
         data.append('HTTP/1.0 %d %s\r\n' % (status_code, status_message))
         # Headers
@@ -134,18 +130,18 @@ class Response(Message):
         # Server:
         data.append('Server: itools.web\r\n')
         # User defined headers
-        for name in state.headers:
+        for name in self.headers:
             if name not in ['date', 'server']:
                 datatype = headers.get_type(name)
-                value = state.headers[name]
+                value = self.headers[name]
                 value = datatype.encode(value)
                 data.append('%s: %s\r\n' % (name.title(), value))
         # Content-Length:
         if not self.has_header('content-length'):
             data.append('Content-Length: %d\r\n' % self.get_content_length())
         # The Cookies
-        for name in state.cookies:
-            cookie = state.cookies[name]
+        for name in self.cookies:
+            cookie = self.cookies[name]
             # The parameters
             parameters = []
             if cookie.expires is not None:
@@ -171,8 +167,8 @@ class Response(Message):
         # A blank line separates the header from the body
         data.append('\r\n')
         # The body
-        if state.body is not None:
-            data.append(state.body)
+        if self.body is not None:
+            data.append(self.body)
 
         return ''.join(data)
 
@@ -181,18 +177,17 @@ class Response(Message):
     # API
     #########################################################################
     def set_status(self, status):
-        self.state.status = status
+        self.status = status
 
 
     def get_status(self):
-        return self.state.status
+        return self.status
 
 
     def set_body(self, body):
-        state = self.state
         if isinstance(body, unicode):
             body = body.encode('UTF-8')
-        state.body = body
+        self.body = body
 
 
     def redirect(self, location, status=302):
@@ -203,7 +198,7 @@ class Response(Message):
     #########################################################################
     # Content-Length
     def get_content_length(self):
-        body = self.state.body
+        body = self.body
         if body is None:
             return 0
         return len(body)
@@ -212,7 +207,7 @@ class Response(Message):
     #########################################################################
     # Cookies
     def set_cookie(self, name, value, **kw):
-        self.state.cookies[name] = Cookie(value, **kw)
+        self.cookies[name] = Cookie(value, **kw)
 
 
     def del_cookie(self, name):
@@ -221,4 +216,4 @@ class Response(Message):
 
 
     def get_cookie(self, name):
-        return self.state.cookies.get(name)
+        return self.cookies.get(name)

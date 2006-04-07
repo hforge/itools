@@ -99,12 +99,11 @@ class IIndexTree(File):
 
 
     def _load_state(self, resource):
-        state = self.state
         # The header
-        state.version = IO.decode_version(resource.read(4))
-        state.number_of_slots = IO.decode_uint32(resource.read(4))
-        state.first_slot = IO.decode_link(resource.read(4))
-        state.first_empty = IO.decode_link(resource.read(4))
+        self.version = IO.decode_version(resource.read(4))
+        self.number_of_slots = IO.decode_uint32(resource.read(4))
+        self.first_slot = IO.decode_link(resource.read(4))
+        self.first_empty = IO.decode_link(resource.read(4))
 
 
     def to_str(self):
@@ -127,19 +126,18 @@ class IIndexTree(File):
         the method that calls it is responsible to use the slot so the
         resource becomes consistent.
         """
-        state = self.state
         resource = self.resource
-        if state.first_empty is None:
-            slot_number = state.number_of_slots
+        if self.first_empty is None:
+            slot_number = self.number_of_slots
             # Increment number of slots
-            state.number_of_slots += 1
-            resource[4:8] = IO.encode_uint32(state.number_of_slots)
+            self.number_of_slots += 1
+            resource[4:8] = IO.encode_uint32(self.number_of_slots)
         else:
-            slot_number = state.first_empty
+            slot_number = self.first_empty
             # Update first empty
             base = 16 + slot_number * 16
             first_empty_link = resource[base+12:base+16]
-            state.first_empty = IO.decode_link(first_empty_link)
+            self.first_empty = IO.decode_link(first_empty_link)
             resource[12:16] = first_empty_link
 
         return slot_number
@@ -185,11 +183,10 @@ class IIndexDocuments(File):
 
 
     def _load_state(self, resource):
-        state = self.state
         # The header
-        state.version = IO.decode_version(resource.read(4))
-        state.number_of_slots = IO.decode_uint32(resource.read(4))
-        state.first_empty = IO.decode_link(resource.read(4))
+        self.version = IO.decode_version(resource.read(4))
+        self.number_of_slots = IO.decode_uint32(resource.read(4))
+        self.first_empty = IO.decode_link(resource.read(4))
 
 
     def to_str(self):
@@ -317,7 +314,7 @@ class Tree(object):
                 self.documents[doc_number] = doc_positions
                 frequency = len(doc_positions)
                 # Search a free block
-                free_block_n = docs_handler.state.first_empty
+                free_block_n = docs_handler.first_empty
                 previous_block_n = None
                 while free_block_n is not None:
                     free_block = 12 + free_block_n * 4
@@ -336,7 +333,7 @@ class Tree(object):
                         if previous_block_n is None:
                             docs_rsrc[8:12] = IO.encode_link(new_free_block_n)
                             # Update in memory
-                            docs_handler.state.first_empty = new_free_block_n
+                            docs_handler.first_empty = new_free_block_n
                         else:
                             previous_block = 12 + previous_block_n * 4
                             docs_rsrc[previous_block+4:previous_block+8] = (
@@ -348,7 +345,7 @@ class Tree(object):
                             docs_rsrc[8:12] = next_r
                             # Update in memory
                             next_n = IO.decode_link(next_r)
-                            docs_handler.state.first_empty = next_n
+                            docs_handler.first_empty = next_n
                         else:
                             previous_block = 12 + previous_block_n * 4
                             docs_rsrc[previous_block+4:previous_block+8] = (
@@ -360,12 +357,12 @@ class Tree(object):
 
                 # Create new block if needed
                 if free_block_n is None:
-                    free_block_n = docs_handler.state.number_of_slots
+                    free_block_n = docs_handler.number_of_slots
                     free_block = 12 + free_block_n * 4
                     number_of_slots = free_block_n + frequency + 3
                     docs_rsrc[4:8] = IO.encode_uint32(number_of_slots)
                     # Update in memory
-                    docs_handler.state.number_of_slots = number_of_slots
+                    docs_handler.number_of_slots = number_of_slots
 
                 # Fill the block
                 docs_rsrc[free_block:free_block+12+(frequency*4)] = (
@@ -428,7 +425,7 @@ class Tree(object):
                         + first_free_block_r)
                     docs_rsrc[8:12] = docs_slot_r
                     # Update on memory
-                    docs.state.first_empty = docs_slot_n
+                    docs.first_empty = docs_slot_n
                 else:
                     prev_slot_n, prev_slot = docs_slot_n, docs_slot
                 # Next
@@ -557,50 +554,48 @@ class IIndex(Folder):
     # Load / Save
     def _load_state(self, resource):
         Folder._load_state(self, resource)
-        state = self.state
 
-        state.tree_handler = tree_handler = self.get_handler('tree')
-        state.docs_handler = docs_handler = self.get_handler('documents')
+        self.tree_handler = tree_handler = self.get_handler('tree')
+        self.docs_handler = docs_handler = self.get_handler('documents')
         # The tree
-        state.root = Tree(state, None)
-        state.root.documents = {}
-        state.root.children = {}
+        self.root = Tree(self, None)
+        self.root.documents = {}
+        self.root.children = {}
 
         tree_rsrc = tree_handler.resource
         tree_rsrc.open()
-        child_n = tree_handler.state.first_slot
+        child_n = tree_handler.first_slot
         while child_n is not None:
             child = 16 + child_n * 16
             c = IO.decode_character(tree_rsrc[child:child+4])
-            tree = Tree(state, child_n)
-            state.root.children[c] = tree
+            tree = Tree(self, child_n)
+            self.root.children[c] = tree
             # Next
             child_n = IO.decode_link(tree_rsrc[child+12:child+16])
         tree_rsrc.close()
 
         # The state
-        state.added_terms = {}
-        state.removed_terms = {}
+        self.added_terms = {}
+        self.removed_terms = {}
 
 
     def _save_state(self, resource):
         tree_resource = resource.get_resource('tree')
         docs_resource = resource.get_resource('documents')
 
-        state = self.state
         # Open resources
         tree_resource.open()
         docs_resource.open()
         try:
             # Removed terms
-            for term, documents in state.removed_terms.items():
-                state.root._unindex_term(term, documents)
-            state.removed_terms = {}
+            for term, documents in self.removed_terms.items():
+                self.root._unindex_term(term, documents)
+            self.removed_terms = {}
             # Added terms
-            _index_term = state.root._index_term
-            for term, documents in state.added_terms.items():
+            _index_term = self.root._index_term
+            for term, documents in self.added_terms.items():
                 _index_term(term, documents)
-            state.added_terms = {}
+            self.added_terms = {}
         finally:
             # Close resources
             tree_resource.close()
@@ -611,44 +606,41 @@ class IIndex(Folder):
     # Public API
     ########################################################################
     def index_term(self, term, doc_number, position):
-        state = self.state
         # Removed terms
-        if term in state.removed_terms:
-            if doc_number in state.removed_terms[term]:
-                del state.removed_terms[term][doc_number]
+        if term in self.removed_terms:
+            if doc_number in self.removed_terms[term]:
+                del self.removed_terms[term][doc_number]
         # Added terms
-        documents = state.added_terms.setdefault(term, {})
+        documents = self.added_terms.setdefault(term, {})
         positions = documents.setdefault(doc_number, set())
         positions.add(position)
 
 
     def unindex_term(self, term, doc_number):
-        state = self.state
         # Added terms
-        if term in state.added_terms:
-            if doc_number in state.added_terms[term]:
-                del state.added_terms[term][doc_number]
+        if term in self.added_terms:
+            if doc_number in self.added_terms[term]:
+                del self.added_terms[term][doc_number]
                 return
         # Removed terms
-        documents = state.removed_terms.setdefault(term, set())
+        documents = self.removed_terms.setdefault(term, set())
         documents.add(doc_number)
 
 
     def search_word(self, word):
-        state = self.state
         # Open resources
-        state.tree_handler.resource.open()
-        state.docs_handler.resource.open()
+        self.tree_handler.resource.open()
+        self.docs_handler.resource.open()
 
-        documents = state.root.search_word(word)
+        documents = self.root.search_word(word)
         # Remove documents
-        if word in state.removed_terms:
-            for doc_number in state.removed_terms[word]:
+        if word in self.removed_terms:
+            for doc_number in self.removed_terms[word]:
                 if doc_number in documents:
                     del documents[doc_number]
         # Add documents
-        if word in state.added_terms:
-            for doc_number, positions in state.added_terms[word].items():
+        if word in self.added_terms:
+            for doc_number, positions in self.added_terms[word].items():
                 if doc_number in documents:
                     # XXX We ever reach this case?
                     documents[doc_number] |= positions
@@ -656,24 +648,23 @@ class IIndex(Folder):
                     documents[doc_number] = positions
 
         # Close resources
-        state.tree_handler.resource.close()
-        state.docs_handler.resource.close()
+        self.tree_handler.resource.close()
+        self.docs_handler.resource.close()
 
         return documents
 
 
     def search_range(self, left, right):
-        state = self.state
         # Open resources
-        state.tree_handler.resource.open()
-        state.docs_handler.resource.open()
+        self.tree_handler.resource.open()
+        self.docs_handler.resource.open()
 
-        documents = state.root.search_range(left, right)
+        documents = self.root.search_range(left, right)
         # XXX We still need to consider removed and added terms, otherwise
         # we may get inaccurate results.
 
         # Close resources
-        state.tree_handler.resource.close()
-        state.docs_handler.resource.close()
+        self.tree_handler.resource.close()
+        self.docs_handler.resource.close()
 
         return documents

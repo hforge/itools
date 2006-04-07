@@ -171,7 +171,7 @@ class Server(object):
         if log is not None:
             host, port = conn.getpeername()
             namespace = (host, time.strftime('%d/%b/%Y:%H:%M:%S %Z'),
-                         request.state.request_line, response.state.status,
+                         request.request_line, response.status,
                          response.get_content_length())
             log.write('%s - - [%s] "%s" %s %s\n' % namespace)
             log.flush()

@@ -122,21 +122,20 @@ class Document(Text):
     def _load_state(self, resource):
         # Pre-process (load as unicode)
         Text._load_state(self, resource)
-        state = self.state
-        data = state.data
-        del state.data
+        data = self.data
+        del self.data
         # Extract the title and body
         lines = data.split('\n')
-        state.title = lines[0]
-        state.body = '\n'.join(lines[3:])
+        self.title = lines[0]
+        self.body = '\n'.join(lines[3:])
 
 
     def title(self):
-        return self.state.title
+        return self.title
 
 
     def body(self):
-        return self.state.body
+        return self.body
 
 
 
@@ -158,7 +157,7 @@ resource_names.sort()
 for resource_name in resource_names:
     resource = tests.resource.get_resource(resource_name)
     document = Document(resource)
-    document = {'title': document.state.title, 'body': document.state.body}
+    document = {'title': document.title, 'body': document.body}
     catalog.index_document(document)
 catalog.save_state()
 

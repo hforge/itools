@@ -364,8 +364,6 @@ class PO(Text):
     def get_messages(self):
         return self.messages.values()
 
-    messages = property(get_messages, None, None, "")
-
 
     def get_msgstr(self, msgid):
         message = self.messages.get(msgid)

@@ -292,12 +292,15 @@ class CSV(Text):
         """
         self.set_changed()
         new_row = self.row_class(row)
+        index = self.get_nrows()
+        new_row.index = index
+        new_row.columns = self.columns
         self.state.lines.append(new_row)
 
         if self.is_schema_defined():
             # Index the new line
             self._index_init()
-            self._index_row(new_row, len(self.state.lines) - 1)
+            self._index_row(new_row, index)
 
 
     def del_row(self, index):

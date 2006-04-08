@@ -94,7 +94,11 @@ class Server(web.server.Server):
 
 
     def get_pid(self):
-        pid = open('%s/pid' % self.target).read()
+        try:
+            pid = open('%s/pid' % self.target).read()
+        except IOError:
+            return None
+
         pid = int(pid)
         try:
             # XXX This only works on Unix

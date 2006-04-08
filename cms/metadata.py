@@ -289,12 +289,15 @@ class Metadata(Node, File.File):
             # LocaleAware
             if language is None:
                 # Language negotiation
-                accept = get_context().request.accept_language
-                available_languages = [ k for k, v in value.items()
-                                        if v.strip() ]
-                language = accept.select_language(available_languages)
+                context = get_context()
+                if context is None:
+                    language = None
+                else:
+                    languages = [ k for k, v in value.items() if v.strip() ]
+                    accept = context.request.accept_language
+                    language = accept.select_language(languages)
+                # Default (XXX pick one at random)
                 if language is None:
-                    # Default (XXX pick one at random)
                     language = value.keys()[0]
                 return value[language]
             return value.get(language, default_value)

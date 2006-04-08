@@ -1,3 +1,30 @@
+0.13.1 (2006/04/08)
+
+  Catalog
+  - Allow indexing tuples of keywords, by Hervé Cauwelier. [#285]
+
+  Web
+  - In virtual hosting, fix "context.uri" when the URL path ends with a
+    slash.
+
+  CMS
+  - Correctly initialize the catalog when creating a new itools.cms instance.
+  - Correctly index the modification time. [#290]
+  - Use the title of the workflow state (instead of its name), in the
+    state form, by Hervé Cauwelier. [#273]
+  - Fix several icons, by Hervé Cauwelier.
+  - Fix the accout form so field completion works, by Hervé Cauwelier. [#288]
+  - Close standard input, output and error when the server is started in
+    normal mode (not debugging), by Hervé Cauwelier.
+  - Now icms-start checks the server is not already running, and icms-stop
+    checks the server is running. [#293]
+
+  Packaging
+  - Fix typo in "setup.py".
+  - Make isetup-build more robust when trying to figure out the version
+    number, by Hervé Cauwelier. [#292]
+
+
 0.13.0 (2006/03/21)
 
   Internationalization

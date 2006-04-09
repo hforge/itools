@@ -44,6 +44,7 @@ from users import User, UserFolder
 from utils import comeback
 from WebSite import WebSite
 from handlers import ListOfUsers, Metadata
+from registry import register_object_class
 
 
 
@@ -476,4 +477,4 @@ class Root(WebSite):
         self.del_handler('en.po')
 
 
-WebSite.register_handler_class(Root)
+register_object_class(Root)

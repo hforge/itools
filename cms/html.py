@@ -32,6 +32,8 @@ from images import Image
 from text import Text
 from utils import comeback
 from widgets import Breadcrumb
+from workflow import WorkflowAware
+from registry import register_object_class
 
 
 class XMLFile(Text, XML.Document):
@@ -39,8 +41,8 @@ class XMLFile(Text, XML.Document):
     class_id = 'text/xml'
 
 
-Text.register_handler_class(XMLFile)
-Text.register_handler_class(XMLFile, format='application/xml')
+register_object_class(XMLFile)
+register_object_class(XMLFile, format='application/xml')
 
 
 
@@ -200,7 +202,7 @@ class XHTMLFile(Text, XHTML.Document):
         return handler.to_str()
 
 
-Text.register_handler_class(XHTMLFile)
+register_object_class(XHTMLFile)
 
 
 
@@ -231,4 +233,4 @@ class HTMLFile(HTML.Document, XHTMLFile):
         comeback(message)
 
 
-XHTMLFile.register_handler_class(HTMLFile)
+register_object_class(HTMLFile)

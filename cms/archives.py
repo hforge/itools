@@ -28,6 +28,7 @@ from itools.stl import stl
 
 # Import from itools.cms
 from File import File
+from registry import register_object_class
 
 
 class Archive(File, iArchive):
@@ -55,7 +56,7 @@ class Archive(File, iArchive):
 
 
 
-File.register_handler_class(Archive)
+register_object_class(Archive)
 
 
 
@@ -75,7 +76,7 @@ class ZipArchive(Archive, iZipArchive):
         return contents
 
 
-Archive.register_handler_class(ZipArchive)
+register_object_class(ZipArchive)
 
 
 
@@ -105,4 +106,4 @@ class TarArchive(Archive, iTarArchive):
         return contents
 
 
-Archive.register_handler_class(TarArchive)
+register_object_class(TarArchive)

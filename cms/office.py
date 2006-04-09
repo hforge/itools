@@ -31,6 +31,8 @@ from itools.web.context import get_context
 # Import from itools.cms
 from itools.cms.text import Text
 from itools.cms.File import File
+from registry import register_object_class
+
 
 mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
 mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
@@ -151,7 +153,7 @@ class MSWord(OfficeDocument):
 
 
 
-OfficeDocument.register_handler_class(MSWord)
+register_object_class(MSWord)
 
 
 
@@ -169,7 +171,7 @@ class MSExcel(OfficeDocument):
 
 
 
-OfficeDocument.register_handler_class(MSExcel)
+register_object_class(MSExcel)
 
 
 
@@ -186,7 +188,7 @@ class MSPowerPoint(OfficeDocument):
 
 
 
-OfficeDocument.register_handler_class(MSPowerPoint)
+register_object_class(MSPowerPoint)
 
 
 
@@ -240,7 +242,7 @@ class OOWriter(OOffice):
 
 
 
-OOffice.register_handler_class(OOWriter)
+register_object_class(OOWriter)
 
 
 
@@ -255,7 +257,7 @@ class OOCalc(OOffice):
 
 
 
-OOffice.register_handler_class(OOCalc)
+register_object_class(OOCalc)
 
 
 
@@ -270,7 +272,7 @@ class OOImpress(OOffice):
 
     
 
-OOffice.register_handler_class(OOImpress)
+register_object_class(OOImpress)
 
 
 
@@ -287,4 +289,4 @@ class PDF(OfficeDocument):
 
 
 
-OfficeDocument.register_handler_class(PDF)
+register_object_class(PDF)

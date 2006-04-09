@@ -34,6 +34,7 @@ from users import crypt_password
 from widgets import Table
 from metadata import Password
 from skins import ui
+from registry import register_object_class
 
 
 
@@ -444,6 +445,6 @@ class WebSite(RoleAware, Folder):
 
         handler = self.get_handler('/ui/WebSite_search_form.xml')
         return stl(handler, namespace)
-      
 
-Folder.register_handler_class(WebSite)
+
+register_object_class(WebSite)

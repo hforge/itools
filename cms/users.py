@@ -34,6 +34,7 @@ from widgets import Table
 from Folder import Folder
 from Handler import Handler
 from metadata import Password
+from registry import register_object_class
 
 
 
@@ -373,7 +374,7 @@ class User(AccessControl, Folder):
         return stl(handler, namespace)
 
 
-Folder.register_handler_class(User)
+register_object_class(User)
 
 
 
@@ -516,4 +517,4 @@ class UserFolder(Folder):
         Folder.on_del_handler(self, segment)
 
 
-Folder.register_handler_class(UserFolder)
+register_object_class(UserFolder)

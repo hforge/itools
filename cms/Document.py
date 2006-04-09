@@ -31,6 +31,7 @@ from utils import get_parameters, comeback
 import html
 from LocaleAware import LocaleAware
 from workflow import WorkflowAware
+from registry import register_object_class
 
 
 
@@ -218,4 +219,4 @@ class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
 ##      comeback(message, messages_index=messages_index)
 
 
-html.XHTMLFile.register_handler_class(HTML)
+register_object_class(HTML)

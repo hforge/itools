@@ -237,55 +237,6 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
             root.reindex_handler(self)
 
 
-    ########################################################################
-    # The Factory
-    ########################################################################
-    handler_class_registry = {}
-
-    @classmethod
-    def register_handler_class(cls, handler_class, format=None):
-        if format is None:
-            format = handler_class.class_id
-        cls.handler_class_registry[format] = handler_class
-
-
-    @classmethod
-    def build_handler(cls, resource, format=None):
-        from File import File
-        from Folder import Folder
-
-        registry = cls.handler_class_registry
-        if format in registry:
-            handler_class = registry[format]
-        else:
-            format = format.split('/')
-            if format[0] in registry:
-                handler_class = registry[format[0]]
-            else:
-                # XXX Show a warning message here
-                if isinstance(resource, base.File):
-                    handler_class = registry[File.class_id]
-                elif isinstance(resource, base.Folder):
-                    handler_class = registry[Folder.class_id]
-                else:
-                    raise ValueError, \
-                          'Unknown resource type "%s"' % repr(resource)
-##        # Check wether the resource is a file and the handler class is a
-##        # folder, or viceversa.
-##        if isinstance(resource, base.File):
-##            if not issubclass(handler_class, File):
-##                handler_class = File
-##        elif isinstance(resource, base.Folder):
-##            if not issubclass(handler_class, Folder):
-##                handler_class = Folder
-
-        return handler_class(resource)
-
-
-    def get_handler_class(self, class_id):
-        return self.handler_class_registry[class_id]
-
-
     @classmethod
     def new_instance(cls):
         return cls()

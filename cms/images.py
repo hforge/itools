@@ -21,6 +21,7 @@ from itools.stl import stl
 
 # Import from ikaaro
 from File import File
+from registry import register_object_class
 
 
 class Image(File, iImage):
@@ -77,7 +78,7 @@ class Image(File, iImage):
         return handler.to_str()
 
 
-File.register_handler_class(Image)
+register_object_class(Image)
 
 
 
@@ -101,4 +102,4 @@ class Video(File):
         return stl(handler, namespace)
 
 
-File.register_handler_class(Video)
+register_object_class(Video)

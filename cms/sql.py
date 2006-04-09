@@ -19,6 +19,7 @@
 from itools.handlers.config import Config
 from itools.stl.stl import stl
 from text import Text
+from registry import register_object_class
 
 # Import other modules
 try:
@@ -59,4 +60,4 @@ class MySQL(Text, Config):
         return stl(handler, namespace)
 
 
-Text.register_handler_class(MySQL)
+register_object_class(MySQL)

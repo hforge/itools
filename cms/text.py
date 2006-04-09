@@ -34,6 +34,7 @@ from itools.xhtml.XHTML import Document
 from utils import get_parameters, comeback
 from versioning import VersioningAware
 from File import File
+from registry import register_object_class
 
 
 class Text(VersioningAware, File, itools.handlers.Text.Text):
@@ -193,7 +194,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
         return htmldiff.make_table(r0.splitlines(), r1.splitlines())
 
 
-File.register_handler_class(Text)
+register_object_class(Text)
 
 
 
@@ -270,7 +271,7 @@ class PO(Text, gettext.PO.PO):
         comeback(message, messages_index=messages_index)
 
 
-Text.register_handler_class(PO)
+register_object_class(PO)
 
 
 
@@ -284,7 +285,7 @@ class CSS(Text):
     class_icon48 = 'images/CSS48.png'
 
 
-Text.register_handler_class(CSS)
+register_object_class(CSS)
 
 
 
@@ -294,7 +295,7 @@ class Python(itools.handlers.python.Python):
     class_icon48 = 'images/Python48.png'
 
 
-Text.register_handler_class(Python)
+register_object_class(Python)
 
 
 
@@ -318,4 +319,4 @@ class RestructuredText(Text, iRestructuredText):
         return body.to_str()
 
 
-Text.register_handler_class(RestructuredText)
+register_object_class(RestructuredText)

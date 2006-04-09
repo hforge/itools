@@ -23,6 +23,7 @@ from itools.stl import stl
 from Handler import Node
 from text import Text
 from utils import comeback
+from registry import register_object_class
 
 
 class Row(iRow, Node):
@@ -106,4 +107,5 @@ class CSV(Text, iCSV):
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)
 
-Text.register_handler_class(CSV)
+
+register_object_class(CSV)

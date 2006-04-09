@@ -20,6 +20,8 @@ from itools.stl import stl
 
 # Import from ikaaro
 from File import File
+from registry import register_object_class
+
 
 
 class Flash(File):
@@ -39,4 +41,4 @@ class Flash(File):
         return stl(handler)
 
 
-File.register_handler_class(Flash)
+register_object_class(Flash)

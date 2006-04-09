@@ -28,6 +28,8 @@ from itools.web import get_context
 # Import from ikaaro
 from utils import comeback
 from Handler import Handler
+from registry import register_object_class
+
 
 
 class File(Handler, itools.handlers.File.File):
@@ -208,4 +210,4 @@ class File(Handler, itools.handlers.File.File):
         comeback(message)
 
 
-Handler.register_handler_class(File)
+register_object_class(File)

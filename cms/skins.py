@@ -33,6 +33,7 @@ from itools.uri.generic import Query
 from Folder import Folder
 from utils import reduce_string
 from widgets import Node
+from registry import register_object_class
 
 
 
@@ -312,7 +313,7 @@ class Skin(Folder):
         return ''.join(s)
 
 
-Folder.register_handler_class(Skin)
+register_object_class(Skin)
 
 
 #############################################################################

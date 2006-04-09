@@ -42,6 +42,7 @@ from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import comeback, checkid, reduce_string
 from widgets import Breadcrumb, Table
+from registry import register_object_class, get_object_class
 
 
 
@@ -121,7 +122,8 @@ class Folder(Handler, BaseFolder):
         else:
             format = resource.get_mimetype()
 
-        return Handler.build_handler(resource, format)
+        cls = get_object_class(format)
+        return cls(resource)
 
 
     def _get_handler_names(self):
@@ -1022,4 +1024,5 @@ class Folder(Handler, BaseFolder):
         return result
 
 
-Handler.register_handler_class(Folder)
+register_object_class(Folder)
+register_object_class(Folder, format="application/x-not-regular-file")

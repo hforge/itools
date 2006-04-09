@@ -26,6 +26,7 @@ from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
 from itools.cms.handlers import Metadata
+from itools.cms import registry
 from itools.cms.root import Root
 
 
@@ -54,7 +55,8 @@ def get_root(target):
     metadata = Metadata(metadata)
     format = metadata.get_property('format')
     # Build and return the root handler
-    return Root.build_handler(root_resource, format=format)
+    cls = registry.get_object_class(format)
+    return cls(root_resource)
 
 
 

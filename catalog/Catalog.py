@@ -82,6 +82,9 @@ class Fields(Text):
 
 class Catalog(Folder):
 
+    class_mimetypes = ['application/x-catalog']
+
+
     def get_skeleton(self, fields=[]):
         skeleton = {'fields': Fields(fields=fields)}
         for number, field in enumerate(fields):

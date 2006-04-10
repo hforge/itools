@@ -39,7 +39,7 @@ class Row(iRow, Node):
         return ['view', 'edit_form']
 
 
-    view__access__ = Node.is_allowed_to_view
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
         namespace = {}
@@ -49,7 +49,7 @@ class Row(iRow, Node):
         return stl(handler, namespace)
 
 
-    edit_form__access__ = Node.is_allowed_to_edit
+    edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     def edit_form(self, context):
         namespace = {}
@@ -59,7 +59,7 @@ class Row(iRow, Node):
         return stl(handler, namespace)
 
 
-    edit__access__ = Node.is_allowed_to_edit
+    edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         column = context.get_form_value('column')
         self.__init__(column)
@@ -97,7 +97,7 @@ class CSV(Text, iCSV):
         return ['view', 'externaledit', 'edit_metadata_form', 'history_form']
 
 
-    edit_form__access__ = None
+    edit_form__access__ = False
 
 
     def view(self, context):

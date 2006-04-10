@@ -20,7 +20,6 @@ from itools.handlers.Image import Image as iImage
 from itools.stl import stl
 
 # Import from ikaaro
-from Handler import Handler
 from File import File
 
 

@@ -27,7 +27,6 @@ from itools.html import HTML
 from itools.web.exceptions import UserError
 
 # Import from ikaaro
-from Handler import Handler
 from File import File
 from images import Image
 from text import Text

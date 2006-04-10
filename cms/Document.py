@@ -28,7 +28,6 @@ from itools.web.exceptions import Forbidden
 
 # Import from ikaaro
 from utils import get_parameters, comeback
-from Handler import Handler
 import html
 from LocaleAware import LocaleAware
 from workflow import WorkflowAware

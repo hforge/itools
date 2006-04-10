@@ -33,7 +33,6 @@ from itools.xhtml.XHTML import Document
 # Import from iKaaro
 from utils import get_parameters, comeback
 from versioning import VersioningAware
-from Handler import Handler
 from File import File
 
 
@@ -114,7 +113,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
     #######################################################################
     # View
-    view__access__ = Handler.is_allowed_to_view
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
         return '<pre>%s</pre>' % cgi.escape(self.to_str())
@@ -122,7 +121,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
     #######################################################################
     # Edit / Inline
-    edit_form__access__ = Handler.is_allowed_to_edit
+    edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     edit_form__sublabel__ = u'Inline'
     def edit_form(self, context):
@@ -133,7 +132,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
         return stl(handler, namespace)
 
 
-    edit__access__ = Handler.is_allowed_to_edit
+    edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         data = context.get_form_value('data')
         resource = memory.File(data)
@@ -162,7 +161,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
     #######################################################################
     # History
-    compare__access__ = Handler.is_allowed_to_view
+    compare__access__ = 'is_allowed_to_view'
     def compare(self, context):
         from html import XHTMLFile
 
@@ -221,7 +220,7 @@ class PO(Text, gettext.PO.PO):
 
     #######################################################################
     # Edit
-    edit_form__access__ = Handler.is_allowed_to_edit
+    edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     edit_form__sublabel__ = u'Inline'
     def edit_form(self, context):
@@ -264,7 +263,7 @@ class PO(Text, gettext.PO.PO):
         return stl(handler, namespace)
 
 
-    edit__access__ = Handler.is_allowed_to_edit
+    edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         msgid = context.get_form_value('msgid')
         msgstr = context.get_form_value('msgstr')

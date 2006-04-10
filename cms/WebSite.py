@@ -24,7 +24,6 @@ from itools.web import get_context
 from itools.web.exceptions import UserError
 
 # Import from itools.cms
-from Handler import Handler
 from Folder import Folder
 from LocaleAware import LocaleAware
 from skins import Skin

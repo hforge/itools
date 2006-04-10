@@ -25,7 +25,6 @@ from itools.stl import stl
 from itools.web.exceptions import UserError
 
 # Import from iKaaro
-from Handler import Handler
 from utils import comeback
 
 
@@ -110,7 +109,7 @@ class VersioningAware(object):
 
     #######################################################################
     # History
-    history_form__access__ = Handler.is_allowed_to_edit
+    history_form__access__ = 'is_allowed_to_edit'
     history_form__label__ = u'History'
     def history_form(self, context):
         namespace = {}
@@ -139,7 +138,7 @@ class VersioningAware(object):
         return stl(handler, namespace)
 
 
-    copy_to_present__access__ = Handler.is_allowed_to_edit
+    copy_to_present__access__ = 'is_allowed_to_edit'
     def copy_to_present(self, context):
         names = context.get_form_values('names')
         if len(names) != 1:

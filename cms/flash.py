@@ -19,7 +19,6 @@
 from itools.stl import stl
 
 # Import from ikaaro
-from Handler import Handler
 from File import File
 
 

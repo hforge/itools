@@ -100,7 +100,8 @@ if __name__ == '__main__':
     cmd = 'git-ls-files'
     for path in os.popen(cmd).readlines():
         path = path.strip()
-        manifest.append(path)
+        if not os.path.islink(path):
+            manifest.append(path)
 
     # Get languages to translate
     languages = []

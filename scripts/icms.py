@@ -38,6 +38,7 @@ from itools.cms.Handler import Handler
 from itools.cms.Metadata import Metadata
 from itools.cms.Root import Root
 from itools.cms.versioning import VersioningAware
+from itools.cms import skins
 
 
 
@@ -115,7 +116,7 @@ def init(parser, options, target):
             abspath = handler.get_abspath()
             if handler.name.startswith('.'):
                 context.skip = True
-            elif abspath == '/ui':
+            elif isinstance(handler, skins.UI):
                 context.skip = True
             elif isinstance(handler, Handler):
                 root.index_handler(handler)

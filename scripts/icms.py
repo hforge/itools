@@ -111,7 +111,6 @@ def init(parser, options, target):
     # Index and archive everything (only for new instances, not imported)
     if options.source is None:
         root = root_class(root_resource)
-        catalog = root.get_handler('.catalog')
         for handler, context in root.traverse2():
             abspath = handler.get_abspath()
             if handler.name.startswith('.'):
@@ -119,7 +118,7 @@ def init(parser, options, target):
             elif abspath == '/ui':
                 context.skip = True
             elif isinstance(handler, Handler):
-                catalog.index_document(handler)
+                root.index_handler(handler)
                 if isinstance(handler, VersioningAware):
                     handler.add_to_archive()
 

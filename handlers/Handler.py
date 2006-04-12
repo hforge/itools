@@ -113,20 +113,46 @@ class Handler(Node):
 
     ########################################################################
     # The factory
-    handler_class_registry = {}
+    handler_class_registry = []
 
     @classmethod
     def register_handler_class(cls, handler_class):
-        resource_type = handler_class.class_resource_type
-##        if resource_type in cls.handler_class_registry:
-##            log
-        cls.handler_class_registry[resource_type] = handler_class
+        if 'handler_class_registry' not in cls.__dict__:
+            cls.handler_class_registry = []
+        cls.handler_class_registry.append(handler_class)
 
 
     @classmethod
-    def build_handler(cls, resource):
-        resource_type = resource.class_resource_type
-        if resource_type in cls.handler_class_registry:
-            handler_class = cls.handler_class_registry[resource_type]
-            return handler_class.build_handler(resource)
-        raise ValueError, 'unknown resource type "%s"' % resource_type
+    def get_handler_class(cls, resource):
+        mimetype = resource.get_mimetype()
+        if mimetype is not None:
+            registry = cls.__dict__.get('handler_class_registry', [])
+            for handler_class in registry:
+                if handler_class.is_able_to_handle_mimetype(mimetype):
+                    return handler_class.get_handler_class(resource)
+        return cls
+
+
+    @classmethod
+    def is_able_to_handle_mimetype(cls, mimetype):
+        # Check wether this class understands this mimetype
+        type, subtype = mimetype.split('/')
+        for class_mimetype in cls.class_mimetypes:
+            class_type, class_subtype = class_mimetype.split('/')
+            if type == class_type:
+                if subtype == class_subtype:
+                    return True
+                if class_subtype == '*':
+                    return True
+        # Check wether any sub-class is able to handle the mimetype
+        for handler_class in cls.__dict__.get('handler_class_registry', []):
+            if handler_class.is_able_to_handle_mimetype(mimetype):
+                return True
+        # Everything failed, we are not able to manage the mimetype
+        return False
+
+
+    @classmethod
+    def build_handler(cls, resource, **kw):
+        handler_class = cls.get_handler_class(resource, **kw)
+        return handler_class(resource)

@@ -42,6 +42,7 @@ class Folder(Handler):
     """
 
     class_resource_type = 'folder'
+    class_mimetypes = ['application/x-not-regular-file']
 
 
     def __init__(self, resource=None, **kw):
@@ -95,19 +96,6 @@ class Folder(Handler):
             # Update the cache
             state.cache[name] = None
         state.added_handlers = {}
-
-
-    #########################################################################
-    # The factory
-    #########################################################################
-    @classmethod
-    def register_handler_class(cls, handler_class):
-        raise NotImplementedError
-
-
-    @classmethod
-    def build_handler(cls, resource):
-        return cls(resource)
 
 
     #########################################################################

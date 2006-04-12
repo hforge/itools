@@ -59,48 +59,6 @@ class File(Handler):
 
 
     #########################################################################
-    # The factory
-    #########################################################################
-    handler_class_registry = []
-
-    @classmethod
-    def register_handler_class(cls, handler_class):
-        if 'handler_class_registry' not in cls.__dict__:
-            cls.handler_class_registry = []
-        cls.handler_class_registry.append(handler_class)
-
-
-    @classmethod
-    def build_handler(cls, resource):
-        mimetype = resource.get_mimetype()
-        if mimetype is not None:
-            registry = cls.__dict__.get('handler_class_registry', [])
-            for handler_class in registry:
-                if handler_class.is_able_to_handle_mimetype(mimetype):
-                    return handler_class.build_handler(resource)
-        return cls(resource)
-
-
-    @classmethod
-    def is_able_to_handle_mimetype(cls, mimetype):
-        # Check wether this class understands this mimetype
-        type, subtype = mimetype.split('/')
-        for class_mimetype in cls.class_mimetypes:
-            class_type, class_subtype = class_mimetype.split('/')
-            if type == class_type:
-                if subtype == class_subtype:
-                    return True
-                if class_subtype == '*':
-                    return True
-        # Check wether any sub-class is able to handle the mimetype
-        for handler_class in cls.__dict__.get('handler_class_registry', []):
-            if handler_class.is_able_to_handle_mimetype(mimetype):
-                return True
-        # Everything failed, we are not able to manage the mimetype
-        return False
-
-
-    #########################################################################
     # The skeleton
     #########################################################################
     def get_skeleton(self):

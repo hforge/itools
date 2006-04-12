@@ -348,10 +348,10 @@ class Server(object):
                 transaction.rollback()
                 if user is None:
                     # Unauthorized (401)
-                    response_body = root.login_form()
+                    response_body = root.login_form(context)
                 else:
                     # Forbidden (403)
-                    response_body = root.forbidden()
+                    response_body = root.forbidden(context)
             except:
                 self.log_error()
                 transaction.rollback()

@@ -302,6 +302,9 @@ class Catalog(Folder):
             yield stored.document
 
 
+Folder.register_handler_class(Catalog)
+
+
 
 class Document(object):
     def __init__(self, number):

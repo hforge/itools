@@ -20,7 +20,7 @@
 import os
 
 # Import from itools
-from utils import get_version
+from utils import get_version, get_abspath
 
 
 __version__ = get_version(globals())

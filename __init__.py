@@ -20,12 +20,7 @@
 import os
 
 # Import from itools
-from utils import get_abspath
+from utils import get_version
 
 
-
-path = get_abspath(globals(), 'version.txt')
-if os.path.exists(path):
-    __version__ = open(path).read().strip()
-else:
-    __version__ = None
+__version__ = get_version(globals())

@@ -70,4 +70,4 @@ classifiers = ['Development Status :: 3 - Alpha',
 
 
 if __name__ == '__main__':
-    setup(description= description, classifiers=classifiers)
+    setup(globals(), description= description, classifiers=classifiers)

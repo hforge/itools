@@ -86,8 +86,16 @@ class build_py_fixed(build_py):
 ############################################################################
 # Our all powerful setup
 ############################################################################
-def setup(description='', classifiers=[]):
-    from __init__ import __version__
+def get_version(namespace):
+    path = get_abspath(namespace, 'version.txt')
+    if os.path.exists(path):
+        return open(path).read().strip()
+    return None
+
+
+
+def setup(namespace, description='', classifiers=[]):
+    version = get_version(namespace)
     try:
         from itools.resources import get_resource
         from handlers.config import Config
@@ -147,7 +155,7 @@ def setup(description='', classifiers=[]):
     if sys.argv == ['setup.py', 'register']:
         author_name = unicode(author_name, 'utf-8')
     core.setup(name = package_name,
-               version = __version__,
+               version = version,
                # Metadata
                author = author_name,
                author_email = config.get_value('author_email'),

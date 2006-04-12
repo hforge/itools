@@ -76,6 +76,44 @@ class Resource(object):
         raise NotImplementedError
 
 
+    def get_mimetype(self):
+        """
+        Try to guess the mimetype for a resource, given the resource itself
+        and its name. To guess from the name we need to extract the type
+        extension, we use an heuristic for this task, but it needs to be
+        improved because there are many patterns:
+
+        <name>                                 README
+        <name>.<type>                          index.html
+        <name>.<type>.<language>               index.html.en
+        <name>.<type>.<language>.<encoding>    index.html.en.UTF-8
+        <name>.<type>.<compression>            itools.tar.gz
+        etc...
+
+        And even more complex, the name could contain dots, or the filename
+        could start by a dot (a hidden file in Unix systems).
+
+        XXX Use magic numbers too (like file -i).
+        """
+        name = self.get_name()
+        if name is None:
+            return None
+
+        # Parse the filename
+        name, type, language = FileName.decode(name)
+
+        # Get the mimetype
+        if type is not None:
+            mimetype, encoding = mimetypes.guess_type('.%s' % type)
+            if mimetype is not None:
+                return mimetype
+
+        if isinstance(self, File):
+            return 'application/octet-stream'
+
+        return 'application/x-not-regular-file'
+
+
     ##########################################################################
     # Open/Close
     ##########################################################################
@@ -110,41 +148,6 @@ class Resource(object):
 class File(Resource):
 
     class_resource_type = 'file'
-
-
-    def get_mimetype(self):
-        """
-        Try to guess the mimetype for a resource, given the resource itself
-        and its name. To guess from the name we need to extract the type
-        extension, we use an heuristic for this task, but it needs to be
-        improved because there are many patterns:
-
-        <name>                                 README
-        <name>.<type>                          index.html
-        <name>.<type>.<language>               index.html.en
-        <name>.<type>.<language>.<encoding>    index.html.en.UTF-8
-        <name>.<type>.<compression>            itools.tar.gz
-        etc...
-
-        And even more complex, the name could contain dots, or the filename
-        could start by a dot (a hidden file in Unix systems).
-
-        XXX Use magic numbers too (like file -i).
-        """
-        name = self.get_name()
-        if name is None:
-            return None
-
-        # Parse the filename
-        name, type, language = FileName.decode(name)
-
-        # Get the mimetype
-        if type is not None:
-            mimetype, encoding = mimetypes.guess_type('.%s' % type)
-            if mimetype is not None:
-                return mimetype
-
-        return 'application/octet-stream'
 
 
     ######################################################################
@@ -227,10 +230,6 @@ class File(Resource):
 class Folder(Resource):
 
     class_resource_type = 'folder'
-
-
-    def get_mimetype(self):
-        return 'application/x-not-regular-file'
 
 
     def open(self):

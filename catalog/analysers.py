@@ -47,11 +47,11 @@ def Text(data):
     lexeme = u''
     for c in data:
         if state == 0:
-            if c.isalpha():
+            if c.isalnum():
                 lexeme += c
                 state = 1
         elif state == 1:
-            if c.isalpha():
+            if c.isalnum():
                 lexeme += c
             else:
                 lexeme = lexeme.lower()

@@ -1,111 +1,508 @@
 # Belmar-Letelier <luis@in-girum.net>, 2003.
 # J. David Ibáñez <jdavid@itaapy.com>, 2003, 2004.
 # Hervé Cauwelier <herve@oursours.net>, 2005.
+# 
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-08 22:12+CET\n"
-"PO-Revision-Date: 2005-12-09 00:37+0100\n"
+"POT-Creation-Date: 2006-04-13 16:04+CET\n"
+"PO-Revision-Date: 2006-04-13 18:28+0200\n"
 "Last-Translator: nderam <hcauwelier@oursours.net>\n"
 "Language-Team:  <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
 
-#: User.py:82
-msgid "%(username)s's home"
-msgstr "Page personnelle de %(username)s"
-
-#: Handler.py:135
+#: cms/Handler.py:161
 msgid "%.01f KB"
 msgstr "%.01f Ko"
 
-#: Handler.py:133
+#: cms/Handler.py:159
 msgid "%.01f MB"
 msgstr "%.01f Mo"
 
-#: Handler.py:139
+#: cms/Handler.py:165
 msgid "%d obs"
 msgstr "%d obj"
 
-#: Root.py:550
+#: cms/root.py:448
 msgid "%s handlers have been re-indexed."
 msgstr "%s objets ont été réindexés."
 
-#: ui/User_translator.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"(1) copyright the software, and (2) offer you this license which gives you "
+"legal permission to copy, distribute and/or modify the software."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "(Exception:"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"(Hereinafter, translation is included without limitation in the term "
+"\"modification\".) Each licensee is addressed as \"you\"."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"(Some other Free Software Foundation software is covered by the GNU Library "
+"General Public License instead.) You can apply it to your programs, too."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"(This alternative is allowed only for noncommercial distribution and only if "
+"you received the program in object code or executable form with such an "
+"offer, in accord with Subsection b above.)"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#calendar\">Calendar</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#ep2005\">EuroPython 2005</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#ftp\">FTP import/export</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#ikaaro.org\">ikaaro.org</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#packaging\">Packaging</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#rdb\">Relational Databases</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#xul\">XUL interfaces</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "- <a href=\"#zope3\">Support Zope 3</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"- <a href=\"../download/ikaaro/ikaaro-0.10.4.tar.gz\">iKaaro\n"
+"                  M10-4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"- <a href=\"../download/ikaaro/ikaaro-0.11.0.tar.gz\">iKaaro\n"
+"                  M11</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"- <a href=\"../download/ikaaro/ikaaro-m9r1.tar.gz\">iKaaro\n"
+"                  M9-1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"- <a href=\"../download/itools/itools-0.5.1.tar.gz\">itools\n"
+"                  0.5.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"- <a href=\"../download/itools/itools-0.6.4.tar.gz\">itools\n"
+"                  0.6.4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"- <a href=\"../download/itools/itools-0.7.4.tar.gz\">itools\n"
+"                  0.7.4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"- <a href=\"../download/localizer/Localizer-1.0.1.tar.gz\">Localizer\n"
+"                1.0.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ihotfix/iHotfix-0.4.0.tar.gz\">0.4.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ihotfix/iHotfix-0.5.0.tar.gz\">0.5.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ihotfix/iHotfix-0.5.1.tar.gz\">0.5.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.10.0.tar.gz\">0.10.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.10.1.tar.gz\">0.10.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.10.2.tar.gz\">0.10.2</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.10.3.tar.gz\">0.10.3</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.10.4.tar.gz\">0.10.4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.11.0.tar.gz\">0.11.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.12.0.tar.gz\">0.12.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.12.1.tar.gz\">0.12.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-0.12.2.tar.gz\">0.12.2</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-m8.tar.gz\">0.8.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-m8r1.tar.gz\">0.8.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-m8r2.tar.gz\">0.8.2</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-m9.tar.gz\">0.9.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../ikaaro/ikaaro-m9r1.tar.gz\">0.9.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.4.1.tar.gz\">0.4.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.4.2.tar.gz\">0.4.2</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.4.3.tar.gz\">0.4.3</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.4.4.tar.gz\">0.4.4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.4.6.tar.gz\">0.4.6</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.5.0.tar.gz\">0.5.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.5.1.tar.gz\">0.5.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.6.0.tar.gz\">0.6.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.6.1.tar.gz\">0.6.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.6.2.tar.gz\">0.6.2</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.6.3.tar.gz\">0.6.3</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.6.4.tar.gz\">0.6.4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.7.0.tar.gz\">0.7.0</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.7.1.tar.gz\">0.7.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.7.2.tar.gz\">0.7.2</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../itools/itools-0.7.3.tar.gz\">0.7.3</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "- <a href=\"../localizer/Localizer-1.0.1.tar.gz\">1.0.1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid ""
+"- <a href=\"../localizer/Localizer-1.1.0a4.tar.gz\">1.1.0 alpha\n"
+"                4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid ""
+"- <a href=\"../localizer/Localizer-1.1.0b1.tar.gz\">1.1.0 beta\n"
+"                1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid ""
+"- <a href=\"../localizer/Localizer-1.1.0b2.tar.gz\">1.1.0 beta\n"
+"                2</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid ""
+"- <a href=\"../localizer/Localizer-1.1.0b3.tar.gz\">1.1.0 beta\n"
+"                3</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid ""
+"- <a href=\"../localizer/Localizer-1.1.0b4.tar.gz\">1.1.0 beta\n"
+"                4</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid ""
+"- <a href=\"../localizer/Localizer-1.1.0b5.tar.gz\">1.1.0 beta\n"
+"                5</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid ""
+"- <a href=\"../localizer/Localizer-1.1.0rc1.tar.gz\">1.1.0 rc\n"
+"                1</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"- <a href=\"http://arch.oursours.net/zoom/herve@oursours.net--public/ikaaro?"
+"expand\">\n"
+"                  Hervé's branch</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"- <a href=\"http://arch.oursours.net/zoom/herve@oursours.net--public/itools?"
+"expand\">\n"
+"                  Hervé's branch</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"- <a href=\"http://deb.oursours.net/unstable/\">Debian\n"
+"                  Packages</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"- <a href=\"http://www.bankwinter.com\">Bank\n"
+"                Winter</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"- <a href=\"http://www.deli.deusto.es/AboutUs/Projects/X-Flow/\">\n"
+"                X-Flow</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid "- <a href=\"http://www.hiru.com\">Hiru</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid "- <a href=\"http://www.idtrack.org\">IDTrack</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid "- <a href=\"http://www.itaapy.com/\">Itaapy</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid "- <a href=\"http://www.traveluni.com\">Traveluni</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"- <a href=\"http://www.tumatxa.com\">Tumatxa</a> (Translation Memory "
+"Repository)"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"- <a href=\"http://www.zope.org/Members/CodeSyntax/DTML_Localizer\">\n"
+"                Tips</a> by Luistxo Fernandez."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"- <a href=\"http://zope.org/Members/fafhrd/CMFLocalizer\">CMFLocalizer</a> "
+"(file system message catalogs)"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"- The <a href=\"http://in-girum.net/mailman/listinfo/ikaaro\">Mailing\n"
+"                  list</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"- The <a href=\"http://in-girum.net/mailman/listinfo/localizer\">Mailing\n"
+"                list</a>"
+msgstr ""
+
+#: cms/ui/User_translator.xml.en:0
 msgid "-- Choose a language --"
 msgstr "-- Choisissez une langue --"
 
-#: WebSite.py:45
+#: cms/WebSite.py:45
 msgid "..."
 msgstr ""
 
-#: ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "/ <a stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
-msgstr "/ <a stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
+msgstr ""
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/classic/template.xhtml.en:0
+msgid ""
+"/ <a stl:if=\"x/url\" stl:content=\"x/name\" stl:attributes=\"href x/url\"></"
+"a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"<a href=\"../ikaaro\"><img border=\"0\" src=\"../images/ikaaro.jpg\"/></a> "
+"is a Content Management System."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/skin/template.xhtml.en:0
+msgid ""
+"<a href=\"../index.xhtml\">Home</a> | <a href=\"../download.xhtml"
+"\">Download</a> | <a href=\"../roadmap.xhtml\">Roadmap</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"<a href=\"../itools\"><tt style=\"font-size: 21px;\">itools</tt></a> is a "
+"Python meta-package, it provides tools such as a workflow engine or a really "
+"fast template language."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/skin/template.xhtml.en:0
+msgid ""
+"<a href=\"../itools.xhtml\">itools</a> | <a href=\"../ikaaro.xhtml\">iKaaro</"
+"a> | <a href=\"../localizer.xhtml\">Localizer</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"<a href=\"../localizer\"><img align=\"left\" border=\"0\" src=\"../images/"
+"localizer.jpg\"/></a> Localizer is a Zope product, it helps to build "
+"multilingual web applications."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=20\">#20 "
+"itools.resources.zope3</a> <strong>[???]</strong>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=26\">#26 "
+"itools.tmx</a> <strong>[???]</strong>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=27\">#27 "
+"itools.xliff</a> <strong>[???]</strong>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=27\">#27 "
+"itools.xliff</a> <strong>[???]</strong> <a name=\"packaging\"></a>"
+msgstr ""
+
+#: cms/ui/Text_externaledit.xml.en:0
 msgid ""
 "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.1-src.tgz"
 "\">Download External Editor for Unix and MacOSX</a>."
-msgstr "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.1-src.tgz"
+msgstr ""
+"<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.1-src.tgz"
 "\">Télécharger External Editor pour Unix et MacOSX</a>."
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid ""
 "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe"
 "\">Download\n"
 "      External Editor for Windows</a>."
-msgstr "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe"
+msgstr ""
+"<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe"
 "\">Télécharger External Editor pour Windows</a>."
 
-#: ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "<a href=\"http://www.ikaaro.org\">ikaaro.org</a>."
 msgstr "<a href=\"http://www.ikaaro.org\">ikaaro.org</a>."
 
-#: ui/aruni/template.xhtml.en:0
-msgid ""
-"<a id=\"action_home\" class=\"icon_home\" href=\"#\" stl:attributes=\"href "
-"user/info/home\">\n"
-"                Home\n"
-"              </a> <a id=\"action_logout\" class=\"icon_logout\" href=\"#\" "
-"stl:attributes=\"href user/info/logout\">\n"
-"                Log out\n"
-"              </a>"
-msgstr "<a id=\"action_home\" class=\"icon_home\" href=\"#\" stl:attributes=\"href "
-"user/info/home\">\n"
-"                Espace personnel\n"
-"              </a> <a id=\"action_logout\" class=\"icon_logout\" href=\"#\" "
-"stl:attributes=\"href user/info/logout\">\n"
-"                Déconnexion\n"
-"              </a>"
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "<a name=\"zope3\"></a>"
+msgstr ""
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/surf/template.xhtml.en:0
 msgid ""
-"<a id=\"action_login\" class=\"icon_login\" href=\"#\" stl:attributes=\"href "
-"user/login_url\">\n"
-"                Log in\n"
-"              </a> <a stl:if=\"user/joinisopen\" id=\"action_join\" class="
-"\"icon_join\" href=\"#\" stl:attributes=\"href user/join_url\">\n"
-"                Join\n"
-"              </a>"
-msgstr "<a id=\"action_login\" class=\"icon_login\" href=\"#\" stl:attributes=\"href "
-"user/login_url\">\n"
-"                Connexion\n"
-"              </a> <a stl:if=\"user/joinisopen\" id=\"action_join\" class="
-"\"icon_join\" href=\"#\" stl:attributes=\"href user/join_url\">\n"
-"                Inscription\n"
-"              </a>"
+"<a stl:content=\"subtab/label\" href=\"#\" stl:attributes=\"href subtab/name;"
+"title subtab/label\">Label</a> <span stl:if=\"not repeat/subtab/end\"> | </"
+"span>"
+msgstr ""
 
-#: ui/WebSite_search.xml.en:0
+#: cms/ui/WebSite_search.xml.en:0
 msgid ""
 "<a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;"
 "</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
-msgstr "<a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;"
-"</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">&gt;&gt;</a>"
+msgstr ""
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid ""
 "<a stl:if=\"item/url\" stl:content=\"item/short_name\" stl:attributes=\"href "
 "item/url;title item/name\">The path entry</a> <span stl:if=\"not item/url\" "
@@ -113,580 +510,1098 @@ msgid ""
 "<stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 msgstr ""
 
-#: ui/WebSite_search.xml.en:0
+#: cms/ui/WebSite_search.xml.en:0
 msgid ""
 "<span class=\"result_url\" stl:content=\"object/abspath\"></span> - <span "
 "class=\"result_type\" stl:content=\"object/type\"></span> - <span class="
 "\"result_size\" stl:content=\"object/size\"></span>"
 msgstr ""
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/surf/template.xhtml.en:0
+msgid ""
+"<span stl:if=\"user\" stl:content=\"user/name\"></span> <span stl:if=\"not "
+"user\">\n"
+"                                <em>not logged in</em>\n"
+"                              </span>"
+msgstr ""
+
+#: cms/ui/surf/template.xhtml.en:0
+msgid ""
+"<stl:block stl:if=\"not repeat/item/start\">»</stl:block> <a stl:if=\"item/"
+"url\" stl:content=\"item/short_name\" stl:attributes=\"href item/url\"></a> "
+"<span stl:if=\"not item/url\" stl:content=\"item/name\"></span>"
+msgstr ""
+
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
 "<stl:inline stl:if=\"batch/control\" stl:content=\"batch/control\"></stl:"
 "inline> <a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous"
 "\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next"
 "\">>></a>"
-msgstr "<stl:inline stl:if=\"batch/control\" stl:content=\"batch/control\"></stl:"
-"inline> <a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous"
-"\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next"
-"\">&gt;&gt;</a>"
+msgstr ""
 
-#: ui/WorkflowAware_state.xml.en:0
-msgid "<strong stl:content=\"state\"></strong>"
-msgstr "<strong stl:content=\"state\"></strong>"
-
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid ""
-"<strong stl:if=\"user/info\" stl:content=\"user/info/title\">\n"
-"              The user\n"
-"            </strong> <strong stl:if=\"not user/info\">\n"
-"              not logged in\n"
-"            </strong>"
+"<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:"
+"inline> <stl:inline stl:if=\"not user/info\">not logged in</stl:inline>"
+msgstr ""
+"<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:"
+"inline> <stl:inline stl:if=\"not user/info\">non authentifié</stl:inline>"
+
+#: cms/ui/WorkflowAware_state.xml.en:0
+msgid "<strong stl:content=\"state\"></strong>"
 msgstr ""
 
-#: workflow.py:39
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>0.</strong> This License applies to any program or other work which "
+"contains a notice placed by the copyright holder saying it may be "
+"distributed under the terms of this General Public License."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>1.</strong> You may copy and distribute verbatim copies of the "
+"Program's source code as you receive it, in any medium, provided that you "
+"conspicuously and appropriately publish on each copy an appropriate "
+"copyright notice and disclaimer of warranty;"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>10.</strong> If you wish to incorporate parts of the Program into "
+"other free programs whose distribution conditions are different, write to "
+"the author to ask for permission."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>11.</strong> BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE "
+"IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>12.</strong> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED "
+"TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY "
+"AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR "
+"DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES "
+"ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT "
+"LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES "
+"SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE "
+"WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN "
+"ADVISED OF THE POSSIBILITY OF SUCH DAMAGES."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>2.</strong> You may modify your copy or copies of the Program or any "
+"portion of it, thus forming a work based on the Program, and copy and "
+"distribute such modifications or work under the terms of Section 1 above, "
+"provided that you also meet all of these conditions:"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>3.</strong> You may copy and distribute the Program (or a work based "
+"on it, under Section 2) in object code or executable form under the terms of "
+"Sections 1 and 2 above provided that you also do one of the following:"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>4.</strong> You may not copy, modify, sublicense, or distribute the "
+"Program except as expressly provided under this License."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>5.</strong> You are not required to accept this License, since you "
+"have not signed it."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>6.</strong> Each time you redistribute the Program (or any work "
+"based on the Program), the recipient automatically receives a license from "
+"the original licensor to copy, distribute or modify the Program subject to "
+"these terms and conditions."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>7.</strong> If, as a consequence of a court judgment or allegation "
+"of patent infringement or for any other reason (not limited to patent "
+"issues), conditions are imposed on you (whether by court order, agreement or "
+"otherwise) that contradict the conditions of this License, they do not "
+"excuse you from the conditions of this License."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>8.</strong> If the distribution and/or use of the Program is "
+"restricted in certain countries either by patents or by copyrighted "
+"interfaces, the original copyright holder who places the Program under this "
+"License may add an explicit geographical distribution limitation excluding "
+"those countries, so that distribution is permitted only in or among "
+"countries not thus excluded."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>9.</strong> The Free Software Foundation may publish revised and/or "
+"new versions of the General Public License from time to time."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>a)</strong> Accompany it with the complete corresponding machine-"
+"readable source code, which must be distributed under the terms of Sections "
+"1 and 2 above on a medium customarily used for software interchange;"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>a)</strong> You must cause the modified files to carry prominent "
+"notices stating that you changed the files and the date of any change."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>b)</strong> Accompany it with a written offer, valid for at least "
+"three years, to give any third party, for a charge no more than your cost of "
+"physically performing source distribution, a complete machine-readable copy "
+"of the corresponding source code, to be distributed under the terms of "
+"Sections 1 and 2 above on a medium customarily used for software interchange;"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>b)</strong> You must cause any work that you distribute or publish, "
+"that in whole or in part contains or is derived from the Program or any part "
+"thereof, to be licensed as a whole at no charge to all third parties under "
+"the terms of this License."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>c)</strong> Accompany it with the information you received as to the "
+"offer to distribute corresponding source code."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"<strong>c)</strong> If the modified program normally reads commands "
+"interactively when run, you must cause it, when started running for such "
+"interactive use in the most ordinary way, to print or display an "
+"announcement including an appropriate copyright notice and a notice that "
+"there is no warranty (or else, saying that you provide a warranty) and that "
+"users may redistribute the program under these conditions, and telling the "
+"user how to view a copy of this License."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"<tt style=\"font-size: 21px;\">itools</tt> is a Python meta-package, see the "
+"right column for a summary of what <tt>itools</tt> provides."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid "<tt>itools</tt>, iKaaro and Localizer."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"A Virtual File System for Python (<a href=\"http://www.python-in-business."
+"org/ep2005/listtrack.chtml?track=692\">Python Frameworks</a>) <strong>"
+"[jdavid]</strong>"
+msgstr ""
+
+#: cms/workflow.py:39
 msgid "A pending document awaits review from authorized users to be published."
-msgstr "Un document en attente a besoin de l'aval des responsables pour être publié."
-
-#: examples/portal1/Root.py:28
-msgid "A portal for learning iKaaro"
 msgstr ""
+"Un document en attente a besoin de l'aval des responsables pour être publié."
 
-#: workflow.py:36
+#: cms/workflow.py:36
 msgid "A private document only can be reached by authorized users."
 msgstr ""
 "Un document privé ne peut être atteint que par les utilisateurs autorisés."
 
-#: workflow.py:42
+#: cms/workflow.py:42
 msgid "A public document can be reached by even anonymous users."
-msgstr "Un document public peut être atteint même par les utilisateurs anonymes."
+msgstr ""
+"Un document public peut être atteint même par les utilisateurs anonymes."
 
-#: workflow.py:145
+#: cms/workflow.py:145
 msgid "A transition must be selected."
 msgstr "Une action doit être sélectionnée."
 
-#: Root.py:460
+#: cms/root.py:354
 msgid "About"
 msgstr "Au sujet de"
 
-#: workflow.py:54
+#: cms/workflow.py:54
 msgid "Accept the document."
 msgstr "Accepter le document"
 
-#: Root.py:160
+#: cms/root.py:152
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr "Accès refusé, vous n'êtes pas autorisé à accéder à cette ressource."
 
-#: User.py:317
+#: cms/users.py:252
 msgid "Account"
 msgstr "Compte"
 
-#: ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "Account Change"
 msgstr "Modifier le compte"
 
-#: User.py:372
+#: cms/users.py:310
 msgid "Account changed."
 msgstr "Compte modifié."
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Action"
 msgstr "Action"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Active Item"
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Active subview"
 msgstr ""
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Active view"
 msgstr ""
 
-#: ui/WebSite_new_instance.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Activities other than copying, distribution and modification are not covered "
+"by this License;"
+msgstr ""
+
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Add"
 msgstr "Ajouter"
 
-#: ui/Group_add_users.xml.en:0
+#: cms/ui/Group_add_users.xml.en:0
 msgid "Add Users"
 msgstr "Ajouter des utilisateurs"
 
-#: ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Add a Document"
 msgstr "Ajouter un document"
 
-#: ui/Folder_new_instance.xml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid "Add a Folder"
 msgstr "Ajouter un dossier"
 
-#: ui/UserFolder_new_user.xml.en:0
+#: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add a New User"
 msgstr "Créer un utilisateur"
 
-#: ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "Add a new translator skill:"
 msgstr "Ajouter une nouvelle traduction possible"
 
-#: ui/UserFolder_new_user.xml.en:0
+#: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add and return"
 msgstr "Ajouter et revenir"
 
-#: ui/UserFolder_new_user.xml.en:0
+#: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add and view"
 msgstr "Ajouter et voir"
 
-#: Root.py:111
+#: cms/root.py:103
 msgid "Admins"
 msgstr "Administrateurs"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Advanced Search"
 msgstr "Recherche avancée"
 
-#: ui/Group_add_users.xml.en:0
+#: cms/ui/Group_add_users.xml.en:0
 msgid "All users are already added."
 msgstr "Tous les utilisateurs sont déjà ajoutés."
 
-#: ui/Root_general.xml.en:0
+#: cms/ui/Root_general.xml.en:0
 msgid "Allow joining"
 msgstr "Autoriser l'inscription"
 
-#: ui/Root_general.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Also, for each author's protection and ours, we want to make certain that "
+"everyone understands that there is no warranty for this free software."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "An Index & Search engine."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "And you must show them these terms so they know their rights."
+msgstr ""
+
+#: cms/ui/Root_general.xml.en:0
 msgid "Anonymous users allowed to join this web site"
 msgstr "Les utilisateurs anonymes sont autorisés à s'inscrire sur ce site web"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Any"
+msgstr "N'importe"
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Any attempt otherwise to copy, modify, sublicense or distribute the Program "
+"is void, and will automatically terminate your rights under this License."
 msgstr ""
 
-#: ui/Root_internal_server_error.xml.en:0
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "Apologies for the inconvenience."
-msgstr "Veuillez nous excuser pour la gêne occasionée."
+msgstr "Veuillez nous excuser pour la gêne occasionnée."
 
-#: User.py:272
+#: cms/users.py:207
 msgid "Application"
-msgstr "Application"
+msgstr ""
 
-#: ui/User_edit.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Application Preferences"
 msgstr "Préférences de l'application"
 
-#: User.py:309
+#: cms/users.py:244
 msgid "Application preferences changed."
 msgstr "Préférences de l'application modifiées."
 
-#: Folder.py:452
+#: cms/Folder.py:466
 msgid "As Icons"
 msgstr "Icônes"
 
-#: Folder.py:515
+#: cms/Folder.py:529
 msgid "As Image Gallery"
 msgstr "Galerie d'images"
 
-#: Folder.py:469
+#: cms/Folder.py:483
 msgid "As List"
 msgstr "Liste"
 
-#: ui/File_help.xml.en:0
+#: cms/ui/File_help.xml.en:0
 msgid "Available views:"
 msgstr "Vues disponibles&nbsp;:"
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
 msgstr "Assurez-vous d'avoir l'extension External Editor."
 
-#: Group.py:184
+#: cms/ui/epoz_script_table.xml.en:0
+msgid "Border"
+msgstr "Bordure"
+
+#: cms/Group.py:180
 msgid "Browse"
 msgstr "Naviguer"
 
-#: ui/Folder_browsedir.xml.en:0
+#: cms/ui/Folder_browsedir.xml.en:0
 msgid "Browse-Directories"
 msgstr "Naviguer dans les dossiers"
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"Building a Zope application with iKaaro (<a href=\"http://www.python-in-"
+"business.org/ep2005/listtrack.chtml?track=694\">Zope and Zope related</a>) "
+"<strong>[luis]</strong>"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"But when you distribute the same sections as part of a whole which is a work "
+"based on the Program, the distribution of the whole must be on the terms of "
+"this License, whose permissions for other licensees extend to the entire "
+"whole, and thus to each and every part regardless of who wrote it."
+msgstr ""
+
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "By"
 msgstr "Par"
 
-#: csv_.py:30
-msgid "CSV Row"
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"By contrast, the GNU General Public License is intended to guarantee your "
+"freedom to share and change free software--to make sure the software is free "
+"for all its users."
 msgstr ""
 
-#: openoffice.py:88
+#: cms/csv_.py:30
+msgid "CSV Row"
+msgstr "Enregistrement CSV"
+
+#: cms/openoffice.py:88
 msgid "Calc"
-msgstr "Classeur"
+msgstr "OpenOffice.org Calc"
 
-#: Root.py:496
-msgid "Catalog"
-msgstr "Catalogue"
-
-#: ui/Root_catalog.xml.en:0
+#: cms/ui/Root_catalog.xml.en:0
 msgid "Cataloguing of Content"
 msgstr "Catalogue du contenu"
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Change"
 msgstr "Modifier"
 
-#: ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "Change account"
 msgstr "Modifier le compte"
 
-#: ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Change default for the selected one"
 msgstr "Changer la langue par défaut pour celle sélectionnée"
 
-#: ui/User_edit.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Change preferences"
 msgstr "Modifier les préférences"
 
-#: ui/User_home.xml.en:0
-msgid "Change your account information;"
-msgstr ""
-
-#: ui/User_welcome.xml.en:0
-msgid "Change your account;"
-msgstr "Modifier votre compte&nbsp;;"
-
-#: ui/User_home.xml.en:0
-msgid "Change your password;"
-msgstr ""
-
-#: ui/User_welcome.xml.en:0
-msgid "Change your preferences;"
-msgstr "Modifier vos préférences&nbsp;;"
-
-#: csv_.py:66
+#: cms/csv_.py:66
 msgid "Changes saved."
 msgstr "Modifications sauvegardées"
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "Character encoding"
 msgstr "Codage des caractères"
 
-#: ui/Root_languages.xml.en:0
+#: cms/root.py:456
+msgid "Check Groups"
+msgstr "Vérifier les groupes"
+
+#: cms/ui/Root_check_groups.xml.en:0
+msgid "Check groups for <em>phantom</em> users"
+msgstr "Vérifier les utilisateurs <em>fantômes</em> des groupes"
+
+#: cms/ui/Root_languages.xml.en:0
 msgid "Choose a language"
 msgstr "Choisir une langue"
 
-#: ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Choose a template:"
 msgstr "Choisir un modèle&nbsp;:"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid ""
 "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per "
 "inceptos hymenaeos."
 msgstr ""
 
-#: ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Code"
-msgstr "Code"
+msgstr ""
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments"
 msgstr "Commentaires&nbsp;:"
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments (optional):"
-msgstr "Commentaires (optionel)&nbsp;:"
+msgstr "Commentaires (optionnel)&nbsp;:"
 
-#: ui/File_history.xml.en:0
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "Community build-up:"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid "Companies that provide support for Localizer"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"Companies that provide support for Localizer- <a href=\"http://www."
+"codesyntax.com/\">CodeSyntax</a>"
+msgstr ""
+
+#: cms/ui/File_history.xml.en:0
 msgid "Compare selected revisions"
 msgstr "Comparer les versions séléctionnées"
 
-#: ui/Folder_browse_list.xml.en:0
+#: handlers/Var.py:78
+msgid "Content-Encoding: %s\n"
+msgstr ""
+
+#: handlers/Var.py:76
+msgid "Content-Language: %s\n"
+msgstr ""
+
+#: handlers/Var.py:80
+msgid "Content-Length: %s\n"
+msgstr ""
+
+#: handlers/Var.py:74
+msgid "Content-Type: %s\n"
+msgstr ""
+
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Contents"
+msgstr ""
+
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Copy"
 msgstr "Copier"
 
-#: ui/File_history.xml.en:0
+#: cms/ui/File_history.xml.en:0
 msgid "Copy to present the selected revision"
 msgstr "Rétablir la version sélectionnée"
 
-#: ui/Group_add_group.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Copyright (C) 1989, 1991 Free Software Foundation, Inc. 51 Franklin Street, "
+"Fifth Floor, Boston, MA 02110-1301, USA Everyone is permitted to copy and "
+"distribute verbatim copies of this license document, but changing it is not "
+"allowed."
+msgstr ""
+
+#: cms/ui/Group_add_group.xml.en:0
 msgid "Create a New Group"
 msgstr "Créer un groupe"
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
 msgstr "État actuel&nbsp;:"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Cut"
 msgstr "Couper"
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Date"
 msgstr "Date"
 
-#: ui/Folder_browse_list.xml.en:0
-msgid ""
-"Date <stl:inline stl:content=\"table/sortcontrol(mtime_microsecond)\"></stl:"
-"inline>"
-msgstr "Date <stl:inline stl:content=\"table/sortcontrol(mtime_microsecond)\"></stl:"
-"inline>"
+#: cms/ui/Folder_browse_list.xml.en:0
+msgid "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
+msgstr ""
+"Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 
-#: ui/Root_languages.xml.en:0
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "Debian/Ununtu <strong>[hervé]</strong>."
+msgstr ""
+
+#: cms/ui/Root_languages.xml.en:0
 msgid "Default"
 msgstr "Défaut"
 
-#: ui/Handler_edit_metadata.xml.en:0
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid "Demo"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"Demo- Try the <a href=\"http://demo.ikaaro.org/\">demo</a> (username and "
+"password \"super\")"
+msgstr ""
+
+#: cms/ui/Handler_edit_metadata.xml.en:0
 msgid "Description"
 msgstr "Description"
 
-#: ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Details"
 msgstr "Détails"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Display only contents with the following terms:"
 msgstr "N'afficher que le contenu qui contient&nbsp;:"
 
-#: ui/Folder_translate.xml.en:0
-#, fuzzy
+#: cms/ui/Folder_translate.xml.en:0
 msgid "Document"
 msgstr "Document"
 
-#: openoffice.py:89
-msgid "Document Calc"
-msgstr "Classeur OpenOffice.org"
-
-#: msoffice.py:109
+#: cms/msoffice.py:109
 msgid "Document Excel"
 msgstr "Classeur Excel"
 
-#: flash.py:31
+#: cms/flash.py:30
 msgid "Document Flash"
 msgstr "Document Flash"
 
-#: ui/File_history.xml.en:0
+#: cms/ui/File_history.xml.en:0
 msgid "Document History"
 msgstr "Historique du document"
 
-#: openoffice.py:102
-msgid "Document Impress"
-msgstr "Présentation OpenOffice.org"
-
-#: pdf.py:31
+#: cms/pdf.py:31
 msgid "Document PDF"
 msgstr "Document PDF"
 
-#: msoffice.py:144
-#, fuzzy
+#: cms/msoffice.py:144
 msgid "Document PowerPoint"
 msgstr "Document PowerPoint"
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Document State"
 msgstr "État du document"
 
-#: msoffice.py:69
+#: cms/msoffice.py:69
 msgid "Document Word"
 msgstr "Document Word"
 
-#: openoffice.py:76
-msgid "Document Writer"
-msgstr "Document OpenOffice.org"
-
-#: html.py:162
+#: cms/html.py:162
 msgid "Document changed."
 msgstr "Document modifié."
 
-#: text.py:137
+#: cms/text.py:143
 msgid "Document edited."
 msgstr "Document modifié."
 
-#: Folder.py:824
+#: cms/Folder.py:838
 msgid "Document translations created."
 msgstr "Traductions du document créées."
 
-#: ui/File_help.xml.en:0
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid "Documentation and Support"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"Documentation and Support- <a href=\"../download/ikaaro/ikaaro-20050223.pdf"
+"\">The\n"
+"                  official iKaaro documentation</a> (PDF)."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"Documentation and Support- <a href=\"../download/itools/itools-20050223.pdf"
+"\">The\n"
+"                  official itools documentation</a> (PDF)."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"Documentation and Support- <a href=\"http://www.j-david.net/software/"
+"localizer/guide\">The\n"
+"                Guide</a>."
+msgstr ""
+
+#: cms/ui/File_help.xml.en:0
 msgid "Documents are where the data is stored"
 msgstr "Les documents servent à stocker les données"
 
-#: File.py:82
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
 msgid "Download"
-msgstr "Télécharger"
+msgstr ""
 
-#: ui/User_edit_account.xml.en:0
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"Download- <a href=\"../download/ikaaro-0.12.3-metapackage.tar.gz\">The\n"
+"                  meta-package</a> (<a href=\"../download/itools/itools-"
+"0.7.4.tar.gz\">itools\n"
+"                  0.7.4</a>, <a href=\"../download/ihotfix/iHotfix-0.5.2.tar."
+"gz\">iHotfix\n"
+"                  0.5.2</a> and <a href=\"../download/ikaaro/ikaaro-0.12.3."
+"tar.gz\">iKaaro\n"
+"                  M12-3</a>)."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"Download- <a href=\"../download/localizer/Localizer-1.1.0-metapackage.tar.gz"
+"\">\n"
+"                The meta-package</a> (<a href=\"../download/itools/itools-"
+"0.7.4.tar.gz\">itools\n"
+"                0.7.3</a>, <a href=\"../download/ihotfix/iHotfix-0.5.2.tar.gz"
+"\">iHotfix\n"
+"                0.5.2</a> and <a href=\"../download/localizer/Localizer-"
+"1.1.0.tar.gz\">Localizer\n"
+"                1.1.0</a>)."
+msgstr ""
+
+#: cms/ui/User_edit_account.xml.en:0
 msgid "E-mail"
 msgstr "Courriel"
 
-#: html.py:148
+#: cms/html.py:148
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
-msgstr "Erreur&nbsp;: le document ne peut être changé, la source n'est pas du code HTML correct."
+msgstr ""
+"Erreur&nbsp;: le document ne peut être changé, la source n'est pas du code "
+"HTML correct."
 
-#: ui/File_help.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER "
+"PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER "
+"EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES "
+"OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "Each version is given a distinguishing version number."
+msgstr ""
+
+#: cms/ui/File_help.xml.en:0
 msgid "Edit"
-msgstr "Editer"
+msgstr "Modifier"
 
-#: ui/User_edit_groups.xml.en:0
+#: cms/ui/User_edit_groups.xml.en:0
 msgid "Edit Groups"
 msgstr "Modifier les groupes"
 
-#: ui/Handler_edit_metadata.xml.en:0
+#: cms/ui/Handler_edit_metadata.xml.en:0
 msgid "Edit Metadata in Current Language"
 msgstr "Modifier les métadonnées dans la langue courante"
 
-#: ui/User_home.xml.en:0
-msgid "Edit this page;"
-msgstr ""
+#: cms/ui/User_profile.xml.en:0
+msgid "Edit account details;"
+msgstr "Modifier le compte&nbsp;:"
 
-#: ui/epoz_script_color.xml.en:0
+#: cms/ui/User_profile.xml.en:0
+msgid "Edit preferences;"
+msgstr "Modifier les préférences&nbsp;:"
+
+#: cms/ui/epoz_script_color.xml.en:0
 msgid "Epoz"
 msgstr ""
 
-#: ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "Epoz-Toolbox"
-msgstr "Epoz-Toolbox"
+msgstr "boite à outils Epoz"
 
-#: msoffice.py:108
+#: cms/ui/epoz_script_table.xml.en:0
+msgid "Epoz3"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "EuroPython 2005"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"Everything here is free software, released to the world under one or another "
+"of the <a href=\"http://www.gnu.org/licenses/\">GNU licenses</a>, and backed "
+"by an active community."
+msgstr ""
+
+#: cms/ui/Root_check_groups.xml.en:0
+msgid "Everything is alright."
+msgstr "Tout est sous contrôle."
+
+#: cms/msoffice.py:108
 msgid "Excel"
 msgstr "Excel"
 
-#: File.py:111
+#: cms/File.py:113
 msgid "External"
 msgstr "Externe"
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "External Editor"
 msgstr "Éditeur externe"
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "External Editor.."
 msgstr "Éditeur externe..."
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Field"
 msgstr "Champ"
 
-#: ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "File"
 msgstr "Fichier"
 
-#: Folder.py:961
+#: cms/Folder.py:976
 msgid "File uploaded."
 msgstr "Fichier téléchargé."
 
-#: flash.py:30
+#: cms/ui/Root_license.xml.en:0
+msgid "Finally, any free program is threatened constantly by software patents."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "Five talks have been proposed:"
+msgstr ""
+
+#: cms/ui/Root_check_groups.xml.en:0
+msgid "Fix"
+msgstr "Corriger."
+
+#: cms/flash.py:29
 msgid "Flash"
 msgstr "Flash"
 
-#: Folder.py:56
+#: cms/Folder.py:56
 msgid "Folder"
 msgstr "Dossier"
 
-#: ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Folders are used to classify documents."
-msgstr "Les répertoires servent à classer des documents."
+msgstr "Les dossiers servent à classer des documents."
 
-#: ui/Folder_browse_image.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"For an executable work, complete source code means all the source code for "
+"all modules it contains, plus any associated interface definition files, "
+"plus the scripts used to control compilation and installation of the "
+"executable."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"For example, if a patent license would not permit royalty-free "
+"redistribution of the Program by all those who receive copies directly or "
+"indirectly through you, then the only way you could satisfy both it and this "
+"License would be to refrain entirely from distribution of the Program."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"For example, if you distribute copies of such a program, whether gratis or "
+"for a fee, you must give the recipients all the rights that you have."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"For software which is copyrighted by the Free Software Foundation, write to "
+"the Free Software Foundation;"
+msgstr ""
+
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "Format"
 msgstr "Format"
 
-#: ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "From"
 msgstr "À partir de"
 
-#: ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "Full name"
 msgstr "Nom complet"
 
-#: ui/Group_browse_users.xml.en:0
+#: cms/ui/Group_browse_users.xml.en:0
 msgid ""
 "Fullname <stl:inline stl:content=\"table/sortcontrol(fullname)\"></stl:"
 "inline>"
-msgstr "Nom complet <stl:inline stl:content=\"table/sortcontrol(fullname)\"></stl:"
+msgstr ""
+"Nom complet <stl:inline stl:content=\"table/sortcontrol(fullname)\"></stl:"
 "inline>"
 
-#: WebSite.py:135
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "Functional scope:"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "GNU GENERAL PUBLIC LICENSE"
+msgstr ""
+
+#: cms/WebSite.py:135
 msgid "General"
 msgstr "Général"
 
-#: ui/Root_general.xml.en:0
+#: cms/ui/Root_general.xml.en:0
 msgid "General Settings."
-msgstr "Réglages généraux"
+msgstr "Réglages globaux"
 
-#: WebSite.py:151
+#: cms/WebSite.py:151
 msgid "General settings changed."
-msgstr "Réglages généraux modifiés."
+msgstr "Réglages globaux modifiés."
 
-#: Group.py:57
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"Give a look at the <a href=\"http://demo.ikaaro.org/\">demo</a> (username "
+"and password \"super\"), or <a href=\"../download/ikaaro/ikaaro-0.13.0-"
+"metapackage.tar.gz\">download</a> it straight away."
+msgstr ""
+
+#: cms/Group.py:57
 msgid "Group"
 msgstr "Groupe"
 
-#: Group.py:176
+#: cms/Group.py:172
 msgid "Group added."
 msgstr "Groupe ajouté."
 
-#: ui/User_edit_groups.xml.en:0
+#: cms/ui/User_edit_groups.xml.en:0
 msgid ""
 "Group name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
-msgstr "Nom du groupe <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
+msgstr ""
+"Nom du groupe <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:"
+"inline>"
 
-#: User.py:380
+#: cms/users.py:318
 msgid "Groups"
 msgstr "Groupes"
 
-#: examples/portal1/Root.py:49
-msgid "Hello world!"
-msgstr ""
+#: cms/root.py:485
+msgid "Groups fixed."
+msgstr "Groupes corrigés."
 
-#: ui/File_help.xml.en:0
+#: cms/ui/File_help.xml.en:0
 msgid "Help"
 msgstr "Aide"
 
-#: ui/File_help.xml.en:0
+#: cms/ui/File_help.xml.en:0
 msgid "History"
 msgstr "Historique"
 
-#: ui/Root_internal_server_error.xml.en:0
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Home"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"However, as a special exception, the source code distributed need not "
+"include anything that is normally distributed (in either source or binary "
+"form) with the major components (compiler, kernel, and so on) of the "
+"operating system on which the executable runs, unless that component itself "
+"accompanies the executable."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"However, nothing else grants you permission to modify or distribute the "
+"Program or its derivative works."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"However, parties who have received copies, or rights, from you under this "
+"License will not have their licenses terminated so long as such parties "
+"remain in full compliance."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"If any portion of this section is held invalid or unenforceable under any "
+"particular circumstance, the balance of the section is intended to apply and "
+"the section as a whole is intended to apply in other circumstances."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"If distribution of executable or object code is made by offering access to "
+"copy from a designated place, then offering equivalent access to copy the "
+"source code from the same place counts as distribution of the source code, "
+"even though third parties are not compelled to copy the source along with "
+"the object code."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"If identifiable sections of that work are not derived from the Program, and "
+"can be reasonably considered independent and separate works in themselves, "
+"then this License, and its terms, do not apply to those sections when you "
+"distribute them as separate works."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"If the Program does not specify a version number of this License, you may "
+"choose any version ever published by the Free Software Foundation."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"If the Program specifies a version number of this License which applies to "
+"it and \"any later version\", you have the option of following the terms and "
+"conditions either of that version or of any later version published by the "
+"Free Software Foundation."
+msgstr ""
+
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "If the error persits contact directly with the system administrator."
 msgstr "Si l'erreur persiste, contactez l'administrateur du site."
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"If the software is modified by someone else and passed on, we want its "
+"recipients to know that what they have is not the original, so that any "
+"problems introduced by others will not reflect on the original authors' "
+"reputations."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"If you cannot distribute so as to satisfy simultaneously your obligations "
+"under this License and any other pertinent obligations, then as a "
+"consequence you may not distribute the Program at all."
+msgstr ""
+
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "If you don't, you can download it from a link below."
 msgstr "Sinon, vous pouvez le télécharger par un des liens ci-dessous."
 
-#: ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "If you type a new password, you must confirm it."
-msgstr "Si vous saissisez un nouveau mot de passe, vous devez le confirmer."
+msgstr "Si vous saisissez un nouveau mot de passe, vous devez le confirmer."
 
-#: images.py:30
+#: cms/images.py:30
 msgid "Image"
 msgstr "Image"
 
-#: openoffice.py:101
+#: cms/openoffice.py:101
 msgid "Impress"
-msgstr "Présentation OpenOffice.org"
+msgstr "OpenOffice.org Impress"
 
-#: text.py:221
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"In addition, mere aggregation of another work not based on the Program with "
+"the Program (or with a work based on the Program) on a volume of a storage "
+"or distribution medium does not bring the other work under the scope of this "
+"License."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"In such case, this License incorporates the limitation as if written in the "
+"body of this License."
+msgstr ""
+
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Inactive Item"
+msgstr ""
+
+#: i18n/segment.py:21
+msgid "Inc"
+msgstr ""
+
+#: cms/text.py:227
 msgid "Inline"
 msgstr "En ligne"
 
-#: ui/Root_internal_server_error.xml.en:0
+#: cms/ui/epoz_script_table.xml.en:0
+msgid "Insert table"
+msgstr "Insérer table"
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "Inter-operability:"
+msgstr ""
+
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "It has been logged and a report sent to the system administrator."
 msgstr "Cette anomalie vient d'être notifiée à l'administrateur système."
 
-#: ui/Root_about.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"It is not the purpose of this section to induce you to infringe any patents "
+"or other property right claims or to contest validity of any such claims;"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid "J. David Ibáñez at <a href=\"http://www.itaapy.com\">itaapy.com</a>"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
 msgid "J. David Ibáñez, lead developer"
 msgstr "J. David Ibáñez, développeur principal"
 
-#: ui/User_home.xml.en:0
-msgid "John Doe's home"
-msgstr ""
-
-#: ui/Root_join.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "Join"
 msgstr "Inscription"
 
-#: ui/Root_join.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "Join the Community"
 msgstr "Rejoignez-nous"
 
-#: text.py:45
+#: cms/text.py:45
 msgid "Keep your notes with plain text files."
 msgstr "Conserver vos notes dans des fichiers texte."
 
-#: ui/File_help.xml.en:0
+#: cms/ui/File_help.xml.en:0
 msgid ""
 "Keeps an historical record with the changes made, it is possible to come "
 "back to an older version."
@@ -694,27 +1609,31 @@ msgstr ""
 "Un historique des modifications est constitué. Vous pouvez ainsi revenir sur "
 "une version antérieure."
 
-#: ui/Text_new_instance.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Language"
 msgstr "Langue"
 
-#: ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Language Settings"
 msgstr "Configuration des langues "
 
-#: WebSite.py:230
+#: cms/WebSite.py:230
 msgid "Language added."
 msgstr "Langue ajoutée."
 
-#: WebSite.py:159
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Language:"
+msgstr ""
+
+#: cms/WebSite.py:159
 msgid "Languages"
 msgstr "Langues"
 
-#: WebSite.py:217
+#: cms/WebSite.py:217
 msgid "Languages removed."
 msgstr "Langues supprimées."
 
-#: ui/File_help.xml.en:0
+#: cms/ui/File_help.xml.en:0
 msgid ""
 "Lets to edit the document, it is possible to use an external editor if you "
 "install it or to upload a file from the filesystem."
@@ -724,43 +1643,93 @@ msgstr ""
 "aussi télécharger un document depuis votre disque vers votre application "
 "iKaaro."
 
-#: Root.py:461
+#: cms/root.py:355
 msgid "License"
 msgstr "Licence"
 
-#: ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "Link"
 msgstr "Lien"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "Localizer"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"Localizer 1.1, and Case Studies (<a href=\"http://www.python-in-business.org/"
+"ep2005/listtrack.chtml?track=694\">Zope and Zope related</a>) <strong>"
+"[jdavid]</strong>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid "Localizer based tools"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"Localizer based tools- <a href=\"http://zope.org/Members/camil7/"
+"SilvaLocalContent\">Locale\n"
+"                aware Silva content objects</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"Localizer is a Zope product, it helps to build multilingual web applications."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "Localizer» <a href=\"../localizer/Localizer-1.1.0.tar.gz\">1.1.0</a>"
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Location:"
 msgstr "Emplacement&nbsp;:"
 
-#: ui/WebSite_login.xml.en:0
+#: cms/ui/surf/template.xhtml.en:0
 msgid "Log in"
-msgstr "Connexion"
+msgstr ""
 
-#: WebSite.py:238
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Log out"
+msgstr ""
+
+#: cms/WebSite.py:237
 msgid "Login"
 msgstr "Connexion"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"Look up the <a href=\"http://www.j-david.net/software/localizer\">old site</"
+"a> for documentation and references, or just <a href=\"../download/localizer/"
+"Localizer-1.1.0-metapackage.tar.gz\">\n"
+"          download</a> it."
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: examples/portal1/setup.py:31
-msgid "Luis Belmar-Letelier"
-msgstr ""
+#: cms/root.py:455
+msgid "Maintenance"
+msgstr "Maintenance"
 
-#: ui/User_welcome.xml.en:0
-msgid "Manage your personal content;"
+#: cms/ui/User_profile.xml.en:0
+msgid "Manage personal content;"
 msgstr "Gérer vos données personnelles&nbsp;;"
 
-#: ui/PO_edit.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Many people have made generous contributions to the wide range of software "
+"distributed through that system in reliance on consistent application of "
+"that system;"
+msgstr ""
+
+#: cms/ui/PO_edit.xml.en:0
 msgid "Message"
 msgstr "Message"
 
-#: ui/PO_edit.xml.en:0
+#: cms/ui/PO_edit.xml.en:0
 msgid ""
 "Message <stl:inline stl:content=\"messages_index\"></stl:inline> / <stl:"
 "inline stl:content=\"messages_total\"></stl:inline> <a stl:attributes=\"href "
@@ -768,967 +1737,1643 @@ msgid ""
 "\"href messages_previous\">&lt;</a> <a style=\"font-size: 10px\" stl:"
 "attributes=\"href messages_next\">></a> <a stl:attributes=\"href "
 "messages_last\">>></a>"
-msgstr "Message <stl:inline stl:content=\"messages_index\"></stl:inline> / <stl:"
-"inline stl:content=\"messages_total\"></stl:inline> <a stl:attributes=\"href "
-"messages_first\">&lt;&lt;</a> <a style=\"font-size: 10px\" stl:attributes="
-"\"href messages_previous\">&lt;</a> <a style=\"font-size: 10px\" stl:"
-"attributes=\"href messages_next\">&gt;</a> <a stl:attributes=\"href "
-"messages_last\">&gt;&gt;</a>"
+msgstr ""
 
-#: text.py:209
+#: cms/text.py:215
 msgid "Message Catalog"
 msgstr "Catalogue de messages"
 
-#: ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Message Translation"
-msgstr "Traduction du message"
+msgstr "Traduction de message"
 
-#: text.py:270
+#: cms/text.py:276
 msgid "Message edited."
 msgstr "Message modifié"
 
-#: ui/File_help.xml.en:0
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Message!"
+msgstr ""
+
+#: cms/ui/File_help.xml.en:0
 msgid "Metadata"
 msgstr "Métadonnées"
 
-#: Handler.py:503
+#: cms/Handler.py:588
 msgid "Metadata changed."
 msgstr "Métadonnées modifiées."
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Modified after"
-msgstr ""
+msgstr "Modifié après le"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Modified before"
+msgstr "Modifié avant le"
+
+#: cms/ui/Root_license.xml.en:0
+msgid "NO WARRANTY"
 msgstr ""
 
-#: ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Name"
 msgstr "Nom"
 
-#: ui/Folder_browse_list.xml.en:0
-#, fuzzy
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
 msgstr "Nom <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Name contains"
-msgstr ""
+msgstr "Le nom contient"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Navigation"
 msgstr "Navigation"
 
-#: Folder.py:832
+#: cms/Folder.py:846
 msgid "New Resource"
 msgstr "Nouvelle ressource"
 
-#: Folder.py:897
+#: cms/Folder.py:911
 msgid "New resource added."
 msgstr "Nouvelle ressource ajoutée."
 
-#: ui/User_tasks.xml.en:0
+#: cms/ui/User_tasks.xml.en:0
 msgid "No document awaits your review."
 msgstr "Aucun document en attente."
 
-#: File.py:197
+#: cms/File.py:190
 msgid "No file has been entered."
 msgstr "Aucun fichier n'a été entré."
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "No history."
 msgstr "Rien dans l'historique."
 
-#: Folder.py:758
-msgid "No objects selected"
-msgstr "Aucun objet sélectionné."
-
-#: Folder.py:680
+#: cms/Folder.py:772
 msgid "No objects selected."
 msgstr "Aucun objet sélectionné."
 
-#: Group.py:309
+#: cms/Group.py:301
 msgid "No user added"
 msgstr "Aucun utilisateur ajouté "
 
-#: ui/Group_add_users.xml.en:0
+#: cms/ui/Group_add_users.xml.en:0
 msgid "No users to add in this group."
 msgstr "Aucun utilisateur à ajouter dans ce groupe."
 
-#: ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "Note the name and title won't change."
 msgstr "Notez que ni le nom ni le titre ne changeront."
 
-#: ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Note:"
 msgstr "Note&nbsp;:"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"Now we are waiting for the reply from the track chairs to know which ones "
+"will be accepted."
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Nulla facilisi."
 msgstr ""
 
-#: examples/portal1/Root.py:53
-msgid "O'Reilly & Associates"
-msgstr ""
-
-#: Folder.py:669
+#: cms/Folder.py:683
 msgid "Objects copied."
 msgstr "Objets copiés."
 
-#: Folder.py:689
+#: cms/Folder.py:703
 msgid "Objects cut."
 msgstr "Objets coupés."
 
-#: Folder.py:749
+#: cms/Folder.py:763
 msgid "Objects pasted."
 msgstr "Objets collés."
 
-#: Folder.py:585
+#: cms/Folder.py:599
 msgid "Objects removed: %s."
 msgstr "Objets suprimés&nbsp;: %s."
 
-#: Folder.py:649
+#: cms/Folder.py:663
 msgid "Objects renamed."
 msgstr "Objets renommés."
 
-#: Folder.py:57
+#: cms/openoffice.py:76
+msgid "OpenOffice.org Document"
+msgstr "Document OpenOffice.org"
+
+#: cms/openoffice.py:102
+msgid "OpenOffice.org Presentation"
+msgstr "Présentation OpenOffice.org"
+
+#: cms/openoffice.py:89
+msgid "OpenOffice.org Spreadsheet"
+msgstr "Classeur OpenOffice.org"
+
+#: cms/Folder.py:57
 msgid "Organize your files and documents with folders."
 msgstr "Organisez vos fichiers et documents dans des dossiers."
 
-#: pdf.py:30
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Our General Public Licenses are designed to make sure that you have the "
+"freedom to distribute copies of free software (and charge for this service "
+"if you wish), that you receive source code or can get it if you want it, "
+"that you can change the software or use pieces of it in new free programs;"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Our decision will be guided by the two goals of preserving the free status "
+"of all derivatives of our free software and of promoting the sharing and "
+"reuse of software generally."
+msgstr ""
+
+#: cms/pdf.py:30
 msgid "PDF"
 msgstr "PDF"
 
-#: ui/WebSite_login.xml.en:0
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "Packaging"
+msgstr ""
+
+#: cms/ui/Root_join.xml.en:0
 msgid "Password"
 msgstr "Mot de passe"
 
-#: User.py:353
+#: cms/users.py:289
 msgid "Passwords mismatch, please try again."
-msgstr "Le mot de passe est incorrect, veuillez réessayez."
+msgstr "Les mots de passe sont différents, veuillez réessayez."
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Paste"
 msgstr "Coller"
 
-#: workflow.py:38
+#: cms/workflow.py:38
 msgid "Pending"
 msgstr "En attente de publication"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/User_profile.xml.en:0
+msgid "Pending tasks."
+msgstr "Voir vos tâches en cours."
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Phasellus varius eleifend tellus."
 msgstr ""
 
-#: text.py:44
+#: cms/text.py:44
 msgid "Plain Text"
 msgstr "Texte intégral"
 
-#: ui/Group_add_group.xml.en:0
+#: cms/ui/Group_add_group.xml.en:0
 msgid "Please choose a name for this new group."
 msgstr "Veuillez choisir un nom pour ce nouveau groupe."
 
-#: ui/File_new_instance.xml.en:0
-#, fuzzy
+#: cms/ui/File_new_instance.xml.en:0
 msgid ""
 "Please click the <strong>Upload</strong> button below to import the file and "
 "create a new resource."
-msgstr "Veuillez cliquer sur le bouton <strong>Télécharger</strong> ci-dessous pour importer le fichier et créer une nouvelle resource."
+msgstr ""
+"Veuillez cliquer sur le bouton <strong>Télécharger</strong> ci-dessous pour "
+"importer le fichier et créer une nouvelle ressource."
 
-#: ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid ""
 "Please click the <strong>Upload</strong> button below to import the new file."
-msgstr "Veuillez cliquer sur le bouton <strong>Télécharger</strong> ci-dessous pour importer le nouveau fichier."
+msgstr ""
+"Veuillez cliquer sur le bouton <strong>Télécharger</strong> ci-dessous pour "
+"importer le nouveau fichier."
 
-#: ui/Root_join.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "Please enter a password for protecting your account."
 msgstr "Veuillez saisir un mot de passe pour sécuriser votre compte."
 
-#: ui/Root_join.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "Please enter the username you want to use on this website, e.g."
 msgstr "Veuillez saisir le nom d'utilisateur que vous souhaitez, par exemple"
 
-#: ui/WebSite_login.xml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Please enter your login (e.g."
 msgstr "Veuillez saisir votre nom d'utilisateur, par exemple"
 
-#: ui/WebSite_login.xml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Please enter your password (it will not be displayed in clear text)."
 msgstr "Veuillez saisir votre mot de passe (il ne sera pas affiché en clair)."
 
-#: ui/Folder_new_instance.xml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid "Please give a title to your folder."
-msgstr "Veuiller saisir un titre pour ce dossier."
+msgstr "Veuillez saisir un titre pour ce dossier."
 
-#: Folder.py:483
+#: cms/Folder.py:497
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr "Merci de saisir une recherche si vous incluez les sous-dossiers."
 
-#: ui/Root_join.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "Please repeat your password to prevent any typing mistake."
-msgstr "Veuillez saisir à nouveau votre mot de passe pour éviter les erreurs de frappe."
+msgstr ""
+"Veuillez saisir à nouveau votre mot de passe pour éviter les erreurs de "
+"frappe."
 
-#: ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid ""
 "Please select a file from your system using the <strong>Browse...</strong> "
 "button below."
-msgstr "Veuillez choisir un fichier de votre ordinateur à l'aide du bouton <strong>Parcourir...</strong> ci-dessous."
+msgstr ""
+"Veuillez choisir un fichier de votre ordinateur à l'aide du bouton "
+"<strong>Parcourir...</strong> ci-dessous."
 
-#: ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Please select the source language of your document."
 msgstr "Veuillez sélectionner la langue source de votre document."
 
-#: ui/Root_internal_server_error.xml.en:0
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "Please try again later."
 msgstr "Merci de réessayer plus tard."
 
-#: ui/Folder_new_instance.xml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid ""
 "Please type the folder name, it will be used to store it and it will appear "
 "in the URL."
-msgstr "Veuillez saisir le nom du dossier, il sera enregistré sous ce nom et il apparaîtra dans l'adresse URL."
+msgstr ""
+"Veuillez saisir le nom du dossier, il sera enregistré sous ce nom et il "
+"apparaîtra dans l'adresse URL."
 
-#: ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid ""
 "Please type the name, this is not the title of your document but the file "
 "name."
-msgstr "Veuillez saisir le nom, pas le titre du document mais le nom du fichier."
+msgstr ""
+"Veuillez saisir le nom, pas le titre du document mais le nom du fichier."
 
-#: ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Please type the title of your document."
 msgstr "Veuillez saisir le titre de votre document."
 
-#: examples/portal1/Root.py:27
-msgid "Portal one"
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "Plus the Simple Template Language."
 msgstr ""
 
-#: msoffice.py:143
+#: cms/msoffice.py:143
 msgid "PowerPoint"
 msgstr "PowerPoint"
 
-#: User.py:379
+#: cms/ui/Root_license.xml.en:0
+msgid "Preamble"
+msgstr ""
+
+#: cms/users.py:251
 msgid "Preferences"
 msgstr "Préférences"
 
-#: ui/Folder_browse_image.xml.en:0
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "Preview"
 msgstr "Aperçu"
 
-#: workflow.py:35
+#: cms/workflow.py:35
 msgid "Private"
 msgstr "Privé"
 
-#: workflow.py:41
+#: cms/ui/web_site_templates/community/skin/template.xhtml.en:0
+msgid "Products:"
+msgstr ""
+
+#: cms/users.py:140
+msgid "Profile"
+msgstr "Profil"
+
+#: cms/workflow.py:41
 msgid "Public"
 msgstr "Publié"
 
-#: workflow.py:46
+#: cms/workflow.py:46
 msgid "Publish the document."
 msgstr "Publier le document."
 
-#: html.py:55
+#: cms/html.py:55
 msgid "Publish your own web pages."
-msgstr "Publiez vos propres pages web."
+msgstr "Publiez vos propres pages Web."
 
-#: examples/portal1/Root.py:55
-msgid "Publishers of the Future"
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"Read the <a href=\"../download/itools/itools-0.8.0.pdf\">documentation</a> "
+"(PDF) or <a href=\"../download/itools/itools-0.8.0.tar.gz\">download</a> it."
 msgstr ""
 
-#: examples/portal1/Root.py:52
-msgid "Python Cookbook"
-msgstr ""
-
-#: examples/portal1/Root.py:41
-msgid "Read the doc in README file."
-msgstr ""
-
-#: ui/Root_catalog.xml.en:0
+#: cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
 msgstr "Réindexer"
 
-#: workflow.py:52
+#: cms/workflow.py:52
 msgid "Reject the document."
 msgstr "Rejeter le document."
 
-#: ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid ""
 "Released to the world under the terms and conditions of the <a href=\";"
 "license\">GNU General Public License</a>, iKaaro is a free software project, "
 "built by its community:"
-msgstr "Diffusé sous les termes et conditions de la <a href=\";license\">Licence publique générale GNU</a>, ikaaro est un projet de logiciel libre, bâti par sa communauté."
+msgstr ""
+"Diffusé sous les termes et conditions de la <a href=\";license\">Licence "
+"publique générale GNU</a>, iKaaro est un projet de logiciel libre, bâti par "
+"sa communauté."
 
-#: ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "Remove"
 msgstr "Supprimer"
 
-#: ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Remove selected ones"
 msgstr "Supprimer la sélection"
 
-#: ui/Folder_rename.xml.en:0
+#: cms/ui/Folder_rename.xml.en:0
 msgid "Rename"
 msgstr "Renommer"
 
-#: ui/Folder_rename.xml.en:0
+#: cms/ui/Folder_rename.xml.en:0
 msgid "Rename Objects"
 msgstr "Renommer les objets"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Rename.."
 msgstr "Renommer..."
 
-#: ui/UserFolder_new_user.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "Repeat Password"
 msgstr "Confirmer le mot de passe"
 
-#: workflow.py:48
+#: cms/workflow.py:48
 msgid "Request the document publication."
 msgstr "Demander la publication du document."
 
-#: workflow.py:56
+#: cms/workflow.py:56
 msgid "Retire the document."
 msgstr "Retirer le document."
 
-#: workflow.py:50
+#: cms/workflow.py:50
 msgid "Retract the document."
-msgstr "Rejeter le document."
+msgstr "Retirer le document."
 
-#: Root.py:105
+#: cms/root.py:97
 msgid "Reviewers"
 msgstr "Modérateurs"
 
-#: versioning.py:152
+#: cms/versioning.py:155
 msgid "Revision copied to present."
 msgstr "La version choisie est maintenant la version actuelle."
 
-#: ui/CSVRow_edit.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY "
+"SERVICING, REPAIR OR CORRECTION."
+msgstr ""
+
+#: cms/ui/CSVRow_edit.xml.en:0
 msgid "Save Changes"
 msgstr "Sauvegarder"
 
-#: ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Save the translation"
 msgstr "Sauvegarder la traduction"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Search"
 msgstr "Rechercher"
 
-#: ui/WebSite_search.xml.en:0
+#: cms/ui/WebSite_search.xml.en:0
 msgid "Search Results"
 msgstr "Résultat de la recherche"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search subfolders"
 msgstr "Inclure les sous-dossiers"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search term"
 msgstr "Texte à chercher"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
 msgstr ""
 
-#: ui/User_welcome.xml.en:0
-msgid "See your pending tasks."
-msgstr "Voir vos tâches en cours."
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"See <a href=\"http://deb.oursours.net/debian/\">http://deb.oursours.net/"
+"debian/</a>"
+msgstr ""
 
-#: ui/Group_add_users.xml.en:0
+#: cms/ui/Group_add_users.xml.en:0
 msgid "Select users you want to add in this group."
 msgstr "Sélectionnez des utilisateurs à ajouter à ce groupe."
 
-#: WebSite.py:134
+#: cms/WebSite.py:134
 msgid "Settings"
 msgstr "Configuration"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Size"
 msgstr "Taille"
 
-#: skins.py:43
+#: cms/skins.py:43
 msgid "Skin"
-msgstr "Thème"
+msgstr "Habillage"
 
-#: workflow.py:109
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid "Some sites made with Localizer"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"Some sites made with Localizer- <a href=\"http://www.eea.eu.int\">European "
+"Environment\n"
+"                Agency</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid "Some sites made with iKaaro"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"Some sites made with iKaaro- <a href=\"http://www.drei.cnrs.fr/\">CNRS / "
+"DREI</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid "Source archives"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+msgid ""
+"Source archives- <a href=\"http://in-girum.net/cgi-bin/archzoom.cgi/"
+"jdavid@itaapy.com--public/Localizer?expand\">\n"
+"                The trunk</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid ""
+"Source archives- <a href=\"http://in-girum.net/cgi-bin/archzoom.cgi/"
+"jdavid@itaapy.com--public/ikaaro?expand\">\n"
+"                  The trunk</a>"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"Source archives- <a href=\"http://in-girum.net/cgi-bin/archzoom.cgi/"
+"jdavid@itaapy.com--public/itools?expand\">\n"
+"                  The trunk</a>"
+msgstr ""
+
+#: cms/workflow.py:109
 msgid "State"
 msgstr "État"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
 "State <stl:inline stl:content=\"table/sortcontrol(workflow_state)\"></stl:"
 "inline>"
-msgstr "État <stl:inline stl:content=\"table/sortcontrol(workflow_state)\"></stl:"
+msgstr ""
+"État <stl:inline stl:content=\"table/sortcontrol(workflow_state)\"></stl:"
 "inline>"
 
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "State History"
-msgstr "Historique"
+msgstr "Historique de workflow"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Such new versions will be similar in spirit to the present version, but may "
+"differ in detail to address new problems or concerns."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "Support for Zope 3"
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Suspendisse potenti."
 msgstr ""
 
-#: ui/Folder_translate.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
+msgstr ""
+
+#: cms/ui/epoz_script_table.xml.en:0
+msgid "Table columns"
+msgstr "Colonnes"
+
+#: cms/ui/epoz_script_table.xml.en:0
+msgid "Table rows"
+msgstr "Lignes"
+
+#: cms/ui/Folder_translate.xml.en:0
 msgid "Target language"
 msgstr "langue cible"
 
-#: User.py:425
+#: cms/users.py:363
 msgid "Tasks"
 msgstr "Tâches"
 
-#: ui/Document_translate.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid "Terms and Conditions for Copying, Distribution and Modification"
+msgstr ""
+
+#: cms/Folder.py:64
+msgid "Text"
+msgstr "Texte"
+
+#: cms/ui/Document_translate.xml.en:0
 msgid "Text being translated"
 msgstr "Texte en cours de traduction"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Text contains"
-msgstr ""
+msgstr "Le texte contient"
 
-#: ui/WebSite_logout.xml.en:0
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "Thank you for using ikaaro."
-msgstr "Merci d'utiliser ikaaro."
+msgstr "Merci d'utiliser iKaaro."
 
-#: Root.py:487
+#: cms/root.py:381
 msgid "Thanks for joining us, please log in"
 msgstr "Bienvenue, veuillez vous connecter."
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"The \"Program\", below, refers to any such program or work, and a \"work "
+"based on the Program\" means either the Program or any derivative work under "
+"copyright law:"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"The act of running the Program is not restricted, and the output from the "
+"Program is covered only if its contents constitute a work based on the "
+"Program (independent of having been made by running the Program). Whether "
+"that is true depends on what the Program does."
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The active item"
 msgstr ""
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/surf/template.xhtml.en:0
 msgid "The active root"
 msgstr ""
 
-#: WebSite.py:200
+#: cms/WebSite.py:200
 msgid "The default language has been changed."
 msgstr "La langue par défaut a été changée."
 
-#: Folder.py:945
+#: cms/Folder.py:960
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 "Le nom du document contient des caractères interdits, choisissez-en un autre."
 
-#: ui/User_tasks.xml.en:0
+#: cms/ui/User_tasks.xml.en:0
 msgid "The documents below await review for publication:"
-msgstr "Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
+msgstr ""
+"Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
 
-#: Folder.py:923
+#: cms/Folder.py:938
 msgid "The file must be entered"
 msgstr "Le fichier doit être saisi."
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/Root_check_groups.xml.en:0
+msgid "The following groups contain users that don't exist anymore:"
+msgstr "Les groupes suivants contiennent des utilisateurs effacés&nbsp;:"
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The inactive item"
 msgstr ""
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/surf/template.xhtml.en:0
 msgid "The inactive root"
 msgstr ""
 
-#: ui/User_translator.xml.en:0
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"The itools XML infrastructure (<a href=\"http://www.python-in-business.org/"
+"ep2005/listtrack.chtml?track=692\">Python Frameworks</a>) <strong>[jdavid]</"
+"strong>"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"The licenses for most software are designed to take away your freedom to "
+"share and change it."
+msgstr ""
+
+#: cms/ui/User_translator.xml.en:0
 msgid "The list below describes your skills as a translator:"
 msgstr ""
-"La liste suivante décrit les traductions que vous êtes suceptible "
+"La liste suivante décrit les traductions que vous êtes susceptible "
 "d'effectuer&nbsp;:"
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The message"
 msgstr ""
 
-#: ui/File_help.xml.en:0
+#: cms/ui/File_help.xml.en:0
 msgid ""
 "The metadata describes the document (title, subject, description, etc..)."
 msgstr ""
 "Les méta-données décrivent le document (titre, sujet, description, etc)."
 
-#: Group.py:165
+#: cms/Group.py:161
 msgid "The name contains illegal characters, choose another one."
 msgstr "Le nom contient des caractères interdits, choisissez-en un autre."
 
-#: Group.py:160
+#: cms/Group.py:156
 msgid "The name must be entered"
 msgstr "Le nom doit être saisi."
 
-#: UserFolder.py:133
+#: cms/users.py:489
 msgid "The password is wrong, please try again."
 msgstr "Le mot de passe est incorrect, veuillez réessayer."
 
-#: WebSite.py:268
+#: cms/WebSite.py:267
 msgid "The password is wrong."
 msgstr "Le mot de passe est incorrect."
 
-#: Root.py:174
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"The precise terms and conditions for copying, distribution and modification "
+"follow."
+msgstr ""
+
+#: cms/root.py:166
 msgid "The requested resource has not been found."
 msgstr "La ressource demandée est introuvable."
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The resource title"
 msgstr ""
 
-#: Folder.py:772
+#: cms/Folder.py:786
 msgid "The selected objects can not be translated."
 msgstr ""
 "Les documents sélectionnés ne peuvent pas être traduits ou sont déjà "
 "traduits."
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"The source code for a work means the preferred form of the work for making "
+"modifications to it."
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The subview"
 msgstr ""
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/surf/template.xhtml.en:0
 msgid "The title"
 msgstr ""
 
-#: WebSite.py:263
+#: cms/WebSite.py:262
 msgid "The user \"%s\" does not exist."
 msgstr "L'utilisateur &laquo;&nbsp;%s&nbsp;&raquo; n'existe pas."
 
-#: UserFolder.py:125
+#: cms/users.py:481
 msgid "The username is wrong, please try again."
 msgstr "Le nom d'utilisateur est incorrect, veuillez réessayer."
 
-#: ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The view"
 msgstr ""
 
-#: ui/User_edit.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Theme"
 msgstr "Thème"
 
-#: ui/Folder_browse_image.xml.en:0
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "There are no images."
 msgstr "Aucune image."
 
-#: ui/PO_edit.xml.en:0
+#: cms/ui/PO_edit.xml.en:0
 msgid "There aren't messages."
 msgstr "Aucun message."
 
-#: ui/Root_internal_server_error.xml.en:0
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "There has been an internal server error."
-msgstr "Une erreur s'est déclarée."
+msgstr "Une erreur interne s'est déclarée."
 
-#: Group.py:171
+#: cms/Group.py:167
 msgid "There is already another group with this name."
 msgstr "Il existe déjà un autre groupe de ce nom."
 
-#: Folder.py:883
-msgid "There is already another object with this name."
-msgstr "Il existe déjà un objet de ce nom."
-
-#: Folder.py:951
+#: cms/Folder.py:966
 msgid "There is already another resource with this name."
 msgstr "Il existe déjà une ressource de ce nom."
 
-#: UserFolder.py:128
+#: cms/users.py:484
 msgid "There is another user with the username \"%s\", please try again"
-msgstr "Il existe déjà un utilisateur du nom de &laquo;&nbsp;%s&nbsp;&raquo;, veuillez en changer."
+msgstr ""
+"Il existe déjà un utilisateur du nom de &laquo;&nbsp;%s&nbsp;&raquo;, "
+"veuillez en changer."
 
-#: ui/Folder_browse_thumbnails.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Therefore, by modifying or distributing the Program (or any work based on "
+"the Program), you indicate your acceptance of this License to do so, and all "
+"its terms and conditions for copying, distributing or modifying the Program "
+"or works based on it."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "These actions are prohibited by law if you do not accept this License."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "These requirements apply to the modified work as a whole."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"These restrictions translate to certain responsibilities for you if you "
+"distribute copies of the software, or if you modify it."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"This General Public License applies to most of the Free Software "
+"Foundation's software and to any other program whose authors commit to using "
+"it."
+msgstr ""
+
+#: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "This folder is empty."
-msgstr "Ce répertoire ou cette requête est vide."
+msgstr "Ce dossier est vide."
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "This folder or query is empty."
-msgstr "Ce répertoire ou cette requête est vide."
+msgstr "Ce dossier ou cette requête est vide."
 
-#: ui/Group_browse_users.xml.en:0
+#: cms/ui/Group_browse_users.xml.en:0
 msgid "This group is empty."
 msgstr "Ce groupe est vide."
 
-#: ui/File_help.xml.en:0
+#: cms/ui/File_help.xml.en:0
 msgid "This help screen."
 msgstr "Cet onglet d'aide."
 
-#: ui/OOffice_view.xml.en:0
+#: cms/ui/OOffice_view.xml.en:0
 msgid "This is a preview of your document, it doesnt really look like that."
 msgstr "Ceci est un aperçu du document, pas l'original."
 
-#: ui/Tar_untar.xml.en:0
+#: cms/ui/Tar_untar.xml.en:0
 msgid "This is a tar file, you can untar it by clicking the button below:"
 msgstr ""
-"Ceci est un fichier d'archive (.tar), vous pouvez le transformer en "
-"répertoire utilisable en cliquant sur le boutton ci-dessous."
+"Ceci est un fichier d'archive (.tar), vous pouvez le transformer en dossier "
+"utilisable en cliquant sur le bouton ci-dessous."
 
-#: ui/User_welcome.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid ""
 "This is your personal space where you can manage your own documents and "
 "publish them."
-msgstr "Ceci est votre espace personnel où vous pouvez gérer vos propres documents et les faire publier."
+msgstr ""
+"Ceci est votre espace personnel où vous pouvez gérer vos propres documents "
+"et les faire publier."
 
-#: ui/Group_add_users.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"This section is intended to make thoroughly clear what is believed to be a "
+"consequence of the rest of this License."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"Thus, it is not the intent of this section to claim rights or contest your "
+"rights to work written entirely by you;"
+msgstr ""
+
+#: cms/ui/Group_add_users.xml.en:0
 msgid "Tip:"
 msgstr "Astuce&nbsp;:"
 
-#: ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Title"
 msgstr "Titre"
 
-#: ui/Folder_browse_list.xml.en:0
-#, fuzzy
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
 "Title <stl:inline stl:content=\"table/sortcontrol(title)\"></stl:inline>"
-msgstr "Titre <stl:inline stl:content=\"table/sortcontrol(title)\"></stl:inline>"
+msgstr ""
+"Titre <stl:inline stl:content=\"table/sortcontrol(title)\"></stl:inline>"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Title contains"
+msgstr "Le titre contient"
+
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Title:"
 msgstr ""
 
-#: ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "To"
 msgstr "Pour"
 
-#: ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "To add a folder enter its name and click the <tt>Add</tt> button."
 msgstr ""
-"Pour ajouter un répertoire, saisissez son nom et cliquez sur le bouton "
+"Pour ajouter un dossier saisissez son nom et cliquez sur le bouton "
 "<strong>Ajouter</strong>."
 
-#: ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
-msgstr "Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
+msgstr ""
+"Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
 
-#: ui/File_download_form.xml.en:0
-#, fuzzy
+#: cms/ui/File_download_form.xml.en:0
 msgid ""
 "To download this file, click on <a stl:content=\"title_or_name\" href=\"\" "
 "stl:attributes=\"href url\"></a>"
-msgstr "Pour télécharger ce fichier, cliquez sur <a stl:content=\"title_or_name\" href=\"\" "
-"stl:attributes=\"href url\"></a>"
+msgstr ""
+"Pour télécharger ce fichier, cliquez sur <a stl:content=\"title_or_name\" "
+"href=\"\" stl:attributes=\"href url\"></a>"
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid ""
 "To open this document with External Editor, please click the "
 "<strong>External Editor...</strong> button."
-msgstr "Pour ouvrir ce document avec l'éditeur externe, veuillez cliquer sur le bouton <strong>Éditeur externe...</strong>."
+msgstr ""
+"Pour ouvrir ce document avec l'éditeur externe, veuillez cliquer sur le "
+"bouton <strong>Éditeur externe...</strong>."
 
-#: ui/Root_catalog.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"To prevent this, we have made it clear that any patent must be licensed for "
+"everyone's free use or not licensed at all."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"To protect your rights, we need to make restrictions that forbid anyone to "
+"deny you these rights or to ask you to surrender the rights."
+msgstr ""
+
+#: cms/ui/Root_catalog.xml.en:0
 msgid "To reindex the whole site click the button below:"
 msgstr "Pour réindexer tout le site, cliquez sur le bouton ci-dessous."
 
-#: ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "To save the translation above click the button below:"
-msgstr "Pour sauvegarder la traduction ci-dessus, cliquez sur le bouton suivant."
+msgstr ""
+"Pour sauvegarder la traduction ci-dessus, cliquez sur le bouton suivant."
 
-#: Root.py:403
+#: cms/root.py:296
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
 "Subject: %(subject)s\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=\"%(encoding)s\"\n"
 "\n"
 "%(body)s\n"
 msgstr ""
 
-#: workflow.py:163
+#: cms/workflow.py:163
 msgid "Transition done."
 msgstr "Action effectuée."
 
-#: ui/Folder_translate.xml.en:0
+#: cms/ui/Folder_translate.xml.en:0
 msgid "Translate"
 msgstr "Traduire"
 
-#: ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Translate.."
 msgstr "Traduire..."
 
-#: Document.py:207
+#: cms/Document.py:207
 msgid "Translation saved."
 msgstr "Traduction sauvegardée."
 
-#: ui/Folder_browse_list.xml.en:0
-#, fuzzy
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid ""
+"Traveluni (<a href=\"http://www.python-in-business.org/ep2005/listtrack."
+"chtml?track=694\">Zope and Zope related</a>) <strong>[luis]</strong>"
+msgstr ""
+
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
 "Type <stl:inline stl:content=\"table/sortcontrol(format)\"></stl:inline>"
-msgstr "Type <stl:inline stl:content=\"table/sortcontrol(format)\"></stl:inline>"
+msgstr ""
+"Type <stl:inline stl:content=\"table/sortcontrol(format)\"></stl:inline>"
 
-#: ui/Tar_untar.xml.en:0
+#: cms/ui/surf/template.xhtml.en:0
+msgid "Type:"
+msgstr ""
+
+#: handlers/Var.py:72
+msgid "URI: %s\n"
+msgstr ""
+
+#: cms/ui/Tar_untar.xml.en:0
 msgid "Unpack"
 msgstr "Décompacter"
 
-#: ui/File_upload.xml.en:0
+#: cms/root.py:394
+msgid "Update Catalog"
+msgstr "Mettre à jour le catalogue"
+
+#: cms/ui/File_upload.xml.en:0
 msgid "Upload"
 msgstr "Télécharger"
 
-#: ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "Upload File"
 msgstr "Télécharger un fichier"
 
-#: ui/File_new_instance.xml.en:0
-msgid "Upload a File"
-msgstr "Télécharger un fichier"
-
-#: ui/File_new_instance.xml.en:0
+#: cms/ui/File_new_instance.xml.en:0
 msgid "Upload and return"
 msgstr "Télécharger et revenir"
 
-#: ui/File_new_instance.xml.en:0
+#: cms/ui/File_new_instance.xml.en:0
 msgid "Upload and view"
 msgstr "Télécharger et voir"
 
-#: File.py:204
+#: cms/File.py:197
 msgid ""
 "Upload failed: either the file does not match this document type (%s) or it "
 "contains errors."
 msgstr ""
-"Erreur lors du téléchargement&nbsp;: soit le fichier ne correspond pas à ce type "
-"de document (%s), soit il contient des erreurs."
+"Erreur lors du téléchargement&nbsp;: soit le fichier ne correspond pas à ce "
+"type de document (%s), soit il contient des erreurs."
 
-#: File.py:34
+#: cms/File.py:34
 msgid "Upload office documents, images, media files, etc."
-msgstr "Téléchargez des documents bureautiques, des images, des fichiers de média, etc."
+msgstr ""
+"Téléchargez des documents bureautiques, des images, des fichiers de média, "
+"etc."
 
-#: ui/File_history.xml.en:0
+#: cms/ui/File_history.xml.en:0
 msgid "User"
 msgstr "Utilisateur"
 
-#: Group.py:311
+#: cms/Group.py:303
 msgid "User added"
-msgstr "Utilisateur(s) ajouté(s)."
+msgstr "Utilisateur ajouté."
 
-#: UserFolder.py:144
+#: cms/users.py:500
 msgid "User added."
-msgstr "Utilisateur(s) ajouté(s)."
+msgstr "Utilisateur ajouté."
 
-#: User.py:418
+#: cms/users.py:356
 msgid "User groups edited."
 msgstr "Groupes de l'utilisateur modifiés."
 
-#: Group.py:240
+#: cms/Group.py:236
 msgid "User removed."
 msgstr "Utilisateur supprimé."
 
-#: ui/WebSite_login.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ui/Group_browse_users.xml.en:0
+#: cms/ui/Group_browse_users.xml.en:0
 msgid ""
 "Username <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
-msgstr "Nom d'utilisateur <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
+msgstr ""
+"Nom d'utilisateur <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:"
+"inline>"
 
-#: Root.py:119
+#: cms/root.py:111
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: Group.py:313
+#: cms/Group.py:305
 msgid "Users added"
-msgstr "Utilisateur(s) ajouté(s)."
+msgstr "Utilisateurs ajoutés."
 
-#: ui/User_welcome.xml.en:0
-msgid ""
-"Users and visitors will not be able to view your data, unless a reviewer "
-"approves your publication request."
-msgstr "Les utilisateurs et autres visiteurs ne pourront pas voir vos données, à moins qu'un modérateur approuve vos demandes de publication."
-
-#: Group.py:242
+#: cms/Group.py:238
 msgid "Users removed."
 msgstr "Utilisateurs supprimés."
 
-#: html.py:215
+#: cms/ui/Root_license.xml.en:0
+msgid "Version 2, June 1991"
+msgstr ""
+
+#: cms/html.py:215
 msgid "Version edited."
 msgstr "Version modifiée."
 
-#: File.py:206
+#: cms/File.py:199
 msgid "Version uploaded."
 msgstr "Version téléchargée."
 
-#: text.py:114
+#: cms/users.py:162
 msgid "View"
 msgstr "Voir"
 
-#: examples/portal1/Root.py:44
-msgid "View's exemple"
-msgstr ""
-
-#: WebSite.py:404
+#: cms/WebSite.py:389
 msgid "We did not find results for \"%s\"."
 msgstr "Aucun résultat pour &laquo;&nbsp;%s&nbsp;&raquo;."
 
-#: html.py:54
+#: cms/ui/Root_license.xml.en:0
+msgid "We protect your rights with two steps:"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"We wish to avoid the danger that redistributors of a free program will "
+"individually obtain patent licenses, in effect making the program "
+"proprietary."
+msgstr ""
+
+#: cms/html.py:54
 msgid "Web Page"
 msgstr "Page Web"
 
-#: WebSite.py:44
+#: cms/WebSite.py:44
 msgid "Web Site"
 msgstr "Site Web"
 
-#: User.py:210
-msgid "Welcome"
-msgstr "Accueil"
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"Welcome to IKAARO.org, here we host three different but related projects:"
+msgstr ""
 
-#: ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "Welcome to the iKaaro Content Management System"
-msgstr "Bienvenue dans le système de gestion de contenu ikaaro."
+msgstr "Bienvenue dans le système de gestion de contenu iKaaro."
 
-#: ui/User_welcome.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid "Welcome to your home folder."
 msgstr "Bienvenue dans votre espace personnel."
 
-#: msoffice.py:68
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid "What's new?"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"What's new?» <a href=\"../download/ikaaro/ikaaro-0.13.0-metapackage.tar.gz"
+"\">iKaaro\n"
+"          M13</a> released (April 18)"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "When we speak of free software, we are referring to freedom, not price."
+msgstr ""
+
+#: cms/ui/epoz_script_table.xml.en:0
+msgid "With head"
+msgstr "Avec en-tête"
+
+#: cms/ui/epoz_script_table.xml.en:0
+msgid "Without head"
+msgstr "Sans en-tête"
+
+#: cms/msoffice.py:68
 msgid "Word"
 msgstr "Word"
 
-#: ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
 msgstr "État de workflow"
 
-#: openoffice.py:75
+#: cms/openoffice.py:75
 msgid "Writer"
-msgstr "Writer"
+msgstr "OpenOffice.org Writer"
 
-#: ui/Root_languages.xml.en:0
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"XML infrastructure, includes resource handlers for XML, XHTML and HTML "
+"documents."
+msgstr ""
+
+#: cms/ui/Root_languages.xml.en:0
 msgid "Yes"
 msgstr "Oui"
 
-#: ui/WebSite_logout.xml.en:0
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "You Are Now Logged out"
 msgstr "Vous êtes maintenant déconnecté."
 
-#: ui/User_view.xml.en:0
+#: cms/ui/User_view.xml.en:0
 msgid "You are a member of the following groups:"
 msgstr "Vous êtes membre des groupes suivants&nbsp;:"
 
-#: ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "You are not a translator, <em>woaaahh</em>"
-msgstr "Vous n'êtes pas un traducteur, <em>woaaahh</em>"
+msgstr "Vous n'êtes pas traducteur, <em>woaaahh</em>"
 
-#: ui/WebSite_logout.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"You are not responsible for enforcing compliance by third parties to this "
+"License."
+msgstr ""
+
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "You are now an anonymous visitor."
 msgstr "Vous êtes maintenant un visiteur anonyme."
 
-#: ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "You can add other languages support to your application"
 msgstr "Vous pouvez ajouter le support d'autres langues à votre application."
 
-#: ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "You can change your password by typing a new one."
-msgstr "Vous pouvez changer votre mot de passe en en saissant un autre."
+msgstr "Vous pouvez changer votre mot de passe en en saisissant un autre."
 
-#: ui/User_welcome.xml.en:0
-msgid "You can do the following actions in your home folder:"
-msgstr "Vous pouvez réaliser les actions suivantes dans votre espace personnel&nbsp;:"
-
-#: ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "You can do the following actions:"
 msgstr "Vous pouvez réaliser les actions suivantes&nbsp;:"
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid ""
 "You can edit this document using an application from your desktop, like MS "
 "Office or OpenOffice.org."
-msgstr "Vous pouvez modifier ce document à l'aide d'une application de votre ordinateur, comme MS Office ou OpenOffice.org."
+msgstr ""
+"Vous pouvez modifier ce document à l'aide d'une application de votre "
+"ordinateur, comme MS Office ou OpenOffice.org."
 
-#: WebSite.py:210
+#: cms/WebSite.py:210
 msgid "You can not remove the default language."
 msgstr "Vous ne pouvez pas supprimer la langue par défaut."
 
-#: ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "You can upload a new file to replace the current one."
-msgstr "Vous pouvez charger un fichier à partir de votre disque pour remplacer l'actuel."
+msgstr ""
+"Vous pouvez charger un fichier de votre ordinateur pour remplacer l'actuel."
 
-#: ui/User_view.xml.en:0
+#: cms/ui/User_view.xml.en:0
 msgid "You don't belong to any group."
 msgstr "Vous n'appartenez à aucun groupe."
 
-#: ui/Text_externaledit.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"You may charge a fee for the physical act of transferring a copy, and you "
+"may at your option offer warranty protection in exchange for a fee."
+msgstr ""
+
+#: cms/ui/Text_externaledit.xml.en:0
 msgid ""
 "You may need to change the character encoding if your application doesn't "
 "support UTF-8 (not recommended)."
-msgstr "Vous pourriez avoir besoin de changer le codage des caractères si votre application ne prend pas en charge UTF-8 (non recommandé)."
+msgstr ""
+"Vous pourriez avoir besoin de changer le codage des caractères si votre "
+"application ne prend pas en charge UTF-8 (non recommandé)."
 
-#: User.py:343
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"You may not impose any further restrictions on the recipients' exercise of "
+"the rights granted herein."
+msgstr ""
+
+#: cms/users.py:278
 msgid "You mistyped your actual password, you account is not changed."
-msgstr "Vous avez mal saisi votre mot de passe actuel, votre compte n'a pas été modifié."
+msgstr ""
+"Vous avez mal saisi votre mot de passe actuel, votre compte n'a pas été "
+"modifié."
 
-#: ui/Group_add_users.xml.en:0
+#: cms/ui/Group_add_users.xml.en:0
 msgid "You must add user(s) in parent group:"
 msgstr "Vous devez ajouter le(s) utilisateur(s) dans un groupe parent&nbsp;:"
 
-#: WebSite.py:224
+#: cms/WebSite.py:224
 msgid "You must choose a language"
 msgstr "Vous devez choisir une langue."
 
-#: WebSite.py:191
+#: cms/ui/Root_license.xml.en:0
+msgid "You must make sure that they, too, receive or can get the source code."
+msgstr ""
+
+#: cms/WebSite.py:191
 msgid "You must select one and only one language."
 msgstr "Vous ne devez sélectionner qu'une langue."
 
-#: versioning.py:142
+#: cms/versioning.py:145
 msgid "You must select one and only one revision."
 msgstr "Vous ne devez sélectionner qu'une révision."
 
-#: text.py:165
+#: cms/text.py:171
 msgid "You must select one or two revisions."
 msgstr "Vous devez sélectionner une ou deux révisions."
 
-#: Group.py:222
+#: cms/Group.py:218
 msgid "You must select the members to remove."
 msgstr "Vous devez sélectionner les membres à supprimer."
 
-#: ui/WebSite_logout.xml.en:0
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "Your login information has been cleared."
 msgstr "Vos informations de connexion ont été effacées."
 
-#: ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid ""
 "a friendly user interface, high end multilingual features, powerful "
 "versioning system, desktop integration, web services support and more."
 msgstr ""
 "Une interface utilisateur conviviale et paramétrable en plusieurs langues, "
-"un puissant sytème de gestion de versions, une intégration aux outils "
-"bureautiques, le suport des services Web, et bien plus."
+"un puissant système de gestion de versions, une intégration aux outils "
+"bureautiques, le support des services Web, et bien plus."
 
-#: ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid ""
 "administrators can add new languages at the root of the application, tab "
 "\"Settings\", subtab \"Languages\"."
-msgstr "Les administrateurs peuvent ajouter de nouvelles langues à la racine de l'application, onglet &laquo;&nbsp;Configuration&nbsp;&raquo;, sous-onglet &laquo;&nbsp;Langues&nbsp;&raquo;."
+msgstr ""
+"Les administrateurs peuvent ajouter de nouvelles langues à la racine de "
+"l'application, onglet &laquo;&nbsp;Configuration&nbsp;&raquo;, sous-onglet "
+"&laquo;&nbsp;Langues&nbsp;&raquo;."
 
-#: Root.py:451
-msgid "iKaaro"
-msgstr "ikaaro"
-
-#: examples/portal1/Root.py:54
-msgid "iKaaro for Dummies"
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "an API to manage URIs, to identify and locate resources."
 msgstr ""
 
-#: ui/Root_about.xml.en:0
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"an abstraction layer over resources that let to manage them with a "
+"consistent API, independently of where they are stored."
+msgstr ""
+
+#: i18n/oracle.py:46
+msgid "and"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"and give any other recipients of the Program a copy of this License along "
+"with the Program."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "and that you know you can do these things."
+msgstr ""
+
+#: i18n/oracle.py:48
+msgid "are"
+msgstr ""
+
+#: i18n/oracle.py:45
+msgid "but"
+msgstr ""
+
+#: i18n/oracle.py:41
+msgid "como"
+msgstr ""
+
+#: i18n/oracle.py:42
+msgid "con"
+msgstr ""
+
+#: i18n/oracle.py:40
+msgid "del"
+msgstr ""
+
+#: i18n/oracle.py:33
+msgid "des"
+msgstr ""
+
+#: i18n/oracle.py:34
+msgid "donc"
+msgstr ""
+
+#: i18n/oracle.py:33
+msgid "elle"
+msgstr ""
+
+#: i18n/oracle.py:33
+msgid "elles"
+msgstr ""
+
+#: i18n/oracle.py:34
+msgid "estaux"
+msgstr ""
+
+#: i18n/oracle.py:40
+msgid "estÃ¡"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "format:"
+msgstr ""
+
+#: i18n/oracle.py:48
+msgid "from"
+msgstr ""
+
+#: i18n/oracle.py:41
+msgid "hay"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "iHotfix"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "iHotfix» <a href=\"../ihotfix/iHotfix-0.5.2.tar.gz\">0.5.2</a>"
+msgstr ""
+
+#: cms/root.py:345
+msgid "iKaaro"
+msgstr "iKaaro"
+
+#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
+msgid "iKaaro Case Study:"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
 msgid "iKaaro provides state of the art Content Management technology:"
 msgstr ""
-"ikaaro fournit une offre complète dans le domaine de la gestion de contenu&nbsp;:"
+"iKaaro fournit une offre complète dans le domaine de la gestion de "
+"contenu&nbsp;:"
 
-#: ui/WebSite_login.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"if the Program itself is interactive but does not normally print such an "
+"announcement, your work based on the Program is not required to print an "
+"announcement.)"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "ikaaro"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "ikaaro» <a href=\"../ikaaro/ikaaro-0.12.3.tar.gz\">0.12.3</a>"
+msgstr ""
+
+#: i18n/oracle.py:33
+msgid "ils"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+msgid "is a Content Management System."
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"it is up to the author/donor to decide if he or she is willing to distribute "
+"software through any other system and a licensee cannot impose that choice."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "itools"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "itools.catalog"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "itools.handlers"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "itools.i18n"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "itools.resources"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "itools.uri"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "itools.workflow"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "itools.xml"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/download.xhtml.en:0
+msgid "itools» <a href=\"../itools/itools-0.7.4.tar.gz\">0.7.4</a>"
+msgstr ""
+
+#: cms/ui/WebSite_login.xml.en:0
 msgid "jsmith)."
 msgstr "adupont)."
 
-#: ui/Root_join.xml.en:0
+#: cms/ui/Root_join.xml.en:0
 msgid "jsmith."
 msgstr "adupont."
 
-#: ui/Folder_rename.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"keep intact all the notices that refer to this License and to the absence of "
+"any warranty;"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "language:"
+msgstr ""
+
+#: i18n/oracle.py:41
+msgid "las"
+msgstr ""
+
+#: i18n/oracle.py:32
+msgid "les"
+msgstr ""
+
+#: i18n/oracle.py:40
+msgid "los"
+msgstr ""
+
+#: i18n/oracle.py:34
+msgid "mais"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "modified:"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "not logged in"
+msgstr ""
+
+#: i18n/oracle.py:34
+msgid "nous"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "or,"
+msgstr ""
+
+#: i18n/oracle.py:34
+msgid "oÃ¹"
+msgstr ""
+
+#: i18n/oracle.py:41
+msgid "para"
+msgstr ""
+
+#: i18n/oracle.py:42
+msgid "pero"
+msgstr ""
+
+#: i18n/oracle.py:41
+msgid "por"
+msgstr ""
+
+#: i18n/oracle.py:32
+msgid "qu'"
+msgstr ""
+
+#: i18n/oracle.py:32
+msgid "que"
+msgstr ""
+
+#: i18n/oracle.py:41
+msgid "quÃ©"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"rather, the intent is to exercise the right to control the distribution of "
+"derivative or collective works based on the Program."
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"represent workflows as automatons, objects can move from one state to "
+"another through transitions, classes can add specific semantics to states "
+"and transitions."
+msgstr ""
+
+#: web/request.py:115
+msgid "request method \"%s\" not yet implemented"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid ""
+"resource handlers infrastructure (resource handlers are non persistent "
+"classes that add specific semantics to resources). This package also "
+"includes several handlers out of the box."
+msgstr ""
+
+#: i18n/oracle.py:47
+msgid "she"
+msgstr ""
+
+#: i18n/oracle.py:46
+msgid "that"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"that is to say, a work containing the Program or a portion of it, either "
+"verbatim or with modifications and/or translated into another language."
+msgstr ""
+
+#: i18n/oracle.py:47
+msgid "the"
+msgstr ""
+
+#: i18n/oracle.py:45
+msgid "their"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid "they are outside its scope."
+msgstr ""
+
+#: i18n/oracle.py:45
+msgid "this"
+msgstr ""
+
+#: cms/ui/Root_license.xml.en:0
+msgid ""
+"this section has the sole purpose of protecting the integrity of the free "
+"software distribution system, which is implemented by public license "
+"practices."
+msgstr ""
+
+#: cms/ui/Folder_rename.xml.en:0
 msgid "to"
 msgstr "en"
 
-#: ui/PO_edit.xml.en:0
+#: cms/ui/web_site_templates/community/itools.xhtml.en:0
+msgid "tools for language negotiation and text segmentation."
+msgstr ""
+
+#: cms/ui/PO_edit.xml.en:0
 msgid "translation"
 msgstr "traduction"
 
-#: ui/Group_add_users.xml.en:0
+#: i18n/oracle.py:40
+msgid "una"
+msgstr ""
+
+#: i18n/oracle.py:32
+msgid "une"
+msgstr ""
+
+#: cms/ui/Group_add_users.xml.en:0
 msgid ""
 "use CTRL to select or unselected a user, use shift to select contiguous "
 "users."
-msgstr "Utilisez la touche Ctrl pour sélectionner ou désélectionner un utilisateur, la touche shift pour sélectionner une suite d'utilisateurs."
+msgstr ""
+"Utilisez la touche Ctrl pour sélectionner ou désélectionner un utilisateur, "
+"la touche Shift pour sélectionner une suite d'utilisateurs."
 
-#: ui/Folder_browse_image.xml.en:0
-msgid "x"
-msgstr "x"
+#: i18n/oracle.py:33
+msgid "vous"
+msgstr ""
 
-#: ui/HTML_addlink.xml.en:0
+#: cms/ui/Root_license.xml.en:0
+msgid "we sometimes make exceptions for this."
+msgstr ""
+
+#: i18n/oracle.py:46
+msgid "when"
+msgstr ""
+
+#: i18n/oracle.py:46
+msgid "whereas"
+msgstr ""
+
+#: i18n/oracle.py:47
+msgid "you"
+msgstr ""
+
+#: i18n/oracle.py:48
+msgid "your"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"» <a href=\"../download/itools/itools-0.8.0.tar.gz\">itools\n"
+"          0.8.0</a> released (April 18)"
+msgstr ""
+
+#: cms/ui/web_site_templates/community/index.xhtml.en:0
+msgid ""
+"» <a href=\"../download/localizer/Localizer-1.1.0-metapackage.tar.gz\">\n"
+"          Localizer 1.1.0</a> released (April 11)"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href join_url\">Join</a>"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href login_url\">Login</a>"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href user/home\">Home</a>"
+msgstr ""
+
+#: cms/ui/classic/template.xhtml.en:0
+msgid "» <a stl:attributes=\"href user/logout\">Log out</a>"
+msgstr ""
+
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "» Browse and link an image from the workspace:"
 msgstr "» Parcourir l'application pour sélectionner une image&nbsp;:"
 
-#: ui/Folder_browsedir.xml.en:0
+#: cms/ui/Folder_browsedir.xml.en:0
 msgid "» Browse and link an object from the workspace:"
 msgstr "» Parcourir  et lier un document de l'application&nbsp;:"
 
-#: ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "» Type the url to add:"
 msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"

@@ -52,6 +52,15 @@ def start(parser, options, target):
     # Set-up the server object
     server = Server(target, port=options.port)
 
+    # Check the instance is up-to-date
+    root = server.root
+    if root.get_property('version') < root.class_version:
+        print 'The instance is not up-to-date, please type:'
+        print
+        print '    $ icms-update <instance>'
+        print
+        return
+
     # Check the server is not running
     pid = server.get_pid()
     if pid is not None:

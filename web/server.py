@@ -187,10 +187,14 @@ class Server(object):
             connection.send(response)
             return
 
+        # Build and set the context
+        context = Context(request)
+        set_context(context)
+
         # Our canonical URLs never end with an slash
-        if request.uri.path.endswith_slash:
+        if context.uri.path.endswith_slash:
             # Redirect to the same URL without the trailing slash
-            goto = copy(request.uri)
+            goto = copy(context.uri)
             goto.path.endswith_slash = False
             response = Response(status_code=301)
             response.set_header('Location', goto)
@@ -202,10 +206,6 @@ class Server(object):
             response = response.to_str()
             connection.send(response)
             return
-
-        # Build and set the context
-        context = Context(request)
-        set_context(context)
 
         # Get the root handler
         root = self.root

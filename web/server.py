@@ -187,6 +187,22 @@ class Server(object):
             connection.send(response)
             return
 
+        # Our canonical URLs never end with an slash
+        if request.uri.path.endswith_slash:
+            # Redirect to the same URL without the trailing slash
+            goto = copy(request.uri)
+            goto.path.endswith_slash = False
+            response = Response(status_code=301)
+            response.set_header('Location', goto)
+            response.set_body('Moved Permanently')
+            # Access Log
+            content_length = response.get_content_length()
+            self.log_access(connection, request_line, 301, content_length)
+            # Send response
+            response = response.to_str()
+            connection.send(response)
+            return
+
         # Build and set the context
         context = Context(request)
         set_context(context)

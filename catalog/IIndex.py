@@ -111,6 +111,18 @@ class IIndexTree(File):
         state.first_empty = IO.decode_link(resource.read(4))
 
 
+    def to_str(self):
+        data = [IO.encode_version(self.version),
+                IO.encode_uint32(self.number_of_slots),
+                IO.encode_link(self.first_slot),
+                IO.encode_link(self.first_empty)]
+        # XXX To finish
+##        for i in range(number_of_slots):
+##            pass
+        return ''.join(data)
+
+
+
     def _get_free_slot(self):
         """
         Internal method that returns a free slot. If none exists a new one
@@ -184,6 +196,16 @@ class IIndexDocuments(File):
         state.version = IO.decode_version(resource.read(4))
         state.number_of_slots = IO.decode_uint32(resource.read(4))
         state.first_empty = IO.decode_link(resource.read(4))
+
+
+    def to_str(self):
+        data = [IO.encode_version(self.version),
+                IO.encode_uint32(self.number_of_slots),
+                IO.encode_link(self.first_empty)]
+        # XXX To finish
+##        for i in range(number_of_slots):
+##            pass
+        return ''.join(data)
 
 
 

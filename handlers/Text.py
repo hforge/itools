@@ -21,7 +21,7 @@ from File import File
 
 class Text(File):
 
-    class_mimetypes = ['text/*']
+    class_mimetypes = ['text']
     class_extension = 'txt'
 
 

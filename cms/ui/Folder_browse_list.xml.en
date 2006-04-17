@@ -85,9 +85,6 @@
       <input type="submit" name=";cut" value="Cut" class="button_cut"/>
     </stl:block>
     <input type="submit" name=";paste" value="Paste" stl:if="paste" class="button_paste"/>
-    <stl:block if="table/objects">
-      <input type="submit" name=";translate_form" value="Translate.." class="button_translate"/>
-    </stl:block>
   </p>
 </form>
 

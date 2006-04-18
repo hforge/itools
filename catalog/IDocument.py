@@ -62,30 +62,71 @@ class IndexedField(File):
 
 
 
-class StoredField(File):
+class StoredFields(File):
 
-    def get_skeleton(self, data=u''):
-        return IO.encode_string(data)
+    def get_skeleton(self):
+        return IO.encode_byte(0)
 
 
     def _load_state(self, resource):
         data = resource.read()
-        self.state.value = IO.decode_string(data)[0]
+
+        # Read number of fields
+        n_fields = IO.decode_byte(data[0])
+        data = data[1:]
+
+        # Load fields
+        values = {}
+        for i in range(n_fields):
+            field_number = IO.decode_byte(data[0])
+            data = data[1:]
+            field_value, data = IO.decode_string(data)
+            values[field_number] = field_value
+
+        self.state.values = values
 
 
     def to_str(self):
-        return IO.encode_string(self.state.value)
+        values = self.state.values
+
+        # Field numbers
+        field_numbers = values.keys()
+        field_numbers.sort()
+
+        # Number of fields
+        n_fields = len(field_numbers)
+        data = [IO.encode_byte(n_fields)]
+
+        # Fields
+        for field_number in field_numbers:
+            field_value = values[field_number]
+            data.append(IO.encode_byte(field_number))
+            data.append(IO.encode_string(field_value))
+
+        return ''.join(data)
+
+
+    def set_value(self, number, value):
+        self.state.values[number] = value
+
+
+    def get_value(self, number):
+        return self.state.values.get(number)
 
 
 
 class IDocument(Folder):
 
+    def get_skeleton(self):
+        return {'stored': StoredFields()}
+
+
     def _get_handler(self, segment, resource):
         name = segment.name
         if name.startswith('i'):
             return IndexedField(resource)
-        elif name.startswith('s'):
-            return StoredField(resource)
+        elif name == 'stored':
+            return StoredFields(resource)
         return Folder._get_handler(self, segment, resource)
 
 

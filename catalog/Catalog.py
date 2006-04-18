@@ -22,7 +22,7 @@ import warnings
 from itools.handlers.Folder import Folder
 from itools.handlers.Text import Text
 from analysers import get_analyser
-from IDocument import IDocument, IndexedField, StoredField
+from IDocument import IDocument, IndexedField
 from IIndex import IIndex
 import queries
 
@@ -179,6 +179,7 @@ class Catalog(Folder):
         # Create the document
         doc_number = self.get_new_document_number()
         idoc = IDocument()
+        stored = idoc.get_handler('stored')
         state.added_documents[doc_number] = idoc
         # Index
         fields = self.get_handler('fields')
@@ -216,8 +217,9 @@ class Catalog(Folder):
                 # XXX Coerce lists
                 if isinstance(value, list):
                     value = ' '.join(value)
-                idoc._set_handler('s%d' % field.number,
-                                  StoredField(data=value))
+                stored.set_value(field.number, value)
+
+            stored.set_changed()
 
         return doc_number
 
@@ -272,7 +274,8 @@ class Catalog(Folder):
         state = self.state
         fields = self.get_handler('fields')
         # iterate on sorted by weight in decrease order
-        for document in sorted(documents.iteritems(), key=itemgetter(1), reverse=True):
+        for document in sorted(documents.iteritems(), key=itemgetter(1),
+                               reverse=True):
             doc_number, weight = document
             # Load the IDocument
             if doc_number in state.added_documents:
@@ -282,14 +285,10 @@ class Catalog(Folder):
             # Get the stored fields
             if doc_handler.document is None:
                 document = Document(doc_number)
+                stored = doc_handler.get_handler('stored')
                 for field in fields.state.fields:
                     if field.is_stored:
-                        name = 's%d' % field.number
-                        if doc_handler.has_handler(name):
-                            stored_field = doc_handler.get_handler(name)
-                            value = stored_field.state.value
-                        else:
-                            value = None
+                        value = stored.get_value(field.number)
                         setattr(document, field.name, value)
                 doc_handler.document = document
 

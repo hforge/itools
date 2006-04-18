@@ -52,7 +52,7 @@ def update(parser, options, target):
                 instance.del_resource(name)
         # Backup
         print '  * Backup database...'
-        os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+        os.system('cp -r %s/database %s/database.bak' % (target, target))
         # Transaction state
         open('%s/state' % target, 'w').write('OK')
 

@@ -1,3 +1,27 @@
+0.13.2 (2006/04/18)
+
+  Handlers
+  - Remove obsolete module "Python.py" (#297).
+
+  CSV
+  - Fix "add_row" when the schema is defined, by Hervé Cauwelier (#296).
+
+  Catalog
+  - Now the text analyser accepts numbers.
+
+  Packaging
+  - Implement "get_version" to help other packages to define __version__.
+
+  Web
+  - Now canonical URLs never end with a slash (#294).
+
+  CMS
+  - Several fixes related to virtual hosting.
+  - Now "icms-start" refuses to start the server if the instance is not
+    up-to-date (#301).
+  - Speed-up "icms-init" and "icms-update".
+
+
 0.13.1 (2006/04/08)
 
   Catalog

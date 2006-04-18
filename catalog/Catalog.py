@@ -219,7 +219,7 @@ class Catalog(Folder):
                     value = ' '.join(value)
                 stored.set_value(field.number, value)
 
-            stored.set_changed()
+            stored.save_state()
 
         return doc_number
 

@@ -94,7 +94,8 @@ def init(parser, options, target):
         transaction.commit()
 
     # Backup
-    os.system('rsync -a %s/database/ %s/database.bak' % (target, target))
+    cmd = 'cp -r %s/database %s/database.bak'
+    os.system(cmd % (target, target))
 
     # Transaction state
     open('%s/state' % target, 'w').write('OK')

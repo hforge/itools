@@ -151,11 +151,15 @@ class Server(object):
         pass
 
 
-    def after_commit(self):
+    def start_commit(self):
         pass
 
 
-    def after_rollback(self):
+    def end_commit_on_success(self):
+        pass
+
+
+    def end_commit_on_error(self):
         pass
 
 
@@ -189,6 +193,7 @@ class Server(object):
 
         # Build and set the context
         context = Context(request)
+        context.server = self
         set_context(context)
 
         # Our canonical URLs never end with an slash
@@ -345,19 +350,20 @@ class Server(object):
                         response.set_status(500)
                         response_body = root.internal_server_error()
                     else:
-                        # Save changes
                         username = user and user.name or 'NONE'
                         note = str(request.uri.path)
+                        # Save changes
+                        self.start_commit()
                         try:
                             transaction.commit(username, note)
                         except:
                             self.log_error()
                             transaction.rollback()
-                            self.after_rollback()
+                            self.end_commit_on_error()
                             response.set_status(500)
                             response_body = root.internal_server_error()
                         else:
-                            self.after_commit()
+                            self.end_commit_on_success()
 
             # Set the response body
             response.set_body(response_body)

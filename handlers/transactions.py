@@ -49,11 +49,9 @@ class Transaction(set):
                     handler._save_state(handler.resource)
                     handler.resource.close()
         except:
-            # XXX Right now we just rollback the transaction, so handlers
-            # state will be consistent.
-            #
-            # However, it may happen something worse, the resource layer
-            # may be left into an inconsistent state.
+            # Rollback the transaction, so handlers state will be consistent.
+            # Note that the resource layer maybe incosistent anyway, true
+            # ACID support must be implemented in a layer above.
             self.rollback()
             self.release()
             raise

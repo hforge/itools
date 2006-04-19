@@ -114,10 +114,12 @@ class Server(web.server.Server):
             if hasattr(handler, 'before_commit'):
                 handler.before_commit()
 
+
+    def start_commit(self):
         open('%s/state' % self.target, 'w').write('START')
 
 
-    def after_commit(self):
+    def end_commit_on_success(self):
         target = self.target
         open('%s/state' % target, 'w').write('END')
         cmd = 'rsync -a --delete %s/database/ %s/database.bak'
@@ -125,7 +127,7 @@ class Server(web.server.Server):
         open('%s/state' % target, 'w').write('OK')
 
 
-    def after_rollback(self):
+    def end_commit_on_error(self):
         target = self.target
         cmd = 'rsync -a --delete %s/database.bak/ %s/database'
         os.system(cmd % (target, target))

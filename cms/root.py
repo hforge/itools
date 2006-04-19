@@ -399,51 +399,52 @@ class Root(Group, WebSite):
 
     update_catalog__access__ = 'is_admin'
     def update_catalog(self):
-        # Initialize a new empty catalog
         t0 = time()
-        tmp_path = tempfile.mkdtemp()
-        tmp_folder = get_handler(tmp_path)
-        tmp_folder.set_handler('catalog', Catalog(fields=self._catalog_fields))
-        tmp_folder.save_state()
-        catalog_resource = tmp_folder.resource.get_resource('catalog')
-        catalog = Catalog(catalog_resource)
-        # Remove old catalog
-        self.del_handler('.catalog')
-        t1 = time()
-        print 'Updating catalog, initialization:', t1 - t0
+        # Init transaction (because we use sub-transactions)
+        server = get_context().server
+        server.start_commit()
 
-        n = 0
-        for handler, context in self.traverse2():
-            name = handler.name
-            abspath = handler.get_abspath()
+        try:
+            # Start fresh
+            self.del_handler('.catalog')
+            self.set_handler('.catalog', Catalog(fields=self._catalog_fields))
+            self.save_state()
 
-            if name.startswith('.'):
-                context.skip = True
-            elif abspath == '/ui':
-                context.skip = True
-            elif handler.real_handler is not None and not abspath == '/ui':
-                context.skip = True
-            elif not name.startswith('.'):
-                print n, abspath
-                catalog.index_document(handler.get_catalog_indexes())
-                n += 1
-                # Avoid too much memory usage but saving changes
-                if n % 500 == 0:
-                    catalog.save_state()
-        catalog.save_state()
+            # Initialize a new empty catalog
+            catalog = self.get_handler('.catalog')
+            t1 = time()
+            print 'Updating catalog, init:', t1 - t0
 
-        t2 = time()
-        print 'Updating catalog, indexing:', t2 - t1
-        # Set new catalog
-        self.set_handler('.catalog', catalog)
-        t3 = time()
-        print 'Updating catalog, saving:', t3 - t2
-        path = tmp_path.split('/')
-        path, name = '/'.join(path[:-1]), path[-1]
-        get_resource(path).del_resource(name)
-        t4 = time()
-        print 'Updating catalog, removing temporary files:', t4 - t3
-        print 'Updating catalog, total:', t4 - t0
+            n = 0
+            for handler, context in self.traverse2():
+                name = handler.name
+                abspath = handler.get_abspath()
+
+                if name.startswith('.'):
+                    context.skip = True
+                elif abspath == '/ui':
+                    context.skip = True
+                elif handler.real_handler is not None and not abspath == '/ui':
+                    context.skip = True
+                elif not name.startswith('.'):
+                    print n, abspath
+                    catalog.index_document(handler.get_catalog_indexes())
+                    n += 1
+                    # Avoid too much memory usage but saving changes
+                    if n % 500 == 0:
+                        catalog.save_state()
+            catalog.save_state()
+            t2 = time()
+            print 'Updating catalog, indexing:', t2 - t1
+        except:
+            server.end_commit_on_error()
+            raise
+        else:
+            server.end_commit_on_success()
+            t3 = time()
+            print 'Updating catalog, sync:', t3 - t2
+
+        print 'Updating catalog, total:', t3 - t0
 
         message = self.gettext(u'%s handlers have been re-indexed.') % n
         comeback(message)

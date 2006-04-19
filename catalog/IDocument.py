@@ -112,6 +112,9 @@ class StoredFields(File):
 
         self.state.values = values
 
+        # Cache (XXX To be replaced by the built-in state)
+        self.document = None
+
 
     def to_str(self):
         values = self.state.values
@@ -139,34 +142,4 @@ class StoredFields(File):
 
     def get_value(self, number):
         return self.state.values.get(number)
-
-
-
-class IDocument(Folder):
-
-    def get_skeleton(self):
-        return {'indexed': IndexedFields(),
-                'stored': StoredFields()}
-
-
-    def _get_handler(self, segment, resource):
-        name = segment.name
-        if name == 'indexed':
-            return IndexedFields(resource)
-        elif name == 'stored':
-            return StoredFields(resource)
-        return Folder._get_handler(self, segment, resource)
-
-
-    def _load_state(self, resource):
-        Folder._load_state(self, resource)
-        self.document = None
-
-
-    # Used by Catalog.index_document, may be removed (XXX).
-    def _set_handler(self, name, handler):
-        self.resource.set_resource(name, handler.resource)
-        self.state.cache[name] = None
-        self.timestamp = self.resource.get_mtime()
-
 

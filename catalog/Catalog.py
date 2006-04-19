@@ -22,7 +22,7 @@ import warnings
 from itools.handlers.Folder import Folder
 from itools.handlers.Text import Text
 from analysers import get_analyser
-from IDocument import IDocument
+from IDocument import IndexedFields, StoredFields
 from IIndex import IIndex
 import queries
 
@@ -95,8 +95,10 @@ class Catalog(Folder):
             return Fields(resource)
         elif name.startswith('f'):
             return IIndex(resource)
-        elif name.startswith('d'):
-            return IDocument(resource)
+        elif name.endswith('i'):
+            return IndexedFields(resource)
+        elif name.endswith('s'):
+            return StoredFields(resource)
         return Folder._get_handler(self, segment, resource)
 
 
@@ -108,8 +110,8 @@ class Catalog(Folder):
 
         state = self.state
         # The document number
-        document_numbers = [ int(x[1:]) for x in resource.get_resource_names()
-                             if x.startswith('d') ]
+        document_numbers = [ int(x[:-1]) for x in resource.get_resource_names()
+                             if x.endswith('i') ]
         if document_numbers:
             state.document_number = max(document_numbers) + 1
         else:
@@ -123,17 +125,26 @@ class Catalog(Folder):
         state = self.state
         # Remove documents
         for doc_number in state.removed_documents:
-            name = 'd%07d' % doc_number
-            resource.del_resource(name)
-            del state.cache[name]
+            iname = '%07di' % doc_number
+            sname = '%07ds' % doc_number
+            resource.del_resource(iname)
+            resource.del_resource(sname)
+            del state.cache[iname]
+            del state.cache[sname]
         state.removed_documents = []
         # Add documents
-        for doc_number, document in state.added_documents.items():
-            if document.has_changed():
-                document.save_state()
-            name = 'd%07d' % doc_number
-            resource.set_resource(name, document.resource)
-            state.cache[name] = None
+        for doc_number in state.added_documents:
+            indexed, stored = state.added_documents[doc_number]
+            if indexed.has_changed():
+                indexed.save_state()
+            if stored.has_changed():
+                stored.save_state()
+            iname = '%07di' % doc_number
+            sname = '%07ds' % doc_number
+            resource.set_resource(iname, indexed.resource)
+            resource.set_resource(sname, stored.resource)
+            state.cache[iname] = None
+            state.cache[sname] = None
         state.added_documents = {}
         # Save indexes
         fields = self.get_handler('fields')
@@ -178,10 +189,10 @@ class Catalog(Folder):
         state = self.state
         # Create the document
         doc_number = self.get_new_document_number()
-        idoc = IDocument()
-        indexed = idoc.get_handler('indexed')
-        stored = idoc.get_handler('stored')
-        state.added_documents[doc_number] = idoc
+##        idoc = IDocument()
+        indexed = IndexedFields()
+        stored = StoredFields()
+        state.added_documents[doc_number] = (indexed, stored)
         # Index
         fields = self.get_handler('fields')
         for field in fields.state.fields:
@@ -229,9 +240,9 @@ class Catalog(Folder):
 
         state = self.state
         if doc_number in state.added_documents:
-            document = state.added_documents.pop(doc_number)
+            indexed, stored = state.added_documents.pop(doc_number)
         else:
-            indexed = self.get_handler('d%07d/indexed' % doc_number)
+            indexed = self.get_handler('%07di' % doc_number)
             state.removed_documents.append(doc_number)
 
         fields = indexed.state.fields
@@ -277,20 +288,20 @@ class Catalog(Folder):
             doc_number, weight = document
             # Load the IDocument
             if doc_number in state.added_documents:
-                doc_handler = state.added_documents[doc_number]
+                indexed, stored = state.added_documents[doc_number]
             else:
-                doc_handler = self.get_handler('d%07d' % doc_number)
+                stored = self.get_handler('%07ds' % doc_number)
+
             # Get the stored fields
-            if doc_handler.document is None:
+            if stored.document is None:
                 document = Document(doc_number)
-                stored = doc_handler.get_handler('stored')
                 for field in fields.state.fields:
                     if field.is_stored:
                         value = stored.get_value(field.number)
                         setattr(document, field.name, value)
-                doc_handler.document = document
+                stored.document = document
 
-            yield doc_handler.document
+            yield stored.document
 
 
 

@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,44 +25,71 @@ import IO
 
 
 
-class IndexedField(File):
+class IndexedFields(File):
 
     def get_skeleton(self):
-        return IO.encode_uint32(0)
+        return IO.encode_byte(0)
 
 
     def _load_state(self, resource):
-        state = self.state
+        # Number of fields
+        n_fields = resource.read(1)
+        n_fields = IO.decode_byte(n_fields)
 
-        state.number_of_terms = IO.decode_uint32(resource.read(4))
-        state.terms = []
-
+        # Load fields
+        fields = {}
         data = resource.read()
-        for i in range(state.number_of_terms):
-            term, data = IO.decode_string(data)
-            state.terms.append(term)
+        for i in range(n_fields):
+            # The field number
+            field_number = IO.decode_byte(data[0])
+            data = data[1:]
+            # The terms
+            number_of_terms = IO.decode_uint32(data[:4])
+            data = data[4:]
+            terms = []
+            for j in range(number_of_terms):
+                term, data = IO.decode_string(data)
+                terms.append(term)
 
+            fields[field_number] = terms
 
-    def add_term(self, term):
-        state = self.state
-
-        state.number_of_terms += 1
-        state.terms.append(term)
-        # Update the resource
-        self.resource.write(IO.encode_uint32(state.number_of_terms))
-        self.resource.append(IO.encode_string(term))
-        # Set timestamp
-        self.timestamp = self.resource.get_mtime()
+        self.state.fields = fields
 
 
     def to_str(self):
-        state = self.state
-        return IO.encode_uint32(state.number_of_terms) \
-               + ''.join([ IO.encode_string(x) for x in state.terms ])
+        fields = self.state.fields
+
+        field_numbers = fields.keys()
+        field_numbers.sort()
+        data = [IO.encode_byte(len(field_numbers))]
+
+        for field_number in field_numbers:
+            data.append(IO.encode_byte(field_number))
+            terms = fields[field_number]
+            data.append(IO.encode_uint32(len(terms)))
+            for term in terms:
+                data.append(IO.encode_string(term))
+
+        return ''.join(data)
+
+
+    def add_field(self, number, terms):
+        self.state.fields[number] = terms
 
 
 
 class StoredFields(File):
+    """
+    The format of this resource is:
+
+      - number of fields (byte)
+      - fields (sequence of fields)
+
+    Where each field is:
+
+      - field number (byte)
+      - field value (string)
+    """
 
     def get_skeleton(self):
         return IO.encode_byte(0)
@@ -118,13 +145,14 @@ class StoredFields(File):
 class IDocument(Folder):
 
     def get_skeleton(self):
-        return {'stored': StoredFields()}
+        return {'indexed': IndexedFields(),
+                'stored': StoredFields()}
 
 
     def _get_handler(self, segment, resource):
         name = segment.name
-        if name.startswith('i'):
-            return IndexedField(resource)
+        if name == 'indexed':
+            return IndexedFields(resource)
         elif name == 'stored':
             return StoredFields(resource)
         return Folder._get_handler(self, segment, resource)

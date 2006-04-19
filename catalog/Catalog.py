@@ -22,7 +22,7 @@ import warnings
 from itools.handlers.Folder import Folder
 from itools.handlers.Text import Text
 from analysers import get_analyser
-from IDocument import IDocument, IndexedField
+from IDocument import IDocument
 from IIndex import IIndex
 import queries
 
@@ -179,6 +179,7 @@ class Catalog(Folder):
         # Create the document
         doc_number = self.get_new_document_number()
         idoc = IDocument()
+        indexed = idoc.get_handler('indexed')
         stored = idoc.get_handler('stored')
         state.added_documents[doc_number] = idoc
         # Index
@@ -196,21 +197,18 @@ class Catalog(Folder):
 
             # Indexed fields
             if field.is_indexed:
-                # Forward index (unindex)
-                idoc._set_handler('i%d' % field.number, IndexedField())
-                ifield = idoc.get_handler('i%d' % field.number)
-
-                # Inverted index (search)
+                # Get the inverted index (search)
                 ii = self.get_handler('f%d' % field.number)
-                terms = set()
                 # Tokenize
+                terms = set()
                 analyser = get_analyser(field.type)
                 for word, position in analyser(value):
+                    terms.add(word)
+                    # Update the inverted index
                     ii.index_term(word, doc_number, position)
-                    # Update the un-index data structure
-                    if word not in terms:
-                        ifield.add_term(word)
-                        terms.add(word)
+
+                # Update the forward index (un-index)
+                indexed.add_field(field.number, list(terms))
 
             # Stored fields (hits)
             if field.is_stored:
@@ -219,7 +217,8 @@ class Catalog(Folder):
                     value = ' '.join(value)
                 stored.set_value(field.number, value)
 
-            stored.save_state()
+        indexed.save_state()
+        stored.save_state()
 
         return doc_number
 
@@ -232,15 +231,14 @@ class Catalog(Folder):
         if doc_number in state.added_documents:
             document = state.added_documents.pop(doc_number)
         else:
-            document = self.get_handler('d%07d' % doc_number)
+            indexed = self.get_handler('d%07d/indexed' % doc_number)
             state.removed_documents.append(doc_number)
 
-        for name in document.resource.get_resource_names():
-            if name.startswith('i'):
-                field = document.get_handler(name)
-                ii = self.get_handler('f' + name[1:])
-                for term in field.state.terms:
-                    ii.unindex_term(term, doc_number)
+        fields = indexed.state.fields
+        for field_number in fields:
+            ii = self.get_handler('f%d' % field_number)
+            for term in fields[field_number]:
+                ii.unindex_term(term, doc_number)
 
 
     def _search(self, query=None, **kw):

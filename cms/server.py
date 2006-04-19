@@ -109,7 +109,11 @@ class Server(web.server.Server):
         return pid
 
 
-    def before_commit(self):
+    def before_commit(self, transaction):
+        for handler in list(transaction):
+            if hasattr(handler, 'before_commit'):
+                handler.before_commit()
+
         open('%s/state' % self.target, 'w').write('START')
 
 

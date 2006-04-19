@@ -40,15 +40,6 @@ class Transaction(set):
         if not self:
             return
 
-        # Event: before commit
-        try:
-            for handler in list(self):
-                if hasattr(handler, 'before_commit'):
-                    handler.before_commit()
-        except:
-            self.rollback()
-            raise
-
         self.lock()
         try:
             # Errors should not happen in this stage.

@@ -147,7 +147,7 @@ class Server(object):
         error_log.flush()
 
 
-    def before_commit(self):
+    def before_commit(self, transaction):
         pass
 
 
@@ -337,20 +337,27 @@ class Server(object):
                 response_body = root.internal_server_error()
             else:
                 if transaction:
-                    # Save changes
-                    username = user and user.name or 'NONE'
-                    note = str(request.uri.path)
-                    self.before_commit()
                     try:
-                        transaction.commit(username, note)
+                        self.before_commit(transaction)
                     except:
                         self.log_error()
                         transaction.rollback()
-                        self.after_rollback()
                         response.set_status(500)
                         response_body = root.internal_server_error()
                     else:
-                        self.after_commit()
+                        # Save changes
+                        username = user and user.name or 'NONE'
+                        note = str(request.uri.path)
+                        try:
+                            transaction.commit(username, note)
+                        except:
+                            self.log_error()
+                            transaction.rollback()
+                            self.after_rollback()
+                            response.set_status(500)
+                            response_body = root.internal_server_error()
+                        else:
+                            self.after_commit()
 
             # Set the response body
             response.set_body(response_body)

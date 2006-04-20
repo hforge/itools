@@ -34,6 +34,10 @@ from Folder import Folder
 
 class ListOfUsers(handlers.File.File):
 
+    def get_skeleton(self, users=[]):
+        return '\n'.join(users)
+
+
     def _load_state(self, resource):
         state = self.state
 
@@ -64,11 +68,7 @@ class Group(Folder):
     def get_skeleton(self, users=[]):
         # Build the users handler manually, as a test (the other option is
         # to build a handler class just to manage '.users')
-        data = '\n'.join(users)
-        users = ListOfUsers()
-        users.resource.write(data)
-
-        return {'.users': users}
+        return {'.users': ListOfUsers(users=users)}
 
 
     #######################################################################

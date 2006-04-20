@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
-"POT-Creation-Date: 2006-04-13 16:04+CET\n"
+"POT-Creation-Date: 2006-04-20 12:04+CET\n"
 "PO-Revision-Date: 2004-05-29 19:03+0200\n"
 "Last-Translator: J. David Ibáñez <jdavid@itaapy.com>\n"
 "Language-Team:  <es@li.org>\n"
@@ -12,6 +12,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.3.1\n"
+
+#: cms/widgets.py:187
+msgid "%(start)s-%(end)s of %(total)s"
+msgstr "%(start)s-%(end)s de %(total)s"
 
 #: cms/Handler.py:161
 msgid "%.01f KB"
@@ -25,7 +29,7 @@ msgstr ""
 msgid "%d obs"
 msgstr ""
 
-#: cms/root.py:448
+#: cms/root.py:449
 msgid "%s handlers have been re-indexed."
 msgstr ""
 
@@ -971,7 +975,7 @@ msgstr "Idioma"
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:456
+#: cms/root.py:457
 msgid "Check Groups"
 msgstr ""
 
@@ -1444,7 +1448,7 @@ msgstr ""
 msgid "Groups"
 msgstr ""
 
-#: cms/root.py:485
+#: cms/root.py:486
 #, fuzzy
 msgid "Groups fixed."
 msgstr "Usuarios"
@@ -1731,7 +1735,7 @@ msgstr ""
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: cms/root.py:455
+#: cms/root.py:456
 msgid "Maintenance"
 msgstr ""
 
@@ -3383,9 +3387,6 @@ msgstr ""
 #: cms/ui/HTML_addlink.xml.en:0
 msgid "» Type the url to add:"
 msgstr ""
-
-#~ msgid "%(start)s-%(end)s of %(total)s"
-#~ msgstr "%(start)s-%(end)s de %(total)s"
 
 #~ msgid "<b>%s</b> is already a member of this group."
 #~ msgstr "<b>%s</b> ya es un miembro de este grupo."

@@ -7,13 +7,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2006-04-13 16:04+CET\n"
+"POT-Creation-Date: 2006-04-20 12:04+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ./cms/widgets.py:187
+msgid "%(start)s-%(end)s of %(total)s"
+msgstr ""
 
 #: ./cms/Handler.py:161
 msgid "%.01f KB"
@@ -27,7 +31,7 @@ msgstr ""
 msgid "%d obs"
 msgstr ""
 
-#: ./cms/root.py:448
+#: ./cms/root.py:449
 msgid "%s handlers have been re-indexed."
 msgstr ""
 
@@ -755,7 +759,7 @@ msgstr ""
 msgid "Character encoding"
 msgstr ""
 
-#: ./cms/root.py:456
+#: ./cms/root.py:457
 msgid "Check Groups"
 msgstr ""
 
@@ -1143,7 +1147,7 @@ msgstr ""
 msgid "Groups"
 msgstr ""
 
-#: ./cms/root.py:485
+#: ./cms/root.py:486
 msgid "Groups fixed."
 msgstr ""
 
@@ -1363,7 +1367,7 @@ msgstr ""
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: ./cms/root.py:455
+#: ./cms/root.py:456
 msgid "Maintenance"
 msgstr ""
 

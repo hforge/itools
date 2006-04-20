@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2006-04-13 16:04+CET\n"
+"POT-Creation-Date: 2006-04-20 12:04+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -15,6 +15,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
+
+#: cms/widgets.py:187
+msgid "%(start)s-%(end)s of %(total)s"
+msgstr "%(start)s-%(end)s of %(total)s"
 
 #: cms/Handler.py:161
 msgid "%.01f KB"
@@ -29,7 +33,7 @@ msgstr ""
 msgid "%d obs"
 msgstr "%d bytes"
 
-#: cms/root.py:448
+#: cms/root.py:449
 msgid "%s handlers have been re-indexed."
 msgstr "%s oggetti sono stati re-indicizzati."
 
@@ -1109,7 +1113,7 @@ msgstr "Linguaggi rimossi"
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:456
+#: cms/root.py:457
 #, fuzzy
 msgid "Check Groups"
 msgstr "Gruppi"
@@ -1617,7 +1621,7 @@ msgstr ""
 msgid "Groups"
 msgstr "Gruppi"
 
-#: cms/root.py:485
+#: cms/root.py:486
 #, fuzzy
 msgid "Groups fixed."
 msgstr "Gruppo aggiunto"
@@ -1955,7 +1959,7 @@ msgstr ""
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: cms/root.py:455
+#: cms/root.py:456
 msgid "Maintenance"
 msgstr ""
 
@@ -3732,9 +3736,6 @@ msgstr "» Inserisci l'URL da aggiungere:"
 
 #~ msgid "\"<stl:inline content=\"name\"></stl:inline>\" to"
 #~ msgstr "\"<stl:inline content=\"name\"></stl:inline>\" a"
-
-#~ msgid "%(start)s-%(end)s of %(total)s"
-#~ msgstr "%(start)s-%(end)s of %(total)s"
 
 #~ msgid ", by <em stl:content=\"transition/user\"></em>."
 #~ msgstr ", da <em stl:content=\"transition/user\"></em>."

@@ -184,7 +184,7 @@ class Table(object):
             batch['next'] = next
 
         # Batch summary
-        control = Handler.gettext('%(start)s-%(end)s of %(total)s') \
+        control = Handler.gettext(u'%(start)s-%(end)s of %(total)s') \
                   % {'start': self.batchstart, 'end': self.batchend,
                      'total': self.total}
         batch['control'] = control

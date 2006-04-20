@@ -22,6 +22,8 @@ import sys
 
 # Import from itools
 from itools.resources import base, get_resource
+from itools.handlers.Folder import Folder
+from itools.handlers.transactions import get_transaction
 from itools import web
 from itools.cms.metadata import Metadata
 from itools.cms.root import Root
@@ -121,9 +123,36 @@ class Server(web.server.Server):
 
     def end_commit_on_success(self):
         target = self.target
+        db = '%s/database' % target
+        db2 = '%s/database.bak' % target
+
         open('%s/state' % target, 'w').write('END')
-        cmd = 'rsync -a --delete %s/database/ %s/database.bak'
-        os.system(cmd % (target, target))
+        cmd = 'rsync -lptgoD --delete %s/database%s %s/database.bak%s'
+        for handler in get_transaction():
+            abspath = handler.get_abspath()
+            src = '%s%s' % (db, abspath)
+            dst = '%s%s' % (db2, abspath)
+
+            if isinstance(handler, Folder):
+                src_files = set(os.listdir(src))
+                dst_files = set(os.listdir(dst))
+                # Remove
+                for filename in dst_files - src_files:
+                    filename = '%s/%s' % (dst, filename)
+                    if os.path.isdir(filename):
+                        os.rmdir(filename)
+                    else:
+                        os.remove(filename)
+                # Add
+                for filename in src_files - dst_files:
+                    srcfile = '%s/%s' % (src, filename)
+                    dstfile = '%s/%s' % (dst, filename)
+                    if os.path.isdir(srcfile):
+                        os.system('cp -r %s %s' % (srcfile, dstfile))
+                    else:
+                        open(dstfile, 'w').write(open(srcfile).read())
+            else:
+                open(dst, 'w').write(open(src).read())
         open('%s/state' % target, 'w').write('OK')
 
 

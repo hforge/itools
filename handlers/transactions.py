@@ -59,8 +59,6 @@ class Transaction(set):
             # Update handlers timestamp
             for handler in self:
                 handler.timestamp = handler.resource.get_mtime()
-            # Reset the transaction
-            self.clear()
             # Release the thread lock
             self.release()
 

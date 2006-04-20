@@ -364,6 +364,7 @@ class Server(object):
                             response_body = root.internal_server_error()
                         else:
                             self.end_commit_on_success()
+                            transaction.clear()
 
             # Set the response body
             response.set_body(response_body)

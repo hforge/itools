@@ -200,19 +200,11 @@ class Handler(Node):
 
         transaction = get_transaction()
         transaction.lock()
+        resource.open()
         try:
-            resource.open()
             self._save_state(resource)
-        except:
+        finally:
             resource.close()
-            transaction.release()
-            raise
-        else:
-            resource.close()
-            if resource is self.resource:
-                if self in transaction:
-                    transaction.remove(self)
-                self.timestamp = resource.get_mtime()
             transaction.release()
 
 

@@ -431,7 +431,7 @@ class Root(Group, WebSite):
                     catalog.index_document(handler.get_catalog_indexes())
                     n += 1
                     # Avoid too much memory usage but saving changes
-                    if n % 500 == 0:
+                    if n % 1000 == 0:
                         catalog.save_state()
             catalog.save_state()
             t2 = time()

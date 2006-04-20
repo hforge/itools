@@ -52,6 +52,20 @@ class ListOfUsers(handlers.File.File):
         return '\n'.join(self.state.usernames)
 
 
+    def get_usernames(self):
+        return self.state.usernames
+
+
+    def add(self, username):
+        self.set_changed()
+        self.state.usernames.add(username)
+
+
+    def remove(self, username):
+        self.set_changed()
+        self.state.usernames.remove(username)
+
+
 
 class Group(Folder):
 
@@ -95,13 +109,12 @@ class Group(Folder):
         username = username.strip()
         if username:
             list_of_users = self.get_handler('.users')
-            list_of_users.set_changed()
-            list_of_users.state.usernames.add(username)
+            list_of_users.add(username)
             self.set_changed()
 
 
     def get_usernames(self):
-        return self.get_handler('.users').state.usernames
+        return self.get_handler('.users').get_usernames()
 
 
     def get_subgroups(self):
@@ -242,9 +255,8 @@ class Group(Folder):
         list_of_users = self.get_handler('.users')
 
         username = username.strip()
-        if username in list_of_users.state.usernames:
-            list_of_users.set_changed()
-            list_of_users.state.usernames.remove(username)
+        if username in list_of_users.get_usernames():
+            list_of_users.remove(username)
             self.set_changed() 
 
 

@@ -28,7 +28,7 @@ from urllib import unquote
 
 # Import from itools
 from itools.resources.socket import File
-from itools.handlers import transactions
+from itools.handlers.transactions import get_transaction
 from itools.web.exceptions import BadRequest, Forbidden, UserError
 from itools.web.context import Context, get_context, set_context
 from itools.web.request import Request
@@ -156,7 +156,7 @@ class Server(object):
 
 
     def end_commit_on_success(self):
-        pass
+        get_transaction().clear()
 
 
     def end_commit_on_error(self):
@@ -312,7 +312,7 @@ class Server(object):
             context.scripts = []
 
             # Get the transaction object
-            transaction = transactions.get_transaction()
+            transaction = get_transaction()
 
             try:
                 # Call the method
@@ -364,7 +364,6 @@ class Server(object):
                             response_body = root.internal_server_error()
                         else:
                             self.end_commit_on_success()
-                            transaction.clear()
 
             # Set the response body
             response.set_body(response_body)

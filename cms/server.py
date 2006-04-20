@@ -126,9 +126,10 @@ class Server(web.server.Server):
         db = '%s/database' % target
         db2 = '%s/database.bak' % target
 
-        open('%s/state' % target, 'w').write('END')
-        abspaths = [ x.get_abspath() for x in get_transaction() ]
+        transaction = get_transaction()
+        abspaths = [ x.get_abspath() for x in transaction ]
         abspaths.sort()
+        open('%s/state' % target, 'w').write('END')
         for abspath in abspaths:
             src = '%s%s' % (db, abspath)
             dst = '%s%s' % (db2, abspath)
@@ -172,7 +173,11 @@ class Server(web.server.Server):
                             open(dstfile, 'w').write(open(srcfile).read())
             else:
                 open(dst, 'w').write(open(src).read())
+
+        # Finish with the backup
         open('%s/state' % target, 'w').write('OK')
+        # Clean the transaction
+        transaction.clear()
 
 
     def end_commit_on_error(self):

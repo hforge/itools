@@ -146,13 +146,6 @@ class Catalog(Folder):
             state.cache[iname] = None
             state.cache[sname] = None
         state.added_documents = {}
-        # Save indexes
-        fields = self.get_handler('fields')
-        for field in fields.state.fields:
-            if field.is_indexed:
-                iindex = self.get_handler('f%d' % field.number)
-                iindex._save_state(iindex.resource)
-                iindex.timestamp = iindex.resource.get_mtime()
 
 
     #########################################################################
@@ -210,6 +203,7 @@ class Catalog(Folder):
             if field.is_indexed:
                 # Get the inverted index (search)
                 ii = self.get_handler('f%d' % field.number)
+                ii.set_changed()
                 # Tokenize
                 terms = set()
                 analyser = get_analyser(field.type)
@@ -248,6 +242,7 @@ class Catalog(Folder):
         fields = indexed.state.fields
         for field_number in fields:
             ii = self.get_handler('f%d' % field_number)
+            ii.set_changed()
             for term in fields[field_number]:
                 ii.unindex_term(term, doc_number)
 

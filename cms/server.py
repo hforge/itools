@@ -127,20 +127,20 @@ class Server(web.server.Server):
         db2 = '%s/database.bak' % target
 
         open('%s/state' % target, 'w').write('END')
-        cmd = 'rsync -lptgoD --delete %s/database%s %s/database.bak%s'
-        for handler in get_transaction():
-            abspath = handler.get_abspath()
+        abspaths = [ x.get_abspath() for x in get_transaction() ]
+        abspaths.sort()
+        for abspath in abspaths:
             src = '%s%s' % (db, abspath)
             dst = '%s%s' % (db2, abspath)
 
-            if isinstance(handler, Folder):
+            if os.path.isdir(src):
                 src_files = set(os.listdir(src))
                 dst_files = set(os.listdir(dst))
                 # Remove
                 for filename in dst_files - src_files:
                     filename = '%s/%s' % (dst, filename)
                     if os.path.isdir(filename):
-                        os.rmdir(filename)
+                        os.system('rm -r %s' % filename)
                     else:
                         os.remove(filename)
                 # Add
@@ -151,6 +151,25 @@ class Server(web.server.Server):
                         os.system('cp -r %s %s' % (srcfile, dstfile))
                     else:
                         open(dstfile, 'w').write(open(srcfile).read())
+                # Different. XXX Could not need this if IIndex (itools.catalog)
+                # was not a so special handler (the folder keeps the data
+                # structure for the files).
+                for filename in src_files & dst_files:
+                    srcfile = '%s/%s' % (src, filename)
+                    dstfile = '%s/%s' % (dst, filename)
+                    srctime = os.stat(srcfile).st_mtime
+                    dsttime = os.stat(dstfile).st_mtime
+                    if srctime > dsttime:
+                        # Remove
+                        if os.path.isdir(dstfile):
+                            os.system('rm -r %s' % dstfile)
+                        else:
+                            os.remove(dstfile)
+                        # Copy
+                        if os.path.isdir(srcfile):
+                            os.system('cp -r %s %s' % (srcfile, dstfile))
+                        else:
+                            open(dstfile, 'w').write(open(srcfile).read())
             else:
                 open(dst, 'w').write(open(src).read())
         open('%s/state' % target, 'w').write('OK')

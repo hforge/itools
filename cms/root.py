@@ -31,7 +31,7 @@ from itools import get_abspath
 from itools.resources import get_resource
 from itools import handlers
 from itools.handlers import get_handler
-from itools.handlers import transactions
+from itools.handlers.transactions import get_transaction
 from itools.xml import namespaces
 from itools.stl import stl
 from itools.catalog.Catalog import Catalog
@@ -400,6 +400,7 @@ class Root(Group, WebSite):
     update_catalog__access__ = 'is_admin'
     def update_catalog(self):
         t0 = time()
+        transaction = get_transaction()
         # Init transaction (because we use sub-transactions)
         server = get_context().server
         server.start_commit()
@@ -408,7 +409,7 @@ class Root(Group, WebSite):
             # Start fresh
             self.del_handler('.catalog')
             self.set_handler('.catalog', Catalog(fields=self._catalog_fields))
-            self.save_state()
+            transaction.commit()
 
             # Initialize a new empty catalog
             catalog = self.get_handler('.catalog')
@@ -432,8 +433,8 @@ class Root(Group, WebSite):
                     n += 1
                     # Avoid too much memory usage but saving changes
                     if n % 1000 == 0:
-                        catalog.save_state()
-            catalog.save_state()
+                        transaction.commit()
+            transaction.commit()
             t2 = time()
             print 'Updating catalog, indexing:', t2 - t1
         except:

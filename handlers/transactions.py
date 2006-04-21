@@ -44,10 +44,12 @@ class Transaction(set):
         try:
             # Errors should not happen in this stage.
             for handler in self:
-                if handler.resource.get_mtime() is not None:
-                    handler.resource.open()
-                    handler._save_state(handler.resource)
-                    handler.resource.close()
+                resource = handler.resource
+                if resource.get_mtime() is not None:
+                    resource.open()
+                    handler._save_state(resource)
+                    resource.close()
+                    handler.timestamp = resource.get_mtime()
         except:
             # Rollback the transaction, so handlers state will be consistent.
             # Note that the resource layer maybe incosistent anyway, true
@@ -56,9 +58,6 @@ class Transaction(set):
             self.release()
             raise
         else:
-            # Update handlers timestamp
-            for handler in self:
-                handler.timestamp = handler.resource.get_mtime()
             # Release the thread lock
             self.release()
 

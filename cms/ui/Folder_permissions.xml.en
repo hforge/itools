@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <form action=";permissions" method="post">
+      <div style="width: 300; float: left; padding: 0px 10px 10px 10px;">
+            <h2>Members and roles</h2>
+            <table cellpadding="2" cellspacing="0" border="1" width="300">
+                <thead>
+                    <tr >
+                        <th width="10"></th>
+                        <th width="*">Name</th>
+                        <th width="100">Role</th>
+                    </tr>
+                </thead>
+                <tbody stl:if="users">
+                    <tr stl:repeat="user users">
+                        <td>
+                            <input type="checkbox" name="delusers" 
+                                   stl:attributes="value user/name" />
+                        </td>
+                        <td stl:content="user/title"></td>
+                        <td>
+                          <select stl:attributes="name user/name">
+                            <option stl:repeat="role user/roles"
+                              stl:attributes="value role/name;
+                                selected role/selected"
+                              stl:content="role/title">
+                            </option>
+                          </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="width: 300px">
+              <input type="submit" name="update" value="Update"
+                style="float: right" />
+              <input type="submit" name="delete" value="Delete" />
+            </p>
+        </div>
+        <div style="width: 300px; margin-left: 320px">
+            <h2>Add a member</h2>
+            <select name="addusers" size="15" multiple="multiple">
+                <option stl:repeat="user others"
+                    stl:attributes="value user/name"
+                    stl:content="user/title" />
+            </select>
+            <p style="width: 200px">
+              <input type="submit" name="add" value="Add" />
+            </p>
+        </div>
+        <div class="clear"></div>
+    </form>
+</stl:block>

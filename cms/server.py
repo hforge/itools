@@ -152,25 +152,25 @@ class Server(web.server.Server):
                         os.system('cp -r %s %s' % (srcfile, dstfile))
                     else:
                         open(dstfile, 'w').write(open(srcfile).read())
-##                # Different. XXX Could not need this if IIndex (itools.catalog)
-##                # was not a so special handler (the folder keeps the data
-##                # structure for the files).
-##                for filename in src_files & dst_files:
-##                    srcfile = '%s/%s' % (src, filename)
-##                    dstfile = '%s/%s' % (dst, filename)
-##                    srctime = os.stat(srcfile).st_mtime
-##                    dsttime = os.stat(dstfile).st_mtime
-##                    if srctime > dsttime:
-##                        # Remove
-##                        if os.path.isdir(dstfile):
-##                            os.system('rm -r %s' % dstfile)
-##                        else:
-##                            os.remove(dstfile)
-##                        # Copy
-##                        if os.path.isdir(srcfile):
-##                            os.system('cp -r %s %s' % (srcfile, dstfile))
-##                        else:
-##                            open(dstfile, 'w').write(open(srcfile).read())
+                # Different. XXX Could not need this if IIndex (itools.catalog)
+                # was not a so special handler (the folder keeps the data
+                # structure for the files).
+                for filename in src_files & dst_files:
+                    srcfile = '%s/%s' % (src, filename)
+                    dstfile = '%s/%s' % (dst, filename)
+                    srctime = os.stat(srcfile).st_mtime
+                    dsttime = os.stat(dstfile).st_mtime
+                    if srctime > dsttime:
+                        # Remove
+                        if os.path.isdir(dstfile):
+                            os.system('rm -r %s' % dstfile)
+                        else:
+                            os.remove(dstfile)
+                        # Copy
+                        if os.path.isdir(srcfile):
+                            os.system('cp -r %s %s' % (srcfile, dstfile))
+                        else:
+                            open(dstfile, 'w').write(open(srcfile).read())
             else:
                 open(dst, 'w').write(open(src).read())
 

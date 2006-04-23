@@ -197,7 +197,7 @@ class Server(object):
         set_context(context)
 
         # Our canonical URLs never end with an slash
-        if context.uri.path.endswith_slash:
+        if request.method == 'GET' and context.uri.path.endswith_slash:
             # Redirect to the same URL without the trailing slash
             goto = copy(context.uri)
             goto.path.endswith_slash = False

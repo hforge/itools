@@ -198,10 +198,6 @@ class Node(AccessControl, iNode):
 class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
               CatalogAware):
 
-    # Needed by the classic skin
-    is_image = False
-
-
     def before_commit(self):
         from root import Root
 

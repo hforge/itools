@@ -38,10 +38,7 @@ from itools.catalog.Catalog import Catalog
 from itools.web import get_context
 
 # Import from itools.cms
-from Group import Group
-from Handler import Handler
-from handlers import Metadata
-from metadata import Password
+from Group import RoleAware
 from text import PO
 from users import User, UserFolder
 from utils import comeback
@@ -49,7 +46,7 @@ from WebSite import WebSite
 
 
 
-class Root(Group, WebSite):
+class Root(RoleAware, WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
@@ -89,7 +86,6 @@ class Root(Group, WebSite):
         skeleton['.archive'] = handlers.Folder.Folder()
         # Now call the parents get_skeleton
         users = [username]
-        skeleton.update(Group.get_skeleton(self, users=users))
         # Reviewers
         reviewers = Group(users=users)
         skeleton['reviewers'] = reviewers

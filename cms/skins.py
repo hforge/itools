@@ -264,16 +264,15 @@ class Skin(Folder):
 
 
     def get_site_search(self):
-
         context = get_context()
-        request = context.request
+
         namespace = {}
 
-        path = context.handler.get_pathtoroot()
-        namespace['action'] = path + ';site_search'
+        here = context.handler
+        namespace['action'] = '%s/;site_search' % here.get_pathtoroot()
 
-        if request.has_parameter('site_search_text'):
-            namespace['text'] = request.get_parameter('site_search_text')
+        if context.has_form_value('site_search_text'):
+            namespace['text'] = context.get_form_value('site_search_text')
         else:
             namespace['text'] = ''
 

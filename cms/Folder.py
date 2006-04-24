@@ -485,7 +485,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
         context.set_cookie('browse', 'list')
 
-        if context.has_parameter('search_value'):
+        if context.has_form_value('search_value'):
             search_value = context.get_form_value('search_value')
             search_value = unicode(search_value, 'utf8').strip()
         else:
@@ -931,7 +931,7 @@ class Folder(Handler, handlers.Folder.Folder):
         self.set_handler(name, handler, **kw)
 
         message = self.gettext(u'New resource added.')
-        if context.has_parameter('add_and_return'):
+        if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             handler = self.get_handler(name)

@@ -1,3 +1,18 @@
+0.13.3 (2006/04/24)
+
+  CSV
+  - Be strict when parsing CSV files (check all lines have the same number
+    of columns), by Piotr Macuk. [#263]
+
+  Catalog
+  - New format, much more compact.
+
+  CMS
+  - Speed-up write operations.
+  - Add datatype "Enumerate", by Hervé Cauwelier. [#304]
+  - Update the French translation, by Hervé Cauwelier. [#303]
+
+
 0.13.2 (2006/04/18)
 
   Handlers

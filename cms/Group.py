@@ -326,6 +326,10 @@ class RoleAware(object):
         return [r['name'] for r in self.__roles__]
 
 
+    def get_role_resource_names(self):
+        return ['.%s' % r for r in self.get_role_names()]
+
+
     def get_skeleton(self, **kw):
         skeleton = {}
 

@@ -43,6 +43,7 @@ from text import PO
 from users import User, UserFolder
 from utils import comeback
 from WebSite import WebSite
+from handlers import ListOfUsers
 
 
 
@@ -50,7 +51,7 @@ class Root(RoleAware, WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20060205'
+    class_version = '20060424'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
 
@@ -447,53 +448,19 @@ class Root(RoleAware, WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20051025(self):
-        """Folders now wear the 'folder' format in their metadata."""
-        from Folder import Folder
-
-        reindex_handler = self.reindex_handler
-        for handler, context in self.traverse2():
-            name = handler.name
-            abspath = handler.abspath
-            if name.startswith('.'):
-                context.skip = True
-            elif abspath == '/ui':
-                context.skip = True
-            elif handler is self:
-                pass
-            elif isinstance(handler, Folder):
-                format = handler.get_property('format')
-                if format == '':
-                    print abspath
-                    handler.set_property('format', Folder.class_id)
-                    reindex_handler(handler)
-
-
-    def update_20060205(self):
-        users = self.get_handler('users')
-        for user in users.search_handlers(handler_class=User):
-            data = user.get_handler('.data')
-            # Move email and password to the metadata
-            user.set_property('ikaaro:email', data.state.email)
-            password = Password.decode(data.state.password)
-            user.set_property('ikaaro:password', password)
-            # Remove obsolete resource
-            user.resource.del_resource('.data')
-
-
-    #######################################################################
-    # Import
-    #######################################################################
-##    ximport__access__ = 'is_admin'
-##    def ximport(self, path):
-##        from itools.handlers import get_handler
-##        for resource_name in self.resource.get_resource_names():
-##            self.resource.del_resource(resource_name)
-##        source = get_resource(path)
-##        for resource_name in source.get_resource_names():
-##            resource = source.get_resource(resource_name)
-##            self.resource.set_resource(resource_name, resource)
-##        print 'importing, done'
+    def update_20060424(self):
+        # Get info
+        admins = self.get_handler('admins/.users').get_usernames()
+        reviewers = self.get_handler('reviewers/.users').get_usernames()
+        # Add handlers
+        self.set_handler('.admins.users', ListOfUsers(users=admins))
+        self.set_handler('.reviewers.users', ListOfUsers(users=reviewers))
+        # Remove handlers
+        self.del_handler('.users')
+        self.del_handler('admins')
+        self.del_handler('.admins.metadata')
+        self.del_handler('reviewers')
+        self.del_handler('.reviewers.metadata')
 
 
 WebSite.register_handler_class(Root)

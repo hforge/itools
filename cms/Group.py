@@ -21,75 +21,35 @@ from itools.web.exceptions import UserError
 from itools.web import get_context
 
 # Import from ikaaro
-from access import AccessControl
 from handlers import ListOfUsers
-from utils import comeback, checkid
-from widgets import Table
-from Folder import Folder
+from utils import comeback
 
 
 
-class Group(Folder):
+##class Group(Folder):
 
-    class_id = 'group'
-    class_version = '20040625'
-    class_title = u'Group'
-
-
-    #######################################################################
-    # Skeleton
-    #######################################################################
-    def get_skeleton(self, users=[]):
-        # Build the users handler manually, as a test (the other option is
-        # to build a handler class just to manage '.users')
-        return {'.users': ListOfUsers(users=users)}
+##    class_id = 'group'
+##    class_version = '20040625'
+##    class_title = u'Group'
 
 
-    #######################################################################
-    # Catalog
-    #######################################################################
-    def get_catalog_indexes(self):
-        document = Folder.get_catalog_indexes(self)
-        document['is_group'] = True
-        document['usernames'] = self.get_usernames()
-        return document
+##    #######################################################################
+##    # Skeleton
+##    #######################################################################
+##    def get_skeleton(self, users=[]):
+##        # Build the users handler manually, as a test (the other option is
+##        # to build a handler class just to manage '.users')
+##        return {'.users': ListOfUsers(users=users)}
 
 
-    #######################################################################
-    # API
-    #######################################################################
-    def set_user(self, username):
-        username = username.strip()
-        if username:
-            list_of_users = self.get_handler('.users')
-            list_of_users.add(username)
-            self.set_changed()
-
-
-    def get_usernames(self):
-        return self.get_handler('.users').get_usernames()
-
-
-    def get_subgroups(self):
-        """
-        Returns a list with all the subgroups, including the subgroups of
-        the subgroups, etc..
-        """
-        for handler in self.traverse():
-            if isinstance(handler, Group):
-                yield handler
-
-
-    def remove_user(self, username):
-        list_of_users = self.get_handler('.users')
-
-        username = username.strip()
-        if username in list_of_users.get_usernames():
-            list_of_users.remove(username)
-            self.set_changed() 
-
-
-Folder.register_handler_class(Group)
+##    #######################################################################
+##    # Catalog
+##    #######################################################################
+##    def get_catalog_indexes(self):
+##        document = Folder.get_catalog_indexes(self)
+##        document['is_group'] = True
+##        document['usernames'] = self.get_usernames()
+##        return document
 
 
 

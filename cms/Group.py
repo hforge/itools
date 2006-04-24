@@ -342,7 +342,7 @@ class RoleAware(object):
         return skeleton
 
 
-    def get_handler(self, segment, resource):
+    def _get_handler(self, segment, resource):
         return ListOfUsers(resource)
 
 

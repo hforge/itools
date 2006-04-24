@@ -104,7 +104,7 @@ class OrderAware(object):
     def order_folders_down(self, **kw):
         if not kw.has_key('name'):
             message = u"Please select the folders to order down."
-            return comeback(message)
+            return comeback(self.gettext(message))
         
         names = kw['name']
         ordered_names = self.get_ordered_folder_names()

@@ -175,8 +175,8 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
         # with the POST method, but is should be a GET method. Maybe
         # it will be solved after the needed folder browse overhaul.
         if context.request.method == 'POST':
-            context.redirect(';compare?%s' % '&'.join([ 'names:list=%s' % x
-                                                        for x in names ]))
+            url = ';compare?%s' % '&'.join([ 'names=%s' % x for x in names ])
+            context.redirect(url)
 
         archives = self.get_root().get_handler('.archive')
         revisions = archives.get_handler(self.get_property('id'))

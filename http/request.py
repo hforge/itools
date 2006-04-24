@@ -333,7 +333,7 @@ class Request(Message):
             elif isinstance(value, list):
                 for x in value:
                     # XXX Should coerce too
-                    new_query.append(('%s:list' % key, x))
+                    new_query.append(('%s' % key, x))
             else:
                 # XXX More types needed!!
                 new_query.append((key, str(value)))

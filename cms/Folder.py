@@ -44,7 +44,6 @@ from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import comeback, checkid, reduce_string
 from widgets import Breadcrumb, Table
-from Group import ListOfUsers
 
 
 
@@ -1020,6 +1019,8 @@ class FolderWithRole(Folder):
 
 
     def get_skeleton(self, **kw):
+        from Group import ListOfUsers
+
         skeleton = Folder.get_skeleton(self)
 
         # build roles
@@ -1032,6 +1033,8 @@ class FolderWithRole(Folder):
 
 
     def _get_handler(self, segment, resource):
+        from Group import ListOfUsers
+
         name = segment.name
         if name[0] == '.':
             roles = ['.' + r['name'] for r in self.get_roles()]

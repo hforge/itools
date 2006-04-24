@@ -85,18 +85,18 @@ class Context(object):
 
 
     def get_form_values(self, name):
-        value = self.request.get_parameter(name)
-        if isinstance(value, list):
-            return value
-        return [value]
+        request = self.request
+        if request.has_parameter(name):
+            value = request.get_parameter(name)
+            if isinstance(value, list):
+                return value
+            return [value]
+
+        return []
 
 
-    def has_parameter(self, name):
+    def has_form_value(self, name):
         return self.request.has_parameter(name)
-
-
-##    def get_parameters(self):
-##        return self.request.
 
 
     ########################################################################

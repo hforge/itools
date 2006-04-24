@@ -21,6 +21,7 @@ import marshal
 from time import time
 import urllib
 import zlib
+from operator import attrgetter
 
 # Import from itools
 from itools.datatypes import FileName
@@ -43,6 +44,7 @@ from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import comeback, checkid, reduce_string
 from widgets import Breadcrumb, Table
+from Group import ListOfUsers
 
 
 

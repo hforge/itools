@@ -53,31 +53,12 @@ class AccessControl(object):
         return None
 
 
-    def is_ingroup(self, name):
-        """
-        Checks wether the authenticated user is in the given group (e.g.
-        admins, reviewers) within the context of this resource.
-        """
-        context = get_context()
-
-        user = context.user
-        if user is None:
-            return False
-
-        root = context.root
-        users = root.get_handler(name).get_usernames()
-        if user.name in users:
-            return True
-
-        return False
-
-
     def is_admin(self):
-        return self.is_ingroup('admins')
+        return get_context().root.is_in_role('admins')
 
 
     def is_reviewer(self):
-        return self.is_ingroup('reviewers')
+        return get_context().root.is_in_role('reviewers')
 
 
     def is_authenticated(self):

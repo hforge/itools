@@ -89,9 +89,9 @@ class WorkflowAware(iWorkflowAware):
         if user is None:
             return False
 
-        if user.name in root.get_handler('admins').get_usernames():
+        if root.is_in_role('admins', user.name):
             return True
-        if user.name in root.get_handler('reviewers').get_usernames():
+        if root.is_in_role('reviewers', user.name):
             return True
 
         if name == 'request':

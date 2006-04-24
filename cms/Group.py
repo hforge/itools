@@ -18,6 +18,7 @@
 # Import from itools
 from itools.stl import stl
 from itools.web.exceptions import UserError
+from itools.web import get_context
 
 # Import from ikaaro
 from access import AccessControl
@@ -59,13 +60,6 @@ class Group(Folder):
     #######################################################################
     # API
     #######################################################################
-    def _get_handler(self, segment, resource):
-        name = segment.name
-        if name == '.users':
-            return ListOfUsers(resource)
-        return Folder._get_handler(self, segment, resource)
-
-
     def set_user(self, username):
         username = username.strip()
         if username:
@@ -88,127 +82,6 @@ class Group(Folder):
                 yield handler
 
 
-    #######################################################################
-    # User interface
-    #######################################################################
-    def get_views(self):
-        return ['browse_users', 'browse_thumbnails', 'edit_metadata_form']
-
-
-    def get_subviews(self, name):
-        views = [['browse_users', 'add_users_form'],
-                 ['browse_thumbnails', 'browse_list', 'add_group_form']]
-        for subviews in views:
-            if name in subviews:
-                return subviews
-        return Folder.get_subviews(self, name)
-
-
-    is_allowed_to_view = AccessControl.is_admin
-    
-
-    #######################################################################
-    # Groups
-    browse_thumbnails__label__ = u'Groups'
-
-
-    add_group_form__access__ = 'is_admin'
-    add_group_form__label__ = u'Add'
-    add_group_form__sublabel__ = u'Add'
-    def add_group_form(self, context):
-        handler = self.get_handler('/ui/Group_add_group.xml')
-        return stl(handler)
-
-
-    add_group__access__ = 'is_admin'
-    def add_group(self, context):
-        # Process input data
-        name = context.get_form_value('name').strip()
-        if not name:
-            # Empty name
-            raise UserError, self.gettext(u'The name must be entered')
-
-        name = checkid(name)
-        if name is None:
-            # Invalid name
-            message = (u'The name contains illegal characters, choose'
-                       u' another one.')
-            raise UserError, self.gettext(message)
-
-        if self.has_handler(name):
-            # Name already used
-            message = u'There is already another group with this name.'
-            raise UserError, self.gettext(message)
-
-        self.set_handler(name, Group())
-
-        message = self.gettext(u'Group added.')
-        comeback(message, goto=';browse_thumbnails')
-
-
-    #######################################################################
-    # Users / Browse
-    browse_users__access__ = 'is_admin'
-    browse_users__label__ = u'Users'
-    browse_users__sublabel__ = u'Browse'
-    def browse_users(self, context):
-        root = context.root
-
-        namespace = {}
-        tablename = 'users'
-
-        # Get the objects
-        path_to_root = self.get_pathto(root)
-        objects = []
-        for username in self.get_usernames():
-            user = root.get_user(username)
-            url = '%s/users/%s/;%s' % (path_to_root, username,
-                                       user.get_firstview())
-            objects.append({'name': username, 'fullname': user.title,
-                            'url': url})
-
-        # Use the widget
-        table = Table(path_to_root, tablename, objects, sortby='name',
-                      sortorder='up', batchstart='0', batchsize='0')
-
-        # Add the total
-        namespace['table'] = table
-        namespace['total'] = len(objects)
-
-        handler = self.get_handler('/ui/Group_browse_users.xml')
-        return stl(handler, namespace)
-
-
-    remove_users__access__ = 'is_admin'
-    def remove_users(self, context):
-        ids = context.get_form_values('ids')
-
-        if not ids:
-            message = self.gettext(u'You must select the members to remove.')
-            raise UserError, message
-
-        root = context.root
-        user_folder = root.get_handler('users')
-        # Remove users in sub-groups
-        for subgroup in self.get_subgroups():
-            for name in ids:
-                if name in subgroup.get_usernames():
-                    subgroup.remove_user(name)
-
-        # Remove from this group
-        for name in ids:
-            self.remove_user(name)
-            # Empty group cache
-            user = user_folder.get_handler(name)
-            user.clear_group_cache()
-
-        if len(ids) == 1:
-            message = self.gettext(u'User removed.')
-        else:
-            message = self.gettext(u'Users removed.')
-        comeback(message)
-
-
     def remove_user(self, username):
         list_of_users = self.get_handler('.users')
 
@@ -218,59 +91,187 @@ class Group(Folder):
             self.set_changed() 
 
 
-    #######################################################################
-    # Users / Add
-    add_users_form__access__ = 'is_admin'
-    add_users_form__label__ = u'Users'
-    add_users_form__sublabel__ = u'Add'
-    def add_users_form(self, context):
-        # Users owned by my parent.
-        parent = self.parent
-        while not isinstance(parent, Group):
-            parent = parent.parent
-        pusernames = parent.get_usernames()
-        usernames = pusernames.difference(self.get_usernames())
-        usernames = list(usernames)
-        usernames.sort()
+Folder.register_handler_class(Group)
 
-        # Build the namespace
+
+
+class RoleAware(object):
+
+    __roles__ = [
+        {'name': 'members', 'title': u"Members", 'unit': u"Member"},
+        {'name': 'reviewers', 'title': u"Reviewers", 'unit': u"Reviewer"},
+    ]
+
+
+    def get_role(self, name):
+        return self.get_handler('.%s.users' % name)
+
+
+    def get_roles(self):
+        return list(self.__roles__)
+
+
+    def get_role_names(self):
+        return [r['name'] for r in self.__roles__]
+
+
+    def get_role_resource_names(self):
+        return ['.%s' % r for r in self.get_role_names()]
+
+
+    def get_skeleton(self, **kw):
+        skeleton = {}
+
+        # build roles
+        for role in self.get_roles():
+            rolename = role['name']
+            users = kw.get(rolename, [])
+            skeleton['.%s.users' % rolename] = ListOfUsers(users=users)
+
+        return skeleton
+
+
+    def is_in_role(self, rolename, username=None):
+        if username is None:
+            context = get_context()
+            user = context.user
+            if user is None:
+                return False
+            username = user.name
+
+        role = self.get_role(rolename)
+        return username in role.get_usernames()
+
+
+    def del_roles(self, username):
+        for role in self.get_roles():
+            handler = self.get_role(role['name'])
+            if username in handler.get_usernames():
+                handler.remove(username)
+
+        context = get_context()
+        root = context.root
+        user = root.get_user(username)
+        user.clear_group_cache()
+
+
+    def set_role(self, rolename, username):
+        for role in self.get_roles():
+            handler = self.get_role(role['name'])
+            if rolename == role['name']:
+                if not username in handler.get_usernames():
+                    handler.add(username)
+            else:
+                if username in handler.get_usernames():
+                    handler.remove(username)
+
+        context = get_context()
+        root = context.root
+        user = root.get_user(username)
+        user.clear_group_cache()
+
+
+    #########################################################################
+    # User Interface
+    def get_roles_namespace(self, username):
+        namespace = []
+
+        for role in self.get_roles():
+            rolename = role['name']
+            namespace.append({
+                'name': rolename,
+                'title': role['unit'],
+                'selected': self.is_in_role(rolename, username)
+            })
+
+        return namespace
+
+
+    def get_views(self):
+        return ['permissions_form']
+
+
+    def _get_members_sort_key(self):
+        return 'title_or_name'
+
+
+    permissions_form__access__ = 'is_allowed_to_edit'
+    permissions_form__label__ = u"Permissions"
+    def permissions_form(self, context):
+        root = context.root
+        userfolder = root.get_object('users')
         namespace = {}
-        namespace['users'] = [ {'name': x, 'title': x} for x in usernames ]
-        namespace['nb_users'] = len(usernames) - 1
-        if len(usernames)  > 10 :
-             namespace['size'] = 10
-        else:
-             namespace['size'] = len(usernames)
-        namespace['name'] = self.name
-        namespace['parent'] = self.parent.name
-        if (self.parent.name == 'groups') or (pusernames):
-            namespace['parent'] = ''
 
-        handler = self.get_handler('/ui/Group_add_users.xml')
+        members = set()
+        for role in self.get_roles():
+            rolename = role['name']
+            handler = self.get_role(rolename)
+            members = members.union(handler.get_usernames())
+
+        users = [userfolder.get_object(u) for u in members]
+        key = attrgetter(self._get_members_sort_key())
+        users.sort(key=key)
+        namespace['users'] = []
+
+        for user in users:
+            username = user.name
+            info = {}
+            info['name'] = username
+            info['title'] = user.get_title_or_name()
+            info['roles'] = self.get_roles_namespace(username)
+            namespace['users'].append(info)
+
+        others = []
+        for user in userfolder.search_handlers():
+            if user.name not in members:
+                others.append(user)
+        others.sort(key=key)
+
+        namespace['others'] = []
+        for user in others:
+            info = {}
+            info['name'] = user.name
+            info['title'] = user.get_title_or_name()
+            namespace['others'].append(info)
+
+        handler = self.get_handler('/ui/Folder_permissions.xml')
         return stl(handler, namespace)
 
 
-    add_users__access__ = 'is_admin'
-    def add_users(self, context):
-        """Form action that adds new members to the group."""
-        names = context.get_form_values('names')
+    permissions__access__ = 'is_allowed_to_edit'
+    def permissions(self, delusers=[], addusers=[], **kw):
+        context = get_context()
+        root = context.root
 
-        userfolder = context.root.get_object('users')
-        for name in names:
-            group_id = self.get_abspath().split('/')[3:]
-            self.set_user(name)
-            # Empty group cache
-            user = userfolder.get_handler(name)
-            user.clear_group_cache()
+        # permissions to remove
+        if kw.get('delete'):
+            if isinstance(delusers, str):
+                delusers = [delusers]
+            for username in delusers:
+                self.del_roles(username)
 
-        if len(names) == 0:
-             message = u'No user added'
-        elif len(names) == 1: 
-             message = u'User added'
-        else:
-             message = u'Users added'
-        message = self.gettext(message)
-        comeback(message, goto=';browse_users')
+            message = u"Members deleted."
+            return comeback(message)
 
+        # permissions to add
+        elif kw.get('add'):
+            if isinstance(addusers, str):
+                addusers = [addusers]
+            for username in addusers:
+                self.set_role('members', username)
 
-Folder.register_handler_class(Group)
+            message = u"Members added."
+            return comeback(message)
+
+        # permissions to change
+        elif kw.get('update'):
+            userfolder = root.get_handler('users')
+            for username, new_role in kw.items():
+                if username in delusers or (
+                    username in addusers or (
+                        not userfolder.has_handler(username))):
+                    continue
+                self.set_role(new_role, username)
+
+            message = u"Roles updated."
+            return comeback(message)

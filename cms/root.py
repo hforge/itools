@@ -54,7 +54,12 @@ class Root(RoleAware, WebSite):
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
 
-    __fixed_handlers__ = ['users', 'admins', 'reviewers', 'ui']
+    __fixed_handlers__ = ['users', 'ui']
+
+
+    __roles__ = [
+        {'name': 'reviewers', 'title': u'Reviewers', 'unit': u'Reviewer'},
+        {'name': 'admins', 'title': u'Admins', 'unit': u'Admin'}]
 
 
     ########################################################################
@@ -77,27 +82,13 @@ class Root(RoleAware, WebSite):
 
 
     def get_skeleton(self, username=None, password=None):
-        skeleton = {}
-        # The catalog must be added first, so everything else is indexed
-        # (<index name>, <type>, <indexed>, <stored>)
-        catalog = Catalog(fields=self._catalog_fields)
-        skeleton['.catalog'] = catalog
+        # First call the parent's get_skeleton
+        users = [username]
+        skeleton = RoleAware.get_skeleton(self, admins=users)
+        # The catalog, index and search
+        skeleton['.catalog'] = Catalog(fields=self._catalog_fields)
         # The archive is used for versioning
         skeleton['.archive'] = handlers.Folder.Folder()
-        # Now call the parents get_skeleton
-        users = [username]
-        # Reviewers
-        reviewers = Group(users=users)
-        skeleton['reviewers'] = reviewers
-        metadata = self.build_metadata(reviewers, owner=username,
-                                       **{'dc:title': {'en': u'Reviewers'}})
-        skeleton['.reviewers.metadata'] = metadata
-        # Admins
-        admins = Group(users=users)
-        skeleton['admins'] = admins
-        metadata = self.build_metadata(admins, owner=username,
-                                       **{'dc:title': {'en': u'Admins'}})
-        skeleton['.admins.metadata'] = metadata
         # Metadata
         skeleton['.metadata'] = self.build_metadata(self)
         # Users
@@ -167,7 +158,7 @@ class Root(RoleAware, WebSite):
     # Traverse
     ########################################################################
     def _get_handler_names(self):
-        return Group._get_handler_names(self) + ['ui']
+        return WebSite._get_handler_names(self) + ['ui']
 
 
     def _get_handler(self, segment, resource):
@@ -177,7 +168,7 @@ class Root(RoleAware, WebSite):
             return Catalog(resource)
         elif name == '.archive':
             return handlers.Folder.Folder(resource)
-        return Group._get_handler(self, segment, resource)
+        return WebSite._get_handler(self, segment, resource)
 
 
     ########################################################################
@@ -208,7 +199,7 @@ class Root(RoleAware, WebSite):
 
 
     def get_document_types(self):
-        return Group.get_document_types(self) ##+ [WebSite]
+        return WebSite.get_document_types(self) ##+ [WebSite]
 
 
     ########################################################################
@@ -309,8 +300,8 @@ class Root(RoleAware, WebSite):
         user = get_context().user
         if user is None:
             return ['about', 'login_form', 'register_form']
-        return ['browse_thumbnails', 'new_resource_form',
-                'edit_metadata_form', 'general_form', 'catalog_form', 'about']
+        return ['browse_thumbnails', 'new_resource_form', 'edit_metadata_form',
+                'general_form', 'permissions_form', 'catalog_form', 'about']
 
 
     def get_subviews(self, name):
@@ -321,7 +312,7 @@ class Root(RoleAware, WebSite):
         for subviews in views:
             if name in subviews:
                 return subviews
-        return Group.get_subviews(self, name)
+        return WebSite.get_subviews(self, name)
 
 
     browse_thumbnails__label__ = u'Contents'
@@ -505,4 +496,4 @@ class Root(RoleAware, WebSite):
 ##        print 'importing, done'
 
 
-Group.register_handler_class(Root)
+WebSite.register_handler_class(Root)

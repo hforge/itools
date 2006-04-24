@@ -513,7 +513,7 @@ class UserFolder(Folder):
             group.set_user(username)
 
         message = self.gettext(u'User added.')
-        if context.has_parameter('add_and_return'):
+        if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             goto='./%s/;%s' % (username, user.get_firstview())

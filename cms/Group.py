@@ -34,8 +34,6 @@ class Group(Folder):
     class_id = 'group'
     class_version = '20040625'
     class_title = u'Group'
-    class_icon16 = 'images/Group16.png'
-    class_icon48 = 'images/Group48.png'
 
 
     #######################################################################

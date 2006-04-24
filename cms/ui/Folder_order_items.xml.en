@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <form action="." method="post">
+    <table border="0" cellpadding="2" cellspacing="2">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr stl:repeat="folder folders">
+          <td><input type="checkbox" name="name:list" value="" stl:attributes="value folder/name" /></td>
+          <td stl:content="folder/name"></td>
+          <td stl:content="folder/title"></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      <input type="submit" name=";order_folders_up" value="Order up" />
+      <input type="submit" name=";order_folders_down" value="Order down" />
+    </p>
+  </form>
+</stl:block>

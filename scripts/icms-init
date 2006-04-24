@@ -47,29 +47,21 @@ def init(parser, options, target):
         config.set('instance', 'port', options.port)
     config.write(open('%s/config.ini' % target, 'w'))
 
-    # Load the source
-    if options.source is None:
-        # Load the root class
-        if options.root is None:
-            root_class = Root
-        else:
-            exec('import %s' % options.root)
-            exec('root_class = %s.Root' % options.root)
-        # Get the password
-        if options.password is None:
-            password = [ random.choice(string.ascii_letters + string.digits)
-                         for x in range(8) ]
-            password = ''.join(password)
-        else:
-            password = options.password
-        # Build the instance on memory
-        source = root_class(username='admin', password=password).resource
+    # Load the root class
+    if options.root is None:
+        root_class = Root
     else:
-        source = get_resource(options.source)
-        if not isinstance(source, base.Folder):
-            parser.error('can not import instance (not a folder)')
-        if not source.has_resource('.metadata'):
-            parser.error('can not import instance (bad folder)')
+        exec('import %s' % options.root)
+        exec('root_class = %s.Root' % options.root)
+    # Get the password
+    if options.password is None:
+        password = [ random.choice(string.ascii_letters + string.digits)
+                     for x in range(8) ]
+        password = ''.join(password)
+    else:
+        password = options.password
+    # Build the instance on memory
+    source = root_class(username='admin', password=password).resource
 
     # Initialize the database
     instance = get_resource(target)
@@ -77,21 +69,20 @@ def init(parser, options, target):
     root_resource = instance.get_resource('database')
 
     # Index and archive everything (only for new instances, not imported)
-    if options.source is None:
-        root = root_class(root_resource)
-        for handler, context in root.traverse2():
-            abspath = handler.get_abspath()
-            if handler.name.startswith('.'):
-                context.skip = True
-            elif isinstance(handler, skins.UI):
-                context.skip = True
-            elif isinstance(handler, Handler):
-                root.index_handler(handler)
-                if isinstance(handler, VersioningAware):
-                    handler.add_to_archive()
+    root = root_class(root_resource)
+    for handler, context in root.traverse2():
+        abspath = handler.get_abspath()
+        if handler.name.startswith('.'):
+            context.skip = True
+        elif isinstance(handler, skins.UI):
+            context.skip = True
+        elif isinstance(handler, Handler):
+            root.index_handler(handler)
+            if isinstance(handler, VersioningAware):
+                handler.add_to_archive()
 
-        transaction = transactions.get_transaction()
-        transaction.commit()
+    transaction = transactions.get_transaction()
+    transaction.commit()
 
     # Backup
     cmd = 'cp -r %s/database %s/database.bak'
@@ -103,10 +94,9 @@ def init(parser, options, target):
     # Bravo!
     print '*'
     print '* Welcome to itools.cms'
-    if options.source is None:
-        print '* A user with administration rights has been created for you:'
-        print '*   username: admin'
-        print '*   password: %s' % password
+    print '* A user with administration rights has been created for you:'
+    print '*   username: admin'
+    print '*   password: %s' % password
     print '*'
     print '* To start the new instance type:'
     print '*   icms-start %s' % target
@@ -124,8 +114,6 @@ if __name__ == '__main__':
         '-p', '--port', type='int', help='listen to port number')
     parser.add_option(
         '-r', '--root', help='use the ROOT handler class to init the instance')
-    parser.add_option(
-        '-s', '--source', help='use the SOURCE directory to init the instance')
     parser.add_option(
         '-w', '--password', help='use the given PASSWORD for the admin user')
 

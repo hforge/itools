@@ -197,39 +197,32 @@ class RoleAware(object):
 
 
     permissions__access__ = 'is_allowed_to_edit'
-    def permissions(self, delusers=[], addusers=[], **kw):
-        context = get_context()
-        root = context.root
-
-        # permissions to remove
-        if kw.get('delete'):
-            if isinstance(delusers, str):
-                delusers = [delusers]
-            for username in delusers:
+    def permissions(self, context):
+        # Permissions to remove
+        if context.has_form_value('delete'):
+            for username in context.get_form_values('delusers'):
                 self.del_roles(username)
 
             message = u"Members deleted."
-            return comeback(message)
 
-        # permissions to add
-        elif kw.get('add'):
-            if isinstance(addusers, str):
-                addusers = [addusers]
-            for username in addusers:
-                self.set_role('members', username)
+        # Permissions to add
+        elif context.has_form_value('add'):
+            default_role = self.get_roles()[0]['name']
+            for username in context.get_form_values('addusers'):
+                self.set_role(default_role, username)
 
             message = u"Members added."
-            return comeback(message)
 
-        # permissions to change
-        elif kw.get('update'):
-            userfolder = root.get_handler('users')
-            for username, new_role in kw.items():
-                if username in delusers or (
-                    username in addusers or (
-                        not userfolder.has_handler(username))):
+        # Permissions to change
+        elif context.has_form_value('update'):
+            root = context.root
+            userfolder = root.get_object('users')
+            for key in context.get_form_keys():
+                if key in ['delusers', 'addusers', 'update', 'delete', 'add']:
                     continue
-                self.set_role(new_role, username)
+                new_role = context.get_form_value(key)
+                self.set_role(new_role, key)
 
             message = u"Roles updated."
-            return comeback(message)
+
+        comeback(message)

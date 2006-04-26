@@ -19,6 +19,7 @@
 import os
 import mimetypes
 import tempfile
+from zipfile import ZipFile
 
 # Import from itools
 from itools.resources import memory
@@ -184,21 +185,16 @@ OfficeDocument.register_handler_class(MSPowerPoint)
 
 class OOffice(OfficeDocument):
 
-    def to_text(self, outfile=None):
+    def to_text(self):
         if self.__text_output__ is not None:
             return self.__text_output__
 
-        temp = TempDir(self)
-        temp.convert('unzip %s content.xml', outfile='content.xml')
-        stdout = temp.stdout
-        stderr = temp.stderr
-
-        if stderr != "":
-            text = u''
-        else:
-            resource = memory.File(stdout)
-            handler = XML.Document(resource)
-            text = handler.to_text()
+        resource = memory.File(self.to_str())
+        archive = ZipFile(resource)
+        content = archive.read('content.xml')
+        resource = memory.File(content)
+        handler = XML.Document(resource)
+        text = handler.to_text()
 
         self.__text_output__ = text
 

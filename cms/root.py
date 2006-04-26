@@ -38,7 +38,6 @@ from itools.catalog.Catalog import Catalog
 from itools.web import get_context
 
 # Import from itools.cms
-from Group import RoleAware
 from text import PO
 from users import User, UserFolder
 from utils import comeback
@@ -47,7 +46,7 @@ from handlers import ListOfUsers
 
 
 
-class Root(RoleAware, WebSite):
+class Root(WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
@@ -85,7 +84,7 @@ class Root(RoleAware, WebSite):
     def get_skeleton(self, username=None, password=None):
         # First call the parent's get_skeleton
         users = [username]
-        skeleton = RoleAware.get_skeleton(self, admins=users)
+        skeleton = WebSite.get_skeleton(self, admins=users)
         # The catalog, index and search
         skeleton['.catalog'] = Catalog(fields=self._catalog_fields)
         # The archive is used for versioning

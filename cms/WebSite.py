@@ -26,6 +26,7 @@ from itools.web.exceptions import UserError
 # Import from itools.cms
 from Folder import Folder
 from LocaleAware import LocaleAware
+from Group import RoleAware
 from skins import Skin
 from utils import comeback
 from workflow import WorkflowAware
@@ -36,7 +37,7 @@ from skins import ui
 
 
 
-class WebSite(Folder):
+class WebSite(RoleAware, Folder):
 
     class_id = 'WebSite'
     class_title = u'Web Site'
@@ -47,14 +48,20 @@ class WebSite(Folder):
     __fixed_handlers__ = ['skin', 'index']
 
 
-    def get_skeleton(self, skin_name=None, **kw):
-        skeleton = {}
-        # The Skin
-        skin = Skin()
-        skeleton['skin'] = skin
-        skeleton['.skin.metadata'] = self.build_metadata(skin, **kw)
+    __roles__ = [
+        {'name': 'members', 'title': u"Members", 'unit': u"Member"},
+        {'name': 'reviewers', 'title': u"Reviewers", 'unit': u"Reviewer"},
+    ]
 
-        return skeleton
+
+##    def get_skeleton(self, skin_name=None, **kw):
+##        skeleton = {}
+##        # The Skin
+##        skin = Skin()
+##        skeleton['skin'] = skin
+##        skeleton['.skin.metadata'] = self.build_metadata(skin, **kw)
+
+##        return skeleton
 
 
     def _get_virtual_handler(self, segment):
@@ -124,7 +131,7 @@ class WebSite(Folder):
     ########################################################################
     def get_views(self):
         return ['browse_thumbnails', 'new_resource_form', 'edit_metadata_form',
-                'general_form']
+                'general_form', 'permissions_form']
 
 
     def get_subviews(self, name):

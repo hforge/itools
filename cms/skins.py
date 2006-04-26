@@ -81,29 +81,13 @@ class Skin(Folder):
 
     def get_metadata_ns(self):
         context = get_context()
-        request = context.request
+
         here = context.handler
-
-        namespace = {}
-
-        namespace['title'] = here.get_title_or_name()
-        namespace['format'] = here.class_title
-        namespace['language'] = here.get_property('dc:language')
-        namespace['mtime'] = here.get_mtime().strftime('%Y-%m-%d %H:%M')
-        namespace['icon'] = here.get_path_to_icon(size=48)
-
-        # Languages
-        site_root = here.get_site_root()
-        site_languages = site_root.get_property('ikaaro:website_languages')
-        language = context.get_cookie('content_language') or site_languages[0]
-        languages = []
-        for x in site_languages:
-            languages.append({'code': x,
-                              'name': i18n.get_language_name(x),
-                              'is_selected': x == language})
-        namespace['languages'] = languages
-
-        return namespace
+        return {'title': here.get_title_or_name(),
+                'format': here.class_title,
+                'language': here.get_property('dc:language'),
+                'mtime': here.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                'icon': here.get_path_to_icon(size=48)}
 
 
     def get_tabs(self):
@@ -328,6 +312,8 @@ class Skin(Folder):
 
         # Root search
         namespace['site_search'] = self.get_site_search()
+        from pprint import pprint
+        pprint(namespace)
 
         return namespace
 

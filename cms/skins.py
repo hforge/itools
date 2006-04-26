@@ -312,8 +312,6 @@ class Skin(Folder):
 
         # Root search
         namespace['site_search'] = self.get_site_search()
-        from pprint import pprint
-        pprint(namespace)
 
         return namespace
 

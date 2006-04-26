@@ -200,20 +200,13 @@ class User(Folder):
                               'is_selected': language_code == user_language})
         namespace['languages'] = languages
 
-        # Themes
-        themes = []
-        user_theme = self.get_property('ikaaro:user_theme')
-        for theme in root.get_themes():
-            themes.append({'value': theme, 'is_selected': theme == user_theme})
-        namespace['themes'] = themes
-
         handler = self.get_handler('/ui/User_edit.xml')
         return stl(handler, namespace)
 
 
     edit__access__ = 'is_self_or_superuser'
     def edit(self, context):
-        for key in ['ikaaro:user_theme', 'ikaaro:user_language']:
+        for key in ['ikaaro:user_language']:
             self.set_property(key, context.get_form_value(key))
 
         message = self.gettext(u'Application preferences changed.')

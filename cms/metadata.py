@@ -107,7 +107,7 @@ class Schema(schemas.base.Schema):
         # Users
         'email': Email,
         'password': Password,
-        'user_theme': String(default='aruni'),
+        'user_theme': String(default='aruni'), # XXX unused
         'user_language': String(default='en'),
         'website_is_open': Boolean(default=False),
         'website_languages': Tokens(default=('en',))}

@@ -242,12 +242,12 @@ class Root(WebSite):
         themes = self.get_themes()
         theme = themes[0]
 
-        # Check the user preferences
-        user = context.user
-        if user is not None:
-            theme = user.get_property('ikaaro:user_theme')
-            if theme not in themes:
-                theme = themes[0]
+##        # Check the user preferences
+##        user = context.user
+##        if user is not None:
+##            theme = user.get_property('ikaaro:user_theme')
+##            if theme not in themes:
+##                theme = themes[0]
 
         return self.get_handler('ui/%s' % theme)
 

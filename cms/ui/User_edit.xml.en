@@ -16,14 +16,6 @@
           stl:content="language/name" />
       </select>
     </dd>
-    <dt>Theme</dt>
-    <dd>
-      <select name="ikaaro:user_theme">
-        <option stl:repeat="theme themes"
-          stl:attributes="value theme/value; selected theme/is_selected"
-          stl:content="theme/value" />
-      </select>
-    </dd>
   </dl>
   <p>
     <input type="submit" value="Change preferences" class="button_ok"/>

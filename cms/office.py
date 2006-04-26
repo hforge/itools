@@ -76,16 +76,11 @@ class OfficeDocument(File):
     def to_text(self):
         if self.__text_output__ is not None:
             return self.__text_output__
-        print "OfficeDocument.to_text"
 
         html = self.to_html().encode('UTF-8')
-        print "html", html
         resource = memory.File(html)
-        print "resource", resource
         handler = HTML.Document(resource)
-        print "handler", handler
         text = handler.to_text()
-        print "text", text
         self.__text_output__ = text
 
         return text
@@ -94,7 +89,6 @@ class OfficeDocument(File):
     def to_html(self, outfile=None):
         if self.__html_output__ is not None:
             return self.__html_output__
-        print "OfficeDocument.to_html"
 
         temp = TempDir(self)
         temp.convert(self.source_converter, outfile=outfile)
@@ -102,14 +96,12 @@ class OfficeDocument(File):
         stderr = temp.stderr
 
         if stderr != "":
-            print "Warning html of file not converted: %s" % stderr
             text = u''
         else:
             try:
                 text = unicode(stdout, self.source_encoding)
             except UnicodeDecodeError:
                 encoding = Text.guess_encoding(stdout)
-                print "encoding", encoding
                 text = unicode(stdout, encoding)
         self.__html_output__ = text
 
@@ -195,7 +187,6 @@ class OOffice(OfficeDocument):
     def to_text(self, outfile=None):
         if self.__text_output__ is not None:
             return self.__text_output__
-        print "OOffice.to_text"
 
         temp = TempDir(self)
         temp.convert('unzip %s content.xml', outfile='content.xml')
@@ -215,7 +206,6 @@ class OOffice(OfficeDocument):
 
 
     def to_html(self):
-        print "OOffice.to_html"
         raise NotImplementedError
 
 

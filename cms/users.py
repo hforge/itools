@@ -95,8 +95,8 @@ class User(Folder):
         # Task list only for reviewers and admins (for now).
         root = get_context().root
         is_admin = root.is_in_role('admins', self.name)
-        is_rev = root.is_in_role('reviewers', self.name)
-        if is_admin or is_rev:
+##        is_rev = root.is_in_role('reviewers', self.name)
+        if is_admin: ## or is_rev:
             views.append('tasks_list')
 
         return views

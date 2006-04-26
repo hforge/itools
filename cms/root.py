@@ -58,7 +58,6 @@ class Root(WebSite):
 
 
     __roles__ = [
-        {'name': 'reviewers', 'title': u'Reviewers', 'unit': u'Reviewer'},
         {'name': 'admins', 'title': u'Admins', 'unit': u'Admin'}]
 
 
@@ -448,12 +447,9 @@ class Root(WebSite):
     # Update
     #######################################################################
     def update_20060424(self):
-        # Get info
+        # Add '.admins.users'
         admins = self.get_handler('admins/.users').get_usernames()
-        reviewers = self.get_handler('reviewers/.users').get_usernames()
-        # Add handlers
         self.set_handler('.admins.users', ListOfUsers(users=admins))
-        self.set_handler('.reviewers.users', ListOfUsers(users=reviewers))
         # Remove handlers
         self.del_handler('.users')
         self.del_handler('admins')

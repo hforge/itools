@@ -91,8 +91,8 @@ class WorkflowAware(iWorkflowAware):
 
         if root.is_in_role('admins', user.name):
             return True
-        if root.is_in_role('reviewers', user.name):
-            return True
+##        if root.is_in_role('reviewers', user.name):
+##            return True
 
         if name == 'request':
             return True

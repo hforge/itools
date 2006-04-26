@@ -57,8 +57,8 @@ class AccessControl(object):
         return get_context().root.is_in_role('admins')
 
 
-    def is_reviewer(self):
-        return get_context().root.is_in_role('reviewers')
+##    def is_reviewer(self):
+##        return get_context().root.is_in_role('reviewers')
 
 
     def is_authenticated(self):
@@ -102,6 +102,3 @@ class AccessControl(object):
     is_allowed_to_remove = is_allowed_to_edit
     is_allowed_to_copy = is_allowed_to_edit
     is_allowed_to_move = is_allowed_to_edit
-    is_allowed_to_translate = is_allowed_to_edit
-
-

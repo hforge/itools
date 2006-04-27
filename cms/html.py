@@ -17,7 +17,6 @@
 
 # Import from the Standard Library
 import os
-import re
 
 # Import from itools
 from itools.resources import memory
@@ -148,16 +147,14 @@ class XHTMLFile(Text, XHTML.Document):
                   u'ERROR: the document could not be changed, the input' \
                   ' data was not proper HTML code.'
 
-        # Get only the body
-        expr = re.compile('<body>(.*)</body>', re.I + re.S)
-        match = expr.search(new_body)
-        new_body = match.group()
-        # Replace by the new body
-        data = self.to_str()
-        data = expr.sub(new_body, data)
-
-        resource = memory.File(data)
-        self.load_state(resource)
+        # Parse the new data
+        resource = memory.File(new_body)
+        doc = XHTML.Document(resource)
+        children = doc.get_body().children
+        # Save the changes
+        body = self.get_body()
+        self.set_changed()
+        body.children = children
 
         message = self.gettext(u'Document changed.')
         comeback(message)
@@ -203,14 +200,14 @@ class HTMLFile(HTML.Document, XHTMLFile):
         # XXX This is copy and paste from XHTMLFile.edit (except for the
         # tidy part)
         new_body = kw['data']
-        new_body = '<body>%s</body>' % new_body
-        # Replace by the new body
-        expr = re.compile('<body>(.*)</body>', re.I + re.S)
-        data = self.to_str()
-        data = expr.sub(new_body, data)
-
-        resource = memory.File(data)
-        self.load_state(resource)
+        # Parse the new data
+        resource = memory.File(new_body)
+        doc = HTML.Document(resource)
+        children = doc.get_root_element().children
+        # Save the changes
+        body = self.get_body()
+        self.set_changed()
+        body.children = children
 
         message = self.gettext(u'Version edited.')
         comeback(message)

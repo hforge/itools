@@ -408,7 +408,7 @@ class UserFolder(Folder):
             skeleton[username] = user
             metadata = {'owner': username, 'ikaaro:password': password}
             metadata = self.build_metadata(user, **metadata)
-            skeleton['.%s.metadata' % username] = metadata
+            skeleton['%s.metadata' % username] = metadata
         return skeleton
 
 

@@ -115,8 +115,8 @@ class Folder(Handler, handlers.Folder.Folder):
             elif name.endswith('.lock'):
                 return Lock(resource)
         # Get the format
-        if self.has_handler('.%s.metadata' % name):
-            metadata = self.get_handler('.%s.metadata' % name)
+        if self.has_handler('%s.metadata' % name):
+            metadata = self.get_handler('%s.metadata' % name)
             format = metadata.get_property('format')
         else:
             format = resource.get_mimetype()
@@ -173,7 +173,7 @@ class Folder(Handler, handlers.Folder.Folder):
         metadata = handler.get_metadata()
         if metadata is None:
             metadata = self.build_metadata(handler, format=format, **kw)
-        self.set_handler('.%s.metadata' % name, metadata)
+        self.set_handler('%s.metadata' % name, metadata)
 
 
     def after_set_handler(self, segment, handler, format=None, id=None,
@@ -233,7 +233,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 handler.remove_translation()
 
             # Remove metadata
-            self.del_handler('.%s.metadata' % name)
+            self.del_handler('%s.metadata' % name)
 
 
     def build_metadata(self, handler, owner=None, format=None, **kw):
@@ -680,8 +680,8 @@ class Folder(Handler, handlers.Folder.Folder):
 
                 # XXX itools should provide an API to copy and move handlers
                 self.set_handler(new_name, handler, move=True)
-                self.del_handler('.%s.metadata' % new_name)
-                self.set_handler('.%s.metadata' % new_name, handler_metadata)
+                self.del_handler('%s.metadata' % new_name)
+                self.set_handler('%s.metadata' % new_name, handler_metadata)
                 self.del_handler(old_name)
 
         message = self.gettext(u'Objects renamed.')

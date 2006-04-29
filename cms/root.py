@@ -95,11 +95,11 @@ class Root(WebSite):
         skeleton['users'] = users
         metadata = self.build_metadata(users, owner=username,
                                        **{'dc:title': {'en': u'Users'}})
-        skeleton['.users.metadata'] = metadata
+        skeleton['users.metadata'] = metadata
         # Message catalog
         en_po = PO()
         skeleton['en.po'] = en_po
-        skeleton['.en.po.metadata'] = self.build_metadata(en_po)
+        skeleton['en.po.metadata'] = self.build_metadata(en_po)
         # That's all
         return skeleton
 

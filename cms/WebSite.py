@@ -59,7 +59,7 @@ class WebSite(RoleAware, Folder):
 ##        # The Skin
 ##        skin = Skin()
 ##        skeleton['skin'] = skin
-##        skeleton['.skin.metadata'] = self.build_metadata(skin, **kw)
+##        skeleton['skin.metadata'] = self.build_metadata(skin, **kw)
 
 ##        return skeleton
 
@@ -68,7 +68,7 @@ class WebSite(RoleAware, Folder):
         name = segment.name
         if name == 'ui':
             return ui
-        elif name in ('users', '.users.metadata'):
+        elif name in ('users', 'users.metadata'):
             return self.get_handler('/%s' % name)
         return Folder._get_virtual_handler(self, segment)
 

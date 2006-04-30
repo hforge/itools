@@ -27,35 +27,6 @@ from itools.cms.server import get_config, get_root, ask_confirmation
 
 
 def update(parser, options, target):
-    # Move from the ZODB to the filesystem. Upgrade code from 0.12 to 0.13,
-    # it must be removed as of 0.14 (XXX).
-    instance = get_resource(target)
-    if instance.has_resource('database.fs'):
-        message = 'Move database from the ZODB to the filesystem (y/N)? '
-        if ask_confirmation(message) is False:
-            return
-
-        from itools.resources import zodb
-        from ZODB.FileStorage import FileStorage
-        # Load root resource
-        print '  * Loading ZODB...'
-        storage = FileStorage('%s/database.fs' % target)
-        database = zodb.Database(storage)
-        root_resource = database.get_resource('/')
-        # Copy to the filesystem
-        print '  * Copying resources to the filesystem...'
-        instance.set_resource('database', root_resource)
-        # Remove "database.*"
-        print '  * Cleaning old ZODB files...'
-        for name in instance.get_resource_names():
-            if name.startswith('database.'):
-                instance.del_resource(name)
-        # Backup
-        print '  * Backup database...'
-        os.system('cp -r %s/database %s/database.bak' % (target, target))
-        # Transaction state
-        open('%s/state' % target, 'w').write('OK')
-
     # Load the config
     config = get_config(target)
 

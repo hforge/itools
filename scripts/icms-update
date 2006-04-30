@@ -55,7 +55,16 @@ def update(parser, options, target):
                   % (instance_version, class_version)
         if ask_confirmation(message) is True:
             print 'Updating...'
-            root.update()
+            try:
+                root.update()
+            except:
+                # Restore from backup
+                cmd = 'rsync -a --delete %s/database.bak/ %s/database'
+                os.system(cmd % (target, target))
+                raise
+            # Update backup
+            cmd = 'rsync -a --delete %s/database/ %s/database.bak'
+            os.system(cmd % (target, target))
 
 
 

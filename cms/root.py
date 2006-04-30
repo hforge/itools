@@ -28,6 +28,7 @@ from urllib import quote
 
 # Import from itools
 from itools import get_abspath
+from itools.datatypes import FileName
 from itools.resources import get_resource
 from itools import handlers
 from itools.handlers import get_handler
@@ -42,7 +43,7 @@ from text import PO
 from users import User, UserFolder
 from utils import comeback
 from WebSite import WebSite
-from handlers import ListOfUsers
+from handlers import ListOfUsers, Metadata
 
 
 
@@ -50,7 +51,7 @@ class Root(WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20060424'
+    class_version = '20060430'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
 
@@ -456,6 +457,25 @@ class Root(WebSite):
         self.del_handler('.admins.metadata')
         self.del_handler('reviewers')
         self.del_handler('.reviewers.metadata')
+
+
+    def update_20060430(self):
+        stack = [self]
+        while stack:
+            folder = stack.pop()
+            for name in folder.get_handler_names():
+                handler = folder.get_handler(name)
+                # Update metadata
+                if isinstance(handler, Metadata) and name != '.metadata':
+                    folder.del_handler(name)
+                    short_name, type, language = FileName.decode(name[1:-9])
+                    folder.set_handler(name[1:], handler)
+                # Skip hidden handlers
+                elif name.startswith('.'):
+                    continue
+                # Recursive
+                elif isinstance(handler, FolderHandler):
+                    stack.append(handler)
 
 
 WebSite.register_handler_class(Root)

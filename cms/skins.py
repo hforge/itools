@@ -30,6 +30,7 @@ from itools.stl import stl
 from itools.xhtml import XHTML
 from itools import i18n
 from itools.web import get_context
+from itools.uri.generic import Query
 
 # Import from itools.cms
 from Folder import Folder
@@ -113,6 +114,7 @@ class Skin(Folder):
         # Get request, path, etc...
         context = get_context()
         here = context.handler
+        request = context.request
 
         # Tabs
         views = here.get_views()
@@ -131,12 +133,30 @@ class Skin(Folder):
 
         # Subtabs
         subtabs = []
-        for name in subviews:
+        for subview in subviews:
+            # from method?param1=value1&param2=value2&...
+            # we separate method and arguments, 
+            # then we get a dict with the arguments and the subview active state
+            if '?' in subview:
+                name, args = subview.split('?')
+                args = Query.decode(args)
+                for arg in args:
+                    request_param = request.get_parameter(arg)
+                    if request_param != args[arg]:
+                        active = False
+                        break
+                else:
+                    active = True
+            else:
+                name, args = subview, {}
+                active = name == context.method
+
             method = here.get_method(name)
             if method is not None:
                 label = getattr(method.im_class, '%s__sublabel__' % name)
-                active = name == context.method
-                subtabs.append({'name': ';%s' % name,
+                if callable(label):
+                    label = label(**args)
+                subtabs.append({'name': ';%s' % subview,
                                 'label': here.gettext(label),
                                 'active': active,
                                 'style': active and 'tab_active' or 'tab'})

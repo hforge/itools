@@ -33,9 +33,6 @@ import flash
 import handlers
 import html
 import images
-import msoffice
-import openoffice
-import pdf
 import office
 import text
 import archives

@@ -32,9 +32,9 @@ import csv_
 import flash
 import html
 import images
-#import msoffice
-#import openoffice
-#import pdf
+import msoffice
+import openoffice
+import pdf
 import office
 import text
 

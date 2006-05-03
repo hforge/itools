@@ -15,70 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from the Standard Library
-import os
-import tempfile
+# XXX This module is now deprecated in favor of itools.cms.office
+# backward compatibility ensured for itools 0.13
 
-# Import from ikaaro
-from Handler import Handler
-from File import File
-
-
-class PDF(File):
-
-    class_id = 'application/pdf'
-    class_title = u'PDF'
-    class_description = u'Document PDF'
-    class_icon48 = 'images/Pdf48.png'
-    class_icon16 = 'images/Pdf16.png'
-
-
-    def to_text(self):
-        here = os.getcwd()
-        pdf_tmp = tempfile.mkdtemp('.pdf')
-        os.chdir(pdf_tmp)
-        open('./temp.pdf', 'w').write(self.to_str())
-
-        stdin, stdout, stderr = os.popen3('pdftotext ./temp.pdf -')
-        text = stdout.read()
-        err = stderr.read()
-        if err != "":
-            print "Warning text of file not indexed because: %s" % err
-            text = u''
-        else:
-            text = unicode(text, 'latin1')
-
-        os.system('rm -fr %s' % pdf_tmp)
-        os.chdir(here)
-
-        return text 
-
-
-    def to_html(self):
-        here = os.getcwd()
-        pdf_tmp = tempfile.mkdtemp('.pdf')
-        os.chdir(pdf_tmp)
-        open('./temp.pdf', 'w').write(self.to_str())
-
-        stdin, stdout, stderr = os.popen3(
-            'pdftohtml -enc UTF-8 -p -noframes -stdout ./temp.pdf')
-        text = stdout.read()
-        err = stderr.read()
-        if err != "":
-            print "ERROR could not generate preview: %s" % err
-            text = ''
-
-        os.system('rm -fr %s' % pdf_tmp)
-        os.chdir(here)
-
-        return text
-
-
-    view__access__ = Handler.is_allowed_to_view
-    view__label__ = u'View'
-    view__sublabel__ = u'Preview'
-    def view(self):
-        return self.to_html()
-
-
-File.register_handler_class(PDF)
+from itools.cms.office import PDF

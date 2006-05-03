@@ -369,6 +369,8 @@ class User(Folder):
         documents = []
         for brain in root.search(workflow_state='pending'):
             document = root.get_handler(brain.abspath)
+            if not document.is_allowed_to_view():
+                continue
             documents.append({'url': '%s/;%s' % (self.get_pathto(document),
                                                  document.get_firstview()),
                              'title': document.title_or_name})

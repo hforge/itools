@@ -921,14 +921,14 @@ class Folder(Handler, handlers.Folder.Folder):
         # Build the handler
         handler = handler_class.new_instance()
 
-        # Calculate title
-        root = self.get_root()
-        languages = root.get_property('ikaaro:website_languages')
-        default_language = languages[0]
-        kw = {}
-        kw['dc:title'] = {default_language: context.get_form_value('dc:title')}
         # Add the handler
-        self.set_handler(name, handler, **kw)
+        self.set_handler(name, handler)
+        # Set the title
+        handler = self.get_handler(name)
+        root = self.get_site_root()
+        languages = root.get_property('ikaaro:website_languages')
+        title = context.get_form_value('dc:title')
+        handler.set_property('dc:title', title, languages[0])
 
         message = self.gettext(u'New resource added.')
         if context.has_form_value('add_and_return'):

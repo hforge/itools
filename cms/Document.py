@@ -135,87 +135,87 @@ class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
 
     #######################################################################
     # Translate form
-    def get_catalog(self):
-        return self.acquire('en.po')
-        
+##  def get_catalog(self):
+##      return self.acquire('en.po')
+##      
 
-    translate_form__access__ = 'is_allowed_to_edit'
-    translate_form__label__ = u'Translate'
-    def translate_form(self):
-        context = get_context()
-        request = context.request
+##  translate_form__access__ = 'is_allowed_to_edit'
+##  translate_form__label__ = u'Translate'
+##  def translate_form(self):
+##      context = get_context()
+##      request = context.request
 
-        namespace = {}
-        # Translate from the master
-        master = self.get_master_handler()
-        catalog = self.get_catalog()
-        data = master.translate(catalog)
-        namespace['text'] = data
+##      namespace = {}
+##      # Translate from the master
+##      master = self.get_master_handler()
+##      catalog = self.get_catalog()
+##      data = master.translate(catalog)
+##      namespace['text'] = data
 
-        # Translation form
-        msgids = master.get_messages()
-        msgids = list(msgids)
+##      # Translation form
+##      msgids = master.get_messages()
+##      msgids = list(msgids)
 
-        # Set total
-        total = len(msgids)
-        namespace['messages_total'] = str(total)
+##      # Set total
+##      total = len(msgids)
+##      namespace['messages_total'] = str(total)
 
-        # Set the index
-        parameters = get_parameters('messages', index='1')
-        index = parameters['index']
-        namespace['messages_index'] = index
-        index = int(index)
+##      # Set the index
+##      parameters = get_parameters('messages', index='1')
+##      index = parameters['index']
+##      namespace['messages_index'] = index
+##      index = int(index)
 
-        # Set first, last, previous and next
-        request = get_context().request
-        namespace['messages_first'] = request.build_url(messages_index=1)
-        namespace['messages_last'] = request.build_url(messages_index=total)
-        previous = max(index - 1, 1)
-        namespace['messages_previous'] = request.build_url(messages_index=previous)
-        next = min(index + 1, total)
-        namespace['messages_next'] = request.build_url(messages_index=next)
+##      # Set first, last, previous and next
+##      request = get_context().request
+##      namespace['messages_first'] = request.build_url(messages_index=1)
+##      namespace['messages_last'] = request.build_url(messages_index=total)
+##      previous = max(index - 1, 1)
+##      namespace['messages_previous'] = request.build_url(messages_index=previous)
+##      next = min(index + 1, total)
+##      namespace['messages_next'] = request.build_url(messages_index=next)
 
-        # Set msgid and msgstr
-        if msgids:
-            # Acquire catalog
-            catalog = self.get_catalog()
+##      # Set msgid and msgstr
+##      if msgids:
+##          # Acquire catalog
+##          catalog = self.get_catalog()
 
-            msgid = msgids[index-1]
-            namespace['msgid'] = cgi.escape(PO.unescape(msgid))
-            msgstr = catalog.get_msgstr(msgid) or ''
-            msgstr = cgi.escape(PO.unescape(msgstr))
-            namespace['msgstr'] = msgstr
-        else:
-            namespace['msgid'] = None
+##          msgid = msgids[index-1]
+##          namespace['msgid'] = cgi.escape(PO.unescape(msgid))
+##          msgstr = catalog.get_msgstr(msgid) or ''
+##          msgstr = cgi.escape(PO.unescape(msgstr))
+##          namespace['msgstr'] = msgstr
+##      else:
+##          namespace['msgid'] = None
 
-        handler = self.get_handler('/ui/Document_translate.xml')
-        return stl(handler, namespace)
-
-
-    save_translation__access__ = 'is_allowed_to_edit'
-    def save_translation(self):
-        # Translate from the master
-        master = self.get_master_handler()
-        catalog = self.get_catalog()
-        data = master.translate(catalog)
-
-        resource = memory.File(data)
-        self.load_state(resource)
-
-        message = self.gettext(u'Translation saved.')
-        comeback(message)
+##      handler = self.get_handler('/ui/Document_translate.xml')
+##      return stl(handler, namespace)
 
 
-    translate_message__access__ = 'is_allowed_to_edit'
-    def translate_message(self, msgid, msgstr, messages_index=None, **kw):
-        msgid = PO.escape(msgid.replace('\r', ''))
-        msgstr = PO.escape(msgstr.replace('\r', ''))
+##  save_translation__access__ = 'is_allowed_to_edit'
+##  def save_translation(self):
+##      # Translate from the master
+##      master = self.get_master_handler()
+##      catalog = self.get_catalog()
+##      data = master.translate(catalog)
 
-        catalog = self.get_catalog()
-        catalog.set_message(msgid, msgstr)
+##      resource = memory.File(data)
+##      self.load_state(resource)
 
-        message = self.gettext(u'Message edited.')
-        comeback(message, messages_index=messages_index)
+##      message = self.gettext(u'Translation saved.')
+##      comeback(message)
+
+
+##  translate_message__access__ = 'is_allowed_to_edit'
+##  def translate_message(self, msgid, msgstr, messages_index=None, **kw):
+##      msgid = PO.escape(msgid.replace('\r', ''))
+##      msgstr = PO.escape(msgstr.replace('\r', ''))
+
+##      catalog = self.get_catalog()
+##      catalog.set_message(msgid, msgstr)
+
+##      message = self.gettext(u'Message edited.')
+##      comeback(message, messages_index=messages_index)
 
 
 html.XHTMLFile.register_handler_class(HTML)

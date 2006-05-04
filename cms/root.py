@@ -51,7 +51,7 @@ class Root(WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20060430'
+    class_version = '20060504'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
 
@@ -97,10 +97,10 @@ class Root(WebSite):
         metadata = self.build_metadata(users, owner=username,
                                        **{'dc:title': {'en': u'Users'}})
         skeleton['users.metadata'] = metadata
-        # Message catalog
-        en_po = PO()
-        skeleton['en.po'] = en_po
-        skeleton['en.po.metadata'] = self.build_metadata(en_po)
+##        # Message catalog
+##        en_po = PO()
+##        skeleton['en.po'] = en_po
+##        skeleton['en.po.metadata'] = self.build_metadata(en_po)
         # That's all
         return skeleton
 
@@ -473,6 +473,10 @@ class Root(WebSite):
                 # Recursive
                 elif isinstance(handler, FolderHandler):
                     stack.append(handler)
+
+
+    def update_20060504(self):
+        self.del_handler('en.po')
 
 
 WebSite.register_handler_class(Root)

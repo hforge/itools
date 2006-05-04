@@ -297,16 +297,13 @@ class Root(WebSite):
     # Back Office
     ########################################################################
     def get_views(self):
-        user = get_context().user
-        if user is None:
-            return ['about', 'login_form', 'register_form']
         return ['browse_thumbnails', 'new_resource_form', 'edit_metadata_form',
-                'general_form', 'permissions_form', 'catalog_form', 'about']
+                'languages_form', 'permissions_form', 'catalog_form', 'about']
 
 
     def get_subviews(self, name):
         views = [['browse_thumbnails', 'browse_list'],
-                 ['general_form', 'languages_form'],
+                 ['permissions_form', 'anonymous_form'],
                  ['about', 'license'],
                  ['catalog_form', 'check_groups']]
         for subviews in views:

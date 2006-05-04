@@ -41,7 +41,7 @@ class WebSite(RoleAware, Folder):
 
     class_id = 'WebSite'
     class_title = u'Web Site'
-    class_description = u'...'
+    class_description = u'Create a new Web Site or Work Place.'
     class_icon16 = 'images/WebSite16.png'
     class_icon48 = 'images/WebSite48.png'
 
@@ -131,44 +131,22 @@ class WebSite(RoleAware, Folder):
     ########################################################################
     def get_views(self):
         return ['browse_thumbnails', 'new_resource_form', 'edit_metadata_form',
-                'general_form', 'permissions_form']
+                'languages_form', 'permissions_form']
 
 
     def get_subviews(self, name):
-        if name in ['general_form', 'languages_form']:
-            return ['general_form', 'languages_form']
+        if name in ['permissions_form', 'anonymous_form']:
+            return ['permissions_form', 'anonymous_form']
         return Folder.get_subviews(self, name)
 
 
-    ######################################################################
-    # Settings / General
-    general_form__access__ = 'is_admin'
-    general_form__label__ = u'Settings'
-    general_form__sublabel__ = u'General'
-    def general_form(self, context):
-        # Build the namespace
-        namespace = {}
-        website_is_open = self.get_property('ikaaro:website_is_open')
-        namespace['website_is_open'] = website_is_open
-
-        handler = self.get_handler('/ui/Root_general.xml')
-        return stl(handler, namespace)
-
-
-    change_general__access__ = 'is_admin'
-    def change_general(self, context):
-        key = 'ikaaro:website_is_open'
-        self.set_property(key, context.get_form_value(key, False))
-
-        message = self.gettext(u'General settings changed.')
-        comeback(message)
+    permissions_form__label__ = u"Security"
 
 
     ######################################################################
-    # Settings / Languages
-    languages_form__access__ = 'is_admin'
+    # Languages
+    languages_form__access__ = 'is_allowed_to_edit'
     languages_form__label__ = u'Languages'
-    languages_form__sublabel__ = u'Languages'
     def languages_form(self, context):
         namespace = {}
 
@@ -243,6 +221,32 @@ class WebSite(RoleAware, Folder):
                           website_languages + (code,))
 
         message = self.gettext(u'Language added.')
+        comeback(message)
+
+
+    ######################################################################
+    # Security / Anonymous
+    anonymous_form__access__ = 'is_allowed_to_edit'
+    anonymous_form__label__ = u'Security'
+    anonymous_form__sublabel__ = u'Anonymous'
+    def anonymous_form(self, context):
+        # Build the namespace
+        namespace = {}
+        # Monolingual properties
+        for name in ['ikaaro:website_is_open']:
+            namespace[name] = self.get_property(name)
+
+        handler = self.get_handler('/ui/WebSite_anonymous.xml')
+        return stl(handler, namespace)
+
+
+    edit_anonymous__access__ = 'is_allowed_to_edit'
+    def edit_anonymous(self, context):
+        # Boolean properties
+        for name in ['ikaaro:website_is_open']:
+            self.set_property(name, context.get_form_value(name, False))
+
+        message = self.gettext(u'Changes saved.')
         comeback(message)
 
 

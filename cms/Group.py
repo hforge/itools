@@ -164,6 +164,7 @@ class RoleAware(object):
 
     permissions_form__access__ = 'is_admin'
     permissions_form__label__ = u"Permissions"
+    permissions_form__sublabel__ = u"Permissions"
     def permissions_form(self, context):
         root = context.root
         userfolder = root.get_object('users')

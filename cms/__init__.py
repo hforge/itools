@@ -42,6 +42,7 @@ import archives
 ###########################################################################
 # Register
 ###########################################################################
+Folder.register_document_type(html.XHTMLFile)
 Folder.register_document_type(Folder)
 Folder.register_document_type(File.File)
 Folder.register_document_type(text.Text)

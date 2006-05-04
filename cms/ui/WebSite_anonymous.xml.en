@@ -4,15 +4,15 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>General Settings.</h2>
+<h2>Anonymous Settings.</h2>
 
-<form action=";change_general" method="post">
+<form action=";edit_anonymous" method="post">
   <dl>
     <dt>Anonymous users allowed to join this web site</dt>
     <dd>
       <label>Allow joining</label>
       <input class="checkbox" type="checkbox" name="ikaaro:website_is_open"
-        value="1" stl:attributes="checked website_is_open" />
+        value="1" stl:attributes="checked ikaaro:website_is_open" />
     </dd>
   </dl>
   <p>

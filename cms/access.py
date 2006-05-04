@@ -65,37 +65,64 @@ class AccessControl(object):
         return get_context().user is not None
 
 
+    def get_workplace(self):
+        from users import User
+        from WebSite import WebSite
+
+        user = get_context().user
+        # Get the "workplace"
+        node = self
+        while node is not None:
+            if isinstance(node, (WebSite, User)):
+                return node
+            node = node.parent
+
+        # We never should reach here (XXX Raise an exception?)
+        return None
+
+
     def is_allowed_to_view(self):
+        # Objects with workflow
         from workflow import WorkflowAware
-
         if isinstance(self, WorkflowAware):
-            user = get_context().user
-            if user is None:
-                if self.workflow_state != 'public':
-                    return False
+            state = self.workflow_state
+            # Anybody can see public objects
+            if state == 'public':
+                return True
 
+            # Only those who can edit are allowed to see non-public objects
+            return self.is_allowed_to_edit()
+
+        # Everybody can see objects without workflow
         return True
 
 
     def is_allowed_to_edit(self):
         from users import User
 
-        context = get_context()
-
-        user = context.user
+        # Anonymous can touch nothing
+        user = get_context().user
         if user is None:
             return False
 
+        # Admins are all powerfull
         if self.is_admin():
             return True
 
-        here = self
-        while here is not None:
-            if isinstance(here, User):
-                return here.name == user.name
-            here = here.parent
+        # Get the "workplace"
+        workplace = self.get_workplace()
 
-        return True
+        # In the user's home, only him (and the admin) is allowed to edit
+        if isinstance(workplace, User):
+            return workplace.name == user.name
+
+        # Reviewers and Members are allowed to edit
+        if workplace.is_in_role('reviewers'):
+            return True
+        if workplace.is_in_role('members'):
+            return True
+
+        return False
 
 
     is_allowed_to_add = is_allowed_to_edit

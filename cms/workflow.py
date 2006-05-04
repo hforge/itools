@@ -83,21 +83,31 @@ class WorkflowAware(iWorkflowAware):
     ########################################################################
     # Security
     def is_allowed_to_trans(self, name):
-        context = get_context()
-        root, user = context.root, context.user
+        from users import User
 
+        # Anonymous can touch nothing
+        user = get_context().user
         if user is None:
             return False
 
-        if root.is_in_role('admins', user.name):
+        # Admins are all powerfull
+        if self.is_admin():
             return True
-##        if root.is_in_role('reviewers', user.name):
-##            return True
 
-        if name == 'request':
+        # Get the "workplace"
+        workplace = self.get_workplace()
+
+        # In the user's home, he (and only he) is all powerfull
+        if isinstance(workplace, User):
+            return workplace.name == user.name
+
+        # Reviewers can do everything
+        if workplace.is_in_role('reviewers'):
             return True
-        elif name == 'unrequest':
-            return True
+
+        # Members only can request and retract
+        if workplace.is_in_role('members'):
+            return name in ('request', 'unrequest')
 
         return False
 
@@ -105,7 +115,7 @@ class WorkflowAware(iWorkflowAware):
     ########################################################################
     # User Interface
     ########################################################################
-    state_form__access__ = 'is_authenticated'
+    state_form__access__ = 'is_allowed_to_edit'
     state_form__label__ = u'State'
     def state_form(self, context):
         namespace = {}
@@ -138,7 +148,7 @@ class WorkflowAware(iWorkflowAware):
         return stl(handler, namespace)
 
 
-    edit_state__access__ = 'is_authenticated'
+    edit_state__access__ = 'is_allowed_to_edit'
     def edit_state(self, context):
         transition = context.get_form_value('transition')
         comments = context.get_form_value('comments')

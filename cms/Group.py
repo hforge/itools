@@ -61,6 +61,13 @@ class RoleAware(object):
     ]
 
 
+    def has_role(self, name):
+        for role in self.__roles__:
+            if role['name'] == name:
+                return True
+        return False
+
+
     def get_role(self, name):
         return self.get_handler('.%s.users' % name)
 
@@ -97,8 +104,10 @@ class RoleAware(object):
                 return False
             username = user.name
 
-        role = self.get_role(rolename)
-        return username in role.get_usernames()
+        if self.has_role(rolename):
+            role = self.get_role(rolename)
+            return username in role.get_usernames()
+        return False
 
 
     def del_roles(self, username):
@@ -153,7 +162,7 @@ class RoleAware(object):
         return 'title_or_name'
 
 
-    permissions_form__access__ = 'is_allowed_to_edit'
+    permissions_form__access__ = 'is_admin'
     permissions_form__label__ = u"Permissions"
     def permissions_form(self, context):
         root = context.root
@@ -196,7 +205,7 @@ class RoleAware(object):
         return stl(handler, namespace)
 
 
-    permissions__access__ = 'is_allowed_to_edit'
+    permissions__access__ = 'is_admin'
     def permissions(self, context):
         # Permissions to remove
         if context.has_form_value('delete'):

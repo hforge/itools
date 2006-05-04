@@ -199,7 +199,7 @@ class Root(WebSite):
 
 
     def get_document_types(self):
-        return WebSite.get_document_types(self) ##+ [WebSite]
+        return WebSite.get_document_types(self) + [WebSite]
 
 
     ########################################################################
@@ -313,9 +313,6 @@ class Root(WebSite):
             if name in subviews:
                 return subviews
         return WebSite.get_subviews(self, name)
-
-
-    browse_thumbnails__label__ = u'Contents'
 
 
     ########################################################################

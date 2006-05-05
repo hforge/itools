@@ -92,19 +92,19 @@ class File(Handler, itools.handlers.File.File):
         return stl(handler, namespace)
 
 
-    download__access__ = 'is_allowed_to_view'
-    download__mtime__ = Handler.get_mtime
-    def download(self, context):
+    def get_content_type(self):
         # Content-Type
         metadata = self.get_metadata()
         if metadata is None:
-            mimetype = self.get_mimetype()
-        else:
-            mimetype = self.get_property('format')
+            return self.get_mimetype()
+        return self.get_property('format')
 
+
+    download__access__ = 'is_allowed_to_view'
+    download__mtime__ = Handler.get_mtime
+    def download(self, context):
         response = context.response
-        response.set_header('Content-Type', mimetype)
-
+        response.set_header('Content-Type', self.get_content_type())
         return self.to_str()
 
 

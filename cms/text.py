@@ -98,17 +98,8 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
     #######################################################################
     # Download
-    def download(self, context):
-        # XXX Code duplicated from File.File.download
-        metadata = self.get_metadata()
-        if metadata is None:
-            mimetype = self.get_mimetype()
-        else:
-            mimetype = self.get_property('format')
-
-        response = context.response
-        response.set_header('Content-Type', '%s; charset=UTF-8' % mimetype)
-        return self.to_str()
+    def get_content_type(self):
+        return '%s; charset=UTF-8' % File.get_content_type(self)
 
 
     #######################################################################

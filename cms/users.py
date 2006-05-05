@@ -171,25 +171,9 @@ class User(AccessControl, Folder):
         return stl(handler, namespace)
 
 
-    def is_self_or_superuser(self):
-        context = get_context()
-        user = context.user
-
-        if user is not None:
-            # Is self?
-            if user.name == self.name:
-                return True
-            # Is superuser?
-            root = context.root
-            if root.is_in_role('admins', user.name):
-                return True
-
-        return False
-
-
     #######################################################################
     # Edit
-    edit_form__access__ = 'is_self_or_superuser'
+    edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Preferences'
     edit_form__sublabel__ = u'Application'
     def edit_form(self, context):
@@ -212,7 +196,7 @@ class User(AccessControl, Folder):
         return stl(handler, namespace)
 
 
-    edit__access__ = 'is_self_or_superuser'
+    edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         for key in ['ikaaro:user_language']:
             self.set_property(key, context.get_form_value(key))
@@ -223,7 +207,7 @@ class User(AccessControl, Folder):
 
     #######################################################################
     # Edit account
-    edit_account_form__access__ = 'is_self_or_superuser'
+    edit_account_form__access__ = 'is_allowed_to_edit'
     edit_account_form__label__ = u'Preferences'
     edit_account_form__sublabel__ = u'Account'
     def edit_account_form(self, context):
@@ -241,7 +225,7 @@ class User(AccessControl, Folder):
         return stl(handler, namespace)
 
 
-    edit_account__access__ = 'is_self_or_superuser'
+    edit_account__access__ = 'is_allowed_to_edit'
     def edit_account(self, context):
         title = context.get_form_value('dc:title')
         email = context.get_form_value('email')
@@ -369,7 +353,7 @@ class User(AccessControl, Folder):
 
     #######################################################################
     # Tasks
-    tasks_list__access__ = 'is_self_or_superuser'
+    tasks_list__access__ = 'is_allowed_to_edit'
     tasks_list__label__ = u'Tasks'
     def tasks_list(self, context):
         root = context.root

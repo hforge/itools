@@ -370,8 +370,8 @@ register_skin('aruni', '%s/aruni' % path)
 
 class UI(AccessControl, Folder):
 
-    def is_access_allowed(self, user, object, method):
-        return isinstance(object, File) and name == 'GET'
+    def is_access_allowed(self, user, object, method_name):
+        return isinstance(object, File) and method_name == 'GET'
 
 
     def _get_handler(self, segment, resource):

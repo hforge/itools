@@ -98,8 +98,10 @@ class Skin(Folder):
         """
         # Get request, path, etc...
         context = get_context()
-        here = context.handler
         request = context.request
+        user = context.user
+        here = context.handler
+        ac = here.get_access_control()
 
         # Tabs
         views = here.get_views()
@@ -107,9 +109,8 @@ class Skin(Folder):
 
         tabs = []
         for name in views:
-            method = here.get_method(name)
-            if method is not None:
-                label = getattr(method.im_class, '%s__label__' % name)
+            if ac.is_access_allowed(user, here, name):
+                label = getattr(here, '%s__label__' % name)
                 active = name == context.method or name in subviews
                 tabs.append({'name': ';%s' % name,
                              'label': here.gettext(label),
@@ -119,9 +120,9 @@ class Skin(Folder):
         # Subtabs
         subtabs = []
         for subview in subviews:
-            # from method?param1=value1&param2=value2&...
-            # we separate method and arguments, 
-            # then we get a dict with the arguments and the subview active state
+            # From "method?param1=value1&param2=value2&..." we separate
+            # method and arguments, then we get a dict with the arguments
+            # and the subview active state.
             if '?' in subview:
                 name, args = subview.split('?')
                 args = Query.decode(args)
@@ -136,9 +137,8 @@ class Skin(Folder):
                 name, args = subview, {}
                 active = name == context.method
 
-            method = here.get_method(name)
-            if method is not None:
-                label = getattr(method.im_class, '%s__sublabel__' % name)
+            if ac.is_access_allowed(user, here, name):
+                label = getattr(here, '%s__sublabel__' % name)
                 if callable(label):
                     label = label(**args)
                 subtabs.append({'name': ';%s' % subview,
@@ -146,7 +146,7 @@ class Skin(Folder):
                                 'active': active,
                                 'style': active and 'tab_active' or 'tab'})
 
-        return {'tabs':tabs, 'subtabs':subtabs}
+        return {'tabs': tabs, 'subtabs': subtabs}
 
 
 ##    def get_languages(self):

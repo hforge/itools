@@ -22,13 +22,13 @@ class AccessControl(object):
     overriden.
     """
 
-    def is_access_allowed(self, user, object, method):
+    def is_access_allowed(self, user, object, method_name):
         """
         Returns True if the given user is allowed to access the given method
         of the given object. False otherwise.
         """
         # Get the access control definition (default to False)
-        access = getattr(object, '%s__access__' % name, False)
+        access = getattr(object, '%s__access__' % method_name, False)
 
         # Private (False) or Public (True)
         if isinstance(access, bool):
@@ -36,7 +36,7 @@ class AccessControl(object):
 
         # Access Control through a method
         if isinstance(access, str):
-            method = getattr(cls, access, None)
+            method = getattr(self, access, None)
             if method is None:
                 raise ValueError, 'access control "%s" not defined' % access
 

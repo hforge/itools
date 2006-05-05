@@ -315,10 +315,11 @@ class Folder(Handler, handlers.Folder.Folder):
         """
         Returns the first allowed object view url, or None if there aren't.
         """
-        context = get_context()
+        user = get_context().user
+        ac = self.get_access_control()
+
         for name in self.get_views():
-            method = self.get_method(name)
-            if method is not None:
+            if ac.is_access_allowed(user, self, name):
                 if name in ['browse_thumbnails', 'browse_list']:
                     name = self.get_browse_view()
                 return name

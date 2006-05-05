@@ -94,6 +94,37 @@ class Node(AccessControl, iNode):
         return handler
 
 
+    # XXX See if we can get rid of this code (get_access_control may be used
+    # instead)
+    def get_workplace(self):
+        from users import User
+        from WebSite import WebSite
+
+        user = get_context().user
+        # Get the "workplace"
+        node = self
+        while node is not None:
+            if isinstance(node, (WebSite, User)):
+                return node
+            node = node.parent
+
+        # We never should reach here (XXX Raise an exception?)
+        return None
+
+
+    def get_access_control(self):
+        from itools.web.access import AccessControl
+
+        node = self
+        while node is not None:
+            if isinstance(node, AccessControl):
+                return node
+            node = node.parent
+
+        # We never should reach here (XXX Raise an exception?)
+        return None
+
+
     ########################################################################
     # Properties
     ########################################################################

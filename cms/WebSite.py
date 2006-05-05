@@ -26,8 +26,8 @@ from itools.web.exceptions import UserError
 # Import from itools.cms
 from Folder import Folder
 from LocaleAware import LocaleAware
-from Group import RoleAware
 from skins import Skin
+from access import RoleAware
 from utils import comeback
 from workflow import WorkflowAware
 from users import crypt_password

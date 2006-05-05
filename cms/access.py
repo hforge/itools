@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -15,73 +15,24 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from the Standard Library
+from operator import attrgetter
+
 # Import from itools
 from itools.web import get_context
+from itools.web.access import AccessControl as AccessControlBase
+from itools.stl import stl
+from handlers import ListOfUsers
+from utils import comeback
 
 
-class AccessControl(object):
+class AccessControl(AccessControlBase):
 
-    def get_method(self, name):
-        """
-        If there is not a method with the given name an exception will be
-        raised.
-
-        If there is but the user has not the right to access it, the value
-        'None' will be returned.
-
-        If the user has the right, the method itself will be returned.
-        """
-        method = getattr(self, name)
-
-        # Load the access control definition
-        access = getattr(self, '%s__access__' % name, None)
-        if isinstance(access, str):
-            access = getattr(self, access, None)
-
-        # Private methods
-        if access is None or access is False:
-            return None
-
-        # Public methods
-        if access is True:
-            return method
-
-        # XXX Remove 'im_func'?
-        if access.im_func(self) is True:
-            return method
-
-        return None
-
-
-    def is_admin(self):
+    def is_admin(self, user=None, object=None):
         return get_context().root.is_in_role('admins')
 
 
-##    def is_reviewer(self):
-##        return get_context().root.is_in_role('reviewers')
-
-
-    def is_authenticated(self):
-        return get_context().user is not None
-
-
-    def get_workplace(self):
-        from users import User
-        from WebSite import WebSite
-
-        user = get_context().user
-        # Get the "workplace"
-        node = self
-        while node is not None:
-            if isinstance(node, (WebSite, User)):
-                return node
-            node = node.parent
-
-        # We never should reach here (XXX Raise an exception?)
-        return None
-
-
-    def is_allowed_to_view(self):
+    def is_allowed_to_view(self, user, object):
         # Objects with workflow
         from workflow import WorkflowAware
         if isinstance(self, WorkflowAware):
@@ -91,17 +42,47 @@ class AccessControl(object):
                 return True
 
             # Only those who can edit are allowed to see non-public objects
-            return self.is_allowed_to_edit()
+            return self.is_allowed_to_edit(user, object)
 
         # Everybody can see objects without workflow
         return True
 
 
-    def is_allowed_to_edit(self):
-        from users import User
+    def is_allowed_to_edit(self, user, object):
+        # By default only the admin can touch stuff
+        return self.is_admin()
 
+
+    # By default all other change operations (add, remove, copy and move)
+    # are equivalent to "edit".
+    def is_allowed_to_add(self, user, object):
+        return self.is_allowed_to_edit(user, object)
+
+
+    def is_allowed_to_remove(self, user, object):
+        return self.is_allowed_to_edit(user, object)
+
+
+    def is_allowed_to_copy(self, user, object):
+        return self.is_allowed_to_edit(user, object)
+
+
+    def is_allowed_to_move(self, user, object):
+        return self.is_allowed_to_edit(user, object)
+
+
+
+class RoleAware(AccessControl):
+    """
+    This base class implements access control based on the concept of roles.
+    Includes a user interface.
+    """
+
+    #########################################################################
+    # Access Control
+    #########################################################################
+    def is_allowed_to_edit(self, user, object):
         # Anonymous can touch nothing
-        user = get_context().user
         if user is None:
             return False
 
@@ -109,23 +90,196 @@ class AccessControl(object):
         if self.is_admin():
             return True
 
-        # Get the "workplace"
-        workplace = self.get_workplace()
-
-        # In the user's home, only him (and the admin) is allowed to edit
-        if isinstance(workplace, User):
-            return workplace.name == user.name
-
         # Reviewers and Members are allowed to edit
-        if workplace.is_in_role('reviewers'):
+        if self.is_in_role('reviewers'):
             return True
-        if workplace.is_in_role('members'):
+        if self.is_in_role('members'):
             return True
 
         return False
 
 
-    is_allowed_to_add = is_allowed_to_edit
-    is_allowed_to_remove = is_allowed_to_edit
-    is_allowed_to_copy = is_allowed_to_edit
-    is_allowed_to_move = is_allowed_to_edit
+    #########################################################################
+    # To override
+    #########################################################################
+    __roles__ = [
+        {'name': 'members', 'title': u"Members", 'unit': u"Member"},
+        {'name': 'reviewers', 'title': u"Reviewers", 'unit': u"Reviewer"},
+    ]
+
+
+    def _get_members_sort_key(self):
+        return 'title_or_name'
+
+
+    #########################################################################
+    # API
+    #########################################################################
+    def has_role(self, name):
+        for role in self.__roles__:
+            if role['name'] == name:
+                return True
+        return False
+
+
+    def get_role(self, name):
+        return self.handler.get_handler('.%s.users' % name)
+
+
+    def get_roles(self):
+        return list(self.__roles__)
+
+
+    def get_role_names(self):
+        return [r['name'] for r in self.__roles__]
+
+
+    def get_role_resource_names(self):
+        return ['.%s' % r for r in self.get_role_names()]
+
+
+    def get_skeleton(self, **kw):
+        skeleton = {}
+
+        # build roles
+        for role in self.get_roles():
+            rolename = role['name']
+            users = kw.get(rolename, [])
+            skeleton['.%s.users' % rolename] = ListOfUsers(users=users)
+
+        return skeleton
+
+
+    def is_in_role(self, rolename, username=None):
+        if username is None:
+            context = get_context()
+            user = context.user
+            if user is None:
+                return False
+            username = user.name
+
+        if self.has_role(rolename):
+            role = self.get_role(rolename)
+            return username in role.get_usernames()
+        return False
+
+
+    def del_roles(self, username):
+        for role in self.get_roles():
+            handler = self.get_role(role['name'])
+            if username in handler.get_usernames():
+                handler.remove(username)
+
+        context = get_context()
+        root = context.root
+        user = root.get_user(username)
+        user.clear_group_cache()
+
+
+    def set_role(self, rolename, username):
+        for role in self.get_roles():
+            handler = self.get_role(role['name'])
+            if rolename == role['name']:
+                if not username in handler.get_usernames():
+                    handler.add(username)
+            else:
+                if username in handler.get_usernames():
+                    handler.remove(username)
+
+        context = get_context()
+        root = context.root
+        user = root.get_user(username)
+        user.clear_group_cache()
+
+
+    #########################################################################
+    # User Interface
+    #########################################################################
+    def get_roles_namespace(self, username):
+        namespace = []
+
+        for role in self.get_roles():
+            rolename = role['name']
+            namespace.append({
+                'name': rolename,
+                'title': role['unit'],
+                'selected': self.is_in_role(rolename, username)
+            })
+
+        return namespace
+
+
+    permissions_form__access__ = 'is_admin'
+    permissions_form__label__ = u"Permissions"
+    permissions_form__sublabel__ = u"Permissions"
+    def permissions_form(self, context):
+        root = context.root
+        userfolder = root.get_object('users')
+        namespace = {}
+
+        members = set()
+        for role in self.get_roles():
+            rolename = role['name']
+            handler = self.get_role(rolename)
+            members = members.union(handler.get_usernames())
+
+        users = [userfolder.get_object(u) for u in members]
+        key = attrgetter(self._get_members_sort_key())
+        users.sort(key=key)
+        namespace['users'] = []
+
+        for user in users:
+            username = user.name
+            info = {}
+            info['name'] = username
+            info['title'] = user.get_title_or_name()
+            info['roles'] = self.get_roles_namespace(username)
+            namespace['users'].append(info)
+
+        others = []
+        for user in userfolder.search_handlers():
+            if user.name not in members:
+                others.append(user)
+        others.sort(key=key)
+
+        namespace['others'] = []
+        for user in others:
+            info = {}
+            info['name'] = user.name
+            info['title'] = user.get_title_or_name()
+            namespace['others'].append(info)
+
+        handler = self.get_handler('/ui/Folder_permissions.xml')
+        return stl(handler, namespace)
+
+
+    permissions__access__ = 'is_admin'
+    def permissions(self, context):
+        # Permissions to remove
+        if context.has_form_value('delete'):
+            for username in context.get_form_values('delusers'):
+                self.del_roles(username)
+
+            message = u"Members deleted."
+
+        # Permissions to add
+        elif context.has_form_value('add'):
+            default_role = self.get_roles()[0]['name']
+            for username in context.get_form_values('addusers'):
+                self.set_role(default_role, username)
+
+            message = u"Members added."
+
+        # Permissions to change
+        elif context.has_form_value('update'):
+            root = context.root
+            userfolder = root.get_object('users')
+            for key in context.get_form_keys():
+                if key in ['delusers', 'addusers', 'update', 'delete', 'add']:
+                    continue
+                new_role = context.get_form_value(key)
+                self.set_role(new_role, key)
+
+            message = u"Roles updated."
+
+        comeback(message)

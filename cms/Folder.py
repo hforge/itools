@@ -309,9 +309,8 @@ class Folder(Handler, handlers.Folder.Folder):
         }
         key = context.get_cookie('browse')
         return options.get(key, 'browse_thumbnails')
-        
-        
-    
+
+
     def get_firstview(self):
         """
         Returns the first allowed object view url, or None if there aren't.

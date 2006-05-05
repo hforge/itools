@@ -41,7 +41,7 @@ def crypt_password(password):
     return sha.new(password).digest()
 
 
-class User(Folder):
+class User(AccessControl, Folder):
 
     class_id = 'user'
     class_version = '20040625'
@@ -81,9 +81,17 @@ class User(Folder):
 
     #########################################################################
     # Access control
-    is_allowed_to_remove = AccessControl.is_admin
-    is_allowed_to_move = AccessControl.is_admin
-    is_allowed_to_copy = AccessControl.is_admin
+    def is_allowed_to_edit(self, user, object):
+        # You are nobody here, ha ha ha
+        if user is None:
+            return False
+
+        # The all-powerfull
+        if self.is_admin():
+            return True
+
+        # In my home I am the king (and only me)
+        return self.name == user.name
 
 
     #######################################################################

@@ -30,6 +30,7 @@ from itools.stl import stl
 from itools.xhtml import XHTML
 from itools import i18n
 from itools.web import get_context
+from itools.web.access import AccessControl
 from itools.uri.generic import Query
 
 # Import from itools.cms
@@ -367,7 +368,11 @@ path = get_abspath(globals(), 'ui')
 register_skin('aruni', '%s/aruni' % path)
 
 
-class UI(Folder):
+class UI(AccessControl, Folder):
+
+    def is_access_allowed(self, user, object, method):
+        return isinstance(object, File) and name == 'GET'
+
 
     def _get_handler(self, segment, resource):
         name = segment.name

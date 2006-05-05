@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2006-04-20 12:04+CET\n"
+"POT-Creation-Date: 2006-05-05 13:05+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 msgid "%d obs"
 msgstr ""
 
-#: ./cms/root.py:449
+#: ./cms/root.py:450
 msgid "%s handlers have been re-indexed."
 msgstr ""
 
@@ -399,6 +399,14 @@ msgstr ""
 msgid "<a href=\"http://www.ikaaro.org\">ikaaro.org</a>."
 msgstr ""
 
+#: ./cms/ui/aruni/template.xhtml.en:0
+msgid "<a id=\"action_home\" class=\"icon_home\" href=\"#\" stl:attributes=\"href user/info/home\">\n                Home\n              </a> <a id=\"action_logout\" class=\"icon_logout\" href=\"#\" stl:attributes=\"href user/info/logout\">\n                Log out\n              </a>"
+msgstr ""
+
+#: ./cms/ui/aruni/template.xhtml.en:0
+msgid "<a id=\"action_login\" class=\"icon_login\" href=\"#\" stl:attributes=\"href user/login_url\">\n                Log in\n              </a> <a stl:if=\"user/joinisopen\" id=\"action_join\" class=\"icon_join\" href=\"#\" stl:attributes=\"href user/join_url\">\n                Join\n              </a>"
+msgstr ""
+
 #: ./cms/ui/web_site_templates/community/roadmap.xhtml.en:0
 msgid "<a name=\"zope3\"></a>"
 msgstr ""
@@ -431,12 +439,12 @@ msgstr ""
 msgid "<stl:inline stl:if=\"batch/control\" stl:content=\"batch/control\"></stl:inline> <a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
-msgid "<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:inline> <stl:inline stl:if=\"not user/info\">not logged in</stl:inline>"
-msgstr ""
-
 #: ./cms/ui/WorkflowAware_state.xml.en:0
 msgid "<strong stl:content=\"state\"></strong>"
+msgstr ""
+
+#: ./cms/ui/aruni/template.xhtml.en:0
+msgid "<strong stl:if=\"user/info\" stl:content=\"user/info/title\">\n              The user\n            </strong> <strong stl:if=\"not user/info\">\n              not logged in\n            </strong>"
 msgstr ""
 
 #: ./cms/ui/Root_license.xml.en:0
@@ -587,7 +595,7 @@ msgstr ""
 msgid "Activities other than copying, distribution and modification are not covered by this License;"
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: ./cms/ui/Group_add_users.xml.en:0
 msgid "Add"
 msgstr ""
 
@@ -605,6 +613,10 @@ msgstr ""
 
 #: ./cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add a New User"
+msgstr ""
+
+#: ./cms/ui/Folder_permissions.xml.en:0
+msgid "Add a member"
 msgstr ""
 
 #: ./cms/ui/User_translator.xml.en:0
@@ -699,7 +711,7 @@ msgstr ""
 msgid "Border"
 msgstr ""
 
-#: ./cms/Group.py:180
+#: ./cms/Group.py:189
 msgid "Browse"
 msgstr ""
 
@@ -725,10 +737,6 @@ msgstr ""
 
 #: ./cms/csv_.py:30
 msgid "CSV Row"
-msgstr ""
-
-#: ./cms/openoffice.py:88
-msgid "Calc"
 msgstr ""
 
 #: ./cms/ui/Root_catalog.xml.en:0
@@ -759,7 +767,7 @@ msgstr ""
 msgid "Character encoding"
 msgstr ""
 
-#: ./cms/root.py:457
+#: ./cms/root.py:458
 msgid "Check Groups"
 msgstr ""
 
@@ -867,6 +875,10 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
+#: ./cms/ui/Folder_permissions.xml.en:0
+msgid "Delete"
+msgstr ""
+
 #: ./cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
 msgid "Demo"
 msgstr ""
@@ -891,7 +903,7 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
-#: ./cms/msoffice.py:109
+#: ./cms/office.py:155
 msgid "Document Excel"
 msgstr ""
 
@@ -903,11 +915,11 @@ msgstr ""
 msgid "Document History"
 msgstr ""
 
-#: ./cms/pdf.py:31
+#: ./cms/office.py:269
 msgid "Document PDF"
 msgstr ""
 
-#: ./cms/msoffice.py:144
+#: ./cms/office.py:173
 msgid "Document PowerPoint"
 msgstr ""
 
@@ -915,11 +927,11 @@ msgstr ""
 msgid "Document State"
 msgstr ""
 
-#: ./cms/msoffice.py:69
+#: ./cms/office.py:136
 msgid "Document Word"
 msgstr ""
 
-#: ./cms/html.py:162
+#: ./cms/html.py:163
 msgid "Document changed."
 msgstr ""
 
@@ -967,7 +979,7 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#: ./cms/html.py:148
+#: ./cms/html.py:151
 msgid "ERROR: the document could not be changed, the input data was not proper HTML code."
 msgstr ""
 
@@ -1023,7 +1035,7 @@ msgstr ""
 msgid "Everything is alright."
 msgstr ""
 
-#: ./cms/msoffice.py:108
+#: ./cms/office.py:154
 msgid "Excel"
 msgstr ""
 
@@ -1071,8 +1083,24 @@ msgstr ""
 msgid "Folder"
 msgstr ""
 
+#: ./cms/future.py:118
+msgid "Folders already down."
+msgstr ""
+
+#: ./cms/future.py:94
+msgid "Folders already up."
+msgstr ""
+
 #: ./cms/ui/WebSite_new_instance.xml.en:0
 msgid "Folders are used to classify documents."
+msgstr ""
+
+#: ./cms/future.py:129
+msgid "Folders ordered down."
+msgstr ""
+
+#: ./cms/future.py:104
+msgid "Folders ordered up."
 msgstr ""
 
 #: ./cms/ui/Root_license.xml.en:0
@@ -1131,11 +1159,11 @@ msgstr ""
 msgid "Give a look at the <a href=\"http://demo.ikaaro.org/\">demo</a> (username and password \"super\"), or <a href=\"../download/ikaaro/ikaaro-0.13.0-metapackage.tar.gz\">download</a> it straight away."
 msgstr ""
 
-#: ./cms/Group.py:57
+#: ./cms/Group.py:71
 msgid "Group"
 msgstr ""
 
-#: ./cms/Group.py:172
+#: ./cms/Group.py:181
 msgid "Group added."
 msgstr ""
 
@@ -1147,7 +1175,7 @@ msgstr ""
 msgid "Groups"
 msgstr ""
 
-#: ./cms/root.py:486
+#: ./cms/root.py:487
 msgid "Groups fixed."
 msgstr ""
 
@@ -1219,10 +1247,6 @@ msgstr ""
 msgid "Image"
 msgstr ""
 
-#: ./cms/openoffice.py:101
-msgid "Impress"
-msgstr ""
-
 #: ./cms/ui/Root_license.xml.en:0
 msgid "In addition, mere aggregation of another work not based on the Program with the Program (or with a work based on the Program) on a volume of a storage or distribution medium does not bring the other work under the scope of this License."
 msgstr ""
@@ -1267,7 +1291,7 @@ msgstr ""
 msgid "J. David Ibáñez, lead developer"
 msgstr ""
 
-#: ./cms/ui/Root_join.xml.en:0
+#: ./cms/ui/surf/template.xhtml.en:0
 msgid "Join"
 msgstr ""
 
@@ -1283,7 +1307,7 @@ msgstr ""
 msgid "Keeps an historical record with the changes made, it is possible to come back to an older version."
 msgstr ""
 
-#: ./cms/ui/User_edit.xml.en:0
+#: ./cms/ui/Text_new_instance.xml.en:0
 msgid "Language"
 msgstr ""
 
@@ -1367,7 +1391,7 @@ msgstr ""
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: ./cms/root.py:456
+#: ./cms/root.py:457
 msgid "Maintenance"
 msgstr ""
 
@@ -1377,6 +1401,26 @@ msgstr ""
 
 #: ./cms/ui/Root_license.xml.en:0
 msgid "Many people have made generous contributions to the wide range of software distributed through that system in reliance on consistent application of that system;"
+msgstr ""
+
+#: ./cms/future.py:137
+msgid "Member"
+msgstr ""
+
+#: ./cms/future.py:137
+msgid "Members"
+msgstr ""
+
+#: ./cms/future.py:300
+msgid "Members added."
+msgstr ""
+
+#: ./cms/ui/Folder_permissions.xml.en:0
+msgid "Members and roles"
+msgstr ""
+
+#: ./cms/future.py:290
+msgid "Members deleted."
 msgstr ""
 
 #: ./cms/ui/PO_edit.xml.en:0
@@ -1423,7 +1467,7 @@ msgstr ""
 msgid "NO WARRANTY"
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: ./cms/ui/Group_add_group.xml.en:0
 msgid "Name"
 msgstr ""
 
@@ -1460,10 +1504,14 @@ msgid "No history."
 msgstr ""
 
 #: ./cms/Folder.py:772
+msgid "No objects selected"
+msgstr ""
+
+#: ./cms/Folder.py:694
 msgid "No objects selected."
 msgstr ""
 
-#: ./cms/Group.py:301
+#: ./cms/Group.py:309
 msgid "No user added"
 msgstr ""
 
@@ -1487,6 +1535,18 @@ msgstr ""
 msgid "Nulla facilisi."
 msgstr ""
 
+#: ./cms/office.py:238
+msgid "OOo Calc"
+msgstr ""
+
+#: ./cms/office.py:253
+msgid "OOo Impress"
+msgstr ""
+
+#: ./cms/office.py:223
+msgid "OOo Writer"
+msgstr ""
+
 #: ./cms/Folder.py:683
 msgid "Objects copied."
 msgstr ""
@@ -1507,16 +1567,28 @@ msgstr ""
 msgid "Objects renamed."
 msgstr ""
 
-#: ./cms/openoffice.py:76
+#: ./cms/office.py:224
 msgid "OpenOffice.org Document"
 msgstr ""
 
-#: ./cms/openoffice.py:102
+#: ./cms/office.py:254
 msgid "OpenOffice.org Presentation"
 msgstr ""
 
-#: ./cms/openoffice.py:89
+#: ./cms/office.py:239
 msgid "OpenOffice.org Spreadsheet"
+msgstr ""
+
+#: ./cms/future.py:67
+msgid "Order"
+msgstr ""
+
+#: ./cms/ui/Folder_order_items.xml.en:0
+msgid "Order down"
+msgstr ""
+
+#: ./cms/ui/Folder_order_items.xml.en:0
+msgid "Order up"
 msgstr ""
 
 #: ./cms/Folder.py:57
@@ -1531,7 +1603,7 @@ msgstr ""
 msgid "Our decision will be guided by the two goals of preserving the free status of all derivatives of our free software and of promoting the sharing and reuse of software generally."
 msgstr ""
 
-#: ./cms/pdf.py:30
+#: ./cms/office.py:268
 msgid "PDF"
 msgstr ""
 
@@ -1539,7 +1611,7 @@ msgstr ""
 msgid "Packaging"
 msgstr ""
 
-#: ./cms/ui/Root_join.xml.en:0
+#: ./cms/ui/WebSite_login.xml.en:0
 msgid "Password"
 msgstr ""
 
@@ -1557,6 +1629,10 @@ msgstr ""
 
 #: ./cms/ui/User_profile.xml.en:0
 msgid "Pending tasks."
+msgstr ""
+
+#: ./cms/future.py:235
+msgid "Permissions"
 msgstr ""
 
 #: ./cms/ui/aruni/template.xhtml.en:0
@@ -1611,6 +1687,14 @@ msgstr ""
 msgid "Please select a file from your system using the <strong>Browse...</strong> button below."
 msgstr ""
 
+#: ./cms/future.py:111
+msgid "Please select the folders to order down."
+msgstr ""
+
+#: ./cms/future.py:87
+msgid "Please select the folders to order up."
+msgstr ""
+
 #: ./cms/ui/Text_new_instance.xml.en:0
 msgid "Please select the source language of your document."
 msgstr ""
@@ -1635,7 +1719,7 @@ msgstr ""
 msgid "Plus the Simple Template Language."
 msgstr ""
 
-#: ./cms/msoffice.py:143
+#: ./cms/office.py:172
 msgid "PowerPoint"
 msgstr ""
 
@@ -1671,7 +1755,7 @@ msgstr ""
 msgid "Publish the document."
 msgstr ""
 
-#: ./cms/html.py:55
+#: ./cms/html.py:54
 msgid "Publish your own web pages."
 msgstr ""
 
@@ -1691,7 +1775,7 @@ msgstr ""
 msgid "Released to the world under the terms and conditions of the <a href=\";license\">GNU General Public License</a>, iKaaro is a free software project, built by its community:"
 msgstr ""
 
-#: ./cms/ui/User_translator.xml.en:0
+#: ./cms/ui/Group_browse_users.xml.en:0
 msgid "Remove"
 msgstr ""
 
@@ -1711,7 +1795,7 @@ msgstr ""
 msgid "Rename.."
 msgstr ""
 
-#: ./cms/ui/Root_join.xml.en:0
+#: ./cms/ui/UserFolder_new_user.xml.en:0
 msgid "Repeat Password"
 msgstr ""
 
@@ -1727,12 +1811,24 @@ msgstr ""
 msgid "Retract the document."
 msgstr ""
 
+#: ./cms/future.py:138
+msgid "Reviewer"
+msgstr ""
+
 #: ./cms/root.py:97
 msgid "Reviewers"
 msgstr ""
 
 #: ./cms/versioning.py:155
 msgid "Revision copied to present."
+msgstr ""
+
+#: ./cms/ui/Folder_permissions.xml.en:0
+msgid "Role"
+msgstr ""
+
+#: ./cms/future.py:313
+msgid "Roles updated."
 msgstr ""
 
 #: ./cms/ui/Root_license.xml.en:0
@@ -1783,7 +1879,7 @@ msgstr ""
 msgid "Size"
 msgstr ""
 
-#: ./cms/skins.py:43
+#: ./cms/skins.py:44
 msgid "Skin"
 msgstr ""
 
@@ -1951,15 +2047,15 @@ msgstr ""
 msgid "The metadata describes the document (title, subject, description, etc..)."
 msgstr ""
 
-#: ./cms/Group.py:161
+#: ./cms/Group.py:170
 msgid "The name contains illegal characters, choose another one."
 msgstr ""
 
-#: ./cms/Group.py:156
+#: ./cms/Group.py:165
 msgid "The name must be entered"
 msgstr ""
 
-#: ./cms/users.py:489
+#: ./cms/users.py:491
 msgid "The password is wrong, please try again."
 msgstr ""
 
@@ -1999,7 +2095,7 @@ msgstr ""
 msgid "The user \"%s\" does not exist."
 msgstr ""
 
-#: ./cms/users.py:481
+#: ./cms/users.py:483
 msgid "The username is wrong, please try again."
 msgstr ""
 
@@ -2023,15 +2119,19 @@ msgstr ""
 msgid "There has been an internal server error."
 msgstr ""
 
-#: ./cms/Group.py:167
+#: ./cms/Group.py:176
 msgid "There is already another group with this name."
+msgstr ""
+
+#: ./cms/Folder.py:897
+msgid "There is already another object with this name."
 msgstr ""
 
 #: ./cms/Folder.py:966
 msgid "There is already another resource with this name."
 msgstr ""
 
-#: ./cms/users.py:484
+#: ./cms/users.py:486
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
 
@@ -2187,6 +2287,10 @@ msgstr ""
 msgid "Unpack"
 msgstr ""
 
+#: ./cms/ui/Folder_permissions.xml.en:0
+msgid "Update"
+msgstr ""
+
 #: ./cms/root.py:394
 msgid "Update Catalog"
 msgstr ""
@@ -2197,6 +2301,10 @@ msgstr ""
 
 #: ./cms/ui/File_upload.xml.en:0
 msgid "Upload File"
+msgstr ""
+
+#: ./cms/ui/File_new_instance.xml.en:0
+msgid "Upload a File"
 msgstr ""
 
 #: ./cms/ui/File_new_instance.xml.en:0
@@ -2219,11 +2327,11 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: ./cms/Group.py:303
+#: ./cms/Group.py:311
 msgid "User added"
 msgstr ""
 
-#: ./cms/users.py:500
+#: ./cms/users.py:502
 msgid "User added."
 msgstr ""
 
@@ -2231,11 +2339,11 @@ msgstr ""
 msgid "User groups edited."
 msgstr ""
 
-#: ./cms/Group.py:236
+#: ./cms/Group.py:245
 msgid "User removed."
 msgstr ""
 
-#: ./cms/ui/Root_join.xml.en:0
+#: ./cms/ui/WebSite_login.xml.en:0
 msgid "Username"
 msgstr ""
 
@@ -2247,11 +2355,11 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: ./cms/Group.py:305
+#: ./cms/Group.py:313
 msgid "Users added"
 msgstr ""
 
-#: ./cms/Group.py:238
+#: ./cms/Group.py:247
 msgid "Users removed."
 msgstr ""
 
@@ -2259,7 +2367,7 @@ msgstr ""
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: ./cms/html.py:215
+#: ./cms/html.py:216
 msgid "Version edited."
 msgstr ""
 
@@ -2283,7 +2391,7 @@ msgstr ""
 msgid "We wish to avoid the danger that redistributors of a free program will individually obtain patent licenses, in effect making the program proprietary."
 msgstr ""
 
-#: ./cms/html.py:54
+#: ./cms/html.py:53
 msgid "Web Page"
 msgstr ""
 
@@ -2323,16 +2431,12 @@ msgstr ""
 msgid "Without head"
 msgstr ""
 
-#: ./cms/msoffice.py:68
+#: ./cms/office.py:135
 msgid "Word"
 msgstr ""
 
 #: ./cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
-msgstr ""
-
-#: ./cms/openoffice.py:75
-msgid "Writer"
 msgstr ""
 
 #: ./cms/ui/web_site_templates/community/itools.xhtml.en:0
@@ -2431,7 +2535,7 @@ msgstr ""
 msgid "You must select one or two revisions."
 msgstr ""
 
-#: ./cms/Group.py:218
+#: ./cms/Group.py:227
 msgid "You must select the members to remove."
 msgstr ""
 

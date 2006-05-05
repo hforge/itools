@@ -295,32 +295,41 @@ class Server(object):
             else:
                 # Get the method
                 try:
-                    method = handler.get_method(method_name)
-                except:
-                    self.log_error()
-                    # Internal Server Error (500)
-                    response.set_status(500)
-                    method = root.internal_server_error
+                    method = getattr(object, method_name)
+                except AttributeError:
+                    # Not Found (response code 404)
+                    response.set_status(404)
+                    method = root.not_found
                 else:
-                    # Check security
-                    if method is None:
-                        if user is None:
-                            # Unauthorized (401)
-                            method = root.login_form
-                        else:
-                            # Forbidden (403)
-                            method = root.forbidden
+                    # Get the method
+                    try:
+                        ac = handler.get_access_control()
+                        ac_ok = ac.is_access_allowed(user, handler, method_name)
+                    except:
+                        self.log_error()
+                        # Internal Server Error (500)
+                        response.set_status(500)
+                        method = root.internal_server_error
                     else:
-                        mtime = getattr(handler, '%s__mtime__' % method_name, None)
-                        if mtime is not None:
-                            mtime = mtime().replace(microsecond=0)
-                            response.set_header('last-modified', mtime)
-                            if request.method == 'GET':
-                                if request.has_header('if-modified-since'):
-                                    msince = request.get_header('if-modified-since')
-                                    if mtime <= msince:
-                                        # Not modified (304)
-                                        response.set_status(304)
+                        # Check security
+                        if ac_ok is False:
+                            if user is None:
+                                # Unauthorized (401)
+                                method = root.login_form
+                            else:
+                                # Forbidden (403)
+                                method = root.forbidden
+                        else:
+                            mtime = getattr(handler, '%s__mtime__' % method_name, None)
+                            if mtime is not None:
+                                mtime = mtime().replace(microsecond=0)
+                                response.set_header('last-modified', mtime)
+                                if request.method == 'GET':
+                                    if request.has_header('if-modified-since'):
+                                        msince = request.get_header('if-modified-since')
+                                        if mtime <= msince:
+                                            # Not modified (304)
+                                            response.set_status(304)
 
         if response.get_status() != 304:
             # Set the list of needed resources. The method we are going to

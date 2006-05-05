@@ -897,9 +897,10 @@ class Folder(Handler, handlers.Folder.Folder):
     def new_resource(self, context):
         class_id = context.get_form_value('class_id')
         name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
 
         # Check for errors
-        name = name.strip()
+        name = name.strip() or title.strip()
         if not name:
             # Empty name
             raise UserError, self.gettext(u'The name must be entered')
@@ -927,7 +928,6 @@ class Folder(Handler, handlers.Folder.Folder):
         handler = self.get_handler(name)
         root = self.get_site_root()
         languages = root.get_property('ikaaro:website_languages')
-        title = context.get_form_value('dc:title')
         handler.set_property('dc:title', title, languages[0])
 
         message = self.gettext(u'New resource added.')

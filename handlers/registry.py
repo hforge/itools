@@ -45,6 +45,6 @@ def get_handler_class(resource):
     raise ValueError
 
 
-def build_handler(resource, **kw):
-    handler_class = get_handler_class(resource, **kw)
+def build_handler(resource):
+    handler_class = get_handler_class(resource)
     return handler_class(resource)

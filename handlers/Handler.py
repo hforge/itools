@@ -21,8 +21,7 @@ handler class hierarchy.
 """
 
 # Import from the Standard Library
-import datetime
-import thread
+from datetime import datetime
 
 # Import from itools
 from itools.resources import base
@@ -108,5 +107,6 @@ class Handler(Node):
 
 
     def set_changed(self):
+        self.timestamp = datetime.now()
         get_transaction().add(self)
 

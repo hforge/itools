@@ -305,7 +305,8 @@ class RSS(Text):
 
 
     # only required empty channel elements
-    def get_skeleton(self, encoding='UTF-8'):
+    @classmethod
+    def get_skeleton(cls, encoding='UTF-8'):
         s = []
         s.append('<?xml version="1.0" encoding="%s"?>' % encoding)
         s.append('<rss version="2.0">')

@@ -98,7 +98,8 @@ class Document(XHTML.Document):
     #########################################################################
     # The skeleton
     #########################################################################
-    def get_skeleton(self, title=''):
+    @classmethod
+    def get_skeleton(cls, title=''):
         s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"\n' \
             '  "http://www.w3.org/TR/html4/loose.dtd">\n' \
             '<html>\n' \

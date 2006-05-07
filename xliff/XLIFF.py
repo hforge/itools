@@ -130,7 +130,8 @@ class File(object):
 
 class XLIFF(Text):
 
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         return ('<?xml version="1.0" encoding="UTF-8"?>\n'
                 '<!DOCTYPE xliff SYSTEM "http://www.oasis-open.org/'
                 'committees/xliff/documents/xliff.dtd">\n'

@@ -34,7 +34,8 @@ from message import Message
 
 class Request(Message):
 
-    def get_skeleton(self, path='/'):
+    @classmethod
+    def get_skeleton(cls, path='/'):
         return 'GET %s HTTP/1.1\r\n\r\n' % path
 
 

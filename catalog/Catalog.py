@@ -39,7 +39,8 @@ class Field(object):
 
 class Fields(Text):
 
-    def get_skeleton(self, fields=[]):
+    @classmethod
+    def get_skeleton(cls, fields=[]):
         skeleton = ''
         for number, field in enumerate(fields):
             name, type, is_indexed, is_stored = field
@@ -86,7 +87,8 @@ class Catalog(Folder):
     class_mimetypes = ['application/x-catalog']
 
 
-    def get_skeleton(self, fields=[]):
+    @classmethod
+    def get_skeleton(cls, fields=[]):
         skeleton = {'fields': Fields(fields=fields)}
         for number, field in enumerate(fields):
             skeleton['f%d' % number] = IIndex()

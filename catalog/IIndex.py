@@ -91,9 +91,10 @@ class IIndexTree(File):
     class_version = '20040723'
 
 
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         # The header
-        version = IO.encode_version(self.class_version)
+        version = IO.encode_version(cls.class_version)
         number_of_slots = IO.encode_uint32(0)
         first_slot = IO.encode_link(None)
         first_empty = IO.encode_link(None)
@@ -183,8 +184,9 @@ class IIndexDocuments(File):
     class_version = '20050529'
 
 
-    def get_skeleton(self):
-        version = IO.encode_version(self.class_version)
+    @classmethod
+    def get_skeleton(cls):
+        version = IO.encode_version(cls.class_version)
         number_of_slots = IO.encode_uint32(0)
         first_empty = IO.encode_link(None)
         return version + number_of_slots + first_empty
@@ -537,7 +539,8 @@ class Tree(object):
 
 class IIndex(Folder):
 
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         return {'tree': IIndexTree(),
                 'documents': IIndexDocuments()}
 

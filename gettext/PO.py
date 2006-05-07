@@ -142,7 +142,8 @@ class PO(Text):
     #########################################################################
     # The skeleton
     #########################################################################
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         now = time.strftime('%Y-%m-%d %H:%m+%Z', time.gmtime(time.time()))
         lines = ["# SOME DESCRIPTIVE TITLE.",
                  "# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER",

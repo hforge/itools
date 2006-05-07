@@ -62,7 +62,8 @@ class File(Handler):
     #########################################################################
     # The skeleton
     #########################################################################
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         return ''
 
 

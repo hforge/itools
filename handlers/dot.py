@@ -33,7 +33,8 @@ class Dot(Text):
     ########################################################################
     # Skeleton
     ########################################################################
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         template = ('digraph G {\n'
                     'rankdir=BT;\n'
                     '  \n}')

@@ -286,9 +286,11 @@ class icalendar(Text):
     class_extension = 'ics'
 
 
+    #########################################################################
+    # The skeleton
+    #########################################################################
     @classmethod
     def get_skeleton(cls):
-        """ """
         skel = (
             'BEGIN:VCALENDAR\n'
             'VERSION:2.0\n'

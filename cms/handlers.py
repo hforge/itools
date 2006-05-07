@@ -36,7 +36,8 @@ from metadata import Record
 
 class ListOfUsers(File):
 
-    def get_skeleton(self, users=[]):
+    @classmethod
+    def get_skeleton(cls, users=[]):
         return '\n'.join(users)
 
 
@@ -71,7 +72,12 @@ class ListOfUsers(File):
 
 class Lock(Text):
 
-    def get_skeleton(self, username=None, **kw):
+    class_mimetypes = ['text/x-lock']
+    class_extension = 'lock'
+
+
+    @classmethod
+    def get_skeleton(cls, username=None, **kw):
         key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
         timestamp = DateTime.encode(datetime.now())
         return '%s\n%s\n%s' % (username, timestamp, key)
@@ -100,7 +106,8 @@ class Metadata(Node, File):
     class_icon48 = 'images/File48.png'
 
 
-    def get_skeleton(self, handler_class=None, **kw):
+    @classmethod
+    def get_skeleton(cls, handler_class=None, **kw):
         # Initialize the properties to add
         properties = {'format': handler_class.class_id,
                       'version': handler_class.class_version}

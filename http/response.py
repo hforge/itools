@@ -96,7 +96,8 @@ class Cookie(object):
 
 class Response(Message):
 
-    def get_skeleton(self, status_code=200, **kw):
+    @classmethod
+    def get_skeleton(cls, status_code=200, **kw):
         status_message = status_messages[status_code]
         skeleton = ['HTTP/1.1 %s %s' % (status_code, status_message)]
         for name in kw:

@@ -27,7 +27,8 @@ import IO
 
 class IndexedFields(File):
 
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         return IO.encode_byte(0)
 
 
@@ -91,7 +92,8 @@ class StoredFields(File):
       - field value (string)
     """
 
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         return IO.encode_byte(0)
 
 

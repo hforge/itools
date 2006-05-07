@@ -112,7 +112,8 @@ class Message(object):
 
 class TMX(Text):
 
-    def get_skeleton(self):
+    @classmethod
+    def get_skeleton(cls):
         return ('<?xml version="1.0" encoding="UTF-8"?>\n'
                 '<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">\n'
                 '<tmx version="1.4">\n'

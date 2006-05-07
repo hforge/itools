@@ -115,7 +115,8 @@ class Var(Text):
     ########################################################################
     # Skeleton
     ########################################################################
-    def get_skeleton(self, uri=None, language='en', mimetype='text/plain'):
+    @classmethod
+    def get_skeleton(cls, uri=None, language='en', mimetype='text/plain'):
         data = 'URI: %s\n' % uri
         data += 'Content-Language: %s\n' % language
         data += 'Content-Type: %s; charset=UTF-8\n' % mimetype

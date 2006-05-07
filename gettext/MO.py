@@ -20,6 +20,7 @@ from gettext import GNUTranslations
 
 # Import from itools
 from itools.handlers.File import File
+from itools.handlers.registry import register_handler_class
 
 
 class MO(File):
@@ -36,4 +37,4 @@ class MO(File):
         return self.state.translations.ugettext(message)
 
 
-File.register_handler_class(MO)
+register_handler_class(MO)

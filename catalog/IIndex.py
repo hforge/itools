@@ -542,13 +542,13 @@ class IIndex(Folder):
                 'documents': IIndexDocuments()}
 
 
-    def _get_handler(self, segment, resource):
+    def get_handler_class(self, segment, resource):
         name = segment.name
         if name == 'tree':
-            return IIndexTree(resource)
+            return IIndexTree
         elif name == 'documents':
-            return IIndexDocuments(resource)
-        return Folder._get_handler(self, segment, resource)
+            return IIndexDocuments
+        return Folder.get_handler_class(self, segment, resource)
 
 
     ########################################################################

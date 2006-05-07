@@ -21,6 +21,7 @@ import warnings
 # Import from itools
 from itools.handlers.Folder import Folder
 from itools.handlers.Text import Text
+from itools.handlers.registry import register_handler_class
 from analysers import get_analyser
 from IDocument import IndexedFields, StoredFields
 from IIndex import IIndex
@@ -92,17 +93,17 @@ class Catalog(Folder):
         return skeleton
 
 
-    def _get_handler(self, segment, resource):
+    def get_handler_class(self, segment, resource):
         name = segment.name
         if name == 'fields':
-            return Fields(resource)
+            return Fields
         elif name.startswith('f'):
-            return IIndex(resource)
+            return IIndex
         elif name.endswith('i'):
-            return IndexedFields(resource)
+            return IndexedFields
         elif name.endswith('s'):
-            return StoredFields(resource)
-        return Folder._get_handler(self, segment, resource)
+            return StoredFields
+        return Folder.get_handler_class(self, segment, resource)
 
 
     #########################################################################
@@ -302,7 +303,7 @@ class Catalog(Folder):
             yield stored.document
 
 
-Folder.register_handler_class(Catalog)
+register_handler_class(Catalog)
 
 
 

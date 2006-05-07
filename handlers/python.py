@@ -23,6 +23,7 @@ from pprint import pprint
 
 # Import from itools
 from Text import Text
+from itools.handlers.registry import register_handler_class
 
 
 class VisitorUnicode(object):
@@ -198,4 +199,4 @@ class Python(Text):
         return visitor.messages
 
 
-Text.register_handler_class(Python)
+register_handler_class(Python)

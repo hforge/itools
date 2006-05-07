@@ -27,6 +27,7 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.resources import memory
+from itools.handlers.registry import register_handler_class
 from itools.xml import XML, namespaces
 from itools import i18n
 
@@ -625,7 +626,7 @@ class Document(XML.Document):
 
 
 XML.Document.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
-XML.Document.register_handler_class(Document)
+register_handler_class(Document)
 
 
 

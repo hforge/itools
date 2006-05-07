@@ -17,6 +17,7 @@
 
 # Import from itools
 from File import File
+from itools.handlers.registry import register_handler_class
 
 
 class Text(File):
@@ -72,4 +73,4 @@ class Text(File):
         return self.state.data.encode(encoding)
 
 
-File.register_handler_class(Text)
+register_handler_class(Text)

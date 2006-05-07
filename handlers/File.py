@@ -19,8 +19,9 @@
 import datetime
 
 # Import from itools
-from itools.resources import base, memory
+from itools.resources import memory
 from Handler import Handler, State
+from itools.handlers.registry import register_handler_class
 
 
 
@@ -83,4 +84,4 @@ class File(Handler):
 
 
 
-Handler.register_handler_class(File)
+register_handler_class(File)

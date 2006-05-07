@@ -22,6 +22,7 @@ import csv as python_csv
 # Import from itools
 from itools.handlers.Text import Text
 from itools.catalog import queries, analysers
+from itools.handlers.registry import register_handler_class
 
 
 
@@ -413,4 +414,4 @@ class CSV(Text):
         return documents
 
 
-Text.register_handler_class(CSV)
+register_handler_class(CSV)

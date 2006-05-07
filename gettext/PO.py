@@ -22,6 +22,7 @@ import time
 # Import from itools
 from itools.handlers.File import File
 from itools.handlers.Text import Text
+from itools.handlers.registry import register_handler_class
 
 
 # Line types
@@ -405,4 +406,4 @@ class PO(Text):
                                           fuzzy)
 
 
-Text.register_handler_class(PO)
+register_handler_class(PO)

@@ -21,6 +21,7 @@ from time import strptime
 
 # Import from itools
 from itools.handlers.Text import Text
+from itools.handlers.registry import register_handler_class
 from itools.xml import parser
 from itools.datatypes import DataType, Unicode, URI, Integer, String, DateTime
 
@@ -358,4 +359,4 @@ class RSS(Text):
         return namespace
 
 
-Text.register_handler_class(RSS)
+register_handler_class(RSS)

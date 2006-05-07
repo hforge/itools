@@ -25,6 +25,7 @@ from itools.handlers import File, Text
 from itools.datatypes import Unicode, XML as XMLContent, XMLAttribute
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
+from itools.handlers.registry import register_handler_class
 from itools.xml.exceptions import XMLError
 from itools.xml import namespaces
 from itools.xml import parser
@@ -443,7 +444,7 @@ class Document(Text.Text):
         return u' '.join(text)
 
 
-Text.Text.register_handler_class(Document)
+register_handler_class(Document)
 
 
 #############################################################################

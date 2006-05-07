@@ -18,6 +18,7 @@
 
 # Import from itools
 from itools.handlers.Text import Text
+from itools.handlers.registry import register_handler_class
 from itools.xml import parser
 
 
@@ -271,4 +272,4 @@ class TMX(Text):
         state.version = version
 
 
-Text.register_handler_class(TMX)
+register_handler_class(TMX)

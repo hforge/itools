@@ -22,7 +22,7 @@ from datetime import datetime
 from itools.resources import base, memory
 from itools.uri import Path
 from itools.handlers.Handler import Handler, State
-from itools.handlers.transactions import get_transaction
+from itools.handlers import registry
 
 
 
@@ -121,9 +121,8 @@ class Folder(Handler):
         return self.state.cache.keys()
 
 
-    def _get_handler(self, segment, resource):
-        # Build and return the handler
-        return Handler.build_handler(resource)
+    def get_handler_class(self, segment, resource):
+        return registry.get_handler_class(resource)
 
 
     def _get_virtual_handler(self, segment):
@@ -331,15 +330,6 @@ class Folder(Handler):
                         context.skip = False
 
 
-    def acquire(self, name):
-        if self.has_handler(name):
-            return self.get_handler(name)
-        return Handler.acquire(self, name)
-
-
-Handler.register_handler_class(Folder)
-
-
 
 def build_virtual_handler(handler):
     virtual_handler = Handler.__new__(handler.__class__)
@@ -354,3 +344,5 @@ def build_virtual_handler(handler):
 
     return virtual_handler
     
+
+registry.register_handler_class(Folder)

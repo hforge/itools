@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.resources import get_resource
-import Handler
+from registry import get_handler_class
 
 
 
@@ -25,7 +25,6 @@ def get_handler(uri):
     """
     Returns a resource handler from a uri reference.
     """
-    # Get the resource
     resource = get_resource(uri)
-    # Build the handler
-    return Handler.Handler.build_handler(resource)
+    handler_class = get_handler_class(resource)
+    return handler_class(resource)

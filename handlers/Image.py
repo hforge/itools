@@ -26,6 +26,7 @@ except ImportError:
 
 # Import from itools
 from File import File
+from itools.handlers.registry import register_handler_class
 
 
 class Image(File):
@@ -81,4 +82,4 @@ class Image(File):
         return data, im.format
 
 
-File.register_handler_class(Image)
+register_handler_class(Image)

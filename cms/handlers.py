@@ -26,6 +26,7 @@ from itools.datatypes import DateTime, QName, String, Unicode, XML
 from itools import schemas
 from itools.handlers.File import File
 from itools.handlers.Text import Text
+from itools.handlers.registry import register_handler_class
 from itools.xml import namespaces, parser
 from itools.web import get_context
 from Handler import Node
@@ -359,7 +360,7 @@ class Metadata(Node, File):
 
 # Register handler classes, and mimetypes
 for handler_class in [ListOfUsers, Lock, Metadata]:
-    Text.register_handler_class(handler_class)
+    register_handler_class(handler_class)
     for mimetype in handler_class.class_mimetypes:
         mimetypes.add_type(mimetype, '.%s' % handler_class.class_extension)
 

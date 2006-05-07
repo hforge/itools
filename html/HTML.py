@@ -18,6 +18,7 @@
 # Import from itools
 from itools.datatypes import Unicode
 from itools.handlers import File
+from itools.handlers.registry import register_handler_class
 from itools.xml import XML
 from itools.xhtml import XHTML
 from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \
@@ -188,4 +189,4 @@ class Document(XHTML.Document):
         return ''.join(data)
 
 
-XHTML.Document.register_handler_class(Document)
+register_handler_class(Document)

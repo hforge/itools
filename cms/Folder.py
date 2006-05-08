@@ -966,16 +966,17 @@ class Folder(Handler, handlers.Folder.Folder):
         # Guess the language if it is not included in the filename
         name = file.name
         if mimetype.startswith('text/'):
-            name, type, language = FileName.decode(name)
+            short_name, type, language = FileName.decode(name)
             if language is None:
+                # Guess the language
                 file.open()
                 data = file.read()
                 file.close()
                 encoding = Text.guess_encoding(data)
                 data = unicode(data, encoding)
                 language = i18n.oracle.guess_language(data)
-
-            name = FileName.encode((name, type, language))
+                # Rebuild the name
+                name = FileName.encode((short_name, type, language))
 
         name = checkid(name)
         if name is None:
@@ -989,15 +990,15 @@ class Folder(Handler, handlers.Folder.Folder):
             message = u'There is already another resource with this name.'
             raise UserError, self.gettext(message)
 
+        # XXX To fix, see bug #313
         # Build the handler
         handler = Handler.build_handler(file, mimetype)
-
         # Set the handler
         self.set_handler(name, handler, format=mimetype)
 
         # Come back
         message = self.gettext(u'File uploaded.')
-        if kw.has_key('add_and_return'):
+        if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             goto='./%s/;%s' % (name, handler.get_firstview())

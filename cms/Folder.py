@@ -661,7 +661,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 self.del_handler(old_name)
 
         message = self.gettext(u'Objects renamed.')
-        comeback(message, goto=';%s' % self.get_firstview())
+        comeback(message, goto=';%s' % self.get_browse_view())
 
 
     copy__access__ = 'is_allowed_to_copy'
@@ -836,7 +836,7 @@ class Folder(Handler, handlers.Folder.Folder):
                              **{'dc:language': language})
 
         message = self.gettext(u'Document translations created.')
-        comeback(message, goto=';%s' % self.get_firstview())
+        comeback(message, goto=';%s' % self.get_browse_view())
 
 
     #######################################################################

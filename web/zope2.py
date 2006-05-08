@@ -63,8 +63,8 @@ def init(zope_request):
         # Recover the standard input, so Zope can read it again
         zope_request.stdin.seek(0)
         # Load the parameters
-        if request.content_type is not None:
-            type, type_parameters = request.content_type
+        if request.has_header('content-type'):
+            type, type_parameters = request.get_header('content-type')
         else:
             type = ''
         if type == 'application/x-www-form-urlencoded':

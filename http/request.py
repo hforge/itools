@@ -190,12 +190,6 @@ class Request(Message):
     ########################################################################
     # API
     ########################################################################
-    def get_content_type(self):
-        return self.state.headers.get('content-type', None)
-
-    content_type = property(get_content_type, None, None, '')
-
-
     def get_referrer(self):
         return self.state.headers.get('referer', None)
 

@@ -16,10 +16,85 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-class BadRequest(Exception):
+class Successful(Exception):
+    """Base class for 2xx responses."""
+
+
+class OK(Successful):
+    code = 200
+
+
+class Created(Successful):
+    code = 201
+
+
+class Accepted(Successful):
+    code = 202
+
+
+class NoContent(Successful):
+    code = 204
+
+
+
+class Redirection(Exception):
+    """Base class for 3xx responses."""
+
+
+class MultipleChoices(Redirection):
+    code = 300
+
+
+class MovedPermanently(Redirection):
+    code = 301
+
+
+class MovedTemporarily(Redirection):
+    code = 302
+
+
+class NotModified(Redirection):
+    code = 304
+
+
+
+class ClientError(Exception):
+    """Base class for 4xx responses."""
+
+
+class BadRequest(ClientError):
     code = 400
 
 
-class NotImplemented(Exception):
+class Unauthorized(ClientError):
+    code = 401
+
+
+class Forbidden(ClientError):
+    code = 403
+
+
+class NotFound(ClientError):
+    code = 404
+
+
+
+class ServerError(Exception):
+    """Base class for 5xx responses."""
+
+
+class InternalServerError(ServerError):
+    code = 500
+
+
+class NotImplemented(ServerError):
     code = 501
+
+
+class BadGateway(ServerError):
+    code = 502
+
+
+class ServiceUnavailable(ServerError):
+    code = 503
 

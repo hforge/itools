@@ -30,11 +30,11 @@ from urllib import unquote
 # Import from itools
 from itools.resources.socket import File
 from itools.handlers.transactions import get_transaction
+from itools.http.exceptions import Forbidden
 from itools.http.request import Request
 from itools.http.response import Response
-from itools.http.exceptions import BadRequest
-from itools.web.exceptions import Forbidden, UserError
-from itools.web.context import Context, get_context, set_context
+from exceptions import UserError
+from context import Context, get_context, set_context
 
 
 
@@ -222,7 +222,7 @@ class Server(object):
         set_context(context)
 
         # Our canonical URLs never end with an slash
-        if request.method == 'GET' and context.uri.path.endswith_slash:
+        if request.method == 'GET' and request.uri.path.endswith_slash:
             # Redirect to the same URL without the trailing slash
             goto = copy(context.uri)
             goto.path.endswith_slash = False

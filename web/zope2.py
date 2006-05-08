@@ -28,35 +28,35 @@ from itools.web.entities import Entity
 def init(zope_request):
     environ = zope_request.environ
 
-    # Build the request
-    request = Request()
-
     # The request method
     request_method = environ['REQUEST_METHOD']
-    request.set_method(request_method)
+    # The request uri
+    request_uri = zope_request.environ['PATH_INFO']
+    query = zope_request.environ.get('QUERY_STRING', '')
+    if query:
+        request_uri = '%s?%s' % (request_uri, query)
+    # The request hqndler
+    request = Request(method=request_method, uri=request_uri)
 
     # The query
-    query = zope_request.environ.get('QUERY_STRING', '')
     query = uri.generic.Query(query)
 
-    # The path
-    path = zope_request.environ['PATH_INFO']
-    request.set_path(path)
-
     # The header
+    # XXX Check header X-Base-Path
     for name, key in [('Referer', 'HTTP_REFERER'),
                       ('Content-Type', 'CONTENT_TYPE'),
                       ('Host', 'HTTP_X_FORWARDED_HOST'),
                       ('Host', 'HTTP_HOST'),
                       ('Accept-Language', 'HTTP_ACCEPT_LANGUAGE'),
-                      ('Lock-Token', 'HTTP_LOCK_TOKEN')]:
+                      ('Lock-Token', 'HTTP_LOCK_TOKEN'),
+                      ('X-Forwarded-Host', 'HTTP_X_FORWARDED_HOST')]:
         if environ.has_key(key):
             value = environ[key]
             request.set_header(name, value)
 
     # The form
     if request_method in ('GET', 'HEAD'):
-        parameters = query
+        pass
     elif request_method in ('POST', 'PUT', 'LOCK', 'UNLOCK'):
         # Read the standard input
         body = zope_request.stdin.read()
@@ -102,13 +102,13 @@ def init(zope_request):
                     parameters[name] = body
         else:
             parameters = {'BODY': body}
+
+        for name in parameters:
+            value = parameters[name]
+            request._set_parameter(name, value)
     else:
         message = 'request method "%s" not yet implemented' % request_method
         raise ValueError, message
-
-    for name in parameters:
-        value = parameters[name]
-        request._set_parameter(name, value)
 
     # The cookies
     for name in zope_request.cookies:
@@ -120,15 +120,3 @@ def init(zope_request):
     # Build the context
     context = Context(request)
     set_context(context)
-
-    # The authority
-    if 'HTTP_X_FORWARDED_HOST' in environ:
-        authority = environ['HTTP_X_FORWARDED_HOST']
-    else:
-        authority = zope_request['HTTP_HOST']
-
-    # The URI
-    if 'REAL_PATH' in query:
-        path = query.pop('REAL_PATH')
-    request_uri = 'http://%s/%s?%s' % (authority, path, query)
-    context.uri = uri.get_reference(request_uri)

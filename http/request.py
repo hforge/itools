@@ -35,8 +35,8 @@ from message import Message
 class Request(Message):
 
     @classmethod
-    def get_skeleton(cls, path='/'):
-        return 'GET %s HTTP/1.1\r\n\r\n' % path
+    def get_skeleton(cls, method='GET', uri='/'):
+        return '%s %s HTTP/1.1\r\n\r\n' % (method, uri)
 
 
     def _load_state(self, resource):
@@ -69,9 +69,9 @@ class Request(Message):
         # Parse the request line
         state.request_line = request_line
         method, request_uri, http_version = request_line.split()
-        state.method = method
-        state.uri = get_reference(request_uri)
-        state.http_version = http_version
+        self.method = method
+        self.uri = get_reference(request_uri)
+        self.http_version = http_version
         # Check we support the method
         if method not in ['GET', 'HEAD', 'POST', 'PUT', 'LOCK', 'UNLOCK']:
             # Not Implemented (501)
@@ -185,34 +185,6 @@ class Request(Message):
         data.append(self.headers_to_str())
         # The body (XXX to do)
         return ''.join(data)
-
-
-    ########################################################################
-    # The Method
-    def get_method(self):
-        return self.state.method
-
-
-    def set_method(self, method):
-        self.state.method = method
-
-
-    method = property(get_method, set_method, None, '')
-
-
-    ########################################################################
-    # The Request URI
-    def get_uri(self):
-        return self.state.uri
-
-
-    def set_uri(self, reference):
-        if not isinstance(reference, uri.Reference):
-            reference = get_reference(reference)
-        self.state.uri = reference
-
-
-    uri = property(get_uri, set_uri, None, '')
 
 
     ########################################################################

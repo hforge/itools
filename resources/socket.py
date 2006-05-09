@@ -24,6 +24,7 @@ class File(base.File):
 
     def __init__(self, socket):
         self.socket = socket
+        self.buffer = []
 
 
     def get_mtime(self):
@@ -43,24 +44,42 @@ class File(base.File):
         # For some reason 'socket.recv' may not return all the data
         # in a single call, even in blocking mode.
         recv = self.socket.recv
-        data = []
-        while size:
-            data.append(recv(size))
-            size -= len(data[-1])
-        return ''.join(data)
+        buffer = self.buffer
+        buffer_size = sum([ len(x) for x in buffer])
+        remains = size - buffer_size
+        while remains > 0:
+            data = recv(remains)
+            buffer.append(data)
+            remains -= len(data)
+
+        data = ''.join(buffer)
+        self.buffer = [data[size:]]
+        return data[:size]
 
 
     def readline(self):
         recv = self.socket.recv
 
-        data = []
+        buffer = self.buffer
+        line = []
+
         while True:
-            byte = recv(1)
-            if byte:
-                data.append(byte)
-                if byte == '\n':
-                    break
+            if buffer:
+                block = buffer.pop(0)
             else:
+                block = recv(512)
+                if block == '':
+                    break
+
+            i = block.find('\n')
+            if i == -1:
+                line.append(block)
+            else:
+                i = i + 1
+                line.append(block[:i])
+                remains = block[i:]
+                if remains:
+                    buffer.insert(0, remains)
                 break
 
-        return ''.join(data)
+        return ''.join(line)

@@ -5,7 +5,6 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title stl:content="title">The title</title>
-    <!-- Changed by: , 21-Mar-2006 -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
@@ -67,7 +66,7 @@
           </div>
           <ul id="tabs">
              <li stl:repeat="tab tabs" stl:attributes="class tab/style">
-                <a href="#" stl:attributes="href tab/name; title tab/name"
+                <a href="#" stl:attributes="href tab/name"
                   stl:content="tab/label">The view</a>
              </li>
              <li stl:if="none" class="tab_active">
@@ -77,13 +76,14 @@
           <div class="clear"></div>
           <ul id="subtabs">
             <li stl:repeat="subtab subtabs" stl:attributes="class subtab/style">
-              <a href="#" stl:attributes="href subtab/name; title subtab/name"
+              <a href="#" stl:attributes="href subtab/name"
                 stl:content="subtab/label">The subview</a>
             </li>
             <li stl:if="none" class="tab_active">
               <a href="#">Active subview</a>
             </li>
           </ul>
+          <div class="clear"></div>
           <div id="body">
             <div id="message" stl:if="message" stl:content="message">The message</div>
             <div id="content" stl:content="body">
@@ -97,32 +97,34 @@
         </div>
         <div id="block_2">
           <div id="actions">
-            <strong stl:if="user/info" stl:content="user/info/title">
-              The user
-            </strong>
-            <strong stl:if="not user/info">
-              not logged in
-            </strong>
-            <stl:block if="not user/info">
-              <a id="action_login" href="#" class="icon_login"
-                stl:attributes="href user/login_url">
-                Log in
-              </a>
-              <a id="action_join" href="#" class="icon_join" stl:if="user/joinisopen"
-                stl:attributes="href user/join_url">
-                Register
-              </a>
-            </stl:block>
-            <stl:block if="user/info">
-              <a id="action_home" href="#" class="icon_home"
-                stl:attributes="href user/info/home">
-                Home
-              </a>
-              <a id="action_logout" href="#" class="icon_logout"
-                stl:attributes="href user/info/logout">
-                Log out
-              </a>
-            </stl:block>
+          <label>
+            <stl:inline if="user/info" content="user/info/title" />
+            <stl:inline if="not user/info">not logged in</stl:inline>
+          </label>
+            <ul stl:if="not user/info">
+              <li id="action_login">
+                <a href="#" stl:attributes="href user/login_url">
+                  Log in
+                </a>
+              </li>
+              <li id="action_join" stl:if="user/joinisopen">
+                <a href="#" stl:attributes="href user/join_url">
+                  Join
+                </a>
+              </li>
+            </ul>
+            <ul stl:if="user/info">
+              <li id="action_home">
+                <a href="#" stl:attributes="href user/info/home">
+                  Home
+                </a>
+              </li>
+              <li id="action_logout">
+                <a href="#" stl:attributes="href user/info/logout">
+                  Log out
+                </a>
+              </li>
+            </ul>
           </div>
           <div class="navigation">
             <label>Navigation</label>

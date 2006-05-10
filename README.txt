@@ -90,6 +90,9 @@ And:
  - Cedric Moliard <>
  - Nicolas Oyez <noyez@gmail.com>
 
+Includes parts of Epoz 2.0.2. Epoz is copyrighted by Maik Jablonski and
+licensed under the Zope Public License (ZPL) version 2.1.
+
 Most icons used are copyrighted by the Tango Desktop Project, and licensed
 under the Creative Commons Attribution Share-Alike license, including the
 modifications to them. (http://creativecommons.org/licenses/by-sa/2.5/)

@@ -183,8 +183,12 @@ class CSV(Text):
 
     def _index_init(self):
         """Initialize csv values index list"""
-        if self.state.indexes is None:
-            self.state.indexes = [ None for i in self.columns ]
+        for column in self.columns:
+            datatype = self.schema[column]
+            if getattr(datatype, 'index', False):
+                indexes.append(Index())
+            else:
+                indexes.append(None)
 
 
     def _index_all(self):
@@ -326,6 +330,18 @@ class CSV(Text):
             return False
 
 
+    def is_indexed(self):
+        """Check if at least one index is available for searching, etc."""
+        indexes = self.state.indexes
+        if indexes is None:
+            return False
+        indexes = [i for i in indexes if i is not None]
+        if indexes:
+            return True
+
+        return False
+
+
     def get_nrows(self):
         return len(self.state.lines)
 
@@ -396,6 +412,9 @@ class CSV(Text):
     def search(self, query=None, **kw):
         """Return list of row numbers returned by executing the query.
         """
+        if not self.is_indexed():
+            raise IndexError, 'no index is defined in the schema'
+
         if query is None:
             if kw:
                 atoms = []

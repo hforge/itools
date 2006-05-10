@@ -15,12 +15,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from the Standard Library
+from operator import attrgetter
+
 # Import from itools
 from itools import uri
 from itools.handlers.Folder import Folder
 from itools.web import get_context
 
-# Import from ikaaro
+# Import from itools.cms
 from utils import get_parameters
 from Handler import Handler
 
@@ -281,3 +284,103 @@ class Breadcrumb(object):
 
         # Avoid general template
         response.set_header('Content-Type', 'text/html; charset=UTF-8')
+
+
+
+class Node(object):
+
+    def __init__(self, handler, depth=None, count=None):
+        from Folder import Folder as DatabaseFolder
+
+        if depth is None:
+            raise ValueError, 'calling Node without a maximum depth'
+        # 'count' is an internal value, don't touch!
+        if count is None:
+            count = 0
+
+        here = get_context().handler
+        here_abspath = here.abspath
+        handler_abspath = handler.abspath
+
+        self.title = handler.get_title_or_name()
+        self.icon = handler.get_path_to_icon(size=16, from_handler=here)
+        self.path = '%s/;%s' % (here.get_pathto(handler), here.get_firstview())
+        self.active = (here_abspath == handler_abspath)
+
+        self.is_last = False
+        self.in_path = False
+        self.children = []
+
+        if count == depth:
+            self.is_last = True
+            self.in_path = True
+            return
+
+        # continue for possible children
+        #
+        here_path = uri.Path(here_abspath)
+
+        if count == 0:
+            # always recurse root
+            self.in_path = True
+        elif here_path.get_prefix(handler_abspath) == '.':
+            # no common part, so not in path
+            pass
+        elif here_abspath.startswith(handler_abspath):
+            # on the way
+            self.in_path = True
+        else:
+            pass
+
+        # recurse children in our way
+        if self.in_path:
+            self.children = [self.__class__(h, depth=depth, count=count + 1)
+                for h in handler.search_handlers(handler_class=DatabaseFolder)]
+
+        # sort lexicographically by title
+        self.children.sort(key=attrgetter('title'))
+
+
+    def children_as_html(self):
+        output = []
+
+        output.append('<dd>')
+        output.append('<dl>')
+        for child in self.children:
+            output.extend(child.node_as_html())
+        output.append('</dl>')
+        output.append('</dd>')
+
+        return output
+
+
+    def node_as_html(self):
+        output = []
+
+        output.append('<dt>')
+        output.append('<img src="%s" width="16" height="16" alt="" />' % self.icon)
+        css_classes = []
+        if self.active:
+            css_classes.append('nav_active')
+        if self.in_path:
+            css_classes.append('nav_in_path')
+        if self.is_last:
+            css_classes.append('nav_is_last')
+        css_classes = ' '.join(css_classes)
+        output.append('<a href="%s" class="%s">%s</a>'  % (self.path,
+            css_classes, self.title))
+        output.append('</dt>')
+        if self.children:
+            output.extend(self.children_as_html())
+
+        return output
+
+
+    def tree_as_html(self):
+        output = []
+
+        output.append('<dl>')
+        output.extend(self.node_as_html())
+        output.append('</dl>')
+
+        return '\n'.join(output)

@@ -16,10 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from the Standard Library
-from time import time
-from operator import itemgetter
-
 # Import from itools
 from itools import uri
 from itools import get_abspath
@@ -36,6 +32,7 @@ from itools.uri.generic import Query
 # Import from itools.cms
 from Folder import Folder
 from utils import reduce_string
+from widgets import Node
 
 
 
@@ -201,40 +198,7 @@ class Skin(Folder):
         """Build the namespace for the navigation menu."""
         context = get_context()
         root = context.root
-        here = context.handler
-        namespace = {}
-
-        root_menu = {}
-        root_menu['title'] = root.get_title_or_name()
-        root_menu['icon'] = root.get_path_to_icon(size=16, from_handler=here)
-        root_menu['path'] = '%s/;%s' % (here.get_pathto(root), here.get_firstview())
-        root_menu['active'] = (here is root)
-
-        namespace['root'] = root_menu
-
-        menu = []
-        for handler in root.get_handlers():
-            if handler.name.startswith('.'):
-                continue
-            elif handler.real_handler is not None:
-                continue
-            elif not isinstance(handler, Folder):
-                continue
-            elif handler.get_firstview() is None:
-                continue
-            item = {}
-            item['title'] = handler.get_title_or_name()
-            item['icon'] = handler.get_path_to_icon(size=16, from_handler=here)
-            item['path'] = '%s/;%s' % (here.get_pathto(handler), handler.get_firstview())
-            item['active'] = (handler is here)
-            menu.append(item)
-
-        # sort lexicographically by title
-        menu.sort(key=itemgetter('title'))
-
-        namespace['menu'] = menu
-
-        return namespace
+        return Node(root, depth=6).tree_as_html()
 
 
     def get_message(self):
@@ -332,8 +296,8 @@ class Skin(Folder):
 
         # Transform the tree
         handler = self.get_handler('template.xhtml')
-        here = uri.generic.Path(context.handler.get_abspath())
-        there = uri.generic.Path(handler.get_abspath())
+        here = uri.Path(context.handler.get_abspath())
+        there = uri.Path(handler.get_abspath())
         handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
 
         # STL

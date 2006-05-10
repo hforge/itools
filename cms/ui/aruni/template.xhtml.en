@@ -124,43 +124,10 @@
               </a>
             </stl:block>
           </div>
-          <label>Navigation</label>
-          <dl>
-            <dt stl:if="navigation/root/active">
-              <img src="../images/Root16.png" width="16" height="16" alt="" />
-              <strong>
-                <a href="#" stl:attributes="href navigation/root/path"
-                  stl:content="navigation/root/title">The active root</a>
-              </strong>
-            </dt>
-            <dt stl:if="not navigation/root/active">
-              <img src="../images/Root16.png" width="16" height="16" alt="" />
-              <a href="#" stl:attributes="href navigation/root/path"
-                stl:content="navigation/root/title">The inactive root</a>
-            </dt>
-            <dd>
-              <dl>
-                <stl:block repeat="item navigation/menu">
-                  <dt stl:if="item/active">
-                    <img src="../images/Folder16.png" width="16"
-                      height="16" alt="" stl:attributes="src item/icon" />
-                    <strong stl:if="item/active">
-                      <a href="#"
-                          stl:attributes="href item/path"
-                          stl:content="item/title">The active item</a>
-                    </strong>
-                  </dt>
-                  <dt stl:if="not item/active">
-                    <img src="../images/User16.png" width="16" height="16"
-                      alt="" stl:attributes="src item/icon" />
-                    <a href="#"
-                      stl:attributes="href item/path"
-                      stl:content="item/title">The inactive item</a>
-                  </dt>
-                </stl:block>
-              </dl>
-            </dd>
-          </dl>
+          <div class="navigation">
+            <label>Navigation</label>
+            <stl:block content="navigation" />
+          </div>
         </div>
       </div>
     </div>

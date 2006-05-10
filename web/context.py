@@ -32,6 +32,9 @@ class Context(object):
         self.request = request
         self.response = Response()
 
+
+    def init(self):
+        request = self.request
         if request.has_header('X-Forwarded-Host'):
             host = request.get_header('X-Forwarded-Host')
         else:

@@ -31,7 +31,9 @@ from urllib import unquote
 # Import from itools
 from itools.resources.socket import File
 from itools.handlers.transactions import get_transaction
-from itools.http.exceptions import Forbidden
+from itools.http.exceptions import (Forbidden, HTTPException, MovedPermanently,
+                                    NotFound, NotModified, Redirection,
+                                    Unauthorized)
 from itools.http.request import Request
 from itools.http.response import Response
 from exceptions import UserError
@@ -177,13 +179,12 @@ class Server(object):
             log.flush()
 
 
-    def log_error(self):
+    def log_error(self, context=None):
         log = self.error_log
         if log is not None:
             log.write('\n')
             log.write('%s\n' % ('*' * 78))
             # The request data
-            context = get_context()
             if context is not None:
                 # The request
                 request = context.request
@@ -220,66 +221,51 @@ class Server(object):
     def handle_request(self, request):
         # Build and set the context
         context = Context(request)
-        context.server = self
-        set_context(context)
-
-        # Our canonical URLs never end with an slash
-        if request.method == 'GET' and request.uri.path.endswith_slash:
-            # Redirect to the same URL without the trailing slash
-            goto = copy(context.uri)
-            goto.path.endswith_slash = False
-            response = Response(status_code=301)
-            response.set_header('Location', goto)
-            response.set_body('Moved Permanently')
-            # Send response
-            return response
-
-        # Get the root handler
-        root = self.root
-        if root.is_outdated():
-            root.load_state()
-        context.root = root
-
-        # Authenticate
-        cname = '__ac'
-        cookie = context.get_cookie(cname)
-        if cookie is not None:
-            cookie = unquote(cookie)
-            cookie = decodestring(cookie)
-            username, password = cookie.split(':', 1)
-            try:
-                user = root.get_handler('users/%s' % username)
-            except LookupError:
-                pass
-            except:
-                self.log_error()
-            else:
-                if user.authenticate(password):
-                    context.user = user
-        user = context.user
-
-        # Hook (used to set the language)
-        try:
-            root.before_traverse()
-        except:
-            self.log_error()
 
         response = context.response
-        # Traverse
+        status_code = 200
+
         try:
-            handler = root.get_handler(context.path)
-        except LookupError:
-            # Not Found (response code 404)
-            response.set_status(404)
-            method = root.not_found
-            context.handler = root
-        except:
-            self.log_error()
-            # Internal Server Error (500)
-            response.set_status(500)
-            method = root.internal_server_error
-        else:
+            # Initialize the context
+            context.init()
+            print request.request_line
+            context.server = self
+            set_context(context)
+            # Our canonical URLs never end with an slash
+            if request.method == 'GET' and request.uri.path.endswith_slash:
+                goto = copy(context.uri)
+                goto.path.endswith_slash = False
+                raise MovedPermanently(location=goto)
+            # Get the root handler
+            root = self.root
+            if root.is_outdated():
+                root.load_state()
+            context.root = root
+            # Authenticate
+            cname = '__ac'
+            cookie = context.get_cookie(cname)
+            if cookie is not None:
+                cookie = unquote(cookie)
+                cookie = decodestring(cookie)
+                username, password = cookie.split(':', 1)
+                try:
+                    user = root.get_handler('users/%s' % username)
+                except LookupError:
+                    pass
+                else:
+                    if user.authenticate(password):
+                        context.user = user
+            user = context.user
+            # Hook (used to set the language)
+            root.before_traverse()
+            try:
+                handler = root.get_handler(context.path)
+            except LookupError:
+                # Not Found (response code 404)
+                context.handler = root
+                raise NotFound
             context.handler = handler
+            print handler
             # Get the method name
             method_name = context.method
             if method_name is None:
@@ -292,48 +278,24 @@ class Server(object):
                 getattr(handler, method_name)
             except AttributeError:
                 # Not Found (response code 404)
-                response.set_status(404)
-                method = root.not_found
-            else:
-                # Get the method
-                try:
-                    method = getattr(object, method_name)
-                except AttributeError:
-                    # Not Found (response code 404)
-                    response.set_status(404)
-                    method = root.not_found
-                else:
-                    # Get the method
-                    try:
-                        ac = handler.get_access_control()
-                        ac_ok = ac.is_access_allowed(user, handler, method_name)
-                    except:
-                        self.log_error()
-                        # Internal Server Error (500)
-                        response.set_status(500)
-                        method = root.internal_server_error
-                    else:
-                        # Check security
-                        if ac_ok is False:
-                            if user is None:
-                                # Unauthorized (401)
-                                method = root.login_form
-                            else:
-                                # Forbidden (403)
-                                method = root.forbidden
-                        else:
-                            mtime = getattr(handler, '%s__mtime__' % method_name, None)
-                            if mtime is not None:
-                                mtime = mtime().replace(microsecond=0)
-                                response.set_header('last-modified', mtime)
-                                if request.method == 'GET':
-                                    if request.has_header('if-modified-since'):
-                                        msince = request.get_header('if-modified-since')
-                                        if mtime <= msince:
-                                            # Not modified (304)
-                                            response.set_status(304)
-
-        if response.get_status() != 304:
+                raise NotFound
+            # Get the method
+            ac = handler.get_access_control()
+            ac_ok = ac.is_access_allowed(user, handler, method_name)
+            if ac_ok is False:
+                if user is None:
+                    raise Unauthorized
+                raise Forbidden
+            # Check security
+            mtime = getattr(handler, '%s__mtime__' % method_name, None)
+            if mtime is not None:
+                mtime = mtime().replace(microsecond=0)
+                response.set_header('last-modified', mtime)
+                if request.method == 'GET':
+                    if request.has_header('if-modified-since'):
+                        msince = request.get_header('if-modified-since')
+                        if mtime <= msince:
+                            raise NotModified
             # Set the list of needed resources. The method we are going to
             # call may need external resources to be rendered properly, for
             # example it could need an style sheet or a javascript file to
@@ -341,69 +303,51 @@ class Server(object):
             # attribute lets the interface to add those resources.
             context.styles = []
             context.scripts = []
-
-            # Get the transaction object
-            transaction = get_transaction()
-
-            try:
-                # Call the method
-                response_body = method(context)
-            except UserError, exception:
-                # Redirection
-                transaction.rollback()
-                goto = copy(request.referrer)
-                goto.query['message'] = exception.args[0].encode('utf8')
-                context.redirect(goto)
-                response_body = None
-            except Forbidden:
-                transaction.rollback()
-                if user is None:
-                    # Unauthorized (401)
-                    response_body = root.login_form(context)
-                else:
-                    # Forbidden (403)
-                    response_body = root.forbidden(context)
-            except:
-                self.log_error()
-                transaction.rollback()
-                response.set_status(500)
-                response_body = root.internal_server_error(context)
-            else:
-                if transaction:
-                    try:
-                        self.before_commit(transaction)
-                    except:
-                        self.log_error()
-                        transaction.rollback()
-                        response.set_status(500)
-                        response_body = root.internal_server_error(context)
-                    else:
-                        username = user and user.name or 'NONE'
-                        note = str(request.uri.path)
-                        # Save changes
-                        self.start_commit()
-                        try:
-                            transaction.commit(username, note)
-                        except:
-                            self.log_error()
-                            transaction.rollback()
-                            self.end_commit_on_error()
-                            response.set_status(500)
-                            response_body = root.internal_server_error()
-                        else:
-                            self.end_commit_on_success()
-
-            # Set the response body
+            # Call the method
+            print method
+            response_body = method(context)
             response.set_body(response_body)
+            root.after_traverse()
+            # Before commit
+            self.before_commit(get_transaction())
+        except Redirection, exception:
+            status_code = exception.code
+            # Redirect
+            response.set_header('Location', exception.location)
+        except HTTPException, exception:
+            status_code = exception.code
+            # Rollback transaction
+            get_transaction().rollback()
+            self.log_error()
+        except:
+            # Internal Server Error
+            status_code = 500
+            # Rollback transaction
+            get_transaction().rollback()
+            self.log_error()
 
-            # After traverse hook
+        # Set status code
+        print status_code
+        response.set_status(status_code)
+
+        # Commit
+        transaction = get_transaction()
+        if transaction:
+            print 'TRANSACTION'
+            username = user and user.name or 'NONE'
+            note = str(request.uri.path)
+            # Save changes
+            self.start_commit()
             try:
-                root.after_traverse()
+                transaction.commit(username, note)
             except:
-                response.set_status(500)
-                body = root.internal_server_error(context)
-                response.set_body(body)
                 self.log_error()
+                transaction.rollback()
+                self.end_commit_on_error()
+                response.set_status(500)
+                response_body = root.internal_server_error()
+            else:
+                self.end_commit_on_success()
 
         # HEAD
         if request.method == 'HEAD':

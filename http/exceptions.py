@@ -16,85 +16,114 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-class Successful(Exception):
-    """Base class for 2xx responses."""
-
-
-class OK(Successful):
-    code = 200
-
-
-class Created(Successful):
-    code = 201
-
-
-class Accepted(Successful):
-    code = 202
-
-
-class NoContent(Successful):
-    code = 204
+class HTTPException(Exception):
+    """Base class for all HTTP responses."""
 
 
 
-class Redirection(Exception):
+##class Successful(HTTPException):
+##    """Base class for 2xx responses."""
+
+
+##class OK(Successful):
+##    code = 200
+##    title = 'OK'
+
+
+##class Created(Successful):
+##    code = 201
+##    title = 'Created'
+
+
+##class Accepted(Successful):
+##    code = 202
+##    title = 'Accepted'
+
+
+##class NoContent(Successful):
+##    code = 204
+##    title = 'No Content'
+
+
+
+class Redirection(HTTPException):
     """Base class for 3xx responses."""
+
+    location = None
 
 
 class MultipleChoices(Redirection):
     code = 300
+    title = 'Multiple Choices'
 
 
 class MovedPermanently(Redirection):
     code = 301
+    title = 'Moved Permanently'
+
+    def __init__(self, location):
+        self.location = location
 
 
 class MovedTemporarily(Redirection):
     code = 302
+    title = 'Moved Temporarily'
+
+    def __init__(self, location):
+        self.location = location
 
 
 class NotModified(Redirection):
     code = 304
+    title = 'Not Modified'
 
 
 
-class ClientError(Exception):
+class ClientError(HTTPException):
     """Base class for 4xx responses."""
 
 
 class BadRequest(ClientError):
     code = 400
+    title = 'Bad Request'
 
 
 class Unauthorized(ClientError):
     code = 401
+    title = 'Unauthorized'
 
 
 class Forbidden(ClientError):
     code = 403
+    title = 'Forbidden'
 
 
 class NotFound(ClientError):
     code = 404
+    title = 'NotFound'
 
 
 
-class ServerError(Exception):
+class ServerError(HTTPException):
     """Base class for 5xx responses."""
 
 
 class InternalServerError(ServerError):
     code = 500
+    title = 'Internal Server Error'
 
 
 class NotImplemented(ServerError):
     code = 501
+    title = 'Not Implemented'
 
 
 class BadGateway(ServerError):
     code = 502
+    title = 'Bad Gateway'
 
 
 class ServiceUnavailable(ServerError):
     code = 503
+    title = 'Service Unavailable'
 

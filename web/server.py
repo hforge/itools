@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -159,106 +159,18 @@ class Server(object):
                 self.log_error()
 
 
-    def log_access(self, conn, request, response):
-        # Common Log Format
-        #  - IP address of the client
-        #  - RFC 1413 identity (not available)
-        #  - username (XXX not provided right now should we?)
-        #  - time (XXX we use the timezone name, while we should use the
-        #    offset, e.g. +0100)
-        #  - the request line
-        #  - the status code
-        #  - content length of the response
-        log = self.access_log
-        if log is not None:
-            host, port = conn.getpeername()
-            namespace = (host, time.strftime('%d/%b/%Y:%H:%M:%S %Z'),
-                         request.request_line, response.status,
-                         response.get_content_length())
-            log.write('%s - - [%s] "%s" %s %s\n' % namespace)
-            log.flush()
-
-
-    def log_error(self, context=None):
-        log = self.error_log
-        if log is not None:
-            log.write('\n')
-            log.write('%s\n' % ('*' * 78))
-            # The request data
-            if context is not None:
-                # The request
-                request = context.request
-                log.write(request.request_line_to_str())
-                log.write(request.headers_to_str())
-                # Other information
-                user = context.user
-                log.write('\n')
-                log.write('URI     : %s\n' % str(context.uri))
-                log.write('USER    : %s\n' % (user and user.name or None))
-
-            # The traceback
-            log.write('\n')
-            traceback.print_exc(file=log)
-            log.flush()
-
-
-    def before_commit(self, transaction):
-        pass
-
-
-    def start_commit(self):
-        pass
-
-
-    def end_commit_on_success(self):
-        get_transaction().clear()
-
-
-    def end_commit_on_error(self):
-        pass
-
-
-    def commit_transaction(self, context):
-        # Get the transaction
-        transaction = get_transaction()
-        # Nothing to commit
-        if not transaction:
-            return
-
-        # Before commit (hook)
-        self.before_commit(transaction)
-
-        # Transaction metadata
-        username = user and user.name or 'NONE'
-        note = str(request.uri.path)
-
-        # Start commit (hook)
-        self.start_commit()
-
-        try:
-            transaction.commit(username, note)
-        except:
-            # Abort transaction
-            transaction.rollback()
-            # End commit, error (hook)
-            self.end_commit_on_error()
-            # Forward error
-            raise
-
-        # End commit, success (hook)
-        self.end_commit_on_success()
-
-
+    #########################################################################
+    # Handle a request
+    #########################################################################
     def handle_request(self, request):
-        # Create the context
         context = Context(request)
 
         response = context.response
 
         try:
             # Initialize the context
-            context.init()
 ##            print request.request_line
+            context.init()
             context.server = self
             set_context(context)
             # Our canonical URLs never end with an slash
@@ -384,3 +296,101 @@ class Server(object):
 
         # Finish, send back the response
         return response
+
+
+    #########################################################################
+    # Stages
+    def commit_transaction(self, context):
+        # Get the transaction
+        transaction = get_transaction()
+        # Nothing to commit
+        if not transaction:
+            return
+
+        # Before commit (hook)
+        self.before_commit(transaction)
+
+        # Transaction metadata
+        username = user and user.name or 'NONE'
+        note = str(request.uri.path)
+
+        # Start commit (hook)
+        self.start_commit()
+
+        try:
+            transaction.commit(username, note)
+        except:
+            # Abort transaction
+            transaction.rollback()
+            # End commit, error (hook)
+            self.end_commit_on_error()
+            # Forward error
+            raise
+
+        # End commit, success (hook)
+        self.end_commit_on_success()
+
+
+    #########################################################################
+    # Logging
+    #########################################################################
+    def log_access(self, conn, request, response):
+        # Common Log Format
+        #  - IP address of the client
+        #  - RFC 1413 identity (not available)
+        #  - username (XXX not provided right now should we?)
+        #  - time (XXX we use the timezone name, while we should use the
+        #    offset, e.g. +0100)
+        #  - the request line
+        #  - the status code
+        #  - content length of the response
+        log = self.access_log
+        if log is not None:
+            host, port = conn.getpeername()
+            namespace = (host, time.strftime('%d/%b/%Y:%H:%M:%S %Z'),
+                         request.request_line, response.status,
+                         response.get_content_length())
+            log.write('%s - - [%s] "%s" %s %s\n' % namespace)
+            log.flush()
+
+
+    def log_error(self, context=None):
+        log = self.error_log
+        if log is not None:
+            log.write('\n')
+            log.write('%s\n' % ('*' * 78))
+            # The request data
+            if context is not None:
+                # The request
+                request = context.request
+                log.write(request.request_line_to_str())
+                log.write(request.headers_to_str())
+                # Other information
+                user = context.user
+                log.write('\n')
+                log.write('URI     : %s\n' % str(context.uri))
+                log.write('USER    : %s\n' % (user and user.name or None))
+
+            # The traceback
+            log.write('\n')
+            traceback.print_exc(file=log)
+            log.flush()
+
+
+    #########################################################################
+    # Hooks (to be overriden)
+    #########################################################################
+    def before_commit(self, transaction):
+        pass
+
+
+    def start_commit(self):
+        pass
+
+
+    def end_commit_on_success(self):
+        get_transaction().clear()
+
+
+    def end_commit_on_error(self):
+        pass

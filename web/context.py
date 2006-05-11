@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@ from itools import uri
 from itools.http.response import Response
 
 
+
 class Context(object):
 
     def __init__(self, request):
@@ -34,6 +35,9 @@ class Context(object):
 
 
     def init(self):
+        """
+        To process a request it must be loaded, in the first place.
+        """
         request = self.request
         if request.has_header('X-Forwarded-Host'):
             host = request.get_header('X-Forwarded-Host')

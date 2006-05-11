@@ -31,9 +31,9 @@ from urllib import unquote
 # Import from itools
 from itools.resources.socket import File
 from itools.handlers.transactions import get_transaction
-from itools.http.exceptions import (Forbidden, HTTPException, MovedPermanently,
-                                    NotFound, NotModified, Redirection,
-                                    Unauthorized)
+from itools.http.exceptions import (Forbidden, HTTPError, HTTPException,
+                                    MovedPermanently, NotFound, NotModified,
+                                    Redirection, Unauthorized)
 from itools.http.request import Request
 from itools.http.response import Response
 from exceptions import UserError
@@ -218,17 +218,47 @@ class Server(object):
         pass
 
 
+    def commit_transaction(self, context):
+        # Get the transaction
+        transaction = get_transaction()
+        # Nothing to commit
+        if not transaction:
+            return
+
+        # Before commit (hook)
+        self.before_commit(transaction)
+
+        # Transaction metadata
+        username = user and user.name or 'NONE'
+        note = str(request.uri.path)
+
+        # Start commit (hook)
+        self.start_commit()
+
+        try:
+            transaction.commit(username, note)
+        except:
+            # Abort transaction
+            transaction.rollback()
+            # End commit, error (hook)
+            self.end_commit_on_error()
+            # Forward error
+            raise
+
+        # End commit, success (hook)
+        self.end_commit_on_success()
+
+
     def handle_request(self, request):
-        # Build and set the context
+        # Create the context
         context = Context(request)
 
         response = context.response
-        status_code = 200
 
         try:
             # Initialize the context
             context.init()
-            print request.request_line
+##            print request.request_line
             context.server = self
             set_context(context)
             # Our canonical URLs never end with an slash
@@ -265,7 +295,7 @@ class Server(object):
                 context.handler = root
                 raise NotFound
             context.handler = handler
-            print handler
+##            print handler
             # Get the method name
             method_name = context.method
             if method_name is None:
@@ -304,50 +334,47 @@ class Server(object):
             context.styles = []
             context.scripts = []
             # Call the method
-            print method
+##            print method
             response_body = method(context)
-            response.set_body(response_body)
-            root.after_traverse()
-            # Before commit
-            self.before_commit(get_transaction())
         except Redirection, exception:
             status_code = exception.code
+            response.set_status(status_code)
             # Redirect
             response.set_header('Location', exception.location)
         except HTTPException, exception:
             status_code = exception.code
+            response.set_status(status_code)
             # Rollback transaction
             get_transaction().rollback()
             self.log_error()
         except:
             # Internal Server Error
             status_code = 500
+            response.set_status(status_code)
             # Rollback transaction
             get_transaction().rollback()
             self.log_error()
+        else:
+            response.set_body(response_body)
 
-        # Set status code
-        print status_code
-        response.set_status(status_code)
+##        print response.status
 
-        # Commit
-        transaction = get_transaction()
-        if transaction:
-            print 'TRANSACTION'
-            username = user and user.name or 'NONE'
-            note = str(request.uri.path)
-            # Save changes
-            self.start_commit()
-            try:
-                transaction.commit(username, note)
-            except:
-                self.log_error()
-                transaction.rollback()
-                self.end_commit_on_error()
-                response.set_status(500)
-                response_body = root.internal_server_error()
-            else:
-                self.end_commit_on_success()
+        try:
+            root.after_traverse()
+            self.commit_transaction(context)
+        except HTTPError, exception:
+            status_code = exception.code
+            response.set_status(status_code)
+            # Rollback transaction
+            get_transaction().rollback()
+            self.log_error()
+        except:
+            # Internal Server Error
+            status_code = 500
+            response.set_status(status_code)
+            # Rollback transaction
+            get_transaction().rollback()
+            self.log_error()
 
         # HEAD
         if request.method == 'HEAD':

@@ -31,7 +31,7 @@ from itools import schemas
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.gettext import domains
-from itools.http.exceptions import Forbidden, MovedTemporarily
+from itools.http.exceptions import Forbidden
 from itools.web import get_context
 
 # Import from itools.cms
@@ -65,7 +65,7 @@ class Node(iNode):
             raise Forbidden
         # Redirect
         goto = context.uri.resolve2(';%s' % method)
-        raise MovedTemporarily(goto)
+        context.redirect(goto)
 
 
     POST__access__ = 'is_authenticated'

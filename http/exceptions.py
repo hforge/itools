@@ -46,6 +46,9 @@ class HTTPException(Exception):
 
 
 
+############################################################################
+# Redirections
+############################################################################
 class Redirection(HTTPException):
     """Base class for 3xx responses."""
 
@@ -78,8 +81,14 @@ class NotModified(Redirection):
     title = 'Not Modified'
 
 
+############################################################################
+# Errors
+############################################################################
+class HTTPError(HTTPException):
+    """Base class for all errors, client or server side."""
 
-class ClientError(HTTPException):
+
+class ClientError(HTTPError):
     """Base class for 4xx responses."""
 
 
@@ -104,7 +113,7 @@ class NotFound(ClientError):
 
 
 
-class ServerError(HTTPException):
+class ServerError(HTTPError):
     """Base class for 5xx responses."""
 
 

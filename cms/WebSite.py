@@ -20,7 +20,6 @@ from itools import uri
 from itools import i18n
 from itools.catalog import queries
 from itools.stl import stl
-from itools.http.exceptions import MovedTemporarily
 from itools.web import get_context
 from itools.web.exceptions import UserError
 
@@ -322,9 +321,9 @@ class WebSite(RoleAware, Folder):
 
         referrer = request.referrer
         if referrer and referrer.path[-1].param != 'login_form':
-            raise MovedTemporarily(referrer)
-
-        raise MovedTemporarily('users/' + user.name)
+            context.redirect(referrer)
+        else:
+            context.redirect('users/%s' % user.name)
 
 
     logout__access__ = True

@@ -24,7 +24,7 @@ class File(base.File):
 
     def __init__(self, socket):
         self.socket = socket
-        self.buffer = []
+        self.buffer = ''
 
 
     def get_mtime(self):
@@ -43,43 +43,26 @@ class File(base.File):
         """The 'size' parameter is mandatory in sockets."""
         # For some reason 'socket.recv' may not return all the data
         # in a single call, even in blocking mode.
-        recv = self.socket.recv
-        buffer = self.buffer
-        buffer_size = sum([ len(x) for x in buffer])
-        remains = size - buffer_size
-        while remains > 0:
-            data = recv(remains)
-            buffer.append(data)
-            remains -= len(data)
-
-        data = ''.join(buffer)
-        self.buffer = [data[size:]]
-        return data[:size]
-
-
-    def readline(self):
-        recv = self.socket.recv
 
         buffer = self.buffer
-        line = []
+        buffer_size = len(buffer)
+        # The buffer already has all the data we need
+        if buffer_size >= size:
+            self.buffer = buffer[size:]
+            return buffer[:size]
 
-        while True:
-            if buffer:
-                block = buffer.pop(0)
-            else:
-                block = recv(512)
-                if block == '':
-                    break
+        # Read (at least 512 bytes)
+        data = buffer + self.socket.recv(max(512, size - n))
 
-            i = block.find('\n')
-            if i == -1:
-                line.append(block)
-            else:
-                i = i + 1
-                line.append(block[:i])
-                remains = block[i:]
-                if remains:
-                    buffer.insert(0, remains)
-                break
+        #
+        data_size = len(data)
+        if data_size > size:
+            self.buffer = data[size:]
+            return data[:size]
 
-        return ''.join(line)
+        self.buffer = ''
+        return data
+
+
+    # XXX Implement with calls to "read"
+##    def readline(self):

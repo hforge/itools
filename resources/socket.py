@@ -53,7 +53,7 @@ class File(base.File):
             return buffer[:size]
 
         # Read (at least 512 bytes)
-        data = buffer + self.socket.recv(max(512, size - n))
+        data = buffer + self.socket.recv(max(512, size - buffer_size))
 
         #
         data_size = len(data)

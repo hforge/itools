@@ -130,14 +130,13 @@ class Request(Message):
         self.headers.setdefault('cookie', {})
 
         # Load the body
-        self.form = {}
-        parameters = {}
+        self.body = {}
         # The body
         if 'content-length' in headers and 'content-type' in headers:
             size = headers['content-length']
             # Read
-            remains = size - len(buffer)
             buffer = [buffer]
+            remains = size - len(buffer[0])
             while remains > 0:
                 data = read(remains)
                 buffer.append(data)
@@ -147,10 +146,10 @@ class Request(Message):
             body = ''.join(buffer)
 
             # The Form
-            if body:
+            if body and 'content-type' in self.headers:
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
-                    parameters = Query.decode(body)
+                    self._body = uri.generic.Query.decode(body)
                 elif type.startswith('multipart/'):
                     boundary = type_parameters.get('boundary')
                     boundary = '--%s' % boundary
@@ -178,17 +177,12 @@ class Request(Message):
                                 # Strip the path (for IE). XXX Test this.
                                 filename = filename.split('\\')[-1]
                                 resource = memory.File(body, name=filename)
-                                parameters[name] = resource
+                                self.body[name] = resource
                         else:
-                            parameters[name] = body
+                            self.body[name] = body
                 else:
                     resource = memory.File(body)
-                    parameters['body'] = resource
-        else:
-            parameters = self.uri.query
-
-        for name in parameters:
-            self._set_parameter(name, parameters[name])
+                    self.body['body'] = resource
 
 
     ########################################################################

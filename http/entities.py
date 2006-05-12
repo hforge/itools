@@ -20,6 +20,17 @@ from itools.handlers.File import File
 import headers
 
 
+def parse_header(line):
+    if line:
+        name, value = line.split(':', 1)
+        name = name.strip().lower()
+        value = value.strip()
+        type = headers.get_type(name)
+        return name, type.decode(value)
+
+    return None, None
+
+
 
 def parse_header(line):
     if line:

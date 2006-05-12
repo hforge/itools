@@ -853,9 +853,8 @@ msgid "Add a New User"
 msgstr "Créer un utilisateur"
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Add a member"
-msgstr "Créer un utilisateur"
+msgstr "Ajouter un membre"
 
 #: cms/ui/User_translator.xml.en:0
 msgid "Add a new translator skill:"
@@ -1137,9 +1136,8 @@ msgid "Default"
 msgstr "Défaut"
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Delete"
-msgstr "Défaut"
+msgstr "Supprimer"
 
 #: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
 msgid "Demo"
@@ -1803,18 +1801,16 @@ msgid "Members"
 msgstr ""
 
 #: cms/future.py:300
-#, fuzzy
 msgid "Members added."
-msgstr "Utilisateurs ajoutés."
+msgstr "Membres ajoutés."
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Members and roles"
 msgstr ""
 
 #: cms/future.py:290
-#, fuzzy
 msgid "Members deleted."
-msgstr "Aucun objet sélectionné."
+msgstr "Membres supprimés."
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "Message"
@@ -1903,7 +1899,6 @@ msgid "No history."
 msgstr "Rien dans l'historique."
 
 #: cms/Folder.py:772
-#, fuzzy
 msgid "No objects selected"
 msgstr "Aucun objet sélectionné."
 
@@ -1985,9 +1980,8 @@ msgid "OpenOffice.org Spreadsheet"
 msgstr "Classeur OpenOffice.org"
 
 #: cms/future.py:67
-#, fuzzy
 msgid "Order"
-msgstr "Bordure"
+msgstr "Ordre"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "Order down"
@@ -2255,9 +2249,8 @@ msgid "Retract the document."
 msgstr "Retirer le document."
 
 #: cms/future.py:138
-#, fuzzy
 msgid "Reviewer"
-msgstr "Modérateurs"
+msgstr "Modérateur"
 
 #: cms/root.py:97
 msgid "Reviewers"
@@ -2268,14 +2261,12 @@ msgid "Revision copied to present."
 msgstr "La version choisie est maintenant la version actuelle."
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Role"
-msgstr "Supprimer"
+msgstr "Rôle"
 
 #: cms/future.py:313
-#, fuzzy
 msgid "Roles updated."
-msgstr "Fichier téléchargé."
+msgstr "Rôles mis à jour."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2619,9 +2610,8 @@ msgid "There is already another group with this name."
 msgstr "Il existe déjà un autre groupe de ce nom."
 
 #: cms/Folder.py:897
-#, fuzzy
 msgid "There is already another object with this name."
-msgstr "Il existe déjà un autre groupe de ce nom."
+msgstr "Il existe déjà un autre objet avec ce nom."
 
 #: cms/Folder.py:966
 msgid "There is already another resource with this name."
@@ -2834,9 +2824,8 @@ msgid "Unpack"
 msgstr "Décompacter"
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Update"
-msgstr "Mettre à jour le catalogue"
+msgstr "Mettre à jour"
 
 #: cms/root.py:394
 msgid "Update Catalog"
@@ -2851,7 +2840,6 @@ msgid "Upload File"
 msgstr "Télécharger un fichier"
 
 #: cms/ui/File_new_instance.xml.en:0
-#, fuzzy
 msgid "Upload a File"
 msgstr "Télécharger un fichier"
 

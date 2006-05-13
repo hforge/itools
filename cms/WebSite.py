@@ -299,8 +299,9 @@ class WebSite(RoleAware, Folder):
             user = users.get_handler(username)
         else:
             # XXX We lost the referrer if any
+            referrer = context.request.referrer
             message = u'The user "%s" does not exist.'
-            raise UserError, self.gettext(message) % username
+            return referrer.replace(message = self.gettext(message) % username)
 
         password = crypt_password(password)
         if not user.authenticate(password):

@@ -29,6 +29,7 @@ import traceback
 from urllib import unquote
 
 # Import from itools
+from itools import uri
 from itools.resources.socket import File
 from itools.handlers.transactions import get_transaction
 from itools.http.exceptions import (Forbidden, HTTPError, HTTPException,
@@ -264,7 +265,13 @@ class Server(object):
             get_transaction().rollback()
             self.log_error(context)
         else:
-            response.set_body(response_body)
+            if isinstance(response_body, str):
+                response.set_body(response_body)
+            elif isinstance(response_body, uri.Reference):
+                context.redirect(response_body)
+            else:
+                message = 'unexpected value of type "%s"'
+                raise TypeError, message % type(response_body)
 
         try:
             root.after_traverse()

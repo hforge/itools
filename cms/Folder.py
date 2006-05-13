@@ -375,7 +375,8 @@ class Folder(Handler, BaseFolder):
                       sortorder=sortorder, batchstart=batchstart,
                       batchsize=batchsize)
 
-        # get the handler for the visibles documents and extracts values
+        # Get the handler for the visibles documents and extracts values
+        user = context.user
         objects = []
         for line in table.objects:
             abspath = line['abspath']
@@ -929,8 +930,8 @@ class Folder(Handler, BaseFolder):
             goto = ';%s' % self.get_browse_view()
         else:
             handler = self.get_handler(name)
-            goto='./%s/;%s' % (name, handler.get_firstview())
-        context.come_back(message, goto=goto)
+            goto = './%s/;%s' % (name, handler.get_firstview())
+        return context.come_back(message, goto=goto)
 
 
     browse_dir__access__ = 'is_authenticated'

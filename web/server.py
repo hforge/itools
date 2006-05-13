@@ -173,6 +173,13 @@ class Server(object):
             context.init()
             context.server = self
             set_context(context)
+            # Set the list of needed resources. The method we are going to
+            # call may need external resources to be rendered properly, for
+            # example it could need an style sheet or a javascript file to
+            # be included in the html head (which it can not control). This
+            # attribute lets the interface to add those resources.
+            context.styles = []
+            context.scripts = []
             # Our canonical URLs never end with an slash
             if request.method == 'GET' and request.uri.path.endswith_slash:
                 goto = copy(context.uri)
@@ -237,13 +244,6 @@ class Server(object):
                         msince = request.get_header('if-modified-since')
                         if mtime <= msince:
                             raise NotModified
-            # Set the list of needed resources. The method we are going to
-            # call may need external resources to be rendered properly, for
-            # example it could need an style sheet or a javascript file to
-            # be included in the html head (which it can not control). This
-            # attribute lets the interface to add those resources.
-            context.styles = []
-            context.scripts = []
             # Call the method
             response_body = method(context)
         except Redirection, exception:

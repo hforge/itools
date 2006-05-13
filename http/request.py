@@ -135,8 +135,8 @@ class Request(Message):
         if 'content-length' in headers and 'content-type' in headers:
             size = headers['content-length']
             # Read
+            remains = size - len(buffer)
             buffer = [buffer]
-            remains = size - len(buffer[0])
             while remains > 0:
                 data = read(remains)
                 buffer.append(data)
@@ -146,10 +146,10 @@ class Request(Message):
             body = ''.join(buffer)
 
             # The Form
-            if body and 'content-type' in self.headers:
+            if body:
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
-                    self._body = uri.generic.Query.decode(body)
+                    self.body = uri.generic.Query.decode(body)
                 elif type.startswith('multipart/'):
                     boundary = type_parameters.get('boundary')
                     boundary = '--%s' % boundary

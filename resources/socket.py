@@ -64,5 +64,5 @@ class File(base.File):
         return data
 
 
-    # XXX Implement with calls to "read"
-##    def readline(self):
+    def write(self, data):
+        self.socket.sendall(data)

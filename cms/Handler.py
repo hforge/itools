@@ -210,9 +210,10 @@ class Node(iNode):
         """
         Returns the first allowed object view url, or None if there aren't.
         """
+        user = get_context().user
+        ac = self.get_access_control()
         for name in self.get_views():
-            method = self.get_method(name)
-            if method is not None:
+            if ac.is_access_allowed(user, self, name):
                 return name
         return None
 

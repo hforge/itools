@@ -24,6 +24,7 @@ import zlib
 # Import from itools
 from itools.datatypes import FileName
 from itools.handlers.Folder import Folder as BaseFolder
+from itools.handlers.registry import build_handler
 from itools.handlers.Text import Text
 from itools import i18n
 from itools.resources import base
@@ -994,7 +995,7 @@ class Folder(Handler, BaseFolder):
 
         # XXX To fix, see bug #313
         # Build the handler
-        handler = Handler.build_handler(file, mimetype)
+        handler = build_handler(file)
         # Set the handler
         self.set_handler(name, handler, format=mimetype)
 

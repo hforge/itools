@@ -313,8 +313,9 @@ class Server(object):
         self.before_commit(transaction)
 
         # Transaction metadata
+        user = context.user
         username = user and user.name or 'NONE'
-        note = str(request.uri.path)
+        note = str(context.request.uri.path)
 
         # Start commit (hook)
         self.start_commit()

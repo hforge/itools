@@ -561,6 +561,17 @@ class Reference(object):
                          reference.fragment)
 
 
+    def replace(self, **kw):
+        """
+        This method returns a new uri reference, equal to this one, but
+        with the given keyword parameters set in the query.
+        """
+        query = copy(self.query)
+        query.update(kw)
+        return Reference(self.scheme, self.authority, self.path, query,
+                         self.fragment)
+
+
 
 class EmptyReference(Reference):
 

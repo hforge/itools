@@ -169,7 +169,6 @@ class Server(object):
 
         try:
             # Initialize the context
-##            print request.request_line
             context.init()
             context.server = self
             set_context(context)
@@ -207,7 +206,6 @@ class Server(object):
                 context.handler = root
                 raise NotFound
             context.handler = handler
-##            print handler
             # Get the method name
             method_name = context.method
             if method_name is None:
@@ -246,7 +244,6 @@ class Server(object):
             context.styles = []
             context.scripts = []
             # Call the method
-##            print method
             response_body = method(context)
         except Redirection, exception:
             status_code = exception.code
@@ -258,18 +255,16 @@ class Server(object):
             response.set_status(status_code)
             # Rollback transaction
             get_transaction().rollback()
-            self.log_error()
+            self.log_error(context)
         except:
             # Internal Server Error
             status_code = 500
             response.set_status(status_code)
             # Rollback transaction
             get_transaction().rollback()
-            self.log_error()
+            self.log_error(context)
         else:
             response.set_body(response_body)
-
-##        print response.status
 
         try:
             root.after_traverse()
@@ -279,14 +274,14 @@ class Server(object):
             response.set_status(status_code)
             # Rollback transaction
             get_transaction().rollback()
-            self.log_error()
+            self.log_error(context)
         except:
             # Internal Server Error
             status_code = 500
             response.set_status(status_code)
             # Rollback transaction
             get_transaction().rollback()
-            self.log_error()
+            self.log_error(context)
 
         # HEAD
         if request.method == 'HEAD':

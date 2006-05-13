@@ -269,7 +269,7 @@ class Server(object):
                 response.set_body(response_body)
             elif isinstance(response_body, uri.Reference):
                 context.redirect(response_body)
-            else:
+            elif response_body is not None:
                 message = 'unexpected value of type "%s"'
                 raise TypeError, message % type(response_body)
 

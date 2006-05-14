@@ -31,7 +31,7 @@ from itools.handlers.registry import register_handler_class
 
 class Image(File):
 
-    class_mimetypes = ['image/*']
+    class_mimetypes = ['image']
 
 
     def _load_state(self, resource):

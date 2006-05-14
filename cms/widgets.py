@@ -151,9 +151,7 @@ class Table(object):
             value = 'up'
         data['%s_sortorder' % self.name] = value
 
-        request = context.request
-        href = request.build_url(preserve=['search', self.name], **data)
-
+        href = context.uri.replace(**data)
         # Calculate the src
         if self.sortby == column:
             value = self.sortorder
@@ -177,14 +175,12 @@ class Table(object):
         batch['previous'] = None
         if self.previous is not None:
             data = {'%s_batchstart' % self.name: str(self.previous)}
-            previous = request.build_url(preserve=[self.name], **data)
-            batch['previous'] = previous
+            batch['previous'] = context.uri.replace(**data)
 
         batch['next'] = None
         if self.next is not None:
             data = {'%s_batchstart' % self.name: str(self.next)}
-            next = request.build_url(preserve=[self.name], **data)
-            batch['next'] = next
+            batch['next'] = context.uri.replace(**data)
 
         # Batch summary
         control = Handler.gettext(u'%(start)s-%(end)s of %(total)s') \
@@ -243,8 +239,7 @@ class Breadcrumb(object):
         breadcrumb = []
         node = target
         while node is not root.parent:
-            kw = {'bc_target': str(root.get_pathto(node))}
-            url = request.build_url(preserve=['bc'], **kw)
+            url = context.uri.replace(bc_target=str(root.get_pathto(node)))
             breadcrumb.insert(0, {'name': node.name, 'url': url})
             node = node.parent
         self.path = breadcrumb
@@ -259,8 +254,8 @@ class Breadcrumb(object):
             handler = target.get_handler(name)
             if handler.is_allowed_to_view():
                 path = here.get_pathto(handler)
-                kw = {'bc_target': str(root.get_pathto(handler))}
-                url = request.build_url(preserve=['bc'], **kw)
+                bc_target = str(root.get_pathto(handler))
+                url = context.uri.replace(bc_target=bc_target)
 
                 is_folder = isinstance(handler, Folder)
                 is_selectable = False

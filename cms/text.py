@@ -232,13 +232,13 @@ class PO(Text, gettext.PO.PO):
         index = int(index)
 
         # Set first, last, previous and next
-        request = context.request
-        namespace['messages_first'] = request.build_url(messages_index=1)
-        namespace['messages_last'] = request.build_url(messages_index=total)
+        uri = context.uri
+        namespace['messages_first'] = uri.replace(messages_index=1)
+        namespace['messages_last'] = uri.replace(messages_index=total)
         previous = max(index - 1, 1)
-        namespace['messages_previous'] = request.build_url(messages_index=previous)
+        namespace['messages_previous'] = uri.replace(messages_index=previous)
         next = min(index + 1, total)
-        namespace['messages_next'] = request.build_url(messages_index=next)
+        namespace['messages_next'] = uri.replace(messages_index=next)
 
         # Set msgid and msgstr
         if msgids:

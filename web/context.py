@@ -78,7 +78,7 @@ class Context(object):
 
 
     def get_form_value(self, name, default=None):
-        value = self.request.get_parameter(name)
+        value = self.request.get_parameter(name, default)
         if isinstance(value, list):
             return value[0]
         return value

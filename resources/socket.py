@@ -76,7 +76,7 @@ class File(base.File):
 
     def flush(self):
         if self.out_buffer:
-            self.socker.sendall(self.out_buffer)
+            self.socket.sendall(self.out_buffer)
             self.out_buffer = ''
 
 

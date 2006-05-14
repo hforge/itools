@@ -37,7 +37,6 @@ from itools.web import get_context
 # Import from itools.cms
 from access import AccessControl
 from catalog import CatalogAware
-from utils import comeback
 from LocaleAware import LocaleAware
 import webdav
 
@@ -536,8 +535,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         root = context.root
         root.reindex_handler(self)
 
-        message = self.gettext(u'Metadata changed.')
-        comeback(message)
+        return context.come_back(u'Metadata changed.')
 
 
     ########################################################################

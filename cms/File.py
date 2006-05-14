@@ -23,9 +23,6 @@ from itools.uri import get_reference
 from itools.handlers.File import File as BaseFile
 from itools.stl import stl
 from itools.web import get_context
-
-# Import from ikaaro
-from utils import comeback
 from Handler import Handler
 from registry import register_object_class
 from versioning import VersioningAware
@@ -207,8 +204,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
                        u' document type ($mimetype) or it contains errors.')
             return context.come_back(message, mimetype=self.get_mimetype())
 
-        message = self.gettext(u'Version uploaded.')
-        comeback(message)
+        return context.come_back(u'Version uploaded.')
 
 
 register_object_class(File)

@@ -24,7 +24,6 @@ from itools.stl import stl
 from itools.web import get_context
 
 
-
 class VersioningAware(object):
 
     def commit_revision(self):

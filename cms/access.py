@@ -23,7 +23,6 @@ from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
 from handlers import ListOfUsers
-from utils import comeback
 
 
 class AccessControl(AccessControlBase):
@@ -283,19 +282,17 @@ class RoleAware(AccessControl):
         if context.has_form_value('delete'):
             for username in context.get_form_values('delusers'):
                 self.del_roles(username)
-
-            message = u"Members deleted."
+            return context.come_back(u"Members deleted.")
 
         # Permissions to add
-        elif context.has_form_value('add'):
+        if context.has_form_value('add'):
             default_role = self.get_roles()[0]['name']
             for username in context.get_form_values('addusers'):
                 self.set_role(default_role, username)
-
-            message = u"Members added."
+            return context.come_back(u"Members added.")
 
         # Permissions to change
-        elif context.has_form_value('update'):
+        if context.has_form_value('update'):
             root = context.root
             userfolder = root.get_object('users')
             for key in context.get_form_keys():
@@ -304,6 +301,4 @@ class RoleAware(AccessControl):
                 new_role = context.get_form_value(key)
                 self.set_role(new_role, key)
 
-            message = u"Roles updated."
-
-        comeback(message)
+            return context.come_back(u"Roles updated.")

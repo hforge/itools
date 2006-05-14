@@ -23,9 +23,6 @@ from operator import attrgetter
 from itools.stl import stl
 from itools.web import get_context
 
-# Import from itools.cms
-from itools.cms.utils import comeback
-from itools.cms.Group import ListOfUsers
 
 
 class OrderAware(object):
@@ -79,15 +76,13 @@ class OrderAware(object):
     order_folders_up__access__ = 'is_allowed_to_edit'
     def order_folders_up(self, **kw):
         if not kw.has_key('name'):
-            message = u"Please select the folders to order up."
-            return comeback(self.gettext(message))
+            return context.come_back(u"Please select the folders to order up.")
 
         names = kw['name']
         ordered_names = self.get_ordered_folder_names()
         
         if ordered_names[0] == names[0]:
-            message = u"Folders already up."
-            return comeback(self.gettext(message))
+            return context.come_back(u"Folders already up.")
 
         temp = list(ordered_names)
         for name in names:
@@ -97,21 +92,20 @@ class OrderAware(object):
 
         self.set_property('ikaaro:order', tuple(temp))
         message = u"Folders ordered up."
-        comeback(self.gettext(message))
+        return context.come_back(message)
         
         
     order_folders_down__access__ = 'is_allowed_to_edit'
     def order_folders_down(self, **kw):
         if not kw.has_key('name'):
-            message = u"Please select the folders to order down."
-            return comeback(self.gettext(message))
+            return context.come_back(
+                u"Please select the folders to order down.")
         
         names = kw['name']
         ordered_names = self.get_ordered_folder_names()
 
         if ordered_names[-1] == names[-1]:
-            message = u"Folders already down."
-            return comeback(self.gettext(message))
+            return context.come_back(u"Folders already down.")
             
         temp = list(ordered_names)
         names.reverse()
@@ -122,7 +116,7 @@ class OrderAware(object):
 
         self.set_property('ikaaro:order', tuple(temp))
         message = u"Folders ordered down."
-        comeback(self.gettext(message))
+        return context.come_back(message)
 
 
     order_folders_top__access__ = 'is_allowed_to_edit'
@@ -143,7 +137,7 @@ class OrderAware(object):
 
         self.set_property('ikaaro:order', tuple(temp))
         message = u"Folders ordered on top."
-        comeback(self.gettext(message))
+        return context.come_back(message)
         
         
     order_folders_bottom__access__ = 'is_allowed_to_edit'
@@ -164,4 +158,4 @@ class OrderAware(object):
 
         self.set_property('ikaaro:order', tuple(temp))
         message = u"Folders ordered on bottom."
-        comeback(self.gettext(message))
+        return context.come_back(message)

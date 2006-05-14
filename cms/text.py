@@ -112,8 +112,7 @@ class Text(File, BaseText):
         data = context.get_form_value('data')
         self.load_state_from_string(data)
 
-        message = self.gettext(u'Document edited.')
-        comeback(message)
+        return context.come_back(u'Document edited.')
 
 
     #######################################################################
@@ -206,8 +205,7 @@ class PO(Text, gettext.PO.PO):
 ##        self.set_message(msgid, msgstr)
         self._messages[msgid].msgstr = msgstr
 
-        message = self.gettext(u'Message edited.')
-        comeback(message, messages_index=messages_index)
+        return context.come_back(u'Message edited.')
 
 
 register_object_class(PO)

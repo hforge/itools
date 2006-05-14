@@ -61,30 +61,6 @@ def checkid(id):
     return str(id)
 
 
-def comeback(message, goto=None):
-    """Redirects to a document view."""
-    from itools.datatypes import Unicode
-
-    context = get_context()
-
-    # Default to referrer
-    if goto is None:
-        request = context.request
-        goto = request.referrer
-
-    if not isinstance(goto, uri.Reference):
-        goto = uri.get_reference(goto)
-
-    # XXX This code would be simpler if the URI references were inmutable
-    # and provided an API ala datetime to build new references from others.
-    query = copy(goto.query)
-    query['message'] = Unicode.encode(message)
-    goto = uri.Reference(goto.scheme, goto.authority, goto.path, query,
-                         goto.fragment)
-    
-    context.redirect(goto)
-
-
 ###########################################################################
 # Navigation helper functions
 ###########################################################################

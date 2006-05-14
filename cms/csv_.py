@@ -22,7 +22,6 @@ from itools.stl import stl
 # Import from ikaaro
 from Handler import Node
 from text import Text
-from utils import comeback
 from registry import register_object_class
 
 
@@ -64,8 +63,7 @@ class Row(iRow, Node):
         self.__init__(column)
         self.parent.set_changed()
 
-        message = self.gettext(u'Changes saved.')
-        comeback(message)
+        return context.come_back(u'Changes saved.')
 
 
 

@@ -379,8 +379,7 @@ class Root(WebSite):
 
         print 'Updating catalog, total:', t3 - t0
 
-        message = self.gettext(u'%s handlers have been re-indexed.') % n
-        comeback(message)
+        return context.come_back(u'$n handlers have been re-indexed.', n=n)
 
 
     #######################################################################
@@ -416,8 +415,7 @@ class Root(WebSite):
             for username in group_users - root_users:
                 group.remove_user(username)
 
-        message = u'Groups fixed.'
-        comeback(self.gettext(message))
+        return context.come_back(u'Groups fixed.')
 
 
     #######################################################################

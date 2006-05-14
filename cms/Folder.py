@@ -39,7 +39,7 @@ from handlers import Lock, Metadata
 from LocaleAware import LocaleAware
 from versioning import VersioningAware
 from workflow import WorkflowAware
-from utils import comeback, checkid, reduce_string
+from utils import checkid, reduce_string
 from widgets import Breadcrumb, Table
 from registry import register_object_class, get_object_class
 
@@ -482,10 +482,9 @@ class Folder(Handler, BaseFolder):
 
         search_subfolders = context.get_form_value('search_subfolders')
         if search_subfolders and not search_value:
-            message = (u'Please put a value for your search criteria if you'
-                       u' include subfolders.')
-            comeback(self.gettext(message))
-            return
+            return context.come_back(
+                u'Please put a value for your search criteria if you'
+                u' include subfolders.')
 
         selected_criteria = context.get_form_value('search_criteria')
 
@@ -607,8 +606,8 @@ class Folder(Handler, BaseFolder):
             else:
                 not_allowed.append(name)
 
-        message = self.gettext(u'Objects removed: %s.') % ', '.join(removed)
-        comeback(message)
+        return context.come_back(
+            u'Objects removed: $objects.', objects=', '.join(removed))
 
 
     rename_form__access__ = 'is_allowed_to_move'
@@ -673,8 +672,9 @@ class Folder(Handler, BaseFolder):
                 self.set_handler('%s.metadata' % new_name, handler_metadata)
                 self.del_handler(old_name)
 
+        goto = uri.get_reference(';%s' % self.get_browse_view())
         message = self.gettext(u'Objects renamed.')
-        comeback(message, goto=';%s' % self.get_browse_view())
+        return goto.replace(message=message)
 
 
     copy__access__ = 'is_allowed_to_copy'
@@ -692,8 +692,7 @@ class Folder(Handler, BaseFolder):
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
         context.set_cookie('ikaaro_cp', cp, path='/')
 
-        message = self.gettext(u'Objects copied.')
-        comeback(message)
+        return context.come_back(u'Objects copied.')
 
 
     cut__access__ = 'is_allowed_to_move'
@@ -711,8 +710,7 @@ class Folder(Handler, BaseFolder):
         cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
         context.set_cookie('ikaaro_cp', cp, path='/')
 
-        message = self.gettext(u'Objects cut.')
-        comeback(message)
+        return context.come_back(u'Objects cut.')
 
 
     paste__access__ = 'is_allowed_to_add'
@@ -769,8 +767,7 @@ class Folder(Handler, BaseFolder):
                         # Fix owner
                         metadata.set_property('owner', context.user.name)
 
-        message = self.gettext(u'Objects pasted.')
-        comeback(message)
+        return context.come_back(u'Objects pasted.')
 
 
     #######################################################################
@@ -989,12 +986,13 @@ class Folder(Handler, BaseFolder):
         self.set_handler(name, handler, format=mimetype)
 
         # Come back
-        message = self.gettext(u'File uploaded.')
         if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             goto='./%s/;%s' % (name, handler.get_firstview())
-        comeback(message, goto=goto)
+        goto = uri.get_reference(goto)
+        message = self.gettext(u'File uploaded.')
+        return goto.replace(message=message)
 
 
     #######################################################################

@@ -25,7 +25,6 @@ from Folder import Folder
 from LocaleAware import LocaleAware
 from skins import Skin
 from access import RoleAware
-from utils import comeback
 from workflow import WorkflowAware
 from users import crypt_password
 from widgets import Table
@@ -181,8 +180,7 @@ class WebSite(RoleAware, Folder):
         self.set_property('ikaaro:website_languages',
                           tuple(website_languages))
 
-        message = self.gettext(u'The default language has been changed.')
-        comeback(message)
+        return context.come_back(u'The default language has been changed.')
 
 
     remove_languages__access__ = 'is_allowed_to_edit'
@@ -199,8 +197,7 @@ class WebSite(RoleAware, Folder):
         self.set_property('ikaaro:website_languages',
                           tuple(website_languages))
 
-        message = self.gettext(u'Languages removed.')
-        comeback(message)
+        return context.come_back(u'Languages removed.')
 
 
     add_language__access__ = 'is_allowed_to_edit'
@@ -213,8 +210,7 @@ class WebSite(RoleAware, Folder):
         self.set_property('ikaaro:website_languages',
                           website_languages + (code,))
 
-        message = self.gettext(u'Language added.')
-        comeback(message)
+        return context.come_back(u'Language added.')
 
 
     ######################################################################
@@ -239,8 +235,7 @@ class WebSite(RoleAware, Folder):
         for name in ['ikaaro:website_is_open']:
             self.set_property(name, context.get_form_value(name, False))
 
-        message = self.gettext(u'Changes saved.')
-        comeback(message)
+        return context.come_back(u'Changes saved.')
 
 
     ########################################################################

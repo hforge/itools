@@ -27,7 +27,6 @@ from itools.web import get_context
 
 # Import from ikaaro
 from access import AccessControl
-from utils import comeback
 from widgets import Table
 from Folder import Folder
 from Handler import Handler
@@ -184,8 +183,7 @@ class User(AccessControl, Folder):
         for key in ['ikaaro:user_language']:
             self.set_property(key, context.get_form_value(key))
 
-        message = self.gettext(u'Application preferences changed.')
-        comeback(message)
+        return context.come_back(u'Application preferences changed.')
 
 
     #######################################################################
@@ -283,8 +281,7 @@ class User(AccessControl, Folder):
                     context.set_cookie('__ac', cookie, path='/',
                                        expires=expires)
 
-        message = self.gettext(u'Password changed.')
-        comeback(message)
+        return context.come_back(u'Password changed.')
 
 
     #######################################################################
@@ -330,8 +327,7 @@ class User(AccessControl, Folder):
             group = root.get_handler(group_path)
             group.set_user(self.name)
 
-        message = self.gettext(u'User groups edited.')
-        comeback(message)
+        return context.come_back(u'User groups edited.')
 
 
     #######################################################################
@@ -475,12 +471,14 @@ class UserFolder(Folder):
             group = root.get_handler(group_path)
             group.set_user(username)
 
-        message = self.gettext(u'User added.')
         if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             goto='./%s/;%s' % (username, user.get_firstview())
-        comeback(message, goto=goto)
+        goto = uri.get_reference(goto)
+
+        message = self.gettext(u'User added.')
+        return goto.replace(message=message)
 
 
     def on_del_handler(self, segment):

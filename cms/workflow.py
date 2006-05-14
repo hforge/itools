@@ -24,8 +24,6 @@ from itools.workflow.workflow import WorkflowAware as iWorkflowAware
 from itools.stl import stl
 from itools.web import get_context
 
-# Import from iKaaro
-from utils import comeback
 
 
 # Workflow definition
@@ -137,5 +135,4 @@ class WorkflowAware(iWorkflowAware):
         root = context.root
         root.reindex_handler(self)
         # Comeback
-        message = self.gettext(u'Transition done.')
-        comeback(message)
+        return context.come_back(u'Transition done.')

@@ -28,7 +28,6 @@ from itools.html import HTML
 from File import File
 from binary import Image
 from text import Text
-from utils import comeback
 from widgets import Breadcrumb
 from registry import register_object_class
 
@@ -162,8 +161,7 @@ class XHTMLFile(Text, XHTML.Document):
         self.set_changed()
         body.children = children
 
-        message = self.gettext(u'Document changed.')
-        comeback(message)
+        return context.come_back(u'Document changed.')
 
 
     #######################################################################
@@ -231,8 +229,7 @@ class HTMLFile(HTML.Document, XHTMLFile):
         self.set_changed()
         body.children = children
 
-        message = self.gettext(u'Version edited.')
-        comeback(message)
+        return context.come_back(u'Version edited.')
 
 
 register_object_class(HTMLFile)

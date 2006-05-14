@@ -24,7 +24,8 @@ class File(base.File):
 
     def __init__(self, socket):
         self.socket = socket
-        self.buffer = ''
+        self.in_buffer = ''
+        self.out_buffer = ''
 
 
     def get_mtime(self):
@@ -44,11 +45,11 @@ class File(base.File):
         # For some reason 'socket.recv' may not return all the data
         # in a single call, even in blocking mode.
 
-        buffer = self.buffer
+        buffer = self.in_buffer
         buffer_size = len(buffer)
         # The buffer already has all the data we need
         if buffer_size >= size:
-            self.buffer = buffer[size:]
+            self.in_buffer = buffer[size:]
             return buffer[:size]
 
         # Read (at least 512 bytes)
@@ -57,12 +58,28 @@ class File(base.File):
         #
         data_size = len(data)
         if data_size > size:
-            self.buffer = data[size:]
+            self.in_buffer = data[size:]
             return data[:size]
 
-        self.buffer = ''
+        self.in_buffer = ''
         return data
 
 
     def write(self, data):
-        self.socket.sendall(data)
+        data = self.out_buffer + data
+        if len(data) >= 512:
+            n_bytes_sent = self.socket.send(data)
+            self.out_buffer = data[n_bytes_sent:]
+        else:
+            self.out_buffer = data
+
+
+    def flush(self):
+        if self.out_buffer:
+            self.socker.sendall(self.out_buffer)
+            self.out_buffer = ''
+
+
+    def _close(self):
+        self.flush()
+        self.socket.close()

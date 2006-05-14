@@ -102,9 +102,7 @@ class Folder(Handler, BaseFolder):
         # Try index
         for name in ['index.xhtml', 'index.html']:
             if self.has_handler(name):
-                goto = context.uri.resolve2(name)
-                context.redirect(goto)
-                return
+                return context.uri.resolve2(name)
 
         return Handler.GET(self, context)
 
@@ -626,9 +624,8 @@ class Folder(Handler, BaseFolder):
         # with the POST method, but it should be a GET method. Maybe
         # it will be solved after the needed folder browse overhaul.
         if context.request.method == 'POST':
-            ids_list =  '&'.join([ 'ids:list=%s' % x for x in names ])
-            context.redirect(';rename_form?%s' % ids_list)
-            return
+            ids_list = '&'.join([ 'ids=%s' % x for x in names ])
+            return uri.get_reference(';rename_form?%s' % ids_list)
 
         # Build the namespace
         namespace = {}

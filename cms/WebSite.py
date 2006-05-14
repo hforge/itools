@@ -261,8 +261,9 @@ class WebSite(RoleAware, Folder):
         error = users.new_user(email, password, password2)
 
         message = self.gettext(u'Thanks for register, please log in')
-        context.redirect(';login_form?username=%s&message=%s'
-                         % (email, quote(message.encode('utf8'))))
+        message = quote(message.encode('utf8'))
+        goto = ';login_form?username=%s&message=%s' % (email, message)
+        return uri.get_reference(goto)
 
 
     ########################################################################
@@ -313,9 +314,9 @@ class WebSite(RoleAware, Folder):
 
         referrer = request.referrer
         if referrer and referrer.path[-1].param != 'login_form':
-            context.redirect(referrer)
-        else:
-            context.redirect('users/%s' % user.name)
+            return referrer
+
+        return uri.get_reference('users/%s' % user.name)
 
 
     logout__access__ = True
@@ -338,7 +339,7 @@ class WebSite(RoleAware, Folder):
         goto = context.get_form_value('goto', context.request.referrer)
 
         context.set_cookie('language', lang)
-        context.redirect(goto)
+        return goto
 
     
     ########################################################################

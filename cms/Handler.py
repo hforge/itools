@@ -62,9 +62,9 @@ class Node(iNode):
         # Check access
         if method is None:
             raise Forbidden
+
         # Redirect
-        goto = context.uri.resolve2(';%s' % method)
-        context.redirect(goto)
+        return context.uri.resolve2(';%s' % method)
 
 
     POST__access__ = 'is_authenticated'
@@ -470,13 +470,15 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         context.set_cookie('content_language', language)
 
         request = context.request
-        context.redirect(request.referrer)
+        return request.referrer
 
 ##        handler = self.get_version_handler(language=kw['dc:language'])
 ##        print kw['dc:language'], handler.abspath
 ##        method_name = request.referrer.path[-1].param
+##
+##        goto = '%s/;%s' % (self.get_pathto(handler), method_name)
+##        return uri.get_reference(goto)
 
-##        context.redirect('%s/;%s' % (self.get_pathto(handler), method_name))
 
 
     ########################################################################

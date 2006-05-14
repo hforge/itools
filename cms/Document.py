@@ -42,8 +42,7 @@ class HTML(LocaleAware, html.XHTMLFile):
         if method is None:
             raise Forbidden
         # Redirect
-        goto = context.uri.resolve2(';%s' % method)
-        context.redirect(goto)
+        return context.uri.resolve2(';%s' % method)
 
 
     def get_content(self, language=None):

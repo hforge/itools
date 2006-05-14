@@ -22,7 +22,6 @@ from datetime import datetime
 from itools.uri import get_reference
 from itools.handlers.File import File as BaseFile
 from itools.stl import stl
-from itools.web.exceptions import UserError
 from itools.web import get_context
 
 # Import from ikaaro
@@ -197,14 +196,16 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         file = context.get_form_value('file')
 
         if file is None:
-            raise UserError, self.gettext(u'No file has been entered.')
+            return context.come_back(u'No file has been entered.')
 
         # Check wether the handler is able to deal with the uploaded file
         try:
             self.load_state_from(file)
         except:
             self.load_state()
-            raise UserError, self.gettext(u'Upload failed: either the file does not match this document type (%s) or it contains errors.') % self.get_mimetype()
+            message = (u'Upload failed: either the file does not match this'
+                       u' document type ($mimetype) or it contains errors.')
+            return context.come_back(message, mimetype=self.get_mimetype())
 
         message = self.gettext(u'Version uploaded.')
         comeback(message)

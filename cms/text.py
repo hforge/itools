@@ -24,7 +24,6 @@ from itools.handlers.rest import RestructuredText as iRestructuredText
 from itools import gettext
 from itools.stl import stl
 from itools.web import get_context
-from itools.web.exceptions import UserError
 from itools.xhtml.XHTML import Document
 
 # Import from iKaaro

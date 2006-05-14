@@ -16,75 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-class HTTPException(Exception):
-    """Base class for all HTTP responses."""
-
-
-
-##class Successful(HTTPException):
-##    """Base class for 2xx responses."""
-
-
-##class OK(Successful):
-##    code = 200
-##    title = 'OK'
-
-
-##class Created(Successful):
-##    code = 201
-##    title = 'Created'
-
-
-##class Accepted(Successful):
-##    code = 202
-##    title = 'Accepted'
-
-
-##class NoContent(Successful):
-##    code = 204
-##    title = 'No Content'
-
-
-
-############################################################################
-# Redirections
-############################################################################
-class Redirection(HTTPException):
-    """Base class for 3xx responses."""
-
-    location = None
-
-
-class MultipleChoices(Redirection):
-    code = 300
-    title = 'Multiple Choices'
-
-
-class MovedPermanently(Redirection):
-    code = 301
-    title = 'Moved Permanently'
-
-    def __init__(self, location):
-        self.location = location
-
-
-class MovedTemporarily(Redirection):
-    code = 302
-    title = 'Moved Temporarily'
-
-    def __init__(self, location):
-        self.location = location
-
-
-class NotModified(Redirection):
-    code = 304
-    title = 'Not Modified'
-
-
-############################################################################
-# Errors
-############################################################################
-class HTTPError(HTTPException):
+class HTTPError(Exception):
     """Base class for all errors, client or server side."""
 
 

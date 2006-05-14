@@ -21,9 +21,6 @@ from itools import i18n
 from itools.catalog import queries
 from itools.stl import stl
 from itools.web import get_context
-from itools.web.exceptions import UserError
-
-# Import from itools.cms
 from Folder import Folder
 from LocaleAware import LocaleAware
 from skins import Skin
@@ -175,8 +172,8 @@ class WebSite(RoleAware, Folder):
     def change_default_language(self, context):
         codes = context.get_form_values('codes')
         if len(codes) != 1:
-            message = u'You must select one and only one language.'
-            raise UserError, self.gettext(message)
+            return context.come_back(
+                u'You must select one and only one language.')
 
         website_languages = self.get_property('ikaaro:website_languages')
         website_languages = [codes[0]] + [ x for x in website_languages
@@ -195,8 +192,8 @@ class WebSite(RoleAware, Folder):
         default_language = website_languages[0]
 
         if default_language in codes:
-            message = u'You can not remove the default language.'
-            raise UserError, self.gettext(message)
+            return context.come_back(
+                u'You can not remove the default language.')
 
         website_languages = [ x for x in website_languages if x not in codes ]
         self.set_property('ikaaro:website_languages',
@@ -210,7 +207,7 @@ class WebSite(RoleAware, Folder):
     def add_language(self, context):
         code = context.get_form_value('code')
         if not code:
-            raise UserError, self.gettext(u'You must choose a language')
+            return context.come_back(u'You must choose a language')
 
         website_languages = self.get_property('ikaaro:website_languages')
         self.set_property('ikaaro:website_languages',
@@ -299,14 +296,13 @@ class WebSite(RoleAware, Folder):
             user = users.get_handler(username)
         else:
             # XXX We lost the referrer if any
-            referrer = context.request.referrer
-            message = u'The user "%s" does not exist.'
-            return referrer.replace(message = self.gettext(message) % username)
+            return context.come_back(
+                u'The user "$username" does not exist.', username=username)
 
         password = crypt_password(password)
         if not user.authenticate(password):
             # XXX We lost the referrer if any
-            raise UserError, self.gettext(u'The password is wrong.')
+            return context.come_back(u'The password is wrong.')
 
         # Set cookie
         cookie = Password.encode('%s:%s' % (username, password))
@@ -356,7 +352,7 @@ class WebSite(RoleAware, Folder):
     def site_search(self, context):
         text = context.get_form_value('site_search_text').strip()
         if not text:
-            raise UserError, "Empty search value."
+            return context.come_back(u"Empty search value.")
 
         on_title = queries.Equal('title', text)
         on_text = queries.Equal('text', text)

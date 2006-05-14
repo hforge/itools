@@ -32,12 +32,10 @@ from urllib import unquote
 from itools import uri
 from itools.resources.socket import File
 from itools.handlers.transactions import get_transaction
-from itools.http.exceptions import (Forbidden, HTTPError, HTTPException,
-                                    MovedPermanently, NotFound, NotModified,
-                                    Redirection, Unauthorized)
+from itools.http.exceptions import (Forbidden, HTTPError, NotFound,
+                                    Unauthorized)
 from itools.http.request import Request
 from itools.http.response import Response
-from exceptions import UserError
 from context import Context, get_context, set_context
 
 
@@ -184,7 +182,9 @@ class Server(object):
             if request.method == 'GET' and request.uri.path.endswith_slash:
                 goto = copy(context.uri)
                 goto.path.endswith_slash = False
-                raise MovedPermanently(location=goto)
+                context.redirect(goto)
+                # XXX Need to log access and check for HEAD method
+                return response
             # Get the root handler
             root = self.root
             if root.is_outdated():
@@ -246,11 +246,6 @@ class Server(object):
                             raise NotModified
             # Call the method
             response_body = method(context)
-        except Redirection, exception:
-            status_code = exception.code
-            response.set_status(status_code)
-            # Redirect
-            response.set_header('Location', exception.location)
         except HTTPException, exception:
             status_code = exception.code
             response.set_status(status_code)

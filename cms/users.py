@@ -24,7 +24,6 @@ from itools import i18n
 from itools import handlers
 from itools.stl import stl
 from itools.web import get_context
-from itools.web.exceptions import UserError
 
 # Import from ikaaro
 from access import AccessControl
@@ -219,9 +218,9 @@ class User(AccessControl, Folder):
         if self.name == user.name:
             password = crypt_password(password)
             if not self.authenticate(password):
-                message = (u"You mistyped your actual password, "
-                           u"your account is not changed.")
-                raise UserError, self.gettext(message)
+                return context.come_back(
+                    u"You mistyped your actual password, your account is"
+                    u" not changed.")
 
         self.set_property('dc:title', title, language='en')
         email = unicode(email, 'utf-8')
@@ -265,8 +264,8 @@ class User(AccessControl, Folder):
         newpass = newpass.strip()
         if newpass:
             if newpass != newpass2:
-                message = u"Passwords mismatch, please try again."
-                raise UserError, self.gettext(message)
+                return context.come_back(
+                    u"Passwords mismatch, please try again.")
 
             self.set_password(newpass)
             context = get_context()
@@ -457,16 +456,16 @@ class UserFolder(Folder):
 
         # Check the values
         if not username:
-            message = self.gettext(u'The username is wrong, please try again.')
-            raise UserError, message
+            return context.come_back(
+                u'The username is wrong, please try again.')
         if self.has_handler(username):
-            message = (u'There is another user with the username "%s", '
-                       u'please try again')
-            raise UserError, self.gettext(message) % username
-                  
+            return context.come_back(
+                u'There is another user with the username "%s", please'
+                u' try again')
+
         if not password or password != password2:
-            message = self.gettext(u'The password is wrong, please try again.')
-            raise UserError, message
+            return context.come_back(
+                u'The password is wrong, please try again.')
 
         user = self.set_user(username, password)
 

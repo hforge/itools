@@ -18,6 +18,7 @@
 # Import from the Standard Library
 from copy import deepcopy
 import datetime
+from string import Template
 from thread import get_ident, allocate_lock
 from time import strptime
 
@@ -76,6 +77,15 @@ class Context(object):
     def redirect(self, reference, status=302):
         reference = self.uri.resolve(reference)
         self.response.redirect(reference, status)
+
+
+    def come_back(self, message, **kw):
+        # Translate the source message, 
+        gettext = self.root.gettext(message)
+        message = Template(message).substitute(kw)
+        # Build and the return the uri reference to go
+        referrer = self.request.referrer
+        return referrer.replace(message=message)
 
 
     ########################################################################

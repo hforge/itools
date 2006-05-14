@@ -30,7 +30,6 @@ from itools import i18n
 from itools import uri
 from itools.stl import stl
 from itools.web import get_context
-from itools.web.exceptions import UserError
 
 # Import from itools.cms
 import File
@@ -587,7 +586,7 @@ class Folder(Handler, BaseFolder):
     def remove(self, context):
         ids = context.get_form_values('ids')
         if not ids:
-            raise UserError, self.gettext(u'No objects selected.')
+            return context.come_back(u'No objects selected.')
 
         removed = []
         not_allowed = []
@@ -621,7 +620,7 @@ class Folder(Handler, BaseFolder):
 
         # Check input data
         if not names:
-            raise UserError, self.gettext(u'No objects selected.')
+            return context.come_back(u'No objects selected.')
 
         # XXX Hack to get rename working. The current user interface
         # forces the rename_form to be called as a form action, hence
@@ -655,10 +654,10 @@ class Folder(Handler, BaseFolder):
             new_name = checkid(new_name)
             if new_name is None:
                 # Invalid name
-                message = (u'The document name contains illegal characters,'
-                           u' choose another one.')
-                raise UserError, self.gettext(message)
-
+                return context.come_back(
+                    u'The document name contains illegal characters,'
+                    u' choose another one.')
+            # Rename
             if new_name != old_name:
                 handler = self.get_handler(old_name)
                 handler_metadata = handler.get_metadata()
@@ -686,7 +685,7 @@ class Folder(Handler, BaseFolder):
         names = [ x.name for x in handlers if x.is_allowed_to_copy() ]
 
         if not names:
-            raise UserError, self.gettext(u'No objects selected.')
+            return context.come_back(u'No objects selected.')
 
         path = self.get_abspath()
         cp = (False, [ '%s/%s' % (path, x) for x in names ])
@@ -705,7 +704,7 @@ class Folder(Handler, BaseFolder):
         names = [ x.name for x in handlers if x.is_allowed_to_move() ]
 
         if not names:
-            raise UserError, self.gettext(u'No objects selected.')
+            return context.come_back(u'No objects selected.')
 
         path = self.get_abspath()
         cp = (True, [ '%s/%s' % (path, x) for x in names ])
@@ -953,7 +952,7 @@ class Folder(Handler, BaseFolder):
     def upload_file(self, context):
         file = context.get_form_value('file')
         if file is None:
-            raise UserError, self.gettext(u'The file must be entered')
+            return context.come_back(u'The file must be entered')
 
         # Build a memory resource
         mimetype = file.get_mimetype()

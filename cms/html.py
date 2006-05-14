@@ -23,7 +23,6 @@ from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.html import HTML
-from itools.web.exceptions import UserError
 
 # Import from ikaaro
 from File import File
@@ -150,9 +149,9 @@ class XHTMLFile(Text, XHTML.Document):
         stdin.close()
         new_body = stdout.read()
         if not new_body:
-            raise UserError, \
-                  u'ERROR: the document could not be changed, the input' \
-                  ' data was not proper HTML code.'
+            return context.come_back(
+                u'ERROR: the document could not be changed, the input'
+                u' data was not proper HTML code.')
 
         # Parse the new data
         doc = XHTML.Document()

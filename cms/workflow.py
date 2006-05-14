@@ -23,7 +23,6 @@ from itools.workflow.workflow import Workflow
 from itools.workflow.workflow import WorkflowAware as iWorkflowAware
 from itools.stl import stl
 from itools.web import get_context
-from itools.web.exceptions import UserError
 
 # Import from iKaaro
 from utils import comeback
@@ -123,7 +122,7 @@ class WorkflowAware(iWorkflowAware):
         comments = context.get_form_value('comments')
         # Check input data
         if transition is None:
-            raise UserError, self.gettext(u'A transition must be selected.')
+            return context.come_back(u'A transition must be selected.')
 
         # Keep workflow history
         property = {('dc', 'date'): datetime.datetime.now(),

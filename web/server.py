@@ -185,6 +185,8 @@ class Server(object):
                 context.redirect(goto)
                 # XXX Need to log access and check for HEAD method
                 return response
+            # A priori we don't commit with safe methods
+            context.commit = request.method not in ('GET', 'HEAD')
             # Get the root handler
             root = self.root
             if root.is_outdated():
@@ -300,8 +302,13 @@ class Server(object):
     def commit_transaction(self, context):
         # Get the transaction
         transaction = get_transaction()
-        # Nothing to commit
+        # Nothing to do
         if not transaction:
+            return
+
+        # Abort transaction if safe method, or if explicitly stated
+        if context.commit is False:
+            transaction.rollback()
             return
 
         # Before commit (hook)

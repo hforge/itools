@@ -153,7 +153,6 @@ class Server(object):
                     self.access_log.close()
                 if self.error_log is not None:
                     self.error_log.close()
-                break
             except:
                 self.log_error()
 
@@ -162,61 +161,9 @@ class Server(object):
     # Handle a request
     #########################################################################
     def handle_request(self, request):
-        context = Context(request)
-
-        response = context.response
-
         try:
-            # Initialize the context
-            context.init()
-            context.server = self
-            set_context(context)
-            # Set the list of needed resources. The method we are going to
-            # call may need external resources to be rendered properly, for
-            # example it could need an style sheet or a javascript file to
-            # be included in the html head (which it can not control). This
-            # attribute lets the interface to add those resources.
-            context.styles = []
-            context.scripts = []
-            # Our canonical URLs never end with an slash
-            if request.method == 'GET' and request.uri.path.endswith_slash:
-                goto = copy(context.uri)
-                goto.path.endswith_slash = False
-                context.redirect(goto)
-                # XXX Need to log access and check for HEAD method
-                return response
-            # A priori we don't commit with safe methods
-            context.commit = request.method not in ('GET', 'HEAD')
-            # Get the root handler
-            root = self.root
-            if root.is_outdated():
-                root.load_state()
-            context.root = root
-            # Authenticate
-            cname = '__ac'
-            cookie = context.get_cookie(cname)
-            if cookie is not None:
-                cookie = unquote(cookie)
-                cookie = decodestring(cookie)
-                username, password = cookie.split(':', 1)
-                try:
-                    user = root.get_handler('users/%s' % username)
-                except LookupError:
-                    pass
-                else:
-                    if user.authenticate(password):
-                        context.user = user
-            user = context.user
-            # Hook (used to set the language)
-            root.before_traverse()
-            try:
-                handler = root.get_handler(context.path)
-            except LookupError:
-                # Not Found (response code 404)
-                context.handler = root
-                raise NotFound
-            context.handler = handler
-            # Get the method name
+            context = self.build_context(request)
+
             method_name = context.method
             if method_name is None:
                 if request.method == 'HEAD':
@@ -248,7 +195,7 @@ class Server(object):
                             raise NotModified
             # Call the method
             response_body = method(context)
-        except HTTPException, exception:
+        except HTTPError, exception:
             status_code = exception.code
             response.set_status(status_code)
             # Rollback transaction
@@ -293,12 +240,68 @@ class Server(object):
             response.set_header('content-length', content_length)
             response.set_body(None)
 
-        # Finish, send back the response
         return response
 
 
     #########################################################################
     # Stages
+    def build_context(self, request):
+        context = Context(request)
+        response = context.response
+        # Initialize the context
+        context.init()
+        context.server = self
+        set_context(context)
+        # Set the list of needed resources. The method we are going to
+        # call may need external resources to be rendered properly, for
+        # example it could need an style sheet or a javascript file to
+        # be included in the html head (which it can not control). This
+        # attribute lets the interface to add those resources.
+        context.styles = []
+        context.scripts = []
+        # Our canonical URLs never end with an slash
+        if request.method == 'GET' and request.uri.path.endswith_slash:
+            goto = copy(context.uri)
+            goto.path.endswith_slash = False
+            context.redirect(goto)
+            # XXX Need to check for HEAD method
+            return response
+        # A priori we don't commit with safe methods
+        context.commit = request.method not in ('GET', 'HEAD')
+        # Get the root handler
+        root = self.root
+        if root.handler.is_outdated():
+            root.handler.load_state()
+        context.root = root
+        # Authenticate
+        cname = '__ac'
+        cookie = context.get_cookie(cname)
+        if cookie is not None:
+            cookie = unquote(cookie)
+            cookie = decodestring(cookie)
+            username, password = cookie.split(':', 1)
+            try:
+                user = root.get_object('users/%s' % username)
+            except LookupError:
+                pass
+            else:
+                if user.authenticate(password):
+                    context.user = user
+        user = context.user
+        # Hook (used to set the language)
+        root.before_traverse()
+        # Traverse
+        try:
+            object = root.get_object(context.path)
+        except LookupError:
+            # Not Found (response code 404)
+            context.handler = root
+            raise NotFound
+        context.handler = object
+
+        return context
+
+
     def commit_transaction(self, context):
         # Get the transaction
         transaction = get_transaction()

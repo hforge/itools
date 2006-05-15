@@ -127,9 +127,16 @@ class Server(web.server.Server):
         db2 = '%s/database.bak' % target
 
         transaction = get_transaction()
-        abspaths = [ x.get_abspath() for x in transaction ]
-        abspaths.sort()
+
         open('%s/state' % target, 'w').write('END')
+
+        abspaths = []
+        for handler in transaction:
+            if handler.real_handler is not None:
+                handler = handler.real_handler
+            abspaths.append(handler.get_abspath())
+        abspaths.sort()
+
         for abspath in abspaths:
             src = '%s%s' % (db, abspath)
             dst = '%s%s' % (db2, abspath)

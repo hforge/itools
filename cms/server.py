@@ -123,25 +123,24 @@ class Server(web.server.Server):
 
     def end_commit_on_success(self):
         target = self.target
-        db = '%s/database' % target
-        db2 = '%s/database.bak' % target
-
         transaction = get_transaction()
 
         open('%s/state' % target, 'w').write('END')
-
         try:
+            cwd = os.getcwd()
+            src_base = '%s/%s/database/' % (cwd, target)
+            src_base_n = len(src_base)
+            dst_base = '%s/%s/database.bak/' % (cwd, target)
+
             abspaths = []
             for handler in transaction:
-                if handler.real_handler is not None:
-                    handler = handler.real_handler
-                abspaths.append(handler.get_abspath())
+                src_path = str(handler.resource.uri.path)
+                if src_path.startswith(src_base):
+                    dst_path = dst_base + src_path[src_base_n:]
+                    abspaths.append((src_path, dst_path))
             abspaths.sort()
 
-            for abspath in abspaths:
-                src = '%s%s' % (db, abspath)
-                dst = '%s%s' % (db2, abspath)
-
+            for src, dst in abspaths:
                 if os.path.isdir(src):
                     src_files = set(os.listdir(src))
                     dst_files = set(os.listdir(dst))

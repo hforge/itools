@@ -21,7 +21,7 @@ import os
 import sys
 
 # Import from itools
-from itools.resources import base, get_resource
+from itools.resources import base, file, get_resource
 from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
@@ -134,10 +134,12 @@ class Server(web.server.Server):
 
             abspaths = []
             for handler in transaction:
-                src_path = str(handler.resource.uri.path)
-                if src_path.startswith(src_base):
-                    dst_path = dst_base + src_path[src_base_n:]
-                    abspaths.append((src_path, dst_path))
+                resource = handler.resource
+                if isinstance(resource, file.Resource):
+                    src_path = str(resource.uri.path)
+                    if src_path.startswith(src_base):
+                        dst_path = dst_base + src_path[src_base_n:]
+                        abspaths.append((src_path, dst_path))
             abspaths.sort()
 
             for src, dst in abspaths:

@@ -322,7 +322,6 @@ class CSV(Text):
 
         if self.is_schema_defined():
             # Index the new line
-            self._index_init()
             self._index_row(new_row, index)
 
 
@@ -337,7 +336,6 @@ class CSV(Text):
 
         if self.is_schema_defined():
             # Unindex deleted row
-            self._index_init()
             self._unindex_row(index)
 
 

@@ -187,8 +187,11 @@ class RoleAware(object):
 
         context = get_context()
         root = context.root
-        user = root.get_user(username)
-        user.clear_group_cache()
+        try:
+            user = root.get_user(username)
+            user.clear_group_cache()
+        except LookupError:
+            pass
 
 
     def set_role(self, rolename, username):
@@ -203,8 +206,11 @@ class RoleAware(object):
 
         context = get_context()
         root = context.root
-        user = root.get_user(username)
-        user.clear_group_cache()
+        try:
+            user = root.get_user(username)
+            user.clear_group_cache()
+        except LookupError:
+            pass
 
 
     #########################################################################
@@ -245,7 +251,13 @@ class RoleAware(object):
             handler = self.get_handler('.%s' % rolename)
             members = members.union(handler.get_usernames())
 
-        users = [userfolder.get_handler(u) for u in members]
+        users = []
+        for member in members:
+            try:
+                user = userfolder.get_handler(member)
+            except LookupError:
+                continue
+            users.append(user)
         key = attrgetter(self._get_members_sort_key())
         users.sort(key=key)
         namespace['users'] = []

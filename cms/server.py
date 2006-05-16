@@ -130,56 +130,63 @@ class Server(web.server.Server):
 
         open('%s/state' % target, 'w').write('END')
 
-        abspaths = []
-        for handler in transaction:
-            if handler.real_handler is not None:
-                handler = handler.real_handler
-            abspaths.append(handler.get_abspath())
-        abspaths.sort()
+        try:
+            abspaths = []
+            for handler in transaction:
+                if handler.real_handler is not None:
+                    handler = handler.real_handler
+                abspaths.append(handler.get_abspath())
+            abspaths.sort()
 
-        for abspath in abspaths:
-            src = '%s%s' % (db, abspath)
-            dst = '%s%s' % (db2, abspath)
+            for abspath in abspaths:
+                src = '%s%s' % (db, abspath)
+                dst = '%s%s' % (db2, abspath)
 
-            if os.path.isdir(src):
-                src_files = set(os.listdir(src))
-                dst_files = set(os.listdir(dst))
-                # Remove
-                for filename in dst_files - src_files:
-                    filename = '%s/%s' % (dst, filename)
-                    if os.path.isdir(filename):
-                        os.system('rm -r %s' % filename)
-                    else:
-                        os.remove(filename)
-                # Add
-                for filename in src_files - dst_files:
-                    srcfile = '%s/%s' % (src, filename)
-                    dstfile = '%s/%s' % (dst, filename)
-                    if os.path.isdir(srcfile):
-                        os.system('cp -r %s %s' % (srcfile, dstfile))
-                    else:
-                        open(dstfile, 'w').write(open(srcfile).read())
-                # Different. XXX Could not need this if IIndex (itools.catalog)
-                # was not a so special handler (the folder keeps the data
-                # structure for the files).
-                for filename in src_files & dst_files:
-                    srcfile = '%s/%s' % (src, filename)
-                    dstfile = '%s/%s' % (dst, filename)
-                    srctime = os.stat(srcfile).st_mtime
-                    dsttime = os.stat(dstfile).st_mtime
-                    if srctime > dsttime:
-                        # Remove
-                        if os.path.isdir(dstfile):
-                            os.system('rm -r %s' % dstfile)
+                if os.path.isdir(src):
+                    src_files = set(os.listdir(src))
+                    dst_files = set(os.listdir(dst))
+                    # Remove
+                    for filename in dst_files - src_files:
+                        filename = '%s/%s' % (dst, filename)
+                        if os.path.isdir(filename):
+                            os.system('rm -r %s' % filename)
                         else:
-                            os.remove(dstfile)
-                        # Copy
+                            os.remove(filename)
+                    # Add
+                    for filename in src_files - dst_files:
+                        srcfile = '%s/%s' % (src, filename)
+                        dstfile = '%s/%s' % (dst, filename)
                         if os.path.isdir(srcfile):
                             os.system('cp -r %s %s' % (srcfile, dstfile))
                         else:
                             open(dstfile, 'w').write(open(srcfile).read())
-            else:
-                open(dst, 'w').write(open(src).read())
+                    # Different. XXX Could not need this if IIndex
+                    # (itools.catalog) was not a so special handler (the
+                    # folder keeps the data structure for the files).
+                    for filename in src_files & dst_files:
+                        srcfile = '%s/%s' % (src, filename)
+                        dstfile = '%s/%s' % (dst, filename)
+                        srctime = os.stat(srcfile).st_mtime
+                        dsttime = os.stat(dstfile).st_mtime
+                        if srctime > dsttime:
+                            # Remove
+                            if os.path.isdir(dstfile):
+                                os.system('rm -r %s' % dstfile)
+                            else:
+                                os.remove(dstfile)
+                            # Copy
+                            if os.path.isdir(srcfile):
+                                os.system('cp -r %s %s' % (srcfile, dstfile))
+                            else:
+                                open(dstfile, 'w').write(open(srcfile).read())
+                else:
+                    open(dst, 'w').write(open(src).read())
+        except:
+            # Something wrong? Fall to more safe (and slow) rsync, and log
+            # the error.
+            self.log_error()
+            cmd = 'rsync -a --delete %s/database/ %s/database.bak'
+            os.system(cmd % (target, target))
 
         # Finish with the backup
         open('%s/state' % target, 'w').write('OK')

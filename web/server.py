@@ -23,6 +23,7 @@ import os
 import select
 from select import POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL
 import socket
+import sys
 import time
 import traceback
 from urllib import unquote
@@ -41,7 +42,7 @@ from context import Context, get_context, set_context
 class Server(object):
 
     def __init__(self, root, address=None, port=None, access_log=None,
-                 error_log=None, pid_file=None):
+                 error_log=sys.stderr, pid_file=None):
         if address is None:
             address = ''
         if port is None:
@@ -51,12 +52,13 @@ class Server(object):
         # The address and port the server will listen to
         self.address = address
         self.port = port
-        # The access and error logs
-        if access_log is not None:
+        # The access log
+        if isinstance(access_log, str):
             access_log = open(access_log, 'a+')
-        if error_log is not None:
-            error_log = open(error_log, 'a+')
         self.access_log = access_log
+        # The error log
+        if isinstance(error_log, str):
+            error_log = open(error_log, 'a+')
         self.error_log = error_log
         # The pid file
         self.pid_file = pid_file

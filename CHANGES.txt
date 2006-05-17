@@ -1,3 +1,23 @@
+0.13.4 (2006/05/1X)
+
+  Web
+  - Now the server listens to all addresses by default.
+
+  CMS
+  - More robust logic to synchronize the backup database.
+  - Crypt the password in the auth cookie.
+  - New module "future.py" keeps experimental stuff, by Hervé Cauwelier
+    [#110, #305].
+  - Fix indexing of (X)HTML documents, by Hervé Cauwelier [#228].
+  - Fix call to "comeback" in "Folder.rename", by Hervé Cauwelier [#253].
+  - Updated french translation, by Nicolas Deram [#303].
+  - Refactor office document conversion, by Hervé Cauwelier [#306].
+  - Fix edit of (X)HTML documents when the body has attributes [#307].
+  - Allow subviews with query parameters, by Nicolas Deram [#308].
+  - In the user's tasks view, only show documents that the user is
+    allowed to view [#311], by Hervé Cauwelier.
+
+
 0.13.3 (2006/04/24)
 
   CSV

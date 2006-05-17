@@ -79,7 +79,7 @@ class Skin(Folder):
         return breadcrumb
 
 
-    def get_metadata(self):
+    def get_metadata_ns(self):
         context = get_context()
         request = context.request
         here = context.handler
@@ -317,7 +317,7 @@ class Skin(Folder):
         namespace['breadcrumb'] = self.get_breadcrumb()
 
         # Metadata
-        namespace['metadata'] = self.get_metadata()
+        namespace['metadata'] = self.get_metadata_ns()
 
         # Tabs
         tabs = self.get_tabs()

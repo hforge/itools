@@ -27,13 +27,14 @@ from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import UserError
 
-# Import from ikaaro
+# Import from itools.cms
 from Handler import Handler
 from Folder import Folder
 from LocaleAware import LocaleAware
 from skins import Skin
 from utils import comeback
 from workflow import WorkflowAware
+from users import crypt_password
 from widgets import Table
 
 
@@ -262,6 +263,7 @@ class WebSite(Folder):
             message = u'The user "%s" does not exist.'
             raise UserError, self.gettext(message) % username
 
+        password = crypt_password(password)
         if not user.authenticate(password):
             # XXX We lost the referrer if any
             raise UserError, self.gettext(u'The password is wrong.')

@@ -78,7 +78,7 @@ class User(Folder):
 
 
     def authenticate(self, password):
-        return crypt_password(password) == self.get_property('ikaaro:password')
+        return password == self.get_property('ikaaro:password')
 
 
     #########################################################################
@@ -274,6 +274,7 @@ class User(Folder):
         user = context.user
 
         if self.name == user.name:
+            password = crypt_password(password)
             if not self.authenticate(password):
                 message = (u"You mistyped your actual password, "
                            u"you account is not changed.")

@@ -252,13 +252,6 @@ class Server(object):
         context.init()
         context.server = self
         set_context(context)
-        # Set the list of needed resources. The method we are going to
-        # call may need external resources to be rendered properly, for
-        # example it could need an style sheet or a javascript file to
-        # be included in the html head (which it can not control). This
-        # attribute lets the interface to add those resources.
-        context.styles = []
-        context.scripts = []
         # Our canonical URLs never end with an slash
         if request.method == 'GET' and request.uri.path.endswith_slash:
             goto = copy(context.uri)
@@ -270,8 +263,7 @@ class Server(object):
         context.commit = request.method not in ('GET', 'HEAD')
         # Get the root handler
         root = self.root
-        if root.handler.is_outdated():
-            root.handler.load_state()
+        root.init(context)
         context.root = root
         # Authenticate
         cname = '__ac'
@@ -289,7 +281,7 @@ class Server(object):
                     context.user = user
         user = context.user
         # Hook (used to set the language)
-        root.before_traverse()
+        root.before_traverse(context)
         # Traverse
         try:
             object = root.get_object(context.path)

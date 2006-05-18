@@ -62,6 +62,50 @@ class Root(WebSite):
 
 
     ########################################################################
+    # Override itools.web.root.Root
+    ########################################################################
+    def init(self, context):
+        # Set the list of needed resources. The method we are going to
+        # call may need external resources to be rendered properly, for
+        # example it could need an style sheet or a javascript file to
+        # be included in the html head (which it can not control). This
+        # attribute lets the interface to add those resources.
+        context.styles = []
+        context.scripts = []
+        # Reload the root handler if needed
+        if self.handler.is_outdated():
+            self.handler.load_state()
+
+
+    def get_user(self, name):
+        users = self.get_handler('users')
+        if users.has_handler(name):
+            return users.get_handler(name)
+        return None
+
+
+    def before_traverse(self, context):
+        # Language negotiation
+        user = context.user
+        if user is not None:
+            language = user.get_property('ikaaro:user_language')
+            context.request.accept_language.set(language, 2.0)
+
+
+    def after_traverse(self, context):
+        request, response = context.request, context.response
+
+        # If there is not content type and the body is not None,
+        # wrap it in the skin template
+        response_body = response.body
+        if request.method == 'GET' and response_body is not None:
+            if not response.has_header('Content-Type'):
+                skin = self.get_skin()
+                response_body = skin.template(response_body)
+                response.set_body(response_body)
+
+
+    ########################################################################
     # Skeleton
     ########################################################################
     _catalog_fields = [('text', 'text', True, False),
@@ -109,29 +153,6 @@ class Root(WebSite):
     ########################################################################
     # Publish
     ########################################################################
-    def before_traverse(self):
-        context = get_context()
-        # Language negotiation
-        user = context.user
-        if user is not None:
-            language = user.get_property('ikaaro:user_language')
-            context.request.accept_language.set(language, 2.0)
-
-
-    def after_traverse(self):
-        context = get_context()
-        request, response = context.request, context.response
-
-        # If there is not content type and the body is not None,
-        # wrap it in the skin template
-        response_body = response.body
-        if request.method == 'GET' and response_body is not None:
-            if not response.has_header('Content-Type'):
-                skin = self.get_skin()
-                response_body = skin.template(response_body)
-                response.set_body(response_body)
-
-
     def forbidden(self, context):
         message = (u'Access forbidden, you are not authorized to access'
                    u' this resource.')
@@ -175,10 +196,6 @@ class Root(WebSite):
         return self.get_handler('.metadata')
 
     metadata = property(get_metadata, None, None, "")
-
-
-    def get_user(self, name):
-        return self.get_handler('users/%s' % name)
 
 
     def get_usernames(self):

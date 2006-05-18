@@ -81,7 +81,7 @@ class Context(object):
 
     def come_back(self, message, **kw):
         # Translate the source message, 
-        gettext = self.handler.gettext(message)
+        gettext = self.object.gettext(message)
         message = Template(message).substitute(kw)
         # Build and the return the uri reference to go
         referrer = self.request.referrer

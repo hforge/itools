@@ -60,7 +60,7 @@ def get_root(target):
 
 class Server(web.server.Server):
 
-    def __init__(self, target, port=None):
+    def __init__(self, target, address=None, port=None):
         self.target = target
 
         # Load the config
@@ -80,6 +80,14 @@ class Server(web.server.Server):
         root = get_root(target)
         root.name = root.class_title
 
+        # Find out the IP to listen to
+        if address:
+            pass
+        elif config.has_option('instance', 'address'):
+            address = config.get('instance', 'address')
+        else:
+            address = None
+
         # Find out the port to listen
         if port:
             pass
@@ -89,7 +97,7 @@ class Server(web.server.Server):
             port = None
 
         # Initialize
-        web.server.Server.__init__(self, root, port=port,
+        web.server.Server.__init__(self, root, address=address, port=port,
                                    access_log='%s/access_log' % target,
                                    error_log='%s/error_log' % target,
                                    pid_file='%s/pid' % target)

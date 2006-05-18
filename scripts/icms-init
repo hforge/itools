@@ -43,6 +43,8 @@ def init(parser, options, target):
     config = get_config()
     if options.root:
         config.set('instance', 'modules', options.root)
+    if options.address:
+        config.set('instance', 'address', options.address)
     if options.port:
         config.set('instance', 'port', options.port)
     config.write(open('%s/config.ini' % target, 'w'))
@@ -111,7 +113,9 @@ if __name__ == '__main__':
     description = 'Creates a new instance of itools.cms with the name TARGET.'
     parser = OptionParser(usage, version=version, description=description)
     parser.add_option(
-        '-p', '--port', type='int', help='listen to port number')
+        '-a', '--address', help='listen to IP ADDRESS')
+    parser.add_option(
+        '-p', '--port', type='int', help='listen to PORT number')
     parser.add_option(
         '-r', '--root', help='use the ROOT handler class to init the instance')
     parser.add_option(

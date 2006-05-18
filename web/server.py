@@ -38,8 +38,10 @@ from itools.web.response import Response
 
 class Server(object):
 
-    def __init__(self, root, address='', port=None, access_log=None,
+    def __init__(self, root, address=None, port=None, access_log=None,
                  error_log=None, pid_file=None):
+        if address is None:
+            address = ''
         if port is None:
             port = 8080
         # The application's root

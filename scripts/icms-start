@@ -50,7 +50,7 @@ def start(parser, options, target):
         return
 
     # Set-up the server object
-    server = Server(target, port=options.port)
+    server = Server(target, address=options.address, port=options.port)
 
     # Check the instance is up-to-date
     root = server.root
@@ -110,7 +110,9 @@ if __name__ == '__main__':
         '-d', '--debug', action="store_true", default=False,
         help="start the server on debug mode (don't detach from the console)")
     parser.add_option(
-        '-p', '--port', type='int', help='listen to port number')
+        '-a', '--address', help='listen to IP ADDRESS')
+    parser.add_option(
+        '-p', '--port', type='int', help='listen to PORT number')
 
     options, args = parser.parse_args()
     if len(args) != 1:

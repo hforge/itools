@@ -19,13 +19,14 @@
 import os
 import mimetypes
 import tempfile
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipfile
 
 # Import from itools
 from itools.resources import memory
 from itools.stl import stl
 from itools.xml import XML
 from itools.html import HTML
+from itools.web.context import get_context
 
 # Import from itools.cms
 from itools.cms.text import Text
@@ -80,8 +81,14 @@ class OfficeDocument(File):
 
         html = self.to_html().encode('UTF-8')
         resource = memory.File(html)
-        handler = HTML.Document(resource)
-        text = handler.to_text()
+        try:
+            handler = HTML.Document(resource)
+            text = handler.to_text()
+        except ValueError:
+            context = get_context()
+            context.server.log_error()
+            text = u''
+
         self.__text_output__ = text
 
         return text
@@ -190,11 +197,16 @@ class OOffice(OfficeDocument):
             return self.__text_output__
 
         resource = memory.File(self.to_str())
-        archive = ZipFile(resource)
-        content = archive.read('content.xml')
-        resource = memory.File(content)
-        handler = XML.Document(resource)
-        text = handler.to_text()
+        try:
+            archive = ZipFile(resource)
+            content = archive.read('content.xml')
+            resource = memory.File(content)
+            handler = XML.Document(resource)
+            text = handler.to_text()
+        except BadZipfile:
+            context = get_context()
+            context.server.log_error()
+            text = u''
 
         self.__text_output__ = text
 

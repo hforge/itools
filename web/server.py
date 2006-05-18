@@ -246,7 +246,7 @@ def handle_request(connection, server):
 
 class Server(object):
 
-    def __init__(self, root, address='127.0.0.1', port=None, access_log=None,
+    def __init__(self, root, address='', port=None, access_log=None,
                  error_log=None, pid_file=None):
         if port is None:
             port = 8080

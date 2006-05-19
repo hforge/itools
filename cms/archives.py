@@ -37,11 +37,6 @@ class Archive(File, iArchive):
     class_icon16 = 'images/Archive16.png'
     class_icon48 = 'images/Archive48.png'
 
-    def get_views(self):
-        views = File.get_views(self)
-        views.insert(0, 'view')
-        return views
-
 
     #######################################################################
     # View

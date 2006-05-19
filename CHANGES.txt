@@ -1,15 +1,25 @@
-0.13.4 (2006/05/1X)
+0.13.4 (2006/05/19)
+
+  Handlers
+  - New handlers for archive files (TAR, ZIP), by Hervé Cauwelier [#127].
 
   Web
   - Now the server listens to all addresses by default.
 
   CMS
+  Minor features and important fixes:
   - More robust logic to synchronize the backup database.
   - Crypt the password in the auth cookie.
+  - Now it is possible to define the IP address the server listens to
+    through the parameter address of the config file. By Hervé Cauwelier
+    [#270].
+  - Support for archive files (TAR, ZIP), by Hervé Cauwelier [#127].
   - New module "future.py" keeps experimental stuff, by Hervé Cauwelier
     [#110, #305].
+  Minor fixes:
   - Fix indexing of (X)HTML documents, by Hervé Cauwelier [#228].
   - Fix call to "comeback" in "Folder.rename", by Hervé Cauwelier [#253].
+  - Update security declarations, by Hervé Cauwelier [#286].
   - Updated french translation, by Nicolas Deram [#303].
   - Refactor office document conversion, by Hervé Cauwelier [#306].
   - Fix edit of (X)HTML documents when the body has attributes [#307].

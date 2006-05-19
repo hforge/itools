@@ -68,7 +68,7 @@ class Image(File, iImage):
 
     #######################################################################
     # View
-    view__access__ = Handler.is_allowed_to_view
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     view__sublabel__ = u'View'
     def view(self):

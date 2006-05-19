@@ -141,7 +141,7 @@ class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
         return self.acquire('en.po')
         
 
-    translate_form__access__ = Handler.is_allowed_to_edit
+    translate_form__access__ = 'is_allowed_to_edit'
     translate_form__label__ = u'Translate'
     def translate_form(self):
         context = get_context()
@@ -194,7 +194,7 @@ class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
         return stl(handler, namespace)
 
 
-    save_translation__access__ = Handler.is_allowed_to_edit
+    save_translation__access__ = 'is_allowed_to_edit'
     def save_translation(self):
         # Translate from the master
         master = self.get_master_handler()
@@ -208,7 +208,7 @@ class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
         comeback(message)
 
 
-    translate_message__access__ = Handler.is_allowed_to_edit
+    translate_message__access__ = 'is_allowed_to_edit'
     def translate_message(self, msgid, msgstr, messages_index=None, **kw):
         msgid = PO.escape(msgid.replace('\r', ''))
         msgstr = PO.escape(msgstr.replace('\r', ''))

@@ -1236,7 +1236,7 @@ msgstr "Les documents servent à stocker les données"
 
 #: cms/ui/web_site_templates/community/localizer.xhtml.en:0
 msgid "Download"
-msgstr ""
+msgstr "Télécharger"
 
 #: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
 msgid ""

@@ -78,7 +78,7 @@ class File(Handler, itools.handlers.File.File):
 
     #######################################################################
     # Download
-    download_form__access__ = Handler.is_allowed_to_view
+    download_form__access__ = 'is_allowed_to_view'
     download_form__label__ = u'View'
     download_form__sublabel__ = u'Download'
     def download_form(self):
@@ -89,7 +89,7 @@ class File(Handler, itools.handlers.File.File):
         return stl(handler, namespace)
 
 
-    download__access__ = Handler.is_allowed_to_view
+    download__access__ = 'is_allowed_to_view'
     download__mtime__ = Handler.get_mtime
     def download(self):
         context = get_context()
@@ -108,7 +108,7 @@ class File(Handler, itools.handlers.File.File):
 
     #######################################################################
     # Edit / External
-    externaledit__access__ = Handler.is_allowed_to_edit
+    externaledit__access__ = 'is_allowed_to_edit'
     externaledit__label__ = u'Edit'
     externaledit__sublabel__ = u'External'
     def externaledit(self):
@@ -116,7 +116,7 @@ class File(Handler, itools.handlers.File.File):
         return stl(handler)
 
 
-    external_edit__access__ = Handler.is_allowed_to_edit
+    external_edit__access__ = 'is_allowed_to_edit'
     def external_edit(self, encoding=None, **kw):
         # TODO check if zopeedit really needs the meta_type.
 
@@ -176,7 +176,7 @@ class File(Handler, itools.handlers.File.File):
 
     #######################################################################
     # Edit / Upload
-    upload_form__access__ = Handler.is_allowed_to_edit
+    upload_form__access__ = 'is_allowed_to_edit'
     upload_form__label__ = u'Edit'
     upload_form__sublabel__ = u'Upload'
     def upload_form(self):
@@ -184,7 +184,7 @@ class File(Handler, itools.handlers.File.File):
         return stl(handler)
 
 
-    upload__access__ = Handler.is_allowed_to_edit
+    upload__access__ = 'is_allowed_to_edit'
     def upload(self, file=None, **kw):
         if file is None:
             raise UserError, self.gettext(u'No file has been entered.')

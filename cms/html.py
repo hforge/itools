@@ -101,7 +101,7 @@ class XHTMLFile(Text, XHTML.Document):
 
     #######################################################################
     # View
-    view__access__ = Handler.is_allowed_to_view
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self):
         return self.to_xhtml_body()
@@ -113,7 +113,7 @@ class XHTMLFile(Text, XHTML.Document):
         return self.get_body().get_content_as_html()
 
 
-    edit_form__access__ = Handler.is_allowed_to_edit
+    edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     edit_form__sublabel__ = u'Inline'
     def edit_form(self):
@@ -133,7 +133,7 @@ class XHTMLFile(Text, XHTML.Document):
         return stl(handler, namespace)
 
 
-    edit__access__ = Handler.is_allowed_to_edit
+    edit__access__ = 'is_allowed_to_edit'
     def edit(self, **kw):
         # XXX This code is ugly. We must: (1) write our own XML parser, with
         # support for fragments, and (2) use the commented code.
@@ -166,7 +166,7 @@ class XHTMLFile(Text, XHTML.Document):
 
     #######################################################################
     # Edit / Inline / toolbox: add images
-    addimage_form__access__ = Handler.is_allowed_to_edit
+    addimage_form__access__ = 'is_allowed_to_edit'
     def addimage_form(self):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=Image, start=self.parent)
@@ -177,7 +177,7 @@ class XHTMLFile(Text, XHTML.Document):
 
     #######################################################################
     # Edit / Inline / toolbox: add links
-    addlink_form__access__ = Handler.is_allowed_to_edit
+    addlink_form__access__ = 'is_allowed_to_edit'
     def addlink_form(self):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=File, start=self.parent)
@@ -199,7 +199,7 @@ class HTMLFile(HTML.Document, XHTMLFile):
         return self.to_str()
 
 
-    edit__access__ = Handler.is_allowed_to_edit
+    edit__access__ = 'is_allowed_to_edit'
     def edit(self, **kw):
         # XXX This is copy and paste from XHTMLFile.edit (except for the
         # tidy part)

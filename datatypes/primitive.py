@@ -148,8 +148,7 @@ class FileName(DataType):
     """
     A filename is tuple consisting of a name, a type and a language.
 
-    XXX We should extend this to add the character encoding and the
-    compression (gzip, bzip, etc.).
+    XXX We should extend this to add the character encoding
     """
 
     @staticmethod
@@ -172,10 +171,13 @@ class FileName(DataType):
                 return '.'.join(data), None, None
         else:
             # Default values
-            type = language = None
+            type = encoding = language = None
 
             # The language
-            if data[-1] in i18n_languages:
+            if '.%s' % data[-1].lower() in mimetypes.encodings_map:
+                encoding = data[-1]
+                data = data[:-1]
+            elif data[-1] in i18n_languages:
                 language = data[-1]
                 data = data[:-1]
 
@@ -183,6 +185,9 @@ class FileName(DataType):
             if '.%s' % data[-1].lower() in mimetypes.types_map:
                 type = data[-1]
                 data = data[:-1]
+
+            if encoding is not None:
+                type = '%s.%s' % (type, encoding)
 
             # The name
             name = '.'.join(data)

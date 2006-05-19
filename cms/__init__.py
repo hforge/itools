@@ -37,6 +37,7 @@ import openoffice
 import pdf
 import office
 import text
+import archives
 
 
 

@@ -588,18 +588,13 @@ class Folder(Handler, BaseFolder):
         removed = []
         not_allowed = []
 
+        user = context.user
         for name in ids:
             handler = self.get_handler(name)
-            if handler.is_allowed_to_remove():
-##                # Remove versions
-##                metadata = handler.metadata
-##                for lang in metadata.get_translations():
-##                    trans = metadata.get_translation(lang)
-##                    if self.has_handler(trans):
-##                        self.del_handler(trans)
+            ac = handler.get_access_control()
+            if ac.is_allowed_to_remove(user, object):
                 # Remove handler
                 self.del_handler(name)
-                #
                 removed.append(name)
             else:
                 not_allowed.append(name)

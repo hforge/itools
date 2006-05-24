@@ -30,6 +30,10 @@ from itools.http.response import Response
 
 class Context(object):
 
+    user = None
+    object = None
+
+
     def __init__(self, request):
         self.request = request
         self.response = Response()
@@ -58,9 +62,6 @@ class Context(object):
                 request_uri.path = uri.Path('/%s' % diff_path)
         reference = 'http://%s%s' % (host, request_uri)
         self.uri = uri.get_reference(reference)
-
-        # The user, by default it is not authenticated
-        self.user = None
 
         # Split the path into path and method ("a/b/c/;view")
         path = request.uri.path

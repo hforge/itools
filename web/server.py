@@ -157,53 +157,41 @@ class Server(object):
                 self.log_error()
 
 
-    #########################################################################
+    ########################################################################
     # Handle a request
-    #########################################################################
+    ########################################################################
     def GET(self, context):
         request, response = context.request, context.response
+        # This is a safe method
+        context.commit = False
         # Our canonical URLs never end with an slash
         if request.uri.path.endswith_slash:
             goto = copy(context.uri)
             goto.path.endswith_slash = False
             return 302, goto
-        context.commit = False
         # Traverse
-        root = context.root = self.get_root(context)
-        user = context.user = self.get_user(context)
-        root.before_traverse(context)
-        handler = context.handler = self.get_handler(context)
-        if handler is None:
-            return 404, root.not_found(context)
-        method = handler.get_method(context.method)
-        if method is None:
-            return 404, root.not_found(context)
-        # Check security
-        ac = handler.get_access_control()
-        ac_ok = ac.is_access_allowed(user, handler, context.method)
-        if ac_ok is False:
-            if user is None:
-                return 401, root.unauthorized(context)
-            return 403, root.forbidden(context)
-        # Check modification time
-        mtime = getattr(handler, '%s__mtime__' % context.method, None)
-        if mtime is not None:
-            mtime = mtime().replace(microsecond=0)
-            response.set_header('last-modified', mtime)
-            if request.method == 'GET':
-                if request.has_header('if-modified-since'):
-                    msince = request.get_header('if-modified-since')
-                    if mtime <= msince:
-                        return 304, None
+        status, method = self.traverse(context)
+        if status == 200:
+            # Check modification time
+            mtime = getattr(object, '%s__mtime__' % context.method, None)
+            if mtime is not None:
+                mtime = mtime().replace(microsecond=0)
+                response.set_header('last-modified', mtime)
+                if request.method == 'GET':
+                    if request.has_header('if-modified-since'):
+                        msince = request.get_header('if-modified-since')
+                        if mtime <= msince:
+                            return 304, None
         # Call the method
         body = method(context) 
-        # Post-process (used to wrap the body in a skin)
         if isinstance(body, str):
-            body = root.after_traverse(context, body)
-            status = 200
+            # Post-process (used to wrap the body in a skin)
+            body = context.root.after_traverse(context, body)
         elif isinstance(body, uri.Reference):
+            # Redirection
             status = 302
         elif body is not None:
+            # What?
             raise TypeError, 'unexpected value of type "%s"' % type(body)
 
         # Commit
@@ -223,23 +211,42 @@ class Server(object):
 
 
     def POST(self, context):
+        request, response = context.request, context.response
+        # Not a safe method
         context.commit = True
-        raise NotImplementedError
+        # Traverse
+        status, method = self.traverse(context)
+        # Call the method
+        body = method(context) 
+        if isinstance(body, str):
+            # Post-process (used to wrap the body in a skin)
+            body = root.after_traverse(context, body)
+        elif isinstance(body, uri.Reference):
+            # Redirection
+            status = 302
+        elif body is not None:
+            # What?
+            raise TypeError, 'unexpected value of type "%s"' % type(body)
+
+        # Commit
+        self.commit_transaction(context)
+ 
+        return status, body
 
 
     def PUT(self, context):
         context.commit = True
-        raise NotImplementedError
+        return 501, None
 
 
     def LOCK(self, context):
         context.commit = True
-        raise NotImplementedError
+        return 501, None
 
 
     def UNLOCK(self, context):
         context.commit = True
-        raise NotImplementedError
+        return 501, None
 
 
     def handle_request(self, request):
@@ -248,6 +255,7 @@ class Server(object):
         # Initialize the context
         context.init()
         context.server = self
+        context.root = self.root
         set_context(context)
 
         # Get and call the method
@@ -276,7 +284,7 @@ class Server(object):
         return response
 
 
-    #########################################################################
+    ########################################################################
     # Stages
     def get_user(self, context):
         # Check the id/auth cookie
@@ -290,7 +298,7 @@ class Server(object):
         username, password = cookie.split(':', 1)
 
         # Check user exists
-        user = root.get_user(username)
+        user = context.root.get_user(username)
         if user is None:
             return None
 
@@ -301,16 +309,30 @@ class Server(object):
         return None
 
 
-    def get_root(self, context):
-        self.root.init(context)
-        return self.root
-
-
-    def get_handler(self, context):
+    def traverse(self, context):
+        """
+        Returns the status code (200 if everything is Ok so far) and
+        the method to call.
+        """
+        root = context.root
+        root.init(context)
+        user = context.user = self.get_user(context)
+        root.before_traverse(context)
         try:
-             return self.root.get_handler(context.path)
+            handler = context.handler = root.get_handler(context.path)
         except LookupError:
-             return None
+            return 404, root.not_found
+        method = handler.get_method(context.method)
+        if method is None:
+            return 404, root.not_found
+        # Check security
+        ac = handler.get_access_control()
+        if ac.is_access_allowed(user, handler, context.method):
+            return 200, method
+        # Not allowed
+        if user is None:
+            return 401, root.unauthorized
+        return 403, root.forbidden
 
 
     def commit_transaction(self, context):
@@ -350,9 +372,9 @@ class Server(object):
         self.end_commit_on_success()
 
 
-    #########################################################################
+    ########################################################################
     # Logging
-    #########################################################################
+    ########################################################################
     def log_access(self, conn, request, response):
         # Common Log Format
         #  - IP address of the client
@@ -396,9 +418,9 @@ class Server(object):
             log.flush()
 
 
-    #########################################################################
+    ########################################################################
     # Hooks (to be overriden)
-    #########################################################################
+    ########################################################################
     def before_commit(self, transaction):
         pass
 

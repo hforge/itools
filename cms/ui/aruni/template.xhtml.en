@@ -103,26 +103,18 @@
           </label>
             <ul stl:if="not user/info">
               <li id="action_login">
-                <a href="#" stl:attributes="href user/login_url">
-                  Log in
-                </a>
+                <a href="/;login_form">Log in</a>
               </li>
               <li id="action_join" stl:if="user/joinisopen">
-                <a href="#" stl:attributes="href user/join_url">
-                  Join
-                </a>
+                <a href="/;register_form">Register</a>
               </li>
             </ul>
             <ul stl:if="user/info">
               <li id="action_home">
-                <a href="#" stl:attributes="href user/info/home">
-                  Home
-                </a>
+                <a href="#" stl:attributes="href user/info/home">Home</a>
               </li>
               <li id="action_logout">
-                <a href="#" stl:attributes="href user/info/logout">
-                  Log out
-                </a>
+                <a href="/;logout">Log out</a>
               </li>
             </ul>
           </div>

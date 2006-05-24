@@ -4,15 +4,11 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h3>Internal Server Error</h3>
+<h3>Not Found</h3>
 
 <p>
-  There has been an error, please try again later. If the error
-  persits contact with the system administrator.
+  There requested URL <stl:inline content="uri" /> was not found on
+  this server.
 </p>
-<p>
-  Apologies for the inconvenience.
-</p>
-<pre style="color: white;" stl:content="traceback" />
 
 </div>

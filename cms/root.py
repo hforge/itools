@@ -155,16 +155,17 @@ class Root(WebSite):
 
 
     def internal_server_error(self, context):
-        namespace = {}
-        namespace['traceback'] = traceback.format_exc()
+        namespace = {'traceback': traceback.format_exc()}
 
         handler = self.get_handler('/ui/Root_internal_server_error.xml')
         return stl(handler, namespace)
 
 
     def not_found(self, context):
-        message = u'The requested resource has not been found.'
-        return self.gettext(message)
+        namespace = {'uri': str(context.uri)}
+
+        handler = self.get_handler('/ui/Root_not_found.xml')
+        return stl(handler, namespace)
 
 
     ########################################################################
@@ -243,21 +244,10 @@ class Root(WebSite):
     def get_skin(self):
         context = get_context()
 
-        # Check the request (designed to be used from Apache)
-        form = context.request.form
-        if form.has_key('skin_path'):
-            return self.get_handler(form['skin_path'])
 
         # Default
         themes = self.get_themes()
         theme = themes[0]
-
-##        # Check the user preferences
-##        user = context.user
-##        if user is not None:
-##            theme = user.get_property('ikaaro:user_theme')
-##            if theme not in themes:
-##                theme = themes[0]
 
         return self.get_handler('ui/%s' % theme)
 

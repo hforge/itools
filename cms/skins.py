@@ -47,9 +47,8 @@ class Skin(Folder):
     __fixed_handlers__ = ['template.xhtml.en']
 
 
-    def get_breadcrumb(self):
+    def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
-        context = get_context()
         here = context.handler
 
         #
@@ -78,10 +77,14 @@ class Skin(Folder):
         return breadcrumb
 
 
-    def get_metadata_ns(self):
-        context = get_context()
-
+    def get_metadata_ns(self, context):
         here = context.handler
+        if here is None:
+            return {'title': '',
+                    'format': '',
+                    'language': '',
+                    'mtime': '',
+                    'icon': ''}
         return {'title': here.get_title_or_name(),
                 'format': here.class_title,
                 'language': here.get_property('dc:language'),
@@ -89,16 +92,19 @@ class Skin(Folder):
                 'icon': here.get_path_to_icon(size=48)}
 
 
-    def get_tabs(self):
+    def get_tabs(self, context):
         """
         Return tabs and subtabs as a dict {tabs, subtabs} of list of dicts
         [{name, label, active, style}...].
         """
         # Get request, path, etc...
-        context = get_context()
         request = context.request
         user = context.user
         here = context.handler
+        if here is None:
+            return {'tabs': [], 'subtabs': []}
+
+        # Get access control
         ac = here.get_access_control()
 
         # Tabs
@@ -171,80 +177,76 @@ class Skin(Folder):
 ##        return {'language_action': language_action, 'languages': languages}
 
 
-    def get_user_menu(self):
+    def get_user_menu(self, context):
         """Return a dict {user_icon, user, joinisopen}."""
-        context = get_context()
         user = context.user
-        here = context.handler
-        root = context.root
 
-        path_to_root = here.get_pathto(root)
         if user is None:
+            root = context.root
             joinisopen = root.get_property('ikaaro:website_is_open')
-            info = None
-        else:
-            joinisopen = False
-            info = {'name': user.name,
-                    'title': user.title or user.name,
-                    'home':  '%s/;%s' % (here.get_pathto(user),
-                        user.get_firstview()),
-                    'logout': '%s/;logout' % path_to_root}
-        return {'info': info,
-                'joinisopen': joinisopen,
-                'login_url': '%s/;login_form' % path_to_root,
-                'join_url': '%s/;register_form' % path_to_root}
+            return {'info': None, 'joinisopen': joinisopen}
+
+        home = '/users/%s/;%s' % (user.name, user.get_firstview())
+        info = {'name': user.name, 'title': user.title or user.name,
+                'home': home}
+        return {'info': info, 'joinisopen': False}
 
 
-    def get_navigation_menu(self):
+    def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        context = get_context()
         root = context.root
         return Node(root, depth=6).tree_as_html()
 
 
-    def get_message(self):
+    def get_message(self, context):
         """Return a message string from de request."""
-        request = get_context().request
-        form = request.form
-        if form.has_key('message'):
-            message = form['message']
+        if context.has_form_value('message'):
+            message = context.get_form_value('message')
             return unicode(message, 'utf8')
-        else:
-            return None
+        return None
 
 
-    def get_site_search(self):
-        context = get_context()
-
+    def get_site_search(self, context):
         namespace = {}
-
-        here = context.handler
-        namespace['action'] = '%s/;site_search' % here.get_pathtoroot()
-
-        if context.has_form_value('site_search_text'):
-            namespace['text'] = context.get_form_value('site_search_text')
-        else:
-            namespace['text'] = ''
-
+        namespace['action'] = '/;site_search'
+        namespace['text'] = context.get_form_value('site_search_text', '')
         return namespace
 
 
-    def get_template_title(self):
+    def get_template_title(self, context):
         """Return the title to give to the template document."""
-        context = get_context()
         here = context.handler
-        root = here.get_site_root()
+        # Not Found
+        if here is None:
+            return u'404 Not Found'
+        # In the Root
+        root = context.root
         if root is here:
             return root.get_title_or_name()
+        # Somewhere else
+        mapping = {'root_title': root.get_title_or_name(),
+                   'here_title': here.get_title_or_name()}
+        return here.gettext("%(root_title)s: %(here_title)s") % mapping
+
+
+    def get_content_languages(self, context):
+        """Return a namespace with the content languages."""
+        here = context.handler
+        # The current language
+        if here is None:
+            language = None
         else:
-            mapping = {'root_title': root.get_title_or_name(),
-                       'here_title': here.get_title_or_name()}
-            return here.gettext("%(root_title)s: %(here_title)s") % mapping
+            language = here.get_content_language()
+        # The content languages
+        root = context.root
+        available_languages = root.get_property('ikaaro:website_languages')
+        # Build and return the namespace
+        return [ {'name': x, 'title': i18n.get_language_name(x),
+                  'is_selected': x == language}
+                 for x in available_languages ]
 
 
-    def build_namespace(self):
-        context = get_context()
-
+    def build_namespace(self, context):
         namespace = {}
 
         # Resources
@@ -252,32 +254,30 @@ class Skin(Folder):
         namespace['scripts'] = [ x for x in context.scripts ]
 
         # User menu
-        namespace['user']= self.get_user_menu()
+        namespace['user']= self.get_user_menu(context)
 
         # Navigation menu
-        namespace['navigation'] = self.get_navigation_menu()
+        namespace['navigation'] = self.get_navigation_menu(context)
 
         # Languages
-##        languages = self.get_languages()
-##        namespace['language_action'] = languages['language_action']
-##        namespace['languages'] = languages['languages']
+        namespace['content_languages'] = self.get_content_languages(context)
 
         # Breadcrumb
-        namespace['breadcrumb'] = self.get_breadcrumb()
+        namespace['breadcrumb'] = self.get_breadcrumb(context)
 
         # Metadata
-        namespace['metadata'] = self.get_metadata_ns()
+        namespace['metadata'] = self.get_metadata_ns(context)
 
         # Tabs
-        tabs = self.get_tabs()
+        tabs = self.get_tabs(context)
         namespace['tabs'] = tabs['tabs']
         namespace['subtabs'] = tabs['subtabs']
 
         # Message
-        namespace['message'] = self.get_message()
+        namespace['message'] = self.get_message(context)
 
         # Root search
-        namespace['site_search'] = self.get_site_search()
+        namespace['site_search'] = self.get_site_search(context)
 
         return namespace
 
@@ -285,10 +285,10 @@ class Skin(Folder):
     def template(self, content):
         context = get_context()
         # Build the namespace
-        namespace = self.build_namespace()
+        namespace = self.build_namespace(context)
 
         # Content
-        namespace['title'] = self.get_template_title()
+        namespace['title'] = self.get_template_title(context)
         namespace['body'] = content
         namespace['handler'] = context.handler
 
@@ -297,7 +297,7 @@ class Skin(Folder):
 
         # Transform the tree
         handler = self.get_handler('template.xhtml')
-        here = uri.Path(context.handler.get_abspath())
+        here = context.path
         there = uri.Path(handler.get_abspath())
         handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
 

@@ -292,14 +292,16 @@ class Node(object):
         if count is None:
             count = 0
 
-        here = get_context().handler
-        here_abspath = here.abspath
-        handler_abspath = handler.abspath
+        context = get_context()
+        here = context.path
+        handler_abspath = uri.Path(handler.abspath)
 
         self.title = handler.get_title_or_name()
-        self.icon = handler.get_path_to_icon(size=16, from_handler=here)
-        self.path = '%s/;%s' % (here.get_pathto(handler), here.get_firstview())
-        self.active = (here_abspath == handler_abspath)
+        self.icon = handler.get_path_to_icon(size=16,
+                                             from_handler=context.object)
+        self.path = '%s/;%s' % (here.get_pathto(handler_abspath),
+                                handler.get_firstview())
+        self.active = (here == handler_abspath)
 
         self.is_last = False
         self.in_path = False
@@ -312,15 +314,13 @@ class Node(object):
 
         # continue for possible children
         #
-        here_path = uri.Path(here_abspath)
-
         if count == 0:
             # always recurse root
             self.in_path = True
-        elif here_path.get_prefix(handler_abspath) == '.':
+        elif here.get_prefix(handler_abspath) == '.':
             # no common part, so not in path
             pass
-        elif here_abspath.startswith(handler_abspath):
+        elif here.startswith(handler_abspath):
             # on the way
             self.in_path = True
         else:

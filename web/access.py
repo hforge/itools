@@ -46,18 +46,6 @@ class AccessControl(object):
         raise TypeError, 'unexpected value "%s"' % access
 
 
-    def get_method(self, user, object, method):
-        """
-        If the given user is allowed to access the given method in the given
-        object, return the method. Otherwise return None.
-        """
-        if self.is_access_allowed(user, object, method):
-            # We assume the method is defined
-            return getattr(object, method)
-
-        return None
-
-
     #########################################################################
     # Basic Controls
     def is_authenticated(self, user, object):

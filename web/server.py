@@ -160,138 +160,157 @@ class Server(object):
     #########################################################################
     # Handle a request
     #########################################################################
-    def handle_request(self, request):
-        try:
-            context = self.build_context(request)
+    def GET(self, context):
+        request, response = context.request, context.response
+        # Our canonical URLs never end with an slash
+        if request.uri.path.endswith_slash:
+            goto = copy(context.uri)
+            goto.path.endswith_slash = False
+            return 302, goto
+        context.commit = False
+        # Traverse
+        root = context.root = self.get_root(context)
+        user = context.user = self.get_user(context)
+        root.before_traverse(context)
+        handler = context.handler = self.get_handler(context)
+        if handler is None:
+            return 404, root.not_found(context)
+        method = handler.get_method(context.method)
+        if method is None:
+            return 404, root.not_found(context)
+        # Check security
+        ac = handler.get_access_control()
+        ac_ok = ac.is_access_allowed(user, handler, context.method)
+        if ac_ok is False:
+            if user is None:
+                return 401, root.unauthorized(context)
+            return 403, root.forbidden(context)
+        # Check modification time
+        mtime = getattr(handler, '%s__mtime__' % context.method, None)
+        if mtime is not None:
+            mtime = mtime().replace(microsecond=0)
+            response.set_header('last-modified', mtime)
+            if request.method == 'GET':
+                if request.has_header('if-modified-since'):
+                    msince = request.get_header('if-modified-since')
+                    if mtime <= msince:
+                        return 304, None
+        # Call the method
+        body = method(context) 
+        # Post-process (used to wrap the body in a skin)
+        if isinstance(body, str):
+            body = root.after_traverse(context, body)
+            status = 200
+        elif isinstance(body, uri.Reference):
+            status = 302
+        elif body is not None:
+            raise TypeError, 'unexpected value of type "%s"' % type(body)
 
-            method_name = context.method
-            if method_name is None:
-                if request.method == 'HEAD':
-                    method_name = 'GET'
-                else:
-                    method_name = request.method
-            # Check the method exists
-            try:
-                getattr(handler, method_name)
-            except AttributeError:
-                # Not Found (response code 404)
-                raise NotFound
-            # Get the method
-            ac = handler.get_access_control()
-            ac_ok = ac.is_access_allowed(user, handler, method_name)
-            if ac_ok is False:
-                if user is None:
-                    raise Unauthorized
-                raise Forbidden
-            # Check security
-            mtime = getattr(handler, '%s__mtime__' % method_name, None)
-            if mtime is not None:
-                mtime = mtime().replace(microsecond=0)
-                response.set_header('last-modified', mtime)
-                if request.method == 'GET':
-                    if request.has_header('if-modified-since'):
-                        msince = request.get_header('if-modified-since')
-                        if mtime <= msince:
-                            raise NotModified
-            # Call the method
-            response_body = method(context)
-        except HTTPError, exception:
-            status_code = exception.code
-            response.set_status(status_code)
-            # Rollback transaction
-            get_transaction().rollback()
-            self.log_error(context)
-        except:
-            # Internal Server Error
-            status_code = 500
-            response.set_status(status_code)
-            # Rollback transaction
-            get_transaction().rollback()
-            self.log_error(context)
-        else:
-            if isinstance(response_body, str):
-                response.set_body(response_body)
-            elif isinstance(response_body, uri.Reference):
-                context.redirect(response_body)
-            elif response_body is not None:
-                message = 'unexpected value of type "%s"'
-                raise TypeError, message % type(response_body)
+        # Commit
+        self.commit_transaction(context)
 
-        try:
-            root.after_traverse()
-            self.commit_transaction(context)
-        except HTTPError, exception:
-            status_code = exception.code
-            response.set_status(status_code)
-            # Rollback transaction
-            get_transaction().rollback()
-            self.log_error(context)
-        except:
-            # Internal Server Error
-            status_code = 500
-            response.set_status(status_code)
-            # Rollback transaction
-            get_transaction().rollback()
-            self.log_error(context)
+        return status, body
 
-        # HEAD
-        if request.method == 'HEAD':
-            content_length = response.get_content_length()
-            response.set_header('content-length', content_length)
-            response.set_body(None)
 
+    def HEAD(self, context):
+        if context.method == 'HEAD':
+            context.method = 'GET'
+        response = self.GET(context)
+        content_length = response.get_content_length()
+        response.set_header('content-length', content_length)
+        response.set_body(None)
         return response
 
 
-    #########################################################################
-    # Stages
-    def build_context(self, request):
+    def POST(self, context):
+        context.commit = True
+        raise NotImplementedError
+
+
+    def PUT(self, context):
+        context.commit = True
+        raise NotImplementedError
+
+
+    def LOCK(self, context):
+        context.commit = True
+        raise NotImplementedError
+
+
+    def UNLOCK(self, context):
+        context.commit = True
+        raise NotImplementedError
+
+
+    def handle_request(self, request):
         context = Context(request)
         response = context.response
         # Initialize the context
         context.init()
         context.server = self
         set_context(context)
-        # Our canonical URLs never end with an slash
-        if request.method == 'GET' and request.uri.path.endswith_slash:
-            goto = copy(context.uri)
-            goto.path.endswith_slash = False
-            context.redirect(goto)
-            # XXX Need to check for HEAD method
-            return response
-        # A priori we don't commit with safe methods
-        context.commit = request.method not in ('GET', 'HEAD')
-        # Get the root handler
-        root = self.root
-        root.init(context)
-        context.root = root
-        # Authenticate
-        cname = '__ac'
-        cookie = context.get_cookie(cname)
-        if cookie is not None:
-            cookie = unquote(cookie)
-            cookie = decodestring(cookie)
-            username, password = cookie.split(':', 1)
-            try:
-                user = root.get_object('users/%s' % username)
-            except LookupError:
-                pass
-            else:
-                if user.authenticate(password):
-                    context.user = user
-        user = context.user
-        # Hook (used to set the language)
-        root.before_traverse(context)
-        # Traverse
-        try:
-            object = root.get_object(context.path)
-        except LookupError:
-            # Not Found (response code 404)
-            context.handler = root
-            raise NotFound
-        context.handler = object
 
-        return context
+        # Get and call the method
+        method = getattr(self, request.method)
+        try:
+            status, body = method(context)
+        except:
+            status = 500
+            body = self.root.internal_server_error(context)
+
+        # Set body
+        if isinstance(body, str):
+            response.set_body(body)
+        elif isinstance(body, uri.Reference):
+            context.redirect(body)
+
+        # Set status
+        response.set_status(status)
+ 
+        # Check for errors
+        if status >= 400:
+            # Rollback transaction
+            get_transaction().rollback()
+            self.log_error(context)
+
+        return response
+
+
+    #########################################################################
+    # Stages
+    def get_user(self, context):
+        # Check the id/auth cookie
+        cookie = context.get_cookie('__ac')
+        if cookie is None:
+            return None
+
+        # Process cookie
+        cookie = unquote(cookie)
+        cookie = decodestring(cookie)
+        username, password = cookie.split(':', 1)
+
+        # Check user exists
+        user = root.get_user(username)
+        if user is None:
+            return None
+
+        # Authenticate
+        if user.authenticate(password):
+            return user
+
+        return None
+
+
+    def get_root(self, context):
+        self.root.init(context)
+        return self.root
+
+
+    def get_handler(self, context):
+        try:
+             return self.root.get_handler(context.path)
+        except LookupError:
+             return None
 
 
     def commit_transaction(self, context):

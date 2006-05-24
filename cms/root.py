@@ -92,17 +92,12 @@ class Root(WebSite):
             context.request.accept_language.set(language, 2.0)
 
 
-    def after_traverse(self, context):
-        request, response = context.request, context.response
-
+    def after_traverse(self, context, body):
         # If there is not content type and the body is not None,
         # wrap it in the skin template
-        response_body = response.body
-        if request.method == 'GET' and response_body is not None:
-            if not response.has_header('Content-Type'):
-                skin = self.get_skin()
-                response_body = skin.template(response_body)
-                response.set_body(response_body)
+        if context.response.has_header('Content-Type'):
+            return body
+        return self.get_skin().template(body)
 
 
     ########################################################################

@@ -64,11 +64,12 @@ class Context(object):
 
         # Split the path into path and method ("a/b/c/;view")
         path = request.uri.path
-        self.path = path
-        self.method = None
         if path and not path[-1].name:
             self.path = path[:-1]
             self.method = path[-1].param
+        else:
+            self.path = path
+            self.method = request.method
 
 
     ########################################################################

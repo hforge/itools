@@ -69,16 +69,20 @@ class Node(iNode):
 
     POST__access__ = 'is_authenticated'
     def POST(self, context):
-        user = context.user
         for name in context.get_form_keys():
             if name.startswith(';'):
-                ac = self.get_access_control()
-                # Get the method
                 method_name = name[1:]
-                method = self.get_method(user, self, method_name)
-                # Check security
+                method = self.get_method(method_name)
                 if method is None:
                     method = self.forbidden_form
+                    # XXX Not found
+                    pass
+                # Check security
+                user = context.user
+                ac = self.get_access_control()
+                if not ac.is_access_allowed(user, self, method_name):
+                    # XXX Forbidden or Unauthorized
+                    pass
                 # Call the method
                 return method(context)
 

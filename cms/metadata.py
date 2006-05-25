@@ -74,7 +74,8 @@ class Enumerate(String):
 
     @classmethod
     def get_options(cls):
-        return list(cls.options)
+        """Returns a copy of options list of dictionaries."""
+        return [dict(option) for option in cls.options]
 
 
     @classmethod

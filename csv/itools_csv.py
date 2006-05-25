@@ -260,14 +260,18 @@ class CSV(Text):
         lines = []
         # When schema or columns (or both) are None there is plain 
         # string to string conversion
-        if self.schema and self.columns:
-            for line in self.state.lines:
-                line = [ '"%s"' % self.schema[self.columns[i]].encode(value) 
-                         for i, value in enumerate(line) ]
+        schema = self.schema
+        columns = self.columns
+        if schema and columns:
+            datatypes = [ (i, schema[x]) for i, x in enumerate(columns) ]
+            for row in self.state.lines:
+                line = [ '"%s"' % datatype.encode(row[i]).replace('"', '""')
+                         for i, datatype in datatypes ]
                 lines.append(','.join(line))
         else:
             for line in self.state.lines:
-                line = [ '"%s"' % x.encode(encoding) for x in line ]
+                line = [ '"%s"' % x.encode(encoding).replace('"', '""')
+                         for x in line ]
                 lines.append(','.join(line))
         return '\n'.join(lines)
 

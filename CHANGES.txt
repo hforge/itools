@@ -1,3 +1,74 @@
+0.14.0 (2006/06/XX)
+
+  Datatypes
+  - Add method "is_valid" to the API. This method is to be called after
+    decoding, used to restrict the space of valid values.
+  - Add datatype for email addresses.
+
+  URI
+  - New method "replace" returns a new URI with the query updated.
+
+  Resources
+  - Folders can have a mimetype other than application/x-not-regular-file.
+  - Socket resources now implement writing. And do buffering for both
+    read and write operations.
+
+  Handlers
+  - Simplify handlers, remove the "parent" and "name" attributes, and
+    the associated API.
+  - Remove the state attribute, keep the handler's state directly in
+    the instance (__dict__).
+  - Now "get_skeleton" is a class method.
+  - Now "set_changed" updates the handler's timestamp.
+  - Now the handler registry is implemented in the "registry.py" module,
+    and it is just a flat mapping from mimetype to handler class.
+
+  CSV
+  - New methods "set_value" and "get_value" to access columns in a row.
+
+  Catalog
+  - Add missing "to_str" methods.
+
+  HTTP
+  - New sub-package itools.http (splitted from itools.web) provides
+    handler classes for HTTP request and response messages.
+
+  Web
+  - Refactor the server for better readibility, performance (e.g. load
+    requests in parallel) and error handling.
+  - Pass the context object to methods, and don't map anymore the form
+    values to the method parameters. This way the method definition will
+    always be: "def method(self, context)".
+  - Add the methods "get_form_keys", "get_form_value", "get_form_values"
+    and "has_form_value" to the context object. This is the preferred
+    way to retrieve form values from the request.
+  - Now if a method returns a URI the client will be redirected to that URI.
+    This is the preferred way to do redirections. Also, new handy method
+    "context.come_back" builds a URI to be used in redirections, specially
+    in form actions.
+  - New context attribute "commit", used to determine wether to commit or
+    not. Now by default GET and HEAD requests are safe ("context.commit"
+    is false)
+  - New module "tree.py" provides base programming interface for traversal.
+  - New module "access.py" provides base access control API.
+
+  CMS
+  - The metadata resources don't start anymore with a dot (for instance
+    "toto.metadata" instead of ".toto.metadata"). And multilingual objects
+    only have one metadata file (e.g. "index.xhtml.metadata" for the
+    resources "index.xhtml.en" and "index.xhtml.fr").
+  - Improved user interface for multilingual documents.
+  - New logic and user interface to manage security, the "RoleAware"
+    class replaces the old groups.
+  - Various user interface improvements, by Hervé Cauwelier. Including
+    #204 and #316.
+  - Now "icms-start" checks the server is not already running, and
+    "icms-stop" checks the server is running [#293].
+  - Remove the obsolete option "--source" of "icms-init".
+  - Remove the fake scripts "icms.py" and "igettext.py".
+  - Remove obsolete skins "classic" and "surf".
+
+
 0.13.8 (2006/07/14)
 
   HTTP

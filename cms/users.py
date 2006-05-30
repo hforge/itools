@@ -269,7 +269,7 @@ class User(Folder):
 
 
     edit_account__access__ = 'is_self_or_superuser'
-    def edit_account(self, email, newpass, newpass2, password, **kw):
+    def edit_account(self, email, newpass, newpass2, password='', **kw):
         context = get_context()
         user = context.user
 

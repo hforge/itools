@@ -283,8 +283,8 @@ class Skin(Folder):
     def get_template_title(self):
         """Return the title to give to the template document."""
         context = get_context()
-        root = context.root
         here = context.handler
+        root = here.get_site_root()
         if root is here:
             return root.get_title_or_name()
         else:

@@ -129,7 +129,7 @@ class TarArchive(Archive):
     class_mimetypes = ['application/x-tar']
 
     def get_contents(self):
-        name = self.name.encode('UTF-8')
+        name = self.resource.name
         archive = StringIO(self.to_str())
         if name.endswith('gz'):
             # try gzip support

@@ -38,6 +38,7 @@ import mimetypes
 import Handler
 import File
 import Folder
+import archive
 import Image
 import python
 import Text
@@ -45,5 +46,4 @@ from utils import get_handler
 
 
 mimetypes.add_type('text/comma-separated-values', '.csv')
-
-
+mimetypes.encodings_map['.bz2'] = 'bzip2'

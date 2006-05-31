@@ -215,10 +215,6 @@ class OOffice(OfficeDocument):
         return text
 
 
-    def to_html(self):
-        raise NotImplementedError
-
-
     def view(self, context):
         namespace = {}
         pgraphs = self.to_text()

@@ -104,11 +104,9 @@ class Archive(File):
         raise NotImplementedError
 
 
-register_handler_class(Archive)
-
-
 
 class ZipArchive(Archive):
+
     class_mimetypes = ['application/zip']
 
     def get_contents(self):
@@ -122,11 +120,9 @@ class ZipArchive(Archive):
         return contents
 
 
-register_handler_class(ZipArchive)
-
-
 
 class TarArchive(Archive):
+
     class_mimetypes = ['application/x-tar']
 
     def get_contents(self):
@@ -150,4 +146,7 @@ class TarArchive(Archive):
         return contents
 
 
+
+# Register
+register_handler_class(ZipArchive)
 register_handler_class(TarArchive)

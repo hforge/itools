@@ -34,7 +34,6 @@ from registry import register_object_class
 class Archive(File, iArchive):
 
     class_id = 'Archive'
-    class_version = '20060518'
     class_icon16 = 'images/Archive16.png'
     class_icon48 = 'images/Archive48.png'
 
@@ -44,66 +43,14 @@ class Archive(File, iArchive):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     view__sublabel__ = u'View'
-    def view(self):
+    def view(self, context):
         namespace = {}
-
         contents = self.get_contents()
         namespace['contents'] = '\n'.join(contents)
 
         handler = self.get_handler('/ui/Archive_view.xml')
-
         return stl(handler, namespace)
 
 
 
 register_object_class(Archive)
-
-
-
-class ZipArchive(Archive, iZipArchive):
-
-    class_id = 'application/zip'
-    class_title = u"Zip Archive"
-
-    def get_contents(self):
-        archive = self.resource
-        archive.open()
-        zip = ZipFile(archive)
-        contents = zip.namelist()
-        zip.close()
-        archive.close()
-
-        return contents
-
-
-register_object_class(ZipArchive)
-
-
-
-class TarArchive(Archive, iTarArchive):
-
-    class_id = 'application/x-tar'
-    class_title = u"Tar Archive"
-
-    def get_contents(self):
-        name = self.name.encode('UTF-8')
-        archive = StringIO(self.to_str())
-        if name.endswith('gz'):
-            # try gzip support
-            import gzip
-            mode = 'r|gz'
-        elif name.endswith('.bz2'):
-            # try bz2 support
-            import bz2
-            mode = 'r|'
-            archive = BZ2Proxy(archive, 'r')
-        else:
-            mode = 'r|'
-        tar = TarFile.open(name=name, mode=mode, fileobj=archive)
-        contents = tar.getnames()
-        tar.close()
-
-        return contents
-
-
-register_object_class(TarArchive)

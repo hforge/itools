@@ -58,8 +58,9 @@ class Folder(Handler, BaseFolder):
     class_description = u'Organize your files and documents with folders.'
     class_icon16 = 'images/Folder16.png'
     class_icon48 = 'images/Folder48.png'
-    class_views = ['browse_thumbnails', 'new_resource_form',
-                   'edit_metadata_form']
+    class_views = [['browse_thumbnails', 'browse_list', 'browse_image'],
+                   ['new_resource_form'],
+                   ['edit_metadata_form']]
 
 
     search_criteria =  [
@@ -331,12 +332,6 @@ class Folder(Handler, BaseFolder):
         return None
 
     firstview = property(get_firstview, None, None, "")
-
-
-    def get_subviews(self, view):
-        if view in ['browse_thumbnails', 'browse_list', 'browse_image']:
-            return ['browse_thumbnails', 'browse_list', 'browse_image']
-        return []
 
 
     #######################################################################

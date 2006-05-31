@@ -30,7 +30,8 @@ class Row(iRow, Node):
 
     class_title = u'CSV Row'
     class_icon48 = 'images/Text48.png'
-    class_views = ['view', 'edit_form']
+    class_views = [['view'],
+                   ['edit_form']]
 
 
     def get_mtime(self):
@@ -72,8 +73,10 @@ class CSV(Text, iCSV):
 
     class_id = 'text/comma-separated-values'
     class_title = u'Comma Separated Values'
-    class_views = ['view', 'externaledit', 'edit_metadata_form',
-                   'history_form']
+    class_views = [['view'],
+                   ['externaledit'],
+                   ['edit_metadata_form'],
+                   ['history_form']]
 
 
     row_class = Row

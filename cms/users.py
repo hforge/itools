@@ -49,13 +49,16 @@ class User(AccessControl, Folder):
     class_title = 'User'
     class_icon16 = 'images/User16.png'
     class_icon48 = 'images/User48.png'
-    class_views = ['profile', 'browse_thumbnails', 'new_resource_form',
-                   'edit_form', 'tasks_list']
+    class_views = [['profile'],
+                   ['browse_thumbnails', 'browse_list', 'browse_image'],
+                   ['new_resource_form'],
+                   ['edit_form', 'edit_account_form', 'edit_groups_form'],
+                   ['tasks_list']]
 
 
-    #########################################################################
+    ########################################################################
     # API
-    #########################################################################
+    ########################################################################
     def set_password(self, value):
         self.set_property('ikaaro:password', crypt_password(value))
 
@@ -64,7 +67,11 @@ class User(AccessControl, Folder):
         return password == self.get_property('ikaaro:password')
 
 
-    #########################################################################
+    def clear_group_cache(self):
+        self._groups = None
+
+
+    ########################################################################
     # Groups
     _groups = None
     def get_groups(self):
@@ -82,7 +89,7 @@ class User(AccessControl, Folder):
     groups = property(get_groups, None, None, "")
 
 
-    #########################################################################
+    ########################################################################
     # Access control
     def is_allowed_to_edit(self, user, object):
         # You are nobody here, ha ha ha
@@ -100,18 +107,6 @@ class User(AccessControl, Folder):
     #######################################################################
     # User interface
     #######################################################################
-    def get_subviews(self, name):
-        # The edit menu
-        subviews = ['edit_form', 'edit_account_form', 'edit_password_form',
-                    'edit_groups_form']
-        if name in subviews:
-            return subviews
-        return Folder.get_subviews(self, name)
-
-
-    def clear_group_cache(self):
-        self._groups = None
-
 
     #######################################################################
     # Profile
@@ -373,7 +368,9 @@ class UserFolder(Folder):
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
-    class_views = ['browse_thumbnails', 'new_user_form', 'edit_metadata_form']
+    class_views = [['browse_thumbnails', 'browse_list'],
+                   ['new_user_form'],
+                   ['edit_metadata_form']]
 
 
     def get_document_types(self):
@@ -424,11 +421,6 @@ class UserFolder(Folder):
     #######################################################################
     # Back-Office
     #######################################################################
-    def get_subviews(self, view):
-        if view in ['browse_thumbnails', 'browse_list']:
-            return ['browse_thumbnails', 'browse_list']
-        return []
-
 
     #######################################################################
     # Add

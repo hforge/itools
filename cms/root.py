@@ -57,9 +57,13 @@ class Root(WebSite):
     class_version = '20060504'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
-    class_views = ['browse_thumbnails', 'new_resource_form',
-                   'edit_metadata_form', 'languages_form',
-                   'permissions_form', 'catalog_form', 'about']
+    class_views = [['browse_thumbnails', 'browse_list'],
+                   ['new_resource_form'],
+                   ['edit_metadata_form'],
+                   ['languages_form'],
+                   ['permissions_form', 'anonymous_form'],
+                   ['catalog_form', 'check_groups'],
+                   ['about', 'license']]
 
     __fixed_handlers__ = ['users', 'ui']
 
@@ -302,16 +306,6 @@ class Root(WebSite):
     ########################################################################
     # Back Office
     ########################################################################
-    def get_subviews(self, name):
-        views = [['browse_thumbnails', 'browse_list'],
-                 ['permissions_form', 'anonymous_form'],
-                 ['about', 'license'],
-                 ['catalog_form', 'check_groups']]
-        for subviews in views:
-            if name in subviews:
-                return subviews
-        return WebSite.get_subviews(self, name)
-
 
     ########################################################################
     # About

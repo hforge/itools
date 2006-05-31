@@ -221,11 +221,16 @@ class Node(iNode):
 
 
     def get_views(self):
-        return self.class_views[:]
+        return [ x[0] for x in self.class_views ]
 
 
     def get_subviews(self, name):
-        return []
+        for block in self.class_views:
+            if name in block:
+                if len(block) == 1:
+                    return []
+                return block[:]
+         return []
 
 
 

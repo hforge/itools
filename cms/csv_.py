@@ -30,14 +30,11 @@ class Row(iRow, Node):
 
     class_title = u'CSV Row'
     class_icon48 = 'images/Text48.png'
+    class_views = ['view', 'edit_form']
 
 
     def get_mtime(self):
         return self.parent.get_mtime()
-
-
-    def get_views(self):
-        return ['view', 'edit_form']
 
 
     view__access__ = 'is_allowed_to_view'
@@ -75,6 +72,8 @@ class CSV(Text, iCSV):
 
     class_id = 'text/comma-separated-values'
     class_title = u'Comma Separated Values'
+    class_views = ['view', 'externaledit', 'edit_metadata_form',
+                   'history_form']
 
 
     row_class = Row
@@ -94,10 +93,9 @@ class CSV(Text, iCSV):
 ##        self.state.encoding = self.guess_encoding(data)
 
 
-    def get_views(self):
-        return ['view', 'externaledit', 'edit_metadata_form', 'history_form']
-
-
+    #########################################################################
+    # User Interface
+    #########################################################################
     edit_form__access__ = False
 
 

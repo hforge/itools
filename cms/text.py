@@ -45,6 +45,7 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
     class_description = u'Keep your notes with plain text files.'
     class_icon16 = 'images/Text16.png'
     class_icon48 = 'images/Text48.png'
+    class_views = ['view', 'edit_form', 'edit_metadata_form', 'history_form']
 
 
     @classmethod
@@ -86,11 +87,6 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
     #######################################################################
     # User interface
     #######################################################################
-    def get_views(self):
-        return ['view', 'edit_form', 'edit_metadata_form',
-                'history_form']
-
-
     def get_subviews(self, name):
         if name in ['edit_form', 'externaledit', 'upload_form']:
             return ['edit_form', 'externaledit', 'upload_form']

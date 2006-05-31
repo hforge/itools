@@ -49,6 +49,8 @@ class User(AccessControl, Folder):
     class_title = 'User'
     class_icon16 = 'images/User16.png'
     class_icon48 = 'images/User48.png'
+    class_views = ['profile', 'browse_thumbnails', 'new_resource_form',
+                   'edit_form', 'tasks_list']
 
 
     #########################################################################
@@ -98,19 +100,6 @@ class User(AccessControl, Folder):
     #######################################################################
     # User interface
     #######################################################################
-    def get_views(self):
-        views = ['profile', 'browse_thumbnails', 'new_resource_form',
-                 'edit_form']
-        # Task list only for reviewers and admins (for now).
-        root = get_context().root
-        is_admin = root.is_in_role('admins', self.name)
-##        is_rev = root.is_in_role('reviewers', self.name)
-        if is_admin: ## or is_rev:
-            views.append('tasks_list')
-
-        return views
-
-
     def get_subviews(self, name):
         # The edit menu
         subviews = ['edit_form', 'edit_account_form', 'edit_password_form',
@@ -384,6 +373,7 @@ class UserFolder(Folder):
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
+    class_views = ['browse_thumbnails', 'new_user_form', 'edit_metadata_form']
 
 
     def get_document_types(self):
@@ -434,10 +424,6 @@ class UserFolder(Folder):
     #######################################################################
     # Back-Office
     #######################################################################
-    def get_views(self):
-        return ['browse_thumbnails', 'new_user_form', 'edit_metadata_form']
-
-
     def get_subviews(self, view):
         if view in ['browse_thumbnails', 'browse_list']:
             return ['browse_thumbnails', 'browse_list']

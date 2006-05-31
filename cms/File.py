@@ -40,6 +40,7 @@ class File(Handler, itools.handlers.File.File):
     class_version = '20040625'
     class_icon16 = 'images/File16.png'
     class_icon48 = 'images/File48.png'
+    class_views = ['download_form', 'externaledit', 'edit_metadata_form']
 
 
     @classmethod
@@ -66,10 +67,6 @@ class File(Handler, itools.handlers.File.File):
     #######################################################################
     # User interface
     #######################################################################
-    def get_views(self):
-        return ['download_form', 'externaledit', 'edit_metadata_form']
-
-
     def get_subviews(self, name):
         if name in ['externaledit', 'upload_form']:
             return ['externaledit', 'upload_form']

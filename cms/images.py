@@ -30,6 +30,7 @@ class Image(File, iImage):
     class_title = u'Image'
     class_version = '20040625'
     class_icon16 = 'images/Image16.png'
+    class_views = ['view', 'externaledit', 'edit_metadata_form']
 
 
     # XXX Temporal, until icon's API is fixed
@@ -62,10 +63,6 @@ class Image(File, iImage):
         response = context.response
         response.set_header('Content-Type', 'image/%s' % format)
         return data
-
-
-    def get_views(self):
-        return ['view', 'externaledit', 'edit_metadata_form']
 
 
     #######################################################################

@@ -54,6 +54,8 @@ class XHTMLFile(Text, XHTML.Document):
     class_description = u'Create and publish a Web Document.'
     class_icon16 = 'images/HTML16.png'
     class_icon48 = 'images/HTML48.png'
+    class_views = ['view', 'edit_form', 'edit_metadata_form', 'state_form',
+                   'history_form']
 
 
     #######################################################################

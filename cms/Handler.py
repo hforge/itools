@@ -52,6 +52,8 @@ logger.addHandler(handler)
 
 class Node(iNode):
 
+    class_views = []
+
     ########################################################################
     # HTTP
     ########################################################################
@@ -219,7 +221,7 @@ class Node(iNode):
 
 
     def get_views(self):
-        return []
+        return self.class_views[:]
 
 
     def get_subviews(self, name):

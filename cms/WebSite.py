@@ -45,6 +45,8 @@ class WebSite(RoleAware, Folder):
     class_description = u'Create a new Web Site or Work Place.'
     class_icon16 = 'images/WebSite16.png'
     class_icon48 = 'images/WebSite48.png'
+    class_views = ['browse_thumbnails', 'new_resource_form',
+                   'edit_metadata_form', 'languages_form', 'permissions_form']
 
     __fixed_handlers__ = ['skin', 'index']
 
@@ -130,11 +132,6 @@ class WebSite(RoleAware, Folder):
     ########################################################################
     # User interface
     ########################################################################
-    def get_views(self):
-        return ['browse_thumbnails', 'new_resource_form', 'edit_metadata_form',
-                'languages_form', 'permissions_form']
-
-
     def get_subviews(self, name):
         if name in ['permissions_form', 'anonymous_form']:
             return ['permissions_form', 'anonymous_form']

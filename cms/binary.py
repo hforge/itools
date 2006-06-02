@@ -60,6 +60,8 @@ class Image(File, iImage):
 
     icon48__access__ = True
     def icon48(self, context):
+        # XXX There is no cache for the thumbnail, it should be stored
+        # in the handler
         width = context.get_form_value('width', 48)
         height = context.get_form_value('height', 48)
 

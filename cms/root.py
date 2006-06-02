@@ -43,7 +43,7 @@ class Root(WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20060504'
+    class_version = '20060602'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
     class_views = [['browse_thumbnails', 'browse_list'],
@@ -334,7 +334,7 @@ class Root(WebSite):
         t0 = time()
         transaction = get_transaction()
         # Init transaction (because we use sub-transactions)
-        server = get_context().server
+        server = context.server
         server.start_commit()
 
         try:
@@ -424,6 +424,9 @@ class Root(WebSite):
     # Update
     #######################################################################
     def update_20060503(self):
+        # Remove ".archive"
+        self.resource.del_resource('.archive')
+
         # Rename ".xxx.metadata" to "xxx.metadata"
         stack = [self.resource]
         while stack:
@@ -442,7 +445,7 @@ class Root(WebSite):
                     stack.append(resource)
 
 
-    def update_20060504(self):
+    def update_20060602(self):
         # Add '.admins.users'
         admins = self.get_handler('admins/.users').get_usernames()
         self.set_handler('.admins.users', ListOfUsers(users=admins))

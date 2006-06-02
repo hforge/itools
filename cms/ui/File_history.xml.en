@@ -4,39 +4,25 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Document History</h2>
-           
-<form action="." method="post">
-  <table border="0" cellpadding="2" cellspacing="2">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Date</th>
-        <th>User</th>
-        <th>Action</th>
-        <th>Size</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="revision revisions">
-        <td>
-          <input class="checkbox" type="checkbox" name="names"
-            stl:if="not repeat/revision/start"
-            stl:attributes="value revision/name" />
-        </td>
-        <td stl:content="revision/date" />
-        <td stl:content="revision/username" />
-        <td stl:content="revision/action" />
-        <td stl:content="revision/size" />
-      </tr>
-    </tbody>
-  </table>
-  <p>
-    <input type="submit" name=";compare" value="Compare selected revisions"
-      class="button_compare" stl:if="compare" />
-    <input type="submit" name=";copy_to_present" class="button_copy"
-      value="Copy to present the selected revision" />
-  </p>
-</form>
+  <h2>Document History</h2>
+             
+  <form action="." method="post">
+    <table border="0" cellpadding="2" cellspacing="2">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Date</th>
+          <th>Size (bytes)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr stl:repeat="revision revisions">
+          <td stl:content="revision/username" />
+          <td stl:content="revision/date" />
+          <td class="number" stl:content="revision/size" />
+        </tr>
+      </tbody>
+    </table>
+  </form>
 
 </stl:block>

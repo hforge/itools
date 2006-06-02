@@ -305,6 +305,10 @@ dl.new_resource_thumb {
   color: #008000;
 }
 
+.number {
+  text-align: right;
+}
+
 #gallery_vpane {
   float: left;
   width: 320px;

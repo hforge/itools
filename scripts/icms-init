@@ -24,7 +24,7 @@ import string
 
 # Import from itools
 import itools
-from itools.resources import base, get_resource
+from itools.resources import get_resource
 from itools.handlers import transactions
 from itools.cms.Handler import Handler
 from itools.cms.root import Root
@@ -70,7 +70,7 @@ def init(parser, options, target):
     instance.set_resource('database', source)
     root_resource = instance.get_resource('database')
 
-    # Index and archive everything (only for new instances, not imported)
+    # Index everything
     root = root_class(root_resource)
     for handler, context in root.traverse2():
         abspath = handler.get_abspath()

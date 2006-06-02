@@ -203,18 +203,15 @@ class Folder(Handler, BaseFolder):
                             root.index_handler(x)
             else:
                 root.index_handler(handler)
-            # Store revision in the archive
+            # Store history
             if move is False:
                 if isinstance(handler, Folder):
-                    for x, context in handler.traverse2():
-                        if x.real_handler is None:
-                            if isinstance(x, VersioningAware):
-                                x.add_to_archive()
-                        else:
-                            context.skip = True
-                else:
-                    if isinstance(handler, VersioningAware):
-                        handler.add_to_archive()
+                    for x in handler.traverse():
+                        if isinstance(x, VersioningAware):
+                            x.commit_revision()
+                    else:
+                        if isinstance(handler, VersioningAware):
+                            handler.commit_revision()
 
 
     def on_del_handler(self, segment):
@@ -243,11 +240,7 @@ class Folder(Handler, BaseFolder):
 
 
     def build_metadata(self, handler, owner=None, format=None, **kw):
-        """Return a Metadata object with sensible default values.
-        The archive id is not generated because handlers could be instances in
-        memory with no attachment to a handler tree, i.e. neither parent nor
-        path. Also some handlers are not VersioningAware.
-        """
+        """Return a Metadata object with sensible default values."""
         if owner is None:
             owner = ''
             context = get_context()

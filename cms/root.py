@@ -16,33 +16,22 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-from copy import copy
-import cStringIO
-import datetime
-import logging
 import smtplib
-import tempfile
 from time import time
 import traceback
-from urllib import quote
 
 # Import from itools
-from itools import get_abspath
 from itools.datatypes import FileName
-from itools.resources import get_resource
 from itools.resources.base import Folder as FolderResource
-from itools.handlers import get_handler
 from itools.handlers.Folder import Folder as FolderHandler
 from itools.handlers.transactions import get_transaction
-from itools.xml import namespaces
 from itools.stl import stl
 from itools.catalog.Catalog import Catalog
 from itools.web import get_context
 
 # Import from itools.cms
 from text import PO
-from users import User, UserFolder
-from utils import comeback
+from users import UserFolder
 from WebSite import WebSite
 from handlers import ListOfUsers, Metadata
 from registry import register_object_class
@@ -97,8 +86,6 @@ class Root(WebSite):
         skeleton = WebSite.get_skeleton(self, admins=users)
         # The catalog, index and search
         skeleton['.catalog'] = Catalog(fields=self._catalog_fields)
-        # The archive is used for versioning
-        skeleton['.archive'] = FolderHandler()
         # Metadata
         skeleton['.metadata'] = self.build_metadata(self)
         # Users

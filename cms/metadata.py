@@ -20,7 +20,7 @@ import base64
 import urllib
 
 # Import from itools
-from itools.datatypes import (DataType, String, Unicode, Boolean, Email,
+from itools.datatypes import (DataType, String, Boolean, Email,
                               Tokens, QName, XML)
 from itools import schemas
 
@@ -102,8 +102,8 @@ class Schema(schemas.base.Schema):
 ##        'name': String,
 ##        'user': String,
 ##        'comments': Unicode,
-        # Archive
-##        'id': String,
+        # History
+        'history': Record,
         # Users
         'email': Email,
         'password': Password,

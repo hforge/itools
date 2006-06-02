@@ -19,8 +19,8 @@
 from datetime import datetime
 
 # Import from itools
-import itools
 from itools.uri import get_reference
+from itools.handlers.File import BaseFile
 from itools.stl import stl
 from itools.web.exceptions import UserError
 from itools.web import get_context
@@ -29,10 +29,11 @@ from itools.web import get_context
 from utils import comeback
 from Handler import Handler
 from registry import register_object_class
+from versioning import VersioningAware
 
 
 
-class File(Handler, itools.handlers.File.File):
+class File(VersioningAware, Handler, BaseFile):
 
     class_id = 'file'
     class_title = u'File'
@@ -42,7 +43,8 @@ class File(Handler, itools.handlers.File.File):
     class_icon48 = 'images/File48.png'
     class_views = [['download_form', 'view'],
                    ['externaledit', 'upload_form'],
-                   ['edit_metadata_form']]
+                   ['edit_metadata_form'],
+                   ['history_form']]
 
 
     @classmethod
@@ -54,6 +56,13 @@ class File(Handler, itools.handlers.File.File):
     GET__mtime__ = Handler.get_mtime
     def GET(self, context):
         return self.download(context)
+
+
+    #######################################################################
+    # Versioning
+    def before_commit(self):
+        Object.before_commit(self)
+        self.commit_revision()
 
 
     #######################################################################

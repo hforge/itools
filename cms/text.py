@@ -17,13 +17,10 @@
 
 # Import from the Standard Library
 import cgi
-from difflib import HtmlDiff
 
 # Import from itools
-import itools
-from itools import gettext
-from itools import i18n
 from itools.resources import memory
+from itools.handlers.Text import Text as BaseText
 from itools.handlers.rest import RestructuredText as iRestructuredText
 from itools.stl import stl
 from itools.web import get_context
@@ -31,13 +28,12 @@ from itools.web.exceptions import UserError
 from itools.xhtml.XHTML import Document
 
 # Import from iKaaro
-from utils import get_parameters, comeback
-from versioning import VersioningAware
+from utils import get_parameters
 from File import File
 from registry import register_object_class
 
 
-class Text(VersioningAware, File, itools.handlers.Text.Text):
+class Text(File, BaseText):
 
     class_id = 'text'
     class_version = '20040625'
@@ -76,13 +72,8 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
 
     #######################################################################
-    # API
+    # Catalog
     #######################################################################
-    def before_commit(self):
-        File.before_commit(self)
-        self.commit_revision()
-
-
     def to_text(self):
         return unicode(self.to_str(), 'utf-8')
 
@@ -142,49 +133,6 @@ class Text(VersioningAware, File, itools.handlers.Text.Text):
 
         handler = self.get_handler('/ui/Text_externaledit.xml')
         return stl(handler, namespace)
-
-
-    #######################################################################
-    # History
-    compare__access__ = 'is_allowed_to_view'
-    def compare(self, context):
-        from html import XHTMLFile
-
-        names = context.get_form_values('names')
-        if len(names) == 0 or len(names) > 2:
-            message = u'You must select one or two revisions.'
-            raise UserError, self.gettext(message)
-
-        # XXX Hack to get rename working. The current user interface
-        # forces the rename_form to be called as a form action, hence
-        # with the POST method, but is should be a GET method. Maybe
-        # it will be solved after the needed folder browse overhaul.
-        if context.request.method == 'POST':
-            url = ';compare?%s' % '&'.join([ 'names=%s' % x for x in names ])
-            context.redirect(url)
-
-        archives = self.get_root().get_handler('.archive')
-        revisions = archives.get_handler(self.get_property('id'))
-
-        r0 = revisions.resource.get_resource(names[0])
-        r0_obj = self.__class__(r0)
-        if isinstance(r0_obj, XHTMLFile):
-            r0 = r0_obj.to_xhtml_body()
-        else:
-            r0 = r0_obj.to_str()
-
-        if len(names) == 2:
-            r1 = revisions.resource.get_resource(names[1])
-            r1_obj = self.__class__(r1)
-        else:
-            r1_obj = self
-        if isinstance(r1_obj, XHTMLFile):
-            r1 = r1_obj.to_xhtml_body()
-        else:
-            r1 = r1_obj.to_str()
-
-        htmldiff = HtmlDiff(wrapcolumn=48)
-        return htmldiff.make_table(r0.splitlines(), r1.splitlines())
 
 
 register_object_class(Text)

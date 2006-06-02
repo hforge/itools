@@ -895,25 +895,29 @@ class Folder(Handler, BaseFolder):
         name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
 
-        # Check for errors
+        # Empty name?
         name = name.strip() or title.strip()
         if not name:
-            # Empty name
-            raise UserError, self.gettext(u'The name must be entered')
+            message = u'The name must be entered'
+            return context.come_back(replace)
 
+        # Invalid name?
         name = checkid(name)
         if name is None:
             message = (u'The document name contains illegal characters,'
                        u' choose another one.')
-            raise UserError, self.gettext(message)
+            return context.come_back(message)
 
-        # Build the name
-        handler_class = self.get_handler_class(class_id)
+        # Find out the handler class
+        handler_class = get_object_class(class_id)
+
+        # Find out the name
         name = FileName.encode((name, handler_class.class_extension,
                                 context.get_form_value('dc:language')))
+        # Name already used?
         if self.has_handler(name):
             message = u'There is already another object with this name.'
-            raise UserError, self.gettext(message)
+            return context.come_back(message)
 
         # Build the handler
         handler = handler_class.new_instance()
@@ -926,13 +930,14 @@ class Folder(Handler, BaseFolder):
         languages = root.get_property('ikaaro:website_languages')
         handler.set_property('dc:title', title, languages[0])
 
-        message = self.gettext(u'New resource added.')
+        # Come back
+        message = u'New resource added.'
         if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
             handler = self.get_handler(name)
             goto='./%s/;%s' % (name, handler.get_firstview())
-        comeback(message, goto=goto)
+        context.come_back(message, goto=goto)
 
 
     browse_dir__access__ = 'is_authenticated'
@@ -974,22 +979,20 @@ class Folder(Handler, BaseFolder):
                 # Rebuild the name
                 name = FileName.encode((short_name, type, language))
 
+        # Invalid name?
         name = checkid(name)
         if name is None:
-            # Invalid name
-            message = (u'The document name contains illegal characters,'
-                       u' choose another one.')
-            raise UserError, self.gettext(message)
+            return context.come_back(
+                u'The document name contains illegal characters,'
+                u' choose another one.')
 
+        # Name already used?
         if self.has_handler(name):
-            # Name already used
             message = u'There is already another resource with this name.'
-            raise UserError, self.gettext(message)
+            return context.come_back(message)
 
-        # XXX To fix, see bug #313
-        # Build the handler
-        handler = build_handler(file)
         # Set the handler
+        handler = build_handler(file)
         self.set_handler(name, handler, format=mimetype)
 
         # Come back

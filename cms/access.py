@@ -53,7 +53,7 @@ class AccessControl(AccessControlBase):
         return self.is_admin()
 
 
-    # By default all other change operations (add, remove, copy and move)
+    # By default all other change operations (add, remove, copy, etc.)
     # are equivalent to "edit".
     def is_allowed_to_add(self, user, object):
         return self.is_allowed_to_edit(user, object)
@@ -68,6 +68,10 @@ class AccessControl(AccessControlBase):
 
 
     def is_allowed_to_move(self, user, object):
+        return self.is_allowed_to_edit(user, object)
+
+
+    def is_allowed_to_trans(self, user, object, name):
         return self.is_allowed_to_edit(user, object)
 
 
@@ -95,6 +99,26 @@ class RoleAware(AccessControl):
             return True
         if self.is_in_role('members'):
             return True
+
+        return False
+
+
+    def is_allowed_to_trans(self, user, object, name):
+        # Anonymous can touch nothing
+        if user is None:
+            return False
+
+        # Admins are all powerfull
+        if self.is_admin():
+            return True
+
+        # Reviewers can do everything
+        if self.is_in_role('reviewers'):
+            return True
+
+        # Members only can request and retract
+        if self.is_in_role('members'):
+            return name in ('request', 'unrequest')
 
         return False
 

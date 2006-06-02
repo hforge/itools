@@ -32,7 +32,6 @@ from binary import Image
 from text import Text
 from utils import comeback
 from widgets import Breadcrumb
-from workflow import WorkflowAware
 from registry import register_object_class
 
 
@@ -55,7 +54,7 @@ class XHTMLFile(Text, XHTML.Document):
     class_icon16 = 'images/HTML16.png'
     class_icon48 = 'images/HTML48.png'
     class_views = [['view'],
-                   ['edit_form'],
+                   ['edit_form', 'externaledit', 'upload_form'],
                    ['edit_metadata_form'],
                    ['state_form'],
                    ['history_form']]

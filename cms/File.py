@@ -30,10 +30,11 @@ from utils import comeback
 from Handler import Handler
 from registry import register_object_class
 from versioning import VersioningAware
+from workflow import WorkflowAware
 
 
 
-class File(VersioningAware, Handler, BaseFile):
+class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
     class_id = 'file'
     class_title = u'File'
@@ -44,6 +45,7 @@ class File(VersioningAware, Handler, BaseFile):
     class_views = [['download_form', 'view'],
                    ['externaledit', 'upload_form'],
                    ['edit_metadata_form'],
+                   ['state_form'],
                    ['history_form']]
 
 

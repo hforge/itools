@@ -30,12 +30,11 @@ from itools.web import get_context
 from utils import get_parameters, comeback
 import html
 from LocaleAware import LocaleAware
-from workflow import WorkflowAware
 from registry import register_object_class
 
 
 
-class HTML(WorkflowAware, LocaleAware, html.XHTMLFile):
+class HTML(LocaleAware, html.XHTMLFile):
 
     def GET(self, context):
         method = self.get_firstview()

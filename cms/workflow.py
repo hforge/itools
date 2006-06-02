@@ -81,38 +81,6 @@ class WorkflowAware(iWorkflowAware):
 
 
     ########################################################################
-    # Security
-    def is_allowed_to_trans(self, name):
-        from users import User
-
-        # Anonymous can touch nothing
-        user = get_context().user
-        if user is None:
-            return False
-
-        # Admins are all powerfull
-        if self.is_admin():
-            return True
-
-        # Get the "workplace"
-        workplace = self.get_workplace()
-
-        # In the user's home, he (and only he) is all powerfull
-        if isinstance(workplace, User):
-            return workplace.name == user.name
-
-        # Reviewers can do everything
-        if workplace.is_in_role('reviewers'):
-            return True
-
-        # Members only can request and retract
-        if workplace.is_in_role('members'):
-            return name in ('request', 'unrequest')
-
-        return False
-
-
-    ########################################################################
     # User Interface
     ########################################################################
     state_form__access__ = 'is_allowed_to_edit'
@@ -123,12 +91,13 @@ class WorkflowAware(iWorkflowAware):
         state = self.get_state()
         namespace['state'] = self.gettext(state['title'])
         # Posible transitions
+        ac = self.get_access_control()
         transitions = []
         for name, trans in state.transitions.items():
-            if self.is_allowed_to_trans(name) is True:
-                description = trans['description']
-                transitions.append({'name': name,
-                                    'description': self.gettext(description)})
+            if ac.is_allowed_to_trans(context.user, self, name) is False:
+                continue
+            description = self.gettext(trans['description'])
+            transitions.append({'name': name, 'description': description})
         namespace['transitions'] = transitions
         # Workflow history
         transitions = []

@@ -28,7 +28,7 @@ from itools.web.exceptions import UserError
 
 # Import from ikaaro
 from File import File
-from images import Image
+from binary import Image
 from text import Text
 from utils import comeback
 from widgets import Breadcrumb

@@ -35,8 +35,8 @@ from itools.web.exceptions import UserError
 
 # Import from itools.cms
 import File
-from images import Image
 from Handler import Handler
+from binary import Image
 from handlers import Lock, Metadata
 from LocaleAware import LocaleAware
 from versioning import VersioningAware

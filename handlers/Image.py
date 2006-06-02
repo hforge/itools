@@ -36,11 +36,11 @@ class Image(File):
 
     def _load_state(self, resource):
         state = self.state
-
+        # Data
         data = resource.read()
         state.data = data
-
-        state.width = state.height = 0
+        # Size
+        state.size = 0, 0
         if PILImage is not None:
             f = StringIO(data)
             try:
@@ -48,26 +48,36 @@ class Image(File):
             except IOError:
                 pass
             else:
-                state.width, state.height = im.size
+                state.size = im.size
+        # Thumbnails
+        state.thumbnails = {}
+
 
     #########################################################################
     # API
     #########################################################################
-    def get_width(self):
-        return self.state.width
-
-
-    def get_height(self):
-        return self.state.height
+    def get_size(self):
+        return self.state.size
 
 
     def get_thumbnail(self, width, height):
         if PILImage is None:
-            return None
+            return None, None
 
-        self.resource.open()
-        im = PILImage.open(self.resource)
-        if self.state.width > width or self.state.height > height:
+        # Check the cache
+        thumbnails = self.state.thumbnails
+        key = (width, height)
+        if key in thumbnails:
+            return thumbnails[key]
+
+        # Build the PIL object
+        data = self.to_str()
+        f = StringIO(data)
+        im = PILImage.open(f)
+
+        # Create the thumbnail if needed
+        state_width, state_height = self.get_size()
+        if state_width > width or state_height > height:
             # XXX Improve the quality of the thumbnails by cropping? The
             # only problem would be the loss of information.
             im.thumbnail((width, height), PILImage.ANTIALIAS)
@@ -77,8 +87,9 @@ class Image(File):
             thumbnail.close()
         else:
             data = self.to_str()
-        self.resource.close()
 
+        # Store in the cache and return
+        thumbnails[key] = data, im.format
         return data, im.format
 
 

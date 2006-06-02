@@ -48,9 +48,11 @@ class Image(File, iImage):
     class_title = u'Image'
     class_version = '20040625'
     class_icon16 = 'images/Image16.png'
+    class_icon48 = 'images/Image48.png'
     class_views = [['view'],
-                   ['externaledit'],
-                   ['edit_metadata_form']]
+                   ['externaledit', 'upload_form'],
+                   ['edit_metadata_form'],
+                   ['history_form']]
 
 
     # XXX Temporal, until icon's API is fixed
@@ -60,25 +62,15 @@ class Image(File, iImage):
 
     icon48__access__ = True
     def icon48(self, context):
-        # XXX There is no cache for the thumbnail, it should be stored
-        # in the handler
         width = context.get_form_value('width', 48)
         height = context.get_form_value('height', 48)
-
         width, height = int(width), int(height)
 
-        if not hasattr(self, '_icon'):
-            self._icon = {}
+        data, format = self.get_thumbnail(width, height)
+        if data is None:
+            data = self.get_handler('/ui/images/Image48.png').to_str()
+            format = 'png'
 
-        if (width, height) not in self._icon:
-            thumbnail = self.get_thumbnail(width, height)
-            if thumbnail is None:
-                data = self.get_handler('/ui/images/Image48.png').to_str()
-                self._icon[(width, height)] = data, 'png'
-            else:
-                self._icon[(width, height)] = thumbnail
-
-        data, format = self._icon[(width, height)]
         response = context.response
         response.set_header('Content-Type', 'image/%s' % format)
         return data
@@ -134,33 +126,35 @@ class Flash(File):
 ###########################################################################
 # Office Documents
 ###########################################################################
-class TempDir(object):
+def convert(handler, cmdline, outfile=None):
+    filename = 'stdin'
 
-    def __init__(self, handler):
-        self.handler = handler
-        self.filename = str(handler.name)
+    # Serialize the handler to a temporary file in the file system
+    path = tempfile.mkdtemp('itools')
+    file_path = os.path.join(path, filename)
+    open(file_path, 'w').write(handler.to_str())
 
-        self.path = tempfile.mkdtemp('itools')
-        file_path = os.path.join(self.path, self.filename)
-        open(file_path, 'w').write(handler.to_str())
+    # Change path
+    here = os.getcwd()
+    os.chdir(path)
 
+    # Call convert method
+    cmdline = cmdline % filename
+    cmdline = cmdline + " >stdout 2>stderr"
+    os.system(cmdline)
 
-    def convert(self, cmdline, outfile=None):
-        here = os.getcwd()
-        os.chdir(self.path)
+    # Get the output
+    if outfile is None:
+        stdout = open('stdout').read()
+    else:
+        stdout = open(outfile).read()
+    stderr = open('stderr').read()
 
-        cmdline = cmdline % self.filename
-        cmdline = cmdline + " >stdout 2>stderr"
-        os.system(cmdline)
+    # Remove the temporary files
+    os.system('rm -fr %s' % path)
+    os.chdir(here)
 
-        if outfile is None:
-            self.stdout = open('stdout').read()
-        else:
-            self.stdout = open(outfile).read()
-        self.stderr = open('stderr').read()
-
-        os.system('rm -fr %s' % self.path)
-        os.chdir(here)
+    return stdout, stderr
 
 
 
@@ -194,10 +188,7 @@ class OfficeDocument(File):
         if self.__html_output__ is not None:
             return self.__html_output__
 
-        temp = TempDir(self)
-        temp.convert(self.source_converter, outfile=outfile)
-        stdout = temp.stdout
-        stderr = temp.stderr
+        stdout, stderr = convert(self, self.source_converter, outfile)
 
         if stderr != "":
             text = u''
@@ -207,8 +198,9 @@ class OfficeDocument(File):
             except UnicodeDecodeError:
                 encoding = Text.guess_encoding(stdout)
                 text = unicode(stdout, encoding)
-        self.__html_output__ = text
 
+        text = text.encode('utf-8')
+        self.__html_output__ = text
         return text
 
 
@@ -299,13 +291,12 @@ class OOffice(OfficeDocument):
 
     def view(self, context):
         namespace = {}
-        pgraphs = self.to_text()
+        pgraphs = self.handler.to_text()
         pgraphs = [ l for l in pgraphs.split('\n') if l and len(l) > 1 ]
         namespace['pgraphs'] = pgraphs
 
         handler = self.get_handler('/ui/OOffice_view.xml')
         return stl(handler, namespace)
-
 
 
 class OOWriter(OOffice):
@@ -327,7 +318,6 @@ class OOCalc(OOffice):
     class_icon16 = 'images/OOCalc16.png'
     class_icon48 = 'images/OOCalc48.png'
     class_extension = '.sxc'
-
 
 
 class OOImpress(OOffice):
@@ -369,7 +359,7 @@ class Archive(File, iArchive):
     view__sublabel__ = u'View'
     def view(self, context):
         namespace = {}
-        contents = self.get_contents()
+        contents = self.handler.get_contents()
         namespace['contents'] = '\n'.join(contents)
 
         handler = self.get_handler('/ui/Archive_view.xml')

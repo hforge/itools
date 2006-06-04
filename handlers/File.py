@@ -35,48 +35,39 @@ class File(Handler):
     class_resource_type = 'file'
 
 
-    def __init__(self, resource=None, **kw):
-        if resource is None:
-            # No resource given, then we create a dummy one
-            data = self.get_skeleton(**kw)
-            resource = memory.File(data)
-
-        self.resource = resource
-        self.state = State()
-        self.load_state()
+    def new(self, data=''):
+        self.data = data
 
 
-    #########################################################################
-    # Load / Save
-    #########################################################################
     def _load_state(self, resource):
-        state = self.state
-        state.data = resource.read()
+        # Be lazy
+        self.data = None
 
 
     def _save_state(self, resource):
-        resource.truncate(0)
         resource.write(self.to_str())
+        resource.truncate()
 
 
     #########################################################################
-    # The skeleton
-    #########################################################################
-    @classmethod
-    def get_skeleton(cls):
-        return ''
+    # Lazy load
+    def _load_data(self):
+        resource = self.resource
+        resource.open()
+        self.data = resource.read()
+        resource.close()
 
 
     #########################################################################
     # API
     #########################################################################
     def to_str(self):
-        return self.state.data
+        return self.data
 
 
     def set_data(self, data):
         self.set_changed()
-        self.state.data = data
+        self.data = data
 
 
     def copy_handler(self):

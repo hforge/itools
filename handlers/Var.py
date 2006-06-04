@@ -84,9 +84,11 @@ class Record(object):
 
 class Var(Text):
 
-    #######################################################################
-    # Parsing
-    #######################################################################
+    def new(self, uri=None, language='en', mimetype='text/plain'):
+        record = Record(uri, mimetype, language, 'UTF-8')
+        self.records = [record]
+
+
     def _load_state(self, resource):
         records = []
 
@@ -110,17 +112,6 @@ class Var(Text):
 
         # Set state
         self.state.records = records
-
-
-    ########################################################################
-    # Skeleton
-    ########################################################################
-    @classmethod
-    def get_skeleton(cls, uri=None, language='en', mimetype='text/plain'):
-        data = 'URI: %s\n' % uri
-        data += 'Content-Language: %s\n' % language
-        data += 'Content-Type: %s; charset=UTF-8\n' % mimetype
-        return data
 
 
     #######################################################################

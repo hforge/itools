@@ -44,6 +44,18 @@ class Handler(Node):
     class_mimetypes = []
     class_extension = None
 
+    # By default the handler is not loaded (we encourage lazy load), so
+    # the timestamp is set to None
+    timestamp = None
+
+
+    def __init__(self, resource=None, **kw):
+        self.resource = resource
+        if resource is None:
+            self.new(**kw)
+        else:
+            self.load_state()
+
 
     # By default the handler is a free node (does not belong to a tree, or
     # is the root of a tree).
@@ -63,24 +75,28 @@ class Handler(Node):
 
     ########################################################################
     # Load / Save
-    def load_state(self, resource=None):
-        if resource is None:
-            resource = self.resource
-            update = False
-        else:
-            update = True
-
+    def load_state(self):
+        resource = self.resource
         resource.open()
-        self._load_state(resource)
-        resource.close()
+        try:
+            self._load_state(resource)
+        finally:
+            resource.close()
         self.timestamp = resource.get_mtime()
-        if update:
-            self.set_changed()
 
 
-    def save_state(self, resource=None):
-        if resource is None:
-            resource = self.resource
+    def load_state_from(self, resource):
+        resource.open()
+        get_transaction().add(self)
+        try:
+            self._load_state(resource)
+        finally:
+            resource.close()
+        self.timestamp = datetime.now()
+
+
+    def save_state(self):
+        resource = self.resource
 
         transaction = get_transaction()
         transaction.lock()
@@ -92,21 +108,47 @@ class Handler(Node):
             transaction.release()
 
 
+    def save_state_to(self, resource):
+        transaction = get_transaction()
+        transaction.lock()
+        resource.open()
+        try:
+            self._save_state(resource)
+        finally:
+            resource.close()
+            transaction.release()
+
+
     def is_outdated(self):
+        timestamp = self.timestamp
+        # It cannot be out-of-date if it has not been loaded yet
+        if timestamp is None:
+            return False
+
         mtime = self.resource.get_mtime()
+        # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
-        return mtime > self.timestamp
+
+        return mtime > timestamp
 
 
     def has_changed(self):
+        timestamp = self.timestamp
+        # Not yet loaded, even
+        if timestamp is None:
+            return False
+
         mtime = self.resource.get_mtime()
+        # If the resource layer does not support mtime... we are...
         if mtime is None:
             return False
+
         return self.timestamp > mtime
 
 
     def set_changed(self):
-        self.timestamp = datetime.now()
-        get_transaction().add(self)
+        if self.resource is not None:
+            self.timestamp = datetime.now()
+            get_transaction().add(self)
 

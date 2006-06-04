@@ -39,14 +39,18 @@ class Field(object):
 
 class Fields(Text):
 
-    @classmethod
-    def get_skeleton(cls, fields=[]):
-        skeleton = ''
+    def new(self, fields=[]):
+        self.fields = []
+        self.indexed_fields = []
+        self.field_numbers = {}
+
         for number, field in enumerate(fields):
             name, type, is_indexed, is_stored = field
-            skeleton += '%d#%s#%s#%d#%d\n' % (number, name, type,
-                                              is_indexed, is_stored)
-        return skeleton
+            field = Field(number, name, type, is_indexed, is_stored)
+            self.fields.append(field)
+            if is_indexed:
+                self.indexed_fields.append(number)
+            self.field_numbers[name] = number
 
 
     def _load_state(self, resource):
@@ -87,12 +91,20 @@ class Catalog(Folder):
     class_mimetypes = ['application/x-catalog']
 
 
-    @classmethod
-    def get_skeleton(cls, fields=[]):
-        skeleton = {'fields': Fields(fields=fields)}
+    def new(self, fields=[]):
+        Folder.new(self)
+
+        # Set initial resources
+        cache = self.cache
         for number, field in enumerate(fields):
-            skeleton['f%d' % number] = IIndex()
-        return skeleton
+            cache['f%d' % number] = IIndex()
+        fields = Fields(fields=fields)
+        cache['fields'] = fields
+
+        # Default state
+        self.document_number = 0
+        self.added_documents = {}
+        self.removed_documents = []
 
 
     def get_handler_class(self, segment, resource):
@@ -110,7 +122,6 @@ class Catalog(Folder):
 
     #########################################################################
     # Load / Save state
-    #########################################################################
     def _load_state(self, resource):
         Folder._load_state(self, resource)
 

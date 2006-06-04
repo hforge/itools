@@ -422,7 +422,7 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
     def PUT(self, context):
         # Save the data
         resource = context.get_form_value('body')
-        self.load_state(resource)
+        self.load_state_from(resource)
         # Build the response
         context.response.set_status(204)
 

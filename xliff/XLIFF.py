@@ -130,26 +130,18 @@ class File(object):
 
 class XLIFF(Text):
 
-    @classmethod
-    def get_skeleton(cls):
-        return ('<?xml version="1.0" encoding="UTF-8"?>\n'
-                '<!DOCTYPE xliff SYSTEM "http://www.oasis-open.org/'
-                'committees/xliff/documents/xliff.dtd">\n'
-                '<xliff version="1.0">\n'
-                '  <file original="/nothing" datatype="plaintext"\n'
-                '        source-language="en">\n'
-                '    <body>\n'
-                '      <trans-unit id="1">\n'
-                '        <source>nothing</source>\n'
-                '      </trans-unit>\n'
-                '    </body>\n'
-                '  </file>\n'
-                '</xliff>\n')
+    def new(self):
+        self.document_type = (
+            'xliff',
+            'http://www.oasis-open.org/committees/xliff/documents/xliff.dtd',
+            None, False)
+        self.version = '1.0'
+        self.lang = None
+        self.files = []
 
 
     #######################################################################
     # Load
-    #######################################################################
     def _load_state(self, resource):
         state = self.state
         state.files = []

@@ -201,7 +201,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
         # Check wether the handler is able to deal with the uploaded file
         try:
-            self.load_state(file)
+            self.load_state_from(file)
         except:
             self.load_state()
             raise UserError, self.gettext(u'Upload failed: either the file does not match this document type (%s) or it contains errors.') % self.get_mimetype()

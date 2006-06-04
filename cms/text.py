@@ -114,7 +114,7 @@ class Text(File, BaseText):
     def edit(self, context):
         data = context.get_form_value('data')
         resource = memory.File(data)
-        self.load_state(resource)
+        self.load_state_from(resource)
 
         message = self.gettext(u'Document edited.')
         comeback(message)

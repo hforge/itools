@@ -91,16 +91,11 @@ class IIndexTree(File):
     class_version = '20040723'
 
 
-    @classmethod
-    def get_skeleton(cls):
-        # The header
-        version = IO.encode_version(cls.class_version)
-        number_of_slots = IO.encode_uint32(0)
-        first_slot = IO.encode_link(None)
-        first_empty = IO.encode_link(None)
-        header = version + number_of_slots + first_slot + first_empty
-
-        return header
+    def new(self):
+        self.version = self.class_version
+        self.number_of_slots = 0
+        self.first_slot = None
+        self.first_empty = None
 
 
     def _load_state(self, resource):
@@ -121,7 +116,6 @@ class IIndexTree(File):
 ##        for i in range(number_of_slots):
 ##            pass
         return ''.join(data)
-
 
 
     def _get_free_slot(self):
@@ -184,12 +178,10 @@ class IIndexDocuments(File):
     class_version = '20050529'
 
 
-    @classmethod
-    def get_skeleton(cls):
-        version = IO.encode_version(cls.class_version)
-        number_of_slots = IO.encode_uint32(0)
-        first_empty = IO.encode_link(None)
-        return version + number_of_slots + first_empty
+    def new(self):
+        self.version = self.class_version
+        self.number_of_slots = 0
+        self.first_empty = None
 
 
     def _load_state(self, resource):
@@ -539,10 +531,17 @@ class Tree(object):
 
 class IIndex(Folder):
 
-    @classmethod
-    def get_skeleton(cls):
-        return {'tree': IIndexTree(),
-                'documents': IIndexDocuments()}
+    def new(self):
+        Folder.new(self)
+        self.tree_handler = self.cache['tree'] = IIndexTree()
+        self.docs_handler = self.cache['documents'] = IIndexDocuments()
+
+        # IIndex specific state
+        self.root = Tree(self, None)
+        self.root.documents = {}
+        self.root.children = {}
+        self.added_terms = {}
+        self.removed_terms = {}
 
 
     def get_handler_class(self, segment, resource):
@@ -556,7 +555,6 @@ class IIndex(Folder):
 
     ########################################################################
     # Load / Save
-    ########################################################################
     def _load_state(self, resource):
         Folder._load_state(self, resource)
         state = self.state
@@ -586,24 +584,27 @@ class IIndex(Folder):
 
 
     def _save_state(self, resource):
-        # XXX We don't use the given resource!!!
+        tree_resource = resource.get_resource('tree')
+        docs_resource = resource.get_resource('documents')
 
         state = self.state
         # Open resources
-        state.tree_handler.resource.open()
-        state.docs_handler.resource.open()
-        # Removed terms
-        for term, documents in state.removed_terms.items():
-            state.root._unindex_term(term, documents)
-        self.removed_terms = {}
-        # Added terms
-        _index_term = state.root._index_term
-        for term, documents in self.state.added_terms.items():
-            _index_term(term, documents)
-        state.added_terms = {}
-        # Close resources
-        state.tree_handler.resource.close()
-        state.docs_handler.resource.close()
+        tree_resource.open()
+        docs_resource.open()
+        try:
+            # Removed terms
+            for term, documents in state.removed_terms.items():
+                state.root._unindex_term(term, documents)
+            state.removed_terms = {}
+            # Added terms
+            _index_term = state.root._index_term
+            for term, documents in state.added_terms.items():
+                _index_term(term, documents)
+            state.added_terms = {}
+        finally:
+            # Close resources
+            tree_resource.close()
+            docs_resource.close()
 
 
     ########################################################################

@@ -45,65 +45,49 @@ class Folder(Handler):
     class_mimetypes = ['application/x-not-regular-file']
 
 
-    def __init__(self, resource=None, **kw):
-        self.state = State()
-        self.state.cache = {}
-
-        if resource is None:
-            self.resource = memory.Folder()
-            # Add the skeleton
-            skeleton = self.get_skeleton(**kw)
-            for name, handler in skeleton.items():
-                self.resource.set_resource(name, handler.resource)
-        else:
-            self.resource = resource
-
-        # Load
-        self.load_state()
+    def new(self):
+        self.cache = {}
+        self.added_handlers = set()
+        self.removed_handlers = set()
 
 
-    #########################################################################
-    # Load / Save
-    #########################################################################
     def _load_state(self, resource):
         # XXX This code may be optimized just checking wether there is
         # already an up-to-date handler in the cache, then it should
         # not be touched.
-        state = self.state
-        state.cache = {}
+        cache = {}
         for name in resource.get_resource_names():
-            state.cache[name] = None
+            cache[name] = None
+        self.cache = cache
 
-        state.added_handlers = {}
-        state.removed_handlers = set()
+        # Keep differential
+        self.added_handlers = set()
+        self.removed_handlers = set()
 
 
     def _save_state(self, resource):
-        state = self.state
-        # Remove handlers
-        for name in state.removed_handlers:
+        cache = self.cache
+        # Remove
+        for name in self.removed_handlers:
             resource.del_resource(name)
-            # Update the cache
-            del state.cache[name]
-        state.removed_handlers = set()
+        self.removed_handlers = set()
 
-        # Add handlers
-        for name, handler in state.added_handlers.items():
-            if name in self._get_handler_names():
+        # Add
+        for name in self.added_handlers:
+            handler = cache[name]
+            # First remove the resource if it exists
+            if resource.has_resource(name):
                 resource.del_resource(name)
-            resource.set_resource(name, handler.resource)
+            # Add a dummy resource
+            if isinstance(handler, Folder):
+                dummy_resource = memory.Folder()
+            else:
+                dummy_resource = memory.File('')
+            resource.set_resource(name, dummy_resource)
+            # Save state to the dummy resource
             handler.resource = resource.get_resource(name)
-            # Update the cache
-            state.cache[name] = None
-        state.added_handlers = {}
-
-
-    #########################################################################
-    # The skeleton
-    #########################################################################
-    @classmethod
-    def get_skeleton(cls):
-        return {}
+            handler._save_state(handler.resource)
+        self.added_handlers = set()
 
 
     #########################################################################
@@ -119,7 +103,7 @@ class Folder(Handler):
     # API (private)
     #########################################################################
     def _get_handler_names(self):
-        return self.state.cache.keys()
+        return self.cache.keys()
 
 
     def get_handler_class(self, segment, resource):
@@ -135,17 +119,19 @@ class Folder(Handler):
         raise LookupError, 'the resource "%s" does not exist' % segment.name
 
 
+    def copy_handler(self):
+        cache = self.cache
+        resource = memory.Folder()
+        for name in cache:
+            handler = self.get_handler(name).copy_handler()
+            resource.set_resource(name, handler.resource)
+        self.save_state_to(resource)
+        return self.__class__(resource)
+
+
     #########################################################################
     # API (public)
     #########################################################################
-    def get_handler_names(self, path='.'):
-        container = self.get_handler(path)
-        handler_names = [ x for x in container._get_handler_names()
-                          if x not in container.state.removed_handlers ]
-        handler_names.extend(container.state.added_handlers.keys())
-        return handler_names
-
-
     def get_handler(self, path):
         # Be sure path is a Path
         if not isinstance(path, Path):
@@ -164,54 +150,63 @@ class Folder(Handler):
                 raise ValueError, 'this handler is the root handler'
             return self.parent.get_handler(path[1:])
 
-        segment, path = path[0], path[1:]
-        name = segment.name
+        here = self
+        for segment in path:
+            name = segment.name
 
-        state = self.state
-        if name in state.added_handlers:
-            # It is a new handler (added but not yet saved)
-            handler = state.added_handlers[name]
-        else:
-            if name in state.cache and name not in state.removed_handlers:
-                # Real handler
-                handler = state.cache[name]
-                if handler is None:
-                    # Miss
-                    resource = self.resource.get_resource(name)
-                    handler = self._get_handler(segment, resource)
-                    # Update the cache
-                    state.cache[name] = handler
-                    # Set parent and name
-                    handler.parent = self
-                    handler.name = name
-                else:
-                    # Hit (XXX we should check wether resource and
-                    # handler.resource are the same or not)
-                    if handler.is_outdated():
-                        handler.load_state()
-                    # If we are virtual, propagate our virtual condition (#158)
-                    if self.real_handler is not None:
-                        handler = build_virtual_handler(handler)
-                        # Set parent and name
-                        handler.parent = self
-                        handler.name = name
-            else:
+            # Check wether it is a folder or not
+            if not isinstance(here, Folder):
+                raise LookupError, u'the resource "%s" does not exist' % name
+
+            # Check wether the resource exists or not
+            if name not in here.cache:
                 # Virtual handler
-                if name in state.cache:
-                    # Hit. Clean the cache (virtual handlers are not cached)
-                    del state.cache[name]
-                # Maybe we found a virtual handler
                 handler = self._get_virtual_handler(segment)
                 handler = build_virtual_handler(handler)
                 # Set parent and name
-                handler.parent = self
+                handler.parent = here
                 handler.name = name
 
-        # Continue with the rest of the path
-        if path:
-            return handler.get_handler(path)
+                here = handler
+                continue
 
-        return handler
+            # Check if it is a new handler (avoid cache)
+            if name in here.added_handlers:
+                here = here.cache[name]
+                continue
+
+            # Get the handler from the cache
+            handler = here.cache[name]
+            if handler is None:
+                # Miss
+                resource = here.resource.get_resource(name)
+                handler_class = here.get_handler_class(segment, resource)
+                handler = handler_class(resource)
+                # Update the cache
+                here.cache[name] = handler
+            else:
+                # Hit, reload the handler if needed
+                if handler.is_outdated():
+                    handler.load_state()
+        return here
+
+
+    def has_handler(self, path):
+        # Be sure path is a Path
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        # Get the container
+        path, segment = path[:-1], path[-1]
+        container = self.get_handler(path)
+
+        # Check wether the container has the handler or not
+        return segment.name in container.cache
+
+
+    def get_handler_names(self, path='.'):
+        container = self.get_handler(path)
+        return container.cache.keys()
 
 
     def get_handlers(self, path='.'):
@@ -235,8 +230,8 @@ class Folder(Handler):
         # Store the container in the transaction
         container.set_changed()
         # Clean the 'removed_handlers' data structure if needed
-        if name in container.state.removed_handlers:
-            container.state.removed_handlers.remove(name)
+        if name in container.removed_handlers:
+            container.removed_handlers.remove(name)
         # Event: before set handler
         container.before_set_handler(segment, handler, **kw)
         # Make a copy of the handler
@@ -244,11 +239,10 @@ class Folder(Handler):
         handler.parent = container
         handler.name = name
         # Add the handler
-        container.state.added_handlers[name] = handler
+        container.added_handlers.add(name)
+        container.cache[name] = handler
         # Event: after set handler
         container.after_set_handler(segment, handler, **kw)
-        # Set timestamp
-        container.timestamp = datetime.now()
 
 
     def del_handler(self, path):
@@ -269,28 +263,15 @@ class Folder(Handler):
         if hasattr(container, 'on_del_handler'):
             container.on_del_handler(segment)
         # Clean the 'added_handlers' data structure if needed
-        if name in container.state.added_handlers:
-            del container.state.added_handlers[name]
+        if name in container.added_handlers:
+            container.added_handlers.remove(name)
         # Mark the handler as deleted
-        container.state.removed_handlers.add(name)
-        # Set timestamp
-        self.timestamp = datetime.now()
+        container.removed_handlers.add(name)
+        del container.cache[name]
 
 
     ########################################################################
     # Other methods
-    def copy_handler(self):
-        resource = memory.Folder()
-        for handler, context in self.traverse2():
-            if handler.real_handler is not None:
-                context.skip = True
-            elif handler is not self:
-                path = self.get_pathto(handler)
-                resource.set_resource(path, handler.resource)
-        self.save_state(resource)
-        return self.__class__(resource)
-
-
     def before_set_handler(self, segment, handler, **kw):
         pass
 
@@ -335,7 +316,7 @@ class Folder(Handler):
 def build_virtual_handler(handler):
     virtual_handler = Handler.__new__(handler.__class__)
 
-    # XXX Use weak references?
+    # XXX Use __slots__ instead of "state"
     virtual_handler.resource = handler.resource
     virtual_handler.state = handler.state
     virtual_handler.timestamp = handler.timestamp

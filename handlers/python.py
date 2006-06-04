@@ -95,16 +95,21 @@ class Python(Text):
     class_mimetypes = ['text/x-python']
     class_extension = 'py'
 
+    
+    def new(self, **kw):
+        Text.new(self, **kw)
+        self.visitor = None
 
-    #########################################################################
-    # Load
-    #########################################################################
+
     def _load_state(self, resource):
         Text._load_state(self, resource)
         state = self.state
         state.visitor = None 
 
 
+    #########################################################################
+    # API
+    #########################################################################
     def get_package_name(self):
         parent = self.parent
         # Check if we are in a python package

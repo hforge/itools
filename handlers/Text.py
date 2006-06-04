@@ -26,9 +26,11 @@ class Text(File):
     class_extension = 'txt'
 
 
-    #########################################################################
-    # Load
-    #########################################################################
+    def new(self, data=u''):
+        self.data = data
+        self.encoding = self.guess_encoding(data)
+
+
     def _load_state(self, resource):
         state = self.state
         data = resource.read()

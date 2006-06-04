@@ -144,6 +144,15 @@ schema = {'title': Unicode,
           'image': String,
           }
 
+# Encode rss element according to its type (by schema)
+def decode_element(name, value):
+    return schema[name].decode(value)
+
+
+# Decode rss element according to its type (by schema)
+def encode_element(name, value):
+    return schema[name].encode(value)
+
 
 
 class RssChannel(object):
@@ -221,14 +230,9 @@ class RSS(Text):
     class_mimetypes = ['application/rss+xml']
     class_extension = 'rss'
 
-    # Encode rss element according to its type (by schema)
-    def decode_element(self, name, value):
-        return schema[name].decode(value)
 
-
-    # Decode rss element according to its type (by schema)
-    def encode_element(self, name, value):
-        return schema[name].encode(value)
+    def new(self):
+        self.channel = None
 
 
     def _load_state(self, resource):
@@ -281,12 +285,11 @@ class RSS(Text):
                     inside_image = 0
                     fields = {}
             elif event == parser.TEXT and save_data == 1:
+                value = decode_element(element_name, value)
                 if inside_image == 1 or inside_item == 1:
-                    fields[element_name] = self.decode_element(element_name,
-                                                               value)
+                    fields[element_name] = value
                 else:
-                    channel_fields[element_name] = self.decode_element(
-                        element_name, value)
+                    channel_fields[element_name] = value
                 save_data = 0
 
         # Fill the internal data structure
@@ -304,21 +307,6 @@ class RSS(Text):
             self.state.channel.add_item(i)
 
 
-    # only required empty channel elements
-    @classmethod
-    def get_skeleton(cls, encoding='UTF-8'):
-        s = []
-        s.append('<?xml version="1.0" encoding="%s"?>' % encoding)
-        s.append('<rss version="2.0">')
-        s.append('<channel>')
-        s.append('\t<title></title>')
-        s.append('\t<link></link>')
-        s.append('\t<description></description>')
-        s.append('</channel>')
-        s.append('</rss>')
-        return '\n'.join(s)
-
-
     def to_str(self, encoding='UTF-8'):
         s = []
         s.append('<?xml version="1.0" encoding="%s"?>' % encoding)
@@ -329,7 +317,7 @@ class RSS(Text):
             if self.state.channel.__dict__.has_key(e):
                 # Not None elements (for example channel.image)
                 if self.state.channel.__dict__[e]:
-                    value = self.encode_element(e, self.state.channel.__dict__[e])
+                    value = encode_element(e, self.state.channel.__dict__[e])
                     s.append('\t<%s>%s</%s>' % (e, value, e))
         # Append channel image data (if exists)
         image = self.state.channel.get_image()
@@ -337,7 +325,7 @@ class RSS(Text):
             s.append('\t<image>')
             for e in rss_image_elements:
                 if image.__dict__.has_key(e):
-                    value = self.encode_element(e, image.__dict__[e])
+                    value = encode_element(e, image.__dict__[e])
                     s.append('\t\t<%s>%s</%s>' % (e, value, e))
             s.append('\t</image>')
         # Append channel items data
@@ -345,7 +333,7 @@ class RSS(Text):
             s.append('\t<item>')
             for e in rss_item_elements:
                 if i.__dict__.has_key(e):
-                    value = self.encode_element(e, i.__dict__[e])
+                    value = encode_element(e, i.__dict__[e])
                     s.append('\t\t<%s>%s</%s>' % (e, value, e))
             s.append('\t</item>')
         s.append('</channel>')

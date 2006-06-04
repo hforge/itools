@@ -25,9 +25,10 @@ class Config(Text):
     class_extension = None
 
     
-    def get_skeleton(self, **kw):
-        lines = [ '%s = %s' % x for x in kw.items() ]
-        return '\n'.join(lines)
+    def new(self, **kw):
+        self.values = kw
+        # XXX
+        self.lines = []
 
 
     def _load_state(self, resource):

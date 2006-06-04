@@ -30,15 +30,12 @@ class Dot(Text):
     class_extension = 'dot'
     class_version = '20050905'
 
-    ########################################################################
-    # Skeleton
-    ########################################################################
-    @classmethod
-    def get_skeleton(cls):
-        template = ('digraph G {\n'
-                    'rankdir=BT;\n'
-                    '  \n}')
-        return template 
+
+    def new(self):
+        data = (u'digraph G {\n'
+                u'rankdir=BT;\n'
+                u'  \n}')
+        Text.new(self, data)
 
 
     ########################################################################
@@ -52,7 +49,6 @@ class Dot(Text):
 
         output : "N" -> "A.B.C" 
         """
-
         imports_dict, modules_dict, all_classes = {}, {}, []
         for h in handlers:
             imports_dict.update(h.get_from_imports_dic())
@@ -64,7 +60,6 @@ class Dot(Text):
             for cls in dic['cls']:
                 class_name, bases = cls
                 full_class_names.append(class_name)
-
 
         dot = []
         for dic in all_classes:
@@ -91,8 +86,8 @@ class Dot(Text):
                     dot.append('"%s" -> "%s"' % (class_name, res))
 
         relations = '\n  '.join(dot)
-        data     = ('digraph G {\n'
-                    'rankdir=BT;\n'
-                    '  %s\n}') % relations
+        data = ('digraph G {\n'
+                'rankdir=BT;\n'
+                '  %s\n}') % relations
         resource = memory.File(data)
-        self.load_state(resource)
+        self.load_state_from(resource)

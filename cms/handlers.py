@@ -40,37 +40,34 @@ class ListOfUsers(File):
     class_extension = 'users'
 
 
-    @classmethod
-    def get_skeleton(cls, users=[]):
-        return '\n'.join(users)
+    def new(self, users=[]):
+        self.usernames = set(users)
 
 
     def _load_state(self, resource):
-        state = self.state
-
-        state.usernames = set()
+        self.usernames = set()
         for username in resource.readlines():
             username = username.strip()
             if username:
-                state.usernames.add(username)
+                self.usernames.add(username)
 
 
     def to_str(self):
-        return '\n'.join(self.state.usernames)
+        return '\n'.join(self.usernames)
 
 
     def get_usernames(self):
-        return self.state.usernames
+        return self.usernames
 
 
     def add(self, username):
         self.set_changed()
-        self.state.usernames.add(username)
+        self.usernames.add(username)
 
 
     def remove(self, username):
         self.set_changed()
-        self.state.usernames.remove(username)
+        self.usernames.remove(username)
 
 
 
@@ -80,27 +77,24 @@ class Lock(Text):
     class_extension = 'lock'
 
 
-    @classmethod
-    def get_skeleton(cls, username=None, **kw):
-        key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
-        timestamp = DateTime.encode(datetime.now())
-        return '%s\n%s\n%s' % (username, timestamp, key)
+    def new(self, username=None, **kw):
+        self.username = username
+        self.timestamp = datetime.now()
+        self.key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
 
 
     def _load_state(self, resource):
-        state = self.state
         username, timestamp, key = resource.read().strip().split('\n')
-        state.username = username
+        self.username = username
         # XXX backwards compatibility: remove microseconds first
         timestamp = timestamp.split('.')[0]
-        state.timestamp = DateTime.decode(timestamp)
-        state.key = key
+        self.timestamp = DateTime.decode(timestamp)
+        self.key = key
 
 
     def to_str(self):
-        state = self.state
-        timestamp = DateTime.encode(state.timestamp)
-        return '%s\n%s\n%s' % (state.username, timestamp, state.key)
+        timestamp = DateTime.encode(self.timestamp)
+        return '%s\n%s\n%s' % (self.username, timestamp, self.key)
 
 
 
@@ -110,55 +104,34 @@ class Metadata(File):
     class_icon48 = 'images/File48.png'
 
 
-    @classmethod
-    def get_skeleton(cls, handler_class=None, **kw):
-        # Initialize the properties to add
-        properties = {'format': handler_class.class_id,
-                      'version': handler_class.class_version}
-        # Update properties with the keyword parameters
-        properties.update(kw)
+    def new(self, handler_class=None, **kw):
+        # Add format and version
+        kw['format'] = handler_class.class_id
+        kw['version'] = handler_class.class_version
 
-        needed_namespaces = {}
-        # Build the XML
-        skeleton = ['<?xml version="1.0" encoding="UTF-8"?>']
-        for name, value in properties.items():
-            if value is not None:
-                prefix, local_name = QName.decode(name)
-                if prefix is None:
-                    datatype = String
-                else:
-                    schema = schemas.get_schema(prefix)
-                    needed_namespaces[schema.class_uri] = prefix
-                    datatype = schema.get_datatype(local_name)
+        # Initialize
+        properties = {}
+        prefixes = set()
+        # Load
+        for name, value in kw.items():
+            if value is None:
+                continue
+            # The property
+            key = QName.decode(name)
+            properties[key] = value
+            # The prefix
+            prefix = key[0]
+            if prefix is not None:
+                prefixes.add(prefix)
 
-                if isinstance(value, dict):
-                    for lang, value in value.items():
-                        value = datatype.encode(value)
-                        value = XMLDataType.encode(value)
-                        skeleton.append('  <%s xml:lang="%s">%s</%s>'
-                                        % (name, lang, value, name))
-                else:
-                    value = datatype.encode(value)
-                    value = XMLDataType.encode(value)
-                    skeleton.append('  <%s>%s</%s>' % (name, value, name))
-
-        # Insert open root element with the required namespace declarations
-        if needed_namespaces:
-            needed_namespaces = [ 'xmlns:%s="%s"' % (y, x)
-                                  for x, y in needed_namespaces.items() ]
-            head = '<metadata %s>' % '\n          '.join(needed_namespaces)
-        else:
-            head = '<metadata>'
-        skeleton.insert(1, head)
-
-        skeleton.append('</metadata>')
-        return '\n'.join(skeleton)
+        # Set state
+        self.prefixes = prefixes
+        self.properties = properties
 
 
     def _load_state(self, resource):
-        state = self.state
         # Keep the namespace prefixes
-        state.prefixes = set()
+        self.prefixes = set()
 
         p_key = None
         datatype = None
@@ -195,7 +168,7 @@ class Metadata(File):
                 p_key = (schema.class_prefix, local_name)
 
                 if local_name == 'metadata':
-                    state.properties = stack.pop()
+                    self.properties = stack.pop()
                 else:
                     # Decode value
                     if datatype is Record:
@@ -224,24 +197,22 @@ class Metadata(File):
                 schema = schemas.get_schema_by_uri(value)
                 prefix = schema.class_prefix
                 if prefix is not None:
-                    state.prefixes.add(prefix)
+                    self.prefixes.add(prefix)
 
 
     def to_str(self):
-        state = self.state
-
         lines = ['<?xml version="1.0" encoding="UTF-8"?>']
 
         # Insert open root element with the required namespace declarations
-        if state.prefixes:
+        if self.prefixes:
             aux = [ (x, schemas.get_schema(x).class_uri)
-                    for x in state.prefixes ]
+                    for x in self.prefixes ]
             aux = '\n          '.join([ 'xmlns:%s="%s"' % x for x in aux ])
             lines.append('<metadata %s>' % aux)
         else:
             lines.append('<metadata>')
 
-        for key, value in state.properties.items():
+        for key, value in self.properties.items():
             prefix, local_name = key
 
             # Get the type
@@ -283,9 +254,8 @@ class Metadata(File):
         datatype = schemas.get_datatype(key)
         default_value = datatype.default
 
-        state = self.state
-        if key in state.properties:
-            value = state.properties[key]
+        if key in self.properties:
+            value = self.properties[key]
         else:
             return default_value
 
@@ -311,12 +281,11 @@ class Metadata(File):
     def has_property(self, name, language=None):
         key = QName.decode(name)
 
-        state = self.state
-        if key not in state.properties:
+        if key not in self.properties:
             return False
 
         if language is not None:
-            return language in state.properties[key]
+            return language in self.properties[key]
 
         return True
 
@@ -326,7 +295,6 @@ class Metadata(File):
 
         key = QName.decode(name)
 
-        state = self.state
         # Set the value
         if language is None:
             datatype = schemas.get_datatype(key)
@@ -334,35 +302,34 @@ class Metadata(File):
             default = datatype.default
             if isinstance(default, list):
                 if isinstance(value, list):
-                    state.properties[key] = value
+                    self.properties[key] = value
                 else:
-                    values = state.properties.setdefault(key, [])
+                    values = self.properties.setdefault(key, [])
                     values.append(value)
             else:
-                state.properties[key] = value
+                self.properties[key] = value
         else:
-            values = state.properties.setdefault(key, {})
+            values = self.properties.setdefault(key, {})
             values[language] = value
 
         # Update prefixes
         if key[0] is not None:
-            state.prefixes.add(key[0])
+            self.prefixes.add(key[0])
         if isinstance(value, dict):
             for prefix, local_name in value:
                 if prefix is not None:
-                    state.prefixes.add(prefix)
+                    self.prefixes.add(prefix)
 
 
     def del_property(self, name, language=None):
         key = QName.decode(name)
 
-        state = self.state
-        if key in state.properties:
+        if key in self.properties:
             if language is None:
                 self.set_changed()
-                del state.properties[key]
+                del self.properties[key]
             else:
-                values = state.properties[key]
+                values = self.properties[key]
                 if language in values:
                     self.set_changed()
                     del values[language]

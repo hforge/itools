@@ -112,26 +112,17 @@ class Message(object):
 
 class TMX(Text):
 
-    @classmethod
-    def get_skeleton(cls):
-        return ('<?xml version="1.0" encoding="UTF-8"?>\n'
-                '<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">\n'
-                '<tmx version="1.4">\n'
-                '  <header o-encoding="utf-8" srclang="fr">\n'
-                '  </header>\n'
-                '    <body>\n'
-                '      <tu>\n'
-                '        <tuv xml:lang="fr" >\n'
-                '          <seg>nothing</seg>\n'
-                '        </tuv>\n'
-                '      </tu>\n'
-                '    </body>\n'
-                '</tmx>')
+    def new(self):
+        self.document_type = (
+            'tmx', 'http://www.lisa.org/tmx/tmx14.dtd', None, False)
+        self.version = '1.4'
+        self.header = {'o-encoding': 'utf-8', 'srclang': 'en'}
+        self.header_notes = {}
+        self.messages = {}
 
 
     #######################################################################
     # Load
-    #######################################################################
     def _load_state(self, resource):
         state = self.state
         state.header = {}
@@ -196,7 +187,6 @@ class TMX(Text):
 
     #######################################################################
     # Save
-    #######################################################################
     def xml_header_to_str(self, encoding='UTF-8'):
         state = self.state
         s = []

@@ -20,6 +20,7 @@ import re
 import time
 
 # Import from itools
+from itools.resources import memory
 from itools.handlers.File import File
 from itools.handlers.Text import Text
 from itools.handlers.registry import register_handler_class
@@ -139,9 +140,13 @@ class PO(Text):
     class_extension = 'po'
 
 
-    #########################################################################
-    # The skeleton
-    #########################################################################
+    def new(self, title=''):
+        # XXX Old style (like in the "get_skeleton" times)
+        skeleton = self.get_skeleton(title)
+        resource = memory.File(skeleton)
+        self._load_state(resource)
+
+
     @classmethod
     def get_skeleton(cls):
         now = time.strftime('%Y-%m-%d %H:%m+%Z', time.gmtime(time.time()))

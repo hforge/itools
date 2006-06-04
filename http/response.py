@@ -96,15 +96,11 @@ class Cookie(object):
 
 class Response(Message):
 
-    @classmethod
-    def get_skeleton(cls, status_code=200, **kw):
-        status_message = status_messages[status_code]
-        skeleton = ['HTTP/1.1 %s %s' % (status_code, status_message)]
-        for name in kw:
-            skeleton.append('%s: %s' % (name, kw[name]))
-
-        skeleton.append('')
-        return '\r\n'.join(skeleton)
+    def new(self, status_code=200, **kw):
+        self.status = status_code
+        self.headers = kw
+        self.body = ''
+        self.cookies = {}
 
 
     def _load_state(self, resource):

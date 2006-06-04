@@ -366,6 +366,12 @@ class Document(XML.Document):
     #########################################################################
     # The skeleton
     #########################################################################
+    def new(self, title=''):
+        skeleton = self.get_skeleton(title)
+        resource = memory.File(skeleton)
+        self._load_state(resource)
+
+
     @classmethod
     def get_skeleton(cls, title=''):
         data = ('<?xml version="1.0" encoding="UTF-8"?>\n'

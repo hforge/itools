@@ -34,9 +34,41 @@ from message import Message
 
 class Request(Message):
 
-    @classmethod
-    def get_skeleton(cls, method='GET', uri='/'):
-        return '%s %s HTTP/1.1\r\n\r\n' % (method, uri)
+    request_line = None
+    headers = None
+    body = None
+
+
+    def new(self, method='GET', uri='/'):
+        version = 'HTTP/1.1'
+        self.request_line = '%s %s %s\r\n' % (method, uri, version)
+        self.method = method
+        self.uri = uri.get_reference(request_uri)
+        self.http_version = version
+        self.headers = {}
+        self.body = {}
+
+
+    def request_line_to_str(self):
+        return '%s %s %s\r\n' % (self.method, self.uri, self.http_version)
+
+
+    def headers_to_str(self):
+        lines = []
+        for name in self.headers:
+            datatype = headers.get_type(name)
+            value = self.headers[name]
+            value = datatype.encode(value)
+            lines.append('%s: %s\r\n' % (name.title(), value))
+        return ''.join(lines)
+
+
+    def to_str(self):
+        data = []
+        data.append(self.request_line_tostr())
+        data.append(self.headers_to_str())
+        # The body (XXX to do)
+        return ''.join(data)
 
 
     def _load_state(self, resource):
@@ -44,8 +76,6 @@ class Request(Message):
 
 
     def non_blocking_load(self, read):
-        state = self.state
-
         buffer = ''
         # Read the first line
         while True:
@@ -67,7 +97,7 @@ class Request(Message):
                 yield None
 
         # Parse the request line
-        state.request_line = request_line
+        self.request_line = request_line
         method, request_uri, http_version = request_line.split()
         self.method = method
         self.uri = get_reference(request_uri)
@@ -79,7 +109,7 @@ class Request(Message):
             raise NotImplemented, message % method
 
         # Load headers
-        headers = state.headers = {}
+        headers = self.headers = {}
         while True:
             if buffer:
                 buffer = buffer.split('\r\n', 1)
@@ -98,10 +128,10 @@ class Request(Message):
             buffer += data
 
         # Cookies
-        state.headers.setdefault('cookie', {})
+        self.headers.setdefault('cookie', {})
 
         # Load the body
-        state.form = {}
+        self.form = {}
         parameters = {}
         # The body
         if 'content-length' in headers and 'content-type' in headers:
@@ -156,48 +186,23 @@ class Request(Message):
                     resource = memory.File(body)
                     parameters['body'] = resource
         else:
-            parameters = state.uri.query
+            parameters = self.uri.query
 
         for name in parameters:
             self._set_parameter(name, parameters[name])
-
-
-    def request_line_to_str(self):
-        state = self.state
-        return '%s %s %s\r\n' % (state.method, state.uri, state.http_version)
-
-
-    def headers_to_str(self):
-        state = self.state
-
-        lines = []
-        for name in state.headers:
-            datatype = headers.get_type(name)
-            value = state.headers[name]
-            value = datatype.encode(value)
-            lines.append('%s: %s\r\n' % (name.title(), value))
-        return ''.join(lines)
-
-
-    def to_str(self):
-        data = []
-        data.append(self.request_line_to_str())
-        data.append(self.headers_to_str())
-        # The body (XXX to do)
-        return ''.join(data)
 
 
     ########################################################################
     # API
     ########################################################################
     def get_referrer(self):
-        return self.state.headers.get('referer', None)
+        return self.headers.get('referer', None)
 
     referrer = property(get_referrer, None, None, '')
 
 
     def get_accept_language(self):
-        headers = self.state.headers
+        headers = self.headers
         if 'accept-language' in headers:
             return headers['accept-language']
         return AcceptLanguage('')
@@ -213,11 +218,11 @@ class Request(Message):
             datatype = schemas.get_datatype(name)
             value = datatype.decode(value)
 
-        self.state.form[name] = value
+        self.form[name] = value
 
 
     def get_parameter(self, name, default=None):
-        form = self.state.form
+        form = self.form
         if name in form:
             return form[name]
 
@@ -229,12 +234,12 @@ class Request(Message):
 
 
     def has_parameter(self, name):
-        return name in self.state.form
+        return name in self.form
 
 
     # XXX Remove? Use "get_parameter" instead?
     def get_form(self):
-        return self.state.form
+        return self.form
 
     form = property(get_form, None, None, '')
 
@@ -242,7 +247,7 @@ class Request(Message):
     ########################################################################
     # The Cookies
     def set_cookie(self, name, value):
-        self.state.headers['cookie'][name] = value
+        self.headers['cookie'][name] = value
 
 
     def get_cookie(self, name):

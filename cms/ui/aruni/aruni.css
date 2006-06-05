@@ -224,3 +224,75 @@ dl.new_resource_thumb { width: 250px; }
 .result_type,
 .result_size { font-size: 80%; }
 .result_url { color: #008000; }
+
+#gallery_vpane {
+  float: left;
+  width: 320px;
+  height: 460px;
+  overflow: auto;
+}
+
+.gallery_image {
+  float: left;
+  width: 130px;
+  height: 130px;
+  margin: 5px 3px;
+  border: 1px solid;
+  border-color: #aaa #444 #444 #aaa;
+  padding: 5px;
+  background: white;
+}
+
+.gallery_image img
+{
+  border: 1px solid;
+  border-color: #444 #aaa #aaa #444;
+}
+
+.gallery_image.landscape img {
+  width: 128px;
+  height: 96px;
+  margin: 16px 0;
+}
+
+.gallery_image.portrait img {
+  width: 96px;
+  height: 128px;
+  margin: 0 16px;
+}
+
+#gallery_main {
+  padding: 20px;
+}
+
+#gallery_center {
+  margin: auto;
+  text-align: center;
+}
+
+#gallery_previous {
+  margin-right: 150px;
+}
+
+#gallery_next {
+  margin-left: 150px;
+}
+
+#gallery_properties {
+  margin: auto;
+  text-align: center;
+}
+
+#gallery_properties th {
+  text-align: right;
+}
+
+#gallery_properties td {
+  text-align: left;
+}
+
+#gallery_description {
+  padding-left: 10px;
+  text-align: left;
+  overflow: auto;
+}

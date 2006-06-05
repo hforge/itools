@@ -18,7 +18,6 @@
 
 # Import from the Standard Library
 import marshal
-from time import time
 import urllib
 import zlib
 
@@ -27,7 +26,7 @@ from itools.datatypes import FileName
 from itools import handlers
 from itools.handlers.Text import Text
 from itools import i18n
-from itools.resources import base, memory
+from itools.resources import base
 from itools import uri
 from itools.stl import stl
 from itools.web import get_context
@@ -167,8 +166,6 @@ class Folder(Handler, handlers.Folder.Folder):
 
     def before_set_handler(self, segment, handler, format=None, id=None,
                            move=False, **kw):
-        from root import Root
-
         name = segment.name
         if name.startswith('.'):
             return
@@ -533,41 +530,65 @@ class Folder(Handler, handlers.Folder.Folder):
     def browse_image(self, selected_image=None, **kw):
         context = get_context()
         request = context.request
-        
-        parent_path = self.get_abspath()
-        if parent_path in ('', None):
-            parent_path = '/'
-        query = {'parent_path' : parent_path}
+        selected_index = None
 
-        namespace = self.browse_namespace(48, query=query)
-        # Select an image by default
+        # check selected image
+        if selected_image is not None:
+            path = uri.Path(selected_image)
+            selected_image = path[-1].name
+            if not selected_image in self.get_handler_names():
+                selected_image = None
+
+        # look up available images
+        namespace = self.browse_namespace(48, batchsize='0')
         table = namespace['table']
-        for object in table.objects:
+        objects = []
+        offset = 0
+        for index, object in enumerate(table.objects):
             name = object['name']
             handler = self.get_handler(name)
-            if isinstance(handler, Image): 
-                if selected_image is None:
-                    selected_image = name
-                object['url'] = request.build_url(preserve=[table.name],
-                                                  selected_image=name)
-                object['css_id'] = (selected_image == name) and 'selected'
-##                object['icon'] = '%s?height=64&width=64' % object['icon']
-            else:
-                object['css_id'] = None
-        # Selected image
+            if not isinstance(handler, Image):
+                offset = offset + 1
+                continue
+            if selected_image is None:
+                selected_image = name
+            if selected_image == name:
+                selected_index = index - offset
+            object['url'] = '?selected_image=%s' % name
+            object['icon'] = '%s/;icon48?height=128&width=128' % name
+            is_landscape = handler.get_width() >= handler.get_height()
+            object['class'] = 'gallery_image %s' % (is_landscape and
+                    'landscape' or 'portrait')
+            objects.append(object)
+
+        table.objects = objects
+
+        # selected image namespace
         if selected_image is None:
             namespace['selected'] = None
         else:
             image = self.get_handler(selected_image)
             selected = {}
-            selected['name'] = image.name
+            selected['title_or_name'] = image.title_or_name
+            selected['description'] = image.get_property('dc:description')
             selected['url'] = '%s/;%s' % (image.name, image.get_firstview())
             selected['preview'] = '%s/;icon48?height=320&width=320' \
                                   % image.name
             selected['width'] = image.get_width()
             selected['height'] = image.get_height()
-            selected['format'] = image.metadata.get_property('format')
-            selected['lang'] = image.metadata.get_property('dc:language')
+            selected['format'] = image.get_format()
+            if selected_index == 0:
+                selected['previous'] = None
+            else:
+                previous = objects[selected_index - 1]['name']
+                selected['previous'] = ';%s?selected_image=%s' % (
+                        context.method, previous)
+            if selected_index == (len(objects) - 1):
+                selected['next'] = None
+            else:
+                next = objects[selected_index + 1]['name']
+                selected['next'] = ';%s?selected_image=%s' % (context.method,
+                        next)
             namespace['selected'] = selected
 
         handler = self.get_handler('/ui/Folder_browse_image.xml')

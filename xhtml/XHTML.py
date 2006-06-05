@@ -385,7 +385,7 @@ class Document(XML.Document):
         Returns the head element.
         """
         root = self.get_root_element()
-        heads = [ x for x in root.get_elements() if x.name == 'head' ]
+        heads = root.get_elements(name='head')
         if heads:
             return heads[0]
         return None
@@ -396,7 +396,7 @@ class Document(XML.Document):
         Returns the body element.
         """
         root = self.get_root_element()
-        bodies = [ x for x in root.get_elements() if x.name == 'body' ]
+        bodies = root.get_elements(name='body')
         if bodies:
             return bodies[0]
         return None

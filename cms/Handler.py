@@ -306,6 +306,10 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         self.metadata.set_property(name, value, language=language)
 
 
+    def del_property(self, name, language=None):
+        self.metadata.del_property(name, language=language)
+
+
     ########################################################################
     # Shorthands (XXX remove as many as posible)
     def get_title(self, language=None):

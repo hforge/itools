@@ -136,9 +136,9 @@ class Server(web.server.Server):
         open('%s/state' % target, 'w').write('END')
         try:
             cwd = os.getcwd()
-            src_base = '%s/%s/database/' % (cwd, target)
+            src_base = os.path.join(cwd, target, 'database/')
             src_base_n = len(src_base)
-            dst_base = '%s/%s/database.bak/' % (cwd, target)
+            dst_base = os.path.join(cwd, target, 'database.bak/')
 
             abspaths = []
             for handler in transaction:

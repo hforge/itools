@@ -225,8 +225,11 @@ class Folder(Handler, handlers.Folder.Folder):
             root = self.get_root()
             if isinstance(root, Root):
                 if isinstance(handler, Folder):
-                    for x in handler.traverse():
-                        root.unindex_handler(x)
+                    for x, context in handler.traverse2():
+                        if x.real_handler is None:
+                            root.unindex_handler(x)
+                        else:
+                            context.skip = True
                 else:
                     root.unindex_handler(handler)
             # Keep database consistency

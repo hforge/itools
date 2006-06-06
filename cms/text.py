@@ -18,20 +18,20 @@
 # Import from the Standard Library
 import cgi
 from difflib import HtmlDiff
-import time
 
 # Import from itools
 import itools
 from itools import gettext
 from itools import i18n
 from itools.resources import memory
+from itools.handlers.rest import RestructuredText as iRestructuredText
 from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import UserError
+from itools.xhtml.XHTML import Document
 
 # Import from iKaaro
 from utils import get_parameters, comeback
-from widgets import Breadcrumb
 from versioning import VersioningAware
 from Handler import Handler
 from File import File
@@ -302,3 +302,27 @@ class Python(itools.handlers.python.Python):
 
 
 Text.register_handler_class(Python)
+
+
+
+class RestructuredText(Text, iRestructuredText):
+
+    class_id = 'text/x-restructured-text'
+    class_version = '20060522'
+    class_title = u"Restructured Text"
+    class_description = u"Text files with Restructured Text syntax support."
+    class_extension = 'rst'
+
+
+    #######################################################################
+    # View
+    def view(self):
+        html = self.to_html()
+        resource = memory.File(html)
+        document = Document(resource)
+        body = document.get_body()
+
+        return body.to_str()
+
+
+Text.register_handler_class(RestructuredText)

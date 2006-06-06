@@ -41,9 +41,11 @@ import Folder
 import archive
 import Image
 import python
+import rest
 import Text
 from utils import get_handler
 
 
 mimetypes.add_type('text/comma-separated-values', '.csv')
+mimetypes.add_type('text/x-restructured-text', '.rst')
 mimetypes.encodings_map['.bz2'] = 'bzip2'

@@ -1,3 +1,30 @@
+0.13.5 (2006/06/06)
+
+  Handlers
+  - Lazy load for binary files and images, by Hervé Cauwelier [#98].
+  - Fixes for archive handlers (ZIP, TAR), by Hervé Cauwelier [#127].
+
+  CSV
+  - Fix serialization, escape double quotes.
+  - Now the method "get_rows" always returns a copy of the rows, by Nicolas
+    Deram.
+
+  CMS
+  Minor features and important fixes:
+  - Fix database sync.
+  - Fix remove when there are virtual handlers.
+  - Improved "browse image" view, by Hervé Cauwelier [#328].
+  Minor fixes and other changes:
+  - More robust Enumerate class, by Hervé Cauwelier [#304].
+  - Use CSS classes instead of ids to define the Epoz style, by Hervé
+    Cauwelier [#317].
+  - Fix edit user's account, password is optional, by Hervé Cauwelier [#321].
+  - Fix the title of HTML pages when in a subsite, by Hervé Cauwelier [#322].
+  - Add "del_property" to the handler's API, by Hervé Cauwelier [#327].
+  - Complete Enumerate's API with "get_value(name)" method, by Hervé
+    Cauwelier [#329].
+
+
 0.13.4 (2006/05/19)
 
   Handlers

@@ -304,7 +304,7 @@ class CSV(Text):
            indexes -- list or tuple of numbers
         """
         if indexes is None:
-            return self.state.lines
+            return self.state.lines[:]
 
         rows = []
         for i in indexes:

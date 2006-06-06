@@ -86,6 +86,15 @@ class Enumerate(String):
         return options
 
 
+    @classmethod
+    def get_value(cls, name, default=None):
+        for option in cls.options:
+            if option['name'] == name:
+                return option['value']
+
+        return default
+
+
 
 class Schema(schemas.base.Schema):
 

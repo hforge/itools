@@ -28,7 +28,7 @@ class Text(File):
 
     def new(self, data=u''):
         self.data = data
-        self.encoding = self.guess_encoding(data)
+        self.encoding = 'utf-8'
 
 
     def _load_state(self, resource):

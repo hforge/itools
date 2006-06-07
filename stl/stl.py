@@ -21,6 +21,8 @@ STL stands for Simple Template Language, as it is the simplest template
 language I could imagine.
 """
 
+# Import from the Standard Library
+from decimal import Decimal
 
 # Import from itools
 from itools.datatypes import Boolean, DataType, XMLAttribute
@@ -530,7 +532,7 @@ def process1(node, stack, repeat, encoding='UTF-8'):
             content = []
         elif isinstance(content, unicode):
             content = [content.encode(encoding)]
-        elif isinstance(content, (int, long)):
+        elif isinstance(content, (int, long, float, Decimal)):
             content = [str(content)]
         elif isinstance(content, str):
             content = [content]

@@ -151,8 +151,7 @@ tests.save_state()
 catalog_resource = tests.resource.get_resource('catalog')
 catalog = Catalog(catalog_resource)
 
-resource_names = [ x for x in tests.get_handler_names()
-                   if x.endswith('.txt') ]
+resource_names = [ x for x in tests.get_handler_names() if x.endswith('.txt') ]
 resource_names.sort()
 for resource_name in resource_names:
     resource = tests.resource.get_resource(resource_name)

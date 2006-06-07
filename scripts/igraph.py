@@ -18,13 +18,11 @@
 
 # import from Python
 from optparse import OptionParser
-from pprint import pprint
-import glob, tempfile, sys, os
+import glob, sys, os
 
 # import from itools
 from itools.handlers import get_handler
-from itools.handlers.python import Python
-from itools.handlers.dot import Dot
+from itools.handlers.dot import class_diagram_from_python
 
 
 if __name__ == "__main__":
@@ -35,25 +33,15 @@ if __name__ == "__main__":
     if not args:
         args = glob.glob('*.py')
     if not len(args):
-        print os.system('itaapyTools_classDiagram.py --help')
+        print os.system('igraph.py --help')
         sys.exit()
 
+    base_path = os.getcwd()
     here = get_handler('.')
-    # we need the name of the package
-    here.name = os.getcwd().split('/')[-1]
+    handlers = [ here.get_handler(x) for x in args ]
 
-    python_handlers = []
-    for name in args:
-        h = here.get_handler(name)
-        h.name = name.split('.py')[0]
-        h.package_name = h.get_package_name()
-        python_handlers.append(h)
-
-    dot = Dot()
-    dot.class_diagram_from_python(python_handlers)
-    dot_data = dot.to_str()
-
+    dot_data = class_diagram_from_python(handlers, base_path)
     open('out.dot', 'w').write(dot_data)
-    print 'dot -Tps out.dot > out.ps; gv out.ps'
 
+    print 'dot -Tps out.dot > out.ps; gv out.ps'
 

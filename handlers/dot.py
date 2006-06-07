@@ -16,78 +16,64 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-from pprint import pprint
+import os
 
 # Import from itools
 from Text import Text
-from python import Python
-from itools.resources import memory 
 
 
-class Dot(Text):
 
-    class_mimetypes = ['text/x-dot']
-    class_extension = 'dot'
-    class_version = '20050905'
+def class_diagram_from_python(handlers, base_path=None):
+    """
+    input : from A import B
+            class N(B.C)
+                pass 
 
+    output : "N" -> "A.B.C" 
+    """
+    # Package name
+    package_name = None
+    if base_path is not None:
+        if os.exists(os.path.join(base_path, '__init__.py')):
+            package_name = os.path.basename(cwd)
 
-    def new(self):
-        data = (u'digraph G {\n'
-                u'rankdir=BT;\n'
-                u'  \n}')
-        Text.new(self, data)
+    imports_dict, modules_dict, all_classes = {}, {}, []
+    for handler in handlers:
+        imports_dict.update(handler.get_from_imports_dic())
+        modules_dict.update(handler.get_imports_dic())
+        all_classes.extend([{'cls': handler.get_classes(package_name),
+                             'h': handler}])
 
+    full_class_names = []
+    for dic in all_classes:
+        for cls in dic['cls']:
+            class_name, bases = cls
+            full_class_names.append(class_name)
 
-    ########################################################################
-    # API 
-    ########################################################################
-    def class_diagram_from_python(self, handlers):
-        """
-        input : from A import B
-                class N(B.C)
-                    pass 
+    dot = []
+    for dic in all_classes:
+        h = dic['h']
+        for cls in dic['cls']:
+            class_name, bases = cls
+            
+            inherit_res = '' 
+            for base_list in bases:
+                res = []
+                # base_list ['B', 'C']
+                while base_list:
+                    base = base_list.pop()
+                    #1 base = 'B' #2 base = 'C'
+                    inherit_res = imports_dict.get(base, base)
+                    inherit_res = modules_dict.get(base, inherit_res)
+                    res.append(inherit_res) 
+                res = '.'.join(res)
+                pkg_res = '%s.%s' % (package_name, res)
+                if package_name: 
+                    if pkg_res in full_class_names:
+                        res = pkg_res
+                dot.append('"%s" -> "%s"' % (class_name, res))
 
-        output : "N" -> "A.B.C" 
-        """
-        imports_dict, modules_dict, all_classes = {}, {}, []
-        for h in handlers:
-            imports_dict.update(h.get_from_imports_dic())
-            modules_dict.update(h.get_imports_dic())
-            all_classes.extend([{'cls': h.get_classes(), 'h':h}])
-
-        full_class_names = []
-        for dic in all_classes:
-            for cls in dic['cls']:
-                class_name, bases = cls
-                full_class_names.append(class_name)
-
-        dot = []
-        for dic in all_classes:
-            h = dic['h']
-            for cls in dic['cls']:
-                class_name, bases = cls
-                
-                inherit_res = '' 
-                for base_list in bases:
-                    res = []
-                    # base_list ['B', 'C']
-                    while base_list:
-                        base = base_list.pop()
-                        #1 base = 'B' #2 base = 'C'
-                        inherit_res = imports_dict.get(base, base)
-                        inherit_res = modules_dict.get(base, inherit_res)
-                        res.append(inherit_res) 
-                        pkg_name = h.get_package_name()
-                    res = '.'.join(res)
-                    pkg_res = '%s.%s' % (pkg_name, res)
-                    if pkg_name: 
-                        if pkg_res in full_class_names:
-                            res = pkg_res
-                    dot.append('"%s" -> "%s"' % (class_name, res))
-
-        relations = '\n  '.join(dot)
-        data = ('digraph G {\n'
-                'rankdir=BT;\n'
-                '  %s\n}') % relations
-        resource = memory.File(data)
-        self.load_state_from(resource)
+    relations = '\n  '.join(dot)
+    return ('digraph G {\n'
+            'rankdir=BT;\n'
+            '  %s\n}') % relations

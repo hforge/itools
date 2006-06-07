@@ -109,19 +109,8 @@ class Python(Text):
     #########################################################################
     # API
     #########################################################################
-    def get_package_name(self):
-        parent = self.parent
-        # Check if we are in a python package
-        package_name = False 
-        if parent is not None:
-            if '__init__.py' in parent.get_handler_names():
-                package_name = parent.name 
-        return package_name 
-
-
     def get_module_name(self):
-        name = self.name 
-        return name
+        return self.resource.name
 
 
     def get_visitor(self):
@@ -134,10 +123,9 @@ class Python(Text):
         return visitor
 
 
-    def get_classes(self):
+    def get_classes(self, pkg_name=None):
         visitor = self.get_visitor()
         
-        pkg_name = self.get_package_name()
         module_name = self.get_module_name()
         classes = visitor.classes
 

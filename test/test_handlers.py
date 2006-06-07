@@ -23,8 +23,8 @@ from unittest import TestCase
 from itools.resources import memory
 from itools.handlers import get_handler
 from itools.handlers.python import Python
-from itools.handlers.dot import Dot
 from itools.handlers.Var import Var
+from itools.handlers.dot import class_diagram_from_python
 
 
 
@@ -170,23 +170,13 @@ class PythonTestCase(TestCase):
 
 class DotTestCase(TestCase):
 
-    def test_skeleton(self):
-        handler = Dot()
-        expect = ('digraph G {\n'
-                  'rankdir=BT;\n'
-                  '  \n}')
-        self.assertEqual(expect, handler.to_str())
-
-
     def test0_class_diagram_from_python(self):
         data = ('from A import B\n'
                 'class N(B):\n'
                 '  pass\n'
                 )
         handler = Python(memory.File(data))
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "N" -> "A.B"\n}')
@@ -201,9 +191,8 @@ class DotTestCase(TestCase):
                 'class N(M, E.F.H):\n'
                 '  pass\n'
                 )
-        dot = Dot()
         handler = Python(memory.File(data))
-        dot.class_diagram_from_python([handler])
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "M" -> "A.B.C.D"\n'
@@ -211,7 +200,6 @@ class DotTestCase(TestCase):
                   '  "N" -> "D.E.F.H"\n'
                   '}'
                   )
-        res = dot.to_str()
         self.assertEqual(expect, res)
 
 
@@ -223,9 +211,7 @@ class DotTestCase(TestCase):
                 '  pass\n'
                 )
         handler = Python(memory.File(data))
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "M" -> "A.B"\n'
@@ -241,9 +227,7 @@ class DotTestCase(TestCase):
                   '  pass\n'
                   )
         handler = Python(memory.File(data))
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "M" -> "A.B.C"\n'
@@ -258,9 +242,7 @@ class DotTestCase(TestCase):
                 '  pass\n'
                 )
         handler = Python(memory.File(data))
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "M" -> "A.B.C.D"\n}'
@@ -277,9 +259,7 @@ class DotTestCase(TestCase):
                   '  pass\n'
                   )
         handler = Python(memory.File(data))
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "M" -> "A.B.C.D"\n'
@@ -296,9 +276,7 @@ class DotTestCase(TestCase):
                 '  pass\n'
                 )
         handler = Python(memory.File(data))
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "M" -> "A.B.C.D"\n'
@@ -315,9 +293,7 @@ class DotTestCase(TestCase):
                 )
         handler = Python(memory.File(data))
         handler.name = 'test'
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "test.M" -> "A.B.C.D"\n'
@@ -336,9 +312,7 @@ class DotTestCase(TestCase):
                 "    pass\n")
         handler = Python(memory.File(data))
         handler.name = 'test'
-        dot = Dot()
-        dot.class_diagram_from_python([handler])
-        res = dot.to_str()
+        res = class_diagram_from_python([handler])
         expect = ('digraph G {\n'
                   'rankdir=BT;\n'
                   '  "test.G" -> "A.B.C"\n'

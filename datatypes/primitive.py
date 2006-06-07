@@ -18,6 +18,7 @@
 # Import from the Standard Library
 import datetime
 import mimetypes
+import decimal
 
 # Import from itools
 from itools.uri import get_reference
@@ -34,6 +35,22 @@ class Integer(DataType):
             return None
         return int(value)
 
+
+    @staticmethod
+    def encode(value):
+        if value is None:
+            return ''
+        return str(value)
+
+
+
+class Decimal(DataType):
+
+    @staticmethod
+    def decode(value):
+        if not value:
+            return None
+        return decimal.Decimal(value)
 
     @staticmethod
     def encode(value):

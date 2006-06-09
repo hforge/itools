@@ -44,8 +44,11 @@ class Folder(Handler):
     class_resource_type = 'folder'
     class_mimetypes = ['application/x-not-regular-file']
 
+    
+    __slots__ = ['cache', 'added_handlers', 'removed_handlers']
 
-    def new(self):
+
+    def new(self, **kw):
         self.cache = {}
         self.added_handlers = set()
         self.removed_handlers = set()
@@ -63,6 +66,13 @@ class Folder(Handler):
         # Keep differential
         self.added_handlers = set()
         self.removed_handlers = set()
+
+
+    def _deep_load(self):
+        self.load_state()
+        for name in self.cache:
+            handler = self.get_handler(name)
+            handler._deep_load()
 
 
     def _save_state(self, resource):
@@ -85,18 +95,32 @@ class Folder(Handler):
                 dummy_resource = memory.File('')
             resource.set_resource(name, dummy_resource)
             # Save state to the dummy resource
-            handler.resource = resource.get_resource(name)
-            handler._save_state(handler.resource)
+            new_resource = resource.get_resource(name)
+            handler.resource = new_resource
+            new_resource.open()
+            handler._save_state(new_resource)
+            new_resource.close()
         self.added_handlers = set()
 
 
-    #########################################################################
-    # Obsolete API
-    # XXX To be removed by 0.5, direct access to the resource must be done
-    # through "self.resource".
-    #########################################################################
-    def get_mimetype(self):
-        return self.resource.get_mimetype()
+    def _save_state_to(self, resource):
+        # Clean the target
+        for name in resource.get_resource_names():
+            resource.del_resource(name)
+
+        # Add the resources
+        cache = self.cache
+        for name in cache:
+            handler = cache[name]
+            # Add a dummy resource
+            if isinstance(handler, Folder):
+                dummy_resource = memory.Folder()
+            else:
+                dummy_resource = memory.File('')
+            resource.set_resource(name, dummy_resource)
+            # Save state to the dummy resource
+            new_resource = resource.get_resource(name)
+            handler.save_state_to(new_resource)
 
 
     #########################################################################
@@ -117,16 +141,6 @@ class Folder(Handler):
         the given name, this method is used to return 'virtual' handlers.
         """
         raise LookupError, 'the resource "%s" does not exist' % segment.name
-
-
-    def copy_handler(self):
-        cache = self.cache
-        resource = memory.Folder()
-        for name in cache:
-            handler = self.get_handler(name).copy_handler()
-            resource.set_resource(name, handler.resource)
-        self.save_state_to(resource)
-        return self.__class__(resource)
 
 
     #########################################################################

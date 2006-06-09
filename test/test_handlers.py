@@ -23,7 +23,6 @@ from unittest import TestCase
 from itools.resources import memory
 from itools.handlers import get_handler
 from itools.handlers.python import Python
-from itools.handlers.Var import Var
 from itools.handlers.dot import class_diagram_from_python
 
 
@@ -46,42 +45,6 @@ class BasicTestCase(TestCase):
         copy = here.copy_handler()
         self.assertEqual(copy.get_handler('hello.txt').to_str(),
                          here.get_handler('hello.txt').to_str())
-
-
-
-class VarTestCase(TestCase):
-
-    def setUp(self):
-        data = ('URI: upgrading.html.de\n'
-                'Content-Language: de\n'
-                'Content-type: text/html; charset=ISO-8859-1\n'
-                '\n'
-                'URI: upgrading.html.en\n'
-                'Content-Language: en\n'
-                'Content-type: text/html; charset=ISO-8859-1\n'
-                '\n'
-                'URI: upgrading.html.fr\n'
-                'Content-Language: fr\n'
-                'Content-type: text/html; charset=ISO-8859-1\n')
-        resource = memory.File(data)
-        self.var = Var(resource)
-
-
-    def test_nrecords(self):
-        self.assertEqual(len(self.var.records), 3)
-
-
-    def test_uri(self):
-        self.assertEqual(self.var.records[0].uri, 'upgrading.html.de')
-
-
-    def test_type(self):
-        self.assertEqual(self.var.records[0].type,
-                         'text/html; charset=ISO-8859-1')
-
-
-    def test_language(self):
-        self.assertEqual(self.var.records[0].language, 'de')
 
 
 

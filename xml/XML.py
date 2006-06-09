@@ -332,6 +332,10 @@ class Document(Text.Text):
     #######################################################################
     # Load
     #######################################################################
+
+    __slots__ = ['resource', 'timestamp', 'document_type', 'root_element']
+
+
     def _load_state(self, resource):
         """
         Builds a tree made of elements and raw data.

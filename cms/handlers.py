@@ -39,6 +39,8 @@ class ListOfUsers(File):
     class_mimetypes = ['text/x-list-of-users']
     class_extension = 'users'
 
+    __slots__ = ['resource', 'timestamp', 'usernames']
+
 
     def new(self, users=[]):
         self.usernames = set(users)
@@ -76,10 +78,12 @@ class Lock(Text):
     class_mimetypes = ['text/x-lock']
     class_extension = 'lock'
 
+    __slots__ = ['resource', 'timestamp', 'username', 'lock_timestamp', 'key']
+
 
     def new(self, username=None, **kw):
         self.username = username
-        self.timestamp = datetime.now()
+        self.lock_timestamp = datetime.now()
         self.key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
 
 
@@ -88,12 +92,12 @@ class Lock(Text):
         self.username = username
         # XXX backwards compatibility: remove microseconds first
         timestamp = timestamp.split('.')[0]
-        self.timestamp = DateTime.decode(timestamp)
+        self.lock_timestamp = DateTime.decode(timestamp)
         self.key = key
 
 
     def to_str(self):
-        timestamp = DateTime.encode(self.timestamp)
+        timestamp = DateTime.encode(self.lock_timestamp)
         return '%s\n%s\n%s' % (self.username, timestamp, self.key)
 
 
@@ -102,6 +106,8 @@ class Metadata(File):
 
     class_title = u'Metadata'
     class_icon48 = 'images/File48.png'
+
+    __slots__ = ['resource', 'timestamp', 'prefixes', 'properties']
 
 
     def new(self, handler_class=None, **kw):

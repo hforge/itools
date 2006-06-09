@@ -26,6 +26,9 @@ class Text(File):
     class_extension = 'txt'
 
 
+    __slots__ = ['resource', 'timestamp', 'data', 'encoding']
+
+
     def new(self, data=u''):
         self.data = data
         self.encoding = 'utf-8'

@@ -25,6 +25,9 @@ class Config(Text):
     class_extension = None
 
     
+    __slots__ = ['resource', 'timestamp', 'values', 'lines']
+
+    
     def new(self, **kw):
         self.values = kw
         # XXX

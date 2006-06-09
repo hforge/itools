@@ -34,27 +34,37 @@ class Image(File):
     class_mimetypes = ['image']
 
 
+    __slots__ = ['resource', 'timestamp', 'data', 'size', 'thumbnails']
+
+
     def _load_state(self, resource):
-        # Data
-        data = resource.read()
-        self.data = data
-        # Size
-        self.size = 0, 0
-        if PILImage is not None:
-            f = StringIO(data)
+        self.data = resource.read()
+
+        # The size, a tuple with the width and height, or None if PIL is not
+        # installed.
+        if PILImage is None:
+            self.size = None
+        else:
+            f = StringIO(self.data)
             try:
                 im = PILImage.open(f)
             except IOError:
-                pass
+                self.size = 0, 0
             else:
                 self.size = im.size
-        # Thumbnails
+
+        # A cache for thumbnails, where the key is the size and the
+        # value is the thumbnail.
         self.thumbnails = {}
 
 
     #########################################################################
     # API
     #########################################################################
+    def get_size(self):
+        return self.size
+
+
     def get_thumbnail(self, width, height):
         if PILImage is None:
             return None, None

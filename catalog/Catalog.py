@@ -39,6 +39,10 @@ class Field(object):
 
 class Fields(Text):
 
+    __slots__ = ['resource', 'timestamp', 'fields', 'indexed_fields',
+                 'field_numbers']
+
+
     def new(self, fields=[]):
         self.fields = []
         self.indexed_fields = []
@@ -88,6 +92,9 @@ class Fields(Text):
 class Catalog(Folder):
 
     class_mimetypes = ['application/x-catalog']
+
+    __slots__ = Folder.__slots__ + ['document_number', 'added_documents',
+                                    'removed_documents']
 
 
     def new(self, fields=[]):

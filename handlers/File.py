@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
+from copy import deepcopy
 import datetime
 
 # Import from itools
@@ -35,27 +36,24 @@ class File(Handler):
     class_resource_type = 'file'
 
 
+    __slots__ = ['resource', 'timestamp', 'data']
+
+
     def new(self, data=''):
         self.data = data
 
 
     def _load_state(self, resource):
-        # Be lazy
-        self.data = None
-
-
-    def _save_state(self, resource):
-        resource.write(self.to_str())
-        resource.truncate()
-
-
-    #########################################################################
-    # Lazy load
-    def _load_data(self):
-        resource = self.resource
-        resource.open()
         self.data = resource.read()
-        resource.close()
+
+
+    def _save_state_to(self, resource):
+        # We call "to_str" so this method will be good for sub-classes
+        data = self.to_str()
+        # Write and truncate (calls to "_save_state" must be done with the
+        # pointer pointing to the beginning)
+        resource.write(data)
+        resource.truncate()
 
 
     #########################################################################
@@ -68,11 +66,6 @@ class File(Handler):
     def set_data(self, data):
         self.set_changed()
         self.data = data
-
-
-    def copy_handler(self):
-        resource = memory.File(self.to_str())
-        return self.__class__(resource)
 
 
 

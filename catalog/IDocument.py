@@ -27,6 +27,9 @@ import IO
 
 class IndexedFields(File):
 
+    __slots__ = ['resource', 'timestamp', 'fields']
+
+
     def new(self):
         self.fields = {}
 
@@ -90,6 +93,9 @@ class StoredFields(File):
       - field number (byte)
       - field value (string)
     """
+
+    __slots__ = ['resource', 'timestamp', 'values', 'document']
+
 
     def new(self):
         self.values = {}

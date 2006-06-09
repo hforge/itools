@@ -21,6 +21,7 @@ handler class hierarchy.
 """
 
 # Import from the Standard Library
+from copy import deepcopy
 from datetime import datetime
 
 # Import from itools
@@ -40,17 +41,26 @@ class Handler(Node):
     class_mimetypes = []
     class_extension = None
 
-    # By default the handler is not loaded (we encourage lazy load), so
-    # the timestamp is set to None
-    timestamp = None
+    # All handlers have a resource and a timestamp, plus the state.
+    # The variable class "__slots__" is to be overriden.
+    __slots__ = ['resource', 'timestamp']
 
 
     def __init__(self, resource=None, **kw):
         self.resource = resource
+        self.timestamp = None
+        # If the resources is None, this is a fresh new handler
         if resource is None:
             self.new(**kw)
-        else:
-            self.load_state()
+
+
+    def __getattr__(self, name):
+        if name not in self.__slots__:
+            message = "'%s' object has no attribute '%s'"
+            raise AttributeError, message % (self.__class.__name__, name)
+
+        self.load_state()
+        return getattr(self, name)
 
 
     # By default the handler is a free node (does not belong to a tree, or
@@ -63,14 +73,29 @@ class Handler(Node):
     ########################################################################
     # API
     ########################################################################
-    def get_mimetype(self):
-        return self.resource.get_mimetype()
+    def copy_handler(self):
+        # Deep load
+        self._deep_load()
+        # Create and initialize the instance
+        cls = self.__class__
+        copy = object.__new__(cls)
+        copy.resource = None
+        copy.timestamp = None
+        # Copy the state
+        for name in cls.__slots__:
+            if name == 'resource' or name == 'timestamp':
+                continue
+            value = getattr(self, name)
+            value = deepcopy(value)
+            setattr(copy, name, value)
+        # Return the copy
+        return copy
 
-    mimetype = property(get_mimetype, None, None, '')
+
+    def _deep_load(self):
+        self.load_state()
 
 
-    ########################################################################
-    # Load / Save
     def load_state(self):
         resource = self.resource
         resource.open()
@@ -109,10 +134,14 @@ class Handler(Node):
         transaction.lock()
         resource.open()
         try:
-            self._save_state(resource)
+            self._save_state_to(resource)
         finally:
             resource.close()
             transaction.release()
+
+
+    def _save_state(self, resource):
+        self._save_state_to(resource)
 
 
     def is_outdated(self):
@@ -148,3 +177,11 @@ class Handler(Node):
             self.timestamp = datetime.now()
             get_transaction().add(self)
 
+
+    ########################################################################
+    # XXX Obsolete.
+    # To be removed by 0.5, use instead "self.resource.get_mimetype".
+    def get_mimetype(self):
+        return self.resource.get_mimetype()
+
+    mimetype = property(get_mimetype, None, None, '')

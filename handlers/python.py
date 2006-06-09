@@ -95,7 +95,10 @@ class Python(Text):
     class_mimetypes = ['text/x-python']
     class_extension = 'py'
 
-    
+
+    __slots__ = Text.__slots__ + ['visitor']
+
+
     def new(self, **kw):
         Text.new(self, **kw)
         self.visitor = None

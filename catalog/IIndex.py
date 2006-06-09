@@ -90,6 +90,9 @@ class IIndexTree(File):
 
     class_version = '20040723'
 
+    __slots__ = ['resource', 'timestamp', 'version', 'number_of_slots',
+                 'first_slot', 'first_empty']
+
 
     def new(self):
         self.version = self.class_version
@@ -174,6 +177,9 @@ class IIndexDocuments(File):
     """
 
     class_version = '20050529'
+
+    __slots__ = ['resource', 'timestamp', 'version', 'number_of_slots',
+                 'first_empty']
 
 
     def new(self):
@@ -527,6 +533,10 @@ class Tree(object):
 
 
 class IIndex(Folder):
+
+    __slots__ = ['resource', 'timestamp', 'tree_handler', 'docs_handler',
+                 'root', 'added_terms', 'removed_terms']
+
 
     def new(self):
         Folder.new(self)

@@ -22,7 +22,6 @@ import sha
 from itools import uri
 from itools import i18n
 from itools import handlers
-from itools.handlers.KeyValue import KeyValue
 from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import UserError
@@ -404,6 +403,7 @@ class UserFolder(Folder):
 
     def set_user(self, username, password):
         user = User()
+        # Set the paswword
         password = crypt_password(password)
         self.set_handler(username, user, **{'ikaaro:password': password})
         return user

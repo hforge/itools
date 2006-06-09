@@ -35,59 +35,38 @@ class Image(File):
 
     def _load_state(self, resource):
         state = self.state
-        state.data = None
-        state.width = None
-        state.height = None
 
+        data = resource.read()
+        state.data = data
+
+        state.width = state.height = 0
+        if PILImage is not None:
+            f = StringIO(data)
+            try:
+                im = PILImage.open(f)
+            except IOError:
+                pass
+            else:
+                state.width, state.height = im.size
 
     #########################################################################
     # API
     #########################################################################
-    def _load_size(self):
-        state = self.state
-        state.width = 0
-        state.height = 0
-
-        if PILImage is None:
-            return
-
-        data = self.to_str()
-        f = StringIO(data)
-        try:
-            im = PILImage.open(f)
-        except IOError:
-            pass
-        else:
-            state.width, state.height = im.size
-
-
     def get_width(self):
-        state = self.state
-        if state.width is None:
-            self._load_size()
-
-        return state.width
+        return self.state.width
 
 
     def get_height(self):
-        state = self.state
-        if state.height is None:
-            self._load_size()
-
-        return state.height
+        return self.state.height
 
 
     def get_thumbnail(self, width, height):
         if PILImage is None:
             return None
 
-        data = self.to_str()
-        state_width = self.get_width()
-        state_height = self.get_height()
-        f = StringIO(data)
-        im = PILImage.open(f)
-
-        if state_width > width or state_height > height:
+        self.resource.open()
+        im = PILImage.open(self.resource)
+        if self.state.width > width or self.state.height > height:
             # XXX Improve the quality of the thumbnails by cropping? The
             # only problem would be the loss of information.
             im.thumbnail((width, height), PILImage.ANTIALIAS)
@@ -95,6 +74,9 @@ class Image(File):
             im.save(thumbnail, im.format)
             data = thumbnail.getvalue()
             thumbnail.close()
+        else:
+            data = self.to_str()
+        self.resource.close()
 
         return data, im.format
 

@@ -1,4 +1,4 @@
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Deram <nderam@gmail.com>  
 #
 # This program is free software; you can redistribute it and/or
@@ -29,16 +29,17 @@ def fold_line(line):
     """
     i = 1
     lines = line.split(' ')
-    res = lines[0] 
+    res = ' ' + lines[0] 
     size = len(res)
     while i < len(lines):
+        # Still less than 75c
         if size+len(lines[i]) <= 75:
             res = res + ' ' + lines[i] 
             size = size + 1 + len(lines[i]) 
             i = i + 1
+        # More than 75c, insert new line
         else:
-            res = res + ' \n '
-            res = res + lines[i]
+            res = res + '\n ' + lines[i]
             size = len(lines[i]) 
             i = i + 1
     return res
@@ -198,14 +199,23 @@ class PropertyType(object):
       name *(;param-name=param-value1[, param-value2, ...]) : value CRLF
       
     """
-
     ###################################################################
-    # Cut property line into  name | [parameters]value                #
+    # Parse the property line separating as :  
+    #
+    #   property name  >  name
+    #   value & parameter list > property_value 
+    # 
+    #   XXX test if the property accepts the given parameters 
+    #       could be a great idea but could be done on Component
+    # 
     ###################################################################
     @classmethod
-    def cut_name(cls, property):
+    def parse(cls, property, encoding='UTF-8'):
+        """
+        Parse content line property splitting it into 2 parts:
+            name | [parameters]value
+        """
         c, lexeme = property[0], ''
-        
         # Test first character of name
         if not c.isalnum() and c != '-':
             raise SyntaxError, 'unexpected character (%s)' % c
@@ -220,60 +230,42 @@ class PropertyType(object):
             else:
                 raise SyntaxError, 'unexpected character (%s)' % c
             c = property[0]
-            
+
         return lexeme, property
-
-
-    ###################################################################
-    # Parse the property line separating as :  
-    #
-    #   property name  >  name
-    #   value          >  value
-    #   parameter list >  parameters
-    # 
-    #   XXX test if the property accepts the given parameters 
-    #       could be a great idea but could be done on Component
-    # 
-    ###################################################################
-    @classmethod
-    def parse(cls, property, encoding='UTF-8'):
-        name, value, parameters = None, None, {}
-
-        name, propertyValue = PropertyType.cut_name(property)
-        value, parameters = PropertyValueType.parse(name, propertyValue,
-                                                    encoding)
-        return name, value, parameters
 
 
     @classmethod
     def decode(cls, line, encoding='UTF-8'):
+        # XXX get only one property line instead of all of this name and so
+        # multiple lines in input
         name, value, parameters = None, None, {}
-        # Parsing
-        name, value, parameters = PropertyType.parse(line, encoding)
-        from itools.ical.icalendar import PropertyValue
-        return name, PropertyValue(value, parameters)
+        # Get name
+        name, value = PropertyType.parse(line, encoding)
+        # Get PropertyValue (parameters and value)
+        value = PropertyValueType.decode(name, value, encoding)
+        from itools.ical.icalendar import Property
+        return Property(name, value)
 
 
     @classmethod
     def encode(cls, name, property):
+        lines = ''
+        # If we get a PropertyValue, we recreate a whole Property
+        from itools.ical.icalendar import Property, PropertyValue
+        if isinstance(property, PropertyValue):
+            property = Property(name, property)
         # Property name
-        prop = str(name)
-        # Property parameters
-        if property.parameters:
-            for key_param in property.parameters:
-                prop = prop + '\n ;' + \
-                       ParameterType.encode(property.parameters[key_param])
+        name = property.name
+        property_values = property.value
+        # For each property_value
+        if isinstance(property_values, list):
+            for property_value in property_values:
+                current = name + PropertyValueType.encode(name, property_value)
+                lines = lines + current + '\n'
         else:
-            prop = prop + '\n'
-
-        # Property value
-        vtype = data_properties.get(name, String)
-        value = vtype.encode(property.value)
-        prop = prop + ' :' + value
-        # Property folded if necessary
-        if len(prop) > 75:
-            prop = fold_line(prop)
-        return prop
+            current = name + PropertyValueType.encode(name, property_values)
+            lines = current + '\n'
+        return lines
 
 
     # Get number of occurrences for given property name
@@ -406,6 +398,9 @@ class PropertyValueType(object):
     ###################################################################
     @classmethod
     def parse(cls, name, property, encoding='UTF-8'):
+        """
+        Parse content line property parameters and value.
+        """
         value, parameters = None, {}
 
         for token, lexeme in PropertyValueType.get_tokens(property):
@@ -424,6 +419,34 @@ class PropertyValueType(object):
                 raise SyntaxError, 'unexpected %s' % token_name[token]
 
         return value, parameters
+
+
+    @classmethod
+    def encode(cls, name, property_value):
+        lines = ''
+        # Property parameters
+        if property_value.parameters:
+            for key_param in property_value.parameters:
+                lines = lines + ';' + \
+                   ParameterType.encode(property_value.parameters[key_param])
+
+        # property_value value
+        vtype = data_properties.get(name, String)
+        value = vtype.encode(property_value.value)
+        lines = lines + ':' + value
+        # property_value folded if necessary
+        if len(lines) > 75:
+            lines = fold_line(lines)
+        return lines
+
+
+    @classmethod
+    def decode(cls, name, string, encoding='UTF-8'):
+        value, parameters = None, {}
+        # Parsing
+        value, parameters = PropertyValueType.parse(name, string, encoding)
+        from itools.ical.icalendar import PropertyValue
+        return PropertyValue(value, parameters)
 
 
 
@@ -506,11 +529,11 @@ class ComponentType(object):
                 if occurs == 1:
                     raise SyntaxError, 'Property %s can be assigned only one '\
                                        'value' % prop_name
-                props[prop_name].append(prop_value)
-            elif occurs == 1:
-                props[prop_name] = prop_value
+                props[prop_name].extend(prop_value)
+            #elif occurs == 1:
+            #    props[prop_name] = prop_value
             else:
-                props[prop_name] = [prop_value]
+                props[prop_name] = prop_value
 
         return props
 
@@ -523,14 +546,14 @@ class ComponentType(object):
         props = ComponentType.parse(properties, c_type, encoding)
 
         from itools.ical.icalendar import Component
-        return Component(props, c_type)
+        return Component(c_type, props)
 
 
     @classmethod
     def encode(cls, component):
         lines = []
 
-        lines.append('BEGIN:%s' % component.c_type)
+        lines.append('BEGIN:%s\n' % component.c_type)
 
         for key in component.properties:
             occurs = PropertyType.nb_occurrences(key)
@@ -541,7 +564,7 @@ class ComponentType(object):
                 for item in component.properties[key]:
                     lines.append(PropertyType.encode(key, item))
 
-        lines.append('END:%s' % component.c_type)
+        lines.append('END:%s\n' % component.c_type)
 
-        return '\n'.join(lines)
+        return ''.join(lines)
 

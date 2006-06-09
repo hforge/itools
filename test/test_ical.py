@@ -1,4 +1,4 @@
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Deram <nderam@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -26,115 +26,67 @@ from itools.resources import get_resource
 from itools.resources import memory
 from itools.handlers.Text import Text
 from itools.datatypes import URI
-from itools.ical.icalendar import icalendar, Property
+from itools.ical.icalendar import icalendar, Component
+from itools.ical.icalendar import Property, PropertyValue, Parameter
 from itools.ical.icalendar import unfold_lines
 from itools.ical import types as icalTypes
-from itools.ical.types import PropertyType, ParameterType, ComponentType
+from itools.ical.types import PropertyType, PropertyValueType
+from itools.ical.types import ParameterType, ComponentType
 
 
 # Example with 1 event
 content = """ 
 BEGIN:VCALENDAR
-VERSION
- :2.0
-PRODID
- :-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN
-METHOD
- :PUBLISH
+VERSION:2.0
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN
+METHOD:PUBLISH
 BEGIN:VEVENT
-UID
- :581361a0-1dd2-11b2-9a42-bd3958eeac9a
-SUMMARY
- :Résumé
-DESCRIPTION
- :all all all
-LOCATION
- :France
-STATUS
- :TENTATIVE
-CLASS
- :PRIVATE
-X-MOZILLA-RECUR-DEFAULT-INTERVAL
- :0
-DTSTART
- ;VALUE="DATE"
- :20050530
-DTEND
- ;VALUE=DATE
- :20050531
-DTSTAMP
- :20050601T074604Z
-ATTENDEE
- ;RSVP=TRUE
- ;MEMBER="MAILTO:DEV-GROUP@host2.com"
- :MAILTO:jdoe@itaapy.com
-ATTENDEE
- ;MEMBER="MAILTO:DEV-GROUP@host2.com"
- :MAILTO:jsmith@itaapy.com
-PRIORITY
- :1
+UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a
+SUMMARY:RÃ©sumÃ©
+DESCRIPTION:all all all
+LOCATION:France
+STATUS:TENTATIVE
+CLASS:PRIVATE
+X-MOZILLA-RECUR-DEFAULT-INTERVAL:0
+DTSTART;VALUE="DATE":20050530
+DTEND;VALUE=DATE:20050531
+DTSTAMP:20050601T074604Z
+ATTENDEE;RSVP=TRUE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jdoe@itaapy.com
+ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jsmith@itaapy.com
+PRIORITY:1
 END:VEVENT
-BEGIN:VCALENDAR
+END:VCALENDAR
 """
 
 # Example with 2 events
 content2 = """ 
 BEGIN:VCALENDAR
-VERSION
- :2.0
-PRODID
- :-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN
-METHOD
- :PUBLISH
+VERSION:2.0
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN
+METHOD:PUBLISH
 BEGIN:VEVENT
-UID
- :581361a0-1dd2-11b2-9a42-bd3958eeac9a
-SUMMARY
- :Refound
-DESCRIPTION
- :all all all
-LOCATION
- :France
-STATUS
- :TENTATIVE
-CLASS
- :PRIVATE
-X-MOZILLA-RECUR-DEFAULT-INTERVAL
- :0
-DTSTART
- ;VALUE="DATE"
- :20050530
-DTEND
- ;VALUE=DATE
- :20050531
-DTSTAMP
- :20050601T074604Z
-ATTENDEE
- ;RSVP=TRUE
- ;MEMBER="MAILTO:DEV-GROUP@host2.com"
- :MAILTO:jdoe@itaapy.com
-PRIORITY
- :1
+UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a
+SUMMARY:Refound
+DESCRIPTION:all all all
+LOCATION:France
+STATUS:TENTATIVE
+CLASS:PRIVATE
+X-MOZILLA-RECUR-DEFAULT-INTERVAL:0
+DTSTART;VALUE="DATE":20050530
+DTEND;VALUE=DATE:20050531
+DTSTAMP:20050601T074604Z
+ATTENDEE;RSVP=TRUE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jdoe@itaapy.com
+PRIORITY:1
 END:VEVENT
 BEGIN:VEVENT
-UID
- :581361a0-1dd2-11b2-9a42-bd3958eeac9b
-SUMMARY
- :222222222
-DTSTART
- ;VALUE="DATE"
- :20050701
-DTEND
- ;VALUE=DATE
- :20050701
-ATTENDEE
- ;RSVP=TRUE
- ;MEMBER="MAILTO:DEV-GROUP@host2.com"
- :MAILTO:jdoe@itaapy.com
-PRIORITY
- :2
+UID:581361a0-1dd2-11b2-9a42-bd3958eeac9b
+SUMMARY:222222222
+DTSTART;VALUE="DATE":20050701
+DTEND;VALUE=DATE:20050701
+ATTENDEE;RSVP=TRUE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jdoe@itaapy.com
+PRIORITY:2
 END:VEVENT
-BEGIN:VCALENDAR
+END:VCALENDAR
 """
 
 
@@ -144,27 +96,17 @@ class icalTestCase(unittest.TestCase):
         """Test unfolding lines."""
         input = (
             'BEGIN:VCALENDAR\n'
-            'VERSION\n'
-            ' :2.0\n'
-            'PRODID\n'
-            ' :-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN\n'
+            'VERSION:2.0\n'
+            'PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN\n'
             'BEGIN:VEVENT\n'
-            'UID\n'
-            ' :581361a0-1dd2-11b2-9a42-bd3958eeac9a\n'
-            'X-MOZILLA-RECUR-DEFAULT-INTERVAL\n'
-            ' :0\n'
-            'DTSTART\n'
-            ' ;VALUE=DATE\n'
-            ' :20050530\n'
-            'DTEND\n'
-            ' ;VALUE=DATE\n'
-            ' :20050531\n'
-            'DTSTAMP\n'
-            ' :20050601T074604Z\n'
-            'DESCRIPTION\n'
-            ' :opps !!! this is a really big information, ..., but does '
-            'it change \n'
-            ' anything in reality ?? We should see a radical change in the next \n'
+            'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a\n'
+            'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0\n'
+            'DTSTART;VALUE=DATE:20050530\n'
+            'DTEND;VALUE=DATE:20050531\n'
+            'DTSTAMP:20050601T074604Z\n'
+            'DESCRIPTION:opps !!! this is a really big information, ..., '
+            'but does it change anything \n'
+            ' in reality ?? We should see a radical change in the next \n'
             ' 3 months, shouldn\'t we ???\\nAaah !!!\n' )
                   
         expected = [
@@ -189,7 +131,161 @@ class icalTestCase(unittest.TestCase):
             i = i + 1
 
 
+    def test_get_skeleton(self):
+        """Test get_skeleton"""
+        cal = icalendar()
+
+        properties = []
+        for name in cal.properties:
+            params = cal.properties[name].parameters
+            value = cal.properties[name].value
+            property = '%s;%s:%s' % (name, params, value)
+            properties.append(property)
+
+        # Test properties
+        expected_properties = [
+            u'VERSION;{}:2.0', 
+            u'PRODID;{}:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
+        self.assertEqual(properties, expected_properties)
+
+        # Test components
+        self.assertEqual(cal.get_components(), {})
+        self.assertEqual(cal.get_components('VEVENT'), [])
+
+
+    def test_empty_event(self):
+        """
+        Test to create, access and encode an event.
+        """
+        expected = 'BEGIN:VEVENT\nEND:VEVENT\n'
+        event = Component('VEVENT')
+        self.assertEqual('UID' in event.properties, True) 
+        self.assertEqual(event.c_type, 'VEVENT')
+        self.assertEqual(event.encoding, 'UTF-8') 
+
+
+    def test_parameter(self):
+        """
+        Test to create, access and encode a parameter with one or more values.
+        """
+        # parameter with only one value
+        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com'])
+        self.assertEqual(param.name, 'MEMBER')
+        self.assertEqual(param.values, ['MAILTO:DEV-GROUP@host.com'])
+
+        expected = 'MEMBER=MAILTO:DEV-GROUP@host.com'
+        self.assertEqual(ParameterType.encode(param), expected)
+
+        # parameter with more than one value
+        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com', 
+                                     'MAILTO:NO-GROUP@host.com'])
+        self.assertEqual(param.name, 'MEMBER')
+        self.assertEqual(param.values, ['MAILTO:DEV-GROUP@host.com',
+                                        'MAILTO:NO-GROUP@host.com'])
+
+        expected = 'MEMBER=MAILTO:DEV-GROUP@host.com,MAILTO:NO-GROUP@host.com'
+        self.assertEqual(ParameterType.encode(param), expected)
+
+         # Same tests from decoding
+        param = ParameterType.decode(expected)
+        self.assertEqual(param.name, 'MEMBER')
+        self.assertEqual(param.values, ['MAILTO:DEV-GROUP@host.com',
+                                        'MAILTO:NO-GROUP@host.com'])
+
+
+    def test_property(self):
+        """
+        Test to create, access and encode a property with or without parameters.
+        """
+        ##################################################################
+        # property without parameter
+        expected = 'SUMMARY:This is the summary\n'
+
+        # no parameters builder
+        property_value = PropertyValue('This is the summary')
+        property = Property('SUMMARY', property_value)
+        self.assertEqual(property.name, 'SUMMARY')
+        self.assertEqual(property.value, property_value)
+        self.assertEqual(PropertyType.encode(property.name, property), expected)
+
+        # with parameters builder
+        property = Property('SUMMARY', PropertyValue('This is the summary'))
+        self.assertEqual(PropertyType.encode(property.name, property), expected)
+
+        ##################################################################
+        # property with one parameter
+        expected = 'ATTENDEE;MEMBER=MAILTO:DEV-GROUP@host.com:'\
+                   'mailto:darwin@itaapy.com\n'
+        # property with one parameter
+        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com'])
+        params = {'MEMBER': param}
+        property = Property('ATTENDEE', 
+                            PropertyValue('mailto:darwin@itaapy.com', params))
+        self.assertEqual(PropertyType.encode(property.name, property), 
+                         expected)
+
+
+    def test_get_property_values(self):
+        cal = icalendar(memory.File(content))
+
+        # icalendar property
+        expected = '2.0'
+        property = cal.get_property_values('VERSION')
+        self.assertEqual(property.value, expected)
+
+        # Component property
+        events = cal.get_components('VEVENT')
+        properties = events[0].properties
+
+        expected = u'RÃ©sumÃ©'
+        property = events[0].get_property_values('SUMMARY')
+        self.assertEqual(property.value, expected)
+
+        expected = 1
+        property = events[0].get_property_values('PRIORITY')
+        self.assertEqual(property.value, expected)
+
+        # Component properties
+        event = Component('VEVENT')
+        name, value = 'MYADD', PropertyValue(u'RÃ©sumÃ© Ã  crÃªtes')
+        event.add(Property(name, value))
+        name = 'DESCRIPTION'
+        value = PropertyValue(u'Property added by calling add_property')
+        event.add(Property(name, value))
+        name = 'ATTENDEE'
+        param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
+        value = PropertyValue('mailto:darwin@itaapy.com', {'MEMBER': param})
+        event.add(Property(name, value))
+
+        properties = event.get_property_values()
+        self.assertEqual('MYADD' in properties, True)
+        self.assertEqual('DESCRIPTION' in properties, True)
+        self.assertEqual('ATTENDEE' in properties, True)
+        self.assertEqual('VERSION' in properties, False)
+
+
+    def test_add_to_calendar(self):
+        """
+        Test to add property and component to an empty icalendar object.
+        """
+        cal = icalendar()
+
+        event = Component('VEVENT')
+        cal.add(event)
+        self.assertEqual(len(cal.get_components('VEVENT')), 1)
+
+        property = Property('METHOD', PropertyValue('PUBLISH'))
+        cal.add(property)
+        self.assertEqual(cal.get_property_values('METHOD'), property.value)
+
+        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com'])
+        self.assertRaises(ValueError, cal.add, param)
+
+
     def property_to_string(self, prop_name, prop):
+        """ 
+        Method only used by test_load and test_load2.
+        """
         value, params = prop.value, ''
         for param_key in prop.parameters:
             param = u';' + prop.parameters[param_key].name + u'='
@@ -206,8 +302,12 @@ class icalTestCase(unittest.TestCase):
         # Test icalendar properties
         properties = []
         for name in cal.properties:
-            params = cal.properties[name].parameters
-            value = cal.properties[name].value
+            property_value = cal.properties[name]
+            # Only property METHOD can occur several times, we give only one
+            if isinstance(property_value, list):
+                property_value = property_value[0]
+            params = property_value.parameters
+            value = property_value.value
             property = '%s;%s:%s' % (name, params, value)
             properties.append(property)
 
@@ -219,7 +319,7 @@ class icalTestCase(unittest.TestCase):
 
         # Test component properties
         properties = []
-        event = cal.get_components_of('VEVENT')[0]
+        event = cal.get_components('VEVENT')[0]
         for prop_name in event.properties:
             occurs = PropertyType.nb_occurrences(prop_name)
             if occurs == 1:
@@ -239,7 +339,7 @@ class icalTestCase(unittest.TestCase):
                      ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
             u'ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com"'
                      ':mailto:jsmith@itaapy.com',
-            u'SUMMARY:Résumé', 
+            u'SUMMARY:RÃ©sumÃ©', 
             u'PRIORITY:1', 
             u'LOCATION:France', 
             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0', 
@@ -249,18 +349,18 @@ class icalTestCase(unittest.TestCase):
             u'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a']
 
         self.assertEqual(properties, expected_event_properties)
-        self.assertEqual(len(cal.get_components_of('VEVENT')), 1)
+        self.assertEqual(len(cal.get_components('VEVENT')), 1)
 
         # Test journals
-        self.assertEqual(len(cal.get_components_of('VJOURNAL')), 0)
+        self.assertEqual(len(cal.get_components('VJOURNAL')), 0)
         # Test todos
-        self.assertEqual(len(cal.get_components_of('TODO')), 0)
+        self.assertEqual(len(cal.get_components('TODO')), 0)
         # Test freebusys
-        self.assertEqual(len(cal.get_components_of('FREEBUSY')), 0)
+        self.assertEqual(len(cal.get_components('FREEBUSY')), 0)
         # Test timezones
-        self.assertEqual(len(cal.get_components_of('TIMEZONE')), 0)
+        self.assertEqual(len(cal.get_components('TIMEZONE')), 0)
         # Test others
-        self.assertEqual(len(cal.get_components_of('others')), 0)
+        self.assertEqual(len(cal.get_components('others')), 0)
 
 
     def test_load_2(self):
@@ -282,7 +382,7 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(properties, expected_properties)
 
         events = []
-        for event in cal.get_components_of('VEVENT'):
+        for event in cal.get_components('VEVENT'):
             properties = []
 
             for prop_name in event.properties:
@@ -325,134 +425,101 @@ class icalTestCase(unittest.TestCase):
 
         self.assertEqual(events, \
                          expected_events)
-        self.assertEqual(len(cal.get_components_of('VEVENT')), 2)
+        self.assertEqual(len(cal.get_components('VEVENT')), 2)
 
         # Test journals
-        self.assertEqual(len(cal.get_components_of('VJOURNAL')), 0)
+        self.assertEqual(len(cal.get_components('VJOURNAL')), 0)
         # Test todos
-        self.assertEqual(len(cal.get_components_of('TODO')), 0)
+        self.assertEqual(len(cal.get_components('TODO')), 0)
         # Test freebusys
-        self.assertEqual(len(cal.get_components_of('FREEBUSY')), 0)
+        self.assertEqual(len(cal.get_components('FREEBUSY')), 0)
         # Test timezones
-        self.assertEqual(len(cal.get_components_of('TIMEZONE')), 0)
+        self.assertEqual(len(cal.get_components('TIMEZONE')), 0)
         # Test others
-        self.assertEqual(len(cal.get_components_of('others')), 0)
+        self.assertEqual(len(cal.get_components('others')), 0)
 
 
-    def test_get_events_filtered(self):
-        """Test get events filtered by arguments given."""
-        cal = icalendar(memory.File(content))
-
-#        events = cal.get_events_filtered(ATTENDEE='MAILTO:jdoe@itaapy.com')
-#        events = cal.get_events_filtered(STATUS='TENTATIVE')
-#        events = cal.get_events_filtered(ATTENDEE='MAILTO:jdoe@itaapy.com', 
-#                                          STATUS='TENTATIVE')
-#        events = cal.get_events_filtered(STATUS='TENTATIVE', PRIORITY=[1])
-        events = cal.get_events_filtered(
-            ATTENDEE=[URI.decode('MAILTO:jdoe@itaapy.com'),
-                      URI.decode('MAILTO:jsmith@itaapy.com')],
-            STATUS='TENTATIVE', PRIORITY=[1])
-
-        if events:
-            for name in events[0].properties:
-                occurs = PropertyType.nb_occurrences(name)
-                if occurs == 1:
-                    value = events[0].properties[name]
-                else:
-                    value = events[0].properties[name][0]
-##                print PropertyType.encode(name, value)
-
-
-    def test_get_events_by_date(self):
-        """Test get events filtered by date."""
-
-        cal = icalendar(memory.File(content))
-
-        date = datetime(2005, 5, 29)
-        events = cal.get_events_by_date(date)
-        self.assertEqual(len(events), 0)
-
-        date = datetime(2005, 5, 30)
-        events = cal.get_events_by_date(date)
-        self.assertEqual(len(events), 1)
-
-        date = datetime(2005, 7, 30)
-        events = cal.get_events_by_date(date)
-        self.assertEqual(len(events), 0)
-
-
-    def test_get_skeleton(self):
-        """Test get_skeleton"""
-        cal = icalendar()
-
-        properties = []
-        for name in cal.properties:
-            params = cal.properties[name].parameters
-            value = cal.properties[name].value
-            property = '%s;%s:%s' % (name, params, value)
-            properties.append(property)
-
-        # Test properties
-        expected_properties = [
-            u'VERSION;{}:2.0', 
-            u'PRODID;{}:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
-        self.assertEqual(properties, expected_properties)
-
-        # Test components
-        self.assertEqual(len(cal.get_components_of('VEVENT')), 0)
-        self.assertEqual(len(cal.get_components_of('TODO')), 0)
-        self.assertEqual(len(cal.get_components_of('VJOURNAL')), 0)
-        self.assertEqual(len(cal.get_components_of('FREEBUSY')), 0)
-        self.assertEqual(len(cal.get_components_of('TIMEZONE')), 0)
-        self.assertEqual(len(cal.get_components_of('others')), 0)
-
-
-    def test_get_property_calendar(self):
-        cal = icalendar(memory.File(content))
-
-        expected = '2.0'
-        property = cal.get_property_values('VERSION')
-        self.assertEqual(property.value, expected)
-
-
-    def test_get_property_component(self):
-        cal = icalendar(memory.File(content))
-        events = cal.get_components_of('VEVENT')
-        properties = events[0].properties
-
-        expected = u'Résumé'
-        property = events[0].get_property_values('SUMMARY')
-        self.assertEqual(property.value, expected)
-
-        expected = 1
-        property = events[0].get_property_values('PRIORITY')
-        self.assertEqual(property.value, expected)
-
-
-    # Not a test, just print
+    # Just call to_str method
     def test_to_str(self):
-        """Test get_skeleton"""
+        """Call to_str method."""
         cal = icalendar(memory.File(content2))
         cal.to_str()
 
 
-    def test_ParameterType(self):
-        """Test to decode a string value and 
-           compare it with encode returned value
-        """   
-        param = ParameterType.decode(';RSVP=TRUE')
-        expected = ';RSVP=TRUE'
-        self.assertEqual(ParameterType.encode(param), expected)
+    def test_add_property(self):
+        """ Test adding a property to any component """
 
-        param = ParameterType.decode(';MEMBER="MAILTO:DEV-GROUP@host2.com"')
-        expected = ';MEMBER="MAILTO:DEV-GROUP@host2.com"'
-        self.assertEqual(ParameterType.encode(param), expected)
+        cal = icalendar(memory.File(content2))
+        event = cal.get_components('VEVENT')[1]
+
+        # other property (MYADD)
+        name, value = 'MYADD', PropertyValue(u'RÃ©sumÃ© Ã  crÃªtes')
+        property = Property(name, value)
+        event.add(property)
+
+        property = event.get_property_values(name)
+        self.assertEqual(property[0], value)
+        self.assertEqual(property[0].value, value.value)
+
+        # property DESCRIPTION
+        name = 'DESCRIPTION'
+        value = PropertyValue(u'Property added by calling add_property')
+        property = Property(name, value)
+        event.add(property)
+
+        property = event.get_property_values(name)
+        self.assertEqual(property, value)
+
+        # property ATTENDEE
+        name = 'ATTENDEE'
+        param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
+        value = PropertyValue('mailto:darwin@itaapy.com', {'MEMBER': param})
+        property = Property(name, value)
+        event.add(property)
+
+        property = event.get_property_values(name)
+        self.assertEqual(str(property[0].value), 'mailto:jdoe@itaapy.com')
+        self.assertEqual(property[1].parameters, {'MEMBER': param})
+        self.assertEqual(property[1], value)
+
+
+    def test_icalendar_set_property(self):
+        """ Test setting a new value to an existant icalendar property"""
+
+        cal = icalendar(memory.File(content))
+
+        name, value = 'VERSION', PropertyValue('2.1')
+        cal.set_property(name, value)
+        self.assertEqual(cal.get_property_values(name), value)
+
+        cal.set_property(name, [value, ])
+        self.assertEqual(cal.get_property_values(name), value)
+
+
+    def test_component_set_property(self):
+        """ Test setting a new value to an existant component property"""
+
+        cal = icalendar(memory.File(content))
+        event = cal.get_components('VEVENT')[0]
+
+        name, value = 'SUMMARY', PropertyValue('This is a new summary')
+        event.set_property(name, value)
+        self.assertEqual(event.get_property_values(name), value)
+
+        name, value = 'ATTENDEE', []
+        param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
+        value.append(PropertyValue('mailto:darwin@itaapy.com', 
+                                   {'MEMBER': param}))
+        value.append(PropertyValue('mailto:jdoe@itaapy.com'))
+        value.append(PropertyValue('mailto:jsmith@itaapy.com'))
+        event.set_property(name, value)
+        self.assertEqual(event.get_property_values(name), value)
 
 
     def test_correspond_to_date(self):
         """ Test if a component corresponds to a given date. """
         cal = icalendar(memory.File(content))
-        event = cal.get_components_of('VEVENT')[0]
+        event = cal.get_components('VEVENT')[0]
 
         date = datetime(2005, 1, 1)
         self.assertEqual(event.correspond_to_date(date), False)
@@ -464,32 +531,170 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(event.correspond_to_date(date), False)
 
 
-    def test_add_property(self):
-        """ Test adding a property to any component """
+    def test_in_range(self):
+        """ Test if a component is in given dates range. """
+        cal = icalendar(memory.File(content))
+        event = cal.get_components('VEVENT')[0]
 
+        dtstart = datetime(2005, 1, 1)
+        dtend = datetime(2005, 1, 1, 20, 0)
+        self.assertEqual(event.in_range(dtstart, dtend), False)
+        dtstart = datetime(2005, 5, 28)
+        dtend = datetime(2005, 5, 30, 0, 0)
+        self.assertEqual(event.in_range(dtstart, dtend), True)
+        dtstart = datetime(2005, 5, 29)
+        dtend = datetime(2005, 5, 30, 0, 1)
+        self.assertEqual(event.in_range(dtstart, dtend), True)
+        dtstart = datetime(2005, 5, 30, 23, 59, 59)
+        dtend = datetime(2005, 5, 31, 0, 0)
+        self.assertEqual(event.in_range(dtstart, dtend), True)
+        dtstart = datetime(2005, 5, 1)
+        dtend = datetime(2005, 6, 1)
+        self.assertEqual(event.in_range(dtstart, dtend), True)
+        dtstart = datetime(2005, 5, 31)
+        dtend = datetime(2005, 6, 1)
+        self.assertEqual(event.in_range(dtstart, dtend), True)
+        dtstart = datetime(2005, 5, 31, 0, 0, 1)
+        dtend = datetime(2005, 6, 1)
+        self.assertEqual(event.in_range(dtstart, dtend), False)
+
+
+    def test_search_events(self):
+        """Test get events filtered by arguments given."""
+        # Test with 1 event
+        cal = icalendar(memory.File(content))
+        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+
+        events = cal.search_events(ATTENDEE=attendee_value)
+        self.assertEqual(len(events), 1)
+
+        events = cal.search_events(STATUS='CONFIRMED')
+        self.assertEqual(events, [])
+
+        events = cal.search_events(STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
+
+        events = cal.search_events(ATTENDEE=attendee_value, STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
+
+        events = cal.search_events(STATUS='TENTATIVE', PRIORITY=1)
+        self.assertEqual(len(events), 1)
+
+        events = cal.search_events(
+            ATTENDEE=[attendee_value, URI.decode('MAILTO:jsmith@itaapy.com')],
+            STATUS='TENTATIVE', 
+            PRIORITY=1)
+        self.assertEqual(len(events), 1)
+
+        # Tests with 2 events
         cal = icalendar(memory.File(content2))
-        event = cal.get_components_of('VEVENT')[1]
+        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
 
-        name, value = 'MYADD', [u'Résumé à crêtes']
-        event.add(name, value)
+        events = cal.search_events(ATTENDEE=attendee_value)
+        self.assertEqual(len(events), 2)
 
-        property = event.get_property_values(name)
-        self.assertEqual(property[0].value, value)
+        events = cal.search_events(STATUS='CONFIRMED')
+        self.assertEqual(events, [])
 
-        name, value = 'DESCRIPTION', 'Property added by calling add_property'
-        event.add(name, value)
+        events = cal.search_events(STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
 
-        property = event.get_property_values(name)
-        self.assertEqual(property[0].value, value)
+        events = cal.search_events(ATTENDEE=attendee_value, STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
 
-        param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
-        name, value = 'ATTENDEE', 'mailto:darwin@itaapy.com'
-        property = Property(name, value, {'MEMBER': param})
-        event.add(name, value, param)
+        events = cal.search_events(STATUS='TENTATIVE', PRIORITY=1)
+        self.assertEqual(len(events), 1)
 
-        property = event.get_property_values(name)
-        self.assertEqual(str(property[0].value), 'mailto:jdoe@itaapy.com')
-        self.assertEqual(str(property[1].value), value)
+        events = cal.search_events(
+            ATTENDEE=[attendee_value, URI.decode('MAILTO:jsmith@itaapy.com')],
+            STATUS='TENTATIVE', 
+            PRIORITY=1)
+        self.assertEqual(len(events), 1)
+
+
+    def test_get_events_in_date(self):
+        """Test get events filtered by date."""
+
+        cal = icalendar(memory.File(content))
+
+        date = datetime(2005, 5, 29)
+        events = cal.get_events_in_date(date)
+        self.assertEqual(len(events), 0)
+        self.assertEqual(cal.has_event_in_date(date), False)
+
+        date = datetime(2005, 5, 30)
+        events = cal.get_events_in_date(date)
+        self.assertEqual(len(events), 1)
+        self.assertEqual(cal.has_event_in_date(date), True)
+
+        date = datetime(2005, 7, 30)
+        events = cal.get_events_in_date(date)
+        self.assertEqual(len(events), 0)
+        self.assertEqual(cal.has_event_in_date(date), False)
+
+
+    def test_get_events_in_range(self):
+        """Test get events matching given dates range."""
+        cal = icalendar(memory.File(content2))
+
+        dtstart = datetime(2005, 1, 1)
+        dtend = datetime(2005, 1, 1, 20, 0)
+        events = cal.get_events_in_range(dtstart, dtend)
+        self.assertEqual(len(events), 0)
+
+        dtstart = datetime(2005, 5, 28)
+        dtend = datetime(2005, 5, 30, 0, 0)
+        events = cal.get_events_in_range(dtstart, dtend)
+        self.assertEqual(len(events), 1)
+
+        dtstart = datetime(2005, 5, 29)
+        dtend = datetime(2005, 5, 30, 0, 1)
+        events = cal.get_events_in_range(dtstart, dtend)
+        self.assertEqual(len(events), 1)
+
+        dtstart = datetime(2005, 5, 30, 23, 59, 59)
+        dtend = datetime(2005, 5, 31, 0, 0)
+        events = cal.get_events_in_range(dtstart, dtend)
+        self.assertEqual(len(events), 1)
+
+        dtstart = datetime(2005, 5, 1)
+        dtend = datetime(2005, 8, 1)
+        events = cal.get_events_in_range(dtstart, dtend)
+        self.assertEqual(len(events), 2)
+
+        dtstart = datetime(2005, 5, 31)
+        dtend = datetime(2005, 6, 1)
+        events = cal.get_events_in_range(dtstart, dtend)
+        self.assertEqual(len(events), 1)
+
+        dtstart = datetime(2005, 5, 31, 0, 0, 1)
+        dtend = datetime(2005, 6, 1)
+        events = cal.get_events_in_range(dtstart, dtend)
+        self.assertEqual(len(events), 0)
+
+
+    def test_get_conflicts(self):
+        """
+        Test get_conflicts method which returns uid couples of events
+        conflicting on a given date. 
+        """
+        cal = icalendar(memory.File(content2))
+        date = datetime(2005, 05, 30)
+
+        conflicts = cal.get_conflicts(date)
+        self.assertEqual(conflicts, None) 
+
+        # set a conflict
+        uid1 = '581361a0-1dd2-11b2-9a42-bd3958eeac9a'
+        uid2 = '581361a0-1dd2-11b2-9a42-bd3958eeac9b'
+        event = cal.get_component_by_uid(uid2)
+        name, value = 'DTSTART', PropertyValue(datetime(2005, 05, 30))
+        event.set_property(name, value)
+        name, value = 'DTEND', PropertyValue(datetime(2005, 05, 31))
+        event.set_property(name, value)
+            
+        conflicts = cal.get_conflicts(date)
+        self.assertEqual(conflicts, [(uid1, uid2)])
 
 
 if __name__ == '__main__':

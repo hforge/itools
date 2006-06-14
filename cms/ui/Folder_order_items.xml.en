@@ -23,6 +23,8 @@
     <p>
       <input type="submit" name=";order_folders_up" value="Order up" />
       <input type="submit" name=";order_folders_down" value="Order down" />
+      <input type="submit" name=";order_folders_top" value="Order top" />
+      <input type="submit" name=";order_folders_bottom" value="Order bottom" />
     </p>
   </form>
 </stl:block>

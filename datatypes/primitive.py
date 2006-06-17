@@ -135,16 +135,22 @@ class DateTime(DataType):
         date, time = value.split()
         year, month, day = date.split('-')
         year, month, day = int(year), int(month), int(day)
-        hours, minutes = time.split(':')
-        hours, minutes = int(hours), int(minutes)
-        return datetime.datetime(year, month, day, hours, minutes)
+        if time.count(':') == 1:
+            # XXX backwards compatibility
+            hours, minutes = time.split(':')
+            hours, minutes, seconds = int(hours), int(minutes), 0
+        else:
+            hours, minutes, seconds = time.split(':')
+            hours, minutes, seconds = int(hours), int(minutes), int(seconds)
+            
+        return datetime.datetime(year, month, day, hours, minutes, seconds)
 
 
     @staticmethod
     def encode(value):
         if value is None:
             return ''
-        return value.strftime('%Y-%m-%d %H:%M')
+        return value.strftime('%Y-%m-%d %H:%M:%S')
 
 
 

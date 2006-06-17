@@ -15,6 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
 import itools
 from itools.uri import get_reference
@@ -143,15 +146,19 @@ class File(Handler, itools.handlers.File.File):
 
         if self.is_locked():
             lock = self.get_lock()
-            if lock.username == context.user.name:
-                # XXX Check "lock.key" is the right value to send; in Zope
-                # this is a call to "lock.getLockToken()".
-                r.append('lock-token:%s' % lock.key)
-                if request.get('borrow_lock'):
-                    r.append('borrow_lock:1')
+            now = datetime.now()
+            expiry = now.replace(hour=now.hour-1)
+            # locks expire after one hour
+            if lock.timestamp < expiry:
+                self.unlock()
             else:
-                # XXX The operation should fail
-                pass
+                # always borrow lock from same user
+                if lock.username == context.user.name:
+                    r.append('lock-token:%s' % lock.key)
+                    r.append('borrow_lock:1')
+                else:
+                    # XXX The operation should fail
+                    pass
 
         r.append('')
 

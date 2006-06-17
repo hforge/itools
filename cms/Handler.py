@@ -17,7 +17,7 @@
 
 # Import from the Standard Library
 import cgi
-import datetime
+from datetime import datetime
 import logging
 from random import random
 from time import time
@@ -26,7 +26,7 @@ from time import time
 import itools
 from itools import get_abspath
 from itools import uri
-from itools.datatypes import QName
+from itools.datatypes import QName, DateTime
 from itools.resources import base, memory
 from itools.handlers.Handler import Node as iNode
 from itools.handlers.transactions import get_transaction
@@ -58,20 +58,24 @@ class Lock(Text):
 
     def get_skeleton(self, username=None, **kw):
         key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
-        return '%s\n%s\n%s' % (username, datetime.datetime.now(), key)
+        timestamp = DateTime.encode(datetime.now())
+        return '%s\n%s\n%s' % (username, timestamp, key)
 
 
     def _load_state(self, resource):
         state = self.state
         username, timestamp, key = resource.read().strip().split('\n')
         state.username = username
-        state.timestamp = timestamp
+        # XXX backwards compatibility: remove microseconds first
+        timestamp = timestamp.split('.')[0]
+        state.timestamp = DateTime.decode(timestamp)
         state.key = key
 
 
     def to_str(self):
         state = self.state
-        return '%s\n%s\n%s' % (state.username, state.timestamp, state.key)
+        timestamp = DateTime.encode(state.timestamp)
+        return '%s\n%s\n%s' % (state.username, timestamp, state.key)
 
 
 

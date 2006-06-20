@@ -21,7 +21,7 @@ import csv as python_csv
 
 # Import from itools
 from itools.handlers.Text import Text
-from itools.catalog import queries
+from itools.catalog import queries, analysers
 
 
 
@@ -61,10 +61,50 @@ class Row(list):
 
 class Index(dict):
 
+    def _normalise_word(self, word):
+        # XXX temporary until we analyse as the catalog do
+        if isinstance(word, bool):
+            word = unicode(int(word))
+        elif not isinstance(word, basestring):
+            word = unicode(word)
+        elif isinstance(word, unicode):
+            word = word.lower()
+
+        return word
+
+
     def search_word(self, word):
+        word = self._normalise_word(word)
+
         if word in self:
             return self[word].copy()
+        
         return {}
+
+
+    def search_range(self, left, right):
+        left = self._normalise_word(left)
+        right = self._normalise_word(right)
+
+        rows = {}
+        
+        if not left:
+            for key in self.keys():
+                if  key < right:
+                    for number in self[key]:
+                        rows[number] = rows.get(number, 0) + 1
+        elif not right:
+            for key in self.keys():
+                if left <= key:
+                    for number in self[key]:
+                        rows[number] = rows.get(number, 0) + 1
+        else:
+            for key in self.keys():
+                if left <= key < right:
+                    for number in self[key]:
+                        rows[number] = rows.get(number, 0) + 1
+
+        return rows
 
 
 
@@ -167,15 +207,17 @@ class CSV(Text):
         indexes = self.state.indexes
         for i, value in enumerate(row):
             datatype = self.schema[self.columns[i]]
-            if getattr(datatype, 'index', False) is True:
-                if indexes[i] is None:
-                    indexes[i] = Index()
-                index = indexes[i]
-                # XXX We should parse the value with itools.catalog.analysers
-                # and store the positions instead of an empty list, as
-                # itools.catalog does.
-                index.setdefault(value, {})
-                index[value][row_number] = []
+            analyser_name = getattr(datatype, 'index', None)
+            if analyser_name is None:
+                continue
+            analyser = analysers.get_analyser(analyser_name)
+            if indexes[i] is None:
+                indexes[i] = Index()
+            index = indexes[i]
+            for word, position in analyser(value):
+                index.setdefault(word, {})
+                index[word].setdefault(row_number, [])
+                index[word][row_number].append(position)
 
 
     def _unindex_row(self, row_number):
@@ -208,7 +250,7 @@ class CSV(Text):
                         for j in idx:
                             if j > row_number:
                                 j = j - 1
-                            new_idx[j] = {}
+                            new_idx[j] = idx[j]
                         reverse_index[key] = new_idx
                     else:
                         del reverse_index[key]

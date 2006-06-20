@@ -98,4 +98,4 @@ analysers = {'text': Text,
              'path': Path}
 
 def get_analyser(name):
-    return analysers.get(name)
+    return analysers[name]

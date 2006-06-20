@@ -29,25 +29,33 @@ class Row(list):
 
     def __getattr__(self, name):
         try:
-            index = self.columns.index(name)
+            column = self.columns.index(name)
         except ValueError:
             message = "'%s' object has no attribute '%s'"
             raise AttributeError, message % (self.__class__.__name__, name)
 
-        return self[index]
+        return self[column]
 
 
     def __setattr__(self, name, value):
-        if name == 'index' or name == 'columns':
+        if name == 'number' or name == 'columns':
             list.__setattr__(self, name, value)
         else:
             try:
-                index = self.columns.index(name)
+                column = self.columns.index(name)
             except ValueError:
                 message = "'%s' object has no attribute '%s'"
                 raise AttributeError, message % (self.__class__.__name__, name)
 
-            self[index] = value
+            self[column] = value
+
+
+    def copy(self):
+        clone = self.__class__(self)
+        clone.number = self.number
+        clone.columns = self.columns
+
+        return clone
 
 
 
@@ -150,13 +158,11 @@ class CSV(Text):
            The index keys are decoded data.
         """
         self._index_init()
-        row_index = 0
-        for line in self.state.lines:
-            self._index_row(line, row_index)
-            row_index = row_index + 1
+        for row_number, line in enumerate(self.state.lines):
+            self._index_row(line, row_number)
 
 
-    def _index_row(self, row, row_index):
+    def _index_row(self, row, row_number):
         """Index one line"""
         indexes = self.state.indexes
         for i, value in enumerate(row):
@@ -169,14 +175,14 @@ class CSV(Text):
                 # and store the positions instead of an empty list, as
                 # itools.catalog does.
                 index.setdefault(value, {})
-                index[value][row_index] = []
+                index[value][row_number] = []
 
 
-    def _unindex_row(self, row_index):
+    def _unindex_row(self, row_number):
         """Unindex deleted row"""
         # XXX We should un-index directly looking from the row values, as
         # the commented code below shows. The difficulty comes from the
-        # fact that row indexes change when a row before is deleted; in
+        # fact that row numbers change when a row before is deleted; in
         # other words, when we remove a row, we must re-index all rows
         # after. The solution is to use internal ids, different from the
         # row number, which don't change through the handler's live.
@@ -184,7 +190,7 @@ class CSV(Text):
 ##        for i, value in enumerate(row):
 ##            index = indexes[i]
 ##            if index is not None:
-##                del index[value][row_index]
+##                del index[value][row_number]
 
         indexes = self.state.indexes
         for reverse_index in indexes:
@@ -193,14 +199,14 @@ class CSV(Text):
                     idx = reverse_index[key]
                     # Remove deleted row index
                     try:
-                        del idx[row_index]
+                        del idx[row_number]
                     except KeyError:
                         pass
                     if idx:
                         # Reindex remaining row indexes
                         new_idx = {}
                         for j in idx:
-                            if j > row_index:
+                            if j > row_number:
                                 j = j - 1
                             new_idx[j] = {}
                         reverse_index[key] = new_idx
@@ -220,13 +226,11 @@ class CSV(Text):
         self.state.indexes = None
 
         lines = []
-        index = 0
-        for line in self._parse(data):
+        for row_number, line in enumerate(self._parse(data)):
             row = self.row_class(line)
-            row.index = index
+            row.number = row_number
             row.columns = self.columns
             lines.append(row)
-            index = index + 1
 
         self.state.lines = lines
         self.state.encoding = self.guess_encoding(data)
@@ -242,6 +246,8 @@ class CSV(Text):
 ##        return self.state.lines[index]
 
 
+    #########################################################################
+    # Catalog API
     def get_index(self, name):
         if name not in self.schema:
             raise ValueError, 'the field "%s" is not defined' % name
@@ -288,76 +294,71 @@ class CSV(Text):
         return len(self.state.lines)
 
 
-    def get_row(self, index):
-        """Return row indexed by index.
+    def get_row(self, number):
+        """Return row at the given line number.
 
-           index -- number
+        Count begins at 0.
         """
-        return self.state.lines[index]
+        return self.state.lines[number]
 
 
-    def get_rows(self, indexes=None):
-        """Return rows indexed by indexex.
-           If indexes is not set (default None) the all rows 
-           are returned.
+    def get_rows(self, numbers=None):
+        """Return rows at the given list of line numbers.
+           If no numbers are given, then all rows are returned.
 
-           indexes -- list or tuple of numbers
+        Count begins at 0.
         """
-        if indexes is None:
-            return self.state.lines[:]
-
-        rows = []
-        for i in indexes:
-            rows.append(self.state.lines[i])
-        return rows
+        if numbers is None:
+            for row in self.state.lines:
+                yield row
+        else:
+            for i in numbers:
+                yield self.state.lines[i]
 
 
     def add_row(self, row):
-        """Append new row.
-           
-           row -- list with new row values
-        """
+        """Append new row as an instance of row class."""
         self.set_changed()
         new_row = self.row_class(row)
-        index = self.get_nrows()
-        new_row.index = index
+        number = self.get_nrows()
+        new_row.number = number
         new_row.columns = self.columns
         self.state.lines.append(new_row)
 
         if self.is_schema_defined():
             # Index the new line
-            self._index_row(new_row, index)
+            self._index_row(new_row, number)
 
 
-    def del_row(self, index):
-        """Delete row indexed by index.
+    def del_row(self, number):
+        """Delete row at the given line number.
 
-           index -- number
+        Count begins at 0.
         """
         self.set_changed()
-        row = self.state.lines[index]
-        del self.state.lines[index]
+        row = self.state.lines[number]
+        del self.state.lines[number]
 
         if self.is_schema_defined():
             # Unindex deleted row
-            self._unindex_row(index)
+            self._unindex_row(number)
 
 
-    def del_rows(self, indexes):
-        """Delete rows indexed by indexes.
+    def del_rows(self, numbers):
+        """Delete rows at the given line numbers.
            
-           indexes -- list or tuple of numbers
+        Count begins at 0.
         """
         self.set_changed()
         # Indexes are changing while deleting process
-        index_offset = 0
-        for i in indexes:
-            self.del_row(i + index_offset)
-            index_offset = index_offset - 1
+        number_offset = 0
+        for i in numbers:
+            self.del_row(i + number_offset)
+            number_offset = number_offset - 1
 
 
     def search(self, query=None, **kw):
-        """Return list of row indexes returned by executing the query.
+        """Return list of row numbers returned by executing the query.
         """
         if query is None:
             if kw:

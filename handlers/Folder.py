@@ -59,7 +59,7 @@ class Folder(Handler):
         # already an up-to-date handler in the cache, then it should
         # not be touched.
         cache = {}
-        for name in resource.get_resource_names():
+        for name in resource.get_names():
             cache[name] = None
         self.cache = cache
 
@@ -105,7 +105,7 @@ class Folder(Handler):
 
     def _save_state_to(self, resource):
         # Clean the target
-        for name in resource.get_resource_names():
+        for name in resource.get_names():
             resource.del_resource(name)
 
         # Add the resources

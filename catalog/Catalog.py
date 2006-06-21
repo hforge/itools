@@ -132,7 +132,7 @@ class Catalog(Folder):
         Folder._load_state(self, resource)
 
         # The document number
-        document_numbers = [ int(x[:-1]) for x in resource.get_resource_names()
+        document_numbers = [ int(x[:-1]) for x in resource.get_names()
                              if x.endswith('i') ]
         if document_numbers:
             self.document_number = max(document_numbers) + 1

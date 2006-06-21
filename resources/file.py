@@ -123,7 +123,7 @@ class File(Resource, base.File):
 
 class Folder(Resource, base.Folder):
 
-    def _get_resource_names(self):
+    def _get_names(self):
         return os.listdir(self._path)
 
 

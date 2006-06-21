@@ -246,14 +246,14 @@ class Folder(Resource):
 
     ######################################################################
     # Specific folder API
-    def get_resource_names(self, path='.'):
+    def get_names(self, path='.'):
         resource = self.get_resource(path)
-        return resource._get_resource_names()
+        return resource._get_names()
 
 
     def get_resources(self, path='.'):
         resource = self.get_resource(path)
-        for name in resource._get_resource_names():
+        for name in resource._get_names():
             yield resource.get_resource(name)
 
 
@@ -307,27 +307,6 @@ class Folder(Resource):
         folder._set_resource(segment.name, resource)
 
 
-    def _set_resource(self, name, resource):
-        """
-        This method is not aimed to be directly used by developers (see
-        set_resource instead) nor to be redefined by sub-classes (see
-        _set_file_resource and _set_folder_resource), though it could
-        be if there is a good reason.
-        """
-        if isinstance(resource, File):
-            resource.open()
-            self._set_file_resource(name, resource)
-            resource.close()
-        elif isinstance(resource, Folder):
-            self._set_folder_resource(name, resource)
-            # Recursively add sub-resources
-            source = resource
-            target = self._get_resource(name)
-            for name in source.get_resource_names():
-                resource = source._get_resource(name)
-                target._set_resource(name, resource)
-
-
     def del_resource(self, path):
         # Normalize and split the path
         if not isinstance(path, Path):
@@ -341,24 +320,6 @@ class Folder(Resource):
         # Delete
         segment = path[-1]
         return resource._del_resource(segment.name)
-
-
-    def _del_resource(self, name):
-        """
-        This method is not aimed to be directly used by developers (see
-        del_resource instead) nor to be redefined by sub-classes (see
-        _del_file_resource and _del_folder_resource), though it could
-        be if there is a good reason.
-        """
-        resource = self._get_resource(name)
-        if isinstance(resource, File):
-            self._del_file_resource(name)
-        elif isinstance(resource, Folder):
-            # Remove sub-resources
-            for subresource_name in resource.get_resource_names():
-                resource._del_resource(subresource_name)
-            # Remove itself
-            self._del_folder_resource(name)
 
 
     def del_resources(self, paths):
@@ -395,8 +356,8 @@ class Folder(Resource):
 
 
     ######################################################################
-    # Private API
-    def _get_resource_names(self):
+    # API to be overridden
+    def _get_names(self):
         """
         Returns a list with all the names of the resources.
         """
@@ -428,3 +389,46 @@ class Folder(Resource):
 
     def _del_folder_resource(self, name):
         raise NotImplementedError
+
+
+    ######################################################################
+    # Private API
+    def _set_resource(self, name, resource):
+        """
+        This method is not aimed to be directly used by developers (see
+        set_resource instead) nor to be redefined by sub-classes (see
+        _set_file_resource and _set_folder_resource), though it could
+        be if there is a good reason.
+        """
+        if isinstance(resource, File):
+            resource.open()
+            self._set_file_resource(name, resource)
+            resource.close()
+        elif isinstance(resource, Folder):
+            self._set_folder_resource(name, resource)
+            # Recursively add sub-resources
+            source = resource
+            target = self._get_resource(name)
+            for name in source.get_names():
+                resource = source._get_resource(name)
+                target._set_resource(name, resource)
+
+
+    def _del_resource(self, name):
+        """
+        This method is not aimed to be directly used by developers (see
+        del_resource instead) nor to be redefined by sub-classes (see
+        _del_file_resource and _del_folder_resource), though it could
+        be if there is a good reason.
+        """
+        resource = self._get_resource(name)
+        if isinstance(resource, File):
+            self._del_file_resource(name)
+        elif isinstance(resource, Folder):
+            # Remove sub-resources
+            for subresource_name in resource.get_names():
+                resource._del_resource(subresource_name)
+            # Remove itself
+            self._del_folder_resource(name)
+
+

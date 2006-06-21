@@ -249,7 +249,7 @@ class Folder(Resource, base.Folder):
         return datetime.fromtimestamp(mtime)
 
 
-    def _get_resource_names(self):
+    def _get_names(self):
         object = self._get_object()
         return object.keys()
 

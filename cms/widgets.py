@@ -246,7 +246,7 @@ class Breadcrumb(object):
         # Content
         objects = []
         self.is_submit = False
-        for name in target.resource.get_resource_names():
+        for name in target.resource.get_names():
             if name.startswith('.'):
                 continue
 

@@ -46,7 +46,7 @@ class FileTestCase(TestCase):
     def test_link(self):
         c = self.tests.get_resource('c')
         tests = c.get_resource('..')
-        self.assertEqual('c' in tests.get_resource_names(), True)
+        self.assertEqual('c' in tests.get_names(), True)
 
 
 ##    def test_python(self):

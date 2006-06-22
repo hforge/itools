@@ -24,11 +24,8 @@ from itools.datatypes import FileName
 
 
 
-class Context(object):
-    """Used by 'traverse2' to control the traversal."""
-
-    def __init__(self):
-        self.skip = False
+class SkipBranch(BaseException):
+    pass
 
 
 
@@ -328,31 +325,21 @@ class Folder(Resource):
 
 
     def traverse(self):
-        yield self
-        for resource in self.get_resources():
-            if isinstance(resource, Folder):
-                for x in resource.traverse():
-                    yield x
-            else:
-                yield resource
+        stack = [self]
+        while True:
+            try:
+                next = stack.pop()
+            except IndexError:
+                raise StopIteration
 
+            try:
+                yield next
+            except SkipBranch:
+                yield
+                continue
 
-    def traverse2(self, context=None):
-        if context is None:
-            context = Context()
-
-        yield self, context
-        if context.skip is True:
-            context.skip = False
-        else:
-            for resource in self.get_resources():
-                if isinstance(resource, Folder):
-                    for x, context in resource.traverse2(context):
-                        yield x, context
-                else:
-                    yield resource, context
-                    if context.skip is True:
-                        context.skip = False
+            if isinstance(next, Folder):
+                stack.extend(list(next.get_resources()))
 
 
     ######################################################################

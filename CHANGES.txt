@@ -62,8 +62,6 @@
     class replaces the old groups.
   - Various user interface improvements, by Hervé Cauwelier. Including
     #204 and #316.
-  - Now "icms-start" checks the server is not already running, and
-    "icms-stop" checks the server is running [#293].
   - Remove the obsolete option "--source" of "icms-init".
   - Remove the fake scripts "icms.py" and "igettext.py".
   - Remove obsolete skins "classic" and "surf".

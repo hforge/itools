@@ -64,6 +64,7 @@ class OrderAware(object):
 
 
     order_folders_form__access__ = 'is_allowed_to_edit'
+    order_folders_form__label__ = u"Order"
     order_folders_form__sublabel__ = u"Order"
     def order_folders_form(self):
         namespace = {}

@@ -119,19 +119,28 @@ class Request(Message):
             self._set_parameter(name, parameters[name])
 
 
-    def to_str(self):
+    def request_line_to_str(self):
+        state = self.state
+        return '%s %s %s\r\n' % (state.method, state.uri, state.http_version)
+
+
+    def headers_to_str(self):
         state = self.state
 
-        data = []
-        # Request line
-        data.append('%s %s %s\n' % (state.method, state.uri,
-                                    state.http_version))
-        # Headers
+        lines = []
         for name in state.headers:
             datatype = headers.get_type(name)
             value = state.headers[name]
             value = datatype.encode(value)
-            data.append('%s: %s\n' % (name.title(), value))
+            lines.append('%s: %s\r\n' % (name.title(), value))
+        return ''.join(lines)
+
+
+    def to_str(self):
+        data = []
+        data.append(self.request_line_to_str())
+        data.append(self.headers_to_str())
+        # The body (XXX to do)
         return ''.join(data)
 
 

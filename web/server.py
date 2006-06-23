@@ -129,24 +129,27 @@ class Server(object):
 
 
     def log_error(self):
-        error_log = self.error_log
-        error_log.write('\n')
-        error_log.write('[Error]\n')
-        error_log.write('date    : %s\n' % str(datetime.now()))
+        log = self.error_log
+        if log is not None:
+            log.write('\n')
+            log.write('%s\n' % ('*' * 78))
+            # The request data
+            context = get_context()
+            if context is not None:
+                # The request
+                request = context.request
+                log.write(request.request_line_to_str())
+                log.write(request.headers_to_str())
+                # Other information
+                user = context.user
+                log.write('\n')
+                log.write('URI     : %s\n' % str(context.uri))
+                log.write('USER    : %s\n' % (user and user.name or None))
 
-        # The request data
-        context = get_context()
-        if context is not None:
-            request = context.request
-            user = context.user
-            error_log.write('uri     : %s\n' % str(context.uri))
-            error_log.write('referrer: %s\n' % str(request.referrer))
-            error_log.write('user    : %s\n' % (user and user.name or None))
-
-        # The traceback
-        error_log.write('\n')
-        traceback.print_exc(file=error_log)
-        error_log.flush()
+            # The traceback
+            log.write('\n')
+            traceback.print_exc(file=log)
+            log.flush()
 
 
     def before_commit(self, transaction):

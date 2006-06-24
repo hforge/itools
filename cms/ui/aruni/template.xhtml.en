@@ -30,7 +30,7 @@
     <script type="text/javascript" stl:repeat="script scripts"
             stl:attributes="src script" />
   </head>
-  <body onload="onMainLoad()">
+  <body>
     <div id="header" class="clearfix">
       <form id="site_search_form" action=";search" method="get"
         stl:attributes="action site_search/action">

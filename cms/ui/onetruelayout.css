@@ -2,117 +2,76 @@
  * taken from http://www.fu2k.org/alex/css/onetruelayout/
  * Million thanks to Alex Robinson!
  */
-
 #block_1 {
-	float: left;
-	width: 80%;
-	margin-left: 20%;
+  float: left;
+  width: 80%;
+  margin-left: 20%;
 }
 * html #block_1 {
-	display: inline;
+  display: inline;
 }
 #block_2 {
-	float: left;
-	width: 20%;
-	margin-left: -100%;
+  float: left;
+  width: 20%;
+  margin-left: -100%;
 }
-/* Start Mac IE5 filter \*/
-#block_1, #block_2 {
-	padding-bottom: 32767px !important;
-	margin-bottom: -32767px !important; 
-}
-@media all and (min-width: 0px) {
-  #block_1, #block_2 {
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important; 
-  }
-  #block_1:before, #block_2:before {
-    content: '[DO NOT LEAVE IT IS NOT REAL]';
-    display: block;
-    background: inherit;
-    padding-top: 32767px !important;
-    margin-bottom: -32767px !important;
-    height: 0;
-  }
-}
-/* End Mac IE5 filter */
 /* IE Win can be a bit out - you might need to adjust  
 bottom value by -1px or as required */
 .verticalalign {
-	position: absolute;
-	bottom: 0;
+  position: absolute;
+  bottom: 0;
 }
 #block_1 .verticalalign {
-	width: 80%;
+  width: 80%;
 }
 #block_2 .verticalalign {
-	width: 20%;
+  width: 20%;
 }
-/* hack for Opera 7+ */
-@media all and (min-width: 0px) {
-  .verticalalign {
-    width: 100% !important;
-	}
-  /* But Opera 9 does it right, so CSS3 hax to the max */
-  div[id^="wrapper"] #block_1 .verticalalign {
-    width: 80% !important;
-	}
-  div[id^="wrapper"] #block_2 .verticalalign {
-    width: 20% !important;
-	}
-}
-/* hack for IEs of all persuasions */
+/* hack for IEs of all persuasions before IE7 */
 * html .verticalalign {
-	width: 100% !important;
+  width: 100% !important;
 }
 .verticalalign p {
-	position: absolute;
-	bottom: 0;
-	right: 0;
-	margin: 0;
-	padding: 0;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+}
+#wrapper_extra {
+  position: relative;
+}
+* html #wrapper {
+  position: relative;
 }
 #wrapper {
-	position: relative;
-	overflow: hidden; /* This hides the excess padding in non-IE browsers */
-}
-/* we need this for IE 5.01 - otherwise the wrapper does not expand to the
-necessary height (unless fixed, this problem becomes even more acute 
-weirdness as the method is enhanced */
-#wrapper
-{
-/* Normally a Holly-style hack height: 1% would suffice but that causes 
-IE 5.01 to completely collapse the wrapper - instead we float it */
-	float: left;
-/* NB. possibly only IE 5.01 needs to get this float value - otherwise 5.5 sometimes 
-(I saw it happen many moons ago) makes the width of wrapper too small 
-the float: none with the comment is ignored by 5.01,
-5.5 and above see it and carry on about their business
-It's probably fine to just remove it, but it's left here 
-just in case that many moons ago problem rears its head again */
-	float/**/: none;
+  overflow: hidden; /* This hides the excess padding in non-IE browsers */
 }
 /* easy clearing */
 #wrapper:after {
-	content: '[DO NOT LEAVE IT IS NOT REAL]'; 
-	display: block; 
-	height: 0; 
-	clear: both; 
-	visibility: hidden;
+  content: '[DO NOT LEAVE IT IS NOT REAL]'; 
+  display: block; 
+  height: 0; 
+  clear: both; 
+  visibility: hidden;
 }
 #wrapper {
-	display: inline-block;
+  display: inline-block;
 }
 /*\*/
 #wrapper {
-	display: block;
+  display: block;
 }
 /* end easy clearing */
+#footer {
+  clear: both;
+}
 /* Safari needs this - otherwise the ghost overflow, though painted 
 correctly obscures links and form elements that by rights should be above it.
 An unintended side-effect is that it cause such elements to vanish in IE 5.01
 and 5.5, hence the child selector hack */
 * > #footer, * > form, * > #notes, * > .output {
-	position: relative;
-	z-index: 1000;
+  position: relative;
+  z-index: 1000;
 }
+

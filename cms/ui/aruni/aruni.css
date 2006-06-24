@@ -71,7 +71,7 @@ dt { font-weight: bold; }
   display: inline;
   margin: 0;
   border-right: 1px solid #d3d7cf;
-  padding: 6px;
+  padding: 6px 6px 7px;
   white-space: nowrap;
 }
 #tabs a,
@@ -108,9 +108,12 @@ dt { font-weight: bold; }
 }
 
 #body {
-  margin-top: -1px;
-  border: 1px solid #f57900;
   padding: 3px;
+  overflow: auto;
+}
+
+* html #block_1 {
+  overflow: auto;
 }
 
 #block_2 { font-size: 90%; }

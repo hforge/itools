@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2006-05-05 13:05+CET\n"
+"POT-Creation-Date: 2006-06-24 14:06+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -20,15 +20,15 @@ msgstr ""
 msgid "%(start)s-%(end)s of %(total)s"
 msgstr "%(start)s-%(end)s of %(total)s"
 
-#: cms/Handler.py:161
+#: cms/Handler.py:172
 msgid "%.01f KB"
 msgstr ""
 
-#: cms/Handler.py:159
+#: cms/Handler.py:170
 msgid "%.01f MB"
 msgstr ""
 
-#: cms/Handler.py:165
+#: cms/Handler.py:176
 #, fuzzy
 msgid "%d obs"
 msgstr "%d bytes"
@@ -417,7 +417,7 @@ msgstr ""
 msgid "-- Choose a language --"
 msgstr "Scegli un linguaggio"
 
-#: cms/WebSite.py:45
+#: cms/WebSite.py:46
 msgid "..."
 msgstr "..."
 
@@ -562,6 +562,15 @@ msgid ""
 "<stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 msgstr ""
 
+#: cms/ui/Folder_browse_image.xml.en:0
+msgid ""
+"<a stl:if=\"selected/previous\" id=\"gallery_previous\" href=\"\" stl:"
+"attributes=\"href selected/previous\">&lt;</a> <span stl:if=\"not selected/"
+"previous\" id=\"gallery_previous\">&lt;</span> <a stl:if=\"selected/next\" "
+"id=\"gallery_next\" href=\"\" stl:attributes=\"href selected/next\">></a> "
+"<span stl:if=\"not selected/next\" id=\"gallery_next\">></span>"
+msgstr ""
+
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
 "<span class=\"result_url\" stl:content=\"object/abspath\"></span> - <span "
@@ -587,6 +596,12 @@ msgid ""
 "<stl:block stl:if=\"not repeat/item/start\">»</stl:block> <a stl:if=\"item/"
 "url\" stl:content=\"item/short_name\" stl:attributes=\"href item/url\"></a> "
 "<span stl:if=\"not item/url\" stl:content=\"item/name\"></span>"
+msgstr ""
+
+#: cms/ui/Folder_browse_image.xml.en:0
+msgid ""
+"<stl:inline stl:content=\"selected/width\"></stl:inline>x<stl:inline stl:"
+"content=\"selected/height\"></stl:inline>"
 msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
@@ -898,7 +913,7 @@ msgstr "A proposito di"
 msgid "Account Change"
 msgstr "OK"
 
-#: cms/users.py:310
+#: cms/users.py:311
 #, fuzzy
 msgid "Account changed."
 msgstr "Metadati modificati"
@@ -928,9 +943,14 @@ msgstr ""
 "Activities other than copying, distribution and modification are not covered "
 "by this License;"
 
-#: cms/ui/Group_add_users.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Add"
 msgstr "Aggiungi"
+
+#: cms/ui/Folder_new_instance.xml.en:0
+#, fuzzy
+msgid "Add Resource of Type \"<span stl:content=\"class_title\"></span>\""
+msgstr "Modifica gruppi per <span stl:content=\"fullname\"></span>"
 
 #: cms/ui/Group_add_users.xml.en:0
 #, fuzzy
@@ -941,11 +961,6 @@ msgstr "Utenti"
 #, fuzzy
 msgid "Add a Document"
 msgstr "Nuovo documento"
-
-#: cms/ui/Folder_new_instance.xml.en:0
-#, fuzzy
-msgid "Add a Folder"
-msgstr "Cartella"
 
 #: cms/ui/UserFolder_new_user.xml.en:0
 #, fuzzy
@@ -1304,7 +1319,7 @@ msgstr ""
 msgid "Document"
 msgstr "Nuovo documento"
 
-#: cms/office.py:155
+#: cms/office.py:162
 #, fuzzy
 msgid "Document Excel"
 msgstr "Documento modificato."
@@ -1319,12 +1334,12 @@ msgstr "Nuovo documento"
 msgid "Document History"
 msgstr "Documento modificato."
 
-#: cms/office.py:269
+#: cms/office.py:281
 #, fuzzy
 msgid "Document PDF"
 msgstr "Nuovo documento"
 
-#: cms/office.py:173
+#: cms/office.py:180
 #, fuzzy
 msgid "Document PowerPoint"
 msgstr "Documento modificato."
@@ -1334,7 +1349,7 @@ msgstr "Documento modificato."
 msgid "Document State"
 msgstr "Documento modificato."
 
-#: cms/office.py:136
+#: cms/office.py:143
 #, fuzzy
 msgid "Document Word"
 msgstr "Documento modificato."
@@ -1348,7 +1363,7 @@ msgstr "Documento modificato."
 msgid "Document edited."
 msgstr "Documento modificato."
 
-#: cms/Folder.py:838
+#: cms/Folder.py:862
 msgid "Document translations created."
 msgstr "Traduzione del documento creata."
 
@@ -1486,12 +1501,12 @@ msgstr ""
 msgid "Everything is alright."
 msgstr ""
 
-#: cms/office.py:154
+#: cms/office.py:161
 #, fuzzy
 msgid "Excel"
 msgstr "Esterno"
 
-#: cms/File.py:113
+#: cms/File.py:116
 msgid "External"
 msgstr "Esterno"
 
@@ -1514,7 +1529,7 @@ msgstr "File"
 msgid "File"
 msgstr "File"
 
-#: cms/Folder.py:976
+#: cms/Folder.py:1000
 msgid "File uploaded."
 msgstr "File aggiornato."
 
@@ -1535,13 +1550,23 @@ msgstr "Ripara"
 msgid "Flash"
 msgstr ""
 
-#: cms/Folder.py:56
+#: cms/Folder.py:55
 msgid "Folder"
 msgstr "Cartella"
 
 #: cms/future.py:118
 #, fuzzy
 msgid "Folders already down."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:164
+#, fuzzy
+msgid "Folders already on bottom."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:143
+#, fuzzy
+msgid "Folders already on top."
 msgstr "Tutti gli utenti sono stati aggiunti."
 
 #: cms/future.py:94
@@ -1555,6 +1580,16 @@ msgstr "Le cartelle sono usate per classificare documenti."
 #: cms/future.py:129
 msgid "Folders ordered down."
 msgstr ""
+
+#: cms/future.py:171
+#, fuzzy
+msgid "Folders ordered on bottom."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:150
+#, fuzzy
+msgid "Folders ordered on top."
+msgstr "Tutti gli utenti sono stati aggiunti."
 
 #: cms/future.py:104
 msgid "Folders ordered up."
@@ -1601,7 +1636,8 @@ msgstr ""
 "the Free Software Foundation;"
 
 #: cms/ui/Folder_browse_image.xml.en:0
-msgid "Format"
+#, fuzzy
+msgid "Format:"
 msgstr "Formato"
 
 #: cms/ui/User_translator.xml.en:0
@@ -1629,7 +1665,7 @@ msgstr ""
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr "GNU GENERAL PUBLIC LICENSE"
 
-#: cms/WebSite.py:135
+#: cms/WebSite.py:136
 msgid "General"
 msgstr "Generale"
 
@@ -1638,7 +1674,7 @@ msgstr "Generale"
 msgid "General Settings."
 msgstr "Impostazioni generali modificate"
 
-#: cms/WebSite.py:151
+#: cms/WebSite.py:152
 #, fuzzy
 msgid "General settings changed."
 msgstr "Impostazioni generali modificate"
@@ -1665,7 +1701,7 @@ msgid ""
 msgstr ""
 "Nome gruppo <stl:inline content=\"table/sortcontrol(name)\"></stl:inline>"
 
-#: cms/users.py:318
+#: cms/users.py:319
 msgid "Groups"
 msgstr "Gruppi"
 
@@ -1901,7 +1937,7 @@ msgstr ""
 "Mantiene uno storico delle modifiche effettuate; in questo modo è possibile "
 "tornare ad una versione precedente."
 
-#: cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Language"
 msgstr "Linguaggio"
 
@@ -1910,7 +1946,7 @@ msgstr "Linguaggio"
 msgid "Language Settings"
 msgstr "Impostazioni linguaggi"
 
-#: cms/WebSite.py:230
+#: cms/WebSite.py:231
 msgid "Language added."
 msgstr "Linguaggio aggiunto."
 
@@ -1919,11 +1955,11 @@ msgstr "Linguaggio aggiunto."
 msgid "Language:"
 msgstr "Linguaggio"
 
-#: cms/WebSite.py:159
+#: cms/WebSite.py:160
 msgid "Languages"
 msgstr "Linguaggi"
 
-#: cms/WebSite.py:217
+#: cms/WebSite.py:218
 msgid "Languages removed."
 msgstr "Linguaggi rimossi"
 
@@ -1987,7 +2023,7 @@ msgstr "Entra"
 msgid "Log out"
 msgstr "Esci"
 
-#: cms/WebSite.py:237
+#: cms/WebSite.py:238
 msgid "Login"
 msgstr "Entra"
 
@@ -2021,15 +2057,15 @@ msgstr ""
 "distributed through that system in reliance on consistent application of "
 "that system;"
 
-#: cms/future.py:137
+#: cms/future.py:179
 msgid "Member"
 msgstr ""
 
-#: cms/future.py:137
+#: cms/future.py:179
 msgid "Members"
 msgstr ""
 
-#: cms/future.py:300
+#: cms/future.py:359
 #, fuzzy
 msgid "Members added."
 msgstr "Elenco utenti inseriti"
@@ -2038,7 +2074,7 @@ msgstr "Elenco utenti inseriti"
 msgid "Members and roles"
 msgstr ""
 
-#: cms/future.py:290
+#: cms/future.py:349
 #, fuzzy
 msgid "Members deleted."
 msgstr "Nessun oggetto selezionato."
@@ -2085,7 +2121,7 @@ msgstr "Mesaggio!"
 msgid "Metadata"
 msgstr "Metadati"
 
-#: cms/Handler.py:588
+#: cms/Handler.py:603
 msgid "Metadata changed."
 msgstr "Metadati modificati"
 
@@ -2102,7 +2138,7 @@ msgstr ""
 msgid "NO WARRANTY"
 msgstr "NO WARRANTY"
 
-#: cms/ui/Group_add_group.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Name"
 msgstr "Nome"
 
@@ -2116,15 +2152,20 @@ msgstr ""
 msgid "Name contains"
 msgstr ""
 
+#: cms/ui/Folder_browse_image.xml.en:0
+#, fuzzy
+msgid "Name:"
+msgstr "Nome"
+
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Navigation"
 msgstr ""
 
-#: cms/Folder.py:846
+#: cms/Folder.py:870
 msgid "New Resource"
 msgstr "Nuova risorsa"
 
-#: cms/Folder.py:911
+#: cms/Folder.py:935
 #, fuzzy
 msgid "New resource added."
 msgstr "Aggiunta nuova risorsa"
@@ -2133,7 +2174,7 @@ msgstr "Aggiunta nuova risorsa"
 msgid "No document awaits your review."
 msgstr ""
 
-#: cms/File.py:190
+#: cms/File.py:197
 msgid "No file has been entered."
 msgstr "Nessun file è stato inserito."
 
@@ -2142,11 +2183,11 @@ msgstr "Nessun file è stato inserito."
 msgid "No history."
 msgstr "Storico"
 
-#: cms/Folder.py:772
+#: cms/Folder.py:796
 msgid "No objects selected"
 msgstr "Nessun oggetto selezionato"
 
-#: cms/Folder.py:694
+#: cms/Folder.py:718
 msgid "No objects selected."
 msgstr "Nessun oggetto selezionato."
 
@@ -2176,49 +2217,49 @@ msgstr ""
 msgid "Nulla facilisi."
 msgstr ""
 
-#: cms/office.py:238
+#: cms/office.py:250
 msgid "OOo Calc"
 msgstr ""
 
-#: cms/office.py:253
+#: cms/office.py:265
 #, fuzzy
 msgid "OOo Impress"
 msgstr "Documento modificato."
 
-#: cms/office.py:223
+#: cms/office.py:235
 #, fuzzy
 msgid "OOo Writer"
 msgstr "scrivi"
 
-#: cms/Folder.py:683
+#: cms/Folder.py:707
 msgid "Objects copied."
 msgstr "Oggetti copiati."
 
-#: cms/Folder.py:703
+#: cms/Folder.py:727
 msgid "Objects cut."
 msgstr "Oggetti tagliati."
 
-#: cms/Folder.py:763
+#: cms/Folder.py:787
 msgid "Objects pasted."
 msgstr "Oggetti incollati."
 
-#: cms/Folder.py:599
+#: cms/Folder.py:623
 msgid "Objects removed: %s."
 msgstr "Oggetti rimossi: %s."
 
-#: cms/Folder.py:663
+#: cms/Folder.py:687
 msgid "Objects renamed."
 msgstr "Oggetti rinominati."
 
-#: cms/office.py:224
+#: cms/office.py:236
 msgid "OpenOffice.org Document"
 msgstr ""
 
-#: cms/office.py:254
+#: cms/office.py:266
 msgid "OpenOffice.org Presentation"
 msgstr ""
 
-#: cms/office.py:239
+#: cms/office.py:251
 msgid "OpenOffice.org Spreadsheet"
 msgstr ""
 
@@ -2228,14 +2269,23 @@ msgid "Order"
 msgstr "Cartella"
 
 #: cms/ui/Folder_order_items.xml.en:0
+msgid "Order bottom"
+msgstr ""
+
+#: cms/ui/Folder_order_items.xml.en:0
 msgid "Order down"
 msgstr ""
+
+#: cms/ui/Folder_order_items.xml.en:0
+#, fuzzy
+msgid "Order top"
+msgstr "Cartella"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "Order up"
 msgstr ""
 
-#: cms/Folder.py:57
+#: cms/Folder.py:56
 msgid "Organize your files and documents with folders."
 msgstr ""
 
@@ -2261,7 +2311,7 @@ msgstr ""
 "of all derivatives of our free software and of promoting the sharing and "
 "reuse of software generally."
 
-#: cms/office.py:268
+#: cms/office.py:280
 msgid "PDF"
 msgstr ""
 
@@ -2273,7 +2323,7 @@ msgstr ""
 msgid "Password"
 msgstr "Parola d'accesso"
 
-#: cms/users.py:289
+#: cms/users.py:290
 #, fuzzy
 msgid "Passwords mismatch, please try again."
 msgstr "La password è errata, tenta di nuovo."
@@ -2292,7 +2342,7 @@ msgstr "in attesa di pubblicazione"
 msgid "Pending tasks."
 msgstr "in attesa di pubblicazione"
 
-#: cms/future.py:235
+#: cms/future.py:290
 #, fuzzy
 msgid "Permissions"
 msgstr "Personale"
@@ -2336,10 +2386,6 @@ msgstr ""
 msgid "Please enter your password (it will not be displayed in clear text)."
 msgstr ""
 
-#: cms/ui/Folder_new_instance.xml.en:0
-msgid "Please give a title to your folder."
-msgstr ""
-
 #: cms/Folder.py:497
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr ""
@@ -2359,6 +2405,16 @@ msgstr ""
 msgid "Please select the folders to order down."
 msgstr "Devi scegliere un collaboratore da rimuovere."
 
+#: cms/future.py:157
+#, fuzzy
+msgid "Please select the folders to order on bottom."
+msgstr "Devi scegliere un collaboratore da rimuovere."
+
+#: cms/future.py:136
+#, fuzzy
+msgid "Please select the folders to order on top."
+msgstr "Devi scegliere un collaboratore da rimuovere."
+
 #: cms/future.py:87
 #, fuzzy
 msgid "Please select the folders to order up."
@@ -2374,8 +2430,8 @@ msgstr ""
 
 #: cms/ui/Folder_new_instance.xml.en:0
 msgid ""
-"Please type the folder name, it will be used to store it and it will appear "
-"in the URL."
+"Please type the name, it will be used to store it and it will appear in the "
+"URL."
 msgstr ""
 
 #: cms/ui/Text_new_instance.xml.en:0
@@ -2388,11 +2444,15 @@ msgstr ""
 msgid "Please type the title of your document."
 msgstr ""
 
+#: cms/ui/Folder_new_instance.xml.en:0
+msgid "Please type the title."
+msgstr ""
+
 #: cms/ui/web_site_templates/community/itools.xhtml.en:0
 msgid "Plus the Simple Template Language."
 msgstr ""
 
-#: cms/office.py:172
+#: cms/office.py:179
 msgid "PowerPoint"
 msgstr ""
 
@@ -2404,7 +2464,7 @@ msgstr "Preambolo"
 msgid "Preferences"
 msgstr "Preferenze"
 
-#: cms/ui/Folder_browse_image.xml.en:0
+#: cms/office.py:133
 msgid "Preview"
 msgstr "Anteprima"
 
@@ -2459,7 +2519,7 @@ msgstr ""
 "licenza  <a href=\";license\">GNU General Public License</a>, IKAARO è un "
 "progetto software libero, creato dalla propria comunità di utenti:"
 
-#: cms/ui/Group_browse_users.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "Remove"
 msgstr "Rimuovi"
 
@@ -2489,6 +2549,10 @@ msgstr "Ripeti la parola d'accesso"
 msgid "Request the document publication."
 msgstr "Richiedi la pubblicazione del documento."
 
+#: cms/text.py:312
+msgid "Restructured Text"
+msgstr ""
+
 #: cms/workflow.py:56
 msgid "Retire the document."
 msgstr "Ritira il documento."
@@ -2498,7 +2562,7 @@ msgstr "Ritira il documento."
 msgid "Retract the document."
 msgstr "Rifiuta il documento."
 
-#: cms/future.py:138
+#: cms/future.py:180
 #, fuzzy
 msgid "Reviewer"
 msgstr "Anteprima"
@@ -2517,7 +2581,7 @@ msgstr "Revisione copiata nel presente."
 msgid "Role"
 msgstr "Rimuovi"
 
-#: cms/future.py:313
+#: cms/future.py:372
 #, fuzzy
 msgid "Roles updated."
 msgstr "File aggiornato."
@@ -2575,12 +2639,17 @@ msgstr ""
 "Seleziona l'utente/gli utenti che desideri aggiungere nel gruppo  <b stl:"
 "content=\"name\"></b> :"
 
-#: cms/WebSite.py:134
+#: cms/WebSite.py:135
 msgid "Settings"
 msgstr "Impostazioni"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Size"
+msgstr "Dimensione"
+
+#: cms/ui/Folder_browse_image.xml.en:0
+#, fuzzy
+msgid "Size:"
 msgstr "Dimensione"
 
 #: cms/skins.py:44
@@ -2679,12 +2748,16 @@ msgstr ""
 msgid "Table rows"
 msgstr ""
 
+#: cms/archives.py:85
+msgid "Tar Archive"
+msgstr ""
+
 #: cms/ui/Folder_translate.xml.en:0
 #, fuzzy
 msgid "Target language"
 msgstr "linguaggio:"
 
-#: cms/users.py:363
+#: cms/users.py:364
 msgid "Tasks"
 msgstr "Incarichi"
 
@@ -2692,7 +2765,7 @@ msgstr "Incarichi"
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr "Terms and Conditions for Copying, Distribution and Modification"
 
-#: cms/Folder.py:64
+#: cms/Folder.py:63
 msgid "Text"
 msgstr "Testo"
 
@@ -2703,6 +2776,10 @@ msgstr "Traduci"
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Text contains"
+msgstr ""
+
+#: cms/text.py:313
+msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
 #: cms/ui/WebSite_logout.xml.en:0
@@ -2746,11 +2823,11 @@ msgstr "Il titolo"
 msgid "The active root"
 msgstr ""
 
-#: cms/WebSite.py:200
+#: cms/WebSite.py:201
 msgid "The default language has been changed."
 msgstr "Il linguaggio predefinito è stato modificato."
 
-#: cms/Folder.py:960
+#: cms/Folder.py:984
 msgid "The document name contains illegal characters, choose another one."
 msgstr "Il nome del documento contiene caratteri illegali, scegline un altro."
 
@@ -2758,7 +2835,7 @@ msgstr "Il nome del documento contiene caratteri illegali, scegline un altro."
 msgid "The documents below await review for publication:"
 msgstr "Documenti in attesa di essere valutati per la pubblicazione:"
 
-#: cms/Folder.py:938
+#: cms/Folder.py:962
 msgid "The file must be entered"
 msgstr "Deve essere inserito un file"
 
@@ -2814,11 +2891,11 @@ msgstr "Il nome contiene caratteri illegali, scegline un altro."
 msgid "The name must be entered"
 msgstr "Deve essere inserito il nome"
 
-#: cms/users.py:491
+#: cms/users.py:492
 msgid "The password is wrong, please try again."
 msgstr "La password è errata, tenta di nuovo."
 
-#: cms/WebSite.py:267
+#: cms/WebSite.py:269
 #, fuzzy
 msgid "The password is wrong."
 msgstr "La password è errata"
@@ -2840,7 +2917,7 @@ msgstr ""
 msgid "The resource title"
 msgstr "Il titolo"
 
-#: cms/Folder.py:786
+#: cms/Folder.py:810
 msgid "The selected objects can not be translated."
 msgstr "L'oggetto selezionato non può essere tradotto."
 
@@ -2861,12 +2938,12 @@ msgstr "Il titolo"
 msgid "The title"
 msgstr "Il titolo"
 
-#: cms/WebSite.py:262
+#: cms/WebSite.py:263
 #, fuzzy
 msgid "The user \"%s\" does not exist."
 msgstr "L'utente \"%s\" non esiste"
 
-#: cms/users.py:483
+#: cms/users.py:484
 msgid "The username is wrong, please try again."
 msgstr "Il nome utente è errato, tenta di nuovo"
 
@@ -2878,10 +2955,6 @@ msgstr "Il titolo"
 #: cms/ui/User_edit.xml.en:0
 msgid "Theme"
 msgstr "Tema"
-
-#: cms/ui/Folder_browse_image.xml.en:0
-msgid "There are no images."
-msgstr "Non sono presenti immagini."
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "There aren't messages."
@@ -2896,16 +2969,16 @@ msgstr "Si è verificato un errore di sistema, nulla di preoccupante."
 msgid "There is already another group with this name."
 msgstr "Esiste già un altro gruppo con questo nome."
 
-#: cms/Folder.py:897
+#: cms/Folder.py:921
 #, fuzzy
 msgid "There is already another object with this name."
 msgstr "Esiste già un altro oggetto con questo nome"
 
-#: cms/Folder.py:966
+#: cms/Folder.py:990
 msgid "There is already another resource with this name."
 msgstr "Esiste già un'altra risorsa con questo nome."
 
-#: cms/users.py:486
+#: cms/users.py:487
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
 "Esiste già un altro utente che ha scelto \"%s\" come nome utente, tenta di "
@@ -3156,14 +3229,14 @@ msgstr "Carica un file"
 msgid "Upload and view"
 msgstr "Carica un file"
 
-#: cms/File.py:197
+#: cms/File.py:204
 #, fuzzy
 msgid ""
 "Upload failed: either the file does not match this document type (%s) or it "
 "contains errors."
 msgstr "Il file caricato non corrisponde con questo tipo di documento."
 
-#: cms/File.py:34
+#: cms/File.py:37
 msgid "Upload office documents, images, media files, etc."
 msgstr ""
 
@@ -3175,12 +3248,12 @@ msgstr "Utente"
 msgid "User added"
 msgstr "Utente aggiunto"
 
-#: cms/users.py:502
+#: cms/users.py:503
 #, fuzzy
 msgid "User added."
 msgstr "Utente aggiunto"
 
-#: cms/users.py:356
+#: cms/users.py:357
 #, fuzzy
 msgid "User groups edited."
 msgstr "Gruppi dell'utente modificati."
@@ -3220,7 +3293,7 @@ msgstr "Version 2, June 1991"
 msgid "Version edited."
 msgstr "Versione modificata."
 
-#: cms/File.py:199
+#: cms/File.py:206
 msgid "Version uploaded."
 msgstr "Versione caricata."
 
@@ -3228,7 +3301,7 @@ msgstr "Versione caricata."
 msgid "View"
 msgstr "Vedi"
 
-#: cms/WebSite.py:389
+#: cms/WebSite.py:391
 msgid "We did not find results for \"%s\"."
 msgstr ""
 
@@ -3250,7 +3323,7 @@ msgstr ""
 msgid "Web Page"
 msgstr ""
 
-#: cms/WebSite.py:44
+#: cms/WebSite.py:45
 msgid "Web Site"
 msgstr ""
 
@@ -3292,7 +3365,7 @@ msgstr ""
 msgid "Without head"
 msgstr ""
 
-#: cms/office.py:135
+#: cms/office.py:142
 msgid "Word"
 msgstr ""
 
@@ -3353,7 +3426,7 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:210
+#: cms/WebSite.py:211
 msgid "You can not remove the default language."
 msgstr "Non puoi rimuovere il linguaggio predefinito."
 
@@ -3388,7 +3461,7 @@ msgstr ""
 "You may not impose any further restrictions on the recipients' exercise of "
 "the rights granted herein."
 
-#: cms/users.py:278
+#: cms/users.py:279
 msgid "You mistyped your actual password, you account is not changed."
 msgstr ""
 
@@ -3396,7 +3469,7 @@ msgstr ""
 msgid "You must add user(s) in parent group:"
 msgstr "Devi aggiungere l'utente/gli utenti in un gruppo:"
 
-#: cms/WebSite.py:224
+#: cms/WebSite.py:225
 msgid "You must choose a language"
 msgstr "Devi scegliere un linguaggio"
 
@@ -3404,7 +3477,7 @@ msgstr "Devi scegliere un linguaggio"
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr "You must make sure that they, too, receive or can get the source code."
 
-#: cms/WebSite.py:191
+#: cms/WebSite.py:192
 msgid "You must select one and only one language."
 msgstr "Devi scegliere uno e un solo linguaggio."
 
@@ -3422,6 +3495,10 @@ msgstr "Devi scegliere un collaboratore da rimuovere."
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "Your login information has been cleared."
+msgstr ""
+
+#: cms/archives.py:65
+msgid "Zip Archive"
 msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
@@ -3918,6 +3995,10 @@ msgstr "» Inserisci l'URL da aggiungere:"
 #~ msgid "Add User<span stl:if=\"nb_users\">s</span>"
 #~ msgstr "Aggiungi un utente<span stl:if=\"nb_users\">s</span>"
 
+#, fuzzy
+#~ msgid "Add a Folder"
+#~ msgstr "Cartella"
+
 #~ msgid "Browse users"
 #~ msgstr "Naviga tra gli utenti"
 
@@ -3990,9 +4071,6 @@ msgstr "» Inserisci l'URL da aggiungere:"
 #~ msgstr ""
 #~ "I documenti contengono i dati memorizzati, sono simili ai file del "
 #~ "filesystem."
-
-#~ msgid "Edit groups for <span stl:content=\"fullname\"></span>"
-#~ msgstr "Modifica gruppi per <span stl:content=\"fullname\"></span>"
 
 #~ msgid "English"
 #~ msgstr "Inglese"
@@ -4139,6 +4217,9 @@ msgstr "» Inserisci l'URL da aggiungere:"
 #~ msgstr ""
 #~ "Il contenuto di questo documento HTML è corrotto in quanto non è HTML "
 #~ "valido."
+
+#~ msgid "There are no images."
+#~ msgstr "Non sono presenti immagini."
 
 #~ msgid "Title (<stl:inline content=\"title/lang_name\"></stl:inline>)"
 #~ msgstr "Titolo (<stl:inline content=\"title/lang_name\"></stl:inline>)"

@@ -167,6 +167,9 @@ class Cookie(DataType):
 
     @staticmethod
     def decode(data):
+        if not data:
+            return {}
+
         cookies = {}
         for x in data.split(';'):
             name, value = x.strip().split('=')

@@ -1,28 +1,33 @@
-0.13.6 (2006/06/XX)
+0.13.6 (2006/06/26)
 
   URI
   - Add the method "replace" to uri objects (this makes the method
     "Request.build_url" from itools.web obsolete).
 
   Datatypes
-  - Add a datatype for decimal numbers, by Herve Cauwelier [#330].
+  - Add a datatype for decimal numbers, by Hervé Cauwelier [#330].
 
   Handlers
   - Revert the lazy load patch.
 
   CSV
-  - Now "get_rows" is a generator, by Herve Cauwelier [#312].
+  - Now "get_rows" is a generator, by Hervé Cauwelier [#312].
 
   iCalendar
   - Various API improvements, by Nicolas Deram [#246].
 
   STL
   - Now "stl:content" coerces floats and decimals to strings, by
-    Herve Cauwelier [#331].
+    Hervé Cauwelier [#331].
+
+  Web
+  - Improve error logging, print the whole request headers.
+  - Don't fail when the "Cookie" header is present with an empty value.
 
   CMS
-  - Now locks expire in one hour, by Herve Cauwelier [#250].
-  - Handler for Restructured Text files, by Herve Cauwelier [#68].
+  - Now locks expire in one hour, by Hervé Cauwelier [#250].
+  - Handler for Restructured Text files, by Hervé Cauwelier [#68].
+  - Minor user interface improvements, by Hervé Cauwelier [#324, #334, #340].
 
 
 0.13.5 (2006/06/06)

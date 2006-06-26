@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <div style="display: none" stl:attributes="id widget_id">
+    <div stl:attributes="id toolbar_id">
+      <select class="formatblock" onchange="SelectFormat(this);"
+              style="margin-bottom: 2px;">
+        <option value="">Normal</option>
+        <option value="&lt;p&gt;">Paragraph</option>
+        <option value="&lt;h1&gt;">Heading 1</option>
+        <option value="&lt;h2&gt;">Heading 2</option>
+        <option value="&lt;h3&gt;">Heading 3</option>
+        <option value="&lt;h4&gt;">Heading 4</option>
+        <option value="&lt;h5&gt;">Heading 5</option>
+        <option value="&lt;h6&gt;">Heading 6</option>
+        <option value="&lt;pre&gt;">Formatted</option>
+      </select>
+      <br />
+      <img class="button epoz_button_bold" name="epoz_button_bold"
+        src="images/epoz/epoz_button_bold.png" alt="Bold" title="Bold"
+        onclick="FormatText('bold', '');" /><img
+        class="button epoz_button_italic"
+        src="images/epoz/epoz_button_italic.png" width="23" height="22"
+        alt="Italic" title="Italic" onclick="FormatText('italic', '');"
+        name="epoz_button_italic" /><img
+        class="button epoz_button_underline"
+        src="images/epoz/epoz_button_underline.png" width="23" height="22"
+        alt="Underline" title="Underline" onclick="FormatText('underline', '');"
+        name="epoz_button_underline" /><img
+        class="button epoz_button_strikethrough"
+        src="images/epoz/epoz_button_strikethrough.png" width="23" height="22"
+        alt="Strikethrough" title="Strikethrough"
+        onclick="FormatText('strikethrough', '');"
+        name="epoz_button_strikethrough" />
+      <img src="images/epoz/epoz_button_space.gif" width="2" height="1" />
+      <img class="button epoz_button_subscript"
+        src="images/epoz/epoz_button_subscript.gif" width="23" height="22"
+        alt="Subscript" title="Subscript" onclick="FormatText('subscript', '');"
+        name="epoz_button_subscript" /><img
+        class="button epoz_button_superscript"
+        src="images/epoz/epoz_button_superscript.gif" width="23" height="22"
+        alt="Superscript" title="Superscript"
+        onclick="FormatText('superscript', '');"
+        name="epoz_button_superscript" />
+      <img src="images/epoz/epoz_button_space.gif" width="2" height="1" />
+      <img class="button epoz_button_unformat"
+        src="images/epoz/epoz_button_unformat.png" width="23" height="22"
+        alt="Remove Format" title="Remove Format"
+        onclick="FormatText('removeformat', '');" name="epoz_button_unformat" />
+      <img src="images/epoz/epoz_button_space.gif" width="2" height="1" />
+      <img class="button epoz_button_textcolor"
+        src="images/epoz/epoz_button_textcolor.png" width="23" height="22"
+        alt="Text Color" title="Text Color" onclick="SetTextColor();"
+        name="epoz_button_textcolor"
+        stl:attributes="onclick SetTextColor_call" /><img
+        class="button epoz_button_bgcolor"
+        src="images/epoz/epoz_button_bgcolor.png" width="23" height="22"
+        alt="Background Color" title="Background Color" onclick="SetBackColor();"
+        name="epoz_button_bgcolor" stl:attributes="onclick SetBackColor_call" />
+      <img src="images/epoz/epoz_button_space.gif" width="2" height="1" />
+      <img class="button epoz_button_left_just"
+        src="images/epoz/epoz_button_left_just.png" width="23" height="22"
+        alt="Align Left" title="Align Left" onclick="FormatText('justifyleft',
+        '');" name="epoz_button_left_just" /><img
+        class="button epoz_button_centre"
+        src="images/epoz/epoz_button_centre.png" width="23" height="22"
+        alt="Center" title="Center" onclick="FormatText('justifycenter', '');"
+        name="epoz_button_centre" /><img
+        class="button epoz_button_right_just"
+        src="images/epoz/epoz_button_right_just.png" width="23" height="22"
+        alt="Align Right" title="Align Right"
+        onclick="FormatText('justifyright', '');"
+        name="epoz_button_right_just" />
+      <img src="images/epoz/epoz_button_space.gif" width="2" height="1" />
+      <img class="button epoz_button_numbered_list"
+        src="images/epoz/epoz_button_numbered_list.gif" width="23" height="22"
+        alt="Ordered List" title="Ordered List"
+        onclick="FormatText('insertorderedlist', '');"
+        name="epoz_button_numbered_list" /><img
+        class="button epoz_button_list" src="images/epoz/epoz_button_list.gif"
+        width="23" height="22" alt="Unordered List" title="Unordered List"
+        onclick="FormatText('insertunorderedlist', '');"
+        name="epoz_button_list" /><img
+        class="button epoz_button_outdent"
+        src="images/epoz/epoz_button_outdent.png" width="23" height="22"
+        alt="Outdent" title="Outdent" onclick="FormatText('outdent', '');"
+        name="epoz_button_outdent" /><img
+        class="button epoz_button_indent"
+        src="images/epoz/epoz_button_indent.png" width="23" height="22"
+        alt="Indent" title="Indent" onclick="FormatText('indent', '');"
+        name="epoz_button_indent" />
+      <img src="images/epoz/epoz_button_space.gif" width="2" height="1" />
+      <img class="button epoz_button_hyperlink"
+        src="images/epoz/epoz_button_hyperlink.png" width="23" height="22"
+        alt="Insert Link" title="Insert Link"
+        onclick="window.open(';addlink_form', 'EpozToolbox',
+          'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
+        name="epoz_button_hyperlink" /><img
+        class="button epoz_button_anchor"
+        src="images/epoz/epoz_button_anchor.png" width="23" height="22"
+        alt="Insert Anchor" title="Insert Anchor" onclick="CreateAnchor();"
+        name="epoz_button_anchor" /><img
+        class="button epoz_button_image"
+        src="images/epoz/epoz_button_image.png" width="23" height="22"
+        alt="Insert Image" title="Insert Image"
+        onclick="window.open(';addimage_form', 'EpozToolbox',
+          'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
+        name="epoz_button_image" /><img
+        class="button epoz_button_hr" src="images/epoz/epoz_button_hr.gif"
+        width="23" height="22" alt="Insert Rule" title="Insert Rule"
+        onclick="FormatText('inserthorizontalrule', '');"
+        name="epoz_button_hr" /><img
+        class="button epoz_button_table"
+        src="images/epoz/epoz_button_table.gif" width="23" height="22"
+        alt="Insert Table" title="Insert Table" onclick="SetTable()"
+        stl:attributes="onclick SetTable_call" name="epoz_button_table" />
+      <img src="images/epoz/epoz_button_space.gif" width="2" height="1" />
+      <img class="button epoz_button_undo" src="images/epoz/epoz_button_undo.png"
+        width="23" height="22" alt="Undo" title="Undo"
+        onclick="FormatText('undo', '');" name="epoz_button_undo" /><img
+        class="button epoz_button_redo" src="images/epoz/epoz_button_redo.png"
+        width="23" height="22" alt="Redo" title="Redo"
+        onclick="FormatText('redo', '');" name="epoz_button_redo" />
+      <br />
+      <iframe stl:attributes="src iframe; id frame_id" frameborder="0"
+              style="width: 100%; height: 300px; border: 1px grey solid"
+              onload="InitDocument(this);" name="EpozEditor"></iframe>
+    </div>
+
+    <textarea style="display: none; width: 100%; height: 300px" disabled="1"
+              stl:content="js_data"
+              stl:attributes="name form_name; id textarea_id" />
+
+    <input type="checkbox" style="margin: 0px; width: 10px; height: 10px"
+           onclick="redirectAndSwitchViewMode(this);"
+           stl:attributes="id switch_id" />
+    <span style="font-size: 10px;">HTML</span>
+  </div>
+
+  <script type="text/javascript" stl:content="js_code" />
+  <noscript>
+    <textarea style="width: 100%; height: 300px" stl:content="js_data"
+              stl:attributes="name form_name" />
+  </noscript>
+</stl:block>

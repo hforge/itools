@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2006-06-24 14:06+CET\n"
+"POT-Creation-Date: 2006-06-24 16:06+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -647,6 +647,14 @@ msgstr ""
 msgid "Advanced Search"
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Align Left"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Align Right"
+msgstr ""
+
 #: ./cms/ui/Group_add_users.xml.en:0
 msgid "All users are already added."
 msgstr ""
@@ -711,8 +719,16 @@ msgstr ""
 msgid "Available views:"
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Background Color"
+msgstr ""
+
 #: ./cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Bold"
 msgstr ""
 
 #: ./cms/ui/epoz_script_table.xml.en:0
@@ -749,6 +765,10 @@ msgstr ""
 
 #: ./cms/ui/Root_catalog.xml.en:0
 msgid "Cataloguing of Content"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Center"
 msgstr ""
 
 #: ./cms/ui/WorkflowAware_state.xml.en:0
@@ -1147,6 +1167,10 @@ msgstr ""
 msgid "Format:"
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Formatted"
+msgstr ""
+
 #: ./cms/ui/User_translator.xml.en:0
 msgid "From"
 msgstr ""
@@ -1201,6 +1225,34 @@ msgstr ""
 
 #: ./cms/root.py:487
 msgid "Groups fixed."
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "HTML"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Heading 1"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Heading 2"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Heading 3"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Heading 4"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Heading 5"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Heading 6"
 msgstr ""
 
 #: ./cms/ui/File_help.xml.en:0
@@ -1287,8 +1339,32 @@ msgstr ""
 msgid "Inc"
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Indent"
+msgstr ""
+
 #: ./cms/text.py:227
 msgid "Inline"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Insert Anchor"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Insert Image"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Insert Link"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Insert Rule"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Insert Table"
 msgstr ""
 
 #: ./cms/ui/epoz_script_table.xml.en:0
@@ -1305,6 +1381,10 @@ msgstr ""
 
 #: ./cms/ui/Root_license.xml.en:0
 msgid "It is not the purpose of this section to induce you to infringe any patents or other property right claims or to contest validity of any such claims;"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Italic"
 msgstr ""
 
 #: ./cms/ui/web_site_templates/community/index.xhtml.en:0
@@ -1547,6 +1627,10 @@ msgstr ""
 msgid "No users to add in this group."
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Normal"
+msgstr ""
+
 #: ./cms/ui/File_upload.xml.en:0
 msgid "Note the name and title won't change."
 msgstr ""
@@ -1627,6 +1711,10 @@ msgstr ""
 msgid "Order up"
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Ordered List"
+msgstr ""
+
 #: ./cms/Folder.py:56
 msgid "Organize your files and documents with folders."
 msgstr ""
@@ -1639,12 +1727,20 @@ msgstr ""
 msgid "Our decision will be guided by the two goals of preserving the free status of all derivatives of our free software and of promoting the sharing and reuse of software generally."
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Outdent"
+msgstr ""
+
 #: ./cms/office.py:280
 msgid "PDF"
 msgstr ""
 
 #: ./cms/ui/web_site_templates/community/roadmap.xhtml.en:0
 msgid "Packaging"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Paragraph"
 msgstr ""
 
 #: ./cms/ui/WebSite_login.xml.en:0
@@ -1807,6 +1903,10 @@ msgstr ""
 msgid "Read the <a href=\"../download/itools/itools-0.8.0.pdf\">documentation</a> (PDF) or <a href=\"../download/itools/itools-0.8.0.tar.gz\">download</a> it."
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Redo"
+msgstr ""
+
 #: ./cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
 msgstr ""
@@ -1821,6 +1921,10 @@ msgstr ""
 
 #: ./cms/ui/User_translator.xml.en:0
 msgid "Remove"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Remove Format"
 msgstr ""
 
 #: ./cms/ui/Root_languages.xml.en:0
@@ -1979,8 +2083,20 @@ msgstr ""
 msgid "State History"
 msgstr ""
 
+#: ./cms/ui/epoz.xml.en:0
+msgid "Strikethrough"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Subscript"
+msgstr ""
+
 #: ./cms/ui/Root_license.xml.en:0
 msgid "Such new versions will be similar in spirit to the present version, but may differ in detail to address new problems or concerns."
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Superscript"
 msgstr ""
 
 #: ./cms/ui/web_site_templates/community/roadmap.xhtml.en:0
@@ -2021,6 +2137,10 @@ msgstr ""
 
 #: ./cms/Folder.py:63
 msgid "Text"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Text Color"
 msgstr ""
 
 #: ./cms/ui/Document_translate.xml.en:0
@@ -2337,6 +2457,18 @@ msgstr ""
 
 #: ./handlers/Var.py:72
 msgid "URI: %s\n"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Underline"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Undo"
+msgstr ""
+
+#: ./cms/ui/epoz.xml.en:0
+msgid "Unordered List"
 msgstr ""
 
 #: ./cms/ui/Tar_untar.xml.en:0

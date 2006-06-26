@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2006-06-24 14:06+CET\n"
+"POT-Creation-Date: 2006-06-24 16:06+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -992,6 +992,15 @@ msgstr ""
 msgid "Advanced Search"
 msgstr ""
 
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Align Left"
+msgstr "Testo integrale"
+
+#: cms/ui/epoz.xml.en:0
+msgid "Align Right"
+msgstr ""
+
 #: cms/ui/Group_add_users.xml.en:0
 #, fuzzy
 msgid "All users are already added."
@@ -1068,9 +1077,18 @@ msgstr "Come lista"
 msgid "Available views:"
 msgstr "Viste disponibili:"
 
+#: cms/ui/epoz.xml.en:0
+msgid "Background Color"
+msgstr ""
+
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
 msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Bold"
+msgstr "Cartella"
 
 #: cms/ui/epoz_script_table.xml.en:0
 #, fuzzy
@@ -1126,6 +1144,11 @@ msgstr ""
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Cataloguing of Content"
 msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Center"
+msgstr "Generale"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Change"
@@ -1640,6 +1663,11 @@ msgstr ""
 msgid "Format:"
 msgstr "Formato"
 
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Formatted"
+msgstr "Formato"
+
 #: cms/ui/User_translator.xml.en:0
 msgid "From"
 msgstr "Da"
@@ -1709,6 +1737,40 @@ msgstr "Gruppi"
 #, fuzzy
 msgid "Groups fixed."
 msgstr "Gruppo aggiunto"
+
+#: cms/ui/epoz.xml.en:0
+msgid "HTML"
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Heading 1"
+msgstr "in attesa di pubblicazione"
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Heading 2"
+msgstr "in attesa di pubblicazione"
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Heading 3"
+msgstr "in attesa di pubblicazione"
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Heading 4"
+msgstr "in attesa di pubblicazione"
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Heading 5"
+msgstr "in attesa di pubblicazione"
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Heading 6"
+msgstr "in attesa di pubblicazione"
 
 #: cms/ui/File_help.xml.en:0
 msgid "Help"
@@ -1880,9 +1942,34 @@ msgstr "Il titolo"
 msgid "Inc"
 msgstr ""
 
+#: cms/ui/epoz.xml.en:0
+msgid "Indent"
+msgstr ""
+
 #: cms/text.py:227
 msgid "Inline"
 msgstr "In linea"
+
+#: cms/ui/epoz.xml.en:0
+msgid "Insert Anchor"
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+msgid "Insert Image"
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Insert Link"
+msgstr "Nuovo collegamento"
+
+#: cms/ui/epoz.xml.en:0
+msgid "Insert Rule"
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+msgid "Insert Table"
+msgstr ""
 
 #: cms/ui/epoz_script_table.xml.en:0
 msgid "Insert table"
@@ -1906,6 +1993,11 @@ msgid ""
 msgstr ""
 "It is not the purpose of this section to induce you to infringe any patents "
 "or other property right claims or to contest validity of any such claims;"
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Italic"
+msgstr "Italiano"
 
 #: cms/ui/web_site_templates/community/index.xhtml.en:0
 #, fuzzy
@@ -2199,6 +2291,11 @@ msgstr "Nessun utente aggiunto"
 msgid "No users to add in this group."
 msgstr ""
 
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Normal"
+msgstr "Formato"
+
 #: cms/ui/File_upload.xml.en:0
 msgid "Note the name and title won't change."
 msgstr ""
@@ -2285,6 +2382,11 @@ msgstr "Cartella"
 msgid "Order up"
 msgstr ""
 
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Ordered List"
+msgstr "Cartella"
+
 #: cms/Folder.py:56
 msgid "Organize your files and documents with folders."
 msgstr ""
@@ -2311,12 +2413,20 @@ msgstr ""
 "of all derivatives of our free software and of promoting the sharing and "
 "reuse of software generally."
 
+#: cms/ui/epoz.xml.en:0
+msgid "Outdent"
+msgstr ""
+
 #: cms/office.py:280
 msgid "PDF"
 msgstr ""
 
 #: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
 msgid "Packaging"
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+msgid "Paragraph"
 msgstr ""
 
 #: cms/ui/WebSite_login.xml.en:0
@@ -2500,6 +2610,11 @@ msgid ""
 "(PDF) or <a href=\"../download/itools/itools-0.8.0.tar.gz\">download</a> it."
 msgstr ""
 
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Redo"
+msgstr "Rimuovi"
+
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
 msgstr "Re-indicizza"
@@ -2521,6 +2636,11 @@ msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
 msgid "Remove"
+msgstr "Rimuovi"
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Remove Format"
 msgstr "Rimuovi"
 
 #: cms/ui/Root_languages.xml.en:0
@@ -2718,6 +2838,15 @@ msgstr "Stato <stl:inline content=\"table/sortcontrol(state)\"></stl:inline>"
 msgid "State History"
 msgstr "Storico"
 
+#: cms/ui/epoz.xml.en:0
+msgid "Strikethrough"
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Subscript"
+msgstr "Soggetto"
+
 #: cms/ui/Root_license.xml.en:0
 msgid ""
 "Such new versions will be similar in spirit to the present version, but may "
@@ -2725,6 +2854,11 @@ msgid ""
 msgstr ""
 "Such new versions will be similar in spirit to the present version, but may "
 "differ in detail to address new problems or concerns."
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Superscript"
+msgstr "descrizione"
 
 #: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
 msgid "Support for Zope 3"
@@ -2768,6 +2902,10 @@ msgstr "Terms and Conditions for Copying, Distribution and Modification"
 #: cms/Folder.py:63
 msgid "Text"
 msgstr "Testo"
+
+#: cms/ui/epoz.xml.en:0
+msgid "Text Color"
+msgstr ""
 
 #: cms/ui/Document_translate.xml.en:0
 #, fuzzy
@@ -3192,6 +3330,20 @@ msgstr "Tipo"
 #: handlers/Var.py:72
 msgid "URI: %s\n"
 msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Underline"
+msgstr "In linea"
+
+#: cms/ui/epoz.xml.en:0
+msgid "Undo"
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+#, fuzzy
+msgid "Unordered List"
+msgstr "Lista utenti:"
 
 #: cms/ui/Tar_untar.xml.en:0
 msgid "Unpack"
@@ -4103,9 +4255,6 @@ msgstr "» Inserisci l'URL da aggiungere:"
 #~ msgid "If you already installed the client just click the button below:"
 #~ msgstr "Se hai già installato il client segui il link:"
 
-#~ msgid "Italian"
-#~ msgstr "Italiano"
-
 #~ msgid "Japanese"
 #~ msgstr "Giapponese"
 
@@ -4153,9 +4302,6 @@ msgstr "» Inserisci l'URL da aggiungere:"
 
 #~ msgid "New Folder"
 #~ msgstr "Nuova cartella"
-
-#~ msgid "New Link"
-#~ msgstr "Nuovo collegamento"
 
 #~ msgid "New Workplace"
 #~ msgstr "Nuova area di lavoro"
@@ -4205,9 +4351,6 @@ msgstr "» Inserisci l'URL da aggiungere:"
 
 #~ msgid "State:"
 #~ msgstr "Stato:"
-
-#~ msgid "Subject"
-#~ msgstr "Soggetto"
 
 #~ msgid "Text files are the simplest object to add."
 #~ msgstr ""
@@ -4259,9 +4402,6 @@ msgstr "» Inserisci l'URL da aggiungere:"
 #~ msgid "User data changed."
 #~ msgstr "Dati dell'utente modificati."
 
-#~ msgid "Users List :"
-#~ msgstr "Lista utenti:"
-
 #~ msgid ""
 #~ "When the link is asked for the resource it points to, the language "
 #~ "negotiation takes place, and depending on it one resource or another is "
@@ -4285,9 +4425,6 @@ msgstr "» Inserisci l'URL da aggiungere:"
 #~ "You can upload a file from the filesystem or create a new empty document."
 #~ msgstr ""
 #~ "Puoi caricare un file dal filesystem o creare un nuovo documento vuoto."
-
-#~ msgid "description"
-#~ msgstr "descrizione"
 
 #~ msgid "free keywords (one per line):"
 #~ msgstr "parole chiave libere (una per riga)"

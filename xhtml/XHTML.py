@@ -22,7 +22,8 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools import datatypes
-from itools.datatypes import Boolean, Integer, Unicode, String, URI
+from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
+                              XMLAttribute)
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.resources import memory
@@ -68,6 +69,7 @@ class Element(XML.Element):
             qname = self.get_attribute_qname(namespace_uri, local_name)
             type = schemas.get_datatype_by_uri(namespace_uri, local_name)
             value = type.encode(value)
+            value = XMLAttribute.encode(value)
             s += ' %s="%s"' % (qname, value)
         return s + '>'
 
@@ -88,7 +90,7 @@ class Element(XML.Element):
 
     def is_translatable(self, attribute_name):
         # Attributes
-        if self.name == 'img' and attribute_name == 'alt':
+        if self.name == 'img' and attribute_name in ('alt', 'title'):
             return True
         if self.name == 'input' and attribute_name == 'value':
             if self.has_attribute(Namespace.class_uri, 'type'):
@@ -418,7 +420,9 @@ class Document(XML.Document):
                         #value = catalog.get_msgstr(value) or value
                 qname = node.get_attribute_qname(namespace, local_name)
                 datatype = schemas.get_datatype_by_uri(namespace, local_name)
-                buffer.write(' %s="%s"' % (qname, datatype.encode(value)))
+                value = datatype.encode(value)
+                value = XMLAttribute.encode(value)
+                buffer.write(' %s="%s"' % (qname, value))
             # Close the start tag
             namespace = namespaces.get_namespace(node.namespace)
             schema = namespace.get_element_schema(node.name)

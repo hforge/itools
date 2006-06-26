@@ -22,7 +22,7 @@ import warnings
 
 # Import from itools
 from itools.handlers import File, Text
-from itools.datatypes import Unicode
+from itools.datatypes import Unicode, XML as XMLContent, XMLAttribute
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.xml.exceptions import XMLError
@@ -128,6 +128,7 @@ class Element(object):
             qname = self.get_attribute_qname(namespace_uri, local_name)
             type = get_datatype_by_uri(namespace_uri, local_name)
             value = type.encode(value)
+            value = XMLAttribute.encode(value)
             s += ' %s="%s"' % (qname, value)
         # Close the start tag
         namespace = namespaces.get_namespace(self.namespace)
@@ -153,9 +154,7 @@ class Element(object):
         for node in self.children:
             if isinstance(node, unicode):
                 node = node.encode(encoding)
-                # XXX This is equivalent to 'Unicode.encode',
-                # there should be a single place.
-                s.append(node.replace('&', '&amp;').replace('<', '&lt;'))
+                s.append(XMLContent.encode(node))
             else:
                 s.append(node.to_str(encoding=encoding))
         return ''.join(s)

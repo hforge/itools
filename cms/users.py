@@ -16,9 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-import base64
 import sha
-import urllib
 
 # Import from itools
 from itools import uri
@@ -35,6 +33,7 @@ from utils import comeback
 from widgets import Table
 from Folder import Folder
 from Handler import Handler
+from metadata import Password
 
 
 
@@ -124,7 +123,8 @@ class User(Folder):
 
     def get_subviews(self, name):
         # The edit menu
-        subviews = ['edit_form', 'edit_account_form', 'edit_groups_form']
+        subviews = ['edit_form', 'edit_account_form', 'edit_password_form',
+                    'edit_groups_form']
         if name in subviews:
             return subviews
         return Folder.get_subviews(self, name)
@@ -269,7 +269,7 @@ class User(Folder):
 
 
     edit_account__access__ = 'is_self_or_superuser'
-    def edit_account(self, email, newpass, newpass2, password='', **kw):
+    def edit_account(self, email, password='', **kw):
         context = get_context()
         user = context.user
 
@@ -283,6 +283,41 @@ class User(Folder):
         self.set_property('dc:title', kw['dc:title'], language='en')
         email = unicode(email, 'utf-8')
         self.set_property('ikaaro:email', email)
+        message = self.gettext(u'Account changed.')
+        comeback(message)
+
+
+    #######################################################################
+    # Edit password
+    edit_password_form__access__ = 'is_self_or_superuser'
+    edit_password_form__label__ = u'Preferences'
+    edit_password_form__sublabel__ = u'Password'
+    def edit_password_form(self):
+        context = get_context()
+        user = context.user
+
+        # Build the namespace
+        namespace = {}
+        if self.name != user.name:
+            namespace['must_confirm'] = False
+        else:
+            namespace['must_confirm'] = True
+
+        handler = self.get_handler('/ui/User_edit_password.xml')
+        return stl(handler, namespace)
+
+
+    edit_password__access__ = 'is_self_or_superuser'
+    def edit_password(self, newpass, newpass2, password='', **kw):
+        context = get_context()
+        user = context.user
+
+        if self.name == user.name:
+            password = crypt_password(password)
+            if not self.authenticate(password):
+                message = (u"You mistyped your actual password, "
+                           u"you account is not changed.")
+                raise UserError, self.gettext(message)
 
         newpass = newpass.strip()
         if newpass:
@@ -291,24 +326,22 @@ class User(Folder):
                 raise UserError, self.gettext(message)
 
             self.set_password(newpass)
-            # Update the cookie if we updated our own password
             context = get_context()
-            if self.name == context.user.name:
-                request = context.request
+            # Update the cookie if we updated our own password
+            if self.name == user.name:
                 # XXX This is a copy of the code in WebSite.login, should
                 # refactor
-                cname = '__ac'
-                cookie = base64.encodestring('%s:%s' % (self.name, newpass))
-                cookie = urllib.quote(cookie)
-                path = '/'
+                newpass = crypt_password(newpass)
+                cookie = Password.encode('%s:%s' % (self.name, newpass))
+                request = context.request
                 expires = request.form.get('iAuthExpires', None)
                 if expires is None:
-                    context.set_cookie(cname, cookie, path=path)
+                    context.set_cookie('__ac', cookie, path='/')
                 else:
-                    context.set_cookie(cname, cookie, path=path,
+                    context.set_cookie('__ac', cookie, path='/',
                                        expires=expires)
 
-        message = self.gettext(u'Account changed.')
+        message = self.gettext(u'Password changed.')
         comeback(message)
 
 

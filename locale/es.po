@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
-"POT-Creation-Date: 2006-06-24 16:06+CET\n"
+"POT-Creation-Date: 2006-06-26 15:06+CET\n"
 "PO-Revision-Date: 2004-05-29 19:03+0200\n"
 "Last-Translator: J. David Ibáñez <jdavid@itaapy.com>\n"
 "Language-Team:  <es@li.org>\n"
@@ -396,7 +396,7 @@ msgstr ""
 msgid "-- Choose a language --"
 msgstr "-- Elije un idioma --"
 
-#: cms/WebSite.py:46
+#: cms/WebSite.py:43
 msgid "..."
 msgstr ""
 
@@ -791,7 +791,7 @@ msgstr "Acerca de"
 msgid "Account Change"
 msgstr "Modificar"
 
-#: cms/users.py:311
+#: cms/users.py:286
 msgid "Account changed."
 msgstr ""
 
@@ -1022,6 +1022,11 @@ msgstr "Modificar defecto"
 #: cms/ui/Root_languages.xml.en:0
 msgid "Change default for the selected one"
 msgstr ""
+
+#: cms/ui/User_edit_password.xml.en:0
+#, fuzzy
+msgid "Change password"
+msgstr "Modificar defecto"
 
 #: cms/ui/User_edit.xml.en:0
 #, fuzzy
@@ -1515,7 +1520,7 @@ msgstr ""
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
-#: cms/WebSite.py:136
+#: cms/WebSite.py:133
 #, fuzzy
 msgid "General"
 msgstr "Alemán"
@@ -1524,7 +1529,7 @@ msgstr "Alemán"
 msgid "General Settings."
 msgstr ""
 
-#: cms/WebSite.py:152
+#: cms/WebSite.py:149
 msgid "General settings changed."
 msgstr ""
 
@@ -1549,7 +1554,7 @@ msgid ""
 "Group name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
 msgstr ""
 
-#: cms/users.py:319
+#: cms/users.py:352
 msgid "Groups"
 msgstr ""
 
@@ -1681,7 +1686,7 @@ msgstr ""
 msgid "If you don't, you can download it from a link below."
 msgstr ""
 
-#: cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "If you type a new password, you must confirm it."
 msgstr ""
 
@@ -1800,7 +1805,7 @@ msgstr "Idioma"
 msgid "Language Settings"
 msgstr "Idiomas"
 
-#: cms/WebSite.py:231
+#: cms/WebSite.py:228
 #, fuzzy
 msgid "Language added."
 msgstr "Idioma"
@@ -1810,12 +1815,12 @@ msgstr "Idioma"
 msgid "Language:"
 msgstr "Idioma"
 
-#: cms/WebSite.py:160
+#: cms/WebSite.py:157
 #, fuzzy
 msgid "Languages"
 msgstr "Idioma"
 
-#: cms/WebSite.py:218
+#: cms/WebSite.py:215
 #, fuzzy
 msgid "Languages removed."
 msgstr "Idioma"
@@ -1877,7 +1882,7 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-#: cms/WebSite.py:238
+#: cms/WebSite.py:235
 #, fuzzy
 msgid "Login"
 msgstr "Enlace"
@@ -2183,7 +2188,15 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: cms/users.py:290
+#: cms/ui/User_edit_password.xml.en:0
+msgid "Password Change"
+msgstr ""
+
+#: cms/users.py:344
+msgid "Password changed."
+msgstr ""
+
+#: cms/users.py:325
 msgid "Passwords mismatch, please try again."
 msgstr ""
 
@@ -2313,7 +2326,7 @@ msgstr ""
 msgid "Preamble"
 msgstr ""
 
-#: cms/users.py:251
+#: cms/users.py:293
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -2487,7 +2500,7 @@ msgstr ""
 msgid "Select users you want to add in this group."
 msgstr ""
 
-#: cms/WebSite.py:135
+#: cms/WebSite.py:132
 msgid "Settings"
 msgstr ""
 
@@ -2614,7 +2627,7 @@ msgstr ""
 msgid "Target language"
 msgstr "Idioma"
 
-#: cms/users.py:364
+#: cms/users.py:397
 msgid "Tasks"
 msgstr ""
 
@@ -2674,7 +2687,7 @@ msgstr "Título"
 msgid "The active root"
 msgstr ""
 
-#: cms/WebSite.py:201
+#: cms/WebSite.py:198
 msgid "The default language has been changed."
 msgstr ""
 
@@ -2737,11 +2750,11 @@ msgstr ""
 msgid "The name must be entered"
 msgstr ""
 
-#: cms/users.py:492
+#: cms/users.py:525
 msgid "The password is wrong, please try again."
 msgstr ""
 
-#: cms/WebSite.py:269
+#: cms/WebSite.py:266
 msgid "The password is wrong."
 msgstr ""
 
@@ -2780,11 +2793,11 @@ msgstr "Título"
 msgid "The title"
 msgstr "Título"
 
-#: cms/WebSite.py:263
+#: cms/WebSite.py:260
 msgid "The user \"%s\" does not exist."
 msgstr ""
 
-#: cms/users.py:484
+#: cms/users.py:517
 msgid "The username is wrong, please try again."
 msgstr ""
 
@@ -2817,7 +2830,7 @@ msgstr ""
 msgid "There is already another resource with this name."
 msgstr ""
 
-#: cms/users.py:487
+#: cms/users.py:520
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
 
@@ -2924,7 +2937,7 @@ msgstr ""
 msgid "To add a folder enter its name and click the <tt>Add</tt> button."
 msgstr ""
 
-#: cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
 msgstr ""
 
@@ -3074,12 +3087,12 @@ msgstr "Usuario"
 msgid "User added"
 msgstr "Usuarios"
 
-#: cms/users.py:503
+#: cms/users.py:536
 #, fuzzy
 msgid "User added."
 msgstr "Usuarios"
 
-#: cms/users.py:357
+#: cms/users.py:390
 #, fuzzy
 msgid "User groups edited."
 msgstr "Usuarios"
@@ -3128,7 +3141,7 @@ msgstr ""
 msgid "View"
 msgstr "Ver"
 
-#: cms/WebSite.py:391
+#: cms/WebSite.py:385
 msgid "We did not find results for \"%s\"."
 msgstr ""
 
@@ -3147,7 +3160,7 @@ msgstr ""
 msgid "Web Page"
 msgstr ""
 
-#: cms/WebSite.py:45
+#: cms/WebSite.py:42
 msgid "Web Site"
 msgstr ""
 
@@ -3231,7 +3244,7 @@ msgstr ""
 msgid "You can add other languages support to your application"
 msgstr ""
 
-#: cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "You can change your password by typing a new one."
 msgstr ""
 
@@ -3246,7 +3259,7 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:211
+#: cms/WebSite.py:208
 msgid "You can not remove the default language."
 msgstr ""
 
@@ -3276,7 +3289,7 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:279
+#: cms/users.py:318
 msgid "You mistyped your actual password, you account is not changed."
 msgstr ""
 
@@ -3284,7 +3297,7 @@ msgstr ""
 msgid "You must add user(s) in parent group:"
 msgstr ""
 
-#: cms/WebSite.py:225
+#: cms/WebSite.py:222
 #, fuzzy
 msgid "You must choose a language"
 msgstr "Elije un idioma"
@@ -3293,7 +3306,7 @@ msgstr "Elije un idioma"
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: cms/WebSite.py:192
+#: cms/WebSite.py:189
 msgid "You must select one and only one language."
 msgstr ""
 

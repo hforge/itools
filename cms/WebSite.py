@@ -15,10 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from the Standard Library
-from base64 import encodestring
-from urllib import quote
-
 # Import from itools
 from itools import uri
 from itools import i18n
@@ -36,6 +32,7 @@ from utils import comeback
 from workflow import WorkflowAware
 from users import crypt_password
 from widgets import Table
+from metadata import Password
 
 
 
@@ -269,15 +266,12 @@ class WebSite(Folder):
             raise UserError, self.gettext(u'The password is wrong.')
 
         # Set cookie
-        cname = '__ac'
-        cookie = encodestring('%s:%s' % (username, password))
-        cookie = quote(cookie)
-        path = '/'
+        cookie = Password.encode('%s:%s' % (username, password))
         expires = request.form.get('iAuthExpires', None)
         if expires is None:
-            context.set_cookie(cname, cookie, path=path)
+            context.set_cookie('__ac', cookie, path='/')
         else:
-            context.set_cookie(cname, cookie, path=path, expires=expires)
+            context.set_cookie('__ac', cookie, path='/', expires=expires)
 
         # Set context
         context.user = user

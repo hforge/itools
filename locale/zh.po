@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2006-06-24 16:06+CET\n"
+"POT-Creation-Date: 2006-06-26 15:06+CET\n"
 "PO-Revision-Date: 2004-11-25 22:33+0100\n"
 "Last-Translator: Luis Belmar Letelier <luis@itaapy.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -395,7 +395,7 @@ msgstr ""
 msgid "-- Choose a language --"
 msgstr "选择语言"
 
-#: cms/WebSite.py:46
+#: cms/WebSite.py:43
 msgid "..."
 msgstr ""
 
@@ -790,7 +790,7 @@ msgstr "关于IKAARO"
 msgid "Account Change"
 msgstr "改换"
 
-#: cms/users.py:311
+#: cms/users.py:286
 #, fuzzy
 msgid "Account changed."
 msgstr "用户资料被变更."
@@ -1023,6 +1023,11 @@ msgstr "改变内设"
 #: cms/ui/Root_languages.xml.en:0
 msgid "Change default for the selected one"
 msgstr ""
+
+#: cms/ui/User_edit_password.xml.en:0
+#, fuzzy
+msgid "Change password"
+msgstr "改变内设"
 
 #: cms/ui/User_edit.xml.en:0
 #, fuzzy
@@ -1519,7 +1524,7 @@ msgstr ""
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr "GNU通用公共许可证(GPL)\t"
 
-#: cms/WebSite.py:136
+#: cms/WebSite.py:133
 msgid "General"
 msgstr "概略"
 
@@ -1528,7 +1533,7 @@ msgstr "概略"
 msgid "General Settings."
 msgstr "总设置被改变"
 
-#: cms/WebSite.py:152
+#: cms/WebSite.py:149
 #, fuzzy
 msgid "General settings changed."
 msgstr "总设置被改变"
@@ -1553,7 +1558,7 @@ msgid ""
 "Group name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
 msgstr ""
 
-#: cms/users.py:319
+#: cms/users.py:352
 msgid "Groups"
 msgstr ""
 
@@ -1685,7 +1690,7 @@ msgstr ""
 msgid "If you don't, you can download it from a link below."
 msgstr ""
 
-#: cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "If you type a new password, you must confirm it."
 msgstr ""
 
@@ -1804,7 +1809,7 @@ msgstr "语言"
 msgid "Language Settings"
 msgstr "语言"
 
-#: cms/WebSite.py:231
+#: cms/WebSite.py:228
 msgid "Language added."
 msgstr "语言被加入."
 
@@ -1813,11 +1818,11 @@ msgstr "语言被加入."
 msgid "Language:"
 msgstr "语言"
 
-#: cms/WebSite.py:160
+#: cms/WebSite.py:157
 msgid "Languages"
 msgstr "语言"
 
-#: cms/WebSite.py:218
+#: cms/WebSite.py:215
 msgid "Languages removed."
 msgstr "语言被改变."
 
@@ -1878,7 +1883,7 @@ msgstr "登录"
 msgid "Log out"
 msgstr "登录"
 
-#: cms/WebSite.py:238
+#: cms/WebSite.py:235
 msgid "Login"
 msgstr "登录"
 
@@ -2176,7 +2181,16 @@ msgstr ""
 msgid "Password"
 msgstr "密码"
 
-#: cms/users.py:290
+#: cms/ui/User_edit_password.xml.en:0
+#, fuzzy
+msgid "Password Change"
+msgstr "密码被修改."
+
+#: cms/users.py:344
+msgid "Password changed."
+msgstr "密码被修改."
+
+#: cms/users.py:325
 #, fuzzy
 msgid "Passwords mismatch, please try again."
 msgstr "密码错误,请再输入."
@@ -2311,7 +2325,7 @@ msgstr ""
 msgid "Preamble"
 msgstr ""
 
-#: cms/users.py:251
+#: cms/users.py:293
 msgid "Preferences"
 msgstr "优先"
 
@@ -2490,7 +2504,7 @@ msgstr ""
 msgid "Select users you want to add in this group."
 msgstr ""
 
-#: cms/WebSite.py:135
+#: cms/WebSite.py:132
 msgid "Settings"
 msgstr "设置"
 
@@ -2617,7 +2631,7 @@ msgstr ""
 msgid "Target language"
 msgstr "语言"
 
-#: cms/users.py:364
+#: cms/users.py:397
 msgid "Tasks"
 msgstr ""
 
@@ -2677,7 +2691,7 @@ msgstr "名称"
 msgid "The active root"
 msgstr ""
 
-#: cms/WebSite.py:201
+#: cms/WebSite.py:198
 msgid "The default language has been changed."
 msgstr "预设语言已被改变."
 
@@ -2741,11 +2755,11 @@ msgstr "文件名中含有不符规定的符号,请更名."
 msgid "The name must be entered"
 msgstr "必须输入一个文件名"
 
-#: cms/users.py:492
+#: cms/users.py:525
 msgid "The password is wrong, please try again."
 msgstr "密码错误,请再输入."
 
-#: cms/WebSite.py:269
+#: cms/WebSite.py:266
 #, fuzzy
 msgid "The password is wrong."
 msgstr "密码错误,请再输入."
@@ -2784,11 +2798,11 @@ msgstr "名称"
 msgid "The title"
 msgstr "名称"
 
-#: cms/WebSite.py:263
+#: cms/WebSite.py:260
 msgid "The user \"%s\" does not exist."
 msgstr ""
 
-#: cms/users.py:484
+#: cms/users.py:517
 msgid "The username is wrong, please try again."
 msgstr "用户名错误,请再输入."
 
@@ -2822,7 +2836,7 @@ msgstr "此名称已被另外物件名有."
 msgid "There is already another resource with this name."
 msgstr "此文件名已被另外资源占有."
 
-#: cms/users.py:487
+#: cms/users.py:520
 msgid "There is another user with the username \"%s\", please try again"
 msgstr "此用户名已登记\"%s\", 请输入另一用户名."
 
@@ -2931,7 +2945,7 @@ msgstr ""
 "文件夹被用于分类存储文档. 为了加入一个新文件夹请输入文件夹名称并击打<tt>Add</"
 "tt>键"
 
-#: cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
 msgstr ""
 
@@ -3083,12 +3097,12 @@ msgstr "用户"
 msgid "User added"
 msgstr "加入用户"
 
-#: cms/users.py:503
+#: cms/users.py:536
 #, fuzzy
 msgid "User added."
 msgstr "加入用户"
 
-#: cms/users.py:357
+#: cms/users.py:390
 #, fuzzy
 msgid "User groups edited."
 msgstr "加入用户"
@@ -3134,7 +3148,7 @@ msgstr "版本上载."
 msgid "View"
 msgstr "浏览"
 
-#: cms/WebSite.py:391
+#: cms/WebSite.py:385
 msgid "We did not find results for \"%s\"."
 msgstr ""
 
@@ -3153,7 +3167,7 @@ msgstr ""
 msgid "Web Page"
 msgstr ""
 
-#: cms/WebSite.py:45
+#: cms/WebSite.py:42
 msgid "Web Site"
 msgstr ""
 
@@ -3237,7 +3251,7 @@ msgstr ""
 msgid "You can add other languages support to your application"
 msgstr ""
 
-#: cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "You can change your password by typing a new one."
 msgstr ""
 
@@ -3252,7 +3266,7 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:211
+#: cms/WebSite.py:208
 msgid "You can not remove the default language."
 msgstr "你不能改变预设语言."
 
@@ -3283,7 +3297,7 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:279
+#: cms/users.py:318
 msgid "You mistyped your actual password, you account is not changed."
 msgstr ""
 
@@ -3291,7 +3305,7 @@ msgstr ""
 msgid "You must add user(s) in parent group:"
 msgstr ""
 
-#: cms/WebSite.py:225
+#: cms/WebSite.py:222
 msgid "You must choose a language"
 msgstr "你必须选择一种语言."
 
@@ -3299,7 +3313,7 @@ msgstr "你必须选择一种语言."
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: cms/WebSite.py:192
+#: cms/WebSite.py:189
 msgid "You must select one and only one language."
 msgstr "你只能选择一种语言."
 
@@ -3831,9 +3845,6 @@ msgstr "禄 Type the url to add:"
 
 #~ msgid "No objects found."
 #~ msgstr "未发现物件."
-
-#~ msgid "Password changed."
-#~ msgstr "密码被修改."
 
 #~ msgid "Portuguese"
 #~ msgstr "葡萄牙语"

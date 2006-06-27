@@ -120,12 +120,14 @@ class Server(object):
         #  - the request line
         #  - the status code
         #  - content length of the response
-        if self.access_log is not None:
+        log = self.access_log
+        if log is not None:
             host, port = connection.getpeername()
             now = time.strftime('%d/%b/%Y:%H:%M:%S %Z')
-            self.access_log.write(
+            log.write(
                 '%s - - [%s] "%s" %s %s\n' % (host, now, request_line, status,
                                               size))
+            log.flush()
 
 
     def log_error(self):

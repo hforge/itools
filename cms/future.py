@@ -31,18 +31,8 @@ from itools.cms.Group import ListOfUsers
 class OrderAware(object):
     orderable_classes = None
 
-    def get_catalog_indexes(self):
-        document = {}
-        parent = self.parent
-        if isinstance(parent, OrderAware):
-            index = parent.get_order_index(self)
-            if index is not None:
-                document['order'] = '%04d' % index
-
-        return document
-
-
     def get_ordered_folder_names(self):
+        "Return current order plus the unordered names at the end."
         orderable_classes = self.orderable_classes or self.__class__
         ordered_names = self.get_property('ikaaro:order')
         real_names = [f.name for f in self.search_handlers()
@@ -54,13 +44,17 @@ class OrderAware(object):
         return ordered_folders + unordered_folders
 
 
-    def get_order_index(self, folder):
-        folder_name = folder.name
+    def get_ordered_objects(self, objects):
+        "Return a sorted list of child handlers or brains of them."
+        ordered_list = []
         ordered_names = self.get_ordered_folder_names()
-        if folder_name in ordered_names:
-            return ordered_names.index(folder_name)
+        for object in objects:
+            index = ordered_names.index(object.name)
+            ordered_list.append((index, object))
 
-        return None
+        ordered_list.sort()
+
+        return [x[1] for x in ordered_list]
 
 
     order_folders_form__access__ = 'is_allowed_to_edit'

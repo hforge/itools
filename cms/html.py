@@ -186,6 +186,24 @@ class XHTMLFile(Text, XHTML.Document):
         return stl(handler, namespace)
 
 
+    epoz_color_form__access__ = 'is_allowed_to_edit'
+    def epoz_color_form(self):
+        context = get_context()
+        context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
+
+        handler = self.get_handler('/ui/epoz_script_color.xml')
+        return handler.to_str()
+
+
+    epoz_table_form__access__ = 'is_allowed_to_edit'
+    def epoz_table_form(self):
+        context = get_context()
+        context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
+
+        handler = self.get_handler('/ui/epoz_script_table.xml')
+        return handler.to_str()
+
+
 Text.register_handler_class(XHTMLFile)
 
 

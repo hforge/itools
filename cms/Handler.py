@@ -622,16 +622,15 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
         document.getElementById('%(textarea_id)s').disabled = 0;
         -->"""
         namespace['js_code'] = js_code % namespace
-        color_template = self.get_pathtoroot() + 'ui/epoz_script_color.xml'
-        namespace['SetTextColor_call'] = "SetTextColor('%s')" % color_template
-        namespace['SetBackColor_call'] = "SetBackColor('%s')" % color_template
-        table_template = self.get_pathtoroot() + 'ui/epoz_script_table.xml'
-        namespace['SetTable_call'] = "SetTable('%s')" % table_template
+        namespace['SetTextColor_call'] = "SetTextColor(';epoz_color_form')"
+        namespace['SetBackColor_call'] = "SetBackColor(';epoz_color_form')"
+        namespace['SetTable_call'] = "SetTable(';epoz_table_form')"
 
+        here = uri.Path(self.get_abspath())
         handler = self.get_handler('/ui/epoz.xml')
-        here = uri.generic.Path(self.get_abspath())
-        there = uri.generic.Path(handler.get_abspath())
-        handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
+        there = uri.Path(handler.get_abspath())
+        prefix = here.get_pathto(there)
+        handler = XHTML.set_template_prefix(handler, prefix)
         return stl(handler, namespace)
 
 
@@ -639,13 +638,14 @@ class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
     def epoz_iframe(self):
         context = get_context()
         response = context.response
+        response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
         namespace = {}
         namespace['data'] = self.get_epoz_data()
 
-        response.set_header('Content-Type', 'text/html; charset=UTF-8')
+        here = uri.Path(self.get_abspath())
         handler = self.get_handler('/ui/epoz_iframe.xml')
-        here = uri.generic.Path(self.get_abspath())
-        there = uri.generic.Path(handler.get_abspath())
-        handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
+        there = uri.Path(handler.get_abspath())
+        prefix = here.get_pathto(there)
+        handler = XHTML.set_template_prefix(handler, prefix)
         return stl(handler, namespace)

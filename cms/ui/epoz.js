@@ -526,10 +526,3 @@ function addListener(ob, eventName, functionReference){
         ob.addEventListener(eventName, functionReference, false);
     }
 }
-
-
-/* Color Palette */
-function pickcolor(color) {
-  window.opener.SetColor(color);
-  window.close();
-}

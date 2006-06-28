@@ -280,10 +280,10 @@ class XMLAttribute(object):
 
     @staticmethod
     def encode(value):
-        value = XML.encode(value)
+        value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.replace('"', '&quot;')
 
     @staticmethod
     def decode(value):
-        value = XML.decode(value)
+        value = value.replace('&amp;', '&').replace('&lt;', '<')
         return value.replace('&quot;', '"')

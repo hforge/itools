@@ -36,19 +36,26 @@ class HTTPDate(DataType):
 
     @staticmethod
     def decode(data):
-        try:
-            # RFC 822
-            tm = time.strptime(data, '%a, %d %b %Y %H:%M:%S GMT')
-        except ValueError:
+        formats = [
+            # RFC-1123 (updates RFC-822, which uses two-digits years)
+            '%a, %d %b %Y %H:%M:%S GMT',
+            # RFC-850
+            '%A, %d-%b-%y %H:%M:%S GMT',
+            # ANSI C's asctime() format
+            '%a %b  %d %H:%M:%S %Y',
+            # Non-Standard formats, sent by some clients
+            # Variation of RFC-1123, uses full day name (sent by Netscape 4)
+            '%A, %d %b %Y %H:%M:%S GMT',
+            ]
+        for format in formats:
             try:
-                # RFC 850
-                tm = time.strptime(data, '%A, %d-%b-%y %H:%M:%S GMT')
+                tm = time.strptime(data, format)
             except ValueError:
-                # ANSI C's asctime() format
-                try:
-                    tm = time.strptime(data, '%a %b  %d %H:%M:%S %Y')
-                except ValueError:
-                    raise ValueError, 'date "%s" is not an HTTP-Date' % data
+                pass
+            else:
+                break
+        else:
+            raise ValueError, 'date "%s" is not an HTTP-Date' % data
 
         year, mon, mday, hour, min, sec, wday, yday, isdst = tm
         return datetime(year, mon, mday, hour, min, sec)

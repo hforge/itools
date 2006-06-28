@@ -121,12 +121,29 @@ class Skin(Folder):
         subviews = here.get_subviews(context.method)
 
         tabs = []
-        for name in views:
+        for view in views:
+            # from method?param1=value1&param2=value2&...
+            # we separate method and arguments, 
+            # then we get a dict with the arguments and the subview active state
+            if '?' in view:
+                name, args = view.split('?')
+                args = Query.decode(args)
+                active = name == context.method
+                for key, value in args.items():
+                    request_param = request.get_parameter(key)
+                    if request_param != value:
+                        active = False
+                        break
+            else:
+                name, args = view, {}
+                active = name == context.method
+
             method = here.get_method(name)
             if method is not None:
                 label = getattr(method.im_class, '%s__label__' % name)
-                active = name == context.method or name in subviews
-                tabs.append({'name': ';%s' % name,
+                if callable(label):
+                    label = label(**args)
+                tabs.append({'name': ';%s' % view,
                              'label': here.gettext(label),
                              'active': active,
                              'style': active and 'tab_active' or 'tab'})
@@ -134,19 +151,16 @@ class Skin(Folder):
         # Subtabs
         subtabs = []
         for subview in subviews:
-            # from method?param1=value1&param2=value2&...
-            # we separate method and arguments, 
-            # then we get a dict with the arguments and the subview active state
+            # same thing, separate method and arguments
             if '?' in subview:
                 name, args = subview.split('?')
                 args = Query.decode(args)
-                for arg in args:
-                    request_param = request.get_parameter(arg)
-                    if request_param != args[arg]:
+                active = name == context.method
+                for key, value in args.items():
+                    request_param = request.get_parameter(key)
+                    if request_param != value:
                         active = False
                         break
-                else:
-                    active = True
             else:
                 name, args = subview, {}
                 active = name == context.method

@@ -20,7 +20,6 @@ from copy import deepcopy
 import datetime
 
 # Import from itools
-from itools.resources import memory
 from Handler import Handler
 from itools.handlers.registry import register_handler_class
 

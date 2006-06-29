@@ -20,12 +20,15 @@ This module provides the abstract class which is the root in the
 handler class hierarchy.
 """
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from copy import deepcopy
 from datetime import datetime
 
 # Import from itools
-from itools.resources import base
+from itools import vfs
 from itools.handlers.transactions import get_transaction
 from base import Node
 
@@ -33,25 +36,28 @@ from base import Node
 
 class Handler(Node):
     """
-    This class represents a resource handler, where a resource can be
-    a file, a directory or a link. It is used as a base class for any
-    other handler class.
+    This class represents a resource handler; where a resource can be
+    a file or a directory, and is identified by a URI. It is used as a
+    base class for any other handler class.
     """
 
     class_mimetypes = []
     class_extension = None
 
-    # All handlers have a resource and a timestamp, plus the state.
+    # All handlers have a uri and a timestamp, plus the state.
     # The variable class "__slots__" is to be overriden.
-    __slots__ = ['resource', 'timestamp']
+    __slots__ = ['uri', 'timestamp']
 
 
-    def __init__(self, resource=None, **kw):
-        self.resource = resource
+    def __init__(self, uri=None, **kw):
         self.timestamp = None
-        # If the resources is None, this is a fresh new handler
-        if resource is None:
+        if uri is None:
+            # A handler from scratch
+            self.uri = None
             self.new(**kw)
+        else:
+            # Calculate the URI
+            self.uri = vfs.get_absolute_reference(uri)
 
 
     def __getattr__(self, name):
@@ -79,11 +85,11 @@ class Handler(Node):
         # Create and initialize the instance
         cls = self.__class__
         copy = object.__new__(cls)
-        copy.resource = None
+        copy.uri = None
         copy.timestamp = None
         # Copy the state
         for name in cls.__slots__:
-            if name == 'resource' or name == 'timestamp':
+            if name == 'uri' or name == 'timestamp':
                 continue
             value = getattr(self, name)
             value = deepcopy(value)
@@ -97,31 +103,24 @@ class Handler(Node):
 
 
     def load_state(self):
-        resource = self.resource
-        resource.open()
-        try:
+        resource = vfs.open(self.uri)
+        with resource:
             self._load_state(resource)
-        finally:
-            resource.close()
-        self.timestamp = resource.get_mtime()
+        self.timestamp = vfs.get_mtime(self.uri)
 
 
-    def load_state_from(self, resource):
-        resource.open()
+    def load_state_from(self, uri):
+        resource = vfs.open(uri)
         get_transaction().add(self)
-        try:
+        with resource:
             self._load_state(resource)
-        finally:
-            resource.close()
         self.timestamp = datetime.now()
 
 
     def save_state(self):
-        resource = self.resource
-
         transaction = get_transaction()
         transaction.lock()
-        resource.open()
+        resource = vfs.open(self.uri)
         try:
             self._save_state(resource)
         finally:
@@ -185,3 +184,4 @@ class Handler(Node):
         return self.resource.get_mimetype()
 
     mimetype = property(get_mimetype, None, None, '')
+

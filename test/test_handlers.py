@@ -20,31 +20,39 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.resources import memory
 from itools.handlers import get_handler
 from itools.handlers.python import Python
 from itools.handlers.dot import class_diagram_from_python
 
 
 
-class BasicTestCase(TestCase):
-
-    def test_get(self):
-        handler = get_handler('hello.txt')
-        self.assertEqual(handler.to_str(), 'hello world\n')
-
-
-    def test_copy_file(self):
-        handler = get_handler('hello.txt')
-        copy = handler.copy_handler()
-        self.assertEqual(copy.to_str(), handler.to_str())
+class TextTestCase(TestCase):
+    
+    def test_load(self):
+        handler = get_handler('tests/hello.txt')
+        self.assertEqual(handler.data, u'hello world\n')
 
 
-    def test_copy_folder(self):
-        here = get_handler('.')
-        copy = here.copy_handler()
-        self.assertEqual(copy.get_handler('hello.txt').to_str(),
-                         here.get_handler('hello.txt').to_str())
+
+
+#class BasicTestCase(TestCase):
+
+#    def test_get(self):
+#        handler = get_handler('hello.txt')
+#        self.assertEqual(handler.to_str(), 'hello world\n')
+
+
+#    def test_copy_file(self):
+#        handler = get_handler('hello.txt')
+#        copy = handler.copy_handler()
+#        self.assertEqual(copy.to_str(), handler.to_str())
+
+
+#    def test_copy_folder(self):
+#        here = get_handler('.')
+#        copy = here.copy_handler()
+#        self.assertEqual(copy.get_handler('hello.txt').to_str(),
+#                         here.get_handler('hello.txt').to_str())
 
 
 

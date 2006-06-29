@@ -27,12 +27,7 @@ from file import FileLayer
 registry = {'file': FileLayer}
 
 
-def _get_layer_and_reference(reference):
-    """
-    Internal function, from the given reference (usually a byte string),
-    builds the absolute URI reference. Then find outs which is the protocol
-    handler for it (layer), and returns both.
-    """
+def get_absolute_reference(reference):
     # Be sure "reference" is a Reference
     if not isinstance(reference, Reference):
         # Make it working with Windows
@@ -51,14 +46,19 @@ def _get_layer_and_reference(reference):
     base = uri_decode('file://%s/' % base)
 
     # Resolve the reference
-    reference = base.resolve(reference)
+    return base.resolve(reference)
 
 
-    # Find out the scheme
-    scheme = reference.scheme
-
+def _get_layer_and_reference(reference):
+    """
+    Internal function, from the given reference (usually a byte string),
+    builds the absolute URI reference. Then find outs which is the protocol
+    handler for it (layer), and returns both.
+    """
+    # Get the reference
+    reference = get_absolute_reference(reference)
     # Get the scheme handler
-    layer = registry[scheme]
+    layer = registry[reference.scheme]
 
     return layer, reference
 

@@ -97,17 +97,16 @@ def get_version(namespace):
 def setup(namespace, description='', classifiers=[]):
     version = get_version(namespace)
     try:
-        from itools.resources import get_resource
-        from handlers.config import Config
+        from itools.handlers.config import Config
     except ImportError:
         # Are we trying to install itools?
-        # XXX This is ugly, because Python does not support relative imports
+        # XXX Should use relative imports, by they don't work well yet, see
+        # https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1510172&group_id=5470
         start_local_import()
-        from resources import get_resource
         from handlers.config import Config
         end_local_import()
 
-    config = Config(get_resource('setup.conf'))
+    config = Config('setup.conf')
 
     # Initialize variables
     package_name = config.get_value('name')

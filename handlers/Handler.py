@@ -28,7 +28,7 @@ from copy import deepcopy
 from datetime import datetime
 
 # Import from itools
-from itools import vfs
+from itools.vfs import api as vfs # XXX Workaround for the Python's import shit
 from itools.handlers.transactions import get_transaction
 from base import Node
 

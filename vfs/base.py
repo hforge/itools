@@ -57,8 +57,8 @@ class BaseLayer(object):
         raise NotImplementedError
 
 
-    @staticmethod
-    def get_mimetype(reference):
+    @classmethod
+    def get_mimetype(cls, reference):
         """
         Try to guess the mimetype for a resource, given the resource itself
         and its name. To guess from the name we need to extract the type
@@ -87,7 +87,7 @@ class BaseLayer(object):
             if mimetype is not None:
                 return mimetype
 
-        if self.is_file(reference):
+        if cls.is_file(reference):
             return 'application/octet-stream'
 
         return 'application/x-not-regular-file'

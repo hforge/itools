@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from itools
-from itools.resources import get_resource
 from registry import get_handler_class
 
 
@@ -25,6 +24,5 @@ def get_handler(uri):
     """
     Returns a resource handler from a uri reference.
     """
-    resource = get_resource(uri)
-    handler_class = get_handler_class(resource)
-    return handler_class(resource)
+    handler_class = get_handler_class(uri)
+    return handler_class(uri)

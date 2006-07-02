@@ -15,11 +15,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from datetime import datetime
 
 # Import from itools
-from itools.resources import base, memory
 from itools.uri import Path
 from itools.handlers.Handler import Handler
 from itools.handlers import registry
@@ -83,23 +85,22 @@ class Folder(Handler):
         self.removed_handlers = set()
 
         # Add
+        base = self.uri
         for name in self.added_handlers:
-            handler = cache[name]
+            ref = base.resolve2(name)
             # First remove the resource if it exists
-            if resource.has_resource(name):
-                resource.del_resource(name)
+            if vfs.exists(ref):
+                vfs.remove(ref)
             # Add a dummy resource
+            handler = cache[name]
             if isinstance(handler, Folder):
-                dummy_resource = memory.Folder()
+                vfs.make_folder(ref)
             else:
-                dummy_resource = memory.File('')
-            resource.set_resource(name, dummy_resource)
+                vfs.make_file(ref)
             # Save state to the dummy resource
-            new_resource = resource.get_resource(name)
-            handler.resource = new_resource
-            new_resource.open()
-            handler._save_state(new_resource)
-            new_resource.close()
+            handler.uri = ref
+            with vfs.open(ref) as new_resource:
+                handler._save_state(new_resource)
         self.added_handlers = set()
 
 
@@ -111,13 +112,13 @@ class Folder(Handler):
         # Add the resources
         cache = self.cache
         for name in cache:
-            handler = cache[name]
+            ref = base.resolve2(name)
             # Add a dummy resource
+            handler = cache[name]
             if isinstance(handler, Folder):
-                dummy_resource = memory.Folder()
+                vfs.make_folder(ref)
             else:
-                dummy_resource = memory.File('')
-            resource.set_resource(name, dummy_resource)
+                vfs.make_file(ref)
             # Save state to the dummy resource
             new_resource = resource.get_resource(name)
             handler.save_state_to(new_resource)

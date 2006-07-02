@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from itools
-from itools.resources import base
+from itools import vfs
 
 
 handler_classes = {}
@@ -27,8 +27,8 @@ def register_handler_class(handler_class):
         handler_classes[mimetype] = handler_class
 
 
-def get_handler_class(resource):
-    mimetype = resource.get_mimetype()
+def get_handler_class(uri):
+    mimetype = vfs.get_mimetype(uri)
     if mimetype is not None:
         if mimetype in handler_classes:
             return handler_classes[mimetype]
@@ -37,16 +37,12 @@ def get_handler_class(resource):
         if main_type in handler_classes:
             return handler_classes[main_type]
 
-    if isinstance(resource, base.File):
+    if vfs.is_file(uri):
         from File import File
         return File
-    elif isinstance(resource, base.Folder):
+    elif vfs.is_folder(uri):
         from Folder import Folder
         return Folder
 
     raise ValueError
 
-
-def build_handler(resource):
-    handler_class = get_handler_class(resource)
-    return handler_class(resource)

@@ -135,7 +135,17 @@ def copy(source, target):
 
 
 def move(source, target):
-    raise NotImplementedError
+    source_layer, source_reference = _get_layer_and_reference(source)
+    target_layer, target_reference = _get_layer_and_reference(target)
+
+    if source_layer is target_layer:
+        # Move within the same layer
+        source_layer.move(source_reference, target_reference)
+    else:
+        # Move across different layers (copy and remove)
+        copy(source_reference, target_reference)
+        remove(source_reference)
+
 
 
 

@@ -122,17 +122,15 @@ class FileTestCase(unittest.TestCase):
         vfs.copy('tests/hello.txt', 'tests/hello.txt.bak')
         file = vfs.open('tests/hello.txt.bak')
         self.assertEqual(file.read(), 'hello world\n')
-        # Clean
-        vfs.remove('tests/hello.txt.bak')
 
 
-#    def test18_move_file(self):
-#        vfs.move('tests/hello.txt.bak', 'tests/hello.txt.old')
-#        file = vfs.open('tests/hello.txt.old')
-#        self.assertEqual(file.read(), 'hello world\n')
-#        self.assertEqual(vfs.exists('tests/hello.txt.bak'), False)
-#        # Remove temporary file
-#        vfs.remove('tests/hello.txt.old')
+    def test18_move_file(self):
+        vfs.move('tests/hello.txt.bak', 'tests/hello.txt.old')
+        file = vfs.open('tests/hello.txt.old')
+        self.assertEqual(file.read(), 'hello world\n')
+        self.assertEqual(vfs.exists('tests/hello.txt.bak'), False)
+        # Remove temporary file
+        vfs.remove('tests/hello.txt.old')
         
 
 

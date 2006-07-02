@@ -113,6 +113,11 @@ class BaseLayer(object):
         raise NotImplementedError
 
 
+    @staticmethod
+    def move(source, target):
+        raise NotImplementedError
+
+
 
 
 

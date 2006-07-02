@@ -18,6 +18,7 @@
 # Import from the Standard Library
 from datetime import datetime
 import os
+from subprocess import call
 
 # Import from itools
 from base import BaseLayer
@@ -112,6 +113,17 @@ class FileLayer(BaseLayer):
 
         # A folder (XXX)
         raise NotImplementedError
+
+
+    @staticmethod
+    def move(source, target):
+        # XXX Windows (and maybe other platforms) is not supported, yet
+        try:
+            status = call(['mv', str(source.path), str(target.path)])
+        except OSError:
+            raise NotImplementedError
+        if status != 0:
+            raise IOError
 
 
 

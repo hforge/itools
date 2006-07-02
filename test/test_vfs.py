@@ -129,12 +129,12 @@ class FileTestCase(unittest.TestCase):
         file = vfs.open('tests/hello.txt.old')
         self.assertEqual(file.read(), 'hello world\n')
         self.assertEqual(vfs.exists('tests/hello.txt.bak'), False)
+
+
+    def test19_get_names(self):
+        self.assertEqual('hello.txt.old' in vfs.get_names('tests'), True)
         # Remove temporary file
         vfs.remove('tests/hello.txt.old')
-        
-
-
-
 
 
 

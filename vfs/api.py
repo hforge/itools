@@ -147,7 +147,11 @@ def move(source, target):
         remove(source_reference)
 
 
-
+##########################################################################
+# Folders only
+def get_names(reference):
+    layer, reference = _get_layer_and_reference(reference)
+    return layer.get_names(reference)
 
 
 

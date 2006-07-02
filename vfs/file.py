@@ -126,6 +126,12 @@ class FileLayer(BaseLayer):
             raise IOError
 
 
+    ######################################################################
+    # Folders only
+    @staticmethod
+    def get_names(reference):
+        path = str(reference.path)
+        return os.listdir(path)
 
 
 

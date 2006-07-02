@@ -118,6 +118,11 @@ class BaseLayer(object):
         raise NotImplementedError
 
 
+    ######################################################################
+    # Folders only
+    @staticmethod
+    def get_names(reference):
+        raise NotImplementedError
 
 
 

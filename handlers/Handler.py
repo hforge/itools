@@ -102,21 +102,6 @@ class Handler(Node):
         self.load_state()
 
 
-    def load_state(self):
-        resource = vfs.open(self.uri)
-        with resource:
-            self._load_state(resource)
-        self.timestamp = vfs.get_mtime(self.uri)
-
-
-    def load_state_from(self, uri):
-        resource = vfs.open(uri)
-        get_transaction().add(self)
-        with resource:
-            self._load_state(resource)
-        self.timestamp = datetime.now()
-
-
     def save_state(self):
         transaction = get_transaction()
         transaction.lock()

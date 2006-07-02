@@ -15,12 +15,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from copy import deepcopy
 import datetime
 
 # Import from itools
 from Handler import Handler
+from itools.vfs import api as vfs
 from itools.handlers.registry import register_handler_class
 
 
@@ -58,6 +62,21 @@ class File(Handler):
     #########################################################################
     # API
     #########################################################################
+    def load_state(self):
+        resource = vfs.open(self.uri)
+        with resource:
+            self._load_state(resource)
+        self.timestamp = vfs.get_mtime(self.uri)
+
+
+    def load_state_from(self, uri):
+        resource = vfs.open(uri)
+        get_transaction().add(self)
+        with resource:
+            self._load_state(resource)
+        self.timestamp = datetime.now()
+
+
     def to_str(self):
         return self.data
 
@@ -65,7 +84,6 @@ class File(Handler):
     def set_data(self, data):
         self.set_changed()
         self.data = data
-
 
 
 register_handler_class(File)

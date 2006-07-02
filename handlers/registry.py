@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from itools
-from itools import vfs
+from itools.vfs import api as vfs
 
 
 handler_classes = {}

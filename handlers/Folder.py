@@ -23,6 +23,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import Path
+from itools import vfs
 from itools.handlers.Handler import Handler
 from itools.handlers import registry
 
@@ -56,12 +57,12 @@ class Folder(Handler):
         self.removed_handlers = set()
 
 
-    def _load_state(self, resource):
+    def _load_state(self, uri):
         # XXX This code may be optimized just checking wether there is
         # already an up-to-date handler in the cache, then it should
         # not be touched.
         cache = {}
-        for name in resource.get_names():
+        for name in vfs.get_names(uri):
             cache[name] = None
         self.cache = cache
 
@@ -147,6 +148,17 @@ class Folder(Handler):
     #########################################################################
     # API (public)
     #########################################################################
+    def load_state(self):
+        self._load_state(self.uri)
+        self.timestamp = vfs.get_mtime(self.uri)
+
+
+    def load_state_from(self, uri):
+        get_transaction().add(self)
+        self._load_state(uri)
+        self.timestamp = datetime.now()
+
+
     def get_handler(self, path):
         # Be sure path is a Path
         if not isinstance(path, Path):

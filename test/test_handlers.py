@@ -26,12 +26,26 @@ from itools.handlers.dot import class_diagram_from_python
 
 
 
+class FolderTestCase(TestCase):
+
+    def test_has_handler(self):
+        handler = get_handler('tests')
+        self.assertEqual(handler.has_handler('hello.txt'), True)
+       
+
+
 class TextTestCase(TestCase):
     
-    def test_load(self):
+    def test_load_file(self):
         handler = get_handler('tests/hello.txt')
         self.assertEqual(handler.data, u'hello world\n')
 
+
+
+#    def test_save_file(self):
+#        handler = get_handler('tests/hello.txt')
+#        handler.data = u'bye world'
+#        self.assertEqual(handler.data, u'hello world\n')
 
 
 

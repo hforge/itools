@@ -1,3 +1,21 @@
+0.13.7 (2006/07/03)
+
+  Catalog
+  - Fix the "prof.py" script.
+
+  CSV
+  - Improved Index & Search API, by Hervé Cauwelier [#339].
+
+  Web
+  - Fix the access log, flush the buffer on every line.
+  - Support a non-standard HTTP Date format used by some browsers:
+    '%A, %d %b %Y %H:%M:%S GMT'.
+
+  CMS
+  - Internationalize Epoz, by Hervé Cauwelier [#345].
+  - Fix Epoz for IE, by Hervé Cauwelier [#390].
+
+
 0.13.6 (2006/06/26)
 
   URI

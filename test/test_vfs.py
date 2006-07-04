@@ -25,7 +25,7 @@ from itools import vfs
 
 
 
-class FileTestCase(unittest.TestCase):
+class FileTestCase(TestCase):
     """
     Test the whole API for the filesystem layer, "file://..."
     """

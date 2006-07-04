@@ -15,15 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the Standard Library
-import os
-
 # Import from itools
-from itools.uri import get_reference
-from itools.uri.generic import Reference, decode as uri_decode
-from file import FileLayer
 from api import *
-
-
-# Register the built-in file systems
-registry.register_file_system('file', FileLayer)
+import file

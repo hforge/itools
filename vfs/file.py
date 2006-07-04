@@ -21,10 +21,11 @@ import os
 from subprocess import call
 
 # Import from itools
-from base import BaseLayer
+from base import BaseFS
+from registry import register_file_system
 
 
-class FileLayer(BaseLayer):
+class FileFS(BaseFS):
 
     @staticmethod
     def exists(reference):
@@ -135,20 +136,4 @@ class FileLayer(BaseLayer):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+register_file_system('file', FileFS)

@@ -25,7 +25,7 @@ from itools.datatypes import FileName
 
 
 
-class BaseLayer(object):
+class BaseFS(object):
 
     @staticmethod
     def exists(reference):

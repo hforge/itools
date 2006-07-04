@@ -49,7 +49,7 @@ def get_absolute_reference(reference):
     return base.resolve(reference)
 
 
-def _get_layer_and_reference(reference):
+def get_layer_and_reference(reference):
     """
     Internal function, from the given reference (usually a byte string),
     builds the absolute URI reference. Then find outs which is the protocol
@@ -64,57 +64,57 @@ def _get_layer_and_reference(reference):
 
 
 def exists(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.exists(reference)
 
 
 def is_file(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.is_file(reference)
 
 
 def is_folder(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.is_folder(reference)
 
 
 def get_ctime(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.get_ctime(reference)
 
 
 def get_mtime(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.get_mtime(reference)
 
 
 def get_atime(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.get_atime(reference)
 
 
 def get_mimetype(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.get_mimetype(reference)
 
 
 def make_file(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.make_file(reference)
 
 
 def make_folder(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.make_folder(reference)
 
 
 def remove(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.remove(reference)
 
 
 def open(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.open(reference)
 
 
@@ -135,8 +135,8 @@ def copy(source, target):
 
 
 def move(source, target):
-    source_layer, source_reference = _get_layer_and_reference(source)
-    target_layer, target_reference = _get_layer_and_reference(target)
+    source_layer, source_reference = get_layer_and_reference(source)
+    target_layer, target_reference = get_layer_and_reference(target)
 
     if source_layer is target_layer:
         # Move within the same layer
@@ -150,7 +150,7 @@ def move(source, target):
 ##########################################################################
 # Folders only
 def get_names(reference):
-    layer, reference = _get_layer_and_reference(reference)
+    layer, reference = get_layer_and_reference(reference)
     return layer.get_names(reference)
 
 

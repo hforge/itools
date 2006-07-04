@@ -21,10 +21,9 @@ import os
 # Import from itools
 from itools.uri import get_reference
 from itools.uri.generic import Reference, decode as uri_decode
-from file import FileLayer
+from registry import get_file_system
 
 
-registry = {'file': FileLayer}
 
 
 def get_absolute_reference(reference):
@@ -58,9 +57,9 @@ def get_layer_and_reference(reference):
     # Get the reference
     reference = get_absolute_reference(reference)
     # Get the scheme handler
-    layer = registry[reference.scheme]
+    fs = get_file_system(reference.scheme)
 
-    return layer, reference
+    return fs, reference
 
 
 def exists(reference):

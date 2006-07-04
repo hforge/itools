@@ -82,6 +82,10 @@ class Authority(object):
         return str(self) == str(other)
 
 
+    def __hash__(self):
+        return hash(str(self))
+
+
     def __nonzero__(self):
         return bool(str(self))
 
@@ -242,6 +246,10 @@ class Path(list):
             other = Path(other)
 
         return str(self) == str(other)
+
+
+    def __hash__(self):
+        return hash(str(self))
 
 
     def is_absolute(self):
@@ -452,6 +460,10 @@ class Reference(object):
 
     def __eq__(self, other):
         return str(self) == str(other)
+
+
+    def __hash__(self):
+        return hash(str(self))
 
 
     def resolve(self, reference):

@@ -138,13 +138,15 @@ class FileTestCase(TestCase):
 
 
 
+class FoldersTestCase(TestCase):
+ 
+    def setUp(self):
+        self.tests = vfs.open('tests/')
 
 
-
-
-
-
-
+    def test00_exists(self):
+        exists = self.tests.exists('index.html.en')
+        self.assertEqual(exists, True)
 
 
 

@@ -75,9 +75,8 @@ class Phrase(object):
         # Get the index
         index = catalog.get_index(self.name)
         # Get the analyser
-        fields = catalog.get_handler('fields')
-        field_number = fields.field_numbers[self.name]
-        field = fields.fields[field_number]
+        field_number = catalog.field_numbers[self.name]
+        field = catalog.fields[field_number]
         analyser = get_analyser(field.type)
 
         documents = {}

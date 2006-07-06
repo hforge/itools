@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,11 +20,12 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
+from itools.handlers.spaces import get_space
 from itools.handlers import get_handler
 from itools.handlers.Text import Text
 from itools.catalog import IO
 from itools.catalog import analysers
-from itools.catalog.Catalog import Catalog
+from itools.catalog.catalog import Catalog
 from itools.catalog.IIndex import IIndex
 from itools.catalog import queries
 
@@ -95,25 +96,103 @@ class TextTestCase(TestCase):
 
 
 
-class IITestCase(TestCase):
-
-    def test_hit(self):
-        ii = IIndex()
-        ii.index_term(u'hello', 0, 0)
-        self.assertEqual(bool(ii.search_word(u'hello')), True)
-
-
-    def test_miss(self):
-        ii = IIndex()
-        ii.index_term(u'hello', 0, 0)
-        self.assertEqual(bool(ii.search_word(u'bye')), False)
+class InMemoryTestCase(TestCase):
+ 
+    def test00_build(self):
+        global catalog
+        catalog = Catalog(fields=[('name', 'keyword', True, False)])
+        self.assertEqual(len(catalog.fields), 1)
 
 
-    def test_unindex(self):
-        ii = IIndex()
-        ii.index_term(u'hello', 0, 0)
-        ii.unindex_term(u'hello', 0)
-        self.assertEqual(bool(ii.search_word(u'hello')), False)
+    def test01_index(self):
+        catalog.index_document({'name': 'Toto'})
+        self.assertEqual(catalog.document_number, 1)
+
+
+    def test02_search_and_hit(self):
+        documents = catalog.search(name='Toto')
+        documents = list(documents)
+        self.assertEqual(len(documents), 1)
+
+
+    def test03_search_and_miss(self):
+        documents = catalog.search(name='Fofo')
+        documents = list(documents)
+        self.assertEqual(len(documents), 0)
+
+
+    def test04_unindex(self):
+        # Unindex
+        catalog.unindex_document(0)
+        # Search
+        documents = catalog.search(name='Toto')
+        documents = list(documents)
+        self.assertEqual(len(documents), 0)
+
+
+
+class PersistentTestCase(TestCase):
+    
+    def test00_build(self):
+        space = get_space()
+        space.set_handler('tests/catalog', catalog)
+        space.save_changes()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#class IITestCase(TestCase):
+#
+#    def test_hit(self):
+#        ii = IIndex()
+#        ii.index_term(u'hello', 0, 0)
+#        self.assertEqual(bool(ii.search_word(u'hello')), True)
+#
+#
+#    def test_miss(self):
+#        ii = IIndex()
+#        ii.index_term(u'hello', 0, 0)
+#        self.assertEqual(bool(ii.search_word(u'bye')), False)
+#
+#
+#    def test_unindex(self):
+#        ii = IIndex()
+#        ii.index_term(u'hello', 0, 0)
+#        ii.unindex_term(u'hello', 0)
+#        self.assertEqual(bool(ii.search_word(u'hello')), False)
 
 
 
@@ -141,60 +220,60 @@ class Document(Text):
 
 
 # Build a catalog on memory
-tests = get_handler('fables')
-if tests.has_handler('catalog'):
-    tests.del_handler('catalog')
-catalog = Catalog(fields=[('title', 'text', True, True),
-                          ('body', 'text', True, False)])
-tests.set_handler('catalog', catalog)
-tests.save_state()
-catalog_resource = tests.resource.get_resource('catalog')
-catalog = Catalog(catalog_resource)
-
-resource_names = [ x for x in tests.get_handler_names() if x.endswith('.txt') ]
-resource_names.sort()
-for resource_name in resource_names:
-    resource = tests.resource.get_resource(resource_name)
-    document = Document(resource)
-    document = {'title': document.title, 'body': document.body}
-    catalog.index_document(document)
-catalog.save_state()
-
-
-
-class CatalogTestCase(TestCase):
-
-    def test_hit(self):
-        documents = catalog.search(body='forget')
-        doc_numbers = [ x.__number__ for x in documents ]
-        self.assertEqual(doc_numbers, [5, 10])
+#tests = get_handler('fables')
+#if tests.has_handler('catalog'):
+#    tests.del_handler('catalog')
+#catalog = Catalog(fields=[('title', 'text', True, True),
+#                          ('body', 'text', True, False)])
+#tests.set_handler('catalog', catalog)
+#tests.save_state()
+#catalog_resource = tests.resource.get_resource('catalog')
+#catalog = Catalog(catalog_resource)
+#
+#resource_names = [ x for x in tests.get_handler_names() if x.endswith('.txt') ]
+#resource_names.sort()
+#for resource_name in resource_names:
+#    resource = tests.resource.get_resource(resource_name)
+#    document = Document(resource)
+#    document = {'title': document.title, 'body': document.body}
+#    catalog.index_document(document)
+#catalog.save_state()
 
 
-    def test_phrase(self):
-        documents = catalog.search(body='your son')
-        doc_numbers = [ x.__number__ for x in documents ]
-        self.assertEqual(doc_numbers, [5])
+
+#class CatalogTestCase(TestCase):
+
+#    def test_hit(self):
+#        documents = catalog.search(body='forget')
+#        doc_numbers = [ x.__number__ for x in documents ]
+#        self.assertEqual(doc_numbers, [5, 10])
 
 
-    def test_miss(self):
-        documents = catalog.search(body='plano')
-        doc_numbers = [ x.__number__ for x in documents ]
-        self.assertEqual(doc_numbers, [])
+#    def test_phrase(self):
+#        documents = catalog.search(body='your son')
+#        doc_numbers = [ x.__number__ for x in documents ]
+#        self.assertEqual(doc_numbers, [5])
 
 
-    def test_range(self):
-        query = queries.Range('body', 'home', 'horse')
-        documents = catalog.search(query)
-        doc_numbers = [ x.__number__ for x in documents ]
-        self.assertEqual(doc_numbers,
-                         [22, 17, 2, 30, 25, 19, 16, 13, 12, 11, 8, 5])
+#    def test_miss(self):
+#        documents = catalog.search(body='plano')
+#        doc_numbers = [ x.__number__ for x in documents ]
+#        self.assertEqual(doc_numbers, [])
 
 
-    def test_unindex(self):
-        catalog.unindex_document(5)
-        documents = catalog.search(body='forget')
-        doc_numbers = [ x.__number__ for x in documents ]
-        self.assertEqual(doc_numbers, [10])
+#    def test_range(self):
+#        query = queries.Range('body', 'home', 'horse')
+#        documents = catalog.search(query)
+#        doc_numbers = [ x.__number__ for x in documents ]
+#        self.assertEqual(doc_numbers,
+#                         [22, 17, 2, 30, 25, 19, 16, 13, 12, 11, 8, 5])
+
+
+#    def test_unindex(self):
+#        catalog.unindex_document(5)
+#        documents = catalog.search(body='forget')
+#        doc_numbers = [ x.__number__ for x in documents ]
+#        self.assertEqual(doc_numbers, [10])
 
 
 ##    def test_save(self):

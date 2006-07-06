@@ -15,37 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the Standard Library
-import os
-
 # Import from itools
-from itools.uri import get_reference
-from itools.uri.generic import Reference, decode as uri_decode
+from itools.uri import uri
 from registry import get_file_system
-
-
-
-
-def get_absolute_reference(reference):
-    # Be sure "reference" is a Reference
-    if not isinstance(reference, Reference):
-        # Make it working with Windows
-        if os.path.sep == '\\':
-            if len(reference) > 1 and reference[1] == ':':
-                reference = 'file://%s' % reference
-        reference = get_reference(reference)
-
-    # Get the base path
-    base = os.getcwd()
-    # Make it working with Windows
-    if os.path.sep == '\\':
-        # Internally we use always the "/"
-        base = base.replace(os.path.sep, '/')
-
-    base = uri_decode('file://%s/' % base)
-
-    # Resolve the reference
-    return base.resolve(reference)
 
 
 def get_layer_and_reference(reference):
@@ -54,11 +26,8 @@ def get_layer_and_reference(reference):
     builds the absolute URI reference. Then find outs which is the protocol
     handler for it (layer), and returns both.
     """
-    # Get the reference
-    reference = get_absolute_reference(reference)
-    # Get the scheme handler
+    reference = uri.get_absolute_reference(reference)
     fs = get_file_system(reference.scheme)
-
     return fs, reference
 
 

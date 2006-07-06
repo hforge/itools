@@ -606,34 +606,38 @@ class EmptyReference(Reference):
 # Factory
 ##########################################################################
 
-def decode(data):
-    if isinstance(data, Path):
-        return Reference('', Authority(''), data, {}, None)
+class GenericDataType(object):
 
-    if not isinstance(data, (str, unicode)):
-        raise TypeError, 'unexpected %s' % type(data)
+    @staticmethod
+    def decode(data):
+        if isinstance(data, Path):
+            return Reference('', Authority(''), data, {}, None)
 
-    # Special case, the empty reference
-    if data == '':
-        return EmptyReference()
+        if not isinstance(data, (str, unicode)):
+            raise TypeError, 'unexpected %s' % type(data)
 
-    # Special case, the empty fragment
-    if data == '#':
-        return Reference('', Authority(''), Path(''), {}, '')
+        # Special case, the empty reference
+        if data == '':
+            return EmptyReference()
 
-    # All other cases, split the reference in its components
-    scheme, authority, path, query, fragment = urlsplit(data)
-    # The authority
-    authority = urllib.unquote(authority)
-    # The path
-    path = urllib.unquote(path)
-    # The query
-    try:
-        query = Query.decode(query)
-    except ValueError:
-        pass
-    # The fragment
-    if fragment == '':
-        fragment = None
+        # Special case, the empty fragment
+        if data == '#':
+            return Reference('', Authority(''), Path(''), {}, '')
 
-    return Reference(scheme, Authority(authority), Path(path), query, fragment)
+        # All other cases, split the reference in its components
+        scheme, authority, path, query, fragment = urlsplit(data)
+        # The authority
+        authority = urllib.unquote(authority)
+        authority = Authority(authority)
+        # The path
+        path = urllib.unquote(path)
+        # The query
+        try:
+            query = Query.decode(query)
+        except ValueError:
+            pass
+        # The fragment
+        if fragment == '':
+            fragment = None
+
+        return Reference(scheme, authority, Path(path), query, fragment)

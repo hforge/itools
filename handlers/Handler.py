@@ -28,7 +28,8 @@ from copy import deepcopy
 from datetime import datetime
 
 # Import from itools
-from itools.vfs import api as vfs # XXX Workaround for the Python's import shit
+from itools.uri import uri
+from itools.vfs import api as vfs
 from itools.handlers.transactions import get_transaction
 from base import Node
 
@@ -49,15 +50,15 @@ class Handler(Node):
     __slots__ = ['uri', 'timestamp']
 
 
-    def __init__(self, uri=None, **kw):
+    def __init__(self, ref=None, **kw):
         self.timestamp = None
-        if uri is None:
+        if ref is None:
             # A handler from scratch
             self.uri = None
             self.new(**kw)
         else:
             # Calculate the URI
-            self.uri = vfs.get_absolute_reference(uri)
+            self.uri = uri.get_absolute_reference(ref)
 
 
     def __getattr__(self, name):

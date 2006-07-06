@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2006 Juan David IbÃ¡Ã±ez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,7 +16,17 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-import mailto
-from generic import Path, Reference, Segment
-from uri import *
+from generic import GenericDataType
 
+
+_schemes = {}
+
+
+def register_scheme(name, handler):
+    _schemes[name] = handler
+
+
+def get_scheme(name):
+    if name in _schemes:
+        return _schemes[name]
+    return GenericDataType

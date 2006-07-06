@@ -15,6 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Import from itools
+from registry import register_scheme
 
 
 class Mailto(object):
@@ -31,11 +33,18 @@ class Mailto(object):
 
 
 
-def decode(data):
-    if '@' not in data:
-        # It is normal to use mailto references like 'toto AT example DOT com'
-        # to trick robots. In this case we just return the given string.
-        return data
+class MailtoDataType(object):
 
-    username, host = data.split('@', 1)
-    return Mailto(username, host)
+    @staticmethod
+    def decode(data):
+        if '@' not in data:
+            # It is normal to use mailto references like 'toto AT example
+            # DOT com' to trick robots. In this case we just return the
+            # given string.
+            return data
+
+        username, host = data.split('@', 1)
+        return Mailto(username, host)
+
+
+register_scheme('mailto', MailtoDataType)

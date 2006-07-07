@@ -203,3 +203,8 @@ def decode_version(data):
     ordinal = struct.unpack('>I', data)[0]
     date = datetime.date.fromordinal(ordinal)
     return date.strftime('%Y%m%d')
+
+
+
+# Useful constants
+NULL = encode_link(None)

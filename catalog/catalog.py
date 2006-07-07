@@ -24,8 +24,8 @@ from operator import itemgetter
 # Import from itools
 from itools import vfs
 from itools.handlers.base import Handler
-from IO import (encode_byte, encode_link, encode_string, encode_uint32,
-                encode_version)
+from IO import (encode_byte, encode_character, encode_link, encode_string,
+                encode_uint32, encode_version)
 from analysers import get_analyser
 import queries
 
@@ -44,98 +44,8 @@ class Field(object):
 
 
 
-class Tree(object):
-
-    __slots__ = ['children', 'documents']
 
 
-    def __init__(self):
-        # {<key>: Tree}
-        self.children = {}
-        # {<doc number>: [<position>, ..., <position>]}
-        self.documents = {}
-
-
-    def search_word(self, word):
-        if word:
-            if self.children is None:
-                self.load_children()
-
-            prefix, suffix = word[0], word[1:]
-            subtree = self.children.get(prefix, None)
-            if subtree is None:
-                return {}
-            else:
-                return subtree.search_word(suffix)
-        else:
-            if self.documents is None:
-                self.load_documents()
-
-            return self.documents.copy()
-
-
-
-class Index(object):
-    
-    __slots__ = ['root', 'added_terms', 'removed_terms']
-
-
-    def __init__(self):
-        self.root = Tree()
-        # {<term>: {<doc number>: [<position>, ..., <position>]}
-        self.added_terms = {}
-        # {<term>: set(<doc number>, ..)}
-        self.removed_terms = {}
-
-
-    def index_term(self, term, doc_number, position):
-        # Removed terms
-        if term in self.removed_terms:
-            if doc_number in self.removed_terms[term]:
-                del self.removed_terms[term][doc_number]
-        # Added terms
-        documents = self.added_terms.setdefault(term, {})
-        positions = documents.setdefault(doc_number, set())
-        positions.add(position)
-
-
-    def unindex_term(self, term, doc_number):
-        # Added terms
-        added_terms = self.added_terms
-        if term in added_terms and doc_number in added_terms[term]:
-            del self.added_terms[term][doc_number]
-            return
-
-        # Removed terms
-        documents = self.removed_terms.setdefault(term, set())
-        documents.add(doc_number)
-
-
-    def search_word(self, word):
-        # Open resources
-##        self.tree_handler.resource.open()
-##        self.docs_handler.resource.open()
-
-        documents = self.root.search_word(word)
-        # Remove documents
-        if word in self.removed_terms:
-            for doc_number in self.removed_terms[word]:
-                if doc_number in documents:
-                    del documents[doc_number]
-        # Add documents
-        if word in self.added_terms:
-            for doc_number, positions in self.added_terms[word].items():
-                if doc_number in documents:
-                    # XXX We ever reach this case?
-                    documents[doc_number] |= positions
-                else:
-                    documents[doc_number] = positions
-
-        # Close resources
-##        self.tree_handler.resource.close()
-##        self.docs_handler.resource.close()
-
-        return documents
 
 
 
@@ -225,7 +135,6 @@ class Catalog(Handler):
             for doc_number in self.removed_documents:
                 index.seek(4 + doc_number * 4)
                 index.write(null)
-            self.removed_documents = []
             # Add
             index.seek(0, 2)
             docs.seek(0, 2)
@@ -246,11 +155,34 @@ class Catalog(Handler):
                         terms.sort()
                         data.append(encode_string(' '.join(terms)))
                 docs.write(''.join(data))
+            # Clean data structures
+            self.removed_documents = []
+            self.added_documents = {}
         finally:
             index.close()
             docs.close()
         # Indexes
-        # XXX
+        for field in self.fields:
+            if not field.is_indexed:
+                continue
+            index = self.indexes[field.number]
+            tree = base.open('%d_index_tree' % field.number)
+            docs = base.open('%d_index_docs' % field.number)
+            try:
+                # Remove
+                for term in index.removed_terms:
+                    pass
+                # Add
+                for term in index.added_terms:
+                    pass
+                # Clean data structures
+                # XXX {<term>: set(<doc number>, ..)}
+                index.removed_terms = {}
+                # XXX {<term>: {<doc number>: [<position>, ..., <position>]}
+                index.added_terms = {}
+            finally:
+                tree.close()
+                docs.close()
 
 
     #########################################################################

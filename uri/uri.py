@@ -73,3 +73,20 @@ def get_absolute_reference(reference, base=None):
     return base.resolve(reference)
 
 
+
+def get_absolute_reference2(reference, base=None):
+    """
+    Like "get_absolute_reference", but uses the "resolve2" algorithm
+    (ignores trailing slashes).
+    """
+    # Check the reference is of the good type
+    if not isinstance(reference, Reference):
+        reference = get_reference(reference)
+    # Check the reference is absolute
+    if reference.scheme:
+        return reference
+    # Default to the current working directory
+    if base is None:
+        base = get_cwd()
+    return base.resolve2(reference)
+

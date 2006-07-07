@@ -15,11 +15,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from operator import itemgetter
 
 # Import from itools
-from itools.handlers.Handler import Handler
+from itools import vfs
+from itools.handlers.base import Handler
+from IO import (encode_byte, encode_link, encode_string, encode_uint32,
+                encode_version)
 from analysers import get_analyser
 import queries
 
@@ -147,6 +153,8 @@ class Document(object):
 
 class Catalog(Handler):
 
+    class_version = '20060707'
+
     __slots__ = ['uri', 'timestamp', 'fields', 'field_numbers', 'indexes',
                  'document_number', 'documents', 'added_documents',
                  'removed_documents']
@@ -173,6 +181,76 @@ class Catalog(Handler):
         self.documents = []
         self.added_documents = {}
         self.removed_documents = []
+
+
+    def save_state(self):
+        # Define helpful variables
+        version = encode_version(self.class_version)
+        zero = encode_uint32(0)
+        null = encode_link(None)
+
+        # Initialize
+        base = self.uri
+        if not vfs.exists(base):
+            # Make and open the folder
+            vfs.make_folder(base)
+            base = vfs.open(base)
+            # Initialize documents
+            base.make_file('documents')
+            base.make_file('documents_index')
+            with base.open('documents_index') as documents_index:
+                documents_index.write(zero)
+            # Initialize inverted indexes
+            tree = ''.join([version, zero, null, null])
+            docs = ''.join([version, zero, null])
+            for field in self.fields:
+                # The tree
+                base.make_file('%d_index_tree' % field.number)
+                with base.open('%d_index_tree' % field.number) as file:
+                    file.write(tree)
+                # The documents
+                base.make_file('%d_index_docs' % field.number)
+                with base.open('%d_index_docs' % field.number) as file:
+                    file.write(docs)
+        else:
+            base = vfs.open(base)
+
+        # Save changes
+        fields = self.fields
+        # Documents
+        index = base.open('documents_index')
+        docs = base.open('documents')
+        try:
+            # Remove
+            for doc_number in self.removed_documents:
+                index.seek(4 + doc_number * 4)
+                index.write(null)
+            self.removed_documents = []
+            # Add
+            index.seek(0, 2)
+            docs.seek(0, 2)
+            for document in self.added_documents.values():
+                index.write(encode_link(docs.tell()))
+                data = []
+                for field in fields:
+                    value = document.fields[field.number]
+                    if value is None:
+                        continue
+                    data.append(encode_byte(field.number))
+                    if field.is_stored:
+                        data.append(encode_string(value))
+                    else:
+                        analyser = get_analyser(field.type)
+                        terms = [ x[0] for x in analyser(value) ]
+                        terms = list(set(terms))
+                        terms.sort()
+                        data.append(encode_string(' '.join(terms)))
+                docs.write(''.join(data))
+        finally:
+            index.close()
+            docs.close()
+        # Indexes
+        # XXX
 
 
     #########################################################################

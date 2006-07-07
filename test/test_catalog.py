@@ -139,6 +139,9 @@ class PersistentTestCase(TestCase):
         space.save_changes()
 
 
+    def test01_index(self):
+        catalog.index_document({'name': 'Toto'})
+        catalog.save_state()
 
 
 

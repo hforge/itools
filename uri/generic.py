@@ -475,7 +475,7 @@ class Reference(object):
         absolute, the result is undefined.
         """
         if not isinstance(reference, Reference):
-            reference = decode(reference)
+            reference = GenericDataType.decode(reference)
 
         # Absolute URI
         if reference.scheme:
@@ -528,7 +528,7 @@ class Reference(object):
         and 'resolve2' is one character. Refactor!
         """
         if not isinstance(reference, Reference):
-            reference = decode(reference)
+            reference = GenericDataType.decode(reference)
 
         # Absolute URI
         if reference.scheme:

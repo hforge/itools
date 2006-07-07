@@ -35,7 +35,7 @@ files, etc...
 import mimetypes
 
 # Import from itools
-import Handler
+import base
 import File
 import Folder
 import archive

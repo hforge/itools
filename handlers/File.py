@@ -23,9 +23,9 @@ from copy import deepcopy
 import datetime
 
 # Import from itools
-from Handler import Handler
 from itools.vfs import api as vfs
 from itools.handlers.registry import register_handler_class
+from base import Handler
 
 
 
@@ -48,6 +48,18 @@ class File(Handler):
 
     def _load_state(self, resource):
         self.data = resource.read()
+
+
+    def save_state(self):
+        vfs.make_file(self.uri)
+        with vfs.open(self.uri) as file:
+            self._save_state(file)
+
+
+    def save_state_to(self, uri):
+        vfs.make_file(uri)
+        with vfs.open(uri) as file:
+            self._save_state(file)
 
 
     def _save_state_to(self, resource):

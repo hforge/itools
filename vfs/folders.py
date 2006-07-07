@@ -43,7 +43,7 @@ class Folder(object):
         builds the absolute URI reference. Then find outs which is the
         protocol handler for it (layer), and returns both.
         """
-        reference = uri.get_absolute_reference(reference, base=self.uri)
+        reference = uri.get_absolute_reference2(reference, base=self.uri)
         fs = get_file_system(reference.scheme)
         return fs, reference
 

@@ -87,12 +87,11 @@ class _Node(object):
 
 class _Index(object):
 
-    __slots__ = ['root', 'free_blocks', 'tree_n_blocks', 'docs_n_slots']
+    __slots__ = ['root', 'tree_n_blocks', 'docs_n_slots']
 
 
     def __init__(self):
         self.root = _Node({}, {}, 0)
-        self.free_blocks = []
         self.tree_n_blocks = 1
         self.docs_n_slots = 0
 
@@ -123,8 +122,6 @@ class _Index(object):
         Modifies both the data structure in memory and the given files.
         """
         # Define local variables for speed
-        free_slots = self.free_slots
-        n_free_slots = len(free_slots)
         tree_n_blocks = self.tree_n_blocks
 
         ###################################################################
@@ -137,13 +134,9 @@ class _Index(object):
                 node.load_children(tree_file)
             # Create the node if needed
             if c not in node.children:
-                # Get a free slot
-                if free_slots:
-                    slot_number = free_slots.pop(0)
-                else:
-                    # No more free slots (append)
-                    slot_number = tree_n_blocks
-                    tree_n_blocks += 1
+                # Add a new block
+                slot_number = tree_n_blocks
+                tree_n_blocks += 1
                 # Add node
                 node.children[c] = Tree({}, {}, slot_number)
                 # Write
@@ -158,14 +151,6 @@ class _Index(object):
                                          old_first_child]))
             # Next
             node = node.children[c]
-
-        # Update the tree file, the pointer to the first free block.
-        if len(free_slots) != n_free_slots:
-            tree_file.seek(12)
-            if free_slots:
-                tree_file.write(encode_link(free_slots[0]))
-            else:
-                tree_file.write(NULL)
 
         # Update the number of blocks
         self.tree_n_blocks = tree_n_blocks
@@ -212,6 +197,61 @@ class _Index(object):
 
 
     #######################################################################
+    # Unindex
+    def unindex_term(self, tree_file, docs_file, word, documents):
+        """
+        Un-indexes the given term. The parameter 'documents' is a list with
+        the numbers of the documents that must be un-indexed.
+        """
+        # Get the node
+        node = self.tree
+        for c in word:
+            if node.children is None:
+                node.load_children(tree_file)
+            # Next
+            node = node.children[c]
+
+        # Load documents
+        if node.documents is None:
+            node.load_documents()
+
+        # Update data structure
+        for doc_number in documents:
+            del self.documents[doc_number]
+
+        # Update the docs file
+        # Search the document block
+        tree_file.seek(node.slot * 16 +  4)
+        docs_slot_r = tree_file.read(4)
+        docs_slot_n = decode_link(docs_slot_r)
+        # Free blocks
+        prev_slot_n = prev_slot = None
+        while documents and docs_slot_n is not None:
+            docs_slot = docs_slot_n * 4
+            # Read the header
+            docs_file.seek(docs_slot)
+            header = docs_file.read(12)
+            doc_number = decode_uint32(header[0:4])
+            next_slot_r = header[8:12]
+            next_slot_n = decode_link(next_slot_r)
+            # Hit, remove the block
+            if doc_number in documents:
+                documents.remove(doc_number)
+                # Remove from the documents list
+                if prev_slot_n is None:
+                    tree_file.seek(-4, 1)
+                    tree_file.write(next_slot_r)
+                else:
+                    docs_file.seek(prev_slot + 8)
+                    docs_file.write(next_slot_r)
+            else:
+                prev_slot_n, prev_slot = docs_slot_n, docs_slot
+            # Next
+            docs_slot_n = next_slot_n
+            docs_slot_r = next_slot_r
+
+
+    #######################################################################
     # Search
     def search(self, tree_file, docs_file, word):
         node = self.root
@@ -228,8 +268,8 @@ class _Index(object):
         if node.documents is None:
             node.load_documents(tree_file, docs_file)
 
-        return node.documents
-
+        # XXX Don't copy
+        return node.documents.copy()
 
 
 

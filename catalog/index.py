@@ -25,6 +25,82 @@ from IO import (decode_character, encode_character, decode_link, encode_link,
                 decode_uint32, encode_uint32, encode_version, NULL)
 
 
+"""
+The search data structure is an inverted index.
+
+On memory the inverted index is a tree where every node represents a letter,
+for example, if our index keeps the words 'hello' and 'here' it would look
+like:
+
+  h -- e -- l -- l -- o
+         \- r -- e
+
+This is a compact representation of the index. And every search takes as
+many dictionary lookups as letters has the word being searched, if the
+search is succesful (e.g. 'here' takes 4 lookups and 'hello' takes 5).
+If the search is not succesful it could take less lookups (4 for 'hell',
+but only 2 for 'holidays').
+
+Every node also contains which documents contain the word and the positions
+the word appears within the document, for example (if the word 'hello'
+appears once in the first document and the word 'here' appears twice in
+the second document):
+
+  h -- e -- l -- l -- o {0: [28]}
+         \- r -- e {1: [5, 37]}
+
+File format
+===========
+
+At the resource level, an inverted index is stored as a folder with two
+file resources:
+
+  - 'tree', keeps the tree structure of terms;
+
+  - 'docs', keeps the numbers of the documents where each term has been
+    found, and the frequency (number of times the term has been found in
+    a document).
+
+
+The tree file
+-------------
+
+The "tree" file is made up of blocks, where each block has 16 bytes. A block
+has 4 slots of 4 bytes each.
+
+The first block is special, it represents the root node, the empty string.
+Its format is:
+    
+  - version number [version]
+  - <unused> (4 bytes)
+  - first child [link]
+  - <unused> (4 bytes)
+
+The format for the others blocks is:
+
+  - character [character]
+  - pointer to the "docs" file [link]
+  - first child [link]
+  - next sibling [link]
+
+
+
+The docs file
+-------------
+
+The "docs" file is made up of blocks of variable length. Each block has a
+header of three slots (12 bytes, 3 bytes per slot), followed by n slots,
+one for every position the term appears in the document:
+
+  - document number [uint32]
+  - frequency [uint32]
+  - next document [link]
+  - position (0) [uint32]
+  ...
+  - position (frequency - 1) [uint32]
+"""
+
+
 
 VERSION = encode_version('20060708')
 ZERO = encode_uint32(0)

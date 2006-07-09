@@ -216,7 +216,7 @@ class _Index(object):
         the numbers of the documents that must be un-indexed.
         """
         # Get the node
-        node = self.tree
+        node = self.root
         for c in word:
             if node.children is None:
                 node.load_children(tree_file)
@@ -225,15 +225,15 @@ class _Index(object):
 
         # Load documents
         if node.documents is None:
-            node.load_documents()
+            node.load_documents(tree_file, docs_file)
 
         # Update data structure
         for doc_number in documents:
-            del self.documents[doc_number]
+            del node.documents[doc_number]
 
         # Update the docs file
         # Search the document block
-        tree_file.seek(node.slot * 16 +  4)
+        tree_file.seek(node.block * 16 +  4)
         docs_slot_r = tree_file.read(4)
         docs_slot_n = decode_link(docs_slot_r)
         # Free blocks
@@ -323,8 +323,8 @@ class Index(Handler):
         try:
             # Removed terms
             for term in self.removed_terms:
-                # XXX
-                pass
+                documents = self.removed_terms[term]
+                self._index.unindex_term(tree_file, docs_file, term, documents)
             # Added terms
             for term in self.added_terms:
                 documents = self.added_terms[term]

@@ -15,10 +15,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from itools
+from itools import vfs
 from itools.handlers.base import Handler
 from IO import (decode_character, encode_character, decode_link, encode_link,
-                decode_uint32, encode_uint32, NULL)
+                decode_uint32, encode_uint32, encode_version, NULL)
 
 
 
@@ -99,7 +103,7 @@ class _Index(object):
     #######################################################################
     # Init
     def init_tree_file(self, tree_file):
-        tree_file.write(''.joint([VERSION, ZERO, NULL, NULL]))
+        tree_file.write(''.join([VERSION, ZERO, NULL, NULL]))
 
 
     def init_docs_file(self, docs_file):
@@ -123,6 +127,7 @@ class _Index(object):
         """
         # Define local variables for speed
         tree_n_blocks = self.tree_n_blocks
+        docs_n_slots = self.docs_n_slots
 
         ###################################################################
         # Get the node for the word to index. Create it if it does not
@@ -138,7 +143,7 @@ class _Index(object):
                 slot_number = tree_n_blocks
                 tree_n_blocks += 1
                 # Add node
-                node.children[c] = Tree({}, {}, slot_number)
+                node.children[c] = _Node({}, {}, slot_number)
                 # Write
                 # Prepend the new slot
                 tree_file.seek(node.block * 16 + 8)
@@ -184,8 +189,8 @@ class _Index(object):
             for position in positions:
                 buffer.append(encode_uint32(position))
             # Next
-            first_doc = encode_link(dosc_n_slots)
-            docs_n_slots = docs_slots_n + 3 + frequency
+            first_doc = encode_link(docs_n_slots)
+            docs_n_slots = docs_n_slots + 3 + frequency
         # Append to the docs file
         docs_file.seek(0, 2)
         docs_file.write(''.join(buffer))
@@ -289,8 +294,8 @@ class Index(Handler):
         self.removed_terms = {}
 
 
-    def save_state(self):
-        base = vfs.open(self.uri)
+    def _save_state(self, uri):
+        base = vfs.open(uri)
         tree_file = base.open('tree')
         docs_file = base.open('docs')
         try:
@@ -308,6 +313,27 @@ class Index(Handler):
         finally:
             tree_file.close()
             docs_file.close()
+
+
+    def save_state(self):
+        self._save_state(self.uri)
+
+
+    def save_state_to(self, uri):
+        # Create the index folder
+        vfs.make_folder(uri) 
+        base = vfs.open(uri)
+        # Initialize the tree file
+        base.make_file('tree')
+        with base.open('tree') as file:
+            self._index.init_tree_file(file)
+        # Initialize the docs file
+        base.make_file('docs')
+        with base.open('docs') as file:
+            self._index.init_docs_file(file)
+        # XXX Remains to save the data in "self._index"
+        # Save changes
+        self._save_state(uri)
 
 
     #######################################################################

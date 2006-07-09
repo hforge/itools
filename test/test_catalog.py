@@ -127,6 +127,23 @@ class IndexTestCase(TestCase):
         self.assertEqual(index.search_word(u'world'), {0: [1]})
 
 
+    def test04_search_range(self):
+        index = Index('tests/index')
+        # Index data
+        index.index_term(u'1975-05-28', 1, 0)
+        index.index_term(u'2003-03-03', 2, 0)
+        index.index_term(u'2006-07-08', 3, 0)
+        index.index_term(u'2006-07-09', 4, 0)
+        index.save_state()
+        # Test search
+        self.assertEqual(index.search_range(u'2003-03-03', u'2006-07-09'),
+                         {2: 1, 3: 1})
+        self.assertEqual(index.search_range(u'', u'2006-07-09'),
+                         {1: 1, 2: 1, 3: 1})
+        self.assertEqual(index.search_range(u'2003-03-03', u'6666-12-31'),
+                         {2: 1, 3: 1, 4: 1})
+
+
 
 #class InMemoryTestCase(TestCase):
  

@@ -45,6 +45,7 @@ class _Node(object):
 
     #######################################################################
     # Load
+    #######################################################################
     def load_children(self, tree_file):
         children = {}
         # Read the pointer to the first child
@@ -86,6 +87,73 @@ class _Node(object):
             documents[doc_number] = positions
 
         self.documents = documents
+
+
+    #######################################################################
+    # Search
+    #######################################################################
+    def search_range(self, tree_file, docs_file, left, right):
+        """
+        Searches the index from 'left' to 'right', left included and right
+        excluded: [left, right[
+
+        Returns a mapping with all the documents found, the values of the
+        mapping are the weights.
+        """
+        documents = {}
+        # Here
+        if not left:
+            if self.documents is None:
+                self.load_documents(tree_file, docs_file)
+
+            for n in self.documents:
+                documents[n] = len(self.documents[n])
+
+        # Children
+        if self.children is None:
+            self.load_children(tree_file)
+
+        if left:
+            prefix_left, left = left[0], left[1:]
+        else:
+            prefix_left = None
+
+        if right:
+            prefix_right, right = right[0], right[1:]
+        else:
+            prefix_right = None
+
+        for c in self.children:
+            # Skip too small values
+            if prefix_left and c < prefix_left:
+                continue
+            # Skipt too big values
+            if prefix_right:
+                if c > prefix_right:
+                    continue
+                if c == prefix_right and not right:
+                    continue
+            # Build query for the child
+            # Left border
+            if c == prefix_left:
+                c_left = left
+            else:
+                c_left = None
+            # Right border
+            if c == prefix_right:
+                c_right = right
+            else:
+                c_right = None
+            # Run query
+            child_documents = self.children[c].search_range(tree_file, docs_file,
+                                                            c_left, c_right)
+            for n in child_documents:
+                if n in documents:
+                    documents[n] += child_documents[n]
+                else:
+                    documents[n] = child_documents[n]
+                
+        return documents
 
 
 
@@ -266,7 +334,7 @@ class _Index(object):
     #######################################################################
     # Search
     #######################################################################
-    def search(self, tree_file, docs_file, word):
+    def search_word(self, tree_file, docs_file, word):
         node = self.root
         for c in word:
             if node.children is None:
@@ -284,6 +352,18 @@ class _Index(object):
         # XXX Don't copy
         return node.documents.copy()
 
+
+    def search_range(self, tree_file, docs_file, left, right):
+        """
+        Searches the index from 'left' to 'right', left included and right
+        excluded: [left, right[
+
+        Returns a mapping with all the documents found, the values of the
+        mapping are the weights.
+        """
+        # XXX Recursive implementation. Maybe we should try an iterative one
+        # for speed.
+        return self.root.search_range(tree_file, docs_file, left, right)
 
 
 ###########################################################################
@@ -388,7 +468,7 @@ class Index(Handler):
         tree_file = base.open('tree')
         docs_file = base.open('docs')
         try:
-            documents = self._index.search(tree_file, docs_file, word)
+            documents = self._index.search_word(tree_file, docs_file, word)
         finally:
             tree_file.close()
             docs_file.close()
@@ -409,3 +489,19 @@ class Index(Handler):
 
         return documents
 
+
+    def search_range(self, left, right):
+        # Search in the data structure
+        base = vfs.open(self.uri)
+        tree_file = base.open('tree')
+        docs_file = base.open('docs')
+        try:
+            documents = self._index.search_range(tree_file, docs_file, left, right)
+        finally:
+            tree_file.close()
+            docs_file.close()
+
+        # XXX We still need to consider removed and added terms, otherwise
+        # we may get inaccurate results.
+
+        return documents

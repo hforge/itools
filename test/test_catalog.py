@@ -25,6 +25,7 @@ from itools.handlers import get_handler
 from itools.handlers.Text import Text
 from itools.catalog import IO
 from itools.catalog import analysers
+from itools.catalog.index import Index
 from itools.catalog.catalog import Catalog
 from itools.catalog.IIndex import IIndex
 from itools.catalog import queries
@@ -76,7 +77,7 @@ class IOTestCase(TestCase):
 
 
 
-class TextTestCase(TestCase):
+class AnalysersTestCase(TestCase):
 
     def test_hello(self):
         words = list(analysers.Text(u'Hello world'))
@@ -96,52 +97,83 @@ class TextTestCase(TestCase):
 
 
 
-class InMemoryTestCase(TestCase):
+class IndexTestCase(TestCase):
+
+    def test00_new(self):
+        index = Index()
+        # Index "hello world"
+        index.index_term(u'hello', 0, 0)
+        index.index_term(u'world', 0, 1)
+        # Save
+        index.save_state_to('tests/index')
+
+
+    def test01_load_and_search(self):
+        index = Index('tests/index')
+        self.assertEqual(index.search_word(u'heelo'), {})
+        self.assertEqual(index.search_word(u'hello'), {0: [0]})
+        self.assertEqual(index.search_word(u'world'), {0: [1]})
+
+
+    def test02_unindex(self):
+        index = Index('tests/index')
+        index.unindex_term(u'hello', 0)
+        index.save_state()
+
+
+    def test03_load_and_search(self):
+        index = Index('tests/index')
+        self.assertEqual(index.search_word(u'hello'), {})
+        self.assertEqual(index.search_word(u'world'), {0: [1]})
+
+
+
+#class InMemoryTestCase(TestCase):
  
-    def test00_build(self):
-        global catalog
-        catalog = Catalog(fields=[('name', 'keyword', True, False)])
-        self.assertEqual(len(catalog.fields), 1)
+#    def test00_build(self):
+#       global catalog
+#       catalog = Catalog(fields=[('name', 'keyword', True, False)])
+#       self.assertEqual(len(catalog.fields), 1)
 
 
-    def test01_index(self):
-        catalog.index_document({'name': 'Toto'})
-        self.assertEqual(catalog.document_number, 1)
+#   def test01_index(self):
+#       catalog.index_document({'name': 'Toto'})
+#       self.assertEqual(catalog.document_number, 1)
 
 
-    def test02_search_and_hit(self):
-        documents = catalog.search(name='Toto')
-        documents = list(documents)
-        self.assertEqual(len(documents), 1)
+#   def test02_search_and_hit(self):
+#       documents = catalog.search(name='Toto')
+#       documents = list(documents)
+#       self.assertEqual(len(documents), 1)
 
 
-    def test03_search_and_miss(self):
-        documents = catalog.search(name='Fofo')
-        documents = list(documents)
-        self.assertEqual(len(documents), 0)
+#   def test03_search_and_miss(self):
+#       documents = catalog.search(name='Fofo')
+#       documents = list(documents)
+#       self.assertEqual(len(documents), 0)
 
 
-    def test04_unindex(self):
-        # Unindex
-        catalog.unindex_document(0)
-        # Search
-        documents = catalog.search(name='Toto')
-        documents = list(documents)
-        self.assertEqual(len(documents), 0)
+#   def test04_unindex(self):
+#       # Unindex
+#       catalog.unindex_document(0)
+#       # Search
+#       documents = catalog.search(name='Toto')
+#       documents = list(documents)
+#       self.assertEqual(len(documents), 0)
 
 
 
-class PersistentTestCase(TestCase):
+#lass PersistentTestCase(TestCase):
     
-    def test00_build(self):
-        space = get_space()
-        space.set_handler('tests/catalog', catalog)
-        space.save_changes()
+#   def test00_build(self):
+#       space = get_space()
+#       space.set_handler('tests/catalog', catalog)
+#       space.save_changes()
 
 
-    def test01_index(self):
-        catalog.index_document({'name': 'Toto'})
-        catalog.save_state()
+#   def test01_index(self):
+#       catalog.index_document({'name': 'Toto'})
+#       catalog.save_state()
 
 
 

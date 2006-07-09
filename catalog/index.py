@@ -94,10 +94,19 @@ class _Index(object):
     __slots__ = ['root', 'tree_n_blocks', 'docs_n_slots']
 
 
-    def __init__(self):
-        self.root = _Node({}, {}, 0)
-        self.tree_n_blocks = 1
-        self.docs_n_slots = 0
+    def __init__(self, tree_file=None, docs_file=None):
+        if tree_file is None and docs_file is None:
+            self.root = _Node({}, {}, 0)
+            self.tree_n_blocks = 1
+            self.docs_n_slots = 0
+        else:
+            self.root = _Node(None, {}, 0)
+            # The number of blocks in the tree file
+            tree_file.seek(0, 2)
+            self.tree_n_blocks = tree_file.tell() / 16
+            # The number of slots in the docs file
+            docs_file.seek(0, 2)
+            self.docs_n_slots = docs_file.tell() / 4
 
 
     #######################################################################
@@ -106,12 +115,9 @@ class _Index(object):
         tree_file.write(''.join([VERSION, ZERO, NULL, NULL]))
 
 
-    def init_docs_file(self, docs_file):
-        docs_file.write(VERSION)
-
-
     #######################################################################
     # Index
+    #######################################################################
     def index_term(self, tree_file, docs_file, word, documents):
         """
         Indexes the given documents for the given words.
@@ -203,6 +209,7 @@ class _Index(object):
 
     #######################################################################
     # Unindex
+    #######################################################################
     def unindex_term(self, tree_file, docs_file, word, documents):
         """
         Un-indexes the given term. The parameter 'documents' is a list with
@@ -258,6 +265,7 @@ class _Index(object):
 
     #######################################################################
     # Search
+    #######################################################################
     def search(self, tree_file, docs_file, word):
         node = self.root
         for c in word:
@@ -291,6 +299,20 @@ class Index(Handler):
         # {<term>: {<doc number>: [<position>, ..., <position>]}
         self.added_terms = {}
         # {<term>: set(<doc number>, ..)}
+        self.removed_terms = {}
+
+
+    def load_state(self):
+        base = vfs.open(self.uri)
+        tree_file = base.open('tree')
+        docs_file = base.open('docs')
+        try:
+            self._index = _Index(tree_file, docs_file)    
+        finally:
+            tree_file.close()
+            docs_file.close()
+        # Nothing changed yet
+        self.added_terms = {}
         self.removed_terms = {}
 
 
@@ -329,8 +351,6 @@ class Index(Handler):
             self._index.init_tree_file(file)
         # Initialize the docs file
         base.make_file('docs')
-        with base.open('docs') as file:
-            self._index.init_docs_file(file)
         # XXX Remains to save the data in "self._index"
         # Save changes
         self._save_state(uri)
@@ -368,7 +388,7 @@ class Index(Handler):
         tree_file = base.open('tree')
         docs_file = base.open('docs')
         try:
-            documents = self.index.search(tree_file, docs_file, word)
+            documents = self._index.search(tree_file, docs_file, word)
         finally:
             tree_file.close()
             docs_file.close()

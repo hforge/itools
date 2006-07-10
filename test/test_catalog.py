@@ -27,7 +27,7 @@ from itools.catalog import IO
 from itools.catalog import analysers
 from itools.catalog.index import Index
 from itools.catalog.catalog import Catalog
-from itools.catalog.IIndex import IIndex
+from itools.catalog.documents import Document, Documents
 from itools.catalog import queries
 
 
@@ -145,6 +145,48 @@ class IndexTestCase(TestCase):
 
 
 
+class DocumentsTestCase(TestCase):
+
+    def test00_new(self):
+        documents = Documents()
+        # Index document
+        document = Document(u'hello world')
+        doc_n = documents.index_document(document)
+        self.assertEqual(doc_n, 0)
+        # Another document
+        document = Document(u'bye world')
+        doc_n = documents.index_document(document)
+        self.assertEqual(doc_n, 1)
+        # Save
+        documents.save_state_to('tests/documents')
+
+
+    def test01_load_and_search(self):
+        documents = Documents('tests/documents')
+        # Document 0
+        document = documents.get_document(0)
+        self.assertEqual(document.values[0], u'hello world')
+        # Document 1
+        document = documents.get_document(1)
+        self.assertEqual(document.values[0], u'bye world')
+
+
+    def test02_unindex(self):
+        documents = Documents('tests/documents')
+        documents.unindex_document(0)
+        documents.save_state()
+
+
+    def test03_load_and_search(self):
+        documents = Documents('tests/documents')
+        # Document 0
+        self.assertRaises(LookupError, documents.get_document, 0)
+        # Document 1
+        document = documents.get_document(1)
+        self.assertEqual(document.values[0], u'bye world')
+
+
+
 #class InMemoryTestCase(TestCase):
  
 #    def test00_build(self):
@@ -209,64 +251,25 @@ class IndexTestCase(TestCase):
 
 
 
+#class Document(Text):
+
+#    def _load_state(self, resource):
+#        # Pre-process (load as unicode)
+#        Text._load_state(self, resource)
+#        data = self.data
+#        del self.data
+#        # Extract the title and body
+#        lines = data.split('\n')
+#        self.title = lines[0]
+#        self.body = '\n'.join(lines[3:])
 
 
+#    def title(self):
+#        return self.title
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-#class IITestCase(TestCase):
-#
-#    def test_hit(self):
-#        ii = IIndex()
-#        ii.index_term(u'hello', 0, 0)
-#        self.assertEqual(bool(ii.search_word(u'hello')), True)
-#
-#
-#    def test_miss(self):
-#        ii = IIndex()
-#        ii.index_term(u'hello', 0, 0)
-#        self.assertEqual(bool(ii.search_word(u'bye')), False)
-#
-#
-#    def test_unindex(self):
-#        ii = IIndex()
-#        ii.index_term(u'hello', 0, 0)
-#        ii.unindex_term(u'hello', 0)
-#        self.assertEqual(bool(ii.search_word(u'hello')), False)
-
-
-
-class Document(Text):
-
-    def _load_state(self, resource):
-        # Pre-process (load as unicode)
-        Text._load_state(self, resource)
-        data = self.data
-        del self.data
-        # Extract the title and body
-        lines = data.split('\n')
-        self.title = lines[0]
-        self.body = '\n'.join(lines[3:])
-
-
-    def title(self):
-        return self.title
-
-
-    def body(self):
-        return self.body
+#    def body(self):
+#        return self.body
 
 
 

@@ -502,8 +502,7 @@ class Index(Handler):
         vfs.make_folder(uri) 
         base = vfs.open(uri)
         # Initialize the tree file
-        base.make_file('tree')
-        with base.open('tree') as file:
+        with base.make_file('tree') as file:
             self._index.init_tree_file(file)
         # Initialize the docs file
         base.make_file('docs')

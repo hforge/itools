@@ -28,6 +28,8 @@ from IO import (encode_byte, encode_character, encode_link, encode_string,
                 encode_uint32, encode_version)
 from analysers import get_analyser
 import queries
+from index import Index
+from documents import Documents, Document
 
 
 class Field(object):
@@ -44,26 +46,9 @@ class Field(object):
 
 
 
-
-
-
-
-
-
-
-class Document(object):
-    
-    __slots__ = ['fields']
-
-
-    def __init__(self):
-        self.fields = []
-
-
-
 class Catalog(Handler):
 
-    class_version = '20060707'
+    class_version = '20060708'
 
     __slots__ = ['uri', 'timestamp', 'fields', 'field_numbers', 'indexes',
                  'document_number', 'documents', 'added_documents',
@@ -73,6 +58,7 @@ class Catalog(Handler):
     def new(self, fields=[]):
         self.fields = []
         self.field_numbers = {}
+        # The indexes
         self.indexes = []
         for number, field in enumerate(fields):
             name, type, is_indexed, is_stored = field
@@ -87,10 +73,7 @@ class Catalog(Handler):
             else:
                 self.indexes.append(None)
         # Initialize documents
-        self.document_number = 0
-        self.documents = []
-        self.added_documents = {}
-        self.removed_documents = []
+        self.documents = Documents()
 
 
     def save_state(self):

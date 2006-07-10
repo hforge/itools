@@ -25,7 +25,7 @@ class Config(Text):
     class_extension = None
 
     
-    __slots__ = ['resource', 'timestamp', 'values', 'lines']
+    __slots__ = ['uri', 'timestamp', 'values', 'lines']
 
     
     def new(self, **kw):
@@ -34,10 +34,10 @@ class Config(Text):
         self.lines = []
 
 
-    def _load_state(self, resource):
+    def load_state_from_file(self, file):
         values = {}
         lines = []
-        for line in resource.readlines():
+        for line in file.readlines():
             line = line.strip()
             lines.append(line)
             if line and not line.startswith('#'):

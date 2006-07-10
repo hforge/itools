@@ -204,17 +204,16 @@ class Handler(object):
         self.load_state()
 
 
-    def _save_state(self, resource):
-        self._save_state_to(resource)
-
-
     def is_outdated(self):
+        if self.uri is None:
+            return False
+
         timestamp = self.timestamp
         # It cannot be out-of-date if it has not been loaded yet
         if timestamp is None:
             return False
 
-        mtime = self.resource.get_mtime()
+        mtime = vfs.get_mtime(self.uri)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
@@ -223,12 +222,15 @@ class Handler(object):
 
 
     def has_changed(self):
+        if self.uri is None:
+            return False
+
         timestamp = self.timestamp
         # Not yet loaded, even
         if timestamp is None:
             return False
 
-        mtime = self.resource.get_mtime()
+        mtime = vfs.get_mtime(self.uri)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return False

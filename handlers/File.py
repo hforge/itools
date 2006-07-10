@@ -46,49 +46,49 @@ class File(Handler):
         self.data = data
 
 
-    def _load_state(self, resource):
-        self.data = resource.read()
+    #########################################################################
+    # Load / Save
+    #########################################################################
+    def load_state(self):
+        with vfs.open(self.uri, 'r') as file:
+            self.load_state_from_file(file)
+        self.timestamp = vfs.get_mtime(self.uri)
+
+
+    def load_state_from(self, uri):
+        file = vfs.open(uri)
+        get_transaction().add(self)
+        with file:
+            self.load_state_from_file(file)
+        self.timestamp = datetime.now()
+
+
+    def load_state_from_file(self, file):
+        self.data = file.read()
 
 
     def save_state(self):
-        vfs.make_file(self.uri)
-        with vfs.open(self.uri) as file:
-            self._save_state(file)
+        with vfs.open(self.uri, 'w') as file:
+            self.save_state_to_file(file)
 
 
     def save_state_to(self, uri):
-        vfs.make_file(uri)
-        with vfs.open(uri) as file:
-            self._save_state(file)
+        with vfs.make_file(uri) as file:
+            self.save_state_to_file(file)
 
 
-    def _save_state_to(self, resource):
+    def save_state_to_file(self, file):
         # We call "to_str" so this method will be good for sub-classes
         data = self.to_str()
         # Write and truncate (calls to "_save_state" must be done with the
         # pointer pointing to the beginning)
-        resource.write(data)
-        resource.truncate()
+        file.write(data)
+        file.truncate()
 
 
     #########################################################################
     # API
     #########################################################################
-    def load_state(self):
-        resource = vfs.open(self.uri)
-        with resource:
-            self._load_state(resource)
-        self.timestamp = vfs.get_mtime(self.uri)
-
-
-    def load_state_from(self, uri):
-        resource = vfs.open(uri)
-        get_transaction().add(self)
-        with resource:
-            self._load_state(resource)
-        self.timestamp = datetime.now()
-
-
     def to_str(self):
         return self.data
 

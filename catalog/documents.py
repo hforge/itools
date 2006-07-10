@@ -25,10 +25,55 @@ from IO import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
                 NULL)
 
+"""
+This module implements an storage for documents, where a document is a
+set of fields, each field has a value (a unicode string) and is identified
+with a number. Documents are also identified with numbers.
+
+So, the data structure is:
+    
+  - documents: {<doc number>: Document}
+  - n_documents: int
+
+The "n_documents" variable is a counter used to generate unique ids for
+the documents.
+
+This data structure is serialized to two files, "documents" and "index".
+
+File format
+===========
+
+The documents file
+------------------
+
+Within the documents file each document is stored in variable length blocks,
+one after another. And a document is made of its fields:
+    
+  - field number 0 [byte]
+  - field value 0 [string]
+  ...
+  - field number n [byte]
+  - field value n [string]
+
+The index file
+--------------
+
+The index file is made of fixed length blocks of 8 bytes each:
+    
+  - pointer to the documents file [link]
+  - size of the block in the documents file [uint32]
+
+Each block represents a document: the first block is for the document
+number 0, the second block is for the document number 1, and so on.
+"""
+
+
 
 
 class Document(object):
     
+    __slots__ = ['values']
+
     def __init__(self, *args):
         self.values = {}
         for field_number, value in enumerate(args):

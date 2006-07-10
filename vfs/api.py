@@ -21,6 +21,11 @@ from registry import get_file_system
 from folders import Folder
 
 
+# Constants
+READ = 'r'
+WRITE = 'w'
+
+
 cwd = Folder()
 
 
@@ -64,8 +69,8 @@ def remove(reference):
     return cwd.remove(reference)
 
 
-def open(reference):
-    return cwd.open(reference)
+def open(reference, mode=None):
+    return cwd.open(reference, mode)
 
 
 def copy(source, target):

@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from registry import get_file_system
 from itools.uri import uri
+from registry import get_file_system
 
 
 
@@ -98,13 +98,13 @@ class Folder(object):
         return fs.remove(reference)
 
 
-    def open(self, reference):
+    def open(self, reference, mode=None):
         fs, reference = self.get_fs_and_reference(reference)
         if not fs.exists(reference):
             raise LookupError
 
         if fs.is_file(reference):
-            return fs.open(reference)
+            return fs.open(reference, mode)
         elif fs.is_folder(reference):
             return Folder(reference)            
 

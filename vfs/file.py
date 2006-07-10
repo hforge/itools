@@ -21,6 +21,7 @@ import os
 from subprocess import call
 
 # Import from itools
+from api import READ, WRITE
 from base import BaseFS
 from registry import register_file_system
 
@@ -71,7 +72,7 @@ class FileFS(BaseFS):
         path = str(reference.path)
         if os.path.exists(path):
             raise OSError, "File exists: '%s'" % reference
-        file(path, 'w')
+        return file(path, 'w')
 
 
     @staticmethod
@@ -100,20 +101,23 @@ class FileFS(BaseFS):
 
 
     @staticmethod
-    def open(reference):
+    def open(reference, mode=None):
         path = str(reference.path)
         if not os.path.exists(path):
             raise OSError, "File does not exist '%s'" % reference
 
-        # A file
-        if os.path.isfile(path):
+        # Open for write if possible, otherwise for read
+        if mode is None:
             try:
                 return file(path, 'r+b')
             except IOError:
                 return file(path, 'rb')
 
-        # A folder (XXX)
-        raise NotImplementedError
+        # Open for read
+        if mode == READ:
+            return file(path, 'rb')
+        # Open for write
+        return file(path, 'r+b')
 
 
     @staticmethod

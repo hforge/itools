@@ -333,10 +333,10 @@ class Document(Text.Text):
     # Load
     #######################################################################
 
-    __slots__ = ['resource', 'timestamp', 'document_type', 'root_element']
+    __slots__ = ['uri', 'timestamp', 'document_type', 'root_element']
 
 
-    def _load_state(self, resource):
+    def load_state_from_file(self, file):
         """
         Builds a tree made of elements and raw data.
         """
@@ -345,7 +345,7 @@ class Document(Text.Text):
         xml_namespaces = set()
         # Parse
         stack = []
-        for event, value, line_number in parser.parse(resource.read()):
+        for event, value, line_number in parser.parse(file.read()):
             if event == parser.DOCUMENT_TYPE:
                 self.document_type = value
             elif event == parser.START_ELEMENT:

@@ -94,6 +94,10 @@ class Document(XHTML.Document):
     # HTML does not support XML namespace declarations
     ns_declarations = {}
 
+    
+    __slots__ = ['uri', 'timestamp', 'document_type', 'root_element',
+                 'encoding']
+
 
     #########################################################################
     # The skeleton
@@ -115,13 +119,13 @@ class Document(XHTML.Document):
     #######################################################################
     # Load/Save
     #######################################################################
-    def _load_state(self, resource):
+    def load_state_from_file(self, file):
         self.encoding = 'UTF-8'
         self.document_type = None
         children = []
 
         stack = []
-        data = resource.read()
+        data = file.read()
         parser = Parser()
         for event, value, line_number in parser.parse(data):
             if event == DOCUMENT_TYPE:

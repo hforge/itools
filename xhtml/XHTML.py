@@ -26,7 +26,6 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
                               XMLAttribute)
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
-from itools.resources import memory
 from itools.handlers.registry import register_handler_class
 from itools.xml import XML, namespaces
 from itools import i18n
@@ -363,13 +362,18 @@ class Document(XML.Document):
 
     namespace = 'http://www.w3.org/1999/xhtml'
 
+    __slots__ = ['uri', 'timestamp', 'document_type', 'root_element']
+
+
     #########################################################################
     # The skeleton
     #########################################################################
     def new(self, title=''):
         skeleton = self.get_skeleton(title)
-        resource = memory.File(skeleton)
-        self._load_state(resource)
+        file = StringIO()
+        file.write(skeleton)
+        file.seek(0)
+        self.load_state_from_file(file)
 
 
     @classmethod

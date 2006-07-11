@@ -22,8 +22,8 @@ from urllib import urlencode
 from itools.uri import get_reference, Query
 from itools.datatypes import QName
 from itools import schemas
-from itools.resources import memory
-from itools.handlers.Handler import Handler
+##from itools.resources import memory
+from itools.handlers.base import Handler
 from itools.i18n.accept import AcceptLanguage
 from exceptions import BadRequest, NotImplemented
 import headers
@@ -70,11 +70,18 @@ class Request(Message):
         return ''.join(data)
 
 
-    def _load_state(self, resource):
-        list(self.non_blocking_load(resource.read))
+    #########################################################################
+    # Load
+    #########################################################################
+    def load_state_from_file(self, file):
+        list(self.non_blocking_load(file.read))
 
 
     def non_blocking_load(self, read):
+        """
+        Loads the request state from in non-blocking mode. Aimed at sockets,
+        it works for files too.
+        """
         buffer = ''
         # Read the first line
         while True:

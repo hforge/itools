@@ -21,12 +21,12 @@ import sys
 from time import time
 
 # Import from itools
-from itools.handlers import get_handler, Text
-from itools.handlers.transactions import get_transaction
-from itools.resources import get_resource
+from itools import vfs
+from itools.handlers import Text
+from itools.handlers.spaces import get_space
 from itools.xml import XML
 from itools.html import HTML
-from itools.catalog.Catalog import Catalog
+from itools.catalog.catalog import Catalog
 
 
 
@@ -52,30 +52,27 @@ def create_catalog():
     # Create and get a new empty index
     catalog = Catalog(fields=[('title', 'text', True, True),
                               ('body', 'text', True, False)])
-    tmp = get_handler('/tmp')
-    if tmp.has_handler('catalog_prof'):
-        tmp.del_handler('catalog_prof')
-    tmp.set_handler('catalog_prof', catalog)
-    tmp.save_state()
-    catalog_resource = tmp.resource.get_resource('catalog_prof')
-    catalog = Catalog(catalog_resource)
+    if vfs.exists('/tmp/catalog_prof'):
+        vfs.remove('/tmp/catalog_prof')
+    catalog.save_state_to('/tmp/catalog_prof')
+    catalog = Catalog('/tmp/catalog_prof')
     print 'done'
 
 
 documents = []
 def load_documents():
     print 'Loading documents...',
-    src = get_resource(docs_path)
-    resource_names = [ x for x in src.get_names()
-                       if x.endswith('.html') ]
+    src = vfs.open(docs_path)
+    resource_names = [ x for x in src.get_names() if x.endswith('.html') ]
     resource_names.sort()
     for name in resource_names:
+        doc_uri = src.uri.resolve2(name)
+        doc = Document(doc_uri)
         try:
-            doc = Document(src.get_resource(name))
-        except:
-            print name, '!!'
-        else:
             doc = {'title': doc.title(), 'body': doc.body()}
+        except:
+            print doc_uri, '!!'
+        else:
             documents.append(doc)
     print 'done'
 
@@ -87,8 +84,7 @@ def load_documents():
 def profile_indexing():
     for document in documents:
         catalog.index_document(document)
-    get_transaction().commit()
-##    catalog.save_state()
+    catalog.save_state()
 
 
 def profile_search():

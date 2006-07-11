@@ -22,14 +22,14 @@ from __future__ import with_statement
 from operator import itemgetter
 
 # Import from itools
+from itools.uri import get_absolute_reference
 from itools import vfs
 from itools.handlers.base import Handler
-from IO import (encode_byte, encode_character, encode_link, encode_string,
-                encode_uint32, encode_version)
-from analysers import get_analyser
-import queries
 from index import Index
 from documents import Documents, Document
+from analysers import get_analyser
+import queries
+
 
 
 class Field(object):
@@ -51,8 +51,7 @@ class Catalog(Handler):
     class_version = '20060708'
 
     __slots__ = ['uri', 'timestamp', 'fields', 'field_numbers', 'indexes',
-                 'document_number', 'documents', 'added_documents',
-                 'removed_documents']
+                 'documents']
 
 
     def new(self, fields=[]):
@@ -76,107 +75,74 @@ class Catalog(Handler):
         self.documents = Documents()
 
 
-    def save_state(self):
-        # Define helpful variables
-        version = encode_version(self.class_version)
-        zero = encode_uint32(0)
-        null = encode_link(None)
-
-        # Initialize
-        base = self.uri
-        if not vfs.exists(base):
-            # Make and open the folder
-            vfs.make_folder(base)
-            base = vfs.open(base)
-            # Initialize documents
-            base.make_file('documents')
-            base.make_file('documents_index')
-            with base.open('documents_index') as documents_index:
-                documents_index.write(zero)
-            # Initialize inverted indexes
-            tree = ''.join([version, zero, null, null])
-            docs = ''.join([version, zero, null])
-            for field in self.fields:
-                # The tree
-                base.make_file('%d_index_tree' % field.number)
-                with base.open('%d_index_tree' % field.number) as file:
-                    file.write(tree)
-                # The documents
-                base.make_file('%d_index_docs' % field.number)
-                with base.open('%d_index_docs' % field.number) as file:
-                    file.write(docs)
-        else:
-            base = vfs.open(base)
-
-        # Save changes
-        fields = self.fields
-        # Documents
-        index = base.open('documents_index')
-        docs = base.open('documents')
-        try:
-            # Remove
-            for doc_number in self.removed_documents:
-                index.seek(4 + doc_number * 4)
-                index.write(null)
-            # Add
-            index.seek(0, 2)
-            docs.seek(0, 2)
-            for document in self.added_documents.values():
-                index.write(encode_link(docs.tell()))
-                data = []
-                for field in fields:
-                    value = document.fields[field.number]
-                    if value is None:
-                        continue
-                    data.append(encode_byte(field.number))
-                    if field.is_stored:
-                        data.append(encode_string(value))
-                    else:
-                        analyser = get_analyser(field.type)
-                        terms = [ x[0] for x in analyser(value) ]
-                        terms = list(set(terms))
-                        terms.sort()
-                        data.append(encode_string(' '.join(terms)))
-                docs.write(''.join(data))
-            # Clean data structures
-            self.removed_documents = []
-            self.added_documents = {}
-        finally:
-            index.close()
-            docs.close()
-        # Indexes
+    #########################################################################
+    # Load / Save
+    #########################################################################
+    def load_state(self):
+        self.fields = []
+        self.field_numbers = {}
+        self.indexes = []
+        self.documents = None
+        # Load
+        base = vfs.open(self.uri)
+        with base.open('fields') as file:
+            for line in file.readlines():
+                line = line.strip()
+                if not line:
+                    continue
+                number, name, type, is_indexed, is_stored = line.split('#')
+                number = int(number)
+                is_indexed = bool(int(is_indexed))
+                is_stored = bool(int(is_stored))
+                field = Field(number, name, type, is_indexed, is_stored)
+                self.fields.append(field)
+                self.field_numbers[name] = number
+        # Initialize the indexes
         for field in self.fields:
-            if not field.is_indexed:
+            if field.is_indexed:
+                index_uri = self.uri.resolve2('index_%d' % field.number)
+                self.indexes.append(Index(index_uri))
+            else:
+                self.indexes.append(None)
+        # Initialize the documents
+        documents_uri = self.uri.resolve2('documents')
+        self.documents = Documents(documents_uri)
+
+
+    def save_state_to(self, uri):
+        uri = get_absolute_reference(uri)
+        # Initialize
+        vfs.make_folder(uri)
+        # Create the fields metadata file        
+        base = vfs.open(uri)
+        with base.make_file('fields') as file:
+            for field in self.fields:
+                file.write('%d#%s#%s#%d#%d\n' % (field.number, field.name,
+                                                 field.type, field.is_indexed,
+                                                 field.is_stored))
+        # Save the indexes
+        for field_number, index in enumerate(self.indexes):
+            if index is None:
                 continue
-            index = self.indexes[field.number]
-            tree = base.open('%d_index_tree' % field.number)
-            docs = base.open('%d_index_docs' % field.number)
-            try:
-                # Remove
-                for term in index.removed_terms:
-                    pass
-                # Add
-                for term in index.added_terms:
-                    pass
-                # Clean data structures
-                # XXX {<term>: set(<doc number>, ..)}
-                index.removed_terms = {}
-                # XXX {<term>: {<doc number>: [<position>, ..., <position>]}
-                index.added_terms = {}
-            finally:
-                tree.close()
-                docs.close()
+            index_uri = uri.resolve2('index_%d' % field_number)
+            index.save_state_to(index_uri)
+        # Save the documents
+        documents_uri = uri.resolve2('documents')
+        self.documents.save_state_to(documents_uri)
+
+
+    def save_state(self):
+        # The indexes
+        for index in self.indexes:
+            if index is not None:
+                index.save_state()
+        # The documents
+        self.documents.save_state()
 
 
     #########################################################################
-    # Private API
+    # Public API
     #########################################################################
-    def get_new_document_number(self):
-        document_number = self.document_number
-        self.document_number += 1
-        return document_number
-
-
     def get_index(self, name):
         field_numbers = self.field_numbers
         # Check the field exists
@@ -192,26 +158,24 @@ class Catalog(Handler):
         return index
 
 
-    #########################################################################
-    # Public API
-    #########################################################################
     def index_document(self, document):
-        # Create the document
-        doc_number = self.get_new_document_number()
+        # Create the document to index
+        doc_number = self.documents.n_documents
         catalog_document = Document()
-        self.added_documents[doc_number] = catalog_document
+
+        # Define the function to get values from the document
+        if isinstance(document, dict):
+            getter = document.get
+        else:
+            getter = lambda x: getattr(document, x, None)
 
         # Index
         for field in self.fields:
             # Extract the field value from the document
-            if isinstance(document, dict):
-                value = document.get(field.name)
-            else:
-                value = getattr(document, field.name, None)
+            value = getter(field.name)
 
             # If value is None, don't go further
             if value is None:
-                catalog_document.fields.append(None)
                 continue
 
             # Update the Inverted Index
@@ -230,38 +194,42 @@ class Catalog(Handler):
                 # XXX Coerce lists
                 if isinstance(value, list):
                     value = ' '.join(value)
-                catalog_document.fields.append(value)
+                catalog_document.fields[field.number] = value
             else:
                 # Update the forward index (un-index)
-                catalog_document.fields.append(list(terms))
+                catalog_document.fields[field.number] = ''.join(terms)
+
+        # Add the Document
+        self.documents.index_document(catalog_document)
 
         return doc_number
 
 
     def unindex_document(self, doc_number):
-        if doc_number in self.added_documents:
-            document = self.added_documents.pop(doc_number)
-        else:
-            document = self.documents[doc_number]
-            self.removed_documents.append(doc_number)
-
+        # Update the indexes
+        document = self.documents.get_document(doc_number)
         for field in self.fields:
             # Check the field is indexed
             if not field.is_indexed:
                 continue
             # Check the document is indexed for that field
-            terms = document.fields[field.number]
-            if terms is None:
+            value = document.fields.get(field.number)
+            if value is None:
                 continue
             # If the field is stored, find out the terms to unindex
             if field.is_stored:
                 analyser = get_analyser(field.type)
-                terms = [ term for term, position in analyser(terms) ]
+                terms = [ term for term, position in analyser(value) ]
                 terms = set(terms)
+            else:
+                terms = value.split()
             # Unindex
             index = self.indexes[field.number]
             for term in terms:
                 index.unindex_term(term, doc_number)
+
+        # Update the documents
+        self.documents.unindex_document(doc_number)
 
 
     def _search(self, query=None, **kw):
@@ -296,9 +264,5 @@ class Catalog(Handler):
                                reverse=True):
             doc_number, weight = document
             # Load the IDocument
-            if doc_number in self.added_documents:
-                yield self.added_documents[doc_number]
-            else:
-                yield self.documents[doc_number]
-
+            yield self.documents.get_document(doc_number)
 

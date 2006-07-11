@@ -72,12 +72,12 @@ number 0, the second block is for the document number 1, and so on.
 
 class Document(object):
     
-    __slots__ = ['values']
+    __slots__ = ['fields']
 
     def __init__(self, *args):
-        self.values = {}
+        self.fields = {}
         for field_number, value in enumerate(args):
-            self.values[field_number] = value
+            self.fields[field_number] = value
 
 
 
@@ -129,10 +129,10 @@ class Documents(Handler):
                 document = self.documents[doc_n]
                 # Append the new document to the documents file
                 buffer = []
-                keys = document.values.keys()
+                keys = document.fields.keys()
                 keys.sort()
                 for field_number in keys:
-                    value = document.values[field_number]
+                    value = document.fields[field_number]
                     buffer.append(encode_byte(field_number))
                     buffer.append(encode_string(value))
                 position = docs_file.tell()
@@ -202,16 +202,11 @@ class Documents(Handler):
                 while data:
                     field_n = decode_byte(data[0])
                     value, data = decode_string(data[1:])
-                    document.values[field_n] = value
+                    document.fields[field_n] = value
                 self.documents[doc_n] = document
             finally:
                 index_file.close()
                 docs_file.close()
 
         return self.documents[doc_n]
-
-
-
-
-
 

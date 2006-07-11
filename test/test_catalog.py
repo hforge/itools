@@ -165,10 +165,10 @@ class DocumentsTestCase(TestCase):
         documents = Documents('tests/documents')
         # Document 0
         document = documents.get_document(0)
-        self.assertEqual(document.values[0], u'hello world')
+        self.assertEqual(document.fields[0], u'hello world')
         # Document 1
         document = documents.get_document(1)
-        self.assertEqual(document.values[0], u'bye world')
+        self.assertEqual(document.fields[0], u'bye world')
 
 
     def test02_unindex(self):
@@ -183,66 +183,48 @@ class DocumentsTestCase(TestCase):
         self.assertRaises(LookupError, documents.get_document, 0)
         # Document 1
         document = documents.get_document(1)
-        self.assertEqual(document.values[0], u'bye world')
+        self.assertEqual(document.fields[0], u'bye world')
 
 
 
-#class InMemoryTestCase(TestCase):
- 
-#    def test00_build(self):
-#       global catalog
-#       catalog = Catalog(fields=[('name', 'keyword', True, False)])
-#       self.assertEqual(len(catalog.fields), 1)
-
-
-#   def test01_index(self):
-#       catalog.index_document({'name': 'Toto'})
-#       self.assertEqual(catalog.document_number, 1)
-
-
-#   def test02_search_and_hit(self):
-#       documents = catalog.search(name='Toto')
-#       documents = list(documents)
-#       self.assertEqual(len(documents), 1)
-
-
-#   def test03_search_and_miss(self):
-#       documents = catalog.search(name='Fofo')
-#       documents = list(documents)
-#       self.assertEqual(len(documents), 0)
-
-
-#   def test04_unindex(self):
-#       # Unindex
-#       catalog.unindex_document(0)
-#       # Search
-#       documents = catalog.search(name='Toto')
-#       documents = list(documents)
-#       self.assertEqual(len(documents), 0)
-
-
-
-#lass PersistentTestCase(TestCase):
+class CatalogTestCase(TestCase):
     
-#   def test00_build(self):
-#       space = get_space()
-#       space.set_handler('tests/catalog', catalog)
-#       space.save_changes()
+    def test00_new(self):
+        catalog = Catalog(fields=[('body', 'text', True, True)])
+        # Index "hello world"
+        catalog.index_document({'body': u'hello world'})
+        catalog.index_document({'body': u'bye world'})
+        # Save
+        catalog.save_state_to('tests/catalog')
 
 
-#   def test01_index(self):
-#       catalog.index_document({'name': 'Toto'})
-#       catalog.save_state()
+    def test01_load_and_search(self):
+        catalog = Catalog('tests/catalog')
+        # Search "hello"
+        results = list(catalog.search(body=u'hello'))
+        self.assertEqual(len(results), 1)
+        # Search "world"
+        results = list(catalog.search(body=u'world'))
+        self.assertEqual(len(results), 2)
+        # Search "moon"
+        results = list(catalog.search(body=u'moon'))
+        self.assertEqual(len(results), 0)
 
 
+    def test02_unindex(self):
+        catalog = Catalog('tests/catalog')
+        catalog.unindex_document(0)
+        catalog.save_state()
 
 
-
-
-
-
-
-
+    def test03_load_and_search(self):
+        catalog = Catalog('tests/catalog')
+        # Search "hello"
+        results = list(catalog.search(body=u'hello'))
+        self.assertEqual(len(results), 0)
+        # Search "world"
+        results = list(catalog.search(body=u'world'))
+        self.assertEqual(len(results), 1)
 
 
 

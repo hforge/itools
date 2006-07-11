@@ -1,33 +1,53 @@
 0.14.0 (2006/06/XX)
 
+  Now Python 2.5 is required.
+  Drop the script "igraph.py" (till it works).
+
+  URI
+  - Add the hash method to URIs so they can be used as keys in mappings.
+  - New function "get_cwd" returns a URI object of the current working
+    directory.
+  - New function "get_absolute_reference(ref, base=None)" returns an
+    absolute URI reference for the given reference. Uses the given
+    base URI to resolve the reference if it is relative, the base
+    URI defaults to the current working directory.
+  - The new function "get_absolute_reference2" is similar to
+    "get_absolute_reference", but does not take into account trailing
+    slashes.
+
   Datatypes
   - Add method "is_valid" to the API. This method is to be called after
     decoding, used to restrict the space of valid values.
   - Add datatype for email addresses.
 
-  URI
-  - New method "replace" returns a new URI with the query updated.
-
-  Resources
-  - Folders can have a mimetype other than application/x-not-regular-file.
-  - Socket resources now implement writing. And do buffering for both
-    read and write operations.
+  VFS
+  - The new sub-package "itools.vfs" replaces "itools.resources". The
+    programming interface is radically different.
 
   Handlers
-  - Simplify handlers, remove the "parent" and "name" attributes, and
-    the associated API.
+  - Architecture overhaul. Now handlers are associated to a URI (instead
+    of to a resource). The attributes "parent" and "name" have been
+    removed. New handlers don't have any URI associated to them
+    (handler.uri is None); the method "new" replaces "get_skeleton".
+  - There is a new concept, "spaces", which replaces the transaction
+    object and the cache of folder handlers. Spaces are global mappings
+    from URI to handler, they provide caching and transactions.
   - Remove the state attribute, keep the handler's state directly in
     the instance (__dict__).
-  - Now "get_skeleton" is a class method.
   - Now "set_changed" updates the handler's timestamp.
   - Now the handler registry is implemented in the "registry.py" module,
     and it is just a flat mapping from mimetype to handler class.
+  - Remove the obsolete handlers KeyValue and Var.
 
   CSV
   - New methods "set_value" and "get_value" to access columns in a row.
 
   Catalog
-  - Add missing "to_str" methods.
+  - New more compact format, keeps all documents in two files.
+  - Some changes to the algorithmics and implementation details provide
+    a performance improvement of about 2x for indexing. Other operations
+    should be much faster too, and the memory footprint should be much
+    smaller; but these aspects have not been measured.
 
   HTTP
   - New sub-package itools.http (splitted from itools.web) provides
@@ -60,8 +80,12 @@
   - Improved user interface for multilingual documents.
   - New logic and user interface to manage security, the "RoleAware"
     class replaces the old groups.
+  - Rewrite the versioning logic, don't keep old versions of documents.
+    By Hervé Cauwelier [#47].
+  - Now all files are workflow aware [#241].
   - Various user interface improvements, by Hervé Cauwelier. Including
     #204 and #316.
+  - Now views and subviews are defined with the class variable "class_views".
   - Remove the obsolete option "--source" of "icms-init".
   - Remove the fake scripts "icms.py" and "igettext.py".
   - Remove obsolete skins "classic" and "surf".

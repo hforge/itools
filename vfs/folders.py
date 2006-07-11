@@ -140,7 +140,7 @@ class Folder(object):
             self.remove(source_reference)
 
 
-    def get_names(self, reference):
+    def get_names(self, reference='.'):
         fs, reference = self.get_fs_and_reference(reference)
         return fs.get_names(reference)
  

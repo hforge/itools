@@ -17,7 +17,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-from cStringIO import StringIO
 import mimetypes
 import os
 from tarfile import TarFile
@@ -169,12 +168,9 @@ class OfficeDocument(File):
             return self.__text_output__
 
         html = self.to_html().encode('UTF-8')
-        file = StringIO()
-        file.write(html)
-        file.seek(0)
         try:
             handler = HTML.Document()
-            handler.load_state_from_file(file)
+            handler.load_state_from_string(html)
             text = handler.to_text()
         except ValueError:
             context = get_context()
@@ -274,18 +270,13 @@ class OOffice(OfficeDocument):
         if self.__text_output__ is not None:
             return self.__text_output__
 
-        file = StringIO()
-        file.write(self.to_str())
-        file.seek(0)
+        data = self.to_str()
         try:
             archive = ZipFile()
-            archive.load_state_from_file(file)
+            archive.load_state_from_string(data)
             content = archive.read('content.xml')
-            file = StringIO()
-            file.write(content)
-            file.seek(0)
             handler = XML.Document()
-            handler.load_state_from_file(file)
+            handler.load_state_from_string(content)
             text = handler.to_text()
         except BadZipfile:
             context = get_context()

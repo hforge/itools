@@ -20,6 +20,7 @@ from __future__ import with_statement
 
 # Import from the Standard Library
 from copy import deepcopy
+from cStringIO import StringIO
 import datetime
 
 # Import from itools
@@ -65,6 +66,10 @@ class File(Handler):
 
     def load_state_from_file(self, file):
         self.data = file.read()
+
+
+    def load_state_from_string(self, string):
+        file = StringIO(string)
 
 
     def save_state(self):

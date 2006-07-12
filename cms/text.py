@@ -17,7 +17,6 @@
 
 # Import from the Standard Library
 import cgi
-from cStringIO import StringIO
 
 # Import from itools
 from itools.handlers.Text import Text as BaseText
@@ -112,10 +111,7 @@ class Text(File, BaseText):
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         data = context.get_form_value('data')
-        file = StringIO()
-        file.write(data)
-        file.seek(0)
-        self.load_state_from_file(file)
+        self.load_state_from_string(data)
 
         message = self.gettext(u'Document edited.')
         comeback(message)
@@ -256,11 +252,8 @@ class RestructuredText(Text, iRestructuredText):
     # View
     def view(self):
         html = self.to_html()
-        file = StringIO()
-        file.write(html)
-        file.seek(0)
         document = Document()
-        document.load_state_from_file(file)
+        document.load_state_from_string(html)
         body = document.get_body()
 
         return body.to_str()

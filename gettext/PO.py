@@ -16,11 +16,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
+from cStringIO import StringIO
 import re
 import time
 
 # Import from itools
-from itools.resources import memory
 from itools.handlers.File import File
 from itools.handlers.Text import Text
 from itools.handlers.registry import register_handler_class
@@ -143,8 +143,10 @@ class PO(Text):
     def new(self, title=''):
         # XXX Old style (like in the "get_skeleton" times)
         skeleton = self.get_skeleton(title)
-        resource = memory.File(skeleton)
-        self._load_state(resource)
+        file = StringIO()
+        file.write(skeleton)
+        file.seek(0)
+        self.load_state_from_file(file)
 
 
     @classmethod

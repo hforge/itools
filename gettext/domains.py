@@ -19,7 +19,6 @@
 import os
 
 # Import from itools
-from itools.resources import get_resource
 from itools.handlers.Folder import Folder
 from itools.i18n.accept import AcceptLanguage
 
@@ -27,8 +26,7 @@ domains = {}
 
 def register_domain(name, locale_path):
     if name not in domains:
-        resource = get_resource(locale_path)
-        domains[name] = Domain(resource)
+        domains[name] = Domain(locale_path)
 
 
 

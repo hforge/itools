@@ -39,16 +39,16 @@ class ListOfUsers(File):
     class_mimetypes = ['text/x-list-of-users']
     class_extension = 'users'
 
-    __slots__ = ['resource', 'timestamp', 'usernames']
+    __slots__ = ['uri', 'timestamp', 'usernames']
 
 
     def new(self, users=[]):
         self.usernames = set(users)
 
 
-    def _load_state(self, resource):
+    def load_state_from_file(self, file):
         self.usernames = set()
-        for username in resource.readlines():
+        for username in file.readlines():
             username = username.strip()
             if username:
                 self.usernames.add(username)
@@ -78,7 +78,7 @@ class Lock(Text):
     class_mimetypes = ['text/x-lock']
     class_extension = 'lock'
 
-    __slots__ = ['resource', 'timestamp', 'username', 'lock_timestamp', 'key']
+    __slots__ = ['uri', 'timestamp', 'username', 'lock_timestamp', 'key']
 
 
     def new(self, username=None, **kw):
@@ -87,8 +87,8 @@ class Lock(Text):
         self.key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
 
 
-    def _load_state(self, resource):
-        username, timestamp, key = resource.read().strip().split('\n')
+    def load_state_from_file(self, file):
+        username, timestamp, key = file.read().strip().split('\n')
         self.username = username
         # XXX backwards compatibility: remove microseconds first
         timestamp = timestamp.split('.')[0]
@@ -107,7 +107,7 @@ class Metadata(File):
     class_title = u'Metadata'
     class_icon48 = 'images/File48.png'
 
-    __slots__ = ['resource', 'timestamp', 'prefixes', 'properties']
+    __slots__ = ['uri', 'timestamp', 'prefixes', 'properties']
 
 
     def new(self, handler_class=None, **kw):
@@ -135,7 +135,7 @@ class Metadata(File):
         self.properties = properties
 
 
-    def _load_state(self, resource):
+    def load_state_from_file(self, file):
         # Keep the namespace prefixes
         self.prefixes = set()
 
@@ -144,7 +144,7 @@ class Metadata(File):
         p_language = None
         p_value = ''
         stack = []
-        for event, value, line_number in parser.parse(resource.read()):
+        for event, value, line_number in parser.parse(file.read()):
             if event == parser.START_ELEMENT:
                 namespace_uri, local_name, attributes = value
                 if local_name == 'metadata':

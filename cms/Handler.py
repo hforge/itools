@@ -24,7 +24,7 @@ import itools
 from itools import get_abspath
 from itools import uri
 from itools.datatypes import QName
-from itools.resources import base, memory
+from itools import vfs
 from itools.handlers.Handler import Node as iNode
 from itools.handlers.transactions import get_transaction
 from itools import schemas
@@ -140,7 +140,7 @@ class Node(iNode):
 
     def get_mtime(self):
         # XXX Should use the handler timestamp instead?
-        return self.resource.get_mtime()
+        return vfs.get_mtime(self.handler.uri)
 
     mtime = property(get_mtime, None, None, "")
 
@@ -155,8 +155,8 @@ class Node(iNode):
 
 
     def get_human_size(self):
-        resource = self.resource
-        if isinstance(resource, base.File):
+        uri = self.handler.uri
+        if vfs.is_file(uri):
             bytes = resource.get_size()
             kbytes = bytes / 1024.0
             if kbytes >= 1024:

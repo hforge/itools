@@ -26,7 +26,7 @@ from itools.resources.base import Folder as FolderResource
 from itools.handlers.Folder import Folder as FolderHandler
 from itools.handlers.transactions import get_transaction
 from itools.stl import stl
-from itools.catalog.Catalog import Catalog
+from itools.catalog.catalog import Catalog
 from itools.web import get_context
 
 # Import from itools.cms

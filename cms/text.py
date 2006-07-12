@@ -13,14 +13,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 import cgi
+from cStringIO import StringIO
 
 # Import from itools
-import itools
-from itools.resources import memory
 from itools.handlers.Text import Text as BaseText
 from itools.handlers.rest import RestructuredText as iRestructuredText
 from itools import gettext
@@ -113,8 +112,10 @@ class Text(File, BaseText):
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         data = context.get_form_value('data')
-        resource = memory.File(data)
-        self.load_state_from(resource)
+        file = StringIO()
+        file.write(data)
+        file.seek(0)
+        self.load_state_from_file(file)
 
         message = self.gettext(u'Document edited.')
         comeback(message)
@@ -255,8 +256,11 @@ class RestructuredText(Text, iRestructuredText):
     # View
     def view(self):
         html = self.to_html()
-        resource = memory.File(html)
-        document = Document(resource)
+        file = StringIO()
+        file.write(html)
+        file.seek(0)
+        document = Document()
+        document.load_state_from_file(file)
         body = document.get_body()
 
         return body.to_str()

@@ -25,7 +25,6 @@ import tempfile
 from zipfile import ZipFile, BadZipfile
 
 # Import from itools
-from itools.resources import memory
 from itools.handlers.Image import Image as iImage
 from itools.handlers.archive import (Archive as iArchive, ZipArchive as
                                      iZipArchive, TarArchive as iTarArchive,
@@ -170,9 +169,12 @@ class OfficeDocument(File):
             return self.__text_output__
 
         html = self.to_html().encode('UTF-8')
-        resource = memory.File(html)
+        file = StringIO()
+        file.write(html)
+        file.seek(0)
         try:
-            handler = HTML.Document(resource)
+            handler = HTML.Document()
+            handler.load_state_from_file(file)
             text = handler.to_text()
         except ValueError:
             context = get_context()
@@ -272,12 +274,18 @@ class OOffice(OfficeDocument):
         if self.__text_output__ is not None:
             return self.__text_output__
 
-        resource = memory.File(self.to_str())
+        file = StringIO()
+        file.write(self.to_str())
+        file.seek(0)
         try:
-            archive = ZipFile(resource)
+            archive = ZipFile()
+            archive.load_state_from_file(file)
             content = archive.read('content.xml')
-            resource = memory.File(content)
-            handler = XML.Document(resource)
+            file = StringIO()
+            file.write(content)
+            file.seek(0)
+            handler = XML.Document()
+            handler.load_state_from_file(file)
             text = handler.to_text()
         except BadZipfile:
             context = get_context()

@@ -19,6 +19,26 @@
 import unittest
 from unittest import TestCase
 
+# Import from itools
+from itools import vfs
+import itools.http
+from itools.web.server import Server
+from itools.web.tree import Root
+
+
+
+class ServerTestCase(TestCase):
+    
+    def test00_simple(self):
+        class MyRoot(Root):
+            GET__access__ = True
+            def GET(self, context):
+                return 'hello world'
+        root = MyRoot()
+        server = Server(root)
+##        server.start()
+
+
 
 
 if __name__ == '__main__':

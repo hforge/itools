@@ -103,16 +103,16 @@ class Response(Message):
         self.cookies = {}
 
 
-    def _load_state(self, resource):
+    def load_state_from_file(self, file):
         # The status line
-        line = resource.readline()
+        line = file.readline()
         http_version, status_code, status_message = line.split(' ', 2)
         status_code = int(status_code)
         self.set_status(status_code)
         # The headers
-        self.headers = entities.read_headers(resource)
+        self.headers = entities.read_headers(file)
         # The body
-        self.body = resource.read()
+        self.body = file.read()
         # The cookies
         self.cookies = {}
 

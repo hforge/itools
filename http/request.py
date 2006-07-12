@@ -19,8 +19,7 @@
 from urllib import urlencode
 
 # Import from itools
-from itools.uri import get_reference
-from itools import uri
+from itools.uri import get_reference, Query
 from itools.datatypes import QName
 from itools import schemas
 from itools.resources import memory
@@ -43,7 +42,7 @@ class Request(Message):
         version = 'HTTP/1.1'
         self.request_line = '%s %s %s\r\n' % (method, uri, version)
         self.method = method
-        self.uri = uri.get_reference(request_uri)
+        self.uri = get_reference(uri)
         self.http_version = version
         self.headers = {}
         self.body = {}
@@ -151,7 +150,7 @@ class Request(Message):
             if body:
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
-                    parameters = uri.generic.Query.decode(body)
+                    parameters = Query.decode(body)
                 elif type.startswith('multipart/'):
                     boundary = type_parameters.get('boundary')
                     boundary = '--%s' % boundary

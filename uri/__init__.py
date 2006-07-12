@@ -17,6 +17,6 @@
 
 # Import from itools
 import mailto
-from generic import Path, Reference, Segment
+from generic import Path, Reference, Segment, Query
 from uri import *
 

@@ -20,7 +20,8 @@ from base64 import decodestring
 from copy import copy
 from datetime import datetime
 import os
-from select import select
+import select
+from select import POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL
 import socket
 import time
 import traceback
@@ -73,33 +74,46 @@ class Server(object):
         ear.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
         ear.listen(5)
+        ear_fileno = ear.fileno()
 
-        iwtd = [ear]
-        owtd = []
-        ewtd = []
+        requests = {}
+        # Set-up polling object
+        POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
+        POLL_WRITE = POLLOUT | POLLERR | POLLHUP | POLLNVAL
+        poll = select.poll()
+        poll.register(ear_fileno, POLL_READ)
         while True:
             try:
-                iready, oready, eready = select(iwtd, owtd, ewtd)
+                for fileno, event in poll.poll():
+                    if event & POLLIN or event & POLLPRI:
+                        if fileno == ear_fileno:
+                            # New request
+                            try:
+                                conn, client_address = ear.accept()
+                            except socket.error:
+                                continue
 
-                for x in iready:
-                    if x is ear:
-                        # New connection
-                        try:
-                            connection, client_address = ear.accept()
-                        except socket.error:
-                            continue
+                            # Register the connection
+                            fileno = conn.fileno()
+                            poll.register(fileno, POLL_READ)
 
-                        iwtd.append(connection)
-                    else:
-                        # Connection is ready
-                        # XXX To further improve performance, the request
-                        # object should be built as the information arrives,
-                        # giving the control back to the main loop while
-                        # waiting for new bytes. This probably means
-                        # "load_state" should be a generator, what will
-                        # require changes in the handlers design.
-                        iwtd.remove(x)
-                        self.handle_request(x)
+                            requests[fileno] = conn
+                        else:
+                            # Load request
+                            poll.unregister(fileno)
+                            conn = requests.pop(fileno)
+                            self.handle_request(conn)
+                    elif event & POLLOUT:
+                        poll.unregister(fileno)
+                    elif event & POLLERR:
+                        # XXX What to do here?
+                        pass
+                    elif event & POLLHUP:
+                        # XXX What to do here?
+                        pass
+                    elif event & POLLNVAL:
+                        # XXX What to do here?
+                        pass
             except KeyboardInterrupt:
                 ear.close()
                 if self.access_log is not None:

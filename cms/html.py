@@ -19,7 +19,6 @@
 import os
 
 # Import from itools
-from itools.resources import memory
 from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML
@@ -156,8 +155,8 @@ class XHTMLFile(Text, XHTML.Document):
                   ' data was not proper HTML code.'
 
         # Parse the new data
-        resource = memory.File(new_body)
-        doc = XHTML.Document(resource)
+        doc = XHTML.Document()
+        doc.load_state_from_string(new_body)
         children = doc.get_body().children
         # Save the changes
         body = self.get_body()
@@ -225,8 +224,8 @@ class HTMLFile(HTML.Document, XHTMLFile):
         # tidy part)
         new_body = context.get_form_value('data')
         # Parse the new data
-        resource = memory.File(new_body)
-        doc = HTML.Document(resource)
+        doc = HTML.Document()
+        doc.load_state_from_string(new_body)
         children = doc.get_root_element().children
         # Save the changes
         body = self.get_body()

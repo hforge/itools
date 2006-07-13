@@ -24,10 +24,9 @@ import zlib
 # Import from itools
 from itools.datatypes import FileName
 from itools.handlers.Folder import Folder as BaseFolder
-from itools.handlers.registry import build_handler
+##from itools.handlers.registry import build_handler
 from itools.handlers.Text import Text
 from itools import i18n
-from itools.resources import base
 from itools import uri
 from itools.stl import stl
 from itools.web import get_context
@@ -381,8 +380,9 @@ class Folder(Handler, BaseFolder):
         for line in table.objects:
             abspath = line['abspath']
             document = root.get_handler(abspath)
-            if document.is_allowed_to_view():
-                resource = document.resource
+            ac = document.get_access_control()
+            if ac.is_allowed_to_view(user, document):
+                uri = document.uri
                 line = {}
                 name = document.name
                 line['abspath'] = abspath
@@ -392,11 +392,11 @@ class Folder(Handler, BaseFolder):
                 line['class_title'] = self.gettext(document.class_title)
                 line['title'] = document.get_property('dc:title')
                 line['description'] = document.get_property('dc:description')
-                line['is_file'] = isinstance(resource, base.File)
-                line['is_folder'] = isinstance(resource, base.Folder)
-                line['ctime'] = resource.get_ctime()
-                line['mtime'] = resource.get_mtime()
-                line['atime'] = resource.get_atime()
+                line['is_file'] = vfs.is_file(uri)
+                line['is_folder'] = vfs.is_folder(uri)
+                line['ctime'] = vfs.get_ctime(uri)
+                line['mtime'] = vfs.get_mtime(uri)
+                line['atime'] = vfs.get_atime(uri)
 
                 # compute size
                 line['size'] = document.get_human_size()

@@ -21,7 +21,6 @@ import os
 import sys
 
 # Import from itools
-from itools.resources import base, file, get_resource
 from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
@@ -49,14 +48,11 @@ def get_config(target=None):
 
 def get_root(target):
     # Get the root resource
-    root_resource = get_resource('%s/database' % target)
-    # Find out the format (look into the metadata)
-    metadata = root_resource.get_resource('.metadata')
-    metadata = Metadata(metadata)
+    metadata = Metadata('%s/database/.metadata' % target)
     format = metadata.get_property('format')
     # Build and return the root handler
     cls = registry.get_object_class(format)
-    return cls(root_resource)
+    return cls('%s/database')
 
 
 
@@ -134,25 +130,13 @@ class Server(web.server.Server):
     def end_commit_on_success(self):
         target = self.target
         transaction = get_transaction()
-
+        abspaths = [ str(x.uri.path) for x in transaction
+                     if x.uri.scheme == 'file' ]
+        abspaths.sort()
         open('%s/state' % target, 'w').write('END')
         try:
-            cwd = os.getcwd()
-            src_base = os.path.join(cwd, target, 'database/')
-            src_base_n = len(src_base)
-            dst_base = os.path.join(cwd, target, 'database.bak/')
-
-            abspaths = []
-            for handler in transaction:
-                resource = handler.resource
-                if isinstance(resource, file.Resource):
-                    src_path = str(resource.uri.path)
-                    if src_path.startswith(src_base):
-                        dst_path = dst_base + src_path[src_base_n:]
-                        abspaths.append((src_path, dst_path))
-            abspaths.sort()
-
-            for src, dst in abspaths:
+            for src in abspaths:
+                dst = src.replace('/database/', '/database.bak/', 1)
                 if os.path.isdir(src):
                     src_files = set(os.listdir(src))
                     dst_files = set(os.listdir(dst))

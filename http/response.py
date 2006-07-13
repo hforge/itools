@@ -225,9 +225,3 @@ class Response(Message):
 
     def get_cookie(self, name):
         return self.state.cookies.get(name)
-
-
-    #########################################################################
-    # For Zope
-    #########################################################################
-    __str__ = to_str

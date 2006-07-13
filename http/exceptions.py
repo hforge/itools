@@ -15,32 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from itools
-from itools.handlers.File import File
-from itools.web import headers
 
+class BadRequest(Exception):
+    code = 400
 
-class Message(File):
-    """
-    Base class, for HTTP request and responses.
-    """
-
-    #########################################################################
-    # API
-    #########################################################################
-    def set_header(self, name, value):
-        name = name.lower()
-        if isinstance(value, str):
-            type = headers.get_type(name)
-            value = type.decode(value)
-        self.state.headers[name] = value
-
-
-    def has_header(self, name):
-        name = name.lower()
-        return name in self.state.headers
-
-
-    def get_header(self, name):
-        name = name.lower()
-        return self.state.headers[name]

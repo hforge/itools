@@ -25,10 +25,10 @@ from itools import schemas
 from itools.resources import memory
 from itools.handlers.Handler import Handler
 from itools.i18n.accept import AcceptLanguage
-from itools.web.exceptions import BadRequest
-from itools.web import headers
-from itools.web import entities
-from itools.web.message import Message
+from exceptions import BadRequest
+import headers
+import entities
+from message import Message
 
 
 class Request(Message):

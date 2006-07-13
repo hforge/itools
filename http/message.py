@@ -17,40 +17,23 @@
 
 # Import from itools
 from itools.handlers.File import File
-from itools.web import headers
+import headers
 
 
+class Message(File):
+    """
+    Base class, for HTTP request and responses.
+    """
 
-def read_headers(resource):
-    index = 0
-
-    entity_headers = {}
-    body = None
-
-    # The headers
-    while True:
-        line = resource.readline()
-        line = line.strip()
-        if line:
-            name, value = line.split(':', 1)
-            name = name.strip().lower()
-            value = value.strip()
+    #########################################################################
+    # API
+    #########################################################################
+    def set_header(self, name, value):
+        name = name.lower()
+        if isinstance(value, str):
             type = headers.get_type(name)
-            entity_headers[name] = type.decode(value)
-        else:
-            break
-
-    return entity_headers
-
-
-
-class Entity(File):
-
-    def _load_state(self, resource):
-        state = self.state
-
-        state.headers = read_headers(resource)
-        state.body = resource.read()
+            value = type.decode(value)
+        self.state.headers[name] = value
 
 
     def has_header(self, name):
@@ -61,7 +44,3 @@ class Entity(File):
     def get_header(self, name):
         name = name.lower()
         return self.state.headers[name]
-
-
-    def get_body(self):
-        return self.state.body

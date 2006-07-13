@@ -23,7 +23,7 @@ from time import strptime
 
 # Import from itools
 from itools import uri
-from response import Response
+from itools.http.response import Response
 
 
 class Context(object):

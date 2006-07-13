@@ -29,10 +29,11 @@ from urllib import unquote
 # Import from itools
 from itools.resources.socket import File
 from itools.handlers.transactions import get_transaction
-from itools.web.exceptions import BadRequest, Forbidden, UserError
+from itools.http.request import Request
+from itools.http.response import Response
+from itools.http.exceptions import BadRequest
+from itools.web.exceptions import Forbidden, UserError
 from itools.web.context import Context, get_context, set_context
-from itools.web.request import Request
-from itools.web.response import Response
 
 
 

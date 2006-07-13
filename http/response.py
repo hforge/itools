@@ -20,10 +20,10 @@ from datetime import datetime
 
 # Import from itools
 from itools.schemas import get_datatype
-from itools.web import headers
-from itools.web.headers import HTTPDate
-from itools.web.message import Message
-from itools.web import entities
+import headers
+from headers import HTTPDate
+from message import Message
+import entities
 
 
 status_messages = {

@@ -19,13 +19,14 @@
 from urllib import urlencode
 
 # Import from itools
+from itools.uri import get_reference
 from itools import uri
 from itools.datatypes import QName
 from itools import schemas
 from itools.resources import memory
 from itools.handlers.Handler import Handler
 from itools.i18n.accept import AcceptLanguage
-from exceptions import BadRequest
+from exceptions import BadRequest, NotImplemented
 import headers
 import entities
 from message import Message
@@ -34,47 +35,89 @@ from message import Message
 class Request(Message):
 
     def get_skeleton(self, path='/'):
-        return 'GET %s HTTP/1.1' % path
+        return 'GET %s HTTP/1.1\r\n\r\n' % path
 
 
     def _load_state(self, resource):
+        list(self.non_blocking_load(resource.read))
+
+
+    def non_blocking_load(self, read):
         state = self.state
-        state.form = {}
 
-        # The request line
-        line = resource.readline()
-        line = line.strip()
-        try:
-            method, request_uri, http_version = line.split()
-        except ValueError:
-            raise BadRequest, line
-        else:
-            state.request_line = line
+        buffer = ''
+        # Read the first line
+        while True:
+            data = read(512)
+            data_size = len(data)
+            # Check there is some data, if not we abort the request, something
+            # may be wrong.
+            if data_size == 0:
+                raise BadRequest
+            buffer += data
+            buffer = buffer.split('\r\n', 1)
+            if len(buffer) == 2:
+                request_line, buffer = buffer
+                break
 
-        self.set_method(method)
-        reference = uri.get_reference(request_uri)
-        self.set_uri(reference)
+            buffer = buffer[0]
+            # Give control back
+            if data_size < 512:
+                yield None
+
+        # Parse the request line
+        state.request_line = request_line
+        method, request_uri, http_version = request_line.split()
+        state.method = method
+        state.uri = get_reference(request_uri)
         state.http_version = http_version
+        # Check we support the method
+        if method not in ['GET', 'HEAD', 'POST', 'PUT', 'LOCK', 'UNLOCK']:
+            # Not Implemented (501)
+            message = u'request method "%s" not yet implemented'
+            raise NotImplemented, message % method
 
-        # The headers
-        state.headers = entities.read_headers(resource)
+        # Load headers
+        headers = state.headers = {}
+        while True:
+            if buffer:
+                buffer = buffer.split('\r\n', 1)
+                if len(buffer) == 2:
+                    line, buffer = buffer
+                    if not line:
+                        break
+                    name, value = entities.parse_header(line)
+                    headers[name] = value
+                    continue
 
-        # The body
-        if self.has_header('content-length'):
-            size = self.get_header('content-length')
-            body = resource.read(size)
-        else:
-            body = ''
+                buffer = buffer[0]
+            if len(data) < 512:
+                yield None
+            data = read(512)
+            buffer += data
 
         # Cookies
         state.headers.setdefault('cookie', {})
 
-        # The Form
-        if method in ('GET', 'HEAD'):
-            parameters = reference.query
-        elif method in ('POST', 'PUT', 'LOCK', 'UNLOCK'):
-            parameters = {}
-            if self.has_header('content-type'):
+        # Load the body
+        state.form = {}
+        parameters = {}
+        # The body
+        if 'content-length' in headers and 'content-type' in headers:
+            size = headers['content-length']
+            # Read
+            remains = size - len(buffer)
+            buffer = [buffer]
+            while remains > 0:
+                data = read(remains)
+                buffer.append(data)
+                remains = remains - len(data)
+                if remains:
+                    yield None
+            body = ''.join(buffer)
+
+            # The Form
+            if body:
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
                     parameters = uri.generic.Query.decode(body)
@@ -112,8 +155,7 @@ class Request(Message):
                     resource = memory.File(body)
                     parameters['body'] = resource
         else:
-            message = u'request method "%s" not yet implemented' % method
-            raise ValueError, message
+            parameters = state.uri.query
 
         for name in parameters:
             self._set_parameter(name, parameters[name])
@@ -165,7 +207,7 @@ class Request(Message):
 
     def set_uri(self, reference):
         if not isinstance(reference, uri.Reference):
-            reference = uri.get_reference(reference)
+            reference = get_reference(reference)
         self.state.uri = reference
 
 

@@ -76,6 +76,7 @@ class Server(object):
         ear.listen(5)
         ear_fileno = ear.fileno()
 
+        # Mapping {<fileno>: (request, loader)}
         requests = {}
         # Set-up polling object
         POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
@@ -96,15 +97,37 @@ class Server(object):
                             # Register the connection
                             fileno = conn.fileno()
                             poll.register(fileno, POLL_READ)
-
-                            requests[fileno] = conn
+                            # Build and store the request
+                            request = Request()
+                            loader = request.non_blocking_load(conn.recv)
+                            requests[fileno] = conn, request, loader
                         else:
                             # Load request
                             poll.unregister(fileno)
-                            conn = requests.pop(fileno)
-                            self.handle_request(conn)
+                            conn, request, loader = requests.pop(fileno)
+                            try:
+                                loader.next()
+                            except StopIteration:
+                                response = self.handle_request(request)
+                                # Ready to send response
+                                poll.register(fileno, POLL_WRITE)
+                                requests[fileno] = conn, response
+                                # Log access
+                                self.log_access(conn, request, response)
+                            except KeyboardInterrupt:
+                                raise
+                            except:
+                                self.log_error()
+                            else:
+                                requests[fileno] = conn, request, loader
+                                poll.register(fileno, POLL_READ)
                     elif event & POLLOUT:
                         poll.unregister(fileno)
+                        conn, response = requests.pop(fileno)
+                        # Send the response
+                        response = response.to_str()
+                        conn.sendall(response)
+                        conn.close()
                     elif event & POLLERR:
                         # XXX What to do here?
                         pass
@@ -125,7 +148,7 @@ class Server(object):
                 self.log_error()
 
 
-    def log_access(self, connection, request_line, status, size):
+    def log_access(self, conn, request, response):
         # Common Log Format
         #  - IP address of the client
         #  - RFC 1413 identity (not available)
@@ -137,11 +160,11 @@ class Server(object):
         #  - content length of the response
         log = self.access_log
         if log is not None:
-            host, port = connection.getpeername()
-            now = time.strftime('%d/%b/%Y:%H:%M:%S %Z')
-            log.write(
-                '%s - - [%s] "%s" %s %s\n' % (host, now, request_line, status,
-                                              size))
+            host, port = conn.getpeername()
+            namespace = (host, time.strftime('%d/%b/%Y:%H:%M:%S %Z'),
+                         request.state.request_line, response.state.status,
+                         response.get_content_length())
+            log.write('%s - - [%s] "%s" %s %s\n' % namespace)
             log.flush()
 
 
@@ -185,34 +208,7 @@ class Server(object):
         pass
 
 
-    def handle_request(self, connection):
-        # Build the request object
-        resource = File(connection)
-        try:
-            request = Request(resource)
-        except BadRequest, exception:
-            request = None
-            request_line = exception.args[0]
-        except:
-            self.log_error()
-            request = None
-            request_line = 'XXX'
-        else:
-            # Keep here (though redundant) to be used later in the access log
-            request_line = request.state.request_line
-
-        if request is None:
-            # Build response for the 400 error
-            response = Response(status_code=400)
-            response.set_body('Bad Request')
-            # Access Log
-            content_length = response.get_content_length()
-            self.log_access(connection, request_line, 400, content_length)
-            # Send response
-            response = response.to_str()
-            connection.send(response)
-            return
-
+    def handle_request(self, request):
         # Build and set the context
         context = Context(request)
         context.server = self
@@ -226,13 +222,8 @@ class Server(object):
             response = Response(status_code=301)
             response.set_header('Location', goto)
             response.set_body('Moved Permanently')
-            # Access Log
-            content_length = response.get_content_length()
-            self.log_access(connection, request_line, 301, content_length)
             # Send response
-            response = response.to_str()
-            connection.send(response)
-            return
+            return response
 
         # Get the root handler
         root = self.root
@@ -399,10 +390,6 @@ class Server(object):
                 response.set_body(body)
                 self.log_error()
 
-        # Access Log
-        self.log_access(connection, request_line, response.state.status,
-                        response.get_content_length())
-
         # HEAD
         if request.method == 'HEAD':
             content_length = response.get_content_length()
@@ -410,6 +397,4 @@ class Server(object):
             response.set_body(None)
 
         # Finish, send back the response
-        response = response.to_str()
-        connection.send(response)
-        connection.close()
+        return response

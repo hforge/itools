@@ -129,23 +129,23 @@ class Response(Message):
         # The status line
         status_code = state.status
         status_message = status_messages[status_code]
-        data.append('HTTP/1.0 %d %s' % (status_code, status_message))
+        data.append('HTTP/1.0 %d %s\r\n' % (status_code, status_message))
         # Headers
         # Date:
         date = datetime.utcnow()
-        data.append('Date: %s' % HTTPDate.encode(date))
+        data.append('Date: %s\r\n' % HTTPDate.encode(date))
         # Server:
-        data.append('Server: itools.web')
+        data.append('Server: itools.web\r\n')
         # User defined headers
         for name in state.headers:
             if name not in ['date', 'server']:
                 datatype = headers.get_type(name)
                 value = state.headers[name]
                 value = datatype.encode(value)
-                data.append('%s: %s' % (name.title(), value))
+                data.append('%s: %s\r\n' % (name.title(), value))
         # Content-Length:
         if not self.has_header('content-length'):
-            data.append('Content-Length: %d' % self.get_content_length())
+            data.append('Content-Length: %d\r\n' % self.get_content_length())
         # The Cookies
         for name in state.cookies:
             cookie = state.cookies[name]
@@ -169,15 +169,15 @@ class Response(Message):
             datatype = get_datatype(name)
             value = datatype.encode(cookie.value)
 
-            data.append('Set-Cookie: %s="%s"%s' % (name, value,
+            data.append('Set-Cookie: %s="%s"%s\r\n' % (name, value,
                                                    ''.join(parameters)))
         # A blank line separates the header from the body
-        data.append('')
+        data.append('\r\n')
         # The body
         if state.body is not None:
             data.append(state.body)
 
-        return '\r\n'.join(data)
+        return ''.join(data)
 
 
     #########################################################################

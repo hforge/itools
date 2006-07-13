@@ -19,3 +19,7 @@
 class BadRequest(Exception):
     code = 400
 
+
+class NotImplemented(Exception):
+    code = 501
+

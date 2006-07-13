@@ -21,24 +21,30 @@ import headers
 
 
 
+def parse_header(line):
+    if line:
+        name, value = line.split(':', 1)
+        name = name.strip().lower()
+        value = value.strip()
+        type = headers.get_type(name)
+        return name, type.decode(value)
+
+    return None, None
+
+
+
 def read_headers(resource):
-    index = 0
-
     entity_headers = {}
-    body = None
-
-    # The headers
-    while True:
+    # Setup
+    line = resource.readline()
+    line = line.strip()
+    # Go
+    while line:
+        name, value = parse_header(line)
+        entity_headers[name] = value
+        # Next
         line = resource.readline()
         line = line.strip()
-        if line:
-            name, value = line.split(':', 1)
-            name = name.strip().lower()
-            value = value.strip()
-            type = headers.get_type(name)
-            entity_headers[name] = type.decode(value)
-        else:
-            break
 
     return entity_headers
 

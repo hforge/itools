@@ -70,6 +70,7 @@ class File(Handler):
 
     def load_state_from_string(self, string):
         file = StringIO(string)
+        self.load_state_from_file(file)
 
 
     def save_state(self):

@@ -17,6 +17,7 @@
 
 # Import from itools
 from itools.handlers.Image import Image as iImage
+from itools.stl import stl
 from itools.web import get_context
 
 # Import from ikaaro
@@ -77,3 +78,27 @@ class Image(File, iImage):
 
 
 File.register_handler_class(Image)
+
+
+
+class Video(File):
+
+    class_id = 'video'
+    class_title = u'Video'
+    class_description = u'Video'
+    class_icon48 = 'images/Flash48.png'
+    class_icon16 = 'images/Flash16.png'
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    view__sublabel__ = u'View'
+    def view(self):
+        namespace = {}
+        namespace['format'] = self.get_mimetype()
+
+        handler = self.get_handler('/ui/Video_view.xml')
+        return stl(handler, namespace)
+
+
+File.register_handler_class(Video)

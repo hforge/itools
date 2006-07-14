@@ -1,3 +1,18 @@
+0.13.8 (2006/07/14)
+
+  HTTP
+  - New package "itools.http", split from "itools.web".
+
+  Web
+  - Load requests and send responses in non-blocking mode.
+  - Use "poll" instead of "select" to detect changes in sockets.
+
+  CMS
+  - Style fixes for the HTML editor, by Hervé Cauwelier [#138].
+  - Split account and password forms in two subtabs, by Hervé Cauwelier [#344]
+  - New handler for video files, to view them inline.
+
+
 0.13.7 (2006/07/03)
 
   Catalog

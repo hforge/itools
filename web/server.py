@@ -94,6 +94,8 @@ class Server(object):
                             except socket.error:
                                 continue
 
+                            # Set non-blocking mode
+                            conn.setblocking(0)
                             # Register the connection
                             fileno = conn.fileno()
                             poll.register(fileno, POLL_READ)
@@ -109,11 +111,12 @@ class Server(object):
                                 loader.next()
                             except StopIteration:
                                 response = self.handle_request(request)
-                                # Ready to send response
-                                poll.register(fileno, POLL_WRITE)
-                                requests[fileno] = conn, response
                                 # Log access
                                 self.log_access(conn, request, response)
+                                # Ready to send response
+                                poll.register(fileno, POLL_WRITE)
+                                response = response.to_str()
+                                requests[fileno] = conn, response
                             except KeyboardInterrupt:
                                 raise
                             except:
@@ -125,9 +128,13 @@ class Server(object):
                         poll.unregister(fileno)
                         conn, response = requests.pop(fileno)
                         # Send the response
-                        response = response.to_str()
-                        conn.sendall(response)
-                        conn.close()
+                        n = conn.send(response)
+                        response = response[n:]
+                        if response:
+                            poll.register(fileno, POLL_WRITE)
+                            requests[fileno] = conn, response
+                        else:
+                            conn.close()
                     elif event & POLLERR:
                         # XXX What to do here?
                         pass

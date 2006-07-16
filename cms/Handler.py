@@ -17,20 +17,16 @@
 
 # Import from the Standard Library
 import cgi
-from datetime import datetime
 import logging
-from random import random
-from time import time
 
 # Import from itools
 import itools
 from itools import get_abspath
 from itools import uri
-from itools.datatypes import QName, DateTime
+from itools.datatypes import QName
 from itools.resources import base, memory
 from itools.handlers.Handler import Node as iNode
 from itools.handlers.transactions import get_transaction
-from itools.handlers.Text import Text
 from itools import schemas
 from itools.stl import stl
 from itools.xhtml import XHTML
@@ -51,31 +47,6 @@ logger = logging.getLogger('update')
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
 logger.addHandler(handler)
-
-
-
-class Lock(Text):
-
-    def get_skeleton(self, username=None, **kw):
-        key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
-        timestamp = DateTime.encode(datetime.now())
-        return '%s\n%s\n%s' % (username, timestamp, key)
-
-
-    def _load_state(self, resource):
-        state = self.state
-        username, timestamp, key = resource.read().strip().split('\n')
-        state.username = username
-        # XXX backwards compatibility: remove microseconds first
-        timestamp = timestamp.split('.')[0]
-        state.timestamp = DateTime.decode(timestamp)
-        state.key = key
-
-
-    def to_str(self):
-        state = self.state
-        timestamp = DateTime.encode(state.timestamp)
-        return '%s\n%s\n%s' % (state.username, timestamp, state.key)
 
 
 

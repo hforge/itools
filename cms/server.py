@@ -25,7 +25,7 @@ from itools.resources import base, file, get_resource
 from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
-from itools.cms.metadata import Metadata
+from itools.cms.handlers import Metadata
 from itools.cms.root import Root
 
 

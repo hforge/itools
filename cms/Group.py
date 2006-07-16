@@ -16,50 +16,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from itools
-from itools import handlers
 from itools.stl import stl
 from itools.web.exceptions import UserError
 
 # Import from ikaaro
 from access import AccessControl
+from handlers import ListOfUsers
 from utils import comeback, checkid
 from widgets import Table
 from Folder import Folder
-
-
-
-class ListOfUsers(handlers.File.File):
-
-    def get_skeleton(self, users=[]):
-        return '\n'.join(users)
-
-
-    def _load_state(self, resource):
-        state = self.state
-
-        state.usernames = set()
-        for username in resource.readlines():
-            username = username.strip()
-            if username:
-                state.usernames.add(username)
-
-
-    def to_str(self):
-        return '\n'.join(self.state.usernames)
-
-
-    def get_usernames(self):
-        return self.state.usernames
-
-
-    def add(self, username):
-        self.set_changed()
-        self.state.usernames.add(username)
-
-
-    def remove(self, username):
-        self.set_changed()
-        self.state.usernames.remove(username)
 
 
 

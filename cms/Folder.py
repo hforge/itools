@@ -35,9 +35,9 @@ from itools.web.exceptions import UserError
 # Import from itools.cms
 import File
 from images import Image
-from Handler import Handler, Lock
+from Handler import Handler
+from handlers import Lock, Metadata
 from LocaleAware import LocaleAware
-from metadata import Metadata
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import comeback, checkid, reduce_string

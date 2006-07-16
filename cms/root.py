@@ -40,7 +40,8 @@ from itools.web import get_context
 # Import from itools.cms
 from Group import Group
 from Handler import Handler
-from metadata import Metadata, Password
+from handlers import Metadata
+from metadata import Password
 from text import PO
 from users import User, UserFolder
 from utils import comeback

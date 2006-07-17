@@ -30,8 +30,9 @@ from urllib import quote
 from itools import get_abspath
 from itools.datatypes import FileName
 from itools.resources import get_resource
-from itools import handlers
+from itools.resources.base import Folder as FolderResource
 from itools.handlers import get_handler
+from itools.handlers.Folder import Folder as FolderHandler
 from itools.handlers.transactions import get_transaction
 from itools.xml import namespaces
 from itools.stl import stl
@@ -45,6 +46,7 @@ from utils import comeback
 from WebSite import WebSite
 from handlers import ListOfUsers, Metadata
 from registry import register_object_class
+from Folder import Folder
 
 
 
@@ -89,7 +91,7 @@ class Root(WebSite):
         # The catalog, index and search
         skeleton['.catalog'] = Catalog(fields=self._catalog_fields)
         # The archive is used for versioning
-        skeleton['.archive'] = handlers.Folder.Folder()
+        skeleton['.archive'] = FolderHandler()
         # Metadata
         skeleton['.metadata'] = self.build_metadata(self)
         # Users
@@ -168,7 +170,7 @@ class Root(WebSite):
         if name == '.catalog':
             return Catalog(resource)
         elif name == '.archive':
-            return handlers.Folder.Folder(resource)
+            return FolderHandler(resource)
         return WebSite._get_handler(self, segment, resource)
 
 
@@ -442,7 +444,26 @@ class Root(WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20060424(self):
+    def update_20060503(self):
+        # Rename ".xxx.metadata" to "xxx.metadata"
+        stack = [self.resource]
+        while stack:
+            folder = stack.pop()
+            for name in folder.get_resource_names():
+                resource = folder.get_resource(name)
+                # Update metadata
+                if name.endswith('.metadata') and name != '.metadata':
+                    folder.del_resource(name)
+                    folder.set_resource(name[1:], resource)
+                # Skip hidden handlers
+                elif name.startswith('.'):
+                    continue
+                # Recursive
+                elif isinstance(resource, FolderResource):
+                    stack.append(resource)
+
+
+    def update_20060504(self):
         # Add '.admins.users'
         admins = self.get_handler('admins/.users').get_usernames()
         self.set_handler('.admins.users', ListOfUsers(users=admins))
@@ -452,28 +473,7 @@ class Root(WebSite):
         self.del_handler('.admins.metadata')
         self.del_handler('reviewers')
         self.del_handler('.reviewers.metadata')
-
-
-    def update_20060430(self):
-        stack = [self]
-        while stack:
-            folder = stack.pop()
-            for name in folder.get_handler_names():
-                handler = folder.get_handler(name)
-                # Update metadata
-                if isinstance(handler, Metadata) and name != '.metadata':
-                    folder.del_handler(name)
-                    short_name, type, language = FileName.decode(name[1:-9])
-                    folder.set_handler(name[1:], handler)
-                # Skip hidden handlers
-                elif name.startswith('.'):
-                    continue
-                # Recursive
-                elif isinstance(handler, FolderHandler):
-                    stack.append(handler)
-
-
-    def update_20060504(self):
+        # Remove "en.po"
         self.del_handler('en.po')
 
 

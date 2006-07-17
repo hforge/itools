@@ -1,5 +1,6 @@
-# -*- coding: UTF-8 -*-
-# Copyright (C) 2006 HervÃ© Cauwelier <herve@itaapy.com>
+# -*- coding: ISO-8859-1 -*-
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#               2006 Hervé Cauwelier <herve@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,33 +14,124 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-import os
+from cStringIO import StringIO
 import mimetypes
+import os
+from tarfile import TarFile
 import tempfile
 from zipfile import ZipFile, BadZipfile
 
 # Import from itools
 from itools.resources import memory
-from itools.stl import stl
+from itools.handlers.Image import Image as iImage
+from itools.handlers.archive import (Archive as iArchive, ZipArchive as
+                                     iZipArchive, TarArchive as iTarArchive,
+                                     BZ2Proxy)
 from itools.xml import XML
 from itools.html import HTML
+from itools.stl import stl
 from itools.web.context import get_context
-
-# Import from itools.cms
-from itools.cms.text import Text
-from itools.cms.File import File
+from File import File
+from text import Text
 from registry import register_object_class
 
 
-mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
-mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
-mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
+###########################################################################
+# Images, Video & Flash
+###########################################################################
+class Image(File, iImage):
+
+    class_id = 'image'
+    class_title = u'Image'
+    class_version = '20040625'
+    class_icon16 = 'images/Image16.png'
+    class_views = [['view'],
+                   ['externaledit'],
+                   ['edit_metadata_form']]
+
+
+    # XXX Temporal, until icon's API is fixed
+    def icons_path(self):
+        return ';icon48?width=144&height=144'
+
+
+    icon48__access__ = True
+    def icon48(self, context):
+        width = context.get_form_value('width', 48)
+        height = context.get_form_value('height', 48)
+
+        width, height = int(width), int(height)
+
+        if not hasattr(self, '_icon'):
+            self._icon = {}
+
+        if (width, height) not in self._icon:
+            thumbnail = self.get_thumbnail(width, height)
+            if thumbnail is None:
+                data = self.get_handler('/ui/images/Image48.png').to_str()
+                self._icon[(width, height)] = data, 'png'
+            else:
+                self._icon[(width, height)] = thumbnail
+
+        data, format = self._icon[(width, height)]
+        response = context.response
+        response.set_header('Content-Type', 'image/%s' % format)
+        return data
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    view__sublabel__ = u'View'
+    def view(self, context):
+        handler = self.get_handler('/ui/Image_view.xml')
+        return handler.to_str()
 
 
 
+class Video(File):
+
+    class_id = 'video'
+    class_title = u'Video'
+    class_description = u'Video'
+    class_icon48 = 'images/Flash48.png'
+    class_icon16 = 'images/Flash16.png'
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    view__sublabel__ = u'View'
+    def view(self):
+        namespace = {}
+        namespace['format'] = self.get_mimetype()
+
+        handler = self.get_handler('/ui/Video_view.xml')
+        return stl(handler, namespace)
+
+
+
+class Flash(File):
+
+    class_id = 'application/x-shockwave-flash'
+    class_title = u'Flash'
+    class_description = u'Document Flash'
+    class_icon48 = 'images/Flash48.png'
+    class_icon16 = 'images/Flash16.png'
+
+
+    view__label__ = u'View'
+    view__sublabel__ = u'View'
+    view__access__ = 'is_allowed_to_view'
+    def view(self, context):
+        handler = self.get_handler('/ui/Flash_view.xml')
+        return stl(handler)
+
+
+###########################################################################
+# Office Documents
+###########################################################################
 class TempDir(object):
 
     def __init__(self, handler):
@@ -153,10 +245,6 @@ class MSWord(OfficeDocument):
 
 
 
-register_object_class(MSWord)
-
-
-
 class MSExcel(OfficeDocument):
 
     class_id = 'application/vnd.ms-excel'
@@ -171,10 +259,6 @@ class MSExcel(OfficeDocument):
 
 
 
-register_object_class(MSExcel)
-
-
-
 class MSPowerPoint(OfficeDocument):
 
     class_id = 'application/vnd.ms-powerpoint'
@@ -185,10 +269,6 @@ class MSPowerPoint(OfficeDocument):
     class_extension = '.ppt'
 
     source_converter = 'ppthtml "%s"'
-
-
-
-register_object_class(MSPowerPoint)
 
 
 
@@ -226,7 +306,6 @@ class OOffice(OfficeDocument):
 
 
 
-
 class OOWriter(OOffice):
 
     class_id = 'application/vnd.sun.xml.writer'
@@ -235,10 +314,6 @@ class OOWriter(OOffice):
     class_icon16 = 'images/OOWriter16.png'
     class_icon48 = 'images/OOWriter48.png'
     class_extension = '.sxw'
-
-
-
-register_object_class(OOWriter)
 
 
 
@@ -253,10 +328,6 @@ class OOCalc(OOffice):
 
 
 
-register_object_class(OOCalc)
-
-
-
 class OOImpress(OOffice):
 
     class_id = 'application/vnd.sun.xml.impress'
@@ -265,10 +336,6 @@ class OOImpress(OOffice):
     class_icon16 = 'images/OOImpress16.png'
     class_icon48 = 'images/OOImpress48.png'
     class_extension = '.sxi'
-
-    
-
-register_object_class(OOImpress)
 
 
 
@@ -285,4 +352,44 @@ class PDF(OfficeDocument):
 
 
 
+###########################################################################
+# Archive (zip, tar)
+###########################################################################
+class Archive(File, iArchive):
+
+    class_id = 'Archive'
+    class_icon16 = 'images/Archive16.png'
+    class_icon48 = 'images/Archive48.png'
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    view__sublabel__ = u'View'
+    def view(self, context):
+        namespace = {}
+        contents = self.get_contents()
+        namespace['contents'] = '\n'.join(contents)
+
+        handler = self.get_handler('/ui/Archive_view.xml')
+        return stl(handler, namespace)
+
+
+
+###########################################################################
+# Register
+###########################################################################
+mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
+mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
+mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
+
+register_object_class(Image)
+register_object_class(Video)
+register_object_class(Flash)
+register_object_class(MSWord)
+register_object_class(MSExcel)
+register_object_class(MSPowerPoint)
+register_object_class(OOWriter)
+register_object_class(OOCalc)
+register_object_class(OOImpress)
 register_object_class(PDF)
+register_object_class(Archive)

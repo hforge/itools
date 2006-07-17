@@ -23,6 +23,7 @@ except ImportError:
 
 # Import from itools
 from Text import Text
+from registry import register_handler_class
 
 
 class RestructuredText(Text):
@@ -54,4 +55,4 @@ class RestructuredText(Text):
         return output
 
 
-Text.register_handler_class(RestructuredText)
+register_handler_class(RestructuredText)

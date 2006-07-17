@@ -29,12 +29,15 @@ from itools.handlers.Text import Text
 from itools.handlers.registry import register_handler_class
 from itools.xml import namespaces, parser
 from itools.web import get_context
-from Handler import Node
 from metadata import Record
 
 
 
 class ListOfUsers(File):
+
+    class_mimetypes = ['text/x-list-of-users']
+    class_extension = 'users'
+
 
     @classmethod
     def get_skeleton(cls, users=[]):
@@ -100,7 +103,7 @@ class Lock(Text):
 
 
 
-class Metadata(Node, File):
+class Metadata(File):
 
     class_title = u'Metadata'
     class_icon48 = 'images/File48.png'

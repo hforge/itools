@@ -23,7 +23,7 @@ import zlib
 
 # Import from itools
 from itools.datatypes import FileName
-from itools import handlers
+from itools.handlers.Folder import Folder as BaseFolder
 from itools.handlers.Text import Text
 from itools import i18n
 from itools.resources import base
@@ -45,7 +45,7 @@ from widgets import Breadcrumb, Table
 
 
 
-class Folder(Handler, handlers.Folder.Folder):
+class Folder(Handler, BaseFolder):
 
     #########################################################################
     # Class metadata
@@ -125,7 +125,7 @@ class Folder(Handler, handlers.Folder.Folder):
 
 
     def _get_handler_names(self):
-        names = handlers.Folder.Folder._get_handler_names(self)
+        names = BaseFolder._get_handler_names(self)
         for name in names:
             if not name.startswith('.'):
                 name, type, language = FileName.decode(name)
@@ -160,7 +160,7 @@ class Folder(Handler, handlers.Folder.Folder):
                 language = languages[0]
             return self.get_handler('%s.%s' % (name, language))
 
-        return handlers.Folder.Folder._get_virtual_handler(self, segment)
+        return BaseFolder._get_virtual_handler(self, segment)
 
 
     def before_set_handler(self, segment, handler, format=None, id=None,

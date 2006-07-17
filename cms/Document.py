@@ -23,8 +23,8 @@ from itools.resources import memory
 from itools.gettext import PO
 from itools.xml import XML
 from itools.stl import stl
+from itools.http.exceptions import Forbidden
 from itools.web import get_context
-from itools.web.exceptions import Forbidden
 
 # Import from ikaaro
 from utils import get_parameters, comeback

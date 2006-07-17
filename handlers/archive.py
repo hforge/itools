@@ -22,6 +22,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from File import File
+from registry import register_handler_class
 
 
 #
@@ -103,7 +104,7 @@ class Archive(File):
         raise NotImplementedError
 
 
-File.register_handler_class(Archive)
+register_handler_class(Archive)
 
 
 
@@ -121,7 +122,7 @@ class ZipArchive(Archive):
         return contents
 
 
-Archive.register_handler_class(ZipArchive)
+register_handler_class(ZipArchive)
 
 
 
@@ -149,4 +150,4 @@ class TarArchive(Archive):
         return contents
 
 
-Archive.register_handler_class(TarArchive)
+register_handler_class(TarArchive)

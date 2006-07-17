@@ -31,8 +31,8 @@ from itools import schemas
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.gettext import domains
+from itools.http.exceptions import Forbidden
 from itools.web import get_context
-from itools.web.exceptions import Forbidden
 
 # Import from itools.cms
 from access import AccessControl
@@ -50,7 +50,7 @@ logger.addHandler(handler)
 
 
 
-class Node(AccessControl, iNode):
+class Node(iNode):
 
     ########################################################################
     # HTTP

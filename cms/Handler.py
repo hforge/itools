@@ -230,7 +230,7 @@ class Node(iNode):
                 if len(block) == 1:
                     return []
                 return block[:]
-         return []
+        return []
 
 
 

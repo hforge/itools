@@ -19,9 +19,11 @@
 import cgi
 
 # Import from itools
+import itools
 from itools.resources import memory
 from itools.handlers.Text import Text as BaseText
 from itools.handlers.rest import RestructuredText as iRestructuredText
+from itools import gettext
 from itools.stl import stl
 from itools.web import get_context
 from itools.web.exceptions import UserError

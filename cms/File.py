@@ -20,7 +20,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import get_reference
-from itools.handlers.File import BaseFile
+from itools.handlers.File import File as BaseFile
 from itools.stl import stl
 from itools.web.exceptions import UserError
 from itools.web import get_context

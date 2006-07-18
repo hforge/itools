@@ -24,7 +24,6 @@ import string
 
 # Import from itools
 import itools
-from itools.resources import get_resource
 from itools.handlers import transactions
 from itools.cms.Handler import Handler
 from itools.cms.root import Root
@@ -63,15 +62,12 @@ def init(parser, options, target):
     else:
         password = options.password
     # Build the instance on memory
-    source = root_class(username='admin', password=password).resource
-
+    source = root_class(username='admin', password=password)
     # Initialize the database
-    instance = get_resource(target)
-    instance.set_resource('database', source)
-    root_resource = instance.get_resource('database')
+    source.save_state_to('%s/database' % target)
 
     # Index everything
-    root = root_class(root_resource)
+    root = root_class('%s/database' % target)
     for handler, context in root.traverse2():
         abspath = handler.get_abspath()
         if handler.name.startswith('.'):

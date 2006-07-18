@@ -22,7 +22,7 @@ import traceback
 
 # Import from itools
 from itools.datatypes import FileName
-from itools.resources.base import Folder as FolderResource
+from itools import vfs
 from itools.handlers.Folder import Folder as FolderHandler
 from itools.handlers.transactions import get_transaction
 from itools.stl import stl
@@ -424,25 +424,24 @@ class Root(WebSite):
     # Update
     #######################################################################
     def update_20060503(self):
+        root = vfs.open(self.uri)
         # Remove ".archive"
-        self.resource.del_resource('.archive')
+        root.remove('.archive')
 
         # Rename ".xxx.metadata" to "xxx.metadata"
-        stack = [self.resource]
+        stack = [root]
         while stack:
             folder = stack.pop()
-            for name in folder.get_resource_names():
-                resource = folder.get_resource(name)
+            for name in folder.get_names():
                 # Update metadata
                 if name.endswith('.metadata') and name != '.metadata':
-                    folder.del_resource(name)
-                    folder.set_resource(name[1:], resource)
+                    folder.move(name, name[1:])
                 # Skip hidden handlers
                 elif name.startswith('.'):
                     continue
                 # Recursive
-                elif isinstance(resource, FolderResource):
-                    stack.append(resource)
+                elif folder.is_folder(name):
+                    stack.append(folder.open(name))
 
 
     def update_20060602(self):

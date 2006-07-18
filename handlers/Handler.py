@@ -47,7 +47,7 @@ class Handler(Node):
 
     # All handlers have a uri and a timestamp, plus the state.
     # The variable class "__slots__" is to be overriden.
-    __slots__ = ['uri', 'timestamp']
+##    __slots__ = ['uri', 'timestamp']
 
 
     def __init__(self, ref=None, **kw):

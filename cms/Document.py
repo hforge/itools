@@ -19,7 +19,6 @@
 import cgi
 
 # Import from itools
-from itools.resources import memory
 from itools.gettext import PO
 from itools.xml import XML
 from itools.stl import stl
@@ -27,7 +26,7 @@ from itools.http.exceptions import Forbidden
 from itools.web import get_context
 
 # Import from ikaaro
-from utils import get_parameters, comeback
+from utils import get_parameters
 import html
 from LocaleAware import LocaleAware
 from registry import register_object_class

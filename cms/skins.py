@@ -20,7 +20,6 @@
 from itools import uri
 from itools import get_abspath
 from itools.datatypes import URI
-from itools.resources import get_resource, memory
 from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML
@@ -323,8 +322,7 @@ register_object_class(Skin)
 skin_registry = {}
 def register_skin(name, skin):
     if isinstance(skin, str):
-        resource = get_resource(skin)
-        skin = Skin(resource)
+        skin = Skin(skin)
     skin_registry[name] = skin
 
 
@@ -354,5 +352,4 @@ class UI(AccessControl, Folder):
 
 
 path = get_abspath(globals(), 'ui')
-resource = get_resource(path)
-ui = UI(resource)
+ui = UI(path)

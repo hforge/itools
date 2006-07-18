@@ -20,6 +20,7 @@ import cgi
 
 # Import from itools
 from itools.handlers.Text import Text as BaseText
+from itools.handlers.python import Python as BasePython
 from itools.handlers.rest import RestructuredText as iRestructuredText
 from itools import gettext
 from itools.stl import stl
@@ -226,7 +227,7 @@ register_object_class(CSS)
 
 
 
-class Python(itools.handlers.python.Python):
+class Python(BasePython):
 
     class_id = 'text/x-python'
     class_icon48 = 'images/Python48.png'

@@ -23,7 +23,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import Path
-from itools import vfs
+from itools.vfs import api as vfs
 from itools.handlers.Handler import Handler
 from itools.handlers import registry
 

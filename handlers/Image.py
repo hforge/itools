@@ -34,7 +34,7 @@ class Image(File):
     class_mimetypes = ['image']
 
 
-    __slots__ = ['resource', 'timestamp', 'data', 'size', 'thumbnails']
+    __slots__ = ['uri', 'timestamp', 'data', 'size', 'thumbnails']
 
 
     def _load_state(self, resource):

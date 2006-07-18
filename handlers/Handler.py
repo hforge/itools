@@ -103,30 +103,8 @@ class Handler(Node):
         self.load_state()
 
 
-    def save_state(self):
-        transaction = get_transaction()
-        transaction.lock()
-        resource = vfs.open(self.uri)
-        try:
-            self._save_state(resource)
-        finally:
-            resource.close()
-            transaction.release()
-
-
-    def save_state_to(self, resource):
-        transaction = get_transaction()
-        transaction.lock()
-        resource.open()
-        try:
-            self._save_state_to(resource)
-        finally:
-            resource.close()
-            transaction.release()
-
-
-    def _save_state(self, resource):
-        self._save_state_to(resource)
+    def save_state(self, uri):
+        self.save_state_to(uri)
 
 
     def is_outdated(self):

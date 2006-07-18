@@ -22,7 +22,7 @@ from __future__ import with_statement
 from datetime import datetime
 
 # Import from itools
-from itools.uri import Path
+from itools.uri import Path, get_absolute_reference
 from itools.vfs import api as vfs
 from base import Handler
 import registry
@@ -78,51 +78,37 @@ class Folder(Handler):
             handler._deep_load()
 
 
-    def _save_state(self, resource):
+    def save_state(self):
         cache = self.cache
         # Remove
+        folder = vfs.open(self.uri)
         for name in self.removed_handlers:
-            resource.del_resource(name)
+            folder.remove(name)
         self.removed_handlers = set()
 
         # Add
         base = self.uri
         for name in self.added_handlers:
-            ref = base.resolve2(name)
-            # First remove the resource if it exists
-            if vfs.exists(ref):
-                vfs.remove(ref)
-            # Add a dummy resource
-            handler = cache[name]
-            if isinstance(handler, Folder):
-                vfs.make_folder(ref)
-            else:
-                vfs.make_file(ref)
-            # Save state to the dummy resource
-            handler.uri = ref
-            with vfs.open(ref) as new_resource:
-                handler._save_state(new_resource)
+            # Remove the handler if it exists
+            if folder.exists(name):
+                folder.remove(name)
+            # Add the handler
+            target = base.resolve2(name)
+            handler = self.get_handler(name)
+            handler.save_state_to(target)
+            handler.uri = target
         self.added_handlers = set()
 
 
-    def _save_state_to(self, resource):
-        # Clean the target
-        for name in resource.get_names():
-            resource.del_resource(name)
-
-        # Add the resources
-        cache = self.cache
-        for name in cache:
-            ref = base.resolve2(name)
-            # Add a dummy resource
-            handler = cache[name]
-            if isinstance(handler, Folder):
-                vfs.make_folder(ref)
-            else:
-                vfs.make_file(ref)
-            # Save state to the dummy resource
-            new_resource = resource.get_resource(name)
-            handler.save_state_to(new_resource)
+    def save_state_to(self, uri):
+        # Create the target folder
+        vfs.make_folder(uri)
+        # Add all the handlers
+        base = get_absolute_reference(uri)
+        for name in self.cache:
+            handler = self.get_handler(name)
+            target = base.resolve2(name)
+            handler.save_state_to(target)
 
 
     #########################################################################

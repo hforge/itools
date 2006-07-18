@@ -375,15 +375,15 @@ class UserFolder(Folder):
     # Skeleton
     #######################################################################
     def get_skeleton(self, users=[]):
-        skeleton = {}
+        Folder.new(self)
+        cache = self.cache
         for username, password in users:
             password = crypt_password(password)
             user = User()
-            skeleton[username] = user
+            cache[username] = user
             metadata = {'owner': username, 'ikaaro:password': password}
             metadata = self.build_metadata(user, **metadata)
-            skeleton['%s.metadata' % username] = metadata
-        return skeleton
+            cache['%s.metadata' % username] = metadata
 
 
     #######################################################################

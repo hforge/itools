@@ -119,26 +119,20 @@ class Root(WebSite):
                        ]
 
 
-    def get_skeleton(self, username=None, password=None):
-        # First call the parent's get_skeleton
-        users = [username]
-        skeleton = WebSite.get_skeleton(self, admins=users)
-        # The catalog, index and search
-        skeleton['.catalog'] = Catalog(fields=self._catalog_fields)
-        # Metadata
-        skeleton['.metadata'] = self.build_metadata(self)
+    def new(self, username=None, password=None):
+        # Call the parent
+        WebSite.new(self, admins=[username])
+
+        # Create sub-handlers
+        cache = self.cache
+        cache['.metadata'] = self.build_metadata(self)
+        cache['.catalog'] = Catalog(fields=self._catalog_fields)
         # Users
         users = UserFolder(users=[(username, password)])
-        skeleton['users'] = users
+        cache['users'] = users
         metadata = self.build_metadata(users, owner=username,
                                        **{'dc:title': {'en': u'Users'}})
-        skeleton['users.metadata'] = metadata
-##        # Message catalog
-##        en_po = PO()
-##        skeleton['en.po'] = en_po
-##        skeleton['en.po.metadata'] = self.build_metadata(en_po)
-        # That's all
-        return skeleton
+        cache['users.metadata'] = metadata
 
 
     def get_catalog_metadata_fields(self):

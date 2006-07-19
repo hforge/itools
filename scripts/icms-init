@@ -30,6 +30,7 @@ from itools.cms.root import Root
 from itools.cms.server import get_config
 from itools.cms.versioning import VersioningAware
 from itools.cms import skins
+from itools.cms.catalog import CatalogAware
 
 
 def init(parser, options, target):
@@ -72,12 +73,14 @@ def init(parser, options, target):
         abspath = handler.get_abspath()
         if handler.name.startswith('.'):
             context.skip = True
-        elif isinstance(handler, skins.UI):
+            continue
+        if isinstance(handler, skins.UI):
             context.skip = True
-        elif isinstance(handler, Handler):
+            continue
+        if isinstance(handler, CatalogAware):
             root.index_handler(handler)
-            if isinstance(handler, VersioningAware):
-                handler.add_to_archive()
+        if isinstance(handler, VersioningAware):
+            handler.commit_revision()
 
     transaction = transactions.get_transaction()
     transaction.commit()

@@ -39,7 +39,7 @@ class Field(object):
 
 class Fields(Text):
 
-    __slots__ = ['resource', 'timestamp', 'fields', 'indexed_fields',
+    __slots__ = ['resource', 'timestamp', 'parent', 'name', 'fields', 'indexed_fields',
                  'field_numbers']
 
 

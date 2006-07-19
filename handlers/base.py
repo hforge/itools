@@ -153,12 +153,15 @@ class Handler(Node):
     class_mimetypes = []
     class_extension = None
 
-    # All handlers have a uri and a timestamp, plus the state.
+    # All handlers have a uri, timestamp, parend and name, plus the state.
     # The variable class "__slots__" is to be overriden.
-    __slots__ = ['uri', 'timestamp']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name']
 
 
     def __init__(self, ref=None, **kw):
+        self.parent = None
+        self.name = ''
+
         self.timestamp = None
         if ref is None:
             # A handler from scratch
@@ -191,7 +194,7 @@ class Handler(Node):
         copy.timestamp = None
         # Copy the state
         for name in cls.__slots__:
-            if name == 'uri' or name == 'timestamp':
+            if name in ('uri', 'timestamp', 'parent', 'name'):
                 continue
             value = getattr(self, name)
             value = deepcopy(value)

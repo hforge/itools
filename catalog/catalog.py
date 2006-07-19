@@ -50,8 +50,8 @@ class Catalog(Handler):
 
     class_version = '20060708'
 
-    __slots__ = ['uri', 'timestamp', 'fields', 'field_numbers', 'indexes',
-                 'documents']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'fields', 'field_numbers', 'indexes', 'documents']
 
 
     def new(self, fields=[]):

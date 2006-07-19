@@ -95,8 +95,8 @@ class Document(XHTML.Document):
     ns_declarations = {}
 
     
-    __slots__ = ['uri', 'timestamp', 'document_type', 'root_element',
-                 'encoding']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'document_type', 'root_element', 'encoding']
 
 
     #########################################################################

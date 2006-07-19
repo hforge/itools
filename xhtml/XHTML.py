@@ -362,7 +362,8 @@ class Document(XML.Document):
 
     namespace = 'http://www.w3.org/1999/xhtml'
 
-    __slots__ = ['uri', 'timestamp', 'document_type', 'root_element']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'document_type', 'root_element']
 
 
     #########################################################################

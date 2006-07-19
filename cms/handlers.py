@@ -39,7 +39,7 @@ class ListOfUsers(File):
     class_mimetypes = ['text/x-list-of-users']
     class_extension = 'users'
 
-    __slots__ = ['uri', 'timestamp', 'usernames']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'usernames']
 
 
     def new(self, users=[]):
@@ -78,7 +78,8 @@ class Lock(Text):
     class_mimetypes = ['text/x-lock']
     class_extension = 'lock'
 
-    __slots__ = ['uri', 'timestamp', 'username', 'lock_timestamp', 'key']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'username', 'lock_timestamp', 'key']
 
 
     def new(self, username=None, **kw):
@@ -107,7 +108,8 @@ class Metadata(File):
     class_title = u'Metadata'
     class_icon48 = 'images/File48.png'
 
-    __slots__ = ['uri', 'timestamp', 'prefixes', 'properties']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'prefixes', 'properties']
 
 
     def new(self, handler_class=None, **kw):

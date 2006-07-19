@@ -83,7 +83,8 @@ class Document(object):
 
 class Documents(Handler):
 
-    __slots__ = ['uri', 'timestamp', 'documents', 'n_documents',
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'documents', 'n_documents',
                  'added_documents', 'removed_documents']
 
 

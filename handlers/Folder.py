@@ -48,7 +48,8 @@ class Folder(Handler):
     class_mimetypes = ['application/x-not-regular-file']
 
     
-    __slots__ = ['cache', 'added_handlers', 'removed_handlers']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'cache', 'added_handlers', 'removed_handlers']
 
 
     def new(self, **kw):

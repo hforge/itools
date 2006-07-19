@@ -333,7 +333,8 @@ class Document(Text.Text):
     # Load
     #######################################################################
 
-    __slots__ = ['uri', 'timestamp', 'document_type', 'root_element']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+                 'document_type', 'root_element']
 
 
     def load_state_from_file(self, file):

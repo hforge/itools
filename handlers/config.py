@@ -25,7 +25,7 @@ class Config(Text):
     class_extension = None
 
     
-    __slots__ = ['uri', 'timestamp', 'values', 'lines']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'values', 'lines']
 
     
     def new(self, **kw):

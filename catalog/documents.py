@@ -72,12 +72,25 @@ number 0, the second block is for the document number 1, and so on.
 
 class Document(object):
     
-    __slots__ = ['fields']
+    __slots__ = ['fields', 'field_numbers']
 
     def __init__(self, *args):
         self.fields = {}
         for field_number, value in enumerate(args):
             self.fields[field_number] = value
+        self.field_numbers = None
+
+
+    def __getattr__(self, name):
+        field_numbers = self.field_numbers
+        if field_numbers is None:
+            raise AttributeError
+        if name not in field_numbers:
+            raise AttributeError
+        n = field_numbers[name]
+        if n not in self.fields:
+            raise AttributeError
+        return self.fields[n]
 
 
 

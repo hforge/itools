@@ -269,6 +269,8 @@ class Catalog(Folder):
         for document in sorted(documents.iteritems(), key=itemgetter(1),
                                reverse=True):
             doc_number, weight = document
-            # Load the IDocument
-            yield self.documents.get_document(doc_number)
+            # Load the dcument
+            document = self.documents.get_document(doc_number)
+            document.field_numbers = self.field_numbers
+            yield document 
 

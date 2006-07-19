@@ -146,7 +146,7 @@ class RoleAware(AccessControl):
 
 
     def get_role(self, name):
-        return self.handler.get_handler('.%s.users' % name)
+        return self.get_handler('.%s.users' % name)
 
 
     def get_roles(self):

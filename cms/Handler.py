@@ -151,7 +151,7 @@ class Node(BaseNode):
 
     def get_mtime(self):
         # XXX Should use the handler timestamp instead?
-        return vfs.get_mtime(self.handler.uri)
+        return vfs.get_mtime(self.uri)
 
     mtime = property(get_mtime, None, None, "")
 
@@ -166,7 +166,7 @@ class Node(BaseNode):
 
 
     def get_human_size(self):
-        uri = self.handler.uri
+        uri = self.uri
         if vfs.is_file(uri):
             bytes = resource.get_size()
             kbytes = bytes / 1024.0

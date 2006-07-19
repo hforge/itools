@@ -290,7 +290,7 @@ class OOffice(OfficeDocument):
 
     def view(self, context):
         namespace = {}
-        pgraphs = self.handler.to_text()
+        pgraphs = self.to_text()
         pgraphs = [ l for l in pgraphs.split('\n') if l and len(l) > 1 ]
         namespace['pgraphs'] = pgraphs
 
@@ -358,7 +358,7 @@ class Archive(File, iArchive):
     view__sublabel__ = u'View'
     def view(self, context):
         namespace = {}
-        contents = self.handler.get_contents()
+        contents = self.get_contents()
         namespace['contents'] = '\n'.join(contents)
 
         handler = self.get_handler('/ui/Archive_view.xml')

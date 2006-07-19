@@ -374,7 +374,7 @@ class UserFolder(Folder):
     #######################################################################
     # Skeleton
     #######################################################################
-    def get_skeleton(self, users=[]):
+    def new(self, users=[]):
         Folder.new(self)
         cache = self.cache
         for username, password in users:

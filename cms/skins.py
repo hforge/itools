@@ -20,6 +20,7 @@
 from itools import uri
 from itools import get_abspath
 from itools.datatypes import URI
+from itools.handlers.File import File
 from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML

@@ -260,7 +260,7 @@ class Handler(Node):
     # XXX Obsolete.
     # To be removed by 0.5, use instead "self.resource.get_mimetype".
     def get_mimetype(self):
-        return self.resource.get_mimetype()
+        return vfs.get_mimetype(self.uri)
 
     mimetype = property(get_mimetype, None, None, '')
 

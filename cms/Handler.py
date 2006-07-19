@@ -55,6 +55,14 @@ class Node(BaseNode):
     ########################################################################
     # HTTP
     ########################################################################
+    def get_method(self, name):
+        try:
+            method = getattr(self, name)
+        except AttributeError:
+            return None
+        return method
+
+
     GET__access__ = 'is_allowed_to_view'
     def GET(self, context):
         method = self.get_firstview()

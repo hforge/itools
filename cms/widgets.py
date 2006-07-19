@@ -317,14 +317,11 @@ class Node(object):
         if count == 0:
             # always recurse root
             self.in_path = True
-        elif here.get_prefix(handler_abspath) == '.':
-            # no common part, so not in path
-            pass
-        elif here.startswith(handler_abspath):
-            # on the way
-            self.in_path = True
         else:
-            pass
+            prefix = here.get_prefix(handler_abspath)
+            if prefix != '.':
+                # on the way
+                self.in_path = True
 
         # recurse children in our way
         if self.in_path:

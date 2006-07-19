@@ -19,11 +19,11 @@
 from operator import attrgetter
 
 # Import from itools
-from itools.handlers.Folder import Folder
 from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
 from handlers import ListOfUsers
+from Folder import Folder
 
 
 class AccessControl(AccessControlBase):
@@ -139,6 +139,13 @@ class RoleAware(AccessControl, Folder):
     #########################################################################
     # API
     #########################################################################
+    def _get_handler(self, segment, uri):
+        name = segment.name
+        if name.endswith('.users'):
+            return ListOfUsers(uri)
+        return Folder._get_handler(self, segment, uri)
+
+
     def has_role(self, name):
         for role in self.__roles__:
             if role['name'] == name:

@@ -32,9 +32,9 @@ from itools.xhtml import XHTML
 from itools.gettext import domains
 from itools.http.exceptions import Forbidden
 from itools.web import get_context
+from itools.web.access import AccessControl
 
 # Import from itools.cms
-from access import AccessControl
 from catalog import CatalogAware
 from LocaleAware import LocaleAware
 import webdav
@@ -126,8 +126,6 @@ class Node(BaseNode):
 
 
     def get_access_control(self):
-        from itools.web.access import AccessControl
-
         node = self
         while node is not None:
             if isinstance(node, AccessControl):

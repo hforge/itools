@@ -143,7 +143,7 @@ class Node(object):
 
 
 
-class Handler(object):
+class Handler(Node):
     """
     This class represents a resource handler; where a resource can be
     a file or a directory, and is identified by a URI. It is used as a

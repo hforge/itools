@@ -20,12 +20,11 @@ import cgi
 import logging
 
 # Import from itools
-import itools
 from itools import get_abspath
 from itools import uri
 from itools.datatypes import QName
 from itools import vfs
-from itools.handlers.Handler import Node as iNode
+from itools.handlers.base import Node as BaseNode, Handler as BaseHandler
 from itools.handlers.transactions import get_transaction
 from itools import schemas
 from itools.stl import stl
@@ -49,7 +48,7 @@ logger.addHandler(handler)
 
 
 
-class Node(iNode):
+class Node(BaseNode):
 
     class_views = []
 
@@ -238,8 +237,7 @@ class Node(iNode):
 
 
 
-class Handler(itools.handlers.Handler.Handler, Node, domains.DomainAware,
-              CatalogAware):
+class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
 
     def before_commit(self):
         from root import Root

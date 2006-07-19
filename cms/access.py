@@ -242,7 +242,7 @@ class RoleAware(AccessControl, Folder):
     permissions_form__sublabel__ = u"Permissions"
     def permissions_form(self, context):
         root = context.root
-        userfolder = root.get_object('users')
+        userfolder = root.get_handler('users')
         namespace = {}
 
         members = set()
@@ -251,7 +251,7 @@ class RoleAware(AccessControl, Folder):
             handler = self.get_role(rolename)
             members = members.union(handler.get_usernames())
 
-        users = [userfolder.get_object(u) for u in members]
+        users = [userfolder.get_handler(u) for u in members]
         key = attrgetter(self._get_members_sort_key())
         users.sort(key=key)
         namespace['users'] = []
@@ -299,7 +299,7 @@ class RoleAware(AccessControl, Folder):
         # Permissions to change
         if context.has_form_value('update'):
             root = context.root
-            userfolder = root.get_object('users')
+            userfolder = root.get_handler('users')
             for key in context.get_form_keys():
                 if key in ['delusers', 'addusers', 'update', 'delete', 'add']:
                     continue

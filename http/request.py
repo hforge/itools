@@ -239,7 +239,10 @@ class Request(Message):
 
     # XXX Remove? Use "get_parameter" instead?
     def get_form(self):
-        return self.form
+        if self.method in ('GET', 'HEAD'):
+                return self.uri.query
+        # XXX What parameters with the fields defined in the query?
+        return self.body
 
     form = property(get_form, None, None, '')
 

@@ -161,6 +161,7 @@ class Handler(Node):
     def __init__(self, ref=None, **kw):
         self.parent = None
         self.name = ''
+        self.real_handler = None
 
         self.timestamp = None
         if ref is None:

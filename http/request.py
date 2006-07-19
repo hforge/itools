@@ -156,7 +156,7 @@ class Request(Message):
             if body:
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
-                    self.body = uri.generic.Query.decode(body)
+                    self.body = Query.decode(body)
                 elif type.startswith('multipart/'):
                     boundary = type_parameters.get('boundary')
                     boundary = '--%s' % boundary

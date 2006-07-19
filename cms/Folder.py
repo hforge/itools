@@ -267,6 +267,8 @@ class Folder(Handler, BaseFolder):
             # Skip hidden handlers
             if name.startswith('.'):
                 continue
+            if name.endswith('.metadata'):
+                continue
 
             filename, type, language = FileName.decode(name)
             if language is not None:

@@ -148,8 +148,7 @@ class Node(BaseNode):
 
 
     def get_mtime(self):
-        # XXX Should use the handler timestamp instead?
-        return vfs.get_mtime(self.uri)
+        return self.timestamp
 
     mtime = property(get_mtime, None, None, "")
 

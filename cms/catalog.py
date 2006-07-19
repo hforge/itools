@@ -37,7 +37,7 @@ class CatalogAware(object):
             'text': self.to_text(),
             'owner': get_property('owner'),
             'title_or_name': title or name,
-            'mtime': str(vfs.get_mtime(self.uri).strftime('%Y%m%d%H%M%S')),
+            'mtime': str(self.timestamp.strftime('%Y%m%d%H%M%S')),
             }
 
         parent = self.parent

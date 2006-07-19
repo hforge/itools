@@ -50,7 +50,7 @@ class Catalog(Handler):
 
     class_version = '20060708'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'fields', 'field_numbers', 'indexes', 'documents']
 
 

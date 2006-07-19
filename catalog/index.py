@@ -447,7 +447,7 @@ class _Index(object):
 ###########################################################################
 class Index(Handler):
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  '_index', 'added_terms', 'removed_terms']
 
 

@@ -48,7 +48,7 @@ class Folder(Handler):
     class_mimetypes = ['application/x-not-regular-file']
 
     
-    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'cache', 'added_handlers', 'removed_handlers']
 
 

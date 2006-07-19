@@ -40,7 +40,7 @@ class File(Handler):
     class_resource_type = 'file'
 
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'data']
+    __slots__ = ['uri', 'timestamp', 'parent', 'real_handler', 'name', 'data']
 
 
     def new(self, data=''):

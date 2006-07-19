@@ -34,7 +34,7 @@ class Image(File):
     class_mimetypes = ['image']
 
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'data', 'size', 'thumbnails']
 
 

@@ -333,7 +333,7 @@ class Document(Text.Text):
     # Load
     #######################################################################
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'document_type', 'root_element']
 
 

@@ -495,7 +495,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
         parent = self.parent
         if parent is None:
             return None
-        metadata_name = '.%s.metadata' % self.name
+        metadata_name = '%s.metadata' % self.name
         if parent.has_handler(metadata_name):
             return parent.get_handler(metadata_name)
         return None

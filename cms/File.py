@@ -208,3 +208,4 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
 
 register_object_class(File)
+register_object_class(File, format="application/octet-stream")

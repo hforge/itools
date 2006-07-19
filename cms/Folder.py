@@ -868,7 +868,7 @@ class Folder(Handler, BaseFolder):
             return stl(handler, namespace)
 
         else:
-            handler_class = self.get_handler_class(type)
+            handler_class = get_object_class(type)
             return handler_class.new_instance_form()
 
 

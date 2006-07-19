@@ -19,6 +19,7 @@
 import cgi
 
 # Import from itools
+from itools import i18n
 from itools.handlers.Text import Text as BaseText
 from itools.handlers.python import Python as BasePython
 from itools.handlers.rest import RestructuredText as iRestructuredText
@@ -26,8 +27,6 @@ from itools import gettext
 from itools.stl import stl
 from itools.web import get_context
 from itools.xhtml.XHTML import Document
-
-# Import from iKaaro
 from utils import get_parameters
 from File import File
 from registry import register_object_class

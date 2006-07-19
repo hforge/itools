@@ -202,8 +202,8 @@ class Root(WebSite):
         return groups
 
 
-    def get_document_types(self):
-        return WebSite.get_document_types(self) + [WebSite]
+##  def get_document_types(self):
+##      return WebSite.get_document_types(self) + [WebSite]
 
 
     ########################################################################

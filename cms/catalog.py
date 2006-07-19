@@ -15,7 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Import from itools.cms
+# Import from itools
+from itools import vfs
 from workflow import WorkflowAware
 
 
@@ -36,7 +37,7 @@ class CatalogAware(object):
             'text': self.to_text(),
             'owner': get_property('owner'),
             'title_or_name': title or name,
-            'mtime': str(self.resource.get_mtime().strftime('%Y%m%d%H%M%S')),
+            'mtime': str(vfs.get_mtime(self.uri).strftime('%Y%m%d%H%M%S')),
             }
 
         parent = self.parent

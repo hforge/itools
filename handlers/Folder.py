@@ -201,6 +201,8 @@ class Folder(Handler):
                 # Hit, reload the handler if needed
                 if handler.is_outdated():
                     handler.load_state()
+            # Next
+            here = handler
         return here
 
 

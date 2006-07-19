@@ -111,11 +111,10 @@ class Folder(Handler, BaseFolder):
     def _get_handler(self, segment, uri):
         name = segment.name
         # Metadata
-        if name.startswith('.'):
-            if name.endswith('.metadata'):
-                return Metadata(uri)
-            elif name.endswith('.lock'):
-                return Lock(uri)
+        if name.endswith('.metadata'):
+            return Metadata(uri)
+        if name.endswith('.lock'):
+            return Lock(uri)
         # Get the format
         if self.has_handler('%s.metadata' % name):
             metadata = self.get_handler('%s.metadata' % name)

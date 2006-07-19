@@ -141,8 +141,7 @@ class Folder(Handler, BaseFolder):
     def _get_virtual_handler(self, segment):
         name = segment.name
 
-        languages = [ x.split('.')[-1]
-                      for x in self.resource.get_resource_names()
+        languages = [ x.split('.')[-1] for x in vfs.get_names(self.uri)
                       if x.startswith(name) ]
         languages = [ x for x in languages if x in i18n.languages ]
 

@@ -20,6 +20,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import get_reference
+from itools import vfs
 from itools.handlers.File import File as BaseFile
 from itools.stl import stl
 from itools.web import get_context
@@ -70,7 +71,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         """
         Returns the size of this object.
         """
-        return self.resource.get_size()
+        return vfs.get_size(self.uri)
 
 
     #######################################################################
@@ -123,15 +124,13 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
         # Get the context, request and response
         request, response = context.request, context.response
-        # Get the resource
-        resource = self.resource
 
         uri = context.uri
         uri_string = '%s://%s/%s' % (uri.scheme, uri.authority, uri.path[:-1])
         uri = get_reference(uri_string)
         r = ['url:%s' % str(uri),
              'meta_type:toto', # XXX Maybe something more meaningful than toto?
-             'content_type:%s' % resource.get_mimetype(),
+             'content_type:%s' % self.get_mimetype(),
              'cookie:%s' % request.get_cookies_as_str()]
 
         title = self.get_property('dc:title')

@@ -165,7 +165,7 @@ class Node(BaseNode):
     def get_human_size(self):
         uri = self.uri
         if vfs.is_file(uri):
-            bytes = resource.get_size()
+            bytes = vfs.get_size(uri)
             kbytes = bytes / 1024.0
             if kbytes >= 1024:
                 mbytes = kbytes / 1024.0

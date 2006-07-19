@@ -174,7 +174,7 @@ class Node(BaseNode):
             else:
                 size = self.gettext(u'%.01f KB') % kbytes
         else:
-            size = len([ x for x in resource.get_names()
+            size = len([ x for x in vfs.get_names(self.uri)
                          if not x.startswith('.') ])
             size = self.gettext(u'%d obs') % size
 

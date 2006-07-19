@@ -83,6 +83,11 @@ class Folder(object):
         return fs.get_mimetype(reference)
 
 
+    def get_size(self, reference):
+        fs, reference = self.get_fs_and_reference(reference)
+        return fs.get_size(reference)
+
+
     def make_file(self, reference):
         fs, reference = self.get_fs_and_reference(reference)
         return fs.make_file(reference)

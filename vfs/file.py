@@ -68,6 +68,12 @@ class FileFS(BaseFS):
 
 
     @staticmethod
+    def get_size(reference):
+        path = str(reference.path)
+        return os.path.getsize(path)
+
+
+    @staticmethod
     def make_file(reference):
         path = str(reference.path)
         if os.path.exists(path):

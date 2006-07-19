@@ -57,6 +57,10 @@ def get_mimetype(reference):
     return cwd.get_mimetype(reference)
 
 
+def get_size(reference):
+    return cwd.get_size(reference)
+
+
 def make_file(reference):
     return cwd.make_file(reference)
 

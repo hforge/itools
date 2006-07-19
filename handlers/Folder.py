@@ -140,7 +140,7 @@ class Folder(Handler):
 
 
     def _get_handler(self, segment, uri):
-        handler_class = here.get_handler_class(uri)
+        handler_class = self.get_handler_class(uri)
         return handler_class(uri)
 
 

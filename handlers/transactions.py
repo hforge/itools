@@ -19,6 +19,9 @@
 import datetime
 import thread
 
+# Import from itools
+from itools import vfs
+
 
 thread_lock = thread.allocate_lock()
 
@@ -44,12 +47,9 @@ class Transaction(set):
         try:
             # Errors should not happen in this stage.
             for handler in self:
-                resource = handler.resource
-                if resource.get_mtime() is not None:
-                    resource.open()
-                    handler._save_state(resource)
-                    resource.close()
-                    handler.timestamp = resource.get_mtime()
+                mtime = vfs.get_mtime(handler.uri)
+                if mtime is not None:
+                    handler.save_state()
         except:
             # Rollback the transaction, so handlers state will be consistent.
             # Note that the resource layer maybe incosistent anyway, true

@@ -73,8 +73,8 @@ class Root(WebSite):
         context.styles = []
         context.scripts = []
         # Reload the root handler if needed
-        if self.handler.is_outdated():
-            self.handler.load_state()
+        if self.is_outdated():
+            self.load_state()
 
 
     def get_user(self, name):

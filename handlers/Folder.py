@@ -176,7 +176,7 @@ class Folder(Handler):
             # Check wether the resource exists or not
             if name not in here.cache:
                 # Virtual handler
-                handler = self._get_virtual_handler(segment)
+                handler = here._get_virtual_handler(segment)
                 handler = build_virtual_handler(handler)
                 # Set parent and name
                 handler.parent = here

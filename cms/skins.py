@@ -337,11 +337,11 @@ class UI(AccessControl, Folder):
         return isinstance(object, File) and method_name == 'GET'
 
 
-    def _get_handler(self, segment, resource):
+    def _get_handler(self, segment, uri):
         name = segment.name
         if name in skin_registry:
             return skin_registry[name]
-        return Folder._get_handler(self, segment, resource)
+        return Folder._get_handler(self, segment, uri)
 
 
     def _get_virtual_handler(self, segment):

@@ -119,8 +119,8 @@ class Folder(Handler):
         return self.cache.keys()
 
 
-    def get_handler_class(self, segment, resource):
-        return registry.get_handler_class(resource)
+    def get_handler_class(self, uri):
+        return registry.get_handler_class(uri)
 
 
     def _get_virtual_handler(self, segment):
@@ -131,6 +131,12 @@ class Folder(Handler):
         """
         raise LookupError, 'the resource "%s" does not exist' % segment.name
 
+
+    def _get_handler(self, segment, uri):
+        handler_class = here.get_handler_class(uri)
+        return handler_class(uri)
+
+        
 
     #########################################################################
     # API (public)
@@ -193,10 +199,8 @@ class Folder(Handler):
             handler = here.cache[name]
             if handler is None:
                 # Miss
-                resource = here.resource.get_resource(name)
-                handler_class = here.get_handler_class(segment, resource)
-                handler = handler_class(resource)
-                # Update the cache
+                uri = here.uri.resolve2(str(segment))
+                handler = here._get_handler(segment, uri)
                 here.cache[name] = handler
             else:
                 # Hit, reload the handler if needed

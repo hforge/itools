@@ -23,6 +23,7 @@ import zlib
 
 # Import from itools
 from itools.datatypes import FileName
+from itools import vfs
 from itools.handlers.Folder import Folder as BaseFolder
 ##from itools.handlers.registry import build_handler
 from itools.handlers.Text import Text
@@ -107,23 +108,23 @@ class Folder(Handler, BaseFolder):
         return Handler.GET(self, context)
 
 
-    def _get_handler(self, segment, resource):
+    def _get_handler(self, segment, uri):
         name = segment.name
         # Metadata
         if name.startswith('.'):
             if name.endswith('.metadata'):
-                return Metadata(resource)
+                return Metadata(uri)
             elif name.endswith('.lock'):
-                return Lock(resource)
+                return Lock(uri)
         # Get the format
         if self.has_handler('%s.metadata' % name):
             metadata = self.get_handler('%s.metadata' % name)
             format = metadata.get_property('format')
         else:
-            format = resource.get_mimetype()
+            format = vfs.get_mimetype(uri)
 
         cls = get_object_class(format)
-        return cls(resource)
+        return cls(uri)
 
 
     def _get_handler_names(self):

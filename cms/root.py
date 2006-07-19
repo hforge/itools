@@ -169,14 +169,14 @@ class Root(WebSite):
         return WebSite._get_handler_names(self) + ['ui']
 
 
-    def _get_handler(self, segment, resource):
+    def _get_handler(self, segment, uri):
         name = segment.name
 
         if name == '.catalog':
-            return Catalog(resource)
+            return Catalog(uri)
         elif name == '.archive':
-            return FolderHandler(resource)
-        return WebSite._get_handler(self, segment, resource)
+            return FolderHandler(uri)
+        return WebSite._get_handler(self, segment, uri)
 
 
     ########################################################################

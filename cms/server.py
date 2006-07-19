@@ -52,7 +52,7 @@ def get_root(target):
     format = metadata.get_property('format')
     # Build and return the root handler
     cls = registry.get_object_class(format)
-    return cls('%s/database')
+    return cls('%s/database' % target)
 
 
 

@@ -201,7 +201,8 @@ class Handler(Node):
         cls = self.__class__
         copy = object.__new__(cls)
         copy.uri = None
-        copy.timestamp = None
+        copy.timestamp = datetime.now()
+        copy.real_handler = None
         # Copy the state
         for name in cls.__slots__:
             if name in ('uri', 'timestamp', 'parent', 'name', 'real_handler'):

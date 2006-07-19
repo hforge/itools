@@ -194,6 +194,10 @@ class Folder(Handler):
                 # Miss
                 uri = here.uri.resolve2(str(segment))
                 handler = here._get_handler(segment, uri)
+                # Set parent and name
+                handler.parent = here
+                handler.name = name
+                # Update the cache
                 here.cache[name] = handler
             else:
                 # Hit, reload the handler if needed
@@ -219,7 +223,11 @@ class Folder(Handler):
 
     def get_handler_names(self, path='.'):
         container = self.get_handler(path)
-        return container.cache.keys()
+        return container._get_handler_names()
+
+
+    def _get_handler_names(self):
+        return self.cache.keys()
 
 
     def get_handlers(self, path='.'):

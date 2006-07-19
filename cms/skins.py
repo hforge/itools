@@ -260,7 +260,7 @@ class Skin(Folder):
         namespace['navigation'] = self.get_navigation_menu(context)
 
         # Languages
-        namespace['content_languages'] = self.get_content_languages(context)
+##        namespace['content_languages'] = self.get_content_languages(context)
 
         # Breadcrumb
         namespace['breadcrumb'] = self.get_breadcrumb(context)

@@ -153,6 +153,7 @@ class Server(object):
                     self.access_log.close()
                 if self.error_log is not None:
                     self.error_log.close()
+                break
             except:
                 self.log_error()
 

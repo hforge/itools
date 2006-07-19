@@ -23,23 +23,11 @@ import sys
 
 # Import from itools
 import itools
-from itools.resources import get_resource
 from itools.cms.server import Server
 
 
 
 def start(parser, options, target):
-    # Check wether the instance uses the filesystem (not ZODB) (XXX, to be
-    # removed by 0.14).
-    instance = get_resource(target)
-    if instance.has_resource('database.fs'):
-        print ('The database must be moved from the ZODB to the filesystem,'
-               ' type:')
-        print
-        print '    $ icms-update <instance>'
-        print
-        return
-
     # Check for database consistency
     state = open('%s/state' % target).read()
     if state != 'OK':

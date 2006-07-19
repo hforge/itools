@@ -152,6 +152,8 @@ class Documents(Folder):
 
     def save_state(self):
         self._save_state(self.uri)
+        # Update the timestamp
+        self.timestamp = vfs.get_mtime(self.uri)
 
 
     def save_state_to(self, uri):

@@ -104,6 +104,8 @@ class Folder(Handler):
             handler.save_state_to(target)
             handler.uri = target
         self.added_handlers = set()
+        # Update the timestamp
+        self.timestamp = vfs.get_mtime(self.uri)
 
 
     def save_state_to(self, uri):

@@ -694,5 +694,6 @@ def set_template_prefix(handler, offset, encoding='UTF-8'):
             raise ValueError, 'unexpected value "%s"' % node
 
     data = ''.join(data)
-    resource = memory.File(data)
-    return Document(resource)
+    document = Document()
+    document.load_state_from_string(data)
+    return document

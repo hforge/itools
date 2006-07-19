@@ -72,9 +72,10 @@ number 0, the second block is for the document number 1, and so on.
 
 class Document(object):
     
-    __slots__ = ['fields', 'field_numbers']
+    __slots__ = ['__number__', 'fields', 'field_numbers']
 
-    def __init__(self, *args):
+    def __init__(self, n, *args):
+        self.__number__ = n
         self.fields = {}
         for field_number, value in enumerate(args):
             self.fields[field_number] = value
@@ -198,7 +199,7 @@ class Documents(Folder):
 
     def get_document(self, doc_n):
         if doc_n not in self.documents:
-            document = Document()
+            document = Document(doc_n)
             # Load document from the documents file
             base = vfs.open(self.uri)
             index_file = base.open('index', 'r')

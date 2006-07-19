@@ -163,7 +163,7 @@ class Catalog(Folder):
     def index_document(self, document):
         # Create the document to index
         doc_number = self.documents.n_documents
-        catalog_document = Document()
+        catalog_document = Document(doc_number)
 
         # Define the function to get values from the document
         if isinstance(document, dict):

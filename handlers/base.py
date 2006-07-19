@@ -195,7 +195,8 @@ class Handler(Node):
 
     def copy_handler(self):
         # Deep load
-        self._deep_load()
+        if self.uri is not None:
+            self._deep_load()
         # Create and initialize the instance
         cls = self.__class__
         copy = object.__new__(cls)

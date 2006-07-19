@@ -163,14 +163,15 @@ class Handler(Node):
         self.name = ''
         self.real_handler = None
 
-        self.timestamp = None
         if ref is None:
             # A handler from scratch
             self.uri = None
             self.new(**kw)
+            self.timestamp = None
         else:
             # Calculate the URI
             self.uri = uri.get_absolute_reference(ref)
+            ##self.timestamp = None
 
 
     def __getattr__(self, name):

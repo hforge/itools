@@ -136,7 +136,6 @@ class Folder(Handler):
         handler_class = here.get_handler_class(uri)
         return handler_class(uri)
 
-        
 
     #########################################################################
     # API (public)
@@ -337,10 +336,11 @@ class Folder(Handler):
 def build_virtual_handler(handler):
     virtual_handler = Handler.__new__(handler.__class__)
 
-    # XXX Use __slots__ instead of "state"
-    virtual_handler.resource = handler.resource
-    virtual_handler.state = handler.state
-    virtual_handler.timestamp = handler.timestamp
+    for name in handler.__slots__:
+        if name in ('parent', 'name', 'real_handler'):
+            continue
+        value = getattr(handler, name)
+        setattr(virtual_handler, name, value)
 
     # Keep a reference to the real handler
     virtual_handler.real_handler = handler

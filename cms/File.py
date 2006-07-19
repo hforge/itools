@@ -59,7 +59,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     #######################################################################
     # Versioning
     def before_commit(self):
-        Object.before_commit(self)
+        Handler.before_commit(self)
         self.commit_revision()
 
 

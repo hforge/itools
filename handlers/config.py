@@ -35,7 +35,7 @@ class Config(Text):
         self.lines = []
 
 
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         values = {}
         lines = []
         for line in file.readlines():

@@ -47,7 +47,7 @@ class ListOfUsers(File):
         self.usernames = set(users)
 
 
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         self.usernames = set()
         for username in file.readlines():
             username = username.strip()
@@ -89,7 +89,7 @@ class Lock(Text):
         self.key = '%s-%s-00105A989226:%.03f' % (random(), random(), time())
 
 
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         username, timestamp, key = file.read().strip().split('\n')
         self.username = username
         # XXX backwards compatibility: remove microseconds first
@@ -138,7 +138,7 @@ class Metadata(File):
         self.properties = properties
 
 
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         # Keep the namespace prefixes
         self.prefixes = set()
 

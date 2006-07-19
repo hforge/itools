@@ -185,6 +185,14 @@ class Handler(Node):
     ########################################################################
     # API
     ########################################################################
+    def load_state(self):
+        raise NotImplementedError
+
+
+    def load_state_from(self, uri):
+        raise NotImplementedError
+
+
     def copy_handler(self):
         # Deep load
         self._deep_load()

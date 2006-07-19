@@ -119,7 +119,7 @@ class Document(XHTML.Document):
     #######################################################################
     # Load/Save
     #######################################################################
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         self.encoding = 'UTF-8'
         self.document_type = None
         children = []

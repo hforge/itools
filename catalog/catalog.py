@@ -24,7 +24,7 @@ from operator import itemgetter
 # Import from itools
 from itools.uri import get_absolute_reference
 from itools import vfs
-from itools.handlers.base import Handler
+from itools.handlers.Folder import Folder
 from index import Index
 from documents import Documents, Document
 from analysers import get_analyser
@@ -46,7 +46,7 @@ class Field(object):
 
 
 
-class Catalog(Handler):
+class Catalog(Folder):
 
     class_version = '20060708'
 
@@ -78,7 +78,7 @@ class Catalog(Handler):
     #########################################################################
     # Load / Save
     #########################################################################
-    def load_state(self):
+    def _load_state(self):
         self.fields = []
         self.field_numbers = {}
         self.indexes = []

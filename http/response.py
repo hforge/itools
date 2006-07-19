@@ -103,7 +103,7 @@ class Response(Message):
         self.cookies = {}
 
 
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         # The status line
         line = file.readline()
         http_version, status_code, status_message = line.split(' ', 2)

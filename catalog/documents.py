@@ -20,7 +20,7 @@ from __future__ import with_statement
 
 # Import from itools
 from itools import vfs
-from itools.handlers.base import Handler
+from itools.handlers.Folder import Folder
 from IO import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
                 NULL)
@@ -81,7 +81,7 @@ class Document(object):
 
 
 
-class Documents(Handler):
+class Documents(Folder):
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'documents', 'n_documents',
@@ -100,7 +100,7 @@ class Documents(Handler):
     ######################################################################
     # Load/Save
     ######################################################################
-    def load_state(self):
+    def _load_state(self):
         base = vfs.open(self.uri)
         with base.open('index') as index_file:
             self.documents = {}

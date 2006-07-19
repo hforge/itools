@@ -50,22 +50,25 @@ class File(Handler):
     #########################################################################
     # Load / Save
     #########################################################################
+    def _load_state_from_file(self, file):
+        """Method to be overriden by sub-classes."""
+        self.data = file.read()
+
+
     def load_state(self):
         with vfs.open(self.uri, 'r') as file:
-            self.load_state_from_file(file)
+            self._load_state_from_file(file)
         self.timestamp = vfs.get_mtime(self.uri)
 
 
     def load_state_from(self, uri):
-        file = vfs.open(uri)
-        get_transaction().add(self)
-        with file:
+        with vfs.open(uri) as file:
             self.load_state_from_file(file)
-        self.timestamp = datetime.now()
 
 
     def load_state_from_file(self, file):
-        self.data = file.read()
+        self.set_changed()
+        self._load_state_from_file(file)
 
 
     def load_state_from_string(self, string):

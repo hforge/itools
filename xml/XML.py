@@ -337,7 +337,7 @@ class Document(Text.Text):
                  'document_type', 'root_element']
 
 
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         """
         Builds a tree made of elements and raw data.
         """

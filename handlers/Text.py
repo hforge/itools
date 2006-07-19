@@ -35,7 +35,7 @@ class Text(File):
         self.encoding = 'utf-8'
 
 
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         data = file.read()
         self.encoding = self.guess_encoding(data)
         self.data = unicode(data, self.encoding)

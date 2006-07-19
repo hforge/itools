@@ -20,7 +20,7 @@ from __future__ import with_statement
 
 # Import from itools
 from itools import vfs
-from itools.handlers.base import Handler
+from itools.handlers.Folder import Folder
 from IO import (decode_character, encode_character, decode_link, encode_link,
                 decode_uint32, encode_uint32, encode_version, NULL)
 
@@ -445,7 +445,7 @@ class _Index(object):
 ###########################################################################
 # Handler
 ###########################################################################
-class Index(Handler):
+class Index(Folder):
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  '_index', 'added_terms', 'removed_terms']
@@ -459,7 +459,7 @@ class Index(Handler):
         self.removed_terms = {}
 
 
-    def load_state(self):
+    def _load_state(self):
         base = vfs.open(self.uri)
         tree_file = base.open('tree')
         docs_file = base.open('docs')

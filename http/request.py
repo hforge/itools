@@ -73,7 +73,7 @@ class Request(Message):
     #########################################################################
     # Load
     #########################################################################
-    def load_state_from_file(self, file):
+    def _load_state_from_file(self, file):
         list(self.non_blocking_load(file.read))
 
 

@@ -19,6 +19,7 @@
 from operator import attrgetter
 
 # Import from itools
+from itools.handlers.Folder import Folder
 from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
@@ -75,7 +76,7 @@ class AccessControl(AccessControlBase):
 
 
 
-class RoleAware(AccessControl):
+class RoleAware(AccessControl, Folder):
     """
     This base class implements access control based on the concept of roles.
     Includes a user interface.
@@ -161,16 +162,13 @@ class RoleAware(AccessControl):
         return ['.%s' % r for r in self.get_role_names()]
 
 
-    def get_skeleton(self, **kw):
-        skeleton = {}
-
-        # build roles
+    def new(self, **kw):
+        Folder.new(self)
+        cache = self.cache
         for role in self.get_roles():
             rolename = role['name']
             users = kw.get(rolename, [])
-            skeleton['.%s.users' % rolename] = ListOfUsers(users=users)
-
-        return skeleton
+            cache['.%s.users' % rolename] = ListOfUsers(users=users)
 
 
     def is_in_role(self, rolename, username=None):

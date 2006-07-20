@@ -284,7 +284,7 @@ class Breadcrumb(object):
 class Node(object):
 
     def __init__(self, handler, depth=None, count=None):
-        from Folder import Folder as DatabaseFolder
+        from Folder import Folder
 
         if depth is None:
             raise ValueError, 'calling Node without a maximum depth'
@@ -325,8 +325,13 @@ class Node(object):
 
         # recurse children in our way
         if self.in_path:
-            self.children = [self.__class__(h, depth=depth, count=count + 1)
-                for h in handler.search_handlers(handler_class=DatabaseFolder)]
+            user = context.user
+            self.children = []
+            for h in handler.search_handlers(handler_class=Folder):
+                ac = h.get_access_control()
+                if ac.is_allowed_to_view(user, h):
+                    node = self.__class__(h, depth=depth, count=count + 1)
+                    self.children.append(node)
 
         # sort lexicographically by title
         self.children.sort(key=attrgetter('title'))

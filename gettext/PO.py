@@ -140,6 +140,9 @@ class PO(Text):
     class_extension = 'po'
 
 
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'messages', 'lines', 'encoding']
+
     def new(self, title=''):
         # XXX Old style (like in the "get_skeleton" times)
         skeleton = self.get_skeleton(title)
@@ -282,7 +285,7 @@ class PO(Text):
                         if key == 'Content-Type':
                             mimetype, charset = value.split(';')
                             charset = charset.strip()
-                            self._encoding = charset[len('charset='):]
+                            self.encoding = charset[len('charset='):]
                 elif line_type == BLANK:
                     # End of the entry
                     id = ''.join(msgid)
@@ -311,7 +314,7 @@ class PO(Text):
                     raise POSyntaxError(line_number, line_type)
 
 
-    def _load_state(self, resource):
+    def _load_state_from_file(self, file):
         """
         A PO file is made of entries, where entries are separated by one
         or more blank lines. Each entry consists of a msgid and a msgstr,
@@ -335,7 +338,7 @@ class PO(Text):
         self.encoding = 'utf8'
 
         # Split the data by lines and intialize the line index
-        data = resource.read()
+        data = file.read()
         self.lines = data.split('\n') + ['']
 
         # Add entries

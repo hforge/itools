@@ -246,11 +246,14 @@ class CSV(Text):
                         pass
                     if idx:
                         # Reindex remaining row indexes
+                        # decrease row numbers above the deleted row
                         new_idx = {}
-                        for j in idx:
-                            if j > row_number:
-                                j = j - 1
-                            new_idx[j] = idx[j]
+                        for number in idx:
+                            if number > row_number:
+                                new_number = number - 1
+                            else:
+                                new_number = number
+                            new_idx[new_number] = idx[number]
                         reverse_index[key] = new_idx
                     else:
                         del reverse_index[key]

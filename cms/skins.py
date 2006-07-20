@@ -338,6 +338,10 @@ class UI(AccessControl, Folder):
         return isinstance(object, File) and method_name == 'GET'
 
 
+    def is_allowed_to_view(self, user, object):
+        return False
+
+
     def _get_handler(self, segment, uri):
         name = segment.name
         if name in skin_registry:

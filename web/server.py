@@ -70,6 +70,7 @@ class SocketWrapper(object):
             data, self.buffer = buffer[:size], buffer[size:]
             return data
         # Could not read the required data
+        self.buffer = buffer
         return None
 
 

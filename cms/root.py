@@ -417,7 +417,7 @@ class Root(WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20060503(self):
+    def update_20060602(self):
         root = vfs.open(self.uri)
         # Remove ".archive"
         root.remove('.archive')
@@ -437,19 +437,18 @@ class Root(WebSite):
                 elif folder.is_folder(name):
                     stack.append(folder.open(name))
 
-
-    def update_20060602(self):
         # Add '.admins.users'
-        admins = self.get_handler('admins/.users').get_usernames()
-        self.set_handler('.admins.users', ListOfUsers(users=admins))
+        root.move('admins/.users', '.admins.users')
         # Remove handlers
-        self.del_handler('.users')
-        self.del_handler('admins')
-        self.del_handler('.admins.metadata')
-        self.del_handler('reviewers')
-        self.del_handler('.reviewers.metadata')
+        root.remove('.users')
+        root.remove('admins')
+        root.remove('admins.metadata')
+        root.remove('reviewers')
+        root.remove('reviewers.metadata')
         # Remove "en.po"
-        self.del_handler('en.po')
+        if root.exists('en.po'):
+            root.remove('en.po')
+            root.remove('en.po.metadata')
 
 
 register_object_class(Root)

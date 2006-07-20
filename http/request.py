@@ -22,7 +22,6 @@ from urllib import urlencode
 from itools.uri import get_reference, Query
 from itools.datatypes import QName
 from itools import schemas
-##from itools.resources import memory
 from itools.handlers.base import Handler
 from itools.i18n.accept import AcceptLanguage
 from exceptions import BadRequest, NotImplemented
@@ -139,8 +138,8 @@ class Request(Message):
                         elif part.startswith('\n'):
                             part = part[1:]
                         # Parse the entity
-                        resource = memory.File(part)
-                        entity = entities.Entity(resource)
+                        entity = entities.Entity()
+                        entity.load_state_from_string(part)
                         # Find out the parameter name
                         header = entity.get_header('Content-Disposition')
                         value, header_parameters = header
@@ -156,13 +155,12 @@ class Request(Message):
                             if filename:
                                 # Strip the path (for IE). XXX Test this.
                                 filename = filename.split('\\')[-1]
-                                resource = memory.File(body, name=filename)
-                                self.body[name] = resource
+                                ##resource = memory.File(body, name=filename)
+                                self.body[name] = body
                         else:
                             self.body[name] = body
                 else:
-                    resource = memory.File(body)
-                    self.body['body'] = resource
+                    self.body['body'] = body
 
 
     ########################################################################

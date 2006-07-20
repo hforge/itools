@@ -34,7 +34,8 @@ def get_object_class(class_id):
         if class_id in objects_registry:
             return objects_registry[class_id]
 
-    return None
+    # Default to file
+    return objects_registry["application/octet-stream"]
 
 
 ##def build_handler(resource, format=None):

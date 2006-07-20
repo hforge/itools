@@ -28,9 +28,12 @@ class MO(File):
     class_mimetypes = ['application/x-mo']
     class_extension = 'mo'
 
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'translations']
 
-    def _load_state(self, resource):
-        self.translations = GNUTranslations(resource)
+
+    def _load_state_from_file(self, file):
+        self.translations = GNUTranslations(file)
 
 
     def gettext(self, message):

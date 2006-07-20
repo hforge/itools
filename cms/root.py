@@ -36,6 +36,7 @@ from WebSite import WebSite
 from handlers import ListOfUsers, Metadata
 from registry import register_object_class
 from Folder import Folder
+from catalog import CatalogAware
 
 
 
@@ -345,23 +346,24 @@ class Root(WebSite):
             print 'Updating catalog, init:', t1 - t0
 
             n = 0
-            for handler, context in self.traverse2():
+            for handler, ctx in self.traverse2():
                 name = handler.name
                 abspath = handler.get_abspath()
-
-                if name.startswith('.'):
-                    context.skip = True
-                elif abspath == '/ui':
-                    context.skip = True
-                elif handler.real_handler is not None and not abspath == '/ui':
-                    context.skip = True
-                elif not name.startswith('.'):
-                    print n, abspath
-                    catalog.index_document(handler.get_catalog_indexes())
-                    n += 1
-                    # Avoid too much memory usage but saving changes
-                    if n % 1000 == 0:
-                        transaction.commit()
+                # Skip virtual handlers
+                if handler.real_handler is not None:
+                    ctx.skip = True
+                    continue
+                # Skip non catalog aware handlers
+                if not isinstance(handler, CatalogAware):
+                    ctx.skip = True
+                    continue
+                # Index the document
+                print n, abspath
+                catalog.index_document(handler.get_catalog_indexes())
+                n += 1
+                # Avoid too much memory usage but saving changes
+                if n % 1000 == 0:
+                    transaction.commit()
             transaction.commit()
             t2 = time()
             print 'Updating catalog, indexing:', t2 - t1

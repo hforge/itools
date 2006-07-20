@@ -298,7 +298,7 @@ class Node(object):
 
         self.title = handler.get_title_or_name()
         self.icon = handler.get_path_to_icon(size=16,
-                                             from_handler=context.object)
+                                             from_handler=context.handler)
         self.path = '%s/;%s' % (here.get_pathto(handler_abspath),
                                 handler.get_firstview())
         self.active = (here == handler_abspath)

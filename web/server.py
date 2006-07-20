@@ -382,6 +382,7 @@ class Server(object):
         try:
             handler = context.handler = root.get_handler(context.path)
         except LookupError:
+            context.handler = None
             return 404, root.not_found
         method = handler.get_method(context.method)
         if method is None:

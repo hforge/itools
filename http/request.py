@@ -39,35 +39,26 @@ class Request(Message):
 
 
     def _load_state(self, resource):
-        list(self.non_blocking_load(resource.read))
+        # XXX
+        ## list(self.non_blocking_load(resource))
+        pass
 
 
-    def non_blocking_load(self, read):
+    def non_blocking_load(self, file):
+        """
+        Loads the request state from in non-blocking mode. Aimed at sockets,
+        it works for files too.
+        """
         state = self.state
 
-        buffer = ''
-        # Read the first line
-        while True:
-            data = read(512)
-            data_size = len(data)
-            # Check there is some data, if not we abort the request, something
-            # may be wrong.
-            if data_size == 0:
-                raise BadRequest
-            buffer += data
-            buffer = buffer.split('\r\n', 1)
-            if len(buffer) == 2:
-                request_line, buffer = buffer
-                break
-
-            buffer = buffer[0]
-            # Give control back
-            if data_size < 512:
-                yield None
-
+        # Read the request line
+        line = file.readline()
+        while line is None:
+            yield None
+            line = file.readline()
         # Parse the request line
-        state.request_line = request_line
-        method, request_uri, http_version = request_line.split()
+        state.request_line = line
+        method, request_uri, http_version = line.split()
         state.method = method
         state.uri = get_reference(request_uri)
         state.http_version = http_version
@@ -80,21 +71,16 @@ class Request(Message):
         # Load headers
         headers = state.headers = {}
         while True:
-            if buffer:
-                buffer = buffer.split('\r\n', 1)
-                if len(buffer) == 2:
-                    line, buffer = buffer
-                    if not line:
-                        break
-                    name, value = entities.parse_header(line)
-                    headers[name] = value
-                    continue
-
-                buffer = buffer[0]
-            if len(data) < 512:
+            line = file.readline()
+            if line is None:
                 yield None
-            data = read(512)
-            buffer += data
+                continue
+            # End of headers?
+            if not line:
+                break
+            # Parse the line
+            name, value = entities.parse_header(line)
+            headers[name] = value
 
         # Cookies
         state.headers.setdefault('cookie', {})
@@ -105,18 +91,11 @@ class Request(Message):
         # The body
         if 'content-length' in headers and 'content-type' in headers:
             size = headers['content-length']
-            # Read
-            remains = size - len(buffer)
-            buffer = [buffer]
-            while remains > 0:
-                data = read(remains)
-                buffer.append(data)
-                remains = remains - len(data)
-                if remains:
-                    yield None
-            body = ''.join(buffer)
+            body = file.read(size)
+            while body is None:
+                yield None
+                body = file.read(size)
 
-            # The Form
             if body:
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':

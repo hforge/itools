@@ -32,6 +32,10 @@ class Mailto(object):
         return 'mailto:%s@%s' % (self.username, self.host)
 
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+
 
 class MailtoDataType(object):
 

@@ -275,7 +275,7 @@ class Server(object):
         # Traverse
         status, method = self.traverse(context)
         # Call the method
-        body = method(context) 
+        body = method(context)
         if isinstance(body, str):
             # Post-process (used to wrap the body in a skin)
             body = root.after_traverse(context, body)
@@ -334,6 +334,7 @@ class Server(object):
         try:
             status, body = method(context)
         except:
+            self.log_error(context)
             status = 500
             body = self.root.internal_server_error(context)
 

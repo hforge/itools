@@ -213,25 +213,27 @@ class Folder(Handler, BaseFolder):
         from root import Root
 
         name = segment.name
-        if not name.startswith('.'):
-            handler = self.get_handler(segment)
-            # Unindex
-            root = self.get_root()
-            if isinstance(root, Root):
-                if isinstance(handler, Folder):
-                    for x, context in handler.traverse2():
-                        if x.real_handler is None:
-                            root.unindex_handler(x)
-                        else:
-                            context.skip = True
-                else:
-                    root.unindex_handler(handler)
-            # Keep database consistency
-            if isinstance(handler, LocaleAware):
-                handler.remove_translation()
+        if name.startswith('.') or name.endswith('.metadata'):
+            return
 
-            # Remove metadata
-            self.del_handler('%s.metadata' % name)
+        handler = self.get_handler(segment)
+        # Unindex
+        root = self.get_root()
+        if isinstance(root, Root):
+            if isinstance(handler, Folder):
+                for x, context in handler.traverse2():
+                    if x.real_handler is None:
+                        root.unindex_handler(x)
+                    else:
+                        context.skip = True
+            else:
+                root.unindex_handler(handler)
+        # Keep database consistency
+        if isinstance(handler, LocaleAware):
+            handler.remove_translation()
+
+        # Remove metadata
+        self.del_handler('%s.metadata' % name)
 
 
     def build_metadata(self, handler, owner=None, format=None, **kw):

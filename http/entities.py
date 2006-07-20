@@ -44,17 +44,17 @@ def parse_header(line):
 
 
 
-def read_headers(resource):
+def read_headers(file):
     entity_headers = {}
     # Setup
-    line = resource.readline()
+    line = file.readline()
     line = line.strip()
     # Go
     while line:
         name, value = parse_header(line)
         entity_headers[name] = value
         # Next
-        line = resource.readline()
+        line = file.readline()
         line = line.strip()
 
     return entity_headers
@@ -63,9 +63,19 @@ def read_headers(resource):
 
 class Entity(File):
 
-    def _load_state(self, resource):
-        self.headers = read_headers(resource)
-        self.body = resource.read()
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'headers', 'body']
+
+
+    def _load_state_from_file(self, file):
+        self.headers = read_headers(file)
+        body = file.read()
+        if body.endswith('\r\n'):
+            self.body = body[:-2]
+        elif body.endswith('\n'):
+            self.body = body[:-1]
+        else:
+            self.body = body
 
 
     def has_header(self, name):

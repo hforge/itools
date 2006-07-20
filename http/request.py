@@ -146,17 +146,13 @@ class Request(Message):
                         name = header_parameters['name']
                         # Load the value
                         body = entity.get_body()
-                        if body.endswith('\r\n'):
-                            body = body[:-2]
-                        elif body.endswith('\n'):
-                            body = body[:-1]
                         if 'filename' in header_parameters:
                             filename = header_parameters['filename']
                             if filename:
-                                # Strip the path (for IE). XXX Test this.
+                                # Strip the path (for IE).
                                 filename = filename.split('\\')[-1]
-                                ##resource = memory.File(body, name=filename)
-                                self.body[name] = body
+                                mimetype = entity.get_header('content-type')[0]
+                                self.body[name] = filename, mimetype, body
                         else:
                             self.body[name] = body
                 else:

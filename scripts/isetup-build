@@ -25,7 +25,6 @@ import sys
 # Import from itools
 import itools
 from itools.uri.generic import Path
-from itools.resources import get_resource, memory
 from itools.handlers import get_handler
 import itools.gettext
 from itools.xhtml import XHTML
@@ -139,8 +138,7 @@ if __name__ == '__main__':
     for path in os.popen(cmd).readlines():
         # Load the handler
         path = path.strip()
-        resource = get_resource(path)
-        handler = XHTML.Document(resource)
+        handler = XHTML.Document(path)
         # Build the translation
         n = path.rfind('.')
         for language in target_languages:

@@ -195,8 +195,9 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
             return context.come_back(u'No file has been entered.')
 
         # Check wether the handler is able to deal with the uploaded file
+        filename, mimetype, data = file
         try:
-            self.load_state_from(file)
+            self.load_state_from_string(data)
         except:
             self.load_state()
             message = (u'Upload failed: either the file does not match this'

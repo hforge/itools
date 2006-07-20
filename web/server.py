@@ -255,9 +255,6 @@ class Server(object):
             # What?
             raise TypeError, 'unexpected value of type "%s"' % type(body)
 
-        # Commit
-        self.commit_transaction(context)
-
         return status, body
 
 
@@ -289,25 +286,38 @@ class Server(object):
             # What?
             raise TypeError, 'unexpected value of type "%s"' % type(body)
 
-        # Commit
-        self.commit_transaction(context)
- 
         return status, body
 
 
     def PUT(self, context):
         context.commit = True
-        return 501, None
+        # Traverse
+        status, method = self.traverse(context)
+        # Call the method
+        body = method(context) 
+        return 204, None
 
 
     def LOCK(self, context):
         context.commit = True
-        return 501, None
+        # Traverse
+        status, method = self.traverse(context)
+        # Call the method
+        body = method(context) 
+        if isinstance(body, str):
+            return 200, body
+        elif body is None:
+            return 423, None
+        raise TypeError
 
 
     def UNLOCK(self, context):
         context.commit = True
-        return 501, None
+        # Traverse
+        status, method = self.traverse(context)
+        # Call the method
+        body = method(context) 
+        return 204, None
 
 
     def handle_request(self, request):
@@ -326,6 +336,9 @@ class Server(object):
         except:
             status = 500
             body = self.root.internal_server_error(context)
+
+        # Commit
+        self.commit_transaction(context)
 
         # Set body
         if isinstance(body, str):

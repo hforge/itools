@@ -33,8 +33,7 @@ from itools.gettext import domains
 from itools.http.exceptions import Forbidden
 from itools.web import get_context
 from itools.web.access import AccessControl
-
-# Import from itools.cms
+from handlers import Lock
 from catalog import CatalogAware
 from LocaleAware import LocaleAware
 import webdav
@@ -428,14 +427,14 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
     PUT__access__ = 'is_authenticated'
     def PUT(self, context):
         # Save the data
-        resource = context.get_form_value('body')
-        self.load_state_from(resource)
-        # Build the response
-        context.response.set_status(204)
+        body = context.get_form_value('body')
+        self.load_state_from_string(body)
 
 
     LOCK__access__ = 'is_authenticated'
     def LOCK(self, context):
+        if self.is_locked():
+            return None
         # Lock the resource
         lock = self.lock()
         # Build response
@@ -466,8 +465,6 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
 
         # Unlock the resource
         self.unlock()
-
-        context.response.set_status(204)
 
 
     ########################################################################

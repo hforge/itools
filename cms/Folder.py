@@ -679,7 +679,9 @@ class Folder(Handler, BaseFolder):
         ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to copy
         handlers = [ self.get_handler(x) for x in ids ]
-        names = [ x.name for x in handlers if x.is_allowed_to_copy() ]
+        ac = self.get_access_control()
+        names = [ x.name for x in handlers
+                  if ac.is_allowed_to_copy(context.user, x) ]
 
         if not names:
             return context.come_back(u'No objects selected.')
@@ -697,7 +699,9 @@ class Folder(Handler, BaseFolder):
         ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to move
         handlers = [ self.get_handler(x) for x in ids ]
-        names = [ x.name for x in handlers if x.is_allowed_to_move() ]
+        ac = self.get_access_control()
+        names = [ x.name for x in handlers
+                  if ac.is_allowed_to_move(context.user, x) ]
 
         if not names:
             return context.come_back(u'No objects selected.')

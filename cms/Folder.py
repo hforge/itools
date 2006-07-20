@@ -945,19 +945,15 @@ class Folder(Handler, BaseFolder):
             return context.come_back(u'The file must be entered')
 
         # Build a memory resource
-        mimetype = file.get_mimetype()
+        name, mimetype, body = file
 
         # Guess the language if it is not included in the filename
-        name = file.name
         if mimetype.startswith('text/'):
             short_name, type, language = FileName.decode(name)
             if language is None:
                 # Guess the language
-                file.open()
-                data = file.read()
-                file.close()
-                encoding = Text.guess_encoding(data)
-                data = unicode(data, encoding)
+                encoding = Text.guess_encoding(body)
+                data = unicode(body, encoding)
                 language = i18n.oracle.guess_language(data)
                 # Rebuild the name
                 name = FileName.encode((short_name, type, language))
@@ -975,7 +971,9 @@ class Folder(Handler, BaseFolder):
             return context.come_back(message)
 
         # Set the handler
-        handler = build_handler(file)
+        handler_class = get_object_class(mimetype)
+        handler = handler_class()
+        handler.load_state_from_string(body)
         self.set_handler(name, handler, format=mimetype)
 
         # Come back

@@ -22,7 +22,6 @@ import os
 
 # Import from itools
 import itools
-from itools.resources import get_resource
 from itools.cms.server import get_config, get_root, ask_confirmation
 
 

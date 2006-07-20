@@ -39,6 +39,64 @@ from itools.http.response import Response
 from context import Context, get_context, set_context
 
 
+class SocketWrapper(object):
+    """
+    Offers a file-like interface for sockets in non-blocking mode.
+    Read only.
+    """
+
+    __slots__ = ['socket', 'buffer']
+
+    def __init__(self, socket):
+        self.socket = socket
+        self.buffer = ''
+
+
+    def read(self, size):
+        buffer = self.buffer
+        buffer_size = len(buffer)
+        # Check we already have the required data
+        if buffer_size >= size:
+            data, self.buffer = buffer[:size], buffer[size:]
+            return data
+        # Try to read the remaining
+        try: 
+            data = self.socket.recv(size - buffer_size)
+        except:
+            return None
+        buffer += data
+        # Check we now have the required data
+        if len(buffer) >= size:
+            data, self.buffer = buffer[:size], buffer[size:]
+            return data
+        # Could not read the required data
+        return None
+
+
+    def readline(self):
+        buffer = self.buffer
+        # Check if there is already a line in the buffer
+        if '\r\n' in buffer:
+            line, self.buffer = buffer.split('\r\n', 1)
+            return line
+        # Read as much as possible
+        recv = self.socket.recv
+        while True:
+            try:
+                data = recv(512)
+            except:
+                return None
+            buffer += data
+            # Hit
+            if '\r\n' in buffer:
+                line, self.buffer = buffer.split('\r\n', 1)
+                return line
+            # Miss
+            if len(data) < 512:
+                self.buffer = buffer
+                return None 
+
+
 
 class Server(object):
 
@@ -104,7 +162,8 @@ class Server(object):
                             poll.register(fileno, POLL_READ)
                             # Build and store the request
                             request = Request()
-                            loader = request.non_blocking_load(conn.recv)
+                            wrapper = SocketWrapper(conn)
+                            loader = request.non_blocking_load(wrapper)
                             requests[fileno] = conn, request, loader
                         else:
                             # Load request

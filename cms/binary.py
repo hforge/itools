@@ -167,7 +167,7 @@ class OfficeDocument(File):
         if self.__text_output__ is not None:
             return self.__text_output__
 
-        html = self.to_html().encode('UTF-8')
+        html = self.to_html()
         try:
             handler = HTML.Document()
             handler.load_state_from_string(html)

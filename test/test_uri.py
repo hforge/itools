@@ -22,9 +22,10 @@ from unittest import TestCase
 # Import from itools
 from itools.uri import get_reference
 from itools.uri import generic
-from itools.uri.generic import normalize_path, Path, Reference
+from itools.uri.generic import normalize_path, Path, Reference, GenericDataType
 from itools.uri import mailto
 from itools.uri.mailto import Mailto
+from itools.uri.mailto import MailtoDataType
 
 
 
@@ -235,7 +236,7 @@ class ParseTestCase(TestCase):
 
     def test_full(self):
         ref = 'http://example.com/a/b/c?query#fragment'
-        ref = generic.decode(ref)
+        ref = GenericDataType.decode(ref)
         self.assertEqual(ref.scheme, 'http')
         self.assertEqual(ref.authority, 'example.com')
         self.assertEqual(ref.path, '/a/b/c')
@@ -245,7 +246,7 @@ class ParseTestCase(TestCase):
 
     def test_network(self):
         ref = '//example.com/a/b'
-        ref = generic.decode(ref)
+        ref = GenericDataType.decode(ref)
         self.assertEqual(bool(ref.scheme), False)
         self.assertEqual(ref.authority, 'example.com')
         self.assertEqual(ref.path, '/a/b')
@@ -253,7 +254,7 @@ class ParseTestCase(TestCase):
 
     def test_path(self):
         ref = '/a/b/c'
-        ref = generic.decode(ref)
+        ref = GenericDataType.decode(ref)
         self.assertEqual(bool(ref.scheme), False)
         self.assertEqual(bool(ref.authority), False)
         self.assertEqual(ref.path, '/a/b/c')
@@ -261,7 +262,7 @@ class ParseTestCase(TestCase):
 
     def test_query(self):
         ref = '?query'
-        ref = generic.decode(ref)
+        ref = GenericDataType.decode(ref)
         self.assertEqual(bool(ref.scheme), False)
         self.assertEqual(bool(ref.authority), False)
         self.assertEqual(len(ref.path), 0)
@@ -273,15 +274,15 @@ class SpecialTestCase(TestCase):
     """Test special cases."""
 
     def test_fragment(self):
-        self.assertEqual(str(generic.decode('#')), '#')
+        self.assertEqual(str(GenericDataType.decode('#')), '#')
 
 
     def test_dot(self):
-        self.assertEqual(str(generic.decode('.')), '.')
+        self.assertEqual(str(GenericDataType.decode('.')), '.')
 
 
     def test_empty(self):
-        self.assertEqual(str(generic.decode('')), '')
+        self.assertEqual(str(GenericDataType.decode('')), '')
 
 
 
@@ -291,7 +292,7 @@ class ResolveTestCase(TestCase):
     """
 
     def setUp(self):
-        self.base = generic.decode('http://a/b/c/d;p?q')
+        self.base = GenericDataType.decode('http://a/b/c/d;p?q')
 
 
     def test_standard(self):
@@ -374,7 +375,7 @@ class MailtoTestCase(unittest.TestCase):
 
     def test_mailto(self):
         """Regular Mailto object."""
-        ob = mailto.Mailto(self.username, self.host)
+        ob = mailto.Mailto(self.address)
         self.assertEqual(ob.username, self.username)
         self.assertEqual(ob.host, self.host)
         self.assertEqual(str(ob), self.uri)
@@ -382,15 +383,15 @@ class MailtoTestCase(unittest.TestCase):
 
     def test_mailto_no_host(self):
         """Mailto object with no host."""
-        ob = mailto.Mailto(self.username, None)
-        self.assertEqual(ob.username, self.username)
+        ob = mailto.Mailto(self.username)
+        self.assertEqual(ob.username, None)
         self.assertEqual(ob.host, None)
         self.assertEqual(str(ob), self.uri_no_host)
 
 
     def test_decode(self):
         """Decoding of a regular "mailto:" reference."""
-        ob = mailto.decode(self.address)
+        ob = MailtoDataType.decode(self.uri)
         self.assert_(isinstance(ob, mailto.Mailto))
         self.assertEqual(ob.username, self.username)
         self.assertEqual(ob.host, self.host)
@@ -399,17 +400,17 @@ class MailtoTestCase(unittest.TestCase):
 
     def test_decode_no_host(self):
         """Decoding of a "mailto:" reference with no @host."""
-        ob = mailto.decode(self.username)
+        ob = MailtoDataType.decode(self.uri_no_host)
         self.assert_(isinstance(ob, mailto.Mailto))
-        self.assertEqual(ob.username, self.username)
+        self.assertEqual(ob.username, None)
         self.assertEqual(ob.host, None)
         self.assertEqual(str(ob), self.uri_no_host)
 
 
     def test_compare(self):
         """Compare two Mailto objects with same parameters."""
-        ob = mailto.Mailto(self.username, self.host)
-        copy = mailto.decode(self.address)
+        ob = mailto.Mailto(self.address)
+        copy = MailtoDataType.decode(self.uri)
         self.assert_(type(ob) is type(copy))
         self.assertEqual(ob.username, copy.username)
         self.assertEqual(ob.host, copy.host)

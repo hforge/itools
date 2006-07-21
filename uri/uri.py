@@ -33,8 +33,8 @@ def get_reference(reference):
     if ':' in reference:
         scheme_name, scheme_specifics = reference.split(':', 1)
         scheme = registry.get_scheme(scheme_name)
-        return scheme.decode(scheme_specifics)
-    scheme = generic.GenericDataType
+    else:
+        scheme = generic.GenericDataType
     return scheme.decode(reference)
 
 

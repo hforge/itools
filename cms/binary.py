@@ -95,7 +95,7 @@ class Video(File):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     view__sublabel__ = u'View'
-    def view(self):
+    def view(self, context):
         namespace = {}
         namespace['format'] = self.get_mimetype()
 

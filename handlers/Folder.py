@@ -100,9 +100,10 @@ class Folder(Handler):
                 folder.remove(name)
             # Add the handler
             target = base.resolve2(name)
-            handler = self.get_handler(name)
+            handler = cache[name]
             handler.save_state_to(target)
-            handler.uri = target
+            # Clean the cache (the most simple and robust option)
+            cache[name] = None
         self.added_handlers = set()
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)

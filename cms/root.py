@@ -143,6 +143,10 @@ class Root(WebSite):
     ########################################################################
     # Publish
     ########################################################################
+    def unauthorized(self, context):
+        return self.login_form(context)
+
+
     def forbidden(self, context):
         message = (u'Access forbidden, you are not authorized to access'
                    u' this resource.')

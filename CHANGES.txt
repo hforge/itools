@@ -1,94 +1,11 @@
-0.14.0 (2006/06/XX)
 
-  Now Python 2.5 is required.
-  Drop the script "igraph.py" (till it works).
 
-  URI
-  - Add the hash method to URIs so they can be used as keys in mappings.
-  - New function "get_cwd" returns a URI object of the current working
-    directory.
-  - New function "get_absolute_reference(ref, base=None)" returns an
-    absolute URI reference for the given reference. Uses the given
-    base URI to resolve the reference if it is relative, the base
-    URI defaults to the current working directory.
-  - The new function "get_absolute_reference2" is similar to
-    "get_absolute_reference", but does not take into account trailing
-    slashes.
+***************************************************************************
+  Since "itools 0.14.0" we don't maintain the CHANGES file anymore.
+  Refer to the RELEASE and UPGRADE files instead.
+***************************************************************************
 
-  Datatypes
-  - Add method "is_valid" to the API. This method is to be called after
-    decoding, used to restrict the space of valid values.
-  - Add datatype for email addresses.
 
-  VFS
-  - The new sub-package "itools.vfs" replaces "itools.resources". The
-    programming interface is radically different.
-
-  Handlers
-  - Architecture overhaul. Now handlers are associated to a URI (instead
-    of to a resource). The attributes "parent" and "name" have been
-    removed. New handlers don't have any URI associated to them
-    (handler.uri is None); the method "new" replaces "get_skeleton".
-  - There is a new concept, "spaces", which replaces the transaction
-    object and the cache of folder handlers. Spaces are global mappings
-    from URI to handler, they provide caching and transactions.
-  - Remove the state attribute, keep the handler's state directly in
-    the instance (__dict__).
-  - Now "set_changed" updates the handler's timestamp.
-  - Now the handler registry is implemented in the "registry.py" module,
-    and it is just a flat mapping from mimetype to handler class.
-  - Remove the obsolete handlers KeyValue and Var.
-
-  CSV
-  - New methods "set_value" and "get_value" to access columns in a row.
-
-  Catalog
-  - New more compact format, keeps all documents in two files.
-  - Some changes to the algorithmics and implementation details provide
-    a performance improvement of about 2x for indexing. Other operations
-    should be much faster too, and the memory footprint should be much
-    smaller; but these aspects have not been measured.
-
-  HTTP
-  - New sub-package itools.http (splitted from itools.web) provides
-    handler classes for HTTP request and response messages.
-
-  Web
-  - Refactor the server for better readibility, performance (e.g. load
-    requests in parallel) and error handling.
-  - Pass the context object to methods, and don't map anymore the form
-    values to the method parameters. This way the method definition will
-    always be: "def method(self, context)".
-  - Add the methods "get_form_keys", "get_form_value", "get_form_values"
-    and "has_form_value" to the context object. This is the preferred
-    way to retrieve form values from the request.
-  - Now if a method returns a URI the client will be redirected to that URI.
-    This is the preferred way to do redirections. Also, new handy method
-    "context.come_back" builds a URI to be used in redirections, specially
-    in form actions.
-  - New context attribute "commit", used to determine wether to commit or
-    not. Now by default GET and HEAD requests are safe ("context.commit"
-    is false)
-  - New module "tree.py" provides base programming interface for traversal.
-  - New module "access.py" provides base access control API.
-
-  CMS
-  - The metadata resources don't start anymore with a dot (for instance
-    "toto.metadata" instead of ".toto.metadata"). And multilingual objects
-    only have one metadata file (e.g. "index.xhtml.metadata" for the
-    resources "index.xhtml.en" and "index.xhtml.fr").
-  - Improved user interface for multilingual documents.
-  - New logic and user interface to manage security, the "RoleAware"
-    class replaces the old groups.
-  - Rewrite the versioning logic, don't keep old versions of documents.
-    By Hervé Cauwelier [#47].
-  - Now all files are workflow aware [#241].
-  - Various user interface improvements, by Hervé Cauwelier. Including
-    #204 and #316.
-  - Now views and subviews are defined with the class variable "class_views".
-  - Remove the obsolete option "--source" of "icms-init".
-  - Remove the fake scripts "icms.py" and "igettext.py".
-  - Remove obsolete skins "classic" and "surf".
 
 
 0.13.8 (2006/07/14)

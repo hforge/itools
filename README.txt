@@ -4,26 +4,26 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.catalog        itools.http             itools.tmx
-  itools.cms            itools.i18n             itools.uri
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
   itools.csv            itools.ical             itools.web
-  itools.datatypes      itools.resources        itools.workflow
-  itools.gettext        itools.rss              itools.xhtml
-  itools.handlers       itools.schemas          itools.xliff
-  itools.html           itools.stl              itools.xml
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
 
 The scripts included are:
 
-  icms-init             icms-update             igraph.py
-  icms-restore          igettext-build          isetup-build
-  icms-start            igettext-extract        isetup-test
-  icms-stop             igettext-merge          isetup-update-locale
+  icms-init             icms-update             isetup-build
+  icms-restore          igettext-build          isetup-test
+  icms-start            igettext-extract        isetup-update-locale
+  icms-stop             igettext-merge          
 
 
 Requirements
 ------------
 
-itools requires Python 2.4 or later.
+itools requires Python 2.5 or later.
 
 The PIL Python package is recommended, itools.cms will use it if it is
 installed.
@@ -66,7 +66,7 @@ Home
 http://www.ikaaro.org/itools
 
 Mailing list
-http://in-girum.net/mailman/listinfo/ikaaro
+http://mail.ikaaro.org/mailman/listinfo/itools
 
 Bug Tracker
 http://bugs.ikaaro.org

@@ -1,0 +1,108 @@
+
+
+**************************************************************************
+itools 0.14.0
+**************************************************************************
+
+1. Requirements
+===============
+
+With itools 0.14 the minimum version of Python required is 2.5
+
+
+2 itools.vfs (replaces itools.resources)
+========================================
+
+The package "itools.resources" has been replaced by the new package
+"itools.vfs".
+
+2.1 A richer API
+················
+
+The new package "itools.vfs" offers a more rich API. Basically where
+before we needed two lines:
+
+    >>> from itools.resources import get_resource
+    >>>
+    >>> resource = get_resource('hello.txt')
+    >>> mtime = resource.get_mtime()
+
+Now one line will be enough:
+
+    >>> from itools import vfs
+    >>>
+    >>> mtime = vfs.get_mtime('hello.txt')
+
+2.2 Files are Python files
+··························
+
+The function "vfs.open" replaces "get_resource". The difference, it
+returns real Python files, instead of "file resources". The code:
+
+    >>> file = get_resource('hello.txt')
+    >>> file.open()
+    >>> [WORK WITH THE FILE]
+    >>> file.close()
+
+Now will be written:
+
+    >>> file = vfs.open('hello.txt')
+    >>> [WORK WITH THE FILE]
+    >>> file.close()
+
+The API offered by resource files was already very close to Python
+files, so in most cases no further modifications will be needed.
+
+
+2.3 Folders can still be opened
+·······························
+
+The function "vfs.open" works for folders like before, so the code:
+
+    >>> folder = get_resource('/tmp')
+
+Will be just rewritten to:
+
+    >>> folder = vfs.open('/tmp')
+
+And keep working.
+
+
+2.4 There are no more "memory" resources
+········································
+
+There is no equivalent to "memory" resources in "itools.vfs", the
+good news is that you won't need them. Memory resources were there
+only because of "itools.handlers", but "itools.handlers" don't
+needs them anymore.
+
+
+3. itools.handlers
+==================
+
+XXX
+
+
+4. itools.catalog
+=================
+
+XXX
+
+5. itools.web
+=============
+
+XXX
+
+6. itools.cms
+=============
+
+XXX
+
+
+
+
+
+
+
+
+

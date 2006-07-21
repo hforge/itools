@@ -1,4 +1,57 @@
 
+itools 0.14.0
+=============
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This release brings important API and performance improvements
+accross several sub-packages.
+
+The most notably change is the new "itools.vfs" package (where "vfs"
+stands for Virtual File System), it replaces the "itools.resources"
+package. While functionally equivalent, "itools.vfs" offers a much
+more intuitive and rich API.
+
+Our index and search engine, the "itools.catalog" package, sports
+a more compact file format. And performance for indexing, unindexing
+and searching has been improved by about a 2x factor.
+
+The API and performance of other packages has been greatly improved,
+specially for "itools.handlers" and "itools.web". The user interface
+of "itools.cms" has been simplified, most important the access control
+screens.
+
+And now Python 2.5 is required.
+
+See the UPGRADE.txt file for more details.
+
+
+Resources
+---------
+
+Download
+http://www.ikaaro.org/download/itools/itools-0.14.0.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.13
 ===========
 
@@ -49,7 +102,6 @@ For a more detailed list of the changes see the CHANGES.txt file.
 
 [1] http://git.or.cz/
 [2] http://www.gnu.org/licenses/why-not-lgpl.html
-
 
 
 Resources

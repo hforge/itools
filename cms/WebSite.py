@@ -372,12 +372,14 @@ class WebSite(RoleAware, Folder):
             batchstart='0', batchsize='10')
 
         # get the handler for the visibles documents and extracts values
+        user = context.user
         objects = []
         for object in table.objects:
             abspath = object['abspath']
             document = root.get_handler(abspath)
-            
-            if not document.is_allowed_to_view():
+
+            ac = document.get_access_control()
+            if not ac.is_allowed_to_view(user, document):
                 continue
 
             info = {}

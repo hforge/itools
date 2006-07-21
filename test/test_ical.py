@@ -22,8 +22,6 @@ import unittest
 from datetime import datetime
 
 # Import from itools
-from itools.resources import get_resource
-from itools.resources import memory
 from itools.handlers.Text import Text
 from itools.datatypes import URI
 from itools.ical.icalendar import icalendar, Component
@@ -51,8 +49,8 @@ X-MOZILLA-RECUR-DEFAULT-INTERVAL:0
 DTSTART;VALUE="DATE":20050530
 DTEND;VALUE=DATE:20050531
 DTSTAMP:20050601T074604Z
-ATTENDEE;RSVP=TRUE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jdoe@itaapy.com
-ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jsmith@itaapy.com
+ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com
+ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jsmith@itaapy.com
 PRIORITY:1
 END:VEVENT
 END:VCALENDAR
@@ -75,7 +73,7 @@ X-MOZILLA-RECUR-DEFAULT-INTERVAL:0
 DTSTART;VALUE="DATE":20050530
 DTEND;VALUE=DATE:20050531
 DTSTAMP:20050601T074604Z
-ATTENDEE;RSVP=TRUE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jdoe@itaapy.com
+ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com
 PRIORITY:1
 END:VEVENT
 BEGIN:VEVENT
@@ -83,7 +81,7 @@ UID:581361a0-1dd2-11b2-9a42-bd3958eeac9b
 SUMMARY:222222222
 DTSTART;VALUE="DATE":20050701
 DTEND;VALUE=DATE:20050701
-ATTENDEE;RSVP=TRUE;MEMBER="MAILTO:DEV-GROUP@host2.com":MAILTO:jdoe@itaapy.com
+ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com
 PRIORITY:2
 END:VEVENT
 END:VCALENDAR
@@ -131,8 +129,8 @@ class icalTestCase(unittest.TestCase):
             i = i + 1
 
 
-    def test_get_skeleton(self):
-        """Test get_skeleton"""
+    def test_new(self):
+        """Test new"""
         cal = icalendar()
 
         properties = []
@@ -169,28 +167,28 @@ class icalTestCase(unittest.TestCase):
         Test to create, access and encode a parameter with one or more values.
         """
         # parameter with only one value
-        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com'])
+        param = Parameter('MEMBER', ['mailto:DEV-GROUP@host.com'])
         self.assertEqual(param.name, 'MEMBER')
-        self.assertEqual(param.values, ['MAILTO:DEV-GROUP@host.com'])
+        self.assertEqual(param.values, ['mailto:DEV-GROUP@host.com'])
 
-        expected = 'MEMBER=MAILTO:DEV-GROUP@host.com'
+        expected = 'MEMBER=mailto:DEV-GROUP@host.com'
         self.assertEqual(ParameterType.encode(param), expected)
 
         # parameter with more than one value
-        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com', 
-                                     'MAILTO:NO-GROUP@host.com'])
+        param = Parameter('MEMBER', ['mailto:DEV-GROUP@host.com', 
+                                     'mailto:NO-GROUP@host.com'])
         self.assertEqual(param.name, 'MEMBER')
-        self.assertEqual(param.values, ['MAILTO:DEV-GROUP@host.com',
-                                        'MAILTO:NO-GROUP@host.com'])
+        self.assertEqual(param.values, ['mailto:DEV-GROUP@host.com',
+                                        'mailto:NO-GROUP@host.com'])
 
-        expected = 'MEMBER=MAILTO:DEV-GROUP@host.com,MAILTO:NO-GROUP@host.com'
+        expected = 'MEMBER=mailto:DEV-GROUP@host.com,mailto:NO-GROUP@host.com'
         self.assertEqual(ParameterType.encode(param), expected)
 
          # Same tests from decoding
         param = ParameterType.decode(expected)
         self.assertEqual(param.name, 'MEMBER')
-        self.assertEqual(param.values, ['MAILTO:DEV-GROUP@host.com',
-                                        'MAILTO:NO-GROUP@host.com'])
+        self.assertEqual(param.values, ['mailto:DEV-GROUP@host.com',
+                                        'mailto:NO-GROUP@host.com'])
 
 
     def test_property(self):
@@ -214,10 +212,10 @@ class icalTestCase(unittest.TestCase):
 
         ##################################################################
         # property with one parameter
-        expected = 'ATTENDEE;MEMBER=MAILTO:DEV-GROUP@host.com:'\
+        expected = 'ATTENDEE;MEMBER="mailto:DEV-GROUP@host.com":'\
                    'mailto:darwin@itaapy.com\n'
         # property with one parameter
-        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com'])
+        param = Parameter('MEMBER', ['"mailto:DEV-GROUP@host.com"'])
         params = {'MEMBER': param}
         property = Property('ATTENDEE', 
                             PropertyValue('mailto:darwin@itaapy.com', params))
@@ -226,7 +224,8 @@ class icalTestCase(unittest.TestCase):
 
 
     def test_get_property_values(self):
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
 
         # icalendar property
         expected = '2.0'
@@ -253,7 +252,7 @@ class icalTestCase(unittest.TestCase):
         value = PropertyValue(u'Property added by calling add_property')
         event.add(Property(name, value))
         name = 'ATTENDEE'
-        param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
+        param = ParameterType.decode('MEMBER="mailto:DEV-GROUP@host2.com"')
         value = PropertyValue('mailto:darwin@itaapy.com', {'MEMBER': param})
         event.add(Property(name, value))
 
@@ -278,7 +277,7 @@ class icalTestCase(unittest.TestCase):
         cal.add(property)
         self.assertEqual(cal.get_property_values('METHOD'), property.value)
 
-        param = Parameter('MEMBER', ['MAILTO:DEV-GROUP@host.com'])
+        param = Parameter('MEMBER', ['"mailto:DEV-GROUP@host.com"'])
         self.assertRaises(ValueError, cal.add, param)
 
 
@@ -297,7 +296,8 @@ class icalTestCase(unittest.TestCase):
 
     def test_load(self):
         """Test loading a simple calendar."""
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
 
         # Test icalendar properties
         properties = []
@@ -335,9 +335,9 @@ class icalTestCase(unittest.TestCase):
             u'STATUS:TENTATIVE', 
             u'DTSTAMP:2005-06-01 07:46:04',  
             u'DESCRIPTION:all all all', 
-            u'ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com"' 
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
                      ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
-            u'ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com"'
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
                      ':mailto:jsmith@itaapy.com',
             u'SUMMARY:Résumé', 
             u'PRIORITY:1', 
@@ -365,7 +365,8 @@ class icalTestCase(unittest.TestCase):
 
     def test_load_2(self):
         """Test loading a 2 events calendar."""
-        cal = icalendar(memory.File(content2))
+        cal = icalendar()
+        cal.load_state_from_string(content2)
 
         properties = []
         for name in cal.properties:
@@ -403,7 +404,7 @@ class icalTestCase(unittest.TestCase):
             u'STATUS:TENTATIVE', 
             u'DTSTAMP:2005-06-01 07:46:04',  
             u'DESCRIPTION:all all all', 
-            u'ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com"' 
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
                      ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
             u'SUMMARY:Refound', 
             u'PRIORITY:1', 
@@ -414,7 +415,7 @@ class icalTestCase(unittest.TestCase):
             u'CLASS:PRIVATE', 
             u'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a'], 
             [
-            u'ATTENDEE;MEMBER="MAILTO:DEV-GROUP@host2.com";RSVP=TRUE'\
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'\
              ':mailto:jdoe@itaapy.com', 
             u'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9b', 
             u'SUMMARY:222222222', 
@@ -442,14 +443,15 @@ class icalTestCase(unittest.TestCase):
     # Just call to_str method
     def test_to_str(self):
         """Call to_str method."""
-        cal = icalendar(memory.File(content2))
+        cal = icalendar()
+        cal.load_state_from_string(content2)
         cal.to_str()
 
 
     def test_add_property(self):
         """ Test adding a property to any component """
-
-        cal = icalendar(memory.File(content2))
+        cal = icalendar()
+        cal.load_state_from_string(content2)
         event = cal.get_components('VEVENT')[1]
 
         # other property (MYADD)
@@ -472,7 +474,7 @@ class icalTestCase(unittest.TestCase):
 
         # property ATTENDEE
         name = 'ATTENDEE'
-        param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
+        param = ParameterType.decode('MEMBER="mailto:DEV-GROUP@host2.com"')
         value = PropertyValue('mailto:darwin@itaapy.com', {'MEMBER': param})
         property = Property(name, value)
         event.add(property)
@@ -485,8 +487,8 @@ class icalTestCase(unittest.TestCase):
 
     def test_icalendar_set_property(self):
         """ Test setting a new value to an existant icalendar property"""
-
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
 
         name, value = 'VERSION', PropertyValue('2.1')
         cal.set_property(name, value)
@@ -498,8 +500,8 @@ class icalTestCase(unittest.TestCase):
 
     def test_component_set_property(self):
         """ Test setting a new value to an existant component property"""
-
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
         event = cal.get_components('VEVENT')[0]
 
         name, value = 'SUMMARY', PropertyValue('This is a new summary')
@@ -507,18 +509,19 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(event.get_property_values(name), value)
 
         name, value = 'ATTENDEE', []
-        param = ParameterType.decode('MEMBER=MAILTO:DEV-GROUP@host2.com')
-        value.append(PropertyValue('mailto:darwin@itaapy.com', 
+        param = ParameterType.decode('MEMBER="mailto:DEV-GROUP@host2.com"')
+        value.append(PropertyValue(URI.decode('mailto:darwin@itaapy.com'), 
                                    {'MEMBER': param}))
-        value.append(PropertyValue('mailto:jdoe@itaapy.com'))
-        value.append(PropertyValue('mailto:jsmith@itaapy.com'))
+        value.append(PropertyValue(URI.decode('mailto:jdoe@itaapy.com')))
+        value.append(PropertyValue(URI.decode('mailto:jsmith@itaapy.com')))
         event.set_property(name, value)
         self.assertEqual(event.get_property_values(name), value)
 
 
     def test_correspond_to_date(self):
         """ Test if a component corresponds to a given date. """
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
         event = cal.get_components('VEVENT')[0]
 
         date = datetime(2005, 1, 1)
@@ -533,7 +536,8 @@ class icalTestCase(unittest.TestCase):
 
     def test_in_range(self):
         """ Test if a component is in given dates range. """
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
         event = cal.get_components('VEVENT')[0]
 
         dtstart = datetime(2005, 1, 1)
@@ -562,7 +566,8 @@ class icalTestCase(unittest.TestCase):
     def test_search_events(self):
         """Test get events filtered by arguments given."""
         # Test with 1 event
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
         attendee_value = URI.decode('mailto:jdoe@itaapy.com')
 
         events = cal.search_events(ATTENDEE=attendee_value)
@@ -581,13 +586,14 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(len(events), 1)
 
         events = cal.search_events(
-            ATTENDEE=[attendee_value, URI.decode('MAILTO:jsmith@itaapy.com')],
+            ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
             STATUS='TENTATIVE', 
             PRIORITY=1)
         self.assertEqual(len(events), 1)
 
         # Tests with 2 events
-        cal = icalendar(memory.File(content2))
+        cal = icalendar()
+        cal.load_state_from_string(content2)
         attendee_value = URI.decode('mailto:jdoe@itaapy.com')
 
         events = cal.search_events(ATTENDEE=attendee_value)
@@ -606,7 +612,7 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(len(events), 1)
 
         events = cal.search_events(
-            ATTENDEE=[attendee_value, URI.decode('MAILTO:jsmith@itaapy.com')],
+            ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
             STATUS='TENTATIVE', 
             PRIORITY=1)
         self.assertEqual(len(events), 1)
@@ -614,8 +620,8 @@ class icalTestCase(unittest.TestCase):
 
     def test_get_events_in_date(self):
         """Test get events filtered by date."""
-
-        cal = icalendar(memory.File(content))
+        cal = icalendar()
+        cal.load_state_from_string(content)
 
         date = datetime(2005, 5, 29)
         events = cal.get_events_in_date(date)
@@ -635,7 +641,8 @@ class icalTestCase(unittest.TestCase):
 
     def test_get_events_in_range(self):
         """Test get events matching given dates range."""
-        cal = icalendar(memory.File(content2))
+        cal = icalendar()
+        cal.load_state_from_string(content2)
 
         dtstart = datetime(2005, 1, 1)
         dtend = datetime(2005, 1, 1, 20, 0)
@@ -678,7 +685,8 @@ class icalTestCase(unittest.TestCase):
         Test get_conflicts method which returns uid couples of events
         conflicting on a given date. 
         """
-        cal = icalendar(memory.File(content2))
+        cal = icalendar()
+        cal.load_state_from_string(content2)
         date = datetime(2005, 05, 30)
 
         conflicts = cal.get_conflicts(date)

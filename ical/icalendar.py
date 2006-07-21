@@ -282,31 +282,35 @@ class icalendar(Text):
         END:VCALENDAR
     """
 
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'properties', 'components', 'encoding']
     class_mimetypes = ['text/calendar']
     class_extension = 'ics'
 
 
     #########################################################################
-    # The skeleton
+    # New
     #########################################################################
-    @classmethod
-    def get_skeleton(cls):
-        skel = (
-            'BEGIN:VCALENDAR\n'
-            'VERSION:2.0\n'
-            'PRODID:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN\n'
-            'END:VCALENDAR\n')
+    def new(self):
+        properties = (
+            ('VERSION', {}, u'2.0'), 
+            ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
+          )
+        self.properties = {}
+        for name, param, value in properties:
+            self.properties[name] = PropertyValue(value, param)
 
-        return skel
+        self.components = {}
+        self.encoding = 'UTF-8'
 
 
-    def _load_state(self, resource):
+    def _load_state_from_file(self, file):
         """ """
         self.properties = {}
         self.components = {}
 
         data = None
-        data = resource.read()
+        data = file.read()
         self.encoding = Text.guess_encoding(data)
 
         value = []
@@ -500,8 +504,8 @@ class icalendar(Text):
             events = cal.search_events(
                 STATUS='TENTATIVE', 
                 PRIORITY=1,
-                ATTENDEE=[URI.decode('MAILTO:jdoe@itaapy.com'),
-                          URI.decode('MAILTO:jsmith@itaapy.com')])
+                ATTENDEE=[URI.decode('mailto:jdoe@itaapy.com'),
+                          URI.decode('mailto:jsmith@itaapy.com')])
 
         ** With a list of values, events match if at least one value matches
         """

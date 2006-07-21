@@ -29,8 +29,8 @@ from itools.web import get_context
 # Misc
 #############################################################################
 
-src = ur""" @¹,;:!¡?ª$£¤+&/\"*#()[]{}'ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûİ~ıÿ~^°"""
-dst = ur"""---------------------------AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuY-yy---"""
+src = ur""" ¹,;:!¡?ª$£¤+&/\"*#()[]{}'ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûİ~ıÿ~^°"""
+dst = ur"""--------------------------AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuY-yy---"""
 
 transmap = {}
 for i in range(len(src)):
@@ -40,7 +40,7 @@ for i in range(len(src)):
 
 def checkid(id):
     """
-    Checks wether th id is or not a valid Zope id. If it is the id is
+    Checks wether the id is or not a valid Zope id. If it is the id is
     returned, but stripped. If it is a bad id None is returned to signal
     the error.
     """
@@ -54,7 +54,7 @@ def checkid(id):
 
     # Check for unallowed characters
     for c in id:
-        if not c.isalnum() and c not in ('.', '-', '_'):
+        if not c.isalnum() and c not in ('.', '-', '_', '@'):
             return None
 
     # The id is good

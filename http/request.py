@@ -179,19 +179,11 @@ class Request(Message):
 
     ########################################################################
     # The Form
-    def _set_parameter(self, name, value):
-        prefix, local_name = QName.decode(name)
-        if prefix is not None:
-            datatype = schemas.get_datatype(name)
-            value = datatype.decode(value)
-
-        self.form[name] = value
-
-
     def get_parameter(self, name, default=None):
         form = self.form
         if name in form:
-            return form[name]
+            datatype = schemas.get_datatype(name)
+            return datatype.decode(form[name])
 
         if default is None:
             datatype = schemas.get_datatype(name)

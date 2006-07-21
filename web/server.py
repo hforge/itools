@@ -226,7 +226,7 @@ class Server(object):
         # This is a safe method
         context.commit = False
         # Our canonical URLs never end with an slash
-        if request.uri.path.endswith_slash:
+        if context.uri.path.endswith_slash:
             goto = copy(context.uri)
             goto.path.endswith_slash = False
             return 302, goto

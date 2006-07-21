@@ -161,6 +161,7 @@ class Catalog(Folder):
 
 
     def index_document(self, document):
+        self.set_changed()
         # Create the document to index
         doc_number = self.documents.n_documents
         catalog_document = Document(doc_number)
@@ -183,7 +184,6 @@ class Catalog(Folder):
             # Update the Inverted Index
             if field.is_indexed:
                 index = self.indexes[field.number]
-                index.set_changed()
                 # Tokenize
                 terms = set()
                 analyser = get_analyser(field.type)
@@ -203,13 +203,13 @@ class Catalog(Folder):
                 catalog_document.fields[field.number] = ''.join(terms)
 
         # Add the Document
-        self.documents.set_changed()
         self.documents.index_document(catalog_document)
 
         return doc_number
 
 
     def unindex_document(self, doc_number):
+        self.set_changed()
         # Update the indexes
         document = self.documents.get_document(doc_number)
         for field in self.fields:
@@ -229,12 +229,10 @@ class Catalog(Folder):
                 terms = value.split()
             # Unindex
             index = self.indexes[field.number]
-            index.set_changed()
             for term in terms:
                 index.unindex_term(term, doc_number)
 
         # Update the documents
-        self.documents.set_changed()
         self.documents.unindex_document(doc_number)
 
 

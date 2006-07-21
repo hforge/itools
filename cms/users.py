@@ -49,7 +49,7 @@ class User(AccessControl, Folder):
     class_views = [['profile'],
                    ['browse_thumbnails', 'browse_list', 'browse_image'],
                    ['new_resource_form'],
-                   ['edit_form', 'edit_account_form', 'edit_groups_form'],
+                   ['edit_form', 'edit_account_form'],
                    ['tasks_list']]
 
 
@@ -64,26 +64,18 @@ class User(AccessControl, Folder):
         return password == self.get_property('ikaaro:password')
 
 
-    def clear_group_cache(self):
-        self._groups = None
-
-
-    ########################################################################
-    # Groups
-    _groups = None
     def get_groups(self):
-        if self._groups is None:
-            # Load groups
-            root = self.get_root()
-            if root is not None:
-                catalog = root.get_handler('.catalog')
-                brains = catalog.search(is_group=True, usernames=self.name)
-                groups = [ x.abspath for x in brains ]
-                self._groups = tuple(groups)
+        """
+        Returns all the role aware handlers where this user is a member.
+        """
+        root = self.get_root()
+        if root is None:
+            return ()
 
-        return self._groups
-
-    groups = property(get_groups, None, None, "")
+        catalog = root.get_handler('.catalog')
+        brains = catalog.search(is_role_aware=True, members=self.name)
+        groups = [ x.abspath for x in brains ]
+        return tuple(groups)
 
 
     ########################################################################
@@ -123,33 +115,6 @@ class User(AccessControl, Folder):
         namespace['is_owner_or_admin'] = is_owner or is_admin
 
         handler = self.get_handler('/ui/User_profile.xml')
-        return stl(handler, namespace)
-
-
-    #######################################################################
-    # View
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u'View'
-    def view(self, context):
-        root = context.root
-
-        namespace = {}
-        namespace['label'] = self.title_or_name
-        groups = []
-        for group_path in self.get_groups():
-            group = root.get_handler(group_path)
-            path_to_group = self.get_pathto(group)
-
-            group_ns = {}
-            path_to_icon = group.get_path_to_icon(48)
-            path_to_icon = uri.Path(str(path_to_group) + '/').resolve(path_to_icon)
-            group_ns['logo'] = path_to_icon
-            group_ns['url'] = '%s/;%s' % (path_to_group, group.get_firstview())
-            group_ns['name'] = group.title_or_name 
-            groups.append(group_ns)
-        namespace['groups'] = groups
-
-        handler = self.get_handler('/ui/User_view.xml')
         return stl(handler, namespace)
 
 
@@ -285,52 +250,6 @@ class User(AccessControl, Folder):
 
 
     #######################################################################
-    # Edit user groups
-    edit_groups_form__access__ = 'is_admin'
-    edit_groups_form__label__ = u'Edit'
-    edit_groups_form__sublabel__ = u'Groups'
-    def edit_groups_form(self, context):
-        root = context.root
-
-        tablename = 'groups_list'
-        namespace = {}
-        objects = []
-        for path in root.get_groups():
-            if path != '':
-                group = root.get_handler(path)
-                url = '%s/;%s' % (self.get_pathto(group),
-                                  group.get_firstview())
-                checked = self.name in group.get_usernames()
-                objects.append({'name': str(path), 'url': url,
-                                'checked': checked})
-
-        table = Table(self.get_pathtoroot(), tablename, objects,
-                      sortby='name', sortorder='up',
-                      batchstart='0', batchsize='0')
-        namespace['table'] = table
-        namespace['fullname'] = self.title
-
-        handler = self.get_handler('/ui/User_edit_groups.xml')
-        return stl(handler, namespace)
-
-
-    edit_groups__access__ = 'is_admin'
-    def edit_groups(self, context):
-        groups = context.get_form_values('groups')
-        # Add user in groups
-        root = context.root
-        all_groups = root.get_groups()
-        for group_path in all_groups:
-            group = root.get_handler(group_path)
-            group.remove_users([self.name])
-        for group_path in groups:
-            group = root.get_handler(group_path)
-            group.set_user(self.name)
-
-        return context.come_back(u'User groups edited.')
-
-
-    #######################################################################
     # Tasks
     tasks_list__access__ = 'is_allowed_to_edit'
     tasks_list__label__ = u'Tasks'
@@ -422,25 +341,8 @@ class UserFolder(Folder):
     new_user_form__access__ = 'is_admin'
     new_user_form__label__ = u'Add'
     def new_user_form(self, context):
-        root = context.root
-
-        tablename = 'groups_list'
-        namespace = {}
-        objects = []
-        for path in root.get_groups():
-            if path != '':
-                group = root.get_handler(path)
-                url = '%s/;%s' % (self.get_pathto(group),
-                                  group.get_firstview())
-                objects.append({'name': str(path), 'url': url})
-
-        table = Table(self.get_pathtoroot(), tablename, objects,
-                      sortby='name', sortorder='up',
-                      batchstart='0', batchsize='0')
-        namespace['table'] = table
-
         handler = self.get_handler('/ui/UserFolder_new_user.xml')
-        return stl(handler, namespace)
+        return stl(handler)
 
 
     new_user__access__ = 'is_admin'
@@ -488,7 +390,7 @@ class UserFolder(Folder):
             root = self.get_root()
             for group_path in handler.get_groups():
                 group = root.get_handler(group_path)
-                group.remove_user(name)
+                group.del_roles(name)
         Folder.on_del_handler(self, segment)
 
 

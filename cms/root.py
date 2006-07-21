@@ -107,11 +107,11 @@ class Root(WebSite):
     _catalog_fields = [('text', 'text', True, False),
                        ('title', 'text', True, True),
                        ('owner', 'keyword', True, True),
-                       ('is_group', 'bool', True, False),
+                       ('is_role_aware', 'bool', True, False),
                        ('format', 'keyword', True, True),
                        ('workflow_state', 'keyword', True, True),
                        ('abspath', 'keyword', True, True),
-                       ('usernames', 'keyword', True, False),
+                       ('members', 'keyword', True, False),
                        # Folder's view
                        ('parent_path', 'keyword', True, True),
                        ('name', 'keyword', True, True),
@@ -195,16 +195,6 @@ class Root(WebSite):
 
     def get_usernames(self):
         return self.get_handler('users').get_usernames()
-
-
-    def get_groups(self):
-        """
-        Returns a list with all the subgroups, including the subgroups of
-        the subgroups, etc..
-        """
-        groups = self.search(is_group=True)
-        groups = [ x.abspath for x in groups if x.abspath != '/' ]
-        return groups
 
 
 ##  def get_document_types(self):
@@ -386,6 +376,14 @@ class Root(WebSite):
 
     #######################################################################
     # Check groups
+    def get_groups(self):
+        """
+        Returns a list with all the subgroups, including the subgroups of
+        the subgroups, etc..
+        """
+        return [ x.abspath for x in self.search(is_role_aware=True) ]
+
+
     check_groups__access__ = 'is_admin'
     check_groups__label__ = u'Maintenance'
     check_groups__sublabel__ = u'Check Groups'
@@ -396,9 +394,9 @@ class Root(WebSite):
         root_users = self.get_handler('users').get_usernames()
         for path in self.get_groups():
             group = self.get_handler(path)
-            group_users = group.get_usernames()
-            if not group_users.issubset(root_users):
-                missing = list(group_users - root_users)
+            members = group.get_members()
+            if not members.issubset(root_users):
+                missing = list(members - root_users)
                 missing.sort()
                 missing = ' '.join(missing)
                 groups.append({'path': path, 'users': missing})
@@ -413,9 +411,9 @@ class Root(WebSite):
         root_users = self.get_handler('users').get_usernames()
         for path in self.get_groups():
             group = self.get_handler(path)
-            group_users = group.get_usernames()
-            for username in group_users - root_users:
-                group.remove_user(username)
+            members = group.get_members()
+            for username in members - root_users:
+                group.del_roles(username)
 
         return context.come_back(u'Groups fixed.')
 

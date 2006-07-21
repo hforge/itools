@@ -198,11 +198,6 @@ class RoleAware(AccessControl, Folder):
             if username in handler.get_usernames():
                 handler.remove(username)
 
-        context = get_context()
-        root = context.root
-        user = root.get_user(username)
-        user.clear_group_cache()
-
 
     def set_role(self, rolename, username):
         for role in self.get_roles():
@@ -214,10 +209,14 @@ class RoleAware(AccessControl, Folder):
                 if username in handler.get_usernames():
                     handler.remove(username)
 
-        context = get_context()
-        root = context.root
-        user = root.get_user(username)
-        user.clear_group_cache()
+
+    def get_members(self):
+        members = set()
+        for role in self.get_roles():
+            rolename = role['name']
+            handler = self.get_role(rolename)
+            members = members.union(handler.get_usernames())
+        return members
 
 
     #########################################################################
@@ -245,11 +244,7 @@ class RoleAware(AccessControl, Folder):
         userfolder = root.get_handler('users')
         namespace = {}
 
-        members = set()
-        for role in self.get_roles():
-            rolename = role['name']
-            handler = self.get_role(rolename)
-            members = members.union(handler.get_usernames())
+        members = self.get_members()
 
         users = [userfolder.get_handler(u) for u in members]
         key = attrgetter(self._get_members_sort_key())

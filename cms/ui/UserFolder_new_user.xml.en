@@ -21,25 +21,6 @@
       <input type="password" name="password2" />
     </dd>
   </dl>
-  <table border="0" cellpadding="2" cellspacing="2">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Group name <stl:inline content="table/sortcontrol(name)" /></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="object table/objects">
-        <td>
-          <input class="checkbox" name="groups" 
-            type="checkbox" stl:attributes="value object/name"/>
-        </td>
-        <td>
-          <a stl:attributes="href object/url" stl:content="object/name" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
   <p>
     <input type="submit" name="add_and_view" value="Add and view" class="button_ok"/>
     <input type="submit" name="add_and_return" value="Add and return"/>

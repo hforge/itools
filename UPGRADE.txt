@@ -80,23 +80,353 @@ needs them anymore.
 3. itools.handlers
 ==================
 
-XXX
+3.1 Handlers are attached to URIs
+·································
+
+Now handlers are attached to a URI instead of to a resource.
+
+Before:
+
+    >>> from itools.resources import get_resource
+    >>> from itools.handlers.Text import Text
+    >>>
+    >>> resource = get_resource('hello.txt')
+    >>> handler = Text(resource)
+    >>> print handler.resource
+    <itools.resources.file.File object at 0xb7a1f18c>
+
+Now:
+
+    >>> from itools.handlers.Text import Text
+    >>>
+    >>> handler = Text('hello.txt')
+    >>> print handler.uri
+    file:///tmp/hello.txt
+
+3.2 New handlers are attached to nothing
+········································
+
+New handlers are built like before, with (optional) keyword parameters,
+but they are attached to nothing.
+
+Before:
+
+    >>> handler = Text()
+    >>> print handler.resource
+    <itools.resources.memory.File object at 0xb7b2392c>
+
+Now:
+
+    >>> handler = Text()
+    >>> print handler.uri
+    None
+
+3.3 Loading
+···········
+
+With 0.13 the method "load_state" was both able to reload the state
+from the handler's resource, or to use another resource. With 0.14
+the new method "load_state_from" must be used to load from another
+uri.
+
+Before:
+
+    >>> handler.load_state()
+    >>> handler.load_state(resource)
+
+Now:
+
+    >>> handler.load_state()
+    >>> handler.load_state_from(uri)
+
+In addition file handlers have other two load methods, to load the
+handler from an open file or from a byte string, respectively:
+
+    >>> handler.load_state_from_file(file)
+    >>> handler.load_state_from_string(string)
+
+3.4 Saving
+··········
+
+Similarly there are two methods to save instead of one:
+
+Before:
+
+    >>> handler.save_state()
+    >>> handler.save_state(resource)
+
+Now:
+
+    >>> handler.save_state()
+    >>> handler.save_state_to(uri)
+
+And file handlers have a third method to save to open files:
+
+    >>> handler.save_state_to_file(file)
+
+3.5 Writing handler classes
+···························
+
+First, the Python slots must be defined for all handler classes, these
+must include the five mandatory instance variables ("uri", "timestamp",
+"parent", "name", "real_handler") plus the variables that define the
+handler's state. For example:
+
+    class VCard(File):
+
+        __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                     'version', 'xxx']
+
+With itools 0.14 the handler's state is not stored in the instance
+variable "state", which has been removed, but directly into the instance.
+And the method to specialize for files is not anymore "_load_state(resource)",
+but "_load_state_from_file(file)".
+
+Before:
+
+    def _load_state(self, resource):
+	state = self.state
+        ...
+        state.version = version
+        ...
+
+Now:
+
+    def _load_state_from_file(self, file):
+        ...
+        self.version = version
+        ...
+
+Also, the method "get_skeleton" has been replaced with the method "new",
+which directly initializes the handler's state.
+
+Before:
+
+    def get_skeleton(self, version="2.1"):
+        skeleton = ("BEGIN:VCARD\n"
+                    "VERSION:2.1\n"
+                    "END:VCARD\n")
+        return skeleton % version
+
+Now:
+
+    def new(self, version="2.1"):
+        self.version = "2.1"
+
+3.6 The registry
+················
+
+Last, the registry for handler classes is now implemented in the module
+"registry".
+
+Before:
+
+    class VCard(File):
+        class_mimetypes = ['text/v-card']
+        class_extenstion = 'vcf'
+
+    File.register_handler_class(VCard)
+
+Now:
+
+    from itools.handler.registry import register_handler_class
+
+    class VCard(File):
+        class_mimetypes = ['text/v-card']
+        class_extenstion = 'vcf'
+
+    register_handler_class(VCard)
 
 
 4. itools.catalog
 =================
 
-XXX
+The catalog's API is the same, but the format has changed. This just
+mean that old catalog instances must be removed, and rebuilt with the
+new code.
+
 
 5. itools.web
 =============
 
-XXX
+5.1 Getting parameters from the request
+·······································
+
+Before the request parameters were implicitly mapped to the Python
+method definition. Now, instead, the context object is always passed
+and the parameters must be explicitly retrieved from it.
+
+Before:
+
+    def edit_metadata(self, title, description, **kw):
+        ...
+
+Now:
+
+    def edit_metadata(self, context):
+        title = context.get_form_value('title')
+        description = context.get_form_value('description')
+
+The complete API is:
+
+    context.get_form_keys()
+    context.get_form_value(name, default=None)
+    context.get_form_values(name)
+    context.has_form_value(name)
+
+5.2 Removed the special case ":list"
+····································
+
+In itools 0.13 we still used the ":list" descriptor from the old Zope days.
+Now the new context API allows as to do the same thing in a more reliable
+way.
+
+Before:
+
+    <select name="colors:list" multiple="multiple">
+      <option value="red" />
+      <option value="green" />
+      <option value="blue" />
+    </select>
+
+    def edit_colors(self, colors, **kw):
+        self.colors = colors
+
+Now:
+
+    <select name="colors" multiple="multiple">
+      <option value="red" />
+      <option value="green" />
+      <option value="blue" />
+    </select>
+
+    def edit_colors(self, context):
+        self.colors = context.get_form_values('colors')
+
+[Note] For a discussion on the importance to be splicit see the documentation
+for the Standard Library module cgi, http://docs.python.org/lib/node472.html
+
+
+5.3 Redirections made easy
+··························
+
+Before to make a redirection we either used the context API or raised an
+exception. Now the common way is to return a URI object.
+
+Before:
+
+    from itools.web import get_context
+    from itools.web.exceptions import UserError
+
+    def edit_metadata(self, title, description, **kw):
+        if not title:
+            raise UserError, "the title is mandatory"
+        ...
+        context = get_context()
+        context.redirect(';edit_metadata_form')
+
+Now:
+
+    from itools import uri
+
+    def edit_metadata(self, context):
+        if not title:
+            ref = ';edit_metadata_form?message=the title is mandatory'
+            return uri.get_reference(ref)
+        ...
+        return uri.get_reference(';edit_metadata_form')
+
 
 6. itools.cms
 =============
 
+6.1 The registry
+················
+
+The registry for itools.cms handler classes is now separated from the
+standard registry for base handlers.
+
+Before:
+
+    class Forum(Folder)
+        class_id = 'forum'
+
+    Folder.register_handler_class(Forum)
+
+Now:
+
+    from itools.cms.registry import register_object_class
+
+    class Forum(Folder)
+        class_id = 'forum'
+
+    register_object_class(Forum)
+
+6.2 More on redirections
+························
+
+Following on redirections, the utilty function "comeback" has been replaced
+by the more high level "context.come_back".
+
+Before:
+
+    from itools.cms.utils import comeback
+
+    def edit_metadata(self, title, description, **kw):
+        ...
+        message = u"Changes saved. New title: %(title)s."
+        message = self.gettext(message) % {'title': title}
+        comeback(message)
+
+Now:
+
+    def edit_metadata(self, context):
+        ...
+        message = u"Changes saved. New title: $title."
+        return context.come_back(message, title=title)
+
+Basically the new method calls to "gettext" to translate the text string.
+And we use a more friendly format for variable substitution.
+
+6.3 Access Control
+··················
+
+The access control has been redisigned (and is now basically provied by
+"itools.web.access"). Instead of every handler class to inherit from
+AccessControl, now we search back in the parth (acquire) the access
+control point.
+
+Before:
+
+    if handler.is_allowed_to_view():
+	...
+
+Now:
+
+    ac = handler.get_access_control()
+    if ac.is_allowed_to_view(context.user, handler):
+        ...
+
+This will basically reduce the need for subclassing. 
+
+6.X Roles replace Groups
+························
+
+The groups concept and code has been replaced by "Roles".
+
 XXX
+
+
+6.X All files are workflow aware
+································
+
+6.X Versioning
+··············
+
+6.X Updating instances
+······················
+
+
 
 
 

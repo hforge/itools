@@ -773,77 +773,77 @@ class Folder(Handler, BaseFolder):
 
     #######################################################################
     # Browse / Translate
-    translate_form__access__ = 'is_allowed_to_translate'
-    def translate_form(self, context):
-        context.get_form_values('ids')
-        if not ids:
-            raise UserError, self.gettext(u'No objects selected')
+##  translate_form__access__ = 'is_allowed_to_translate'
+##  def translate_form(self, context):
+##      context.get_form_values('ids')
+##      if not ids:
+##          raise UserError, self.gettext(u'No objects selected')
 
-        # Check input data
-        site_root = self.get_site_root()
-        content_languages = site_root.get_property('ikaaro:website_languages')
-        handlers = [ self.get_handler(x) for x in ids ]
-        handlers = [ x for x in handlers if isinstance(x, LocaleAware) ]
-        handlers = [ x for x in handlers if x.is_allowed_to_translate() ]
-        handlers = [ x for x in handlers
-                     if [ y for y in content_languages
-                          if y not in x.get_available_languages() ] ]
-        names = [ x.name for x in handlers ]
+##      # Check input data
+##      site_root = self.get_site_root()
+##      content_languages = site_root.get_property('ikaaro:website_languages')
+##      handlers = [ self.get_handler(x) for x in ids ]
+##      handlers = [ x for x in handlers if isinstance(x, LocaleAware) ]
+##      handlers = [ x for x in handlers if x.is_allowed_to_translate() ]
+##      handlers = [ x for x in handlers
+##                   if [ y for y in content_languages
+##                        if y not in x.get_available_languages() ] ]
+##      names = [ x.name for x in handlers ]
 
-        if not names:
-            message = u'The selected objects can not be translated.'
-            raise UserError, self.gettext(message)
+##      if not names:
+##          message = u'The selected objects can not be translated.'
+##          raise UserError, self.gettext(message)
 
-        # XXX Hack to get translate working. The current user interface
-        # forces the translate_form to be called as a form action, hence
-        # with the POST method, but is should be a GET method. Maybe
-        # it will be solved after the needed folder browse overhaul.
-        if context.request.method == 'POST':
-            ids_list =  '&'.join([ 'ids:list=%s' % x for x in names ])
-            context.redirect(';translate_form?%s' % ids_list)
+##      # XXX Hack to get translate working. The current user interface
+##      # forces the translate_form to be called as a form action, hence
+##      # with the POST method, but is should be a GET method. Maybe
+##      # it will be solved after the needed folder browse overhaul.
+##      if context.request.method == 'POST':
+##          ids_list =  '&'.join([ 'ids:list=%s' % x for x in names ])
+##          context.redirect(';translate_form?%s' % ids_list)
 
-        # Build the namespace
-        namespace = {}
-        # Documents
-        documents = []
-        for handler in handlers:
-            document = {'name': handler.name,
-                        'title_or_name': handler.title_or_name}
-            languages = [ x for x in content_languages
-                          if x not in handler.get_available_languages() ]
-            document['languages'] = [
-                {'code': x,
-                 'name': self.gettext(i18n.get_language_name(x))}
-                for x in languages ]
-            documents.append(document)
-        namespace['documents'] = documents
+##      # Build the namespace
+##      namespace = {}
+##      # Documents
+##      documents = []
+##      for handler in handlers:
+##          document = {'name': handler.name,
+##                      'title_or_name': handler.title_or_name}
+##          languages = [ x for x in content_languages
+##                        if x not in handler.get_available_languages() ]
+##          document['languages'] = [
+##              {'code': x,
+##               'name': self.gettext(i18n.get_language_name(x))}
+##              for x in languages ]
+##          documents.append(document)
+##      namespace['documents'] = documents
 
-        # Process the template
-        handler = self.get_handler('/ui/Folder_translate.xml')
-        return stl(handler, namespace)
+##      # Process the template
+##      handler = self.get_handler('/ui/Folder_translate.xml')
+##      return stl(handler, namespace)
 
 
-    translate__access__ = 'is_allowed_to_translate'
-    def translate(self, context):
-        names = context.get_form_value('names')
-        languages = context.get_form_value('languages')
+##  translate__access__ = 'is_allowed_to_translate'
+##  def translate(self, context):
+##      names = context.get_form_value('names')
+##      languages = context.get_form_value('languages')
 
-        for i in range(len(names)):
-            name, type, language = FileName.decode(names[i])
-            language = languages[i]
-            trans_name = FileName.encode((name, type, language))
-            name = names[i]
-            # Get the original handler and its metadata
-            handler = self.get_handler(name)
-            metadata = handler.get_metadata()
-            # Add the handler
-            handler_class = handler.__class__
-            trans_handler = handler_class()
-            self.set_handler(trans_name, trans_handler,
-                             **{'dc:language': language})
+##      for i in range(len(names)):
+##          name, type, language = FileName.decode(names[i])
+##          language = languages[i]
+##          trans_name = FileName.encode((name, type, language))
+##          name = names[i]
+##          # Get the original handler and its metadata
+##          handler = self.get_handler(name)
+##          metadata = handler.get_metadata()
+##          # Add the handler
+##          handler_class = handler.__class__
+##          trans_handler = handler_class()
+##          self.set_handler(trans_name, trans_handler,
+##                           **{'dc:language': language})
 
-        message = self.gettext(u'Document translations created.')
-        comeback(message, goto=';%s' % self.get_browse_view())
+##      message = u'Document translations created.'
+##      context.come_back(message, goto=';%s' % self.get_browse_view())
 
 
     #######################################################################

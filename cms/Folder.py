@@ -874,7 +874,6 @@ class Folder(Handler, BaseFolder):
 
             handler = self.get_handler('/ui/Folder_new_resource.xml')
             return stl(handler, namespace)
-
         else:
             handler_class = get_object_class(type)
             return handler_class.new_instance_form()
@@ -890,7 +889,7 @@ class Folder(Handler, BaseFolder):
         name = name.strip() or title.strip()
         if not name:
             message = u'The name must be entered'
-            return context.come_back(replace)
+            return context.come_back(message)
 
         # Invalid name?
         name = checkid(name)

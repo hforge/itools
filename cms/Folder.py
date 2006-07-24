@@ -843,7 +843,7 @@ class Folder(Handler, BaseFolder):
 ##                           **{'dc:language': language})
 
 ##      message = u'Document translations created.'
-##      context.come_back(message, goto=';%s' % self.get_browse_view())
+##      return context.come_back(message, goto=';%s' % self.get_browse_view())
 
 
     #######################################################################

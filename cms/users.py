@@ -188,8 +188,8 @@ class User(AccessControl, Folder):
         self.set_property('dc:title', title, language='en')
         email = unicode(email, 'utf-8')
         self.set_property('ikaaro:email', email)
-        message = self.gettext(u'Account changed.')
-        comeback(message)
+
+        return context.come_back(u'Account changed.')
 
 
     #######################################################################

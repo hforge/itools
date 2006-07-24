@@ -120,17 +120,17 @@ class OrderAware(object):
 
 
     order_folders_top__access__ = 'is_allowed_to_edit'
-    def order_folders_top(self, **kw):
+    def order_folders_top(self, context):
         if not kw.has_key('name'):
             message = u"Please select the folders to order on top."
-            return comeback(self.gettext(message))
+            return context.come_back(message)
 
         names = kw['name']
         ordered_names = self.get_ordered_folder_names()
         
         if ordered_names[0] == names[0]:
             message = u"Folders already on top."
-            return comeback(self.gettext(message))
+            return context.come_back(message)
 
         temp = names + [name for name in ordered_names
                 if name not in names]
@@ -141,17 +141,17 @@ class OrderAware(object):
         
         
     order_folders_bottom__access__ = 'is_allowed_to_edit'
-    def order_folders_bottom(self, **kw):
+    def order_folders_bottom(self, context):
         if not kw.has_key('name'):
             message = u"Please select the folders to order on bottom."
-            return comeback(self.gettext(message))
+            return context.come_back(message)
 
         names = kw['name']
         ordered_names = self.get_ordered_folder_names()
         
         if ordered_names[0] == names[0]:
             message = u"Folders already on bottom."
-            return comeback(self.gettext(message))
+            return context.come_back(message)
 
         temp = [name for name in ordered_names
                 if name not in names] + names

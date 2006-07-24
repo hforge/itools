@@ -20,6 +20,15 @@
         <input type="text" id="name" name="name" size="50"
           stl:attributes="value name" />
       </dd>
+      <dt>Please select the source language of your document.</dt>
+      <dd>
+        <label for="dc_language">Language</label>
+        <select id="dc_language" name="dc:language">
+          <option stl:repeat="lang languages"
+            stl:attributes="value lang/code; selected lang/isdefault"
+            stl:content="lang/name" />
+        </select>
+      </dd>
     </dl>
     <p>
       <input type="hidden" name="class_id" stl:attributes="value class_id" />

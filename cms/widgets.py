@@ -246,33 +246,30 @@ class Breadcrumb(object):
         # Content
         objects = []
         self.is_submit = False
-        for name in target.resource.get_names():
-            if name.startswith('.'):
+        user = context.user
+        filter = (Folder, filter_type)
+        for handler in target.search_handlers(handler_class=filter):
+            ac = handler.get_access_control()
+            if not ac.is_allowed_to_view(user, handler):
                 continue
 
-            handler = target.get_handler(name)
-            if handler.is_allowed_to_view():
-                path = here.get_pathto(handler)
-                bc_target = str(root.get_pathto(handler))
-                url = context.uri.replace(bc_target=bc_target)
+            path = here.get_pathto(handler)
+            bc_target = str(root.get_pathto(handler))
+            url = context.uri.replace(bc_target=bc_target)
 
-                is_folder = isinstance(handler, Folder)
-                is_selectable = False
-                if is_folder or isinstance(handler, filter_type):
-                    is_selectable = True
-                    self.is_submit = True
-                    # Calculate path
-                    path_to_icon = handler.get_path_to_icon(16)
-                    if path:
-                        path_to_handler = uri.Path(str(path) + '/')
-                        path_to_icon = path_to_handler.resolve(path_to_icon)
-                    objects.append({'name': name,
-                                    'is_folder': is_folder,
-                                    'is_selectable': is_selectable,
-                                    'path': path,
-                                    'url': url,
-                                    'icon': path_to_icon,
-                                    'object_type': handler.get_mimetype()})
+            self.is_submit = True
+            # Calculate path
+            path_to_icon = handler.get_path_to_icon(16)
+            if path:
+                path_to_handler = uri.Path(str(path) + '/')
+                path_to_icon = path_to_handler.resolve(path_to_icon)
+            objects.append({'name': handler.name,
+                            'is_folder': isinstance(handler, Folder),
+                            'is_selectable': True,
+                            'path': path,
+                            'url': url,
+                            'icon': path_to_icon,
+                            'object_type': handler.get_mimetype()})
 
         self.objects = objects
 

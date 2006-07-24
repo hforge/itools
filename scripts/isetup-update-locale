@@ -23,7 +23,6 @@ import sys
 
 # Import from itools
 import itools
-from itools.resources import get_resource
 from itools.handlers.python import Python
 from itools.gettext import PO
 from itools.xhtml import XHTML
@@ -55,8 +54,7 @@ if __name__ == '__main__':
         sys.stdout.write('.')
         sys.stdout.flush()
         path = path.strip()
-        resource = get_resource(path)
-        handler = Python(resource)
+        handler = Python(path)
         for msgid, line_number in handler.get_messages():
             if len(msgid) > 2:
                 po.set_message(msgid, references={path: [line_number]})
@@ -70,8 +68,7 @@ if __name__ == '__main__':
         sys.stdout.write('.')
         sys.stdout.flush()
         path = path.strip()
-        resource = get_resource(path)
-        handler = XHTML.Document(resource)
+        handler = XHTML.Document(path)
         for msgid, line_number in handler.get_messages():
             if len(msgid) > 1:
                 po.set_message(msgid, references={path: [line_number]})

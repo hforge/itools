@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-from cStringIO import StringIO
 import re
 import time
 
@@ -143,13 +142,10 @@ class PO(Text):
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'messages', 'lines', 'encoding']
 
-    def new(self, title=''):
+    def new(self):
         # XXX Old style (like in the "get_skeleton" times)
-        skeleton = self.get_skeleton(title)
-        file = StringIO()
-        file.write(skeleton)
-        file.seek(0)
-        self.load_state_from_file(file)
+        skeleton = self.get_skeleton()
+        self.load_state_from_string(skeleton)
 
 
     @classmethod

@@ -388,7 +388,30 @@ Now:
 Basically the new method calls to "gettext" to translate the text string.
 And we use a more friendly format for variable substitution.
 
-6.3 Access Control
+6.3 Views and subviews
+······················
+
+While redefining the methods "get_views" and "get_subviews" still works
+(so the code is backwards compatible), now there is preferred way: to
+use the class variable "class_views".
+
+Before:
+
+    def get_views(self):
+        return ['browse_thumbnails', 'new_resource_form', 'edit_metadata_form']
+
+    def get_subviews(self, view):
+        if view in ['browse_thumbnails', 'browse_list', 'browse_image']:
+            return ['browse_thumbnails', 'browse_list', 'browse_image']
+        return []
+
+Now:
+
+    class_views = [['browse_thumbnails', 'browse_list', 'browse_image'],
+                   ['new_resource_form'],
+                   ['edit_metadata_form']]
+
+6.4 Access Control
 ··················
 
 The access control has been redisigned (and is now basically provied by
@@ -409,29 +432,62 @@ Now:
 
 This will basically reduce the need for subclassing. 
 
-6.X Roles replace Groups
+6.5 Roles replace Groups
 ························
 
 The groups concept and code has been replaced by "Roles".
 
-XXX
+This is maybe the most intrusive change. Basically every group becomes a
+role, and the container of the roles must be role aware, this is to say,
+must inherit from the class "RoleAware".
 
+The database instances will need to be upgraded, check the upgrade method
+in "itools.cms.root.Root" where this is done for the vanilla itools.cms
 
-6.X All files are workflow aware
+6.6 All files are workflow aware
 ································
 
-6.X Versioning
+And private default. The effect this may cause is that after an upgrade
+many images and other files that with 0.13 were accessible for anonymous
+users, become with 0.14 private.
+
+May need an upgrade script to automatically publish the images. Or to do
+it manually.
+
+
+6.7 Versioning
 ··············
 
-6.X Updating instances
+The versioning code has been simplified in preparation for the git backend
+in a future release. Basically now we don't keep old versions of the files,
+so the new code has a smaller functional scope.
+
+On the other hand now all files are versioning aware, not just text files.
+
+Note that the upgrade code removes the archive.
+
+6.8 Updating instances
 ······················
 
+Firs and very important, make a backup copy of the database.
 
+Upgrading an instance of a vanilla itools.cms is a two steps process:
+(1) run "icms-update", (2) reindex the catalog. This is the list of
+changes made by "icms-update":
 
+  - Remove the archive (".archive")
+  - Rename the metadata files from ".xxx.metadata" to "xxx.metadata"
+  - Change the group admins to the role admins.
+  - Remove the group reviewers.
+  - Remove the "en.po" resource (the message catalog).
 
+To reindex the catalog you will need to start the application, log in,
+and go to the URL "http://xxx/;catalog_form", then click the update
+catalog button.
 
-
-
+If you are upgrading your custom application it is likely you will need
+to redefine the upgrade method. Check the one from vanilla "itools.cms"
+for the example.
 
 
 

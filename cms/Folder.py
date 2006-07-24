@@ -988,6 +988,7 @@ class Folder(Handler, BaseFolder):
         handler = handler_class()
         handler.load_state_from_string(body)
         self.set_handler(name, handler, format=mimetype)
+        handler = self.get_handler(name)
 
         # Come back
         if context.has_form_value('add_and_return'):

@@ -1,5 +1,3 @@
-# translation of es.po to 
-# translation of es.po to
 # J. David Ibáñez <jdavid@itaapy.com>, 2003, 2004.
 msgid ""
 msgstr ""
@@ -361,7 +359,7 @@ msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Action"
-msgstr ""
+msgstr "Acción"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Active subview"
@@ -406,12 +404,11 @@ msgstr ""
 
 #: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add and return"
-msgstr ""
+msgstr "Agregar y regresar"
 
 #: cms/ui/UserFolder_new_user.xml.en:0
-#, fuzzy
 msgid "Add and view"
-msgstr "Agregar un nuevo enlace:"
+msgstr "Agregar y ver"
 
 #: cms/root.py:62
 msgid "Admin"
@@ -423,7 +420,7 @@ msgstr ""
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Advanced Search"
-msgstr ""
+msgstr "Búsqueda Avanzada"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Align Left"
@@ -449,7 +446,7 @@ msgstr ""
 
 #: cms/WebSite.py:220
 msgid "Anonymous"
-msgstr ""
+msgstr "Anónimo"
 
 #: cms/ui/WebSite_anonymous.xml.en:0
 #, fuzzy
@@ -476,7 +473,7 @@ msgstr ""
 
 #: cms/users.py:125
 msgid "Application"
-msgstr ""
+msgstr "Aplicación"
 
 #: cms/ui/User_edit.xml.en:0
 #, fuzzy
@@ -489,7 +486,7 @@ msgstr ""
 
 #: cms/Folder.py:455
 msgid "As Icons"
-msgstr ""
+msgstr "Como Iconos"
 
 #: cms/Folder.py:517
 msgid "As Image Gallery"
@@ -508,14 +505,12 @@ msgid "Be sure your have the external editor plug-in installed."
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Bold"
-msgstr "Nueva Carpeta"
+msgstr "Negrita"
 
 #: cms/ui/epoz_script_table.xml.en:0
-#, fuzzy
 msgid "Border"
-msgstr "Nueva Carpeta"
+msgstr "Borde"
 
 #: cms/ui/Folder_browsedir.xml.en:0
 #, fuzzy
@@ -568,9 +563,8 @@ msgid "Change default for the selected one"
 msgstr ""
 
 #: cms/ui/User_edit_password.xml.en:0
-#, fuzzy
 msgid "Change password"
-msgstr "Modificar defecto"
+msgstr "Modificar clave de acceso"
 
 #: cms/ui/User_edit.xml.en:0
 #, fuzzy
@@ -599,9 +593,8 @@ msgid "Choose a language"
 msgstr "Elije un idioma"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
-#, fuzzy
 msgid "Choose a template:"
-msgstr "Elije un idioma"
+msgstr "Elije una plantilla:"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -619,7 +612,7 @@ msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments"
-msgstr ""
+msgstr "Comentarios"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments (optional):"
@@ -651,7 +644,7 @@ msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
-msgstr ""
+msgstr "Estado actual:"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Cut"
@@ -670,13 +663,12 @@ msgid "Default"
 msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Delete"
-msgstr "Fecha"
+msgstr ""
 
 #: cms/ui/Handler_edit_metadata.xml.en:0
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Details"
@@ -687,19 +679,16 @@ msgid "Display only contents with the following terms:"
 msgstr ""
 
 #: cms/ui/Folder_translate.xml.en:0
-#, fuzzy
 msgid "Document"
-msgstr "Documento editado."
+msgstr "Documento"
 
 #: cms/binary.py:244
-#, fuzzy
 msgid "Document Excel"
-msgstr "Documento editado."
+msgstr "Documento Excel"
 
 #: cms/binary.py:111
-#, fuzzy
 msgid "Document Flash"
-msgstr "Documento editado."
+msgstr "Documento Flash"
 
 #: cms/ui/File_history.xml.en:0
 #, fuzzy
@@ -707,14 +696,12 @@ msgid "Document History"
 msgstr "Documento editado."
 
 #: cms/binary.py:337
-#, fuzzy
 msgid "Document PDF"
-msgstr "Documento editado."
+msgstr "Documento PDF"
 
 #: cms/binary.py:258
-#, fuzzy
 msgid "Document PowerPoint"
-msgstr "Documento editado."
+msgstr "Documento PowerPoint"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 #, fuzzy
@@ -724,7 +711,7 @@ msgstr "Documento editado."
 #: cms/binary.py:229
 #, fuzzy
 msgid "Document Word"
-msgstr "Documento editado."
+msgstr "Documento Word"
 
 #: cms/html.py:164
 #, fuzzy
@@ -741,7 +728,7 @@ msgstr ""
 
 #: cms/ui/User_edit_account.xml.en:0
 msgid "E-mail"
-msgstr ""
+msgstr "Correo electrónico"
 
 #: cms/html.py:152
 msgid ""
@@ -799,28 +786,24 @@ msgid "Everything is alright."
 msgstr ""
 
 #: cms/binary.py:243
-#, fuzzy
 msgid "Excel"
-msgstr "Externo"
+msgstr "Excel"
 
 #: cms/File.py:114
 msgid "External"
 msgstr "Externo"
 
 #: cms/ui/Text_externaledit.xml.en:0
-#, fuzzy
 msgid "External Editor"
-msgstr "Editor externo"
+msgstr "Editor Externo"
 
 #: cms/ui/Text_externaledit.xml.en:0
-#, fuzzy
 msgid "External Editor.."
-msgstr "Editor externo"
+msgstr "Editor Externo.."
 
 #: cms/ui/Folder_browse_list.xml.en:0
-#, fuzzy
 msgid "Field"
-msgstr "Fichero"
+msgstr "Campo"
 
 #: cms/ui/File_upload.xml.en:0
 msgid "File"
@@ -843,9 +826,8 @@ msgid "Flash"
 msgstr ""
 
 #: cms/Folder.py:56
-#, fuzzy
 msgid "Folder"
-msgstr "Nueva Carpeta"
+msgstr "Carpeta"
 
 #: cms/future.py:108
 msgid "Folders already down."
@@ -912,9 +894,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
-#, fuzzy
 msgid "Format:"
-msgstr "Formato"
+msgstr "Formato:"
 
 #: cms/ui/epoz.xml.en:0
 #, fuzzy
@@ -1089,9 +1070,8 @@ msgid "Indent"
 msgstr ""
 
 #: cms/text.py:155
-#, fuzzy
 msgid "Inline"
-msgstr "Italiano"
+msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Anchor"
@@ -1099,12 +1079,11 @@ msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Image"
-msgstr ""
+msgstr "Insertar Imagen"
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Insert Link"
-msgstr "Nuevo Enlace"
+msgstr "Insertar Enlace"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Rule"
@@ -1112,11 +1091,11 @@ msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Table"
-msgstr ""
+msgstr "Insertar Tabla"
 
 #: cms/ui/epoz_script_table.xml.en:0
 msgid "Insert table"
-msgstr ""
+msgstr "Insertar tabla"
 
 #: cms/ui/Root_internal_server_error.xml.en:0
 msgid "Internal Server Error"
@@ -1129,9 +1108,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Italic"
-msgstr "Italiano"
+msgstr "Cursiva"
 
 #: cms/ui/Root_about.xml.en:0
 msgid "J. David Ibáñez, lead developer"
@@ -1160,9 +1138,8 @@ msgid "Language added."
 msgstr "Idioma"
 
 #: cms/WebSite.py:141
-#, fuzzy
 msgid "Languages"
-msgstr "Idioma"
+msgstr "Idiomas"
 
 #: cms/WebSite.py:200
 #, fuzzy
@@ -1237,7 +1214,7 @@ msgstr "No se ha encontrado ningún objeto."
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "Message"
-msgstr ""
+msgstr "Mensaje"
 
 #: cms/ui/PO_edit.xml.en:0
 msgid ""
@@ -1250,9 +1227,8 @@ msgid ""
 msgstr ""
 
 #: cms/text.py:143
-#, fuzzy
 msgid "Message Catalog"
-msgstr "Catalán"
+msgstr ""
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "Message Translation"
@@ -1299,23 +1275,20 @@ msgid "Name contains"
 msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
-#, fuzzy
 msgid "Name:"
-msgstr "Nombre"
+msgstr "Nombre:"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Navigation"
-msgstr ""
+msgstr "Navigación"
 
 #: cms/Folder.py:853
-#, fuzzy
 msgid "New Resource"
-msgstr "Nueva Carpeta"
+msgstr "Nuevo Recurso"
 
 #: cms/Folder.py:925
-#, fuzzy
 msgid "New resource added."
-msgstr "Nuevo Documento"
+msgstr "Nuevo recurso agregado."
 
 #: cms/ui/User_tasks.xml.en:0
 msgid "No document awaits your review."
@@ -1335,14 +1308,12 @@ msgid "No objects selected."
 msgstr "No se ha encontrado ningún objeto."
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Normal"
-msgstr "Formato"
+msgstr "Normal"
 
 #: cms/ui/Root_not_found.xml.en:0
-#, fuzzy
 msgid "Not Found"
-msgstr "No se ha encontrado ningún objeto."
+msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
 msgid "Note the name and title won't change."
@@ -1350,7 +1321,7 @@ msgstr ""
 
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "Note:"
-msgstr ""
+msgstr "Nota:"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Nulla facilisi."
@@ -1371,18 +1342,16 @@ msgid "OOo Writer"
 msgstr "escribir"
 
 #: cms/Folder.py:694
-#, fuzzy
 msgid "Objects copied."
-msgstr "No se ha encontrado ningún objeto."
+msgstr "Objetos copiados."
 
 #: cms/Folder.py:714
-#, fuzzy
 msgid "Objects cut."
-msgstr "No se ha encontrado ningún objeto."
+msgstr ""
 
 #: cms/Folder.py:771
 msgid "Objects pasted."
-msgstr ""
+msgstr "Objetos pegados."
 
 #: cms/Folder.py:606
 #, fuzzy
@@ -1390,9 +1359,8 @@ msgid "Objects removed: $objects."
 msgstr "No se ha encontrado ningún objeto."
 
 #: cms/Folder.py:673
-#, fuzzy
 msgid "Objects renamed."
-msgstr "No se ha encontrado ningún objeto."
+msgstr "Objetos renombrados."
 
 #: cms/binary.py:305
 msgid "OpenOffice.org Document"
@@ -1407,9 +1375,8 @@ msgid "OpenOffice.org Spreadsheet"
 msgstr ""
 
 #: cms/future.py:59
-#, fuzzy
 msgid "Order"
-msgstr "Nueva Carpeta"
+msgstr ""
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "Order bottom"
@@ -1429,9 +1396,8 @@ msgid "Order up"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Ordered List"
-msgstr "Nueva Carpeta"
+msgstr "Lista Ordenada"
 
 #: cms/Folder.py:57
 msgid "Organize your files and documents with folders."
@@ -1458,15 +1424,15 @@ msgstr ""
 
 #: cms/binary.py:336
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Paragraph"
-msgstr ""
+msgstr "Parágrafo"
 
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Password"
-msgstr ""
+msgstr "Clave de acceso"
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "Password Change"
@@ -1490,12 +1456,11 @@ msgstr ""
 
 #: cms/ui/User_profile.xml.en:0
 msgid "Pending tasks."
-msgstr ""
+msgstr "Tareas pendientes."
 
 #: cms/access.py:241
-#, fuzzy
 msgid "Permissions"
-msgstr "Externo"
+msgstr "Permisos"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Phasellus varius eleifend tellus."
@@ -1576,7 +1541,7 @@ msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid "Preamble"
-msgstr ""
+msgstr "Preámbulo"
 
 #: cms/users.py:198
 msgid "Preferences"
@@ -1587,17 +1552,16 @@ msgid "Preview"
 msgstr ""
 
 #: cms/workflow.py:32
-#, fuzzy
 msgid "Private"
-msgstr "escribir"
+msgstr "Privado"
 
 #: cms/users.py:103
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #: cms/workflow.py:38
 msgid "Public"
-msgstr ""
+msgstr "Público"
 
 #: cms/workflow.py:43
 msgid "Publish the document."
@@ -1608,9 +1572,8 @@ msgid "Redo"
 msgstr ""
 
 #: cms/ui/WebSite_register.xml.en:0
-#, fuzzy
 msgid "Register"
-msgstr "Título"
+msgstr ""
 
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
@@ -1618,7 +1581,7 @@ msgstr ""
 
 #: cms/workflow.py:49
 msgid "Reject the document."
-msgstr ""
+msgstr "Rechazar el documento."
 
 #: cms/ui/Root_about.xml.en:0
 msgid ""
@@ -1641,9 +1604,8 @@ msgid "Remove selected ones"
 msgstr ""
 
 #: cms/ui/Folder_rename.xml.en:0
-#, fuzzy
 msgid "Rename"
-msgstr "nombre"
+msgstr "Renombrar"
 
 #: cms/ui/Folder_rename.xml.en:0
 msgid "Rename Objects"
@@ -1651,7 +1613,7 @@ msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Rename.."
-msgstr ""
+msgstr "Renombrar.."
 
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Repeat Password"
@@ -1667,29 +1629,27 @@ msgstr ""
 
 #: cms/workflow.py:53
 msgid "Retire the document."
-msgstr ""
+msgstr "Retirar el documento."
 
 #: cms/workflow.py:47
 msgid "Retract the document."
 msgstr ""
 
 #: cms/access.py:131
-#, fuzzy
 msgid "Reviewer"
-msgstr "Título"
+msgstr "Revisor"
 
 #: cms/access.py:131
 msgid "Reviewers"
-msgstr ""
+msgstr "Revisores"
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Role"
-msgstr "Nueva Carpeta"
+msgstr "Rol"
 
 #: cms/access.py:304
 msgid "Roles updated."
-msgstr ""
+msgstr "Roles actualizados."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1698,9 +1658,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/CSVRow_edit.xml.en:0
-#, fuzzy
 msgid "Save Changes"
-msgstr "Modificar"
+msgstr "Guardar Cambios"
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "Save the translation"
@@ -1725,9 +1684,8 @@ msgid "Search term"
 msgstr "Buscar"
 
 #: cms/WebSite.py:219
-#, fuzzy
 msgid "Security"
-msgstr "seguridad"
+msgstr "Seguridad"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
@@ -1739,21 +1697,19 @@ msgstr "Tamaño"
 
 #: cms/ui/File_history.xml.en:0
 msgid "Size (bytes)"
-msgstr ""
+msgstr "Tamaño (octetos)"
 
 #: cms/ui/Folder_browse_image.xml.en:0
-#, fuzzy
 msgid "Size:"
-msgstr "Tamaño"
+msgstr "Tamaño:"
 
 #: cms/skins.py:43
 msgid "Skin"
-msgstr ""
+msgstr "Piel"
 
 #: cms/workflow.py:84
-#, fuzzy
 msgid "State"
-msgstr "Fecha"
+msgstr "Estado"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
@@ -1780,9 +1736,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Superscript"
-msgstr "Seguridad"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Suspendisse potenti."
@@ -1808,7 +1763,7 @@ msgstr "Idioma"
 
 #: cms/users.py:255
 msgid "Tasks"
-msgstr ""
+msgstr "Tareas"
 
 #: cms/ui/Root_license.xml.en:0
 msgid "Terms and Conditions for Copying, Distribution and Modification"
@@ -1816,7 +1771,7 @@ msgstr ""
 
 #: cms/Folder.py:67
 msgid "Text"
-msgstr ""
+msgstr "Texto"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Text Color"
@@ -1893,7 +1848,7 @@ msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "The message"
-msgstr ""
+msgstr "El mensaje"
 
 #: cms/Folder.py:892
 msgid "The name must be entered"
@@ -1914,9 +1869,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "The resource title"
-msgstr "Título"
+msgstr "El título del recurso"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1925,14 +1879,12 @@ msgid ""
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "The subview"
-msgstr "Título"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "The title"
-msgstr "Título"
+msgstr "El título"
 
 #: cms/WebSite.py:296
 msgid "The user \"$username\" does not exist."
@@ -1943,17 +1895,16 @@ msgid "The username is wrong, please try again."
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "The view"
-msgstr "Título"
+msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "There aren't messages."
-msgstr ""
+msgstr "No hay mensajes."
 
 #: cms/ui/Root_internal_server_error.xml.en:0
 msgid "There has been an error, please try again later."
-msgstr ""
+msgstr "Ha habido un error, por favor intentalo más tarde."
 
 #: cms/Folder.py:910
 msgid "There is already another object with this name."
@@ -2003,7 +1954,6 @@ msgid ""
 msgstr ""
 
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
-#, fuzzy
 msgid "This folder is empty."
 msgstr "Esta carpeta está vacía."
 
@@ -2108,7 +2058,7 @@ msgstr ""
 
 #: cms/ui/Folder_translate.xml.en:0
 msgid "Translate"
-msgstr ""
+msgstr "Traducir"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
@@ -2116,27 +2066,24 @@ msgid ""
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Underline"
-msgstr "Italiano"
+msgstr "Subrayar"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Undo"
-msgstr ""
+msgstr "Deshacer"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Unordered List"
 msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Update"
-msgstr "Catalán"
+msgstr "Actualizar"
 
 #: cms/root.py:316
-#, fuzzy
 msgid "Update Catalog"
-msgstr "Catalán"
+msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
 msgid "Upload"
@@ -2199,9 +2146,8 @@ msgid "Version uploaded."
 msgstr ""
 
 #: cms/binary.py:90
-#, fuzzy
 msgid "Video"
-msgstr "Ver"
+msgstr ""
 
 #: cms/binary.py:358
 msgid "View"
@@ -2223,13 +2169,12 @@ msgid ""
 msgstr ""
 
 #: cms/html.py:49
-#, fuzzy
 msgid "Web Document"
-msgstr "Documento editado."
+msgstr ""
 
 #: cms/WebSite.py:40
 msgid "Web Site"
-msgstr ""
+msgstr "Sitio Web"
 
 #: cms/ui/Root_about.xml.en:0
 msgid "Welcome to the iKaaro Content Management System"
@@ -2261,7 +2206,7 @@ msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "Yes"
-msgstr ""
+msgstr "Sí"
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "You Are Now Logged out"
@@ -2335,9 +2280,8 @@ msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
 #: cms/WebSite.py:207
-#, fuzzy
 msgid "You must choose a language"
-msgstr "Elije un idioma"
+msgstr "Debes elijir un idioma"
 
 #: cms/ui/Root_license.xml.en:0
 msgid "You must make sure that they, too, receive or can get the source code."
@@ -2383,9 +2327,8 @@ msgid "are"
 msgstr "Comparar"
 
 #: i18n/oracle.py:45
-#, fuzzy
 msgid "but"
-msgstr "Acerca de"
+msgstr ""
 
 #: i18n/oracle.py:41
 msgid "como"
@@ -2425,9 +2368,8 @@ msgid "estÃ¡"
 msgstr ""
 
 #: i18n/oracle.py:48
-#, fuzzy
 msgid "from"
-msgstr "Formato"
+msgstr ""
 
 #: i18n/oracle.py:41
 msgid "hay"

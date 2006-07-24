@@ -200,7 +200,7 @@ class Catalog(Folder):
                 catalog_document.fields[field.number] = value
             else:
                 # Update the forward index (un-index)
-                catalog_document.fields[field.number] = ''.join(terms)
+                catalog_document.fields[field.number] = ' '.join(terms)
 
         # Add the Document
         self.documents.index_document(catalog_document)

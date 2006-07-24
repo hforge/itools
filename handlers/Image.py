@@ -38,8 +38,8 @@ class Image(File):
                  'data', 'size', 'thumbnails']
 
 
-    def _load_state(self, resource):
-        self.data = resource.read()
+    def _load_state_from_file(self, file):
+        self.data = file.read()
 
         # The size, a tuple with the width and height, or None if PIL is not
         # installed.

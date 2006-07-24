@@ -22,13 +22,13 @@ import urllib
 import zlib
 
 # Import from itools
+from itools.uri import Path, get_reference
 from itools.datatypes import FileName
 from itools import vfs
 from itools.handlers.Folder import Folder as BaseFolder
 ##from itools.handlers.registry import build_handler
 from itools.handlers.Text import Text
 from itools import i18n
-from itools import uri
 from itools.stl import stl
 from itools.web import get_context
 
@@ -406,7 +406,7 @@ class Folder(Handler, BaseFolder):
                 path_to_icon = document.get_path_to_icon(icon_size,
                                                          from_handler=self)
                 if path_to_icon.startswith(';'):
-                    path_to_icon = uri.Path('%s/' % name).resolve(path_to_icon)
+                    path_to_icon = Path('%s/' % name).resolve(path_to_icon)
                 line['icon'] = path_to_icon
                 line['short_title'] = reduce_string(document.title_or_name,
                                                     12, 40)
@@ -521,7 +521,7 @@ class Folder(Handler, BaseFolder):
 
         # check selected image
         if selected_image is not None:
-            path = uri.Path(selected_image)
+            path = Path(selected_image)
             selected_image = path[-1].name
             if not selected_image in self.get_handler_names():
                 selected_image = None
@@ -625,7 +625,7 @@ class Folder(Handler, BaseFolder):
         # it will be solved after the needed folder browse overhaul.
         if context.request.method == 'POST':
             ids_list = '&'.join([ 'ids=%s' % x for x in names ])
-            return uri.get_reference(';rename_form?%s' % ids_list)
+            return get_reference(';rename_form?%s' % ids_list)
 
         # Build the namespace
         namespace = {}
@@ -669,7 +669,7 @@ class Folder(Handler, BaseFolder):
                 self.set_handler('%s.metadata' % new_name, handler_metadata)
                 self.del_handler(old_name)
 
-        goto = uri.get_reference(';%s' % self.get_browse_view())
+        goto = get_reference(';%s' % self.get_browse_view())
         message = self.gettext(u'Objects renamed.')
         return goto.replace(message=message)
 
@@ -994,7 +994,7 @@ class Folder(Handler, BaseFolder):
             goto = ';%s' % self.get_browse_view()
         else:
             goto='./%s/;%s' % (name, handler.get_firstview())
-        goto = uri.get_reference(goto)
+        goto = get_reference(goto)
         message = self.gettext(u'File uploaded.')
         return goto.replace(message=message)
 

@@ -257,8 +257,8 @@ class CSV(Text):
                         del reverse_index[key]
 
 
-    def _load_state(self, resource):
-        data = resource.read()
+    def _load_state_from_file(self, file):
+        data = file.read()
 
         # Collection of None and reverse indexes.
         # When the column is indexed there will be dictionary with 

@@ -79,8 +79,8 @@ class CSV(Text, iCSV):
 
     row_class = Row
 
-##    def _load_state(self, resource):
-##        data = resource.read()
+##    def _load_state_from_file(self, file):
+##        data = file.read()
 
 ##        lines = []
 ##        index = 0

@@ -142,9 +142,9 @@ class XLIFF(Text):
 
     #######################################################################
     # Load
-    def _load_state(self, resource):
+    def _load_state_from_file(self, file):
         self.files = []
-        for event, value, line_number in parser.parse(resource.read()):
+        for event, value, line_number in parser.parse(file.read()):
             if event == parser.DOCUMENT_TYPE:
                 self.document_type = value
             elif event == parser.START_ELEMENT:

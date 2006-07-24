@@ -235,9 +235,9 @@ class CatalogTestCase(TestCase):
 
 #class Document(Text):
 
-#    def _load_state(self, resource):
+#    def _load_state_from_file(self, file):
 #        # Pre-process (load as unicode)
-#        Text._load_state(self, resource)
+#        Text._load_state_from_file(self, file)
 #        data = self.data
 #        del self.data
 #        # Extract the title and body

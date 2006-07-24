@@ -104,8 +104,8 @@ class Python(Text):
         self.visitor = None
 
 
-    def _load_state(self, resource):
-        Text._load_state(self, resource)
+    def _load_state_from_file(self, file):
+        Text._load_state_from_file(self, file)
         self.visitor = None 
 
 

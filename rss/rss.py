@@ -235,7 +235,7 @@ class RSS(Text):
         self.channel = None
 
 
-    def _load_state(self, resource):
+    def _load_state_from_file(self, file):
         # Temp fields data
         fields = {}
         channel_fields = {}
@@ -251,7 +251,7 @@ class RSS(Text):
         image = None
         items = []
         # Parse the rss file
-        for event, value, line_number in parser.parse(resource.read()):
+        for event, value, line_number in parser.parse(file.read()):
             if event == parser.START_ELEMENT:
                 namespace, local_name, attributes = value
                 if local_name == 'image':

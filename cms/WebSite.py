@@ -240,8 +240,8 @@ class WebSite(RoleAware, Folder):
 
     ########################################################################
     # Register
-    def is_allowed_to_register(self):
-        return get_context().root.get_property('ikaaro:website_is_open')
+    def is_allowed_to_register(self, user, object):
+        return self.get_property('ikaaro:website_is_open')
 
 
     register_form__access__ = 'is_allowed_to_register'

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2006-06-26 15:06+CET\n"
+"POT-Creation-Date: 2006-07-24 14:07+CET\n"
 "PO-Revision-Date: 2001-07-08 17:07+CET\n"
 "Last-Translator: jdavid\n"
 "Language-Team: ??\n"
@@ -9,24 +9,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: cms/widgets.py:187
+#: cms/root.py:374
+msgid "$n handlers have been re-indexed."
+msgstr ""
+
+#: cms/widgets.py:185
 msgid "%(start)s-%(end)s of %(total)s"
 msgstr ""
 
-#: cms/Handler.py:172
+#: cms/Handler.py:173
 msgid "%.01f KB"
 msgstr ""
 
-#: cms/Handler.py:170
+#: cms/Handler.py:171
 msgid "%.01f MB"
 msgstr ""
 
-#: cms/Handler.py:176
+#: cms/Handler.py:177
 msgid "%d obs"
-msgstr ""
-
-#: cms/root.py:450
-msgid "%s handlers have been re-indexed."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -58,341 +58,27 @@ msgid ""
 "offer, in accord with Subsection b above.)"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#calendar\">Calendar</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#ep2005\">EuroPython 2005</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#ftp\">FTP import/export</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#ikaaro.org\">ikaaro.org</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#packaging\">Packaging</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#rdb\">Relational Databases</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#xul\">XUL interfaces</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "- <a href=\"#zope3\">Support Zope 3</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid ""
-"- <a href=\"../download/ikaaro/ikaaro-0.10.4.tar.gz\">iKaaro\n"
-"                  M10-4</a>"
+"(optional) You can use a specific name to store your document, as a file "
+"name, and this name will appear in the URL."
 msgstr ""
 
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid ""
-"- <a href=\"../download/ikaaro/ikaaro-0.11.0.tar.gz\">iKaaro\n"
-"                  M11</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid ""
-"- <a href=\"../download/ikaaro/ikaaro-m9r1.tar.gz\">iKaaro\n"
-"                  M9-1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"- <a href=\"../download/itools/itools-0.5.1.tar.gz\">itools\n"
-"                  0.5.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"- <a href=\"../download/itools/itools-0.6.4.tar.gz\">itools\n"
-"                  0.6.4</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"- <a href=\"../download/itools/itools-0.7.4.tar.gz\">itools\n"
-"                  0.7.4</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"- <a href=\"../download/localizer/Localizer-1.0.1.tar.gz\">Localizer\n"
-"                1.0.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ihotfix/iHotfix-0.4.0.tar.gz\">0.4.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ihotfix/iHotfix-0.5.0.tar.gz\">0.5.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ihotfix/iHotfix-0.5.1.tar.gz\">0.5.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.10.0.tar.gz\">0.10.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.10.1.tar.gz\">0.10.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.10.2.tar.gz\">0.10.2</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.10.3.tar.gz\">0.10.3</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.10.4.tar.gz\">0.10.4</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.11.0.tar.gz\">0.11.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.12.0.tar.gz\">0.12.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.12.1.tar.gz\">0.12.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-0.12.2.tar.gz\">0.12.2</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-m8.tar.gz\">0.8.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-m8r1.tar.gz\">0.8.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-m8r2.tar.gz\">0.8.2</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-m9.tar.gz\">0.9.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../ikaaro/ikaaro-m9r1.tar.gz\">0.9.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.4.1.tar.gz\">0.4.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.4.2.tar.gz\">0.4.2</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.4.3.tar.gz\">0.4.3</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.4.4.tar.gz\">0.4.4</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.4.6.tar.gz\">0.4.6</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.5.0.tar.gz\">0.5.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.5.1.tar.gz\">0.5.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.6.0.tar.gz\">0.6.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.6.1.tar.gz\">0.6.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.6.2.tar.gz\">0.6.2</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.6.3.tar.gz\">0.6.3</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.6.4.tar.gz\">0.6.4</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.7.0.tar.gz\">0.7.0</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.7.1.tar.gz\">0.7.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.7.2.tar.gz\">0.7.2</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../itools/itools-0.7.3.tar.gz\">0.7.3</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "- <a href=\"../localizer/Localizer-1.0.1.tar.gz\">1.0.1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid ""
-"- <a href=\"../localizer/Localizer-1.1.0a4.tar.gz\">1.1.0 alpha\n"
-"                4</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid ""
-"- <a href=\"../localizer/Localizer-1.1.0b1.tar.gz\">1.1.0 beta\n"
-"                1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid ""
-"- <a href=\"../localizer/Localizer-1.1.0b2.tar.gz\">1.1.0 beta\n"
-"                2</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid ""
-"- <a href=\"../localizer/Localizer-1.1.0b3.tar.gz\">1.1.0 beta\n"
-"                3</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid ""
-"- <a href=\"../localizer/Localizer-1.1.0b4.tar.gz\">1.1.0 beta\n"
-"                4</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid ""
-"- <a href=\"../localizer/Localizer-1.1.0b5.tar.gz\">1.1.0 beta\n"
-"                5</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid ""
-"- <a href=\"../localizer/Localizer-1.1.0rc1.tar.gz\">1.1.0 rc\n"
-"                1</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid ""
-"- <a href=\"http://arch.oursours.net/zoom/herve@oursours.net--public/ikaaro?"
-"expand\">\n"
-"                  Hervé's branch</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"- <a href=\"http://arch.oursours.net/zoom/herve@oursours.net--public/itools?"
-"expand\">\n"
-"                  Hervé's branch</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"- <a href=\"http://deb.oursours.net/unstable/\">Debian\n"
-"                  Packages</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"- <a href=\"http://www.bankwinter.com\">Bank\n"
-"                Winter</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"- <a href=\"http://www.deli.deusto.es/AboutUs/Projects/X-Flow/\">\n"
-"                X-Flow</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid "- <a href=\"http://www.hiru.com\">Hiru</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid "- <a href=\"http://www.idtrack.org\">IDTrack</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid "- <a href=\"http://www.itaapy.com/\">Itaapy</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid "- <a href=\"http://www.traveluni.com\">Traveluni</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"- <a href=\"http://www.tumatxa.com\">Tumatxa</a> (Translation Memory "
-"Repository)"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"- <a href=\"http://www.zope.org/Members/CodeSyntax/DTML_Localizer\">\n"
-"                Tips</a> by Luistxo Fernandez."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"- <a href=\"http://zope.org/Members/fafhrd/CMFLocalizer\">CMFLocalizer</a> "
-"(file system message catalogs)"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"- The <a href=\"http://in-girum.net/mailman/listinfo/ikaaro\">Mailing\n"
-"                  list</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"- The <a href=\"http://in-girum.net/mailman/listinfo/localizer\">Mailing\n"
-"                list</a>"
+"(optional) You can use a specific name to store your folder, and this name "
+"will appear in the URL."
 msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
 msgid "-- Choose a language --"
 msgstr ""
 
-#: cms/WebSite.py:43
+#: ical/icalendar.py:297
+msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
+msgstr ""
+
+#: cms/sql.py:36
 msgid "..."
 msgstr ""
 
@@ -400,66 +86,12 @@ msgstr ""
 msgid "/ <a stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
 msgstr ""
 
-#: cms/ui/classic/template.xhtml.en:0
-msgid ""
-"/ <a stl:if=\"x/url\" stl:content=\"x/name\" stl:attributes=\"href x/url\"></"
-"a>"
+#: ical/icalendar.py:296
+msgid "2.0"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"<a href=\"../ikaaro\"><img border=\"0\" src=\"../images/ikaaro.jpg\"/></a> "
-"is a Content Management System."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/skin/template.xhtml.en:0
-msgid ""
-"<a href=\"../index.xhtml\">Home</a> | <a href=\"../download.xhtml"
-"\">Download</a> | <a href=\"../roadmap.xhtml\">Roadmap</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"<a href=\"../itools\"><tt style=\"font-size: 21px;\">itools</tt></a> is a "
-"Python meta-package, it provides tools such as a workflow engine or a really "
-"fast template language."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/skin/template.xhtml.en:0
-msgid ""
-"<a href=\"../itools.xhtml\">itools</a> | <a href=\"../ikaaro.xhtml\">iKaaro</"
-"a> | <a href=\"../localizer.xhtml\">Localizer</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"<a href=\"../localizer\"><img align=\"left\" border=\"0\" src=\"../images/"
-"localizer.jpg\"/></a> Localizer is a Zope product, it helps to build "
-"multilingual web applications."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=20\">#20 "
-"itools.resources.zope3</a> <strong>[???]</strong>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=26\">#26 "
-"itools.tmx</a> <strong>[???]</strong>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=27\">#27 "
-"itools.xliff</a> <strong>[???]</strong>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"<a href=\"http://in-girum.net/cgi-bin/bugzilla/show_bug.cgi?id=27\">#27 "
-"itools.xliff</a> <strong>[???]</strong> <a name=\"packaging\"></a>"
+#: cms/skins.py:221
+msgid "404 Not Found"
 msgstr ""
 
 #: cms/ui/Text_externaledit.xml.en:0
@@ -477,39 +109,6 @@ msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
 msgid "<a href=\"http://www.ikaaro.org\">ikaaro.org</a>."
-msgstr ""
-
-#: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"<a id=\"action_home\" class=\"icon_home\" href=\"#\" stl:attributes=\"href "
-"user/info/home\">\n"
-"                Home\n"
-"              </a> <a id=\"action_logout\" class=\"icon_logout\" href=\"#\" "
-"stl:attributes=\"href user/info/logout\">\n"
-"                Log out\n"
-"              </a>"
-msgstr ""
-
-#: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"<a id=\"action_login\" class=\"icon_login\" href=\"#\" stl:attributes=\"href "
-"user/login_url\">\n"
-"                Log in\n"
-"              </a> <a stl:if=\"user/joinisopen\" id=\"action_join\" class="
-"\"icon_join\" href=\"#\" stl:attributes=\"href user/join_url\">\n"
-"                Join\n"
-"              </a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "<a name=\"zope3\"></a>"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
-msgid ""
-"<a stl:content=\"subtab/label\" href=\"#\" stl:attributes=\"href subtab/name;"
-"title subtab/label\">Label</a> <span stl:if=\"not repeat/subtab/end\"> | </"
-"span>"
 msgstr ""
 
 #: cms/ui/WebSite_search.xml.en:0
@@ -542,21 +141,6 @@ msgid ""
 "\"result_size\" stl:content=\"object/size\"></span>"
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
-msgid ""
-"<span stl:if=\"user\" stl:content=\"user/name\"></span> <span stl:if=\"not "
-"user\">\n"
-"                                <em>not logged in</em>\n"
-"                              </span>"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
-msgid ""
-"<stl:block stl:if=\"not repeat/item/start\">»</stl:block> <a stl:if=\"item/"
-"url\" stl:content=\"item/short_name\" stl:attributes=\"href item/url\"></a> "
-"<span stl:if=\"not item/url\" stl:content=\"item/name\"></span>"
-msgstr ""
-
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid ""
 "<stl:inline stl:content=\"selected/width\"></stl:inline>x<stl:inline stl:"
@@ -571,17 +155,14 @@ msgid ""
 "\">>></a>"
 msgstr ""
 
-#: cms/ui/WorkflowAware_state.xml.en:0
-msgid "<strong stl:content=\"state\"></strong>"
-msgstr ""
-
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
-"<strong stl:if=\"user/info\" stl:content=\"user/info/title\">\n"
-"              The user\n"
-"            </strong> <strong stl:if=\"not user/info\">\n"
-"              not logged in\n"
-"            </strong>"
+"<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:"
+"inline> <stl:inline stl:if=\"not user/info\">not logged in</stl:inline>"
+msgstr ""
+
+#: cms/ui/WorkflowAware_state.xml.en:0
+msgid "<strong stl:content=\"state\"></strong>"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -732,52 +313,35 @@ msgid ""
 "user how to view a copy of this License."
 msgstr ""
 
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"<tt style=\"font-size: 21px;\">itools</tt> is a Python meta-package, see the "
-"right column for a summary of what <tt>itools</tt> provides."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid "<tt>itools</tt>, iKaaro and Localizer."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"A Virtual File System for Python (<a href=\"http://www.python-in-business."
-"org/ep2005/listtrack.chtml?track=692\">Python Frameworks</a>) <strong>"
-"[jdavid]</strong>"
-msgstr ""
-
-#: cms/workflow.py:39
+#: cms/workflow.py:36
 msgid "A pending document awaits review from authorized users to be published."
 msgstr ""
 
-#: cms/workflow.py:36
+#: cms/workflow.py:33
 msgid "A private document only can be reached by authorized users."
 msgstr ""
 
-#: cms/workflow.py:42
+#: cms/workflow.py:39
 msgid "A public document can be reached by even anonymous users."
 msgstr ""
 
-#: cms/workflow.py:145
+#: cms/workflow.py:123
 msgid "A transition must be selected."
 msgstr ""
 
-#: cms/root.py:354
+#: cms/root.py:301
 msgid "About"
 msgstr ""
 
-#: cms/workflow.py:54
+#: cms/workflow.py:51
 msgid "Accept the document."
 msgstr ""
 
-#: cms/root.py:152
+#: cms/root.py:151
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
-#: cms/users.py:252
+#: cms/users.py:158
 msgid "Account"
 msgstr ""
 
@@ -785,16 +349,12 @@ msgstr ""
 msgid "Account Change"
 msgstr ""
 
-#: cms/users.py:286
+#: cms/users.py:192
 msgid "Account changed."
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Action"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
-msgid "Active Item"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -811,16 +371,12 @@ msgid ""
 "by this License;"
 msgstr ""
 
-#: cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/Folder_permissions.xml.en:0
 msgid "Add"
 msgstr ""
 
 #: cms/ui/Folder_new_instance.xml.en:0
 msgid "Add Resource of Type \"<span stl:content=\"class_title\"></span>\""
-msgstr ""
-
-#: cms/ui/Group_add_users.xml.en:0
-msgid "Add Users"
 msgstr ""
 
 #: cms/ui/Text_new_instance.xml.en:0
@@ -847,7 +403,11 @@ msgstr ""
 msgid "Add and view"
 msgstr ""
 
-#: cms/root.py:103
+#: cms/root.py:62
+msgid "Admin"
+msgstr ""
+
+#: cms/root.py:62
 msgid "Admins"
 msgstr ""
 
@@ -863,11 +423,7 @@ msgstr ""
 msgid "Align Right"
 msgstr ""
 
-#: cms/ui/Group_add_users.xml.en:0
-msgid "All users are already added."
-msgstr ""
-
-#: cms/ui/Root_general.xml.en:0
+#: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Allow joining"
 msgstr ""
 
@@ -877,15 +433,19 @@ msgid ""
 "everyone understands that there is no warranty for this free software."
 msgstr ""
 
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "An Index & Search engine."
-msgstr ""
-
 #: cms/ui/Root_license.xml.en:0
 msgid "And you must show them these terms so they know their rights."
 msgstr ""
 
-#: cms/ui/Root_general.xml.en:0
+#: cms/WebSite.py:220
+msgid "Anonymous"
+msgstr ""
+
+#: cms/ui/WebSite_anonymous.xml.en:0
+msgid "Anonymous Settings."
+msgstr ""
+
+#: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Anonymous users allowed to join this web site"
 msgstr ""
 
@@ -903,7 +463,7 @@ msgstr ""
 msgid "Apologies for the inconvenience."
 msgstr ""
 
-#: cms/users.py:207
+#: cms/users.py:125
 msgid "Application"
 msgstr ""
 
@@ -911,24 +471,20 @@ msgstr ""
 msgid "Application Preferences"
 msgstr ""
 
-#: cms/users.py:244
+#: cms/users.py:151
 msgid "Application preferences changed."
 msgstr ""
 
-#: cms/Folder.py:466
+#: cms/Folder.py:455
 msgid "As Icons"
 msgstr ""
 
-#: cms/Folder.py:529
+#: cms/Folder.py:517
 msgid "As Image Gallery"
 msgstr ""
 
-#: cms/Folder.py:483
+#: cms/Folder.py:471
 msgid "As List"
-msgstr ""
-
-#: cms/ui/File_help.xml.en:0
-msgid "Available views:"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -947,19 +503,8 @@ msgstr ""
 msgid "Border"
 msgstr ""
 
-#: cms/Group.py:189
-msgid "Browse"
-msgstr ""
-
 #: cms/ui/Folder_browsedir.xml.en:0
 msgid "Browse-Directories"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"Building a Zope application with iKaaro (<a href=\"http://www.python-in-"
-"business.org/ep2005/listtrack.chtml?track=694\">Zope and Zope related</a>) "
-"<strong>[luis]</strong>"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -993,7 +538,7 @@ msgstr ""
 msgid "Center"
 msgstr ""
 
-#: cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Change"
 msgstr ""
 
@@ -1021,7 +566,7 @@ msgstr ""
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:458
+#: cms/root.py:389
 msgid "Check Groups"
 msgstr ""
 
@@ -1047,6 +592,10 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
+#: cms/csv_.py:73
+msgid "Comma Separated Values"
+msgstr ""
+
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments"
 msgstr ""
@@ -1055,50 +604,12 @@ msgstr ""
 msgid "Comments (optional):"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "Community build-up:"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid "Companies that provide support for Localizer"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"Companies that provide support for Localizer- <a href=\"http://www."
-"codesyntax.com/\">CodeSyntax</a>"
-msgstr ""
-
-#: cms/ui/File_history.xml.en:0
-msgid "Compare selected revisions"
-msgstr ""
-
-#: handlers/Var.py:78
-msgid "Content-Encoding: %s\n"
-msgstr ""
-
-#: handlers/Var.py:76
-msgid "Content-Language: %s\n"
-msgstr ""
-
-#: handlers/Var.py:80
-msgid "Content-Length: %s\n"
-msgstr ""
-
-#: handlers/Var.py:74
-msgid "Content-Type: %s\n"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
+#: cms/Folder.py:516
 msgid "Contents"
 msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Copy"
-msgstr ""
-
-#: cms/ui/File_history.xml.en:0
-msgid "Copy to present the selected revision"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -1109,8 +620,12 @@ msgid ""
 "allowed."
 msgstr ""
 
-#: cms/ui/Group_add_group.xml.en:0
-msgid "Create a New Group"
+#: cms/WebSite.py:41
+msgid "Create a new Web Site or Work Place."
+msgstr ""
+
+#: cms/html.py:50
+msgid "Create and publish a Web Document."
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
@@ -1129,26 +644,12 @@ msgstr ""
 msgid "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "Debian/Ununtu <strong>[hervé]</strong>."
-msgstr ""
-
 #: cms/ui/Root_languages.xml.en:0
 msgid "Default"
 msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Delete"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid "Demo"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid ""
-"Demo- Try the <a href=\"http://demo.ikaaro.org/\">demo</a> (username and "
-"password \"super\")"
 msgstr ""
 
 #: cms/ui/Handler_edit_metadata.xml.en:0
@@ -1167,11 +668,11 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
-#: cms/office.py:162
+#: cms/binary.py:244
 msgid "Document Excel"
 msgstr ""
 
-#: cms/flash.py:30
+#: cms/binary.py:111
 msgid "Document Flash"
 msgstr ""
 
@@ -1179,11 +680,11 @@ msgstr ""
 msgid "Document History"
 msgstr ""
 
-#: cms/office.py:281
+#: cms/binary.py:337
 msgid "Document PDF"
 msgstr ""
 
-#: cms/office.py:180
+#: cms/binary.py:258
 msgid "Document PowerPoint"
 msgstr ""
 
@@ -1191,85 +692,27 @@ msgstr ""
 msgid "Document State"
 msgstr ""
 
-#: cms/office.py:143
+#: cms/binary.py:229
 msgid "Document Word"
 msgstr ""
 
-#: cms/html.py:163
+#: cms/html.py:164
 msgid "Document changed."
 msgstr ""
 
-#: cms/text.py:143
+#: cms/text.py:115
 msgid "Document edited."
 msgstr ""
 
-#: cms/Folder.py:862
-msgid "Document translations created."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid "Documentation and Support"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid ""
-"Documentation and Support- <a href=\"../download/ikaaro/ikaaro-20050223.pdf"
-"\">The\n"
-"                  official iKaaro documentation</a> (PDF)."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"Documentation and Support- <a href=\"../download/itools/itools-20050223.pdf"
-"\">The\n"
-"                  official itools documentation</a> (PDF)."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"Documentation and Support- <a href=\"http://www.j-david.net/software/"
-"localizer/guide\">The\n"
-"                Guide</a>."
-msgstr ""
-
-#: cms/ui/File_help.xml.en:0
-msgid "Documents are where the data is stored"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
+#: cms/File.py:85
 msgid "Download"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid ""
-"Download- <a href=\"../download/ikaaro-0.12.3-metapackage.tar.gz\">The\n"
-"                  meta-package</a> (<a href=\"../download/itools/itools-"
-"0.7.4.tar.gz\">itools\n"
-"                  0.7.4</a>, <a href=\"../download/ihotfix/iHotfix-0.5.2.tar."
-"gz\">iHotfix\n"
-"                  0.5.2</a> and <a href=\"../download/ikaaro/ikaaro-0.12.3."
-"tar.gz\">iKaaro\n"
-"                  M12-3</a>)."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"Download- <a href=\"../download/localizer/Localizer-1.1.0-metapackage.tar.gz"
-"\">\n"
-"                The meta-package</a> (<a href=\"../download/itools/itools-"
-"0.7.4.tar.gz\">itools\n"
-"                0.7.3</a>, <a href=\"../download/ihotfix/iHotfix-0.5.2.tar.gz"
-"\">iHotfix\n"
-"                0.5.2</a> and <a href=\"../download/localizer/Localizer-"
-"1.1.0.tar.gz\">Localizer\n"
-"                1.1.0</a>)."
 msgstr ""
 
 #: cms/ui/User_edit_account.xml.en:0
 msgid "E-mail"
 msgstr ""
 
-#: cms/html.py:151
+#: cms/html.py:152
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
@@ -1287,12 +730,8 @@ msgstr ""
 msgid "Each version is given a distinguishing version number."
 msgstr ""
 
-#: cms/ui/File_help.xml.en:0
+#: cms/text.py:154
 msgid "Edit"
-msgstr ""
-
-#: cms/ui/User_edit_groups.xml.en:0
-msgid "Edit Groups"
 msgstr ""
 
 #: cms/ui/Handler_edit_metadata.xml.en:0
@@ -1307,7 +746,15 @@ msgstr ""
 msgid "Edit preferences;"
 msgstr ""
 
-#: cms/ui/epoz_script_color.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
+msgid "Email address"
+msgstr ""
+
+#: cms/WebSite.py:351
+msgid "Empty search value."
+msgstr ""
+
+#: cms/ui/epoz_script_table.xml.en:0
 msgid "Epoz"
 msgstr ""
 
@@ -1315,30 +762,15 @@ msgstr ""
 msgid "Epoz-Toolbox"
 msgstr ""
 
-#: cms/ui/epoz_script_table.xml.en:0
-msgid "Epoz3"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "EuroPython 2005"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"Everything here is free software, released to the world under one or another "
-"of the <a href=\"http://www.gnu.org/licenses/\">GNU licenses</a>, and backed "
-"by an active community."
-msgstr ""
-
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "Everything is alright."
 msgstr ""
 
-#: cms/office.py:161
+#: cms/binary.py:243
 msgid "Excel"
 msgstr ""
 
-#: cms/File.py:116
+#: cms/File.py:114
 msgid "External"
 msgstr ""
 
@@ -1358,7 +790,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: cms/Folder.py:1000
+#: cms/Folder.py:993
 msgid "File uploaded."
 msgstr ""
 
@@ -1366,35 +798,31 @@ msgstr ""
 msgid "Finally, any free program is threatened constantly by software patents."
 msgstr ""
 
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "Five talks have been proposed:"
-msgstr ""
-
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "Fix"
 msgstr ""
 
-#: cms/flash.py:29
+#: cms/binary.py:110
 msgid "Flash"
 msgstr ""
 
-#: cms/Folder.py:55
+#: cms/Folder.py:56
 msgid "Folder"
 msgstr ""
 
-#: cms/future.py:118
+#: cms/future.py:108
 msgid "Folders already down."
 msgstr ""
 
-#: cms/future.py:164
+#: cms/future.py:153
 msgid "Folders already on bottom."
 msgstr ""
 
-#: cms/future.py:143
+#: cms/future.py:132
 msgid "Folders already on top."
 msgstr ""
 
-#: cms/future.py:94
+#: cms/future.py:85
 msgid "Folders already up."
 msgstr ""
 
@@ -1402,19 +830,19 @@ msgstr ""
 msgid "Folders are used to classify documents."
 msgstr ""
 
-#: cms/future.py:129
+#: cms/future.py:118
 msgid "Folders ordered down."
 msgstr ""
 
-#: cms/future.py:171
+#: cms/future.py:160
 msgid "Folders ordered on bottom."
 msgstr ""
 
-#: cms/future.py:150
+#: cms/future.py:139
 msgid "Folders ordered on top."
 msgstr ""
 
-#: cms/future.py:104
+#: cms/future.py:94
 msgid "Folders ordered up."
 msgstr ""
 
@@ -1462,57 +890,11 @@ msgstr ""
 msgid "Full name"
 msgstr ""
 
-#: cms/ui/Group_browse_users.xml.en:0
-msgid ""
-"Fullname <stl:inline stl:content=\"table/sortcontrol(fullname)\"></stl:"
-"inline>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "Functional scope:"
-msgstr ""
-
 #: cms/ui/Root_license.xml.en:0
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
-#: cms/WebSite.py:133
-msgid "General"
-msgstr ""
-
-#: cms/ui/Root_general.xml.en:0
-msgid "General Settings."
-msgstr ""
-
-#: cms/WebSite.py:149
-msgid "General settings changed."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"Give a look at the <a href=\"http://demo.ikaaro.org/\">demo</a> (username "
-"and password \"super\"), or <a href=\"../download/ikaaro/ikaaro-0.13.0-"
-"metapackage.tar.gz\">download</a> it straight away."
-msgstr ""
-
-#: cms/Group.py:71
-msgid "Group"
-msgstr ""
-
-#: cms/Group.py:181
-msgid "Group added."
-msgstr ""
-
-#: cms/ui/User_edit_groups.xml.en:0
-msgid ""
-"Group name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
-msgstr ""
-
-#: cms/users.py:352
-msgid "Groups"
-msgstr ""
-
-#: cms/root.py:487
+#: cms/root.py:418
 msgid "Groups fixed."
 msgstr ""
 
@@ -1544,15 +926,11 @@ msgstr ""
 msgid "Heading 6"
 msgstr ""
 
-#: cms/ui/File_help.xml.en:0
-msgid "Help"
-msgstr ""
-
-#: cms/ui/File_help.xml.en:0
+#: cms/versioning.py:46
 msgid "History"
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Home"
 msgstr ""
 
@@ -1617,7 +995,7 @@ msgid ""
 msgstr ""
 
 #: cms/ui/Root_internal_server_error.xml.en:0
-msgid "If the error persits contact directly with the system administrator."
+msgid "If the error persits contact with the system administrator."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -1643,7 +1021,7 @@ msgstr ""
 msgid "If you type a new password, you must confirm it."
 msgstr ""
 
-#: cms/images.py:30
+#: cms/binary.py:46
 msgid "Image"
 msgstr ""
 
@@ -1661,10 +1039,6 @@ msgid ""
 "body of this License."
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
-msgid "Inactive Item"
-msgstr ""
-
 #: i18n/segment.py:21
 msgid "Inc"
 msgstr ""
@@ -1673,7 +1047,7 @@ msgstr ""
 msgid "Indent"
 msgstr ""
 
-#: cms/text.py:227
+#: cms/text.py:155
 msgid "Inline"
 msgstr ""
 
@@ -1701,12 +1075,8 @@ msgstr ""
 msgid "Insert table"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "Inter-operability:"
-msgstr ""
-
 #: cms/ui/Root_internal_server_error.xml.en:0
-msgid "It has been logged and a report sent to the system administrator."
+msgid "Internal Server Error"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -1719,30 +1089,16 @@ msgstr ""
 msgid "Italic"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid "J. David Ibáñez at <a href=\"http://www.itaapy.com\">itaapy.com</a>"
-msgstr ""
-
 #: cms/ui/Root_about.xml.en:0
 msgid "J. David Ibáñez, lead developer"
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
-msgid "Join"
-msgstr ""
-
-#: cms/ui/Root_join.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Join the Community"
 msgstr ""
 
-#: cms/text.py:45
+#: cms/text.py:40
 msgid "Keep your notes with plain text files."
-msgstr ""
-
-#: cms/ui/File_help.xml.en:0
-msgid ""
-"Keeps an historical record with the changes made, it is possible to come "
-"back to an older version."
 msgstr ""
 
 #: cms/ui/User_edit.xml.en:0
@@ -1753,29 +1109,19 @@ msgstr ""
 msgid "Language Settings"
 msgstr ""
 
-#: cms/WebSite.py:228
+#: cms/WebSite.py:213
 msgid "Language added."
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
-msgid "Language:"
-msgstr ""
-
-#: cms/WebSite.py:157
+#: cms/WebSite.py:141
 msgid "Languages"
 msgstr ""
 
-#: cms/WebSite.py:215
+#: cms/WebSite.py:200
 msgid "Languages removed."
 msgstr ""
 
-#: cms/ui/File_help.xml.en:0
-msgid ""
-"Lets to edit the document, it is possible to use an external editor if you "
-"install it or to upload a file from the filesystem."
-msgstr ""
-
-#: cms/root.py:355
+#: cms/root.py:302
 msgid "License"
 msgstr ""
 
@@ -1783,66 +1129,27 @@ msgstr ""
 msgid "Link"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "Localizer"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"Localizer 1.1, and Case Studies (<a href=\"http://www.python-in-business.org/"
-"ep2005/listtrack.chtml?track=694\">Zope and Zope related</a>) <strong>"
-"[jdavid]</strong>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid "Localizer based tools"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"Localizer based tools- <a href=\"http://zope.org/Members/camil7/"
-"SilvaLocalContent\">Locale\n"
-"                aware Silva content objects</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"Localizer is a Zope product, it helps to build multilingual web applications."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "Localizer» <a href=\"../localizer/Localizer-1.1.0.tar.gz\">1.1.0</a>"
-msgstr ""
-
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Location:"
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Log in"
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Log out"
 msgstr ""
 
-#: cms/WebSite.py:235
+#: cms/WebSite.py:272
 msgid "Login"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"Look up the <a href=\"http://www.j-david.net/software/localizer\">old site</"
-"a> for documentation and references, or just <a href=\"../download/localizer/"
-"Localizer-1.1.0-metapackage.tar.gz\">\n"
-"          download</a> it."
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: cms/root.py:457
+#: cms/root.py:388
 msgid "Maintenance"
 msgstr ""
 
@@ -1857,15 +1164,15 @@ msgid ""
 "that system;"
 msgstr ""
 
-#: cms/future.py:179
+#: cms/access.py:130
 msgid "Member"
 msgstr ""
 
-#: cms/future.py:179
+#: cms/access.py:130
 msgid "Members"
 msgstr ""
 
-#: cms/future.py:359
+#: cms/access.py:292
 msgid "Members added."
 msgstr ""
 
@@ -1873,7 +1180,7 @@ msgstr ""
 msgid "Members and roles"
 msgstr ""
 
-#: cms/future.py:349
+#: cms/access.py:285
 msgid "Members deleted."
 msgstr ""
 
@@ -1891,7 +1198,7 @@ msgid ""
 "messages_last\">>></a>"
 msgstr ""
 
-#: cms/text.py:215
+#: cms/text.py:143
 msgid "Message Catalog"
 msgstr ""
 
@@ -1899,19 +1206,15 @@ msgstr ""
 msgid "Message Translation"
 msgstr ""
 
-#: cms/text.py:276
+#: cms/text.py:208
 msgid "Message edited."
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
-msgid "Message!"
-msgstr ""
-
-#: cms/ui/File_help.xml.en:0
+#: cms/handlers.py:109
 msgid "Metadata"
 msgstr ""
 
-#: cms/Handler.py:603
+#: cms/Handler.py:546
 msgid "Metadata changed."
 msgstr ""
 
@@ -1923,11 +1226,15 @@ msgstr ""
 msgid "Modified before"
 msgstr ""
 
+#: cms/sql.py:35
+msgid "MySQL Database"
+msgstr ""
+
 #: cms/ui/Root_license.xml.en:0
 msgid "NO WARRANTY"
 msgstr ""
 
-#: cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/Folder_permissions.xml.en:0
 msgid "Name"
 msgstr ""
 
@@ -1947,11 +1254,11 @@ msgstr ""
 msgid "Navigation"
 msgstr ""
 
-#: cms/Folder.py:870
+#: cms/Folder.py:853
 msgid "New Resource"
 msgstr ""
 
-#: cms/Folder.py:935
+#: cms/Folder.py:925
 msgid "New resource added."
 msgstr ""
 
@@ -1959,7 +1266,7 @@ msgstr ""
 msgid "No document awaits your review."
 msgstr ""
 
-#: cms/File.py:197
+#: cms/File.py:195
 msgid "No file has been entered."
 msgstr ""
 
@@ -1967,24 +1274,16 @@ msgstr ""
 msgid "No history."
 msgstr ""
 
-#: cms/Folder.py:796
-msgid "No objects selected"
-msgstr ""
-
-#: cms/Folder.py:718
+#: cms/Folder.py:707
 msgid "No objects selected."
-msgstr ""
-
-#: cms/Group.py:309
-msgid "No user added"
-msgstr ""
-
-#: cms/ui/Group_add_users.xml.en:0
-msgid "No users to add in this group."
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Normal"
+msgstr ""
+
+#: cms/ui/Root_not_found.xml.en:0
+msgid "Not Found"
 msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
@@ -1995,61 +1294,55 @@ msgstr ""
 msgid "Note:"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"Now we are waiting for the reply from the track chairs to know which ones "
-"will be accepted."
-msgstr ""
-
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Nulla facilisi."
 msgstr ""
 
-#: cms/office.py:250
+#: cms/binary.py:315
 msgid "OOo Calc"
 msgstr ""
 
-#: cms/office.py:265
+#: cms/binary.py:325
 msgid "OOo Impress"
 msgstr ""
 
-#: cms/office.py:235
+#: cms/binary.py:304
 msgid "OOo Writer"
 msgstr ""
 
-#: cms/Folder.py:707
+#: cms/Folder.py:694
 msgid "Objects copied."
 msgstr ""
 
-#: cms/Folder.py:727
+#: cms/Folder.py:714
 msgid "Objects cut."
 msgstr ""
 
-#: cms/Folder.py:787
+#: cms/Folder.py:771
 msgid "Objects pasted."
 msgstr ""
 
-#: cms/Folder.py:623
-msgid "Objects removed: %s."
+#: cms/Folder.py:606
+msgid "Objects removed: $objects."
 msgstr ""
 
-#: cms/Folder.py:687
+#: cms/Folder.py:673
 msgid "Objects renamed."
 msgstr ""
 
-#: cms/office.py:236
+#: cms/binary.py:305
 msgid "OpenOffice.org Document"
 msgstr ""
 
-#: cms/office.py:266
+#: cms/binary.py:326
 msgid "OpenOffice.org Presentation"
 msgstr ""
 
-#: cms/office.py:251
+#: cms/binary.py:316
 msgid "OpenOffice.org Spreadsheet"
 msgstr ""
 
-#: cms/future.py:67
+#: cms/future.py:59
 msgid "Order"
 msgstr ""
 
@@ -2073,7 +1366,7 @@ msgstr ""
 msgid "Ordered List"
 msgstr ""
 
-#: cms/Folder.py:56
+#: cms/Folder.py:57
 msgid "Organize your files and documents with folders."
 msgstr ""
 
@@ -2096,19 +1389,15 @@ msgstr ""
 msgid "Outdent"
 msgstr ""
 
-#: cms/office.py:280
+#: cms/binary.py:336
 msgid "PDF"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "Packaging"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Paragraph"
 msgstr ""
 
-#: cms/ui/WebSite_login.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Password"
 msgstr ""
 
@@ -2116,11 +1405,11 @@ msgstr ""
 msgid "Password Change"
 msgstr ""
 
-#: cms/users.py:344
+#: cms/users.py:249
 msgid "Password changed."
 msgstr ""
 
-#: cms/users.py:325
+#: cms/users.py:231
 msgid "Passwords mismatch, please try again."
 msgstr ""
 
@@ -2128,7 +1417,7 @@ msgstr ""
 msgid "Paste"
 msgstr ""
 
-#: cms/workflow.py:38
+#: cms/workflow.py:35
 msgid "Pending"
 msgstr ""
 
@@ -2136,7 +1425,7 @@ msgstr ""
 msgid "Pending tasks."
 msgstr ""
 
-#: cms/future.py:290
+#: cms/access.py:241
 msgid "Permissions"
 msgstr ""
 
@@ -2144,12 +1433,8 @@ msgstr ""
 msgid "Phasellus varius eleifend tellus."
 msgstr ""
 
-#: cms/text.py:44
+#: cms/text.py:39
 msgid "Plain Text"
-msgstr ""
-
-#: cms/ui/Group_add_group.xml.en:0
-msgid "Please choose a name for this new group."
 msgstr ""
 
 #: cms/ui/File_new_instance.xml.en:0
@@ -2163,12 +1448,12 @@ msgid ""
 "Please click the <strong>Upload</strong> button below to import the new file."
 msgstr ""
 
-#: cms/ui/Root_join.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Please enter a password for protecting your account."
 msgstr ""
 
-#: cms/ui/Root_join.xml.en:0
-msgid "Please enter the username you want to use on this website, e.g."
+#: cms/ui/WebSite_register.xml.en:0
+msgid "Please enter your email address."
 msgstr ""
 
 #: cms/ui/WebSite_login.xml.en:0
@@ -2179,11 +1464,15 @@ msgstr ""
 msgid "Please enter your password (it will not be displayed in clear text)."
 msgstr ""
 
-#: cms/Folder.py:497
+#: cms/ui/Folder_new_instance.xml.en:0
+msgid "Please give a title to your folder."
+msgstr ""
+
+#: cms/Folder.py:487
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr ""
 
-#: cms/ui/Root_join.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Please repeat your password to prevent any typing mistake."
 msgstr ""
 
@@ -2193,55 +1482,27 @@ msgid ""
 "button below."
 msgstr ""
 
-#: cms/future.py:111
+#: cms/future.py:102
 msgid "Please select the folders to order down."
 msgstr ""
 
-#: cms/future.py:157
+#: cms/future.py:146
 msgid "Please select the folders to order on bottom."
 msgstr ""
 
-#: cms/future.py:136
+#: cms/future.py:125
 msgid "Please select the folders to order on top."
 msgstr ""
 
-#: cms/future.py:87
+#: cms/future.py:79
 msgid "Please select the folders to order up."
-msgstr ""
-
-#: cms/ui/Text_new_instance.xml.en:0
-msgid "Please select the source language of your document."
-msgstr ""
-
-#: cms/ui/Root_internal_server_error.xml.en:0
-msgid "Please try again later."
-msgstr ""
-
-#: cms/ui/Folder_new_instance.xml.en:0
-msgid ""
-"Please type the name, it will be used to store it and it will appear in the "
-"URL."
-msgstr ""
-
-#: cms/ui/Text_new_instance.xml.en:0
-msgid ""
-"Please type the name, this is not the title of your document but the file "
-"name."
 msgstr ""
 
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "Please type the title of your document."
 msgstr ""
 
-#: cms/ui/Folder_new_instance.xml.en:0
-msgid "Please type the title."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "Plus the Simple Template Language."
-msgstr ""
-
-#: cms/office.py:179
+#: cms/binary.py:257
 msgid "PowerPoint"
 msgstr ""
 
@@ -2249,53 +1510,43 @@ msgstr ""
 msgid "Preamble"
 msgstr ""
 
-#: cms/users.py:293
+#: cms/users.py:198
 msgid "Preferences"
 msgstr ""
 
-#: cms/office.py:133
+#: cms/binary.py:219
 msgid "Preview"
 msgstr ""
 
-#: cms/workflow.py:35
+#: cms/workflow.py:32
 msgid "Private"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/skin/template.xhtml.en:0
-msgid "Products:"
-msgstr ""
-
-#: cms/users.py:140
+#: cms/users.py:103
 msgid "Profile"
 msgstr ""
 
-#: cms/workflow.py:41
+#: cms/workflow.py:38
 msgid "Public"
 msgstr ""
 
-#: cms/workflow.py:46
+#: cms/workflow.py:43
 msgid "Publish the document."
-msgstr ""
-
-#: cms/html.py:54
-msgid "Publish your own web pages."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"Read the <a href=\"../download/itools/itools-0.8.0.pdf\">documentation</a> "
-"(PDF) or <a href=\"../download/itools/itools-0.8.0.tar.gz\">download</a> it."
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Redo"
 msgstr ""
 
+#: cms/ui/WebSite_register.xml.en:0
+msgid "Register"
+msgstr ""
+
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
 msgstr ""
 
-#: cms/workflow.py:52
+#: cms/workflow.py:49
 msgid "Reject the document."
 msgstr ""
 
@@ -2330,43 +1581,39 @@ msgstr ""
 msgid "Rename.."
 msgstr ""
 
-#: cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Repeat Password"
 msgstr ""
 
-#: cms/workflow.py:48
+#: cms/workflow.py:45
 msgid "Request the document publication."
 msgstr ""
 
-#: cms/text.py:312
+#: cms/text.py:243
 msgid "Restructured Text"
 msgstr ""
 
-#: cms/workflow.py:56
+#: cms/workflow.py:53
 msgid "Retire the document."
 msgstr ""
 
-#: cms/workflow.py:50
+#: cms/workflow.py:47
 msgid "Retract the document."
 msgstr ""
 
-#: cms/future.py:180
+#: cms/access.py:131
 msgid "Reviewer"
 msgstr ""
 
-#: cms/root.py:97
+#: cms/access.py:131
 msgid "Reviewers"
-msgstr ""
-
-#: cms/versioning.py:155
-msgid "Revision copied to present."
 msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Role"
 msgstr ""
 
-#: cms/future.py:372
+#: cms/access.py:304
 msgid "Roles updated."
 msgstr ""
 
@@ -2384,7 +1631,7 @@ msgstr ""
 msgid "Save the translation"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Search"
 msgstr ""
 
@@ -2400,83 +1647,31 @@ msgstr ""
 msgid "Search term"
 msgstr ""
 
+#: cms/WebSite.py:219
+msgid "Security"
+msgstr ""
+
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"See <a href=\"http://deb.oursours.net/debian/\">http://deb.oursours.net/"
-"debian/</a>"
-msgstr ""
-
-#: cms/ui/Group_add_users.xml.en:0
-msgid "Select users you want to add in this group."
-msgstr ""
-
-#: cms/WebSite.py:132
-msgid "Settings"
 msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Size"
 msgstr ""
 
+#: cms/ui/File_history.xml.en:0
+msgid "Size (bytes)"
+msgstr ""
+
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "Size:"
 msgstr ""
 
-#: cms/skins.py:44
+#: cms/skins.py:43
 msgid "Skin"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid "Some sites made with Localizer"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"Some sites made with Localizer- <a href=\"http://www.eea.eu.int\">European "
-"Environment\n"
-"                Agency</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid "Some sites made with iKaaro"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid ""
-"Some sites made with iKaaro- <a href=\"http://www.drei.cnrs.fr/\">CNRS / "
-"DREI</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid "Source archives"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/localizer.xhtml.en:0
-msgid ""
-"Source archives- <a href=\"http://in-girum.net/cgi-bin/archzoom.cgi/"
-"jdavid@itaapy.com--public/Localizer?expand\">\n"
-"                The trunk</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid ""
-"Source archives- <a href=\"http://in-girum.net/cgi-bin/archzoom.cgi/"
-"jdavid@itaapy.com--public/ikaaro?expand\">\n"
-"                  The trunk</a>"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"Source archives- <a href=\"http://in-girum.net/cgi-bin/archzoom.cgi/"
-"jdavid@itaapy.com--public/itools?expand\">\n"
-"                  The trunk</a>"
-msgstr ""
-
-#: cms/workflow.py:109
+#: cms/workflow.py:84
 msgid "State"
 msgstr ""
 
@@ -2508,10 +1703,6 @@ msgstr ""
 msgid "Superscript"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "Support for Zope 3"
-msgstr ""
-
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Suspendisse potenti."
 msgstr ""
@@ -2529,15 +1720,11 @@ msgstr ""
 msgid "Table rows"
 msgstr ""
 
-#: cms/archives.py:85
-msgid "Tar Archive"
-msgstr ""
-
 #: cms/ui/Folder_translate.xml.en:0
 msgid "Target language"
 msgstr ""
 
-#: cms/users.py:397
+#: cms/users.py:255
 msgid "Tasks"
 msgstr ""
 
@@ -2545,7 +1732,7 @@ msgstr ""
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: cms/Folder.py:63
+#: cms/Folder.py:67
 msgid "Text"
 msgstr ""
 
@@ -2561,7 +1748,7 @@ msgstr ""
 msgid "Text contains"
 msgstr ""
 
-#: cms/text.py:313
+#: cms/text.py:244
 msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
@@ -2569,8 +1756,8 @@ msgstr ""
 msgid "Thank you for using ikaaro."
 msgstr ""
 
-#: cms/root.py:381
-msgid "Thanks for joining us, please log in"
+#: cms/WebSite.py:263
+msgid "Thanks for register, please log in"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2578,6 +1765,10 @@ msgid ""
 "The \"Program\", below, refers to any such program or work, and a \"work "
 "based on the Program\" means either the Program or any derivative work under "
 "copyright law:"
+msgstr ""
+
+#: cms/sql.py:48
+msgid "The Python package MySQLdb is not installed."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2588,19 +1779,11 @@ msgid ""
 "that is true depends on what the Program does."
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "The active item"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
-msgid "The active root"
-msgstr ""
-
-#: cms/WebSite.py:198
+#: cms/WebSite.py:183
 msgid "The default language has been changed."
 msgstr ""
 
-#: cms/Folder.py:984
+#: cms/Folder.py:973
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 
@@ -2608,27 +1791,12 @@ msgstr ""
 msgid "The documents below await review for publication:"
 msgstr ""
 
-#: cms/Folder.py:962
+#: cms/Folder.py:953
 msgid "The file must be entered"
 msgstr ""
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "The following groups contain users that don't exist anymore:"
-msgstr ""
-
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "The inactive item"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
-msgid "The inactive root"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"The itools XML infrastructure (<a href=\"http://www.python-in-business.org/"
-"ep2005/listtrack.chtml?track=692\">Python Frameworks</a>) <strong>[jdavid]</"
-"strong>"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2645,24 +1813,15 @@ msgstr ""
 msgid "The message"
 msgstr ""
 
-#: cms/ui/File_help.xml.en:0
-msgid ""
-"The metadata describes the document (title, subject, description, etc..)."
-msgstr ""
-
-#: cms/Group.py:170
-msgid "The name contains illegal characters, choose another one."
-msgstr ""
-
-#: cms/Group.py:165
+#: cms/Folder.py:892
 msgid "The name must be entered"
 msgstr ""
 
-#: cms/users.py:525
+#: cms/users.py:366
 msgid "The password is wrong, please try again."
 msgstr ""
 
-#: cms/WebSite.py:266
+#: cms/WebSite.py:301
 msgid "The password is wrong."
 msgstr ""
 
@@ -2672,16 +1831,8 @@ msgid ""
 "follow."
 msgstr ""
 
-#: cms/root.py:166
-msgid "The requested resource has not been found."
-msgstr ""
-
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "The resource title"
-msgstr ""
-
-#: cms/Folder.py:810
-msgid "The selected objects can not be translated."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2694,15 +1845,15 @@ msgstr ""
 msgid "The subview"
 msgstr ""
 
-#: cms/ui/surf/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The title"
 msgstr ""
 
-#: cms/WebSite.py:260
-msgid "The user \"%s\" does not exist."
+#: cms/WebSite.py:296
+msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: cms/users.py:517
+#: cms/users.py:358
 msgid "The username is wrong, please try again."
 msgstr ""
 
@@ -2710,32 +1861,30 @@ msgstr ""
 msgid "The view"
 msgstr ""
 
-#: cms/ui/User_edit.xml.en:0
-msgid "Theme"
-msgstr ""
-
 #: cms/ui/PO_edit.xml.en:0
 msgid "There aren't messages."
 msgstr ""
 
 #: cms/ui/Root_internal_server_error.xml.en:0
-msgid "There has been an internal server error."
+msgid "There has been an error, please try again later."
 msgstr ""
 
-#: cms/Group.py:176
-msgid "There is already another group with this name."
-msgstr ""
-
-#: cms/Folder.py:921
+#: cms/Folder.py:910
 msgid "There is already another object with this name."
 msgstr ""
 
-#: cms/Folder.py:990
+#: cms/Folder.py:978
 msgid "There is already another resource with this name."
 msgstr ""
 
-#: cms/users.py:520
+#: cms/users.py:361
 msgid "There is another user with the username \"%s\", please try again"
+msgstr ""
+
+#: cms/ui/Root_not_found.xml.en:0
+msgid ""
+"There requested URL <stl:inline stl:content=\"uri\"></stl:inline> was not "
+"found on this server."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2775,20 +1924,8 @@ msgstr ""
 msgid "This folder or query is empty."
 msgstr ""
 
-#: cms/ui/Group_browse_users.xml.en:0
-msgid "This group is empty."
-msgstr ""
-
-#: cms/ui/File_help.xml.en:0
-msgid "This help screen."
-msgstr ""
-
 #: cms/ui/OOffice_view.xml.en:0
 msgid "This is a preview of your document, it doesnt really look like that."
-msgstr ""
-
-#: cms/ui/Tar_untar.xml.en:0
-msgid "This is a tar file, you can untar it by clicking the button below:"
 msgstr ""
 
 #: cms/ui/User_profile.xml.en:0
@@ -2809,10 +1946,6 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
-#: cms/ui/Group_add_users.xml.en:0
-msgid "Tip:"
-msgstr ""
-
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Title"
 msgstr ""
@@ -2824,10 +1957,6 @@ msgstr ""
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Title contains"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
-msgid "Title:"
 msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
@@ -2874,7 +2003,7 @@ msgstr ""
 msgid "To save the translation above click the button below:"
 msgstr ""
 
-#: cms/root.py:296
+#: cms/root.py:264
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -2885,7 +2014,7 @@ msgid ""
 "%(body)s\n"
 msgstr ""
 
-#: cms/workflow.py:163
+#: cms/workflow.py:138
 msgid "Transition done."
 msgstr ""
 
@@ -2894,30 +2023,8 @@ msgid "Translate"
 msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
-msgid "Translate.."
-msgstr ""
-
-#: cms/Document.py:207
-msgid "Translation saved."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid ""
-"Traveluni (<a href=\"http://www.python-in-business.org/ep2005/listtrack."
-"chtml?track=694\">Zope and Zope related</a>) <strong>[luis]</strong>"
-msgstr ""
-
-#: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
 "Type <stl:inline stl:content=\"table/sortcontrol(format)\"></stl:inline>"
-msgstr ""
-
-#: cms/ui/surf/template.xhtml.en:0
-msgid "Type:"
-msgstr ""
-
-#: handlers/Var.py:72
-msgid "URI: %s\n"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -2932,15 +2039,11 @@ msgstr ""
 msgid "Unordered List"
 msgstr ""
 
-#: cms/ui/Tar_untar.xml.en:0
-msgid "Unpack"
-msgstr ""
-
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Update"
 msgstr ""
 
-#: cms/root.py:394
+#: cms/root.py:316
 msgid "Update Catalog"
 msgstr ""
 
@@ -2964,13 +2067,13 @@ msgstr ""
 msgid "Upload and view"
 msgstr ""
 
-#: cms/File.py:204
+#: cms/File.py:203
 msgid ""
-"Upload failed: either the file does not match this document type (%s) or it "
-"contains errors."
+"Upload failed: either the file does not match this document type ($mimetype) "
+"or it contains errors."
 msgstr ""
 
-#: cms/File.py:37
+#: cms/File.py:38
 msgid "Upload office documents, images, media files, etc."
 msgstr ""
 
@@ -2978,60 +2081,39 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: cms/Group.py:311
-msgid "User added"
-msgstr ""
-
-#: cms/users.py:536
+#: cms/users.py:382
 msgid "User added."
-msgstr ""
-
-#: cms/users.py:390
-msgid "User groups edited."
-msgstr ""
-
-#: cms/Group.py:245
-msgid "User removed."
 msgstr ""
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid "Username"
 msgstr ""
 
-#: cms/ui/Group_browse_users.xml.en:0
-msgid ""
-"Username <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
-msgstr ""
-
-#: cms/root.py:111
+#: cms/root.py:135
 msgid "Users"
-msgstr ""
-
-#: cms/Group.py:313
-msgid "Users added"
-msgstr ""
-
-#: cms/Group.py:247
-msgid "Users removed."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:216
+#: cms/html.py:232
 msgid "Version edited."
 msgstr ""
 
-#: cms/File.py:206
+#: cms/File.py:207
 msgid "Version uploaded."
 msgstr ""
 
-#: cms/users.py:162
+#: cms/binary.py:90
+msgid "Video"
+msgstr ""
+
+#: cms/binary.py:358
 msgid "View"
 msgstr ""
 
-#: cms/WebSite.py:385
+#: cms/WebSite.py:413
 msgid "We did not find results for \"%s\"."
 msgstr ""
 
@@ -3046,17 +2128,12 @@ msgid ""
 "proprietary."
 msgstr ""
 
-#: cms/html.py:53
-msgid "Web Page"
+#: cms/html.py:49
+msgid "Web Document"
 msgstr ""
 
-#: cms/WebSite.py:42
+#: cms/WebSite.py:40
 msgid "Web Site"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"Welcome to IKAARO.org, here we host three different but related projects:"
 msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
@@ -3065,17 +2142,6 @@ msgstr ""
 
 #: cms/ui/User_profile.xml.en:0
 msgid "Welcome to your home folder."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid "What's new?"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"What's new?» <a href=\"../download/ikaaro/ikaaro-0.13.0-metapackage.tar.gz"
-"\">iKaaro\n"
-"          M13</a> released (April 18)"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -3090,18 +2156,12 @@ msgstr ""
 msgid "Without head"
 msgstr ""
 
-#: cms/office.py:142
+#: cms/binary.py:228
 msgid "Word"
 msgstr ""
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"XML infrastructure, includes resource handlers for XML, XHTML and HTML "
-"documents."
 msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
@@ -3110,10 +2170,6 @@ msgstr ""
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "You Are Now Logged out"
-msgstr ""
-
-#: cms/ui/User_view.xml.en:0
-msgid "You are a member of the following groups:"
 msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
@@ -3148,16 +2204,12 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:208
+#: cms/WebSite.py:194
 msgid "You can not remove the default language."
 msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
 msgid "You can upload a new file to replace the current one."
-msgstr ""
-
-#: cms/ui/User_view.xml.en:0
-msgid "You don't belong to any group."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -3178,15 +2230,15 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:318
+#: cms/users.py:223
 msgid "You mistyped your actual password, you account is not changed."
 msgstr ""
 
-#: cms/ui/Group_add_users.xml.en:0
-msgid "You must add user(s) in parent group:"
+#: cms/users.py:185
+msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
-#: cms/WebSite.py:222
+#: cms/WebSite.py:207
 msgid "You must choose a language"
 msgstr ""
 
@@ -3194,28 +2246,12 @@ msgstr ""
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: cms/WebSite.py:189
+#: cms/WebSite.py:175
 msgid "You must select one and only one language."
-msgstr ""
-
-#: cms/versioning.py:145
-msgid "You must select one and only one revision."
-msgstr ""
-
-#: cms/text.py:171
-msgid "You must select one or two revisions."
-msgstr ""
-
-#: cms/Group.py:227
-msgid "You must select the members to remove."
 msgstr ""
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "Your login information has been cleared."
-msgstr ""
-
-#: cms/archives.py:65
-msgid "Zip Archive"
 msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
@@ -3228,16 +2264,6 @@ msgstr ""
 msgid ""
 "administrators can add new languages at the root of the application, tab "
 "\"Settings\", subtab \"Languages\"."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "an API to manage URIs, to identify and locate resources."
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"an abstraction layer over resources that let to manage them with a "
-"consistent API, independently of where they are stored."
 msgstr ""
 
 #: i18n/oracle.py:46
@@ -3298,10 +2324,6 @@ msgstr ""
 msgid "estÃ¡"
 msgstr ""
 
-#: cms/ui/classic/template.xhtml.en:0
-msgid "format:"
-msgstr ""
-
 #: i18n/oracle.py:48
 msgid "from"
 msgstr ""
@@ -3310,20 +2332,8 @@ msgstr ""
 msgid "hay"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "iHotfix"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "iHotfix» <a href=\"../ihotfix/iHotfix-0.5.2.tar.gz\">0.5.2</a>"
-msgstr ""
-
-#: cms/root.py:345
+#: cms/root.py:292
 msgid "iKaaro"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/roadmap.xhtml.en:0
-msgid "iKaaro Case Study:"
 msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
@@ -3337,20 +2347,8 @@ msgid ""
 "announcement.)"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "ikaaro"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "ikaaro» <a href=\"../ikaaro/ikaaro-0.12.3.tar.gz\">0.12.3</a>"
-msgstr ""
-
 #: i18n/oracle.py:33
 msgid "ils"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/ikaaro.xhtml.en:0
-msgid "is a Content Management System."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -3359,58 +2357,14 @@ msgid ""
 "software through any other system and a licensee cannot impose that choice."
 msgstr ""
 
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "itools"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "itools.catalog"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "itools.handlers"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "itools.i18n"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "itools.resources"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "itools.uri"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "itools.workflow"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "itools.xml"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/download.xhtml.en:0
-msgid "itools» <a href=\"../itools/itools-0.7.4.tar.gz\">0.7.4</a>"
-msgstr ""
-
 #: cms/ui/WebSite_login.xml.en:0
 msgid "jsmith)."
-msgstr ""
-
-#: cms/ui/Root_join.xml.en:0
-msgid "jsmith."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
 "keep intact all the notices that refer to this License and to the absence of "
 "any warranty;"
-msgstr ""
-
-#: cms/ui/classic/template.xhtml.en:0
-msgid "language:"
 msgstr ""
 
 #: i18n/oracle.py:41
@@ -3427,14 +2381,6 @@ msgstr ""
 
 #: i18n/oracle.py:34
 msgid "mais"
-msgstr ""
-
-#: cms/ui/classic/template.xhtml.en:0
-msgid "modified:"
-msgstr ""
-
-#: cms/ui/classic/template.xhtml.en:0
-msgid "not logged in"
 msgstr ""
 
 #: i18n/oracle.py:34
@@ -3479,22 +2425,8 @@ msgid ""
 "derivative or collective works based on the Program."
 msgstr ""
 
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"represent workflows as automatons, objects can move from one state to "
-"another through transitions, classes can add specific semantics to states "
-"and transitions."
-msgstr ""
-
-#: web/request.py:115
+#: http/request.py:98
 msgid "request method \"%s\" not yet implemented"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid ""
-"resource handlers infrastructure (resource handlers are non persistent "
-"classes that add specific semantics to resources). This package also "
-"includes several handlers out of the box."
 msgstr ""
 
 #: i18n/oracle.py:47
@@ -3513,6 +2445,10 @@ msgstr ""
 
 #: i18n/oracle.py:47
 msgid "the"
+msgstr ""
+
+#: handlers/Folder.py:175
+msgid "the resource \"%s\" does not exist"
 msgstr ""
 
 #: i18n/oracle.py:45
@@ -3538,10 +2474,6 @@ msgstr ""
 msgid "to"
 msgstr ""
 
-#: cms/ui/web_site_templates/community/itools.xhtml.en:0
-msgid "tools for language negotiation and text segmentation."
-msgstr ""
-
 #: cms/ui/PO_edit.xml.en:0
 msgid "translation"
 msgstr ""
@@ -3552,12 +2484,6 @@ msgstr ""
 
 #: i18n/oracle.py:32
 msgid "une"
-msgstr ""
-
-#: cms/ui/Group_add_users.xml.en:0
-msgid ""
-"use CTRL to select or unselected a user, use shift to select contiguous "
-"users."
 msgstr ""
 
 #: i18n/oracle.py:33
@@ -3582,34 +2508,6 @@ msgstr ""
 
 #: i18n/oracle.py:48
 msgid "your"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"» <a href=\"../download/itools/itools-0.8.0.tar.gz\">itools\n"
-"          0.8.0</a> released (April 18)"
-msgstr ""
-
-#: cms/ui/web_site_templates/community/index.xhtml.en:0
-msgid ""
-"» <a href=\"../download/localizer/Localizer-1.1.0-metapackage.tar.gz\">\n"
-"          Localizer 1.1.0</a> released (April 11)"
-msgstr ""
-
-#: cms/ui/classic/template.xhtml.en:0
-msgid "» <a stl:attributes=\"href join_url\">Join</a>"
-msgstr ""
-
-#: cms/ui/classic/template.xhtml.en:0
-msgid "» <a stl:attributes=\"href login_url\">Login</a>"
-msgstr ""
-
-#: cms/ui/classic/template.xhtml.en:0
-msgid "» <a stl:attributes=\"href user/home\">Home</a>"
-msgstr ""
-
-#: cms/ui/classic/template.xhtml.en:0
-msgid "» <a stl:attributes=\"href user/logout\">Log out</a>"
 msgstr ""
 
 #: cms/ui/HTML_addlink.xml.en:0

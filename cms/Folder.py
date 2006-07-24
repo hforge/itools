@@ -641,8 +641,8 @@ class Folder(Handler, BaseFolder):
 
     rename__access__ = 'is_allowed_to_move'
     def rename(self, context):
-        names = context.get_form_value('names')
-        new_names = context.get_form_value('new_names')
+        names = context.get_form_values('names')
+        new_names = context.get_form_values('new_names')
         # Process input data
         for i, old_name in enumerate(names):
             xxx, extension, language = FileName.decode(old_name)

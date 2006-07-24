@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+# Import from the future
+from __future__ import with_statement
+
+# Import from the Standard Library
+from optparse import OptionParser
+
+# Import from itools
+import itools
+from itools import vfs
+from itools.catalog.IO import decode_character, decode_link
+
+
+
+def format_int_as_hex(x, length=4):
+    if x is None:
+        return ' ' * (length + 1)
+    x = hex(x)
+    x = x[2:].upper()
+    return '0' * (length - len(x)) + x
+
+
+
+def inspect(parser, options, target):
+    index = vfs.open(target)
+    with index.open('tree') as file:
+        i = 0
+        data = file.read(16)
+        while data:
+            if i == 0:
+                c = ' '
+                docs = None
+                child = decode_link(data[8:12])
+                sibling = None
+            else:
+                c = decode_character(data[:4])
+                docs = decode_link(data[4:8])
+                child = decode_link(data[8:12])
+                sibling = decode_link(data[12:16])
+            docs = format_int_as_hex(docs)
+            child = format_int_as_hex(child)
+            sibling = format_int_as_hex(sibling)
+            print format_int_as_hex(i), c, docs, child, sibling
+            # Next
+            i += 1
+            data = file.read(16)
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog INDEX'
+    version = 'itools %s' % itools.__version__
+    description = 'Inspects the given INDEX.'
+    parser = OptionParser(usage, version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    inspect(parser, options, target)

@@ -38,7 +38,7 @@ class Row(iRow, Node):
         return ['view', 'edit_form']
 
 
-    view__access__ = Node.is_allowed_to_view
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self):
         namespace = {}
@@ -48,7 +48,7 @@ class Row(iRow, Node):
         return stl(handler, namespace)
 
 
-    edit_form__access__ = Node.is_allowed_to_edit
+    edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     def edit_form(self):
         namespace = {}
@@ -58,7 +58,7 @@ class Row(iRow, Node):
         return stl(handler, namespace)
 
 
-    edit__access__ = Node.is_allowed_to_edit
+    edit__access__ = 'is_allowed_to_edit'
     def edit(self, column, **kw):
         self.__init__(column)
         self.parent.set_changed()

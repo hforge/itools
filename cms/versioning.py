@@ -110,7 +110,7 @@ class VersioningAware(object):
 
     #######################################################################
     # History
-    history_form__access__ = Handler.is_allowed_to_edit
+    history_form__access__ = 'is_allowed_to_edit'
     history_form__label__ = u'History'
     def history_form(self):
         namespace = {}
@@ -139,7 +139,7 @@ class VersioningAware(object):
         return stl(handler, namespace)
 
 
-    copy_to_present__access__ = Handler.is_allowed_to_edit
+    copy_to_present__access__ = 'is_allowed_to_edit'
     def copy_to_present(self, names=[], **kw):
         if len(names) != 1:
             message = u'You must select one and only one revision.'

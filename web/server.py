@@ -259,13 +259,19 @@ class Server(object):
 
 
     def HEAD(self, context):
+        # Tweak the method to call if needed
         if context.method == 'HEAD':
             context.method = 'GET'
-        response = self.GET(context)
-        content_length = response.get_content_length()
-        response.set_header('content-length', content_length)
-        response.set_body(None)
-        return response
+        # Do a GET
+        status, body = self.GET(context)
+        # Set the content length, and body is None
+        # XXX This may not work correctly if body is not a string
+        if isinstance(body, str):
+            response = context.response
+            response.set_header('content-length', len(body))
+            body = None
+
+        return status, body
 
 
     def POST(self, context):

@@ -46,8 +46,12 @@ class Context(object):
         request = self.request
         if request.has_header('X-Forwarded-Host'):
             host = request.get_header('X-Forwarded-Host')
-        else:
+        elif request.has_header('Host'):
             host = request.get_header('Host')
+        else:
+            # XXX We should return a 400 response with HTTP 1.1
+            # XXX What to do with 1.0?
+            host = None
 
         # The requested uri
         request_uri = request.uri

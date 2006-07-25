@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,10 +13,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
 from itools import uri
+from itools.datatypes import Email
 from itools import i18n
 from itools.catalog import queries
 from itools.stl import stl
@@ -253,17 +254,38 @@ class WebSite(RoleAware, Folder):
 
     register__access__ = 'is_allowed_to_register'
     def register(self, context):
-        password = context.get_form_value('password')
-        password2 = context.get_form_value('password2')
+        # Check the email
         email = context.get_form_value('ikaaro:email')
+        email = email.strip()
+        if not Email.is_valid(email):
+            message = u'A valid email address must be provided.'
+            return context.come_back(message)
 
+        # Do we already have a user with that email?
         users = self.get_handler('users')
-        error = users.new_user(email, password, password2)
+        if users.has_handler(email):
+            message = u'There is already a user with that email.'
+            return context.come_back(message)
 
-        message = self.gettext(u'Thanks for register, please log in')
-        message = quote(message.encode('utf8'))
-        goto = ';login_form?username=%s&message=%s' % (email, message)
-        return uri.get_reference(goto)
+        # Check the password
+        password = context.get_form_value('password')
+        if not password:
+            message = u'The password is mandatory.'
+            return context.come_back(message)
+
+        # Check the password
+        password2 = context.get_form_value('password2')
+        if password != password2:
+            message = u'The passwords do not match.'
+            return context.come_back(message)
+
+        # Add the user
+        user = users.set_user(email, password)
+
+        # Bring the user to the login form
+        message = u'Thanks for register, please log in'
+        goto = ';login_form?username=%s' % email
+        return context.come_back(message, goto=goto)
 
 
     ########################################################################

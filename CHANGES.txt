@@ -1,11 +1,27 @@
-
-
 ***************************************************************************
   Since "itools 0.14.0" we don't maintain the CHANGES file anymore.
   Refer to the RELEASE and UPGRADE files instead.
 ***************************************************************************
 
 
+
+0.13.9 (2006/07/25)
+
+  URI
+  - Fix the mailto scheme, return always a Mailto object, by Hervé Cauwelier
+    [#421].
+
+  CSV
+  - Fix deleting rows, by Hervé Cauwelier [#423].
+  - Fix index initialization, by Hervé Cauwelier [#339].
+
+  Web
+  - More robust code to load requests.
+  - Change a little the error log format, add the date.
+
+  CMS
+  - Now views can have a URI query, by Hervé Cauwelier [#308].
+  - Update access control declarations, by Hervé Cauwelier [#446].
 
 
 0.13.8 (2006/07/14)

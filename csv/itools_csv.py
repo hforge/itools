@@ -113,7 +113,9 @@ class CSV(Text):
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some columns the schema should be declared as:
     # schema = {'firstname': Unicode, 'lastname': Unicode, 
-    #           'age': Integer(index=True)}
+    #           'age': Integer(index='<analyser>')}
+    # where <analyser> is an itools.catalog analyser or derivate: keyword,
+    # book, text, path.
     schema = None
 
     # List of the schema column names
@@ -183,9 +185,10 @@ class CSV(Text):
 
     def _index_init(self):
         """Initialize csv values index list"""
+        indexes = self.indexes = []
         for column in self.columns:
             datatype = self.schema[column]
-            if getattr(datatype, 'index', False):
+            if getattr(datatype, 'index', None) is not None:
                 indexes.append(Index())
             else:
                 indexes.append(None)

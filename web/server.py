@@ -238,20 +238,23 @@ class Server(object):
     def log_error(self):
         log = self.error_log
         if log is not None:
+            # The separator
             log.write('\n')
             log.write('%s\n' % ('*' * 78))
+            # The date
+            log.write('DATE: %s\n' % datetime.now())
             # The request data
             context = get_context()
             if context is not None:
+                # The URI and user
+                user = context.user
+                log.write('URI : %s\n' % str(context.uri))
+                log.write('USER: %s\n' % (user and user.name or None))
+                log.write('\n')
                 # The request
                 request = context.request
                 log.write(request.request_line_to_str())
                 log.write(request.headers_to_str())
-                # Other information
-                user = context.user
-                log.write('\n')
-                log.write('URI     : %s\n' % str(context.uri))
-                log.write('USER    : %s\n' % (user and user.name or None))
 
             # The traceback
             log.write('\n')

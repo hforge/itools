@@ -27,6 +27,9 @@ class Mailto(object):
 
 
     def __str__(self):
+        if not self.host:
+            return 'mailto:%s' % self.username
+
         return 'mailto:%s@%s' % (self.username, self.host)
 
 
@@ -35,7 +38,8 @@ def decode(data):
     if '@' not in data:
         # It is normal to use mailto references like 'toto AT example DOT com'
         # to trick robots. In this case we just return the given string.
-        return data
+        username, host = data, None
+    else:
+        username, host = data.split('@', 1)
 
-    username, host = data.split('@', 1)
     return Mailto(username, host)

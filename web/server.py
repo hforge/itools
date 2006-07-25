@@ -278,7 +278,7 @@ class Server(object):
         body = method(context)
         if isinstance(body, str):
             # Post-process (used to wrap the body in a skin)
-            body = root.after_traverse(context, body)
+            body = context.root.after_traverse(context, body)
         elif isinstance(body, uri.Reference):
             # Redirection
             status = 302

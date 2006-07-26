@@ -23,7 +23,6 @@ from itools import uri
 from itools import i18n
 from itools import handlers
 from itools.stl import stl
-from itools.web import get_context
 
 # Import from ikaaro
 from access import AccessControl
@@ -194,11 +193,10 @@ class User(AccessControl, Folder):
 
     #######################################################################
     # Edit password
-    edit_password_form__access__ = 'is_self_or_superuser'
+    edit_password_form__access__ = 'is_allowed_to_edit'
     edit_password_form__label__ = u'Preferences'
     edit_password_form__sublabel__ = u'Password'
-    def edit_password_form(self):
-        context = get_context()
+    def edit_password_form(self, context):
         user = context.user
 
         # Build the namespace
@@ -212,9 +210,11 @@ class User(AccessControl, Folder):
         return stl(handler, namespace)
 
 
-    edit_password__access__ = 'is_self_or_superuser'
-    def edit_password(self, newpass, newpass2, password='', **kw):
-        context = get_context()
+    edit_password__access__ = 'is_allowed_to_edit'
+    def edit_password(self, context):
+        newpass = context.get_form_value('newpass')
+        newpass2 = context.get_form_value('newpass2')
+        password = context.get_form_value('password')
         user = context.user
 
         if self.name == user.name:
@@ -231,7 +231,6 @@ class User(AccessControl, Folder):
                     u"Passwords mismatch, please try again.")
 
             self.set_password(newpass)
-            context = get_context()
             # Update the cookie if we updated our own password
             if self.name == user.name:
                 # XXX This is a copy of the code in WebSite.login, should

@@ -87,7 +87,7 @@ class Context(object):
 
     def come_back(self, message, goto=None, **kw):
         # Translate the source message, 
-        gettext = self.handler.gettext(message)
+        message = self.handler.gettext(message)
         message = Template(message).substitute(kw)
         # Build and the return the uri reference to go
         if goto is None:

@@ -543,9 +543,9 @@ class Folder(Handler, BaseFolder):
                 selected_index = index - offset
             object['url'] = '?selected_image=%s' % name
             object['icon'] = '%s/;icon48?height=128&width=128' % name
-            is_landscape = handler.get_width() >= handler.get_height()
-            object['class'] = 'gallery_image %s' % (is_landscape and
-                    'landscape' or 'portrait')
+            width, height = handler.get_size()
+            layout = 'landscape' if (width >= height) else 'portrait'
+            object['class'] = 'gallery_image %s' % layout
             objects.append(object)
 
         table.objects = objects
@@ -561,8 +561,9 @@ class Folder(Handler, BaseFolder):
             selected['url'] = '%s/;%s' % (image.name, image.get_firstview())
             selected['preview'] = '%s/;icon48?height=320&width=320' \
                                   % image.name
-            selected['width'] = image.get_width()
-            selected['height'] = image.get_height()
+            width, height = image.get_size()
+            selected['width'] = width
+            selected['height'] = height
             selected['format'] = image.get_format()
             if selected_index == 0:
                 selected['previous'] = None

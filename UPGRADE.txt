@@ -274,6 +274,10 @@ The complete API is:
     context.get_form_values(name)
     context.has_form_value(name)
 
+Other methods that expect the "context" parameter are:
+
+  - before_traverse
+
 5.2 Removed the special case ":list"
 ····································
 

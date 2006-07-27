@@ -8,17 +8,16 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-07-24 14:07+CET\n"
-"PO-Revision-Date: 2006-04-13 18:28+0200\n"
+"PO-Revision-Date: 2006-07-27 12:09+0200\n"
 "Last-Translator: nderam <hcauwelier@oursours.net>\n"
 "Language-Team:  <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: cms/root.py:374
-#, fuzzy
 msgid "$n handlers have been re-indexed."
-msgstr "%s objets ont été réindexés."
+msgstr "$n objets ont été réindexés."
 
 #: cms/widgets.py:185
 msgid "%(start)s-%(end)s of %(total)s"
@@ -69,13 +68,13 @@ msgstr ""
 msgid ""
 "(optional) You can use a specific name to store your document, as a file "
 "name, and this name will appear in the URL."
-msgstr ""
+msgstr "(optionnel) Vous pouvez utiliser un nom pour stocker votre document, comme un nom de fichier, et qui apparaîtra dans l'URL."
 
 #: cms/ui/Folder_new_instance.xml.en:0
 msgid ""
 "(optional) You can use a specific name to store your folder, and this name "
 "will appear in the URL."
-msgstr ""
+msgstr "(optionnel) Vous pouvez utiliser un nom spécifique pour stocker votre dossier, et qui apparaîtra dans l'URL."
 
 #: cms/ui/User_translator.xml.en:0
 msgid "-- Choose a language --"
@@ -99,7 +98,7 @@ msgstr ""
 
 #: cms/skins.py:221
 msgid "404 Not Found"
-msgstr ""
+msgstr "404 Introuvable"
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid ""
@@ -167,16 +166,12 @@ msgid ""
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid ""
 "<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:"
 "inline> <stl:inline stl:if=\"not user/info\">not logged in</stl:inline>"
 msgstr ""
-"<strong stl:if=\"user/info\" stl:content=\"user/info/title\">\n"
-"              L'utilisateur\n"
-"            </strong> <strong stl:if=\"not user/info\">\n"
-"              non authentifié\n"
-"            </strong>"
+"<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:"
+"inline> <stl:inline stl:if=\"not user/info\">Authentification</stl:inline>"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "<strong stl:content=\"state\"></strong>"
@@ -426,9 +421,8 @@ msgid "Add and view"
 msgstr "Ajouter et voir"
 
 #: cms/root.py:62
-#, fuzzy
 msgid "Admin"
-msgstr "Administrateurs"
+msgstr "Administrateur"
 
 #: cms/root.py:62
 msgid "Admins"
@@ -462,12 +456,11 @@ msgstr ""
 
 #: cms/WebSite.py:220
 msgid "Anonymous"
-msgstr ""
+msgstr "Anonyme"
 
 #: cms/ui/WebSite_anonymous.xml.en:0
-#, fuzzy
 msgid "Anonymous Settings."
-msgstr "Réglages globaux"
+msgstr "Anonymes"
 
 #: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Anonymous users allowed to join this web site"
@@ -618,7 +611,7 @@ msgstr ""
 
 #: cms/csv_.py:73
 msgid "Comma Separated Values"
-msgstr ""
+msgstr "Format CSV"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments"
@@ -630,7 +623,7 @@ msgstr "Commentaires (optionnel)&nbsp;:"
 
 #: cms/Folder.py:516
 msgid "Contents"
-msgstr ""
+msgstr "Contenu"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Copy"
@@ -649,9 +642,8 @@ msgid "Create a new Web Site or Work Place."
 msgstr ""
 
 #: cms/html.py:50
-#, fuzzy
 msgid "Create and publish a Web Document."
-msgstr "Publier le document."
+msgstr "Créer un publier un document Web."
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
@@ -776,11 +768,11 @@ msgstr "Modifier les préférences&nbsp;:"
 
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Email address"
-msgstr ""
+msgstr "Adresse de courrier"
 
 #: cms/WebSite.py:351
 msgid "Empty search value."
-msgstr ""
+msgstr "Rien à chercher."
 
 #: cms/ui/epoz_script_table.xml.en:0
 msgid "Epoz"
@@ -839,23 +831,20 @@ msgid "Folder"
 msgstr "Dossier"
 
 #: cms/future.py:108
-#, fuzzy
 msgid "Folders already down."
-msgstr "Tous les utilisateurs sont déjà ajoutés."
+msgstr "Dossiers déjà en bas."
 
 #: cms/future.py:153
-#, fuzzy
 msgid "Folders already on bottom."
-msgstr "Tous les utilisateurs sont déjà ajoutés."
+msgstr "Dossiers déjà tout en bas"
 
 #: cms/future.py:132
-#, fuzzy
 msgid "Folders already on top."
-msgstr "Tous les utilisateurs sont déjà ajoutés."
+msgstr "Dossiers déjà en haut."
 
 #: cms/future.py:85
 msgid "Folders already up."
-msgstr ""
+msgstr "Dossiers déjà en haut."
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Folders are used to classify documents."
@@ -863,21 +852,19 @@ msgstr "Les dossiers servent à classer des documents."
 
 #: cms/future.py:118
 msgid "Folders ordered down."
-msgstr ""
+msgstr "Dossiers descendus."
 
 #: cms/future.py:160
-#, fuzzy
 msgid "Folders ordered on bottom."
-msgstr "Tous les utilisateurs sont déjà ajoutés."
+msgstr "Dossiers déplacés en bas."
 
 #: cms/future.py:139
-#, fuzzy
 msgid "Folders ordered on top."
-msgstr "Tous les utilisateurs sont déjà ajoutés."
+msgstr "Dossiers déplacés en haut."
 
 #: cms/future.py:94
 msgid "Folders ordered up."
-msgstr ""
+msgstr "Dossiers montés."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -908,9 +895,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
-#, fuzzy
 msgid "Format:"
-msgstr "Format"
+msgstr "Format&nbsp;:"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Formatted"
@@ -966,7 +952,7 @@ msgstr "Historique"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Home"
-msgstr ""
+msgstr "Dossiers personnel"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1029,7 +1015,6 @@ msgid ""
 msgstr ""
 
 #: cms/ui/Root_internal_server_error.xml.en:0
-#, fuzzy
 msgid "If the error persits contact with the system administrator."
 msgstr "Si l'erreur persiste, contactez l'administrateur du site."
 
@@ -1112,7 +1097,7 @@ msgstr "Insérer table"
 
 #: cms/ui/Root_internal_server_error.xml.en:0
 msgid "Internal Server Error"
-msgstr ""
+msgstr "Erreur interne du serveur"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1201,11 +1186,11 @@ msgstr ""
 
 #: cms/access.py:130
 msgid "Member"
-msgstr ""
+msgstr "Membre"
 
 #: cms/access.py:130
 msgid "Members"
-msgstr ""
+msgstr "Membres"
 
 #: cms/access.py:292
 msgid "Members added."
@@ -1213,7 +1198,7 @@ msgstr "Membres ajoutés."
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Members and roles"
-msgstr ""
+msgstr "Membres et rôles"
 
 #: cms/access.py:285
 msgid "Members deleted."
@@ -1263,7 +1248,7 @@ msgstr "Modifié avant le"
 
 #: cms/sql.py:35
 msgid "MySQL Database"
-msgstr ""
+msgstr "Base de données MySQL"
 
 #: cms/ui/Root_license.xml.en:0
 msgid "NO WARRANTY"
@@ -1282,9 +1267,8 @@ msgid "Name contains"
 msgstr "Le nom contient"
 
 #: cms/ui/Folder_browse_image.xml.en:0
-#, fuzzy
 msgid "Name:"
-msgstr "Nom"
+msgstr "Nom&nbsp;:"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Navigation"
@@ -1320,7 +1304,7 @@ msgstr "Normal"
 
 #: cms/ui/Root_not_found.xml.en:0
 msgid "Not Found"
-msgstr ""
+msgstr "Introuvable"
 
 #: cms/ui/File_upload.xml.en:0
 msgid "Note the name and title won't change."
@@ -1335,17 +1319,14 @@ msgid "Nulla facilisi."
 msgstr ""
 
 #: cms/binary.py:315
-#, fuzzy
 msgid "OOo Calc"
 msgstr "OpenOffice.org Calc"
 
 #: cms/binary.py:325
-#, fuzzy
 msgid "OOo Impress"
 msgstr "OpenOffice.org Impress"
 
 #: cms/binary.py:304
-#, fuzzy
 msgid "OOo Writer"
 msgstr "OpenOffice.org Writer"
 
@@ -1362,9 +1343,8 @@ msgid "Objects pasted."
 msgstr "Objets collés."
 
 #: cms/Folder.py:606
-#, fuzzy
 msgid "Objects removed: $objects."
-msgstr "Objets supprimés&nbsp;: %s."
+msgstr "Objets supprimés: $objects."
 
 #: cms/Folder.py:673
 msgid "Objects renamed."
@@ -1388,20 +1368,19 @@ msgstr "Ordre"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "Order bottom"
-msgstr ""
+msgstr "Tout en bas"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "Order down"
-msgstr ""
+msgstr "Descendre"
 
 #: cms/ui/Folder_order_items.xml.en:0
-#, fuzzy
 msgid "Order top"
-msgstr "Ordre"
+msgstr "Tout en haut"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "Order up"
-msgstr ""
+msgstr "Monter"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Ordered List"
@@ -1498,9 +1477,8 @@ msgid "Please enter a password for protecting your account."
 msgstr "Veuillez saisir un mot de passe pour sécuriser votre compte."
 
 #: cms/ui/WebSite_register.xml.en:0
-#, fuzzy
 msgid "Please enter your email address."
-msgstr "Veuillez saisir votre nom d'utilisateur, par exemple"
+msgstr "Veuillez saisir votre adresse de courriel"
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid "Please enter your login (e.g."
@@ -1533,24 +1511,20 @@ msgstr ""
 "<strong>Parcourir...</strong> ci-dessous."
 
 #: cms/future.py:102
-#, fuzzy
 msgid "Please select the folders to order down."
-msgstr "Veuillez sélectionner la langue source de votre document."
+msgstr "Veuillez sélectionner les dossiers à descendre."
 
 #: cms/future.py:146
-#, fuzzy
 msgid "Please select the folders to order on bottom."
-msgstr "Veuillez sélectionner la langue source de votre document."
+msgstr "Veuillez sélectionner les dossiers à déplacer en bas."
 
 #: cms/future.py:125
-#, fuzzy
 msgid "Please select the folders to order on top."
-msgstr "Veuillez sélectionner la langue source de votre document."
+msgstr "Veuillez sélectionner les dossiers à déplacer en haut."
 
 #: cms/future.py:79
-#, fuzzy
 msgid "Please select the folders to order up."
-msgstr "Veuillez sélectionner la langue source de votre document."
+msgstr "Veuillez sélectionner les dossiers à monter."
 
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "Please type the title of your document."
@@ -1593,9 +1567,8 @@ msgid "Redo"
 msgstr "Restaurer"
 
 #: cms/ui/WebSite_register.xml.en:0
-#, fuzzy
 msgid "Register"
-msgstr "Modérateur"
+msgstr "Inscription"
 
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
@@ -1706,9 +1679,8 @@ msgid "Search term"
 msgstr "Texte à chercher"
 
 #: cms/WebSite.py:219
-#, fuzzy
 msgid "Security"
-msgstr "Exposant"
+msgstr "Sécurité"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
@@ -1720,12 +1692,11 @@ msgstr "Taille"
 
 #: cms/ui/File_history.xml.en:0
 msgid "Size (bytes)"
-msgstr ""
+msgstr "Taille (octets)"
 
 #: cms/ui/Folder_browse_image.xml.en:0
-#, fuzzy
 msgid "Size:"
-msgstr "Taille"
+msgstr "Taille&nbsp;:"
 
 #: cms/skins.py:43
 msgid "Skin"
@@ -1812,16 +1783,15 @@ msgstr "Le texte contient"
 
 #: cms/text.py:244
 msgid "Text files with Restructured Text syntax support."
-msgstr ""
+msgstr "Fichiers texte au format Restructured Text"
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "Thank you for using ikaaro."
 msgstr "Merci d'utiliser iKaaro."
 
 #: cms/WebSite.py:263
-#, fuzzy
 msgid "Thanks for register, please log in"
-msgstr "Bienvenue, veuillez vous connecter."
+msgstr "Merci de votre inscription, veuillez vous connecter."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1832,7 +1802,7 @@ msgstr ""
 
 #: cms/sql.py:48
 msgid "The Python package MySQLdb is not installed."
-msgstr ""
+msgstr "Le paquet Python MySQLdb n'est pas installé."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1917,9 +1887,8 @@ msgid "The title"
 msgstr ""
 
 #: cms/WebSite.py:296
-#, fuzzy
 msgid "The user \"$username\" does not exist."
-msgstr "L'utilisateur &laquo;&nbsp;%s&nbsp;&raquo; n'existe pas."
+msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
 #: cms/users.py:358
 msgid "The username is wrong, please try again."
@@ -1934,9 +1903,8 @@ msgid "There aren't messages."
 msgstr "Aucun message."
 
 #: cms/ui/Root_internal_server_error.xml.en:0
-#, fuzzy
 msgid "There has been an error, please try again later."
-msgstr "Le nom d'utilisateur est incorrect, veuillez réessayer."
+msgstr "Une erreur s'est produite, veuillez réessayer plus tard."
 
 #: cms/Folder.py:910
 msgid "There is already another object with this name."
@@ -1956,7 +1924,7 @@ msgstr ""
 msgid ""
 "There requested URL <stl:inline stl:content=\"uri\"></stl:inline> was not "
 "found on this server."
-msgstr ""
+msgstr "L'URL demandée &laquo;&nbsp;<stl:inline stl:content=\"uri\"></stl:inline>&nbsp;&raquo; est introuvable sur ce serveur."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2151,13 +2119,10 @@ msgid "Upload and view"
 msgstr "Télécharger et voir"
 
 #: cms/File.py:203
-#, fuzzy
 msgid ""
 "Upload failed: either the file does not match this document type ($mimetype) "
 "or it contains errors."
-msgstr ""
-"Erreur lors du téléchargement&nbsp;: soit le fichier ne correspond pas à ce "
-"type de document (%s), soit il contient des erreurs."
+msgstr "Le chargement a échoué&nbsp;: veuillez vérifier le type du fichier et son intégrité."
 
 #: cms/File.py:38
 msgid "Upload office documents, images, media files, etc."
@@ -2194,9 +2159,8 @@ msgid "Version uploaded."
 msgstr "Version téléchargée."
 
 #: cms/binary.py:90
-#, fuzzy
 msgid "Video"
-msgstr "Voir"
+msgstr "Vidéo"
 
 #: cms/binary.py:358
 msgid "View"
@@ -2218,9 +2182,8 @@ msgid ""
 msgstr ""
 
 #: cms/html.py:49
-#, fuzzy
 msgid "Web Document"
-msgstr "Document"
+msgstr "Document Web"
 
 #: cms/WebSite.py:40
 msgid "Web Site"
@@ -2332,7 +2295,6 @@ msgstr ""
 "modifié."
 
 #: cms/users.py:185
-#, fuzzy
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 "Vous avez mal saisi votre mot de passe actuel, votre compte n'a pas été "
@@ -2535,7 +2497,7 @@ msgstr ""
 
 #: http/request.py:98
 msgid "request method \"%s\" not yet implemented"
-msgstr ""
+msgstr "Méthode &laquo;&nbsp;%s&nbsp;&raquo; pas encore implémentée"
 
 #: i18n/oracle.py:47
 msgid "she"
@@ -2556,9 +2518,8 @@ msgid "the"
 msgstr ""
 
 #: handlers/Folder.py:175
-#, fuzzy
 msgid "the resource \"%s\" does not exist"
-msgstr "L'utilisateur &laquo;&nbsp;%s&nbsp;&raquo; n'existe pas."
+msgstr "La ressource &laquo;&nbsp;%s&nbsp;&raquo; n'existe pas."
 
 #: i18n/oracle.py:45
 msgid "their"

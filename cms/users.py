@@ -254,12 +254,14 @@ class User(AccessControl, Folder):
     tasks_list__label__ = u'Tasks'
     def tasks_list(self, context):
         root = context.root
+        user = context.user
 
         namespace = {}
         documents = []
         for brain in root.search(workflow_state='pending'):
             document = root.get_handler(brain.abspath)
-            if not document.is_allowed_to_view():
+            ac = document.get_access_control()
+            if not ac.is_allowed_to_view(user, document):
                 continue
             documents.append({'url': '%s/;%s' % (self.get_pathto(document),
                                                  document.get_firstview()),

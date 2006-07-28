@@ -108,6 +108,10 @@ class CSV(Text):
     class_extension = 'csv'
     class_version = '20040625'
 
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'lines', 'indexes',
+                 '__curr_parsed_line_no', '__number_of_columns']
+
 
     # Hash with column names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}

@@ -344,7 +344,15 @@ Now:
 6. itools.cms
 =============
 
-6.1 The registry
+6.1 Re-arranging the code
+·························
+
+Some files have been renamed, hence the imports must be updated:
+
+  from itools.cms.images import Image  (BEFORE)
+  from itools.cms.binary import Image  (NOW)
+
+6.2 The registry
 ················
 
 The registry for itools.cms handler classes is now separated from the
@@ -366,7 +374,7 @@ Now:
 
     register_object_class(Forum)
 
-6.2 More on redirections
+6.3 More on redirections
 ························
 
 Following on redirections, the utilty function "comeback" has been replaced
@@ -392,7 +400,7 @@ Now:
 Basically the new method calls to "gettext" to translate the text string.
 And we use a more friendly format for variable substitution.
 
-6.3 Views and subviews
+6.4 Views and subviews
 ······················
 
 While redefining the methods "get_views" and "get_subviews" still works
@@ -415,7 +423,7 @@ Now:
                    ['new_resource_form'],
                    ['edit_metadata_form']]
 
-6.4 Access Control
+6.5 Access Control
 ··················
 
 The access control has been redisigned (and is now basically provied by
@@ -436,7 +444,7 @@ Now:
 
 This will basically reduce the need for subclassing. 
 
-6.5 Roles replace Groups
+6.6 Roles replace Groups
 ························
 
 The groups concept and code has been replaced by "Roles".
@@ -448,7 +456,7 @@ must inherit from the class "RoleAware".
 The database instances will need to be upgraded, check the upgrade method
 in "itools.cms.root.Root" where this is done for the vanilla itools.cms
 
-6.6 All files are workflow aware
+6.7 All files are workflow aware
 ································
 
 And private default. The effect this may cause is that after an upgrade
@@ -459,7 +467,7 @@ May need an upgrade script to automatically publish the images. Or to do
 it manually.
 
 
-6.7 Versioning
+6.8 Versioning
 ··············
 
 The versioning code has been simplified in preparation for the git backend
@@ -470,7 +478,7 @@ On the other hand now all files are versioning aware, not just text files.
 
 Note that the upgrade code removes the archive.
 
-6.8 Updating instances
+6.9 Updating instances
 ······················
 
 Firs and very important, make a backup copy of the database.

@@ -304,7 +304,7 @@ class WebSite(RoleAware, Folder):
 
 
     login__access__ = True
-    def login(self, context):
+    def login(self, context, goto=None):
         username = context.get_form_value('username')
         password = context.get_form_value('password')
 
@@ -334,9 +334,13 @@ class WebSite(RoleAware, Folder):
         # Set context
         context.user = user
 
+        # Come back
         referrer = request.referrer
         if referrer and referrer.path[-1].param != 'login_form':
             return referrer
+
+        if goto is not None:
+            return uri.get_reference(goto)
 
         return uri.get_reference('users/%s' % user.name)
 

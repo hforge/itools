@@ -546,10 +546,7 @@ class Folder(Handler, BaseFolder):
             if selected_image == name:
                 selected_index = index - offset
             object['url'] = '?selected_image=%s' % name
-            object['icon'] = '%s/;icon48?height=128&width=128' % name
-            width, height = handler.get_size()
-            layout = 'landscape' if (width >= height) else 'portrait'
-            object['class'] = 'gallery_image %s' % layout
+            object['icon'] = '%s/;icon48?width=128&height=128' % name
             objects.append(object)
 
         table.objects = objects

@@ -32,7 +32,7 @@ def stop(parser, options, target):
     if pid is None:
         print 'The server is not running.'
     else:
-        os.kill(pid, signal.SIGTERM)
+        os.kill(pid, signal.SIGINT)
         print 'Stopped.'
 
 

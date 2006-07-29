@@ -139,13 +139,13 @@ class Server(object):
         ear_fileno = ear.fileno()
 
         # Mapping {<fileno>: (request, loader)}
-        requests = {}
+        requests = {ear_fileno: None}
         # Set-up polling object
         POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
         POLL_WRITE = POLLOUT | POLLERR | POLLHUP | POLLNVAL
         poll = select.poll()
         poll.register(ear_fileno, POLL_READ)
-        while True:
+        while requests:
             try:
                 for fileno, event in poll.poll():
                     if event & POLLIN or event & POLLPRI:
@@ -209,13 +209,16 @@ class Server(object):
                         pass
             except KeyboardInterrupt:
                 ear.close()
-                if self.access_log is not None:
-                    self.access_log.close()
-                if self.error_log is not None:
-                    self.error_log.close()
-                break
+                # Gracefully stop
+                requests.pop(ear_fileno)
             except:
                 self.log_error()
+
+        # Close files
+        if self.access_log is not None:
+            self.access_log.close()
+        if self.error_log is not None:
+            self.error_log.close()
 
 
     ########################################################################

@@ -4,12 +4,9 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <div id="gallery_vpane">
-    <div class="gallery_image" stl:repeat="image table/objects"
-      stl:attributes="class image/class">
-      <a href="" stl:attributes="href image/url">
-        <img src="" stl:attributes="src image/icon" />
-      </a>
-    </div>
+    <a stl:repeat="image table/objects" stl:attributes="href image/url">
+      <img stl:attributes="src image/icon" />
+    </a>
   </div>
   <div id="gallery_main" stl:if="selected">
     <div id="gallery_center">

@@ -235,33 +235,12 @@ dl.new_resource_thumb { width: 250px; }
   overflow: auto;
 }
 
-.gallery_image {
-  float: left;
-  width: 130px;
-  height: 130px;
+#gallery_vpane img {
   margin: 5px 3px;
   border: 1px solid;
   border-color: #aaa #444 #444 #aaa;
   padding: 5px;
-  background: white;
-}
-
-.gallery_image img
-{
-  border: 1px solid;
-  border-color: #444 #aaa #aaa #444;
-}
-
-.gallery_image.landscape img {
-  width: 128px;
-  height: 96px;
-  margin: 16px 0;
-}
-
-.gallery_image.portrait img {
-  width: 96px;
-  height: 128px;
-  margin: 0 16px;
+  background: #fff;
 }
 
 #gallery_main {

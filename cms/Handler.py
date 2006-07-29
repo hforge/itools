@@ -387,7 +387,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
             handler.set_handler('.lock', lock)
         else:
             parent = handler.parent
-            parent.set_handler('.%s.lock' % handler.name, lock)
+            parent.set_handler('%s.lock' % handler.name, lock)
 
         return lock.key
 
@@ -398,7 +398,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
             handler.del_handler('.lock')
         else:
             parent = handler.parent
-            parent.del_handler('.%s.lock' % handler.name)
+            parent.del_handler('%s.lock' % handler.name)
 
 
     def is_locked(self):
@@ -407,7 +407,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
             return handler.has_handler('.lock')
         else:
             parent = handler.parent
-            return parent.has_handler('.%s.lock' % handler.name)
+            return parent.has_handler('%s.lock' % handler.name)
 
 
     def get_lock(self):
@@ -416,7 +416,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
             lock = handler.get_handler('.lock')
         else:
             parent = handler.parent
-            lock = parent.get_handler('.%s.lock' % handler.name)
+            lock = parent.get_handler('%s.lock' % handler.name)
 
         return lock
 

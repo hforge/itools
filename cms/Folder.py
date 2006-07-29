@@ -167,7 +167,9 @@ class Folder(Handler, BaseFolder):
     def before_set_handler(self, segment, handler, format=None, id=None,
                            move=False, **kw):
         name = segment.name
-        if name.startswith('.') or name.endswith('.metadata'):
+        if not isinstance(handler, Handler):
+            return
+        if name.startswith('.'):
             return
 
         # Set metadata
@@ -182,7 +184,9 @@ class Folder(Handler, BaseFolder):
         from root import Root
 
         name = segment.name
-        if name.startswith('.') or name.endswith('.metadata'):
+        if not isinstance(handler, Handler):
+            return
+        if name.startswith('.'):
             return
 
         root = self.get_root()

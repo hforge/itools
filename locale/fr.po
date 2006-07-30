@@ -456,7 +456,7 @@ msgstr ""
 
 #: cms/WebSite.py:220
 msgid "Anonymous"
-msgstr "Anonyme"
+msgstr "Anonymes"
 
 #: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Anonymous Settings."
@@ -952,7 +952,7 @@ msgstr "Historique"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Home"
-msgstr "Dossiers personnel"
+msgstr "Dossier personnel"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""

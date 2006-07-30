@@ -346,6 +346,8 @@ class Server(object):
             self.log_error(context)
             status = 500
             body = self.root.internal_server_error(context)
+            # Prevent transaction from being commited
+            context.commit = False
 
         # Commit
         self.commit_transaction(context)

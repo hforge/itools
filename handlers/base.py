@@ -153,7 +153,7 @@ class Handler(Node):
     class_mimetypes = []
     class_extension = None
 
-    # All handlers have a uri, timestamp, parend and name, plus the state.
+    # All handlers have a uri, timestamp, parent and name, plus the state.
     # The variable class "__slots__" is to be overriden.
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler']
 
@@ -178,8 +178,11 @@ class Handler(Node):
         if name not in self.__slots__:
             message = "'%s' object has no attribute '%s'"
             raise AttributeError, message % (self.__class__.__name__, name)
+        elif name == 'timestamp':
+            self.timestamp = vfs.get_mtime(self.uri)
+        else:
+            self.load_state()
 
-        self.load_state()
         return getattr(self, name)
 
 

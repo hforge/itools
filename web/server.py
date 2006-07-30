@@ -208,6 +208,7 @@ class Server(object):
                         # XXX What to do here?
                         pass
             except KeyboardInterrupt:
+                poll.unregister(ear_fileno)
                 ear.close()
                 # Gracefully stop
                 requests.pop(ear_fileno)

@@ -48,7 +48,7 @@ class User(AccessControl, Folder):
     class_views = [['profile'],
                    ['browse_thumbnails', 'browse_list', 'browse_image'],
                    ['new_resource_form'],
-                   ['edit_form', 'edit_account_form'],
+                   ['edit_form', 'edit_account_form', 'edit_password_form'],
                    ['tasks_list']]
 
 

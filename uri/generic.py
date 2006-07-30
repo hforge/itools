@@ -396,8 +396,12 @@ class Query(object):
                 line.append(key)
             elif isinstance(value, list):
                 for x in value:
+                    if isinstance(x, unicode):
+                        x = x.encode('UTF-8')
                     line.append('%s=%s' % (key, urllib.quote_plus(x)))
             else:
+                if isinstance(value, unicode):
+                    value = value.encode('UTF-8')
                 line.append('%s=%s' % (key, urllib.quote_plus(value)))
         return '&'.join(line)
 

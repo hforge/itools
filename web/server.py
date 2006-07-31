@@ -256,7 +256,16 @@ class Server(object):
                         if mtime <= msince:
                             return 304, None
         # Call the method
-        body = method(context) 
+        try:
+            body = method(context) 
+        except Forbidden:
+            if context.user is None:
+                status = 401
+                body = context.root.unauthorized(context)
+            else:
+                status = 403
+                body = context.root.forbidden(context)
+
         if isinstance(body, str):
             # Post-process (used to wrap the body in a skin)
             body = context.root.after_traverse(context, body)

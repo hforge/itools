@@ -36,6 +36,7 @@ from itools.web import get_context
 import File
 from Handler import Handler
 from binary import Image
+from catalog import CatalogAware
 from handlers import Lock, Metadata
 from LocaleAware import LocaleAware
 from versioning import VersioningAware
@@ -198,7 +199,7 @@ class Folder(Handler, BaseFolder):
                     if x.real_handler is not None:
                         context.skip = True
                     else:
-                        if not x.name.startswith('.'):
+                        if isinstance(x, CatalogAware):
                             root.index_handler(x)
             else:
                 root.index_handler(handler)

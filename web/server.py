@@ -22,6 +22,7 @@ from datetime import datetime
 import os
 import select
 from select import POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL
+from signal import signal, SIGINT
 import socket
 import sys
 import time
@@ -140,11 +141,25 @@ class Server(object):
 
         # Mapping {<fileno>: (request, loader)}
         requests = {ear_fileno: None}
+
         # Set-up polling object
         POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
         POLL_WRITE = POLLOUT | POLLERR | POLLHUP | POLLNVAL
         poll = select.poll()
         poll.register(ear_fileno, POLL_READ)
+
+        # Set up the graceful stop
+        def stop(n, frame, ear=ear, ear_fileno=ear_fileno, poll=poll,
+                 requests=requests):
+            if ear_fileno not in requests:
+                return
+            poll.unregister(ear_fileno)
+            ear.close()
+            requests.pop(ear_fileno)
+            print 'Shutting down the server (gracefully)...'
+        signal(SIGINT, stop)
+
+        # Loop
         while requests:
             try:
                 for fileno, event in poll.poll():
@@ -180,8 +195,6 @@ class Server(object):
                                 poll.register(fileno, POLL_WRITE)
                                 response = response.to_str()
                                 requests[fileno] = conn, response
-                            except KeyboardInterrupt:
-                                raise
                             except:
                                 self.log_error()
                             else:
@@ -207,11 +220,6 @@ class Server(object):
                     elif event & POLLNVAL:
                         # XXX What to do here?
                         pass
-            except KeyboardInterrupt:
-                poll.unregister(ear_fileno)
-                ear.close()
-                # Gracefully stop
-                requests.pop(ear_fileno)
             except:
                 self.log_error()
 

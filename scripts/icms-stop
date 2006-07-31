@@ -33,7 +33,7 @@ def stop(parser, options, target):
         print 'The server is not running.'
     else:
         os.kill(pid, signal.SIGINT)
-        print 'Stopped.'
+        print 'Shutting down the server (gracefully)...'
 
 
 if __name__ == '__main__':

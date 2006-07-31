@@ -32,6 +32,7 @@ import binary
 import csv_
 import handlers
 import html
+import ical
 import text
 
 
@@ -43,6 +44,7 @@ Folder.register_document_type(Folder)
 Folder.register_document_type(File.File)
 Folder.register_document_type(text.Text)
 Folder.register_document_type(Document.HTML)
+Folder.register_document_type(ical.Calendar)
 
 # Register domain (i18n)
 path = os.path.join(os.path.split(globals()['__path__'][0])[0], 'locale')

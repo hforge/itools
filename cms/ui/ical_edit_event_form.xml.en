@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form id="edit_event" action=";edit_event" method="post">
+  <p>* marked fields must be filled, except attendee email address if no
+  attendee.</p>
+  <table class="form">
+    <tr>
+      <td>Summary *</td>
+      <td>
+        <input type="text" id="SUMMARY" name="SUMMARY" 
+               stl:attributes="value SUMMARY" />
+      </td>
+    </tr>
+    <tr>
+      <td>Location</td>
+      <td>
+        <input type="text" name="LOCATION" stl:attributes="value LOCATION" />
+      </td>
+    </tr>
+    <tr>
+      <td>Start *</td>
+      <td>
+        <input type="text" name="DTSTART1" id="DTSTART1" size="12"
+               stl:attributes="value DTSTART1" />
+        <input type="button" id="trigger_dtstart" value="..." />
+        <input type="text" name="DTSTART2" id="DTSTART2" size="8"
+               stl:attributes="value DTSTART2" />
+      </td>
+    </tr>
+    <tr>
+      <td>End</td>
+      <td>
+        <input type="text" name="DTEND1" id="DTEND1" size="12"
+               stl:attributes="value DTEND1" />
+        <input type="button" id="trigger_dtend" value="..." />
+        <input type="text" name="DTEND2" id="DTEND2" size="8"
+               stl:attributes="value DTEND2" />
+      </td>
+    </tr>
+    <tr>
+      <td>Description</td>
+      <td>
+        <textarea name="DESCRIPTION" stl:content="DESCRIPTION" cols="65" />
+      </td>
+    </tr>
+    
+    <!-- STATUS -->
+    <tr stl:if="STATUS">
+      <td>Status *</td>
+      <td>
+        <select name="STATUS">
+          <stl:block stl:repeat="s STATUS">
+            <option stl:attributes="selected s/selected" stl:content="s/value"/> 
+          </stl:block>
+        </select>
+      </td>
+    </tr>
+
+    <!-- ATTENDEES -->
+    <tr stl:if="ATTENDEE">
+      <td>Attendees</td>
+      <td>
+        <table stl:repeat="att ATTENDEE">
+          <tr>
+            <td>Email address *</td>
+            <td colspan="3">
+              <input type="text" size="30"
+                 stl:attributes="name att/uri; value att/v_uri" />
+            </td>
+          </tr>
+          <tr>
+            <td>Common name</td>
+            <td>
+              <input type="text" size="20"
+               stl:attributes="name att/common; value att/v_common" />
+            </td>
+            <td>Presence</td>
+            <td>
+              <select stl:attributes="name att/role">
+                <stl:block stl:if="att/v_role/required">
+                    <option selected="yes">REQUIRED</option> 
+                    <option>OPTIONNAL</option>
+                    <option>NONE</option>
+                </stl:block>
+                <stl:block stl:if="att/v_role/optionnal">
+                    <option>REQUIRED</option>
+                    <option selected="yes">OPTIONNAL</option> 
+                    <option>NONE</option>
+                </stl:block>
+                <stl:block stl:if="att/v_role/no">
+                    <option>REQUIRED</option>
+                    <option>OPTIONNAL</option>
+                    <option selected="yes">NONE</option> 
+                </stl:block>
+              </select>
+            </td>
+          </tr>
+          <tr></tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- COMMENTS -->
+    <tr stl:repeat="comment COMMENT">
+      <td>Comment</td>
+      <td>
+        <textarea stl:attributes="name comment/name" 
+                  stl:content="comment/value" cols="65" />
+      </td>
+    </tr>
+    
+    <table cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <input type="hidden" name="UID" stl:attributes="value UID" />
+        </td>
+      </tr>
+    </table>
+    <tr stl:if="allowed">
+      <td></td>
+      <td class="submit">
+        <input type="submit" name="update" value="OK" /></td>
+      <td class="cancel">
+        <input type="submit" name="remove" value="Definitely remove" /></td>
+    </tr>
+  </table>
+</form>
+
+<script language="javascript">
+  focus("SUMMARY");
+  Calendar.setup({
+    inputField: "DTSTART1",
+    ifFormat: "%Y-%m-%d",
+    firstDay: <stl:block content="firstday">0</stl:block>,
+    button: "trigger_dtstart"});
+  Calendar.setup({
+    inputField: "DTEND1",
+    ifFormat: "%Y-%m-%d",
+    firstDay: <stl:block content="firstday">0</stl:block>,
+    button: "trigger_dtend"});
+</script>
+
+
+</stl:block>

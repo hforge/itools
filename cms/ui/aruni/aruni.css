@@ -359,3 +359,71 @@ dl.new_resource_thumb {
   text-align: left;
   overflow: auto;
 }
+
+/* ICALENDAR */
+#ical_table_view #selector {
+  margin: 5px 0px 5px 0px;
+  font-size:18px;
+}
+#ical_table_view #selector ul {
+  list-style:none;
+  display:inline;
+}
+#ical_table_view #selector li {
+  display: inline; 
+  padding: 26px;
+}
+#ical_table_view #selector li a {
+  text-decoration:none;
+  color: #cc0000;
+}
+
+#ical_table_view table {
+  border-spacing: 1px;
+}
+#ical_table_view td {
+  background: #e9b96e;
+}
+
+#ical_table_view th {
+  background: #cc0000;
+  color: #fce94f;
+  font-weight: bold;
+}
+
+#ical_table_view .month {
+  font-weight: bold;
+  color: #cc0000;
+}
+
+#ical_table_view .day {
+  padding: 2px 5px 2px 5px;
+  height: 70px;
+}
+
+#ical_table_view .bold {
+  font-weight: bold;
+}
+
+#ical_table_view .add_event {
+  color: #ce5c00;
+  text-decoration:none; 
+  font-size:11px; 
+  vertical-align: top;
+}
+
+#ical_table_view .event dd {
+  font: 10pt "Bitstream Vera Sans";
+  margin-left: 5px;
+}
+
+#ical_table_view .event a.CONFIRMED {
+  color: #4a0000;
+}
+#ical_table_view .event a.TENTATIVE {
+  color: #cc0000;
+}
+#ical_table_view .event a.CANCELLED {
+  color: #8f5902;
+}
+

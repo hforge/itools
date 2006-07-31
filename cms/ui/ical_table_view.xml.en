@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<div id="ical_table_view"> 
+  <div id="selector">
+    <ul>
+      <li>
+        <a stl:attributes="href previous_week">&lt;</a>
+        <stl:block stl:content="current_week" />
+        <a stl:attributes="href next_week">&gt;</a>
+      </li>
+      <li>
+        <a stl:attributes="href previous_month">&lt;</a>
+        <stl:block stl:content="current_month" />
+        <a stl:attributes="href next_month">&gt;</a>
+      </li>
+      <li>
+        <a stl:attributes="href previous_year">&lt;</a>
+        <stl:block stl:content="current_year" />
+        <a stl:attributes="href next_year">&gt;</a>
+      </li>
+    </ul>
+  </div>
+
+  <table>
+    <colgroup span="1" width="9%" />
+    <colgroup span="7" width="13%" />
+
+    <tr>
+      <th />
+      <th>Monday</th>
+      <th>Tuesday</th>
+      <th>Wednesday</th>
+      <th>Thursday</th>
+      <th>Friday</th>
+      <th>Saturday</th>
+      <th>Sunday</th>
+    </tr>
+
+    <tr stl:repeat="week weeks" valign="top">
+      <td stl:content="week/month" class="month" />
+      <td stl:repeat="day week/days" class="day">
+        <span stl:content="day/nday" class="bold" />
+        <a class="add_event" stl:attributes="href day/url">++</a>
+
+        <!-- TIME PRECISED-->
+        <div class="event" stl:repeat="event day/events">
+          <dl stl:if="event/TIME">
+            <dt>
+              <a stl:attributes="href event/url; class event/STATUS">
+                <span stl:if="event/DTSTART">
+                  <span stl:content="event/DTSTART" />
+                  <span stl:if="event/DTEND"> - </span></span>
+                <span stl:if="event/DTEND" stl:content="event/DTEND" />
+              </a>
+            </dt>
+            <dd stl:content="event/SUMMARY" />
+          </dl>  
+        </div>
+        <!-- NO TIME GIVEN (all day long) -->
+        <div class="event" stl:repeat="event day/events">
+          <dl stl:if="not event/TIME">
+            <dt>
+              <a stl:attributes="href event/url; class event/STATUS" 
+                 stl:content="event/SUMMARY" />
+            </dt>
+            <dd />
+          </dl>  
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+</stl:block>

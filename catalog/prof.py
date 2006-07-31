@@ -23,7 +23,6 @@ from time import time
 # Import from itools
 from itools import vfs
 from itools.handlers import Text
-from itools.handlers.spaces import get_space
 from itools.xml import XML
 from itools.html import HTML
 from itools.catalog.catalog import Catalog

@@ -104,11 +104,22 @@ class DateTime(DataType):
     def from_str(value):
         if not value:
             return None
-        date, time = value.split()
+        date, time = value, None
+        if ' ' in value:
+            date, time = value.split()
+        # Date
         year, month, day = date.split('-')
         year, month, day = int(year), int(month), int(day)
-        hours, minutes, seconds = time.split(':')
-        hours, minutes, seconds = int(hours), int(minutes), int(seconds)
+        # If no time
+        if not time:
+             return datetime(year, month, day)
+        # Time
+        if time.count(':') == 1:
+            hours, minutes = time.split(':')
+            hours, minutes, seconds = int(hours), int(minutes), 0
+        else:
+            hours, minutes, seconds = time.split(':')
+            hours, minutes, seconds = int(hours), int(minutes), int(seconds)
         return datetime(year, month, day, hours, minutes, seconds)
 
 
@@ -553,7 +564,8 @@ class ComponentType(object):
     def encode(cls, component):
         lines = []
 
-        lines.append('BEGIN:%s\n' % component.c_type)
+        line = 'BEGIN:%s\n' % component.c_type
+        lines.append(Unicode.encode(line))
 
         for key in component.properties:
             occurs = PropertyType.nb_occurrences(key)
@@ -564,7 +576,8 @@ class ComponentType(object):
                 for item in component.properties[key]:
                     lines.append(PropertyType.encode(key, item))
 
-        lines.append('END:%s\n' % component.c_type)
+        line = 'END:%s\n' % component.c_type
+        lines.append(Unicode.encode(line))
 
         return ''.join(lines)
 

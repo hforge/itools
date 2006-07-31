@@ -82,7 +82,7 @@ class Property(object):
 
 class PropertyValue(object):
 
-    def __init__(self, value, parameters={}):
+    def __init__(self, value, parameters=None):
         """
         Initialize the property value.
 
@@ -90,6 +90,8 @@ class PropertyValue(object):
         parameters -- {param1_name: Parameter object, ...}
         """
         self.value, self.parameters = value, parameters
+        if not self.parameters:
+            self.parameters = {}
 
 
 class Component(object):
@@ -108,7 +110,7 @@ class Component(object):
     # component-type/properties (for example to test if property can appear more
     # than one time, ...)
 
-    def __init__ (self, c_type, properties={}, encoding='UTF-8'):
+    def __init__ (self, c_type, properties=None, encoding='UTF-8'):
         """
         Initialize the component.
 
@@ -117,9 +119,11 @@ class Component(object):
         """
         self.c_type = c_type
         self.properties = properties
+        if not properties:
+            self.properties = {}
         self.encoding = encoding
         # We add arbitrarily an uid
-        if 'UID' not in properties and 'uid' not in properties:
+        if 'UID' not in self.properties and 'uid' not in self.properties:
             self.add(Property('UID', PropertyValue(self.generate_uid())))
 
 
@@ -400,7 +404,9 @@ class icalendar(Text):
         """ """
         lines = []
 
-        lines.append('BEGIN:VCALENDAR\n')
+        line = 'BEGIN:VCALENDAR\n'
+        lines.append(Unicode.encode(line))
+
         # Calendar properties
         for key in self.properties:
             occurs = PropertyType.nb_occurrences(key) 
@@ -414,7 +420,8 @@ class icalendar(Text):
             for component in self.components[type_component]:
                 lines.append(ComponentType.encode(component))
 
-        lines.append('END:VCALENDAR\n')
+        line = 'END:VCALENDAR\n'
+        lines.append(Unicode.encode(line))
 
         return ''.join(lines)
 
@@ -440,6 +447,18 @@ class icalendar(Text):
         else:
             raise ValueError, 'Only Property and Component object types can be'\
                               ' added to an icalendar object.'
+
+
+    def remove(self, type, uid):
+        """
+        Definitely remove an existant component from the calendar.
+        """
+        for index, component in enumerate(self.components[type]):
+            c_uid  = component.get_property_values('UID')
+            if c_uid and c_uid.value == uid:
+                del self.components[type][index]
+                break
+        self.set_changed()
 
 
     def get_property_values(self, name=None):

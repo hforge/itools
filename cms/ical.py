@@ -399,7 +399,7 @@ class Calendar(Text, icalendar):
         if context.has_form_value('remove'):
             return self.remove(context)
 
-        date = self.get_current_date()
+        date = self.get_current_date(context.get_form_value('DTSTART1'))
         # Get UID and Component object
         uid = context.get_form_value('UID')
         if uid:
@@ -453,7 +453,7 @@ class Calendar(Text, icalendar):
         event.set_property('DTSTAMP', PropertyValue(datetime.today()))
 
         self.set_changed()
-        goto = ';table_view?date=%s' % date
+        goto = ';table_view?date=%s' % date.strftime('%Y-%m-%d')
         return context.come_back(u'Data updated', goto=goto)
 
 

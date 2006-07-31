@@ -336,8 +336,11 @@ class WebSite(RoleAware, Folder):
 
         # Come back
         referrer = request.referrer
-        if referrer and referrer.path[-1].param != 'login_form':
-            return referrer
+        if referrer:
+            if not referrer.path:
+                return referrer
+            elif referrer.path[-1].param != 'login_form':
+                return referrer
 
         if goto is not None:
             return uri.get_reference(goto)

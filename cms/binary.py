@@ -50,6 +50,7 @@ class Image(File, iImage):
     class_views = [['view'],
                    ['externaledit', 'upload_form'],
                    ['edit_metadata_form'],
+                   ['state_form'],
                    ['history_form']]
 
 

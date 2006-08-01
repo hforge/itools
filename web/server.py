@@ -20,8 +20,6 @@ from base64 import decodestring
 from copy import copy
 from datetime import datetime
 import os
-import select
-from select import POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL
 from signal import signal, SIGINT
 import socket
 import sys
@@ -39,7 +37,46 @@ from itools.http.request import Request
 from itools.http.response import Response
 from context import Context, get_context, set_context
 
+###########################################################################
+# Some pre-historic systems (e.g. Windows and MacOS) don't implement
+# the "poll" sytem call. The code below is a wrapper around the "select"
+# system call that implements the poll's API.
+###########################################################################
+POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL = 1, 2, 4, 8, 16, 32
+try:
+    from select import poll as Poll
+except ImportError:
+    from select import select
+    # TODO: implement a wrapper around select with the API of poll
+    class Poll(object):
+        def __init__(self):
+            self.iwtd, self.owtd, self.ewtd = [], [], []
 
+        def register(self, fileno, mode):
+            if mode & POLLIN or mode & POLLPRI:
+                self.iwtd.append(fileno)
+            if mode & POLLOUT:
+                self.owtd.append(fileno)
+            if mode & POLLERR or mode & POLLHUP or mode & POLLNVAL:
+                self.ewtd.append(fileno)
+
+        def unregister(self, fileno):
+            for wtd in self.iwtd, self.owtd, self.ewtd:
+                if fileno in wtd:
+                    wtd.remove(fileno)
+        
+        def poll(self):
+            iwtd, owtd, ewtd = select(self.iwtd, self.owtd, self.ewtd)
+            return [ (x, POLLIN) for x in iwtd ] \
+                   + [ (x, POLLOUT) for x in owtd ] \
+                   + [ (x, POLLERR) for x in ewtd ]
+
+
+
+###########################################################################
+# Wrapper around sockets in non-blocking mode that offers the a file
+# like API
+###########################################################################
 class SocketWrapper(object):
     """
     Offers a file-like interface for sockets in non-blocking mode.
@@ -99,7 +136,9 @@ class SocketWrapper(object):
                 return None 
 
 
-
+###########################################################################
+# The Web Server
+###########################################################################
 class Server(object):
 
     def __init__(self, root, address=None, port=None, access_log=None,
@@ -145,7 +184,7 @@ class Server(object):
         # Set-up polling object
         POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
         POLL_WRITE = POLLOUT | POLLERR | POLLHUP | POLLNVAL
-        poll = select.poll()
+        poll = Poll()
         poll.register(ear_fileno, POLL_READ)
 
         # Set up the graceful stop

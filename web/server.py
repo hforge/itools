@@ -212,14 +212,19 @@ class Server(object):
                         else:
                             conn.close()
                     elif event & POLLERR:
-                        # XXX What to do here?
-                        pass
+                        poll.unregister(fileno)
+                        if fileno in requests:
+                            del requests[fileno]
                     elif event & POLLHUP:
-                        # XXX What to do here?
-                        pass
+                        # XXX Is this right?
+                        poll.unregister(fileno)
+                        if fileno in requests:
+                            del requests[fileno]
                     elif event & POLLNVAL:
-                        # XXX What to do here?
-                        pass
+                        # XXX Is this right?
+                        poll.unregister(fileno)
+                        if fileno in requests:
+                            del requests[fileno]
             except:
                 self.log_error()
 

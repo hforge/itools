@@ -408,7 +408,9 @@ class Server(object):
             self.log_error(context)
             status = 500
             body = self.root.internal_server_error(context)
-            # Prevent transaction from being commited
+
+        # Be sure not to commit on errors
+        if status >= 400:
             context.commit = False
 
         # Commit
@@ -422,13 +424,6 @@ class Server(object):
 
         # Set status
         response.set_status(status)
- 
-        # Check for errors
-        if status >= 400:
-            # Rollback transaction
-            get_transaction().rollback()
-            self.log_error(context)
-
         return response
 
 

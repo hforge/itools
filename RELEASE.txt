@@ -1,4 +1,59 @@
 
+itools 0.14.1
+=============
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+In spite of being a minor release, there are some important and visible
+(and backwards compatible) changes.
+
+First and foremost, the functional scope of itools.cms has been extended
+with calendar objects. It is possible to create a new empty calendar or
+upload ics files.
+
+Very important too is that now the web server is gracefully stopped.
+This means the pending requests will be processed before shutting down
+the server.
+
+Also, the French translation has been updated.
+
+And of course there are a bunch of bug fixes, accross the uri, handlers,
+csv, web and cms packages. This includes the task tracker items: #98,
+#416, #455, #456 and #457.
+
+Credits:
+
+ - Hervé Cauwelier updated the French translation and fixed many bugs;
+ - Nicolas Deram implemented the calendar objects in itools.cms;
+ - J. David Ibáñez implemented the graceful stop and fixed many bugs.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.1.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.14.0 (alias Bolívar)
 ==============================
 

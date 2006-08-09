@@ -79,17 +79,20 @@ class User(AccessControl, Folder):
 
     ########################################################################
     # Access control
-    def is_allowed_to_edit(self, user, object):
+    def is_self_or_admin(self, user, object):
         # You are nobody here, ha ha ha
         if user is None:
             return False
 
-        # The all-powerfull
-        if self.is_admin():
+        # In my home I am the king
+        if self.name == user.name:
             return True
 
-        # In my home I am the king (and only me)
-        return self.name == user.name
+        # The all-powerfull
+        return self.is_admin()
+
+
+    is_allowed_to_edit = is_self_or_admin
 
 
     #######################################################################

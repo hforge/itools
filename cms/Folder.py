@@ -26,7 +26,7 @@ from itools.uri import Path, get_reference
 from itools.datatypes import FileName
 from itools import vfs
 from itools.handlers.Folder import Folder as BaseFolder
-##from itools.handlers.registry import build_handler
+from itools.handlers.registry import get_handler_class
 from itools.handlers.Text import Text
 from itools import i18n
 from itools.stl import stl
@@ -114,16 +114,25 @@ class Folder(Handler, BaseFolder):
         # Metadata
         if name.endswith('.metadata'):
             return Metadata(uri)
+        # Locks
         if name.endswith('.lock'):
             return Lock(uri)
-        # Get the format
+
+        # cms objects
         if self.has_handler('%s.metadata' % name):
             metadata = self.get_handler('%s.metadata' % name)
             format = metadata.get_property('format')
-        else:
+            cls = get_object_class(format)
+            return cls(uri)
+        
+        # XXX For now UI objects are like cms objects
+        if self.get_abspath().startswith('/ui'):
             format = vfs.get_mimetype(uri)
+            cls = get_object_class(format)
+            return cls(uri)
 
-        cls = get_object_class(format)
+        # Anything else is a bare handler
+        cls = get_handler_class(uri)
         return cls(uri)
 
 

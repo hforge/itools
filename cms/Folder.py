@@ -126,7 +126,8 @@ class Folder(Handler, BaseFolder):
             return cls(uri)
         
         # XXX For now UI objects are like cms objects
-        if self.get_abspath().startswith('/ui'):
+        real = self.real_handler or self
+        if real.get_abspath().startswith('/ui'):
             format = vfs.get_mimetype(uri)
             cls = get_object_class(format)
             return cls(uri)

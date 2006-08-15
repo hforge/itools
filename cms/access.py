@@ -29,7 +29,9 @@ from Folder import Folder
 class AccessControl(AccessControlBase):
 
     def is_admin(self, user=None, object=None):
-        return get_context().root.is_in_role('admins')
+        if user is None:
+            return False
+        return get_context().root.is_in_role('admins', user.name)
 
 
     def is_allowed_to_view(self, user, object):

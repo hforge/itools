@@ -310,8 +310,29 @@ Now:
 [Note] For a discussion on the importance to be splicit see the documentation
 for the Standard Library module cgi, http://docs.python.org/lib/node472.html
 
+5.3 Upload files
+················
 
-5.3 Redirections made easy
+Before the uploaded files were memory resources, now it is a tuple with three
+elements: the filename, the mimetype and the data (a string).
+
+Before:
+
+    def f(self, **kw):
+	file = kw['file']
+
+	filename = file.name
+	mimetype = file.get_mimetype()
+	body = file.read()
+
+Now:
+
+    def f(self, context):
+	file = context.get_form_value('file')
+
+	filename, mimetype, body = file
+
+5.4 Redirections made easy
 ··························
 
 Before to make a redirection we either used the context API or raised an
@@ -340,6 +361,12 @@ Now:
         ...
         return uri.get_reference(';edit_metadata_form')
 
+5.5 Not Found
+·············
+
+Before when the requested resource was not found the variable "context.handler"
+was set to the root handler. Now it is None.
+
 
 6. itools.cms
 =============
@@ -351,6 +378,12 @@ Some files have been renamed, hence the imports must be updated:
 
   from itools.cms.images import Image  (BEFORE)
   from itools.cms.binary import Image  (NOW)
+
+  from itools.cms.flash import Flash   (BEFORE)
+  from itools.cms.binary import Flash  (NOW)
+
+  from itools.cms.metadata import Metadata  (BEFORE)
+  from itools.cms.handlers import Metadata  (NOW)
 
 6.2 The registry
 ················
@@ -423,7 +456,22 @@ Now:
                    ['new_resource_form'],
                    ['edit_metadata_form']]
 
-6.5 Access Control
+6.5 Skins
+·········
+
+Now most skin methods expect the context as parameter. These are:
+
+  - build_namespace
+
+Also, the STL namespace has changed a little, the following names have been
+removed:
+
+  - logout
+
+So the templates will need to be changed.
+
+
+6.6 Access Control
 ··················
 
 The access control has been redisigned (and is now basically provied by
@@ -442,9 +490,19 @@ Now:
     if ac.is_allowed_to_view(context.user, handler):
         ...
 
-This will basically reduce the need for subclassing. 
+And now the __access__ declarations are only allowed to be either False,
+True or the name of the control method as a byte string. Other notations
+are definitely obsolete.
 
-6.6 Roles replace Groups
+Before:
+
+   edit__access__ = is_allowed_to_edit
+
+Now:
+
+   edit__access__ = 'is_allowed_to_edit'
+
+6.7 Roles replace Groups
 ························
 
 The groups concept and code has been replaced by "Roles".
@@ -456,7 +514,7 @@ must inherit from the class "RoleAware".
 The database instances will need to be upgraded, check the upgrade method
 in "itools.cms.root.Root" where this is done for the vanilla itools.cms
 
-6.7 All files are workflow aware
+6.8 All files are workflow aware
 ································
 
 And private default. The effect this may cause is that after an upgrade
@@ -467,7 +525,7 @@ May need an upgrade script to automatically publish the images. Or to do
 it manually.
 
 
-6.8 Versioning
+6.9 Versioning
 ··············
 
 The versioning code has been simplified in preparation for the git backend
@@ -478,7 +536,7 @@ On the other hand now all files are versioning aware, not just text files.
 
 Note that the upgrade code removes the archive.
 
-6.9 Updating instances
+6.10 Updating instances
 ······················
 
 Firs and very important, make a backup copy of the database.

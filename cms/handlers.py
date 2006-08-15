@@ -113,9 +113,9 @@ class Metadata(File):
                  'prefixes', 'properties']
 
 
-    def new(self, handler_class=None, **kw):
+    def new(self, handler_class=None, format=None, **kw):
         # Add format and version
-        kw['format'] = handler_class.class_id
+        kw['format'] = format or handler_class.class_id
         kw['version'] = handler_class.class_version
 
         # Initialize

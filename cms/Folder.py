@@ -124,13 +124,16 @@ class Folder(Handler, BaseFolder):
             format = metadata.get_property('format')
             cls = get_object_class(format)
             return cls(uri)
-        
+
         # XXX For now UI objects are like cms objects
-        real = self.real_handler or self
-        if real.get_abspath().startswith('/ui'):
-            format = vfs.get_mimetype(uri)
-            cls = get_object_class(format)
-            return cls(uri)
+        from skins import UI
+        x = self
+        while x:
+            if isinstance(x, UI):
+                format = vfs.get_mimetype(uri)
+                cls = get_object_class(format)
+                return cls(uri)
+            x = x.parent
 
         # Anything else is a bare handler
         cls = get_handler_class(uri)

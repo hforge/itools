@@ -9,7 +9,7 @@
 
     <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
     <link rel="stylesheet" type="text/css"
-          href="../calendar/calendar-win2k-1.css" />
+          href="../calendar/calendar-aruni.css" />
     <script type="text/javascript" src="../calendar/calendar.js" />
     <script type="text/javascript" src="../calendar/lang/calendar-en.js" />
     <script type="text/javascript" src="../calendar/calendar-setup.js" />

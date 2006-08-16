@@ -90,60 +90,81 @@ a img {
   color: #888a85;
 }
 
-#tabs, #subtabs {
-  height: 1.9em;
+#tabs,
+#subtabs {
   margin: 0;
-  border-top: 1px solid #d3d7cf;
-  border-left: 1px solid #d3d7cf;
   padding: 0;
-  list-style: none;
 }
-#tabs li,
-#subtabs li {
-  display: inline;
-  float: left;
+
+#tabs span,
+#subtabs span {
+  display: inline-block;
   margin: 0;
-  border-right: 1px solid #d3d7cf;
-  padding: 6px 6px 7px;
-  white-space: nowrap;
+  padding: 0;
 }
+
 #tabs a,
 #subtabs a {
-  display: block;
+  display: inline-block;
+  margin: 0;
+  border-right: 1px solid #babdb6;
+  padding: 6px;
   font-size: 80%;
   text-decoration: none;
+  white-space: nowrap;
 }
-#tabs .tab_active a,
-#tabs .tab:hover a,
-#subtabs .tab_active a,
-#subtabs .tab:hover a {
-  color: #fff;
+
+#tabs > span,
+#subtabs > span {
+  display: -moz-inline-box;
+}
+
+#tabs span > a,
+#subtabs span > a {
+  display: block;
+}
+
+#tabs span span,
+#subtabs span span {
+  display: none;
 }
 
 #tabs {
-  margin: 3px 0 0 0;
+  border-width: 1px;
+  border-style: solid solid none solid;
+  border-color: #babdb6;
 }
+
 #tabs a {
   color: #2e3436;
 }
-#tabs .tab_active,
-#tabs .tab:hover {
+
+#tabs .tab_active a,
+#tabs .tab a:hover {
+  color: #eeeeec;
   background: #3465a4 url(images/tab_bg.png) left top repeat-x;
-  border-bottom: 1px solid #3465a4;
 }
+
+#tabs .tab_active a {
+  color: #eeeeec;
+}
+
 #subtabs {
-  margin: -1px 0 0;
+  border: 1px solid #babdb6;
   background: #3465a4;
 }
-#subtabs li {
-  background: #3465a4;
-}
+
 #subtabs a {
-  color: #eee;
+  color: #eeeeec;
 }
-#subtabs .tab_active,
-#subtabs .tab:hover {
+
+#subtabs .tab_active a,
+#subtabs .tab a:hover {
   background: #f57900 url(images/subtab_bg.png) left top repeat-x;
+}
+
+#subtabs .tab_dummy a {
+  border-style: none;
 }
 
 #message {

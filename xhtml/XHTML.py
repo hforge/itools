@@ -90,7 +90,9 @@ class Element(XML.Element):
 
     def is_translatable(self, attribute_name):
         # Attributes
-        if self.name == 'img' and attribute_name in ('alt', 'title'):
+        if attribute_name == 'title':
+            return True
+        if self.name == 'img' and attribute_name == 'alt':
             return True
         if self.name == 'input' and attribute_name == 'value':
             if self.has_attribute(Namespace.class_uri, 'type'):

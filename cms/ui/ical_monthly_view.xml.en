@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<div id="ical_table_view"> 
+<div id="ical_monthly_view"> 
   <div id="selector">
     <ul>
       <li>
@@ -31,13 +31,9 @@
 
     <tr>
       <th />
-      <th>Monday</th>
-      <th>Tuesday</th>
-      <th>Wednesday</th>
-      <th>Thursday</th>
-      <th>Friday</th>
-      <th>Saturday</th>
-      <th>Sunday</th>
+      <th stl:repeat="day days_of_week">
+        <span stl:content="day/name" />
+      </th>
     </tr>
 
     <tr stl:repeat="week weeks" valign="top">

@@ -74,6 +74,10 @@ msgid ""
 "will appear in the URL."
 msgstr ""
 
+#: cms/ui/ical_weekly_view.xml.en:0
+msgid "++"
+msgstr ""
+
 #: cms/ui/User_translator.xml.en:0
 msgid "-- Choose a language --"
 msgstr "选择语言"
@@ -489,15 +493,19 @@ msgstr "优先"
 msgid "Application preferences changed."
 msgstr ""
 
-#: cms/Folder.py:455
+#: cms/ical.py:75
+msgid "April"
+msgstr ""
+
+#: cms/Folder.py:460
 msgid "As Icons"
 msgstr "图标"
 
-#: cms/Folder.py:517
+#: cms/Folder.py:522
 msgid "As Image Gallery"
 msgstr ""
 
-#: cms/Folder.py:471
+#: cms/Folder.py:476
 msgid "As List"
 msgstr "目录"
 
@@ -507,6 +515,10 @@ msgstr ""
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
+msgstr ""
+
+#: cms/ical.py:76
+msgid "August"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -626,7 +638,7 @@ msgstr ""
 msgid "Comments (optional):"
 msgstr ""
 
-#: cms/Folder.py:516
+#: cms/Folder.py:521
 msgid "Contents"
 msgstr ""
 
@@ -667,6 +679,10 @@ msgstr "日期"
 msgid "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 msgstr ""
 
+#: cms/ical.py:77
+msgid "December"
+msgstr ""
+
 #: cms/ui/Root_languages.xml.en:0
 msgid "Default"
 msgstr "设置"
@@ -693,12 +709,12 @@ msgstr ""
 msgid "Document"
 msgstr "新文件"
 
-#: cms/binary.py:244
+#: cms/binary.py:245
 #, fuzzy
 msgid "Document Excel"
 msgstr "编辑文档"
 
-#: cms/binary.py:111
+#: cms/binary.py:112
 #, fuzzy
 msgid "Document Flash"
 msgstr "新文件"
@@ -708,12 +724,12 @@ msgstr "新文件"
 msgid "Document History"
 msgstr "编辑文档"
 
-#: cms/binary.py:337
+#: cms/binary.py:338
 #, fuzzy
 msgid "Document PDF"
 msgstr "新文件"
 
-#: cms/binary.py:258
+#: cms/binary.py:259
 #, fuzzy
 msgid "Document PowerPoint"
 msgstr "编辑文档"
@@ -723,7 +739,7 @@ msgstr "编辑文档"
 msgid "Document State"
 msgstr "编辑文档"
 
-#: cms/binary.py:229
+#: cms/binary.py:230
 #, fuzzy
 msgid "Document Word"
 msgstr "编辑文档"
@@ -819,6 +835,10 @@ msgstr "外部"
 msgid "External Editor.."
 msgstr "外部"
 
+#: cms/ical.py:75
+msgid "February"
+msgstr ""
+
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Field"
 msgstr ""
@@ -839,11 +859,11 @@ msgstr ""
 msgid "Fix"
 msgstr ""
 
-#: cms/binary.py:110
+#: cms/binary.py:111
 msgid "Flash"
 msgstr ""
 
-#: cms/Folder.py:56
+#: cms/Folder.py:57
 msgid "Folder"
 msgstr "文件夹"
 
@@ -1140,10 +1160,22 @@ msgstr "意在利语"
 msgid "J. David Ibáñez, lead developer"
 msgstr ""
 
+#: cms/ical.py:75
+msgid "January"
+msgstr ""
+
 #: cms/ui/WebSite_register.xml.en:0
 #, fuzzy
 msgid "Join the Community"
 msgstr "加入社区"
+
+#: cms/ical.py:76
+msgid "July"
+msgstr ""
+
+#: cms/ical.py:76
+msgid "June"
+msgstr ""
 
 #: cms/text.py:40
 msgid "Keep your notes with plain text files."
@@ -1213,6 +1245,15 @@ msgid ""
 "that system;"
 msgstr ""
 
+#: cms/ical.py:75
+#, fuzzy
+msgid "March"
+msgstr "搜索"
+
+#: cms/ical.py:76
+msgid "May"
+msgstr ""
+
 #: cms/access.py:130
 msgid "Member"
 msgstr ""
@@ -1262,7 +1303,7 @@ msgstr ""
 msgid "Message edited."
 msgstr "信息被修正."
 
-#: cms/handlers.py:109
+#: cms/ical.py:80
 msgid "Metadata"
 msgstr "附加信息"
 
@@ -1351,20 +1392,24 @@ msgstr ""
 msgid "Note:"
 msgstr ""
 
+#: cms/ical.py:77
+msgid "November"
+msgstr ""
+
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Nulla facilisi."
 msgstr ""
 
-#: cms/binary.py:315
+#: cms/binary.py:316
 msgid "OOo Calc"
 msgstr ""
 
-#: cms/binary.py:325
+#: cms/binary.py:326
 #, fuzzy
 msgid "OOo Impress"
 msgstr "编辑文档"
 
-#: cms/binary.py:304
+#: cms/binary.py:305
 #, fuzzy
 msgid "OOo Writer"
 msgstr "写入"
@@ -1429,7 +1474,7 @@ msgstr ""
 msgid "Ordered List"
 msgstr "文件夹"
 
-#: cms/Folder.py:57
+#: cms/Folder.py:58
 msgid "Organize your files and documents with folders."
 msgstr ""
 
@@ -1452,7 +1497,7 @@ msgstr ""
 msgid "Outdent"
 msgstr ""
 
-#: cms/binary.py:336
+#: cms/binary.py:337
 msgid "PDF"
 msgstr ""
 
@@ -1530,12 +1575,16 @@ msgstr ""
 msgid "Please enter your password (it will not be displayed in clear text)."
 msgstr ""
 
+#: cms/ical.py:727
+msgid "Please fill date AND end times."
+msgstr ""
+
 #: cms/ui/Folder_new_instance.xml.en:0
 #, fuzzy
 msgid "Please give a title to your folder."
 msgstr "你必须选择删除成员."
 
-#: cms/Folder.py:487
+#: cms/Folder.py:492
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr ""
 
@@ -1573,7 +1622,7 @@ msgstr "你必须选择删除成员."
 msgid "Please type the title of your document."
 msgstr ""
 
-#: cms/binary.py:257
+#: cms/binary.py:258
 msgid "PowerPoint"
 msgstr ""
 
@@ -1585,7 +1634,7 @@ msgstr ""
 msgid "Preferences"
 msgstr "优先"
 
-#: cms/binary.py:219
+#: cms/binary.py:220
 msgid "Preview"
 msgstr "查阅"
 
@@ -1632,7 +1681,7 @@ msgid ""
 "built by its community:"
 msgstr ""
 
-#: cms/ui/User_translator.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Remove"
 msgstr "删除"
 
@@ -1742,6 +1791,10 @@ msgstr "安全"
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
 msgstr ""
 
+#: cms/ical.py:76
+msgid "September"
+msgstr ""
+
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Size"
 msgstr "尺寸"
@@ -1797,6 +1850,10 @@ msgstr "安全"
 msgid "Suspendisse potenti."
 msgstr ""
 
+#: cms/ical.py:40
+msgid "TENTATIVE"
+msgstr ""
+
 #: cms/ui/Root_license.xml.en:0
 msgid ""
 "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
@@ -1823,7 +1880,7 @@ msgstr ""
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: cms/Folder.py:67
+#: cms/Folder.py:68
 msgid "Text"
 msgstr ""
 
@@ -1906,7 +1963,7 @@ msgstr "以下目录详述你作为翻译者的技巧"
 msgid "The message"
 msgstr "此处无内容."
 
-#: cms/Folder.py:892
+#: cms/Folder.py:894
 msgid "The name must be entered"
 msgstr "必须输入一个文件名"
 
@@ -2047,6 +2104,19 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
+#: cms/ical.py:703
+msgid "Timetable removed successfully."
+msgstr ""
+
+#: cms/ical.py:730
+msgid "Timetable updated successfully."
+msgstr ""
+
+#: cms/ical.py:660
+#, fuzzy
+msgid "Timetables"
+msgstr "名称"
+
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Title"
 msgstr "名称"
@@ -2145,7 +2215,7 @@ msgstr ""
 msgid "Unordered List"
 msgstr "目录"
 
-#: cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 #, fuzzy
 msgid "Update"
 msgstr "更新目录"
@@ -2269,7 +2339,7 @@ msgstr ""
 msgid "Without head"
 msgstr ""
 
-#: cms/binary.py:228
+#: cms/binary.py:229
 msgid "Word"
 msgstr ""
 
@@ -2321,6 +2391,10 @@ msgstr ""
 #: cms/WebSite.py:194
 msgid "You can not remove the default language."
 msgstr "你不能改变预设语言."
+
+#: cms/ui/ical_edit_timetables.xml.en:0
+msgid "You can specify timetables to limit the range when an event can be set."
+msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
 #, fuzzy
@@ -2592,7 +2666,7 @@ msgid ""
 "practices."
 msgstr ""
 
-#: cms/ui/Folder_rename.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "to"
 msgstr ""
 
@@ -2838,6 +2912,10 @@ msgstr "禄 Type the url to add:"
 
 #~ msgid "State:"
 #~ msgstr "状态"
+
+#, fuzzy
+#~ msgid "Table view"
+#~ msgstr "名称"
 
 #, fuzzy
 #~ msgid "The active item"

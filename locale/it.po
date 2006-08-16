@@ -88,6 +88,10 @@ msgid ""
 "will appear in the URL."
 msgstr ""
 
+#: cms/ui/ical_weekly_view.xml.en:0
+msgid "++"
+msgstr ""
+
 #: cms/ui/User_translator.xml.en:0
 msgid "-- Choose a language --"
 msgstr "Scegli un linguaggio"
@@ -606,15 +610,19 @@ msgstr "Preferenze"
 msgid "Application preferences changed."
 msgstr ""
 
-#: cms/Folder.py:455
+#: cms/ical.py:75
+msgid "April"
+msgstr ""
+
+#: cms/Folder.py:460
 msgid "As Icons"
 msgstr "Come icone"
 
-#: cms/Folder.py:517
+#: cms/Folder.py:522
 msgid "As Image Gallery"
 msgstr "Come galleria di immagini"
 
-#: cms/Folder.py:471
+#: cms/Folder.py:476
 msgid "As List"
 msgstr "Come lista"
 
@@ -624,6 +632,10 @@ msgstr ""
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
+msgstr ""
+
+#: cms/ical.py:76
+msgid "August"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -754,7 +766,7 @@ msgstr "Commenti:"
 msgid "Comments (optional):"
 msgstr "Commenti:"
 
-#: cms/Folder.py:516
+#: cms/Folder.py:521
 msgid "Contents"
 msgstr "Contenuti"
 
@@ -803,6 +815,10 @@ msgstr "Data"
 msgid "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 msgstr "Titolo <stl:inline content=\"table/sortcontrol(title)\"></stl:inline>"
 
+#: cms/ical.py:77
+msgid "December"
+msgstr ""
+
 #: cms/ui/Root_languages.xml.en:0
 msgid "Default"
 msgstr "Default"
@@ -829,12 +845,12 @@ msgstr ""
 msgid "Document"
 msgstr "Nuovo documento"
 
-#: cms/binary.py:244
+#: cms/binary.py:245
 #, fuzzy
 msgid "Document Excel"
 msgstr "Documento modificato."
 
-#: cms/binary.py:111
+#: cms/binary.py:112
 #, fuzzy
 msgid "Document Flash"
 msgstr "Nuovo documento"
@@ -844,12 +860,12 @@ msgstr "Nuovo documento"
 msgid "Document History"
 msgstr "Documento modificato."
 
-#: cms/binary.py:337
+#: cms/binary.py:338
 #, fuzzy
 msgid "Document PDF"
 msgstr "Nuovo documento"
 
-#: cms/binary.py:258
+#: cms/binary.py:259
 #, fuzzy
 msgid "Document PowerPoint"
 msgstr "Documento modificato."
@@ -859,7 +875,7 @@ msgstr "Documento modificato."
 msgid "Document State"
 msgstr "Documento modificato."
 
-#: cms/binary.py:229
+#: cms/binary.py:230
 #, fuzzy
 msgid "Document Word"
 msgstr "Documento modificato."
@@ -960,6 +976,10 @@ msgstr "Editor esterno"
 msgid "External Editor.."
 msgstr "Editor esterno"
 
+#: cms/ical.py:75
+msgid "February"
+msgstr ""
+
 #: cms/ui/Folder_browse_list.xml.en:0
 #, fuzzy
 msgid "Field"
@@ -982,11 +1002,11 @@ msgstr ""
 msgid "Fix"
 msgstr "Ripara"
 
-#: cms/binary.py:110
+#: cms/binary.py:111
 msgid "Flash"
 msgstr ""
 
-#: cms/Folder.py:56
+#: cms/Folder.py:57
 msgid "Folder"
 msgstr "Cartella"
 
@@ -1347,10 +1367,22 @@ msgstr "Italiano"
 msgid "J. David Ibáñez, lead developer"
 msgstr "J. David Ibáñez, sviluppatore principale"
 
+#: cms/ical.py:75
+msgid "January"
+msgstr ""
+
 #: cms/ui/WebSite_register.xml.en:0
 #, fuzzy
 msgid "Join the Community"
 msgstr "Diventa collaboratore"
+
+#: cms/ical.py:76
+msgid "July"
+msgstr ""
+
+#: cms/ical.py:76
+msgid "June"
+msgstr ""
 
 #: cms/text.py:40
 msgid "Keep your notes with plain text files."
@@ -1424,6 +1456,15 @@ msgstr ""
 "distributed through that system in reliance on consistent application of "
 "that system;"
 
+#: cms/ical.py:75
+#, fuzzy
+msgid "March"
+msgstr "Cerca"
+
+#: cms/ical.py:76
+msgid "May"
+msgstr ""
+
 #: cms/access.py:130
 msgid "Member"
 msgstr ""
@@ -1480,7 +1521,7 @@ msgstr "Salva la traduzione"
 msgid "Message edited."
 msgstr "Messaggio modificato."
 
-#: cms/handlers.py:109
+#: cms/ical.py:80
 msgid "Metadata"
 msgstr "Metadati"
 
@@ -1572,20 +1613,24 @@ msgstr ""
 msgid "Note:"
 msgstr ""
 
+#: cms/ical.py:77
+msgid "November"
+msgstr ""
+
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Nulla facilisi."
 msgstr ""
 
-#: cms/binary.py:315
+#: cms/binary.py:316
 msgid "OOo Calc"
 msgstr ""
 
-#: cms/binary.py:325
+#: cms/binary.py:326
 #, fuzzy
 msgid "OOo Impress"
 msgstr "Documento modificato."
 
-#: cms/binary.py:304
+#: cms/binary.py:305
 #, fuzzy
 msgid "OOo Writer"
 msgstr "scrivi"
@@ -1650,7 +1695,7 @@ msgstr ""
 msgid "Ordered List"
 msgstr "Cartella"
 
-#: cms/Folder.py:57
+#: cms/Folder.py:58
 msgid "Organize your files and documents with folders."
 msgstr ""
 
@@ -1680,7 +1725,7 @@ msgstr ""
 msgid "Outdent"
 msgstr ""
 
-#: cms/binary.py:336
+#: cms/binary.py:337
 msgid "PDF"
 msgstr ""
 
@@ -1760,12 +1805,16 @@ msgstr ""
 msgid "Please enter your password (it will not be displayed in clear text)."
 msgstr ""
 
+#: cms/ical.py:727
+msgid "Please fill date AND end times."
+msgstr ""
+
 #: cms/ui/Folder_new_instance.xml.en:0
 #, fuzzy
 msgid "Please give a title to your folder."
 msgstr "Devi scegliere un collaboratore da rimuovere."
 
-#: cms/Folder.py:487
+#: cms/Folder.py:492
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr ""
 
@@ -1803,7 +1852,7 @@ msgstr "Devi scegliere un collaboratore da rimuovere."
 msgid "Please type the title of your document."
 msgstr ""
 
-#: cms/binary.py:257
+#: cms/binary.py:258
 msgid "PowerPoint"
 msgstr ""
 
@@ -1815,7 +1864,7 @@ msgstr "Preambolo"
 msgid "Preferences"
 msgstr "Preferenze"
 
-#: cms/binary.py:219
+#: cms/binary.py:220
 msgid "Preview"
 msgstr "Anteprima"
 
@@ -1866,7 +1915,7 @@ msgstr ""
 "licenza  <a href=\";license\">GNU General Public License</a>, IKAARO è un "
 "progetto software libero, creato dalla propria comunità di utenti:"
 
-#: cms/ui/User_translator.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Remove"
 msgstr "Rimuovi"
 
@@ -1978,6 +2027,10 @@ msgstr "Sicurezza"
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
 msgstr ""
 
+#: cms/ical.py:76
+msgid "September"
+msgstr ""
+
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Size"
 msgstr "Dimensione"
@@ -2037,6 +2090,10 @@ msgstr "descrizione"
 msgid "Suspendisse potenti."
 msgstr ""
 
+#: cms/ical.py:40
+msgid "TENTATIVE"
+msgstr ""
+
 #: cms/ui/Root_license.xml.en:0
 msgid ""
 "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
@@ -2064,7 +2121,7 @@ msgstr "Incarichi"
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr "Terms and Conditions for Copying, Distribution and Modification"
 
-#: cms/Folder.py:67
+#: cms/Folder.py:68
 msgid "Text"
 msgstr "Testo"
 
@@ -2160,7 +2217,7 @@ msgstr ""
 msgid "The message"
 msgstr "Non sono presenti messaggi."
 
-#: cms/Folder.py:892
+#: cms/Folder.py:894
 msgid "The name must be entered"
 msgstr "Deve essere inserito il nome"
 
@@ -2321,6 +2378,19 @@ msgstr ""
 "Thus, it is not the intent of this section to claim rights or contest your "
 "rights to work written entirely by you;"
 
+#: cms/ical.py:703
+msgid "Timetable removed successfully."
+msgstr ""
+
+#: cms/ical.py:730
+msgid "Timetable updated successfully."
+msgstr ""
+
+#: cms/ical.py:660
+#, fuzzy
+msgid "Timetables"
+msgstr "Titolo"
+
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Title"
 msgstr "Titolo"
@@ -2426,7 +2496,7 @@ msgstr ""
 msgid "Unordered List"
 msgstr "Lista utenti:"
 
-#: cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 #, fuzzy
 msgid "Update"
 msgstr "Aggiorna il catalogo"
@@ -2556,7 +2626,7 @@ msgstr ""
 msgid "Without head"
 msgstr ""
 
-#: cms/binary.py:228
+#: cms/binary.py:229
 msgid "Word"
 msgstr ""
 
@@ -2610,6 +2680,10 @@ msgstr ""
 #: cms/WebSite.py:194
 msgid "You can not remove the default language."
 msgstr "Non puoi rimuovere il linguaggio predefinito."
+
+#: cms/ui/ical_edit_timetables.xml.en:0
+msgid "You can specify timetables to limit the range when an event can be set."
+msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
 #, fuzzy
@@ -2911,7 +2985,7 @@ msgstr ""
 "software distribution system, which is implemented by public license "
 "practices."
 
-#: cms/ui/Folder_rename.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "to"
 msgstr ""
 
@@ -3400,6 +3474,10 @@ msgstr "» Inserisci l'URL da aggiungere:"
 
 #~ msgid "State:"
 #~ msgstr "Stato:"
+
+#, fuzzy
+#~ msgid "Table view"
+#~ msgstr "Il titolo"
 
 #~ msgid "Text files are the simplest object to add."
 #~ msgstr ""

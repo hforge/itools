@@ -31,14 +31,15 @@ from registry import register_object_class
 
 # Import from itools.cms
 from itools.cms.text import Text
+from itools.cms.Handler import Handler
 from itools.cms.metadata import Enumerate
 
 
 class Status(Enumerate):
 
-    options = [{'name': 'TENTATIVE', 'value': 'TENTATIVE'},
-               {'name': 'CONFIRMED', 'value': 'CONFIRMED'}, 
-               {'name': 'CANCELLED', 'value': 'CANCELLED'}]
+    options = [{'name': 'TENTATIVE', 'value': u'TENTATIVE'},
+               {'name': 'CONFIRMED', 'value': u'CONFIRMED'}, 
+               {'name': 'CANCELLED', 'value': u'CANCELLED'}]
 
 
 
@@ -50,25 +51,26 @@ class Calendar(Text, icalendar):
     class_description = u'Schedule your time with calendar files.'
     class_icon16 = 'images/icalendar16.png'
     class_icon48 = 'images/icalendar48.png'
-    class_views = [['table_view', 'text_view', 'download'], 
-                   ['upload_form', 'edit_event_form']]
-    #               ,['edit_form', 'externaledit', 'upload_form'],
-    #               ['edit_metadata_form'],
+    class_views = [['monthly_view', 'weekly_view', 'text_view', 
+                    'download_form'], 
+                   ['upload_form', 'edit_timetables_form',
+                    'edit_metadata_form']]
     #               ['history_form']]
     # default values for fields within namespace
     default_fields = {'UID': None, 'DTSTART1': None, 'DTEND1': None, 
                       'SUMMARY': u'', 'LOCATION': u'', 'DESCRIPTION': u'', 
                       'ATTENDEE': [], 'COMMENT': [], 
                       'STATUS': {}}
-    # default viewed fields on table_view
+    # default viewed fields on monthly_view
     default_viewed_fields = ('DTSTART', 'DTEND', 'SUMMARY', 'STATUS')
-    # default start and end of the day for current resource/calendar
-    default_daystart = time(8,0)
-    default_dayend = time(20,0)
+    months = {1: u'January', 2: u'February', 3: u'March', 4: u'April', 
+              5: u'May', 6: u'June', 7: u'July', 8: u'August', 9: u'September',
+              10: u'October', 11: u'November', 12: u'December'}
+    days = {0: u'Monday', 1: u'Tuesday', 2: u'Wednesday', 3: u'Thursday', 
+            4: u'Friday', 5: u'Saturday', 6: u'Sunday'}
 
 
-    def GET(self, context):
-        return self.view(context)
+    edit_metadata_form__sublabel__ = u'Metadata'
 
 
     @classmethod
@@ -103,6 +105,7 @@ class Calendar(Text, icalendar):
         return self.to_str()
 
 
+    @classmethod
     def get_current_date(cls, date=None):
         # Set current date to selected date (default is today)
         if not date:
@@ -118,16 +121,28 @@ class Calendar(Text, icalendar):
 
 
     # Get namespace for one selected day, filling given fields
-    def get_events(self, date, fields=None):
+    def get_events(self, date, method='monthly_view', timetable=None, 
+                   fields=None, resource_name=None):
         # If no date, return []
         if date is None:
             return []
         # If no tuple of fields given, set default one
         if fields == None:
             fields = self.default_viewed_fields
+        # Initialize url
+        base_url = ';edit_event_form?'
+        if resource_name:
+            base_url = '%s/;edit_event_form?' % resource_name
 
         # Get events on selected date
-        events = self.get_events_in_date(date)
+        if timetable:
+            index = timetable['num']
+            start = datetime.combine(date, timetable['start'])
+            end = datetime.combine(date, timetable['end'])
+            events = self.get_events_in_range(start, end)
+            base_url = '%stimetable=%s&' % (base_url, index)
+        else:
+            events = self.get_events_in_date(date)
 
         # For each event, fill namespace
         namespace = []
@@ -177,8 +192,8 @@ class Calendar(Text, icalendar):
                     values = event.get_property_values(field)
                     ns_event[field] = self.ns_values(values)
 
-            ns_event['url'] = ';edit_event_form?date=%s&uid=%s'\
-                              % (date.date(), uid)
+            ns_event['url'] = '%sdate=%s&uid=%s&method=%s'\
+                              % (base_url, date.date(), uid, method)
             namespace.append(ns_event)
 
         return namespace
@@ -192,7 +207,42 @@ class Calendar(Text, icalendar):
         return values
 
 
-    def is_allowed_to_edit(self, context, event):
+    @classmethod
+    def add_selector_ns(cls, c_date, method, namespace):
+        # Set header used to navigate into time
+        # Week, current date is first showed week + 1
+        tmp_date = c_date - timedelta(7)
+        current_week = cls.gettext(u'Week ')
+        current_week = current_week + Unicode.encode(tmp_date.strftime('%U'))
+        previous_week = ";%s?date=%s" % (method, tmp_date.date())
+        tmp_date = c_date + timedelta(7)
+        next_week = ";%s?date=%s" % (method, tmp_date.date())
+        # Month
+        current_month = cls.gettext(cls.months[c_date.month])
+        tmp_date = c_date - timedelta(30)
+        previous_month = ";%s?date=%s" % (method, tmp_date.date())
+        tmp_date = c_date + timedelta(30)
+        next_month = ";%s?date=%s" % (method, tmp_date.date())
+        # Year
+        tmp_date = c_date - timedelta(365)
+        previous_year = ";%s?date=%s" % (method, tmp_date.date())
+        tmp_date = c_date + timedelta(365)
+        next_year = ";%s?date=%s" % (method, tmp_date.date())
+        # Set value into namespace
+        namespace['current_week'] = current_week
+        namespace['previous_week'] = previous_week
+        namespace['next_week'] = next_week
+        namespace['current_month'] = current_month
+        namespace['previous_month'] = previous_month
+        namespace['next_month'] = next_month
+        namespace['current_year'] = c_date.year
+        namespace['previous_year'] = previous_year
+        namespace['next_year'] = next_year
+        return namespace
+
+
+    # Test if user in context is the organizer of a given event (or is admin)
+    def is_organizer_or_admin(self, context, event):
         if self.get_access_control().is_admin(context.user):
             return True
         if event:
@@ -202,16 +252,111 @@ class Calendar(Text, icalendar):
         return False
           
 
-    def get_first_day(self):
     # 0 means Sunday, 1 means Monday
+    @classmethod
+    def get_first_day(cls):
         return 1
+
+
+    # Get days of week based on get_first_day's result 
+    @classmethod
+    def days_of_week_ns(cls, date, num=None, ndays=7):
+        ns_days = []
+        for index in range(ndays):
+            ns =  {}
+            ns['name'] = cls.gettext(cls.days[date.weekday()])
+            ns['nday'] = None
+            if num:
+                ns['nday'] = date.day
+            ns_days.append(ns)
+            date = date + timedelta(1)
+        return ns_days
+
+
+    # Get the list of all timetables with label, start and end in a dict
+    def get_timetables(self, default=None):
+        timetables = []
+        for index in range(10):
+            src_timetable = self.get_property('timetable_%s' % index)
+            if not src_timetable:
+                break
+            timetables.append(self.get_timetable_from_string(index, 
+                                                             src_timetable))
+        # If timetable required and none found, add default one
+        if timetables == [] and default:
+            timetable = {'num': 0,
+                         'timetable': u'',
+                         'start': time(0,0),
+                         'end': time(23,59,59)}
+            timetables.append(timetable)
+        # Sort by start time
+        timetables.sort(lambda x, y: cmp(x['start'], y['start']))
+        return timetables
+
+
+    # Get timetable as dict from a string like "08:00 - 10:00" or "08:00-10:00"
+    def get_timetable_by_index(self, index):
+        timetable = self.get_property('timetable_%s' % index)
+        if timetable:
+            return self.get_timetable_from_string(index, timetable)
+        return None
+
+
+    # Get timetable as dict from a string like "08:00 - 10:00" or "08:00-10:00"
+    def get_timetable_from_string(self, index, timetable):
+        start, end = timetable.split('-')
+        ns = {}
+        ns['num'] = index
+        ns['timetable'] = timetable.replace('-', ' - ')
+        hour, minute = start.split(':')
+        ns['start'] = time(int(hour), int(minute))
+        hour, minute = end.split(':')
+        ns['end'] = time(int(hour), int(minute))
+        return ns
+        
+
+    # Get a week beginning at start date as a list to be given to namespace
+    def get_timetables_ns(self, start, method='weekly_view', 
+                          resource_name=None, ndays=7):
+        ns = []
+        # Initialize url and parameters
+        base_url = ';edit_event_form?'
+        if resource_name:
+            base_url = '%s/;edit_event_form?' % resource_name
+        base_param = ''
+        if method:
+            base_param = '&method=%s&' % method
+        # Get timetables
+        timetables = self.get_timetables(default=True)
+        # For each defined timetable
+        for index, timetable in enumerate(timetables):
+            day = start
+            ns_timetable = {}
+            ns_timetable['timetable'] = timetable['timetable']
+            num = timetable['num']
+            # ndays days
+            ns_days = []
+            for d in range(ndays):
+                ns_day = {}
+                params = '%sdate=%s&timetable=%s'\
+                         % (base_param, day.date(), num)
+                ns_day['url'] = '%s%s' % (base_url, params)
+                ns_day['events'] = self.get_events(day, method, 
+                                                   timetable, 
+                                                   resource_name=resource_name)
+                ns_days.append(ns_day)
+                day = day + timedelta(1)
+            ns_timetable['days'] = ns_days
+            ns.append(ns_timetable)
+        return ns
 
     #######################################################################
     # User interface
     #######################################################################
 
-    download__access__ = True #'is_allowed_to_view'
-    download__sublabel__ = u'Export in ical format'
+    download_form__access__ = True #'is_allowed_to_view'
+    download_form__sublabel__ = u'Export in ical format'
+
 
     # View
     text_view__access__ = True #'is_allowed_to_view'
@@ -221,11 +366,11 @@ class Calendar(Text, icalendar):
         return '<pre>%s</pre>' % self.to_str()
 
 
-    # Table view
-    table_view__access__ = True #'is_allowed_to_table_view'
-    table_view__label__ = u'View'
-    table_view__sublabel__ = u'Table view'
-    def table_view(self, context):
+    # Monthly view
+    monthly_view__access__ = True #'is_allowed_to_view'
+    monthly_view__label__ = u'View'
+    monthly_view__sublabel__ = u'Monthly'
+    def monthly_view(self, context):
         context = get_context()
         root = context.root
 
@@ -236,38 +381,15 @@ class Calendar(Text, icalendar):
         # 0 = Monday, ..., 6 = Sunday
         weekday = c_date.weekday()
         start = c_date - timedelta(7 + weekday)
+        if self.get_first_day() == 0:
+            start = start - timedelta(1)
 
         namespace = {}
-        #################################################
-        # Set header used to navigate into time
-        # Week, current date is first showed week + 1
-        tmp_date = c_date - timedelta(7)
-        current_week = Unicode.encode('Week %s' % tmp_date.strftime('%U'))
-        previous_week = ";table_view?date=%s" % tmp_date.date()
-        tmp_date = c_date + timedelta(7)
-        next_week = ";table_view?date=%s" % tmp_date.date()
-        # Month
-        current_month = Unicode.encode(c_date.strftime('%B'))
-        tmp_date = c_date - timedelta(30)
-        previous_month = ";table_view?date=%s" % tmp_date.date()
-        tmp_date = c_date + timedelta(30)
-        next_month = ";table_view?date=%s" % tmp_date.date()
-        # Year
-        tmp_date = c_date - timedelta(365)
-        previous_year = ";table_view?date=%s" % tmp_date.date()
-        tmp_date = c_date + timedelta(365)
-        next_year = ";table_view?date=%s" % tmp_date.date()
+        # Add header to navigate into time
+        namespace = self.add_selector_ns(c_date, 'monthly_view', namespace)
 
-        namespace['current_week'] = current_week
-        namespace['previous_week'] = previous_week
-        namespace['next_week'] = next_week
-        namespace['current_month'] = current_month
-        namespace['previous_month'] = previous_month
-        namespace['next_month'] = next_month
-        namespace['current_year'] = c_date.year
-        namespace['previous_year'] = previous_year
-        namespace['next_year'] = next_year
-        #################################################
+        # Get header line with days of the week
+        namespace['days_of_week'] = self.days_of_week_ns(start)
 
         namespace['weeks'] = []
         day = start
@@ -279,33 +401,77 @@ class Calendar(Text, icalendar):
                 ns_day = {}
                 ns_day['nday'] = day.day
                 ns_day['url'] = ';edit_event_form?date=%s' % day.date()
-                ns_day['events'] = self.get_events(day)
+                ns_day['events'] = self.get_events(day, 'monthly_view')
                 ns_week['days'].append(ns_day)
                 if day.day == 1:
-                    month = self.gettext(Unicode.encode(day.strftime('%B')))
+                    month = self.gettext(self.months[day.month])
                     ns_week['month'] = month
                 day = day + timedelta(1)
             namespace['weeks'].append(ns_week)
 
-        handler = root.get_handler('ui/ical_table_view.xml')
+        handler = root.get_handler('ui/ical_monthly_view.xml')
+        return stl(handler, namespace)
+
+
+    # Weekly view
+    weekly_view__access__ = True #'is_allowed_to_view'
+    weekly_view__label__ = u'View'
+    weekly_view__sublabel__ = u'Weekly'
+    def weekly_view(self, context):
+        context = get_context()
+        root = context.root
+
+        # Current date
+        c_date = self.get_current_date(context.get_form_value('date', None))
+
+        # Calculate start of current week
+        # 0 = Monday, ..., 6 = Sunday
+        weekday = c_date.weekday()
+        start = c_date - timedelta(weekday)
+        if self.get_first_day() == 0:
+            start = start - timedelta(1)
+
+        namespace = {}
+        # Add header to navigate into time
+        namespace = self.add_selector_ns(c_date, 'weekly_view' ,namespace)
+
+        # Get header line with days of the week
+        namespace['days_of_week'] = self.days_of_week_ns(start, num=True)
+
+        # Get 1 week with all defined timetables or none (just one line)
+        namespace['timetables'] = self.get_timetables_ns(start)
+
+        handler = root.get_handler('ui/ical_weekly_view.xml')
         return stl(handler, namespace)
 
 
     edit_event_form__access__ = True #'is_allowed_to_edit'
     edit_event_form__label__ = u'Edit'
-    edit_event_form__sublabel__ = u'Edit event'
+    edit_event_form__sublabel__ = u'Event'
     def edit_event_form(self, context):
         context = get_context()
         root = context.root
-        goto = ';table_view'
 
         uid = context.get_form_value('uid', None)
+        method = context.get_form_value('method', 'monthly_view')
+        goto = ';%s' % method 
+
         date = context.get_form_value('date', None)
         if not date:
             message = u'A date must be specified to edit an event'
             return context.come_back(message, goto=goto)
         # date as a datetime object
         c_date = self.get_current_date(date)
+
+        # Timetables
+        tt_start, tt_end = None, None
+        timetable = context.get_form_value('timetable', None)
+        if timetable:
+            timetables = self.get_timetables()
+            if timetables != []:
+                timetable = timetables[int(timetable)]
+                tt_start = timetable['start'].strftime('%H:%M')
+                tt_end = timetable['end'].strftime('%H:%M')
 
         # Initialization
         namespace = {}
@@ -351,10 +517,10 @@ class Calendar(Text, icalendar):
                 namespace[field] = self.default_fields[field]
                 if field == 'DTSTART1':
                     namespace['DTSTART1'] = date
-                    namespace['DTSTART2'] = '__:__'
+                    namespace['DTSTART2'] = tt_start or '__:__'
                 elif field == 'DTEND1':
                     namespace['DTEND1'] = date
-                    namespace['DTEND2'] = '__:__'
+                    namespace['DTEND2'] = tt_end or '__:__'
 
         # Get attendees -- add blank one if no attendee at all
 #        if namespace['ATTENDEE'] == []:
@@ -384,11 +550,15 @@ class Calendar(Text, icalendar):
 #                ns_comment['value'] = comment.value
 #                comments.append(ns_comment)
 
-        # Show action buttons only if current user is the organizer of the event
-        # or admin
-        namespace['allowed'] = self.is_allowed_to_edit(context, event)
+        # Call to gettext on Status values
+        for status in namespace['STATUS']:
+            status['value'] = self.gettext(status['value'])
+        # Show action buttons only if current user is authorized
+        namespace['allowed'] = self.is_organizer_or_admin(context, event)
         # Set first day of week
         namespace['firstday'] = self.get_first_day()
+        # Keep params
+        namespace['method'] = method
 
         handler = root.get_handler('ui/ical_edit_event_form.xml')
         return stl(handler, namespace)
@@ -399,15 +569,20 @@ class Calendar(Text, icalendar):
         if context.has_form_value('remove'):
             return self.remove(context)
 
+        method = context.get_form_value('method', 'monthly_view')
+        goto = ';%s' % method
+        if method not in dir(self):
+            goto = '../;%s' % method
+
         date = self.get_current_date(context.get_form_value('DTSTART1'))
         # Get UID and Component object
         uid = context.get_form_value('UID')
         if uid:
             event = self.get_component_by_uid(uid)
             # Test if current user is admin or organizer of this event
-            if not self.is_allowed_to_edit(context, event):
+            if not self.is_organizer_or_admin(context, event):
                 message = u'You are not authorized to modify this event.'
-                return context.come_back(message)
+                return context.come_back(goto, message)
         else:
             event = Component('VEVENT')
             # Add user as Organizer
@@ -419,7 +594,7 @@ class Calendar(Text, icalendar):
         for key in context.get_form_keys():
             if key == 'UID':
                 continue
-            elif key == 'update':
+            elif key in ('update', 'method'):
                 continue
             # Get date and time for DTSTART and DTEND
             elif key[:-1] in ('DTSTART', 'DTEND'):
@@ -437,7 +612,7 @@ class Calendar(Text, icalendar):
                         value = DateTime.from_str(value)
                     except:
                         message = u'One or more field is invalid.'
-                        return context.come_back(message)
+                        return context.come_back(goto, message)
                     value = PropertyValue(value, params)
                     event.set_property(real_key, value)
             else:
@@ -453,15 +628,94 @@ class Calendar(Text, icalendar):
         event.set_property('DTSTAMP', PropertyValue(datetime.today()))
 
         self.set_changed()
-        goto = ';table_view?date=%s' % date.strftime('%Y-%m-%d')
+        goto = '%s?date=%s' % (goto, date.strftime('%Y-%m-%d'))
         return context.come_back(u'Data updated', goto=goto)
 
 
     remove__access__ = True
     def remove(self, context):
         uid = context.get_form_value('UID') 
+        method = context.get_form_value('method', 'monthly_view')
         icalendar.remove(self, 'VEVENT', uid)
-        goto = ';table_view?%s' % self.get_current_date()
+        goto = ';%s?%s' % (method, self.get_current_date())
+        if method not in dir(self):
+            goto = '../;%s?%s' % (method, self.get_current_date())
         return context.come_back(u'Event definitely deleted.', goto=goto)
+
+
+    edit_timetables_form__access__ = True
+    edit_timetables_form__label__ = u'Edit'
+    edit_timetables_form__sublabel__ = u'Timetables'
+    def edit_timetables_form(self, context):
+        context = get_context()
+        root = context.root
+        # Initialization
+        namespace = {}
+        timetables = self.get_timetables()
+        namespace['timetables'] = []
+        for index, timetable in enumerate(timetables):
+            num = timetable['num']
+            ns = {}
+            ns['index'] = num
+            ns['startname'] = '%s_startname' % num
+            ns['endname'] = '%s_endname' % num
+            ns['start'] = timetable['start'].strftime('%H:%M')
+            ns['end'] = timetable['end'].strftime('%H:%M')
+            namespace['timetables'].append(ns)
+        handler = root.get_handler('ui/ical_edit_timetables.xml')
+        return stl(handler, namespace)
+
+
+    edit_timetables__access__ = True
+    def edit_timetables(self, context):
+        ##############################################################
+        # Remove selected lines
+        if context.has_form_value('remove'):
+            ids = context.get_form_values('ids')
+            for index in range(10):
+                if str(index) in ids:
+                    # Delete selected timetable
+                    self.del_property('timetable_%s' % index)
+                    # Move last timetable to where the deleted one was
+                    indexes = range(index, 10)
+                    indexes.reverse()
+                    for index_2 in indexes:
+                        if str(index_2) in ids:
+                            continue
+                        value = self.get_property('timetable_%s' %index_2)
+                        if value:
+                            self.set_property('timetable_%s' % index, value)
+                            self.del_property('timetable_%s' % index_2)
+                            break
+                    ids.remove(str(index))
+            return context.come_back(u'Timetable removed successfully.')
+
+        ##############################################################
+        # Update timetable or just set index to next index
+        for index in range(10):
+            if not context.has_form_value('%s_startname' %index):
+                break
+            # Update existing timetable at current index
+            if context.has_form_value('update'):
+                timetable = {}
+                start = context.get_form_value('%s_startname' %index, None)
+                end = context.get_form_value('%s_endname' %index, None)
+                if not start or not end:
+                    return context.come_back(u'Please fill date AND end times.')
+                timetable = '%s-%s' % (start, end)
+                self.set_property('timetable_%s' % index, timetable)
+
+        ##############################################################
+        # Add a new timetable
+        if context.has_form_value('add'):
+            timetable = {}
+            start = context.get_form_value('new_start', None)
+            end = context.get_form_value('new_end', None)
+            if not start or not end or start == '__:__' or end == '__:__':
+                return context.come_back(u'Please fill date AND end times.')
+            timetable = '%s-%s' % (start, end)
+            self.set_property('timetable_%s' % index, timetable)
+        return context.come_back(u'Timetable updated successfully.')
+        
 
 register_object_class(Calendar)

@@ -253,7 +253,7 @@ class Component(object):
             dtstart = dtstart.value
             tuple_dtstart = (dtstart.year, dtstart.month, dtstart.day, 
                              dtstart.hour, dtstart.minute, dtstart.second)
-            if tuple_end < tuple_dtstart:
+            if tuple_end <= tuple_dtstart:
                 return False
         # If start > DTEND, then component happens earlier
         if 'DTEND' in self.properties:
@@ -263,7 +263,7 @@ class Component(object):
             dtend = dtend.value
             tuple_dtend = (dtend.year, dtend.month, dtend.day, 
                            dtend.hour, dtend.minute, dtend.second)
-            if tuple_start > tuple_dtend: 
+            if tuple_start >= tuple_dtend: 
                 return False
         return True 
 

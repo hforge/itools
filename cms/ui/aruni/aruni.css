@@ -382,69 +382,69 @@ dl.new_resource_thumb {
 }
 
 /* ICALENDAR */
-#ical_table_view #selector {
+#ical_monthly_view #selector, #ical_weekly_view #selector {
   margin: 5px 0px 5px 0px;
   font-size:18px;
 }
-#ical_table_view #selector ul {
+#ical_monthly_view #selector ul , #ical_weekly_view #selector ul {
   list-style:none;
   display:inline;
 }
-#ical_table_view #selector li {
+#ical_monthly_view #selector li , #ical_weekly_view #selector li {
   display: inline; 
   padding: 26px;
 }
-#ical_table_view #selector li a {
+#ical_monthly_view #selector li a , #ical_weekly_view #selector li a {
   text-decoration:none;
   color: #cc0000;
 }
 
-#ical_table_view table {
+#ical_monthly_view table , #ical_weekly_view table {
   border-spacing: 1px;
 }
-#ical_table_view td {
+#ical_monthly_view td , #ical_weekly_view td {
   background: #e9b96e;
 }
 
-#ical_table_view th {
+#ical_monthly_view th , #ical_weekly_view th {
   background: #cc0000;
   color: #fce94f;
   font-weight: bold;
 }
 
-#ical_table_view .month {
+#ical_monthly_view .month {
   font-weight: bold;
   color: #cc0000;
 }
 
-#ical_table_view .day {
+#ical_monthly_view .day , #ical_weekly_view .day {
   padding: 2px 5px 2px 5px;
   height: 70px;
-}
+} 
 
-#ical_table_view .bold {
+#ical_monthly_view .bold {
   font-weight: bold;
 }
 
-#ical_table_view .add_event {
+#ical_monthly_view .add_event , #ical_weekly_view .add_event {
   color: #ce5c00;
   text-decoration:none; 
   font-size:11px; 
   vertical-align: top;
 }
 
-#ical_table_view .event dd {
+#ical_monthly_view .event dd , #ical_weekly_view .event dd {
   font: 10pt "Bitstream Vera Sans";
   margin-left: 5px;
 }
 
-#ical_table_view .event a.CONFIRMED {
+#ical_monthly_view .event .CONFIRMED , #ical_weekly_view .event .CONFIRMED {
   color: #4a0000;
 }
-#ical_table_view .event a.TENTATIVE {
+#ical_monthly_view .event .TENTATIVE , #ical_weekly_view .event .TENTATIVE {
   color: #cc0000;
 }
-#ical_table_view .event a.CANCELLED {
+#ical_monthly_view .event .CANCELLED , #ical_weekly_view .event .CANCELLED {
   color: #8f5902;
 }
 

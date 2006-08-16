@@ -115,6 +115,7 @@
       <tr>
         <td>
           <input type="hidden" name="UID" stl:attributes="value UID" />
+          <input type="hidden" name="method" stl:attributes="value method" />
         </td>
       </tr>
     </table>

@@ -492,15 +492,19 @@ msgstr "Préférences de l'application"
 msgid "Application preferences changed."
 msgstr "Préférences de l'application modifiées."
 
-#: cms/Folder.py:455
+#: cms/ical.py:75
+msgid "April"
+msgstr "Avril"
+
+#: cms/Folder.py:460
 msgid "As Icons"
 msgstr "Icônes"
 
-#: cms/Folder.py:517
+#: cms/Folder.py:522
 msgid "As Image Gallery"
 msgstr "Galerie d'images"
 
-#: cms/Folder.py:471
+#: cms/Folder.py:476
 msgid "As List"
 msgstr "Liste"
 
@@ -511,6 +515,10 @@ msgstr "Couleur de fond"
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
 msgstr "Assurez-vous d'avoir l'extension External Editor."
+
+#: cms/ical.py:76
+msgid "August"
+msgstr "Août"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Bold"
@@ -621,7 +629,7 @@ msgstr "Commentaires&nbsp;:"
 msgid "Comments (optional):"
 msgstr "Commentaires (optionnel)&nbsp;:"
 
-#: cms/Folder.py:516
+#: cms/Folder.py:521
 msgid "Contents"
 msgstr "Contenu"
 
@@ -662,6 +670,10 @@ msgid "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 msgstr ""
 "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 
+#: cms/ical.py:77
+msgid "December"
+msgstr "Décembre"
+
 #: cms/ui/Root_languages.xml.en:0
 msgid "Default"
 msgstr "Défaut"
@@ -686,11 +698,11 @@ msgstr "N'afficher que le contenu qui contient&nbsp;:"
 msgid "Document"
 msgstr "Document"
 
-#: cms/binary.py:244
+#: cms/binary.py:245
 msgid "Document Excel"
 msgstr "Classeur Excel"
 
-#: cms/binary.py:111
+#: cms/binary.py:112
 msgid "Document Flash"
 msgstr "Document Flash"
 
@@ -698,11 +710,11 @@ msgstr "Document Flash"
 msgid "Document History"
 msgstr "Historique du document"
 
-#: cms/binary.py:337
+#: cms/binary.py:338
 msgid "Document PDF"
 msgstr "Document PDF"
 
-#: cms/binary.py:258
+#: cms/binary.py:259
 msgid "Document PowerPoint"
 msgstr "Document PowerPoint"
 
@@ -710,7 +722,7 @@ msgstr "Document PowerPoint"
 msgid "Document State"
 msgstr "État du document"
 
-#: cms/binary.py:229
+#: cms/binary.py:230
 msgid "Document Word"
 msgstr "Document Word"
 
@@ -802,6 +814,10 @@ msgstr "Éditeur externe"
 msgid "External Editor.."
 msgstr "Éditeur externe..."
 
+#: cms/ical.py:75
+msgid "February"
+msgstr "Février"
+
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Field"
 msgstr "Champ"
@@ -822,11 +838,11 @@ msgstr ""
 msgid "Fix"
 msgstr "Corriger."
 
-#: cms/binary.py:110
+#: cms/binary.py:111
 msgid "Flash"
 msgstr "Flash"
 
-#: cms/Folder.py:56
+#: cms/Folder.py:57
 msgid "Folder"
 msgstr "Dossier"
 
@@ -1113,9 +1129,21 @@ msgstr "Italique"
 msgid "J. David Ibáñez, lead developer"
 msgstr "J. David Ibáñez, développeur principal"
 
+#: cms/ical.py:75
+msgid "January"
+msgstr "Janvier"
+
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Join the Community"
 msgstr "Rejoignez-nous"
+
+#: cms/ical.py:76
+msgid "July"
+msgstr "Juillet"
+
+#: cms/ical.py:76
+msgid "June"
+msgstr "Juin"
 
 #: cms/text.py:40
 msgid "Keep your notes with plain text files."
@@ -1184,6 +1212,14 @@ msgid ""
 "that system;"
 msgstr ""
 
+#: cms/ical.py:75
+msgid "March"
+msgstr "Mars"
+
+#: cms/ical.py:76
+msgid "May"
+msgstr "Mai"
+
 #: cms/access.py:130
 msgid "Member"
 msgstr "Membre"
@@ -1230,7 +1266,7 @@ msgstr "Traduction de message"
 msgid "Message edited."
 msgstr "Message modifié"
 
-#: cms/handlers.py:109
+#: cms/ical.py:80
 msgid "Metadata"
 msgstr "Métadonnées"
 
@@ -1314,19 +1350,23 @@ msgstr "Notez que ni le nom ni le titre ne changeront."
 msgid "Note:"
 msgstr "Note&nbsp;:"
 
+#: cms/ical.py:77
+msgid "November"
+msgstr "Novembre"
+
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Nulla facilisi."
 msgstr ""
 
-#: cms/binary.py:315
+#: cms/binary.py:316
 msgid "OOo Calc"
 msgstr "OpenOffice.org Calc"
 
-#: cms/binary.py:325
+#: cms/binary.py:326
 msgid "OOo Impress"
 msgstr "OpenOffice.org Impress"
 
-#: cms/binary.py:304
+#: cms/binary.py:305
 msgid "OOo Writer"
 msgstr "OpenOffice.org Writer"
 
@@ -1386,7 +1426,7 @@ msgstr "Monter"
 msgid "Ordered List"
 msgstr "Liste numérotée"
 
-#: cms/Folder.py:57
+#: cms/Folder.py:58
 msgid "Organize your files and documents with folders."
 msgstr "Organisez vos fichiers et documents dans des dossiers."
 
@@ -1409,7 +1449,7 @@ msgstr ""
 msgid "Outdent"
 msgstr "Désindenter"
 
-#: cms/binary.py:336
+#: cms/binary.py:337
 msgid "PDF"
 msgstr "PDF"
 
@@ -1488,11 +1528,15 @@ msgstr "Veuillez saisir votre nom d'utilisateur, par exemple"
 msgid "Please enter your password (it will not be displayed in clear text)."
 msgstr "Veuillez saisir votre mot de passe (il ne sera pas affiché en clair)."
 
+#: cms/ical.py:727
+msgid "Please fill date AND end times."
+msgstr "Veuillez saisir la date ET l'heure."
+
 #: cms/ui/Folder_new_instance.xml.en:0
 msgid "Please give a title to your folder."
 msgstr "Veuillez saisir un titre pour ce dossier."
 
-#: cms/Folder.py:487
+#: cms/Folder.py:492
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr "Merci de saisir une recherche si vous incluez les sous-dossiers."
 
@@ -1530,7 +1574,7 @@ msgstr "Veuillez sélectionner les dossiers à monter."
 msgid "Please type the title of your document."
 msgstr "Veuillez saisir le titre de votre document."
 
-#: cms/binary.py:257
+#: cms/binary.py:258
 msgid "PowerPoint"
 msgstr "PowerPoint"
 
@@ -1542,7 +1586,7 @@ msgstr ""
 msgid "Preferences"
 msgstr "Préférences"
 
-#: cms/binary.py:219
+#: cms/binary.py:220
 msgid "Preview"
 msgstr "Aperçu"
 
@@ -1588,7 +1632,7 @@ msgstr ""
 "publique générale GNU</a>, iKaaro est un projet de logiciel libre, bâti par "
 "sa communauté."
 
-#: cms/ui/User_translator.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -1686,6 +1730,10 @@ msgstr "Sécurité"
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
 msgstr ""
 
+#: cms/ical.py:76
+msgid "September"
+msgstr "Septembre"
+
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Size"
 msgstr "Taille"
@@ -1740,6 +1788,10 @@ msgstr "Exposant"
 msgid "Suspendisse potenti."
 msgstr ""
 
+#: cms/ical.py:40
+msgid "TENTATIVE"
+msgstr "TENTATIVE"
+
 #: cms/ui/Root_license.xml.en:0
 msgid ""
 "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
@@ -1765,7 +1817,7 @@ msgstr "Tâches"
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: cms/Folder.py:67
+#: cms/Folder.py:68
 msgid "Text"
 msgstr "Texte"
 
@@ -1850,7 +1902,7 @@ msgstr ""
 msgid "The message"
 msgstr ""
 
-#: cms/Folder.py:892
+#: cms/Folder.py:894
 msgid "The name must be entered"
 msgstr "Le nom doit être saisi."
 
@@ -1987,6 +2039,18 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
+#: cms/ical.py:703
+msgid "Timetable removed successfully."
+msgstr "Horaire supprimé."
+
+#: cms/ical.py:730
+msgid "Timetable updated successfully."
+msgstr "Horaire modifié."
+
+#: cms/ical.py:660
+msgid "Timetables"
+msgstr "Horaires"
+
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Title"
 msgstr "Titre"
@@ -2090,7 +2154,7 @@ msgstr "Annuler"
 msgid "Unordered List"
 msgstr "Liste à puces"
 
-#: cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Update"
 msgstr "Mettre à jour"
 
@@ -2209,7 +2273,7 @@ msgstr "Avec en-tête"
 msgid "Without head"
 msgstr "Sans en-tête"
 
-#: cms/binary.py:228
+#: cms/binary.py:229
 msgid "Word"
 msgstr "Word"
 
@@ -2262,6 +2326,12 @@ msgstr ""
 #: cms/WebSite.py:194
 msgid "You can not remove the default language."
 msgstr "Vous ne pouvez pas supprimer la langue par défaut."
+
+#: cms/ui/ical_edit_timetables.xml.en:0
+msgid "You can specify timetables to limit the range when an event can be set."
+msgstr ""
+"Vous pouvez spécifier des horaires afin de limiter les plages de temps ou un "
+"évènement peut être saisi."
 
 #: cms/ui/File_upload.xml.en:0
 msgid "You can upload a new file to replace the current one."
@@ -2540,9 +2610,9 @@ msgid ""
 "practices."
 msgstr ""
 
-#: cms/ui/Folder_rename.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "to"
-msgstr "en"
+msgstr "à"
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "translation"
@@ -2760,10 +2830,6 @@ msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 #~ msgstr ""
 #~ "Veuillez saisir le nom, pas le titre du document mais le nom du fichier."
 
-#, fuzzy
-#~ msgid "Please type the title."
-#~ msgstr "Veuillez saisir le titre."
-
 #~ msgid "Publish your own web pages."
 #~ msgstr "Publiez vos propres pages Web."
 
@@ -2775,6 +2841,9 @@ msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 
 #~ msgid "Settings"
 #~ msgstr "Configuration"
+
+#~ msgid "Table view"
+#~ msgstr "Vue calendrier"
 
 #~ msgid ""
 #~ "The metadata describes the document (title, subject, description, etc..)."

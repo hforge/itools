@@ -18,10 +18,11 @@
 
 # Import from the Standard Library
 import mimetypes
-import os
+from os.path import join as path_join
 from tarfile import TarFile
 import tempfile
 from zipfile import ZipFile, BadZipfile
+from subprocess import call
 
 # Import from itools
 from itools.handlers.Image import Image as iImage
@@ -126,32 +127,33 @@ class Flash(File):
 # Office Documents
 ###########################################################################
 def convert(handler, cmdline, outfile=None):
-    filename = 'stdin'
+    cmdline = cmdline % 'stdin'
 
     # Serialize the handler to a temporary file in the file system
     path = tempfile.mkdtemp('itools')
-    file_path = os.path.join(path, filename)
+    file_path = path_join(path, 'stdin')
     open(file_path, 'w').write(handler.to_str())
 
-    # Change path
-    here = os.getcwd()
-    os.chdir(path)
+    # stdout & stderr
+    stdout_path = path_join(path, 'stdout')
+    stdout = open(stdout_path, 'w')
+    stderr_path =path_join(path, 'stderr')
+    stderr = open(stderr_path, 'w')
 
     # Call convert method
-    cmdline = cmdline % filename
-    cmdline = cmdline + " >stdout 2>stderr"
-    os.system(cmdline)
+    try:
+        # XXX do not use pipes, not enough buffer to hold stdout
+        call(cmdline, stdout=stdout, stderr=stderr, shell=True, cwd=path)
+    except OSError, e:
+        context = get_context()
+        context.server.log_error(context)
 
-    # Get the output
-    if outfile is None:
-        stdout = open('stdout').read()
-    else:
-        stdout = open(outfile).read()
-    stderr = open('stderr').read()
+    # Read output
+    stdout = open(stdout_path).read()
+    stderr = open(stderr_path).read()
 
     # Remove the temporary files
-    os.system('rm -fr %s' % path)
-    os.chdir(here)
+    call('rm -fr %s' % path, shell=True)
 
     return stdout, stderr
 
@@ -208,9 +210,9 @@ class OfficeDocument(File):
         self.__html_output__ = None
 
 
-    def upload(self, file=None, **kw):
-        File.upload(self, file=file, **kw)
+    def upload(self, context):
         self.clear_cache()
+        return File.upload(self, context)
 
 
     ########################################################################
@@ -281,7 +283,7 @@ class OOffice(OfficeDocument):
             text = handler.to_text()
         except BadZipfile:
             context = get_context()
-            context.server.log_error()
+            context.server.log_error(context)
             text = u''
 
         self.__text_output__ = text

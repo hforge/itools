@@ -22,7 +22,6 @@ import sys
 
 # Import from itools
 import itools
-from itools.resources import get_resource
 from itools.handlers import get_handler
 from itools.xhtml import XHTML
 import itools.stl
@@ -54,8 +53,7 @@ if __name__ == '__main__':
 
     try:
         source, po = args
-        resource = get_resource(source)
-        xhtml = XHTML.Document(resource)
+        xhtml = XHTML.Document(source)
         po = get_handler(po)
         output.write(xhtml.translate(po))
     finally:

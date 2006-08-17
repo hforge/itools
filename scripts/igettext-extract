@@ -22,7 +22,6 @@ import sys
 
 # Import from itools
 import itools
-from itools.resources import get_resource
 from itools.gettext import PO
 from itools.xhtml import XHTML
 import itools.stl
@@ -53,12 +52,11 @@ if __name__ == '__main__':
         po = PO.PO()
         for source_file in args:
             # Load the source handler
-            resource = get_resource(source_file)
             if source_file.endswith('.py'):
-                handler = Python(resource)
+                handler = Python(source_file)
             else:
                 # XXX Suppose it is XHTML
-                handler = XHTML.Document(resource)
+                handler = XHTML.Document(source_file)
             # Extract the messages
             for msgid, line_number in handler.get_messages():
                 po.set_message(msgid, references={source_file: [line_number]})

@@ -22,6 +22,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools import datatypes
+from itools.datatypes import XML as XMLDataType
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
                               XMLAttribute)
 from itools import schemas
@@ -470,7 +471,7 @@ class Document(XML.Document):
                     open_tag(node)
                     message = Message(node.children)
                     for x in process_message(message, keep_spaces):
-                        yield x
+                        yield XMLDataType.encode(x)
                     yield node.get_end_tag()
                 else:
                     # Check wether the node message has real text to process.
@@ -490,7 +491,7 @@ class Document(XML.Document):
                         # Nothing to translate
                         for x in message:
                             if isinstance(x, unicode):
-                                yield x
+                                yield XMLDataType.encode(x)
                             elif isinstance(x, XML.Element):
                                 open_tag(x)
                                 msg = Message(x.children)

@@ -28,7 +28,7 @@ from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.handlers.registry import register_handler_class
 from itools.xml import XML, namespaces
-from itools import i18n
+from itools.i18n.segment import Message
 
 
 #############################################################################
@@ -468,7 +468,7 @@ class Document(XML.Document):
                 if len(message) == 1 and isinstance(message[0], XML.Element):
                     node = message[0]
                     open_tag(node)
-                    message = i18n.segment.Message(node.children)
+                    message = Message(node.children)
                     for x in process_message(message, keep_spaces):
                         yield x
                     yield node.get_end_tag()
@@ -491,6 +491,12 @@ class Document(XML.Document):
                         for x in message:
                             if isinstance(x, unicode):
                                 yield x
+                            elif isinstance(x, XML.Element):
+                                open_tag(x)
+                                msg = Message(x.children)
+                                for y in process_message(msg, keep_spaces):
+                                    yield y
+                                yield x.get_end_tag()
                             else:
                                 yield x.to_unicode()
                         raise StopIteration
@@ -512,7 +518,7 @@ class Document(XML.Document):
 
         buffer = StringIO()
         buffer.write(self.header_to_str())
-        message = i18n.segment.Message()
+        message = Message()
         keep_spaces = False
         root_element = self.get_root_element()
         for node, context in self.traverse2():
@@ -528,7 +534,7 @@ class Document(XML.Document):
                         # Process any previous message
                         for x in process_message(message, keep_spaces):
                             buffer.write(x.encode('utf-8'))
-                        message = i18n.segment.Message()
+                        message = Message()
                         # The open tag
                         open_tag(node)
                         # Presarve spaces if <pre>
@@ -538,7 +544,7 @@ class Document(XML.Document):
                     if node.is_block():
                         for x in process_message(message, keep_spaces):
                             buffer.write(x.encode('utf-8'))
-                        message = i18n.segment.Message()
+                        message = Message()
                         # The close tag
                         buffer.write(node.get_end_tag())
                         # </pre> don't preserve spaces any more
@@ -571,7 +577,7 @@ class Document(XML.Document):
                 # Check wether the message is only one element
                 if len(message) == 1 and isinstance(message[0], XML.Element):
                     node = message[0]
-                    message = i18n.segment.Message(node.children)
+                    message = Message(node.children)
                     for x in process_message(message, keep_spaces):
                         yield x
                 else:
@@ -596,7 +602,7 @@ class Document(XML.Document):
                         yield segment
 
         messages = []
-        message = i18n.segment.Message()
+        message = Message()
         keep_spaces = False
         for node, context in self.traverse2():
             if isinstance(node, unicode):
@@ -607,7 +613,7 @@ class Document(XML.Document):
                         for x in process_message(message, keep_spaces):
                             if x not in messages:
                                 yield x, 0
-                        message = i18n.segment.Message()
+                        message = Message()
                         # Don't go through this node
                         context.skip = True
                     else:
@@ -625,7 +631,7 @@ class Document(XML.Document):
                             for x in process_message(message, keep_spaces):
                                 if x not in messages:
                                     yield x, 0
-                            message = i18n.segment.Message()
+                            message = Message()
                             # Presarve spaces if <pre>
                             if node.name == 'pre':
                                 context.keep_spaces = True

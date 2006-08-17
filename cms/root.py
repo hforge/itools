@@ -150,7 +150,7 @@ class Root(WebSite):
     def forbidden(self, context):
         message = (u'Access forbidden, you are not authorized to access'
                    u' this resource.')
-        return self.gettext(message)
+        return self.gettext(message).encode('utf-8')
 
 
     def internal_server_error(self, context):

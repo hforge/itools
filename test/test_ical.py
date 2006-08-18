@@ -545,7 +545,7 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(event.in_range(dtstart, dtend), False)
         dtstart = datetime(2005, 5, 28)
         dtend = datetime(2005, 5, 30, 0, 0)
-        self.assertEqual(event.in_range(dtstart, dtend), True)
+        self.assertEqual(event.in_range(dtstart, dtend), False)
         dtstart = datetime(2005, 5, 29)
         dtend = datetime(2005, 5, 30, 0, 1)
         self.assertEqual(event.in_range(dtstart, dtend), True)
@@ -557,7 +557,7 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(event.in_range(dtstart, dtend), True)
         dtstart = datetime(2005, 5, 31)
         dtend = datetime(2005, 6, 1)
-        self.assertEqual(event.in_range(dtstart, dtend), True)
+        self.assertEqual(event.in_range(dtstart, dtend), False)
         dtstart = datetime(2005, 5, 31, 0, 0, 1)
         dtend = datetime(2005, 6, 1)
         self.assertEqual(event.in_range(dtstart, dtend), False)
@@ -650,7 +650,7 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(len(events), 0)
 
         dtstart = datetime(2005, 5, 28)
-        dtend = datetime(2005, 5, 30, 0, 0)
+        dtend = datetime(2005, 5, 30, 0, 50)
         events = cal.get_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 1)
 
@@ -669,7 +669,7 @@ class icalTestCase(unittest.TestCase):
         events = cal.get_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 2)
 
-        dtstart = datetime(2005, 5, 31)
+        dtstart = datetime(2005, 5, 30, 23)
         dtend = datetime(2005, 6, 1)
         events = cal.get_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 1)

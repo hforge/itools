@@ -568,6 +568,8 @@ class icalendar(Text):
                 # If filter do not match component, go to next one
                 if not add_to_res:
                     break
+            else:
+                add_to_res = True
 
             # Add event if all filters match
             if add_to_res:

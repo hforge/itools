@@ -8,19 +8,19 @@
   <div id="selector">
     <ul>
       <li>
-        <a stl:attributes="href previous_week">&lt;</a>
+        <a stl:attributes="href previous_week">&laquo;</a>
         <stl:block stl:content="current_week" />
-        <a stl:attributes="href next_week">&gt;</a>
+        <a stl:attributes="href next_week">&raquo;</a>
       </li>
       <li>
-        <a stl:attributes="href previous_month">&lt;</a>
+        <a stl:attributes="href previous_month">&laquo;</a>
         <stl:block stl:content="current_month" />
-        <a stl:attributes="href next_month">&gt;</a>
+        <a stl:attributes="href next_month">&raquo;</a>
       </li>
       <li>
-        <a stl:attributes="href previous_year">&lt;</a>
+        <a stl:attributes="href previous_year">&laquo;</a>
         <stl:block stl:content="current_year" />
-        <a stl:attributes="href next_year">&gt;</a>
+        <a stl:attributes="href next_year">&raquo;</a>
       </li>
     </ul>
   </div>

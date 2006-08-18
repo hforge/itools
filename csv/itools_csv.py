@@ -113,6 +113,14 @@ class CSV(Text):
                  '__curr_parsed_line_no', '__number_of_columns']
 
 
+    def new(self, **kw):
+        self.lines = []        
+        if self.is_schema_defined():
+            self._index_init()
+        else:
+            self.indexes = None
+
+
     # Hash with column names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some columns the schema should be declared as:

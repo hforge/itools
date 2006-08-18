@@ -28,10 +28,13 @@ class VersioningAware(object):
 
     def commit_revision(self):
         context = get_context()
-        user = context.user
+        if context is None:
+            username = ''
+        else:
+            username = context.user.name
 
         property = {
-            (None, 'user'): user.name,
+            (None, 'user'): username,
             ('dc', 'date'): datetime.now(),
             (None, 'size'): str(len(self.to_str())),
         }

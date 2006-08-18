@@ -481,7 +481,7 @@ class Document(XML.Document):
                     open_tag(node)
                     message = Message(node.children)
                     for x in process_message(message, keep_spaces):
-                        yield XMLDataType.encode(x)
+                        yield x
                     yield node.get_end_tag()
                 else:
                     # Check wether the node message has real text to process.
@@ -514,7 +514,6 @@ class Document(XML.Document):
                     # Something to translate: segmentation
                     for segment in message.get_segments(keep_spaces):
                         msgstr = catalog.get_translation(segment)
-                        #msgstr = catalog.get_msgstr(segment) or segment
                         # Escapes "&", except when it is an entity reference
                         def f(match):
                             x = match.group(0)
@@ -522,6 +521,8 @@ class Document(XML.Document):
                                 return x
                             return "&amp;" + x[1:]
                         msgstr = re.sub("&[\w;]*", f, msgstr)
+                        # XXX The special characters "<" and "&" must be
+                        # escaped in text nodes (only in text nodes).
 
                         yield msgstr
                         if keep_spaces is False:

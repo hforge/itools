@@ -1,5 +1,5 @@
 # -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,9 +13,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+# Import from the future
+from __future__ import with_statement
 
 # Import from the Standard Library
+from os import getpid
 import profile
 import sys
 from time import time
@@ -26,6 +30,16 @@ from itools.handlers import Text
 from itools.xml import XML
 from itools.html import HTML
 from itools.catalog.catalog import Catalog
+
+
+def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
+                  'KB': 1024.0, 'MB': 1024.0*1024.0}):
+    with open('/proc/%d/status' % getpid()) as file:
+        v = file.read()
+    i = v.index('VmSize:')
+    v = v[i:].split(None, 3)  # whitespace
+    # convert Vm value to bytes
+    return float(v[1]) * scale[v[2]]
 
 
 
@@ -58,6 +72,11 @@ def create_catalog():
     print 'done'
 
 
+def load_catalog():
+    global catalog
+    catalog = Catalog('/tmp/catalog_prof')
+
+
 documents = []
 def load_documents():
     print 'Loading documents...',
@@ -76,42 +95,64 @@ def load_documents():
     print 'done'
 
 
-##catalog = Catalog(fields=[('title', 'text', True, True),
-##                          ('body', 'text', True, False)])
-
-
-def profile_indexing():
+def index_documents():
     for document in documents:
         catalog.index_document(document)
     catalog.save_state()
 
 
-def profile_search():
+def search_documents():
     for word in ('forget', 'lion', 'hit'):
         catalog.search(body=word)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        option = sys.argv[1]
-    else:
-        option = None
+    # Check input
+    options = ('bench-index', 'bench-search',
+               'bench-memory',
+               'profile-index', 'profile-search')
+    usage = "This script expects one of the following options:\n\n"
+    for option in options:
+        usage += '    %s\n' % option
 
-    if option == 'profile':
+    if len(sys.argv) != 2:
+        print usage
+        sys.exit()
+
+    option = sys.argv[1]
+    if option not in options:
+        print usage
+        sys.exit()
+
+    # Proceed
+    if option == 'profile-index':
         create_catalog()
         load_documents()
-        # Profile
-        profile.run('profile_indexing()')
-##        print
-##        profile.run('profile_search()')
-    elif option == 'bench':
+        profile.run('index_documents()')
+    elif option == 'profile-search':
         create_catalog()
         load_documents()
-        # Benchmark
+        profile.run('search_documents()')
+    elif option == 'bench-index':
+        create_catalog()
+        load_documents()
         t0 = time()
-        profile_indexing()
-        t1 = time()
-        print t1 - t0
-    else:
-        print "This script expects only one of the two options: 'profile'" \
-              " or 'bench'."
+        index_documents()
+        print time() - t0
+    elif option == 'bench-search':
+        create_catalog()
+        load_documents()
+        t0 = time()
+        search_documents()
+        print time() - t0
+    elif option == 'bench-memory':
+        load_catalog()
+        index = catalog.get_index('body')
+        tree_file = vfs.open(index.uri.resolve2('tree'))
+        m0 = vmsize()
+        try:
+            index._index.root._load_children_deep(tree_file)
+        finally:
+            tree_file.close()
+        m1 = vmsize()
+        print '%s - %s = %s' % (m1, m0, m1-m0)

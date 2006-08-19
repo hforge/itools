@@ -165,6 +165,14 @@ class _Node(object):
         self.documents = documents
 
 
+    def _load_children_deep(self, tree_file):
+        # This method is only here to meseaure the memory footprint
+        if self.children is None:
+            self.load_children(tree_file)
+        for child in self.children:
+            self.children[child]._load_children_deep(tree_file)
+
+
     #######################################################################
     # Search
     #######################################################################

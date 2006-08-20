@@ -130,8 +130,7 @@ if __name__ == '__main__':
         load_documents()
         profile.run('index_documents()')
     elif option == 'profile-search':
-        create_catalog()
-        load_documents()
+        load_catalog()
         profile.run('search_documents()')
     elif option == 'bench-index':
         create_catalog()
@@ -140,8 +139,7 @@ if __name__ == '__main__':
         index_documents()
         print time() - t0
     elif option == 'bench-search':
-        create_catalog()
-        load_documents()
+        load_catalog()
         t0 = time()
         search_documents()
         print time() - t0

@@ -34,23 +34,12 @@ def Text(data):
     0 -> 0 [stop word]
     1 -> 1 [letter or number]
     1 -> 0 [stop word]
-
-    0 -> 1 [letter or number]
-    0 -> 0 [stop word]
-    1 -> 2 [letter or number]
-    1 -> 0 [stop word]
-    2 -> 2 [letter or number]
-    2 -> word [stop word]
     """
     position = 0
     state = 0
     lexeme = u''
     for c in data:
-        if state == 0:
-            if c.isalnum():
-                lexeme += c
-                state = 1
-        elif state == 1:
+        if state == 1:
             if c.isalnum():
                 lexeme += c
             else:
@@ -59,6 +48,10 @@ def Text(data):
                 position += 1
                 lexeme = u''
                 state = 0
+        else: # state == 0
+            if c.isalnum():
+                lexeme += c
+                state = 1
     # Last word
     if state == 1:
         lexeme = lexeme.lower()

@@ -295,13 +295,16 @@ class _Index(object):
             # Load data if needed
             if node.children is None:
                 node.load_children(tree_file)
+
             # Create the node if needed
-            if c not in node.children:
+            children = node.children
+            if c in children:
+                # Next
+                node = children[c]
+            else:
                 # Add a new block
                 slot_number = tree_n_blocks
                 tree_n_blocks += 1
-                # Add node
-                node.children[c] = _Node({}, {}, slot_number)
                 # Write
                 # Prepend the new slot
                 tree_file.seek(node.block * 16 + 8)
@@ -312,8 +315,8 @@ class _Index(object):
                 tree_file.seek(slot_number * 16)
                 tree_file.write(''.join([encode_character(c), NULL, NULL,
                                          old_first_child]))
-            # Next
-            node = node.children[c]
+                # Add node, and continue
+                children[c] = node = _Node({}, {}, slot_number)
 
         # Update the number of blocks
         self.tree_n_blocks = tree_n_blocks

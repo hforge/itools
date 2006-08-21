@@ -364,8 +364,9 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
             for version in versions:
                 getattr(self, 'update_%s' % version)(*args, **kw)
                 logger.info('%s upgraded from %s to %s', self,
-                            self.class_version, version)
+                            object_version, version)
                 self.set_property('version', version)
+                object_version = version
             get_transaction().commit()
 
 

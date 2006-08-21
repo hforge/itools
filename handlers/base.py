@@ -15,9 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from copy import deepcopy
 from datetime import datetime

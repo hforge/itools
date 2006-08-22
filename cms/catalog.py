@@ -15,6 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
 from itools import vfs
 from workflow import WorkflowAware
@@ -31,6 +34,10 @@ class CatalogAware(object):
         get_property = self.get_metadata().get_property
         title = get_property('dc:title')
 
+        mtime = self.timestamp
+        if mtime is None:
+            mtime = datetime.now()
+
         document = {
             'name': name,
             'abspath': abspath,
@@ -39,7 +46,7 @@ class CatalogAware(object):
             'text': self.to_text(),
             'owner': get_property('owner'),
             'title_or_name': title or name,
-            'mtime': str(self.timestamp.strftime('%Y%m%d%H%M%S')),
+            'mtime': mtime.strftime('%Y%m%d%H%M%S'),
             }
 
         parent = self.parent

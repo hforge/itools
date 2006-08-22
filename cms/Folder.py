@@ -219,9 +219,12 @@ class Folder(Handler, BaseFolder):
             # Store history
             if move is False:
                 if isinstance(handler, Folder):
-                    for x in handler.traverse():
-                        if isinstance(x, VersioningAware):
-                            x.commit_revision()
+                    for x, context in handler.traverse2():
+                        if x.real_handler is not None:
+                            context.skip = True
+                        else:
+                            if isinstance(x, VersioningAware):
+                                x.commit_revision()
                     else:
                         if isinstance(handler, VersioningAware):
                             handler.commit_revision()

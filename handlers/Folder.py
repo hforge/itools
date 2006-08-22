@@ -197,15 +197,15 @@ class Folder(Handler):
                 # Miss
                 uri = here.uri.resolve2(str(segment))
                 handler = here._get_handler(segment, uri)
-                # Set parent and name
-                handler.parent = here
-                handler.name = name
                 # Update the cache
                 here.cache[name] = handler
             else:
                 # Hit, reload the handler if needed
                 if handler.is_outdated():
                     handler.load_state()
+            # Set parent and name
+            handler.parent = here
+            handler.name = name
             # Next
             here = handler
         return here

@@ -25,6 +25,39 @@ from itools.catalog import queries, analysers
 from itools.handlers.registry import register_handler_class
 
 
+###########################################################################
+# Parsing
+###########################################################################
+sniffer = python_csv.Sniffer()
+
+def parse(data, n_columns=None):
+    """
+    This method is a generator that returns one CSV row at a time.
+    To do the job it wraps the standard Python's csv parser.
+    """
+    # Find out the dialect
+    if data:
+        lines = data.splitlines()
+        dialect = sniffer.sniff('\n'.join(lines[:10]))
+        # Fix the fucking sniffer
+        dialect.doublequote = True
+        if dialect.delimiter == '':
+            dialect.delimiter = ','
+        # Get the reader
+        reader = python_csv.reader(lines, dialect)
+        # Find out the number of columns, if not specified
+        if n_columns is None:
+            line = reader.next()
+            n_columns = len(line)
+            yield line, reader.line_no
+        # Go
+        for line in reader:
+            if len(line) != n_columns:
+                msg = u'CSV syntax error: wrong number of columns at line %d'
+                raise ValueError, msg % reader.line_num
+            yield line
+
+
 
 class Row(list):
 
@@ -109,8 +142,7 @@ class CSV(Text):
     class_version = '20040625'
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'lines', 'indexes',
-                 '__curr_parsed_line_no', '__number_of_columns']
+                 'lines', 'indexes']
 
 
     def new(self, **kw):
@@ -137,62 +169,26 @@ class CSV(Text):
     # The class to use for each row (this allows easy specialization)
     row_class = Row
 
-    # Internal parser value
-    # Number of columns in parsed file
-    __number_of_columns = 0
-
-    # Internal parser value
-    # Number of currently parsed line
-    __curr_parsed_line_no = 0
 
     #########################################################################
     # Parsing
     #########################################################################
-    def _get_csv_reader(self, data):
-        """Build and return the csv file reader."""
-        lines = data.splitlines()
-        dialect = python_csv.Sniffer().sniff('\n'.join(lines[:10]))
-        # Fix the fucking sniffer
-        dialect.doublequote = True
-        if dialect.delimiter == '':
-            dialect.delimiter = ','
-        return python_csv.reader(lines, dialect)
-
-
     def _parse(self, data):
         """Parse the csv data"""
-        reader = self._get_csv_reader(data)
         # Only if the schema and columns are set, else the schema or
-        # columns definition is ignored (schema is hash now and has no order)
+        # columns definition is ignored.
         if self.is_schema_defined():
-            for line in reader:
-                self._syntax_check(line)
-                decoded_line = self._decode_line(line)
-                yield decoded_line
+            schema = self.schema
+            columns = self.columns
+
+            n_columns = len(columns)
+            for line in parse(data, n_columns):
+                yield [ schema[columns[i]].decode(value)
+                        for i, value in enumerate(line) ]
         else:
             encoding = Text.guess_encoding(data)
-            for line in reader:
-                self._syntax_check(line)
+            for line in parse(data):
                 yield [ unicode(x, encoding) for x in line ]
-
-
-    def _syntax_check(self, line):
-        """Syntax check of the parsed line"""
-        if self.__curr_parsed_line_no == 0:
-            if self.is_schema_defined():
-                self.__number_of_columns = len(self.columns)
-            else:
-                self.__number_of_columns = len(line)
-        self.__curr_parsed_line_no += 1
-        if len(line) != self.__number_of_columns:
-            msg = 'CSV file syntax error: wrong number of columns at line %d'
-            raise ValueError, msg % self.__curr_parsed_line_no
-
-
-    def _decode_line(self, line):
-        """Decode values from the csv line according to the schema."""
-        return [ self.schema[self.columns[i]].decode(value) 
-                 for i, value in enumerate(line) ]
 
 
     def _index_init(self):

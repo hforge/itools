@@ -45,7 +45,16 @@ class Table(object):
     """
 
     def __init__(self, root, name, objects, sortby=None, sortorder='up',
-                 batchstart='0', batchsize='0'):
+                 batchstart='0', batchsize='0', getter=None):
+        # The default getter tries first getattr, and if it fails tries
+        # mapping access.
+        if getter is None:
+            def getter(object, key):
+                try:
+                    return getattr(object, key)
+                except AttributeError:
+                    return object[key]
+
         # Get the parameters
         total = len(objects)
         parameters = get_parameters(name, sortby=sortby, sortorder=sortorder,
@@ -79,10 +88,7 @@ class Table(object):
                 for criteria in sortby:
                     value = object
                     for key in criteria:
-                        if hasattr(value, key):
-                            value = getattr(value, key)
-                        else:
-                            value = value[key]
+                        value = getter(value, key)
                     if callable(value):
                         value = value()
                     criterias.append(value)

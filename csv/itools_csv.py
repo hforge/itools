@@ -49,7 +49,7 @@ def parse(data, n_columns=None):
         if n_columns is None:
             line = reader.next()
             n_columns = len(line)
-            yield line, reader.line_no
+            yield line
         # Go
         for line in reader:
             if len(line) != n_columns:

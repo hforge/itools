@@ -266,6 +266,7 @@ class PO(Text):
                     msgid.append(value)
                 elif line_type == MSGSTR:
                     msgstr.append(value)
+                    id = ''.join(msgid)
                     state = 3
                 else:
                     raise POSyntaxError(line_number, line_type)
@@ -284,7 +285,6 @@ class PO(Text):
                             self.encoding = charset[len('charset='):]
                 elif line_type == BLANK:
                     # End of the entry
-                    id = ''.join(msgid)
                     yield id, comments, msgid, msgstr, fuzzy, line_number
                     state = 0
                     id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
@@ -302,7 +302,6 @@ class PO(Text):
                     pass
                 elif line_type == BLANK:
                     # End of the entry
-                    id = ''.join(msgid)
                     yield id, comments, msgid, msgstr, fuzzy, line_number
                     state = 0
                     id, comments, msgid, msgstr, fuzzy = None, [], [], [], False

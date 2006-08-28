@@ -48,5 +48,5 @@ class AccessControl(object):
 
     #########################################################################
     # Basic Controls
-    def is_authenticated(self, user, object):
+    def is_authenticated(self, user, object=None):
         return user is not None

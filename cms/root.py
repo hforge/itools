@@ -424,7 +424,8 @@ class Root(WebSite):
     def update_20060602(self):
         root = vfs.open(self.uri)
         # Remove ".archive"
-        root.remove('.archive')
+        if root.exists('.archive'):
+            root.remove('.archive')
 
         # Rename ".xxx.metadata" to "xxx.metadata"
         stack = [root]

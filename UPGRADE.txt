@@ -385,6 +385,9 @@ Some files have been renamed, hence the imports must be updated:
   from itools.cms.metadata import Metadata  (BEFORE)
   from itools.cms.handlers import Metadata  (NOW)
 
+  from itools.cms.Group import ListOfUsers    (BEFORE)
+  from itools.cms.handlers import ListOfUsers (NOW)
+
 6.2 The registry
 ················
 

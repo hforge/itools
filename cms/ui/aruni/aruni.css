@@ -150,7 +150,9 @@ a img {
 }
 
 #subtabs {
-  border: 1px solid #babdb6;
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: #babdb6;
   background: #3465a4;
 }
 

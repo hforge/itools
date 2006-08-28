@@ -19,6 +19,6 @@
 import mimetypes
 
 # Import from itools
-from itools_csv import parse, CSV
+from itools_csv import parse, CSV, Row
 
 mimetypes.add_type('text/comma-separated-values', '.csv')

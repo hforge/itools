@@ -1,4 +1,65 @@
 
+itools 0.14.2
+=============
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This is mostly a bug fix release.
+
+The CSV parser has been separated from the CSV handler (itools.csv), so it
+can be used independently (to use "from itools.csv import parser"). Fixed
+a serious bug which prevented to create CSV handlers from scratch.
+
+Now the PO handler (itools.gettext) correctly detects the charset defined
+in the PO header.
+
+Now the "title" attribute of (X)HTML documents is always extracted to be
+translated, not only in "img" elements. Fix corner case in the automatic
+translation code. Declare some elements as inline to improve the behaviour
+of the translation machinery.
+
+The family of igettext scripts has been fixed, it still used the old API.
+
+The HTML/CSS code for the tabs (itools.cms) has been updated to work
+better in differente browsers, now even looks nice in text mode (#382).
+The web interface for calendar objects has seen various improvements. A
+bunch of minor bugs have been fixed in itools.cms, including #306, #458,
+#459 and #460.
+
+Credits:
+
+ - Hervé Cauwelier improved the web interface of itools.cms;
+ - Nicolas Deram updated the calendar code;
+ - J. David Ibáñez fixed many bugs;
+ - Josef Meile found the problem in the PO handler.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.2.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.14.1
 =============
 

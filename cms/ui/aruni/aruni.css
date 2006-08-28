@@ -165,6 +165,7 @@ a img {
   background: #f57900 url(images/subtab_bg.png) left top repeat-x;
 }
 
+#tabs .tab_dummy a,
 #subtabs .tab_dummy a {
   border-style: none;
 }

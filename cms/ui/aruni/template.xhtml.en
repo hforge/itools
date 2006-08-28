@@ -68,7 +68,8 @@
             <span stl:repeat="tab tabs" stl:attributes="class tab/style"><a
                 href="#" stl:attributes="href tab/name"
                 stl:content="tab/label">The view</a><span stl:if="not
-                repeat/tab/end">|</span></span>
+                repeat/tab/end">|</span></span><span
+              class="tab_dummy"><a>&nbsp;</a></span>
           </div>
           <div id="subtabs">
             <span stl:repeat="tab subtabs" stl:attributes="class tab/style"><a

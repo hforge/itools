@@ -374,19 +374,40 @@ was set to the root handler. Now it is None.
 6.1 Re-arranging the code
 ·························
 
-Some files have been renamed, hence the imports must be updated:
+Some files have been renamed, hence the imports must be updated.
 
-  from itools.cms.images import Image  (BEFORE)
-  from itools.cms.binary import Image  (NOW)
+The module "archive" has been moved to the "handlers" subpackage. Before:
 
-  from itools.cms.flash import Flash   (BEFORE)
-  from itools.cms.binary import Flash  (NOW)
+  from itools.cms.archive import ZipArchive, TarArchive
 
-  from itools.cms.metadata import Metadata  (BEFORE)
-  from itools.cms.handlers import Metadata  (NOW)
+Now:
 
-  from itools.cms.Group import ListOfUsers    (BEFORE)
-  from itools.cms.handlers import ListOfUsers (NOW)
+  from itools.handlers.archive import ZipArchive, TarArchive
+
+The new module "binary" keeps most binary handlers. Before:
+
+  from itools.cms.images import Image
+  from itools.cms.flash import Flash
+  from itools.cms.office import PDF, OfficeDocument, MSWord, MSExcel, \
+      MSPowerPoint, OOffice, OOWriter, OOCalc, OOImpress
+
+Now:
+
+  from itools.cms.binary import Image
+  from itools.cms.binary import Flash
+  from itools.cms.binary import PDF, OfficeDocument, MSWord, MSExcel, \
+      MSPowerPoint, OOffice, OOWriter, OOCalc, OOImpress
+
+The new module "handlers" keeps some low-level handlers (those that have
+their own parsing logic). Before:
+
+  from itools.cms.metadata import Metadata
+  from itools.cms.Group import ListOfUsers
+
+Now:
+
+  from itools.cms.handlers import Metadata
+  from itools.cms.handlers import ListOfUsers
 
 6.2 The registry
 ················

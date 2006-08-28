@@ -237,6 +237,13 @@ Now:
 
     register_handler_class(VCard)
 
+3.6 Other API changes
+····················· 
+
+The handler for images (itools.handlers.Image.Image) provides the method
+"get_size", which returns a tuple with the width and the height of the
+image. This method replaces "get_width" and "get_height".
+
 
 4. itools.catalog
 =================
@@ -486,11 +493,14 @@ Now:
 Now most skin methods expect the context as parameter. These are:
 
   - build_namespace
+  - get_navigation_menu
+  - get_tabs
 
 Also, the STL namespace has changed a little, the following names have been
 removed:
 
-  - logout
+  - user/info/logout
+  - user/login_url
 
 So the templates will need to be changed.
 

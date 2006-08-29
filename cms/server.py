@@ -101,6 +101,12 @@ class Server(web.server.Server):
                                    error_log='%s/error_log' % target,
                                    pid_file='%s/pid' % target)
 
+        # The SMTP host
+        if config.has_option('instance', 'smtp-host'):
+            self.smtp_host = config.get('instance', 'smtp-host')
+        else:
+            self.smtp_host = None
+
 
     def get_pid(self):
         try:

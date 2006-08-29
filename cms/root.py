@@ -275,7 +275,10 @@ class Root(WebSite):
                                      'encoding': encoding}
         message = message.encode(encoding)
         # Send email
-        smtp_host = self.smtp_host
+        smtp_host = context.server.smtp_host
+        # XXX Fallback for backwards compatibility, introduced in 0.14.2
+        if smtp_host is None:
+            smtp_host = self.smtp_host
         smtp = smtplib.SMTP(smtp_host)
         smtp.sendmail(from_addr, to_addr, message)
         smtp.quit()

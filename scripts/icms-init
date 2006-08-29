@@ -47,6 +47,8 @@ def init(parser, options, target):
         config.set('instance', 'address', options.address)
     if options.port:
         config.set('instance', 'port', options.port)
+    if options.smtp_host:
+        config.set('instance', 'smtp-host', options.smtp_host)
     config.write(open('%s/config.ini' % target, 'w'))
 
     # Load the root class
@@ -119,6 +121,8 @@ if __name__ == '__main__':
         '-r', '--root', help='use the ROOT handler class to init the instance')
     parser.add_option(
         '-w', '--password', help='use the given PASSWORD for the admin user')
+    parser.add_option(
+        '-s', '--smtp-host', help='use the given SMTP_HOST to send emails')
 
     options, args = parser.parse_args()
     if len(args) != 1:

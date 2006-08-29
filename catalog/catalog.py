@@ -194,13 +194,16 @@ class Catalog(Folder):
 
             # Update the Document
             if field.is_stored:
-                # XXX Coerce lists
+                # Stored
+                # XXX Coerce
                 if isinstance(value, list):
                     value = ' '.join(value)
+                elif isinstance(value, str):
+                    value = unicode(value)
                 catalog_document.fields[field.number] = value
             else:
-                # Update the forward index (un-index)
-                catalog_document.fields[field.number] = ' '.join(terms)
+                # Not Stored
+                catalog_document.fields[field.number] = list(terms)
 
         # Add the Document
         self.documents.index_document(catalog_document)
@@ -226,7 +229,7 @@ class Catalog(Folder):
                 terms = [ term for term, position in analyser(value) ]
                 terms = set(terms)
             else:
-                terms = value.split()
+                terms = value
             # Unindex
             index = self.indexes[field.number]
             for term in terms:

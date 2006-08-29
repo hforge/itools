@@ -23,7 +23,7 @@ from itools import vfs
 from itools.handlers.Folder import Folder
 from IO import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
-                NULL)
+                decode_vint, encode_vint, NULL)
 
 """
 This module implements an storage for documents, where a document is a
@@ -148,8 +148,22 @@ class Documents(Folder):
                 keys.sort()
                 for field_number in keys:
                     value = document.fields[field_number]
-                    buffer.append(encode_byte(field_number))
-                    buffer.append(encode_string(value))
+                    # The first byte keeps the field number (0-127) and
+                    # a bit that will tell us wether the field is stored
+                    # or not. (XXX This information may be passed from
+                    # the outside).
+                    if isinstance(value, unicode):
+                        # Stored
+                        buffer.append(encode_byte(field_number | 128))
+                        # "value" must be a unicode string
+                        buffer.append(encode_string(value))
+                    else:
+                        # Not Stored
+                        buffer.append(encode_byte(field_number))
+                        # "value" must be a list of unicode strings
+                        buffer.append(encode_vint(len(value)))
+                        for x in value:
+                            buffer.append(encode_string(x))
                 position = docs_file.tell()
                 data = ''.join(buffer)
                 docs_file.write(data)
@@ -217,8 +231,19 @@ class Documents(Folder):
                 data = docs_file.read(size)
                 # Load the document data
                 while data:
-                    field_n = decode_byte(data[0])
-                    value, data = decode_string(data[1:])
+                    first_byte = decode_byte(data[0])
+                    if first_byte & 128:
+                        # Stored
+                        value, data = decode_string(data[1:])
+                    else:
+                        # Not Stored
+                        n_terms, data = decode_vint(data[1:])
+                        value = []
+                        while n_terms > 0:
+                            x, data = decode_string(data)
+                            value.append(x)
+                            n_terms -= 1
+                    field_n = first_byte & 127
                     document.fields[field_n] = value
                 self.documents[doc_n] = document
             finally:

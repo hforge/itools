@@ -19,6 +19,7 @@
 from distutils import core
 from distutils.command.build_py import build_py
 import os
+import subprocess
 import sys
 
 
@@ -123,7 +124,7 @@ def setup(namespace, description='', classifiers=[]):
 
     # Write the manifest file if it does not exists
     if not os.path.exists('MANIFEST'):
-        os.system('git-ls-files > MANIFEST')
+        subprocess.call(['git-ls-files'], stdout=open('MANIFEST', 'w'))
 
     # The data files
     for line in open('MANIFEST').readlines():

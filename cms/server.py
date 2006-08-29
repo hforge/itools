@@ -18,6 +18,7 @@
 # Import from the Standard Library
 from ConfigParser import RawConfigParser
 import os
+import subprocess
 import sys
 
 # Import from itools
@@ -144,7 +145,7 @@ class Server(web.server.Server):
                     for filename in dst_files - src_files:
                         filename = '%s/%s' % (dst, filename)
                         if os.path.isdir(filename):
-                            os.system('rm -r %s' % filename)
+                            subprocess.call(['rm', '-r', filename])
                         else:
                             os.remove(filename)
                     # Add
@@ -152,7 +153,7 @@ class Server(web.server.Server):
                         srcfile = '%s/%s' % (src, filename)
                         dstfile = '%s/%s' % (dst, filename)
                         if os.path.isdir(srcfile):
-                            os.system('cp -r %s %s' % (srcfile, dstfile))
+                            subprocess.call(['cp', '-r', srcfile, dstfile])
                         else:
                             open(dstfile, 'w').write(open(srcfile).read())
                     # Different. XXX Could not need this if IIndex
@@ -166,12 +167,12 @@ class Server(web.server.Server):
                         if srctime > dsttime:
                             # Remove
                             if os.path.isdir(dstfile):
-                                os.system('rm -r %s' % dstfile)
+                                subprocess.call(['rm', '-r', dstfile])
                             else:
                                 os.remove(dstfile)
                             # Copy
                             if os.path.isdir(srcfile):
-                                os.system('cp -r %s %s' % (srcfile, dstfile))
+                                subprocess.call(['cp', '-r', srcfile, dstfile])
                             else:
                                 open(dstfile, 'w').write(open(srcfile).read())
                 else:
@@ -180,8 +181,9 @@ class Server(web.server.Server):
             # Something wrong? Fall to more safe (and slow) rsync, and log
             # the error.
             self.log_error()
-            cmd = 'rsync -a --delete %s/database/ %s/database.bak'
-            os.system(cmd % (target, target))
+            subprocess.call(['rsync', '-a', '--delete',
+                             '%s/database/' % target,
+                             '%s/database.bak' % target])
 
         # Finish with the backup
         open('%s/state' % target, 'w').write('OK')
@@ -191,6 +193,7 @@ class Server(web.server.Server):
 
     def end_commit_on_error(self):
         target = self.target
-        cmd = 'rsync -a --delete %s/database.bak/ %s/database'
-        os.system(cmd % (target, target))
+        subprocess.call(['rsync', '-a', '--delete',
+                         '%s/database.bak/' % target,
+                         '%s/database' % target])
         open('%s/state' % target, 'w').write('OK')

@@ -16,7 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-import os
+import subprocess
+from subprocess import PIPE, Popen
 
 # Import from itools
 from itools.xml import XML
@@ -68,7 +69,8 @@ class XHTMLFile(Text, XHTML.Document):
 
 
     def to_html(self):
-        stdin, stdout, stderr = os.popen3('tidy -i -utf8 -ashtml')
+        p = Popen(['tidy', '-i', '-utf8', '-ashtml'], stdin=PIPE, stdout=PIPE)
+        stdin, stdout = p.stdin, p.stdout
         stdin.write(self.to_str())
         stdin.close()
         return unicode(stdout.read(), 'utf-8')
@@ -143,7 +145,8 @@ class XHTMLFile(Text, XHTML.Document):
 
         new_body = context.get_form_value('data')
         # Epoz returns HTML, coerce to XHTML (by tidy)
-        stdin, stdout, stderr = os.popen3('tidy -i -utf8 -asxhtml')
+        p = Popen(['tidy', '-i', '-utf8', '-asxhtml'], stdin=PIPE, stdout=PIPE)
+        stdin, stdout = p.stdin, p.stdout
         stdin.write(new_body)
         stdin.close()
         new_body = stdout.read()

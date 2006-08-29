@@ -19,6 +19,7 @@
 # import from Python
 from optparse import OptionParser
 import glob, sys, os
+import subprocess
 
 # import from itools
 from itools.handlers import get_handler
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     if not args:
         args = glob.glob('*.py')
     if not len(args):
-        print os.system('igraph.py --help')
+        subprocess.call(['igraph.py', '--help'], stdout=sys.stdout)
         sys.exit()
 
     base_path = os.getcwd()

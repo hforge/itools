@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2001-2002, 2006 J. David Ibáñez <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2001-2002, 2006 J. David IbÃ¡Ã±ez <jdavid@itaapy.com>
 #               2004 J. Thierry Fromon <from.t@free.fr>
 #
 # This program is free software; you can redistribute it and/or
@@ -173,30 +173,30 @@ class MostSimilarTestCase(unittest.TestCase):
 class OracleTestCase(unittest.TestCase):
 
     def test_spain_long(self):
-        text = u"""Nueva coordinadora de Humanidades. En sustitución de la
-        doctora Olga Hansberg, el pasado martes 17 tomó posesión como
+        text = u"""Nueva coordinadora de Humanidades. En sustituciÃ³n de la
+        doctora Olga Hansberg, el pasado martes 17 tomÃ³ posesiÃ³n como
         coordinadora de Humanidades de la UNAM la doctora Mari Carmen Serra
         Puche. Con la doctora Serra se inicia un nuevo ciclo del cual se espera
         que las ciencias sociales y las humanidades sean lo que deben ser: la
         inteligencia y el alma de la UNAM.
 
-        En la ceremonia de toma de posesión de la doctora Serra estuvo presente
-        el rector Juan Ramón de la Fuente, quien sostuvo que la máxima casa de
-        estudios está preparada para enfrentar los nuevos retos que deberá
-        enfrentar la institución en la perspectiva de la reforma. La comunidad
-        académica tiene plena confianza en que la nueva coordinadora será punto
-        de equilibrio y unión para que se produzcan una serie de cambios en este
+        En la ceremonia de toma de posesiÃ³n de la doctora Serra estuvo presente
+        el rector Juan RamÃ³n de la Fuente, quien sostuvo que la mÃ¡xima casa de
+        estudios estÃ¡ preparada para enfrentar los nuevos retos que deberÃ¡
+        enfrentar la instituciÃ³n en la perspectiva de la reforma. La comunidad
+        acadÃ©mica tiene plena confianza en que la nueva coordinadora serÃ¡ punto
+        de equilibrio y uniÃ³n para que se produzcan una serie de cambios en este
         subsistema universitario. Por lo pronto y para que no digan que no se
         reconoce hay que decir que las autoridades ya anunciaron que el Centro
         de Estudios sobre la Universidad (CESU) y el Instituto de
-        Investigaciones Económicas tendrán nuevas instalaciones, decisión que
-        está más que justificada y, repito, se agradece."""
+        Investigaciones EconÃ³micas tendrÃ¡n nuevas instalaciones, decisiÃ³n que
+        estÃ¡ mÃ¡s que justificada y, repito, se agradece."""
         self.assertEqual(oracle.guess_language(text), 'es')
 
 
     def test_spain_short(self):
-        text = u"""Nueva coordinadora de Humanidades. En sustitución de la
-        doctora Olga Hansberg, el pasado martes 17 tomó posesión como
+        text = u"""Nueva coordinadora de Humanidades. En sustituciÃ³n de la
+        doctora Olga Hansberg, el pasado martes 17 tomÃ³ posesiÃ³n como
         coordinadora de Humanidades de la UNAM la doctora Mari Carmen Serra
         Puche."""
         self.assertEqual(oracle.guess_language(text), 'es')
@@ -208,27 +208,27 @@ class OracleTestCase(unittest.TestCase):
 
 
     def test_french_long(self):
-        text = u"""Le piège de la guerre coloniale se referme sur les
-        envahisseurs de lIrak. Comme les troupes françaises embourbées jadis
-        en Algérie, les Britanniques au Kenya, les Belges au Congo et les
-        Portugais en Guinée-Bissau (voire aujourdhui les Israéliens à Gaza),
+        text = u"""Le piÃ¨ge de la guerre coloniale se referme sur les
+        envahisseurs de lIrak. Comme les troupes franÃ§aises embourbÃ©es jadis
+        en AlgÃ©rie, les Britanniques au Kenya, les Belges au Congo et les
+        Portugais en GuinÃ©e-Bissau (voire aujourdhui les IsraÃ©liens Ã  Gaza),
         les forces
-        américaines constatent que leur écrasante supériorité ne suffit pas à
-        leur épargner enlèvements, embuscades et autres attentats mortels Pour
+        amÃ©ricaines constatent que leur Ã©crasante supÃ©rioritÃ© ne suffit pas Ã 
+        leur Ã©pargner enlÃ¨vements, embuscades et autres attentats mortels Pour
         les soldats sur le terrain, loccupation de lIrak se transforme en une
         descente aux enfers."""
         self.assertEqual(oracle.guess_language(text), 'fr')
                 
 
     def test_french_short(self):
-        text = u"""un dossier spécial consacré à la « révolution de velours »
-        géorgienne sur le site de lagence Radio Free Europe fondée par le
-        Congrès des Etats-Unis."""
+        text = u"""un dossier spÃ©cial consacrÃ© Ã  la Â« rÃ©volution de velours Â»
+        gÃ©orgienne sur le site de lagence Radio Free Europe fondÃ©e par le
+        CongrÃ¨s des Etats-Unis."""
         self.assertEqual(oracle.guess_language(text), 'fr')
                 
 
     def test_french_very_sort(self):
-        text = u"""Les déclarations du président Vladimir Poutine"""
+        text = u"""Les dÃ©clarations du prÃ©sident Vladimir Poutine"""
         self.assertEqual(oracle.guess_language(text), 'fr')
                 
 

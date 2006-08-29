@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2002-2005 Juan David IbÃ¡Ã±ez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ from itools.web import get_context
 # Misc
 #############################################################################
 
-src = ur""" ¹,;:!¡?ª$£¤+&/\"*#()[]{}'ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûİ~ıÿ~^°"""
+src = ur""" Â¹,;:!Â¡?Âª$Â£Â¤+&/\"*#()[]{}'Ã„Ã…ÃÃ€Ã‚ÃƒÃ¤Ã¥Ã¡Ã Ã¢Ã£Ã‡Ã§Ã‰ÃˆÃŠÃ‹Ã©Ã¨ÃªÃ«Ã¦ÃÃŒÃÃÃ­Ã¬Ã®Ã¯Ã‘Ã±Ã–Ã“Ã’Ã”Ã•Ã˜Ã¶Ã³Ã²Ã´ÃµÃ¸ÃŸÃœÃšÃ™Ã›Ã¼ÃºÃ¹Ã»Ã~Ã½Ã¿~^Â°"""
 dst = ur"""--------------------------AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuY-yy---"""
 
 transmap = {}

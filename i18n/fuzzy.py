@@ -1,6 +1,6 @@
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2004 Thierry Fromon <from.t@free.fr>
-#               2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#               2006 Juan David IbÃ¡Ã±ez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -79,7 +79,7 @@ def get_most_similar(a, *args):
 ##dictionary = {u'Monsieur': (u'Mr', u'M', u'M.', u'Mr.'),
 ##              u'Madame': (u'Md', u'Md.')}
 
-##punctuations = [u'.', u',', u';', u'?', '!', u"'", u'"', u'¡', u'¿']
+##punctuations = [u'.', u',', u';', u'?', '!', u"'", u'"', u'Â¡', u'Â¿']
 
 
 ##def expand_abbreviations(text):

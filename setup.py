@@ -1,7 +1,7 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2006 Juan David Ib·Òez Palomar <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2002-2006 Juan David Ib√°√±ez Palomar <jdavid@itaapy.com>
 #                    2005 Luis Belmar Leteliet <luis@itaapy.com>
-#                    2005 HervÈ Cauwelier <herve@oursours.net>
+#                    2005 Herv√© Cauwelier <herve@oursours.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

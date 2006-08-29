@@ -1,4 +1,4 @@
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2004 Thierry Fromon <from.t@free.fr>
 #
 # This program is free software; you can redistribute it and/or
@@ -21,26 +21,26 @@ if you want to add a new langage, it's very easy:
 
  - create a litle dictionnary like Deutch_base = [...], don't forget the u for
    unicode
- - create a specific char dictionnary like Deutch_char = [u'ß', u'ü', u'ö']
+ - create a specific char dictionnary like Deutch_char = [u'ÃŸ', u'Ã¼', u'Ã¶']
 
  - add the new langage in global variable language.
 """
 
-keeping_punctuation = [ u'¡', u'¿']
+keeping_punctuation = [ u'Â¡', u'Â¿']
 rubbish_punctuation = [u'.', u',', u';', u'?', '!', u"'", u'"']
 
-French_base = [u'que', u"qu'", u'à', u'le', u'les', u'du', u'de', u'un',u'une',
+French_base = [u'que', u"qu'", u'Ã ', u'le', u'les', u'du', u'de', u'un',u'une',
                u'des', u'je', u'tu', u'il', u'ils', u'vous', u'elle', u'elles',
-               u'nous', u'mais', u'où',  u'et', u'donc', u'est' u'aux']
-French_char = [u'ê', u'ç', ]
+               u'nous', u'mais', u'oÃ¹',  u'et', u'donc', u'est' u'aux']
+French_char = [u'Ãª', u'Ã§', ]
 
 Deutch_base = []
-Deutch_char = [u'ß', u'ä', u'ü', u'ö']
+Deutch_char = [u'ÃŸ', u'Ã¤', u'Ã¼', u'Ã¶']
 
-Spanish_base = [u'de', u'del', u'una', u'al', u'el', u'está', u'los', u'y', 
-                u'por', u'para', u'qué', u'como', u'hay', u'las', u'no',u'es',
+Spanish_base = [u'de', u'del', u'una', u'al', u'el', u'estÃ¡', u'los', u'y', 
+                u'por', u'para', u'quÃ©', u'como', u'hay', u'las', u'no',u'es',
                 u'con', u'o', u'su', u'lo', u'pero'] + keeping_punctuation
-Spainish_char = [u'ó', u'ú', u'í', u'ñ']
+Spainish_char = [u'Ã³', u'Ãº', u'Ã­', u'Ã±']
 
 English_base = [u'but', u'of', u'no', u'on', u'their', u'as', u'this',
                 u'an', u'when', u'where'  u'as', u'and', u'or', u'that',

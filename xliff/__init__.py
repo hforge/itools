@@ -1,4 +1,4 @@
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas OYEZ <noyez@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or

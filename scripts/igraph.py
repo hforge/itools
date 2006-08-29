@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Luis A. Belmar Letelier <luis@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or

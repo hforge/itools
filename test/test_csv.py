@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2004-2005 Juan David IbÃ¡Ã±ez Palomar <jdavid@itaapy.com>
 #                    2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This program is free software; you can redistribute it and/or
@@ -41,11 +41,11 @@ TEST_SYNTAX_ERROR = 'one,,\n,two,,\n,,three'
 class CSVTestCase(TestCase):
 
     def test_unicode(self):
-        data = '"Martin von Löwis","Marc André Lemburg","Guido van Rossum"\n'
+        data = '"Martin von LÃ¶wis","Marc AndrÃ© Lemburg","Guido van Rossum"\n'
         resource = memory.File(data)
         handler = itools_csv.CSV(resource)
-        self.assertEqual(handler.get_rows(), [[u"Martin von Löwis",
-                                               u"Marc André Lemburg",
+        self.assertEqual(handler.get_rows(), [[u"Martin von LÃ¶wis",
+                                               u"Marc AndrÃ© Lemburg",
                                                u"Guido van Rossum"]])
 
 
@@ -233,7 +233,7 @@ class CSVTestCase(TestCase):
         handler.add_row(['Piotr', 'Macuk', '1975-12-08'])
         handler.add_row(['Basia', 'Macuk', '2002-02-14'])
         self.assertEqual(handler.search(surname='Macuk'), [0, 1])
-        handler.add_row(['Pawe³', 'Macuk', '1977-05-13'])
+        handler.add_row(['PaweÂ³', 'Macuk', '1977-05-13'])
         self.assertEqual(handler.search(surname='Macuk'), [0, 1, 2])
         handler.del_row(2)
         self.assertEqual(handler.search(surname='Macuk'), [0, 1])

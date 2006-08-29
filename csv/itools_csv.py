@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004-2006 Juan David Ib·Òez Palomar <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2004-2006 Juan David Ib√°√±ez Palomar <jdavid@itaapy.com>
 #                    2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This program is free software; you can redistribute it and/or

@@ -1,4 +1,4 @@
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Deram <nderam@gmail.com>
 #               2005 Nicolas Oyez <nicoyez@gmail.com>
 #

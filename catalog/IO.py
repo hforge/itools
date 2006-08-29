@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2004 Juan David Ib·Òez Palomar <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2004 Juan David Ib√°√±ez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -115,7 +115,7 @@ def decode_vint(data):
 
 # XXX This actually does not work for non-ascci characters, because:
 #
-#  >>> u'È'.encode('unicode_internal')
+#  >>> u'√©'.encode('unicode_internal')
 #  '\xc3\x00\x00\x00\xa9\x00\x00\x00'
 #
 # That is, a 8 byte length string, instead of just 4 bytes

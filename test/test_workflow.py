@@ -1,5 +1,5 @@
-# -*- coding: ISO-8859-1 -*-
-# Copyright (C) 2002-2003  J. David Ib·Òez <jdavid@itaapy.com>
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2002-2003  J. David Ib√°√±ez <jdavid@itaapy.com>
 #               2002  Thilo Ernst <Thilo.Ernst@dlr.de>
 #
 # This program is free software; you can redistribute it and/or

@@ -1,4 +1,4 @@
-# -*- coding: ISO-8859-1 -*-
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This program is free software; you can redistribute it and/or

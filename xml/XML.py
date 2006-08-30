@@ -233,13 +233,14 @@ class Element(object):
     #######################################################################
     # Traverse
     def traverse(self):
-        yield self
-        for child in self.children:
-            if isinstance(child, Element):
-                for x in child.traverse():
-                    yield x
-            else:
-                yield child
+        stack = [self]
+        pop = stack.pop
+        extend = stack.extend
+        while stack:
+            node = pop()
+            yield node
+            if isinstance(node, Element):
+                extend(node.children[::-1])
 
 
     def traverse2(self, context=None):

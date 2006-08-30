@@ -134,10 +134,6 @@ class RoleAware(AccessControl, Folder):
     ]
 
 
-    def _get_members_sort_key(self):
-        return 'title_or_name'
-
-
     #########################################################################
     # API
     #########################################################################
@@ -248,31 +244,28 @@ class RoleAware(AccessControl, Folder):
 
         members = self.get_members()
 
-        users = [userfolder.get_handler(u) for u in members]
-        key = attrgetter(self._get_members_sort_key())
-        users.sort(key=key)
-        namespace['users'] = []
-
-        for user in users:
-            username = user.name
-            info = {}
-            info['name'] = username
-            info['title'] = user.get_title_or_name()
-            info['roles'] = self.get_roles_namespace(username)
-            namespace['users'].append(info)
-
+        users = []
         others = []
-        for user in userfolder.search_handlers():
-            if user.name not in members:
-                others.append(user)
-        others.sort(key=key)
+        # XXX This code is slow when there are many users, because the
+        # method "userfolder.get_handler" is too expensive.
+        get_user = userfolder.get_handler
+        for name in userfolder.get_handler_names():
+            if name[-9:] == '.metadata':
+                continue
+            user = get_user(name)
+            if name in members:
+                users.append({'name': name,
+                              'title_or_name': user.get_title_or_name(),
+                              'roles': self.get_roles_namespace(name)})
+            else:
+                others.append({'name': name,
+                               'title_or_name': user.get_title_or_name()})
 
-        namespace['others'] = []
-        for user in others:
-            info = {}
-            info['name'] = user.name
-            info['title'] = user.get_title_or_name()
-            namespace['others'].append(info)
+        users.sort(key=lambda x: x['title_or_name'])
+        others.sort(key=lambda x: x['title_or_name'])
+
+        namespace['users'] = users
+        namespace['others'] = others
 
         handler = self.get_handler('/ui/Folder_permissions.xml')
         return stl(handler, namespace)

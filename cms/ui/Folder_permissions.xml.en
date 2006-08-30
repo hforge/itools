@@ -20,7 +20,7 @@
                             <input type="checkbox" name="delusers" 
                                    stl:attributes="value user/name" />
                         </td>
-                        <td stl:content="user/title"></td>
+                        <td stl:content="user/title_or_name"></td>
                         <td>
                           <select stl:attributes="name user/name">
                             <option stl:repeat="role user/roles"
@@ -44,7 +44,7 @@
             <select name="addusers" size="15" multiple="multiple">
                 <option stl:repeat="user others"
                     stl:attributes="value user/name"
-                    stl:content="user/title" />
+                    stl:content="user/title_or_name" />
             </select>
             <p style="width: 200px">
               <input type="submit" name="add" value="Add" />

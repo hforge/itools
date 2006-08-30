@@ -16,12 +16,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-# Import from the Standard Library
-from operator import attrgetter
-
 # Import from itools
 from itools.stl import stl
-from itools.web import get_context
 
 
 
@@ -57,7 +53,7 @@ class OrderAware(object):
     order_folders_form__access__ = 'is_allowed_to_edit'
     order_folders_form__label__ = u"Order"
     order_folders_form__sublabel__ = u"Order"
-    def order_folders_form(self):
+    def order_folders_form(self, context):
         namespace = {}
         namespace['folders'] = []
 
@@ -74,11 +70,11 @@ class OrderAware(object):
 
 
     order_folders_up__access__ = 'is_allowed_to_edit'
-    def order_folders_up(self, **kw):
-        if not kw.has_key('name'):
+    def order_folders_up(self, context):
+        names = context.get_form_values('names')
+        if not names:
             return context.come_back(u"Please select the folders to order up.")
 
-        names = kw['name']
         ordered_names = self.get_ordered_folder_names()
         
         if ordered_names[0] == names[0]:
@@ -96,12 +92,12 @@ class OrderAware(object):
         
         
     order_folders_down__access__ = 'is_allowed_to_edit'
-    def order_folders_down(self, **kw):
-        if not kw.has_key('name'):
+    def order_folders_down(self, context):
+        names = context.get_form_values('names')
+        if not names:
             return context.come_back(
                 u"Please select the folders to order down.")
         
-        names = kw['name']
         ordered_names = self.get_ordered_folder_names()
 
         if ordered_names[-1] == names[-1]:
@@ -121,11 +117,11 @@ class OrderAware(object):
 
     order_folders_top__access__ = 'is_allowed_to_edit'
     def order_folders_top(self, context):
-        if not kw.has_key('name'):
+        names = context.get_form_values('names')
+        if not names:
             message = u"Please select the folders to order on top."
             return context.come_back(message)
 
-        names = kw['name']
         ordered_names = self.get_ordered_folder_names()
         
         if ordered_names[0] == names[0]:
@@ -142,14 +138,14 @@ class OrderAware(object):
         
     order_folders_bottom__access__ = 'is_allowed_to_edit'
     def order_folders_bottom(self, context):
-        if not kw.has_key('name'):
+        names = context.get_form_values('names')
+        if not names:
             message = u"Please select the folders to order on bottom."
             return context.come_back(message)
 
-        names = kw['name']
         ordered_names = self.get_ordered_folder_names()
         
-        if ordered_names[0] == names[0]:
+        if ordered_names[-1] == names[-1]:
             message = u"Folders already on bottom."
             return context.come_back(message)
 

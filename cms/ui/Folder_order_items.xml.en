@@ -14,7 +14,7 @@
       </thead>
       <tbody>
         <tr stl:repeat="folder folders">
-          <td><input type="checkbox" name="name:list" value="" stl:attributes="value folder/name" /></td>
+          <td><input type="checkbox" name="names" value="" stl:attributes="value folder/name" /></td>
           <td stl:content="folder/name"></td>
           <td stl:content="folder/title"></td>
         </tr>

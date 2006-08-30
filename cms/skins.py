@@ -119,7 +119,7 @@ class Skin(Folder):
             if '?' in view:
                 name, args = view.split('?')
                 args = Query.decode(args)
-                active = name == context.method
+                active = name == context.method or name in subviews
                 for key, value in args.items():
                     request_param = request.get_parameter(key)
                     if request_param != value:
@@ -127,7 +127,7 @@ class Skin(Folder):
                         break
             else:
                 name, args = view, {}
-                active = name == context.method
+                active = name == context.method or name in subviews
 
             if ac.is_access_allowed(user, here, name):
                 label = getattr(here, '%s__label__' % name)

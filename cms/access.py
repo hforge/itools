@@ -37,8 +37,8 @@ class AccessControl(AccessControlBase):
     def is_allowed_to_view(self, user, object):
         # Objects with workflow
         from workflow import WorkflowAware
-        if isinstance(self, WorkflowAware):
-            state = self.workflow_state
+        if isinstance(object, WorkflowAware):
+            state = object.workflow_state
             # Anybody can see public objects
             if state == 'public':
                 return True

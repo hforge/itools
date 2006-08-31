@@ -164,7 +164,7 @@ class RoleAware(AccessControl, Folder):
 
 
     def get_role_resource_names(self):
-        return ['.%s' % r for r in self.get_role_names()]
+        return ['.%s.users' % r for r in self.get_role_names()]
 
 
     def new(self, **kw):

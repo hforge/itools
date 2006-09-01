@@ -1926,7 +1926,7 @@ msgstr "Veuillez saisir votre adresse de courriel"
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid "Please enter your login (e.g."
-msgstr "Veuillez saisir votre nom d'utilisateur, par exemple"
+msgstr "Veuillez saisir votre identifiant, par exemple"
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid "Please enter your password (it will not be displayed in clear text)."
@@ -2417,7 +2417,7 @@ msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
 #: cms/users.py:362
 msgid "The username is wrong, please try again."
-msgstr "Le nom d'utilisateur est incorrect, veuillez réessayer."
+msgstr "L'identifiant est incorrect, veuillez réessayer."
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "There aren't messages."
@@ -2442,8 +2442,8 @@ msgstr "Il existe déjà une ressource de ce nom."
 #: cms/users.py:365
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
-"Il existe déjà un utilisateur du nom de &laquo;&nbsp;%s&nbsp;&raquo;, "
-"veuillez en changer."
+"Il existe déjà un utilisateur avec l'identifiant "
+"&laquo;&nbsp;%s&nbsp;&raquo;, veuillez en changer."
 
 #: cms/ui/Root_not_found.xml.en:0
 msgid ""
@@ -2704,7 +2704,7 @@ msgstr "Utilisateur ajouté."
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid "Username"
-msgstr "Nom d'utilisateur"
+msgstr "Identifiant"
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid ""

@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form action=";browse_list" method="get">
+<form action=";browse_list" method="get" stl:if="search_criteria">
   <dl>
     <dt>Display only contents with the following terms:</dt>
     <dd>

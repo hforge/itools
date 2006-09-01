@@ -3,11 +3,10 @@
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <form id="edit_event" action=";edit_event" method="post">
-  <p>* marked fields must be filled, except attendee email address if no
-  attendee.</p>
+  <p>(To add an event lasting all day long, leave time fields empty.)</p>
   <table class="form">
     <tr>
-      <td>Summary *</td>
+      <td>Summary</td>
       <td>
         <input type="text" id="SUMMARY" name="SUMMARY" 
                stl:attributes="value SUMMARY" />
@@ -20,23 +19,39 @@
       </td>
     </tr>
     <tr>
-      <td>Start *</td>
+      <td>Start</td>
       <td>
-        <input type="text" name="DTSTART1" id="DTSTART1" size="12"
-               stl:attributes="value DTSTART1" />
+        <input type="text" name="DTSTART_day" id="DTSTART_day" size="2"
+               stl:attributes="value DTSTART_day" /> /
+        <input type="text" name="DTSTART_month" id="DTSTART_month" size="2"
+               stl:attributes="value DTSTART_month" /> /
+        <input type="text" name="DTSTART_year" id="DTSTART_year" size="4"
+               stl:attributes="value DTSTART_year" />
         <input type="button" id="trigger_dtstart" value="..." />
-        <input type="text" name="DTSTART2" id="DTSTART2" size="8"
-               stl:attributes="value DTSTART2" />
+      <span style="padding-left: 10px">
+        <input type="text" name="DTSTART_hours" id="DTSTART_hours" size="2"
+               stl:attributes="value DTSTART_hours" /> :
+        <input type="text" name="DTSTART_minutes" id="DTSTART_minutes" size="2"
+               stl:attributes="value DTSTART_minutes" />
+      </span>
       </td>
     </tr>
     <tr>
       <td>End</td>
       <td>
-        <input type="text" name="DTEND1" id="DTEND1" size="12"
-               stl:attributes="value DTEND1" />
+        <input type="text" name="DTEND_day" id="DTEND_day" size="2"
+               stl:attributes="value DTEND_day" /> /
+        <input type="text" name="DTEND_month" id="DTEND_month" size="2"
+               stl:attributes="value DTEND_month" /> /
+        <input type="text" name="DTEND_year" id="DTEND_year" size="4"
+               stl:attributes="value DTEND_year" />
         <input type="button" id="trigger_dtend" value="..." />
-        <input type="text" name="DTEND2" id="DTEND2" size="8"
-               stl:attributes="value DTEND2" />
+      <span style="padding-left: 10px">
+        <input type="text" name="DTEND_hours" id="DTSTART_hours" size="2"
+               stl:attributes="value DTEND_hours" /> :
+        <input type="text" name="DTEND_minutes" id="DTSTART_minutes" size="2"
+               stl:attributes="value DTEND_minutes" />
+      </span>
       </td>
     </tr>
     <tr>
@@ -48,7 +63,7 @@
     
     <!-- STATUS -->
     <tr stl:if="STATUS">
-      <td>Status *</td>
+      <td>Status</td>
       <td>
         <select name="STATUS">
           <stl:block stl:repeat="s STATUS">
@@ -64,7 +79,7 @@
       <td>
         <table stl:repeat="att ATTENDEE">
           <tr>
-            <td>Email address *</td>
+            <td>Email address</td>
             <td colspan="3">
               <input type="text" size="30"
                  stl:attributes="name att/uri; value att/v_uri" />
@@ -110,38 +125,51 @@
                   stl:content="comment/value" cols="65" />
       </td>
     </tr>
-    
-    <table cellpadding="0" cellspacing="0">
-      <tr>
-        <td>
-          <input type="hidden" name="UID" stl:attributes="value UID" />
-          <input type="hidden" name="method" stl:attributes="value method" />
-        </td>
-      </tr>
-    </table>
-    <tr stl:if="allowed">
-      <td></td>
-      <td class="submit">
-        <input type="submit" name="update" value="OK" /></td>
-      <td class="cancel">
-        <input type="submit" name="remove" value="Definitely remove" /></td>
-    </tr>
   </table>
+
+  <input type="hidden" name="UID" stl:attributes="value UID" />
+  <input type="hidden" name="method" stl:attributes="value method" />
+
+  <p stl:if="allowed">
+     <input type="submit" name="update" value="OK" class="button_ok"/>
+     <input type="submit" name="remove" value="Definitely remove"
+            class="button_delete" />
+  </p>
 </form>
 
 <script language="javascript">
   focus("SUMMARY");
-  Calendar.setup({
-    inputField: "DTSTART1",
-    ifFormat: "%Y-%m-%d",
-    firstDay: <stl:block content="firstday">0</stl:block>,
-    button: "trigger_dtstart"});
-  Calendar.setup({
-    inputField: "DTEND1",
-    ifFormat: "%Y-%m-%d",
-    firstDay: <stl:block content="firstday">0</stl:block>,
-    button: "trigger_dtend"});
-</script>
 
+    function update_dtstart(cal) {
+        var date = cal.date;
+        // use the _other_ field
+        var field = document.getElementById("DTSTART_year");
+        field.value = date.print("%Y")
+        var field = document.getElementById("DTSTART_month");
+        field.value = date.print("%m")
+    }
+    function update_dtend(cal) {
+        var date = cal.date;
+        // use the _other_ field
+        var field = document.getElementById("DTEND_year");
+        field.value = date.print("%Y")
+        var field = document.getElementById("DTEND_month");
+        field.value = date.print("%m")
+    }
+
+  Calendar.setup({
+    inputField: "DTSTART_day",
+    ifFormat: "%d",
+    firstDay: <stl:block content="firstday">0</stl:block>,
+    button: "trigger_dtstart",
+    onUpdate: update_dtstart});
+
+  Calendar.setup({
+    inputField: "DTEND_day",
+    ifFormat: "%d",
+    firstDay: <stl:block content="firstday">0</stl:block>,
+    button: "trigger_dtend",
+    onUpdate: update_dtend});
+</script>
 
 </stl:block>

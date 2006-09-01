@@ -51,16 +51,17 @@ class Calendar(Text, icalendar):
     class_description = u'Schedule your time with calendar files.'
     class_icon16 = 'images/icalendar16.png'
     class_icon48 = 'images/icalendar48.png'
-    class_views = [['monthly_view', 'weekly_view', 'text_view', 
-                    'download_form'], 
+    class_views = [['monthly_view', 'weekly_view', 'download_form'], 
                    ['upload_form', 'edit_timetables_form',
-                    'edit_metadata_form']]
+                    'edit_metadata_form', 'edit_event_form']]
     #               ['history_form']]
     # default values for fields within namespace
-    default_fields = {'UID': None, 'DTSTART1': None, 'DTEND1': None, 
-                      'SUMMARY': u'', 'LOCATION': u'', 'DESCRIPTION': u'', 
-                      'ATTENDEE': [], 'COMMENT': [], 
-                      'STATUS': {}}
+    default_fields = {
+        'UID': None, 'SUMMARY': u'', 'LOCATION': u'', 'DESCRIPTION': u'',  
+        'DTSTART_year': None, 'DTSTART_month': None, 'DTSTART_day': None, 
+        'DTEND_year': None, 'DTEND_month': None, 'DTEND_day': None, 
+        'ATTENDEE': [], 'COMMENT': [], 'STATUS': {}
+      }
     # default viewed fields on monthly_view
     default_viewed_fields = ('DTSTART', 'DTEND', 'SUMMARY', 'STATUS')
     months = {1: u'January', 2: u'February', 3: u'March', 4: u'April', 
@@ -180,11 +181,13 @@ class Calendar(Text, icalendar):
                         ns_event['DTEND'] = ns_end
                         ns_event['TIME'] = True
                     # On first day
-                    elif v_date == date.date():
+                    elif v_date == date.date() and (not timetable or \
+                      (timetable and value == start)):
                         ns_event['DTSTART'] = '%s...' % ns_start
                         ns_event['TIME'] = True
                     # On last day
-                    elif v2_date == date.date():
+                    elif v2_date == date.date() and (not timetable or \
+                      (timetable and value2 == end)):
                         ns_event['DTEND'] = '...%s' % ns_end
                         ns_event['TIME'] = True
                     # Neither first nor last day
@@ -464,7 +467,7 @@ class Calendar(Text, icalendar):
 
         date = context.get_form_value('date', None)
         if not date:
-            message = u'A date must be specified to edit an event'
+            message = u'To add an event, click on + symbol from the views.'
             return context.come_back(message, goto=goto)
         # date as a datetime object
         c_date = self.get_current_date(date)
@@ -474,15 +477,12 @@ class Calendar(Text, icalendar):
         # Timetables
         tt_start, tt_end = None, None
         timetable = context.get_form_value('timetable', None)
-        tt_start = context.get_form_value('start_time', None)
         if timetable:
             timetables = self.get_timetables()
             if timetables != []:
                 timetable = timetables[int(timetable)]
-                tt_start = timetable['start'].strftime('%H:%M')
-                tt_end = timetable['end'].strftime('%H:%M')
-        elif tt_start:
-            tt_end = context.get_form_value('end_time', None)
+                tt_start = timetable['start']
+                tt_end = timetable['end']
 
         # Initialization
         namespace = {}
@@ -505,18 +505,22 @@ class Calendar(Text, icalendar):
                     namespace[key] = value
                 elif key == 'STATUS':
                     namespace['STATUS'] = status.get_namespace(value.value)
-                # Split DTSTART field into 2 fields : (1)date and (2)time 
+                # Split date fields into dd/mm/yyyy and hh:mm
                 elif key in ('DTSTART', 'DTEND'):
                     value, params = value.value, value.parameters
-                    namespace['%s1'%key] = value.date()
+                    value_date = value.date().strftime('%Y-%m-%d').split('-')
+                    namespace['%s_year' % key] = value_date[0]
+                    namespace['%s_month' % key] = value_date[1]
+                    namespace['%s_day' % key] = value_date[2]
                     param = params.get('VALUE', '')
                     if not param or param.values != ['DATE']:
-                        namespace['%s2'%key] = value.time().strftime('%H:%M')
+                        namespace['%s_hours'%key] = value.strftime('%H')
+                        namespace['%s_minutes'%key] = value.strftime('%M')
                     else:
-                        namespace['%s2'%key] = '__:__'
+                        namespace['%s_hours'%key] = ''
+                        namespace['%s_minutes'%key] = ''
                 else:
                     namespace[key] = value.value
-
 
         # Default managed fields are :
         # SUMMARY, LOCATION, DTSTART, DTEND, DESCRIPTION, 
@@ -526,12 +530,28 @@ class Calendar(Text, icalendar):
         for field in self.default_fields:
             if field not in namespace:
                 namespace[field] = self.default_fields[field]
-                if field == 'DTSTART1':
-                    namespace['DTSTART1'] = date
-                    namespace['DTSTART2'] = tt_start or '__:__'
-                elif field == 'DTEND1':
-                    namespace['DTEND1'] = date
-                    namespace['DTEND2'] = tt_end or '__:__'
+                if field.startswith('DTSTART_'):
+                    year, month, day = date.split('-')
+                    hours = minutes = ''
+                    if tt_start:
+                        hours = tt_start.strftime('%H')
+                        minutes = tt_start.strftime('%M')
+                    namespace['DTSTART_year'] = year
+                    namespace['DTSTART_month'] = month
+                    namespace['DTSTART_day'] = day
+                    namespace['DTSTART_hours'] = hours
+                    namespace['DTSTART_minutes'] = minutes
+                elif field.startswith('DTEND_'):
+                    year, month, day = date.split('-')
+                    hours = minutes = ''
+                    if tt_end:
+                        hours = tt_end.strftime('%H')
+                        minutes = tt_end.strftime('%M')
+                    namespace['DTEND_year'] = year
+                    namespace['DTEND_month'] = month
+                    namespace['DTEND_day'] = day
+                    namespace['DTEND_hours'] = hours
+                    namespace['DTEND_minutes'] = minutes
 
         # Get attendees -- add blank one if no attendee at all
 #        if namespace['ATTENDEE'] == []:
@@ -585,7 +605,12 @@ class Calendar(Text, icalendar):
         if method not in dir(self):
             goto = '../;%s' % method
 
-        date = self.get_current_date(context.get_form_value('DTSTART1'))
+        # Get date from the 3 fields 'dd','mm','yyyy' into 'yyyy/mm/dd'
+        date = ''
+        for item in ('year', 'month', 'day'):
+            date = date + context.get_form_value('DTSTART_%s' % item)
+        date = self.get_current_date(date)
+
         # Get UID and Component object
         uid = context.get_form_value('UID')
         if uid:
@@ -608,24 +633,60 @@ class Calendar(Text, icalendar):
             elif key in ('update', 'method'):
                 continue
             # Get date and time for DTSTART and DTEND
-            elif key[:-1] in ('DTSTART', 'DTEND'):
-                real_key, number = key[:-1], key[-1]
-                if number == '1':
-                    v_date = context.get_form_value(key)
-                    v_time = context.get_form_value('%s2' % real_key, '')
+            elif key.startswith('DTSTART_day'):
+                values = {}
+                for real_key in ('DTSTART', 'DTEND'):
+                    # Get date
+                    v_items = []
+                    for item in ('year', 'month', 'day'):
+                        item = '%s_%s' % (real_key, item)
+                        v_item = context.get_form_value(item)
+                        v_items.append(v_item)
+                    v_date = '-'.join(v_items)
+                    # Get time
+                    hours = context.get_form_value('%s_hours' % real_key)
+                    minutes = context.get_form_value('%s_minutes' % real_key)
+                    v_time = '%s:%s' % (hours, minutes)
+                    # Append time to date into value
                     params = {}
-                    if v_time in ('__:__', ''):
+                    if v_time == ':':
                         value = v_date
                         params['VALUE'] = Parameter('VALUE', ['DATE'])
                     else:
                         value = ' '.join([v_date, v_time])
+                    # Get value as a datetime object
                     try:
                         value = DateTime.from_str(value)
                     except:
+                        # Remove event if new one
+                        if not uid:
+                            uid = event.get_property_values('UID').value
+                            icalendar.remove(self, 'VEVENT', uid)
                         message = u'One or more field is invalid.'
-                        return context.come_back(goto, message)
-                    value = PropertyValue(value, params)
-                    event.set_property(real_key, value)
+                        return context.come_back(goto=goto, message=message)
+                    values[real_key] = value, params
+                # Check if start <= end
+                if values['DTSTART'][0] > values['DTEND'][0]:
+                    message = u'Start date MUST be earlier than end date.'
+                    goto = ';edit_event_form'
+                    date = values['DTSTART'][0].strftime('%Y-%m-%d')
+                    goto = goto + '?date=%s' % date
+                    if uid:
+                        goto = goto + '&uid=%s' % uid
+                    else:
+                        timetable = context.get_form_value('timetable', 0)
+                        goto = goto + '&timetable=%s' % timetable
+                    # Remove event if new one
+                    if not uid:
+                        uid = event.get_property_values('UID').value
+                        icalendar.remove(self, 'VEVENT', uid)
+                    return context.come_back(goto=goto, message=message)
+                # Save values
+                for key in ('DTSTART', 'DTEND'):
+                    value = PropertyValue(values[key][0], values[key][1])
+                    event.set_property(key, value)
+            elif key.startswith('DTSTART') or key.startswith('DTEND'):
+                continue
             else:
                 values = context.get_form_values(key)
                 type = data_properties.get(key, Unicode)

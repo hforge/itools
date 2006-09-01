@@ -414,7 +414,6 @@ class Folder(Handler, BaseFolder):
                 line['class_title'] = self.gettext(document.class_title)
                 line['title'] = document.get_property('dc:title')
                 line['description'] = document.get_property('dc:description')
-                line['is_file'] = vfs.is_file(uri)
                 line['is_folder'] = vfs.is_folder(uri)
                 line['ctime'] = vfs.get_ctime(uri)
                 line['mtime'] = vfs.get_mtime(uri)
@@ -445,13 +444,6 @@ class Folder(Handler, BaseFolder):
                     state = document.get_state()
                     line['workflow_state'] = self.gettext(state['title'])
 
-                # Document details
-                line['details'] = '%s-details' % name
-                is_image = isinstance(document, Image)
-                line['is_image'] = is_image
-                if is_image:
-                    line['image_preview'] = '%s/;icon48?width=200&height=160' % name
-                line['onclick'] = "hide_details('%s-details')" % name
                 # Objects that should not be removed/renamed/etc
                 line['checkbox'] = name not in self.__fixed_handlers__
                 #
@@ -491,9 +483,6 @@ class Folder(Handler, BaseFolder):
     browse_list__label__ = u'Contents'
     browse_list__sublabel__ = u'As List'
     def browse_list(self, context):
-        context = get_context()
-        request = context.request
-
         context.set_cookie('browse', 'list')
 
         if context.has_form_value('search_value'):

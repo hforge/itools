@@ -86,15 +86,17 @@ class Context(object):
 
 
     def come_back(self, message, goto=None, **kw):
-        # Translate the source message, 
-        message = self.handler.gettext(message)
-        message = Template(message).substitute(kw)
-        # Build and the return the uri reference to go
+        # By default we come back to the referrer
         if goto is None:
             goto = self.request.referrer
         else:
             goto = uri.get_reference(goto)
-        return goto.replace(message=message)
+        # Translate the source message
+        if message:
+            message = self.handler.gettext(message)
+            message = Template(message).substitute(kw)
+            return goto.replace(message=message)
+        return goto
 
 
     ########################################################################

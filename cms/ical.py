@@ -273,8 +273,33 @@ class Calendar(Text, icalendar):
         return ns_days
 
 
+    @classmethod
+    def get_default_timetables(cls, interval=24*60, start_time=None,
+                               end_time=None):
+        # Start is a day at midnight, and its duration is 24 hours
+        start =  datetime(2000, 1, 1)
+        end =  datetime(2000, 1, 1, 23, 59)
+        # Set given start_time
+        if start_time:
+            start = datetime.combine(datetime(2000, 1, 1), start_time)
+        # Set given end_time
+        if end_time:
+            end = datetime.combine(datetime(2000, 1, 1), end_time)
+        # Get timetables for a given interval in minutes, by default 1 day 
+        timetables, tt_start = [], start
+        while tt_start < end:
+            tt_end = tt_start + timedelta(minutes=interval)
+            timetable = {'num': None,
+                         'timetable': u'',
+                         'start': tt_start.time(),
+                         'end': tt_end.time()}
+            timetables.append(timetable)
+            tt_start = tt_end
+        return timetables
+
+
     # Get the list of all timetables with label, start and end in a dict
-    def get_timetables(self, default=None):
+    def get_timetables(self, default=None, interval=24*60):
         timetables = []
         for index in range(10):
             src_timetable = self.get_property('timetable_%s' % index)
@@ -284,12 +309,7 @@ class Calendar(Text, icalendar):
                                                              src_timetable))
         # If timetable required and none found, add default one
         if timetables == [] and default:
-            timetable = {'num': 0,
-                         'timetable': u'',
-                         'start': time(0,0),
-                         'end': time(23,59,59)}
-            timetables.append(timetable)
-        # Sort by start time
+            timetables = self.get_default_timetables(interval)
         timetables.sort(lambda x, y: cmp(x['start'], y['start']))
         return timetables
 
@@ -462,16 +482,21 @@ class Calendar(Text, icalendar):
             return context.come_back(message, goto=goto)
         # date as a datetime object
         c_date = self.get_current_date(date)
+        if not date:
+            date = c_date.strftime('%Y-%m-%d')
 
         # Timetables
         tt_start, tt_end = None, None
         timetable = context.get_form_value('timetable', None)
+        tt_start = context.get_form_value('start_time', None)
         if timetable:
-            timetables = self.get_timetables()
+            timetables = self.get_timetables(default=True)
             if timetables != []:
                 timetable = timetables[int(timetable)]
                 tt_start = timetable['start'].strftime('%H:%M')
                 tt_end = timetable['end'].strftime('%H:%M')
+        elif tt_start:
+            tt_end = context.get_form_value('end_time', None)
 
         # Initialization
         namespace = {}
@@ -719,3 +744,316 @@ class Calendar(Text, icalendar):
         
 
 register_object_class(Calendar)
+
+
+
+class CalendarAware(object):
+
+    # Start 08:00, End 20:00, Interval 30min
+    class_cal_range = (time(7,0), time(21,0), 30)
+    class_cal_fields = ('SUMMARY', 'DTSTART', 'DTEND')
+    class_weekly_shown = ('SUMMARY', )
+
+
+    def get_cal_range(cls):
+        return cls.class_cal_range
+
+
+    def get_cal_fields(cls):
+        return cls.class_cal_fields
+
+
+    def get_weekly_shown(cls):
+        return cls.class_weekly_shown
+
+
+    browse_calendar__access__ = 'is_allowed_to_edit'
+    browse_calendar__label__ = u'Contents'
+    browse_calendar__sublabel__ = u'As calendar'
+    def browse_calendar(self, context):
+        context = get_context()
+        root = context.root
+
+        # Set calendar as selected browse view
+        context.set_cookie('browse', 'calendar')
+
+        # Current date
+        date = context.get_form_value('date', None)
+        c_date = Calendar.get_current_date(date)
+        if not date:
+            date = c_date.strftime('%Y-%m-%d')
+
+        # Start and end times, and interval
+        c_start_time, c_end_time = time(0, 0), time(23, 59)
+        c_start_time, c_end_time, interval = self.get_cal_range()
+        start_time = datetime.combine(c_date, c_start_time)
+        end_time = datetime.combine(c_date, c_end_time)
+
+        # Get fields and fields to show
+        cal_fields = self.get_cal_fields()
+        shown_fields = self.get_weekly_shown()
+
+        namespace = {}
+        # Add date selector
+        namespace['date'] = c_date.date()
+        namespace['firstday'] = Calendar.get_first_day()
+
+        # Get default timetables
+        timetables = Calendar.get_default_timetables(interval=interval,
+                      start_time=c_start_time, end_time=c_end_time)
+
+        ###############################################################
+        # Add a header line with start time of each timetable
+        ns_timetables = []
+        timetable = timetables[0]
+        last_start = timetable['start']
+        last_start = datetime.combine(c_date, last_start)
+        # Add first timetable start time
+        ns_timetable =  {'start': last_start.strftime('%H:%M')}
+        ns_timetables.append(ns_timetable)
+        # Add next ones if delta time > 45min
+        for timetable in timetables[1:]:
+            tt_start = timetable['start']
+            tt_start = datetime.combine(c_date, tt_start)
+            if tt_start - last_start > timedelta(minutes=45):
+                ns_timetable =  {'start': tt_start.strftime('%H:%M')}
+                ns_timetables.append(ns_timetable)
+                last_start = tt_start
+            else:
+                ns_timetables.append({'start': None})
+        namespace['header_timetables'] = ns_timetables
+
+        ###################################################################
+        # For each found calendar
+        calendars = self.search_handlers(handler_class=Calendar)
+        ns_calendars = []
+        for calendar in calendars:
+            calendar_url = self.get_pathto(calendar)
+            args = 'date=%s&method=%s' % (date, 'browse_calendar')
+            new_url = '%s/;edit_event_form?%s' % (calendar_url, args)
+
+            ns_calendar = {}
+            ns_calendar['name'] = calendar.get_title_or_name()
+
+            ###############################################################
+            # Get list of all events in current calendar
+            events_list = calendar.get_events_in_date(c_date)
+            # Get dict from events_list and sort events by start date
+            ns_events = []
+            for event in events_list:
+                ns_event = {}
+                for field in shown_fields:
+                    ns_event[field] = event.get_property_values(field).value
+                event_start = event.get_property_values('DTSTART').value
+                event_end = event.get_property_values('DTEND').value
+                # Add timetables info
+                tt_start = 0
+                tt_end = len(timetables)-1
+                for tt_index, tt in enumerate(timetables):
+                    start = datetime.combine(c_date, tt['start'])
+                    end = datetime.combine(c_date, tt['end'])
+                    if start <= event_start:
+                        tt_start = tt_index
+                    if end >= event_end:
+                        tt_end = tt_index
+                        break
+                ns_event['tt_start'] = tt_start
+                ns_event['tt_end'] = tt_end
+                ns_event['UID'] = event.get_property_values('UID').value
+                ns_event['colspan'] = tt_end - tt_start + 1
+                ns_events.append(ns_event)
+            ns_events.sort(lambda x, y: cmp(x['tt_start'], y['tt_start']))
+
+            ###############################################################
+            # Organize events in rows
+            rows = []
+            for index, tt in enumerate(timetables):
+                row_index = 0 
+                # Search events in current timetable
+                for index_event, event in enumerate(ns_events):
+                    if index >= event['tt_start'] and index <= event['tt_end']:
+                        if index == event['tt_start']:
+                            if rows == [] or row_index >= len(rows):
+                                rows.append({'events': []})
+                            rows[row_index]['events'].append(event)
+                        row_index = row_index + 1
+
+            ###############################################################
+            # Set event values
+            new_class = 'add_event'
+            new_value = '+'
+            ###############################################################
+            ns_rows = []
+            for row in rows:
+                ns_row = {}
+                ns_columns = []
+                events = row['events']
+                if events == []:
+                    ns_rows = None
+                    break
+                event = events[0]
+                colspan = 0
+                for tt_index, timetable in enumerate(timetables):
+                    if colspan > 0:
+                        colspan = colspan - 1
+                        continue
+                    start = timetable['start']
+                    end = timetable['end']
+                    start = datetime.combine(c_date, start)
+                    end = datetime.combine(c_date, end)
+                    # Set end to the day after if end at midnight
+                    if end.time() == time(0,0):
+                        end = end + timedelta(days=1)
+                    tmp_args = args + \
+                               '&start_time=%s' % start.strftime('%H:%M')
+                    tmp_args = tmp_args + \
+                               '&end_time=%s' % end.strftime('%H:%M')
+                    new_url = '%s/;edit_event_form?%s' % (calendar_url, 
+                                                          tmp_args)
+                    # Add event
+                    if event and tt_index == event['tt_start']:
+                        event_params = args + '&uid=%s'%event['UID']
+                        go_url = '%s/;edit_event_form?%s' % (calendar_url,
+                                                             event_params) 
+                        column = {'class': 'busy',
+                                  'colspan': event['colspan'],
+                                  'rowspan': 1,
+                                  'new_url': go_url,
+                                  'new_class': new_class,
+                                  'new_value': '>>'}
+                        # Fields to show
+                        for field in shown_fields:
+                            value = event[field]
+                            if isinstance(value, datetime):
+                                value = value.strftime('%H:%M')
+                            column[field] = value
+                        # Set colspan
+                        colspan = event['colspan'] - 1
+                        # Delete added event
+                        del events[0]
+                        event = None
+                        if events != []:
+                            event = events[0]
+                    else:
+                        column =  {'class': None,
+                                  'colspan': 1,
+                                  'rowspan': 1,
+                                  'new_url': new_url,
+                                  'new_class': new_class,
+                                  'new_value': ''}
+                    # Fields in template but not shown
+                    for field in cal_fields:
+                        if field not in column:
+                            column[field] = None
+                    ns_columns.append(column)
+                    ns_row['columns'] = ns_columns
+                ns_rows.append(ns_row)
+
+            ###############################################################
+            # Extend cells below if possible
+#            for index, row in enumerate(ns_rows[:-1]):
+#                tt_index = 0
+#                for col in row['columns']:
+#                    if col['class'] == None:
+#                        continue
+#                    colspan = col['colspan']
+#                    tt_start = timetables[tt_index]['start']
+#                    tt_end =  timetables[tt_index + colspan]['end']
+#                    tt_start = tt_start.strftime('%H:%M')
+#                    tt_end = tt_end.strftime('%H:%M')
+#                    extendable = True
+#                    # For each row below current row
+#                    for subrow in ns_rows[index+1:]:
+#                        print '-------', tt_start, tt_end
+#                        if extendable == False:
+#                            break
+#                        subindexes = []
+#                        sub_tt_index = 0
+#                        for subindex, subcol in enumerate(subrow['columns']):
+#                            print '+++', subindex
+#                            substart = subcol['start']
+#                            subend = subcol['end']
+#
+#                            sub_tt_start = timetables[sub_tt_index]['start']
+#                            sub_tt_end = timetables[sub_tt_index]['end']
+#                            sub_tt_start = sub_tt_start.strftime('%H:%M')
+#                            sub_tt_end = sub_tt_end.strftime('%H:%M')
+#
+#                            # end of while
+#                            end = False
+#                            # Go to next in for
+#                            next = False
+#                            while not end and sub_tt_end < subend:
+#                                # Ends before
+#                                if sub_tt_end <= tt_start:
+#                                    next = end = True
+#                                # Begins after
+#                                if sub_tt_start >= tt_end:
+#                                    end = True
+#                                # Busy
+#                                if subcol['class'] != None:
+#                                    extendable = False
+#                                    end = True
+#                                else:
+#                                    if subindex not in subindexes:
+#                                        subindexes.append(subindex)
+#                                    print subindexes
+#                                # Update sub_tt
+#                                sub_tt_index = sub_tt_index + 1
+#                                sub_tt_start = timetables[sub_tt_index]['start']
+#                                sub_tt_end = timetables[sub_tt_index]['end']
+#                                sub_tt_start = sub_tt_start.strftime('%H:%M')
+#                                sub_tt_end = sub_tt_end.strftime('%H:%M')
+#                            if not next and end:
+#                                break
+#
+#                        # Delete columns below and extend rowspan
+#                        if extendable:
+#                            col['rowspan'] = col['rowspan'] + 1
+#                            subindexes.reverse()
+#                            for i in subindexes:
+#                                del subrow['columns'][i]
+#                    tt_index = tt_index + colspan
+
+            ###############################################################
+            # Add ns_rows to namespace
+            ns_calendar['rows'] = ns_rows
+
+            ###############################################################
+            # Add one line with header and empty cases with only '+'
+            ns_columns = []
+            for timetable in timetables:
+                start = timetable['start']
+                end = timetable['end']
+                start = datetime.combine(c_date, start)
+                end = datetime.combine(c_date, end)
+
+                tmp_args = args + '&start_time=%s' % start.strftime('%H:%M')
+                tmp_args = tmp_args + '&end_time=%s' % end.strftime('%H:%M')
+                new_url = '%s/;edit_event_form?%s' % (calendar_url, tmp_args)
+
+                column =  {'class': None,
+                          'colspan': 1,
+                          'rowspan': 1,
+                          'DTSTART': start.strftime('%H:%M'),
+                          'DTEND': end.strftime('%H:%M'),
+                          'new_url': new_url,
+                          'new_class': new_class,
+                          'new_value': new_value}
+                # Fields in template but not shown
+                for field in cal_fields:
+                    if field not in column:
+                        column[field] = None
+                ns_columns.append(column)
+            ns_calendar['header_columns'] = ns_columns
+
+            # Add url to calendar keeping args
+            ns_calendar['url'] = '%s/;monthly_view?%s' % (calendar_url, args)
+            ns_calendar['rowspan'] = len(rows) + 1
+            ns_calendars.append(ns_calendar)
+
+        namespace['calendars'] = ns_calendars
+
+        handler = root.get_handler('/ui/Folder_browse_calendar.xml')
+        return stl(handler, namespace)
+

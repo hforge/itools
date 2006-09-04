@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<div id="browse_calendar"> 
+<form action="." method="post">
+
+  <div id="attributes">
+    <span>
+      Date : <input type="text" name="date" id="date" size="11"
+             stl:attributes="value date" />
+      <input type="button" id="trigger_date" value="..." /> </span>
+
+    <input type="submit" id="update" name=";browse_calendar" value="OK" 
+      class="button_ok" />
+  </div>
+
+  <table cellspacing="0" cellpadding="0">
+      <tr id="header_timetables">
+        <td />
+        <div stl:repeat="tt header_timetables">
+          <td>
+            <span stl:if="tt/start" stl:content="tt/start" />
+          </td>
+        </div>
+      </tr>
+
+      <div stl:repeat="calendar calendars">
+
+      <tr id="header_columns">
+        <td stl:attributes="rowspan calendar/rowspan">
+          <a stl:attributes="href calendar/url" stl:content="calendar/name" />
+        </td>
+        <div stl:repeat="col calendar/header_columns">
+          <td align="center" >
+            <a stl:attributes="href col/new_url; class col/new_class"
+               stl:content="col/new_value" />
+          </td>
+        </div>
+      </tr>
+
+      <tr stl:repeat="row calendar/rows">
+        <div stl:repeat="col row/columns">
+          <td stl:attributes="class col/class; colspan col/colspan; rowspan col/rowspan" align="center" >
+            <a stl:attributes="href col/new_url; class col/new_class"
+               stl:content="col/new_value" />
+            <span stl:if="col/SUMMARY" stl:content="col/SUMMARY" />
+            <span stl:if="col/DTSTART" stl:content="col/DTSTART" />
+            <span stl:if="col/DTEND" stl:content="col/DTEND" />
+          </td>
+        </div>
+      </tr>
+
+      </div>
+
+      <tr id="header_timetables">
+        <td />
+        <div stl:repeat="tt header_timetables">
+          <td>
+            <span stl:if="tt/start" stl:content="tt/start" />
+          </td>
+        </div>
+      </tr>
+
+    </table>
+</form>
+</div>
+
+<script language="javascript">
+  focus("date");
+  Calendar.setup({
+    inputField: "date",
+    ifFormat: "%Y-%m-%d",
+    firstDay: <stl:block content="firstday">0</stl:block>,
+    button: "trigger_date"});
+</script>
+
+
+</stl:block>

@@ -20,6 +20,7 @@
 import marshal
 import urllib
 import zlib
+from datetime import datetime, time, timedelta
 
 # Import from itools
 from itools.uri import Path, get_reference
@@ -38,6 +39,7 @@ from Handler import Handler
 from binary import Image
 from catalog import CatalogAware
 from handlers import Lock, Metadata
+from ical import CalendarAware
 from LocaleAware import LocaleAware
 from versioning import VersioningAware
 from workflow import WorkflowAware
@@ -47,7 +49,7 @@ from registry import register_object_class, get_object_class
 
 
 
-class Folder(Handler, BaseFolder):
+class Folder(Handler, BaseFolder, CalendarAware):
 
     #########################################################################
     # Class metadata
@@ -58,7 +60,8 @@ class Folder(Handler, BaseFolder):
     class_description = u'Organize your files and documents with folders.'
     class_icon16 = 'images/Folder16.png'
     class_icon48 = 'images/Folder48.png'
-    class_views = [['browse_thumbnails', 'browse_list', 'browse_image'],
+    class_views = [['browse_thumbnails', 'browse_list', 'browse_image', 
+                    'browse_calendar'],
                    ['new_resource_form'],
                    ['edit_metadata_form']]
 
@@ -326,6 +329,8 @@ class Folder(Handler, BaseFolder):
             'list': 'browse_list',
             'image_gallery': 'browse_image',
         }
+        if isinstance(self, CalendarAware):
+            options['calendar'] = 'browse_calendar'
         key = context.get_cookie('browse')
         return options.get(key, 'browse_thumbnails')
 

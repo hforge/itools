@@ -451,3 +451,55 @@ dl.new_resource_thumb {
   color: #8f5902;
 }
 
+#browse_calendar .busy {
+  background: #729fcf;
+}
+
+#browse_calendar #attributes {
+  margin: 5px 0 8px 0;
+}
+
+#browse_calendar #attributes span {
+  margin: 0 8px 0 0;
+}
+
+#browse_calendar .add_event {
+  font-size: 11px;
+  text-decoration: none;
+  color: #3465a4;
+}
+
+#browse_calendar table {
+  border-collapse: collapse;
+}
+#browse_calendar td {
+  border: 1px solid black;
+}
+
+#browse_calendar .header_columns {
+  font-size: 9px;
+  font-weight: bold;
+}
+
+#browse_calendar #header_columns {
+  border-top: 1.5px solid black;
+}
+
+#browse_calendar #header_columns td {
+  padding: 6px;
+}
+
+#browse_calendar #header_timetables,
+#browse_calendar #header_timetables table, 
+#browse_calendar #header_timetables tr, 
+#browse_calendar #header_timetables td {
+  border: none;
+}
+
+#browse_calendar #header_timetables span {
+  margin-left: -15px;
+  font-size: 9px;
+  font-weight: bold;
+  text-align: left;
+}
+

@@ -13,27 +13,36 @@ meta-package for easier development and deployment:
   itools.handlers       itools.stl              itools.xliff
   itools.html           itools.tmx              itools.xml
 
-This is mostly a bug fix release.
+This release brings user interface improvements and many bug fixes. These
+are the most important changes:
 
-The CSV parser has been separated from the CSV handler (itools.csv), so it
-can be used independently (to use "from itools.csv import parser"). Fixed
-a serious bug which prevented to create CSV handlers from scratch.
+  itools.catalog -- Fix keyword fields that are indexed but not stored,
+    when there is at least one value that contains spaces. The format of
+    the catalog changes a little so it must be rebuilt.
 
-Now the PO handler (itools.gettext) correctly detects the charset defined
-in the PO header.
+  itools.cms -- The HTML/CSS code for the tabs has been updated to work
+    better in different browsers, now it even looks nice in text mode
+    (#382). The web interface for calendar objects has seen various
+    improvements (#82, #496).
 
-Now the "title" attribute of (X)HTML documents is always extracted to be
-translated, not only in "img" elements. Fix corner case in the automatic
-translation code. Declare some elements as inline to improve the behaviour
-of the translation machinery.
+    The configuration file and the "icms-init" script accept a new option,
+    "smtp-host", which defines the host to use to send emails.
 
-The family of igettext scripts has been fixed, it still used the old API.
+    A bunch of minor bugs have been fixed in itools.cms, including #306,
+    #308, #458, #459, #460, #497, #498, #500 and #501.
 
-The HTML/CSS code for the tabs (itools.cms) has been updated to work
-better in differente browsers, now even looks nice in text mode (#382).
-The web interface for calendar objects has seen various improvements. A
-bunch of minor bugs have been fixed in itools.cms, including #306, #458,
-#459 and #460.
+  itools.csv -- The CSV parser has been separated from the CSV handler, so
+    it can be used independently ("from itools.csv import parser"). Fixed
+    a serious bug which prevented to create CSV handlers from scratch.
+
+  itools.gettext -- Now the PO handler properly detects the charset defined
+    in the PO files header. The family of igettext scripts has been updated
+    to use the new API of itools 0.14.
+
+  itools.xhtml -- Now the "title" attribute of (X)HTML documents is always
+    extracted to be translated, not only in "img" elements. Fix corner case
+    in the automatic translation code. Declare some elements as inline to
+    improve the behaviour of the translation machinery.
 
 Credits:
 

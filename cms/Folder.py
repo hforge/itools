@@ -20,7 +20,6 @@
 import marshal
 import urllib
 import zlib
-from datetime import datetime, time, timedelta
 
 # Import from itools
 from itools.uri import Path, get_reference

@@ -17,7 +17,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from Python Standard Library
-from pprint import pprint
 from datetime import datetime
 
 # Import from itools
@@ -260,9 +259,15 @@ class Component(object):
             dtend = self.get_property_values('DTEND')
             if isinstance(dtend, list):
                 dtend = dtend[0]
-            dtend = dtend.value
+            dtend, param = dtend.value, dtend.parameters
             tuple_dtend = (dtend.year, dtend.month, dtend.day, 
                            dtend.hour, dtend.minute, dtend.second)
+            # If parameter 'VALUE' == 'DATE', event last all day
+            if (dtend.hour + dtend.minute + dtend.second) == 0:
+                param = param.get('VALUE', '')
+                if param and 'DATE' in param.values:
+                    tuple_dtend = (dtend.year, dtend.month, dtend.day, 
+                                   23, 59, 59)
             if tuple_start >= tuple_dtend: 
                 return False
         return True 
@@ -357,7 +362,6 @@ class icalendar(Text):
 
         # Check if VERSION and PRODID properties don't miss
         if 'VERSION' not in done or 'PRODID' not in done:
-            print done
             raise ValueError, 'PRODID or VERSION parameter missing'
 
 

@@ -68,6 +68,12 @@ class Calendar(Text, icalendar):
               10: u'October', 11: u'November', 12: u'December'}
     days = {0: u'Monday', 1: u'Tuesday', 2: u'Wednesday', 3: u'Thursday', 
             4: u'Friday', 5: u'Saturday', 6: u'Sunday'}
+    # class_timetables
+    class_timetables = (((7,0),(8,0)), ((8,0),(9,0)), ((9,0),(10,0)), 
+                        ((10,0),(11,0)), ((11,0),(12,0)), ((12,0),(13,0)), 
+                        ((13,0),(14,0)), ((14,0),(15,0)), ((15,0),(16,0)), 
+                        ((16,0),(17,0)), ((17,0),(18,0)), ((18,0),(19,0)), 
+                        ((19,0),(20,0)), ((20,0),(21,0)))
 
 
     edit_metadata_form__sublabel__ = u'Metadata'
@@ -136,7 +142,7 @@ class Calendar(Text, icalendar):
 
         # Get events on selected date
         if timetable:
-            index = timetable['num']
+            index = timetable['index']
             start = datetime.combine(date, timetable['start'])
             end = datetime.combine(date, timetable['end'])
             events = self.get_events_in_range(start, end)
@@ -273,67 +279,47 @@ class Calendar(Text, icalendar):
         return ns_days
 
 
-    @classmethod
-    def get_default_timetables(cls, interval=24*60, start_time=None,
-                               end_time=None):
-        # Start is a day at midnight, and its duration is 24 hours
-        start =  datetime(2000, 1, 1)
-        end =  datetime(2000, 1, 1, 23, 59)
-        # Set given start_time
-        if start_time:
-            start = datetime.combine(datetime(2000, 1, 1), start_time)
-        # Set given end_time
-        if end_time:
-            end = datetime.combine(datetime(2000, 1, 1), end_time)
-        # Get timetables for a given interval in minutes, by default 1 day 
-        timetables, tt_start = [], start
-        while tt_start < end:
-            tt_end = tt_start + timedelta(minutes=interval)
-            timetable = {'num': None,
-                         'timetable': u'',
-                         'start': tt_start.time(),
-                         'end': tt_end.time()}
-            timetables.append(timetable)
-            tt_start = tt_end
-        return timetables
-
-
-    # Get the list of all timetables with label, start and end in a dict
-    def get_timetables(self, default=None, interval=24*60):
+    def get_timetables(self):
         timetables = []
-        for index in range(10):
-            src_timetable = self.get_property('timetable_%s' % index)
-            if not src_timetable:
-                break
-            timetables.append(self.get_timetable_from_string(index, 
-                                                             src_timetable))
-        # If timetable required and none found, add default one
-        if timetables == [] and default:
-            timetables = self.get_default_timetables(interval)
-        timetables.sort(lambda x, y: cmp(x['start'], y['start']))
+        src_timetables = self.get_property('timetables')
+
+        # Nothing in file, so get from class variable (tuple)
+        if not src_timetables:
+            src_timetables = self.class_timetables
+            for index, timetable in enumerate(src_timetables):
+                start, end = timetable
+                start = time(start[0], start[1])
+                end = time(end[0], end[1])
+                ns_timetable = {}
+                ns_timetable['index'] = index 
+                ns_timetable['start'] = start
+                ns_timetable['end'] = end
+                timetables.append(ns_timetable)
+            return timetables
+
+        # From file
+        for index, timetable in enumerate(src_timetables.split(';')):
+            ns_timetable = {}
+            ns_timetable['index'] = index 
+            start, end = timetable.split('),(')
+            start, end = start[1:], end[:-1]
+            hours, minutes = start.split(',')
+            hours, minutes = int(hours), int(minutes)
+            ns_timetable['start'] = time(hours, minutes)
+            hours, minutes = end.split(',')
+            hours, minutes = int(hours), int(minutes)
+            ns_timetable['end'] = time(hours, minutes)
+            timetables.append(ns_timetable)
         return timetables
 
 
-    # Get timetable as dict from a string like "08:00 - 10:00" or "08:00-10:00"
+    # Get timetable as dict from its index (used in projects)
     def get_timetable_by_index(self, index):
-        timetable = self.get_property('timetable_%s' % index)
+        timetable = self.get_timetables()
         if timetable:
-            return self.get_timetable_from_string(index, timetable)
+            return timetable[index]
         return None
 
-
-    # Get timetable as dict from a string like "08:00 - 10:00" or "08:00-10:00"
-    def get_timetable_from_string(self, index, timetable):
-        start, end = timetable.split('-')
-        ns = {}
-        ns['num'] = index
-        ns['timetable'] = timetable.replace('-', ' - ')
-        hour, minute = start.split(':')
-        ns['start'] = time(int(hour), int(minute))
-        hour, minute = end.split(':')
-        ns['end'] = time(int(hour), int(minute))
-        return ns
-        
 
     # Get a week beginning at start date as a list to be given to namespace
     def get_timetables_ns(self, start, method='weekly_view', 
@@ -347,22 +333,22 @@ class Calendar(Text, icalendar):
         if method:
             base_param = '&method=%s&' % method
         # Get timetables
-        timetables = self.get_timetables(default=True)
+        timetables = self.get_timetables()
         # For each defined timetable
         for index, timetable in enumerate(timetables):
+            tt_start, tt_end = timetable['start'], timetable['end']
             day = start
             ns_timetable = {}
-            ns_timetable['timetable'] = timetable['timetable']
-            num = timetable['num']
+            ns_timetable['timetable'] = tt_start.strftime('%H:%M') + ' - ' +\
+                                        tt_end.strftime('%H:%M')
             # ndays days
             ns_days = []
             for d in range(ndays):
                 ns_day = {}
                 params = '%sdate=%s&timetable=%s'\
-                         % (base_param, day.date(), num)
+                         % (base_param, day.date(), index)
                 ns_day['url'] = '%s%s' % (base_url, params)
-                ns_day['events'] = self.get_events(day, method, 
-                                                   timetable, 
+                ns_day['events'] = self.get_events(day, method, timetable, 
                                                    resource_name=resource_name)
                 ns_days.append(ns_day)
                 day = day + timedelta(1)
@@ -490,7 +476,7 @@ class Calendar(Text, icalendar):
         timetable = context.get_form_value('timetable', None)
         tt_start = context.get_form_value('start_time', None)
         if timetable:
-            timetables = self.get_timetables(default=True)
+            timetables = self.get_timetables()
             if timetables != []:
                 timetable = timetables[int(timetable)]
                 tt_start = timetable['start'].strftime('%H:%M')
@@ -676,71 +662,98 @@ class Calendar(Text, icalendar):
         root = context.root
         # Initialization
         namespace = {}
-        timetables = self.get_timetables()
         namespace['timetables'] = []
-        for index, timetable in enumerate(timetables):
-            num = timetable['num']
-            ns = {}
-            ns['index'] = num
-            ns['startname'] = '%s_startname' % num
-            ns['endname'] = '%s_endname' % num
-            ns['start'] = timetable['start'].strftime('%H:%M')
-            ns['end'] = timetable['end'].strftime('%H:%M')
-            namespace['timetables'].append(ns)
+
+        # Show current timetables only if previously set in metadata
+        if self.get_property('timetables'):
+            timetables = self.get_timetables()
+            for index, timetable in enumerate(timetables):
+                ns = {}
+                ns['index'] = index
+                ns['startname'] = '%s_start' % index
+                ns['endname'] = '%s_end' % index
+                ns['start'] = timetable['start'].strftime('%H:%M')
+                ns['end'] = timetable['end'].strftime('%H:%M')
+                namespace['timetables'].append(ns)
         handler = root.get_handler('ui/ical_edit_timetables.xml')
         return stl(handler, namespace)
 
 
     edit_timetables__access__ = True
     def edit_timetables(self, context):
-        ##############################################################
+        timetables = []
+        if self.get_property('timetables'):
+            timetables = self.get_timetables()
+
+        # Nothing to change
+        if timetables == [] and not context.has_form_value('add'):
+            return context.come_back(u'Nothing to change.')
+
         # Remove selected lines
         if context.has_form_value('remove'):
             ids = context.get_form_values('ids')
-            for index in range(10):
-                if str(index) in ids:
-                    # Delete selected timetable
-                    self.del_property('timetable_%s' % index)
-                    # Move last timetable to where the deleted one was
-                    indexes = range(index, 10)
-                    indexes.reverse()
-                    for index_2 in indexes:
-                        if str(index_2) in ids:
-                            continue
-                        value = self.get_property('timetable_%s' %index_2)
-                        if value:
-                            self.set_property('timetable_%s' % index, value)
-                            self.del_property('timetable_%s' % index_2)
-                            break
-                    ids.remove(str(index))
-            return context.come_back(u'Timetable removed successfully.')
+            if ids == []:
+                return context.come_back(u'Nothing to remove.')
+            new_timetables = []
+            for index, timetable in enumerate(timetables):
+                if str(index) not in ids:
+                    new_timetables.append(timetable)
+            timetables = new_timetables
+            message = u'Timetable(s) removed successfully.'
 
-        ##############################################################
-        # Update timetable or just set index to next index
-        for index in range(10):
-            if not context.has_form_value('%s_startname' %index):
-                break
-            # Update existing timetable at current index
-            if context.has_form_value('update'):
+        else:
+            # Update timetable or just set index to next index
+            for index, timetable in enumerate(timetables):
+                for key in ('start', 'end'):
+                    value = context.get_form_value('%s_%s' % (index, key), None)
+                    if not value or value == '__:__':
+                        return context.come_back(u'Wrong time selection.')
+                    try:
+                        hours, minutes = value.split(':')
+                        hours, minutes = int(hours), int(minutes)
+                        timetable[key] = time(hours, minutes)
+                    except:
+                        message = u'Wrong time selection (HH:MM).'
+                        return context.come_back(message=message)
+                if timetable['start'] >= timetable['end']:
+                    message = u'Start time must be earlier than end time.'
+                    return context.come_back(message=message)
+
+            # Add a new timetable
+            if context.has_form_value('add'):
                 timetable = {}
-                start = context.get_form_value('%s_startname' %index, None)
-                end = context.get_form_value('%s_endname' %index, None)
-                if not start or not end:
-                    return context.come_back(u'Please fill date AND end times.')
-                timetable = '%s-%s' % (start, end)
-                self.set_property('timetable_%s' % index, timetable)
+                for key in ('start', 'end'):
+                    value = context.get_form_value('new_%s' % key, None)
+                    if not value or value == '__:__':
+                        return context.come_back(u'Wrong time selection.')
+                    try:
+                        hours, minutes = value.split(':')
+                        hours, minutes = int(hours), int(minutes)
+                        timetable[key] = time(hours, minutes)
+                    except:
+                        message = u'Wrong time selection (HH:MM).'
+                        return context.come_back(message=message)
+                if timetable['start'] >= timetable['end']:
+                    message = u'Start time must be earlier than end time.'
+                    return context.come_back(message=message)
+                timetables.append(timetable)
+                timetables.sort(lambda x, y: cmp(x['start'], y['start']))
 
-        ##############################################################
-        # Add a new timetable
-        if context.has_form_value('add'):
-            timetable = {}
-            start = context.get_form_value('new_start', None)
-            end = context.get_form_value('new_end', None)
-            if not start or not end or start == '__:__' or end == '__:__':
-                return context.come_back(u'Please fill date AND end times.')
-            timetable = '%s-%s' % (start, end)
-            self.set_property('timetable_%s' % index, timetable)
-        return context.come_back(u'Timetable updated successfully.')
+            message = u'Timetables updated successfully.'
+
+        # Save new value into metadata
+        str_timetables = []
+        for timetable in timetables:
+            start = timetable['start']
+            end = timetable['end']
+            start = '(' + str(start.hour) + ',' + str(start.minute) + ')'
+            end = '(' + str(end.hour) + ',' + str(end.minute) + ')'
+            str_timetable = start + ',' + end
+            str_timetables.append(str_timetable)
+        str_timetables = ';'.join(str_timetables)
+        self.set_property('timetables', str_timetables)
+
+        return context.come_back(message=message)
         
 
 register_object_class(Calendar)
@@ -765,6 +778,28 @@ class CalendarAware(object):
 
     def get_weekly_shown(cls):
         return cls.class_weekly_shown
+
+
+    @classmethod
+    def get_default_timetables(cls, interval, start_time, end_time):
+        start =  datetime(2000, 1, 1)
+        end =  datetime(2000, 1, 1, 23, 59)
+        # Set given start_time
+        if start_time:
+            start = datetime.combine(datetime(2000, 1, 1), start_time)
+        # Set given end_time
+        if end_time:
+            end = datetime.combine(datetime(2000, 1, 1), end_time)
+        # Get timetables for a given interval in minutes, by default 1 day 
+        timetables, tt_start = [], start
+        while tt_start < end:
+            tt_end = tt_start + timedelta(minutes=interval)
+            timetable = {'index': None,
+                         'start': tt_start.time(),
+                         'end': tt_end.time()}
+            timetables.append(timetable)
+            tt_start = tt_end
+        return timetables
 
 
     browse_calendar__access__ = 'is_allowed_to_edit'
@@ -799,7 +834,7 @@ class CalendarAware(object):
         namespace['firstday'] = Calendar.get_first_day()
 
         # Get default timetables
-        timetables = Calendar.get_default_timetables(interval=interval,
+        timetables = self.get_default_timetables(interval=interval,
                       start_time=c_start_time, end_time=c_end_time)
 
         ###############################################################

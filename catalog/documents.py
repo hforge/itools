@@ -87,11 +87,9 @@ class Document(object):
         if field_numbers is None:
             raise AttributeError
         if name not in field_numbers:
-            raise AttributeError
+            raise AttributeError, "the field '%s' is not defined" % name
         n = field_numbers[name]
-        if n not in self.fields:
-            raise AttributeError
-        return self.fields[n]
+        return self.fields.get(n)
 
 
 

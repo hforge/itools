@@ -59,8 +59,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     class_description = u'Organize your files and documents with folders.'
     class_icon16 = 'images/Folder16.png'
     class_icon48 = 'images/Folder48.png'
-    class_views = [['browse_thumbnails', 'browse_list', 'browse_image', 
-                    'browse_calendar'],
+    class_views = [['browse_thumbnails', 'browse_list', 'browse_image'],
                    ['new_resource_form'],
                    ['edit_metadata_form']]
 

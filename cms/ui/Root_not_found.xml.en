@@ -6,9 +6,7 @@
 
 <h3>Not Found</h3>
 
-<p>
-  There requested URL <stl:inline content="uri" /> was not found on
-  this server.
-</p>
+<p>The requested URL <stl:inline content="uri" /> was not found on this
+server.</p>
 
 </div>

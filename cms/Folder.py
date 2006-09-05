@@ -235,7 +235,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         from root import Root
 
         name = segment.name
-        if name.startswith('.') or name.endswith('.metadata'):
+        if (name.startswith('.')
+            or name.endswith('.metadata')
+            or name.endswith('.lock')):
             return
 
         handler = self.get_handler(segment)

@@ -132,8 +132,10 @@
 
   <p stl:if="allowed">
      <input type="submit" name="update" value="OK" class="button_ok"/>
-     <input type="submit" name="remove" value="Definitely remove"
-            class="button_delete" />
+     <input stl:if="remove" type="submit" name="remove" 
+            value="Definitely remove" class="button_delete" />
+     <input stl:if="not remove" type="submit" name="cancel" 
+            value="Cancel" class="button_cancel" />
   </p>
 </form>
 

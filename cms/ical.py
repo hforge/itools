@@ -486,6 +486,7 @@ class Calendar(Text, icalendar):
 
         # Initialization
         namespace = {}
+        namespace['remove'] = None
         event = None
         properties = []
         status = Status()
@@ -497,6 +498,7 @@ class Calendar(Text, icalendar):
                 message = u'Event not found'
                 goto = '%s?date=%s' % (goto,date)
                 return context.come_back(message, goto=goto)
+            namespace['remove'] = True
             properties = event.get_property_values()
             # Get values
             for key in properties:
@@ -606,9 +608,17 @@ class Calendar(Text, icalendar):
             goto = '../;%s' % method
 
         # Get date from the 3 fields 'dd','mm','yyyy' into 'yyyy/mm/dd'
-        date = ''
+        v_items = []
         for item in ('year', 'month', 'day'):
-            date = date + context.get_form_value('DTSTART_%s' % item)
+            v_items.append(context.get_form_value('DTSTART_%s' % item))
+        date = '-'.join(v_items)
+
+        # Cancel
+        if context.has_form_value('cancel'):
+            goto = goto + '?date=' + date
+            return context.come_back('', goto)
+
+        # Set date as a datetime object
         date = self.get_current_date(date)
 
         # Get UID and Component object
@@ -706,12 +716,15 @@ class Calendar(Text, icalendar):
 
     remove__access__ = True
     def remove(self, context):
-        uid = context.get_form_value('UID') 
         method = context.get_form_value('method', 'monthly_view')
-        icalendar.remove(self, 'VEVENT', uid)
         goto = ';%s?%s' % (method, self.get_current_date())
         if method not in dir(self):
             goto = '../;%s?%s' % (method, self.get_current_date())
+
+        uid = context.get_form_value('UID') 
+        if not uid:
+            return context.come_back('', goto)
+        icalendar.remove(self, 'VEVENT', uid)
         return context.come_back(u'Event definitely deleted.', goto=goto)
 
 

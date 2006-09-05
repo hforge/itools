@@ -80,9 +80,10 @@ class Node(BaseNode):
                 method_name = name[1:]
                 method = self.get_method(method_name)
                 if method is None:
-                    method = self.forbidden_form
-                    # XXX Not found
-                    pass
+                    # XXX When the method is not defined, is it the best
+                    # thing to do a Not-Found error?
+                    # XXX Send a 404 status code.
+                    return context.root.not_found(context)
                 # Check security
                 user = context.user
                 ac = self.get_access_control()

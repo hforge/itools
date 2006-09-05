@@ -36,14 +36,15 @@ included are:
  - itools.gettext
  - itools.handlers
  - itools.html
+ - itools.http
  - itools.i18n
  - itools.ical
- - itools.resources
  - itools.rss
  - itools.schemas
  - itools.stl
  - itools.tmx
  - itools.uri
+ - itools.vfs
  - itools.web
  - itools.workflow
  - itools.xhtml

@@ -382,7 +382,7 @@ class WebSite(RoleAware, Folder):
         on_title = queries.Equal('title', text)
         on_text = queries.Equal('text', text)
         query = queries.Or(on_title, on_text)
-        results = self.search(query=query)
+        results = self.search(query=query).get_documents()
 
         # put the metadatas in a dictionary list to be managed with Table
         root = context.root

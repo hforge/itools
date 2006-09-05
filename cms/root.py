@@ -222,7 +222,7 @@ class Root(WebSite):
         catalog = self.get_handler('.catalog')
 
         abspath = handler.get_abspath()
-        for document in catalog.search(abspath=abspath):
+        for document in catalog.search(abspath=abspath).get_documents():
             catalog.unindex_document(document.__number__)
 
 
@@ -231,6 +231,11 @@ class Root(WebSite):
             handler = handler.real_handler
         self.unindex_handler(handler)
         self.index_handler(handler)
+
+
+    def search(self, **kw):
+        catalog = self.get_handler('.catalog')
+        return catalog.search(**kw)
 
 
     ########################################################################
@@ -393,7 +398,8 @@ class Root(WebSite):
         Returns a list with all the subgroups, including the subgroups of
         the subgroups, etc..
         """
-        return [ x.abspath for x in self.search(is_role_aware=True) ]
+        results = self.search(is_role_aware=True)
+        return [ x.abspath for x in results.get_documents() ]
 
 
     check_groups__access__ = 'is_admin'

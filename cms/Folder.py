@@ -377,7 +377,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             query['parent_path'] = self.get_abspath()
 
         if results is None:
-            results = self.search(**query)
+            results = root.search(**query).get_documents()
 
         # if search in subfolders is active we filter on path
         if search_subfolders is not None:
@@ -1020,14 +1020,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         like [{'id': criteria_id, 'title' : criteria_title},...]
         """
         return self.search_criteria
-
-
-    def search(self, **kw):
-        context = get_context()
-        root = context.root
-        catalog = root.get_handler('.catalog')
-        result = catalog.search(**kw)
-        return result
 
 
 register_object_class(Folder)

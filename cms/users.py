@@ -72,8 +72,8 @@ class User(AccessControl, Folder):
             return ()
 
         catalog = root.get_handler('.catalog')
-        brains = catalog.search(is_role_aware=True, members=self.name)
-        groups = [ x.abspath for x in brains ]
+        results = catalog.search(is_role_aware=True, members=self.name)
+        groups = [ x.abspath for x in results.get_documents() ]
         return tuple(groups)
 
 
@@ -260,7 +260,7 @@ class User(AccessControl, Folder):
 
         namespace = {}
         documents = []
-        for brain in root.search(workflow_state='pending'):
+        for brain in root.search(workflow_state='pending').get_documents():
             document = root.get_handler(brain.abspath)
             ac = document.get_access_control()
             if not ac.is_allowed_to_view(user, document):

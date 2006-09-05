@@ -266,12 +266,14 @@ class Catalog(Folder):
         documents = self._search(query, **kw)
         # Build the document objects
         fields = self.fields
-        # iterate on sorted by weight in decrease order
+        # Iterate on sorted by weight in decrease order
+        get_document = self.documents.get_document
+        field_numbers = self.field_numbers
         for document in sorted(documents.iteritems(), key=itemgetter(1),
                                reverse=True):
-            doc_number, weight = document
-            # Load the dcument
-            document = self.documents.get_document(doc_number)
-            document.field_numbers = self.field_numbers
+            doc_number = document[0]
+            # Load the document
+            document = get_document(doc_number)
+            document.field_numbers = field_numbers
             yield document 
 

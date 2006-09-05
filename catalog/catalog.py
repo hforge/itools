@@ -47,6 +47,36 @@ class Field(object):
 
 
 
+class SearchResults(object):
+
+    __slots__ = ['results', 'documents', 'field_numbers']
+
+
+    def __init__(self, results, documents, field_numbers):
+        self.results = results
+        self.documents = documents
+        self.field_numbers = field_numbers
+
+
+    def get_n_documents(self):
+        """Returns the number of documents found."""
+        return len(self.results)
+
+
+    def get_documents(self):
+        # Iterate on sorted by weight in decrease order
+        get_document = self.documents.get_document
+        field_numbers = self.field_numbers
+        for document in sorted(self.results.iteritems(), key=itemgetter(1),
+                               reverse=True):
+            doc_number = document[0]
+            # Load the document
+            document = get_document(doc_number)
+            document.field_numbers = field_numbers
+            yield document 
+
+
+
 class Catalog(Folder):
 
     class_version = '20060708'
@@ -243,7 +273,7 @@ class Catalog(Folder):
         self.documents.unindex_document(doc_number)
 
 
-    def _search(self, query=None, **kw):
+    def search(self, query=None, **kw):
         # Build the query if it is passed through keyword parameters
         if query is None:
             if kw:
@@ -255,29 +285,6 @@ class Catalog(Folder):
             else:
                 raise ValueError, "expected a query"
         # Search
-        return query.search(self)
-
-
-    def how_many(self, query=None, **kw):
-        """
-        Returns the number of documents found.
-        """
-        return len(self._search(query, **kw))
-
-
-    def search(self, query=None, **kw):
-        # Search
-        documents = self._search(query, **kw)
-        # Build the document objects
-        fields = self.fields
-        # Iterate on sorted by weight in decrease order
-        get_document = self.documents.get_document
-        field_numbers = self.field_numbers
-        for document in sorted(documents.iteritems(), key=itemgetter(1),
-                               reverse=True):
-            doc_number = document[0]
-            # Load the document
-            document = get_document(doc_number)
-            document.field_numbers = field_numbers
-            yield document 
+        results = query.search(self)
+        return SearchResults(results, self.documents, self.field_numbers)
 

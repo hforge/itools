@@ -43,6 +43,7 @@ class Text(File, BaseText):
     class_views = [['view'],
                    ['edit_form', 'externaledit', 'upload_form'],
                    ['edit_metadata_form'],
+                   ['state_form'],
                    ['history_form']]
 
 

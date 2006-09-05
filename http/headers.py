@@ -46,6 +46,9 @@ class HTTPDate(DataType):
             # Non-Standard formats, sent by some clients
             # Variation of RFC-1123, uses full day name (sent by Netscape 4)
             '%A, %d %b %Y %H:%M:%S GMT',
+            # Variation of RFC-850, uses full month name and full year
+            # (unkown sender)
+            '%A, %d-%B-%Y %H:%M:%S GMT',
             ]
         for format in formats:
             try:

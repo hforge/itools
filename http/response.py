@@ -68,6 +68,8 @@ status_messages = {
     415: 'Unsupported Media Type',
     416: 'Requested Range Not Satisfiable',
     417: 'Expectation Failed',
+    # Client error (WebDAV),
+    423: 'Locked',
     # Server error (HTTP 1.0)
     500: 'Internal error',
     501: 'Not Implemented',

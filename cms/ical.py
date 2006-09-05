@@ -483,6 +483,15 @@ class Calendar(Text, icalendar):
                 timetable = timetables[int(timetable)]
                 tt_start = timetable['start']
                 tt_end = timetable['end']
+        else:
+            tt_start = context.get_form_value('start_time', None)
+            tt_end = context.get_form_value('end_time', None)
+            if tt_start:
+                hours, minutes = tt_start.split(':')
+                tt_start = time(int(hours), int(minutes))
+            if tt_end:
+                hours, minutes = tt_end.split(':')
+                tt_end = time(int(hours), int(minutes))
 
         # Initialization
         namespace = {}

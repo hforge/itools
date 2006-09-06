@@ -656,7 +656,7 @@ class icalendar(Text):
                 dtstart = event.get_property_values('DTSTART').value
                 dtend = event.get_property_values('DTEND').value
 
-                if dtstart >  dtend_ref or dtend <= dtstart_ref:
+                if dtstart >=  dtend_ref or dtend <= dtstart_ref:
                     continue
                 conflicts.append((i, j))
 

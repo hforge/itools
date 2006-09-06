@@ -418,6 +418,9 @@ class Calendar(Text, icalendar):
                 day = day + timedelta(1)
             namespace['weeks'].append(ns_week)
 
+        add_icon = self.get_handler('/ui/images/button_add.png')
+        namespace['add_icon'] = self.get_pathto(add_icon)
+
         handler = root.get_handler('ui/ical_monthly_view.xml')
         return stl(handler, namespace)
 
@@ -449,6 +452,9 @@ class Calendar(Text, icalendar):
 
         # Get 1 week with all defined timetables or none (just one line)
         namespace['timetables'] = self.get_timetables_ns(start)
+
+        add_icon = self.get_handler('/ui/images/button_add.png')
+        namespace['add_icon'] = self.get_pathto(add_icon)
 
         handler = root.get_handler('ui/ical_weekly_view.xml')
         return stl(handler, namespace)

@@ -40,7 +40,8 @@
     <tr stl:repeat="timetable timetables" valign="top">
       <td stl:content="timetable/timetable" class="timetable" />
       <td stl:repeat="day timetable/days" class="day">
-        <a class="add_event" stl:attributes="href day/url">++</a>
+        <a class="add_event" stl:attributes="href day/url"><img width="16"
+            height="16" stl:attributes="src add_icon" /></a>
 
         <!-- TIME PRECISED-->
         <div class="event" stl:repeat="event day/events">

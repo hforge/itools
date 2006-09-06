@@ -435,6 +435,10 @@ dl.new_resource_thumb {
   font-size:11px; 
   vertical-align: top;
 }
+#ical_monthly_view .add_event img,
+#ical_weekly_view .add_event img {
+  vertical-align: bottom;
+}
 
 #ical_monthly_view .event dd , #ical_weekly_view .event dd {
   font: 10pt "Bitstream Vera Sans";

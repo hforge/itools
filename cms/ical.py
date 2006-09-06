@@ -20,7 +20,7 @@ from datetime import datetime, time, timedelta
 
 # Import from itools
 from itools import i18n
-from itools.datatypes import Unicode
+from itools.datatypes import Unicode, Time, Date
 from itools.ical.icalendar import icalendar, Component, PropertyValue
 from itools.ical.icalendar import Parameter
 from itools.ical.types import data_properties, DateTime
@@ -114,17 +114,10 @@ class Calendar(Text, icalendar):
 
     @classmethod
     def get_current_date(cls, date=None):
-        # Set current date to selected date (default is today)
-        if not date:
-            # Today in format AAAA-MM-DD
-            today = datetime.today()
-            date = today.strftime('%Y-%m-%d')
         try:
-            year, month, day = date.split('-')
-            year, month, day = int(year), int(month), int(day)
-            return datetime(year, month, day)
+            return Date.decode(date or datetime.today())
         except:
-            return cls.get_current_date()
+            return datetime.today()
 
 
     # Get namespace for one selected day, filling given fields
@@ -172,23 +165,23 @@ class Calendar(Text, icalendar):
                     else:
                         value2 = event.get_property_values('DTEND').value
                     v_date, v2_date = value.date(), value2.date()
-                    # Get printable times
-                    ns_start = value.strftime('%H:%M')
-                    ns_end = value2.strftime('%H:%M')
+                    # Set times as printable times HH:MM
+                    v_time = Time.encode(value.time(), False)
+                    v2_time = Time.encode(value2.time(), False)
                     # Only one day
                     if v_date == v2_date:
-                        ns_event['DTSTART'] = ns_start
-                        ns_event['DTEND'] = ns_end
+                        ns_event['DTSTART'] = v_time
+                        ns_event['DTEND'] = v2_time
                         ns_event['TIME'] = True
                     # On first day
-                    elif v_date == date.date() and (not timetable or \
+                    elif v_date == date and (not timetable or \
                       (timetable and value == start)):
-                        ns_event['DTSTART'] = '%s...' % ns_start
+                        ns_event['DTSTART'] = '%s...' % v_time
                         ns_event['TIME'] = True
                     # On last day
-                    elif v2_date == date.date() and (not timetable or \
+                    elif v2_date == date and (not timetable or \
                       (timetable and value2 == end)):
-                        ns_event['DTEND'] = '...%s' % ns_end
+                        ns_event['DTEND'] = '...%s' % v2_time
                         ns_event['TIME'] = True
                     # Neither first nor last day
                     else:
@@ -202,10 +195,41 @@ class Calendar(Text, icalendar):
                     ns_event[field] = self.ns_values(values)
 
             ns_event['url'] = '%sdate=%s&uid=%s&method=%s'\
-                              % (base_url, date.date(), uid, method)
+                              % (base_url, Date.encode(date), uid, method)
             namespace.append(ns_event)
 
         return namespace
+
+
+    def get_ns_events(self, date, shown_fields, timetables):
+        # Get list of all events
+        events_list = self.get_events_in_date(date)
+        # Get dict from events_list and sort events by start date
+        ns_events = []
+        for event in events_list:
+            ns_event = {}
+            for field in shown_fields:
+                ns_event[field] = event.get_property_values(field).value
+            event_start = event.get_property_values('DTSTART').value
+            event_end = event.get_property_values('DTEND').value
+            # Add timetables info
+            tt_start = 0
+            tt_end = len(timetables)-1
+            for tt_index, tt in enumerate(timetables):
+                start = datetime.combine(date, tt['start'])
+                end = datetime.combine(date, tt['end'])
+                if start <= event_start:
+                    tt_start = tt_index
+                if end >= event_end:
+                    tt_end = tt_index
+                    break
+            ns_event['tt_start'] = tt_start
+            ns_event['tt_end'] = tt_end
+            ns_event['UID'] = event.get_property_values('UID').value
+            ns_event['colspan'] = tt_end - tt_start + 1
+            ns_events.append(ns_event)
+        ns_events.sort(lambda x, y: cmp(x['tt_start'], y['tt_start']))
+        return ns_events
 
 
     def ns_values(self, values):
@@ -223,20 +247,20 @@ class Calendar(Text, icalendar):
         tmp_date = c_date - timedelta(7)
         current_week = cls.gettext(u'Week ')
         current_week = current_week + Unicode.encode(tmp_date.strftime('%U'))
-        previous_week = ";%s?date=%s" % (method, tmp_date.date())
+        previous_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
         tmp_date = c_date + timedelta(7)
-        next_week = ";%s?date=%s" % (method, tmp_date.date())
+        next_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
         # Month
         current_month = cls.gettext(cls.months[c_date.month])
         tmp_date = c_date - timedelta(30)
-        previous_month = ";%s?date=%s" % (method, tmp_date.date())
+        previous_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
         tmp_date = c_date + timedelta(30)
-        next_month = ";%s?date=%s" % (method, tmp_date.date())
+        next_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
         # Year
         tmp_date = c_date - timedelta(365)
-        previous_year = ";%s?date=%s" % (method, tmp_date.date())
+        previous_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
         tmp_date = c_date + timedelta(365)
-        next_year = ";%s?date=%s" % (method, tmp_date.date())
+        next_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
         # Set value into namespace
         namespace['current_week'] = current_week
         namespace['previous_week'] = previous_week
@@ -342,14 +366,14 @@ class Calendar(Text, icalendar):
             tt_start, tt_end = timetable['start'], timetable['end']
             day = start
             ns_timetable = {}
-            ns_timetable['timetable'] = tt_start.strftime('%H:%M') + ' - ' +\
-                                        tt_end.strftime('%H:%M')
+            ns_timetable['timetable'] = Time.encode(tt_start, False) + ' - ' +\
+                                        Time.encode(tt_end, False)
             # ndays days
             ns_days = []
             for d in range(ndays):
                 ns_day = {}
                 params = '%sdate=%s&timetable=%s'\
-                         % (base_param, day.date(), index)
+                         % (base_param, Date.encode(day), index)
                 ns_day['url'] = '%s%s' % (base_url, params)
                 ns_day['events'] = self.get_events(day, method, timetable, 
                                                    resource_name=resource_name)
@@ -409,7 +433,7 @@ class Calendar(Text, icalendar):
             for d in range(7):
                 ns_day = {}
                 ns_day['nday'] = day.day
-                ns_day['url'] = ';edit_event_form?date=%s' % day.date()
+                ns_day['url'] = ';edit_event_form?date=%s' % Date.encode(day)
                 ns_day['events'] = self.get_events(day, 'monthly_view')
                 ns_week['days'].append(ns_day)
                 if day.day == 1:
@@ -478,7 +502,7 @@ class Calendar(Text, icalendar):
         # date as a datetime object
         c_date = self.get_current_date(date)
         if not date:
-            date = c_date.strftime('%Y-%m-%d')
+            date = Date.encode(c_date)
 
         # Timetables
         tt_start, tt_end = None, None
@@ -493,11 +517,9 @@ class Calendar(Text, icalendar):
             tt_start = context.get_form_value('start_time', None)
             tt_end = context.get_form_value('end_time', None)
             if tt_start:
-                hours, minutes = tt_start.split(':')
-                tt_start = time(int(hours), int(minutes))
+                tt_start = Time.decode(tt_start)
             if tt_end:
-                hours, minutes = tt_end.split(':')
-                tt_end = time(int(hours), int(minutes))
+                tt_end = Time.decode(tt_end)
 
         # Initialization
         namespace = {}
@@ -525,14 +547,15 @@ class Calendar(Text, icalendar):
                 # Split date fields into dd/mm/yyyy and hh:mm
                 elif key in ('DTSTART', 'DTEND'):
                     value, params = value.value, value.parameters
-                    value_date = value.date().strftime('%Y-%m-%d').split('-')
-                    namespace['%s_year' % key] = value_date[0]
-                    namespace['%s_month' % key] = value_date[1]
-                    namespace['%s_day' % key] = value_date[2]
+                    year, month, day = Date.encode(value).split('-')
+                    namespace['%s_year' % key] = year
+                    namespace['%s_month' % key] = month
+                    namespace['%s_day' % key] = day
                     param = params.get('VALUE', '')
                     if not param or param.values != ['DATE']:
-                        namespace['%s_hours'%key] = value.strftime('%H')
-                        namespace['%s_minutes'%key] = value.strftime('%M')
+                        hours, minutes = Time.encode(value, False).split(':')
+                        namespace['%s_hours'%key] = hours
+                        namespace['%s_minutes'%key] = minutes
                     else:
                         namespace['%s_hours'%key] = ''
                         namespace['%s_minutes'%key] = ''
@@ -551,8 +574,7 @@ class Calendar(Text, icalendar):
                     year, month, day = date.split('-')
                     hours = minutes = ''
                     if tt_start:
-                        hours = tt_start.strftime('%H')
-                        minutes = tt_start.strftime('%M')
+                        hours, minutes = Time.encode(tt_start, False).split(':')
                     namespace['DTSTART_year'] = year
                     namespace['DTSTART_month'] = month
                     namespace['DTSTART_day'] = day
@@ -562,41 +584,12 @@ class Calendar(Text, icalendar):
                     year, month, day = date.split('-')
                     hours = minutes = ''
                     if tt_end:
-                        hours = tt_end.strftime('%H')
-                        minutes = tt_end.strftime('%M')
+                        hours, minutes = Time.encode(tt_end, False).split(':')
                     namespace['DTEND_year'] = year
                     namespace['DTEND_month'] = month
                     namespace['DTEND_day'] = day
                     namespace['DTEND_hours'] = hours
                     namespace['DTEND_minutes'] = minutes
-
-        # Get attendees -- add blank one if no attendee at all
-#        if namespace['ATTENDEE'] == []:
-#            namespace['ATTENDEE'] = self.attendees_namespace()
-#        else:
-#            attendees_list.append(PropertyValue(''))
-#            attendees = self.attendees_namespace(attendees_list)
-
-#        # Get attendees -- add blank one if no attendee at all
-#        if not attendees_list:
-#            attendees = self.attendees_namespace()
-#        else:
-#            attendees_list.append(PropertyValue(''))
-#            attendees = self.attendees_namespace(attendees_list)
-#
-#        # Get comments -- add blank one if no comment at all
-#        if not comments_list:
-#            comments_list = []
-#        # Add a blank comment for a new one
-#        comments_list.append(PropertyValue(''))
-#        comments = []
-#        for i, comment in enumerate(comments_list):
-#            # Allow only one empty value at last position
-#            if comment.value != '' or i == (len(comments_list)-1):
-#                ns_comment = {}
-#                ns_comment['name'] = 'COMMENT.%s' % i
-#                ns_comment['value'] = comment.value
-#                comments.append(ns_comment)
 
         # Call to gettext on Status values
         for status in namespace['STATUS']:
@@ -694,8 +687,7 @@ class Calendar(Text, icalendar):
                 if values['DTSTART'][0] > values['DTEND'][0]:
                     message = u'Start date MUST be earlier than end date.'
                     goto = ';edit_event_form'
-                    date = values['DTSTART'][0].strftime('%Y-%m-%d')
-                    goto = goto + '?date=%s' % date
+                    goto = goto + '?date=%s' + Date.encode(values['DTSTART'][0])
                     if uid:
                         goto = goto + '&uid=%s' % uid
                     else:
@@ -725,7 +717,7 @@ class Calendar(Text, icalendar):
         event.set_property('DTSTAMP', PropertyValue(datetime.today()))
 
         self.set_changed()
-        goto = '%s?date=%s' % (goto, date.strftime('%Y-%m-%d'))
+        goto = '%s?date=%s' % (goto, Date.encode(date))
         return context.come_back(u'Data updated', goto=goto)
 
 
@@ -761,8 +753,8 @@ class Calendar(Text, icalendar):
                 ns['index'] = index
                 ns['startname'] = '%s_start' % index
                 ns['endname'] = '%s_end' % index
-                ns['start'] = timetable['start'].strftime('%H:%M')
-                ns['end'] = timetable['end'].strftime('%H:%M')
+                ns['start'] = Time.encode(timetable['start'], False)
+                ns['end'] = Time.encode(timetable['end'], False)
                 namespace['timetables'].append(ns)
         handler = root.get_handler('ui/ical_edit_timetables.xml')
         return stl(handler, namespace)
@@ -798,9 +790,7 @@ class Calendar(Text, icalendar):
                     if not value or value == '__:__':
                         return context.come_back(u'Wrong time selection.')
                     try:
-                        hours, minutes = value.split(':')
-                        hours, minutes = int(hours), int(minutes)
-                        timetable[key] = time(hours, minutes)
+                        timetable[key] = Time.decode(value)
                     except:
                         message = u'Wrong time selection (HH:MM).'
                         return context.come_back(message=message)
@@ -816,9 +806,7 @@ class Calendar(Text, icalendar):
                     if not value or value == '__:__':
                         return context.come_back(u'Wrong time selection.')
                     try:
-                        hours, minutes = value.split(':')
-                        hours, minutes = int(hours), int(minutes)
-                        timetable[key] = time(hours, minutes)
+                        timetable[key] = Time.decode(value)
                     except:
                         message = u'Wrong time selection (HH:MM).'
                         return context.come_back(message=message)
@@ -851,7 +839,7 @@ register_object_class(Calendar)
 
 class CalendarAware(object):
 
-    # Start 08:00, End 20:00, Interval 30min
+    # Start 07:00, End 21:00, Interval 30min
     class_cal_range = (time(7,0), time(21,0), 30)
     class_cal_fields = ('SUMMARY', 'DTSTART', 'DTEND')
     class_weekly_shown = ('SUMMARY', )
@@ -891,11 +879,61 @@ class CalendarAware(object):
         return timetables
 
 
+    # Get one line with times of timetables
+    def get_header_timetables(self, timetables, delta=45):
+        date = datetime.today()
+        ns_timetables = []
+        timetable = timetables[0]
+        last_start = timetable['start']
+        last_start = datetime.combine(date, last_start)
+        # Add first timetable start time
+        ns_timetable =  {'start': last_start.strftime('%H:%M')}
+        ns_timetables.append(ns_timetable)
+        # Add next ones if delta time > delta minutes
+        for timetable in timetables[1:]:
+            tt_start = timetable['start']
+            tt_start = datetime.combine(date, tt_start)
+            if tt_start - last_start > timedelta(minutes=delta):
+                ns_timetable =  {'start': tt_start.strftime('%H:%M')}
+                ns_timetables.append(ns_timetable)
+                last_start = tt_start
+            else:
+                ns_timetables.append({'start': None})
+        return ns_timetables
+
+
+    # Get one line with header and empty cases with only '+'
+    def get_header_columns(self, calendar_url, args, timetables, cal_fields, 
+                           new_class='add_event', new_value='+'):
+        ns_columns = []
+        for timetable in timetables:
+            start = Time.encode(timetable['start'], False)
+            end = Time.encode(timetable['end'], False)
+
+            tmp_args = args + '&start_time=%s' % start
+            tmp_args = tmp_args + '&end_time=%s' % end
+            new_url = '%s/;edit_event_form?%s' % (calendar_url, tmp_args)
+
+            column =  {'class': None,
+                      'colspan': 1,
+                      'rowspan': 1,
+                      'DTSTART': start,
+                      'DTEND': end,
+                      'new_url': new_url,
+                      'new_class': new_class,
+                      'new_value': new_value}
+            # Fields in template but not shown
+            for field in cal_fields:
+                if field not in column:
+                    column[field] = None
+            ns_columns.append(column)
+        return ns_columns
+
+
     browse_calendar__access__ = 'is_allowed_to_edit'
     browse_calendar__label__ = u'Contents'
     browse_calendar__sublabel__ = u'As calendar'
     def browse_calendar(self, context):
-        context = get_context()
         root = context.root
 
         # Set calendar as selected browse view
@@ -905,10 +943,9 @@ class CalendarAware(object):
         date = context.get_form_value('date', None)
         c_date = Calendar.get_current_date(date)
         if not date:
-            date = c_date.strftime('%Y-%m-%d')
+            date = Date.encode(c_date)
 
         # Start and end times, and interval
-        c_start_time, c_end_time = time(0, 0), time(23, 59)
         c_start_time, c_end_time, interval = self.get_cal_range()
         start_time = datetime.combine(c_date, c_start_time)
         end_time = datetime.combine(c_date, c_end_time)
@@ -919,7 +956,7 @@ class CalendarAware(object):
 
         namespace = {}
         # Add date selector
-        namespace['date'] = c_date.date()
+        namespace['date'] = date
         namespace['firstday'] = Calendar.get_first_day()
 
         # Get default timetables
@@ -928,25 +965,8 @@ class CalendarAware(object):
 
         ###############################################################
         # Add a header line with start time of each timetable
-        ns_timetables = []
-        timetable = timetables[0]
-        last_start = timetable['start']
-        last_start = datetime.combine(c_date, last_start)
-        # Add first timetable start time
-        ns_timetable =  {'start': last_start.strftime('%H:%M')}
-        ns_timetables.append(ns_timetable)
-        # Add next ones if delta time > 45min
-        for timetable in timetables[1:]:
-            tt_start = timetable['start']
-            tt_start = datetime.combine(c_date, tt_start)
-            if tt_start - last_start > timedelta(minutes=45):
-                ns_timetable =  {'start': tt_start.strftime('%H:%M')}
-                ns_timetables.append(ns_timetable)
-                last_start = tt_start
-            else:
-                ns_timetables.append({'start': None})
-        namespace['header_timetables'] = ns_timetables
-
+        namespace['header_timetables'] = self.get_header_timetables(timetables)
+        
         ###################################################################
         # For each found calendar
         calendars = self.search_handlers(handler_class=Calendar)
@@ -960,33 +980,9 @@ class CalendarAware(object):
             ns_calendar['name'] = calendar.get_title_or_name()
 
             ###############################################################
-            # Get list of all events in current calendar
-            events_list = calendar.get_events_in_date(c_date)
-            # Get dict from events_list and sort events by start date
-            ns_events = []
-            for event in events_list:
-                ns_event = {}
-                for field in shown_fields:
-                    ns_event[field] = event.get_property_values(field).value
-                event_start = event.get_property_values('DTSTART').value
-                event_end = event.get_property_values('DTEND').value
-                # Add timetables info
-                tt_start = 0
-                tt_end = len(timetables)-1
-                for tt_index, tt in enumerate(timetables):
-                    start = datetime.combine(c_date, tt['start'])
-                    end = datetime.combine(c_date, tt['end'])
-                    if start <= event_start:
-                        tt_start = tt_index
-                    if end >= event_end:
-                        tt_end = tt_index
-                        break
-                ns_event['tt_start'] = tt_start
-                ns_event['tt_end'] = tt_end
-                ns_event['UID'] = event.get_property_values('UID').value
-                ns_event['colspan'] = tt_end - tt_start + 1
-                ns_events.append(ns_event)
-            ns_events.sort(lambda x, y: cmp(x['tt_start'], y['tt_start']))
+            # Get a dict for each event with shown_fields, tt_start, tt_end, 
+            # uid and colspan ; the result is a list sorted by tt_start
+            ns_events = calendar.get_ns_events(c_date, shown_fields, timetables)
 
             ###############################################################
             # Organize events in rows
@@ -1021,17 +1017,10 @@ class CalendarAware(object):
                     if colspan > 0:
                         colspan = colspan - 1
                         continue
-                    start = timetable['start']
-                    end = timetable['end']
-                    start = datetime.combine(c_date, start)
-                    end = datetime.combine(c_date, end)
-                    # Set end to the day after if end at midnight
-                    if end.time() == time(0,0):
-                        end = end + timedelta(days=1)
-                    tmp_args = args + \
-                               '&start_time=%s' % start.strftime('%H:%M')
-                    tmp_args = tmp_args + \
-                               '&end_time=%s' % end.strftime('%H:%M')
+                    start = Time.encode(timetable['start'], False)
+                    end = Time.encode(timetable['end'], False)
+                    tmp_args = args + '&start_time=' + start
+                    tmp_args = tmp_args + '&end_time=' + end
                     new_url = '%s/;edit_event_form?%s' % (calendar_url, 
                                                           tmp_args)
                     # Add event
@@ -1145,32 +1134,11 @@ class CalendarAware(object):
 
             ###############################################################
             # Add one line with header and empty cases with only '+'
-            ns_columns = []
-            for timetable in timetables:
-                start = timetable['start']
-                end = timetable['end']
-                start = datetime.combine(c_date, start)
-                end = datetime.combine(c_date, end)
+            header_columns = self.get_header_columns(calendar_url, args, 
+                                                     timetables, cal_fields)
+            ns_calendar['header_columns'] = header_columns 
 
-                tmp_args = args + '&start_time=%s' % start.strftime('%H:%M')
-                tmp_args = tmp_args + '&end_time=%s' % end.strftime('%H:%M')
-                new_url = '%s/;edit_event_form?%s' % (calendar_url, tmp_args)
-
-                column =  {'class': None,
-                          'colspan': 1,
-                          'rowspan': 1,
-                          'DTSTART': start.strftime('%H:%M'),
-                          'DTEND': end.strftime('%H:%M'),
-                          'new_url': new_url,
-                          'new_class': new_class,
-                          'new_value': new_value}
-                # Fields in template but not shown
-                for field in cal_fields:
-                    if field not in column:
-                        column[field] = None
-                ns_columns.append(column)
-            ns_calendar['header_columns'] = ns_columns
-
+            ###############################################################
             # Add url to calendar keeping args
             ns_calendar['url'] = '%s/;monthly_view?%s' % (calendar_url, args)
             ns_calendar['rowspan'] = len(rows) + 1

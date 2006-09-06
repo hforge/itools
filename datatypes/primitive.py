@@ -125,6 +125,31 @@ class Date(DataType):
         return value.strftime('%Y-%m-%d')
 
 
+class Time(DataType):
+ 
+    @staticmethod
+    def decode(value):
+        if not value:
+            return None
+        values = value.split(':')
+        hours = values.pop(0)
+        minutes = values.pop(0)
+        seconds = 0
+        if values:
+            seconds = values.pop(0)
+        hours, minutes, seconds = int(hours), int(minutes), int(seconds)
+        return datetime.time(hours, minutes, seconds)
+
+
+    @staticmethod
+    def encode(value, seconds=True):
+        if value is None:
+            return ''
+        if not seconds:
+            return value.strftime('%H:%M')
+        return value.strftime('%H:%M:%S')
+
+
 
 class DateTime(DataType):
 

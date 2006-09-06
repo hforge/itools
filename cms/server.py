@@ -16,12 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-from ConfigParser import RawConfigParser
 import os
 import subprocess
 import sys
 
 # Import from itools
+from itools.handlers.config import Config
 from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
@@ -38,12 +38,8 @@ def ask_confirmation(message):
 
 
 
-def get_config(target=None):
-    config = RawConfigParser()
-    config.add_section('instance')
-    if target is not None:
-        config.read(['%s/config.ini' % target])
-    return config
+def get_config(target):
+    return Config('%s/config.conf' % target)
 
 
 
@@ -66,14 +62,11 @@ class Server(web.server.Server):
         config = get_config(target)
 
         # Load Python packages and modules
-        if config.has_option('instance', 'modules'):
-            for name in config.get('instance', 'modules').split():
+        modules = config.get_value('modules')
+        if modules is not None:
+            for name in modules.split():
                 name = name.strip()
                 exec('import %s' % name)
-
-        # XXX Backwards compatibility (obsolete since 0.13)
-        if config.has_option('instance', 'root'):
-            exec('import %s' % config.get('instance', 'root'))
 
         # Load the root handler
         root = get_root(target)
@@ -82,18 +75,16 @@ class Server(web.server.Server):
         # Find out the IP to listen to
         if address:
             pass
-        elif config.has_option('instance', 'address'):
-            address = config.get('instance', 'address')
         else:
-            address = None
+            address = config.get_value('address')
 
         # Find out the port to listen
         if port:
             pass
-        elif config.has_option('instance', 'port'):
-            port = config.getint('instance', 'port')
         else:
-            port = None
+            port = config.get_value('port')
+            if port is not None:
+                port = int(port)
 
         # Initialize
         web.server.Server.__init__(self, root, address=address, port=port,
@@ -102,10 +93,7 @@ class Server(web.server.Server):
                                    pid_file='%s/pid' % target)
 
         # The SMTP host
-        if config.has_option('instance', 'smtp-host'):
-            self.smtp_host = config.get('instance', 'smtp-host')
-        else:
-            self.smtp_host = None
+        self.smtp_host = config.get_value('smtp-host')
 
 
     def get_pid(self):

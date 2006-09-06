@@ -24,10 +24,10 @@ import string
 
 # Import from itools
 import itools
+from itools.handlers.config import Config
 from itools.handlers import transactions
 from itools.cms.Handler import Handler
 from itools.cms.root import Root
-from itools.cms.server import get_config
 from itools.cms.versioning import VersioningAware
 from itools.cms import skins
 from itools.cms.catalog import CatalogAware
@@ -40,16 +40,16 @@ def init(parser, options, target):
         parser.error('can not create the instance (check permissions)')
 
     # Create the config file
-    config = get_config()
+    config = Config()
     if options.root:
-        config.set('instance', 'modules', options.root)
+        config.set_value('modules', options.root)
     if options.address:
-        config.set('instance', 'address', options.address)
+        config.set_value('address', options.address)
     if options.port:
-        config.set('instance', 'port', options.port)
+        config.set_value('port', options.port)
     if options.smtp_host:
-        config.set('instance', 'smtp-host', options.smtp_host)
-    config.write(open('%s/config.ini' % target, 'w'))
+        config.set_value('smtp-host', options.smtp_host)
+    config.save_state_to('%s/config.conf' % target)
 
     # Load the root class
     if options.root is None:

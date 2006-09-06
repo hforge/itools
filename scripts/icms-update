@@ -30,14 +30,11 @@ def update(parser, options, target):
     config = get_config(target)
 
     # Load Python packages and modules
-    if config.has_option('instance', 'modules'):
-        for name in config.get('instance', 'modules').split():
+    modules = config.get_value('modules')
+    if modules is not None:
+        for name in modules.split():
             name = name.strip()
             exec('import %s' % name)
-
-    # XXX Backwards compatibility (obsolete since 0.13)
-    if config.has_option('instance', 'root'):
-        exec('import %s' % config.get('instance', 'root'))
 
     # Load the root resource
     root = get_root(target)

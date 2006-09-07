@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<div id="ical_weekly_view"> 
+<div id="cal_weekly_view"> 
   <div id="selector">
     <ul>
       <li>

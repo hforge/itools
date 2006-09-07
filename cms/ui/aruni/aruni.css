@@ -385,81 +385,81 @@ dl.new_resource_thumb {
 }
 
 /* ICALENDAR */
-#ical_monthly_view #selector, #ical_weekly_view #selector {
+#cal_monthly_view #selector, #cal_weekly_view #selector {
   margin: 5px 0px 5px 0px;
   font-size:18px;
 }
-#ical_monthly_view #selector ul , #ical_weekly_view #selector ul {
+#cal_monthly_view #selector ul , #cal_weekly_view #selector ul {
   list-style:none;
   display:inline;
 }
-#ical_monthly_view #selector li , #ical_weekly_view #selector li {
+#cal_monthly_view #selector li , #cal_weekly_view #selector li {
   display: inline; 
   padding: 26px;
 }
-#ical_monthly_view #selector li a , #ical_weekly_view #selector li a {
+#cal_monthly_view #selector li a , #cal_weekly_view #selector li a {
   text-decoration:none;
   color: #cc0000;
 }
 
-#ical_monthly_view table , #ical_weekly_view table {
+#cal_monthly_view table , #cal_weekly_view table {
   border-spacing: 1px;
 }
-#ical_monthly_view td , #ical_weekly_view td {
+#cal_monthly_view td , #cal_weekly_view td {
   background: #e9b96e;
 }
 
-#ical_monthly_view th , #ical_weekly_view th {
+#cal_monthly_view th , #cal_weekly_view th {
   background: #cc0000;
   color: #fce94f;
   font-weight: bold;
 }
 
-#ical_monthly_view .month {
+#cal_monthly_view .month {
   font-weight: bold;
   color: #cc0000;
 }
 
-#ical_monthly_view .day , #ical_weekly_view .day {
+#cal_monthly_view .day , #cal_weekly_view .day {
   padding: 2px 5px 2px 5px;
   height: 70px;
 } 
 
-#ical_monthly_view .bold {
+#cal_monthly_view .bold {
   font-weight: bold;
 }
 
-#ical_monthly_view .add_event , #ical_weekly_view .add_event {
+#cal_monthly_view .add_event , #cal_weekly_view .add_event {
   color: #ce5c00;
   text-decoration:none; 
   font-size:11px; 
   vertical-align: top;
 }
-#ical_monthly_view .add_event img,
-#ical_weekly_view .add_event img {
+#cal_monthly_view .add_event img,
+#cal_weekly_view .add_event img {
   vertical-align: bottom;
 }
 
-#ical_monthly_view .event dd , #ical_weekly_view .event dd {
+#cal_monthly_view .event dd , #cal_weekly_view .event dd {
   font: 10pt "Bitstream Vera Sans";
   margin-left: 5px;
 }
 
-#ical_monthly_view .event .CONFIRMED , #ical_weekly_view .event .CONFIRMED {
+#cal_monthly_view .event .CONFIRMED , #cal_weekly_view .event .CONFIRMED {
   color: #4a0000;
 }
-#ical_monthly_view .event .TENTATIVE , #ical_weekly_view .event .TENTATIVE {
+#cal_monthly_view .event .TENTATIVE , #cal_weekly_view .event .TENTATIVE {
   color: #cc0000;
 }
-#ical_monthly_view .event .CANCELLED , #ical_weekly_view .event .CANCELLED {
+#cal_monthly_view .event .CANCELLED , #cal_weekly_view .event .CANCELLED {
   color: #8f5902;
 }
 
-#browse_calendar .busy {
+.cal_busy {
   background: #729fcf;
 }
 
-#browse_calendar .conflict {
+.cal_conflict {
   background: #ef2929;
 }
 

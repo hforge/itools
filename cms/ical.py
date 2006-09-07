@@ -1008,7 +1008,7 @@ class CalendarAware(object):
                     if show_conflicts and uid in conflicts_list:
                         css_class = 'cal_conflict'
                     else:
-                        css_class = 'busy'
+                        css_class = 'cal_busy'
 
                     column['class'] = css_class
                     column['colspan'] = event['colspan']

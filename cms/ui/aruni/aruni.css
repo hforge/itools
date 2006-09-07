@@ -459,6 +459,10 @@ dl.new_resource_thumb {
   background: #729fcf;
 }
 
+#browse_calendar .conflict {
+  background: #ef2929;
+}
+
 #browse_calendar #attributes {
   margin: 5px 0 8px 0;
 }
@@ -467,10 +471,11 @@ dl.new_resource_thumb {
   margin: 0 8px 0 0;
 }
 
+#browse_calendar .evt_value, 
 #browse_calendar .add_event {
-  font-size: 11px;
+  font-size: 12px;
   text-decoration: none;
-  color: #3465a4;
+  color: #003180;
 }
 
 #browse_calendar table {

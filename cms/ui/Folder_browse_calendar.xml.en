@@ -14,57 +14,54 @@
       <input type="button" id="trigger_date" value="..." /> </span>
 
     <input type="submit" id="update" name=";browse_calendar" value="OK" 
-      class="button_ok" />
+           class="button_ok" />
   </div>
 
   <table cellspacing="0" cellpadding="0">
-      <tr id="header_timetables">
-        <td />
-        <div stl:repeat="tt header_timetables">
-          <td>
-            <span stl:if="tt/start" stl:content="tt/start" />
-          </td>
-        </div>
-      </tr>
+    <tr id="header_timetables">
+      <td />
+      <td stl:repeat="tt header_timetables">
+        <span stl:if="tt/start" stl:content="tt/start" />
+      </td>
+    </tr>
 
-      <div stl:repeat="calendar calendars">
+    <stl:block stl:repeat="calendar calendars">
+    <tr id="header_columns">
+      <td stl:attributes="rowspan calendar/rowspan">
+        <a stl:attributes="href calendar/url" stl:content="calendar/name" />
+      </td>
+      <td align="center" stl:repeat="col calendar/header_columns">
+        <a stl:attributes="href col/new_url; class col/new_class"
+           stl:content="col/new_value" />
+      </td>
+    </tr>
+    <tr stl:repeat="row calendar/rows">
+      <td stl:repeat="col row/columns" align="center"
+     stl:attributes="class col/class; colspan col/colspan; rowspan col/rowspan">
+        <stl:block stl:if="link_on_summary">
+          <a stl:if="col/evt_url" stl:content="col/SUMMARY" 
+             stl:attributes="href col/evt_url" class="evt_value" />
+        </stl:block>
 
-      <tr id="header_columns">
-        <td stl:attributes="rowspan calendar/rowspan">
-          <a stl:attributes="href calendar/url" stl:content="calendar/name" />
-        </td>
-        <div stl:repeat="col calendar/header_columns">
-          <td align="center" >
-            <a stl:attributes="href col/new_url; class col/new_class"
-               stl:content="col/new_value" />
-          </td>
-        </div>
-      </tr>
+        <stl:block stl:if="not link_on_summary">
+          <a stl:if="col/evt_url" stl:content="col/evt_value"
+             stl:attributes="href col/evt_url" class="evt_value" />
+          <span stl:if="col/SUMMARY" stl:content="col/SUMMARY" />
+        </stl:block>
 
-      <tr stl:repeat="row calendar/rows">
-        <div stl:repeat="col row/columns">
-          <td stl:attributes="class col/class; colspan col/colspan; rowspan col/rowspan" align="center" >
-            <a stl:attributes="href col/new_url; class col/new_class"
-               stl:content="col/new_value" />
-            <span stl:if="col/SUMMARY" stl:content="col/SUMMARY" />
-            <span stl:if="col/DTSTART" stl:content="col/DTSTART" />
-            <span stl:if="col/DTEND" stl:content="col/DTEND" />
-          </td>
-        </div>
-      </tr>
+        <span stl:if="col/DTSTART" stl:content="col/DTSTART" />
+        <span stl:if="col/DTEND" stl:content="col/DTEND" />
+      </td>
+    </tr>
+    </stl:block>
 
-      </div>
-
-      <tr id="header_timetables">
-        <td />
-        <div stl:repeat="tt header_timetables">
-          <td>
-            <span stl:if="tt/start" stl:content="tt/start" />
-          </td>
-        </div>
-      </tr>
-
-    </table>
+    <tr id="header_timetables">
+      <td />
+      <td stl:repeat="tt header_timetables">
+        <span stl:if="tt/start" stl:content="tt/start" />
+      </td>
+    </tr>
+  </table>
 </form>
 </div>
 
@@ -76,6 +73,5 @@
     firstDay: <stl:block content="firstday">0</stl:block>,
     button: "trigger_date"});
 </script>
-
 
 </stl:block>

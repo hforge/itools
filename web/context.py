@@ -89,7 +89,7 @@ class Context(object):
         # By default we come back to the referrer
         if goto is None:
             goto = self.request.referrer
-        else:
+        elif isinstance(goto, str):
             goto = uri.get_reference(goto)
         # Translate the source message
         if message:

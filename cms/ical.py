@@ -280,8 +280,7 @@ class Calendar(Text, icalendar):
             return True
         if event:
             organizer = event.get_property_values('ORGANIZER')
-            if organizer:
-                return context.user.uri == organizer.value
+            return organizer and context.user.get_abspath() == organizer.value
         return False
           
 
@@ -641,7 +640,7 @@ class Calendar(Text, icalendar):
         else:
             event = Component('VEVENT')
             # Add user as Organizer
-            organizer = context.user.uri
+            organizer = context.user.get_abspath()
             organizer = PropertyValue(organizer)
             event.set_property('ORGANIZER', organizer)
             self.add(event)

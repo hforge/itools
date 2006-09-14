@@ -113,7 +113,7 @@ class User(AccessControl, Folder):
         is_owner = user is not None and user.name == self.name
         namespace['is_owner'] = is_owner
         # Owner or Admin
-        is_admin = root.is_in_role('admins', user.name)
+        is_admin = user is not None and root.is_in_role('admins', user.name)
         namespace['is_owner_or_admin'] = is_owner or is_admin
 
         handler = self.get_handler('/ui/User_profile.xml')

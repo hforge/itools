@@ -632,11 +632,12 @@ class Calendar(Text, icalendar):
         # Get UID and Component object
         uid = context.get_form_value('UID')
         if uid:
-            event = self.get_component_by_uid(uid)
+            event = self.duplicate_component(self.get_component_by_uid(uid))
             # Test if current user is admin or organizer of this event
             if not self.is_organizer_or_admin(context, event):
                 message = u'You are not authorized to modify this event.'
                 return context.come_back(goto, message)
+            self.add(event)
         else:
             event = Component('VEVENT')
             # Add user as Organizer

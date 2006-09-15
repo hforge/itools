@@ -52,6 +52,7 @@ DTSTAMP:20050601T074604Z
 ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com
 ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jsmith@itaapy.com
 PRIORITY:1
+SEQUENCE:0
 END:VEVENT
 END:VCALENDAR
 """
@@ -75,6 +76,7 @@ DTEND;VALUE=DATE:20050531
 DTSTAMP:20050601T074604Z
 ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com
 PRIORITY:1
+SEQUENCE:0
 END:VEVENT
 BEGIN:VEVENT
 UID:581361a0-1dd2-11b2-9a42-bd3958eeac9b
@@ -83,6 +85,7 @@ DTSTART;VALUE="DATE":20050701
 DTEND;VALUE=DATE:20050701
 ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com
 PRIORITY:2
+SEQUENCE:0
 END:VEVENT
 END:VCALENDAR
 """
@@ -158,6 +161,7 @@ class icalTestCase(unittest.TestCase):
         expected = 'BEGIN:VEVENT\nEND:VEVENT\n'
         event = Component('VEVENT')
         self.assertEqual('UID' in event.properties, True) 
+        self.assertEqual('SEQUENCE' in event.properties, True) 
         self.assertEqual(event.c_type, 'VEVENT')
         self.assertEqual(event.encoding, 'UTF-8') 
 
@@ -335,6 +339,7 @@ class icalTestCase(unittest.TestCase):
             u'STATUS:TENTATIVE', 
             u'DTSTAMP:2005-06-01 07:46:04',  
             u'DESCRIPTION:all all all', 
+            u'SEQUENCE:0', 
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
                      ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
@@ -404,6 +409,7 @@ class icalTestCase(unittest.TestCase):
             u'STATUS:TENTATIVE', 
             u'DTSTAMP:2005-06-01 07:46:04',  
             u'DESCRIPTION:all all all', 
+            u'SEQUENCE:0', 
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
                      ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
             u'SUMMARY:Refound', 
@@ -418,14 +424,14 @@ class icalTestCase(unittest.TestCase):
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'\
              ':mailto:jdoe@itaapy.com', 
             u'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9b', 
+            u'SEQUENCE:0', 
             u'SUMMARY:222222222', 
             u'PRIORITY:2',  
             u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
             u'DTSTART;VALUE="DATE":2005-07-01 00:00:00'
             ]]
 
-        self.assertEqual(events, \
-                         expected_events)
+        self.assertEqual(events, expected_events)
         self.assertEqual(len(cal.get_components('VEVENT')), 2)
 
         # Test journals
@@ -555,11 +561,8 @@ class icalTestCase(unittest.TestCase):
         dtstart = datetime(2005, 5, 1)
         dtend = datetime(2005, 6, 1)
         self.assertEqual(event.in_range(dtstart, dtend), True)
-        dtstart = datetime(2005, 5, 31)
-        dtend = datetime(2005, 6, 1)
-        self.assertEqual(event.in_range(dtstart, dtend), False)
-        dtstart = datetime(2005, 5, 31, 0, 0, 1)
-        dtend = datetime(2005, 6, 1)
+        dtstart = datetime(2005, 6, 1)
+        dtend = datetime(2005, 6, 2)
         self.assertEqual(event.in_range(dtstart, dtend), False)
 
 
@@ -677,7 +680,7 @@ class icalTestCase(unittest.TestCase):
         dtstart = datetime(2005, 5, 31, 0, 0, 1)
         dtend = datetime(2005, 6, 1)
         events = cal.get_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 0)
+        self.assertEqual(len(events), 1)
 
 
     def test_get_conflicts(self):

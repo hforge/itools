@@ -18,6 +18,7 @@
 
 # Import from Python Standard Library
 from datetime import datetime
+from copy import deepcopy
 
 # Import from itools
 from itools.handlers.Text import Text
@@ -124,6 +125,10 @@ class Component(object):
         # We add arbitrarily an uid
         if 'UID' not in self.properties and 'uid' not in self.properties:
             self.add(Property('UID', PropertyValue(self.generate_uid())))
+        # We add a sequence number equal to 0
+        if 'SEQUENCE' not in self.properties and \
+           'sequence' not in self.properties:
+            self.add(Property('SEQUENCE', PropertyValue(0)))
 
 
     def generate_uid(self):
@@ -455,13 +460,16 @@ class icalendar(Text):
 
     def remove(self, type, uid):
         """
-        Definitely remove an existant component from the calendar.
+        Definitely remove from the calendar each occurrence of an existant
+        component. 
         """
+        indexes = []
         for index, component in enumerate(self.components[type]):
             c_uid  = component.get_property_values('UID')
             if c_uid and c_uid.value == uid:
-                del self.components[type][index]
-                break
+                indexes.insert(0, index)
+        for index in indexes:
+            del self.components[type][index]
         self.set_changed()
 
 
@@ -517,8 +525,32 @@ class icalendar(Text):
         return components
 
 
+    def duplicate_component(self, component):
+        new = deepcopy(component)
+        seq = new.get_property_values('SEQUENCE')
+        if not seq:
+            component.set_property('SEQUENCE', PropertyValue(0))
+            seq = PropertyValue(0)
+        seq = seq.value + 1
+        new.set_property('SEQUENCE', PropertyValue(seq))
+        return new
+
+
+    def is_last(self, component):
+        """
+        Return True if current component has the biggest sequence number (or
+        none) of all components with its UID
+        """
+        sequence = component.get_property_values('SEQUENCE')
+        if not sequence:
+            return True
+        uid = component.get_property_values('UID').value
+        components = self.get_component_by_uid(uid, False)
+        return sequence.value == (len(components) - 1)
+
+        
     # Get some events corresponding to arguments
-    def search_events(self, **kw):
+    def search_events(self, only_last=True, **kw):
         """
         Return a list of Component objects of type 'VEVENT' corresponding to the
         given filters.
@@ -543,6 +575,8 @@ class icalendar(Text):
 
         # For each events
         for event in self.components['VEVENT']:
+            if only_last and not self.is_last(event):
+                continue
             add_to_res = False
             # For each filter
             for filter in filters:
@@ -582,21 +616,27 @@ class icalendar(Text):
         return res_events
 
 
-    def get_component_by_uid(self, uid):
+    def get_component_by_uid(self, uid, only_last=True):
         """
-        Return a Component object with the given uid, None if it doesn't appear.
+        Return components with the given uid, None if it doesn't appear.
+        If only_last is True, return only the last occurrence.
         """
-        components = self.search_events(UID='%s' %uid)
-        if components:
-            return components[0]
+        components = self.search_events(only_last, UID='%s' %uid)
+        if not only_last and components:
+            return components
+        for component in components:
+            if self.is_last(component):
+                return component
         return None
 
 
     # Get some events corresponding to a given date
-    def get_events_in_date(self, date):
+    def get_events_in_date(self, date, only_last=True):
         """
         Return a list of Component objects of type 'VEVENT' matching the given
-        date.  """
+        date. 
+        If only_last is True, return only the last occurrences.
+        """
         res_events, res_event = [], None
 
         if 'VEVENT' not in self.components:
@@ -605,13 +645,14 @@ class icalendar(Text):
         # Get only the events which matches
         for event in self.components['VEVENT']:
             if event.correspond_to_date(date):
-                res_events.append(event)
+                if not only_last or self.is_last(event):
+                    res_events.append(event)
 
         return res_events
 
 
     # Get some events corresponding to a given dates range
-    def get_events_in_range(self, dtstart, dtend):
+    def get_events_in_range(self, dtstart, dtend, only_last=True):
         """
         Return a list of Component objects of type 'VEVENT' matching the given
         dates range.  """
@@ -622,6 +663,8 @@ class icalendar(Text):
 
         # Get only the events which matches
         for event in self.components['VEVENT']:
+            if only_last and not self.is_last(event):
+                continue
             if event.in_range(dtstart, dtend):
                 res_events.append(event)
 
@@ -639,6 +682,7 @@ class icalendar(Text):
     def get_conflicts(self, date):
         """
         Returns a list of uid couples which happen at the same time.
+        We check only last occurrence of events.
         """
         events = self.get_events_in_date(date)
         if len(events) <= 1:

@@ -565,6 +565,11 @@ class Document(XML.Document):
             else:
                 buffer.write(node.to_str())
 
+        # Process trailing message
+        if message:
+            for x in process_message(message, keep_spaces):
+                buffer.write(x.encode('utf-8'))
+
         data = buffer.getvalue()
         buffer.close()
         return data

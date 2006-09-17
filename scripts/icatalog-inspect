@@ -25,7 +25,8 @@ from optparse import OptionParser
 # Import from itools
 import itools
 from itools import vfs
-from itools.catalog.IO import decode_character, decode_link
+from itools.catalog.IO import (decode_byte, decode_character, decode_link,
+                               decode_string, decode_uint32, decode_vint)
 
 
 
@@ -38,9 +39,8 @@ def format_int_as_hex(x, length=4):
 
 
 
-def inspect(parser, options, target):
-    index = vfs.open(target)
-    with index.open('tree') as file:
+def inspect_index(target):
+    with target.open('tree') as file:
         i = 0
         data = file.read(16)
         while data:
@@ -63,6 +63,37 @@ def inspect(parser, options, target):
             data = file.read(16)
 
 
+def inspect_documents(target):
+    index = target.open('index').read()
+    docs = target.open('documents').read()
+
+    n = len(index) / 8
+    for i in range(n):
+        base = i * 8
+        pointer = decode_link(index[base:base+4])
+        size = decode_uint32(index[base+4:base+8])
+        print 'DOC', i
+        doc = docs[pointer:pointer+size]
+
+        while doc:
+            first_byte = decode_byte(doc[0])
+            doc = doc[1:]
+            fn, is_stored = first_byte & 127, first_byte & 128
+            if is_stored:
+                value, doc = decode_string(doc)
+                print '%s (STORED)' % fn, repr(value)
+            else:
+                n_terms, doc = decode_vint(doc)
+                values = []
+                for j in range(n_terms):
+                    value, doc = decode_string(doc)
+                    values.append(value)
+                print '%s (NOT STORED)' % fn, values
+
+        print
+
+
+
 
 if __name__ == '__main__':
     # The command line parser
@@ -76,6 +107,10 @@ if __name__ == '__main__':
         parser.error('incorrect number of arguments')
 
     target = args[0]
+    target = vfs.open(target)
+    if target.exists('tree'):
+        inspect_index(target)
+    else:
+        inspect_documents(target)
 
-    # Action!
-    inspect(parser, options, target)
+

@@ -43,20 +43,8 @@ This data structure is serialized to two files, "documents" and "index".
 File format
 ===========
 
-The documents file
-------------------
-
-Within the documents file each document is stored in variable length blocks,
-one after another. And a document is made of its fields:
-    
-  - field number 0 [byte]
-  - field value 0 [string]
-  ...
-  - field number n [byte]
-  - field value n [string]
-
-The index file
---------------
+The index file (index)
+----------------------
 
 The index file is made of fixed length blocks of 8 bytes each:
     
@@ -65,6 +53,34 @@ The index file is made of fixed length blocks of 8 bytes each:
 
 Each block represents a document: the first block is for the document
 number 0, the second block is for the document number 1, and so on.
+
+The documents file (documents)
+------------------------------
+
+Within the documents file each document is stored in variable length blocks,
+one after another. And a document is made of its fields:
+    
+  - field number, is stored [byte]
+  - field value
+
+The first byte is split in two parts, the highest weight bit tells whether
+the field is stored or not, the lower 7 bits tell are the field number. For
+example:
+    
+  1 0000010 (field number: 3, is stored: false)
+
+The structure of the field value depends on whether the field is stored or
+not. If it is stored it will be an string:
+    
+  - field value [string]
+
+If it is not it will be a list of terms:
+    
+  - n_terms [vint]
+  - term 0 [string]
+  ...
+  - term n [string]
+
 """
 
 

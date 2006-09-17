@@ -197,7 +197,7 @@ class Catalog(Folder):
                 # Stored
                 # XXX Coerce
                 if isinstance(value, list):
-                    value = ' '.join(value)
+                    value = u' '.join(value)
                 elif isinstance(value, str):
                     value = unicode(value)
                 catalog_document.fields[field.number] = value

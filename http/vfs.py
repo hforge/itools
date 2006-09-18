@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from httplib import HTTPConnection
 from urllib import urlopen
 
 # Import from itools
@@ -25,6 +26,27 @@ from itools.vfs.registry import register_file_system
 
 class HTTPFS(BaseFS):
     
+
+    @staticmethod
+    def exists(reference):
+        conn = HTTPConnection(str(reference.authority))
+        # XXX Add the query
+        conn.request('HEAD', str(reference.path))
+        response = conn.getresponse()
+        status = int(response.status)
+        return status < 400 or status >= 500
+
+
+    @staticmethod
+    def is_file(reference):
+        return HTTPFS.exists(reference)
+
+
+    @staticmethod
+    def is_folder(reference):
+        return False
+
+
     @staticmethod
     def open(reference):
         reference = str(reference)

@@ -22,6 +22,7 @@ from urllib import urlopen
 # Import from itools
 from itools.vfs.base import BaseFS
 from itools.vfs.registry import register_file_system
+from headers import HTTPDate
 
 
 class HTTPFS(BaseFS):
@@ -49,6 +50,13 @@ class HTTPFS(BaseFS):
     @staticmethod
     def is_folder(reference):
         return False
+
+
+    @staticmethod
+    def get_mtime(reference):
+        response = HTTPFS._head(reference)
+        mtime = response.getheader('last-modified')
+        return HTTPDate.decode(mtime)
 
 
     @classmethod

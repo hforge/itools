@@ -25,14 +25,18 @@ from itools.vfs.registry import register_file_system
 
 
 class HTTPFS(BaseFS):
-    
 
     @staticmethod
-    def exists(reference):
+    def _head(reference):
         conn = HTTPConnection(str(reference.authority))
         # XXX Add the query
         conn.request('HEAD', str(reference.path))
-        response = conn.getresponse()
+        return conn.getresponse()
+
+
+    @staticmethod
+    def exists(reference):
+        response = HTTPFS._head(reference)
         status = int(response.status)
         return status < 400 or status >= 500
 
@@ -47,8 +51,15 @@ class HTTPFS(BaseFS):
         return False
 
 
+    @classmethod
+    def get_mimetype(cls, reference):
+        response = HTTPFS._head(reference)
+        ctype = response.getheader('content-type')
+        return ctype.split(';')[0]
+
+
     @staticmethod
-    def open(reference):
+    def open(reference, mode=None):
         reference = str(reference)
         return urlopen(reference) 
 

@@ -56,8 +56,12 @@ class File(Handler):
 
 
     def load_state(self):
-        with vfs.open(self.uri, 'r') as file:
+        # XXX Use "with" once "urllib.urlopen" supports it
+        file = vfs.open(self.uri, 'r')
+        try:
             self._load_state_from_file(file)
+        finally:
+            file.close()
         self.timestamp = vfs.get_mtime(self.uri)
 
 

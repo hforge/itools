@@ -120,6 +120,26 @@ class Folder(Handler):
             handler.save_state_to(target)
 
 
+    def copy_handler(self):
+        # Deep load
+        if self.uri is not None:
+            self._deep_load()
+        # Create and initialize the instance
+        cls = self.__class__
+        copy = object.__new__(cls)
+        copy.uri = None
+        copy.timestamp = datetime.now()
+        copy.real_handler = None
+        # Copy the state
+        copy.cache = {}
+        copy.added_handlers = set()
+        copy.removed_handlers = set()
+        for name in self.cache:
+            copy.cache[name] = self.cache[name].copy_handler()
+        # Return the copy
+        return copy
+
+
     #########################################################################
     # API (private)
     #########################################################################

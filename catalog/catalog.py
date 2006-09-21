@@ -24,6 +24,7 @@ from operator import itemgetter
 # Import from itools
 from itools.uri import get_absolute_reference
 from itools import vfs
+from itools.handlers.base import Handler
 from itools.handlers.Folder import Folder
 from index import Index
 from documents import Documents, Document
@@ -140,6 +141,9 @@ class Catalog(Folder):
         self.documents.save_state()
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
+
+
+    copy_handler = Handler.copy_handler
 
 
     #########################################################################

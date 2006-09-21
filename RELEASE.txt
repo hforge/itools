@@ -1,4 +1,66 @@
 
+itools 0.14.3 (2006/09/22)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This is mostly a bug-fix release:
+
+ - A new datatype for time objects has been added to itools.datatypes
+   (#104).
+
+ - Now there is some support for the HTTP layer in itools.vfs, the methods
+   "exists", "get_mimetype", "get_mtime", "is_file" and "is_folder" and
+   "open" work.
+
+ - An important bug in itools.catalog has been fixed, now indexing of
+   stored fields when the value is a list of byte strings works fine.
+
+ - Now the method "context.come_back" (from itools.web) accepts a URI
+   object for the "goto" parameter, not just a string.
+
+ - There have been many improvements to the calendar code, both in
+   itools.ical and itools.cms: #82, #246, #496, #507, #509, .
+
+ - Fix renaming of a non-empty folder. The external editor (itools.cms)
+   works again. Text handlers have a view to change their workflow state.
+   Some templates (e.g. image preview) are not broken anymore in other
+   languages than english (#502, #511). And anonymous users can reach the
+   profile page.
+
+Credits:
+
+ - Hervé Cauwelier helped with the calendar code;
+ - Nicolas Deram kept working on the calendar and calendar related code;
+ - J. David Ibáñez fixed bugs here and there.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.3.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.14.2
 =============
 

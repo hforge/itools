@@ -6,6 +6,8 @@
 
 <div id="cal_monthly_view"> 
   <div id="selector">
+    <a stl:if="today" stl:attributes="href today" class="cal_today">
+      Come back to today</a>
     <ul>
       <li>
         <a stl:attributes="href previous_week">&laquo;</a>
@@ -39,7 +41,10 @@
     <tr stl:repeat="week weeks" valign="top">
       <td stl:content="week/month" class="month" />
       <td stl:repeat="day week/days" class="day">
-        <span stl:content="day/nday" class="bold" />
+        <span stl:if="not day/selected" stl:content="day/nday" class="bold"/>
+        <span stl:if="day/selected" stl:content="day/nday" 
+              class="cal_day_selected" />
+
         <a class="add_event" stl:attributes="href day/url"><img width="16"
             height="16" stl:attributes="src add_icon" /></a>
 

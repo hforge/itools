@@ -16,7 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from Standard Library
-from datetime import datetime, time, timedelta
+from calendar import monthrange, isleap
+from datetime import datetime, date, time, timedelta
 
 # Import from itools
 from itools import i18n
@@ -242,24 +243,54 @@ class Calendar(Text, icalendar):
 
     @classmethod
     def add_selector_ns(cls, c_date, method, namespace):
-        # Set header used to navigate into time
-        # Week, current date is first showed week + 1
+        """
+        Set header used to navigate into time.
+
+          datetime.strftime('%U') gives week number, starting week by Sunday
+          datetime.strftime('%W') gives week number, starting week by Monday
+          This week number is calculated as "Week O1" begins on the first
+          Sunday/Monday of the year. Its range is [0,53]. 
+
+        We adjust week numbers to fit rules which are used by french people.
+        XXX Check for other countries
+        """
+        format = '%W' if cls.get_first_day() == 1 else '%U'
+        week_number = Unicode.encode(c_date.strftime(format))
+        # Get day of 1st January, if < friday and != monday then number++
+        day, xxx = monthrange(c_date.year, 1)
+        if day in (1,2,3):
+            week_number = str(int(week_number) + 1)
+            if len(week_number) == 1:
+                week_number = '0%s' % week_number
+        current_week = cls.gettext(u'Week ') + week_number
         tmp_date = c_date - timedelta(7)
-        current_week = cls.gettext(u'Week ')
-        current_week = current_week + Unicode.encode(tmp_date.strftime('%U'))
         previous_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
         tmp_date = c_date + timedelta(7)
         next_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
         # Month
         current_month = cls.gettext(cls.months[c_date.month])
-        tmp_date = c_date - timedelta(30)
+        delta = 31
+        if c_date.month != 1:
+            xxx, delta = monthrange(c_date.year, c_date.month - 1)
+        tmp_date = c_date - timedelta(delta)
         previous_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        tmp_date = c_date + timedelta(30)
+        xxx, delta = monthrange(c_date.year, c_date.month)
+        tmp_date = c_date + timedelta(delta)
         next_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
         # Year
-        tmp_date = c_date - timedelta(365)
+        date_before = date(c_date.year, 2, 28)
+        date_after = date(c_date.year, 3, 1)
+        delta = 365
+        if (isleap(c_date.year - 1) and c_date <= date_before) \
+          or (isleap(c_date.year) and c_date > date_before):
+            delta = 366
+        tmp_date = c_date - timedelta(delta)
         previous_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        tmp_date = c_date + timedelta(365)
+        delta = 365
+        if (isleap(c_date.year) and c_date <= date_before) \
+          or (isleap(c_date.year +1) and c_date >= date_after):
+            delta = 366
+        tmp_date = c_date + timedelta(delta)
         next_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
         # Set value into namespace
         namespace['current_week'] = current_week
@@ -271,6 +302,9 @@ class Calendar(Text, icalendar):
         namespace['current_year'] = c_date.year
         namespace['previous_year'] = previous_year
         namespace['next_year'] = next_year
+        # Add today link
+        tmp_date = datetime.today()
+        namespace['today'] = ";%s?date=%s" % (method, Date.encode(tmp_date))
         return namespace
 
 
@@ -292,12 +326,14 @@ class Calendar(Text, icalendar):
 
     # Get days of week based on get_first_day's result 
     @classmethod
-    def days_of_week_ns(cls, date, num=None, ndays=7):
+    def days_of_week_ns(cls, date, num=None, ndays=7, c_date=None):
         ns_days = []
         for index in range(ndays):
             ns =  {}
             ns['name'] = cls.gettext(cls.days[date.weekday()])
             ns['nday'] = None
+            if c_date:
+                ns['selected'] = (c_date == date)
             if num:
                 ns['nday'] = date.day
             ns_days.append(ns)
@@ -432,6 +468,7 @@ class Calendar(Text, icalendar):
             for d in range(7):
                 ns_day = {}
                 ns_day['nday'] = day.day
+                ns_day['selected'] = (day == c_date)
                 ns_day['url'] = ';edit_event_form?date=%s' % Date.encode(day)
                 ns_day['events'] = self.get_events(day, 'monthly_view')
                 ns_week['days'].append(ns_day)
@@ -471,7 +508,7 @@ class Calendar(Text, icalendar):
         namespace = self.add_selector_ns(c_date, 'weekly_view' ,namespace)
 
         # Get header line with days of the week
-        namespace['days_of_week'] = self.days_of_week_ns(start, num=True)
+        namespace['days_of_week'] = self.days_of_week_ns(start, True, 7, c_date)
 
         # Get 1 week with all defined timetables or none (just one line)
         namespace['timetables'] = self.get_timetables_ns(start)

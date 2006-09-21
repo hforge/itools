@@ -402,6 +402,13 @@ dl.new_resource_thumb {
   color: #cc0000;
 }
 
+#cal_monthly_view .cal_today, #cal_weekly_view .cal_today {
+  margin-left: 2px;
+  color: #3465a4;
+  font-size: 12px;
+  font-style: italic;
+}
+
 #cal_monthly_view table , #cal_weekly_view table {
   border-spacing: 1px;
 }
@@ -426,6 +433,17 @@ dl.new_resource_thumb {
 } 
 
 #cal_monthly_view .bold {
+  font-weight: bold;
+}
+
+#cal_monthly_view .cal_day_selected,
+#cal_weekly_view .cal_day_selected {
+  color: #cc0000;
+  background: #fce94f;
+}
+
+#cal_monthly_view .cal_day_selected {
+  padding: 1px;
   font-weight: bold;
 }
 
@@ -511,4 +529,3 @@ dl.new_resource_thumb {
   font-weight: bold;
   text-align: left;
 }
-

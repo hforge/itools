@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-01 17:09+CET\n"
+"POT-Creation-Date: 2006-09-22 15:09+CET\n"
 "PO-Revision-Date: 2006-07-27 12:09+0200\n"
 "Last-Translator: nderam <hcauwelier@oursours.net>\n"
 "Language-Team:  <fr@li.org>\n"
@@ -23,15 +23,15 @@ msgstr "$n objets ont été réindexés."
 msgid "%(start)s-%(end)s of %(total)s"
 msgstr "%(start)s-%(end)s de %(total)s"
 
-#: cms/Handler.py:173
+#: cms/Handler.py:174
 msgid "%.01f KB"
 msgstr "%.01f Ko"
 
-#: cms/Handler.py:171
+#: cms/Handler.py:172
 msgid "%.01f MB"
 msgstr "%.01f Mo"
 
-#: cms/Handler.py:177
+#: cms/Handler.py:178
 msgid "%d obs"
 msgstr "%d obj"
 
@@ -86,11 +86,7 @@ msgstr ""
 "(optionnel) Vous pouvez utiliser un nom spécifique pour stocker votre "
 "dossier, et qui apparaîtra dans l'URL."
 
-#: cms/ui/ical_weekly_view.xml.en:0
-msgid "++"
-msgstr "++"
-
-#: ical/icalendar.py:306
+#: ical/icalendar.py:311
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
@@ -98,7 +94,7 @@ msgstr ""
 msgid "..."
 msgstr ""
 
-#: ical/icalendar.py:305
+#: ical/icalendar.py:310
 msgid "2.0"
 msgstr ""
 
@@ -329,12 +325,6 @@ msgid ""
 "epoz_button_redo.png\" alt=\"Redo\" title=\"Redo\" name=\"epoz_button_redo\" "
 "width=\"23\" class=\"button epoz_button_redo\" onclick=\"FormatText('redo', "
 "'');\"/> <br/>"
-msgstr ""
-
-#: cms/ui/ical_monthly_view.xml.en:0
-msgid ""
-"<span class=\"bold\" stl:content=\"day/nday\"></span> <a class=\"add_event\" "
-"stl:attributes=\"href day/url\">++</a>"
 msgstr ""
 
 #: cms/ui/ical_weekly_view.xml.en:0
@@ -752,23 +742,23 @@ msgstr "Préférences de l'application"
 msgid "Application preferences changed."
 msgstr "Préférences de l'application modifiées."
 
-#: cms/ical.py:67
+#: cms/ical.py:68
 msgid "April"
 msgstr "Avril"
 
-#: cms/Folder.py:481
+#: cms/Folder.py:473
 msgid "As Icons"
 msgstr "Icônes"
 
-#: cms/Folder.py:543
+#: cms/Folder.py:532
 msgid "As Image Gallery"
 msgstr "Galerie d'images"
 
-#: cms/Folder.py:497
+#: cms/Folder.py:489
 msgid "As List"
 msgstr "Liste"
 
-#: cms/ical.py:868
+#: cms/ical.py:1166
 msgid "As calendar"
 msgstr "Calendrier"
 
@@ -776,7 +766,7 @@ msgstr "Calendrier"
 msgid "Attendees"
 msgstr ""
 
-#: cms/ical.py:68
+#: cms/ical.py:69
 msgid "August"
 msgstr "Août"
 
@@ -819,11 +809,11 @@ msgid ""
 "for all its users."
 msgstr ""
 
-#: cms/ical.py:42
+#: cms/ical.py:43
 msgid "CANCELLED"
 msgstr "ANNULE"
 
-#: cms/ical.py:41
+#: cms/ical.py:42
 msgid "CONFIRMED"
 msgstr "CONFIRME"
 
@@ -835,9 +825,13 @@ msgstr "Enregistrement CSV"
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
-#: cms/ical.py:50
+#: cms/ical.py:51
 msgid "Calendar"
 msgstr "Calendrier"
+
+#: cms/ui/ical_edit_event_form.xml.en:0
+msgid "Cancel"
+msgstr "Annuler"
 
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Cataloguing of Content"
@@ -906,6 +900,10 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
+#: cms/ui/ical_weekly_view.xml.en:0
+msgid "Come back to today"
+msgstr "Revenir à aujourd'hui"
+
 #: cms/csv_.py:73
 msgid "Comma Separated Values"
 msgstr "Format CSV"
@@ -926,7 +924,7 @@ msgstr "Commentaires (optionnel)&nbsp;:"
 msgid "Common name"
 msgstr "Nom"
 
-#: cms/ical.py:867
+#: cms/ical.py:1165
 msgid "Contents"
 msgstr "Contenu"
 
@@ -958,7 +956,7 @@ msgstr "État actuel&nbsp;:"
 msgid "Cut"
 msgstr "Couper"
 
-#: cms/ical.py:704
+#: cms/ical.py:758
 msgid "Data updated"
 msgstr "Données mises à jour."
 
@@ -971,7 +969,7 @@ msgid "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 msgstr ""
 "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 
-#: cms/ical.py:69
+#: cms/ical.py:70
 msgid "December"
 msgstr "Décembre"
 
@@ -1031,7 +1029,7 @@ msgstr "Document Word"
 msgid "Document changed."
 msgstr "Document modifié."
 
-#: cms/text.py:115
+#: cms/text.py:116
 msgid "Document edited."
 msgstr "Document modifié."
 
@@ -1063,7 +1061,7 @@ msgstr ""
 msgid "Each version is given a distinguishing version number."
 msgstr ""
 
-#: cms/ical.py:719
+#: cms/ical.py:776
 msgid "Edit"
 msgstr "Modifier"
 
@@ -1104,15 +1102,15 @@ msgstr ""
 msgid "Epoz-Toolbox"
 msgstr "boite à outils Epoz"
 
-#: cms/ical.py:459
+#: cms/ical.py:525
 msgid "Event"
 msgstr "Evènement"
 
-#: cms/ical.py:715
+#: cms/ical.py:772
 msgid "Event definitely deleted."
 msgstr "Evènement définitivement supprimé."
 
-#: cms/ical.py:497
+#: cms/ical.py:571
 msgid "Event not found"
 msgstr "Evènement non trouvé"
 
@@ -1124,7 +1122,7 @@ msgstr "Tout est sous contrôle."
 msgid "Excel"
 msgstr "Excel"
 
-#: cms/ical.py:367
+#: cms/ical.py:426
 msgid "Export in ical format"
 msgstr "Exporter au format ical"
 
@@ -1140,7 +1138,7 @@ msgstr "Éditeur externe"
 msgid "External Editor.."
 msgstr "Éditeur externe..."
 
-#: cms/ical.py:67
+#: cms/ical.py:68
 msgid "February"
 msgstr "Février"
 
@@ -1166,7 +1164,7 @@ msgstr "Fichier"
 msgid "File <input id=\"file\" name=\"file\" size=\"50\" type=\"file\"/>"
 msgstr ""
 
-#: cms/Folder.py:1023
+#: cms/Folder.py:1012
 msgid "File uploaded."
 msgstr "Fichier téléchargé."
 
@@ -1182,7 +1180,7 @@ msgstr "Corriger."
 msgid "Flash"
 msgstr "Flash"
 
-#: cms/Folder.py:59
+#: cms/Folder.py:58
 msgid "Folder"
 msgstr "Dossier"
 
@@ -1254,7 +1252,7 @@ msgstr ""
 msgid "Format:"
 msgstr "Format&nbsp;:"
 
-#: cms/ical.py:71
+#: cms/ical.py:72
 msgid "Friday"
 msgstr "Vendredi"
 
@@ -1395,7 +1393,7 @@ msgstr ""
 msgid "Indent"
 msgstr "Indenter"
 
-#: cms/text.py:155
+#: cms/text.py:156
 msgid "Inline"
 msgstr "En ligne"
 
@@ -1441,7 +1439,7 @@ msgstr "Italique"
 msgid "J. David Ibáñez, lead developer"
 msgstr "J. David Ibáñez, développeur principal"
 
-#: cms/ical.py:67
+#: cms/ical.py:68
 msgid "January"
 msgstr "Janvier"
 
@@ -1449,11 +1447,11 @@ msgstr "Janvier"
 msgid "Join the Community"
 msgstr "Rejoignez-nous"
 
-#: cms/ical.py:68
+#: cms/ical.py:69
 msgid "July"
 msgstr "Juillet"
 
-#: cms/ical.py:68
+#: cms/ical.py:69
 msgid "June"
 msgstr "Juin"
 
@@ -1536,11 +1534,11 @@ msgid ""
 "that system;"
 msgstr ""
 
-#: cms/ical.py:67
+#: cms/ical.py:68
 msgid "March"
 msgstr "Mars"
 
-#: cms/ical.py:68
+#: cms/ical.py:69
 msgid "May"
 msgstr "Mai"
 
@@ -1600,7 +1598,7 @@ msgid ""
 "cols=\"65\" rows=\"8\" stl:content=\"msgid\"></textarea>"
 msgstr ""
 
-#: cms/text.py:143
+#: cms/text.py:144
 msgid "Message Catalog"
 msgstr "Catalogue de messages"
 
@@ -1614,15 +1612,15 @@ msgid ""
 "\"msgstr\" cols=\"65\" rows=\"8\"></textarea>"
 msgstr ""
 
-#: cms/text.py:208
+#: cms/text.py:209
 msgid "Message edited."
 msgstr "Message modifié"
 
-#: cms/ical.py:80
+#: cms/ical.py:81
 msgid "Metadata"
 msgstr "Métadonnées"
 
-#: cms/Handler.py:547
+#: cms/Handler.py:548
 msgid "Metadata changed."
 msgstr "Métadonnées modifiées."
 
@@ -1646,11 +1644,11 @@ msgid ""
 "size=\"10\" type=\"text\"/>"
 msgstr ""
 
-#: cms/ical.py:70
+#: cms/ical.py:71
 msgid "Monday"
 msgstr "Lundi"
 
-#: cms/ical.py:381
+#: cms/ical.py:440
 msgid "Monthly"
 msgstr "Mensuel"
 
@@ -1698,11 +1696,11 @@ msgstr "Nom&nbsp;:"
 msgid "Navigation"
 msgstr "Navigation"
 
-#: cms/Folder.py:877
+#: cms/Folder.py:866
 msgid "New Resource"
 msgstr "Nouvelle ressource"
 
-#: cms/Folder.py:954
+#: cms/Folder.py:943
 msgid "New resource added."
 msgstr "Nouvelle ressource ajoutée."
 
@@ -1718,7 +1716,7 @@ msgstr "Aucun fichier n'a été entré."
 msgid "No history."
 msgstr "Rien dans l'historique."
 
-#: cms/Folder.py:731
+#: cms/Folder.py:720
 msgid "No objects selected."
 msgstr "Aucun objet sélectionné."
 
@@ -1734,15 +1732,15 @@ msgstr "Notez que ni le nom ni le titre ne changeront."
 msgid "Note:"
 msgstr "Note&nbsp;:"
 
-#: cms/ical.py:751
+#: cms/ical.py:808
 msgid "Nothing to change."
 msgstr "Aucune modification."
 
-#: cms/ical.py:757
+#: cms/ical.py:814
 msgid "Nothing to remove."
 msgstr "Rien à supprimer."
 
-#: cms/ical.py:69
+#: cms/ical.py:70
 msgid "November"
 msgstr "Novembre"
 
@@ -1766,31 +1764,31 @@ msgstr "OpenOffice.org Impress"
 msgid "OOo Writer"
 msgstr "OpenOffice.org Writer"
 
-#: cms/Folder.py:718
+#: cms/Folder.py:707
 msgid "Objects copied."
 msgstr "Objets copiés."
 
-#: cms/Folder.py:738
+#: cms/Folder.py:727
 msgid "Objects cut."
 msgstr "Objets coupés."
 
-#: cms/Folder.py:795
+#: cms/Folder.py:784
 msgid "Objects pasted."
 msgstr "Objets collés."
 
-#: cms/Folder.py:630
+#: cms/Folder.py:619
 msgid "Objects removed: $objects."
 msgstr "Objets supprimés: $objects."
 
-#: cms/Folder.py:697
+#: cms/Folder.py:686
 msgid "Objects renamed."
 msgstr "Objets renommés."
 
-#: cms/ical.py:69
+#: cms/ical.py:70
 msgid "October"
 msgstr "Octobre"
 
-#: cms/ical.py:665
+#: cms/ical.py:720
 msgid "One or more field is invalid."
 msgstr "Au moins un champ est invalide."
 
@@ -1830,7 +1828,7 @@ msgstr "Monter"
 msgid "Ordered List"
 msgstr "Liste numérotée"
 
-#: cms/Folder.py:60
+#: cms/Folder.py:59
 msgid "Organize your files and documents with folders."
 msgstr "Organisez vos fichiers et documents dans des dossiers."
 
@@ -1936,7 +1934,7 @@ msgstr "Veuillez saisir votre mot de passe (il ne sera pas affiché en clair)."
 msgid "Please give a title to your folder."
 msgstr "Veuillez saisir un titre pour ce dossier."
 
-#: cms/Folder.py:513
+#: cms/Folder.py:502
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr "Merci de saisir une recherche si vous incluez les sous-dossiers."
 
@@ -2078,7 +2076,7 @@ msgstr ""
 msgid "Request the document publication."
 msgstr "Demander la publication du document."
 
-#: cms/text.py:243
+#: cms/text.py:244
 msgid "Restructured Text"
 msgstr ""
 
@@ -2112,7 +2110,7 @@ msgid ""
 "SERVICING, REPAIR OR CORRECTION."
 msgstr ""
 
-#: cms/ical.py:71
+#: cms/ical.py:72
 msgid "Saturday"
 msgstr "Samedi"
 
@@ -2124,7 +2122,7 @@ msgstr "Sauvegarder"
 msgid "Save the translation"
 msgstr "Sauvegarder la traduction"
 
-#: cms/ical.py:51
+#: cms/ical.py:52
 msgid "Schedule your time with calendar files."
 msgstr "Organisez votre temps à l'aide de fichiers ical."
 
@@ -2165,7 +2163,7 @@ msgstr "Sécurité"
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
 msgstr ""
 
-#: cms/ical.py:68
+#: cms/ical.py:69
 msgid "September"
 msgstr "Septembre"
 
@@ -2189,11 +2187,11 @@ msgstr "Habillage"
 msgid "Start"
 msgstr "Début"
 
-#: cms/ical.py:670
+#: cms/ical.py:725
 msgid "Start date MUST be earlier than end date."
 msgstr "La date de début DOIT être antérieure à la date de fin."
 
-#: cms/ical.py:798
+#: cms/ical.py:851
 msgid "Start time must be earlier than end time."
 msgstr "L'heure de début doit être antérieure à l'heure de fin."
 
@@ -2235,7 +2233,7 @@ msgstr ""
 msgid "Summary"
 msgstr "Titre"
 
-#: cms/ical.py:71
+#: cms/ical.py:72
 msgid "Sunday"
 msgstr "Dimanche"
 
@@ -2247,7 +2245,7 @@ msgstr "Exposant"
 msgid "Suspendisse potenti."
 msgstr ""
 
-#: cms/ical.py:40
+#: cms/ical.py:41
 msgid "TENTATIVE"
 msgstr "TENTATIVE"
 
@@ -2276,7 +2274,7 @@ msgstr "Tâches"
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: cms/Folder.py:71
+#: cms/Folder.py:69
 msgid "Text"
 msgstr "Texte"
 
@@ -2298,11 +2296,11 @@ msgid ""
 "\"50\" type=\"text\"/>"
 msgstr ""
 
-#: cms/text.py:244
+#: cms/text.py:245
 msgid "Text files with Restructured Text syntax support."
 msgstr "Fichiers texte au format Restructured Text"
 
-#: cms/ical.py:373
+#: cms/ical.py:432
 msgid "Text view"
 msgstr "Vue textuelle"
 
@@ -2337,7 +2335,7 @@ msgstr ""
 msgid "The default language has been changed."
 msgstr "La langue par défaut a été changée."
 
-#: cms/Folder.py:1002
+#: cms/Folder.py:991
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 "Le nom du document contient des caractères interdits, choisissez-en un autre."
@@ -2347,7 +2345,7 @@ msgid "The documents below await review for publication:"
 msgstr ""
 "Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
 
-#: cms/Folder.py:982
+#: cms/Folder.py:971
 msgid "The file must be entered"
 msgstr "Le fichier doit être saisi."
 
@@ -2371,7 +2369,7 @@ msgstr ""
 msgid "The message"
 msgstr ""
 
-#: cms/Folder.py:915
+#: cms/Folder.py:904
 msgid "The name must be entered"
 msgstr "Le nom doit être saisi."
 
@@ -2396,6 +2394,14 @@ msgid ""
 "The precise terms and conditions for copying, distribution and modification "
 "follow."
 msgstr ""
+
+#: cms/ui/Root_not_found.xml.en:0
+msgid ""
+"The requested URL <stl:inline stl:content=\"uri\"></stl:inline> was not "
+"found on this server."
+msgstr ""
+"L'URL demandée <stl:inline stl:content=\"uri\"></stl:" "inline> est "
+"introuvable sur ce serveur."
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "The resource title"
@@ -2431,27 +2437,19 @@ msgstr "Une erreur s'est produite, veuillez réessayer plus tard."
 msgid "There is already a user with that email."
 msgstr "Il existe déjà un utilisateur avec cet email."
 
-#: cms/Folder.py:933
+#: cms/Folder.py:922
 msgid "There is already another object with this name."
 msgstr "Il existe déjà un autre objet avec ce nom."
 
-#: cms/Folder.py:1007
+#: cms/Folder.py:996
 msgid "There is already another resource with this name."
 msgstr "Il existe déjà une ressource de ce nom."
 
 #: cms/users.py:365
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
-"Il existe déjà un utilisateur avec l'identifiant "
-"&laquo;&nbsp;%s&nbsp;&raquo;, veuillez en changer."
-
-#: cms/ui/Root_not_found.xml.en:0
-msgid ""
-"There requested URL <stl:inline stl:content=\"uri\"></stl:inline> was not "
-"found on this server."
-msgstr ""
-"L'URL demandée &laquo;&nbsp;<stl:inline stl:content=\"uri\"></stl:"
-"inline>&nbsp;&raquo; est introuvable sur ce serveur."
+"Il existe déjà un utilisateur avec l'identifiant &laquo;&nbsp;%s&nbsp;"
+"&raquo;, veuillez en changer."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2508,7 +2506,7 @@ msgid ""
 "consequence of the rest of this License."
 msgstr ""
 
-#: cms/ical.py:70
+#: cms/ical.py:71
 msgid "Thursday"
 msgstr "Jeudi"
 
@@ -2518,15 +2516,15 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
-#: cms/ical.py:763
+#: cms/ical.py:820
 msgid "Timetable(s) removed successfully."
 msgstr "Horaire(s) supprimé(s)."
 
-#: cms/ical.py:720
+#: cms/ical.py:777
 msgid "Timetables"
 msgstr "Horaires"
 
-#: cms/ical.py:803
+#: cms/ical.py:856
 msgid "Timetables updated successfully."
 msgstr "Horaire modifié."
 
@@ -2565,7 +2563,7 @@ msgstr ""
 "Pour ajouter un dossier saisissez son nom et cliquez sur le bouton "
 "<strong>Ajouter</strong>."
 
-#: cms/ical.py:470
+#: cms/ical.py:536
 msgid "To add an event, click on + symbol from the views."
 msgstr "Pour ajouter un évènement, cliquer sur le symbôle + à partir des vues."
 
@@ -2630,7 +2628,7 @@ msgstr "Action effectuée."
 msgid "Translate"
 msgstr "Traduire"
 
-#: cms/ical.py:70
+#: cms/ical.py:71
 msgid "Tuesday"
 msgstr "Mardi"
 
@@ -2732,7 +2730,7 @@ msgstr "Version téléchargée."
 msgid "Video"
 msgstr "Vidéo"
 
-#: cms/ical.py:427
+#: cms/ical.py:490
 msgid "View"
 msgstr "Voir"
 
@@ -2759,15 +2757,15 @@ msgstr "Document Web"
 msgid "Web Site"
 msgstr "Site Web"
 
-#: cms/ical.py:70
+#: cms/ical.py:71
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: cms/ical.py:224
+#: cms/ical.py:265
 msgid "Week "
 msgstr "Semaine "
 
-#: cms/ical.py:428
+#: cms/ical.py:491
 msgid "Weekly"
 msgstr "Hebdomadaire"
 
@@ -2800,11 +2798,11 @@ msgid ""
 "      </select>"
 msgstr ""
 
-#: cms/ical.py:795
+#: cms/ical.py:848
 msgid "Wrong time selection (HH:MM)."
 msgstr "Horaire incorrect (HH:MM)."
 
-#: cms/ical.py:789
+#: cms/ical.py:844
 msgid "Wrong time selection."
 msgstr "Horaire incorrect."
 
@@ -2820,7 +2818,7 @@ msgstr "Vous êtes maintenant déconnecté."
 msgid "You are not a translator, <em>woaaahh</em>"
 msgstr "Vous n'êtes pas traducteur, <em>woaaahh</em>"
 
-#: cms/ical.py:620
+#: cms/ical.py:674
 msgid "You are not authorized to modify this event."
 msgstr "Accès refusé, vous n'êtes pas autorisé à modifier cet évènement."
 
@@ -3114,7 +3112,7 @@ msgstr ""
 msgid "the"
 msgstr ""
 
-#: handlers/Folder.py:175
+#: handlers/Folder.py:195
 msgid "the resource \"%s\" does not exist"
 msgstr "La ressource &laquo;&nbsp;%s&nbsp;&raquo; n'existe pas."
 
@@ -3190,6 +3188,9 @@ msgstr "» Parcourir  et lier un document de l'application&nbsp;:"
 #: cms/ui/HTML_addlink.xml.en:0
 msgid "» Type the url to add:"
 msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
+
+#~ msgid "++"
+#~ msgstr "++"
 
 #~ msgid "-- Choose a language --"
 #~ msgstr "-- Choisissez une langue --"

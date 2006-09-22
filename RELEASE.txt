@@ -29,7 +29,7 @@ This is mostly a bug-fix release:
    object for the "goto" parameter, not just a string.
 
  - There have been many improvements to the calendar code, both in
-   itools.ical and itools.cms: #82, #246, #496, #507, #509, .
+   itools.ical and itools.cms: #82, #246, #496, #507 and #509.
 
  - Fix renaming of a non-empty folder. The external editor (itools.cms)
    works again. Text handlers have a view to change their workflow state.

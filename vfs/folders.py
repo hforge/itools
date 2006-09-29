@@ -67,6 +67,16 @@ class Folder(object):
         return fs.is_folder(reference)
 
 
+    def can_read(self, reference):
+        fs, reference = self.get_fs_and_reference(reference)
+        return fs.can_read(reference)
+
+
+    def can_write(self, reference):
+        fs, reference = self.get_fs_and_reference(reference)
+        return fs.can_write(reference)
+
+
     def get_ctime(self, reference):
         fs, reference = self.get_fs_and_reference(reference)
         return fs.get_ctime(reference)

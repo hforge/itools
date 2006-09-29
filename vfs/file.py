@@ -47,6 +47,26 @@ class FileFS(BaseFS):
 
 
     @staticmethod
+    def can_read(reference):
+        path = str(reference.path)
+        st_mode = os.stat(path).st_mode
+        # Folder
+        if st_mode & 0040000:
+            return st_mode & 5
+        # File
+        elif st_mode & 0100000:
+            return st_mode & 4
+ 
+        return False
+
+
+    @staticmethod
+    def can_write(reference):
+        path = str(reference.path)
+        return os.stat(path).st_mode & 2
+
+
+    @staticmethod
     def get_ctime(reference):
         path = str(reference.path)
         ctime = os.path.getctime(path)

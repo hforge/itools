@@ -41,6 +41,14 @@ def is_folder(reference):
     return cwd.is_folder(reference)
 
 
+def can_read(reference):
+    return cwd.can_read(reference)
+
+
+def can_write(reference):
+    return cwd.can_write(reference)
+
+
 def get_ctime(reference):
     return cwd.get_ctime(reference)
 

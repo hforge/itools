@@ -188,7 +188,6 @@ class User(AccessControl, Folder):
                     u" not changed.")
 
         self.set_property('dc:title', title, language='en')
-        email = unicode(email, 'utf-8')
         self.set_property('ikaaro:email', email)
 
         return context.come_back(u'Account changed.')

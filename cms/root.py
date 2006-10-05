@@ -163,6 +163,15 @@ class Root(WebSite):
     def not_found(self, context):
         namespace = {'uri': str(context.uri)}
 
+        # Don't show the skin if it is not going to work
+        request = context.request
+        if request.has_header('x-base-path'):
+            try:
+                self.get_handler('%s/ui' % request.get_header('x-base-path'))
+            except LookupError:
+                response = context.response
+                response.set_header('content-type', 'text/html; charset=UTF-8')
+
         handler = self.get_handler('/ui/Root_not_found.xml')
         return stl(handler, namespace)
 

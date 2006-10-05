@@ -608,7 +608,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         for name in ids:
             handler = self.get_handler(name)
             ac = handler.get_access_control()
-            if ac.is_allowed_to_remove(user, object):
+            if ac.is_allowed_to_remove(user, handler):
                 # Remove handler
                 self.del_handler(name)
                 removed.append(name)

@@ -26,10 +26,7 @@ from itools.xhtml import XHTML
 from itools.html import HTML
 
 # Import from ikaaro
-from File import File
-from binary import Image
 from text import Text
-from widgets import Breadcrumb
 from registry import register_object_class
 
 
@@ -165,44 +162,6 @@ class XHTMLFile(Text, XHTML.Document):
         body.children = children
 
         return context.come_back(u'Document changed.')
-
-
-    #######################################################################
-    # Edit / Inline / toolbox: add images
-    addimage_form__access__ = 'is_allowed_to_edit'
-    def addimage_form(self, context):
-        namespace = {}
-        namespace['bc'] = Breadcrumb(filter_type=Image, start=self.parent)
-
-        handler = self.get_handler('/ui/HTML_addimage.xml')
-        return stl(handler, namespace)
-
-
-    #######################################################################
-    # Edit / Inline / toolbox: add links
-    addlink_form__access__ = 'is_allowed_to_edit'
-    def addlink_form(self, context):
-        namespace = {}
-        namespace['bc'] = Breadcrumb(filter_type=File, start=self.parent)
-
-        handler = self.get_handler('/ui/HTML_addlink.xml')
-        return stl(handler, namespace)
-
-
-    epoz_color_form__access__ = 'is_allowed_to_edit'
-    def epoz_color_form(self, context):
-        context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
-
-        handler = self.get_handler('/ui/epoz_script_color.xml')
-        return handler.to_str()
-
-
-    epoz_table_form__access__ = 'is_allowed_to_edit'
-    def epoz_table_form(self, context):
-        context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
-
-        handler = self.get_handler('/ui/epoz_script_table.xml')
-        return handler.to_str()
 
 
 register_object_class(XHTMLFile)

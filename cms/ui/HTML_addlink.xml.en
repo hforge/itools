@@ -43,7 +43,6 @@
                 <tr stl:repeat="object bc/objects">
                   <td>
                     <input type="radio" name="object"
-                           stl:if="not object/is_folder"
                            stl:attributes="value object/path" />
                   </td>
                   <td>

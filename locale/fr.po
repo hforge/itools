@@ -2400,7 +2400,7 @@ msgid ""
 "The requested URL <stl:inline stl:content=\"uri\"></stl:inline> was not "
 "found on this server."
 msgstr ""
-"L'URL demandée <stl:inline stl:content=\"uri\"></stl:" "inline> est "
+"L'URL demandée <stl:inline stl:content=\"uri\"></stl:inline> est "
 "introuvable sur ce serveur."
 
 #: cms/ui/aruni/template.xhtml.en:0

@@ -95,10 +95,15 @@ class FileFS(BaseFS):
 
     @staticmethod
     def make_file(reference):
-        path = str(reference.path)
-        if os.path.exists(path):
-            raise OSError, "File exists: '%s'" % reference
-        return file(path, 'w')
+        folder_path = str(reference.path[:-1])
+        file_path = str(reference.path)
+
+        if os.path.exists(folder_path):
+            if os.path.exists(file_path):
+                raise OSError, "File exists: '%s'" % reference
+        else:
+            os.makedirs(folder_path)
+        return file(file_path, 'w')
 
 
     @staticmethod

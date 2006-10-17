@@ -95,7 +95,7 @@ def get_version(namespace):
 
 
 
-def setup(namespace, description='', classifiers=[]):
+def setup(namespace, description='', classifiers=[], ext_modules=[]):
     version = get_version(namespace)
     try:
         from itools.handlers.config import Config
@@ -170,6 +170,8 @@ def setup(namespace, description='', classifiers=[]):
                package_data = package_data,
                # Scripts
                scripts = scripts,
+               # C extensions
+               ext_modules=ext_modules,
                # XXX broken distutils
                cmdclass={'build_py': build_py_fixed})
 

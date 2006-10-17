@@ -15,9 +15,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from distutils.core import Extension
 import os
 
 # Import from itools
@@ -71,4 +72,6 @@ classifiers = ['Development Status :: 3 - Alpha',
 
 
 if __name__ == '__main__':
-    setup(globals(), description= description, classifiers=classifiers)
+    cparser = Extension('itools.xml._parser', sources=['xml/_parser.c'])
+    setup(globals(), description= description, classifiers=classifiers,
+          ext_modules=[cparser])

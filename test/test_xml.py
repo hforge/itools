@@ -20,9 +20,85 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.resources import memory
 from itools.xml import XML
+from itools.xml._parser import Parser, XMLError
+from itools.xml.parser import parse
+from itools.xml.parser import XML_DECL, DOCUMENT_TYPE, START_ELEMENT, \
+    END_ELEMENT, EMPTY_ELEMENT, TEXT, COMMENT, PI, CHAR_REF, ENTITY_REF, \
+    CDATA, NAMESPACE
 
+
+#class CParserTestCase(TestCase):
+
+#   def test_xml_decl(self):
+#       data = '<?xml version="1.0" encoding="UTF-8"?>'
+#       x = Parser(data).get_token()
+#       self.assertEqual(x, (XML_DECL, ('1.0', 'UTF-8'), 1))
+
+
+#   def test_element(self):
+#       data = '<a>'
+#       x = Parser(data).get_token()
+#       self.assertEqual(x, (START_ELEMENT, (None, 'a', {}), 1))
+
+
+
+class ParserTestCase(TestCase):
+
+    def test_xml_decl(self):
+        data = '<?xml version="1.0" encoding="UTF-8"?>'
+        token = XML_DECL
+        value = '1.0', 'UTF-8', None
+        self.assertEqual(parse(data).next(), (token, value, 1))
+
+
+    #######################################################################
+    # Start Element
+    def test_element(self):
+        data = '<a>'
+        token = START_ELEMENT
+        value = None, 'a', {}
+        self.assertEqual(parse(data).next(), (token, value, 1))
+
+
+    def test_attributes(self):
+        data = '<a href="http://www.ikaaro.org">'
+        token = START_ELEMENT
+        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
+        self.assertEqual(parse(data).next(), (token, value, 1))
+
+
+    def test_attributes_single_quote(self):
+        data = "<a href='http://www.ikaaro.org'>"
+        token = START_ELEMENT
+        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
+        self.assertEqual(parse(data).next(), (token, value, 1))
+
+
+    def test_attributes_no_quote(self):
+        data = "<a href=http://www.ikaaro.org>"
+        self.assertRaises(XMLError, parse(data).next)
+
+
+    def test_attributes_forbidden_char(self):
+        data = '<img title="Black & White">'
+        self.assertRaises(XMLError, parse(data).next)
+
+
+    def test_attributes_entity_reference(self):
+        data = '<img title="Black &amp; White">'
+        token = START_ELEMENT
+        value = None, 'img', {(None, 'title'): 'Black & White'}
+        self.assertEqual(parse(data).next(), (token, value, 1))
+
+
+    #######################################################################
+    # CDATA
+    def test_cdata(self):
+        data = '<![CDATA[Black & White]]>'
+        token = CDATA
+        value = 'Black & White'
+        self.assertEqual(parse(data).next(), (token, value, 1))
 
 
 class XMLTestCase(TestCase):
@@ -37,9 +113,10 @@ class XMLTestCase(TestCase):
                ' this is a <span style="color: red">test</span>\n' \
                '</body>\n' \
                '</html>'
-        resource = memory.File(data)
-        h1 = XML.Document(resource)
-        h2 = XML.Document(resource)
+        h1 = XML.Document()
+        h1.load_state_from_string(data)
+        h2 = XML.Document()
+        h2.load_state_from_string(data)
 
         self.assertEqual(h1, h2)
 

@@ -158,17 +158,10 @@ class DateTime(DataType):
         if not value:
             return None
         date, time = value.split()
-        year, month, day = date.split('-')
-        year, month, day = int(year), int(month), int(day)
-        if time.count(':') == 1:
-            # XXX backwards compatibility
-            hours, minutes = time.split(':')
-            hours, minutes, seconds = int(hours), int(minutes), 0
-        else:
-            hours, minutes, seconds = time.split(':')
-            hours, minutes, seconds = int(hours), int(minutes), int(seconds)
-            
-        return datetime.datetime(year, month, day, hours, minutes, seconds)
+        date = Date.decode(date)
+        time = Time.decode(time)
+
+        return datetime.datetime.combine(date, time)
 
 
     @staticmethod

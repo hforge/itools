@@ -142,8 +142,9 @@ class Server(web.server.Server):
         abspaths.sort()
         open('%s/state' % target, 'w').write('END')
         try:
+            a, b = '%s/database' % target, '%s/database.bak' % target
             for src in abspaths:
-                dst = src.replace('/database/', '/database.bak/', 1)
+                dst = src.replace(a, b, 1)
                 if os.path.isdir(src):
                     src_files = set(os.listdir(src))
                     dst_files = set(os.listdir(dst))

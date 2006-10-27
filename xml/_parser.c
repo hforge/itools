@@ -475,7 +475,12 @@ PyObject* parse_document_type(Parser* self) {
 }
 
 
-static PyObject* get_token(Parser* self) {
+static PyObject* Parser_iter(PyObject* self) {
+    return self;
+}
+
+
+static PyObject* Parser_iternext(Parser* self) {
     char c;
     int size;
     int line;
@@ -526,7 +531,7 @@ static PyObject* get_token(Parser* self) {
     /* FIXME, there are many places else we must check for EOF */
     c = *(self->cursor);
     if (c == '\0')
-        return Py_BuildValue("");
+        return NULL;
 
     line = self->line_no;
     column = self->column;
@@ -831,7 +836,7 @@ static PyObject* get_token(Parser* self) {
     }
 
     /* Return None (just to avoid the compiler to complain) */
-    return Py_BuildValue("");
+    return NULL;
 }
 
 
@@ -846,49 +851,48 @@ static PyMemberDef Parser_members[] = {
 
 
 static PyMethodDef Parser_methods[] = {
-    {"get_token", (PyCFunction)get_token, METH_NOARGS, "Return the next token"},
     {NULL, NULL, 0, NULL}
 };
 
 
 static PyTypeObject ParserType = {
     PyObject_HEAD_INIT(NULL)
-    0,                           /*ob_size*/
-    "itools.xml._parser.Parser", /*tp_name*/
-    sizeof(Parser),              /*tp_basicsize*/
-    0,                           /*tp_itemsize*/
-    (destructor)Parser_dealloc,  /*tp_dealloc*/
-    0,                           /*tp_print*/
-    0,                           /*tp_getattr*/
-    0,                           /*tp_setattr*/
-    0,                           /*tp_compare*/
-    0,                           /*tp_repr*/
-    0,                           /*tp_as_number*/
-    0,                           /*tp_as_sequence*/
-    0,                           /*tp_as_mapping*/
-    0,                           /*tp_hash */
-    0,                           /*tp_call*/
-    0,                           /*tp_str*/
-    0,                           /*tp_getattro*/
-    0,                           /*tp_setattro*/
-    0,                           /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT,          /*tp_flags*/
-    "Parser state",              /* tp_doc */
-    0,                           /* tp_traverse */
-    0,                           /* tp_clear */
-    0,                           /* tp_richcompare */
-    0,                           /* tp_weaklistoffset */
-    0,                           /* tp_iter */
-    0,                           /* tp_iternext */
-    Parser_methods,              /* tp_methods */
-    Parser_members,              /* tp_members */
-    0,                           /* tp_getset */
-    0,                           /* tp_base */
-    0,                           /* tp_dict */
-    0,                           /* tp_descr_get */
-    0,                           /* tp_descr_set */
-    0,                           /* tp_dictoffset */
-    (initproc)Parser_init,       /* tp_init */
+    0,                              /* ob_size */
+    "itools.xml._parser.Parser",    /* tp_name */
+    sizeof(Parser),                 /* tp_basicsize */
+    0,                              /* tp_itemsize */
+    (destructor)Parser_dealloc,     /* tp_dealloc */
+    0,                              /* tp_print */
+    0,                              /* tp_getattr */
+    0,                              /* tp_setattr */
+    0,                              /* tp_compare */
+    0,                              /* tp_repr */
+    0,                              /* tp_as_number */
+    0,                              /* tp_as_sequence */
+    0,                              /* tp_as_mapping */
+    0,                              /* tp_hash */
+    0,                              /* tp_call */
+    0,                              /* tp_str */
+    0,                              /* tp_getattro */
+    0,                              /* tp_setattro */
+    0,                              /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT,             /* tp_flags */
+    "Parser state",                 /* tp_doc */
+    0,                              /* tp_traverse */
+    0,                              /* tp_clear */
+    0,                              /* tp_richcompare */
+    0,                              /* tp_weaklistoffset */
+    Parser_iter,                    /* tp_iter */
+    (iternextfunc)Parser_iternext,  /* tp_iternext */
+    Parser_methods,                 /* tp_methods */
+    Parser_members,                 /* tp_members */
+    0,                              /* tp_getset */
+    0,                              /* tp_base */
+    0,                              /* tp_dict */
+    0,                              /* tp_descr_get */
+    0,                              /* tp_descr_set */
+    0,                              /* tp_dictoffset */
+    (initproc)Parser_init,          /* tp_init */
 };
 
 

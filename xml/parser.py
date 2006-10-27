@@ -23,11 +23,7 @@ XML_DECL, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CHAR_REF
 
 def parse(data):
     parser = Parser(data)
-    while True:
-        x = parser.get_token()
-        if x is None:
-            break
-
+    for x in parser:
         token, value, line_no = x
 
         if token == START_ELEMENT:

@@ -34,6 +34,17 @@
 
 
 /**************************************************************************
+ * Import from Python
+ *************************************************************************/
+
+PyObject* p_schemas;
+PyObject* p_get_datatype_by_uri;
+
+PyObject* p_htmlentitydefs;
+PyObject* p_name2codepoint;
+
+
+/**************************************************************************
  * Exceptions
  *************************************************************************/
 
@@ -488,12 +499,8 @@ static PyObject* Parser_iternext(Parser* self) {
     PyObject* tag_name;
     int end_tag;
     /* To call Python from C */
-    PyObject* p_schemas;
-    PyObject* p_get_datatype_by_uri;
     PyObject* p_datatype;
     PyObject* p_datatype_decode;
-    PyObject* p_htmlentitydefs;
-    PyObject* p_name2codepoint;
     /* Attributes */
     PyObject* attr;
     PyObject* attr_name;
@@ -514,14 +521,6 @@ static PyObject* Parser_iternext(Parser* self) {
     /* There are tokens waiting */
     if (self->token_stack_top)
         return pop_token(self);
-
-    /* Import from Python */
-    /* from itools.schemas import get_datatype_by_uri */
-    p_schemas = PyImport_ImportModule("itools.schemas");
-    p_get_datatype_by_uri = PyObject_GetAttrString(p_schemas, "get_datatype_by_uri");
-    /* from htmlentitydefs import name2codepoint */
-    p_htmlentitydefs = PyImport_ImportModule("htmlentitydefs");
-    p_name2codepoint = PyObject_GetAttrString(p_htmlentitydefs, "name2codepoint");
 
     /* Check for EOF */
     /* FIXME, there are many places else we must check for EOF */
@@ -912,6 +911,14 @@ initparser(void) {
     ParserType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&ParserType) < 0)
         return;
+
+    /* Import from Python */
+    /* from itools.schemas import get_datatype_by_uri */
+    p_schemas = PyImport_ImportModule("itools.schemas");
+    p_get_datatype_by_uri = PyObject_GetAttrString(p_schemas, "get_datatype_by_uri");
+    /* from htmlentitydefs import name2codepoint */
+    p_htmlentitydefs = PyImport_ImportModule("htmlentitydefs");
+    p_name2codepoint = PyObject_GetAttrString(p_htmlentitydefs, "name2codepoint");
 
     /* Initialize the module */
     module = Py_InitModule3("parser", module_methods, "Low-level XML parser");

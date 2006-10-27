@@ -1,6 +1,10 @@
 
 #include <Python.h>
 #include "structmember.h"
+/* To call Python from C */
+#include <import.h>
+#include <graminit.h>
+#include <pythonrun.h>
 
 /* Tokens */
 #define XML_DECL 0
@@ -19,6 +23,7 @@
 #define BAD_XML_DECL "XML declaration not well-formed: line %d, column %d"
 #define INVALID_TOKEN "not well-formed (invalid token): line %d, column %d"
 #define MISMATCH "mismatched tag: line %d, column %d"
+#define UNDEFINED_ENTITY "undefined entity: line %d, column %d"
 
 #define ERROR(msg, line, column) PyErr_Format(XMLError, msg, line, column)
 
@@ -481,6 +486,13 @@ static PyObject* get_token(Parser* self) {
     PyObject* tag_uri;
     PyObject* tag_name;
     int end_tag;
+    /* To call Python from C */
+    PyObject* p_schemas;
+    PyObject* p_get_datatype_by_uri;
+    PyObject* p_datatype;
+    PyObject* p_datatype_decode;
+    PyObject* p_htmlentitydefs;
+    PyObject* p_name2codepoint;
     /* Attributes */
     PyObject* attr;
     PyObject* attr_name;
@@ -501,6 +513,14 @@ static PyObject* get_token(Parser* self) {
     /* There are tokens waiting */
     if (self->token_stack_top)
         return pop_token(self);
+
+    /* Import from Python */
+    /* from itools.schemas import get_datatype_by_uri */
+    p_schemas = PyImport_ImportModule("itools.schemas");
+    p_get_datatype_by_uri = PyObject_GetAttrString(p_schemas, "get_datatype_by_uri");
+    /* from htmlentitydefs import name2codepoint */
+    p_htmlentitydefs = PyImport_ImportModule("htmlentitydefs");
+    p_name2codepoint = PyObject_GetAttrString(p_htmlentitydefs, "name2codepoint");
 
     /* Check for EOF */
     /* FIXME, there are many places else we must check for EOF */
@@ -766,6 +786,10 @@ static PyObject* get_token(Parser* self) {
                 /* Update to the dict */
                 /* XXX Check for duplicates */
                 attr_name = Py_BuildValue("(OO)", attr_uri, attr_name);
+                p_datatype = PyEval_CallObject(p_get_datatype_by_uri, attr_name);
+                p_datatype_decode = PyObject_GetAttrString(p_datatype, "decode");
+                attr_value = Py_BuildValue("(O)", attr_value);
+                attr_value = PyEval_CallObject(p_datatype_decode, attr_value);
                 PyDict_SetItem(attributes, attr_name, attr_value);
             }
 
@@ -786,6 +810,13 @@ static PyObject* get_token(Parser* self) {
             value = xml_entity_reference(self);
             if (value == NULL)
                 return ERROR(INVALID_TOKEN, line, column);
+            /* htmlentitydefs.name2unicodepoint[value] */
+            value = PyDict_GetItem(p_name2codepoint, value);
+            if (value == NULL)
+                return ERROR(UNDEFINED_ENTITY, line, column);
+            /* unichr(codepoint).encode('utf-8') */
+            value = PyUnicode_FromOrdinal(PyInt_AsLong(value));
+            value = PyUnicode_AsUTF8String(value);
             return Py_BuildValue("(iOi)", ENTITY_REF, value, line);
         }
     } else {

@@ -103,6 +103,13 @@ class Video(File):
         return stl(handler, namespace)
 
 
+    def get_content_type(self):
+        # XXX For some reason when uploading a WMV file with firefox the
+        # file is identified as "video/x-msvideo". But IE does not understand
+        # it, instead it expects "video/x-ms-wmv".
+        return self.get_mimetype()
+
+
 
 class Flash(File):
 

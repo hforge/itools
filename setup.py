@@ -72,6 +72,6 @@ classifiers = ['Development Status :: 3 - Alpha',
 
 
 if __name__ == '__main__':
-    cparser = Extension('itools.xml._parser', sources=['xml/_parser.c'])
+    cparser = Extension('itools.xml.parser', sources=['xml/parser.c'])
     setup(globals(), description= description, classifiers=classifiers,
           ext_modules=[cparser])

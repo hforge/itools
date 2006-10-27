@@ -351,7 +351,9 @@ class Document(Text.Text):
             if event == parser.DOCUMENT_TYPE:
                 self.document_type = value
             elif event == parser.START_ELEMENT:
-                namespace_uri, element_name, attributes = value
+                namespace_uri, element_name, attributes, ns_decls = value
+                for ns_decl in ns_decls:
+                    xml_namespaces.add(ns_decls[ns_decl])
                 namespace = namespaces.get_namespace(namespace_uri)
                 try:
                     schema = namespace.get_element_schema(element_name)
@@ -375,8 +377,6 @@ class Document(Text.Text):
             elif event == parser.TEXT:
                 if stack:
                     stack[-1].set_text(value, 'UTF-8')
-            elif event == parser.NAMESPACE:
-                xml_namespaces.add(value)
 
         # Add the XML namespaces to the root element
         root_element = self.root_element

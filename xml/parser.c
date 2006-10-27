@@ -475,10 +475,6 @@ PyObject* parse_document_type(Parser* self) {
 }
 
 
-static PyObject* Parser_iter(PyObject* self) {
-    return self;
-}
-
 
 static PyObject* Parser_iternext(Parser* self) {
     char c;
@@ -858,7 +854,7 @@ static PyMethodDef Parser_methods[] = {
 static PyTypeObject ParserType = {
     PyObject_HEAD_INIT(NULL)
     0,                              /* ob_size */
-    "itools.xml._parser.Parser",    /* tp_name */
+    "itools.xml.parser.Parser",     /* tp_name */
     sizeof(Parser),                 /* tp_basicsize */
     0,                              /* tp_itemsize */
     (destructor)Parser_dealloc,     /* tp_dealloc */
@@ -882,7 +878,7 @@ static PyTypeObject ParserType = {
     0,                              /* tp_clear */
     0,                              /* tp_richcompare */
     0,                              /* tp_weaklistoffset */
-    Parser_iter,                    /* tp_iter */
+    PyObject_SelfIter,              /* tp_iter */
     (iternextfunc)Parser_iternext,  /* tp_iternext */
     Parser_methods,                 /* tp_methods */
     Parser_members,                 /* tp_members */
@@ -910,7 +906,7 @@ static PyMethodDef module_methods[] = {
 #endif
 
 PyMODINIT_FUNC
-init_parser(void) {
+initparser(void) {
     PyObject* module;
 
     ParserType.tp_new = PyType_GenericNew;
@@ -918,7 +914,7 @@ init_parser(void) {
         return;
 
     /* Initialize the module */
-    module = Py_InitModule3("_parser", module_methods, "Low-level XML parser");
+    module = Py_InitModule3("parser", module_methods, "Low-level XML parser");
     if (module == NULL)
         return;
 
@@ -927,7 +923,7 @@ init_parser(void) {
     PyModule_AddObject(module, "Parser", (PyObject *)&ParserType);
 
     /* Register exceptions */
-    XMLError = PyErr_NewException("itools.xml._parser.XMLError", NULL, NULL);
+    XMLError = PyErr_NewException("itools.xml.parser.XMLError", NULL, NULL);
     Py_INCREF(XMLError);
     PyModule_AddObject(module, "XMLError", XMLError);
 }

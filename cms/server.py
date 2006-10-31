@@ -61,6 +61,8 @@ class Server(web.server.Server):
 
     def __init__(self, target, address=None, port=None):
         self.target = target
+        if target.endswith('/'):
+            self.target = target[:-1]
 
         # Load the config
         config = get_config(target)

@@ -649,8 +649,8 @@ static PyObject* Parser_iternext(Parser* self) {
                             return ERROR(BAD_XML_DECL, line, column);
                     }
                 }
-                self->cursor++;
-                self->column++;
+                self->cursor += 2;
+                self->column += 2;
                 return Py_BuildValue("(i(OOO)i)", XML_DECL, version, encoding,
                                      standalone, line);
             } else {

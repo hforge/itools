@@ -61,6 +61,8 @@ class Server(web.server.Server):
 
     def __init__(self, target, address=None, port=None):
         self.target = target
+        # FIXME This is not robust, what if the target has two or more
+        # trailing slashes. TODO "self.target" should be a Path object.
         if target.endswith('/'):
             self.target = target[:-1]
 

@@ -56,6 +56,8 @@ class HTTPFS(BaseFS):
     def get_mtime(reference):
         response = HTTPFS._head(reference)
         mtime = response.getheader('last-modified')
+        if mtime is None:
+            return None
         return HTTPDate.decode(mtime)
 
 

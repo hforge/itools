@@ -30,7 +30,6 @@
 /* FIXME, limits to be removed */
 #define TAG_STACK_SIZE 200 /* Maximum deepness of the element tree */
 #define NS_INDEX_SIZE 10
-#define TOKEN_STACK_SIZE 10
 
 
 /**************************************************************************
@@ -70,9 +69,8 @@ typedef struct {
     int tag_ns_index[NS_INDEX_SIZE]; /* FIXME: hardcoded limit */
     int tag_ns_index_top;
     PyObject* namespaces;
-    /* Token stack */
-    PyObject* token_stack[TOKEN_STACK_SIZE]; /* FIXME: hardcoded limit */
-    int token_stack_top;
+    /* The end tag in an empty element */
+    PyObject* left_token; /* FIXME: hardcoded limit */
 } Parser;
 
 
@@ -94,7 +92,7 @@ static int Parser_init(Parser* self, PyObject* args) {
     /* The stacks are empty */
     self->tag_stack_top = 0;
     self->tag_ns_index_top = 0;
-    self->token_stack_top = 0;
+    self->left_token = NULL;
 
     self->namespaces = Py_BuildValue("{}");
 
@@ -103,7 +101,11 @@ static int Parser_init(Parser* self, PyObject* args) {
 
 
 /* Merges two dictionaries into a new one, when conflict happens the second
- * dict has priority. */
+ * dict has priority. 
+ *
+ * Returns a new reference. The reference count of the items from the
+ * source dicts that get into the new dict are incremented.
+ */
 PyObject* merge_dicts(PyObject* a, PyObject* b) {
     PyObject* c;
 
@@ -113,13 +115,18 @@ PyObject* merge_dicts(PyObject* a, PyObject* b) {
         return NULL;
 
     /* Update with "b" */
-    if (PyDict_Update(c, b) == -1)
+    if (PyDict_Update(c, b) == -1) {
+        Py_DECREF(c);
         return NULL;
+    }
 
     return c;
 }
 
 
+/* Adds a new tag to the tag stack. Updates the namespaces structure.
+ *
+ * We take ownership of "value". */
 int push_tag(Parser* self, PyObject* value, PyObject* namespaces) {
     PyObject* new_namespaces;
 
@@ -150,65 +157,60 @@ int push_tag(Parser* self, PyObject* value, PyObject* namespaces) {
 }
 
 
+/* Pops the given tag, if it matches the last tag in the stack. Otherwise
+ * return an error condition.
+ * 
+ * Steals the reference to "value". Returns a new reference. */
 PyObject* pop_tag(Parser* self, PyObject* value) {
-    PyObject* last_open_tag;
-    PyObject* uri;
-
     /* Check the stack is not empty */
-    if (self->tag_stack_top == 0)
+    if (self->tag_stack_top == 0) {
+        Py_DECREF(value);
         return NULL;
+    }
 
     /* Pop the top value from the stack */
     self->tag_stack_top--;
-    last_open_tag = self->tag_stack[self->tag_stack_top];
-    Py_DECREF(last_open_tag);
+    PyObject* last_open_tag = self->tag_stack[self->tag_stack_top];
+    PyObject* namespaces = self->tag_ns_stack[self->tag_stack_top];
 
     /* Check the values match */
-    if (PyObject_Compare(value, last_open_tag))
+    if (PyObject_Compare(value, last_open_tag)) {
+        Py_DECREF(value);
+        Py_DECREF(last_open_tag);
+        Py_XDECREF(namespaces);
         return NULL;
-
-    /* Process namespace */
-    uri = PyDict_GetItem(self->namespaces, PyTuple_GetItem(value, 0));
-    if (uri == NULL)
-        uri = Py_BuildValue("");
-
-    /* Namespaces */
-    if (self->tag_ns_stack[self->tag_stack_top]) {
-        self->tag_ns_index_top--;
-        Py_DECREF(self->namespaces);
-        self->namespaces = self->tag_ns_stack[self->tag_ns_index[self->tag_ns_index_top - 1]];
     }
 
-    return Py_BuildValue("(OO)", uri, PyTuple_GetItem(value, 1));
-}
+    /* Don't need the "last_open_tag" anymore */
+    Py_DECREF(last_open_tag);
 
+    /* Find out the URI from the prefix */
+    PyObject* prefix = PyTuple_GetItem(value, 0);
+    PyObject* uri;
+    if (PyDict_Contains(self->namespaces, prefix)) {
+        uri = PyDict_GetItem(self->namespaces, prefix);
+        if (uri == NULL) {
+            Py_DECREF(value);
+            Py_XDECREF(namespaces);
+            return NULL;
+        }
+    } else
+        uri = Py_None;
 
-/* The token stack */
-int push_token(Parser* self, PyObject* value) {
-    if (self->token_stack_top >= TOKEN_STACK_SIZE)
-        return -1;
+    /* Build the return value */
+    PyObject* name = PyTuple_GetItem(value, 1);
+    PyObject* result = Py_BuildValue("(OO)", uri, name);
 
-    Py_INCREF(value);
-    self->token_stack[self->token_stack_top] = value;
-    self->token_stack_top++;
+    /* Update the namespaces data structure if needed */
+    if (namespaces) {
+        self->tag_ns_index_top--;
+        self->namespaces = self->tag_ns_stack[self->tag_ns_index[self->tag_ns_index_top - 1]];
+        Py_DECREF(namespaces);
+    }
 
-    return 0;
-}
-
-
-PyObject* pop_token(Parser* self) {
-    PyObject* value;
-
-    if (self->token_stack_top == 0)
-        return NULL;
-
-    self->token_stack_top--;
-    value = self->token_stack[self->token_stack_top];
     Py_DECREF(value);
-
-    return value;
+    return result;
 }
-
 
 
 /**************************************************************************
@@ -244,7 +246,9 @@ int read_string(Parser* self, char* expected) {
 }
 
 
-/* Name (http://www.w3.org/TR/REC-xml/#NT-Name) */
+/* Name (http://www.w3.org/TR/REC-xml/#NT-Name)
+ *
+ * Returns a new reference. */
 PyObject* xml_name(Parser* self) {
     int size;
     char c;
@@ -273,23 +277,20 @@ PyObject* xml_name(Parser* self) {
 }
 
 
-/* Prefix + Name (http://www.w3.org/TR/REC-xml-names/#ns-decl) */
+/* Prefix + Name (http://www.w3.org/TR/REC-xml-names/#ns-decl)
+ *
+ * Returns a new reference. */
 PyObject* xml_prefix_name(Parser* self) {
-    int size;
-    char c;
-    char* base;
-    PyObject* prefix;
-    PyObject* name;
-
     /* First character must be a letter */
-    c = *(self->cursor);
+    char c = *(self->cursor);
     if (!isalpha(c))
         return NULL;
 
     /* Get the value */
-    base = self->cursor;
+    char* base = self->cursor;
     self->cursor++;
     self->column++;
+    int size;
     for (size=1; 1; size++, move_cursor(self)) {
         c = *(self->cursor);
         if (isalnum(c))
@@ -301,19 +302,18 @@ PyObject* xml_prefix_name(Parser* self) {
 
     if (c == ':') {
         /* With prefix */
-        prefix = Py_BuildValue("s#", base, size);
         self->cursor++;
         self->column++;
-        name = xml_name(self);
+        PyObject* name = xml_name(self);
         if (name == NULL)
             return NULL;
-    } else {
-        /* No Prefix */
-        prefix = Py_BuildValue("");
-        name = Py_BuildValue("s#", base, size);
+        PyObject* result = Py_BuildValue("(s#O)", base, size, name);
+        Py_DECREF(name);
+        return result;
     }
 
-    return Py_BuildValue("(OO)", prefix, name);
+    /* No Prefix */
+    return Py_BuildValue("(Os#)", Py_None, base, size);
 }
 
 
@@ -337,16 +337,18 @@ int xml_equal(Parser* self) {
     return 0;
 }
 
-/* Attribute Value (http://www.w3.org/TR/REC-xml/#NT-EntityRef) */
+/* Attribute Value (http://www.w3.org/TR/REC-xml/#NT-EntityRef)
+ *
+ * Returns a new reference. */
 PyObject* xml_entity_reference(Parser* self) {
-    PyObject* value;
-
-    value = xml_name(self);
+    PyObject* value = xml_name(self);
     if (value == NULL)
         return NULL;
 
-    if (*(self->cursor) != ';')
+    if (*(self->cursor) != ';') {
+        Py_DECREF(value);
         return NULL;
+    }
 
     self->cursor++;
     self->column++;
@@ -354,12 +356,13 @@ PyObject* xml_entity_reference(Parser* self) {
     return value;
 }
 
-/* Attribute Value (http://www.w3.org/TR/REC-xml/#NT-CharRef) */
+/* Attribute Value (http://www.w3.org/TR/REC-xml/#NT-CharRef)
+ *
+ * Returns a new reference. */
 PyObject* xml_char_reference(Parser* self) {
-    char* base;
-    int size;
+    char* base = self->cursor;
 
-    base = self->cursor;
+    int size;
     for (size=0; *(self->cursor) != ';'; size++, move_cursor(self));
     move_cursor(self);
 
@@ -368,29 +371,32 @@ PyObject* xml_char_reference(Parser* self) {
 
 
 
-/* Attribute Value (http://www.w3.org/TR/REC-xml/#NT-AttValue) */
+/* Attribute Value (http://www.w3.org/TR/REC-xml/#NT-AttValue)
+ *
+ * Returns a new reference. */
 PyObject* xml_attr_value(Parser* self) {
-    int size;
-    char* base;
     char c;
-    char delimiter;
     PyObject* value;
 
     /* The heading quote */
-    delimiter = *(self->cursor);
+    char delimiter = *(self->cursor);
     if ((delimiter != '"') && (delimiter != '\''))
         return NULL;
 
-    move_cursor(self);
+    self->cursor++;
+    self->column++;
 
     /* The value */
-    base = self->cursor;
+    char* base = self->cursor;
+    int size;
     for (size=0; 1; size++, move_cursor(self)) {
         c = *(self->cursor);
         if (c == '&') {
-            move_cursor(self);
+            self->cursor++;
+            self->column++;
             if (*(self->cursor) == '#') {
-                move_cursor(self);
+                self->cursor++;
+                self->column++;
                 value = xml_char_reference(self);
                 /* TODO What to do with the value? */
             } else {
@@ -411,17 +417,17 @@ PyObject* xml_attr_value(Parser* self) {
     }
 
     /* Update state */
-    move_cursor(self);
+    self->cursor++;
+    self->column++;
     return Py_BuildValue("s#", base, size);
 }
 
 
-/* XML Declaration */
 
-
-/* Document Type */
+/* Document Type
+ *
+ * Return a new reference. */
 PyObject* parse_document_type(Parser* self) {
-    PyObject* name;
     PyObject* system_id;
     PyObject* public_id;
     PyObject* has_internal_subset;
@@ -432,72 +438,95 @@ PyObject* parse_document_type(Parser* self) {
     xml_space(self);
 
     /* Name */
-    name = xml_name(self);
+    PyObject* name = xml_name(self);
     if (name == NULL)
         return NULL;
     xml_space(self);
     /* External ID */
     c = *(self->cursor);
     if (c == 'S') {
-        if (read_string(self, "SYSTEM"))
+        if (read_string(self, "SYSTEM")) {
+            Py_DECREF(name);
             return NULL;
+        }
         xml_space(self);
         /* PUBLIC ID */
-        public_id = Py_BuildValue("");
+        public_id = Py_None;
         /* SYSTEM ID */
         system_id = xml_attr_value(self);
-        if (system_id == NULL)
+        if (system_id == NULL) {
+            Py_DECREF(name);
             return NULL;
+        }
+        Py_INCREF(public_id);
     } else if (c == 'P') {
-        if (read_string(self, "PUBLIC"))
+        if (read_string(self, "PUBLIC")) {
+            Py_DECREF(name);
             return NULL;
+        }
         xml_space(self);
         /* PUBLIC ID */
         public_id = xml_attr_value(self);
-        if (public_id == NULL)
+        if (public_id == NULL) {
+            Py_DECREF(name);
             return NULL;
+        }
         xml_space(self);
         /* SYSTEM ID */
         system_id = xml_attr_value(self);
-        if (system_id == NULL)
+        if (system_id == NULL) {
+            Py_DECREF(name);
+            Py_DECREF(public_id);
             return NULL;
-    } else
+        }
+    } else {
+        Py_DECREF(name);
         return NULL;
+    }
     /* White Space */
     xml_space(self);
     /* Internal subset */
     c = *(self->cursor);
     if (c == '[') {
         /* XXX NOT IMPLEMENTED*/
+        Py_DECREF(name);
+        Py_DECREF(public_id);
+        Py_DECREF(system_id);
         PyErr_SetString(PyExc_NotImplementedError,
                         "internal subset not yet supported");
         return NULL;
     } else
-        has_internal_subset = Py_BuildValue("");
+        has_internal_subset = Py_None;
     /* End doctype declaration */
-    if (c != '>')
+    if (c != '>') {
+        Py_DECREF(name);
+        Py_DECREF(public_id);
+        Py_DECREF(system_id);
         return NULL;
+    }
 
     self->cursor++;
     self->column++;
 
-    return Py_BuildValue("(OOOO)", name, system_id, public_id,
-                         has_internal_subset);
+    PyObject* result = Py_BuildValue("(OOOO)", name, system_id, public_id,
+                                     has_internal_subset);
+    Py_DECREF(name);
+    Py_DECREF(public_id);
+    Py_DECREF(system_id);
+    return result;
 }
 
 
-
+/* Returns a new reference */
 static PyObject* Parser_iternext(Parser* self) {
-    char c;
     int size;
-    int line;
-    int column;
     char* base;
-    PyObject* token;
     PyObject* value;
+    PyObject* value2;
     PyObject* tag_uri;
     PyObject* tag_name;
     int end_tag;
+    PyObject* result;
     /* To call Python from C */
     PyObject* p_datatype;
     PyObject* p_datatype_decode;
@@ -507,10 +536,8 @@ static PyObject* Parser_iternext(Parser* self) {
     PyObject* attr_prefix;
     PyObject* attr_uri;
     PyObject* attr_value;
-    PyObject* attributes;
+    PyObject* attr_value2;
     PyObject* attributes_list;
-    int attributes_n;
-    int idx;
     PyObject* namespace_decls;
     PyObject* namespaces;
     /* XML declaration */
@@ -519,17 +546,20 @@ static PyObject* Parser_iternext(Parser* self) {
     PyObject* standalone;
 
     /* There are tokens waiting */
-    if (self->token_stack_top)
-        return pop_token(self);
+    if (self->left_token) {
+        value = self->left_token;
+        self->left_token = NULL;
+        return value;
+    }
 
     /* Check for EOF */
     /* FIXME, there are many places else we must check for EOF */
-    c = *(self->cursor);
+    char c = *(self->cursor);
     if (c == '\0')
         return NULL;
 
-    line = self->line_no;
-    column = self->column;
+    int line = self->line_no;
+    int column = self->column;
 
     if (c == '<') {
         self->cursor++;
@@ -546,8 +576,10 @@ static PyObject* Parser_iternext(Parser* self) {
             /* White Space */
             xml_space(self);
             /* Close */
-            if (*(self->cursor) != '>')
+            if (*(self->cursor) != '>') {
+                Py_DECREF(value);
                 return ERROR(INVALID_TOKEN, line, column);
+            }
             self->cursor++;
             self->column++;
             /* Remove from the stack */
@@ -555,7 +587,9 @@ static PyObject* Parser_iternext(Parser* self) {
             if (value == NULL)
                 return ERROR(MISMATCH, line, column);
  
-            return Py_BuildValue("(iOi)", END_ELEMENT, value, line);
+            result = Py_BuildValue("(iOi)", END_ELEMENT, value, line);
+            Py_DECREF(value);
+            return result;
         } else if (c == '!') {
             /* "<!" */
             self->cursor++;
@@ -591,7 +625,9 @@ static PyObject* Parser_iternext(Parser* self) {
                 value = parse_document_type(self);
                 if (value == NULL)
                     return ERROR(INVALID_TOKEN, line, column);
-                return Py_BuildValue("(iOi)", DOCUMENT_TYPE, value, line);
+                result = Py_BuildValue("(iOi)", DOCUMENT_TYPE, value, line);
+                Py_DECREF(value);
+                return result;
             } else if (c == '[') {
                 /* CData section */
                 if (read_string(self, "[CDATA["))
@@ -626,33 +662,61 @@ static PyObject* Parser_iternext(Parser* self) {
                 encoding = Py_BuildValue("s", "utf-8");
                 standalone = Py_BuildValue("");
                 if (strncmp(self->cursor, "?>", 2)) {
+                    Py_DECREF(encoding);
                     /* Encoding */
-                    if (read_string(self, "encoding") == -1)
+                    if (read_string(self, "encoding") == -1) {
+                        Py_DECREF(version);
+                        Py_DECREF(standalone);
                         return ERROR(BAD_XML_DECL, line, column);
-                    if (xml_equal(self) == -1)
+                    }
+                    if (xml_equal(self) == -1) {
+                        Py_DECREF(version);
+                        Py_DECREF(standalone);
                         return ERROR(BAD_XML_DECL, line, column);
+                    }
                     encoding = xml_attr_value(self);
-                    if (encoding == NULL)
+                    if (encoding == NULL) {
+                        Py_DECREF(version);
+                        Py_DECREF(standalone);
                         return ERROR(BAD_XML_DECL, line, column);
+                    }
                     xml_space(self);
                     if (strncmp(self->cursor, "?>", 2)) {
+                        Py_DECREF(standalone);
                         /* Standalone */
-                        if (read_string(self, "standalone") == -1)
+                        if (read_string(self, "standalone") == -1) {
+                            Py_DECREF(version);
+                            Py_DECREF(encoding);
                             return ERROR(BAD_XML_DECL, line, column);
-                        if (xml_equal(self) == -1)
+                        }
+                        if (xml_equal(self) == -1) {
+                            Py_DECREF(version);
+                            Py_DECREF(encoding);
                             return ERROR(BAD_XML_DECL, line, column);
+                        }
                         standalone = xml_attr_value(self);
-                        if (standalone == NULL)
+                        if (standalone == NULL) {
+                            Py_DECREF(version);
+                            Py_DECREF(encoding);
                             return ERROR(BAD_XML_DECL, line, column);
+                        }
                         xml_space(self);
-                        if (strncmp(self->cursor, "?>", 2))
+                        if (strncmp(self->cursor, "?>", 2)) {
+                            Py_DECREF(version);
+                            Py_DECREF(encoding);
+                            Py_DECREF(standalone);
                             return ERROR(BAD_XML_DECL, line, column);
+                        }
                     }
                 }
                 self->cursor += 2;
                 self->column += 2;
-                return Py_BuildValue("(i(OOO)i)", XML_DECL, version, encoding,
-                                     standalone, line);
+                result = Py_BuildValue("(i(OOO)i)", XML_DECL, version, encoding,
+                                       standalone, line);
+                Py_DECREF(version);
+                Py_DECREF(encoding);
+                Py_DECREF(standalone);
+                return result;
             } else {
                 value = xml_name(self);
                 if (value == NULL)
@@ -683,26 +747,37 @@ static PyObject* Parser_iternext(Parser* self) {
                     self->cursor++;
                     self->column++;
                     /* Add to the stack */
-                    if (push_tag(self, value, namespace_decls) == -1)
+                    if (push_tag(self, value, namespace_decls) == -1) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
                         return PyErr_Format(PyExc_RuntimeError,
                                             "internal error");
+                    }
 
                     end_tag = 0;
                     namespaces = self->namespaces;
+                    Py_INCREF(namespaces);
                     break;
                 } else if (c == '/') {
                     self->cursor++;
                     self->column++;
-                    if (*(self->cursor) != '>')
+                    if (*(self->cursor) != '>') {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     self->cursor++;
                     self->column++;
 
                     end_tag = 1;
                     if (PyDict_Size(namespace_decls))
                         namespaces = merge_dicts(self->namespaces, namespace_decls);
-                    else
+                    else {
                         namespaces = self->namespaces;
+                        Py_INCREF(namespaces);
+                    }
 
                     break;
                 }
@@ -713,17 +788,33 @@ static PyObject* Parser_iternext(Parser* self) {
                     self->column += 6;
                     /* The prefix */
                     attr_name = xml_name(self);
-                    if (attr_name == NULL)
+                    if (attr_name == NULL) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* Eq */
-                    if (xml_equal(self) == -1)
+                    if (xml_equal(self) == -1) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
+                        Py_DECREF(attr_name);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* The URI */
                     attr_value = xml_attr_value(self);
-                    if (attr_value == NULL)
+                    if (attr_value == NULL) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
+                        Py_DECREF(attr_name);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* Set the namespace */
                     PyDict_SetItem(namespace_decls, attr_name, attr_value);
+                    Py_DECREF(attr_name);
+                    Py_DECREF(attr_value);
                 } else if ((!(strncmp(self->cursor, "xmlns", 5)))
                            && ((self->cursor[5] == '=')
                                || (isspace(self->cursor[5])))) {
@@ -731,48 +822,72 @@ static PyObject* Parser_iternext(Parser* self) {
                     self->cursor += 5;
                     self->column += 5;
                     /* Eq */
-                    if (xml_equal(self) == -1)
+                    if (xml_equal(self) == -1) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* The URI */
                     attr_value = xml_attr_value(self);
-                    if (attr_value == NULL)
+                    if (attr_value == NULL) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* Set the default namespace */
-                    PyDict_SetItem(namespace_decls, Py_BuildValue(""), attr_value);
+                    PyDict_SetItem(namespace_decls, Py_None, attr_value);
+                    Py_DECREF(attr_value);
                 } else {
                     /* Attribute */
                     attr_name = xml_prefix_name(self);
-                    if (attr_name == NULL)
+                    if (attr_name == NULL) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* Eq */
-                    if (xml_equal(self) == -1)
+                    if (xml_equal(self) == -1) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
+                        Py_DECREF(attr_name);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* Value */
                     attr_value = xml_attr_value(self);
-                    if (attr_value == NULL)
+                    if (attr_value == NULL) {
+                        Py_DECREF(value);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
+                        Py_DECREF(attr_name);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
                     /* Set the attribute */
                     PyList_Append(attributes_list,
                                   Py_BuildValue("(OO)", attr_name, attr_value));
+                    Py_DECREF(attr_name);
+                    Py_DECREF(attr_value);
                 }
             }
 
             /* Tag */
             tag_uri = PyDict_GetItem(namespaces, PyTuple_GetItem(value, 0));
             if (tag_uri == NULL)
-                tag_uri = Py_BuildValue("");
+                tag_uri = Py_None;
             tag_name = PyTuple_GetItem(value, 1);
 
             /* The END_ELEMENT token will be sent later */
-            if (end_tag) {
-                token = Py_BuildValue("(i(OO)i)", END_ELEMENT, tag_uri,
-                                      tag_name, line);
-                push_token(self, token);
-            }
+            if (end_tag)
+                self->left_token = Py_BuildValue("(i(OO)i)", END_ELEMENT,
+                                                 tag_uri, tag_name, line);
 
             /* Attributes */
-            attributes = Py_BuildValue("{}");
-            attributes_n = PyList_Size(attributes_list);
+            PyObject* attributes = PyDict_New();
+            int attributes_n = PyList_Size(attributes_list);
+            int idx;
             for (idx=0; idx < attributes_n; idx++) {
                 attr = PyList_GetItem(attributes_list, idx);
                 /* Find out the attribute URI */
@@ -789,12 +904,23 @@ static PyObject* Parser_iternext(Parser* self) {
                 p_datatype = PyEval_CallObject(p_get_datatype_by_uri, attr_name);
                 p_datatype_decode = PyObject_GetAttrString(p_datatype, "decode");
                 attr_value = Py_BuildValue("(O)", attr_value);
-                attr_value = PyEval_CallObject(p_datatype_decode, attr_value);
-                PyDict_SetItem(attributes, attr_name, attr_value);
+                attr_value2 = PyEval_CallObject(p_datatype_decode, attr_value);
+                Py_DECREF(attr_value);
+                PyDict_SetItem(attributes, attr_name, attr_value2);
+                Py_DECREF(attr_name);
+                Py_DECREF(p_datatype);
+                Py_DECREF(p_datatype_decode);
+                Py_DECREF(attr_value2);
             }
 
-            return Py_BuildValue("(i(OOOO)i)", START_ELEMENT, tag_uri, tag_name,
-                                 attributes, namespaces, line);
+            result = Py_BuildValue("(i(OOOO)i)", START_ELEMENT, tag_uri,
+                                   tag_name, attributes, namespaces, line);
+            Py_DECREF(value);
+            Py_DECREF(attributes_list);
+            Py_DECREF(namespace_decls);
+            Py_DECREF(namespaces);
+            Py_DECREF(attributes);
+            return result;
         }
     } else if (c == '&') {
         self->cursor++;
@@ -804,20 +930,27 @@ static PyObject* Parser_iternext(Parser* self) {
             self->cursor++;
             self->column++;
             value = xml_char_reference(self);
-            return Py_BuildValue("(iOi)", CHAR_REF, value, line);
+            result = Py_BuildValue("(iOi)", CHAR_REF, value, line);
+            Py_DECREF(value);
+            return result;
         } else {
             /* Entity reference */
             value = xml_entity_reference(self);
             if (value == NULL)
                 return ERROR(INVALID_TOKEN, line, column);
+            /* XXX Specific to HTML */
             /* htmlentitydefs.name2unicodepoint[value] */
-            value = PyDict_GetItem(p_name2codepoint, value);
-            if (value == NULL)
+            value2 = PyDict_GetItem(p_name2codepoint, value);
+            Py_DECREF(value);
+            if (value2 == NULL)
                 return ERROR(UNDEFINED_ENTITY, line, column);
             /* unichr(codepoint).encode('utf-8') */
-            value = PyUnicode_FromOrdinal(PyInt_AsLong(value));
-            value = PyUnicode_AsUTF8String(value);
-            return Py_BuildValue("(iOi)", ENTITY_REF, value, line);
+            value2 = PyUnicode_FromOrdinal(PyInt_AS_LONG(value2));
+            value = PyUnicode_AsUTF8String(value2);
+            Py_DECREF(value2);
+            result = Py_BuildValue("(iOi)", ENTITY_REF, value, line);
+            Py_DECREF(value);
+            return result;
         }
     } else {
         /* Text */
@@ -843,6 +976,29 @@ static PyMemberDef Parser_members[] = {
     {"column", T_INT, offsetof(Parser, column), 0, "Column"},
     {NULL}
 };
+
+
+static PyObject* test_refcnt(PyObject* self) {
+    PyObject* a;
+    PyObject* b;
+    PyObject* k;
+    PyObject* v;
+
+    a = PyDict_New();
+    k = Py_BuildValue("s", "x");
+    v = PyInt_FromLong(4);
+
+    printf("%i %i %i\n", a->ob_refcnt, k->ob_refcnt, v->ob_refcnt);
+    PyDict_SetItem(a, k, v);
+    printf("%i %i %i\n", a->ob_refcnt, k->ob_refcnt, v->ob_refcnt);
+
+    b = PyDict_Copy(a);
+    printf("%i %i %i\n", a->ob_refcnt, k->ob_refcnt, v->ob_refcnt);
+
+    Py_DECREF(k);
+    Py_DECREF(v);
+    return Py_BuildValue("");
+}
 
 
 static PyMethodDef Parser_methods[] = {
@@ -872,7 +1028,7 @@ static PyTypeObject ParserType = {
     0,                              /* tp_setattro */
     0,                              /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT,             /* tp_flags */
-    "Parser state",                 /* tp_doc */
+    "XML Parser",                   /* tp_doc */
     0,                              /* tp_traverse */
     0,                              /* tp_clear */
     0,                              /* tp_richcompare */
@@ -896,6 +1052,8 @@ static PyTypeObject ParserType = {
  * ***********************************************************************/
 
 static PyMethodDef module_methods[] = {
+    /* {"method name", method, METH_VARARGS | METH_KEYWORDS | METH_NOARGS,
+        "doc string"} */
     {NULL}
 };
 

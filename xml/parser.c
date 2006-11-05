@@ -980,29 +980,6 @@ static PyMemberDef Parser_members[] = {
 };
 
 
-static PyObject* test_refcnt(PyObject* self) {
-    PyObject* a;
-    PyObject* b;
-    PyObject* k;
-    PyObject* v;
-
-    a = PyDict_New();
-    k = Py_BuildValue("s", "x");
-    v = PyInt_FromLong(4);
-
-    printf("%i %i %i\n", a->ob_refcnt, k->ob_refcnt, v->ob_refcnt);
-    PyDict_SetItem(a, k, v);
-    printf("%i %i %i\n", a->ob_refcnt, k->ob_refcnt, v->ob_refcnt);
-
-    b = PyDict_Copy(a);
-    printf("%i %i %i\n", a->ob_refcnt, k->ob_refcnt, v->ob_refcnt);
-
-    Py_DECREF(k);
-    Py_DECREF(v);
-    return Py_BuildValue("");
-}
-
-
 static PyMethodDef Parser_methods[] = {
     {NULL, NULL, 0, NULL}
 };

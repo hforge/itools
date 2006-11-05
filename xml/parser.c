@@ -17,7 +17,6 @@
 #define CHAR_REF 7
 #define ENTITY_REF 8
 #define CDATA 9
-#define NAMESPACE 10
 
 /* Errors */
 #define BAD_XML_DECL "XML declaration not well-formed: line %d, column %d"
@@ -1070,6 +1069,17 @@ initparser(void) {
     XMLError = PyErr_NewException("itools.xml.parser.XMLError", NULL, NULL);
     Py_INCREF(XMLError);
     PyModule_AddObject(module, "XMLError", XMLError);
-}
 
+    /* Register constants */
+    PyModule_AddIntConstant(module, "XML_DECL", XML_DECL);
+    PyModule_AddIntConstant(module, "DOCUMENT_TYPE", DOCUMENT_TYPE);
+    PyModule_AddIntConstant(module, "START_ELEMENT", START_ELEMENT);
+    PyModule_AddIntConstant(module, "END_ELEMENT", END_ELEMENT);
+    PyModule_AddIntConstant(module, "TEXT", TEXT);
+    PyModule_AddIntConstant(module, "COMMENT", COMMENT);
+    PyModule_AddIntConstant(module, "PI", PI);
+    PyModule_AddIntConstant(module, "CHAR_REF", CHAR_REF);
+    PyModule_AddIntConstant(module, "ENTITY_REF", ENTITY_REF);
+    PyModule_AddIntConstant(module, "CDATA", CDATA);
+}
 

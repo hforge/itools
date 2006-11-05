@@ -147,9 +147,15 @@ class Metadata(File):
         p_language = None
         p_value = ''
         stack = []
-        for event, value, line_number in parser.parse(file.read()):
+        for event, value, line_number in parser.Parser(file.read()):
             if event == parser.START_ELEMENT:
-                namespace_uri, local_name, attributes = value
+                namespace_uri, local_name, attributes, ns_decls = value
+                # Update prefixes
+                for ns_uri in ns_decls.values():
+                    schema = schemas.get_schema_by_uri(ns_uri)
+                    prefix = schema.class_prefix
+                    if prefix is not None:
+                        self.prefixes.add(prefix)
                 if local_name == 'metadata':
                     stack.append({})
                 else:
@@ -201,12 +207,6 @@ class Metadata(File):
             elif event == parser.TEXT:
                 if p_key is not None:
                     p_value += value
-            elif event == parser.NAMESPACE:
-                # Update prefixes
-                schema = schemas.get_schema_by_uri(value)
-                prefix = schema.class_prefix
-                if prefix is not None:
-                    self.prefixes.add(prefix)
 
 
     def to_str(self):

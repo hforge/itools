@@ -347,7 +347,7 @@ class Document(Text.Text):
         xml_namespaces = set()
         # Parse
         stack = []
-        for event, value, line_number in parser.parse(file.read()):
+        for event, value, line_number in parser.Parser(file.read()):
             if event == parser.DOCUMENT_TYPE:
                 self.document_type = value
             elif event == parser.START_ELEMENT:

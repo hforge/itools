@@ -894,6 +894,8 @@ static PyObject* Parser_iternext(Parser* self) {
                 attr_name = PyTuple_GetItem(attr, 0);
                 attr_prefix = PyTuple_GetItem(attr_name, 0);
                 attr_uri = PyDict_GetItem(namespaces, attr_prefix);
+                if (attr_uri == NULL)
+                    attr_uri = Py_None;
                 /* Find out the attribute name */
                 attr_name = PyTuple_GetItem(attr_name, 1);
                 /* Find out the attribute value */
@@ -901,10 +903,10 @@ static PyObject* Parser_iternext(Parser* self) {
                 /* Update to the dict */
                 /* XXX Check for duplicates */
                 attr_name = Py_BuildValue("(OO)", attr_uri, attr_name);
-                p_datatype = PyEval_CallObject(p_get_datatype_by_uri, attr_name);
+                p_datatype = PyObject_CallObject(p_get_datatype_by_uri, attr_name);
                 p_datatype_decode = PyObject_GetAttrString(p_datatype, "decode");
                 attr_value = Py_BuildValue("(O)", attr_value);
-                attr_value2 = PyEval_CallObject(p_datatype_decode, attr_value);
+                attr_value2 = PyObject_CallObject(p_datatype_decode, attr_value);
                 Py_DECREF(attr_value);
                 PyDict_SetItem(attributes, attr_name, attr_value2);
                 Py_DECREF(attr_name);

@@ -56,7 +56,7 @@ static PyObject* XMLError;
 typedef struct {
     PyObject_HEAD
     /* Specific fields */
-    char* data;
+    PyObject* data;
     char* cursor;
     int line_no;
     int column;
@@ -74,26 +74,72 @@ typedef struct {
 
 
 static void Parser_dealloc(Parser* self) {
+    Py_XDECREF(self->data);
+
+    int idx;
+    for (idx=0; idx<self->tag_stack_top; idx++) {
+        Py_DECREF(self->tag_stack[idx]);
+        Py_DECREF(self->tag_ns_stack[idx]);
+    }
+
+    Py_XDECREF(self->left_token);
+
     self->ob_type->tp_free((PyObject*)self);
 }
 
 
-static int Parser_init(Parser* self, PyObject* args) {
+static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
+    Parser* self;
+
+    /* Allocate memory */
+    self = (Parser*)type->tp_alloc(type, 0);
+    if (self == NULL)
+        return NULL;
+
+    self->data = NULL;
+    self->cursor = NULL;
+    self->line_no = 1;
+    self->column = 1;
+    self->tag_stack_top = 0;
+    self->tag_ns_index_top = 0;
+    self->namespaces = NULL;
+    self->left_token = NULL;
+
+    return (PyObject*)self;
+}
+
+
+static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
+    PyObject* data;
+
     /* Load the input data */
-    if (!PyArg_ParseTuple(args, "s", &self->data))
+    if (!PyArg_ParseTuple(args, "S", &data))
         return -1;
 
+    Py_XDECREF(self->data);
+    Py_INCREF(data);
+    self->data = data;
+
     /* Initialize variables */
-    self->cursor = self->data;
+    self->cursor = PyString_AsString(data);
     self->line_no = 1;
     self->column = 1;
 
     /* The stacks are empty */
+    int idx;
+    for (idx=0; idx<self->tag_stack_top; idx++) {
+        Py_DECREF(self->tag_stack[idx]);
+        Py_DECREF(self->tag_ns_stack[idx]);
+    }
     self->tag_stack_top = 0;
     self->tag_ns_index_top = 0;
+
+    /* For empty elements, "left_token" keeps the closing tag. */
+    Py_XDECREF(self->left_token);
     self->left_token = NULL;
 
-    self->namespaces = Py_BuildValue("{}");
+    /* Namespaces */
+    self->namespaces = NULL;
 
     return 0;
 }
@@ -127,18 +173,22 @@ PyObject* merge_dicts(PyObject* a, PyObject* b) {
  *
  * We take ownership of "value". */
 int push_tag(Parser* self, PyObject* value, PyObject* namespaces) {
-    PyObject* new_namespaces;
-
     if (self->tag_stack_top >= TAG_STACK_SIZE)
         return -1;
 
+    PyObject* new_namespaces;
     if (PyDict_Size(namespaces)) {
         if (self->tag_ns_index_top >= NS_INDEX_SIZE)
             return -1;
         /* Create the new namespaces */
-        new_namespaces = merge_dicts(self->namespaces, namespaces);
-        if (new_namespaces == NULL)
-            return -1;
+        if (self->namespaces == NULL) {
+            Py_INCREF(namespaces);
+            new_namespaces = namespaces;
+        } else {
+            new_namespaces = merge_dicts(self->namespaces, namespaces);
+            if (new_namespaces == NULL)
+                return -1;
+        }
         /* Update the current namespaces */
         self->namespaces = new_namespaces;
         /* Update ns index */
@@ -186,7 +236,9 @@ PyObject* pop_tag(Parser* self, PyObject* value) {
     /* Find out the URI from the prefix */
     PyObject* prefix = PyTuple_GetItem(value, 0);
     PyObject* uri;
-    if (PyDict_Contains(self->namespaces, prefix)) {
+    if (self->namespaces == NULL)
+        uri = Py_None;
+    else if (PyDict_Contains(self->namespaces, prefix)) {
         uri = PyDict_GetItem(self->namespaces, prefix);
         if (uri == NULL) {
             Py_DECREF(value);
@@ -756,7 +808,7 @@ static PyObject* Parser_iternext(Parser* self) {
 
                     end_tag = 0;
                     namespaces = self->namespaces;
-                    Py_INCREF(namespaces);
+                    Py_XINCREF(namespaces);
                     break;
                 } else if (c == '/') {
                     self->cursor++;
@@ -775,7 +827,7 @@ static PyObject* Parser_iternext(Parser* self) {
                         namespaces = merge_dicts(self->namespaces, namespace_decls);
                     else {
                         namespaces = self->namespaces;
-                        Py_INCREF(namespaces);
+                        Py_XINCREF(namespaces);
                     }
 
                     break;
@@ -873,9 +925,13 @@ static PyObject* Parser_iternext(Parser* self) {
             }
 
             /* Tag */
-            tag_uri = PyDict_GetItem(namespaces, PyTuple_GetItem(value, 0));
-            if (tag_uri == NULL)
+            if (namespaces == NULL)
                 tag_uri = Py_None;
+            else {
+                tag_uri = PyDict_GetItem(namespaces, PyTuple_GetItem(value, 0));
+                if (tag_uri == NULL)
+                    tag_uri = Py_None;
+            }
             tag_name = PyTuple_GetItem(value, 1);
 
             /* The END_ELEMENT token will be sent later */
@@ -892,9 +948,13 @@ static PyObject* Parser_iternext(Parser* self) {
                 /* Find out the attribute URI */
                 attr_name = PyTuple_GetItem(attr, 0);
                 attr_prefix = PyTuple_GetItem(attr_name, 0);
-                attr_uri = PyDict_GetItem(namespaces, attr_prefix);
-                if (attr_uri == NULL)
+                if (namespaces == NULL)
                     attr_uri = Py_None;
+                else {
+                    attr_uri = PyDict_GetItem(namespaces, attr_prefix);
+                    if (attr_uri == NULL)
+                        attr_uri = Py_None;
+                }
                 /* Find out the attribute name */
                 attr_name = PyTuple_GetItem(attr_name, 1);
                 /* Find out the attribute value */
@@ -914,12 +974,17 @@ static PyObject* Parser_iternext(Parser* self) {
                 Py_DECREF(attr_value2);
             }
 
-            result = Py_BuildValue("(i(OOOO)i)", START_ELEMENT, tag_uri,
-                                   tag_name, attributes, namespaces, line);
+            if (namespaces == NULL)
+                result = Py_BuildValue("(i(OOO{})i)", START_ELEMENT, tag_uri,
+                                       tag_name, attributes, line);
+            else {
+                result = Py_BuildValue("(i(OOOO)i)", START_ELEMENT, tag_uri,
+                                       tag_name, attributes, namespaces, line);
+                Py_DECREF(namespaces);
+            }
             Py_DECREF(value);
             Py_DECREF(attributes_list);
             Py_DECREF(namespace_decls);
-            Py_DECREF(namespaces);
             Py_DECREF(attributes);
             return result;
         }
@@ -1022,6 +1087,8 @@ static PyTypeObject ParserType = {
     0,                              /* tp_descr_set */
     0,                              /* tp_dictoffset */
     (initproc)Parser_init,          /* tp_init */
+    0,                              /* tp_alloc */
+    Parser_new,                     /* tp_new */
 };
 
 
@@ -1044,7 +1111,6 @@ PyMODINIT_FUNC
 initparser(void) {
     PyObject* module;
 
-    ParserType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&ParserType) < 0)
         return;
 

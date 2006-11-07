@@ -493,8 +493,8 @@ PyObject* xml_char_reference(Parser* self) {
  *
  * Returns a new reference. */
 PyObject* xml_attr_value(Parser* self) {
-    char c;
-    PyObject* value;
+    PyObject* result = NULL;
+    PyObject* ref;
 
     /* The heading quote */
     char delimiter = *(self->cursor);
@@ -507,37 +507,60 @@ PyObject* xml_attr_value(Parser* self) {
     /* The value */
     char* base = self->cursor;
     int size;
-    for (size=0; 1; size++, move_cursor(self)) {
-        c = *(self->cursor);
+    for (size=0; 1;) {
+        char c = *(self->cursor);
+
+        /* Stop */
+        if (c == delimiter)
+            break;
+
+        /* Forbidden characters */
+        if ((c == '\0') || (c == '<'))
+            return NULL;
+
+        /* Entity or Character Reference */
         if (c == '&') {
             self->cursor++;
             self->column++;
             if (*(self->cursor) == '#') {
                 self->cursor++;
                 self->column++;
-                value = xml_char_reference(self);
-                if (value == NULL)
+                ref = xml_char_reference(self);
+                if (ref == NULL)
                     return NULL;
-                /* TODO What to do with the value? */
             } else {
-                value = xml_entity_reference(self);
-                if (value == NULL)
+                ref = xml_entity_reference(self);
+                if (ref == NULL)
                     return NULL;
-                /* TODO What to do with the value? */
             }
-            return NULL;
-        } else if ((c == '\0') || (c == '<'))
-            return NULL;
-
-        /* Stop */
-        if (c == delimiter)
-            break;
+            /* Concat */
+            if (size > 0) {
+                result = Py_BuildValue("s#", base, size);
+                PyString_ConcatAndDel(&result, ref);
+            } else {
+                result = ref;
+            }
+            /* Reset */
+            base = self->cursor;
+            size = 0;
+        } else {
+            size++;
+            move_cursor(self);
+        }
     }
 
-    /* Update state */
+    /* Read delimiter */
     self->cursor++;
     self->column++;
-    return Py_BuildValue("s#", base, size);
+
+    /* Post-process */
+    if (result == NULL)
+        return Py_BuildValue("s#", base, size);
+
+    ref = Py_BuildValue("s#", base, size);
+    PyString_ConcatAndDel(&result, ref);
+
+    return result;
 }
 
 

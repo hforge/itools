@@ -94,9 +94,17 @@ if __name__ == '__main__':
     if len(args) != 0:
         parser.error('incorrect number of arguments')
 
+    # Try using git facilities
+    git_available = bool(os.popen('git-branch').read())
+    if not git_available:
+        print "Warning: not using git."
+
     # Initialize the list of files to install (the MANIFEST)
     manifest = ['MANIFEST']
-    cmd = 'git-ls-files'
+    if git_available:
+        cmd = 'git-ls-files'
+    else:
+        cmd = 'find -name "*.py" | grep -v "^./build" | grep -v "^./dist'
     for path in os.popen(cmd).readlines():
         path = path.strip()
         if not os.path.islink(path):
@@ -154,12 +162,10 @@ if __name__ == '__main__':
 
     # Find out the version string
     manifest.append('version.txt')
-    print '(3) Find out the version string',
-    sys.stdout.flush()
-    version = get_version()
-    if version is None:
-        print 'ERROR: Not a git repository'
-    else:
+    if git_available:
+        print '(3) Find out the version string',
+        sys.stdout.flush()
+        version = get_version()
         open('version.txt', 'w').write(version)
         print 'OK'
 

@@ -1,0 +1,83 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: fr\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-09-22 15:09+CET\n"
+"PO-Revision-Date: 2006-07-27 12:09+0200\n"
+"Last-Translator: nderam <hcauwelier@oursours.net>\n"
+"Language-Team:  <fr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ui/frontoffice1/template.xhtml.en:0
+msgid "<a stl:attributes=\"href to_backoffice\">Back</a>"
+msgstr ""
+
+#: ui/frontoffice1/template.xhtml.en:0
+msgid "A simple Zope portal with iKaaro"
+msgstr ""
+
+#: ui/frontoffice1/template.xhtml.en:0
+msgid "Body"
+msgstr ""
+
+#: ui/frontoffice1/ExampleDocument_view.xml.en:0
+msgid "Document Content"
+msgstr ""
+
+#: ui/frontoffice1/ExampleDocument_view.xml.en:0
+msgid "Document Title"
+msgstr ""
+
+#: document.py:30
+msgid "Example Document"
+msgstr "Document d'exemple"
+
+#: folder.py:34
+msgid "Example Folder"
+msgstr "Dossier d'exemple"
+
+#: root.py:34
+msgid "ExamplePortal"
+msgstr ""
+
+#: ui/frontoffice1/ExampleFolder_view.xml.en:0
+msgid "Folder Contents"
+msgstr ""
+
+#: ui/frontoffice1/ExampleFolder_view.xml.en:0
+msgid "Folder Title"
+msgstr ""
+
+#: ui/frontoffice1/template.xhtml.en:0
+msgid "Footer:"
+msgstr ""
+
+#: ui/frontoffice1/Root_index.xml.en:0
+msgid "Hello World!"
+msgstr "<em>Hello world</em> !"
+
+#: document.py:31
+msgid "Here the description of our Example Document"
+msgstr "Ici la description de votre document d'exemple"
+
+#: folder.py:35
+msgid "Here the description of our Example Folder"
+msgstr "Ici la description de votre dossier d'exemple"
+
+#: ui/frontoffice1/template.xhtml.en:0
+msgid "Menu"
+msgstr ""
+
+#: folder.py:47
+msgid "Preview"
+msgstr "Aperçu"
+
+#: root.py:42
+msgid "Welcome!"
+msgstr "Bienvenue !"
+
+#: ui/frontoffice1/Root_index.xml.en:0
+msgid "You have successfully installed and created your own portal!"
+msgstr "Vous avez réussi à installer et créer votre propre portail !"

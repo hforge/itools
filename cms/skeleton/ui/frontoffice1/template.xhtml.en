@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="main.css" />
+  </head>
+  <body>
+    <div id="header">
+      <h1>A Simple Portal with itools.cms</h1>
+      <p id="breadcrumb">
+        You are here:
+        <span stl:repeat="item breadcrumb">
+          <a stl:attributes="href item/url" stl:content="item/name"/>
+          <span stl:if="not repeat/item/end">&raquo;</span>
+        </span>
+      </p>
+    </div>
+    <div id="navigation">
+      <h2>Navigation</h2>
+      <ul>
+        <li stl:repeat="item folders">
+          <a class="in_path"
+             stl:if="item/in_path"
+             stl:attributes="href item/url" stl:content="item/name"/>
+          <a stl:if="not item/in_path"
+             stl:attributes="href item/url"
+             stl:content="item/name"/>
+        </li>
+      </ul>
+    </div>
+    <div id="content" stl:content="body">Body</div>
+    <div class="clear"></div>
+    <div id="footer">
+      <a stl:if="is_allowed_to_edit"
+        stl:attributes="href switch_skin">Back to back-office</a>
+    </div>
+  </body>
+</html>

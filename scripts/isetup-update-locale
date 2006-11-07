@@ -17,12 +17,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
+from __future__ import with_statement
 from optparse import OptionParser
 import os
 import sys
 
 # Import from itools
 import itools
+from itools import vfs
 from itools.handlers.python import Python
 from itools.gettext import PO
 from itools.xhtml import XHTML
@@ -49,29 +51,33 @@ if __name__ == '__main__':
     # Process Python files
     print '(1) Processing Python files',
     sys.stdout.flush()
-    cmd = 'find -name "*.py" | grep -v "^./build" | grep -v "^./dist" | grep -v "/test_" | grep -v "cms/utils.py"'
-    for path in os.popen(cmd).readlines():
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        path = path.strip()
-        handler = Python(path)
-        for msgid, line_number in handler.get_messages():
-            if len(msgid) > 2:
-                po.set_message(msgid, references={path: [line_number]})
+    with open('MANIFEST') as manifest:
+        for line in manifest.readlines():
+            path = line.strip()
+            if not path.endswith('.py') or 'test_' in path or path == 'cms/utils.py':
+                continue
+            sys.stdout.write('.')
+            sys.stdout.flush()
+            handler = Python(path)
+            for msgid, line_number in handler.get_messages():
+                if len(msgid) > 2:
+                    po.set_message(msgid, references={path: [line_number]})
     print ' OK'
 
     # Process XHTML files
     print '(2) Processing XHTML files',
     sys.stdout.flush()
-    cmd = 'find -name "*.x*ml.en" | grep -v "^./build" | grep -v "^./dist"'
-    for path in os.popen(cmd).readlines():
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        path = path.strip()
-        handler = XHTML.Document(path)
-        for msgid, line_number in handler.get_messages():
-            if len(msgid) > 1:
-                po.set_message(msgid, references={path: [line_number]})
+    with open('MANIFEST') as manifest:
+        for line in manifest.readlines():
+            path = line.strip()
+            if not (path.endswith('.xhtml.en') or path.endswith('.xml.en')):
+                continue
+            sys.stdout.write('.')
+            sys.stdout.flush()
+            handler = XHTML.Document(path)
+            for msgid, line_number in handler.get_messages():
+                if len(msgid) > 1:
+                    po.set_message(msgid, references={path: [line_number]})
     print ' OK'
 
     # Update locale.pot
@@ -84,9 +90,10 @@ if __name__ == '__main__':
     print '(4) Updating language files:'
     print '',
     sys.stdout.flush()
-    cmd = 'find locale -name "*.po"'
-    for path in os.popen(cmd).readlines():
-        path = path.strip()
+    folder = vfs.open('locale')
+    for filename in folder.get_names():
+        if not filename.endswith('.po'):
+            continue
         print path,
         sys.stdout.flush()
         os.system('msgmerge -U -s %s locale/locale.pot' % path)

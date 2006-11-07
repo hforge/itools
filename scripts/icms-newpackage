@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Import from the Standard Library
+from __future__ import with_statement
+from optparse import OptionParser
+from os import makedirs
+from os.path import exists, basename, dirname, join
+from shutil import copyfile
+
+# Import from itools
+import itools
+from itools import cms
+
+
+def create(parser, options, target):
+    if exists(target):
+        parser.error("Directory '%s' already existing" % target)
+
+    package = basename(target)
+    skeleton = join(dirname(cms.__file__), 'skeleton')
+
+    # Copy source files
+
+    print "Creating...",
+
+    with open(join(skeleton, 'MANIFEST')) as manifest:
+        for line in manifest.readlines():
+            path = line.strip()
+            source = join(skeleton, path)
+            dest = join(target, path)
+            basedir = dirname(dest)
+            if basedir and not exists(basedir):
+                makedirs(basedir)
+            copyfile(source, dest)
+            print ".",
+
+    print "Done."
+
+    # Set up package
+
+    setup = join(target, 'setup.conf')
+    new_setup = []
+    with open(setup) as file:
+        for line in file.readlines():
+            if line.startswith('name = '):
+                new_setup.append('name = %s\n' % package)
+            else:
+                new_setup.append(line)
+    with open(setup, 'w') as file:
+        file.write(''.join(new_setup))
+
+    print "Package '%s' created in '%s'." % (package, target)
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog TARGET'
+    version = 'itools %s' % itools.__version__
+    description = 'Creates a new Python package for itools.cms of name TARGET.'
+    parser = OptionParser(usage, version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    create(parser, options, target)

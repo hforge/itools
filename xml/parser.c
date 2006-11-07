@@ -969,6 +969,17 @@ static PyObject* Parser_iternext(Parser* self) {
                 attr_value = Py_BuildValue("(O)", attr_value);
                 attr_value2 = PyObject_CallObject(p_datatype_decode, attr_value);
                 Py_DECREF(attr_value);
+                if (attr_value2 == NULL) {
+                    Py_DECREF(attr_name);
+                    Py_DECREF(p_datatype);
+                    Py_DECREF(p_datatype_decode);
+                    Py_DECREF(value);
+                    Py_DECREF(attributes_list);
+                    Py_DECREF(namespace_decls);
+                    Py_DECREF(attributes);
+                    Py_XDECREF(namespaces);
+                    return NULL;
+                }
                 PyDict_SetItem(attributes, attr_name, attr_value2);
                 Py_DECREF(attr_name);
                 Py_DECREF(p_datatype);

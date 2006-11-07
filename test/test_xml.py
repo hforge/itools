@@ -23,7 +23,7 @@ from unittest import TestCase
 from itools.xml import XML
 from itools.xml.parser import Parser, XMLError
 from itools.xml.parser import XML_DECL, DOCUMENT_TYPE, START_ELEMENT, \
-    END_ELEMENT, TEXT, COMMENT, PI, CHAR_REF, ENTITY_REF, CDATA
+    END_ELEMENT, TEXT, COMMENT, PI, CDATA
 
 
 #class CParserTestCase(TestCase):

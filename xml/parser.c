@@ -14,15 +14,13 @@
 #define TEXT 4
 #define COMMENT 5
 #define PI 6
-#define CHAR_REF 7
-#define ENTITY_REF 8
-#define CDATA 9
+#define CDATA 7
 
 /* Errors */
 #define BAD_XML_DECL "XML declaration not well-formed: line %d, column %d"
 #define INVALID_TOKEN "not well-formed (invalid token): line %d, column %d"
 #define MISMATCH "mismatched tag: line %d, column %d"
-#define UNDEFINED_ENTITY "undefined entity: line %d, column %d"
+#define BAD_ENTITY_REF "error parsing entity reference: line %d, column %d"
 
 #define ERROR(msg, line, column) PyErr_Format(XMLError, msg, line, column)
 
@@ -394,17 +392,33 @@ int xml_equal(Parser* self) {
  *
  * Returns a new reference. */
 PyObject* xml_entity_reference(Parser* self) {
+    /* Read the name */
     PyObject* value = xml_name(self);
     if (value == NULL)
         return NULL;
 
+    /* Read ";" */
     if (*(self->cursor) != ';') {
         Py_DECREF(value);
         return NULL;
     }
-
     self->cursor++;
     self->column++;
+
+    /* To codepoint */
+    /* XXX Specific to HTML */
+    /* htmlentitydefs.name2unicodepoint[value] */
+    PyObject* cp = PyDict_GetItem(p_name2codepoint, value);
+    Py_DECREF(value);
+    if (cp == NULL)
+        return NULL;
+
+    /* unichr(codepoint) */
+    PyObject* u_char = PyUnicode_FromOrdinal(PyInt_AS_LONG(cp));
+
+    /* value.encode('utf-8') */
+    value = PyUnicode_AsUTF8String(u_char);
+    Py_DECREF(u_char);
 
     return value;
 }
@@ -413,13 +427,63 @@ PyObject* xml_entity_reference(Parser* self) {
  *
  * Returns a new reference. */
 PyObject* xml_char_reference(Parser* self) {
-    char* base = self->cursor;
+    int cp = 0;
 
-    int size;
-    for (size=0; *(self->cursor) != ';'; size++, move_cursor(self));
-    move_cursor(self);
+    char c = *(self->cursor);
+    if (c == 'x') {
+        /* Read "x" */
+        self->cursor++;
+        self->column++;
+        /* Check there is ate least one digit */
+        c = *(self->cursor);
+        if (!isxdigit(c))
+            return NULL;
+        /* Hex */
+        for (; 1; self->cursor++, self->column++) {
+            c = *(self->cursor);
+            if (c == ';')
+                break;
+            /* Decode char */
+            cp = cp * 16;
+            if (c >= '0' && c <= '9')
+                cp = cp + (c - '0');
+            else if (c >= 'A' && c <= 'F')
+                cp = cp + (c - 'A') + 10;
+            else if (c >= 'a' && c <= 'f')
+                cp = cp + (c - 'a') + 10;
+            else
+                return NULL;
+        }
+    } else {
+        /* Check there is ate least one digit */
+        c = *(self->cursor);
+        if (!isdigit(c))
+            return NULL;
+        /* Dec */
+        for (; 1; self->cursor++, self->column++) {
+            c = *(self->cursor);
+            if (c == ';')
+                break;
+            /* Decode char */
+            cp = cp * 10;
+            if (c >= '0' && c <= '9')
+                cp = cp + (c - '0');
+            else
+                return NULL;
+        }
+    }
 
-    return Py_BuildValue("s#", base, size);
+    /* Read ";" */
+    self->cursor++;
+    self->column++;
+
+    /* unichr(codepoint) */
+    PyObject* u_char = PyUnicode_FromOrdinal(cp);
+    /* value.encode('utf-8') */
+    PyObject* value = PyUnicode_AsUTF8String(u_char);
+    Py_DECREF(u_char);
+
+    return value;
 }
 
 
@@ -458,8 +522,6 @@ PyObject* xml_attr_value(Parser* self) {
                     return NULL;
                 /* TODO What to do with the value? */
             }
-            PyErr_SetString(PyExc_NotImplementedError,
-                            "references inside attributes not yet supported");
             return NULL;
         } else if ((c == '\0') || (c == '<'))
             return NULL;
@@ -575,7 +637,6 @@ static PyObject* Parser_iternext(Parser* self) {
     int size;
     char* base;
     PyObject* value;
-    PyObject* value2;
     PyObject* tag_uri;
     PyObject* tag_name;
     int end_tag;
@@ -1009,25 +1070,15 @@ static PyObject* Parser_iternext(Parser* self) {
             self->cursor++;
             self->column++;
             value = xml_char_reference(self);
-            result = Py_BuildValue("(iOi)", CHAR_REF, value, line);
+            result = Py_BuildValue("(iOi)", TEXT, value, line);
             Py_DECREF(value);
             return result;
         } else {
             /* Entity reference */
             value = xml_entity_reference(self);
             if (value == NULL)
-                return ERROR(INVALID_TOKEN, line, column);
-            /* XXX Specific to HTML */
-            /* htmlentitydefs.name2unicodepoint[value] */
-            value2 = PyDict_GetItem(p_name2codepoint, value);
-            Py_DECREF(value);
-            if (value2 == NULL)
-                return ERROR(UNDEFINED_ENTITY, line, column);
-            /* unichr(codepoint).encode('utf-8') */
-            value2 = PyUnicode_FromOrdinal(PyInt_AS_LONG(value2));
-            value = PyUnicode_AsUTF8String(value2);
-            Py_DECREF(value2);
-            result = Py_BuildValue("(iOi)", ENTITY_REF, value, line);
+                return ERROR(BAD_ENTITY_REF, line, column);
+            result = Py_BuildValue("(iOi)", TEXT, value, line);
             Py_DECREF(value);
             return result;
         }
@@ -1157,8 +1208,6 @@ initparser(void) {
     PyModule_AddIntConstant(module, "TEXT", TEXT);
     PyModule_AddIntConstant(module, "COMMENT", COMMENT);
     PyModule_AddIntConstant(module, "PI", PI);
-    PyModule_AddIntConstant(module, "CHAR_REF", CHAR_REF);
-    PyModule_AddIntConstant(module, "ENTITY_REF", ENTITY_REF);
     PyModule_AddIntConstant(module, "CDATA", CDATA);
 }
 

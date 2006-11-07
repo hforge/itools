@@ -146,13 +146,20 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
 
 
 /* Merges two dictionaries into a new one, when conflict happens the second
- * dict has priority. 
+ * dict has priority. The first dictionary, "a", maybe NULL, then the second
+ * dictionary, "b", is returned.
  *
  * Returns a new reference. The reference count of the items from the
  * source dicts that get into the new dict are incremented.
  */
 PyObject* merge_dicts(PyObject* a, PyObject* b) {
     PyObject* c;
+
+    /* If "a" is NULL return b */
+    if (a == NULL) {
+        Py_INCREF(b);
+        return b;
+    }
 
     /* Make a copy of "a" */
     c = PyDict_Copy(a);
@@ -181,14 +188,9 @@ int push_tag(Parser* self, PyObject* value, PyObject* namespaces) {
         if (self->tag_ns_index_top >= NS_INDEX_SIZE)
             return -1;
         /* Create the new namespaces */
-        if (self->namespaces == NULL) {
-            Py_INCREF(namespaces);
-            new_namespaces = namespaces;
-        } else {
-            new_namespaces = merge_dicts(self->namespaces, namespaces);
-            if (new_namespaces == NULL)
-                return -1;
-        }
+        new_namespaces = merge_dicts(self->namespaces, namespaces);
+        if (new_namespaces == NULL)
+            return -1;
         /* Update the current namespaces */
         self->namespaces = new_namespaces;
         /* Update ns index */

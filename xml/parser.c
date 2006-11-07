@@ -79,7 +79,7 @@ static void Parser_dealloc(Parser* self) {
     int idx;
     for (idx=0; idx<self->tag_stack_top; idx++) {
         Py_DECREF(self->tag_stack[idx]);
-        Py_DECREF(self->tag_ns_stack[idx]);
+        Py_XDECREF(self->tag_ns_stack[idx]);
     }
 
     Py_XDECREF(self->left_token);

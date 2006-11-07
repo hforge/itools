@@ -349,7 +349,7 @@ class AttributesAttr(DataType):
                       'attributes expression expects two fields'
 
             name, expr = x
-            if expr.startswith('not '):
+            if expr.startswith('not') and expr[3].isspace():
                 expr = NotExpression(expr)
             else:
                 expr = Expression(expr)
@@ -368,7 +368,7 @@ class IfAttr(DataType):
 
     @staticmethod
     def decode(data):
-        if data.startswith('not '):
+        if data.startswith('not') and data[3].isspace():
             return NotExpression(data)
         return Expression(data)
 

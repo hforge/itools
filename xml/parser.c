@@ -21,6 +21,7 @@
 #define INVALID_TOKEN "not well-formed (invalid token): line %d, column %d"
 #define MISMATCH "mismatched tag: line %d, column %d"
 #define BAD_ENTITY_REF "error parsing entity reference: line %d, column %d"
+#define BAD_CHAR_REF "error parsing character reference: line %d, column %d"
 
 #define ERROR(msg, line, column) PyErr_Format(XMLError, msg, line, column)
 
@@ -456,9 +457,9 @@ PyObject* xml_char_reference(Parser* self) {
         }
     } else {
         /* Check there is ate least one digit */
-        c = *(self->cursor);
-        if (!isdigit(c))
+        if (!isdigit(c)) {
             return NULL;
+        }
         /* Dec */
         for (; 1; self->cursor++, self->column++) {
             c = *(self->cursor);
@@ -515,6 +516,8 @@ PyObject* xml_attr_value(Parser* self) {
                 self->cursor++;
                 self->column++;
                 value = xml_char_reference(self);
+                if (value == NULL)
+                    return NULL;
                 /* TODO What to do with the value? */
             } else {
                 value = xml_entity_reference(self);
@@ -1070,6 +1073,8 @@ static PyObject* Parser_iternext(Parser* self) {
             self->cursor++;
             self->column++;
             value = xml_char_reference(self);
+            if (value == NULL)
+                return ERROR(BAD_CHAR_REF, line, column);
             result = Py_BuildValue("(iOi)", TEXT, value, line);
             Py_DECREF(value);
             return result;

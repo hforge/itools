@@ -51,25 +51,46 @@ class ParserTestCase(TestCase):
 
 
     #######################################################################
+    # Character References
+    def test_char_ref(self):
+        data = '&#241;'
+        token = TEXT
+        value = "ñ"
+        self.assertEqual(Parser(data).next(), (token, value, 1))
+
+
+    def test_char_ref_hex(self):
+        data = '&#xf1;'
+        token = TEXT
+        value = "ñ"
+        self.assertEqual(Parser(data).next(), (token, value, 1))
+
+
+    def test_char_ref_empty(self):
+        data = '&#;'
+        self.assertRaises(XMLError, Parser(data).next)
+
+
+    #######################################################################
     # Start Element
     def test_element(self):
         data = '<a>'
         token = START_ELEMENT
-        value = None, 'a', {}
+        value = None, 'a', {}, {}
         self.assertEqual(Parser(data).next(), (token, value, 1))
 
 
     def test_attributes(self):
         data = '<a href="http://www.ikaaro.org">'
         token = START_ELEMENT
-        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
+        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}, {}
         self.assertEqual(Parser(data).next(), (token, value, 1))
 
 
     def test_attributes_single_quote(self):
         data = "<a href='http://www.ikaaro.org'>"
         token = START_ELEMENT
-        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
+        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}, {}
         self.assertEqual(Parser(data).next(), (token, value, 1))
 
 
@@ -86,7 +107,7 @@ class ParserTestCase(TestCase):
     def test_attributes_entity_reference(self):
         data = '<img title="Black &amp; White">'
         token = START_ELEMENT
-        value = None, 'img', {(None, 'title'): 'Black & White'}
+        value = None, 'img', {(None, 'title'): 'Black & White'}, {}
         self.assertEqual(Parser(data).next(), (token, value, 1))
 
 

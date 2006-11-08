@@ -54,7 +54,8 @@ if __name__ == '__main__':
     with open('MANIFEST') as manifest:
         for line in manifest.readlines():
             path = line.strip()
-            if not path.endswith('.py') or 'test_' in path or path == 'cms/utils.py':
+            if (not path.endswith('.py') or 'test_' in path or
+                    path == 'cms/utils.py' or path.startswith('cms/skeleton')):
                 continue
             sys.stdout.write('.')
             sys.stdout.flush()
@@ -70,7 +71,8 @@ if __name__ == '__main__':
     with open('MANIFEST') as manifest:
         for line in manifest.readlines():
             path = line.strip()
-            if not (path.endswith('.xhtml.en') or path.endswith('.xml.en')):
+            if (not (path.endswith('.xhtml.en') or path.endswith('.xml.en')) or
+                    path.startswith('cms/skeleton')):
                 continue
             sys.stdout.write('.')
             sys.stdout.flush()

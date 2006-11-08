@@ -19,12 +19,14 @@
 # Import from the Standard Library
 from __future__ import with_statement
 from optparse import OptionParser
-from os import makedirs
+from os import makedirs, getcwd
 from os.path import exists, basename, dirname, join
 from shutil import copyfile
+from subprocess import call
 
 # Import from itools
 import itools
+from itools import uri
 from itools import cms
 
 
@@ -64,6 +66,14 @@ def create(parser, options, target):
                 new_setup.append(line)
     with open(setup, 'w') as file:
         file.write(''.join(new_setup))
+
+    # Build package
+
+    cwd = uri.Path(getcwd())
+    binary = cwd.resolve2(__file__.replace('icms-newpackage', 'isetup-build'))
+    target = cwd.resolve2(target)
+    print "Calling", binary
+    call(str(binary), cwd=str(target))
 
     print "Package '%s' created in '%s'." % (package, target)
 

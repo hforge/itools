@@ -104,7 +104,7 @@ if __name__ == '__main__':
     if git_available:
         cmd = 'git-ls-files'
     else:
-        cmd = 'find -name "*.py" | grep -v "^./build" | grep -v "^./dist'
+        cmd = 'find -type f|grep -Ev "^./(build|dist)"|grep -Ev "*.(~|pyc|fr|es|it|zh)"'
     for path in os.popen(cmd).readlines():
         path = path.strip()
         if not os.path.islink(path):
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     # Build the templates in the target languages
     print '(2) Building XHTML files',
     sys.stdout.flush()
-    cmd = 'find -name "*.x*ml.en" | grep -v "^./build" | grep -v "^./dist"'
+    cmd = 'find -name "*.x*ml.en"| grep -Ev "^./(build|dist|cms/skeleton)"'
     for path in os.popen(cmd).readlines():
         # Load the handler
         path = path.strip()

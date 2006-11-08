@@ -8,9 +8,9 @@
 
 <form name="addform" action=";new_user" method="post">
   <dl>
-    <dt>Username</dt>
+    <dt>Email</dt>
     <dd>
-      <input type="text" id="username" name="username" />
+      <input type="text" id="email" name="email" />
     </dd>
     <dt>Password</dt>
     <dd>
@@ -28,7 +28,7 @@
 </form>
 
 <script language="javascript">
-  focus("username");
+  focus("email");
 </script>
 
 </stl:block>

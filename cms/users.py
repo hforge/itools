@@ -299,13 +299,14 @@ class UserFolder(Folder):
     def new(self, users=[]):
         Folder.new(self)
         cache = self.cache
-        for username, password in users:
+        for email, password in users:
             password = crypt_password(password)
             user = User()
-            cache[username] = user
-            metadata = {'owner': username, 'ikaaro:password': password}
+            cache[email] = user
+            metadata = {'owner': email, 'ikaaro:password': password,
+                        'ikaaro:email': email}
             metadata = self.build_metadata(user, **metadata)
-            cache['%s.metadata' % username] = metadata
+            cache['%s.metadata' % email] = metadata
 
 
     #######################################################################
@@ -318,11 +319,12 @@ class UserFolder(Folder):
         return handlers.Folder.Folder._get_handler_names(self)
 
 
-    def set_user(self, username, password):
+    def set_user(self, email, password):
         user = User()
         # Set the paswword
         password = crypt_password(password)
-        self.set_handler(username, user, **{'ikaaro:password': password})
+        self.set_handler(email, user, **{'ikaaro:email': email,
+                                         'ikaaro:password': password})
         return user
 
 
@@ -350,36 +352,35 @@ class UserFolder(Folder):
 
     new_user__access__ = 'is_admin'
     def new_user(self, context):
-        username = context.get_form_value('username')
+        email = context.get_form_value('email')
         password = context.get_form_value('password')
         password2 = context.get_form_value('password2')
         groups = context.get_form_values('groups')
 
         # Check the values
-        if not username:
+        if not email:
             return context.come_back(
-                u'The username is wrong, please try again.')
-        if self.has_handler(username):
+                u'The email is wrong, please try again.')
+        if self.has_handler(email):
             return context.come_back(
-                u'There is another user with the username "%s", please'
-                u' try again')
+                u'There is another user with the email "%s", please try again')
 
         if not password or password != password2:
             return context.come_back(
                 u'The password is wrong, please try again.')
 
-        user = self.set_user(username, password)
+        user = self.set_user(email, password)
 
         # Add user in groups
         root = context.root
         for group_path in groups:
             group = root.get_handler(group_path)
-            group.set_user(username)
+            group.set_user(email)
 
         if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
-            goto='./%s/;%s' % (username, user.get_firstview())
+            goto='./%s/;%s' % (email, user.get_firstview())
         goto = uri.get_reference(goto)
 
         message = self.gettext(u'User added.')

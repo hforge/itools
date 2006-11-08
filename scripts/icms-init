@@ -21,6 +21,7 @@ from optparse import OptionParser
 import os
 import random
 import string
+import sys
 
 # Import from itools
 import itools
@@ -57,6 +58,13 @@ def init(parser, options, target):
     else:
         exec('import %s' % options.root)
         exec('root_class = %s.Root' % options.root)
+
+    # Get the email address for the init user
+    if options.email is None:
+        sys.stdout.write("Type your email address: ")
+        email = sys.stdin.readline().strip()
+    else:
+        email = options.email
     # Get the password
     if options.password is None:
         password = [ random.choice(string.ascii_letters + string.digits)
@@ -64,8 +72,9 @@ def init(parser, options, target):
         password = ''.join(password)
     else:
         password = options.password
+
     # Build the instance on memory
-    source = root_class(username='admin', password=password)
+    source = root_class(username=email, password=password)
     # Initialize the database
     source.save_state_to('%s/database' % target)
 
@@ -98,7 +107,7 @@ def init(parser, options, target):
     print '*'
     print '* Welcome to itools.cms'
     print '* A user with administration rights has been created for you:'
-    print '*   username: admin'
+    print '*   username: %s' % email
     print '*   password: %s' % password
     print '*'
     print '* To start the new instance type:'
@@ -119,6 +128,8 @@ if __name__ == '__main__':
         '-p', '--port', type='int', help='listen to PORT number')
     parser.add_option(
         '-r', '--root', help='use the ROOT handler class to init the instance')
+    parser.add_option(
+        '-e', '--email', help='e-mail address of the admin user')
     parser.add_option(
         '-w', '--password', help='use the given PASSWORD for the admin user')
     parser.add_option(

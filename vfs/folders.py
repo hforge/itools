@@ -15,6 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+from __future__ import with_statement
+from subprocess import call
+
 # Import from itools
 from itools.uri import uri
 from registry import get_file_system
@@ -106,7 +110,7 @@ class Folder(object):
     def open(self, reference, mode=None):
         fs, reference = self.get_fs_and_reference(reference)
         if not fs.exists(reference):
-            raise LookupError
+            raise LookupError, str(reference)
 
         if fs.is_file(reference):
             return fs.open(reference, mode)
@@ -118,18 +122,20 @@ class Folder(object):
 
     def copy(self, source, target):
         if self.is_file(source):
-            # File
             self.make_file(target)
-            try:
-                source = self.open(source)
-                target = self.open(target)
-                target.write(source.read())
-            finally:
-                source.close()
-                target.close()
+            with self.open(source) as source:
+                with self.open(target) as target:
+                    target.write(source.read())
+        elif self.is_folder(source):
+            source_fs, source_reference = self.get_fs_and_reference(source)
+            target_fs, target_reference = self.get_fs_and_reference(target)
+            if source_fs is target_fs:
+                source_fs.copy(source_reference, target_reference)
+            else:
+                # XXX
+                raise NotImplementedError
         else:
-            # Folder (XXX)
-            raise NotImplementedError
+            raise OSError
 
 
     def move(self, source, target):
@@ -148,25 +154,3 @@ class Folder(object):
     def get_names(self, reference='.'):
         fs, reference = self.get_fs_and_reference(reference)
         return fs.get_names(reference)
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

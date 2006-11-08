@@ -89,7 +89,3 @@ def move(source, target):
 # Folders only
 def get_names(reference):
     return cwd.get_names(reference)
-
-
-
-

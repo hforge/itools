@@ -127,6 +127,17 @@ class FileFS(BaseFS):
 
 
     @staticmethod
+    def copy(source, target):
+        # XXX Windows (and maybe other platforms) is not supported, yet
+        try:
+            status = call(['cp', '-r', str(source.path), str(target.path)])
+        except OSError:
+            raise NotImplementedError
+        if status != 0:
+            raise IOError
+
+
+    @staticmethod
     def move(source, target):
         # XXX Windows (and maybe other platforms) is not supported, yet
         try:

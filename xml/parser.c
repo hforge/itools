@@ -663,6 +663,8 @@ static PyObject* Parser_iternext(Parser* self) {
     int size;
     char* base;
     PyObject* value;
+    PyObject* tag;
+    PyObject* tag_prefix;
     PyObject* tag_uri;
     PyObject* tag_name;
     int end_tag;
@@ -874,9 +876,10 @@ static PyObject* Parser_iternext(Parser* self) {
         } else {
             /* Start Element */
             /* Name */
-            value = xml_prefix_name(self);
-            if (value == NULL)
+            tag = xml_prefix_name(self);
+            if (tag == NULL)
                 return ERROR(INVALID_TOKEN, line, column);
+            tag_prefix = PyTuple_GetItem(tag, 0);
             /* Attributes */
             attributes_list = PyList_New(0);
             namespace_decls = PyDict_New();
@@ -887,8 +890,8 @@ static PyObject* Parser_iternext(Parser* self) {
                     self->cursor++;
                     self->column++;
                     /* Add to the stack */
-                    if (push_tag(self, value, namespace_decls) == -1) {
-                        Py_DECREF(value);
+                    if (push_tag(self, tag, namespace_decls) == -1) {
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         return PyErr_Format(PyExc_RuntimeError,
@@ -903,7 +906,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     self->cursor++;
                     self->column++;
                     if (*(self->cursor) != '>') {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
@@ -929,14 +932,14 @@ static PyObject* Parser_iternext(Parser* self) {
                     /* The prefix */
                     attr_name = xml_name(self);
                     if (attr_name == NULL) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
                     }
                     /* Eq */
                     if (xml_equal(self) == -1) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         Py_DECREF(attr_name);
@@ -945,7 +948,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     /* The URI */
                     attr_value = xml_attr_value(self);
                     if (attr_value == NULL) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         Py_DECREF(attr_name);
@@ -963,7 +966,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     self->column += 5;
                     /* Eq */
                     if (xml_equal(self) == -1) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
@@ -971,7 +974,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     /* The URI */
                     attr_value = xml_attr_value(self);
                     if (attr_value == NULL) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
@@ -983,14 +986,14 @@ static PyObject* Parser_iternext(Parser* self) {
                     /* Attribute */
                     attr_name = xml_prefix_name(self);
                     if (attr_name == NULL) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
                     }
                     /* Eq */
                     if (xml_equal(self) == -1) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         Py_DECREF(attr_name);
@@ -999,15 +1002,20 @@ static PyObject* Parser_iternext(Parser* self) {
                     /* Value */
                     attr_value = xml_attr_value(self);
                     if (attr_value == NULL) {
-                        Py_DECREF(value);
+                        Py_DECREF(tag);
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         Py_DECREF(attr_name);
                         return ERROR(INVALID_TOKEN, line, column);
                     }
                     /* Set the attribute */
+                    attr_prefix = PyTuple_GetItem(attr_name, 0);
+                    if (PyObject_Compare(attr_prefix, Py_None) == 0) {
+                        Py_INCREF(tag_prefix);
+                        PyTuple_SetItem(attr_name, 0, tag_prefix);
+                    }
                     PyList_Append(attributes_list,
-                                  Py_BuildValue("(OO)", attr_name, attr_value));
+                        Py_BuildValue("(OO)", attr_name, attr_value));
                     Py_DECREF(attr_name);
                     Py_DECREF(attr_value);
                 }
@@ -1017,11 +1025,11 @@ static PyObject* Parser_iternext(Parser* self) {
             if (namespaces == NULL)
                 tag_uri = Py_None;
             else {
-                tag_uri = PyDict_GetItem(namespaces, PyTuple_GetItem(value, 0));
+                tag_uri = PyDict_GetItem(namespaces, tag_prefix);
                 if (tag_uri == NULL)
                     tag_uri = Py_None;
             }
-            tag_name = PyTuple_GetItem(value, 1);
+            tag_name = PyTuple_GetItem(tag, 1);
 
             /* The END_ELEMENT token will be sent later */
             if (end_tag)
@@ -1060,7 +1068,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     Py_DECREF(attr_name);
                     Py_DECREF(p_datatype);
                     Py_DECREF(p_datatype_decode);
-                    Py_DECREF(value);
+                    Py_DECREF(tag);
                     Py_DECREF(attributes_list);
                     Py_DECREF(namespace_decls);
                     Py_DECREF(attributes);
@@ -1082,7 +1090,7 @@ static PyObject* Parser_iternext(Parser* self) {
                                        tag_name, attributes, namespaces, line);
                 Py_DECREF(namespaces);
             }
-            Py_DECREF(value);
+            Py_DECREF(tag);
             Py_DECREF(attributes_list);
             Py_DECREF(namespace_decls);
             Py_DECREF(attributes);

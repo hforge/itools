@@ -52,6 +52,50 @@ def get_root(target):
 
 
 
+def finish_commit(folder):
+    """Continue to replace resources by their new state."""
+    for name in folder.get_names():
+        if name == '.catalog':
+            if folder.exists('.catalog.bak'):
+                folder.remove('.catalog.bak')
+            folder.copy(name, '.catalog.bak')
+        elif name == '.catalog.bak':
+            continue
+        elif folder.is_folder(name):
+            subfolder = folder.open(name)
+            finish_commit(subfolder)
+        elif name[0] == '~':
+            marker = name[-3:]
+            if marker == 'tmp' or marker == 'add':
+                original = name[1:-4]
+                folder.move(name, original)
+            elif marker == 'del':
+                folder.remove(name)
+
+
+
+def finish_rollback(folder):
+    """Continue to replace resources by backups."""
+    for name in folder.get_names():
+        if name == '.catalog':
+            if folder.exists(name):
+                folder.remove(name)
+            folder.copy('.catalog.bak', name)
+        elif name == '.catalog.bak':
+            continue
+        elif folder.is_folder(name):
+            subfolder = folder.open(name)
+            finish_rollback(subfolder)
+        elif name[0] == '~':
+            marker = name[-3:]
+            if marker == 'tmp' or marker == 'add':
+                folder.remove(name)
+            elif marker == 'del':
+                original = name[1:-4]
+                folder.move(name, original)
+
+
+
 class Server(web.server.Server):
 
     def __init__(self, target, address=None, port=None):

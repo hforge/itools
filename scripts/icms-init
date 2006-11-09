@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
+from __future__ import with_statement
 from optparse import OptionParser
 import os
 import random
@@ -25,10 +26,14 @@ import sys
 
 # Import from itools
 import itools
+from itools import vfs
 from itools.handlers.config import Config
 from itools.handlers import transactions
+
+# Import from itools.cms
 from itools.cms.Handler import Handler
 from itools.cms.root import Root
+from itools.cms.server import get_config, finish_commit
 from itools.cms.versioning import VersioningAware
 from itools.cms import skins
 from itools.cms.catalog import CatalogAware
@@ -93,15 +98,17 @@ def init(parser, options, target):
         if isinstance(handler, VersioningAware):
             handler.commit_revision()
 
+    # Save altered state
     transaction = transactions.get_transaction()
     transaction.commit()
 
-    # Backup Catalog
-    cmd = 'cp -r %s/database/.catalog %s/database/.catalog.bak'
-    os.system(cmd % (target, target))
+    # First commit
+    folder = vfs.open(target)
+    finish_commit(folder)
 
     # Transaction state
-    open('%s/state' % target, 'w').write('OK')
+    with folder.make_file('state') as state:
+        state.write('OK')
 
     # Bravo!
     print '*'

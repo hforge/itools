@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 import sha
@@ -60,6 +60,8 @@ class User(AccessControl, Folder):
 
 
     def authenticate(self, password):
+        if self.get_property('ikaaro:user_must_confirm'):
+            return False
         return password == self.get_property('ikaaro:password')
 
 
@@ -98,6 +100,22 @@ class User(AccessControl, Folder):
     #######################################################################
     # User interface
     #######################################################################
+
+    #######################################################################
+    # Registration
+    confirm_registration__access__ = True
+    def confirm_registration(self, context):
+        must_confirm = self.get_property('ikaaro:user_must_confirm')
+        if context.get_form_value('key') != must_confirm:
+            return self.gettext(u"Bad key.").encode('utf-8')
+
+        self.del_property('ikaaro:user_must_confirm')
+        context.commit = True
+
+        message = u'Registration confirmed, please log in'
+        goto = '/;login_form?username=%s' % self.name
+        return context.come_back(message, goto=goto)
+
 
     #######################################################################
     # Profile
@@ -323,9 +341,10 @@ class UserFolder(Folder):
         user = User()
         # Set the paswword
         password = crypt_password(password)
+
         self.set_handler(email, user, **{'ikaaro:email': email,
                                          'ikaaro:password': password})
-        return user
+        return self.get_handler(email)
 
 
     def get_usernames(self):

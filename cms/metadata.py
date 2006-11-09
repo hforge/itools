@@ -111,6 +111,7 @@ class Schema(schemas.base.Schema):
         'user_language': String(default='en'),
         'website_is_open': Boolean(default=False),
         'website_languages': Tokens(default=('en',)),
+        'user_must_confirm': String,
         # Future
         'order': Tokens(default=()),
         }

@@ -15,8 +15,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+from copy import deepcopy
+import random
+from string import ascii_letters, Template
+
 # Import from itools
 from itools import uri
+from itools.uri import Path
 from itools.datatypes import Email
 from itools import i18n
 from itools.catalog import queries
@@ -281,11 +287,28 @@ class WebSite(RoleAware, Folder):
 
         # Add the user
         user = users.set_user(email, password)
+        key = ''.join([ random.choice(ascii_letters) for x in range(30) ])
+        user.set_property('ikaaro:user_must_confirm', key)
+
+        # Send confirmation email
+        root = context.root
+        subject = self.gettext("Register confirmation required.")
+        body = self.gettext(
+            "To confirm your registration click the link:\n"
+            "\n"
+            "  $confirm_url")
+        confirm_url = deepcopy(context.uri)
+        confirm_url.path = Path('/users/%s/;confirm_registration' % email)
+        confirm_url.query = {
+            'key': user.get_property('ikaaro:user_must_confirm')}
+        body = Template(body).substitute({'confirm_url': str(confirm_url)})
+        root.send_email(None, email, subject, body)
 
         # Bring the user to the login form
-        message = u'Thanks for register, please log in'
-        goto = ';login_form?username=%s' % email
-        return context.come_back(message, goto=goto)
+        message = self.gettext(
+            u"An email has been sent to you, to finish the registration "
+            u"process follow the instructions detailed in it.")
+        return message.encode('utf-8')
 
 
     ########################################################################
@@ -310,6 +333,7 @@ class WebSite(RoleAware, Folder):
 
         root = context.root
         users = root.get_handler('users')
+        # Check the user exists
         if username and users.has_handler(username):
             user = users.get_handler(username)
         else:
@@ -317,6 +341,12 @@ class WebSite(RoleAware, Folder):
             return context.come_back(
                 u'The user "$username" does not exist.', username=username)
 
+        # Check the user is active
+        if user.get_property('ikaaro:user_must_confirm'):
+            return context.come_back(
+                u'The user "$username" is not active.', username=username)
+
+        # Check the password is right
         password = crypt_password(password)
         if not user.authenticate(password):
             # XXX We lost the referrer if any

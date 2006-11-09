@@ -268,8 +268,10 @@ class WebSite(RoleAware, Folder):
             return context.come_back(message)
 
         # Do we already have a user with that email?
-        users = self.get_handler('users')
-        if users.has_handler(email):
+        root = context.root
+        catalog = root.get_handler('.catalog')
+        results = catalog.search(email=email)
+        if results.get_n_documents():
             message = u'There is already a user with that email.'
             return context.come_back(message)
 
@@ -286,19 +288,19 @@ class WebSite(RoleAware, Folder):
             return context.come_back(message)
 
         # Add the user
+        users = self.get_handler('users')
         user = users.set_user(email, password)
         key = ''.join([ random.choice(ascii_letters) for x in range(30) ])
         user.set_property('ikaaro:user_must_confirm', key)
 
         # Send confirmation email
-        root = context.root
         subject = self.gettext("Register confirmation required.")
         body = self.gettext(
             "To confirm your registration click the link:\n"
             "\n"
             "  $confirm_url")
         confirm_url = deepcopy(context.uri)
-        confirm_url.path = Path('/users/%s/;confirm_registration' % email)
+        confirm_url.path = Path('/users/%s/;confirm_registration' % user.name)
         confirm_url.query = {
             'key': user.get_property('ikaaro:user_must_confirm')}
         body = Template(body).substitute({'confirm_url': str(confirm_url)})
@@ -328,23 +330,31 @@ class WebSite(RoleAware, Folder):
 
     login__access__ = True
     def login(self, context, goto=None):
-        username = context.get_form_value('username')
+        email = context.get_form_value('username')
         password = context.get_form_value('password')
 
-        root = context.root
-        users = root.get_handler('users')
+        # Check the email field has been filed
+        email = email.strip()
+        if not email:
+            return context.come_back(u'Type your email please.')
+
         # Check the user exists
-        if username and users.has_handler(username):
-            user = users.get_handler(username)
-        else:
+        root = context.root
+        catalog = root.get_handler('.catalog')
+        results = catalog.search(email=email)
+        if results.get_n_documents() == 0:
             # XXX We lost the referrer if any
             return context.come_back(
-                u'The user "$username" does not exist.', username=username)
+                u'The user "$username" does not exist.', username=email)
+
+        # Get the user
+        brain = results.get_documents().next()
+        user = root.get_handler('users/%s' % brain.name)
 
         # Check the user is active
         if user.get_property('ikaaro:user_must_confirm'):
             return context.come_back(
-                u'The user "$username" is not active.', username=username)
+                u'The user "$username" is not active.', username=email)
 
         # Check the password is right
         password = crypt_password(password)
@@ -353,6 +363,7 @@ class WebSite(RoleAware, Folder):
             return context.come_back(u'The password is wrong.')
 
         # Set cookie
+        username = str(user.name)
         cookie = Password.encode('%s:%s' % (username, password))
         request = context.request
         expires = request.form.get('iAuthExpires', None)

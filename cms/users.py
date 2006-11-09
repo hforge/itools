@@ -53,6 +53,15 @@ class User(AccessControl, Folder):
 
 
     ########################################################################
+    # Indexing
+    ########################################################################
+    def get_catalog_indexes(self):
+        indexes = Folder.get_catalog_indexes(self)
+        indexes['email'] = self.get_property('ikaaro:email')
+        return indexes
+
+
+    ########################################################################
     # API
     ########################################################################
     def set_password(self, value):
@@ -317,14 +326,16 @@ class UserFolder(Folder):
     def new(self, users=[]):
         Folder.new(self)
         cache = self.cache
-        for email, password in users:
-            password = crypt_password(password)
+        for id, value in enumerate(users):
+            id = str(id)
+            email, password = value
+            # Add User
             user = User()
-            cache[email] = user
-            metadata = {'owner': email, 'ikaaro:password': password,
-                        'ikaaro:email': email}
-            metadata = self.build_metadata(user, **metadata)
-            cache['%s.metadata' % email] = metadata
+            cache[id] = user
+            # Add metadata
+            metadata = {'owner': id, 'ikaaro:email': email,
+                        'ikaaro:password': crypt_password(password)}
+            cache['%s.metadata' % id] = self.build_metadata(user, **metadata)
 
 
     #######################################################################
@@ -339,12 +350,29 @@ class UserFolder(Folder):
 
     def set_user(self, email, password):
         user = User()
-        # Set the paswword
-        password = crypt_password(password)
 
-        self.set_handler(email, user, **{'ikaaro:email': email,
-                                         'ikaaro:password': password})
-        return self.get_handler(email)
+        # Calculate the user id
+        ids = []
+        for key in self.cache:
+            try:
+                key = int(key)
+            except ValueError:
+                pass
+            ids.append(key)
+        if ids:
+            ids.sort()
+            user_id = str(ids[-1] + 1)
+        else:
+            user_id = '0'
+
+        # Set the email and paswword
+        password = crypt_password(password)
+        self.set_handler(user_id, user, **{'ikaaro:email': email,
+                                           'ikaaro:password': password,
+                                           'dc:title': email})
+
+        # Return the user
+        return self.get_handler(user_id)
 
 
     def get_usernames(self):
@@ -376,30 +404,37 @@ class UserFolder(Folder):
         password2 = context.get_form_value('password2')
         groups = context.get_form_values('groups')
 
-        # Check the values
+        # Check the email is not empty
         if not email:
             return context.come_back(
                 u'The email is wrong, please try again.')
-        if self.has_handler(email):
+
+        # Check there is not already a user with that email
+        root = context.root
+        catalog = root.get_handler('.catalog')
+        results = catalog.search(email=email)
+        if results.get_n_documents():
             return context.come_back(
                 u'There is another user with the email "%s", please try again')
 
+        # Check the password is right
         if not password or password != password2:
             return context.come_back(
                 u'The password is wrong, please try again.')
 
+        # Add the user
         user = self.set_user(email, password)
 
         # Add user in groups
-        root = context.root
         for group_path in groups:
             group = root.get_handler(group_path)
-            group.set_user(email)
+            group.set_user(user.name)
 
+        # Come back
         if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
         else:
-            goto='./%s/;%s' % (email, user.get_firstview())
+            goto='./%s/;%s' % (user.name, user.get_firstview())
         goto = uri.get_reference(goto)
 
         message = self.gettext(u'User added.')

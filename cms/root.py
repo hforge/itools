@@ -112,6 +112,8 @@ class Root(WebSite):
                        ('workflow_state', 'keyword', True, True),
                        ('abspath', 'keyword', True, True),
                        ('members', 'keyword', True, False),
+                       # Users
+                       ('email', 'keyword', True, False),
                        # Folder's view
                        ('parent_path', 'keyword', True, True),
                        ('name', 'keyword', True, True),
@@ -122,18 +124,22 @@ class Root(WebSite):
 
     def new(self, username=None, password=None):
         # Call the parent
-        WebSite.new(self, admins=[username])
+        WebSite.new(self)
 
         # Create sub-handlers
         cache = self.cache
         cache['.metadata'] = self.build_metadata(self)
         cache['.catalog'] = Catalog(fields=self._catalog_fields)
         # Users
-        users = UserFolder(users=[(username, password)])
+        users = UserFolder()
         cache['users'] = users
-        metadata = self.build_metadata(users, owner=username,
+        metadata = self.build_metadata(users, owner=None,
                                        **{'dc:title': {'en': u'Users'}})
         cache['users.metadata'] = metadata
+
+        # Add user
+        user = users.set_user(username, password)
+        self.set_role('admins', user.name)
 
 
     def get_catalog_metadata_fields(self):

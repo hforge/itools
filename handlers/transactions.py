@@ -35,8 +35,6 @@ class Transaction(set):
         # Reset handlers
         for handler in self:
             handler.timestamp = datetime.datetime(1900, 1, 1)
-        # Reset the transaction
-        self.clear()
 
 
     def commit(self, username='', note=''):

@@ -18,15 +18,59 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
 
 # Import from itools
 import itools
+from itools import vfs
 from itools.cms.server import ask_confirmation
+
+
+def finish_commit(folder):
+    """Continue to replace resources by their new state"""
+    for name in folder.get_names():
+        if name == '.catalog':
+            if folder.exists('.catalog.bak'):
+                folder.remove('.catalog.bak')
+            folder.copy(name, '.catalog.bak')
+        elif name == '.catalog.bak':
+            continue
+        elif folder.is_folder(name):
+            subfolder = folder.open(name)
+            finish_commit(subfolder)
+        elif name[0] == '~':
+            marker = name[-3:]
+            if marker == 'tmp' or marker == 'add':
+                original = name[1:-4]
+                folder.move(name, original)
+            elif marker == 'del':
+                folder.remove(name)
+
+
+
+def finish_rollback(folder):
+    """Replace resources by backups"""
+    for name in folder.get_names():
+        if name == '.catalog':
+            if folder.exists(name):
+                folder.remove(name)
+            folder.copy('.catalog.bak', name)
+        elif name == '.catalog.bak':
+            continue
+        elif folder.is_folder(name):
+            subfolder = folder.open(name)
+            finish_rollback(subfolder)
+        elif name[0] == '~':
+            marker = name[-3:]
+            if marker == 'tmp' or marker == 'add':
+                folder.remove(name)
+            elif marker == 'del':
+                original = name[1:-4]
+                folder.move(name, original)
 
 
 
 def restore(parser, options, target):
+    database = vfs.open(target).open('database')
     state = open('%s/state' % target).read()
     if state == 'OK':
         print 'Everything seems fine.'
@@ -34,16 +78,21 @@ def restore(parser, options, target):
         message = 'Restore database from backup (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Restoring...',
-            cmd = 'rsync -a --delete %s/database.bak/ %s/database'
-            os.system(cmd % (target, target))
+            finish_rollback(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
-    elif state == 'END':
-        message = 'Backup disrupted, update backup from database (y/N)? '
+    elif state == 'COMMIT':
+        message = 'Commit disrupted, continue (y/N)? '
         if ask_confirmation(message) is True:
-            print '  * Backup...',
-            cmd = 'rsync -a --delete %s/database/ %s/database.bak'
-            os.system(cmd % (target, target))
+            print '  * Commiting...',
+            finish_commit(database)
+            open('%s/state' % target, 'w').write('OK')
+            print 'DONE'
+    elif state == 'ROLLBACK':
+        message = 'Rollback disrupted, continue (y/N)? '
+        if ask_confirmation(message) is True:
+            print '  * Rolling back...',
+            finish_rollback(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     else:

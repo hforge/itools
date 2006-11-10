@@ -92,31 +92,31 @@ class Table(object):
       - batchsize: ..
     """
 
-    def __init__(self, root, name, objects, sortby=None, sortorder='up',
-                 batchstart='0', batchsize='0', getter=None):
+    def __init__(self, objects, sortby=None, sortorder='up', batchstart=0,
+                 batchsize=0, getter=None, name='table'):
         # Get the parameters
-        total = len(objects)
-        parameters = get_parameters(name, sortby=sortby, sortorder=sortorder,
-                                    batchstart=batchstart, batchsize=batchsize)
+        context = get_context()
 
-        sortby = parameters['sortby']
-        if isinstance(sortby, (str, unicode)):
+        if context.has_form_value('%s_sortby' % name):
+            sortby = context.get_form_values('%s_sortby' % name)
+        elif isinstance(sortby, (str, unicode)):
             sortby = [sortby]
-
-        sortorder = parameters['sortorder']
-        batchstart = int(parameters['batchstart'])
-        batchsize = int(parameters['batchsize'])
-
-        # Calculate subtotal and batchend
-        subtotal = len(objects)
-
-        batchend = batchstart + batchsize
-        if batchend > subtotal:
-            batchend = subtotal
+        sortorder = context.get_form_value('%s_sortorder' % name, sortorder)
+        batchstart = context.get_form_value('%s_batchstart' % name, batchstart)
+        batchstart = int(batchstart)
+        batchsize = context.get_form_value('%s_batchsize' % name, batchsize)
+        batchsize = int(batchsize)
 
         # Sort
         if sortby is not None:
             objects = sort(objects, sortby, sortorder, getter)
+
+        # Calculate subtotal and batchend
+        total = len(objects)
+
+        batchend = batchstart + batchsize
+        if batchend > total:
+            batchend = total
 
         # Previous and next
         previous = batchstart - batchsize
@@ -132,8 +132,10 @@ class Table(object):
         # Get the subset
         if batchsize:
             objects = objects[batchstart:batchend]
+            subtotal = batchend - batchstart
+        else:
+            subtotal = total
 
-        self.root = root # XXX Needed by sortcontrol, remove..
         self.name = name
         self.objects = objects
         self.total = total # objects here are not original objects list

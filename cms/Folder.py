@@ -398,8 +398,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         context = get_context()
         request = context.request
 
-        root = context.root
-        path_to_root = context.path.get_pathtoroot()
         search_subfolders = False
 
         # hack for search in a tree, search_subfolder is a path string
@@ -410,6 +408,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         else:
             query['parent_path'] = self.get_abspath()
 
+        root = context.root
         if results is None:
             results = root.search(**query).get_documents()
 
@@ -430,10 +429,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
             table_content.append(line)
 
         # Build the table
-        tablename = 'content'
-        table = Table(path_to_root, tablename, table_content, sortby=sortby,
-                      sortorder=sortorder, batchstart=batchstart,
-                      batchsize=batchsize)
+        table = Table(table_content, sortby=sortby, sortorder=sortorder,
+                      batchstart=batchstart, batchsize=batchsize)
 
         # Get the handler for the visibles documents and extracts values
         user = context.user

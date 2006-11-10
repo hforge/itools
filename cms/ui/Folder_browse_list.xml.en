@@ -39,7 +39,7 @@
     summary="listing of folder content or query result">
     <thead>
       <tr>
-        <th stl:repeat="column table/columns">
+        <th stl:repeat="column table/columns" valign="bottom">
           <stl:block if="column">
             <stl:block content="column/title" />
             <a stl:if="column/href" stl:attributes="href column/href">

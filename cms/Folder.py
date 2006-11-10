@@ -488,13 +488,30 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 #
                 self._browse_namespace(line, document)
                 objects.append(line)
-                
+ 
         table.objects = objects
+        columns = [(None, None), (None, None), ('name', u'Name'),
+                   ('title', u'Title'),
+                   ('format', u'Type'), ('mtime', u'Date'), (None, u'Size'),
+                   ('workflow_state', u'State')]
+        table.columns = []
+        for name, title in columns:
+            if title is None:
+                table.columns.append(None)
+            elif name is None:
+                table.columns.append({'title': self.gettext(title),
+                                      'href': None})
+            else:
+                href, sort = table._sortcontrol(name)
+                table.columns.append({'title': title,
+                                      'href': href,
+                                      'up': (sort == 'up'),
+                                      'down': (sort == 'down'),
+                                      'no': (sort == 'none')})
 
         # Build namespace
         namespace = {}
         namespace['table'] = table
-        namespace['batch'] = table.batch_control()
         # Paste?
         cp = context.get_cookie('ikaaro_cp')
         namespace['paste'] = cp is not None

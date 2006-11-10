@@ -28,23 +28,27 @@
 </form>
 
 <form action="." method="post">
-  <div class="batchcontrol" stl:if="batch/total">
-    <stl:inline if="batch/control" content="batch/control" />
-    <a stl:if="batch/previous" stl:attributes="href batch/previous">&lt;&lt;</a>
-    <a stl:if="batch/next" stl:attributes="href batch/next">&gt;&gt;</a>
+  <div class="batchcontrol" stl:if="table/total">
+    <stl:inline content="table/batch_control" />
+    <a stl:if="table/batch_previous"
+      stl:attributes="href batch_previous">&lt;&lt;</a>
+    <a stl:if="table/batch_next"
+      stl:attributes="href table/batch_next">&gt;&gt;</a>
   </div>
-  <table border="0" cellspacing="2" cellpadding="2"
-    summary="listing of folder content or query result" stl:if="table/objects">
+  <table border="0" cellspacing="2" cellpadding="2" stl:if="table/objects"
+    summary="listing of folder content or query result">
     <thead>
       <tr>
-        <th></th>
-        <th></th>
-        <th>Name <stl:inline content="table/sortcontrol(name)" /></th>
-        <th>Title <stl:inline content="table/sortcontrol(title)" /></th>
-        <th>Type <stl:inline content="table/sortcontrol(format)" /></th>
-        <th>Date <stl:inline content="table/sortcontrol(mtime)" /></th>
-        <th>Size</th>
-        <th>State <stl:inline content="table/sortcontrol(workflow_state)" /></th>
+        <th stl:repeat="column table/columns">
+          <stl:block if="column">
+            <stl:block content="column/title" />
+            <a stl:if="column/href" stl:attributes="href column/href">
+              <img src="/ui/images/order-none.png" stl:if="column/no" />
+              <img src="/ui/images/order-up.png" stl:if="column/up" />
+              <img src="/ui/images/order-down.png" stl:if="column/down" />
+            </a>
+          </stl:block>
+        </th>
       </tr>
     </thead>
     <tbody>

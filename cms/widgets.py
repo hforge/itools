@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,10 +13,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 from operator import attrgetter
+from string import Template
 
 # Import from itools
 from itools import uri
@@ -26,6 +27,53 @@ from itools.web import get_context
 # Import from itools.cms
 from utils import get_parameters
 from Handler import Handler
+
+
+
+def sort(objects, sortby, sortorder='up', getter=None):
+    """
+    Returns the same objects sorted by the given criteria ("sortby"),
+    in the given sense ("sortorder").
+
+    The parameter "sortby" must be a list with the different criterias
+    to use to sort the objects.
+
+    The parameter "getter" if given must be a function that defines the
+    way to get values from every object.
+    """
+
+    # The default getter tries first getattr, and if it fails tries
+    # mapping access.
+    if getter is None:
+        def getter(object, key):
+            try:
+                return getattr(object, key)
+            except AttributeError:
+                return object[key]
+
+    # Process sortby, it must be a list like:
+    #   [<criteria>, ...]
+    # where criteria is a list:
+    #   [<key>, ...]
+    # XXX Do we really need this "feature"?
+    sortby = [ x.split('.') for x in sortby ]
+
+    # Define the sort function
+    def sort_key(x, sortby=sortby, getter=getter):
+        criterias = []
+        for criteria in sortby:
+            for key in criteria:
+                x = getter(x, key)
+            if callable(x):
+                x = x()
+            criterias.append(x)
+        return tuple(criterias)
+
+    # Reverse?
+    reverse = (sortorder == 'down')
+
+    return sorted(objects, key=sort_key, reverse=reverse)
+
 
 
 class Table(object):
@@ -46,21 +94,15 @@ class Table(object):
 
     def __init__(self, root, name, objects, sortby=None, sortorder='up',
                  batchstart='0', batchsize='0', getter=None):
-        # The default getter tries first getattr, and if it fails tries
-        # mapping access.
-        if getter is None:
-            def getter(object, key):
-                try:
-                    return getattr(object, key)
-                except AttributeError:
-                    return object[key]
-
         # Get the parameters
         total = len(objects)
         parameters = get_parameters(name, sortby=sortby, sortorder=sortorder,
                                     batchstart=batchstart, batchsize=batchsize)
 
         sortby = parameters['sortby']
+        if isinstance(sortby, (str, unicode)):
+            sortby = [sortby]
+
         sortorder = parameters['sortorder']
         batchstart = int(parameters['batchstart'])
         batchsize = int(parameters['batchsize'])
@@ -72,35 +114,11 @@ class Table(object):
         if batchend > subtotal:
             batchend = subtotal
 
-        # Order
+        # Sort
         if sortby is not None:
-            # Process sortby, it must be a list like:
-            #   [<criteria>, ...]
-            # where criteria is a list:
-            #   [<key>, ...]
-            if isinstance(sortby, (str, unicode)):
-                sortby = [sortby]
-            sortby = [ x.split('.') for x in sortby ]
+            objects = sort(objects, sortby, sortorder, getter)
 
-            aux = []
-            for object in objects:
-                criterias = []
-                for criteria in sortby:
-                    value = object
-                    for key in criteria:
-                        value = getter(value, key)
-                    if callable(value):
-                        value = value()
-                    criterias.append(value)
-                criterias.append(object)
-                aux.append(tuple(criterias))
-            aux.sort()
-            objects = [ x[-1] for x in aux ]
-
-            if sortorder == 'down':
-                objects.reverse()
-
-            # Previous and next
+        # Previous and next
         previous = batchstart - batchsize
         if previous < 0:
             previous = 0
@@ -119,10 +137,7 @@ class Table(object):
         self.name = name
         self.objects = objects
         self.total = total # objects here are not original objects list
-        if sortby is None:
-            self.sortby = None
-        else:
-            self.sortby = [ '.'.join(x) for x in sortby ]
+        self.sortby = sortby
         self.sortorder = sortorder
         self.batchstart = batchstart + 1
         self.batchend = batchend
@@ -130,69 +145,49 @@ class Table(object):
         self.previous = previous
         self.next = next
 
+        # Return a dict. as {'total', 'previous', 'next',  'control'}
+        context = get_context()
+        # Previous
+        self.batch_previous = None
+        if self.previous is not None:
+            data = {'%s_batchstart' % self.name: str(self.previous)}
+            self.batch_previous = context.uri.replace(**data)
+        # Next 
+        self.batch_next = None
+        if self.next is not None:
+            data = {'%s_batchstart' % self.name: str(self.next)}
+            self.batch_next = context.uri.replace(**data)
+        # Summary
+        message = Handler.gettext(u'$start-$end of $total')
+        self.batch_control = Template(message).substitute(
+            {'start': self.batchstart, 'end': batchend, 'total': total})
 
-    def sortcontrol(self, column):
+
+    def _sortcontrol(self, column):
         """
         Returns an html snippet with a link that lets to order a column
         in a table.
         """
-        context = get_context()
-
         # Process column
         if isinstance(column, (str, unicode)):
             column = [column]
-        # The html snippet, variables: href and src
-        pattern = '<a href="%(href)s"><img src="%(src)s"></a>'
 
         # Calculate the href
         data = {}
         data['%s_sortby' % self.name] = column
 
         if self.sortby == column:
-            if self.sortorder == 'up':
-                value = 'down'
-            else:
-                value = 'up'
-        else:
-            value = 'up'
-        data['%s_sortorder' % self.name] = value
-
-        href = context.uri.replace(**data)
-        # Calculate the src
-        if self.sortby == column:
             value = self.sortorder
+            if self.sortorder == 'up':
+                data['%s_sortorder' % self.name] = 'down'
+            else:
+                data['%s_sortorder' % self.name] = 'up'
         else:
             value = 'none'
-        src = context.path.get_pathto('/ui/images/order-%s.png' % value)
+            data['%s_sortorder' % self.name] = 'up'
 
-        return pattern % {'href': href, 'src': src}
-
-
-    def batch_control(self):
-        """Return a dict. as {'total', 'previous', 'next',  'control'}"""
-        context = get_context()
-        request = context.request
-
-        batch = {}
-        batch['total'] = self.total
-
-        # Batch control
-        batch['previous'] = None
-        if self.previous is not None:
-            data = {'%s_batchstart' % self.name: str(self.previous)}
-            batch['previous'] = context.uri.replace(**data)
-
-        batch['next'] = None
-        if self.next is not None:
-            data = {'%s_batchstart' % self.name: str(self.next)}
-            batch['next'] = context.uri.replace(**data)
-
-        # Batch summary
-        control = Handler.gettext(u'%(start)s-%(end)s of %(total)s') \
-                  % {'start': self.batchstart, 'end': self.batchend,
-                     'total': self.total}
-        batch['control'] = control
-        return batch
+        href = get_context().uri.replace(**data)
+        return href, value
 
 
 

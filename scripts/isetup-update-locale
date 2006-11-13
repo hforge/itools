@@ -96,6 +96,6 @@ if __name__ == '__main__':
     for filename in folder.get_names():
         if not filename.endswith('.po'):
             continue
-        print path,
+        print filename,
         sys.stdout.flush()
-        os.system('msgmerge -U -s %s locale/locale.pot' % path)
+        os.system('msgmerge -U -s locale/%s locale/locale.pot' % filename)

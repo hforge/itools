@@ -8,7 +8,7 @@
 
 <form name="addform" action=";new_user" method="post">
   <dl>
-    <dt>Username</dt>
+    <dt>Username (Do not use accents.)</dt>
     <dd>
       <input type="text" id="username" name="username" />
     </dd>

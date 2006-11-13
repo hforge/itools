@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-22 15:09+CET\n"
+"POT-Creation-Date: 2006-11-13 11:11+CET\n"
 "PO-Revision-Date: 2006-07-27 12:09+0200\n"
 "Last-Translator: nderam <hcauwelier@oursours.net>\n"
 "Language-Team:  <fr@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cms/root.py:377
+#: cms/root.py:386
 msgid "$n handlers have been re-indexed."
 msgstr "$n objets ont été réindexés."
 
@@ -592,7 +592,7 @@ msgstr "Une action doit être sélectionnée."
 msgid "A valid email address must be provided."
 msgstr ""
 
-#: cms/root.py:304
+#: cms/root.py:313
 msgid "About"
 msgstr "Au sujet de"
 
@@ -612,7 +612,7 @@ msgstr "Compte"
 msgid "Account Change"
 msgstr "Modifier le compte"
 
-#: cms/users.py:194
+#: cms/users.py:193
 msgid "Account changed."
 msgstr "Compte modifié."
 
@@ -861,7 +861,7 @@ msgstr "Modifier le mot de passe"
 msgid "Change preferences"
 msgstr "Modifier les préférences"
 
-#: cms/WebSite.py:239
+#: cms/csv_.py:66
 msgid "Changes saved."
 msgstr "Modifications sauvegardées"
 
@@ -878,7 +878,7 @@ msgid ""
 "      </select>"
 msgstr ""
 
-#: cms/root.py:392
+#: cms/root.py:401
 msgid "Check Groups"
 msgstr "Vérifier les groupes"
 
@@ -944,7 +944,7 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:51
+#: cms/html.py:48
 msgid "Create and publish a Web Document."
 msgstr "Créer un publier un document Web."
 
@@ -997,11 +997,11 @@ msgstr "N'afficher que le contenu qui contient&nbsp;:"
 msgid "Document"
 msgstr "Document"
 
-#: cms/binary.py:245
+#: cms/binary.py:252
 msgid "Document Excel"
 msgstr "Classeur Excel"
 
-#: cms/binary.py:111
+#: cms/binary.py:118
 msgid "Document Flash"
 msgstr "Document Flash"
 
@@ -1009,11 +1009,11 @@ msgstr "Document Flash"
 msgid "Document History"
 msgstr "Historique du document"
 
-#: cms/binary.py:338
+#: cms/binary.py:345
 msgid "Document PDF"
 msgstr "Document PDF"
 
-#: cms/binary.py:259
+#: cms/binary.py:266
 msgid "Document PowerPoint"
 msgstr "Document PowerPoint"
 
@@ -1021,11 +1021,11 @@ msgstr "Document PowerPoint"
 msgid "Document State"
 msgstr "État du document"
 
-#: cms/binary.py:230
+#: cms/binary.py:237
 msgid "Document Word"
 msgstr "Document Word"
 
-#: cms/html.py:167
+#: cms/html.py:164
 msgid "Document changed."
 msgstr "Document modifié."
 
@@ -1041,7 +1041,7 @@ msgstr "Télécharger"
 msgid "E-mail"
 msgstr "Courriel"
 
-#: cms/html.py:155
+#: cms/html.py:152
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
@@ -1061,7 +1061,7 @@ msgstr ""
 msgid "Each version is given a distinguishing version number."
 msgstr ""
 
-#: cms/ical.py:776
+#: cms/text.py:155
 msgid "Edit"
 msgstr "Modifier"
 
@@ -1118,7 +1118,7 @@ msgstr "Evènement non trouvé"
 msgid "Everything is alright."
 msgstr "Tout est sous contrôle."
 
-#: cms/binary.py:244
+#: cms/binary.py:251
 msgid "Excel"
 msgstr "Excel"
 
@@ -1176,7 +1176,7 @@ msgstr ""
 msgid "Fix"
 msgstr "Corriger."
 
-#: cms/binary.py:110
+#: cms/binary.py:117
 msgid "Flash"
 msgstr "Flash"
 
@@ -1268,7 +1268,7 @@ msgstr "Nom complet"
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
-#: cms/root.py:421
+#: cms/root.py:430
 msgid "Groups fixed."
 msgstr "Groupes corrigés."
 
@@ -1487,7 +1487,7 @@ msgstr "Langues"
 msgid "Languages removed."
 msgstr "Langues supprimées."
 
-#: cms/root.py:305
+#: cms/root.py:314
 msgid "License"
 msgstr "Licence"
 
@@ -1519,7 +1519,7 @@ msgstr "Connexion"
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: cms/root.py:391
+#: cms/root.py:400
 msgid "Maintenance"
 msgstr "Maintenance"
 
@@ -1748,19 +1748,19 @@ msgstr "Novembre"
 msgid "Nulla facilisi."
 msgstr ""
 
-#: cms/ui/Folder_browse_calendar.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "OK"
 msgstr ""
 
-#: cms/binary.py:316
+#: cms/binary.py:323
 msgid "OOo Calc"
 msgstr "OpenOffice.org Calc"
 
-#: cms/binary.py:326
+#: cms/binary.py:333
 msgid "OOo Impress"
 msgstr "OpenOffice.org Impress"
 
-#: cms/binary.py:305
+#: cms/binary.py:312
 msgid "OOo Writer"
 msgstr "OpenOffice.org Writer"
 
@@ -1792,15 +1792,15 @@ msgstr "Octobre"
 msgid "One or more field is invalid."
 msgstr "Au moins un champ est invalide."
 
-#: cms/binary.py:306
+#: cms/binary.py:313
 msgid "OpenOffice.org Document"
 msgstr "Document OpenOffice.org"
 
-#: cms/binary.py:327
+#: cms/binary.py:334
 msgid "OpenOffice.org Presentation"
 msgstr "Présentation OpenOffice.org"
 
-#: cms/binary.py:317
+#: cms/binary.py:324
 msgid "OpenOffice.org Spreadsheet"
 msgstr "Classeur OpenOffice.org"
 
@@ -1851,7 +1851,7 @@ msgstr ""
 msgid "Outdent"
 msgstr "Désindenter"
 
-#: cms/binary.py:337
+#: cms/binary.py:344
 msgid "PDF"
 msgstr "PDF"
 
@@ -1867,11 +1867,11 @@ msgstr ""
 msgid "Password Change"
 msgstr "Modifier le mot de passe"
 
-#: cms/users.py:251
+#: cms/users.py:250
 msgid "Password changed."
 msgstr "Mot de passe modifié."
 
-#: cms/users.py:234
+#: cms/users.py:233
 msgid "Passwords mismatch, please try again."
 msgstr "Les mots de passe sont différents, veuillez réessayez."
 
@@ -1976,7 +1976,7 @@ msgstr "Veuillez sélectionner la langue source de votre document."
 msgid "Please type the title of your document."
 msgstr "Veuillez saisir le titre de votre document."
 
-#: cms/binary.py:258
+#: cms/binary.py:265
 msgid "PowerPoint"
 msgstr "PowerPoint"
 
@@ -1984,7 +1984,7 @@ msgstr "PowerPoint"
 msgid "Preamble"
 msgstr "Préambule"
 
-#: cms/users.py:200
+#: cms/users.py:199
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -1992,7 +1992,7 @@ msgstr "Préférences"
 msgid "Presence"
 msgstr "Présence"
 
-#: cms/binary.py:220
+#: cms/binary.py:227
 msgid "Preview"
 msgstr "Aperçu"
 
@@ -2266,7 +2266,7 @@ msgstr "Lignes"
 msgid "Target language"
 msgstr "langue cible"
 
-#: cms/users.py:257
+#: cms/users.py:256
 msgid "Tasks"
 msgstr "Tâches"
 
@@ -2377,7 +2377,7 @@ msgstr "Le nom doit être saisi."
 msgid "The password is mandatory."
 msgstr "Le mot de passe est requis."
 
-#: cms/users.py:370
+#: cms/users.py:369
 msgid "The password is wrong, please try again."
 msgstr "Le mot de passe est incorrect, veuillez réessayer."
 
@@ -2400,8 +2400,8 @@ msgid ""
 "The requested URL <stl:inline stl:content=\"uri\"></stl:inline> was not "
 "found on this server."
 msgstr ""
-"L'URL demandée <stl:inline stl:content=\"uri\"></stl:inline> est "
-"introuvable sur ce serveur."
+"L'URL demandée <stl:inline stl:content=\"uri\"></stl:inline> est introuvable "
+"sur ce serveur."
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "The resource title"
@@ -2421,7 +2421,7 @@ msgstr ""
 msgid "The user \"$username\" does not exist."
 msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
-#: cms/users.py:362
+#: cms/users.py:361
 msgid "The username is wrong, please try again."
 msgstr "L'identifiant est incorrect, veuillez réessayer."
 
@@ -2445,7 +2445,7 @@ msgstr "Il existe déjà un autre objet avec ce nom."
 msgid "There is already another resource with this name."
 msgstr "Il existe déjà une ressource de ce nom."
 
-#: cms/users.py:365
+#: cms/users.py:364
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
 "Il existe déjà un utilisateur avec l'identifiant &laquo;&nbsp;%s&nbsp;"
@@ -2609,7 +2609,7 @@ msgid "To save the translation above click the button below:"
 msgstr ""
 "Pour sauvegarder la traduction ci-dessus, cliquez sur le bouton suivant."
 
-#: cms/root.py:264
+#: cms/root.py:273
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -2654,7 +2654,7 @@ msgstr "Liste à puces"
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: cms/root.py:319
+#: cms/root.py:328
 msgid "Update Catalog"
 msgstr "Mettre à jour le catalogue"
 
@@ -2696,13 +2696,17 @@ msgstr ""
 msgid "User"
 msgstr "Utilisateur"
 
-#: cms/users.py:386
+#: cms/users.py:385
 msgid "User added."
 msgstr "Utilisateur ajouté."
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid "Username"
 msgstr "Identifiant"
+
+#: cms/ui/UserFolder_new_user.xml.en:0
+msgid "Username (Do not use accents.)"
+msgstr "Identifiant (Ne pas utiliser de lettre accentuée.)"
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid ""
@@ -2718,7 +2722,7 @@ msgstr "Utilisateurs"
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:235
+#: cms/html.py:194
 msgid "Version edited."
 msgstr "Version modifiée."
 
@@ -2730,7 +2734,7 @@ msgstr "Version téléchargée."
 msgid "Video"
 msgstr "Vidéo"
 
-#: cms/ical.py:490
+#: cms/text.py:93
 msgid "View"
 msgstr "Voir"
 
@@ -2749,7 +2753,7 @@ msgid ""
 "proprietary."
 msgstr ""
 
-#: cms/html.py:50
+#: cms/html.py:47
 msgid "Web Document"
 msgstr "Document Web"
 
@@ -2781,7 +2785,7 @@ msgstr "Bienvenue dans votre espace personnel."
 msgid "When we speak of free software, we are referring to freedom, not price."
 msgstr ""
 
-#: cms/binary.py:229
+#: cms/binary.py:236
 msgid "Word"
 msgstr "Word"
 
@@ -2887,7 +2891,7 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:226
+#: cms/users.py:225
 msgid "You mistyped your actual password, you account is not changed."
 msgstr ""
 "Vous avez mal saisi votre mot de passe actuel, votre compte n'a pas été "
@@ -2999,7 +3003,7 @@ msgstr ""
 msgid "hay"
 msgstr ""
 
-#: cms/root.py:295
+#: cms/root.py:304
 msgid "iKaaro"
 msgstr "iKaaro"
 

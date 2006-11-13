@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2006-09-22 15:09+CET\n"
+"POT-Creation-Date: 2006-11-13 11:11+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,2550 +15,2554 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ./cms/root.py:377
+#: cms/root.py:386
 msgid "$n handlers have been re-indexed."
 msgstr ""
 
-#: ./cms/widgets.py:191
+#: cms/widgets.py:191
 msgid "%(start)s-%(end)s of %(total)s"
 msgstr ""
 
-#: ./cms/Handler.py:174
+#: cms/Handler.py:174
 msgid "%.01f KB"
 msgstr ""
 
-#: ./cms/Handler.py:172
+#: cms/Handler.py:172
 msgid "%.01f MB"
 msgstr ""
 
-#: ./cms/Handler.py:178
+#: cms/Handler.py:178
 msgid "%d obs"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "(1) copyright the software, and (2) offer you this license which gives you legal permission to copy, distribute and/or modify the software."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "(Exception:"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "(Hereinafter, translation is included without limitation in the term \"modification\".) Each licensee is addressed as \"you\"."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "(Some other Free Software Foundation software is covered by the GNU Library General Public License instead.) You can apply it to your programs, too."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "(This alternative is allowed only for noncommercial distribution and only if you received the program in object code or executable form with such an offer, in accord with Subsection b above.)"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "(To add an event lasting all day long, leave time fields empty.)"
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "(optional) You can use a specific name to store your document, as a file name, and this name will appear in the URL."
 msgstr ""
 
-#: ./cms/ui/Folder_new_instance.xml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid "(optional) You can use a specific name to store your folder, and this name will appear in the URL."
 msgstr ""
 
-#: ./ical/icalendar.py:311
+#: ical/icalendar.py:311
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ./cms/sql.py:36
+#: cms/sql.py:36
 msgid "..."
 msgstr ""
 
-#: ./ical/icalendar.py:310
+#: ical/icalendar.py:310
 msgid "2.0"
 msgstr ""
 
-#: ./cms/skins.py:235
+#: cms/skins.py:235
 msgid "404 Not Found"
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.1-src.tgz\">Download External Editor for Unix and MacOSX</a>."
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe\">Download\n      External Editor for Windows</a>."
 msgstr ""
 
-#: ./cms/ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "<a href=\"http://www.ikaaro.org\">ikaaro.org</a>."
 msgstr ""
 
-#: ./cms/ui/WebSite_search.xml.en:0
+#: cms/ui/WebSite_search.xml.en:0
 msgid "<a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "<a stl:if=\"item/url\" stl:content=\"item/short_name\" stl:attributes=\"href item/url;title item/name\">The path entry</a> <span stl:if=\"not item/url\" stl:content=\"item/short_name\" stl:attributes=\"title item/name\"></span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_image.xml.en:0
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "<a stl:if=\"selected/previous\" id=\"gallery_previous\" href=\"\" stl:attributes=\"href selected/previous\">&lt;</a> <span stl:if=\"not selected/previous\" id=\"gallery_previous\">&lt;</span> <a stl:if=\"selected/next\" id=\"gallery_next\" href=\"\" stl:attributes=\"href selected/next\">></a> <span stl:if=\"not selected/next\" id=\"gallery_next\">></span>"
 msgstr ""
 
-#: ./cms/ui/WebSite_search.xml.en:0
+#: cms/ui/WebSite_search.xml.en:0
 msgid "<img height=\"16\" width=\"16\" stl:attributes=\"src object/icon\"/> <a class=\"result_title\" stl:content=\"object/title\" stl:attributes=\"href object/url\"></a><br/> <span class=\"result_url\" stl:content=\"object/abspath\"></span> - <span class=\"result_type\" stl:content=\"object/type\"></span> - <span class=\"result_size\" stl:content=\"object/size\"></span>"
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "<input class=\"button_ok\" type=\"submit\" value=\"Add\"/> <a id=\"tip_title\" onmouseover=\"show_tip()\" onmouseout=\"hide_tip()\">\n    Details\n  </a>"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "<input name=\"DTEND_day\" id=\"DTEND_day\" size=\"2\" type=\"text\" stl:attributes=\"value DTEND_day\"/> / <input name=\"DTEND_month\" id=\"DTEND_month\" size=\"2\" type=\"text\" stl:attributes=\"value DTEND_month\"/> / <input name=\"DTEND_year\" id=\"DTEND_year\" size=\"4\" type=\"text\" stl:attributes=\"value DTEND_year\"/> <input id=\"trigger_dtend\" type=\"button\" value=\"...\"/> <span style=\"padding-left: 10px\">\n        <input name=\"DTEND_hours\" id=\"DTSTART_hours\" size=\"2\" type=\"text\" stl:attributes=\"value DTEND_hours\"/> :\n        <input name=\"DTEND_minutes\" id=\"DTSTART_minutes\" size=\"2\" type=\"text\" stl:attributes=\"value DTEND_minutes\"/>\n      </span>"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "<input name=\"DTSTART_day\" id=\"DTSTART_day\" size=\"2\" type=\"text\" stl:attributes=\"value DTSTART_day\"/> / <input name=\"DTSTART_month\" id=\"DTSTART_month\" size=\"2\" type=\"text\" stl:attributes=\"value DTSTART_month\"/> / <input name=\"DTSTART_year\" id=\"DTSTART_year\" size=\"4\" type=\"text\" stl:attributes=\"value DTSTART_year\"/> <input id=\"trigger_dtstart\" type=\"button\" value=\"...\"/> <span style=\"padding-left: 10px\">\n        <input name=\"DTSTART_hours\" id=\"DTSTART_hours\" size=\"2\" type=\"text\" stl:attributes=\"value DTSTART_hours\"/> :\n        <input name=\"DTSTART_minutes\" id=\"DTSTART_minutes\" size=\"2\" type=\"text\" stl:attributes=\"value DTSTART_minutes\"/>\n      </span>"
 msgstr ""
 
-#: ./cms/ui/Folder_rename.xml.en:0
+#: cms/ui/Folder_rename.xml.en:0
 msgid "<input name=\"names\" type=\"hidden\" stl:attributes=\"value object/real_name\"/> to <input name=\"new_names\" type=\"text\" stl:attributes=\"value object/name\"/>"
 msgstr ""
 
-#: ./cms/ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "<option value=\"\">-- Choose a language --</option> <option stl:content=\"lang/name\" stl:repeat=\"lang languages\" stl:attributes=\"value lang/code\"></option>"
 msgstr ""
 
-#: ./cms/ui/Folder_translate.xml.en:0
+#: cms/ui/Folder_translate.xml.en:0
 msgid "<option value=\"\">Choose a language</option> <option stl:content=\"language/name\" stl:repeat=\"language document/languages\" stl:attributes=\"value language/code\"></option>"
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "<option value=\"\">Choose a language</option> <option stl:content=\"language/name\" stl:repeat=\"language non_active_languages\" stl:attributes=\"value language/code\"></option>"
 msgstr ""
 
-#: ./cms/ui/epoz_script_table.xml.en:0
+#: cms/ui/epoz_script_table.xml.en:0
 msgid "<option value=\"0\">Without head</option> <option value=\"1\">With head</option>"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "<select id=\"formatblock\" style=\"margin-bottom: 2px;\" onchange=\"SelectFormat(this);\">\n        <option value=\"\">Normal</option>\n        <option value=\"&lt;p>\">Paragraph</option>\n        <option value=\"&lt;h1>\">Heading 1</option>\n        <option value=\"&lt;h2>\">Heading 2</option>\n        <option value=\"&lt;h3>\">Heading 3</option>\n        <option value=\"&lt;h4>\">Heading 4</option>\n        <option value=\"&lt;h5>\">Heading 5</option>\n        <option value=\"&lt;h6>\">Heading 6</option>\n        <option value=\"&lt;pre>\">Formatted</option>\n      </select> <br/> <img src=\"images/epoz/epoz_button_bold.png\" alt=\"Bold\" title=\"Bold\" name=\"epoz_button_bold\" class=\"button epoz_button_bold\" onclick=\"FormatText('bold', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_italic.png\" alt=\"Italic\" title=\"Italic\" name=\"epoz_button_italic\" width=\"23\" class=\"button epoz_button_italic\" onclick=\"FormatText('italic', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_underline.png\" alt=\"Underline\" title=\"Underline\" name=\"epoz_button_underline\" width=\"23\" class=\"button epoz_button_underline\" onclick=\"FormatText('underline', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_strikethrough.png\" alt=\"Strikethrough\" title=\"Strikethrough\" name=\"epoz_button_strikethrough\" width=\"23\" class=\"button epoz_button_strikethrough\" onclick=\"FormatText('strikethrough', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_subscript.gif\" alt=\"Subscript\" title=\"Subscript\" name=\"epoz_button_subscript\" width=\"23\" class=\"button epoz_button_subscript\" onclick=\"FormatText('subscript', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_superscript.gif\" alt=\"Superscript\" title=\"Superscript\" name=\"epoz_button_superscript\" width=\"23\" class=\"button epoz_button_superscript\" onclick=\"FormatText('superscript', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_unformat.png\" alt=\"Remove Format\" title=\"Remove Format\" name=\"epoz_button_unformat\" width=\"23\" class=\"button epoz_button_unformat\" onclick=\"FormatText('removeformat', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" alt=\"Text Color\" title=\"Text Color\" name=\"epoz_button_textcolor\" width=\"23\" stl:attributes=\"onclick SetTextColor_call\" class=\"button epoz_button_textcolor\" onclick=\"SetTextColor();\"/><img height=\"22\" src=\"images/epoz/epoz_button_bgcolor.png\" alt=\"Background Color\" title=\"Background Color\" name=\"epoz_button_bgcolor\" width=\"23\" stl:attributes=\"onclick SetBackColor_call\" class=\"button epoz_button_bgcolor\" onclick=\"SetBackColor();\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_left_just.png\" alt=\"Align Left\" title=\"Align Left\" name=\"epoz_button_left_just\" width=\"23\" class=\"button epoz_button_left_just\" onclick=\"FormatText('justifyleft',         '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_centre.png\" alt=\"Center\" title=\"Center\" name=\"epoz_button_centre\" width=\"23\" class=\"button epoz_button_centre\" onclick=\"FormatText('justifycenter', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_right_just.png\" alt=\"Align Right\" title=\"Align Right\" name=\"epoz_button_right_just\" width=\"23\" class=\"button epoz_button_right_just\" onclick=\"FormatText('justifyright', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_numbered_list.gif\" alt=\"Ordered List\" title=\"Ordered List\" name=\"epoz_button_numbered_list\" width=\"23\" class=\"button epoz_button_numbered_list\" onclick=\"FormatText('insertorderedlist', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_list.gif\" alt=\"Unordered List\" title=\"Unordered List\" name=\"epoz_button_list\" width=\"23\" class=\"button epoz_button_list\" onclick=\"FormatText('insertunorderedlist', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_outdent.png\" alt=\"Outdent\" title=\"Outdent\" name=\"epoz_button_outdent\" width=\"23\" class=\"button epoz_button_outdent\" onclick=\"FormatText('outdent', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_indent.png\" alt=\"Indent\" title=\"Indent\" name=\"epoz_button_indent\" width=\"23\" class=\"button epoz_button_indent\" onclick=\"FormatText('indent', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_hyperlink.png\" alt=\"Insert Link\" title=\"Insert Link\" name=\"epoz_button_hyperlink\" width=\"23\" class=\"button epoz_button_hyperlink\" onclick=\"window.open(';addlink_form', 'EpozToolbox',           'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_anchor.png\" alt=\"Insert Anchor\" title=\"Insert Anchor\" name=\"epoz_button_anchor\" width=\"23\" class=\"button epoz_button_anchor\" onclick=\"CreateAnchor();\"/><img height=\"22\" src=\"images/epoz/epoz_button_image.png\" alt=\"Insert Image\" title=\"Insert Image\" name=\"epoz_button_image\" width=\"23\" class=\"button epoz_button_image\" onclick=\"window.open(';addimage_form', 'EpozToolbox',           'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_hr.gif\" alt=\"Insert Rule\" title=\"Insert Rule\" name=\"epoz_button_hr\" width=\"23\" class=\"button epoz_button_hr\" onclick=\"FormatText('inserthorizontalrule', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_table.gif\" alt=\"Insert Table\" title=\"Insert Table\" name=\"epoz_button_table\" width=\"23\" stl:attributes=\"onclick SetTable_call\" class=\"button epoz_button_table\" onclick=\"SetTable()\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_undo.png\" alt=\"Undo\" title=\"Undo\" name=\"epoz_button_undo\" width=\"23\" class=\"button epoz_button_undo\" onclick=\"FormatText('undo', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_redo.png\" alt=\"Redo\" title=\"Redo\" name=\"epoz_button_redo\" width=\"23\" class=\"button epoz_button_redo\" onclick=\"FormatText('redo', '');\"/> <br/>"
 msgstr ""
 
-#: ./cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/ical_weekly_view.xml.en:0
 msgid "<span stl:if=\"event/DTSTART\">\n                  <span stl:content=\"event/DTSTART\"></span>\n                  <span stl:if=\"event/DTEND\"> - </span></span> <span stl:if=\"event/DTEND\" stl:content=\"event/DTEND\"></span>"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "<span stl:repeat=\"tab subtabs\" stl:attributes=\"class tab/style\"><a stl:content=\"tab/label\" href=\"#\" stl:attributes=\"href tab/name\">The subview</a><span stl:if=\"not repeat/tab/end\">|</span></span><span class=\"tab_dummy\"><a> </a></span>"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "<span stl:repeat=\"tab tabs\" stl:attributes=\"class tab/style\"><a stl:content=\"tab/label\" href=\"#\" stl:attributes=\"href tab/name\">The view</a><span stl:if=\"not repeat/tab/end\">|</span></span><span class=\"tab_dummy\"><a> </a></span>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_calendar.xml.en:0
+#: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "<span>\n      Date : <input name=\"date\" id=\"date\" size=\"11\" type=\"text\" stl:attributes=\"value date\"/>\n      <input id=\"trigger_date\" type=\"button\" value=\"...\"/> </span> <input class=\"button_ok\" id=\"update\" type=\"submit\" name=\";browse_calendar\" value=\"OK\"/>"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "<stl:block stl:if=\"att/v_role/required\">\n                    <option selected=\"yes\">REQUIRED</option> \n                    <option>OPTIONNAL</option>\n                    <option>NONE</option>\n                </stl:block> <stl:block stl:if=\"att/v_role/optionnal\">\n                    <option>REQUIRED</option>\n                    <option selected=\"yes\">OPTIONNAL</option> \n                    <option>NONE</option>\n                </stl:block> <stl:block stl:if=\"att/v_role/no\">\n                    <option>REQUIRED</option>\n                    <option>OPTIONNAL</option>\n                    <option selected=\"yes\">NONE</option> \n                </stl:block>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_image.xml.en:0
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "<stl:inline stl:content=\"selected/width\"></stl:inline>x<stl:inline stl:content=\"selected/height\"></stl:inline>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "<stl:inline stl:if=\"batch/control\" stl:content=\"batch/control\"></stl:inline> <a stl:if=\"batch/previous\" stl:attributes=\"href batch/previous\">&lt;&lt;</a> <a stl:if=\"batch/next\" stl:attributes=\"href batch/next\">>></a>"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:inline> <stl:inline stl:if=\"not user/info\">not logged in</stl:inline>"
 msgstr ""
 
-#: ./cms/ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "<stl:inline stl:repeat=\"x bc/path\">\n              / <a stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>\n            </stl:inline> <br/>"
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "<strong stl:content=\"state\"></strong>"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>0.</strong> This License applies to any program or other work which contains a notice placed by the copyright holder saying it may be distributed under the terms of this General Public License."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>1.</strong> You may copy and distribute verbatim copies of the Program's source code as you receive it, in any medium, provided that you conspicuously and appropriately publish on each copy an appropriate copyright notice and disclaimer of warranty;"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>10.</strong> If you wish to incorporate parts of the Program into other free programs whose distribution conditions are different, write to the author to ask for permission."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>11.</strong> BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>12.</strong> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>2.</strong> You may modify your copy or copies of the Program or any portion of it, thus forming a work based on the Program, and copy and distribute such modifications or work under the terms of Section 1 above, provided that you also meet all of these conditions:"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>3.</strong> You may copy and distribute the Program (or a work based on it, under Section 2) in object code or executable form under the terms of Sections 1 and 2 above provided that you also do one of the following:"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>4.</strong> You may not copy, modify, sublicense, or distribute the Program except as expressly provided under this License."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>5.</strong> You are not required to accept this License, since you have not signed it."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>6.</strong> Each time you redistribute the Program (or any work based on the Program), the recipient automatically receives a license from the original licensor to copy, distribute or modify the Program subject to these terms and conditions."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>7.</strong> If, as a consequence of a court judgment or allegation of patent infringement or for any other reason (not limited to patent issues), conditions are imposed on you (whether by court order, agreement or otherwise) that contradict the conditions of this License, they do not excuse you from the conditions of this License."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>8.</strong> If the distribution and/or use of the Program is restricted in certain countries either by patents or by copyrighted interfaces, the original copyright holder who places the Program under this License may add an explicit geographical distribution limitation excluding those countries, so that distribution is permitted only in or among countries not thus excluded."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>9.</strong> The Free Software Foundation may publish revised and/or new versions of the General Public License from time to time."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>a)</strong> Accompany it with the complete corresponding machine-readable source code, which must be distributed under the terms of Sections 1 and 2 above on a medium customarily used for software interchange;"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>a)</strong> You must cause the modified files to carry prominent notices stating that you changed the files and the date of any change."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>b)</strong> Accompany it with a written offer, valid for at least three years, to give any third party, for a charge no more than your cost of physically performing source distribution, a complete machine-readable copy of the corresponding source code, to be distributed under the terms of Sections 1 and 2 above on a medium customarily used for software interchange;"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>b)</strong> You must cause any work that you distribute or publish, that in whole or in part contains or is derived from the Program or any part thereof, to be licensed as a whole at no charge to all third parties under the terms of this License."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>c)</strong> Accompany it with the information you received as to the offer to distribute corresponding source code."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "<strong>c)</strong> If the modified program normally reads commands interactively when run, you must cause it, when started running for such interactive use in the most ordinary way, to print or display an announcement including an appropriate copyright notice and a notice that there is no warranty (or else, saying that you provide a warranty) and that users may redistribute the program under these conditions, and telling the user how to view a copy of this License."
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "<textarea stl:content=\"js_data\" style=\"display: none; width: 100%; height: 300px\" stl:attributes=\"name form_name;id textarea_id\" disabled=\"1\"></textarea> <input style=\"margin: 0px; width: 10px; height: 10px\" type=\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\" stl:attributes=\"id switch_id\"/> <span style=\"font-size: 10px;\">HTML</span>"
 msgstr ""
 
-#: ./cms/workflow.py:36
+#: cms/workflow.py:36
 msgid "A pending document awaits review from authorized users to be published."
 msgstr ""
 
-#: ./cms/workflow.py:33
+#: cms/workflow.py:33
 msgid "A private document only can be reached by authorized users."
 msgstr ""
 
-#: ./cms/workflow.py:39
+#: cms/workflow.py:39
 msgid "A public document can be reached by even anonymous users."
 msgstr ""
 
-#: ./cms/workflow.py:123
+#: cms/workflow.py:123
 msgid "A transition must be selected."
 msgstr ""
 
-#: ./cms/WebSite.py:261
+#: cms/WebSite.py:261
 msgid "A valid email address must be provided."
 msgstr ""
 
-#: ./cms/root.py:304
+#: cms/root.py:313
 msgid "About"
 msgstr ""
 
-#: ./cms/workflow.py:51
+#: cms/workflow.py:51
 msgid "Accept the document."
 msgstr ""
 
-#: ./cms/root.py:151
+#: cms/root.py:151
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
-#: ./cms/users.py:160
+#: cms/users.py:160
 msgid "Account"
 msgstr ""
 
-#: ./cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "Account Change"
 msgstr ""
 
-#: ./cms/users.py:194
+#: cms/users.py:193
 msgid "Account changed."
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Action"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Activities other than copying, distribution and modification are not covered by this License;"
 msgstr ""
 
-#: ./cms/ui/ical_edit_timetables.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Add"
 msgstr ""
 
-#: ./cms/ui/Folder_new_instance.xml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid "Add Resource of Type \"<span stl:content=\"class_title\"></span>\""
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Add a Document"
 msgstr ""
 
-#: ./cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add a New User"
 msgstr ""
 
-#: ./cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/Folder_permissions.xml.en:0
 msgid "Add a member"
 msgstr ""
 
-#: ./cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/Folder_permissions.xml.en:0
 msgid "Add a member <select name=\"addusers\" size=\"15\" multiple=\"multiple\">\n                <option stl:content=\"user/title_or_name\" stl:repeat=\"user others\" stl:attributes=\"value user/name\"></option>\n            </select>"
 msgstr ""
 
-#: ./cms/ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "Add a new translator skill:"
 msgstr ""
 
-#: ./cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add and return"
 msgstr ""
 
-#: ./cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add and view"
 msgstr ""
 
-#: ./cms/root.py:62
+#: cms/root.py:62
 msgid "Admin"
 msgstr ""
 
-#: ./cms/root.py:62
+#: cms/root.py:62
 msgid "Admins"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Advanced Search"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Align Left"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Align Right"
 msgstr ""
 
-#: ./cms/ui/WebSite_anonymous.xml.en:0
+#: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Allow joining"
 msgstr ""
 
-#: ./cms/ui/WebSite_anonymous.xml.en:0
+#: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Allow joining <input class=\"checkbox\" name=\"ikaaro:website_is_open\" type=\"checkbox\" value=\"1\" stl:attributes=\"checked ikaaro:website_is_open\"/>"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Also, for each author's protection and ours, we want to make certain that everyone understands that there is no warranty for this free software."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "And you must show them these terms so they know their rights."
 msgstr ""
 
-#: ./cms/WebSite.py:221
+#: cms/WebSite.py:221
 msgid "Anonymous"
 msgstr ""
 
-#: ./cms/ui/WebSite_anonymous.xml.en:0
+#: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Anonymous Settings."
 msgstr ""
 
-#: ./cms/ui/WebSite_anonymous.xml.en:0
+#: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Anonymous users allowed to join this web site"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Any attempt otherwise to copy, modify, sublicense or distribute the Program is void, and will automatically terminate your rights under this License."
 msgstr ""
 
-#: ./cms/ui/Root_internal_server_error.xml.en:0
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "Apologies for the inconvenience."
 msgstr ""
 
-#: ./cms/users.py:127
+#: cms/users.py:127
 msgid "Application"
 msgstr ""
 
-#: ./cms/ui/User_edit.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Application Preferences"
 msgstr ""
 
-#: ./cms/users.py:153
+#: cms/users.py:153
 msgid "Application preferences changed."
 msgstr ""
 
-#: ./cms/ical.py:68
+#: cms/ical.py:68
 msgid "April"
 msgstr ""
 
-#: ./cms/Folder.py:473
+#: cms/Folder.py:473
 msgid "As Icons"
 msgstr ""
 
-#: ./cms/Folder.py:532
+#: cms/Folder.py:532
 msgid "As Image Gallery"
 msgstr ""
 
-#: ./cms/Folder.py:489
+#: cms/Folder.py:489
 msgid "As List"
 msgstr ""
 
-#: ./cms/ical.py:1166
+#: cms/ical.py:1166
 msgid "As calendar"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Attendees"
 msgstr ""
 
-#: ./cms/ical.py:69
+#: cms/ical.py:69
 msgid "August"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Background Color"
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Bold"
 msgstr ""
 
-#: ./cms/ui/epoz_script_table.xml.en:0
+#: cms/ui/epoz_script_table.xml.en:0
 msgid "Border"
 msgstr ""
 
-#: ./cms/ui/Folder_browsedir.xml.en:0
+#: cms/ui/Folder_browsedir.xml.en:0
 msgid "Browse-Directories"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "But when you distribute the same sections as part of a whole which is a work based on the Program, the distribution of the whole must be on the terms of this License, whose permissions for other licensees extend to the entire whole, and thus to each and every part regardless of who wrote it."
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "By"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "By contrast, the GNU General Public License is intended to guarantee your freedom to share and change free software--to make sure the software is free for all its users."
 msgstr ""
 
-#: ./cms/ical.py:43
+#: cms/ical.py:43
 msgid "CANCELLED"
 msgstr ""
 
-#: ./cms/ical.py:42
+#: cms/ical.py:42
 msgid "CONFIRMED"
 msgstr ""
 
-#: ./cms/csv_.py:30
+#: cms/csv_.py:30
 msgid "CSV Row"
 msgstr ""
 
-#: ./csv/itools_csv.py:56
+#: csv/itools_csv.py:56
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
-#: ./cms/ical.py:51
+#: cms/ical.py:51
 msgid "Calendar"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Cancel"
 msgstr ""
 
-#: ./cms/ui/Root_catalog.xml.en:0
+#: cms/ui/Root_catalog.xml.en:0
 msgid "Cataloguing of Content"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Center"
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Change"
 msgstr ""
 
-#: ./cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "Change account"
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Change default for the selected one"
 msgstr ""
 
-#: ./cms/ui/User_edit_password.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "Change password"
 msgstr ""
 
-#: ./cms/ui/User_edit.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Change preferences"
 msgstr ""
 
-#: ./cms/WebSite.py:239
+#: cms/csv_.py:66
 msgid "Changes saved."
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "Character encoding"
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "Character encoding <select name=\"encoding\">\n        <option stl:content=\"encoding/title\" stl:repeat=\"encoding encodings\" stl:attributes=\"value encoding/value;selected encoding/is_selected\"></option>\n      </select>"
 msgstr ""
 
-#: ./cms/root.py:392
+#: cms/root.py:401
 msgid "Check Groups"
 msgstr ""
 
-#: ./cms/ui/Root_check_groups.xml.en:0
+#: cms/ui/Root_check_groups.xml.en:0
 msgid "Check groups for <em>phantom</em> users"
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Choose a template:"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos."
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Code"
 msgstr ""
 
-#: ./cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/ical_weekly_view.xml.en:0
 msgid "Come back to today"
 msgstr ""
 
-#: ./cms/csv_.py:73
+#: cms/csv_.py:73
 msgid "Comma Separated Values"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Comment"
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments"
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments (optional):"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Common name"
 msgstr ""
 
-#: ./cms/ical.py:1165
+#: cms/ical.py:1165
 msgid "Contents"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Copy"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Copyright (C) 1989, 1991 Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed."
 msgstr ""
 
-#: ./cms/WebSite.py:42
+#: cms/WebSite.py:42
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: ./cms/html.py:51
+#: cms/html.py:48
 msgid "Create and publish a Web Document."
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Cut"
 msgstr ""
 
-#: ./cms/ical.py:758
+#: cms/ical.py:758
 msgid "Data updated"
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Date"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
 msgstr ""
 
-#: ./cms/ical.py:70
+#: cms/ical.py:70
 msgid "December"
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Default"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Definitely remove"
 msgstr ""
 
-#: ./cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/Folder_permissions.xml.en:0
 msgid "Delete"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Description"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Display only contents with the following terms:"
 msgstr ""
 
-#: ./cms/ui/Folder_translate.xml.en:0
+#: cms/ui/Folder_translate.xml.en:0
 msgid "Document"
 msgstr ""
 
-#: ./cms/binary.py:245
+#: cms/binary.py:252
 msgid "Document Excel"
 msgstr ""
 
-#: ./cms/binary.py:111
+#: cms/binary.py:118
 msgid "Document Flash"
 msgstr ""
 
-#: ./cms/ui/File_history.xml.en:0
+#: cms/ui/File_history.xml.en:0
 msgid "Document History"
 msgstr ""
 
-#: ./cms/binary.py:338
+#: cms/binary.py:345
 msgid "Document PDF"
 msgstr ""
 
-#: ./cms/binary.py:259
+#: cms/binary.py:266
 msgid "Document PowerPoint"
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Document State"
 msgstr ""
 
-#: ./cms/binary.py:230
+#: cms/binary.py:237
 msgid "Document Word"
 msgstr ""
 
-#: ./cms/html.py:167
+#: cms/html.py:164
 msgid "Document changed."
 msgstr ""
 
-#: ./cms/text.py:116
+#: cms/text.py:116
 msgid "Document edited."
 msgstr ""
 
-#: ./cms/File.py:75
+#: cms/File.py:75
 msgid "Download"
 msgstr ""
 
-#: ./cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "E-mail"
 msgstr ""
 
-#: ./cms/html.py:155
+#: cms/html.py:152
 msgid "ERROR: the document could not be changed, the input data was not proper HTML code."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Each version is given a distinguishing version number."
 msgstr ""
 
-#: ./cms/ical.py:776
+#: cms/text.py:155
 msgid "Edit"
 msgstr ""
 
-#: ./cms/ui/Handler_edit_metadata.xml.en:0
+#: cms/ui/Handler_edit_metadata.xml.en:0
 msgid "Edit Metadata in Current Language"
 msgstr ""
 
-#: ./cms/ui/User_profile.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid "Edit account details;"
 msgstr ""
 
-#: ./cms/ui/User_profile.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid "Edit preferences;"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Email address"
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Email address <input id=\"username\" name=\"ikaaro:email\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/WebSite.py:380
+#: cms/WebSite.py:380
 msgid "Empty search value."
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "End"
 msgstr ""
 
-#: ./cms/ui/epoz_script_table.xml.en:0
+#: cms/ui/epoz_script_table.xml.en:0
 msgid "Epoz"
 msgstr ""
 
-#: ./cms/ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "Epoz-Toolbox"
 msgstr ""
 
-#: ./cms/ical.py:525
+#: cms/ical.py:525
 msgid "Event"
 msgstr ""
 
-#: ./cms/ical.py:772
+#: cms/ical.py:772
 msgid "Event definitely deleted."
 msgstr ""
 
-#: ./cms/ical.py:571
+#: cms/ical.py:571
 msgid "Event not found"
 msgstr ""
 
-#: ./cms/ui/Root_check_groups.xml.en:0
+#: cms/ui/Root_check_groups.xml.en:0
 msgid "Everything is alright."
 msgstr ""
 
-#: ./cms/binary.py:244
+#: cms/binary.py:251
 msgid "Excel"
 msgstr ""
 
-#: ./cms/ical.py:426
+#: cms/ical.py:426
 msgid "Export in ical format"
 msgstr ""
 
-#: ./cms/File.py:104
+#: cms/File.py:104
 msgid "External"
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "External Editor"
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "External Editor.."
 msgstr ""
 
-#: ./cms/ical.py:68
+#: cms/ical.py:68
 msgid "February"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Field"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Field <select name=\"search_criteria\">\n        <stl:block stl:repeat=\"criteria search_criteria\">\n          <option stl:content=\"criteria/title\" stl:attributes=\"value criteria/id;selected criteria/selected\">Title</option>\n        </stl:block>\n      </select>"
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "File"
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "File <input id=\"file\" name=\"file\" size=\"50\" type=\"file\"/>"
 msgstr ""
 
-#: ./cms/Folder.py:1012
+#: cms/Folder.py:1012
 msgid "File uploaded."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Finally, any free program is threatened constantly by software patents."
 msgstr ""
 
-#: ./cms/ui/Root_check_groups.xml.en:0
+#: cms/ui/Root_check_groups.xml.en:0
 msgid "Fix"
 msgstr ""
 
-#: ./cms/binary.py:110
+#: cms/binary.py:117
 msgid "Flash"
 msgstr ""
 
-#: ./cms/Folder.py:58
+#: cms/Folder.py:58
 msgid "Folder"
 msgstr ""
 
-#: ./cms/future.py:104
+#: cms/future.py:104
 msgid "Folders already down."
 msgstr ""
 
-#: ./cms/future.py:149
+#: cms/future.py:149
 msgid "Folders already on bottom."
 msgstr ""
 
-#: ./cms/future.py:128
+#: cms/future.py:128
 msgid "Folders already on top."
 msgstr ""
 
-#: ./cms/future.py:81
+#: cms/future.py:81
 msgid "Folders already up."
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Folders are used to classify documents."
 msgstr ""
 
-#: ./cms/future.py:114
+#: cms/future.py:114
 msgid "Folders ordered down."
 msgstr ""
 
-#: ./cms/future.py:156
+#: cms/future.py:156
 msgid "Folders ordered on bottom."
 msgstr ""
 
-#: ./cms/future.py:135
+#: cms/future.py:135
 msgid "Folders ordered on top."
 msgstr ""
 
-#: ./cms/future.py:90
+#: cms/future.py:90
 msgid "Folders ordered up."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "For an executable work, complete source code means all the source code for all modules it contains, plus any associated interface definition files, plus the scripts used to control compilation and installation of the executable."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "For example, if a patent license would not permit royalty-free redistribution of the Program by all those who receive copies directly or indirectly through you, then the only way you could satisfy both it and this License would be to refrain entirely from distribution of the Program."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "For example, if you distribute copies of such a program, whether gratis or for a fee, you must give the recipients all the rights that you have."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "For software which is copyrighted by the Free Software Foundation, write to the Free Software Foundation;"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_image.xml.en:0
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "Format:"
 msgstr ""
 
-#: ./cms/ical.py:72
+#: cms/ical.py:72
 msgid "Friday"
 msgstr ""
 
-#: ./cms/ui/ical_edit_timetables.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "From"
 msgstr ""
 
-#: ./cms/ui/User_edit_account.xml.en:0
+#: cms/ui/User_edit_account.xml.en:0
 msgid "Full name"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
-#: ./cms/root.py:421
+#: cms/root.py:430
 msgid "Groups fixed."
 msgstr ""
 
-#: ./cms/versioning.py:49
+#: cms/versioning.py:49
 msgid "History"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Home"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "However, as a special exception, the source code distributed need not include anything that is normally distributed (in either source or binary form) with the major components (compiler, kernel, and so on) of the operating system on which the executable runs, unless that component itself accompanies the executable."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "However, nothing else grants you permission to modify or distribute the Program or its derivative works."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "However, parties who have received copies, or rights, from you under this License will not have their licenses terminated so long as such parties remain in full compliance."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "If any portion of this section is held invalid or unenforceable under any particular circumstance, the balance of the section is intended to apply and the section as a whole is intended to apply in other circumstances."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "If distribution of executable or object code is made by offering access to copy from a designated place, then offering equivalent access to copy the source code from the same place counts as distribution of the source code, even though third parties are not compelled to copy the source along with the object code."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "If identifiable sections of that work are not derived from the Program, and can be reasonably considered independent and separate works in themselves, then this License, and its terms, do not apply to those sections when you distribute them as separate works."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "If the Program does not specify a version number of this License, you may choose any version ever published by the Free Software Foundation."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "If the Program specifies a version number of this License which applies to it and \"any later version\", you have the option of following the terms and conditions either of that version or of any later version published by the Free Software Foundation."
 msgstr ""
 
-#: ./cms/ui/Root_internal_server_error.xml.en:0
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "If the error persits contact with the system administrator."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "If the software is modified by someone else and passed on, we want its recipients to know that what they have is not the original, so that any problems introduced by others will not reflect on the original authors' reputations."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "If you cannot distribute so as to satisfy simultaneously your obligations under this License and any other pertinent obligations, then as a consequence you may not distribute the Program at all."
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "If you don't, you can download it from a link below."
 msgstr ""
 
-#: ./cms/ui/User_edit_password.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "If you type a new password, you must confirm it."
 msgstr ""
 
-#: ./cms/binary.py:45
+#: cms/binary.py:45
 msgid "Image"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "In addition, mere aggregation of another work not based on the Program with the Program (or with a work based on the Program) on a volume of a storage or distribution medium does not bring the other work under the scope of this License."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "In such case, this License incorporates the limitation as if written in the body of this License."
 msgstr ""
 
-#: ./i18n/segment.py:21
+#: i18n/segment.py:21
 msgid "Inc"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Indent"
 msgstr ""
 
-#: ./cms/text.py:156
+#: cms/text.py:156
 msgid "Inline"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Insert Anchor"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Insert Image"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Insert Link"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Insert Rule"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Insert Table"
 msgstr ""
 
-#: ./cms/ui/epoz_script_table.xml.en:0
+#: cms/ui/epoz_script_table.xml.en:0
 msgid "Insert table"
 msgstr ""
 
-#: ./cms/ui/Root_internal_server_error.xml.en:0
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "Internal Server Error"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "It is not the purpose of this section to induce you to infringe any patents or other property right claims or to contest validity of any such claims;"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Italic"
 msgstr ""
 
-#: ./cms/ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "J. David Ibáñez, lead developer"
 msgstr ""
 
-#: ./cms/ical.py:68
+#: cms/ical.py:68
 msgid "January"
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Join the Community"
 msgstr ""
 
-#: ./cms/ical.py:69
+#: cms/ical.py:69
 msgid "July"
 msgstr ""
 
-#: ./cms/ical.py:69
+#: cms/ical.py:69
 msgid "June"
 msgstr ""
 
-#: ./cms/text.py:40
+#: cms/text.py:40
 msgid "Keep your notes with plain text files."
 msgstr ""
 
-#: ./cms/ui/User_edit.xml.en:0
+#: cms/ui/User_edit.xml.en:0
 msgid "Language"
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Language <select id=\"dc_language\" name=\"dc:language\">\n          <option stl:content=\"lang/name\" stl:repeat=\"lang languages\" stl:attributes=\"value lang/code;selected lang/isdefault\"></option>\n        </select>"
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Language Settings"
 msgstr ""
 
-#: ./cms/WebSite.py:214
+#: cms/WebSite.py:214
 msgid "Language added."
 msgstr ""
 
-#: ./cms/WebSite.py:142
+#: cms/WebSite.py:142
 msgid "Languages"
 msgstr ""
 
-#: ./cms/WebSite.py:201
+#: cms/WebSite.py:201
 msgid "Languages removed."
 msgstr ""
 
-#: ./cms/root.py:305
+#: cms/root.py:314
 msgid "License"
 msgstr ""
 
-#: ./cms/ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "Link"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Location"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Location:"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Log in"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Log out"
 msgstr ""
 
-#: ./cms/WebSite.py:294
+#: cms/WebSite.py:294
 msgid "Login"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: ./cms/root.py:391
+#: cms/root.py:400
 msgid "Maintenance"
 msgstr ""
 
-#: ./cms/ui/User_profile.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid "Manage personal content;"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Many people have made generous contributions to the wide range of software distributed through that system in reliance on consistent application of that system;"
 msgstr ""
 
-#: ./cms/ical.py:68
+#: cms/ical.py:68
 msgid "March"
 msgstr ""
 
-#: ./cms/ical.py:69
+#: cms/ical.py:69
 msgid "May"
 msgstr ""
 
-#: ./cms/access.py:132
+#: cms/access.py:132
 msgid "Member"
 msgstr ""
 
-#: ./cms/access.py:132
+#: cms/access.py:132
 msgid "Members"
 msgstr ""
 
-#: ./cms/access.py:287
+#: cms/access.py:287
 msgid "Members added."
 msgstr ""
 
-#: ./cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/Folder_permissions.xml.en:0
 msgid "Members and roles"
 msgstr ""
 
-#: ./cms/access.py:280
+#: cms/access.py:280
 msgid "Members deleted."
 msgstr ""
 
-#: ./cms/ui/PO_edit.xml.en:0
+#: cms/ui/PO_edit.xml.en:0
 msgid "Message"
 msgstr ""
 
-#: ./cms/ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Message <stl:inline stl:content=\"messages_index\"></stl:inline> / <stl:inline stl:content=\"messages_total\"></stl:inline> <a stl:attributes=\"href messages_first\">&lt;&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_previous\">&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_next\">></a> <a stl:attributes=\"href messages_last\">>></a>"
 msgstr ""
 
-#: ./cms/ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Message <stl:inline stl:content=\"messages_index\"></stl:inline> / <stl:inline stl:content=\"messages_total\"></stl:inline> <a stl:attributes=\"href messages_first\">&lt;&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_previous\">&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_next\">></a> <a stl:attributes=\"href messages_last\">>></a> <input name=\"msgid:utf8:ustring\" type=\"hidden\" stl:attributes=\"value msgid\"/>"
 msgstr ""
 
-#: ./cms/ui/PO_edit.xml.en:0
+#: cms/ui/PO_edit.xml.en:0
 msgid "Message <stl:inline stl:content=\"messages_index\"></stl:inline> / <stl:inline stl:content=\"messages_total\"></stl:inline> <a stl:attributes=\"href messages_first\">&lt;&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_previous\">&lt;</a> <a style=\"font-size: 10px\" stl:attributes=\"href messages_next\">></a> <a stl:attributes=\"href messages_last\">>></a> <textarea name=\"msgid:utf8:ustring\" readonly=\"\" cols=\"65\" rows=\"8\" stl:content=\"msgid\"></textarea>"
 msgstr ""
 
-#: ./cms/text.py:144
+#: cms/text.py:144
 msgid "Message Catalog"
 msgstr ""
 
-#: ./cms/ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Message Translation"
 msgstr ""
 
-#: ./cms/ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Message Translation <textarea name=\"msgstr:utf8:ustring\" stl:content=\"msgstr\" cols=\"65\" rows=\"8\"></textarea>"
 msgstr ""
 
-#: ./cms/text.py:209
+#: cms/text.py:209
 msgid "Message edited."
 msgstr ""
 
-#: ./cms/ical.py:81
+#: cms/ical.py:81
 msgid "Metadata"
 msgstr ""
 
-#: ./cms/Handler.py:548
+#: cms/Handler.py:548
 msgid "Metadata changed."
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Modified after"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Modified after <input id=\"site_search_after\" name=\"site_search_after\" size=\"10\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Modified before"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Modified before <input id=\"site_search_before\" name=\"site_search_before\" size=\"10\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/ical.py:71
+#: cms/ical.py:71
 msgid "Monday"
 msgstr ""
 
-#: ./cms/ical.py:440
+#: cms/ical.py:440
 msgid "Monthly"
 msgstr ""
 
-#: ./cms/sql.py:35
+#: cms/sql.py:35
 msgid "MySQL Database"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "NO WARRANTY"
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Name"
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Name <input id=\"name\" name=\"name\" size=\"50\" type=\"text\" stl:attributes=\"value name\"/>"
 msgstr ""
 
-#: ./cms/ui/Folder_new_instance.xml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid "Name <input id=\"name\" name=\"name\" size=\"50\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Name contains"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Name contains <input id=\"site_search_name\" name=\"site_search_name\" size=\"50\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_image.xml.en:0
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "Name:"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Navigation"
 msgstr ""
 
-#: ./cms/Folder.py:866
+#: cms/Folder.py:866
 msgid "New Resource"
 msgstr ""
 
-#: ./cms/Folder.py:943
+#: cms/Folder.py:943
 msgid "New resource added."
 msgstr ""
 
-#: ./cms/ui/User_tasks.xml.en:0
+#: cms/ui/User_tasks.xml.en:0
 msgid "No document awaits your review."
 msgstr ""
 
-#: ./cms/File.py:185
+#: cms/File.py:185
 msgid "No file has been entered."
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "No history."
 msgstr ""
 
-#: ./cms/Folder.py:720
+#: cms/Folder.py:720
 msgid "No objects selected."
 msgstr ""
 
-#: ./cms/ui/Root_not_found.xml.en:0
+#: cms/ui/Root_not_found.xml.en:0
 msgid "Not Found"
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "Note the name and title won't change."
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Note:"
 msgstr ""
 
-#: ./cms/ical.py:808
+#: cms/ical.py:808
 msgid "Nothing to change."
 msgstr ""
 
-#: ./cms/ical.py:814
+#: cms/ical.py:814
 msgid "Nothing to remove."
 msgstr ""
 
-#: ./cms/ical.py:70
+#: cms/ical.py:70
 msgid "November"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Nulla facilisi."
 msgstr ""
 
-#: ./cms/ui/Folder_browse_calendar.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "OK"
 msgstr ""
 
-#: ./cms/binary.py:316
+#: cms/binary.py:323
 msgid "OOo Calc"
 msgstr ""
 
-#: ./cms/binary.py:326
+#: cms/binary.py:333
 msgid "OOo Impress"
 msgstr ""
 
-#: ./cms/binary.py:305
+#: cms/binary.py:312
 msgid "OOo Writer"
 msgstr ""
 
-#: ./cms/Folder.py:707
+#: cms/Folder.py:707
 msgid "Objects copied."
 msgstr ""
 
-#: ./cms/Folder.py:727
+#: cms/Folder.py:727
 msgid "Objects cut."
 msgstr ""
 
-#: ./cms/Folder.py:784
+#: cms/Folder.py:784
 msgid "Objects pasted."
 msgstr ""
 
-#: ./cms/Folder.py:619
+#: cms/Folder.py:619
 msgid "Objects removed: $objects."
 msgstr ""
 
-#: ./cms/Folder.py:686
+#: cms/Folder.py:686
 msgid "Objects renamed."
 msgstr ""
 
-#: ./cms/ical.py:70
+#: cms/ical.py:70
 msgid "October"
 msgstr ""
 
-#: ./cms/ical.py:720
+#: cms/ical.py:720
 msgid "One or more field is invalid."
 msgstr ""
 
-#: ./cms/binary.py:306
+#: cms/binary.py:313
 msgid "OpenOffice.org Document"
 msgstr ""
 
-#: ./cms/binary.py:327
+#: cms/binary.py:334
 msgid "OpenOffice.org Presentation"
 msgstr ""
 
-#: ./cms/binary.py:317
+#: cms/binary.py:324
 msgid "OpenOffice.org Spreadsheet"
 msgstr ""
 
-#: ./cms/future.py:55
+#: cms/future.py:55
 msgid "Order"
 msgstr ""
 
-#: ./cms/ui/Folder_order_items.xml.en:0
+#: cms/ui/Folder_order_items.xml.en:0
 msgid "Order bottom"
 msgstr ""
 
-#: ./cms/ui/Folder_order_items.xml.en:0
+#: cms/ui/Folder_order_items.xml.en:0
 msgid "Order down"
 msgstr ""
 
-#: ./cms/ui/Folder_order_items.xml.en:0
+#: cms/ui/Folder_order_items.xml.en:0
 msgid "Order top"
 msgstr ""
 
-#: ./cms/ui/Folder_order_items.xml.en:0
+#: cms/ui/Folder_order_items.xml.en:0
 msgid "Order up"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Ordered List"
 msgstr ""
 
-#: ./cms/Folder.py:59
+#: cms/Folder.py:59
 msgid "Organize your files and documents with folders."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for this service if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs;"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Our decision will be guided by the two goals of preserving the free status of all derivatives of our free software and of promoting the sharing and reuse of software generally."
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Outdent"
 msgstr ""
 
-#: ./cms/binary.py:337
+#: cms/binary.py:344
 msgid "PDF"
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Password"
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Password <input id=\"password\" name=\"password\" type=\"password\"/>"
 msgstr ""
 
-#: ./cms/ui/User_edit_password.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "Password Change"
 msgstr ""
 
-#: ./cms/users.py:251
+#: cms/users.py:250
 msgid "Password changed."
 msgstr ""
 
-#: ./cms/users.py:234
+#: cms/users.py:233
 msgid "Passwords mismatch, please try again."
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Paste"
 msgstr ""
 
-#: ./cms/workflow.py:35
+#: cms/workflow.py:35
 msgid "Pending"
 msgstr ""
 
-#: ./cms/ui/User_profile.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid "Pending tasks."
 msgstr ""
 
-#: ./cms/access.py:239
+#: cms/access.py:239
 msgid "Permissions"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Phasellus varius eleifend tellus."
 msgstr ""
 
-#: ./cms/text.py:39
+#: cms/text.py:39
 msgid "Plain Text"
 msgstr ""
 
-#: ./cms/ui/File_new_instance.xml.en:0
+#: cms/ui/File_new_instance.xml.en:0
 msgid "Please click the <strong>Upload</strong> button below to import the file and create a new resource."
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "Please click the <strong>Upload</strong> button below to import the new file."
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Please enter a password for protecting your account."
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Please enter your email address."
 msgstr ""
 
-#: ./cms/ui/WebSite_login.xml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Please enter your login (e.g."
 msgstr ""
 
-#: ./cms/ui/WebSite_login.xml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Please enter your password (it will not be displayed in clear text)."
 msgstr ""
 
-#: ./cms/ui/Folder_new_instance.xml.en:0
+#: cms/ui/Folder_new_instance.xml.en:0
 msgid "Please give a title to your folder."
 msgstr ""
 
-#: ./cms/Folder.py:502
+#: cms/Folder.py:502
 msgid "Please put a value for your search criteria if you include subfolders."
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Please repeat your password to prevent any typing mistake."
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "Please select a file from your system using the <strong>Browse...</strong> button below."
 msgstr ""
 
-#: ./cms/future.py:99
+#: cms/future.py:99
 msgid "Please select the folders to order down."
 msgstr ""
 
-#: ./cms/future.py:143
+#: cms/future.py:143
 msgid "Please select the folders to order on bottom."
 msgstr ""
 
-#: ./cms/future.py:122
+#: cms/future.py:122
 msgid "Please select the folders to order on top."
 msgstr ""
 
-#: ./cms/future.py:76
+#: cms/future.py:76
 msgid "Please select the folders to order up."
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Please select the source language of your document."
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Please type the title of your document."
 msgstr ""
 
-#: ./cms/binary.py:258
+#: cms/binary.py:265
 msgid "PowerPoint"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Preamble"
 msgstr ""
 
-#: ./cms/users.py:200
+#: cms/users.py:199
 msgid "Preferences"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Presence"
 msgstr ""
 
-#: ./cms/binary.py:220
+#: cms/binary.py:227
 msgid "Preview"
 msgstr ""
 
-#: ./cms/workflow.py:32
+#: cms/workflow.py:32
 msgid "Private"
 msgstr ""
 
-#: ./cms/users.py:105
+#: cms/users.py:105
 msgid "Profile"
 msgstr ""
 
-#: ./cms/workflow.py:38
+#: cms/workflow.py:38
 msgid "Public"
 msgstr ""
 
-#: ./cms/workflow.py:43
+#: cms/workflow.py:43
 msgid "Publish the document."
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Redo"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Register"
 msgstr ""
 
-#: ./cms/ui/Root_catalog.xml.en:0
+#: cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
 msgstr ""
 
-#: ./cms/workflow.py:49
+#: cms/workflow.py:49
 msgid "Reject the document."
 msgstr ""
 
-#: ./cms/ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "Released to the world under the terms and conditions of the <a href=\";license\">GNU General Public License</a>, iKaaro is a free software project, built by its community:"
 msgstr ""
 
-#: ./cms/ui/ical_edit_timetables.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Remove"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Remove Format"
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Remove selected ones"
 msgstr ""
 
-#: ./cms/ui/Folder_rename.xml.en:0
+#: cms/ui/Folder_rename.xml.en:0
 msgid "Rename"
 msgstr ""
 
-#: ./cms/ui/Folder_rename.xml.en:0
+#: cms/ui/Folder_rename.xml.en:0
 msgid "Rename Objects"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Rename.."
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Repeat Password"
 msgstr ""
 
-#: ./cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Repeat Password <input id=\"password2\" name=\"password2\" type=\"password\"/>"
 msgstr ""
 
-#: ./cms/workflow.py:45
+#: cms/workflow.py:45
 msgid "Request the document publication."
 msgstr ""
 
-#: ./cms/text.py:244
+#: cms/text.py:244
 msgid "Restructured Text"
 msgstr ""
 
-#: ./cms/workflow.py:53
+#: cms/workflow.py:53
 msgid "Retire the document."
 msgstr ""
 
-#: ./cms/workflow.py:47
+#: cms/workflow.py:47
 msgid "Retract the document."
 msgstr ""
 
-#: ./cms/access.py:133
+#: cms/access.py:133
 msgid "Reviewer"
 msgstr ""
 
-#: ./cms/access.py:133
+#: cms/access.py:133
 msgid "Reviewers"
 msgstr ""
 
-#: ./cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/Folder_permissions.xml.en:0
 msgid "Role"
 msgstr ""
 
-#: ./cms/access.py:299
+#: cms/access.py:299
 msgid "Roles updated."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION."
 msgstr ""
 
-#: ./cms/ical.py:72
+#: cms/ical.py:72
 msgid "Saturday"
 msgstr ""
 
-#: ./cms/ui/CSVRow_edit.xml.en:0
+#: cms/ui/CSVRow_edit.xml.en:0
 msgid "Save Changes"
 msgstr ""
 
-#: ./cms/ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Save the translation"
 msgstr ""
 
-#: ./cms/ical.py:52
+#: cms/ical.py:52
 msgid "Schedule your time with calendar files."
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Search"
 msgstr ""
 
-#: ./cms/ui/WebSite_search.xml.en:0
+#: cms/ui/WebSite_search.xml.en:0
 msgid "Search Results"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search subfolders"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search subfolders <input name=\"search_subfolders\" id=\"search_subfolders\" type=\"checkbox\" stl:attributes=\"checked search_subfolders;value self_path\"/> <input class=\"button_search\" type=\"submit\" value=\"Search\"/>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search term"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search term <input name=\"search_value\" size=\"30\" type=\"text\" stl:attributes=\"value search_value\"/>"
 msgstr ""
 
-#: ./cms/WebSite.py:220
+#: cms/WebSite.py:220
 msgid "Security"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Sed wisi lectus, placerat nec, mollis quis, posuere eget, arcu."
 msgstr ""
 
-#: ./cms/ical.py:69
+#: cms/ical.py:69
 msgid "September"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Size"
 msgstr ""
 
-#: ./cms/ui/File_history.xml.en:0
+#: cms/ui/File_history.xml.en:0
 msgid "Size (bytes)"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_image.xml.en:0
+#: cms/ui/Folder_browse_image.xml.en:0
 msgid "Size:"
 msgstr ""
 
-#: ./cms/skins.py:43
+#: cms/skins.py:43
 msgid "Skin"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Start"
 msgstr ""
 
-#: ./cms/ical.py:725
+#: cms/ical.py:725
 msgid "Start date MUST be earlier than end date."
 msgstr ""
 
-#: ./cms/ical.py:851
+#: cms/ical.py:851
 msgid "Start time must be earlier than end time."
 msgstr ""
 
-#: ./cms/workflow.py:84
+#: cms/workflow.py:84
 msgid "State"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "State <stl:inline stl:content=\"table/sortcontrol(workflow_state)\"></stl:inline>"
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "State History"
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Status"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Strikethrough"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Subscript"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Such new versions will be similar in spirit to the present version, but may differ in detail to address new problems or concerns."
 msgstr ""
 
-#: ./cms/ui/ical_edit_event_form.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Summary"
 msgstr ""
 
-#: ./cms/ical.py:72
+#: cms/ical.py:72
 msgid "Sunday"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Superscript"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "Suspendisse potenti."
 msgstr ""
 
-#: ./cms/ical.py:41
+#: cms/ical.py:41
 msgid "TENTATIVE"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
 msgstr ""
 
-#: ./cms/ui/epoz_script_table.xml.en:0
+#: cms/ui/epoz_script_table.xml.en:0
 msgid "Table columns"
 msgstr ""
 
-#: ./cms/ui/epoz_script_table.xml.en:0
+#: cms/ui/epoz_script_table.xml.en:0
 msgid "Table rows"
 msgstr ""
 
-#: ./cms/ui/Folder_translate.xml.en:0
+#: cms/ui/Folder_translate.xml.en:0
 msgid "Target language"
 msgstr ""
 
-#: ./cms/users.py:257
+#: cms/users.py:256
 msgid "Tasks"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: ./cms/Folder.py:69
+#: cms/Folder.py:69
 msgid "Text"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Text Color"
 msgstr ""
 
-#: ./cms/ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "Text being translated"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Text contains"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Text contains <input id=\"site_search_text\" name=\"site_search_text\" size=\"50\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/text.py:245
+#: cms/text.py:245
 msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
-#: ./cms/ical.py:432
+#: cms/ical.py:432
 msgid "Text view"
 msgstr ""
 
-#: ./cms/ui/WebSite_logout.xml.en:0
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "Thank you for using ikaaro."
 msgstr ""
 
-#: ./cms/WebSite.py:286
+#: cms/WebSite.py:286
 msgid "Thanks for register, please log in"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "The \"Program\", below, refers to any such program or work, and a \"work based on the Program\" means either the Program or any derivative work under copyright law:"
 msgstr ""
 
-#: ./cms/sql.py:48
+#: cms/sql.py:48
 msgid "The Python package MySQLdb is not installed."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "The act of running the Program is not restricted, and the output from the Program is covered only if its contents constitute a work based on the Program (independent of having been made by running the Program). Whether that is true depends on what the Program does."
 msgstr ""
 
-#: ./cms/WebSite.py:184
+#: cms/WebSite.py:184
 msgid "The default language has been changed."
 msgstr ""
 
-#: ./cms/Folder.py:991
+#: cms/Folder.py:991
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 
-#: ./cms/ui/User_tasks.xml.en:0
+#: cms/ui/User_tasks.xml.en:0
 msgid "The documents below await review for publication:"
 msgstr ""
 
-#: ./cms/Folder.py:971
+#: cms/Folder.py:971
 msgid "The file must be entered"
 msgstr ""
 
-#: ./cms/ui/Root_check_groups.xml.en:0
+#: cms/ui/Root_check_groups.xml.en:0
 msgid "The following groups contain users that don't exist anymore:"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "The licenses for most software are designed to take away your freedom to share and change it."
 msgstr ""
 
-#: ./cms/ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "The list below describes your skills as a translator:"
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The message"
 msgstr ""
 
-#: ./cms/Folder.py:904
+#: cms/Folder.py:904
 msgid "The name must be entered"
 msgstr ""
 
-#: ./cms/WebSite.py:273
+#: cms/WebSite.py:273
 msgid "The password is mandatory."
 msgstr ""
 
-#: ./cms/users.py:370
+#: cms/users.py:369
 msgid "The password is wrong, please try again."
 msgstr ""
 
-#: ./cms/WebSite.py:323
+#: cms/WebSite.py:323
 msgid "The password is wrong."
 msgstr ""
 
-#: ./cms/WebSite.py:279
+#: cms/WebSite.py:279
 msgid "The passwords do not match."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "The precise terms and conditions for copying, distribution and modification follow."
 msgstr ""
 
-#: ./cms/ui/Root_not_found.xml.en:0
+#: cms/ui/Root_not_found.xml.en:0
 msgid "The requested URL <stl:inline stl:content=\"uri\"></stl:inline> was not found on this server."
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The resource title"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "The source code for a work means the preferred form of the work for making modifications to it."
 msgstr ""
 
-#: ./cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/aruni/template.xhtml.en:0
 msgid "The title"
 msgstr ""
 
-#: ./cms/WebSite.py:318
+#: cms/WebSite.py:318
 msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: ./cms/users.py:362
+#: cms/users.py:361
 msgid "The username is wrong, please try again."
 msgstr ""
 
-#: ./cms/ui/PO_edit.xml.en:0
+#: cms/ui/PO_edit.xml.en:0
 msgid "There aren't messages."
 msgstr ""
 
-#: ./cms/ui/Root_internal_server_error.xml.en:0
+#: cms/ui/Root_internal_server_error.xml.en:0
 msgid "There has been an error, please try again later."
 msgstr ""
 
-#: ./cms/WebSite.py:267
+#: cms/WebSite.py:267
 msgid "There is already a user with that email."
 msgstr ""
 
-#: ./cms/Folder.py:922
+#: cms/Folder.py:922
 msgid "There is already another object with this name."
 msgstr ""
 
-#: ./cms/Folder.py:996
+#: cms/Folder.py:996
 msgid "There is already another resource with this name."
 msgstr ""
 
-#: ./cms/users.py:365
+#: cms/users.py:364
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Therefore, by modifying or distributing the Program (or any work based on the Program), you indicate your acceptance of this License to do so, and all its terms and conditions for copying, distributing or modifying the Program or works based on it."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "These actions are prohibited by law if you do not accept this License."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "These requirements apply to the modified work as a whole."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "These restrictions translate to certain responsibilities for you if you distribute copies of the software, or if you modify it."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "This General Public License applies to most of the Free Software Foundation's software and to any other program whose authors commit to using it."
 msgstr ""
 
-#: ./cms/ui/Folder_browse_thumbnails.xml.en:0
+#: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "This folder is empty."
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "This folder or query is empty."
 msgstr ""
 
-#: ./cms/ui/OOffice_view.xml.en:0
+#: cms/ui/OOffice_view.xml.en:0
 msgid "This is a preview of your document, it doesnt really look like that."
 msgstr ""
 
-#: ./cms/ui/User_profile.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid "This is your personal space where you can manage your own documents and publish them."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "This section is intended to make thoroughly clear what is believed to be a consequence of the rest of this License."
 msgstr ""
 
-#: ./cms/ical.py:71
+#: cms/ical.py:71
 msgid "Thursday"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Thus, it is not the intent of this section to claim rights or contest your rights to work written entirely by you;"
 msgstr ""
 
-#: ./cms/ical.py:820
+#: cms/ical.py:820
 msgid "Timetable(s) removed successfully."
 msgstr ""
 
-#: ./cms/ical.py:777
+#: cms/ical.py:777
 msgid "Timetables"
 msgstr ""
 
-#: ./cms/ical.py:856
+#: cms/ical.py:856
 msgid "Timetables updated successfully."
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Title"
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "Title <input id=\"dc_title\" name=\"dc:title\" size=\"50\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Title <stl:inline stl:content=\"table/sortcontrol(title)\"></stl:inline>"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Title contains"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Title contains <input id=\"site_search_title\" name=\"site_search_title\" size=\"50\" type=\"text\"/>"
 msgstr ""
 
-#: ./cms/ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "To"
 msgstr ""
 
-#: ./cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WebSite_new_instance.xml.en:0
 msgid "To add a folder enter its name and click the <tt>Add</tt> button."
 msgstr ""
 
-#: ./cms/ical.py:536
+#: cms/ical.py:536
 msgid "To add an event, click on + symbol from the views."
 msgstr ""
 
-#: ./cms/ui/User_edit_password.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
 msgstr ""
 
-#: ./cms/ui/File_download_form.xml.en:0
+#: cms/ui/File_download_form.xml.en:0
 msgid "To download this file, click on <a stl:content=\"title_or_name\" href=\"\" stl:attributes=\"href url\"></a>"
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "To open this document with External Editor, please click the <strong>External Editor...</strong> button."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "To prevent this, we have made it clear that any patent must be licensed for everyone's free use or not licensed at all."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "To protect your rights, we need to make restrictions that forbid anyone to deny you these rights or to ask you to surrender the rights."
 msgstr ""
 
-#: ./cms/ui/Root_catalog.xml.en:0
+#: cms/ui/Root_catalog.xml.en:0
 msgid "To reindex the whole site click the button below:"
 msgstr ""
 
-#: ./cms/ui/Document_translate.xml.en:0
+#: cms/ui/Document_translate.xml.en:0
 msgid "To save the translation above click the button below:"
 msgstr ""
 
-#: ./cms/root.py:264
+#: cms/root.py:273
 msgid "To: %(to_addr)s\nFrom: %(from_addr)s\nSubject: %(subject)s\nContent-Transfer-Encoding: 8bit\nContent-Type: text/plain; charset=\"%(encoding)s\"\n\n%(body)s\n"
 msgstr ""
 
-#: ./cms/workflow.py:138
+#: cms/workflow.py:138
 msgid "Transition done."
 msgstr ""
 
-#: ./cms/ui/Folder_translate.xml.en:0
+#: cms/ui/Folder_translate.xml.en:0
 msgid "Translate"
 msgstr ""
 
-#: ./cms/ical.py:71
+#: cms/ical.py:71
 msgid "Tuesday"
 msgstr ""
 
-#: ./cms/ui/Folder_browse_list.xml.en:0
+#: cms/ui/Folder_browse_list.xml.en:0
 msgid "Type <stl:inline stl:content=\"table/sortcontrol(format)\"></stl:inline>"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Underline"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Undo"
 msgstr ""
 
-#: ./cms/ui/epoz.xml.en:0
+#: cms/ui/epoz.xml.en:0
 msgid "Unordered List"
 msgstr ""
 
-#: ./cms/ui/ical_edit_timetables.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Update"
 msgstr ""
 
-#: ./cms/root.py:319
+#: cms/root.py:328
 msgid "Update Catalog"
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "Upload"
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "Upload File"
 msgstr ""
 
-#: ./cms/ui/File_new_instance.xml.en:0
+#: cms/ui/File_new_instance.xml.en:0
 msgid "Upload a File"
 msgstr ""
 
-#: ./cms/ui/File_new_instance.xml.en:0
+#: cms/ui/File_new_instance.xml.en:0
 msgid "Upload and return"
 msgstr ""
 
-#: ./cms/ui/File_new_instance.xml.en:0
+#: cms/ui/File_new_instance.xml.en:0
 msgid "Upload and view"
 msgstr ""
 
-#: ./cms/File.py:193
+#: cms/File.py:193
 msgid "Upload failed: either the file does not match this document type ($mimetype) or it contains errors."
 msgstr ""
 
-#: ./cms/File.py:38
+#: cms/File.py:38
 msgid "Upload office documents, images, media files, etc."
 msgstr ""
 
-#: ./cms/ui/File_history.xml.en:0
+#: cms/ui/File_history.xml.en:0
 msgid "User"
 msgstr ""
 
-#: ./cms/users.py:386
+#: cms/users.py:385
 msgid "User added."
 msgstr ""
 
-#: ./cms/ui/WebSite_login.xml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Username"
 msgstr ""
 
-#: ./cms/ui/WebSite_login.xml.en:0
+#: cms/ui/UserFolder_new_user.xml.en:0
+msgid "Username (Do not use accents.)"
+msgstr ""
+
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Username <input id=\"username\" name=\"username\" type=\"text\" stl:attributes=\"value username\"/>"
 msgstr ""
 
-#: ./cms/root.py:135
+#: cms/root.py:135
 msgid "Users"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: ./cms/html.py:235
+#: cms/html.py:194
 msgid "Version edited."
 msgstr ""
 
-#: ./cms/File.py:197
+#: cms/File.py:197
 msgid "Version uploaded."
 msgstr ""
 
-#: ./cms/binary.py:90
+#: cms/binary.py:90
 msgid "Video"
 msgstr ""
 
-#: ./cms/ical.py:490
+#: cms/text.py:93
 msgid "View"
 msgstr ""
 
-#: ./cms/WebSite.py:442
+#: cms/WebSite.py:442
 msgid "We did not find results for \"%s\"."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "We protect your rights with two steps:"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "We wish to avoid the danger that redistributors of a free program will individually obtain patent licenses, in effect making the program proprietary."
 msgstr ""
 
-#: ./cms/html.py:50
+#: cms/html.py:47
 msgid "Web Document"
 msgstr ""
 
-#: ./cms/WebSite.py:41
+#: cms/WebSite.py:41
 msgid "Web Site"
 msgstr ""
 
-#: ./cms/ical.py:71
+#: cms/ical.py:71
 msgid "Wednesday"
 msgstr ""
 
-#: ./cms/ical.py:265
+#: cms/ical.py:265
 msgid "Week "
 msgstr ""
 
-#: ./cms/ical.py:491
+#: cms/ical.py:491
 msgid "Weekly"
 msgstr ""
 
-#: ./cms/ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "Welcome to the iKaaro Content Management System"
 msgstr ""
 
-#: ./cms/ui/User_profile.xml.en:0
+#: cms/ui/User_profile.xml.en:0
 msgid "Welcome to your home folder."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "When we speak of free software, we are referring to freedom, not price."
 msgstr ""
 
-#: ./cms/binary.py:229
+#: cms/binary.py:236
 msgid "Word"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
 msgstr ""
 
-#: ./cms/ui/WebSite_search_form.xml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state <select id=\"site_search_state\" name=\"site_search_state\">\n        <option value=\"\">Any</option>\n        <option stl:content=\"state/value\" stl:repeat=\"state states\" stl:attributes=\"value state/key\"></option>\n      </select>"
 msgstr ""
 
-#: ./cms/ical.py:848
+#: cms/ical.py:848
 msgid "Wrong time selection (HH:MM)."
 msgstr ""
 
-#: ./cms/ical.py:844
+#: cms/ical.py:844
 msgid "Wrong time selection."
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "Yes"
 msgstr ""
 
-#: ./cms/ui/WebSite_logout.xml.en:0
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "You Are Now Logged out"
 msgstr ""
 
-#: ./cms/ui/User_translator.xml.en:0
+#: cms/ui/User_translator.xml.en:0
 msgid "You are not a translator, <em>woaaahh</em>"
 msgstr ""
 
-#: ./cms/ical.py:674
+#: cms/ical.py:674
 msgid "You are not authorized to modify this event."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "You are not responsible for enforcing compliance by third parties to this License."
 msgstr ""
 
-#: ./cms/ui/WebSite_logout.xml.en:0
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "You are now an anonymous visitor."
 msgstr ""
 
-#: ./cms/ui/Root_languages.xml.en:0
+#: cms/ui/Root_languages.xml.en:0
 msgid "You can add other languages support to your application"
 msgstr ""
 
-#: ./cms/ui/User_edit_password.xml.en:0
+#: cms/ui/User_edit_password.xml.en:0
 msgid "You can change your password by typing a new one."
 msgstr ""
 
-#: ./cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/WorkflowAware_state.xml.en:0
 msgid "You can do the following actions:"
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "You can edit this document using an application from your desktop, like MS Office or OpenOffice.org."
 msgstr ""
 
-#: ./cms/WebSite.py:195
+#: cms/WebSite.py:195
 msgid "You can not remove the default language."
 msgstr ""
 
-#: ./cms/ui/ical_edit_timetables.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "You can specify timetables to limit the range when an event can be set."
 msgstr ""
 
-#: ./cms/ui/File_upload.xml.en:0
+#: cms/ui/File_upload.xml.en:0
 msgid "You can upload a new file to replace the current one."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "You may charge a fee for the physical act of transferring a copy, and you may at your option offer warranty protection in exchange for a fee."
 msgstr ""
 
-#: ./cms/ui/Text_externaledit.xml.en:0
+#: cms/ui/Text_externaledit.xml.en:0
 msgid "You may need to change the character encoding if your application doesn't support UTF-8 (not recommended)."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "You may not impose any further restrictions on the recipients' exercise of the rights granted herein."
 msgstr ""
 
-#: ./cms/users.py:226
+#: cms/users.py:225
 msgid "You mistyped your actual password, you account is not changed."
 msgstr ""
 
-#: ./cms/users.py:187
+#: cms/users.py:187
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
-#: ./cms/WebSite.py:208
+#: cms/WebSite.py:208
 msgid "You must choose a language"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: ./cms/WebSite.py:176
+#: cms/WebSite.py:176
 msgid "You must select one and only one language."
 msgstr ""
 
-#: ./cms/ui/WebSite_logout.xml.en:0
+#: cms/ui/WebSite_logout.xml.en:0
 msgid "Your login information has been cleared."
 msgstr ""
 
-#: ./cms/ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "a friendly user interface, high end multilingual features, powerful versioning system, desktop integration, web services support and more."
 msgstr ""
 
-#: ./cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/Text_new_instance.xml.en:0
 msgid "administrators can add new languages at the root of the application, tab \"Settings\", subtab \"Languages\"."
 msgstr ""
 
-#: ./i18n/oracle.py:46
+#: i18n/oracle.py:46
 msgid "and"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "and give any other recipients of the Program a copy of this License along with the Program."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "and that you know you can do these things."
 msgstr ""
 
-#: ./i18n/oracle.py:48
+#: i18n/oracle.py:48
 msgid "are"
 msgstr ""
 
-#: ./i18n/oracle.py:45
+#: i18n/oracle.py:45
 msgid "but"
 msgstr ""
 
-#: ./i18n/oracle.py:41
+#: i18n/oracle.py:41
 msgid "como"
 msgstr ""
 
-#: ./i18n/oracle.py:42
+#: i18n/oracle.py:42
 msgid "con"
 msgstr ""
 
-#: ./i18n/oracle.py:40
+#: i18n/oracle.py:40
 msgid "del"
 msgstr ""
 
-#: ./i18n/oracle.py:33
+#: i18n/oracle.py:33
 msgid "des"
 msgstr ""
 
-#: ./i18n/oracle.py:34
+#: i18n/oracle.py:34
 msgid "donc"
 msgstr ""
 
-#: ./i18n/oracle.py:33
+#: i18n/oracle.py:33
 msgid "elle"
 msgstr ""
 
-#: ./i18n/oracle.py:33
+#: i18n/oracle.py:33
 msgid "elles"
 msgstr ""
 
-#: ./i18n/oracle.py:34
+#: i18n/oracle.py:34
 msgid "estaux"
 msgstr ""
 
-#: ./i18n/oracle.py:40
+#: i18n/oracle.py:40
 msgid "está"
 msgstr ""
 
-#: ./i18n/oracle.py:48
+#: i18n/oracle.py:48
 msgid "from"
 msgstr ""
 
-#: ./i18n/oracle.py:41
+#: i18n/oracle.py:41
 msgid "hay"
 msgstr ""
 
-#: ./cms/root.py:295
+#: cms/root.py:304
 msgid "iKaaro"
 msgstr ""
 
-#: ./cms/ui/Root_about.xml.en:0
+#: cms/ui/Root_about.xml.en:0
 msgid "iKaaro provides state of the art Content Management technology:"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "if the Program itself is interactive but does not normally print such an announcement, your work based on the Program is not required to print an announcement.)"
 msgstr ""
 
-#: ./i18n/oracle.py:33
+#: i18n/oracle.py:33
 msgid "ils"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "it is up to the author/donor to decide if he or she is willing to distribute software through any other system and a licensee cannot impose that choice."
 msgstr ""
 
-#: ./cms/ui/WebSite_login.xml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "jsmith)."
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "keep intact all the notices that refer to this License and to the absence of any warranty;"
 msgstr ""
 
-#: ./i18n/oracle.py:41
+#: i18n/oracle.py:41
 msgid "las"
 msgstr ""
 
-#: ./i18n/oracle.py:32
+#: i18n/oracle.py:32
 msgid "les"
 msgstr ""
 
-#: ./i18n/oracle.py:40
+#: i18n/oracle.py:40
 msgid "los"
 msgstr ""
 
-#: ./i18n/oracle.py:34
+#: i18n/oracle.py:34
 msgid "mais"
 msgstr ""
 
-#: ./i18n/oracle.py:34
+#: i18n/oracle.py:34
 msgid "nous"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "or,"
 msgstr ""
 
-#: ./i18n/oracle.py:41
+#: i18n/oracle.py:41
 msgid "para"
 msgstr ""
 
-#: ./i18n/oracle.py:42
+#: i18n/oracle.py:42
 msgid "pero"
 msgstr ""
 
-#: ./i18n/oracle.py:41
+#: i18n/oracle.py:41
 msgid "por"
 msgstr ""
 
-#: ./i18n/oracle.py:32
+#: i18n/oracle.py:32
 msgid "qu'"
 msgstr ""
 
-#: ./i18n/oracle.py:32
+#: i18n/oracle.py:32
 msgid "que"
 msgstr ""
 
-#: ./i18n/oracle.py:41
+#: i18n/oracle.py:41
 msgid "qué"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "rather, the intent is to exercise the right to control the distribution of derivative or collective works based on the Program."
 msgstr ""
 
-#: ./http/request.py:98
+#: http/request.py:98
 msgid "request method \"%s\" not yet implemented"
 msgstr ""
 
-#: ./i18n/oracle.py:47
+#: i18n/oracle.py:47
 msgid "she"
 msgstr ""
 
-#: ./i18n/oracle.py:46
+#: i18n/oracle.py:46
 msgid "that"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "that is to say, a work containing the Program or a portion of it, either verbatim or with modifications and/or translated into another language."
 msgstr ""
 
-#: ./i18n/oracle.py:47
+#: i18n/oracle.py:47
 msgid "the"
 msgstr ""
 
-#: ./handlers/Folder.py:195
+#: handlers/Folder.py:195
 msgid "the resource \"%s\" does not exist"
 msgstr ""
 
-#: ./i18n/oracle.py:45
+#: i18n/oracle.py:45
 msgid "their"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "they are outside its scope."
 msgstr ""
 
-#: ./i18n/oracle.py:45
+#: i18n/oracle.py:45
 msgid "this"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "this section has the sole purpose of protecting the integrity of the free software distribution system, which is implemented by public license practices."
 msgstr ""
 
-#: ./cms/ui/ical_edit_timetables.xml.en:0
+#: cms/ui/ical_edit_timetables.xml.en:0
 msgid "to"
 msgstr ""
 
-#: ./cms/ui/PO_edit.xml.en:0
+#: cms/ui/PO_edit.xml.en:0
 msgid "translation<br/> <textarea name=\"msgstr:utf8:ustring\" stl:content=\"msgstr\" cols=\"65\" rows=\"8\"></textarea>"
 msgstr ""
 
-#: ./i18n/oracle.py:40
+#: i18n/oracle.py:40
 msgid "una"
 msgstr ""
 
-#: ./i18n/oracle.py:32
+#: i18n/oracle.py:32
 msgid "une"
 msgstr ""
 
-#: ./i18n/oracle.py:33
+#: i18n/oracle.py:33
 msgid "vous"
 msgstr ""
 
-#: ./cms/ui/Root_license.xml.en:0
+#: cms/ui/Root_license.xml.en:0
 msgid "we sometimes make exceptions for this."
 msgstr ""
 
-#: ./i18n/oracle.py:46
+#: i18n/oracle.py:46
 msgid "when"
 msgstr ""
 
-#: ./i18n/oracle.py:46
+#: i18n/oracle.py:46
 msgid "whereas"
 msgstr ""
 
-#: ./i18n/oracle.py:47
+#: i18n/oracle.py:47
 msgid "you"
 msgstr ""
 
-#: ./i18n/oracle.py:48
+#: i18n/oracle.py:48
 msgid "your"
 msgstr ""
 
-#: ./cms/ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "» Browse and link an image from the workspace:"
 msgstr ""
 
-#: ./cms/ui/Folder_browsedir.xml.en:0
+#: cms/ui/Folder_browsedir.xml.en:0
 msgid "» Browse and link an object from the workspace:"
 msgstr ""
 
-#: ./cms/ui/HTML_addlink.xml.en:0
+#: cms/ui/HTML_addlink.xml.en:0
 msgid "» Type the url to add:"
 msgstr ""

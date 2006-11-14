@@ -15,7 +15,7 @@ meta-package for easier development and deployment:
 
 This release brings an important feature, the new script "icms-make-package".
 It will create a Python package, which specializes "itools.cms" to create a
-custom web application. The purpose of this script is make it easier for
+custom web application. The purpose of this script is to make it easier for
 Python developers to get started with "itools.cms".
 
 The script comes along with the Quick Start document, which can be found in
@@ -34,9 +34,9 @@ Apart from this new feature, some bugs have been fixed:
 
 Credits:
 
- - Hervé Cauwelier added the "icms-make-package" script and fixed the VFS
-   bug;
- - J. David Ibáñez fixed the STL bug.
+  - Hervé Cauwelier added the "icms-make-package" script and fixed the VFS
+    bug;
+  - J. David Ibáñez fixed the STL bug.
 
 
 Resources

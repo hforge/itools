@@ -70,7 +70,7 @@ def create(parser, options, target):
     # Build package
 
     cwd = uri.Path(getcwd())
-    binary = cwd.resolve2(__file__.replace('icms-newpackage', 'isetup-build'))
+    binary = cwd.resolve2(__file__.replace('icms-make-package', 'isetup-build'))
     target = cwd.resolve2(target)
     print "Calling", binary
     call(str(binary), cwd=str(target))

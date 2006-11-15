@@ -126,7 +126,7 @@ class Table(object):
             previous = None
 
         next = batchend
-        if next >= subtotal:
+        if next >= total:
             next = None
 
         # Get the subset

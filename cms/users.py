@@ -357,7 +357,7 @@ class UserFolder(Folder):
             try:
                 key = int(key)
             except ValueError:
-                pass
+                continue
             ids.append(key)
         if ids:
             ids.sort()

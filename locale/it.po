@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2006-09-22 15:09+CET\n"
+"POT-Creation-Date: 2006-11-13 11:11+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-#: cms/root.py:377
+#: cms/root.py:386
 #, fuzzy
 msgid "$n handlers have been re-indexed."
 msgstr "%s oggetti sono stati re-indicizzati."
@@ -686,7 +686,7 @@ msgstr "Deve essere selezionato un cambiamento di stato."
 msgid "A valid email address must be provided."
 msgstr ""
 
-#: cms/root.py:304
+#: cms/root.py:313
 msgid "About"
 msgstr "A proposito di"
 
@@ -708,7 +708,7 @@ msgstr "A proposito di"
 msgid "Account Change"
 msgstr "OK"
 
-#: cms/users.py:194
+#: cms/users.py:193
 #, fuzzy
 msgid "Account changed."
 msgstr "Metadati modificati"
@@ -987,7 +987,7 @@ msgstr "Modifica l'impostazione predefinita"
 msgid "Change preferences"
 msgstr "Preferenze"
 
-#: cms/WebSite.py:239
+#: cms/csv_.py:66
 #, fuzzy
 msgid "Changes saved."
 msgstr "Linguaggi rimossi"
@@ -1005,7 +1005,7 @@ msgid ""
 "      </select>"
 msgstr ""
 
-#: cms/root.py:392
+#: cms/root.py:401
 #, fuzzy
 msgid "Check Groups"
 msgstr "Gruppi"
@@ -1084,7 +1084,7 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:51
+#: cms/html.py:48
 #, fuzzy
 msgid "Create and publish a Web Document."
 msgstr "Pubblica il documento."
@@ -1141,12 +1141,12 @@ msgstr ""
 msgid "Document"
 msgstr "Nuovo documento"
 
-#: cms/binary.py:245
+#: cms/binary.py:252
 #, fuzzy
 msgid "Document Excel"
 msgstr "Documento modificato."
 
-#: cms/binary.py:111
+#: cms/binary.py:118
 #, fuzzy
 msgid "Document Flash"
 msgstr "Nuovo documento"
@@ -1156,12 +1156,12 @@ msgstr "Nuovo documento"
 msgid "Document History"
 msgstr "Documento modificato."
 
-#: cms/binary.py:338
+#: cms/binary.py:345
 #, fuzzy
 msgid "Document PDF"
 msgstr "Nuovo documento"
 
-#: cms/binary.py:259
+#: cms/binary.py:266
 #, fuzzy
 msgid "Document PowerPoint"
 msgstr "Documento modificato."
@@ -1171,12 +1171,12 @@ msgstr "Documento modificato."
 msgid "Document State"
 msgstr "Documento modificato."
 
-#: cms/binary.py:230
+#: cms/binary.py:237
 #, fuzzy
 msgid "Document Word"
 msgstr "Documento modificato."
 
-#: cms/html.py:167
+#: cms/html.py:164
 #, fuzzy
 msgid "Document changed."
 msgstr "Documento modificato."
@@ -1194,7 +1194,7 @@ msgstr ""
 msgid "E-mail"
 msgstr "Email"
 
-#: cms/html.py:155
+#: cms/html.py:152
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
@@ -1216,7 +1216,7 @@ msgstr ""
 msgid "Each version is given a distinguishing version number."
 msgstr "Ad ogni versione è associato un numero di versione univoco."
 
-#: cms/ical.py:776
+#: cms/text.py:155
 msgid "Edit"
 msgstr "Modifica"
 
@@ -1274,7 +1274,7 @@ msgstr ""
 msgid "Everything is alright."
 msgstr ""
 
-#: cms/binary.py:244
+#: cms/binary.py:251
 #, fuzzy
 msgid "Excel"
 msgstr "Esterno"
@@ -1337,7 +1337,7 @@ msgstr ""
 msgid "Fix"
 msgstr "Ripara"
 
-#: cms/binary.py:110
+#: cms/binary.py:117
 msgid "Flash"
 msgstr ""
 
@@ -1447,7 +1447,7 @@ msgstr "Nome completo"
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr "GNU GENERAL PUBLIC LICENSE"
 
-#: cms/root.py:421
+#: cms/root.py:430
 #, fuzzy
 msgid "Groups fixed."
 msgstr "Gruppo aggiunto"
@@ -1717,7 +1717,7 @@ msgstr "Linguaggi"
 msgid "Languages removed."
 msgstr "Linguaggi rimossi"
 
-#: cms/root.py:305
+#: cms/root.py:314
 msgid "License"
 msgstr "Licenza"
 
@@ -1751,7 +1751,7 @@ msgstr "Entra"
 msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
 msgstr ""
 
-#: cms/root.py:391
+#: cms/root.py:400
 msgid "Maintenance"
 msgstr ""
 
@@ -2014,20 +2014,20 @@ msgstr ""
 msgid "Nulla facilisi."
 msgstr ""
 
-#: cms/ui/Folder_browse_calendar.xml.en:0
+#: cms/ui/ical_edit_event_form.xml.en:0
 msgid "OK"
 msgstr "OK"
 
-#: cms/binary.py:316
+#: cms/binary.py:323
 msgid "OOo Calc"
 msgstr ""
 
-#: cms/binary.py:326
+#: cms/binary.py:333
 #, fuzzy
 msgid "OOo Impress"
 msgstr "Documento modificato."
 
-#: cms/binary.py:305
+#: cms/binary.py:312
 #, fuzzy
 msgid "OOo Writer"
 msgstr "scrivi"
@@ -2061,15 +2061,15 @@ msgstr ""
 msgid "One or more field is invalid."
 msgstr ""
 
-#: cms/binary.py:306
+#: cms/binary.py:313
 msgid "OpenOffice.org Document"
 msgstr ""
 
-#: cms/binary.py:327
+#: cms/binary.py:334
 msgid "OpenOffice.org Presentation"
 msgstr ""
 
-#: cms/binary.py:317
+#: cms/binary.py:324
 msgid "OpenOffice.org Spreadsheet"
 msgstr ""
 
@@ -2130,7 +2130,7 @@ msgstr ""
 msgid "Outdent"
 msgstr ""
 
-#: cms/binary.py:337
+#: cms/binary.py:344
 msgid "PDF"
 msgstr ""
 
@@ -2147,11 +2147,11 @@ msgstr ""
 msgid "Password Change"
 msgstr "Parola d'accesso modificata."
 
-#: cms/users.py:251
+#: cms/users.py:250
 msgid "Password changed."
 msgstr "Parola d'accesso modificata."
 
-#: cms/users.py:234
+#: cms/users.py:233
 #, fuzzy
 msgid "Passwords mismatch, please try again."
 msgstr "La password è errata, tenta di nuovo."
@@ -2258,7 +2258,7 @@ msgstr "Devi scegliere un collaboratore da rimuovere."
 msgid "Please type the title of your document."
 msgstr ""
 
-#: cms/binary.py:258
+#: cms/binary.py:265
 msgid "PowerPoint"
 msgstr ""
 
@@ -2266,7 +2266,7 @@ msgstr ""
 msgid "Preamble"
 msgstr "Preambolo"
 
-#: cms/users.py:200
+#: cms/users.py:199
 msgid "Preferences"
 msgstr "Preferenze"
 
@@ -2275,7 +2275,7 @@ msgstr "Preferenze"
 msgid "Presence"
 msgstr "Preferenze"
 
-#: cms/binary.py:220
+#: cms/binary.py:227
 msgid "Preview"
 msgstr "Anteprima"
 
@@ -2577,7 +2577,7 @@ msgstr ""
 msgid "Target language"
 msgstr "linguaggio:"
 
-#: cms/users.py:257
+#: cms/users.py:256
 msgid "Tasks"
 msgstr "Incarichi"
 
@@ -2701,7 +2701,7 @@ msgstr "Deve essere inserito il nome"
 msgid "The password is mandatory."
 msgstr "La password è errata"
 
-#: cms/users.py:370
+#: cms/users.py:369
 msgid "The password is wrong, please try again."
 msgstr "La password è errata, tenta di nuovo."
 
@@ -2751,7 +2751,7 @@ msgstr "Il titolo"
 msgid "The user \"$username\" does not exist."
 msgstr "L'utente \"%s\" non esiste"
 
-#: cms/users.py:362
+#: cms/users.py:361
 msgid "The username is wrong, please try again."
 msgstr "Il nome utente è errato, tenta di nuovo"
 
@@ -2778,7 +2778,7 @@ msgstr "Esiste già un altro oggetto con questo nome"
 msgid "There is already another resource with this name."
 msgstr "Esiste già un'altra risorsa con questo nome."
 
-#: cms/users.py:365
+#: cms/users.py:364
 msgid "There is another user with the username \"%s\", please try again"
 msgstr ""
 "Esiste già un altro utente che ha scelto \"%s\" come nome utente, tenta di "
@@ -2956,7 +2956,7 @@ msgstr "Per re-indicizzare l'intero sito clicca il pulsante:"
 msgid "To save the translation above click the button below:"
 msgstr "Per re-indicizzare l'intero sito clicca il pulsante:"
 
-#: cms/root.py:264
+#: cms/root.py:273
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -3004,7 +3004,7 @@ msgstr "Lista utenti:"
 msgid "Update"
 msgstr "Aggiorna il catalogo"
 
-#: cms/root.py:319
+#: cms/root.py:328
 #, fuzzy
 msgid "Update Catalog"
 msgstr "Aggiorna il catalogo"
@@ -3046,7 +3046,7 @@ msgstr ""
 msgid "User"
 msgstr "Utente"
 
-#: cms/users.py:386
+#: cms/users.py:385
 #, fuzzy
 msgid "User added."
 msgstr "Utente aggiunto"
@@ -3054,6 +3054,10 @@ msgstr "Utente aggiunto"
 #: cms/ui/WebSite_login.xml.en:0
 msgid "Username"
 msgstr "Nome utente"
+
+#: cms/ui/UserFolder_new_user.xml.en:0
+msgid "Username (Do not use accents.)"
+msgstr ""
 
 #: cms/ui/WebSite_login.xml.en:0
 msgid ""
@@ -3069,7 +3073,7 @@ msgstr "Utenti"
 msgid "Version 2, June 1991"
 msgstr "Version 2, June 1991"
 
-#: cms/html.py:235
+#: cms/html.py:194
 msgid "Version edited."
 msgstr "Versione modificata."
 
@@ -3082,7 +3086,7 @@ msgstr "Versione caricata."
 msgid "Video"
 msgstr "Vedi"
 
-#: cms/ical.py:490
+#: cms/text.py:93
 msgid "View"
 msgstr "Vedi"
 
@@ -3104,7 +3108,7 @@ msgstr ""
 "individually obtain patent licenses, in effect making the program "
 "proprietary."
 
-#: cms/html.py:50
+#: cms/html.py:47
 #, fuzzy
 msgid "Web Document"
 msgstr "Nuovo documento"
@@ -3139,7 +3143,7 @@ msgid "When we speak of free software, we are referring to freedom, not price."
 msgstr ""
 "When we speak of free software, we are referring to freedom, not price."
 
-#: cms/binary.py:229
+#: cms/binary.py:236
 msgid "Word"
 msgstr ""
 
@@ -3246,7 +3250,7 @@ msgstr ""
 "You may not impose any further restrictions on the recipients' exercise of "
 "the rights granted herein."
 
-#: cms/users.py:226
+#: cms/users.py:225
 msgid "You mistyped your actual password, you account is not changed."
 msgstr ""
 
@@ -3358,7 +3362,7 @@ msgstr "Da"
 msgid "hay"
 msgstr ""
 
-#: cms/root.py:295
+#: cms/root.py:304
 msgid "iKaaro"
 msgstr "iKaaro"
 

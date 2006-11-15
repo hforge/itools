@@ -1,4 +1,61 @@
 
+itools 0.14.5 (2006/11/14)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This release brings an important feature, the new script "icms-make-package".
+It will create a Python package, which specializes "itools.cms" to create a
+custom web application. The purpose of this script is to make it easier for
+Python developers to get started with "itools.cms".
+
+The script comes along with the Quick Start document, which can be found in
+the itools web site:
+
+  http://download.ikaaro.org/doc/icms-quickstart/quickstart.html
+
+Apart from this new feature, some bugs have been fixed:
+
+  - In itools.vfs, "vfs.copy" now works when the object being copied is a
+    folder in the filesystem.
+
+  - In itools.stl, the "not" expressions work now when the character that
+    follows the "not" keyword is a whitespace other than the common space
+    character (e.g. a tab or a new line).
+
+Credits:
+
+  - Hervé Cauwelier added the "icms-make-package" script and fixed the VFS
+    bug;
+  - J. David Ibáñez fixed the STL bug.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.5.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.14.4 (2006/11/06)
 ==========================
 

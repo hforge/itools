@@ -20,10 +20,16 @@ import datetime
 import thread
 
 # Import from itools
-from itools.vfs import api as vfs
+from itools import vfs
 
 
 thread_lock = thread.allocate_lock()
+transactions_registry = []
+
+
+def register_transaction_class(transaction_class):
+    transactions_registry.append(transaction_class)
+
 
 
 class Transaction(set):
@@ -68,17 +74,21 @@ class Transaction(set):
         thread_lock.release()
 
 
+register_transaction_class(Transaction)
+
+
 
 _transactions = {}
+
 
 def get_transaction():
     ident = thread.get_ident()
 
     thread_lock.acquire()
     try:
-        transaction = _transactions.setdefault(ident, Transaction())
+        transaction_class = transactions_registry[-1]
+        transaction = _transactions.setdefault(ident, transaction_class())
     finally:
         thread_lock.release()
 
     return transaction
-

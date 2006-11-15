@@ -24,6 +24,7 @@ from itools import get_abspath
 from itools.gettext import domains
 
 # Import from itools.cms
+import transaction
 import root
 from Folder import Folder
 import Document

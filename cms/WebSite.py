@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools import uri
-from itools.datatypes import Email
+from itools.datatypes import Email, Unicode
 from itools import i18n
 from itools.catalog import queries
 from itools.stl import stl
@@ -378,6 +378,7 @@ class WebSite(RoleAware, Folder):
         text = context.get_form_value('site_search_text').strip()
         if not text:
             return context.come_back(u"Empty search value.")
+        text = Unicode.decode(text)
 
         on_title = queries.Equal('title', text)
         on_text = queries.Equal('text', text)
@@ -439,8 +440,8 @@ class WebSite(RoleAware, Folder):
         namespace['batch'] = table.batch_control()
 
         if not objects:
-            message = u'We did not find results for "%s".'
-            namespace['not_found'] = self.gettext(message) % text
+            message = u'We did not find results for "%s".' % text
+            namespace['not_found'] = self.gettext(message)
 
         hander = self.get_handler('/ui/WebSite_search.xml')
         return stl(hander, namespace)

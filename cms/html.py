@@ -139,9 +139,9 @@ class XHTMLFile(Text, XHTML.Document):
 
         new_body = context.get_form_value('data')
         # Epoz returns HTML, coerce to XHTML (by tidy)
-        doc = tidy.parseString(self.to_str(), indent=1, char_encoding='utf8',
-                               output_xhtml=1)
-        new_body = str(doc)
+        new_body = tidy.parseString(new_body, indent=1, char_encoding='utf8',
+                                    output_xhtml=1)
+        new_body = str(new_body)
         if not new_body:
             return context.come_back(
                 u'ERROR: the document could not be changed, the input'

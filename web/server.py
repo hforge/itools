@@ -414,12 +414,7 @@ class Server(object):
             context.commit = False
 
         # Commit
-        try:
-            self.commit_transaction(context)
-        except:
-            self.log_error(context)
-            status = 500
-            body = self.root.internal_server_error(context)
+        self.commit_transaction(context)
 
         # Set body
         if isinstance(body, str):

@@ -97,40 +97,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return stl(handler, namespace)
 
 
-    #########################################################################
-    # Transaction
-    def save_state(self):
-        """ Duplicate of handlers.Folder.Folder.save_state but save to
-        temporary files.
-        """
-        cache = self.cache
-        base = self.uri
-
-        # Remove
-        folder = vfs.open(base)
-        for name in self.removed_handlers:
-            temp = '~%s.del' % name
-            folder.move(name, temp)
-        self.removed_handlers = set()
-
-        # Add
-        for name in self.added_handlers:
-            temp = '~%s.add' % name if name != '.catalog' else name
-            if folder.exists(temp):
-                folder.remove(temp)
-            # Add the handler
-            target = base.resolve2(temp)
-            handler = cache[name]
-            # Add the handler
-            handler.save_state_to(target)
-            # Clean the cache (the most simple and robust option)
-            cache[name] = None
-        self.added_handlers = set()
-
-        # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
-
-
     #######################################################################
     # Traverse
     #######################################################################

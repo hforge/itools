@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from the Standard Library
-from __future__ import with_statement
 from datetime import datetime
 
 # Import from itools
@@ -59,20 +58,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
 
     #######################################################################
-    # Transaction
-    #######################################################################
-
-    def save_state(self):
-        """ Duplicate of handlers.File.File.save_state but save to a temporary
-        file.
-        """
-        temp = self.uri.resolve('~%s.tmp' % self.name)
-        with vfs.make_file(temp) as file:
-            self.save_state_to_file(file)
-        # Update the timestamp
-        self.timestamp = vfs.get_mtime(temp)
-
-
+    # Versioning
     def before_commit(self):
         Handler.before_commit(self)
         self.commit_revision()

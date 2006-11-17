@@ -17,22 +17,23 @@
 
 # Import from the Standard Library
 import os
-from os import remove, rename, listdir
-from os.path import isfile, exists, join as join_path
-from shutil import copytree, rmtree
-import signal
+import subprocess
+import sys
 
 # Import from itools
 from itools.handlers.config import Config
+from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
 from itools.cms.handlers import Metadata
 from itools.cms import registry
+from itools.cms.root import Root
 
 
 def ask_confirmation(message):
     print message,
-    line = raw_input().strip().lower()
+    line = sys.stdin.readline()
+    line = line.strip().lower()
     return line == 'y'
 
 
@@ -124,86 +125,70 @@ class Server(web.server.Server):
     def end_commit_on_success(self):
         target = self.target
         transaction = get_transaction()
-        open('%s/state' % target, 'w').write('COMMIT')
+        abspaths = [ str(x.uri.path) for x in transaction
+                     if x.uri.scheme == 'file' ]
+        abspaths.sort()
+        open('%s/state' % target, 'w').write('END')
         try:
-            for handler in transaction:
-                uri = handler.uri
-                if uri.scheme != 'file':
-                    continue
-                path = str(uri.path)
-                name = handler.name
-                if name == '.catalog':
-                    dest = str(uri.path.resolve('.catalog.bak'))
-                    rmtree(dest)
-                    copytree(path, dest)
-                elif isfile(path):
-                    temp = str(uri.path.resolve('~%s.tmp' % name))
-                    rename(temp, path)
+            a, b = '%s/database' % target, '%s/database.bak' % target
+            for src in abspaths:
+                dst = src.replace(a, b, 1)
+                if os.path.isdir(src):
+                    src_files = set(os.listdir(src))
+                    dst_files = set(os.listdir(dst))
+                    # Remove
+                    for filename in dst_files - src_files:
+                        filename = '%s/%s' % (dst, filename)
+                        if os.path.isdir(filename):
+                            subprocess.call(['rm', '-r', filename])
+                        else:
+                            os.remove(filename)
+                    # Add
+                    for filename in src_files - dst_files:
+                        srcfile = '%s/%s' % (src, filename)
+                        dstfile = '%s/%s' % (dst, filename)
+                        if os.path.isdir(srcfile):
+                            subprocess.call(['cp', '-r', srcfile, dstfile])
+                        else:
+                            open(dstfile, 'w').write(open(srcfile).read())
+                    # Different. XXX Could not need this if IIndex
+                    # (itools.catalog) was not a so special handler (the
+                    # folder keeps the data structure for the files).
+                    for filename in src_files & dst_files:
+                        srcfile = '%s/%s' % (src, filename)
+                        dstfile = '%s/%s' % (dst, filename)
+                        srctime = os.stat(srcfile).st_mtime
+                        dsttime = os.stat(dstfile).st_mtime
+                        if srctime > dsttime:
+                            # Remove
+                            if os.path.isdir(dstfile):
+                                subprocess.call(['rm', '-r', dstfile])
+                            else:
+                                os.remove(dstfile)
+                            # Copy
+                            if os.path.isdir(srcfile):
+                                subprocess.call(['cp', '-r', srcfile, dstfile])
+                            else:
+                                open(dstfile, 'w').write(open(srcfile).read())
                 else:
-                    for name in listdir(path):
-                        if name[0] == '~':
-                            temp = join_path(path, name)
-                            if name[-4:] == '.add':
-                                original = join_path(path, name[1:-4])
-                                rename(temp, original)
-                            elif name[-4:] == '.del':
-                                if isfile(temp):
-                                    remove(temp)
-                                else:
-                                    rmtree(temp)
+                    open(dst, 'w').write(open(src).read())
         except:
+            # Something wrong? Fall to more safe (and slow) rsync, and log
+            # the error.
             self.log_error()
-            # XXX stop instance to introspect
-            pid = self.get_pid()
-            os.kill(pid, signal.SIGKILL)
-        # Finish with the commit
+            subprocess.call(['rsync', '-a', '--delete',
+                             '%s/database/' % target,
+                             '%s/database.bak' % target])
+
+        # Finish with the backup
         open('%s/state' % target, 'w').write('OK')
-        # Reset the transaction
+        # Clean the transaction
         transaction.clear()
 
 
     def end_commit_on_error(self):
         target = self.target
-        transaction = get_transaction()
-        open('%s/state' % target, 'w').write('ROLLBACK')
-        try:
-            for handler in transaction:
-                uri = handler.uri
-                if uri.scheme != 'file':
-                    continue
-                path = str(uri.path)
-                name = handler.name
-                if name == '.catalog':
-                    source = str(uri.path.resolve('.catalog.bak'))
-                    rmtree(path)
-                    copytree(source, path)
-                elif isfile(path):
-                    temp = str(uri.path.resolve('~%s.tmp' % name))
-                    if exists(temp):
-                        remove(temp)
-                else:
-                    for name in listdir(path):
-                        if name[0] == '~':
-                            temp = join_path(path, name)
-                            if name[-4:] == '.add':
-                                if isfile(temp):
-                                    remove(temp)
-                                else:
-                                    rmtree(temp)
-                            elif name[-4:] == '.del':
-                                original = join_path(path, name[1:-4])
-                                if exists(original):
-                                    if isfile(original):
-                                        remove(original)
-                                    else:
-                                        rmtree(original)
-                                rename(temp, original)
-        except:
-            self.log_error()
-            # XXX stop instance to introspect
-            pid = self.get_pid()
-            os.kill(pid, signal.SIGKILL)
-        # Finish with the rollback
+        subprocess.call(['rsync', '-a', '--delete',
+                         '%s/database.bak/' % target,
+                         '%s/database' % target])
         open('%s/state' % target, 'w').write('OK')
-        # Reset the transaction
-        transaction.clear()

@@ -16,14 +16,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-from __future__ import with_statement
 from datetime import datetime
 import mimetypes
 from random import random
 from time import time
 
 # Import from itools
-from itools import vfs
 from itools.datatypes import (DateTime, QName, String, Unicode,
                               XML as XMLDataType)
 from itools import schemas
@@ -138,19 +136,6 @@ class Metadata(File):
         # Set state
         self.prefixes = prefixes
         self.properties = properties
-
-
-    #######################################################################
-    # Transaction
-    def save_state(self):
-        """ Duplicate of handlers.File.File.save_state but save to a temporary
-        file.
-        """
-        temp = self.uri.resolve('~%s.tmp' % self.name)
-        with vfs.make_file(temp) as file:
-            self.save_state_to_file(file)
-        # Update the timestamp
-        self.timestamp = vfs.get_mtime(temp)
 
 
     def _load_state_from_file(self, file):

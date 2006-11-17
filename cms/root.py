@@ -21,6 +21,7 @@ from time import time
 import traceback
 
 # Import from itools
+from itools.datatypes import FileName
 from itools import vfs
 from itools.handlers.Folder import Folder as FolderHandler
 from itools.handlers.transactions import get_transaction
@@ -29,9 +30,12 @@ from itools.catalog.catalog import Catalog
 from itools.web import get_context
 
 # Import from itools.cms
+from text import PO
 from users import UserFolder
 from WebSite import WebSite
+from handlers import ListOfUsers, Metadata
 from registry import register_object_class
+from Folder import Folder
 from catalog import CatalogAware
 
 

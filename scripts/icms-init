@@ -96,8 +96,8 @@ def init(parser, options, target):
     transaction = transactions.get_transaction()
     transaction.commit()
 
-    # Backup Catalog
-    cmd = 'cp -r %s/database/.catalog %s/database/.catalog.bak'
+    # Backup
+    cmd = 'cp -r %s/database %s/database.bak'
     os.system(cmd % (target, target))
 
     # Transaction state

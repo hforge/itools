@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,11 +13,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the Standard Library
-import subprocess
-from subprocess import PIPE, Popen
+# Import other libraries
+import tidy
 
 # Import from itools
 from itools.xml import XML
@@ -66,11 +65,9 @@ class XHTMLFile(Text, XHTML.Document):
 
 
     def to_html(self):
-        p = Popen(['tidy', '-i', '-utf8', '-ashtml'], stdin=PIPE, stdout=PIPE)
-        stdin, stdout = p.stdin, p.stdout
-        stdin.write(self.to_str())
-        stdin.close()
-        return unicode(stdout.read(), 'utf-8')
+        doc = tidy.parseString(self.to_str(), indent=1, char_encoding='utf8',
+                               output_html=1)
+        return unicode(str(doc), 'utf-8')
 
 
     def to_text(self):
@@ -142,11 +139,9 @@ class XHTMLFile(Text, XHTML.Document):
 
         new_body = context.get_form_value('data')
         # Epoz returns HTML, coerce to XHTML (by tidy)
-        p = Popen(['tidy', '-i', '-utf8', '-asxhtml'], stdin=PIPE, stdout=PIPE)
-        stdin, stdout = p.stdin, p.stdout
-        stdin.write(new_body)
-        stdin.close()
-        new_body = stdout.read()
+        doc = tidy.parseString(self.to_str(), indent=1, char_encoding='utf8',
+                               output_xhtml=1)
+        new_body = str(doc)
         if not new_body:
             return context.come_back(
                 u'ERROR: the document could not be changed, the input'

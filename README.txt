@@ -25,13 +25,15 @@ Requirements
 
 itools requires Python 2.5 or later.
 
-The PIL Python package is recommended, itools.cms will use it if it is
-installed.
+For itools.cms to work the package "tidy" [1] must be installed. While not
+strictly necessary it is also recommended to have PIL [2] installed.
 
-The commands rsync and tidy are required by itools.cms; the commands
-xlhtml, pdftotext, catdoc, ppthtml, iconv, links, unzip, pdftohtml
-and wvHtml are recommended, itools.cms will use them if installed to
-index documents.
+Apart from the Python packages listed above, itoools.cms requires the
+command rsync. And the commands xlhtml, ppthtml, pdftohtml and wvHtml are
+needed to index some types of documents.
+
+[1] http://utidylib.berlios.de/
+[2] http://www.pythonware.com/products/pil/
 
 
 Install

@@ -353,8 +353,6 @@ class Root(WebSite):
 
             n = 0
             for handler, ctx in self.traverse2():
-                name = handler.name
-                abspath = handler.get_abspath()
                 # Skip virtual handlers
                 if handler.real_handler is not None:
                     ctx.skip = True
@@ -364,7 +362,7 @@ class Root(WebSite):
                     ctx.skip = True
                     continue
                 # Index the document
-                print n, abspath
+                print n, handler.get_abspath()
                 catalog.index_document(handler.get_catalog_indexes())
                 n += 1
                 # Avoid too much memory usage but saving changes
@@ -381,9 +379,11 @@ class Root(WebSite):
             t3 = time()
             print 'Updating catalog, sync:', t3 - t2
 
-        print 'Updating catalog, total:', t3 - t0
+        total = t3 - t0
+        print 'Updating catalog, total:', total
 
-        return context.come_back(u'$n handlers have been re-indexed.', n=n)
+        message = u'$n handlers have been indexed in $time seconds.'
+        return context.come_back(message, n=n, time=('%.02f' % total))
 
 
     #######################################################################

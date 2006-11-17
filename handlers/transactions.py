@@ -24,12 +24,6 @@ from itools.vfs import api as vfs
 
 
 thread_lock = thread.allocate_lock()
-transactions_registry = []
-
-
-def register_transaction_class(transaction_class):
-    transactions_registry.append(transaction_class)
-
 
 
 class Transaction(set):
@@ -74,21 +68,17 @@ class Transaction(set):
         thread_lock.release()
 
 
-register_transaction_class(Transaction)
-
-
 
 _transactions = {}
-
 
 def get_transaction():
     ident = thread.get_ident()
 
     thread_lock.acquire()
     try:
-        transaction_class = transactions_registry[-1]
-        transaction = _transactions.setdefault(ident, transaction_class())
+        transaction = _transactions.setdefault(ident, Transaction())
     finally:
         thread_lock.release()
 
     return transaction
+

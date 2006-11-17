@@ -20,7 +20,7 @@ import datetime
 import thread
 
 # Import from itools
-from itools import vfs
+from itools.vfs import api as vfs
 
 
 thread_lock = thread.allocate_lock()

@@ -329,8 +329,8 @@ class UserFolder(Folder):
         """
         Return all users name.
         """
-        usernames = [ x for x in self.get_handler_names()
-                      if not x.startswith('.') ]
+        usernames = [ x for x in self.get_handler_names() 
+                                 if not x.endswith('.metadata') ]
         return frozenset(usernames)
 
 

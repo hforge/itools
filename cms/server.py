@@ -22,6 +22,7 @@ import subprocess
 import sys
 
 # Import from itools
+from itools import vfs
 from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
@@ -150,19 +151,12 @@ class Server(web.server.Server):
                     dst_files = set(os.listdir(dst))
                     # Remove
                     for filename in dst_files - src_files:
-                        filename = '%s/%s' % (dst, filename)
-                        if os.path.isdir(filename):
-                            subprocess.call(['rm', '-r', filename])
-                        else:
-                            os.remove(filename)
+                        vfs.remove('%s/%s' % (dst, filename))
                     # Add
                     for filename in src_files - dst_files:
                         srcfile = '%s/%s' % (src, filename)
                         dstfile = '%s/%s' % (dst, filename)
-                        if os.path.isdir(srcfile):
-                            subprocess.call(['cp', '-r', srcfile, dstfile])
-                        else:
-                            open(dstfile, 'w').write(open(srcfile).read())
+                        vfs.copy(srcfile, dstfile)
                     # Different. XXX Could not need this if IIndex
                     # (itools.catalog) was not a so special handler (the
                     # folder keeps the data structure for the files).
@@ -173,15 +167,9 @@ class Server(web.server.Server):
                         dsttime = os.stat(dstfile).st_mtime
                         if srctime > dsttime:
                             # Remove
-                            if os.path.isdir(dstfile):
-                                subprocess.call(['rm', '-r', dstfile])
-                            else:
-                                os.remove(dstfile)
+                            vfs.remove(dstfile)
                             # Copy
-                            if os.path.isdir(srcfile):
-                                subprocess.call(['cp', '-r', srcfile, dstfile])
-                            else:
-                                open(dstfile, 'w').write(open(srcfile).read())
+                            vfs.copy(srcfile, dstfile)
                 else:
                     open(dst, 'w').write(open(src).read())
         except:

@@ -17,7 +17,9 @@
 
 # Import from the Standard Library
 from datetime import datetime
-import os
+from os import listdir, mkdir, remove, rmdir, walk
+from os.path import exists, getatime, getctime, getmtime, getsize, isfile, \
+    isdir, join
 from subprocess import call
 
 # Import from itools
@@ -31,19 +33,19 @@ class FileFS(BaseFS):
     @staticmethod
     def exists(reference):
         path = str(reference.path)
-        return os.path.exists(path)
+        return exists(path)
 
 
     @staticmethod
     def is_file(reference):
         path = str(reference.path)
-        return os.path.isfile(path)
+        return isfile(path)
 
 
     @staticmethod
     def is_folder(reference):
         path = str(reference.path)
-        return os.path.isdir(path)
+        return isdir(path)
 
 
     @staticmethod
@@ -69,28 +71,28 @@ class FileFS(BaseFS):
     @staticmethod
     def get_ctime(reference):
         path = str(reference.path)
-        ctime = os.path.getctime(path)
+        ctime = getctime(path)
         return datetime.fromtimestamp(ctime)
 
 
     @staticmethod
     def get_mtime(reference):
         path = str(reference.path)
-        mtime = os.path.getmtime(path)
+        mtime = getmtime(path)
         return datetime.fromtimestamp(mtime)
 
 
     @staticmethod
     def get_atime(reference):
         path = str(reference.path)
-        atime = os.path.getatime(path)
+        atime = getatime(path)
         return datetime.fromtimestamp(atime)
 
 
     @staticmethod
     def get_size(reference):
         path = str(reference.path)
-        return os.path.getsize(path)
+        return getsize(path)
 
 
     @staticmethod
@@ -109,32 +111,32 @@ class FileFS(BaseFS):
     @staticmethod
     def make_folder(reference):
         path = str(reference.path)
-        os.mkdir(path)
+        mkdir(path)
 
 
     @staticmethod
     def remove(reference):
         path = str(reference.path)
-        if not os.path.exists(path):
+        if not exists(path):
             raise OSError, "File does not exist '%s'" % reference
 
-        if os.path.isdir(path):
+        if isdir(path):
             # Remove folder contents
-            for root, folders, files in os.walk(path, topdown=False):
+            for root, folders, files in walk(path, topdown=False):
                 for name in files:
-                    os.remove(os.path.join(root, name))
+                    remove(join(root, name))
                 for name in folders:
-                    os.rmdir(os.path.join(root, name))
+                    rmdir(join(root, name))
             # Remove the folder itself
-            os.rmdir(path)
+            rmdir(path)
         else:
-            os.remove(path)
+            remove(path)
 
 
     @staticmethod
     def open(reference, mode=None):
         path = str(reference.path)
-        if not os.path.exists(path):
+        if not exists(path):
             raise OSError, "File does not exist '%s'" % reference
 
         # Open for write if possible, otherwise for read
@@ -152,14 +154,23 @@ class FileFS(BaseFS):
 
 
     @staticmethod
-    def copy(source, target):
-        # XXX Windows (and maybe other platforms) is not supported, yet
-        try:
-            status = call(['cp', '-r', str(source.path), str(target.path)])
-        except OSError:
-            raise NotImplementedError
-        if status != 0:
-            raise IOError
+    def copy_folder(source, target):
+        # XXX This method is here until we have a "traverse" method and
+        # a cross-scheme "copy" method.
+
+        # The source and the target
+        source = str(source.path)
+        target = str(target.path)
+        # A folder
+        source_n = len(source)
+        for root, folders, files in walk(source):
+            aux = join(target, root[source_n:].lstrip('/'))
+            for name in files:
+                src = join(root, name)
+                dst = join(aux, name)
+                open(dst, 'w').write(open(src).read())
+            for name in folders:
+                mkdir(join(aux, name))
 
 
     @staticmethod
@@ -178,7 +189,7 @@ class FileFS(BaseFS):
     @staticmethod
     def get_names(reference):
         path = str(reference.path)
-        return os.listdir(path)
+        return listdir(path)
 
 
 

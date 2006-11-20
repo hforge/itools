@@ -25,6 +25,7 @@ from subprocess import call
 from cStringIO import StringIO
 
 # Import from itools
+from itools import vfs
 from itools.handlers.Image import Image as iImage
 from itools.handlers.archive import Archive as iArchive
 from itools.xml import XML
@@ -148,7 +149,7 @@ def convert(handler, cmdline, outfile=None):
     # Call convert method
     try:
         # XXX do not use pipes, not enough buffer to hold stdout
-        call(cmdline, stdout=stdout, stderr=stderr, shell=True, cwd=path)
+        call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
     except OSError, e:
         context = get_context()
         context.server.log_error(context)
@@ -158,7 +159,7 @@ def convert(handler, cmdline, outfile=None):
     stderr = open(stderr_path).read()
 
     # Remove the temporary files
-    call('rm -fr %s' % path, shell=True)
+    vfs.remove(path)
 
     return stdout, stderr
 

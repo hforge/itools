@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2004 Thierry Fromon <from.t@free.fr>
+#               2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 
 """
@@ -26,158 +27,162 @@ if you want to add a new langage, it's very easy:
  - add the new langage in global variable language.
 """
 
-keeping_punctuation = [ u'¡', u'¿']
-rubbish_punctuation = [u'.', u',', u';', u'?', '!', u"'", u'"']
 
-French_base = [u'que', u"qu'", u'à', u'le', u'les', u'du', u'de', u'un',u'une',
-               u'des', u'je', u'tu', u'il', u'ils', u'vous', u'elle', u'elles',
-               u'nous', u'mais', u'où',  u'et', u'donc', u'est' u'aux']
-French_char = [u'ê', u'ç', ]
+special_chars = {
+    u'¡': ['es'],
+    u'¿': ['es'],
+    u'ä': ['de'],
+    u'ß': ['de'],
+    u'ç': ['fr'],
+    u'ê': ['fr'],
+    u'í': ['es'],
+    u'ñ': ['es'],
+    u'ö': ['de'],
+    u'ó': ['es'],
+    u'ü': ['de'],
+    u'ú': ['es'],
+}
 
-Deutch_base = []
-Deutch_char = [u'ß', u'ä', u'ü', u'ö']
-
-Spanish_base = [u'de', u'del', u'una', u'al', u'el', u'está', u'los', u'y', 
-                u'por', u'para', u'qué', u'como', u'hay', u'las', u'no',u'es',
-                u'con', u'o', u'su', u'lo', u'pero'] + keeping_punctuation
-Spainish_char = [u'ó', u'ú', u'í', u'ñ']
-
-English_base = [u'but', u'of', u'no', u'on', u'their', u'as', u'this',
-                u'an', u'when', u'where'  u'as', u'and', u'or', u'that',
-                u'the', u'to', u'in', u'i',u'you', u'it', u'he', u'she',
-                u'your', u'are', u'is', 's', u'from' ]
-English_char = []
-
-
-language = (('fr', French_base, French_char),
-            ('de', Deutch_base, Deutch_char),
-            ('es', Spanish_base, Spainish_char),
-            ('en', English_base, English_char))
-
-
-class Char(object):
-    def __init__(self, language, lexeme=''):
-        self.language = language
-        self.lexeme = lexeme
-
-
-class Stat_special_char(Char):
-    def __init__(self, text):
-        self.text = text.upper().swapcase()
-
-
-    def stat_special_char(self):
-        """
-        return percent of special char for specific language
-        """
-        stat = {}
-        for lang in language:
-            n  = 0
-            for special_char in lang[2]:
-                n = n + self.text.count(special_char)
-            if len(self.text) != 0:
-                percent = (n*4000)/len(self.text)
-                percent = min (100, percent)
-            else:
-                percent = 0
-            stat[lang[0]] = percent
-        return stat
-
-
-class Token(object):
-    def __init__(self, id, lexeme=''):
-        self.id = id
-        self.lexeme = lexeme
-
-
-class Select_token(Token):
-    def __init__(self, text):
-        self.text = text
-        for i in rubbish_punctuation:
-            self.text = self.text.replace(i , ' ')
-        for i in keeping_punctuation:
-            self.text = self.text.replace(i , ' '+i+' ')
-        self.index = 0
-
-
-    def get_token(self):
-        """
-        return only word with latin char or keeping_punctuation 
-        """
-        lexeme, token = '', ''
-        if self.index == len(self.text):
-            return Token('EOF', '')
-        while self.index < len(self.text):
-            c = self.text[self.index]
-            self.index += 1
-            lexeme = lexeme + c
-            if c == ' ' or self.index == len(self.text):
-                token = lexeme.upper().swapcase()
-                return Token('word', token)
-            if not(c.isalpha() or c in keeping_punctuation):
-                lexeme , token = '', ''
+special_words = {
+    u'à': ['fr'],
+    u'al': ['es'],
+    u'an': ['en'],
+    u'and': ['en'],
+    u'are': ['en'],
+    u'as': ['en'],
+    u'aux': ['fr'],
+    u'but': ['en'],
+    u'como': ['es'],
+    u'con': ['es'],
+    u'de': ['es', 'fr'],
+    u'del': ['es'],
+    u'des': ['fr'],
+    u'donc': ['fr'],
+    u'du': ['fr'],
+    u'el': ['es'],
+    u'elle': ['fr'],
+    u'elles': ['fr'],
+    u'es': ['es'],
+    u'est': ['fr'],
+    u'está': ['es'],
+    u'et': ['fr'],
+    u'from': ['en'],
+    u'hay': ['es'],
+    u'he': ['en', 'es'],
+    u'i': ['en'],
+    u'il': ['fr'],
+    u'ils': ['fr'],
+    u'in': ['en'],
+    u'is': ['en'],
+    u'it': ['en'],
+    u'je': ['fr'],
+    u'las': ['es'],
+    u'le': ['es', 'fr'],
+    u'lo': ['es'],
+    u'les': ['es', 'fr'],
+    u'los': ['es'],
+    u'mais': ['fr'],
+    u'no': ['en', 'es'],
+    u'nous': ['fr'],
+    u'o': ['es'],
+    u'of': ['en'],
+    u'on': ['en'],
+    u'or': ['en'],
+    u'où': ['fr'],
+    u'para': ['es'],
+    u'pero': ['es'],
+    u'por': ['es'],
+    u'que': ['es', 'fr'],
+    u'qué': ['es'],
+    u'she': ['en'],
+    u'su': ['es'],
+    u'sur': ['fr'],
+    u'that': ['en'],
+    u'the': ['en'],
+    u'their': ['en'],
+    u'this': ['en'],
+    u'to': ['en'],
+    u'tu': ['es', 'fr'],
+    u'un': ['es', 'fr'],
+    u'una': ['es'],
+    u'une': ['fr'],
+    u'vous': ['fr'],
+    u'when': ['en'],
+    u'where': ['en'],
+    u'y': ['es'],
+    u'you': ['en'],
+    u'your': ['en'],
+}
 
 
-    def compare(self):
-        """
-        return percent of word for specific language
-        """
-        token =self.get_token()
-        stat = {}
-        for lang in language:
-             slang = lang[0]
-             stat[slang] = 0
-        number_word = 0
-        while token.id != 'EOF':
-            if token.lexeme not in ['', ' ']:
-                token_word  = token.lexeme.strip()
-                number_word = number_word + 1
-                for lang in language:
-                    slang = lang[0] 
-                    if token_word in lang[1]:
-                        stat[slang] = stat[slang] + 1
-            token = self.get_token()
-        for lang in language:
-            slang = lang[0]
-            if number_word != 0:
-                percent = (stat[slang]*200)/number_word
-                percent = min (100, percent)
-            else:
-                percent = 0
-            stat[slang] = percent
-        return stat
+
+# One thousand words should be enough
+MAX_WORDS = 1000
 
 
-def guess_language(text, threshold=20):
-    """
-    Return the early language or None.
-    """
-    first_percent, second_percent = 0, 0
-    first_lang, second_lang = '', ''
-    word = Select_token(text)
-    char = Stat_special_char(text)
-    words = word.compare()
-    chars = char.stat_special_char()
-    for lang in language:
-        slang = lang[0]
-        if len(text) < 75:
-             percent = min(words[slang] + chars[slang], 99)
-        elif len(text) < 500:
-            percent = min(1.2*words[slang] + 2*chars[slang], 99)
-        else:
-            percent = min(1.6*words[slang] + 4*chars[slang], 99)
-        if percent > first_percent:
-            second_percent, second_lang = first_percent, first_lang 
-            first_percent, first_lang = percent, slang
-        elif percent > second_percent:
-            second_percent, second_lang = percent, slang
-    diff_percent = abs (first_percent - second_percent)
-    if len(text) < 75 and diff_percent <9:    
+
+def guess_language(text):
+    chars = {}
+    words = {}
+
+    # Number of chars and words analyzed
+    n_chars = 0
+    n_words = 0
+
+    # Look for special chars and words in the given text
+    word = u''
+    for c in text:
+        n_chars += 1
+        c = c.lower()
+        # Characters
+        if c in special_chars:
+            for language in special_chars[c]:
+                if language in chars:
+                    chars[language] += 1
+                else:
+                    chars[language] = 1
+        # Words
+        if c.isalpha():
+            word += c
+        elif word:
+            if word in special_words:
+                for language in special_words[word]:
+                    if language in words:
+                        words[language] += 1
+                    else:
+                        words[language] = 1
+            word = u''
+            # Check limit
+            n_words += 1
+            if n_words >= MAX_WORDS:
+                break
+
+    # If we found nothing...
+    if not chars and not words:
         return None
-    elif len(text) < 500 and diff_percent < 19:
-        return None
-    elif  diff_percent < 29:
-        return None
-    return first_lang
 
-                    
+    # Depending on the length of the text, the weight given to chars and
+    # words changes. The minimum distance between two languages too.
+    if n_chars < 75:
+        w_weight, c_weight, distance = 1.0, 1.0, 1.0
+    elif n_chars < 500:
+        w_weight, c_weight, distance = 1.2, 2.0, 2.0
+    else:
+        w_weight, c_weight, distance = 1.6, 4.0, 4.0
+
+    # Calculate the chances the text is written in any language.
+    languages = []
+    for lang in set(chars.keys()) | set(words.keys()):
+        p = w_weight*words.get(lang, 0) + c_weight*chars.get(lang, 0)
+        languages.append((p, lang))
+    languages.sort()
+
+    # Pick the most probable language, unless the distance to the second is
+    # too small.
+    minimum = languages[-1][0] - distance
+    languages = [ lang for p, lang in languages if p >= minimum ]
+    if len(languages) == 1:
+        return languages[0]
+
+    return None
+

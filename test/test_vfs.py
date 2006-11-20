@@ -118,20 +118,15 @@ class FileTestCase(TestCase):
 #    def test16_open_file(self):
 
 
-    def test17_copy_file(self):
+    def test17_move_file(self):
         vfs.copy('tests/hello.txt', 'tests/hello.txt.bak')
-        file = vfs.open('tests/hello.txt.bak')
-        self.assertEqual(file.read(), 'hello world\n')
-
-
-    def test18_move_file(self):
         vfs.move('tests/hello.txt.bak', 'tests/hello.txt.old')
         file = vfs.open('tests/hello.txt.old')
         self.assertEqual(file.read(), 'hello world\n')
         self.assertEqual(vfs.exists('tests/hello.txt.bak'), False)
 
 
-    def test19_get_names(self):
+    def test18_get_names(self):
         self.assertEqual('hello.txt.old' in vfs.get_names('tests'), True)
         # Remove temporary file
         vfs.remove('tests/hello.txt.old')
@@ -149,6 +144,38 @@ class FoldersTestCase(TestCase):
         self.assertEqual(exists, True)
 
 
+class CopyTestCase(TestCase):
+
+    def setUp(self):
+        vfs.make_folder('tmp')
+
+
+    def tearDown(self):
+        vfs.remove('tmp')
+
+
+    def test_copy_file(self):
+        vfs.copy('tests/hello.txt', 'tmp/hello.txt.bak')
+        file = vfs.open('tmp/hello.txt.bak')
+        self.assertEqual(file.read(), 'hello world\n')
+
+
+    def test_copy_file_to_folder(self):
+        vfs.copy('tests/hello.txt', 'tmp')
+        file = vfs.open('tmp/hello.txt')
+        self.assertEqual(file.read(), 'hello world\n')
+
+
+    def test_copy_folder(self):
+        vfs.copy('tests', 'tmp/xxx')
+        file = vfs.open('tmp/xxx/hello.txt')
+        self.assertEqual(file.read(), 'hello world\n')
+
+
+    def test_copy_folder_to_folder(self):
+        vfs.copy('tests', 'tmp')
+        file = vfs.open('tmp/tests/hello.txt')
+        self.assertEqual(file.read(), 'hello world\n')
 
 
 

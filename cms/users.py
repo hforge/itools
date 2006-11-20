@@ -249,9 +249,8 @@ class User(AccessControl, Folder):
         if self.name == user.name:
             password = crypt_password(password)
             if not self.authenticate(password):
-                message = (u"You mistyped your actual password, "
-                           u"you account is not changed.")
-                raise UserError, self.gettext(message)
+                return context.come_back(u"You mistyped your actual password, "
+                                         u"your account is not changed.")
 
         newpass = newpass.strip()
         if newpass:
@@ -379,8 +378,8 @@ class UserFolder(Folder):
         """
         Return all users name.
         """
-        usernames = [ x for x in self.get_handler_names()
-                      if not x.startswith('.') ]
+        usernames = [ x for x in self.get_handler_names() 
+                                 if not x.endswith('.metadata') ]
         return frozenset(usernames)
 
 

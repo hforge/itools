@@ -131,21 +131,33 @@ class Folder(object):
 
 
     def copy(self, source, target):
-        if self.is_file(source):
-            self.make_file(target)
-            with self.open(source) as source:
-                with self.open(target) as target:
+        source_fs, source_ref = self.get_fs_and_reference(source)
+        target_fs, target_ref = self.get_fs_and_reference(target)
+        # If the target exists and is a folder, copy the source within it
+        if target_fs.is_folder(target_ref):
+            target_ref = target_ref.resolve2(source_ref.path[-1].name)
+
+        # File
+        if source_fs.is_file(source_ref):
+            target_fs.make_file(target_ref)
+            with source_fs.open(source_ref) as source:
+                with target_fs.open(target_ref, 'w') as target:
                     target.write(source.read())
-        elif self.is_folder(source):
-            source_fs, source_reference = self.get_fs_and_reference(source)
-            target_fs, target_reference = self.get_fs_and_reference(target)
+            return
+
+        # Folder
+        if source_fs.is_folder(source_ref):
+            target_fs.make_folder(target_ref)
+            # XXX Implement the method traverse and use it to write a
+            # cross-scheme copy method.
             if source_fs is target_fs:
-                source_fs.copy(source_reference, target_reference)
+                source_fs.copy_folder(source_ref, target_ref)
             else:
-                # XXX
                 raise NotImplementedError
-        else:
-            raise OSError
+            return
+
+        # Something else
+        raise OSError
 
 
     def move(self, source, target):

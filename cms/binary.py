@@ -28,12 +28,10 @@ from cStringIO import StringIO
 from itools import vfs
 from itools.handlers.Image import Image as iImage
 from itools.handlers.archive import Archive as iArchive
-from itools.xml import XML
-from itools.html import HTML
+from itools.xml import xml_to_text
 from itools.stl import stl
 from itools.web.context import get_context
 from File import File
-from text import Text
 from registry import register_object_class
 
 
@@ -153,10 +151,18 @@ def convert(handler, cmdline, outfile=None):
     except OSError, e:
         context = get_context()
         context.server.log_error(context)
+        return '', str(e)
 
     # Read output
-    stdout = open(stdout_path).read()
-    stderr = open(stderr_path).read()
+    if outfile is not None:
+        stdout_path = path_join(path, outfile)
+    try:
+        stdout = open(stdout_path).read()
+    except IOError, e:
+        stdout = ''
+        stderr = str(e)
+    else:
+        stderr = open(stderr_path).read()
 
     # Remove the temporary files
     vfs.remove(path)
@@ -167,67 +173,23 @@ def convert(handler, cmdline, outfile=None):
 
 class OfficeDocument(File):
 
-    __text_output__ = None
-    __html_output__ = None
-
     source_encoding = 'UTF-8'
 
-    def to_text(self):
-        if self.__text_output__ is not None:
-            return self.__text_output__
 
-        html = self.to_html()
-        try:
-            handler = HTML.Document()
-            handler.load_state_from_string(html)
-            text = handler.to_text()
-        except ValueError:
-            context = get_context()
-            context.server.log_error()
-            text = u''
-
-        self.__text_output__ = text
-
-        return text
-
-
-    def to_html(self, outfile=None):
-        if self.__html_output__ is not None:
-            return self.__html_output__
-
+    def to_text(self, outfile=None):
         stdout, stderr = convert(self, self.source_converter, outfile)
 
         if stderr != "":
             text = u''
         else:
             try:
-                text = unicode(stdout, self.source_encoding)
+                text = unicode(stdout, self.source_encoding, 'replace')
             except UnicodeDecodeError:
-                encoding = Text.guess_encoding(stdout)
-                text = unicode(stdout, encoding)
+                context = get_context()
+                context.server.log_error()
+                text = u''
 
-        text = text.encode('utf-8')
-        self.__html_output__ = text
         return text
-
-
-    def clear_cache(self):
-        self.__text_output__ = None
-        self.__html_output__ = None
-
-
-    def upload(self, context):
-        self.clear_cache()
-        return File.upload(self, context)
-
-
-    ########################################################################
-    # User interface
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u'View'
-    view__sublabel__ = u'Preview'
-    def view(self, context):
-        return self.to_html()
 
 
 
@@ -239,10 +201,11 @@ class MSWord(OfficeDocument):
     class_icon16 = 'images/Word16.png'
     class_icon48 = 'images/Word48.png'
 
-    source_converter = 'wvHtml --charset=UTF-8 "%s" out.doc'
+    source_converter = 'wvText "%s" out.txt'
 
-    def to_html(self):
-        return OfficeDocument.to_html(self, outfile='out.doc')
+
+    def to_text(self):
+        return OfficeDocument.to_text(self, 'out.txt')
 
 
 
@@ -255,8 +218,18 @@ class MSExcel(OfficeDocument):
     class_icon48 = 'images/Excel48.png'
     class_extension = '.xls'
     
-    source_converter = 'xlhtml -nh "%s"'
-    source_encoding='windows-1252'
+    source_converter = 'xlhtml -a -fw -nc -nh -te "%s"'
+
+
+    def to_text(self):
+        stdout, stderr = convert(self, self.source_converter)
+
+        if stderr != "":
+            text = u''
+        else:
+            text = xml_to_text(stdout)
+
+        return text
 
 
 
@@ -272,39 +245,34 @@ class MSPowerPoint(OfficeDocument):
     source_converter = 'ppthtml "%s"'
 
 
+    def to_text(self):
+        stdout, stderr = convert(self, self.source_converter)
+
+        if stderr != "":
+            text = u''
+        else:
+            text = xml_to_text(stdout)
+
+        return text
+
+
 
 class OOffice(OfficeDocument):
 
     def to_text(self):
-        if self.__text_output__ is not None:
-            return self.__text_output__
-
         file = StringIO(self.to_str())
         try:
-            archive = ZipFile(file)
-            content = archive.read('content.xml')
-            archive.close()
-            handler = XML.Document()
-            handler.load_state_from_string(content)
-            text = handler.to_text()
+            zip = ZipFile(file)
+            content = zip.read('content.xml')
+            zip.close()
+            text = xml_to_text(content)
         except BadZipfile:
             context = get_context()
             context.server.log_error(context)
             text = u''
 
-        self.__text_output__ = text
-
         return text
 
-
-    def view(self, context):
-        namespace = {}
-        pgraphs = self.to_text()
-        pgraphs = [ l for l in pgraphs.split('\n') if l and len(l) > 1 ]
-        namespace['pgraphs'] = pgraphs
-
-        handler = self.get_handler('/ui/OOffice_view.xml')
-        return stl(handler, namespace)
 
 
 class OOWriter(OOffice):
@@ -328,6 +296,7 @@ class OOCalc(OOffice):
     class_extension = '.sxc'
 
 
+
 class OOImpress(OOffice):
 
     class_id = 'application/vnd.sun.xml.impress'
@@ -348,7 +317,7 @@ class PDF(OfficeDocument):
     class_icon48 = 'images/Pdf48.png'
     class_extension = '.pdf'
 
-    source_converter = 'pdftohtml -enc UTF-8 -p -noframes -stdout "%s"'
+    source_converter = 'pdftotext -enc UTF-8 -nopgbrk "%s" -'
 
 
 
@@ -388,8 +357,8 @@ register_object_class(Flash)
 register_object_class(MSWord)
 register_object_class(MSExcel)
 register_object_class(MSPowerPoint)
-register_object_class(OOWriter)
-register_object_class(OOCalc)
-register_object_class(OOImpress)
+register_object_class(OOWriter, 'application/vnd.oasis.opendocument.text')
+register_object_class(OOCalc, 'application/vnd.oasis.opendocument.spreadsheet')
+register_object_class(OOImpress, 'application/vnd.oasis.opendocument.presentation')
 register_object_class(PDF)
 register_object_class(Archive)

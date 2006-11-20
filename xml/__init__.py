@@ -18,3 +18,4 @@
 # Import from itools
 import XML
 import dublin_core
+from indexer import xml_to_text

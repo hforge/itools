@@ -20,8 +20,8 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.resources import memory
 from itools.xhtml import XHTML
+from itools.gettext.PO import PO
 
 
 
@@ -34,14 +34,15 @@ class SegmentationTestCase(TestCase):
                '<em>innovation</em> on the Internet. Developing the\n' \
                'acclaimed, <em>open source</em>, <b>Mozilla 1.6</b>.\n' \
                '</p>'
-        resource = memory.File(data)
-        doc = XHTML.Document(resource)
+        doc = XHTML.Document()
+        doc.load_state_from_string(data)
 
-        expected = [u'The Mozilla project maintains <em>choice</em> and'
-                    u' <em>innovation</em> on the Internet.',
-                    u'Developing the acclaimed, <em>open source</em>,'
-                    u' <b>Mozilla 1.6</b>.']
-        self.assertEqual(doc.get_messages(), expected)
+        messages = list(doc.get_messages())
+        expected = [(u'The Mozilla project maintains <em>choice</em> and'
+                     u' <em>innovation</em> on the Internet.', 0),
+                    (u'Developing the acclaimed, <em>open source</em>,'
+                     u' <b>Mozilla 1.6</b>.', 0)]
+        self.assertEqual(messages, expected)
 
 
     def test_table(self):
@@ -59,13 +60,17 @@ class SegmentationTestCase(TestCase):
                '    <td>even longer</td>\n' \
                '  </tr>\n' \
                '</table>'
-        resource = memory.File(data)
-        doc = XHTML.Document(resource)
+        doc = XHTML.Document()
+        doc.load_state_from_string(data)
 
-        expected = [u'Title', u'Size',
-                    u'The good, the bad and the ugly', u'looong',
-                    u'Love story', u'even longer']
-        self.assertEqual(doc.get_messages(), expected)
+        messages = list(doc.get_messages())
+        expected = [(u'Title', 0),
+                    (u'Size', 0),
+                    (u'The good, the bad and the ugly', 0),
+                    (u'looong', 0),
+                    (u'Love story', 0),
+                    (u'even longer', 0)]
+        self.assertEqual(messages, expected)
 
 
     def test_random(self):
@@ -77,14 +82,14 @@ class SegmentationTestCase(TestCase):
                '  <p><em>hello world</em></p><br/>' \
                '  bye <em>J. David Ibanez Palomar</em>\n' \
                '</body>'
-        resource = memory.File(data)
-        doc = XHTML.Document(resource)
+        doc = XHTML.Document()
+        doc.load_state_from_string(data)
 
-        messages = doc.get_messages()
-        expected = [u'this <em>word</em> is nice',
-                    u'hello world',
-                    u'bye <em>J. David Ibanez Palomar</em>']
-        self.assertEqual(doc.get_messages(), expected)
+        messages = list(doc.get_messages())
+        expected = [(u'this <em>word</em> is nice', 0),
+                    (u'hello world', 0),
+                    (u'bye <em>J. David Ibanez Palomar</em>', 0)]
+        self.assertEqual(messages, expected)
 
 
     def test_form(self):
@@ -94,11 +99,11 @@ class SegmentationTestCase(TestCase):
                '  <input type="text" name="id" />\n' \
                '  <input type="submit" value="Change" />\n' \
                '</form>'
-        resource = memory.File(data)
-        doc = XHTML.Document(resource)
+        doc = XHTML.Document()
+        doc.load_state_from_string(data)
 
-        messages = doc.get_messages()
-        self.assertEqual(messages, [u'Change'])
+        messages = list(doc.get_messages())
+        self.assertEqual(messages, [(u'Change', 0)])
 
 
 
@@ -121,32 +126,32 @@ class TranslationTestCase(TestCase):
     def test_case1(self):
         """Test element content."""
         data = self.template % '<p>hello litle world</p>'
-        data = memory.File(data)
-        xhtml = parsers.XHTML.Document(data)
-        messages = list(xhtml.get_messages())
+        doc = XHTML.Document()
+        doc.load_state_from_string(data)
+        messages = list(doc.get_messages())
 
-        self.assertEqual(messages, [u'hello litle world'])
+        self.assertEqual(messages, [(u'hello litle world', 0)])
 
 
     def test_case2(self):
         """Test simple attribute."""
         data = self.template % '<img alt="The beach" src="beach.jpg" />' 
-        data = memory.File(data)
-        xhtml = parsers.XHTML.Document(data)
-        messages = list(xhtml.get_messages())
+        doc = XHTML.Document()
+        doc.load_state_from_string(data)
+        messages = list(doc.get_messages())
 
-        self.assertEqual(messages, [u'The beach'])
+        self.assertEqual(messages, [(u'The beach', 0)])
 
 
     def test_case3(self):
         """Test complex attribute."""
         data = self.template % """<input type="text" name="id" />
                                   <input type="submit" value="Change" />""" 
-        data = memory.File(data)
-        xhtml = parsers.XHTML.Document(data)
-        messages = list(xhtml.get_messages())
+        doc = XHTML.Document()
+        doc.load_state_from_string(data)
+        messages = list(doc.get_messages())
 
-        self.assertEqual(messages, [u'Change'])
+        self.assertEqual(messages, [(u'Change', 0)])
 
 
     def test_case4(self):
@@ -156,16 +161,17 @@ class TranslationTestCase(TestCase):
         po = 'msgid "hello world"\n' \
              'msgstr "hola mundo"\n'
 
-        p = parsers.PO.PO(memory.File(po))
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
+        p = PO()
+        p.load_state_from_string(po)
+        xhtml = XHTML.Document()
+        xhtml.load_state_from_string(html)
 
         html = xhtml.translate(p)
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
+        xhtml = XHTML.Document()
+        xhtml.load_state_from_string(html)
         
-        data = list(xhtml.get_messages())
-        self.assertEqual(data, [u'hola mundo'])
+        messages = list(xhtml.get_messages())
+        self.assertEqual(messages, [(u'hola mundo', 0)])
 
 
     def test_case5(self):
@@ -174,16 +180,17 @@ class TranslationTestCase(TestCase):
         po = 'msgid "The beach"\n' \
              'msgstr "La playa"'
 
-        p = parsers.PO.PO(memory.File(po))
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
+        p = PO()
+        p.load_state_from_string(po)
+        xhtml = XHTML.Document()
+        xhtml.load_state_from_string(html)
 
         html = xhtml.translate(p)
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
+        xhtml = XHTML.Document()
+        xhtml.load_state_from_string(html)
 
-        data = list(xhtml.get_messages())
-        self.assertEqual(data, [u'La playa'])
+        messages = list(xhtml.get_messages())
+        self.assertEqual(messages, [(u'La playa', 0)])
 
 
 

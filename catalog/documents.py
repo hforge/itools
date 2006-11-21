@@ -158,6 +158,7 @@ class Documents(Folder):
                 document = self.documents[doc_n]
                 # Append the new document to the documents file
                 buffer = []
+                append = buffer.append
                 keys = document.fields.keys()
                 keys.sort()
                 for field_number in keys:
@@ -168,16 +169,16 @@ class Documents(Folder):
                     # the outside).
                     if isinstance(value, unicode):
                         # Stored
-                        buffer.append(encode_byte(field_number | 128))
+                        append(encode_byte(field_number | 128))
                         # "value" must be a unicode string
-                        buffer.append(encode_string(value))
+                        append(encode_string(value))
                     else:
                         # Not Stored
-                        buffer.append(encode_byte(field_number))
+                        append(encode_byte(field_number))
                         # "value" must be a list of unicode strings
-                        buffer.append(encode_vint(len(value)))
+                        append(encode_vint(len(value)))
                         for x in value:
-                            buffer.append(encode_string(x))
+                            append(encode_string(x))
                 position = docs_file.tell()
                 data = ''.join(buffer)
                 docs_file.write(data)

@@ -25,7 +25,22 @@ from itools.handlers.Text import Text
 guess_encoding = Text.guess_encoding
 
 
+# Append &apos;, the apostrophe (simple quote) for XML
+name2codepoint['apos'] = 39
+
+
 def xml_to_text(data):
+    """A brute-force text extractor for XML and HTML syntax, even broken to
+    some extent.
+    We don't use itools.xml.parser (yet) because expat would raise an error for
+    too many documents.
+    The encoding is guessed for each text chunk because 'xlhtml' mixes UTF-8
+    and Latin1 encodings, and the most broken converters don't declare the
+    encoding at all.
+
+    TODO use the C parser instead with itools 0.15.
+    """
+
     output = u''
     # 0 = Default
     # 1 = Start tag
@@ -48,10 +63,7 @@ def xml_to_text(data):
         elif state == 2:
             if c == '<' or c == '&':
                 encoding = guess_encoding(buffer)
-                #try:
                 output += unicode(buffer, encoding, 'replace')
-                #except UnicodeEncodeError:
-                #    pass
                 buffer = ''
                 if c == '<':
                     state = 1

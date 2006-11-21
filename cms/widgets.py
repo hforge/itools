@@ -76,6 +76,38 @@ def sort(objects, sortby, sortorder='up', getter=None):
 
 
 
+def batch(objects, start=0, size=0):
+    # Calculate subtotal and batchend
+    total = len(objects)
+
+    end = start + size
+    if end > total:
+        end = total
+
+    # Previous and next
+    previous = start - size
+    if previous < 0:
+        previous = 0
+    if previous == start:
+        previous = None
+
+    next = end
+    if next >= total:
+        next = None
+
+    # Get the subset
+    if size:
+        objects = objects[start:end]
+        subtotal = end - start
+    else:
+        subtotal = total
+
+    return objects, total, subtotal, end, previous, next
+
+
+
+
+
 class Table(object):
     """
     Returns the ordered subset of objects that matches the given parameters.
@@ -94,57 +126,35 @@ class Table(object):
 
     def __init__(self, objects, sortby=None, sortorder='up', batchstart=0,
                  batchsize=0, getter=None, name='table'):
-        # Get the parameters
         context = get_context()
-
+        # Get the parameters
         if context.has_form_value('%s_sortby' % name):
             sortby = context.get_form_values('%s_sortby' % name)
         elif isinstance(sortby, (str, unicode)):
             sortby = [sortby]
         sortorder = context.get_form_value('%s_sortorder' % name, sortorder)
-        batchstart = context.get_form_value('%s_batchstart' % name, batchstart)
-        batchstart = int(batchstart)
-        batchsize = context.get_form_value('%s_batchsize' % name, batchsize)
-        batchsize = int(batchsize)
+        start = context.get_form_value('%s_batchstart' % name, batchstart)
+        start = int(start)
+        size = context.get_form_value('%s_batchsize' % name, batchsize)
+        size = int(batchsize)
 
         # Sort
         if sortby is not None:
             objects = sort(objects, sortby, sortorder, getter)
 
-        # Calculate subtotal and batchend
-        total = len(objects)
+        # Batch
+        objects, total, subtotal, end, prev, next = batch(objects, start, size)
 
-        batchend = batchstart + batchsize
-        if batchend > total:
-            batchend = total
-
-        # Previous and next
-        previous = batchstart - batchsize
-        if previous < 0:
-            previous = 0
-        if previous == batchstart:
-            previous = None
-
-        next = batchend
-        if next >= total:
-            next = None
-
-        # Get the subset
-        if batchsize:
-            objects = objects[batchstart:batchend]
-            subtotal = batchend - batchstart
-        else:
-            subtotal = total
 
         self.name = name
         self.objects = objects
         self.total = total # objects here are not original objects list
         self.sortby = sortby
         self.sortorder = sortorder
-        self.batchstart = batchstart + 1
-        self.batchend = batchend
+        self.batchstart = start + 1
+        self.batchend = end
         self.subtotal = subtotal
-        self.previous = previous
+        self.previous = prev
         self.next = next
 
         # Return a dict. as {'total', 'previous', 'next',  'control'}
@@ -162,7 +172,7 @@ class Table(object):
         # Summary
         message = Handler.gettext(u'$start-$end of $total')
         self.batch_control = Template(message).substitute(
-            {'start': self.batchstart, 'end': batchend, 'total': total})
+            {'start': self.batchstart, 'end': end, 'total': total})
 
 
     def _sortcontrol(self, column):

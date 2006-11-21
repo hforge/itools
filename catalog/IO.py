@@ -16,9 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-import datetime
-import struct
-import sys
+from datetime import date
+from _struct import Struct
+from sys import maxunicode
 
 
 """
@@ -41,20 +41,26 @@ is the data that remains and does not belong to the value.
 """
 
 
-def encode_byte(value):
-    return chr(value)
+# Bytes
+encode_byte = chr
+decode_byte = ord
+
+# Integers (32 bits)
+uint32 = Struct('>I')
+uint32_unpack = uint32.unpack
 
 
-def decode_byte(data):
-    return ord(data)
-
-
-def encode_uint32(value):
-    return struct.pack('>I', value)
-
+encode_uint32 = uint32.pack
 
 def decode_uint32(data):
-    return int(struct.unpack('>I', data)[0])
+    return uint32_unpack(data)[0]
+
+
+
+# Two Integers (32 + 32 bits)
+uint32_2 = Struct('>II')
+
+encode_uint32_2 = uint32_2.pack
 
 
 # Variable legth integers. Example
@@ -122,7 +128,7 @@ def decode_vint(data):
 
 if u''.encode('utf-16') == '\xff\xfe':
     # Little Endian
-    if sys.maxunicode == 65535:
+    if maxunicode == 65535:
         # UCS 2
         def encode_character(value):
             return value.encode('unicode_internal') + '\x00\x00'
@@ -140,7 +146,7 @@ if u''.encode('utf-16') == '\xff\xfe':
             return unicode(data, 'unicode_internal')
 else:
     # Big endian
-    if sys.maxunicode == 65535:
+    if maxunicode == 65535:
         # UCS 2
         def encode_character(value):
             return value.encode('unicode_internal')[::-1] + '\x00\x00'
@@ -179,13 +185,13 @@ def decode_string(data):
 def encode_link(value):
     if value is None:
         return '\xFF\xFF\xFF\xFF'
-    return struct.pack('>I', value)
+    return encode_uint32(value)
 
 
 def decode_link(data):
     if data == '\xFF\xFF\xFF\xFF':
         return None
-    return int(struct.unpack('>I', data)[0])
+    return uint32_unpack(data)[0]
 
 
 # The first four bytes of every resource contain the version number. The
@@ -194,15 +200,13 @@ def decode_link(data):
 # it is stored as the proleptic Gregorian ordinal.
 def encode_version(value):
     year, month, day = int(value[:4]), int(value[4:6]), int(value[6:])
-    date = datetime.date(year, month, day)
-    ordinal = date.toordinal()
-    return struct.pack('>I', ordinal)
+    ordinal = date(year, month, day).toordinal()
+    return encode_uint32(ordinal)
 
 
 def decode_version(data):
-    ordinal = struct.unpack('>I', data)[0]
-    date = datetime.date.fromordinal(ordinal)
-    return date.strftime('%Y%m%d')
+    ordinal = uint32_unpack(data)[0]
+    return date.fromordinal(ordinal).strftime('%Y%m%d')
 
 
 

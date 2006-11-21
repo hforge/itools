@@ -20,8 +20,8 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.resources import memory
 from itools.html import HTML
+from itools.gettext.PO import PO
 
 
 class HMLTestCase(TestCase):
@@ -29,19 +29,21 @@ class HMLTestCase(TestCase):
     def test_case1(self):
         """Test element content."""
         data = '<p>hello world</p>'
-        resource = memory.File(data)
-        doc = HTML.Document(resource)
+        doc = HTML.Document()
+        doc.load_state_from_string(data)
+        messages = list(doc.get_messages())
 
-        self.assertEqual(doc.get_messages(), [u'hello world'])
+        self.assertEqual(messages, ([u'hello world'], 0))
 
 
     def test_case2(self):
         """Test simple attribute."""
         data = '<img alt="The beach" src="beach.jpg">'
-        resource = memory.File(data)
-        doc = HTML.Document(resource)
+        doc = HTML.Document()
+        doc.load_state_from_string(data)
+        messages = list(doc.get_messages())
 
-        self.assertEqual(doc.get_messages(), [u'The beach'])
+        self.assertEqual(messages, [(u'The beach', 0)])
 
 
     def test_case3(self):
@@ -50,33 +52,40 @@ class HMLTestCase(TestCase):
                '<input type="text" name="id">\n' \
                '<input type="submit" value="Change">\n' \
                '</html>'
-        resource = memory.File(data)
-        doc = HTML.Document(resource)
+        doc = HTML.Document()
+        doc.load_state_from_string(data)
+        messages = list(doc.get_messages())
 
-        self.assertEqual(doc.get_messages(), [u'Change'])
+        self.assertEqual(messages, [(u'Change', 0)])
 
 
     def test_case4(self):
         """Test translation of an element content"""
         data = '<p>hello world</p>'
-        resource = memory.File(data)
-        doc = HTML.Document(resource)
+        doc = HTML.Document()
+        doc.load_state_from_string(data)
 
         po = 'msgid "hello world"\n' \
              'msgstr "hola mundo"'
-        self.assertEqual(doc.translate(po),
+        p = PO()
+        p.load_state_from_string(po)
+
+        self.assertEqual(doc.translate(p),
                          '<p>hola mundo</p>')
 
 
     def test_case5(self):
         """Test translation of an element content"""
         data = '<img alt="The beach" src="beach.jpg">'
-        resource = memory.File(data)
-        doc = HTML.Document(resource)
+        doc = HTML.Document()
+        doc.load_state_from_string(data)
 
         po = 'msgid "The beach"\n' \
              'msgstr "La playa"'
-        self.assertEqual(doc.translate(po),
+        p = PO()
+        p.load_state_from_string(po)
+
+        self.assertEqual(doc.translate(p),
                          '<img src="beach.jpg" alt="La playa">')
 
 
@@ -84,109 +93,17 @@ class HMLTestCase(TestCase):
         """Test translation of an element content"""
         data = '<input type="text" name="id">\n' \
                '<input type="submit" value="Change">'
-        resource = memory.File(data)
-        doc = HTML.Document(resource)
+        doc = HTML.Document()
+        doc.load_state_from_string(data)
 
         po = 'msgid "Change"\n' \
              'msgstr "Cambiar"'
-        self.assertEqual(doc.translate(po),
+        p = PO()
+        p.load_state_from_string(po)
+
+        self.assertEqual(doc.translate(p),
                          '<input type="text" name="id">\n' \
                          '<input type="submit" value="Cambiar">')
-
-
-
-class TranslationTestCase(TestCase):
-    def setUp(self):
-        template ="""<?xml version="1.0" encoding="UTF-8"?>
-                     <!DOCTYPE html
-                      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-                      <html xmlns="http://www.w3.org/1999/xhtml"
-                      xmlns:stl="http://xml.itools.org/namespaces/stl">
-                     <head></head>
-                      <body>%s</body>
-                     </html>
-                  """
-        self.template = template
-
-
-    def test_case1(self):
-        """Test element content."""
-        html = self.template % '<p>hello world</p>'
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
-        messages = list(xhtml.get_messages())
-        self.assertEqual(messages, [u'hello world'])
-
-
-    def test_case2(self):
-        """Test simple attribute."""
-        html = self.template % '<img alt="The beach" src="beach.jpg"/>'
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
-        messages = list(xhtml.get_messages())
-        self.assertEqual(messages, [u'The beach'])
-
-
-    def test_case3(self):
-        """Test complex attribute."""
-        html = self.template % '<input type="text" name="id"/>\n' \
-                               '<input type="submit" value="Change"/>\n'
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
-        messages = list(xhtml.get_messages())
-        self.assertEqual(messages, [u'Change'])
-
-
-    def test_case4(self):
-        """Test translation of an element content"""
-        html = self.template % '<p>hello world</p>'
-        po = 'msgid "hello world"\n' \
-             'msgstr "hola mundo"'
-         
-        p = parsers.PO.PO(memory.File(po))
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
-        
-        html = xhtml.translate(p)
-        result = self.template % '<p>hola mundo </p>'
-        self.assertEqual(html, result)
-        
-
-    def test_case5(self):
-        """Test translation of an element content"""
-        html = '<img alt="The beach" src="beach.jpg"/>'
-        po = 'msgid "The beach"\n' \
-             'msgstr "La playa"'
-
-
-        p = parsers.PO.PO(memory.File(po))
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
-         
-        #print '-----------------', xhtml
-        #html = xhtml.translate(p)
-        #result = self.template % '<img src="beach.jpg" alt="La playa">'
-        #self.assertEqual(html, result)
-
-
-
-    def test_case6(self):
-        """Test translation of an element content"""
-        html = self.template % '<input type="text" name="id"/>\n' \
-                               '<input type="submit" value="Change"/>'
-        po = 'msgid "Change"\n' \
-             'msgstr "Cambiar"'
-
-        p = parsers.PO.PO(memory.File(po))
-        html = memory.File(html)
-        xhtml = parsers.XHTML.Document(html)
-  
-        html = xhtml.translate(p)
-        result = self.template % '<input type="text" name="id"/>\n' \
-                                 '<input type="submit" value="Cambiar/">'
-
-        self.assertEqual(html, result)
 
 
 

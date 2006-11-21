@@ -25,8 +25,23 @@ from itools.handlers.Text import Text
 guess_encoding = Text.guess_encoding
 
 
+# Append &apos;, the apostrophe (simple quote) for XML
+name2codepoint['apos'] = 39
+
+
 def xml_to_text(data):
-    output = u''
+    """A brute-force text extractor for XML and HTML syntax, even broken to
+    some extent.
+    We don't use itools.xml.parser (yet) because expat would raise an error for
+    too many documents.
+    The encoding is guessed for each text chunk because 'xlhtml' mixes UTF-8
+    and Latin1 encodings, and the most broken converters don't declare the
+    encoding at all.
+
+    TODO use the C parser instead with itools 0.15.
+    """
+
+    output = []
     # 0 = Default
     # 1 = Start tag
     # 2 = Start text
@@ -42,16 +57,13 @@ def xml_to_text(data):
         elif state == 1:
             if c == '>':
                 # Force word separator
-                output += u' '
+                output.append(u' ')
                 state = 2
                 continue
         elif state == 2:
             if c == '<' or c == '&':
                 encoding = guess_encoding(buffer)
-                #try:
-                output += unicode(buffer, encoding, 'replace')
-                #except UnicodeEncodeError:
-                #    pass
+                output.append(unicode(buffer, encoding, 'replace'))
                 buffer = ''
                 if c == '<':
                     state = 1
@@ -64,16 +76,16 @@ def xml_to_text(data):
         elif state == 3:
             if c == ';':
                 if buffer[0] == '#':
-                    output += unichr(int(buffer[1:]))
+                    output.append(unichr(int(buffer[1:])))
                 elif buffer[0] == 'x':
-                    output += unichr(int(buffer[1:], 16))
+                    output.append(unichr(int(buffer[1:], 16)))
                 else:
                     # XXX Assume entity
-                    output += unichr(name2codepoint.get(buffer, 63)) # '?'
+                    output.append(unichr(name2codepoint.get(buffer, 63))) # '?'
                 buffer = ''
                 state = 2
                 continue
             else:
                 buffer += c
 
-    return output
+    return u''.join(output)

@@ -22,7 +22,11 @@ from __future__ import with_statement
 from itools import vfs
 from itools.handlers.Folder import Folder
 from IO import (decode_character, encode_character, decode_link, encode_link,
-                decode_uint32, encode_uint32, encode_version, NULL)
+                decode_uint32, encode_uint32, encode_uint32_2, encode_version,
+                NULL)
+
+NULL2 = NULL + NULL
+
 
 
 """
@@ -287,6 +291,10 @@ class _Index(object):
         tree_n_blocks = self.tree_n_blocks
         docs_n_slots = self.docs_n_slots
 
+        seek = tree_file.seek
+        read = tree_file.read
+        write = tree_file.write
+
         ###################################################################
         # Get the node for the word to index. Create it if it does not
         # exist.
@@ -307,14 +315,13 @@ class _Index(object):
                 tree_n_blocks += 1
                 # Write
                 # Prepend the new slot
-                tree_file.seek(node.block * 16 + 8)
-                old_first_child = tree_file.read(4)
-                tree_file.seek(-4, 1)
-                tree_file.write(encode_link(slot_number))
+                seek(node.block * 16 + 8)
+                old_first_child = read(4)
+                seek(-4, 1)
+                write(encode_link(slot_number))
                 # Write the new slot
-                tree_file.seek(slot_number * 16)
-                tree_file.write(''.join([encode_character(c), NULL, NULL,
-                                         old_first_child]))
+                seek(slot_number * 16)
+                write(encode_character(c) + NULL2 + old_first_child)
                 # Add node, and continue
                 children[c] = node = _Node({}, {}, slot_number)
 
@@ -325,8 +332,8 @@ class _Index(object):
         # Update the documents, both the data structure in memory and the
         # file.
         # Get the pointer to the 'documents' file
-        tree_file.seek(node.block * 16 + 4)
-        first_doc = tree_file.read(4)
+        seek(node.block * 16 + 4)
+        first_doc = read(4)
 
         # Load documents if needed
         if node.documents is None:
@@ -334,21 +341,22 @@ class _Index(object):
 
         # Build the data to append to the docs file
         buffer = []
+        append = buffer.append
+        node_documents = node.documents
         for doc_number in documents:
-            if doc_number in node.documents:
+            if doc_number in node_documents:
                 raise ValueError, 'document %s already indexed' % doc_number
 
             positions = documents[doc_number]
             # Update data structure
-            node.documents[doc_number] = positions
+            node_documents[doc_number] = positions
             # Calculate the number of slots
             frequency = len(positions)
-            # Update the buffer
-            buffer.append(encode_uint32(doc_number))
-            buffer.append(encode_uint32(frequency))
-            buffer.append(first_doc)
+            # Update the buffer (uint32, uint32, link, uint32, ...)
+            append(encode_uint32_2(doc_number, frequency))
+            append(first_doc)
             for position in positions:
-                buffer.append(encode_uint32(position))
+                append(encode_uint32(position))
             # Next
             first_doc = encode_link(docs_n_slots)
             docs_n_slots = docs_n_slots + 3 + frequency
@@ -356,8 +364,8 @@ class _Index(object):
         docs_file.seek(0, 2)
         docs_file.write(''.join(buffer))
         # Prepend the document
-        tree_file.seek(node.block * 16 + 4)
-        tree_file.write(first_doc)
+        seek(node.block * 16 + 4)
+        write(first_doc)
 
         self.docs_n_slots = docs_n_slots
 

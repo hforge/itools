@@ -100,8 +100,8 @@ class FileFS(BaseFS):
         folder_path = str(reference.path[:-1])
         file_path = str(reference.path)
 
-        if os.path.exists(folder_path):
-            if os.path.exists(file_path):
+        if exists(folder_path):
+            if exists(file_path):
                 raise OSError, "File exists: '%s'" % reference
         else:
             os.makedirs(folder_path)

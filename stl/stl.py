@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 
 """
@@ -54,9 +54,8 @@ class STLTypeError(TypeError):
 ########################################################################
 
 # Tokens
-TID, TSLASH, TOPEN, TCLOSE, TEOF, TREPEAT, TNONE = range(7)
-token_name = ['id', 'slash', 'open parentheses', 'close parentheses',
-              'end of expression', 'reserved word "repeat"',
+TID, TSLASH, TEOF, TREPEAT, TNONE = range(5)
+token_name = ['id', 'slash', 'end of expression', 'reserved word "repeat"',
               'reserved word "none"']
 
 
@@ -71,9 +70,8 @@ class Expression(object):
     
       none
       a
-      a(literal)
       a/b/c
-      a/b/c(content)
+      repeat/a/index
       ...
     """
 
@@ -82,7 +80,6 @@ class Expression(object):
 
         # Initialize semantic structures
         self.path = ()
-        self.parameters = ()
         self.repeat = False
 
         # Parsing
@@ -108,10 +105,6 @@ class Expression(object):
                     state = 1
                 elif c == '/':
                     return TSLASH, c
-                elif c == '(':
-                    return TOPEN, c
-                elif c == ')':
-                    return TCLOSE, c
                 else:
                     raise STLSyntaxError, 'unexpected character (%s)' % c
             elif state == 1:
@@ -134,10 +127,7 @@ class Expression(object):
     #           | TREPEAT TSLASH TID TSLASH TID
     #           | TNONE
     #   parser1 = TEOF
-    #             | TSLASH parse
-    #             | TOPEN parser2
-    #   parser2 = TID parser3
-    #   parser3 = TCLOSE TEOF
+    #             | TSLASH TID parse1
     ###################################################################
     def parse(self):
         token, lexeme = self.get_token()
@@ -169,30 +159,10 @@ class Expression(object):
         if token == TEOF:
             return
         elif token == TSLASH:
-            self.parse()
-            return
-        elif token == TOPEN:
-            self.parser2()
-            return
-
-        raise STLSyntaxError, 'unexpected %s' % token_name[token]
-
-
-    def parser2(self):
-        token, lexeme = self.get_token()
-        if token == TID:
-            self.parameters = (lexeme,)
-            self.parser3()
-            return
-
-        raise STLSyntaxError, 'unexpected %s' % token_name[token]
-
-
-    def parser3(self):
-        token, lexeme = self.get_token()
-        if token == TCLOSE:
             token, lexeme = self.get_token()
-            if token == TEOF:
+            if token == TID:
+                self.path = self.path + (lexeme,)
+                self.parser1()
                 return
 
         raise STLSyntaxError, 'unexpected %s' % token_name[token]
@@ -214,9 +184,7 @@ class Expression(object):
             x = lookup(x, name)
 
         # Call
-        if self.parameters:
-            x = apply(x, self.parameters)
-        elif callable(x):
+        if callable(x):
             try:
                 x = x()
             except AttributeError, error_value:
@@ -240,8 +208,6 @@ class Expression(object):
         s = '/'.join(self.path)
         if self.repeat is True:
             return 'repeat/%s' % s
-        if self.parameters:
-            return s + '(%s)' % self.parameters
         return s
 
 

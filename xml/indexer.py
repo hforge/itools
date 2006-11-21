@@ -41,7 +41,7 @@ def xml_to_text(data):
     TODO use the C parser instead with itools 0.15.
     """
 
-    output = u''
+    output = []
     # 0 = Default
     # 1 = Start tag
     # 2 = Start text
@@ -57,13 +57,13 @@ def xml_to_text(data):
         elif state == 1:
             if c == '>':
                 # Force word separator
-                output += u' '
+                output.append(u' ')
                 state = 2
                 continue
         elif state == 2:
             if c == '<' or c == '&':
                 encoding = guess_encoding(buffer)
-                output += unicode(buffer, encoding, 'replace')
+                output.append(unicode(buffer, encoding, 'replace'))
                 buffer = ''
                 if c == '<':
                     state = 1
@@ -76,16 +76,16 @@ def xml_to_text(data):
         elif state == 3:
             if c == ';':
                 if buffer[0] == '#':
-                    output += unichr(int(buffer[1:]))
+                    output.append(unichr(int(buffer[1:])))
                 elif buffer[0] == 'x':
-                    output += unichr(int(buffer[1:], 16))
+                    output.append(unichr(int(buffer[1:], 16)))
                 else:
                     # XXX Assume entity
-                    output += unichr(name2codepoint.get(buffer, 63)) # '?'
+                    output.append(unichr(name2codepoint.get(buffer, 63))) # '?'
                 buffer = ''
                 state = 2
                 continue
             else:
                 buffer += c
 
-    return output
+    return u''.join(output)

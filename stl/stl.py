@@ -370,6 +370,8 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     def f(x):
         expr = Expression(x.group(1))
         value = expr.evaluate(stack, repeat_stack)
+        if isinstance(value, unicode):
+            return value.encode(encoding)
         return str(value)
     return subs_expr.sub(f, data)
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title>Epoz-Toolbox</title>
-    <link rel="stylesheet" type="text/css" stl:attributes="href bc/style" />
+    <link rel="stylesheet" type="text/css" href="${bc/style}" />
   </head>
 
   <body>
     <script type="text/javascript" stl:if="bc/object">
-      window.opener.CreateLink('<stl:inline content="bc/object" />');
+      window.opener.CreateLink('${bc/object}');
       window.close();
     </script>
 
@@ -19,8 +19,7 @@
         <td width="20"></td>
         <td bgcolor="#ffffff">
           <p> 
-            &raquo;
-            Type the url to add:
+            &raquo; Type the url to add:
           </p>
           <blockquote>
             <form action=";addlink_form" method="get"
@@ -35,27 +34,22 @@
           </p>
           <blockquote>
             <stl:inline repeat="x bc/path">
-              / <a stl:attributes="href x/url" stl:content="x/name" />
+              / <a href="${x/url}">${x/name}</a>
             </stl:inline>
             <br />
             <form action=";addlink_form" method="get">
               <table>
                 <tr stl:repeat="object bc/objects">
                   <td>
-                    <input type="radio" name="object"
-                           stl:attributes="value object/path" />
+                    <input type="radio" name="object" value="${object/path}" />
                   </td>
                   <td>
-                    <img src="icon16" border="0"
-                         stl:attributes="src object/icon; 
-                                         alt object/object_type" />
+                    <img border="0" alt="${object/object_type}"
+                      src="${object/icon}" />
                   </td>
                   <td>
-                    <a stl:if="object/is_folder"
-                       stl:attributes="href object/url"
-                       stl:content="object/name" />
-                    <stl:inline if="not object/is_folder"
-                                content="object/name"/>
+                    <a stl:if="object/is_folder" href="${object/url}">${object/name}</a>
+                    <stl:inline if="not object/is_folder">${object/name}</stl:inline>
                   </td>
                 </tr>
                 <tr>

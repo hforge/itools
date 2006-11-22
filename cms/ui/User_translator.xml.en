@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
   <p>
     The list below describes your skills as a translator:
   </p>
@@ -21,11 +21,10 @@
 	</tr>
 	<tr stl:repeat="skill translator_skills">
 	  <td>
-	    <input type="checkbox" name="translator_skills"
-	           stl:attributes="value skill/index" />
+           <input type="checkbox" name="translator_skills" value="${skill/index}" />
 	  </td>
-	  <td stl:content="skill/from" />
-	  <td stl:content="skill/to" />
+	  <td>${skill/from}</td>
+	  <td>${skill/to}</td>
 	</tr>
 	<tr>
 	  <td></td>
@@ -47,28 +46,20 @@
     <form action=";add_translator_skill" method="post">
       <table>
 	<tr>
-	  <th align="right">
-	    From
-	  </th>
+	  <th align="right">From</th>
 	  <td>
 	    <select name="from_language" style="width: 100%">
 	      <option value="">-- Choose a language --</option>
-	      <option stl:repeat="lang languages"
-		      stl:attributes="value lang/code"
-		      stl:content="lang/name" />
+              <option stl:repeat="lang languages" value="${lang/code}">${lang/name}</option>
 	    </select>
 	  </td>
 	</tr>
 	<tr>
-	  <th align="right">
-	    To
-	  </th>
+	  <th align="right">To</th>
 	  <td>
 	    <select name="to_language" style="width: 100%">
 	      <option value="">-- Choose a language --</option>
-	      <option stl:repeat="lang languages"
-		      stl:attributes="value lang/code"
-		      stl:content="lang/name" />
+	      <option stl:repeat="lang languages" value="${lang/code}">${lang/name}</option>
 	    </select>
 	  </td>
 	</tr>

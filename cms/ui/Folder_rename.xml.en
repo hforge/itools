@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
@@ -9,13 +9,10 @@
 <form action=";rename" method="post">
   <dl>
     <stl:block repeat="object objects">
-      <dt stl:content="object/name"/>
+      <dt>${object/name}</dt>
       <dd>
-        <input type="hidden" name="names"
-               stl:attributes="value object/real_name" />
-        to
-        <input type="text" name="new_names"
-               stl:attributes="value object/name" />
+        <input type="hidden" name="names" value="${object/real_name}" />
+        to <input type="text" name="new_names" value="${object/name}" />
       </dd>
     </stl:block>
   </dl>

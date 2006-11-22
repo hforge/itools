@@ -2,15 +2,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form id="loginform" name="loginform" action=";login" method="post"
-  stl:attributes="action action">
+<form id="loginform" name="loginform" method="post" action="${action}">
   <dl>
     <dt>Please enter your email address.</dt>
     <dd>
       <label for="username">Email address</label>
-      <input type="text" id="username" name="username" stl:attributes="value username" />
+      <input type="text" id="username" name="username" value="${username}" />
     </dd>
     <dt>Please enter your password (it will not be displayed in clear
       text).</dt>

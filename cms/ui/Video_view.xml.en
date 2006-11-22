@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <object xid="rvocx" xclassid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"
-        xwidth="320" xheight="30">
+  xwidth="320" xheight="30">
   <param name="src" value="." />
   <xparam name="autostart" value="true" />
   <xparam name="controls" value="ControlPanel" />
   <xparam name="console" value="video" />
   <embed src="." xwidth="320" xheight="30" xcontrols="ControlPanel"
-         stl:attributes="type format" xconsole="video" xautostart="true">
+    type="${format}" xconsole="video" xautostart="true">
   </embed>
 </object>
 

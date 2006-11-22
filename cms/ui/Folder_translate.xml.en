@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
@@ -17,16 +17,14 @@
     <tbody>
       <tr stl:repeat="document documents">
         <td align="right">
-          <input type="hidden" name="names"
-            stl:attributes="value document/name" />
-          <stl:block content="document/title_or_name" />
+          <input type="hidden" name="names" value="${document/name}" />
+          ${document/title_or_name}
         </td>
         <td>
           <select name="languages">
             <option value="">Choose a language</option>
             <option stl:repeat="language document/languages"
-              stl:attributes="value language/code"
-              stl:content="language/name" />
+              value="${language/code}">${language/name}</option>
           </select>
         </td>
       </tr>

@@ -561,21 +561,8 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
 
         namespace = {}
         namespace['form_name'] = name
-        namespace['widget_id'] = 'epoz_widget_%s' % name
-        namespace['toolbar_id'] = 'ToolBar_%s' % name
-        namespace['frame_id'] = 'Iframe_%s' % name
-        namespace['textarea_id'] = name
-        namespace['switch_id'] = 'CB_%s' % name
         namespace['js_data'] = js_data
         namespace['iframe'] = ';epoz_iframe'
-        js_code = """<!--
-        document.getElementById('%(widget_id)s').style.display = 'inline';
-        document.getElementById('%(textarea_id)s').disabled = 0;
-        -->"""
-        namespace['js_code'] = js_code % namespace
-        namespace['SetTextColor_call'] = "SetTextColor(';epoz_color_form')"
-        namespace['SetBackColor_call'] = "SetBackColor(';epoz_color_form')"
-        namespace['SetTable_call'] = "SetTable(';epoz_table_form')"
 
         here = uri.Path(self.get_abspath())
         handler = self.get_handler('/ui/epoz.xml')

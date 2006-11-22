@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
@@ -32,10 +32,8 @@
     <dd>
       <label>Character encoding</label>
       <select name="encoding">
-        <option stl:repeat="encoding encodings"
-          stl:attributes="value encoding/value;
-                          selected encoding/is_selected"
-          stl:content="encoding/title" />
+        <option stl:repeat="encoding encodings" value="${encoding/value}"
+          selected="${encoding/is_selected}">${encoding/title}</option>
       </select>
     </dd>
     <dt>To open this document with External Editor, please click the

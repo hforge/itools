@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <form id="edit_event" action=";edit_event" method="post">
   <p>(To add an event lasting all day long, leave time fields empty.)</p>
@@ -8,31 +8,30 @@
     <tr>
       <td>Summary</td>
       <td>
-        <input type="text" id="SUMMARY" name="SUMMARY" 
-               stl:attributes="value SUMMARY" />
+        <input type="text" id="SUMMARY" name="SUMMARY" value="${SUMMARY}" />
       </td>
     </tr>
     <tr>
       <td>Location</td>
       <td>
-        <input type="text" name="LOCATION" stl:attributes="value LOCATION" />
+        <input type="text" name="LOCATION" value="${LOCATION}" />
       </td>
     </tr>
     <tr>
       <td>Start</td>
       <td>
         <input type="text" name="DTSTART_day" id="DTSTART_day" size="2"
-               stl:attributes="value DTSTART_day" /> /
+               value="${DTSTART_day}" /> /
         <input type="text" name="DTSTART_month" id="DTSTART_month" size="2"
-               stl:attributes="value DTSTART_month" /> /
+               value="${DTSTART_month}" /> /
         <input type="text" name="DTSTART_year" id="DTSTART_year" size="4"
-               stl:attributes="value DTSTART_year" />
+               value="${DTSTART_year}" />
         <input type="button" id="trigger_dtstart" value="..." />
       <span style="padding-left: 10px">
         <input type="text" name="DTSTART_hours" id="DTSTART_hours" size="2"
-               stl:attributes="value DTSTART_hours" /> :
+               value="${DTSTART_hours}" /> :
         <input type="text" name="DTSTART_minutes" id="DTSTART_minutes" size="2"
-               stl:attributes="value DTSTART_minutes" />
+               value="${DTSTART_minutes}" />
       </span>
       </td>
     </tr>
@@ -40,24 +39,24 @@
       <td>End</td>
       <td>
         <input type="text" name="DTEND_day" id="DTEND_day" size="2"
-               stl:attributes="value DTEND_day" /> /
+               value="${DTEND_day}" /> /
         <input type="text" name="DTEND_month" id="DTEND_month" size="2"
-               stl:attributes="value DTEND_month" /> /
+               value="${DTEND_month}" /> /
         <input type="text" name="DTEND_year" id="DTEND_year" size="4"
-               stl:attributes="value DTEND_year" />
+               value="${DTEND_year}" />
         <input type="button" id="trigger_dtend" value="..." />
       <span style="padding-left: 10px">
         <input type="text" name="DTEND_hours" id="DTSTART_hours" size="2"
-               stl:attributes="value DTEND_hours" /> :
+               value="${DTEND_hours}" /> :
         <input type="text" name="DTEND_minutes" id="DTSTART_minutes" size="2"
-               stl:attributes="value DTEND_minutes" />
+               value="${DTEND_minutes}" />
       </span>
       </td>
     </tr>
     <tr>
       <td>Description</td>
       <td>
-        <textarea name="DESCRIPTION" stl:content="DESCRIPTION" cols="65" />
+        <textarea name="DESCRIPTION" cols="65">${DESCRIPTION}</textarea>
       </td>
     </tr>
     
@@ -67,7 +66,7 @@
       <td>
         <select name="STATUS">
           <stl:block stl:repeat="s STATUS">
-            <option stl:attributes="selected s/selected" stl:content="s/value"/> 
+            <option selected="${s/selected}">${s/value}</option>
           </stl:block>
         </select>
       </td>
@@ -81,19 +80,17 @@
           <tr>
             <td>Email address</td>
             <td colspan="3">
-              <input type="text" size="30"
-                 stl:attributes="name att/uri; value att/v_uri" />
+              <input type="text" size="30" name="${att/uri}" value="${att/v_uri}" />
             </td>
           </tr>
           <tr>
             <td>Common name</td>
             <td>
-              <input type="text" size="20"
-               stl:attributes="name att/common; value att/v_common" />
+              <input type="text" size="20" name="${att/common}" value="${att/v_common}" />
             </td>
             <td>Presence</td>
             <td>
-              <select stl:attributes="name att/role">
+              <select name="${att/role}">
                 <stl:block stl:if="att/v_role/required">
                     <option selected="yes">REQUIRED</option> 
                     <option>OPTIONNAL</option>
@@ -121,14 +118,13 @@
     <tr stl:repeat="comment COMMENT">
       <td>Comment</td>
       <td>
-        <textarea stl:attributes="name comment/name" 
-                  stl:content="comment/value" cols="65" />
+        <textarea name="${comment/name}" cols="65">${comment/value}</textarea>
       </td>
     </tr>
   </table>
 
-  <input type="hidden" name="UID" stl:attributes="value UID" />
-  <input type="hidden" name="method" stl:attributes="value method" />
+  <input type="hidden" name="UID" value="${UID}" />
+  <input type="hidden" name="method" value="${method}" />
 
   <p stl:if="allowed">
      <input type="submit" name="update" value="OK" class="button_ok"/>
@@ -160,14 +156,14 @@
   Calendar.setup({
     inputField: "DTSTART_day",
     ifFormat: "%d",
-    firstDay: <stl:block content="firstday">0</stl:block>,
+    firstDay: ${firstday},
     button: "trigger_dtstart",
     onUpdate: update_dtstart});
 
   Calendar.setup({
     inputField: "DTEND_day",
     ifFormat: "%d",
-    firstDay: <stl:block content="firstday">0</stl:block>,
+    firstDay: ${firstday},
     button: "trigger_dtend",
     onUpdate: update_dtend});
 </script>

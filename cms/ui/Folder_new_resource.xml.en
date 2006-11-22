@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <stl:block repeat="type types">
     <dl class="thumb new_resource_thumb">
       <dt>
-        <a stl:attributes="href type/url">
-          <img alt="" stl:attributes="src type/icon" />
-        </a>
+        <a href="${type/url}"><img alt="" src="${type/icon}" /></a>
       </dt>
       <dd>
-        <a stl:attributes="href type/url"
-          stl:content="type/title"></a>
+        <a href="${type/url}">${type/title}</a>
       </dd>
-      <dd stl:content="type/description"></dd>
+      <dd>${type/description}</dd>
     </dl>
   </stl:block>
   <div class="clear"></div>

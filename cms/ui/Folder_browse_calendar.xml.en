@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
@@ -9,8 +9,7 @@
 
   <div id="attributes">
     <span>
-      Date : <input type="text" name="date" id="date" size="11"
-             stl:attributes="value date" />
+      Date : <input type="text" name="date" id="date" size="11" value="${date}" />
       <input type="button" id="trigger_date" value="..." /> </span>
 
     <input type="submit" id="update" name=";browse_calendar" value="OK" 
@@ -21,36 +20,33 @@
     <tr id="header_timetables">
       <td />
       <td stl:repeat="tt header_timetables">
-        <span stl:if="tt/start" stl:content="tt/start" />
+        <span stl:if="tt/start">${tt/start}</span>
       </td>
     </tr>
 
     <stl:block stl:repeat="calendar calendars">
     <tr id="header_columns">
-      <td stl:attributes="rowspan calendar/rowspan">
-        <a stl:attributes="href calendar/url" stl:content="calendar/name" />
+      <td rowspan="${calendar/rowspan}">
+        <a href="${calendar/url">${calendar/name}</a>
       </td>
       <td align="center" stl:repeat="col calendar/header_columns">
-        <a stl:attributes="href col/new_url; class col/new_class"
-           stl:content="col/new_value" />
+        <a href="${col/new_url}" class="${col/new_class}">${col/new_value}</a>
       </td>
     </tr>
     <tr stl:repeat="row calendar/rows">
-      <td stl:repeat="col row/columns" align="center"
-     stl:attributes="class col/class; colspan col/colspan; rowspan col/rowspan">
+      <td stl:repeat="col row/columns" align="center" class="${col/class}"
+        colspan="${col/colspan}" rowspan="${col/rowspan}">
         <stl:block stl:if="link_on_summary">
-          <a stl:if="col/evt_url" stl:content="col/SUMMARY" 
-             stl:attributes="href col/evt_url" class="evt_value" />
+          <a stl:if="col/evt_url" href="${col/evt_url}" class="evt_value">${col/SUMMARY}</a>
         </stl:block>
 
         <stl:block stl:if="not link_on_summary">
-          <a stl:if="col/evt_url" stl:content="col/evt_value"
-             stl:attributes="href col/evt_url" class="evt_value" />
-          <span stl:if="col/SUMMARY" stl:content="col/SUMMARY" />
+          <a stl:if="col/evt_url" href="${col/evt_url}" class="evt_value">${col/evt_value}</a>
+          <span stl:if="col/SUMMARY">${col/SUMMARY}</span>
         </stl:block>
 
-        <span stl:if="col/DTSTART" stl:content="col/DTSTART" />
-        <span stl:if="col/DTEND" stl:content="col/DTEND" />
+        <span stl:if="col/DTSTART">${col/DTSTART}</span>
+        <span stl:if="col/DTEND">${col/DTEND}</span>
       </td>
     </tr>
     </stl:block>
@@ -58,7 +54,7 @@
     <tr id="header_timetables">
       <td />
       <td stl:repeat="tt header_timetables">
-        <span stl:if="tt/start" stl:content="tt/start" />
+        <span stl:if="tt/start">${tt/start}</span>
       </td>
     </tr>
   </table>
@@ -70,7 +66,7 @@
   Calendar.setup({
     inputField: "date",
     ifFormat: "%Y-%m-%d",
-    firstDay: <stl:block content="firstday">0</stl:block>,
+    firstDay: ${firstday},
     button: "trigger_date"});
 </script>
 

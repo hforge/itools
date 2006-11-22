@@ -13,6 +13,6 @@
 <p>
   Apologies for the inconvenience.
 </p>
-<pre style="color: white;" stl:content="traceback" />
+<pre style="color: white;">${traceback}</pre>
 
 </div>

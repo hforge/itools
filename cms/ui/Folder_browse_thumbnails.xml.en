@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <p class="batchcontrol" stl:if="table/total">
-    <stl:block content="table/batch_control" />
-    <a stl:if="table/batch_previous"
-       stl:attributes="href table/batch_previous">&lt;&lt;</a>
-    <a stl:if="table/batch_next" stl:attributes="href table/batch_next">&gt;&gt;</a>
+    ${table/batch_control}
+    <a stl:if="table/batch_previous" href="${table/batch_previous}">&lt;&lt;</a>
+    <a stl:if="table/batch_next" href="${table/batch_next}">&gt;&gt;</a>
   </p>
 
   <stl:block repeat="object table/objects">
     <dl class="thumb">
       <dt>
-        <a stl:attributes="href object/url">
-          <img alt="" stl:attributes="src object/icon" />
-        </a>
+        <a href="${object/url}"><img alt="" src="${object/icon}" /></a>
       </dt>
       <dd>
-        <a stl:attributes="href object/url; title object/title_or_name"
-          stl:content="object/short_title">
-        </a>
+        <a href="${object/url}" title="${object/title_or_name}">${object/short_title}</a>
       </dd>
     </dl>
   </stl:block>

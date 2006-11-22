@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h2>Language Settings</h2>
 
@@ -20,11 +20,10 @@
     <tbody>
       <tr stl:repeat="language active_languages">
         <td>
-          <input class="checkbox" type="checkbox" name="codes"
-            stl:attributes="value language/code" />
+          <input class="checkbox" type="checkbox" name="codes" value="${language/code}" />
         </td>
-        <td stl:content="language/name" />
-        <td stl:content="language/code" />
+        <td>${language/name}</td>
+        <td>${language/code}</td>
         <td align="center">
           <stl:block if="language/isdefault">Yes</stl:block>
         </td>
@@ -43,9 +42,7 @@
     <dd>
       <select name="code">
         <option value="">Choose a language</option>
-        <option stl:repeat="language non_active_languages"
-          stl:attributes="value language/code"
-          stl:content="language/name" />
+        <option stl:repeat="language non_active_languages" value="{language/code}">${language/name}</option>
       </select>
     </dd>
   </dl>

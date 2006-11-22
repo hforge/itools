@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <form action=";edit" method="post">
   <p>
-    <textarea name="data" cols="69" rows="19" stl:content="data"
-      wrap="physical" />
+    <textarea name="data" cols="69" rows="19" wrap="physical">${data}</textarea>
   </p>
   <p>
     <input type="submit" value="Change" class="button_ok" />

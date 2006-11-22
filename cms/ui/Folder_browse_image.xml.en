@@ -1,51 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <div id="gallery_vpane">
-    <a stl:repeat="image table/objects" stl:attributes="href image/url">
-      <img stl:attributes="src image/icon" />
+    <a stl:repeat="image table/objects" href="${image/url}">
+      <img src="${image/icon}" />
     </a>
   </div>
   <div id="gallery_main" stl:if="selected">
     <div id="gallery_center">
       <p id="gallery_browse">
-        <a id="gallery_previous" href="" stl:if="selected/previous"
-          stl:attributes="href selected/previous">&lt;</a>
+        <a id="gallery_previous" stl:if="selected/previous"
+          href="${selected/previous}">&lt;</a>
         <span id="gallery_previous" stl:if="not selected/previous">&lt;</span>
-        <a id="gallery_next" href="" stl:if="selected/next"
-          stl:attributes="href selected/next">&gt;</a>
+        <a id="gallery_next" stl:if="selected/next"
+          href="${selected/next}">&gt;</a>
         <span id="gallery_next" stl:if="not selected/next">&gt;</span>
       </p>
       <p id="gallery_preview">
-        <a href="" stl:attributes="href selected/url">
-          <img src="" stl:attributes="src selected/preview" />
-        </a>
+        <a href="${selected/url}"><img src="${selected/preview}" /></a>
       </p>
       <table id="gallery_properties">
         <tbody>
           <tr>
             <th>Name:</th>
             <td>
-              <a href="" stl:attributes="href selected/url"
-                stl:content="selected/title_or_name" />
+              <a href="${selected/url}">${selected/title_or_name}</a>
             </td>
           </tr>
           <tr>
             <th>Size:</th>
             <td>
-              <stl:inline content="selected/width" />x<stl:inline
-                content="selected/height" />
+              ${selected/width}x${selected/height}
             </td>
           </tr>
           <tr>
             <th>Format:</th>
-            <td stl:content="selected/format" />
+            <td>${selected/format}</td>
           </tr>
         </tbody>
       </table>
-      <p id="gallery_description" stl:content="selected/description" />
+      <p id="gallery_description">${selected/description}</p>
     </div>
   </div>
   <div class="clear"></div>

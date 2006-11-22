@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h3>You can specify timetables to limit the range when an event can be set.</h3>
 
@@ -8,18 +8,15 @@
   <table class="form">
     <tr stl:repeat="timetable timetables">
       <td>
-        <input class="checkbox" type="checkbox" name="ids"
-          stl:attributes="value timetable/index" />
+        <input class="checkbox" type="checkbox" name="ids" value="${timetable/index}" />
       </td>
       <td width="50">From</td>
       <td>
-        <input type="text" size="8" 
-          stl:attributes="name timetable/startname; value timetable/start" />
+        <input type="text" size="8" name="${timetable/startname}" value="${timetable/start}" />
       </td>
       <td width="45" align="center">to</td>
       <td>
-        <input type="text" size="8"
-          stl:attributes="name timetable/endname; value timetable/end" />
+        <input type="text" size="8" name="${timetable/endname}" value="${timetable/end}" />
       </td>
       <td />
     </tr>

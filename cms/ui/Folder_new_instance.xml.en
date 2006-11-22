@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Add Resource of Type "<span stl:content="class_title" />"</h2>
+  <h2>Add Resource of Type "${class_title}" />"</h2>
 
   <form name="new_folder" action=";new_resource" method="post">
     <dl>
@@ -21,7 +21,7 @@
       </dd>
     </dl>
     <p>
-      <input type="hidden" name="class_id" stl:attributes="value class_id" />
+      <input type="hidden" name="class_id" value="${class_id}" />
       <input type="submit" name="add_and_view" value="Add and view" class="button_ok"/>
       <input type="submit" name="add_and_return" value="Add and return"/>
     </p>

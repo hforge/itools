@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <form name="new_resource" action=";new_resource" method="post">
-    <input type="hidden" name="class_id" stl:attributes="value class_id" />
+    <input type="hidden" name="class_id" value="${class_id}" />
     <table class="form">
       <tr>
-        <th colspan="2" class="title" stl:content="class_title" />
+        <th colspan="2" class="title">${class_title}</th>
       </tr>
       <tr>
         <th align="right">Name</th>
@@ -22,11 +22,9 @@
         <td colspan="2">
           <p>Choose a template:</p>
           <stl:block repeat="skin skins">
-            <input type="radio" name="skin_name"
-                   stl:attributes="value skin/name" />
-            <stl:block content="skin/title" />
-            <br/>
-            <img stl:attributes="src skin/image_uri" />
+            <input type="radio" name="skin_name" value="${skin/name}" />
+            ${skin/title}<br/>
+            <img src="${skin/image_uri}" />
           </stl:block>
         </td>
       </tr>

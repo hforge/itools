@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h2>Document State</h2>
 
 <p>
-  Current state: <strong stl:content="state" />
+  Current state: <strong>${state}</strong>
 </p>
 
 <form action=";edit_state" method="post">
   <dl>
     <dt>You can do the following actions:</dt>
     <dd stl:repeat="transition transitions">
-      <input type="radio" name="transition"
-        stl:attributes="value transition/name" />
-      <label stl:content="transition/description" />
+      <input type="radio" name="transition" value="${transition/name}" />
+      <label>${transition/description}</label>
     </dd>
     <dt>Comments (optional):</dt>
     <dd>
@@ -45,10 +44,10 @@
   </thead>
   <tbody>
     <tr stl:repeat="transition history">
-      <td stl:content="transition/date" />
-      <td stl:content="transition/name" />
-      <td stl:content="transition/user" />
-      <td stl:content="transition/comments" />
+      <td>${transition/date}</td>
+      <td>${transition/name}</td>
+      <td>${transition/user}</td>
+      <td>${transition/comments}</td>
     </tr>
   </tbody>
 </table>

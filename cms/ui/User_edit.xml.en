@@ -11,9 +11,8 @@
     <dt>Language</dt>
     <dd>
       <select name="ikaaro:user_language">
-        <option stl:repeat="language languages"
-          stl:attributes="value language/code; selected language/is_selected"
-          stl:content="language/name" />
+        <option stl:repeat="language languages" value="${language/code}"
+          selected="${language/is_selected}">${language/name}</option>
       </select>
     </dd>
   </dl>

@@ -5,8 +5,8 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <table border="1" cellpadding="2" cellspacing="2">
     <tr stl:repeat="row rows">
-      <td valign="top" stl:content="repeat/row/index" />
-      <td valign="top" stl:repeat="column row" stl:content="column" />
+      <td valign="top">${repeat/row/index}</td>
+      <td valign="top" stl:repeat="column row">${column}</td>
     </tr>
   </table>
 </stl:block>

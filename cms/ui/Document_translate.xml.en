@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
   <fieldset>
     <legend>Text being translated</legend>
-    <stl:block content="text" />
+    ${text}
   </fieldset>
   <p>To save the translation above click the button below:</p>
   <blockquote>
@@ -17,30 +17,22 @@
   </blockquote>
 
   <form action=";translate_message" method="post">
-    <input type="hidden" name="messages_index"
-           stl:attributes="value messages_index" />
+    <input type="hidden" name="messages_index" value="${messages_index}" />
     <fieldset>
       <legend>
-        Message
-        <stl:inline content="messages_index" />
-        / <stl:inline content="messages_total" />
-        &nbsp;
-        <a stl:attributes="href messages_first">&lt;&lt;</a>
-        <a stl:attributes="href messages_previous"
-           style="font-size: 10px">&lt;</a>
-        <a stl:attributes="href messages_next"
-           style="font-size: 10px">&gt;</a>
-        <a stl:attributes="href messages_last">&gt;&gt;</a>
+        Message ${messages_index} / ${messages_total} &nbsp;
+        <a href="${messages_first}">&lt;&lt;</a>
+        <a href="${messages_previous}" style="font-size: 10px">&lt;</a>
+        <a href="${messages_next}" style="font-size: 10px">&gt;</a>
+        <a href="${messages_last}">&gt;&gt;</a>
       </legend>
-      <input type="hidden" name="msgid:utf8:ustring"
-             stl:attributes="value msgid"/>
-      <div style="font-family: monospace" stl:content="msgid" />
+      <input type="hidden" name="msgid" value="${msgid}" />
+      <div style="font-family: monospace">${msgid}</div>
     </fieldset>
 
     <fieldset>
       <legend>Message Translation</legend>
-      <textarea name="msgstr:utf8:ustring" cols="65" rows="8"
-                stl:content="msgstr"></textarea>
+      <textarea name="msgstr" cols="65" rows="8">${msgstr}</textarea>
       <p>
         <input type="submit" value="Change" class="button_ok"/>
       </p>

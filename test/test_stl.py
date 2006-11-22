@@ -13,20 +13,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 import unittest
 
 # Import from itools
-from itools.resources import get_resource
 from itools.handlers import get_handler
-from itools.stl.stl import (TID, TSLASH, TOPEN, TCLOSE, TEOF, TNONE,
-                            Expression, NamespaceStack, stl)
+from itools.stl.stl import (TID, TSLASH, TEOF, TNONE, Expression,
+                            NamespaceStack, stl)
 
 
 
 class STLTestCase(unittest.TestCase):
+
     def test_tokens(self):
         expression = Expression('a/b/c')
 
@@ -34,7 +34,6 @@ class STLTestCase(unittest.TestCase):
                            (TSLASH, None), (TID, 'c')]
 
         self.assertEqual(expression.path, ('a', 'b', 'c'))
-        self.assertEqual(expression.parameters, ())
 
 
     def test_none(self):
@@ -42,7 +41,6 @@ class STLTestCase(unittest.TestCase):
         expected_tokens = [(TNONE, 'none')]
 
         self.assertEqual(expression.path, ())
-        self.assertEqual(expression.parameters, ())
         self.assertEqual(expression.evaluate(None, None), None)
 
 
@@ -57,43 +55,27 @@ class STLTestCase(unittest.TestCase):
         self.assertEqual(value, 'hello world')
 
 
-    def test_function(self):
-        namespace = {'sum': lambda x: str(sum(range(1, int(x) + 1)))}
+##    def test_template(self):
+##        namespace = {'title': 'hello world',
+##                     'objects': [{'id': 'itools', 'title': 'Itaapy Tools'},
+##                                 {'id': 'ikaaro', 'title': 'The ikaaro CMS'}]}
 
-        class Node:
-            def toxml(self):
-                return 'hello world'
+##        template = get_handler('test-in.xml')
+##        output = stl(template, namespace)
 
-        stack = NamespaceStack()
-        stack.append(namespace)
-        repeat = NamespaceStack()
-        expression = Expression('sum(5)')
-        value = expression.evaluate(stack, repeat)
-
-        self.assertEqual(value, '15')
+##        self.assertEqual(output, get_handler('test-out.xml').to_str())
 
 
-    def test_template(self):
-        namespace = {'title': 'hello world',
-                     'objects': [{'id': 'itools', 'title': 'Itaapy Tools'},
-                                 {'id': 'ikaaro', 'title': 'The ikaaro CMS'}]}
+##    def test_template2(self):
+##        namespace = {'title': 'hello world'}
+##        template = get_handler('test21-in.xml')
+##        template = stl(template, namespace)
 
-        template = get_handler('test-in.xml')
-        output = stl(template, namespace)
+##        namespace = {'body': template}
+##        template = get_handler('test20-in.xml')
+##        output = stl(template, namespace)
 
-        self.assertEqual(output, get_handler('test-out.xml').to_str())
-
-
-    def test_template2(self):
-        namespace = {'title': 'hello world'}
-        template = get_handler('test21-in.xml')
-        template = stl(template, namespace)
-
-        namespace = {'body': template}
-        template = get_handler('test20-in.xml')
-        output = stl(template, namespace)
-
-        self.assertEqual(output, get_handler('test2-out.xml').to_str())
+##        self.assertEqual(output, get_handler('test2-out.xml').to_str())
 
 
 ##    def test_nested(self):

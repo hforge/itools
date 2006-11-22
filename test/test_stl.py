@@ -21,7 +21,25 @@ import unittest
 # Import from itools
 from itools.handlers import get_handler
 from itools.stl.stl import (TID, TSLASH, TEOF, TNONE, Expression,
-                            NamespaceStack, stl)
+                            NamespaceStack, stl, substitute)
+
+
+class SubstituteTestCase(unittest.TestCase):
+
+    def setUp(self):
+        namespace = {'name': 'Toto'}
+
+        self.stack = NamespaceStack()
+        self.stack.append(namespace)
+        self.repeat = NamespaceStack()
+
+
+    def test_simple(self):
+        data = 'Hello ${name}'
+        expected = 'Hello Toto'
+
+        output = substitute(data, self.stack, self.repeat)
+        self.assertEqual(output, expected)
 
 
 

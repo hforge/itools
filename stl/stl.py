@@ -15,7 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-
 """
 STL stands for Simple Template Language, as it is the simplest template
 language I could imagine.
@@ -23,6 +22,7 @@ language I could imagine.
 
 # Import from the Standard Library
 from decimal import Decimal
+import re
 
 # Import from itools
 from itools.datatypes import Boolean, DataType, XMLAttribute
@@ -362,10 +362,24 @@ class RepeatAttr(DataType):
 ########################################################################
 # The run-time engine
 ########################################################################
+subs_expr = re.compile("\$\{(.+?)\}")
+
+
+def substitute(data, stack, repeat_stack, encoding='utf-8'):
+    data = str(data)
+    def f(x):
+        expr = Expression(x.group(1))
+        value = expr.evaluate(stack, repeat_stack)
+        return str(value)
+    return subs_expr.sub(f, data)
+
+
 def encode_attribute(namespace, local_name, value, encoding='UTF-8'):
     datatype = schemas.get_datatype_by_uri(namespace, local_name)
     if issubclass(datatype, Boolean):
         # XXX This representation of boolean attributes is specfic to HTML
+        if value == 'False':
+            return None
         if bool(value) is True:
             return local_name
     elif value is not None:
@@ -379,7 +393,6 @@ def encode_attribute(namespace, local_name, value, encoding='UTF-8'):
         return XMLAttribute.encode(value)
 
     return None
-
 
 
 def stl(document, namespace={}):
@@ -396,7 +409,10 @@ def stl(document, namespace={}):
 def process(node, stack, repeat_stack, encoding='UTF-8'):
     # Raw nodes
     if isinstance(node, unicode):
-        return [node.encode(encoding)]
+        data = node.encode(encoding)
+        # Process "${...}" expressions
+        data = substitute(data, stack, repeat_stack, encoding)
+        return [data]
     elif isinstance(node, XML.Comment):
         return [node.to_str()]
 
@@ -468,6 +484,9 @@ def process1(node, stack, repeat, encoding='UTF-8'):
         # Get the attribute value
         if qname in changed_attributes:
             value = changed_attributes.pop(qname)
+        else:
+            # Process "${...}" expressions
+            value = substitute(value, stack, repeat, encoding)
         # Output only values different than None
         value = encode_attribute(namespace, local_name, value, encoding)
         if value is not None:

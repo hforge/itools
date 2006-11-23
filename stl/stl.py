@@ -239,39 +239,48 @@ class RepeatAttr(DataType):
 ########################################################################
 # The run-time engine
 ########################################################################
+subs_expr_solo = re.compile("^\$\{(.+?)\}$")
 subs_expr = re.compile("\$\{(.+?)\}")
+
+
+def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
+    if isinstace(data, bool):
+        return data
+
+    match = subs_expr_solo.match(data)
+    if match is None:
+        return True
+    expr = Expression(match.group(1))
+    value = expr.evaluate(stack, repeat_stack)
+    return bool(value)
 
 
 def substitute(data, stack, repeat_stack, encoding='utf-8'):
     data = str(data)
-    def f(x):
-        expr = Expression(x.group(1))
+    # Solo, preserve the value None
+    match = subs_expr_solo.match(data)
+    if match is not None:
+        expr = Expression(match.group(1))
         value = expr.evaluate(stack, repeat_stack)
+        # Preserve the value None
+        if value is None:
+            return None
+        # Send the string
         if isinstance(value, unicode):
             return value.encode(encoding)
         return str(value)
-    return subs_expr.sub(f, data)
-
-
-def encode_attribute(namespace, local_name, value, encoding='UTF-8'):
-    datatype = schemas.get_datatype_by_uri(namespace, local_name)
-    if issubclass(datatype, Boolean):
-        # XXX This representation of boolean attributes is specfic to HTML
-        if value == 'False':
-            return None
-        if bool(value) is True:
-            return local_name
-    elif value is not None:
-        # XXX This type-checking maybe should be replaced by something more
-        # deterministic, like "datatype.encode(value)"
+    # A little more complex
+    def repl(match):
+        expr = Expression(match.group(1))
+        value = expr.evaluate(stack, repeat_stack)
+        # Remove if None
+        if value is None:
+            return ''
+        # Send the string
         if isinstance(value, unicode):
-            value = value.encode(encoding)
-        else:
-            value = str(value)
-
-        return XMLAttribute.encode(value)
-
-    return None
+            return value.encode(encoding)
+        return str(value)
+    return subs_expr.sub(repl, data)
 
 
 def stl(document, namespace={}):
@@ -353,11 +362,17 @@ def process1(node, stack, repeat, encoding='UTF-8'):
 
         qname = node.get_attribute_qname(namespace, local_name)
         # Process "${...}" expressions
-        value = substitute(value, stack, repeat, encoding)
-        # Output only values different than None
-        value = encode_attribute(namespace, local_name, value, encoding)
-        if value is not None:
-            s.append(' %s="%s"' % (qname, value))
+        datatype = schemas.get_datatype_by_uri(namespace, local_name)
+        if issubclass(datatype, Boolean):
+            value = substitute_boolean(value, stack, repeat, encoding)
+            if value is True:
+                s.append(' %s="%s"' % (qname, local_name))
+        else:
+            value = substitute(value, stack, repeat, encoding)
+            # Output only values different than None
+            if value is not None:
+                value = XMLAttribute.encode(value)
+                s.append(' %s="%s"' % (qname, value))
 
     # The element schema, we need it
     namespace = namespaces.get_namespace(node.namespace)

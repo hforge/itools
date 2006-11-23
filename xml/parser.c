@@ -1060,6 +1060,15 @@ static PyObject* Parser_iternext(Parser* self) {
                 /* XXX Check for duplicates */
                 attr_name = Py_BuildValue("(OO)", attr_uri, attr_name);
                 p_datatype = PyObject_CallObject(p_get_datatype_by_uri, attr_name);
+                if (p_datatype == NULL) {
+                    Py_DECREF(attr_name);
+                    Py_DECREF(tag);
+                    Py_DECREF(attributes_list);
+                    Py_DECREF(namespace_decls);
+                    Py_DECREF(attributes);
+                    Py_XDECREF(namespaces);
+                    return NULL;
+                }
                 p_datatype_decode = PyObject_GetAttrString(p_datatype, "decode");
                 attr_value = Py_BuildValue("(O)", attr_value);
                 attr_value2 = PyObject_CallObject(p_datatype_decode, attr_value);

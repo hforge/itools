@@ -339,7 +339,7 @@ class Folder(Handler):
                 yield handler
 
 
-    def traverse2(self, context=None):
+    def traverse2(self, context=None, caching=True):
         if context is None:
             context = Context()
 
@@ -348,7 +348,7 @@ class Folder(Handler):
             context.skip = False
         else:
             for name in self.get_handler_names():
-                handler = self.get_handler(name, caching=False)
+                handler = self.get_handler(name, caching=caching)
                 if isinstance(handler, Folder):
                     for x, context in handler.traverse2(context):
                         yield x, context

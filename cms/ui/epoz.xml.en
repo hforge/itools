@@ -123,8 +123,8 @@
         width="23" height="22" alt="Redo" title="Redo"
         onclick="FormatText('redo', '');" name="epoz_button_redo" />
       <br />
-      <iframe stl:attributes="src iframe" frameborder="0"
-        id="Iframe_${form_name}" name="EpozEditor" onload="InitDocument(this);"
+      <iframe frameborder="0" id="Iframe_${form_name}" name="EpozEditor"
+        onload="InitDocument(this);" src="${iframe}"
         style="width: 100%; height: 300px; border: 1px grey solid"></iframe>
     </div>
 

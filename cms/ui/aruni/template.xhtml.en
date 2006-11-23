@@ -25,10 +25,10 @@
     <script type="text/javascript" src="../main.js" />
 
     <!-- Additional resources that maybe needed to render the page -->
-    <link rel="stylesheet" type="text/css" stl:repeat="style styles" 
-      stl:attributes="href style" />
-    <script type="text/javascript" stl:repeat="script scripts"
-      stl:attributes="src script" />
+    <link href="${style}" rel="stylesheet" type="text/css"
+      stl:repeat="style styles" />
+    <script src="${script}" stl:repeat="script scripts" type="text/javascript"
+      />
   </head>
   <body>
     <div id="header" class="clearfix">
@@ -44,15 +44,14 @@
       <div id="wrapper">
         <div id="block_1">
           <div id="maintitle">
-            <img src="../images/Root48.png" width="48" height="48"
-              alt="" style="float: left; margin-right: 9px"
-              stl:if="metadata/icon" stl:attributes="src metadata/icon" />
+            <img alt="" height="48" width="48" src="${metadata/icon}"
+              style="float: left; margin-right: 9px" stl:if="metadata/icon" />
             <h1>${metadata/title}</h1>
             <div id="breadcrumbs">
               <label>Location:</label>
               <ul>
                 <li stl:repeat="item breadcrumb">
-                  <a stl:if="item/url" stl:attributes="href item/url"
+                  <a stl:if="item/url" href="${item/url}"
                     title="${item/name}">${item/short_name}</a>
                   <span stl:if="not item/url" title="${item/name}">${item/short_name}</span>
                   <stl:inline if="not repeat/item/end">/</stl:inline> 
@@ -62,14 +61,14 @@
             <div class="clear"></div>
           </div>
           <div id="tabs">
-            <span stl:repeat="tab tabs" class="${tab/style}"><a href="#"
-              stl:attributes="href tab/name">${tab/label}</a><span stl:if="not
+            <span stl:repeat="tab tabs" class="${tab/style}"><a
+              href="${tab/name}">${tab/label}</a><span stl:if="not
               repeat/tab/end">|</span></span><span
               class="tab_dummy"><a>&nbsp;</a></span>
           </div>
           <div id="subtabs">
-            <span stl:repeat="tab subtabs" class="${tab/style}"><a href="#"
-              stl:attributes="href tab/name">${tab/label}</a><span stl:if="not
+            <span stl:repeat="tab subtabs" class="${tab/style}"><a
+              href="${tab/name}">${tab/label}</a><span stl:if="not
               repeat/tab/end">|</span></span><span
               class="tab_dummy"><a>&nbsp;</a></span>
           </div>
@@ -94,7 +93,7 @@
             </ul>
             <ul stl:if="user/info">
               <li id="action_home">
-                <a href="#" stl:attributes="href user/info/home">Home</a>
+                <a href="${user/info/home}">Home</a>
               </li>
               <li id="action_logout">
                 <a href="/;logout">Log out</a>

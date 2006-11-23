@@ -53,15 +53,6 @@ class STLTypeError(TypeError):
 # Expressions
 ########################################################################
 
-# Tokens
-TID, TSLASH, TEOF, TREPEAT, TNONE = range(5)
-token_name = ['id', 'slash', 'end of expression', 'reserved word "repeat"',
-              'reserved word "none"']
-
-
-keywords = {'repeat': TREPEAT, 'none': TNONE}
-
-
 class Expression(object):
     """
     Parses and evaluates stl expressions.
@@ -76,96 +67,22 @@ class Expression(object):
     """
 
     def __init__(self, expression):
-        self.expression = expression
-
-        # Initialize semantic structures
-        self.path = ()
         self.repeat = False
-
-        # Parsing
-        self.index = 0
-        self.parse()
-        del self.index
-
-
-    ###################################################################
-    # Lexical analysis
-    ###################################################################
-    def get_token(self):
-        token = TEOF
-        lexeme = None
-        state = 0
-
-        while self.index < len(self.expression):
-            c = self.expression[self.index]
-            if state == 0:
-                self.index += 1
-                if c.isalnum() or c in ('_', '.', ':'):
-                    lexeme = c
-                    state = 1
-                elif c == '/':
-                    return TSLASH, c
-                else:
-                    raise STLSyntaxError, 'unexpected character (%s)' % c
-            elif state == 1:
-                if c.isalnum() or c in ('_', '.', ':'):
-                    lexeme += c
-                    self.index += 1
-                else:
-                    break
-
-        if lexeme is not None:
-            token = keywords.get(lexeme, TID)
-
-        return token, lexeme
-
-
-    ###################################################################
-    # Syntax and semantic analysis. Grammar:
-    #
-    #   parse = TID parser1
-    #           | TREPEAT TSLASH TID TSLASH TID
-    #           | TNONE
-    #   parser1 = TEOF
-    #             | TSLASH TID parse1
-    ###################################################################
-    def parse(self):
-        token, lexeme = self.get_token()
-        if token == TID:
-            self.path = self.path + (lexeme,)
-            self.parser1()
-            return
-        elif token == TREPEAT:
-            self.repeat = True
-            token, lexeme = self.get_token()
-            if token == TSLASH:
-                token, lexeme = self.get_token()
-                if token == TID:
-                    self.path = self.path + (lexeme,)
-                    token, lexeme = self.get_token()
-                    if token == TSLASH:
-                        token, lexeme = self.get_token()
-                        if token == TID:
-                            self.path = self.path + (lexeme,)
-                            return
-        elif token == TNONE:
-            return
-
-        raise STLSyntaxError, 'unexpected %s' % token_name[token]
-
-
-    def parser1(self):
-        token, lexeme = self.get_token()
-        if token == TEOF:
-            return
-        elif token == TSLASH:
-            token, lexeme = self.get_token()
-            if token == TID:
-                self.path = self.path + (lexeme,)
-                self.parser1()
-                return
-
-        raise STLSyntaxError, 'unexpected %s' % token_name[token]
+        # none
+        if expression == 'none':
+            self.path = ()
+        else:
+            path = expression.split('/')
+            for x in path:
+                if x == '':
+                    raise STLSyntaxError, 'malformed STL expression'
+            # repeat
+            if path[0] == 'repeat':
+                self.repeat = True
+                path = path[1:]
+                if len(path) != 2:
+                    raise STLSyntaxError, 'malformed STL expression'
+            self.path = tuple(path)
 
 
     ###################################################################

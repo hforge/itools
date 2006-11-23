@@ -313,7 +313,7 @@ class Skin(Folder):
         handler = self.get_handler('template.xhtml')
         here = context.path
         there = uri.Path(handler.get_abspath())
-        handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
+        prefix = here.get_pathto(there)
 
         # STL
         s = []
@@ -322,7 +322,7 @@ class Skin(Folder):
         # mode (see http://hsivonen.iki.fi/doctype/)
         header = header.split('\n', 1)[1]
         s.append(header)
-        data = stl(handler, namespace)
+        data = stl(handler, namespace, prefix=prefix)
         s.append(data)
         return ''.join(s)
 

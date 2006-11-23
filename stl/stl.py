@@ -25,7 +25,7 @@ from decimal import Decimal
 import re
 
 # Import from itools
-from itools.datatypes import Boolean, DataType, XMLAttribute
+from itools.datatypes import Boolean, DataType, URI, XMLAttribute
 from itools import schemas
 from itools.xml import XML, namespaces
 
@@ -244,7 +244,7 @@ subs_expr = re.compile("\$\{(.+?)\}")
 
 
 def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
-    if isinstace(data, bool):
+    if isinstance(data, bool):
         return data
 
     match = subs_expr_solo.match(data)
@@ -264,11 +264,11 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
         value = expr.evaluate(stack, repeat_stack)
         # Preserve the value None
         if value is None:
-            return None
+            return None, 1
         # Send the string
         if isinstance(value, unicode):
-            return value.encode(encoding)
-        return str(value)
+            return value.encode(encoding), 1
+        return str(value), 1
     # A little more complex
     def repl(match):
         expr = Expression(match.group(1))
@@ -280,26 +280,26 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
         if isinstance(value, unicode):
             return value.encode(encoding)
         return str(value)
-    return subs_expr.sub(repl, data)
+    return subs_expr.subn(repl, data)
 
 
-def stl(document, namespace={}):
+def stl(document, namespace={}, prefix=None):
     # Initialize the namespace stack
     stack = NamespaceStack()
     stack.append(namespace)
     # Initialize the repeat stack (keeps repeat/index, repeat/odd, etc...)
     repeat = NamespaceStack()
     # Get the document
-    s = process(document.get_root_element(), stack, repeat)
+    s = process(document.get_root_element(), stack, repeat, prefix=prefix)
     return ''.join(s)
 
 
-def process(node, stack, repeat_stack, encoding='UTF-8'):
+def process(node, stack, repeat_stack, encoding='UTF-8', prefix=None):
     # Raw nodes
     if isinstance(node, unicode):
         data = node.encode(encoding)
         # Process "${...}" expressions
-        data = substitute(data, stack, repeat_stack, encoding)
+        data, kk = substitute(data, stack, repeat_stack, encoding)
         return [data]
     elif isinstance(node, XML.Comment):
         return [node.to_str()]
@@ -324,18 +324,30 @@ def process(node, stack, repeat_stack, encoding='UTF-8'):
             newrepeat.append({name: value})
 
             # Process and append the clone
-            s.extend(process1(node, newstack, newrepeat))
+            s.extend(process1(node, newstack, newrepeat, prefix=prefix))
 
             # Increment counter
             i = i + 1
 
         return s
 
-    s.extend(process1(node, stack, repeat_stack))
+    s.extend(process1(node, stack, repeat_stack, prefix=prefix))
     return s
 
 
-def process1(node, stack, repeat, encoding='UTF-8'):
+def resolve_pointer(uri, offset):
+    uri = URI.decode(uri)
+    if not uri.scheme and not uri.authority:
+        if uri.path.is_relative():
+            if uri.path or str(uri) == '.':
+                # XXX Here we loss the query and fragment.
+                value = offset.resolve(uri.path)
+                return str(value)
+
+    return URI.encode(uri)
+
+
+def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
     """
     Process "stl:if" and variable substitution.
     """
@@ -363,16 +375,39 @@ def process1(node, stack, repeat, encoding='UTF-8'):
         qname = node.get_attribute_qname(namespace, local_name)
         # Process "${...}" expressions
         datatype = schemas.get_datatype_by_uri(namespace, local_name)
+        # Boolean attributes
         if issubclass(datatype, Boolean):
             value = substitute_boolean(value, stack, repeat, encoding)
             if value is True:
                 s.append(' %s="%s"' % (qname, local_name))
-        else:
-            value = substitute(value, stack, repeat, encoding)
-            # Output only values different than None
-            if value is not None:
-                value = XMLAttribute.encode(value)
-                s.append(' %s="%s"' % (qname, value))
+            continue
+        # Non Boolean attributes
+        value, n = substitute(value, stack, repeat, encoding)
+        # Output only values different than None
+        if value is None:
+            continue
+        # Rewrite URLs (XXX specific to HTML)
+        xhtml_ns = 'http://www.w3.org/1999/xhtml'
+        if prefix is None or n > 0:
+            value = XMLAttribute.encode(value)
+            s.append(' %s="%s"' % (qname, value))
+            continue
+        if node.namespace == xhtml_ns and namespace == xhtml_ns:
+            # <... src="X" />
+            if local_name == 'src':
+                value = resolve_pointer(value, prefix)
+            # <link href="X" />
+            elif node.name == 'link':
+                if local_name == 'href':
+                    value = resolve_pointer(value, prefix)
+            # <param name="movie value="X" />
+            elif node.name == 'param':
+                if local_name == 'value':
+                    param_name = node.get_attribute(namespace, 'name')
+                    if param_name == 'movie':
+                        value = resolve_pointer(value, prefix)
+        value = XMLAttribute.encode(value)
+        s.append(' %s="%s"' % (qname, value))
 
     # The element schema, we need it
     namespace = namespaces.get_namespace(node.namespace)
@@ -387,7 +422,7 @@ def process1(node, stack, repeat, encoding='UTF-8'):
     # Process the content
     content = []
     for child in node.children:
-        content.extend(process(child, stack, repeat))
+        content.extend(process(child, stack, repeat, prefix=prefix))
 
     # Remove the element but preserves its children if it is a stl:block or
     # a stl:inline

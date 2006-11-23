@@ -568,8 +568,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
         handler = self.get_handler('/ui/epoz.xml')
         there = uri.Path(handler.get_abspath())
         prefix = here.get_pathto(there)
-        handler = XHTML.set_template_prefix(handler, prefix)
-        return stl(handler, namespace)
+        return stl(handler, namespace, prefix=prefix)
 
 
     epoz_iframe__access__ = 'is_allowed_to_edit'
@@ -582,8 +581,8 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
         handler = self.get_handler('/ui/epoz_iframe.xml')
         here = uri.generic.Path(self.get_abspath())
         there = uri.generic.Path(handler.get_abspath())
-        handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
-        return stl(handler, namespace)
+        prefix = here.get_pathto(there)
+        return stl(handler, namespace, prefix=prefix)
 
 
     #######################################################################

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,10 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-from copy import copy
 import re
 from cStringIO import StringIO
 
@@ -666,59 +665,3 @@ XML.Document.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
 register_handler_class(Document)
 
 
-
-########################################################################
-# API / Change relative links
-########################################################################
-def resolve_pointer(uri, offset):
-    if not uri.scheme and not uri.authority:
-        if uri.path.is_relative():
-            if uri.path or str(uri) == '.':
-                # XXX Here we loss the query and fragment.
-                value = offset.resolve(uri.path)
-                return str(value)
-
-    return URI.encode(uri)
-
-
-def set_template_prefix(handler, offset, encoding='UTF-8'):
-    # Set the prefix
-    data = []
-    data.append(handler.header_to_str())
-    # Let's go!
-    for node, context in handler.traverse2():
-        if isinstance(node, XML.Element):
-            if context.start:
-                data.append('<%s' % node.qname)
-                for namespace, local_name, value in node.get_attributes():
-                    qname = node.get_attribute_qname(namespace, local_name)
-                    datatype = get_datatype_by_uri(namespace, local_name)
-                    if local_name in ('href', 'src'):
-                        value = resolve_pointer(value, offset)
-                    elif node.qname == 'param' and local_name == 'value':
-                        name = node.get_attribute(namespace, 'name')
-                        # Special case for Flash objects
-                        # but others possible (Java, etc.)
-                        if name == 'movie':
-                            value = URI.decode(value)
-                            value = resolve_pointer(value, offset)
-                        else:
-                            value = datatype.encode(value)
-                    else:
-                        value = datatype.encode(value)
-                    value = datatypes.XML.encode(value)
-                    data.append(' %s="%s"' % (qname, value))
-                data.append('>')
-            else:
-                data.append('</%s>' % node.qname)
-        elif isinstance(node, XML.Comment):
-            data.append(node.to_str())
-        elif isinstance(node, unicode):
-            data.append(node.encode(encoding))
-        else:
-            raise ValueError, 'unexpected value "%s"' % node
-
-    data = ''.join(data)
-    document = Document()
-    document.load_state_from_string(data)
-    return document

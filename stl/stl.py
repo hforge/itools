@@ -207,46 +207,6 @@ class Element(XML.Element):
 
 
 
-class ContentAttr(DataType):
-
-    @staticmethod
-    def decode(data):
-        return Expression(data)
-
-
-    @staticmethod
-    def encode(value):
-        return str(value)
-
-
-
-class AttributesAttr(DataType):
-
-    @staticmethod
-    def decode(data):
-        attributes = []
-        for x in data.split(';'):
-            x = x.strip().split(' ', 1)
-            if len(x) == 1:
-                raise STLSyntaxError, \
-                      'attributes expression expects two fields'
-
-            name, expr = x
-            if expr.startswith('not') and expr[3].isspace():
-                expr = NotExpression(expr)
-            else:
-                expr = Expression(expr)
-            attributes.append((name, expr))
-
-        return tuple(attributes)
-
-
-    @staticmethod
-    def encode(value):
-        return ';'.join([ '%s %s' % x for x in value ])
-
-
-
 class IfAttr(DataType):
 
     @staticmethod
@@ -368,7 +328,7 @@ def process(node, stack, repeat_stack, encoding='UTF-8'):
 
 def process1(node, stack, repeat, encoding='UTF-8'):
     """
-    Process stl:if, stl:attributes and stl:content.
+    Process "stl:if" and variable substitution.
     """
     # Remove the element if the given expression evaluates to false
     if node.has_attribute(stl_uri, 'if'):
@@ -380,14 +340,6 @@ def process1(node, stack, repeat, encoding='UTF-8'):
     s = ['<%s' % node.qname]
 
     # Process attributes
-    changed_attributes = {} # qname: value
-    # Evaluate stl:attributes
-    if node.has_attribute(stl_uri, 'attributes'):
-        value = node.get_attribute(stl_uri, 'attributes')
-        for name, expression in value:
-            value = expression.evaluate(stack, repeat)
-            changed_attributes[name] = value
-
     xmlns_uri = namespaces.XMLNSNamespace.class_uri
 
     # Output existing attributes
@@ -400,22 +352,12 @@ def process1(node, stack, repeat, encoding='UTF-8'):
             continue
 
         qname = node.get_attribute_qname(namespace, local_name)
-        # Get the attribute value
-        if qname in changed_attributes:
-            value = changed_attributes.pop(qname)
-        else:
-            # Process "${...}" expressions
-            value = substitute(value, stack, repeat, encoding)
+        # Process "${...}" expressions
+        value = substitute(value, stack, repeat, encoding)
         # Output only values different than None
         value = encode_attribute(namespace, local_name, value, encoding)
         if value is not None:
             s.append(' %s="%s"' % (qname, value))
-
-    # Output remaining attributes
-    for local_name, value in changed_attributes.items():
-        value = encode_attribute(node.namespace, local_name, value, encoding)
-        if value is not None:
-            s.append(' %s="%s"' % (local_name, value))
 
     # The element schema, we need it
     namespace = namespaces.get_namespace(node.namespace)
@@ -428,28 +370,9 @@ def process1(node, stack, repeat, encoding='UTF-8'):
         s.append('>')
 
     # Process the content
-    if node.has_attribute(stl_uri, 'content'):
-        stl_expression = node.get_attribute(stl_uri, 'content')
-        content = stl_expression.evaluate(stack, repeat)
-        # Coerce
-        if content is None:
-            content = []
-        elif isinstance(content, unicode):
-            content = [content.encode(encoding)]
-        elif isinstance(content, (int, long, float, Decimal)):
-            content = [str(content)]
-        elif isinstance(content, str):
-            content = [content]
-        else:
-            msg = 'expression "%(expr)s" evaluates to value of unexpected' \
-                  ' type %(type)s'
-            msg = msg % {'expr': str(stl_expression),
-                         'type': content.__class__.__name__}
-            raise STLTypeError, msg
-    else:
-        content = []
-        for child in node.children:
-            content.extend(process(child, stack, repeat))
+    content = []
+    for child in node.children:
+        content.extend(process(child, stack, repeat))
 
     # Remove the element but preserves its children if it is a stl:block or
     # a stl:inline
@@ -495,8 +418,6 @@ class Schema(schemas.base.Schema):
 
 
     datatypes = {'repeat': RepeatAttr,
-                 'attributes': AttributesAttr,
-                 'content': ContentAttr,
                  'if': IfAttr}
 
 schemas.register_schema(Schema)

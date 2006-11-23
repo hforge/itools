@@ -168,7 +168,7 @@ class Folder(Handler):
     #########################################################################
     # API (public)
     #########################################################################
-    def get_handler(self, path):
+    def get_handler(self, path, caching=True):
         # Be sure path is a Path
         if not isinstance(path, Path):
             path = Path(path)
@@ -217,8 +217,9 @@ class Folder(Handler):
                 # Miss
                 uri = here.uri.resolve2(str(segment))
                 handler = here._get_handler(segment, uri)
-                # Update the cache
-                here.cache[name] = handler
+                if caching is True:
+                    # Update the cache
+                    here.cache[name] = handler
             else:
                 # Hit, reload the handler if needed
                 if handler.is_outdated():
@@ -347,7 +348,7 @@ class Folder(Handler):
             context.skip = False
         else:
             for name in self.get_handler_names():
-                handler = self.get_handler(name)
+                handler = self.get_handler(name, caching=False)
                 if isinstance(handler, Folder):
                     for x, context in handler.traverse2(context):
                         yield x, context

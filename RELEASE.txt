@@ -13,7 +13,7 @@ meta-package for easier development and deployment:
   itools.handlers       itools.stl              itools.xliff
   itools.html           itools.tmx              itools.xml
 
-The focus of this release is performance and bug hunting. Firs the speed:
+The focus of this release is performance and bug hunting. First the speed:
 
  - Indexing of office documents (PDF, OpenDocument, Word, etc.) has been
    massively improved in both speed and memory usage.
@@ -44,6 +44,7 @@ And now for the bugs:
 
 Credits:
 
+  - Luis Belmar-Letelier helped fixing bugs;
   - Hervé Cauwelier worked on the performance and fixed some bugs;
   - Nicolas Deram helped fixing bugs;
   - J. David Ibáñez helped with the performance and fixed many bugs.

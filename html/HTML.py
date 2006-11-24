@@ -137,7 +137,7 @@ class Document(XHTML.Document):
                 element = element_class(name)
                 for attr_name in attributes:
                     attr_value = attributes[attr_name]
-                    element.set_attribute(None, attr_name, attr_value)
+                    element.set_attribute(element.namespace, attr_name, attr_value)
                 stack.append(element)
             elif event == END_ELEMENT:
                 element = stack.pop()

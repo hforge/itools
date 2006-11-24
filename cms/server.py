@@ -144,9 +144,13 @@ class Server(web.server.Server):
         open('%s/state' % target, 'w').write('END')
         try:
             a, b = '%s/database' % target, '%s/database.bak' % target
+            catalog_path = '%s/.catalog' % a
             for src in abspaths:
                 dst = src.replace(a, b, 1)
-                if os.path.isdir(src):
+                if src.endswith(catalog_path):
+                    # XXX Hack for the catalog
+                    subprocess.call(['rsync', '-a', '--delete', src + '/', dst])
+                elif os.path.isdir(src):
                     src_files = set(os.listdir(src))
                     dst_files = set(os.listdir(dst))
                     # Remove
@@ -157,19 +161,6 @@ class Server(web.server.Server):
                         srcfile = '%s/%s' % (src, filename)
                         dstfile = '%s/%s' % (dst, filename)
                         vfs.copy(srcfile, dstfile)
-                    # Different. XXX Could not need this if IIndex
-                    # (itools.catalog) was not a so special handler (the
-                    # folder keeps the data structure for the files).
-                    for filename in src_files & dst_files:
-                        srcfile = '%s/%s' % (src, filename)
-                        dstfile = '%s/%s' % (dst, filename)
-                        srctime = os.stat(srcfile).st_mtime
-                        dsttime = os.stat(dstfile).st_mtime
-                        if srctime > dsttime:
-                            # Remove
-                            vfs.remove(dstfile)
-                            # Copy
-                            vfs.copy(srcfile, dstfile)
                 else:
                     open(dst, 'w').write(open(src).read())
         except:

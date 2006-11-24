@@ -122,7 +122,7 @@ class User(AccessControl, Folder):
         context.commit = True
 
         message = u'Registration confirmed, please log in'
-        goto = '/;login_form?username=%s' % self.name
+        goto = '/;login_form?username=%s' % self.get_property('ikaaro:email')
         return context.come_back(message, goto=goto)
 
 

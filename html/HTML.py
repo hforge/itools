@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -182,15 +182,10 @@ class Document(XHTML.Document):
             self.root_element = element
 
 
-    def to_str(self, encoding='UTF-8'):
-        data = []
-        # The declaration
-        if self.document_type is not None:
-            data.append('<!%s>' % self.document_type)
-        # The document itself
-        data.append(self.get_root_element().to_str(encoding))
-
-        return ''.join(data)
+    def header_to_str(self, encoding='UTF-8'):
+        if self.document_type is None:
+            return ''
+        return '<!%s>' % self.document_type
 
 
 register_handler_class(Document)

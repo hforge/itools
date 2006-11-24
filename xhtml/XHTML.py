@@ -656,6 +656,7 @@ class Document(XML.Document):
                         for x in process_message(message, keep_spaces):
                             if x not in messages:
                                 yield x, 0
+                        message = Message()
                         # </pre> don't preserve spaces any more
                         if node.name == 'pre':
                             keep_spaces = False

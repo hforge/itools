@@ -311,9 +311,7 @@ class Skin(Folder):
 
         # Transform the tree
         handler = self.get_handler('template.xhtml')
-        here = context.path
-        there = uri.Path(handler.get_abspath())
-        prefix = here.get_pathto(there)
+        prefix = uri.Path(handler.get_abspath())
 
         # STL
         s = []

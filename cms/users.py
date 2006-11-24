@@ -217,6 +217,10 @@ class User(AccessControl, Folder):
         self.set_property('dc:title', title, language='en')
         self.set_property('ikaaro:email', email)
 
+        # Reindex
+        root = context.root
+        root.reindex_handler(self)
+
         return context.come_back(u'Account changed.')
 
 

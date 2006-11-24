@@ -148,21 +148,19 @@ def convert(handler, cmdline, outfile=None):
     try:
         # XXX do not use pipes, not enough buffer to hold stdout
         call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
-    except OSError, e:
-        context = get_context()
-        context.server.log_error(context)
-        return '', str(e)
+    except OSError:
+        vfs.remove(path)
+        raise
 
     # Read output
     if outfile is not None:
         stdout_path = path_join(path, outfile)
     try:
         stdout = open(stdout_path).read()
-    except IOError, e:
-        stdout = ''
-        stderr = str(e)
-    else:
-        stderr = open(stderr_path).read()
+    except IOError:
+        vfs.remove(path)
+        raise
+    stderr = open(stderr_path).read()
 
     # Remove the temporary files
     vfs.remove(path)
@@ -177,7 +175,12 @@ class OfficeDocument(File):
 
 
     def to_text(self, outfile=None):
-        stdout, stderr = convert(self, self.source_converter, outfile)
+        try:
+            stdout, stderr = convert(self, self.source_converter, outfile)
+        except (OSError, IOError):
+            context = get_context()
+            context.server.log_error(context)
+            return u''
 
         if stderr != "":
             text = u''
@@ -186,7 +189,7 @@ class OfficeDocument(File):
                 text = unicode(stdout, self.source_encoding, 'replace')
             except UnicodeDecodeError:
                 context = get_context()
-                context.server.log_error()
+                context.server.log_error(context)
                 text = u''
 
         return text
@@ -201,7 +204,7 @@ class MSWord(OfficeDocument):
     class_icon16 = 'images/Word16.png'
     class_icon48 = 'images/Word48.png'
 
-    source_converter = 'wvText "%s" out.txt'
+    source_converter = 'wvText %s out.txt'
 
 
     def to_text(self):
@@ -218,11 +221,16 @@ class MSExcel(OfficeDocument):
     class_icon48 = 'images/Excel48.png'
     class_extension = '.xls'
     
-    source_converter = 'xlhtml -a -fw -nc -nh -te "%s"'
+    source_converter = 'xlhtml -a -fw -nc -nh -te %s'
 
 
     def to_text(self):
-        stdout, stderr = convert(self, self.source_converter)
+        try:
+            stdout, stderr = convert(self, self.source_converter)
+        except (OSError, IOError):
+            context = get_context()
+            context.server.log_error(context)
+            return u''
 
         if stderr != "":
             text = u''
@@ -242,11 +250,16 @@ class MSPowerPoint(OfficeDocument):
     class_icon48 = 'images/PowerPoint48.png'
     class_extension = '.ppt'
 
-    source_converter = 'ppthtml "%s"'
+    source_converter = 'ppthtml %s'
 
 
     def to_text(self):
-        stdout, stderr = convert(self, self.source_converter)
+        try:
+            stdout, stderr = convert(self, self.source_converter)
+        except (OSError, IOError):
+            context = get_context()
+            context.server.log_error(context)
+            return u''
 
         if stderr != "":
             text = u''
@@ -317,7 +330,7 @@ class PDF(OfficeDocument):
     class_icon48 = 'images/Pdf48.png'
     class_extension = '.pdf'
 
-    source_converter = 'pdftotext -enc UTF-8 -nopgbrk "%s" -'
+    source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
 
 
 

@@ -1,4 +1,72 @@
 
+itools 0.14.6 (2006/11/24)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+The focus of this release is performance and bug hunting. First the speed:
+
+ - Indexing of office documents (PDF, OpenDocument, Word, etc.) has been
+   massively improved in both speed and memory usage.
+
+ - The "get_handler" and "traverse2" methods (from itools.handlers) now
+   accept the optional parameter "caching"; if set to False caching won't
+   be active for this call, see #569 for the details.
+
+ - The catalog has been optimized to be about 12% faster with the index
+   and unindex operations.
+
+ - The whole module "itools.i18n.oracle" (whose purpose is to guess the
+   language of a text) has been rewritten for better performance and
+   readibility.
+
+And now for the bugs:
+
+ - A serious bug has been fixed in "itools.cms": under some conditions the
+   catalog was not synchronized with the data. The issue was solved with an
+   update of the catalog, but still very annoying.
+
+ - Some bugs in itools.xhtml and itools.html have been fixed related to the
+   the semi-automatic translation of (X)HTML templates and documents. And
+   the unit tests have been updated. See #279 for the details.
+
+ - Many bugs have been fixed in the itools.cms web interface: #294, #438,
+   #512, #563, #576, #577, #578 and #579.
+
+Credits:
+
+  - Luis Belmar-Letelier helped fixing bugs;
+  - Hervé Cauwelier worked on the performance and fixed some bugs;
+  - Nicolas Deram helped fixing bugs;
+  - J. David Ibáñez helped with the performance and fixed many bugs.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.6.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.14.5 (2006/11/14)
 ==========================
 

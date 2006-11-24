@@ -363,7 +363,7 @@ class Root(WebSite):
             print 'Updating catalog, init:', t1 - t0
 
             n = 0
-            for handler, ctx in self.traverse2():
+            for handler, ctx in self.traverse2(caching=False):
                 # Skip virtual handlers
                 if handler.real_handler is not None:
                     ctx.skip = True

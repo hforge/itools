@@ -33,7 +33,7 @@ class HMLTestCase(TestCase):
         doc.load_state_from_string(data)
         messages = list(doc.get_messages())
 
-        self.assertEqual(messages, ([u'hello world'], 0))
+        self.assertEqual(messages, [(u'hello world', 0)])
 
 
     def test_case2(self):
@@ -70,8 +70,7 @@ class HMLTestCase(TestCase):
         p = PO()
         p.load_state_from_string(po)
 
-        self.assertEqual(doc.translate(p),
-                         '<p>hola mundo</p>')
+        self.assertEqual(doc.translate(p), '<p>hola mundo</p>')
 
 
     def test_case5(self):

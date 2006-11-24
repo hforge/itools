@@ -524,8 +524,13 @@ dl.new_resource_thumb {
 }
 
 #browse_calendar #header_timetables span {
-  margin-left: -15px;
+  margin-left: -15px; /* See below */
   font-size: 9px;
   font-weight: bold;
   text-align: left;
+}
+
+/* Prevent IE from eating the time outside the box */
+* html #browse_calendar #header_timetables span {
+  margin-left: 0;
 }

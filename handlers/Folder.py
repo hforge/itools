@@ -350,7 +350,7 @@ class Folder(Handler):
             for name in self.get_handler_names():
                 handler = self.get_handler(name, caching=caching)
                 if isinstance(handler, Folder):
-                    for x, context in handler.traverse2(context):
+                    for x, context in handler.traverse2(context, caching=caching):
                         yield x, context
                 else:
                     yield handler, context

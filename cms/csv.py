@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # Import from itools
-from itools.csv.itools_csv import CSV as iCSV, Row as iRow
+from itools.csv.csv import CSV as iCSV, Row as iRow
 from itools.stl import stl
 
 # Import from ikaaro

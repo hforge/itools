@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 from datetime import date
@@ -26,7 +26,7 @@ from itools.resources import memory
 from itools.resources import get_resource
 from itools.datatypes import Date, Integer, Unicode, URI
 from itools.catalog import queries
-from itools.csv import itools_csv
+from itools.csv import CSV
 
 
 TEST_DATA_1 = """python,http://python.org,52343,2003-10-23
@@ -43,7 +43,7 @@ class CSVTestCase(TestCase):
     def test_unicode(self):
         data = '"Martin von Löwis","Marc André Lemburg","Guido van Rossum"\n'
         resource = memory.File(data)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         self.assertEqual(handler.get_rows(), [[u"Martin von Löwis",
                                                u"Marc André Lemburg",
                                                u"Guido van Rossum"]])
@@ -51,20 +51,20 @@ class CSVTestCase(TestCase):
 
     def test_num_of_lines(self):
         resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         self.assertEqual(len(handler.get_rows()), 3)
 
 
     def test_num_of_lines_with_last_new_line(self):
         data = TEST_DATA_2 + '\r\n'
         resource = memory.File(data)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         self.assertEqual(len(handler.get_rows()), 3)
 
     
     def test_load_state_with_schema(self):
         resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'url', 'number', 'date']
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
                           'date': Date}
@@ -78,7 +78,7 @@ class CSVTestCase(TestCase):
 
     def test_load_state_without_schema(self):
         resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
                           'date': Date}
         handler.load_state(resource)
@@ -89,7 +89,7 @@ class CSVTestCase(TestCase):
 
     def test_to_str_with_schema(self):
         resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'url', 'number', 'date']
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
                           'date': Date}
@@ -102,7 +102,7 @@ class CSVTestCase(TestCase):
 
     def test_to_str_without_schema(self):
         resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.load_state(resource)
         self.assertEqual(
             handler.to_str(),
@@ -112,13 +112,13 @@ class CSVTestCase(TestCase):
 
     def test_get_row(self):
         resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         self.assertEqual(handler.get_row(1), ['four', 'five', 'six'])
 
 
     def test_get_rows(self):
         resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         self.assertEqual(handler.get_rows([0, 1]), [
             ['one', 'two', 'three'], 
             ['four', 'five', 'six']])
@@ -126,55 +126,55 @@ class CSVTestCase(TestCase):
 
     def test_add_row(self):
         resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         handler.add_row(['a', 'b', 'c'])
         self.assertEqual(handler.get_row(3), ['a', 'b', 'c'])
 
 
     def test_del_row(self):
         resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         handler.del_row(1)
         self.assertEqual(handler.get_row(1), ['seven', 'eight', 'nine'])
 
 
     def test_del_rows(self):
         resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         handler.del_rows([0, 1])
         self.assertEqual(handler.get_row(0), ['seven', 'eight', 'nine'])
 
 
     def test_set_state_in_memory_resource(self):
         resource = memory.File(TEST_DATA_2)
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         handler.add_row(['a', 'b', 'c'])
         handler.save_state()
-        handler2 = itools_csv.CSV(resource)
+        handler2 = CSV(resource)
         self.assertEqual(handler2.get_row(3), ['a', 'b', 'c'])
 
 
     def test_set_state_in_file_resource(self):
         resource = get_resource('test.csv')
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         handler.add_row(['d1', 'e1', 'f1'])
         handler.save_state()
 
         resource2 = get_resource('test.csv')
-        handler2 = itools_csv.CSV(resource2)
+        handler2 = CSV(resource2)
         self.assertEqual(handler2.get_row(3), ['d1', 'e1', 'f1'])
         handler2.del_row(3)
         handler2.save_state()
 
         resource = get_resource('test.csv')
-        handler = itools_csv.CSV(resource)
+        handler = CSV(resource)
         self.assertEqual(handler.get_nrows(), 3)
 
 
     def test_indexes_hit_in_one_row(self):
         data = TEST_DATA_1
         resource = memory.File(data)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'url', 'number', 'date']
         handler.schema = {'name': Unicode, 'url': URI,
                           'number': Integer(index=True),
@@ -188,7 +188,7 @@ class CSVTestCase(TestCase):
     def test_indexes_hit_in_many_rows(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
         resource = memory.File(data)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'date']
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
@@ -199,7 +199,7 @@ class CSVTestCase(TestCase):
     def test_index_new_row(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
         resource = memory.File(data)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'date']
         handler.schema = {'name': Unicode, 'date': Date(index=True)}
         handler.load_state(resource)
@@ -210,7 +210,7 @@ class CSVTestCase(TestCase):
     def test_index_del_row(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
         resource = memory.File(data)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'date']
         handler.schema = {'name': Unicode(index=True),
                           'date': Date(index=True)}
@@ -225,7 +225,7 @@ class CSVTestCase(TestCase):
 
     def test_build_csv_data(self):
         resource = memory.File('')
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'surname', 'date']
         handler.schema = {'name': Unicode, 'surname': Unicode(index=True),
                           'date': Date(index=True)}
@@ -243,7 +243,7 @@ class CSVTestCase(TestCase):
 
     def test_advanced_search(self):
         resource = get_resource('test_adv.csv')
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['id', 'name', 'country', 'date']
         handler.schema = {'id': Integer, 'name': Unicode(index=True),
                           'country': Unicode(index=True),
@@ -271,7 +271,7 @@ class CSVTestCase(TestCase):
 
     def test_access_by_name(self):
         resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'url', 'number', 'date']
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
                           'date': Date}
@@ -283,7 +283,7 @@ class CSVTestCase(TestCase):
 
     def test_get_row_as_handler(self):
         resource = memory.File(TEST_DATA_1)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['name', 'url', 'number', 'date']
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
                           'date': Date}
@@ -296,12 +296,12 @@ class CSVTestCase(TestCase):
 
     def test_bad_syntax_csv_file(self):
         resource = memory.File(TEST_SYNTAX_ERROR)
-        self.assertRaises(ValueError, itools_csv.CSV, resource)
+        self.assertRaises(ValueError, CSV, resource)
 
 
     def test_bad_syntax_csv_file_with_schema(self):
         resource = memory.File(TEST_SYNTAX_ERROR)
-        handler = itools_csv.CSV()
+        handler = CSV()
         handler.columns = ['one', 'two', 'three']
         handler.schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
         self.assertRaises(ValueError, handler.load_state, resource)

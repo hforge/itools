@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 from urllib import urlencode
@@ -179,15 +179,16 @@ class Request(Message):
 
     ########################################################################
     # The Form
-    def get_parameter(self, name, default=None):
+    def get_parameter(self, name, default=None, type=None):
+        if type is None:
+            type = schemas.get_datatype(name)
+
         form = self.form
         if name in form:
-            datatype = schemas.get_datatype(name)
-            return datatype.decode(form[name])
+            return type.decode(form[name])
 
         if default is None:
-            datatype = schemas.get_datatype(name)
-            return datatype.default
+            return type.default
 
         return default
 

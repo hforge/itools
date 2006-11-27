@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 from copy import deepcopy
@@ -105,14 +105,14 @@ class Context(object):
         return self.request.form.keys()
 
 
-    def get_form_value(self, name, default=None):
-        value = self.request.get_parameter(name, default)
+    def get_form_value(self, name, default=None, type=None):
+        value = self.request.get_parameter(name, default=default, type=type)
         if isinstance(value, list):
             return value[0]
         return value
 
 
-    def get_form_values(self, name):
+    def get_form_values(self, name, default=[]):
         request = self.request
         if request.has_parameter(name):
             value = request.get_parameter(name)
@@ -120,7 +120,7 @@ class Context(object):
                 return value
             return [value]
 
-        return []
+        return default
 
 
     def has_form_value(self, name):

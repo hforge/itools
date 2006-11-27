@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #                    2005 Alexandre Fernandez <alex@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 import marshal
@@ -23,7 +23,7 @@ import zlib
 
 # Import from itools
 from itools.uri import Path, get_reference
-from itools.datatypes import FileName
+from itools.datatypes import FileName, Integer
 from itools import vfs
 from itools.handlers.Folder import Folder as BaseFolder
 from itools.handlers.registry import get_handler_class
@@ -43,7 +43,7 @@ from LocaleAware import LocaleAware
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import checkid, reduce_string
-from widgets import Breadcrumb, Table
+from widgets import Breadcrumb, sortcontrol
 from registry import register_object_class, get_object_class
 
 
@@ -358,50 +358,48 @@ class Folder(Handler, BaseFolder, CalendarAware):
         pass
 
 
-    def browse_namespace(self, icon_size, sortby='title_or_name',
-                sortorder='up', batchstart='0', batchsize='20', query={},
-                results=None):
+    def browse_namespace(self, icon_size, sortby=['title_or_name'],
+                         sortorder='up', batchstart=0, batchsize=20,
+                         query={}, results=None):
         context = get_context()
-        request = context.request
+        # Load variables from the request
+        sortby = context.get_form_values('sortby', default=sortby)
+        sortorder = context.get_form_value('sortorder', sortorder)
+        start = context.get_form_value('batchstart', type=Integer,
+                                       default=batchstart)
+        size = context.get_form_value('batchsize', type=Integer,
+                                      default=batchsize)
 
-        search_subfolders = False
-
-        # hack for search in a tree, search_subfolder is a path string
+        # Search
+        # Hack for search in a tree, search_subfolder is a path string
         search_subfolders = query.get('search_subfolders')
-
-        if search_subfolders is not None:
-            del query['search_subfolders']
-        else:
+        if search_subfolders is None:
             query['parent_path'] = self.get_abspath()
-
+        else:
+            del query['search_subfolders']
+        # Search
         root = context.root
         if results is None:
-            results = root.search(**query).get_documents()
-
-        # if search in subfolders is active we filter on path
+            results = root.search(**query)
+            reverse = (sortorder == 'down')
+            documents = results.get_documents(sort_by=sortby, reverse=reverse,
+                                              start=batchstart, size=batchsize)
+        # If search in subfolders is active we filter on path
         if search_subfolders is not None:
             abspath = self.get_abspath()
-            results = [ x for x in results
-                        if x.parent_path.startswith(abspath) ]
-
-        # put the metadatas in a dictionary list to be managed with Table
-        fields = root.get_catalog_metadata_fields()
-        table_content = []
-        for result in results:
-            line = {}
-            for field in fields:
-                # put a '' if the brain doesn't have the given field
-                line[field] = getattr(result, field, '')
-            table_content.append(line)
-
-        # Build the table
-        table = Table(table_content, sortby=sortby, sortorder=sortorder,
-                      batchstart=batchstart, batchsize=batchsize)
+            documents = [ x for x in documents
+                          if x.parent_path.startswith(abspath) ]
 
         # Get the handler for the visibles documents and extracts values
+        fields = root.get_catalog_metadata_fields()
         user = context.user
         objects = []
-        for line in table.objects:
+        for document in documents:
+            line = {}
+            # Initialize the line with all the stored fields
+            for field in fields:
+                line[field] = getattr(document, field, '')
+            # Complete the namespace
             abspath = line['abspath']
             document = root.get_handler(abspath)
             ac = document.get_access_control()
@@ -452,29 +450,45 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 self._browse_namespace(line, document)
                 objects.append(line)
  
-        table.objects = objects
+        # Build namespace
+        namespace = {}
+        total = results.get_n_documents()
+        namespace['total'] = total
+        namespace['objects'] = objects
+
+        # The batch
+        namespace['batchstart'] = start + 1
+        end = min(start + size, total)
+        namespace['batchend'] = end
+        namespace['batch_previous'] = None
+        previous = start - size
+        if previous < 0:
+            previous = 0
+        if previous > start:
+            namespace['batch_previous'] = context.uri.replace(batchstart=str(previous))
+        namespace['batch_next'] = None
+        if end < total:
+            namespace['batch_next'] = context.uri.replace(batchstart=str(end))
+
+        # The column headers
         columns = [(None, None), (None, None), ('name', u'Name'),
                    ('title', u'Title'),
                    ('format', u'Type'), ('mtime', u'Date'), (None, u'Size'),
                    ('workflow_state', u'State')]
-        table.columns = []
+        aux = []
         for name, title in columns:
             if title is None:
-                table.columns.append(None)
+                aux.append(None)
             elif name is None:
-                table.columns.append({'title': self.gettext(title),
-                                      'href': None})
+                aux.append({'title': self.gettext(title), 'href': None})
             else:
-                href, sort = table._sortcontrol(name)
-                table.columns.append({'title': title,
-                                      'href': href,
-                                      'up': (sort == 'up'),
-                                      'down': (sort == 'down'),
-                                      'no': (sort == 'none')})
+                href, sort = sortcontrol(name, sortby, sortorder)
+                aux.append({'title': title, 'href': href,
+                            'up': (sort == 'up'),
+                            'down': (sort == 'down'),
+                            'no': (sort == 'none')})
+        namespace['columns'] = aux
 
-        # Build namespace
-        namespace = {}
-        namespace['table'] = table
         # Paste?
         cp = context.get_cookie('ikaaro_cp')
         namespace['paste'] = cp is not None
@@ -491,7 +505,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         parent_path = self.get_abspath()
         if parent_path in ('', None):
             parent_path = '/'
-        query = {'parent_path' : parent_path}
+        query = {'parent_path': parent_path}
         namespace = self.browse_namespace(48, query=query)
 
         handler = self.get_handler('/ui/Folder_browse_thumbnails.xml')

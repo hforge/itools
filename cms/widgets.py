@@ -30,177 +30,31 @@ from Handler import Handler
 
 
 
-def sort(objects, sortby, sortorder='up', getter=None):
+def sortcontrol(column, sortby, sortorder):
     """
-    Returns the same objects sorted by the given criteria ("sortby"),
-    in the given sense ("sortorder").
-
-    The parameter "sortby" must be a list with the different criterias
-    to use to sort the objects.
-
-    The parameter "getter" if given must be a function that defines the
-    way to get values from every object.
+    Returns an html snippet with a link that lets to order a column
+    in a table.
     """
+    # Process column
+    if isinstance(column, (str, unicode)):
+        column = [column]
 
-    # The default getter tries first getattr, and if it fails tries
-    # mapping access.
-    if getter is None:
-        def getter(object, key):
-            try:
-                return getattr(object, key)
-            except AttributeError:
-                return object[key]
+    # Calculate the href
+    data = {}
+    data['sortby'] = column
 
-    # Process sortby, it must be a list like:
-    #   [<criteria>, ...]
-    # where criteria is a list:
-    #   [<key>, ...]
-    # XXX Do we really need this "feature"?
-    sortby = [ x.split('.') for x in sortby ]
-
-    # Define the sort function
-    def sort_key(x, sortby=sortby, getter=getter):
-        criterias = []
-        for criteria in sortby:
-            for key in criteria:
-                x = getter(x, key)
-            if callable(x):
-                x = x()
-            criterias.append(x)
-        return tuple(criterias)
-
-    # Reverse?
-    reverse = (sortorder == 'down')
-
-    return sorted(objects, key=sort_key, reverse=reverse)
-
-
-
-def batch(objects, start=0, size=0):
-    # Calculate subtotal and batchend
-    total = len(objects)
-
-    end = start + size
-    if end > total:
-        end = total
-
-    # Previous and next
-    previous = start - size
-    if previous < 0:
-        previous = 0
-    if previous == start:
-        previous = None
-
-    next = end
-    if next >= total:
-        next = None
-
-    # Get the subset
-    if size:
-        objects = objects[start:end]
-        subtotal = end - start
-    else:
-        subtotal = total
-
-    return objects, total, subtotal, end, previous, next
-
-
-
-
-
-class Table(object):
-    """
-    Returns the ordered subset of objects that matches the given parameters.
-    Paremeters:
-
-      - objects: list of objects to be shown in the table;
-
-      - sortby: ..
-
-      - sortorder: ..
-
-      - batchstart: ..
-
-      - batchsize: ..
-    """
-
-    def __init__(self, objects, sortby=None, sortorder='up', batchstart=0,
-                 batchsize=0, getter=None, name='table'):
-        context = get_context()
-        # Get the parameters
-        if context.has_form_value('%s_sortby' % name):
-            sortby = context.get_form_values('%s_sortby' % name)
-        elif isinstance(sortby, (str, unicode)):
-            sortby = [sortby]
-        sortorder = context.get_form_value('%s_sortorder' % name, sortorder)
-        start = context.get_form_value('%s_batchstart' % name, batchstart)
-        start = int(start)
-        size = context.get_form_value('%s_batchsize' % name, batchsize)
-        size = int(batchsize)
-
-        # Sort
-        if sortby is not None:
-            objects = sort(objects, sortby, sortorder, getter)
-
-        # Batch
-        objects, total, subtotal, end, prev, next = batch(objects, start, size)
-
-
-        self.name = name
-        self.objects = objects
-        self.total = total # objects here are not original objects list
-        self.sortby = sortby
-        self.sortorder = sortorder
-        self.batchstart = start + 1
-        self.batchend = end
-        self.subtotal = subtotal
-        self.previous = prev
-        self.next = next
-
-        # Return a dict. as {'total', 'previous', 'next',  'control'}
-        context = get_context()
-        # Previous
-        self.batch_previous = None
-        if self.previous is not None:
-            data = {'%s_batchstart' % self.name: str(self.previous)}
-            self.batch_previous = context.uri.replace(**data)
-        # Next 
-        self.batch_next = None
-        if self.next is not None:
-            data = {'%s_batchstart' % self.name: str(self.next)}
-            self.batch_next = context.uri.replace(**data)
-        # Summary
-        message = Handler.gettext(u'$start-$end of $total')
-        self.batch_control = Template(message).substitute(
-            {'start': self.batchstart, 'end': end, 'total': total})
-
-
-    def _sortcontrol(self, column):
-        """
-        Returns an html snippet with a link that lets to order a column
-        in a table.
-        """
-        # Process column
-        if isinstance(column, (str, unicode)):
-            column = [column]
-
-        # Calculate the href
-        data = {}
-        data['%s_sortby' % self.name] = column
-
-        if self.sortby == column:
-            value = self.sortorder
-            if self.sortorder == 'up':
-                data['%s_sortorder' % self.name] = 'down'
-            else:
-                data['%s_sortorder' % self.name] = 'up'
+    if sortby == column:
+        value = sortorder
+        if sortorder == 'up':
+            data['sortorder'] = 'down'
         else:
-            value = 'none'
-            data['%s_sortorder' % self.name] = 'up'
+            data['sortorder'] = 'up'
+    else:
+        value = 'none'
+        data['sortorder'] = 'up'
 
-        href = get_context().uri.replace(**data)
-        return href, value
-
+    href = get_context().uri.replace(**data)
+    return href, value
 
 
 class Breadcrumb(object):

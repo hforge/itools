@@ -4,13 +4,13 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <p class="batchcontrol" stl:if="table/total">
-    ${table/batch_control}
-    <a stl:if="table/batch_previous" href="${table/batch_previous}">&lt;&lt;</a>
-    <a stl:if="table/batch_next" href="${table/batch_next}">&gt;&gt;</a>
+  <p class="batchcontrol" stl:if="total">
+    ${batchstart}-${batchend} of ${total}
+    <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
+    <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
   </p>
 
-  <stl:block repeat="object table/objects">
+  <stl:block repeat="object objects">
     <dl class="thumb">
       <dt>
         <a href="${object/url}"><img alt="" src="${object/icon}" /></a>
@@ -22,7 +22,7 @@
   </stl:block>
   <div class="clear"></div>
 
-  <p stl:if="not table/objects">
+  <p stl:if="not objects">
     This folder is empty.
   </p>
 

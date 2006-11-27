@@ -25,17 +25,17 @@
 </form>
 
 <form action="." method="post">
-  <div class="batchcontrol" stl:if="table/total">
-    ${table/batchstart}-${table/batchend} of ${table/total}
+  <div class="batchcontrol" stl:if="total">
+    ${batchstart}-${batchend} of ${total}
 
-    <a stl:if="table/batch_previous" href="${batch_previous}">&lt;&lt;</a>
-    <a stl:if="table/batch_next" href="${table/batch_next}">&gt;&gt;</a>
+    <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
+    <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
   </div>
-  <table border="0" cellspacing="2" cellpadding="2" stl:if="table/objects"
+  <table border="0" cellspacing="2" cellpadding="2" stl:if="objects"
     summary="listing of folder content or query result">
     <thead>
       <tr>
-        <th stl:repeat="column table/columns" valign="bottom">
+        <th stl:repeat="column columns" valign="bottom">
           <stl:block if="column">
             ${column/title}
             <a stl:if="column/href" href="${column/href}">
@@ -48,7 +48,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr stl:repeat="object table/objects">
+      <tr stl:repeat="object objects">
         <td>
           <input class="checkbox" type="checkbox" name="ids"
             stl:if="object/checkbox" value="${object/name}" />
@@ -74,7 +74,7 @@
     </tbody>
   </table>
   <p>
-    <stl:block if="table/objects">
+    <stl:block if="objects">
       <input type="submit" name=";remove" value="Remove" class="button_delete"
              onclick="return confirmation();"  />
       <input type="submit" name=";rename_form" value="Rename.." class="button_rename"/>
@@ -85,7 +85,7 @@
   </p>
 </form>
 
-<p stl:if="not table/objects">
+<p stl:if="not objects">
   This folder or query is empty.
 </p>
 

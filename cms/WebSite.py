@@ -34,7 +34,6 @@ from skins import Skin
 from access import RoleAware
 from workflow import WorkflowAware
 from users import crypt_password
-from widgets import Table
 from metadata import Password
 from skins import ui
 from registry import register_object_class
@@ -348,7 +347,7 @@ class WebSite(RoleAware, Folder):
                 u'The user "$username" does not exist.', username=email)
 
         # Get the user
-        brain = results.get_documents().next()
+        brain = results.get_documents()[0]
         user = root.get_handler('users/%s' % brain.name)
 
         # Check the user is active

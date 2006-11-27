@@ -26,7 +26,6 @@ from itools.stl import stl
 
 # Import from ikaaro
 from access import AccessControl
-from widgets import Table
 from Folder import Folder
 from Handler import Handler
 from metadata import Password

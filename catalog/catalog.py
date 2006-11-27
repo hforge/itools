@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2006 Juan David IbÃ¡Ã±ez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -63,17 +63,76 @@ class SearchResults(object):
         return len(self.results)
 
 
-    def get_documents(self):
+    def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
+        """
+        Returns the documents for the search, sorted by weight.
+
+        Four optional arguments are accepted, which will modify the documents
+        returned.
+
+        First, it is possible to sort by a field, or a list of fields, instead
+        of by the weight. The condition is that the field must be stored:
+
+          - "sort_by", if given it must be the name of an stored field, or
+            a list of names of stored fields. The results will be sorted by
+            this fields, instead of by the weight.
+
+          - "reverse", a boolean value that says whether the results will be
+            ordered from smaller to greater (reverse is False, the default),
+            or from greater to smaller (reverse is True). This parameter only
+            takes effect if the parameter "sort_by" is also given.
+
+        It is also possible to ask for a subset of the documents:
+            
+          - "start": returns the documents starting from the given start
+            position.
+
+          - "size": returns at most documents as specified by this parameter.
+
+        By default all the documents are returned.
+        """
         # Iterate on sorted by weight in decrease order
         get_document = self.documents.get_document
         field_numbers = self.field_numbers
-        for document in sorted(self.results.iteritems(), key=itemgetter(1),
-                               reverse=True):
-            doc_number = document[0]
-            # Load the document
+
+        if sort_by is None:
+            # Sort by weight
+            doc_numbers = [ x[0] for x in sorted(self.results.iteritems(),
+                                                 key=itemgetter(1),
+                                                 reverse=True) ]
+        else:
+            # Just get the document keys unsorted (we will sort later)
+            doc_numbers = self.results.keys()
+
+        # Load the documents
+        documents = []
+        for doc_number in self.results:
             document = get_document(doc_number)
             document.field_numbers = field_numbers
-            yield document 
+            documents.append(document)
+
+        # Sort by something
+        if sort_by is not None:
+            if isinstance(sort_by, list):
+                sort_by = [ field_numbers[x] for x in sort_by ]
+                def key(doc, sort_by=sort_by):
+                    return tuple([ doc.fields[x] for x in sort_by ])
+            else:
+                sort_by = field_numbers[sort_by]
+                def key(doc, sort_by=sort_by):
+                    return doc.fields[sort_by]
+
+            documents.sort(key=key, reverse=reverse)
+
+        # Batch
+        if size > 0:
+            return documents[start:start+size]
+        if start > 0:
+            return documents[start:]
+
+        return documents
+            
+
 
 
 

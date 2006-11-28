@@ -27,16 +27,16 @@ from itools import get_abspath
 from itools.gettext import domains
 
 # Import from itools.cms
-import root
-from Folder import Folder
-import Document
-import File
-import binary
+from . import root
+from .Folder import Folder
+from . import Document
+from . import File
+from . import binary
 from . import csv
-import handlers
-import html
-import ical
-import text
+from . import handlers
+from . import html
+from . import ical
+from . import text
 
 
 

@@ -19,6 +19,7 @@
 from datetime import datetime
 
 # Import from itools
+from itools.uri import Path
 from itools import vfs
 from workflow import WorkflowAware
 
@@ -49,6 +50,7 @@ class CatalogAware(object):
             'mtime': mtime.strftime('%Y%m%d%H%M%S'),
             }
 
+        # Parent path
         parent = self.parent
         if parent is not None:
             if parent.parent is None:
@@ -56,6 +58,11 @@ class CatalogAware(object):
             else:
                 document['parent_path'] = parent.get_abspath()
 
+        # All paths
+        abspath = Path(abspath)
+        document['paths'] = [ abspath[:x] for x in range(len(abspath) + 1) ]
+
+        # Workflow state
         if isinstance(self, WorkflowAware):
             document['workflow_state'] = self.get_workflow_state()
 

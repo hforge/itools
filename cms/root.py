@@ -115,7 +115,8 @@ class Root(WebSite):
                        # Users
                        ('email', 'keyword', True, False),
                        # Folder's view
-                       ('parent_path', 'keyword', True, True),
+                       ('parent_path', 'keyword', True, False),
+                       ('paths', 'keyword', True, False),
                        ('name', 'keyword', True, True),
                        ('title_or_name', 'keyword', True, True),
                        ('mtime', 'keyword', False, True),

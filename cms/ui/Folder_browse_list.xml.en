@@ -4,21 +4,24 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form action=";browse_list" method="get" stl:if="search_criteria">
+<form action=";browse_list" method="get" stl:if="search_fields">
   <dl>
     <dt>Display only contents with the following terms:</dt>
     <dd>
-      <label for="search_value">Search term</label>
-      <input type="text" name="search_value" size="30" value="${search_value}" />
-      <label for="search_criteria">Field</label>
-      <select name="search_criteria">
-        <stl:block repeat="criteria search_criteria">
-          <option value="${criteria/id}" selected="${criteria/selected}">${criteria/title}</option>
+      <label for="search_term">Search term</label>
+      <input type="text" name="search_term" size="15" value="${search_term}" />
+
+      <label for="search_field">Field</label>
+      <select name="search_field">
+        <stl:block repeat="field search_fields">
+          <option value="${field/id}" selected="${field/selected}"
+            >${field/title}</option>
         </stl:block>
       </select>
+
       <label for="search_subfolders">Search subfolders</label>
       <input type="checkbox" name="search_subfolders" id="search_subfolders"
-        checked="${search_subfolders}" value="${self_path}" />
+        checked="${search_subfolders}" value="1" />
       <input type="submit" value="Search" class="button_search"/>
     </dd>
   </dl>

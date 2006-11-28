@@ -23,7 +23,8 @@ import zlib
 
 # Import from itools
 from itools.uri import Path, get_reference
-from itools.datatypes import FileName, Integer
+from itools.catalog import queries
+from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
 from itools.handlers.Folder import Folder as BaseFolder
 from itools.handlers.registry import get_handler_class
@@ -360,7 +361,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def browse_namespace(self, icon_size, sortby=['title_or_name'],
                          sortorder='up', batchstart=0, batchsize=20,
-                         query={}, results=None):
+                         query=None, results=None):
         context = get_context()
         # Load variables from the request
         sortby = context.get_form_values('sortby', default=sortby)
@@ -371,24 +372,13 @@ class Folder(Handler, BaseFolder, CalendarAware):
                                       default=batchsize)
 
         # Search
-        # Hack for search in a tree, search_subfolder is a path string
-        search_subfolders = query.get('search_subfolders')
-        if search_subfolders is None:
-            query['parent_path'] = self.get_abspath()
-        else:
-            del query['search_subfolders']
-        # Search
         root = context.root
         if results is None:
-            results = root.search(**query)
+            catalog = root.get_handler('.catalog')
+            results = catalog.search(query)
             reverse = (sortorder == 'down')
             documents = results.get_documents(sort_by=sortby, reverse=reverse,
                                               start=batchstart, size=batchsize)
-        # If search in subfolders is active we filter on path
-        if search_subfolders is not None:
-            abspath = self.get_abspath()
-            documents = [ x for x in documents
-                          if x.parent_path.startswith(abspath) ]
 
         # Get the handler for the visibles documents and extracts values
         fields = root.get_catalog_metadata_fields()
@@ -502,10 +492,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def browse_thumbnails(self, context):
         context.set_cookie('browse', 'thumb')
 
-        parent_path = self.get_abspath()
-        if parent_path in ('', None):
-            parent_path = '/'
-        query = {'parent_path': parent_path}
+        query = queries.Equal('parent_path', self.get_abspath())
         namespace = self.browse_namespace(48, query=query)
 
         handler = self.get_handler('/ui/Folder_browse_thumbnails.xml')
@@ -518,38 +505,38 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def browse_list(self, context):
         context.set_cookie('browse', 'list')
 
-        if context.has_form_value('search_value'):
-            search_value = context.get_form_value('search_value')
-            search_value = unicode(search_value, 'utf8').strip()
+        # Get the form values
+        get_form_value = context.get_form_value
+        term = get_form_value('search_term', type=Unicode)
+        field = get_form_value('search_field')
+        search_subfolders = get_form_value('search_subfolders', type=Boolean,
+                                           default=False)
+
+        # Check the form values
+        if context.has_form_value('search_term'):
+            term = term.strip()
+            if not term:
+                return context.come_back(u'Please type a search term.')
+
+        # Build the query
+        abspath = self.get_abspath()
+        if term:
+            if search_subfolders is True:
+                query = queries.Equal('paths', abspath)
+            else:
+                query = queries.Equal('parent_path', abspath)
+            query = queries.And(query, queries.Phrase(field, term))
         else:
-            search_value = u''
+            query = queries.Equal('parent_path', abspath)
 
-        search_subfolders = context.get_form_value('search_subfolders')
-        if search_subfolders and not search_value:
-            return context.come_back(
-                u'Please put a value for your search criteria if you'
-                u' include subfolders.')
-
-        selected_criteria = context.get_form_value('search_criteria')
-
-        query = {}
-        if search_value:
-            query[selected_criteria] = search_value
-        if search_subfolders is not None:
-            query['search_subfolders'] = search_subfolders
-
+        # Build the namespace
         namespace = self.browse_namespace(16, query=query)
-
-        namespace['search_value'] = search_value
+        namespace['search_term'] = term
         namespace['search_subfolders'] = search_subfolders
-        namespace['self_path'] = self.get_abspath()
-
-        search_criteria = [
-            {'id': x['id'],
-             'title': self.gettext(x['title']),
-             'selected': x['id'] == selected_criteria or None}
+        namespace['search_fields'] = [
+            {'id': x['id'], 'title': self.gettext(x['title']),
+             'selected': x['id'] == field or None}
             for x in self.get_search_criteria() ]
-        namespace['search_criteria'] = search_criteria
 
         handler = self.get_handler('/ui/Folder_browse_list.xml')
         return stl(handler, namespace)

@@ -17,18 +17,16 @@
 
 # Import from the Standard Library
 import os
-import subprocess
 import sys
 
 # Import from itools
-from itools import vfs
+from itools import uri
+from itools.vfs.database import DatabaseFS
 from itools.handlers.config import Config
-from itools.handlers.Folder import Folder
 from itools.handlers.transactions import get_transaction
 from itools import web
 from itools.cms.handlers import Metadata
 from itools.cms import registry
-from itools.cms.root import Root
 
 
 def ask_confirmation(message):
@@ -46,18 +44,21 @@ def get_config(target):
 
 def get_root(target):
     # Get the root resource
-    metadata = Metadata('%s/database/.metadata' % target)
+    metadata = Metadata(target.resolve2('database/.metadata'))
     format = metadata.get_property('format')
     # Build and return the root handler
     cls = registry.get_object_class(format)
-    return cls('%s/database' % target)
+    return cls(target.resolve2('database'))
 
 
 
 class Server(web.server.Server):
 
     def __init__(self, target, address=None, port=None):
-        self.target = target.rstrip('/')
+        # Set the target under the control of the Database FS
+        target = uri.get_absolute_reference2(target)
+        target.scheme = 'database'
+        self.target = target
 
         # Load the config
         config = get_config(target)
@@ -87,19 +88,27 @@ class Server(web.server.Server):
             if port is not None:
                 port = int(port)
 
+        path = target.path
+
         # Initialize
         web.server.Server.__init__(self, root, address=address, port=port,
-                                   access_log='%s/access_log' % target,
-                                   error_log='%s/error_log' % target,
-                                   pid_file='%s/pid' % target)
+                                   access_log='%s/access_log' % path,
+                                   error_log='%s/error_log' % path,
+                                   pid_file='%s/pid' % path)
 
         # The SMTP host
         self.smtp_host = config.get_value('smtp-host')
 
+        # The state file
+        self.state_filename = '%s/state' % path
+
+        # The database root
+        self.database = target.resolve2('database')
+
 
     def get_pid(self):
         try:
-            pid = open('%s/pid' % self.target).read()
+            pid = open('%s/pid' % self.target.path).read()
         except IOError:
             return None
 
@@ -120,54 +129,20 @@ class Server(web.server.Server):
 
 
     def start_commit(self):
-        open('%s/state' % self.target, 'w').write('START')
+        open(self.state_filename, 'w').write('START')
 
 
     def end_commit_on_success(self):
-        target = self.target
-        transaction = get_transaction()
-        abspaths = [ str(x.uri.path) for x in transaction
-                     if x.uri.scheme == 'file' ]
-        abspaths.sort()
-        open('%s/state' % target, 'w').write('END')
-        try:
-            a, b = '%s/database' % target, '%s/database.bak' % target
-            catalog_path = '%s/.catalog' % a
-            for src in abspaths:
-                dst = src.replace(a, b, 1)
-                if src.endswith(catalog_path):
-                    # XXX Hack for the catalog
-                    subprocess.call(['rsync', '-a', '--delete', src + '/', dst])
-                elif os.path.isdir(src):
-                    src_files = set(os.listdir(src))
-                    dst_files = set(os.listdir(dst))
-                    # Remove
-                    for filename in dst_files - src_files:
-                        vfs.remove('%s/%s' % (dst, filename))
-                    # Add
-                    for filename in src_files - dst_files:
-                        srcfile = '%s/%s' % (src, filename)
-                        dstfile = '%s/%s' % (dst, filename)
-                        vfs.copy(srcfile, dstfile)
-                else:
-                    open(dst, 'w').write(open(src).read())
-        except:
-            # Something wrong? Fall to more safe (and slow) rsync, and log
-            # the error.
-            self.log_error()
-            subprocess.call(['rsync', '-a', '--delete',
-                             '%s/database/' % target,
-                             '%s/database.bak' % target])
-
+        state_filename = self.state_filename
+        open(state_filename, 'w').write('END')
+        DatabaseFS.commit(self.database)
         # Finish with the backup
-        open('%s/state' % target, 'w').write('OK')
+        open(state_filename, 'w').write('OK')
         # Clean the transaction
-        transaction.clear()
+        get_transaction().clear()
 
 
     def end_commit_on_error(self):
-        target = self.target
-        subprocess.call(['rsync', '-a', '--delete',
-                         '%s/database.bak/' % target,
-                         '%s/database' % target])
-        open('%s/state' % target, 'w').write('OK')
+        DatabaseFS.rollback(self.database)
+        # Finish with the rollback
+        open(self.state_filename, 'w').write('OK')

@@ -18,14 +18,19 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
 
 # Import from itools
 import itools
+from itools import uri
 from itools.cms.server import get_config, get_root, ask_confirmation
+from itools.vfs.database import DatabaseFS
 
 
 def update(parser, options, target):
+    # Set the target under the control of the Database FS
+    target = uri.get_absolute_reference2(target)
+    target.scheme = 'database'
+
     # Load the config
     config = get_config(target)
 
@@ -51,16 +56,15 @@ def update(parser, options, target):
                   % (instance_version, class_version)
         if ask_confirmation(message) is True:
             print 'Updating...'
+            database = target.resolve2('database')
             try:
                 root.update()
             except:
                 # Restore from backup
-                cmd = 'rsync -a --delete %s/database.bak/ %s/database'
-                os.system(cmd % (target, target))
+                DatabaseFS.rollback(database)
                 raise
             # Update backup
-            cmd = 'rsync -a --delete %s/database/ %s/database.bak'
-            os.system(cmd % (target, target))
+            DatabaseFS.commit(database)
 
 
 

@@ -169,6 +169,13 @@ class Segment(object):
                   'segment or string expected, "%s" found' % type(segment)
 
 
+    def __eq__(self, other):
+        if isinstance(other, str):
+            other = Segment(other)
+
+        return str(self) == str(other)
+
+
     def __str__(self):
         if self.param is not None:
             return '%s;%s' % (self.name, self.param)

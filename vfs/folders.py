@@ -17,7 +17,6 @@
 
 # Import from the Standard Library
 from __future__ import with_statement
-from subprocess import call
 
 # Import from itools
 from itools.uri import uri
@@ -127,7 +126,7 @@ class Folder(object):
         elif fs.is_folder(reference):
             return Folder(reference)            
 
-        raise OSError
+        raise OSError, str(reference)
 
 
     def copy(self, source, target):

@@ -27,7 +27,6 @@ import sys
 import itools
 from itools.handlers.config import Config
 from itools.handlers import transactions
-from itools.cms.Handler import Handler
 from itools.cms.root import Root
 from itools.cms.versioning import VersioningAware
 from itools.cms import skins
@@ -96,8 +95,8 @@ def init(parser, options, target):
     transaction = transactions.get_transaction()
     transaction.commit()
 
-    # Backup
-    cmd = 'cp -r %s/database %s/database.bak'
+    # Backup the catalog
+    cmd = 'cp -r %s/database/.catalog %s/database/.catalog.bak'
     os.system(cmd % (target, target))
 
     # Transaction state

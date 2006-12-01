@@ -18,32 +18,84 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
+from subprocess import call
 
 # Import from itools
 import itools
+from itools import vfs
 from itools.cms.server import ask_confirmation
+
+
+def commit(database):
+    stack = [database]
+    while stack:
+        folder = stack.pop()
+        for name in folder.get_names():
+            if name[0] == '~':
+                marker = name[-3:]
+                original = name[1:-4]
+                if marker == 'tmp':
+                    if folder.exists(original):
+                        folder.remove(original)
+                    folder.move(name, original)
+                elif marker == 'add' or marker == 'del':
+                    folder.remove(name)
+            elif name == '.catalog':
+                src = str(folder.uri.path.resolve2('.catalog/'))
+                dst = str(folder.uri.path.resolve2('.catalog.bak'))
+                call(['rsync', '-a', '--delete', src, dst])
+            elif name == '.catalog.bak':
+                continue
+            elif folder.is_folder(name):
+                stack.append(folder.open(name))
+
+
+
+def rollback(database):
+    stack = [database]
+    while stack:
+        folder = stack.pop()
+        for name in folder.get_names():
+            if name[0] == '~':
+                marker = name[-3:]
+                original = name[1:-4]
+                if marker == 'tmp':
+                    folder.remove(name)
+                elif marker == 'add':
+                    folder.remove(original)
+                    folder.remove(name)
+                elif marker == 'del':
+                    if folder.exists(original):
+                        folder.remove(original)
+                    folder.move(name, original)
+            elif name == '.catalog':
+                src = str(folder.uri.path.resolve2('.catalog.bak/'))
+                dst = str(folder.uri.path.resolve2('.catalog'))
+                call(['rsync', '-a', '--delete', src, dst])
+            elif name == '.catalog.bak':
+                continue
+            elif folder.is_folder(name):
+                stack.append(folder.open(name))
 
 
 
 def restore(parser, options, target):
     state = open('%s/state' % target).read()
+    database = vfs.open('%s/database' % target)
     if state == 'OK':
         print 'Everything seems fine.'
     elif state == 'START':
         message = 'Restore database from backup (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Restoring...',
-            cmd = 'rsync -a --delete %s/database.bak/ %s/database'
-            os.system(cmd % (target, target))
+            rollback(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     elif state == 'END':
         message = 'Backup disrupted, update backup from database (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Backup...',
-            cmd = 'rsync -a --delete %s/database/ %s/database.bak'
-            os.system(cmd % (target, target))
+            commit(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     else:

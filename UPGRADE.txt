@@ -1,4 +1,86 @@
 
+**************************************************************************
+itools 0.15.0
+**************************************************************************
+
+1. itools.catalog
+=================
+
+ - Now the the method "search" is not anymore a generator, now it returns
+   an object "SearchResults" which offers two methods: "get_n_documents"
+   and "get_documents"; the former returns the number of documents found
+   (replaces "catalog.how_many"), the last one is a generator that returns
+   the documents.
+
+ - Batching and sorting has been added to the API. The method "get_documents"
+   accepts the optional parameters "sort_by" and "reverse" for sorting,
+   "start" and "size" for batching.
+
+2. itools.xml
+=============
+
+ - The XML parser has been rewritten in C.
+
+3. itools.stl
+=============
+
+ - Implement a new syntax for variable substitution, it replaces the
+   attributes "stl:content" and "stl:attributes". For example, before
+   we wrote:
+
+     <a stl:attributes="href object_uri" stl:content="object_title" />
+
+   And now it will be:
+
+     <a href="${object_uri}">${object_title}</a>
+
+ - STL expressions do not accept parameters anymore. This feature was
+   not documented, and experience has shown it useless.
+
+ - A new feature has been added to STL, now the method "stl" accepts
+   an optional argument "prefix". If given some relative URIs (images
+   and links to CSS stylesheets) will be rewritten, adding the given
+   prefix.
+
+4. itools.web
+=============
+
+ - Now the method "context.get_form_value" accepts the optional parameter
+   "type", which if given will be used to deserialize the form value.
+
+ - The method "context.get_form_values" accepts the optional parameter
+   "default", whose value will be returned if the requested variable is
+   not in the form.
+
+5. itools.cms
+=============
+
+ - Change the format of the configuration file from INI [1] to a more
+   simple and UNIX-like format. The file is renamed from "config.ini"
+   to "config.conf".
+
+ - Now users are identified by their email address. A user that registers
+   to the site must confirm the registration with a confirmation email.
+   Now users are internally identified with a number, the only visible
+   change in the interface is that numbers will appear in the path instead
+   of the user's login.
+
+ - Use the library tidy (through utidylib [2]) instead of the command line
+   programm "tidy".
+
+ - Remove the widget "Table".
+
+ - New database code.
+
+[1] http://en.wikipedia.org/wiki/INI_file
+[2] http://utidylib.berlios.de/
+
+
+6. Packaging
+============
+
+ - Normalize some filenames: "csv/itools_csv.py" becomes "csv/csv.py",
+   "cms/csv_.py" becomes "cms/csv.py".
 
 **************************************************************************
 itools 0.14.0

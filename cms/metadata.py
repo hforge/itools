@@ -112,6 +112,8 @@ class Schema(schemas.base.Schema):
         'website_is_open': Boolean(default=False),
         'website_languages': Tokens(default=('en',)),
         'user_must_confirm': String,
+        # Backwards compatibility
+        'username': String,
         # Future
         'order': Tokens(default=()),
         }

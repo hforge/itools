@@ -23,11 +23,20 @@ import sys
 
 # Import from itools
 import itools
+from itools import vfs
 from itools.cms.server import Server
 
 
 
 def start(parser, options, target):
+    # Check wether the instance uses a backup database (XXX remove for 0.16).
+    if vfs.exists('%s/database.bak' % target):
+        print ('The database must be updated, type:')
+        print
+        print '    $ icms-update <instance>'
+        print
+        return
+
     # Check for database consistency
     state = open('%s/state' % target).read()
     if state != 'OK':

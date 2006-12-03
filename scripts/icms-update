@@ -22,11 +22,25 @@ from optparse import OptionParser
 # Import from itools
 import itools
 from itools import uri
+from itools import vfs
 from itools.cms.server import get_config, get_root, ask_confirmation
 from itools.vfs.database import DatabaseFS
 
 
 def update(parser, options, target):
+    # Update the database, add "database/.catalog.bak" and remove
+    # "database.bak" (XXX remove for 0.16)
+    folder = vfs.open(target)
+    if folder.exists('database.bak'):
+        message = ('Update database (will remove "database.bak" and add '
+                   '"database/.catalog.bak")? (y/N)')
+        if ask_confirmation(message) is False:
+            return
+        print '  * Removing "database.bak"...'
+        folder.remove('database.bak')
+        print '  * Adding "database/.catalog.bak"...'
+        folder.copy('database/.catalog', 'database/.catalog.bak')
+
     # Set the target under the control of the Database FS
     target = uri.get_absolute_reference2(target)
     target.scheme = 'database'

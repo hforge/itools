@@ -44,7 +44,7 @@ class Root(WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20060602'
+    class_version = '20061203'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
     class_views = [['browse_thumbnails', 'browse_list'],
@@ -446,39 +446,28 @@ class Root(WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20060602(self):
-        root = vfs.open(self.uri)
-        # Remove ".archive"
-        if root.exists('.archive'):
-            root.remove('.archive')
-
-        # Rename ".xxx.metadata" to "xxx.metadata"
-        stack = [root]
-        while stack:
-            folder = stack.pop()
-            for name in folder.get_names():
-                # Update metadata
-                if name.endswith('.metadata') and name != '.metadata':
-                    folder.move(name, name[1:])
-                # Skip hidden handlers
-                elif name.startswith('.'):
-                    continue
-                # Recursive
-                elif folder.is_folder(name):
-                    stack.append(folder.open(name))
-
-        # Add '.admins.users'
-        root.move('admins/.users', '.admins.users')
-        # Remove handlers
-        root.remove('.users')
-        root.remove('admins')
-        root.remove('admins.metadata')
-        root.remove('reviewers')
-        root.remove('reviewers.metadata')
-        # Remove "en.po"
-        if root.exists('en.po'):
-            root.remove('en.po')
-            root.remove('en.po.metadata')
+    def update_20061203(self):
+        users = self.get_handler('users')
+        i = 0
+        for name in users.get_handler_names():
+            if name.endswith('.metadata'):
+                continue
+            user = users.get_handler(name) 
+            # Update roles
+            user_id = str(i)
+            for role_aware_object_path in user.get_groups():
+                role_aware_object = self.get_handler(role_aware_object_path)
+                for role_name in role_aware_object.get_role_names():
+                    role = role_aware_object.get_role(role_name)
+                    if name in role.get_usernames():
+                        role.add(user_id)
+            # Rename user
+            users.set_handler(user_id, user, move=True)
+            users.del_handler(name)
+            user = users.get_handler(user_id)
+            # Keep the username
+            user.set_property('ikaaro:username', name)
+            i += 1
 
 
 register_object_class(Root)

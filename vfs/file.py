@@ -23,6 +23,7 @@ from os.path import exists, getatime, getctime, getmtime, getsize, isfile, \
 from subprocess import call
 
 # Import from itools
+from itools import uri
 from api import READ, WRITE
 from base import BaseFS
 from registry import register_file_system
@@ -116,7 +117,11 @@ class FileFS(BaseFS):
 
     @staticmethod
     def remove(reference):
-        path = str(reference.path)
+        if isinstance(reference, uri.Reference):
+            path = str(reference.path)
+        elif isinstance(reference, uri.Path):
+            path = str(path)
+
         if not exists(path):
             raise OSError, "File does not exist '%s'" % reference
 

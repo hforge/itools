@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 from optparse import OptionParser
@@ -25,6 +25,7 @@ from itools import uri
 from itools import vfs
 from itools.cms.server import get_config, get_root, ask_confirmation
 from itools.vfs.database import DatabaseFS
+from itools.cms.server import Server
 
 
 def update(parser, options, target):
@@ -41,22 +42,10 @@ def update(parser, options, target):
         print '  * Adding "database/.catalog.bak"...'
         folder.copy('database/.catalog', 'database/.catalog.bak')
 
-    # Set the target under the control of the Database FS
-    target = uri.get_absolute_reference2(target)
-    target.scheme = 'database'
-
-    # Load the config
-    config = get_config(target)
-
-    # Load Python packages and modules
-    modules = config.get_value('modules')
-    if modules is not None:
-        for name in modules.split():
-            name = name.strip()
-            exec('import %s' % name)
-
-    # Load the root resource
-    root = get_root(target)
+    # Build the server object
+    server = Server(target)
+    target = server.target
+    root = server.root
 
     instance_version = root.get_property('version')
     class_version = root.class_version
@@ -70,15 +59,14 @@ def update(parser, options, target):
                   % (instance_version, class_version)
         if ask_confirmation(message) is True:
             print 'Updating...'
-            database = target.resolve2('database')
             try:
                 root.update()
             except:
                 # Restore from backup
-                DatabaseFS.rollback(database)
+                DatabaseFS.rollback(server.database)
                 raise
             # Update backup
-            DatabaseFS.commit(database)
+            DatabaseFS.commit(server.database)
 
 
 

@@ -179,7 +179,8 @@ class OfficeDocument(File):
             stdout, stderr = convert(self, self.source_converter, outfile)
         except (OSError, IOError):
             context = get_context()
-            context.server.log_error(context)
+            if context is not None:
+                context.server.log_error(context)
             return u''
 
         if stderr != "":

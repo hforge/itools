@@ -29,7 +29,7 @@ def fold_line(line):
     """
     i = 1
     lines = line.split(' ')
-    res = ' ' + lines[0] 
+    res = lines[0] 
     size = len(res)
     while i < len(lines):
         # Still less than 75c
@@ -239,7 +239,7 @@ class PropertyType(object):
             if c.isalnum() or c == '-':
                 lexeme += c
             else:
-                raise SyntaxError, 'unexpected character (%s)' % c
+                raise SyntaxError, "unexpected character '%s' (%s)" % (c, ord(c))
             c = property[0]
 
         return lexeme, property
@@ -444,6 +444,7 @@ class PropertyValueType(object):
         # property_value value
         vtype = data_properties.get(name, String)
         value = vtype.encode(property_value.value)
+        value = value.replace("\\", "\\\\").replace("\r", "\\r").replace("\n", "\\n")
         lines = lines + ':' + value
         # property_value folded if necessary
         if len(lines) > 75:
@@ -456,6 +457,12 @@ class PropertyValueType(object):
         value, parameters = None, {}
         # Parsing
         value, parameters = PropertyValueType.parse(name, string, encoding)
+        if isinstance(value, unicode):
+            tokens = []
+            for token in value.split(u'\\\\'):
+                token = token.replace(u"\\r", u"\r").replace(u"\\n", u"\n")
+                tokens.append(token)
+            value = u'\\'.join(tokens)
         from itools.ical.icalendar import PropertyValue
         return PropertyValue(value, parameters)
 

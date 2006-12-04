@@ -345,57 +345,34 @@ class Root(WebSite):
 
     update_catalog__access__ = 'is_admin'
     def update_catalog(self, context):
-        # Initialize a new empty catalog
         t0 = time()
-        transaction = get_transaction()
-        # Init transaction (because we use sub-transactions)
-        server = context.server
-        server.start_commit()
+        # Start fresh
+        self.del_handler('.catalog')
+        self.set_handler('.catalog', Catalog(fields=self._catalog_fields))
+        catalog = self.get_handler('.catalog')
 
-        try:
-            # Start fresh
-            self.del_handler('.catalog')
-            self.set_handler('.catalog', Catalog(fields=self._catalog_fields))
-            transaction.commit()
+        # Go
+        n = 0
+        for handler, ctx in self.traverse2(caching=False):
+            # Skip virtual handlers
+            if handler.real_handler is not None:
+                ctx.skip = True
+                continue
+            # Skip non catalog aware handlers
+            if not isinstance(handler, CatalogAware):
+                ctx.skip = True
+                continue
+            # Index the document
+            print n, handler.get_abspath()
+            catalog.index_document(handler.get_catalog_indexes())
+            n += 1
 
-            # Initialize a new empty catalog
-            catalog = self.get_handler('.catalog')
-            t1 = time()
-            print 'Updating catalog, init:', t1 - t0
-
-            n = 0
-            for handler, ctx in self.traverse2(caching=False):
-                # Skip virtual handlers
-                if handler.real_handler is not None:
-                    ctx.skip = True
-                    continue
-                # Skip non catalog aware handlers
-                if not isinstance(handler, CatalogAware):
-                    ctx.skip = True
-                    continue
-                # Index the document
-                print n, handler.get_abspath()
-                catalog.index_document(handler.get_catalog_indexes())
-                n += 1
-                # Avoid too much memory usage but saving changes
-                if n % 1000 == 0:
-                    transaction.commit()
-            transaction.commit()
-            t2 = time()
-            print 'Updating catalog, indexing:', t2 - t1
-        except:
-            server.end_commit_on_error()
-            raise
-        else:
-            server.end_commit_on_success()
-            t3 = time()
-            print 'Updating catalog, sync:', t3 - t2
-
-        total = t3 - t0
-        print 'Updating catalog, total:', total
+        # It is done
+        t = time() - t0
+        print 'Updating catalog, total:', t
 
         message = u'$n handlers have been indexed in $time seconds.'
-        return context.come_back(message, n=n, time=('%.02f' % total))
+        return context.come_back(message, n=n, time=('%.02f' % t))
 
 
     #######################################################################

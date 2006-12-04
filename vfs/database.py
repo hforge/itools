@@ -140,7 +140,7 @@ class DatabaseFS(FileFS):
             path = reference.path
             filename = path[-1].name
             marker = filename[-3:]
-            original = str(path.resolve(filename[1:-4]))
+            original = path.resolve(filename[1:-4])
             backup = str(path)
             if marker == 'tmp':
                 remove(backup)
@@ -148,6 +148,7 @@ class DatabaseFS(FileFS):
                 FileFS.remove(original)
                 remove(backup)
             elif marker == 'del':
+                original = str(original)
                 rename(backup, original)
         transaction.clear()
         src = str(database.path.resolve2('.catalog.bak/'))

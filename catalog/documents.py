@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the future
 from __future__ import with_statement
@@ -223,6 +223,8 @@ class Documents(Folder):
 
 
     def unindex_document(self, doc_n):
+        if doc_n in self.added_documents:
+            self.added_documents.remove(doc_n)
         self.removed_documents.append(doc_n)
 
 

@@ -340,11 +340,16 @@ class WebSite(RoleAware, Folder):
         # Check the user exists
         root = context.root
         catalog = root.get_handler('.catalog')
-        results = catalog.search(email=email)
+
+        # Search first by the username, then by the email (for backwards
+        # compatibility with 0.14)
+        results = catalog.search(username=email)
         if results.get_n_documents() == 0:
-            # XXX We lost the referrer if any
-            return context.come_back(
-                u'The user "$username" does not exist.', username=email)
+            results = catalog.search(email=email)
+            # No user found
+            if results.get_n_documents() == 0:
+                return context.come_back(
+                    u'The user "$username" does not exist.', username=email)
 
         # Get the user
         brain = results.get_documents()[0]
@@ -358,7 +363,6 @@ class WebSite(RoleAware, Folder):
         # Check the password is right
         password = crypt_password(password)
         if not user.authenticate(password):
-            # XXX We lost the referrer if any
             return context.come_back(u'The password is wrong.')
 
         # Set cookie

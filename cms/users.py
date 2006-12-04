@@ -57,6 +57,7 @@ class User(AccessControl, Folder):
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         indexes['email'] = self.get_property('ikaaro:email')
+        indexes['username'] = self.get_property('ikaaro:username')
         return indexes
 
 

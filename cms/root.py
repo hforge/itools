@@ -343,8 +343,7 @@ class Root(WebSite):
         return stl(handler)
 
 
-    update_catalog__access__ = 'is_admin'
-    def update_catalog(self, context):
+    def _update_catalog(self):
         t0 = time()
         # Start fresh
         self.del_handler('.catalog')
@@ -370,6 +369,11 @@ class Root(WebSite):
         # It is done
         t = time() - t0
         print 'Updating catalog, total:', t
+
+
+    update_catalog__access__ = 'is_admin'
+    def update_catalog(self, context):
+        self._update_catalog()
 
         message = u'$n handlers have been indexed in $time seconds.'
         return context.come_back(message, n=n, time=('%.02f' % t))
@@ -445,6 +449,8 @@ class Root(WebSite):
             # Keep the username
             user.set_property('ikaaro:username', name)
             i += 1
+        # Update catalog
+        self._update_catalog()
 
 
 register_object_class(Root)

@@ -561,14 +561,19 @@ class Index(Folder):
 
     def search_word(self, word):
         # Search in the data structure
-        base = vfs.open(self.uri)
-        tree_file = base.open('tree')
-        docs_file = base.open('docs')
+        if self.uri is None:
+            tree_file = None
+            docs_file = None
+        else:
+            base = vfs.open(self.uri)
+            tree_file = base.open('tree')
+            docs_file = base.open('docs')
         try:
             documents = self._index.search_word(tree_file, docs_file, word)
         finally:
-            tree_file.close()
-            docs_file.close()
+            if self.uri is not None:
+                tree_file.close()
+                docs_file.close()
 
         # Remove documents
         if word in self.removed_terms:
@@ -588,15 +593,20 @@ class Index(Folder):
 
 
     def search_range(self, left, right):
+        if self.uri is None:
+            tree_file = None
+            docs_file = None
+        else:
+            base = vfs.open(self.uri)
+            tree_file = base.open('tree')
+            docs_file = base.open('docs')
         # Search in the data structure
-        base = vfs.open(self.uri)
-        tree_file = base.open('tree')
-        docs_file = base.open('docs')
         try:
             documents = self._index.search_range(tree_file, docs_file, left, right)
         finally:
-            tree_file.close()
-            docs_file.close()
+            if self.uri is not None:
+                tree_file.close()
+                docs_file.close()
 
         # XXX We still need to consider removed and added terms, otherwise
         # we may get inaccurate results.

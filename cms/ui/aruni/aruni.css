@@ -432,3 +432,8 @@ dl.new_resource_thumb { width: 20em; }
 * html #browse_calendar #header_timetables span {
   margin-left: 0;
 }
+
+/* Left navigation menu */
+.nav_active {
+  font-weight: bold;
+}

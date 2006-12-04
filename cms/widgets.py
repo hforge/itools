@@ -20,7 +20,7 @@ from operator import attrgetter
 from string import Template
 
 # Import from itools
-from itools import uri
+from itools.uri import Path
 from itools.handlers.Folder import Folder
 from itools.web import get_context
 
@@ -128,7 +128,7 @@ class Breadcrumb(object):
             # Calculate path
             path_to_icon = handler.get_path_to_icon(16)
             if path:
-                path_to_handler = uri.Path(str(path) + '/')
+                path_to_handler = Path(str(path) + '/')
                 path_to_icon = path_to_handler.resolve(path_to_icon)
             objects.append({'name': handler.name,
                             'is_folder': isinstance(handler, Folder),
@@ -145,102 +145,76 @@ class Breadcrumb(object):
 
 
 
-class Node(object):
+pattern1 = Template(
+    '<dt><a href="${href}" class="${class}"><img src="${src}" alt=""'
+    ' width="16" height="16" /> ${title}</a></dt>\n'
+    '<dd>\n'
+    '  <dl>\n'
+    '  ${children}\n'
+    '  </dl>\n'
+    '</dd>\n')
 
-    def __init__(self, handler, depth=None, count=None):
-        from Folder import Folder
+pattern2 = Template(
+    '<dt><span class="${class}"><img src="${src}" alt="" width="16"'
+    ' height="16" /> ${title}</span></dt>\n'
+    '<dd>\n'
+    '  <dl>\n'
+    '  ${children}\n'
+    '  </dl>\n'
+    '</dd>\n')
 
-        if depth is None:
-            raise ValueError, 'calling Node without a maximum depth'
-        # 'count' is an internal value, don't touch!
-        if count is None:
-            count = 0
 
-        context = get_context()
-        here = context.path
-        handler_abspath = uri.Path(handler.abspath)
+def _tree(context, handler, depth):
+    from Folder import Folder
 
-        self.title = handler.get_title_or_name()
-        self.icon = handler.get_path_to_icon(size=16,
-                                             from_handler=context.handler)
-        self.path = '%s/;%s' % (here.get_pathto(handler_abspath),
-                                handler.get_firstview())
-        self.active = (here == handler_abspath)
+    # Define local variables
+    here = context.handler
+    here_path = str(context.path)
+    handler_path = handler.abspath
+    in_path = here_path.startswith(handler_path)
 
-        self.is_last = False
-        self.in_path = False
-        self.children = []
+    # Choose the pattern to use
+    firstview = handler.get_firstview()
+    if firstview is None:
+        pattern = pattern2
+    else:
+        pattern = pattern1
 
-        if count == depth:
-            self.is_last = True
-            self.in_path = True
-            return
-
-        # continue for possible children
-        #
-        if count == 0:
-            # always recurse root
-            self.in_path = True
+    # Build the namespace
+    namespace = {}
+    namespace['src'] = handler.get_path_to_icon(size=16, from_handler=here)
+    namespace['title'] = handler.get_title_or_name()
+    if firstview is not None:
+        if handler_path == '/':
+            namespace['href'] = '/;%s' % firstview
         else:
-            prefix = here.get_prefix(handler_abspath)
-            if prefix != '.':
-                # on the way
-                self.in_path = True
+            namespace['href'] = '%s/;%s' % (handler_path, firstview)
 
-        # recurse children in our way
-        if self.in_path:
+    # The CSS style
+    namespace['class'] = ''
+    if here_path == handler_path:
+        namespace['class'] = 'nav_active'
+
+    # The children
+    namespace['children'] = ''
+    if in_path:
+        if depth > 0:
+            depth = depth - 1
             user = context.user
-            self.children = []
-            for h in handler.search_handlers(handler_class=Folder):
-                ac = h.get_access_control()
-                if ac.is_allowed_to_view(user, h):
-                    node = self.__class__(h, depth=depth, count=count + 1)
-                    self.children.append(node)
-
-        # sort lexicographically by title
-        self.children.sort(key=attrgetter('title'))
-
-
-    def children_as_html(self):
-        output = []
-
-        output.append('<dd>')
-        output.append('<dl>')
-        for child in self.children:
-            output.extend(child.node_as_html())
-        output.append('</dl>')
-        output.append('</dd>')
-
-        return output
+            children = []
+            for child in handler.search_handlers(handler_class=Folder):
+                ac = child.get_access_control()
+                if ac.is_allowed_to_view(user, child):
+                    children.append(_tree(context, child, depth))
+            namespace['children'] = '\n'.join(children)
+ 
+    return pattern.substitute(namespace)
 
 
-    def node_as_html(self):
-        output = []
 
-        output.append('<dt>')
-        output.append('<img src="%s" width="16" height="16" alt="" />' % self.icon)
-        css_classes = []
-        if self.active:
-            css_classes.append('nav_active')
-        if self.in_path:
-            css_classes.append('nav_in_path')
-        if self.is_last:
-            css_classes.append('nav_is_last')
-        css_classes = ' '.join(css_classes)
-        output.append('<a href="%s" class="%s">%s</a>'  % (self.path,
-            css_classes, self.title))
-        output.append('</dt>')
-        if self.children:
-            output.extend(self.children_as_html())
+def tree(context, root=None, depth=6):
+    if root is None:
+        root = context.root
 
-        return output
+    return '<dl>\n' + _tree(context, root, depth) + '</dl>\n'
 
-
-    def tree_as_html(self):
-        output = []
-
-        output.append('<dl>')
-        output.extend(self.node_as_html())
-        output.append('</dl>')
-
-        return '\n'.join(output)

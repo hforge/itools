@@ -32,7 +32,7 @@ from itools.uri.generic import Query
 # Import from itools.cms
 from Folder import Folder
 from utils import reduce_string
-from widgets import Node
+from widgets import tree
 from registry import register_object_class
 
 
@@ -208,8 +208,7 @@ class Skin(Folder):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        root = context.root
-        return Node(root, depth=6).tree_as_html()
+        return tree(context, depth=6)
 
 
     def get_message(self, context):

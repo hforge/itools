@@ -4,28 +4,30 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Search Results</h2>
+  <h2>Search Results</h2>
 
-<p class="result_control" stl:if="table/objects">
-  <stl:inline if="batch/control">${batch/control}</stl:inline>
-</p>
+  <p class="result_control" stl:if="batch/control">
+    ${batch/control}
+  </p>
 
-<ol class="results" stl:if="table/objects">
-  <li stl:repeat="object table/objects">
-    <img src="${object/icon}" width="16" height="16" />
-    <a class="result_title" href="${object/url}">${object/title}</a>
-    <br />
-    <span class="result_url">${object/abspath}</span>&nbsp;-
-    <span class="result_type">${object/type}</span>&nbsp;-
-    <span class="result_size">${object/size}</span>
-  </li>
-</ol>
+  <ol class="results" stl:if="table/objects">
+    <li stl:repeat="object table/objects">
+      <img src="${object/icon}" width="16" height="16" />
+      <a class="result_title" href="${object/url}">${object/title}</a>
+      <br />
+      <span class="result_url">${object/abspath}</span>&nbsp;-
+      <span class="result_type">${object/type}</span>&nbsp;-
+      <span class="result_size">${object/size}</span>
+    </li>
+  </ol>
 
-<p class="result_browse" stl:if="batch/total">
-  <a stl:if="batch/previous" href="${batch/previous}">&lt;&lt;</a>
-  <a stl:if="batch/next" href="${batch/next}">&gt;&gt;</a>
-</p>
+  <p class="result_browse" stl:if="batch/total">
+    <a stl:if="batch/previous" href="${batch/previous}">&lt;&lt;</a>
+    <a stl:if="batch/next" href="${batch/next}">&gt;&gt;</a>
+  </p>
 
-<p stl:if="not table/objects">${not_found}</p>
+  <p stl:if="not table/objects">
+    We did not find results for "${text}".
+  </p>
 
 </stl:block>

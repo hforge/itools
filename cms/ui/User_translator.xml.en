@@ -3,6 +3,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
   <p>
     The list below describes your skills as a translator:
   </p>
@@ -72,4 +73,5 @@
       </table>
     </form>
   </blockquote>
+
 </stl:block>

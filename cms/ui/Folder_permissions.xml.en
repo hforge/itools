@@ -3,10 +3,11 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
   <form action=";permissions" method="post">
     <div style="width: 300; float: left; padding: 0px 10px 10px 10px;">
       <h2>Members and roles</h2>
-      <table cellpadding="2" cellspacing="0" border="1" width="300">
+      <table cellpadding="4" cellspacing="0" border="1" width="300">
         <thead>
           <tr>
             <th width="10"></th>
@@ -45,4 +46,5 @@
     </div>
     <div class="clear"></div>
   </form>
+
 </stl:block>

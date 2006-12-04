@@ -5,6 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <h2>${title}</h2>
+
   <p stl:if="is_owner">
     Welcome to your home folder. This is your personal space where you can
     manage your own documents and publish them.

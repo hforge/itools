@@ -4,24 +4,19 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Upload a File</h2>
+  <h2>Upload File</h2>
 
-<form name="upload_file" action=";upload_file" method="post"
-  enctype="multipart/form-data">
-  <dl>
-    <dt>Please select a file from your system using the
-      <strong>Browse...</strong> button below.</dt>
-    <dd>
-      <label for="file">File</label>
-      <input type="file" id="file" name="file" size="50" />
-    </dd>
-    <dt>Please click the <strong>Upload</strong> button below to import the
-      file and create a new resource.</dt>
-    <dd>
-      <input type="submit" name="add_and_view" value="Upload and view" class="button_upload"/>
-      <input type="submit" name="add_and_return" value="Upload and return" />
-    </dd>
-  </dl>
-</form>
+  <form name="upload_file" action=";upload_file" method="post"
+    enctype="multipart/form-data">
+    <dl>
+      <dt><label for="file">File</label></dt>
+      <dd>
+        <input type="file" id="file" name="file" size="50" />
+      </dd>
+    </dl>
+    <p>
+      <input type="submit" value="Upload" class="button_upload"/>
+    </p>
+  </form>
 
 </stl:block>

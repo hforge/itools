@@ -8,15 +8,12 @@
 
   <form name="new_folder" action=";new_resource" method="post">
     <dl>
-      <dt>Please give a title to your folder.</dt>
+      <dt><label for="dc:title">Title</label></dt>
       <dd>
-        <label for="dc_title">Title</label>
-        <input type="text" id="dc_title" name="dc:title" size="50" />
+        <input type="text" id="dc:title" name="dc:title" size="50" />
       </dd>
-      <dt>(optional) You can use a specific name to store your folder, and this
-        name will appear in the URL.</dt>
+      <dt>(optional)<label for="name">Name</label></dt>
       <dd>
-        <label for="name">Name</label>
         <input type="text" id="name" name="name" size="50" />
       </dd>
     </dl>
@@ -28,7 +25,7 @@
   </form>
 
   <script type="text/javascript">
-    focus("dc_title")
+    focus("dc:title")
   </script>
 
 </stl:block>

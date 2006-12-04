@@ -4,13 +4,13 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Cataloguing of Content</h2>
+  <h2>Cataloguing of Content</h2>
 
-<form action=";update_catalog" method="post">
-  <p>To reindex the whole site click the button below:</p>
-  <p>
-    <input type="submit" value="Reindex" class="button_ok"/>
-  </p>
-</form>
+  <form action=";update_catalog" method="post">
+    <p>To reindex the whole site click the button below:</p>
+    <p>
+      <input type="submit" value="Reindex" class="button_ok"/>
+    </p>
+  </form>
 
 </stl:block>

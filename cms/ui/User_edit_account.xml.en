@@ -8,11 +8,11 @@
 
   <form action=";edit_account" method="post">
     <dl>
-      <dt>Full name</dt>
+      <dt><label for="dc:title">Full name</label></dt>
       <dd>
-        <input type="text" id="dc_title" name="dc:title" value="${fullname}" />
+        <input type="text" id="dc:title" name="dc:title" value="${fullname}" />
       </dd>
-      <dt>E-mail</dt>
+      <dt><label for="email">E-mail</label></dt>
       <dd>
         <input type="text" id="email" name="email" value="${email}" />
       </dd>
@@ -30,7 +30,7 @@
   </form>
 
   <script type="text/javascript">
-    focus("dc_title");
+    focus("dc:title");
   </script>
 
 </stl:block>

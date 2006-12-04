@@ -4,33 +4,30 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Join the Community</h2>
+  <h2>Join the Community</h2>
 
-<form name="joinform" action=";register" method="post">
-  <dl>
-    <dt>Please enter your email address.</dt>
-    <dd>
-      <label for="username">Email address</label>
-      <input type="text" id="username" name="ikaaro:email" />
-    </dd>
-    <dt>Please enter a password for protecting your account.</dt>
-    <dd>
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" />
-    </dd>
-    <dt>Please repeat your password to prevent any typing mistake.</dt>
-    <dd>
-      <label for="password2">Repeat Password</label>
-      <input type="password" id="password2" name="password2" />
-    </dd>
-  </dl>
-  <p>
-    <input type="submit" value="Register" class="button_ok"/>
-  </p>
-</form>
+  <form name="joinform" action=";register" method="post">
+    <dl>
+      <dt><label for="ikaaro:email">Email address</label></dt>
+      <dd>
+        <input type="text" id="ikaaro:email" name="ikaaro:email" />
+      </dd>
+      <dt><label for="password">Password</label></dt>
+      <dd>
+        <input type="password" id="password" name="password" />
+      </dd>
+      <dt><label for="password2">Repeat Password</label></dt>
+      <dd>
+        <input type="password" id="password2" name="password2" />
+      </dd>
+    </dl>
+    <p>
+      <input type="submit" value="Register" class="button_ok"/>
+    </p>
+  </form>
 
-<script language="javascript">
-  focus("username")
-</script>
+  <script language="javascript">
+    focus("ikaaro:email")
+  </script>
 
 </stl:block>

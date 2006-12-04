@@ -4,13 +4,15 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form action=";edit" method="post">
-  <p>
-    <textarea name="data" cols="69" rows="19" wrap="physical">${data}</textarea>
-  </p>
-  <p>
-    <input type="submit" value="Change" class="button_ok" />
-  </p>
-</form>
+  <h2>Edit Text</h2>
+
+  <form action=";edit" method="post">
+    <p>
+      <textarea name="data" cols="69" rows="19" wrap="physical">${data}</textarea>
+    </p>
+    <p>
+      <input type="submit" value="Change" class="button_ok" />
+    </p>
+  </form>
 
 </stl:block>

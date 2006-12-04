@@ -10,7 +10,7 @@
 
   <body>
     <script type="text/javascript" stl:if="bc/object">
-      window.opener.CreateLink('${bc/object}');
+      window.opener.CreateLink("${bc/object}");
       window.close();
     </script>
 

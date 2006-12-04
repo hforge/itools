@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h3>Internal Server Error</h3>
+  <h3>Internal Server Error</h3>
 
-<p>
-  There has been an error, please try again later. If the error
-  persits contact with the system administrator.
-</p>
-<p>
-  Apologies for the inconvenience.
-</p>
-<pre style="color: white;">${traceback}</pre>
+  <p>
+    There has been an error, please try again later. If the error
+    persits contact with the system administrator.
+  </p>
+  <p>
+    Apologies for the inconvenience.
+  </p>
+  <pre style="color: white;">${traceback}</pre>
 
 </div>

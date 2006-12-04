@@ -3,6 +3,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
   <form action=";edit" method="post" stl:if="msgid">
     <input type="hidden" name="messages_index" value="${messages_index}" />
     <table>
@@ -36,4 +37,5 @@
   <p stl:if="not msgid">
     There aren't messages.
   </p>
+
 </stl:block>

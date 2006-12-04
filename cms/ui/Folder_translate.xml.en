@@ -4,35 +4,35 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Translate</h2>
+  <h2>Translate</h2>
 
-<form action=";translate" method="post">
-  <table border="0" cellpadding="2" cellspacing="2">
-    <thead>
-      <tr>
-        <th>Document</th>
-        <th>Target language</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="document documents">
-        <td align="right">
-          <input type="hidden" name="names" value="${document/name}" />
-          ${document/title_or_name}
-        </td>
-        <td>
-          <select name="languages">
-            <option value="">Choose a language</option>
-            <option stl:repeat="language document/languages"
-              value="${language/code}">${language/name}</option>
-          </select>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <p>
-    <input type="submit" value="Translate" class="button_translate"/>
-  </p>
-</form>
+  <form action=";translate" method="post">
+    <table border="0" cellpadding="4" cellspacing="4">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Target language</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr stl:repeat="document documents">
+          <td align="right">
+            <input type="hidden" name="names" value="${document/name}" />
+            ${document/title_or_name}
+          </td>
+          <td>
+            <select name="languages">
+              <option value="">Choose a language</option>
+              <option stl:repeat="language document/languages"
+                value="${language/code}">${language/name}</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      <input type="submit" value="Translate" class="button_translate"/>
+    </p>
+  </form>
 
 </stl:block>

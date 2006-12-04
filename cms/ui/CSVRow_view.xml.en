@@ -3,10 +3,12 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
   <dl>
     <stl:block repeat="column row">
       <dt></dt>
       <dd>${column}</dd>
     </stl:block>
   </dl>
+
 </stl:block>

@@ -4,28 +4,25 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<form id="loginform" name="loginform" method="post" action="${action}">
-  <dl>
-    <dt>Please enter your email address.</dt>
-    <dd>
-      <label for="username">Email address</label>
-      <input type="text" id="username" name="username" value="${username}" />
-    </dd>
-    <dt>Please enter your password (it will not be displayed in clear
-      text).</dt>
-    <dd>
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" />
-    </dd>
-  </dl>
-  <p>
-    <input type="submit" value="Log in" class="button_ok"/>
-  </p>
-</form>
+  <form id="loginform" name="loginform" method="post" action="${action}">
+    <dl>
+      <dt><label for="username">Email address</label></dt>
+      <dd>
+        <input type="text" id="username" name="username" value="${username}" />
+      </dd>
+      <dt><label for="password">Password</label></dt>
+      <dd>
+        <input type="password" id="password" name="password" />
+      </dd>
+    </dl>
+    <p>
+      <input type="submit" value="Log in" class="button_ok"/>
+    </p>
+  </form>
 
-<script language="javascript">
-  <stl:inline if="not username">focus("username");</stl:inline>
-  <stl:inline if="username">focus("password");</stl:inline>
-</script>
+  <script language="javascript">
+    <stl:inline if="not username">focus("username");</stl:inline>
+    <stl:inline if="username">focus("password");</stl:inline>
+  </script>
 
 </stl:block>

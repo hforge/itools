@@ -4,52 +4,52 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Language Settings</h2>
+  <h2>Language Settings</h2>
 
-<form action="." method="post">
+  <form action="." method="post">
 
-  <table cellpadding="2" cellspacing="2" summary="Language settings">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Code</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="language active_languages">
-        <td>
-          <input class="checkbox" type="checkbox" name="codes" value="${language/code}" />
-        </td>
-        <td>${language/name}</td>
-        <td>${language/code}</td>
-        <td align="center">
-          <stl:block if="language/isdefault">Yes</stl:block>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <p>
-    <input type="submit" name=";change_default_language"
-      value="Change default for the selected one" class="button_ok"/>
-    <input type="submit" name=";remove_languages" value="Remove selected ones"
-      class="button_delete"/>
-  </p>
+    <table border="0" cellpadding="4" cellspacing="4" summary="Language settings">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Code</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr stl:repeat="language active_languages">
+          <td>
+            <input class="checkbox" type="checkbox" name="codes" value="${language/code}" />
+          </td>
+          <td>${language/name}</td>
+          <td>${language/code}</td>
+          <td align="center">
+            <stl:block if="language/isdefault">Yes</stl:block>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      <input type="submit" name=";change_default_language"
+        value="Change default for the selected one" class="button_ok"/>
+      <input type="submit" name=";remove_languages" value="Remove selected ones"
+        class="button_delete"/>
+    </p>
 
-  <dl stl:if="non_active_languages">
-    <dt>You can add other languages support to your application</dt>
-    <dd>
-      <select name="code">
-        <option value="">Choose a language</option>
-        <option stl:repeat="language non_active_languages" value="{language/code}">${language/name}</option>
-      </select>
-    </dd>
-  </dl>
-  <p>
-    <input type="submit" name=";add_language" value="Add" class="button_ok"/>
-  </p>
+    <dl stl:if="non_active_languages">
+      <dt>You can add other languages support to your application</dt>
+      <dd>
+        <select name="code">
+          <option value="">Choose a language</option>
+          <option stl:repeat="language non_active_languages" value="{language/code}">${language/name}</option>
+        </select>
+      </dd>
+    </dl>
+    <p>
+      <input type="submit" name=";add_language" value="Add" class="button_ok"/>
+    </p>
 
-</form>
+  </form>
 
 </stl:block>

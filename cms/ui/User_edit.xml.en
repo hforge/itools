@@ -4,21 +4,21 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Application Preferences</h2>
+  <h2>Application Preferences</h2>
 
-<form action=";edit" method="post">
-  <dl>
-    <dt>Language</dt>
-    <dd>
-      <select name="ikaaro:user_language">
-        <option stl:repeat="language languages" value="${language/code}"
-          selected="${language/is_selected}">${language/name}</option>
-      </select>
-    </dd>
-  </dl>
-  <p>
-    <input type="submit" value="Change preferences" class="button_ok"/>
-  </p>
-</form>
+  <form action=";edit" method="post">
+    <dl>
+      <dt><label for="ikaaro:user_language">Language</label></dt>
+      <dd>
+        <select id="ikaaro:user_language" name="ikaaro:user_language">
+          <option stl:repeat="language languages" value="${language/code}"
+            selected="${language/is_selected}">${language/name}</option>
+        </select>
+      </dd>
+    </dl>
+    <p>
+      <input type="submit" value="Change preferences" class="button_ok"/>
+    </p>
+  </form>
 
 </stl:block>

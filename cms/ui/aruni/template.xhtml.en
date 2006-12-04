@@ -31,7 +31,7 @@
       />
   </head>
   <body>
-    <div id="header" class="clearfix">
+    <div id="header">
       <form id="site_search_form" method="get" action="${site_search/action}">
         <p>
           <input type="text" name="site_search_text" value="${site_search/text}" />
@@ -39,6 +39,7 @@
         </p>
       </form>
     </div>
+    <div class="clear"></div>
     <!-- http://www.fu2k.org/alex/css/onetruelayout/ -->
     <div id="wrapper_extra">
       <div id="wrapper">

@@ -4,19 +4,19 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<p stl:if="not documents">
-  No document awaits your review.
-</p>
-
-<stl:block if="documents">
-  <p>
-    The documents below await review for publication:
+  <p stl:if="not documents">
+    No document awaits your review.
   </p>
-  <ul>
-    <li stl:repeat="doc documents">
-      <a href="${doc/url}">${doc/title}</a>
-    </li>
-  </ul>
-</stl:block>
+
+  <stl:block if="documents">
+    <p>
+      The documents below await review for publication:
+    </p>
+    <ul>
+      <li stl:repeat="doc documents">
+        <a href="${doc/url}">${doc/title}</a>
+      </li>
+    </ul>
+  </stl:block>
 
 </stl:block>

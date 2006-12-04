@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <form action="." method="post">
-    <table border="0" cellpadding="2" cellspacing="2">
+    <table border="0" cellpadding="4" cellspacing="4">
       <thead>
         <tr>
           <th></th>

@@ -97,9 +97,9 @@ class RoleAware(AccessControl, Folder):
             return True
 
         # Reviewers and Members are allowed to edit
-        if self.is_in_role('reviewers'):
+        if self.is_in_role('reviewers', username):
             return True
-        if self.is_in_role('members'):
+        if self.is_in_role('members', username):
             return True
 
         return False
@@ -115,11 +115,12 @@ class RoleAware(AccessControl, Folder):
             return True
 
         # Reviewers can do everything
-        if self.is_in_role('reviewers'):
+        username = user.name
+        if self.is_in_role('reviewers', username):
             return True
 
         # Members only can request and retract
-        if self.is_in_role('members'):
+        if self.is_in_role('members', username):
             return name in ('request', 'unrequest')
 
         return False
@@ -250,7 +251,7 @@ class RoleAware(AccessControl, Folder):
         # method "userfolder.get_handler" is too expensive.
         get_user = userfolder.get_handler
         for name in userfolder.get_handler_names():
-            if name[-9:] == '.metadata':
+            if name.endswith('.metadata'):
                 continue
             user = get_user(name)
             if name in members:

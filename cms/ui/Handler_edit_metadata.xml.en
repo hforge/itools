@@ -4,23 +4,25 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Edit Metadata in Current Language</h2>
+  <h2>Edit Metadata in Current Language</h2>
 
-<form action=";edit_metadata" method="post">
-  <dl>
-    <dt><label>Title</label></dt>
-    <dd>
-      <input type="text" size="57" name="dc:title" value="${title}" />
-    </dd>
-    <dt><label>Description</label></dt>
-    <dd>
-      <textarea cols="50" rows="8" name="dc:description">${description}</textarea>
-    </dd>
-  </dl>
-  <p>
-    <input type="hidden" name="dc:language" value="${language}" />
-    <input type="submit" value="Change" class="button_ok"/>
-  </p>
-</form>
+  <form action=";edit_metadata" method="post">
+    <dl>
+      <dt><label for="dc:title">Title</label></dt>
+      <dd>
+        <input type="text" size="57" id="dc:title" name="dc:title"
+          value="${title}" />
+      </dd>
+      <dt><label for="dc:description">Description</label></dt>
+      <dd>
+        <textarea cols="50" rows="8" id="dc:description"
+          name="dc:description">${description}</textarea>
+      </dd>
+    </dl>
+    <p>
+      <input type="hidden" name="dc:language" value="${language}" />
+      <input type="submit" value="Change" class="button_ok"/>
+    </p>
+  </form>
 
 </stl:block>

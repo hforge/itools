@@ -3,10 +3,12 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
   <table border="1" cellpadding="2" cellspacing="2">
     <tr stl:repeat="row rows">
       <td valign="top">${repeat/row/index}</td>
       <td valign="top" stl:repeat="column row">${column}</td>
     </tr>
   </table>
+
 </stl:block>

@@ -4,25 +4,21 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Add a Document</h2>
+  <h2>Add Document</h2>
 
   <form name="new_document" action=";new_resource" method="post">
     <dl>
-      <dt>Please type the title of your document.</dt>
+      <dt><label for="dc:title">Title</label></dt>
       <dd>
-        <label for="dc_title">Title</label>
-        <input type="text" id="dc_title" name="dc:title" size="50" />
+        <input type="text" id="dc:title" name="dc:title" size="50" />
       </dd>
-      <dt>(optional) You can use a specific name to store your document, as a
-        file name, and this name will appear in the URL.</dt>
+      <dt>(optional)<label for="name">Name</label></dt>
       <dd>
-        <label for="name">Name</label>
         <input type="text" id="name" name="name" size="50" value="${name}" />
       </dd>
-      <dt>Please select the source language of your document.</dt>
+      <dt><label for="dc:language">Language</label></dt>
       <dd>
-        <label for="dc_language">Language</label>
-        <select id="dc_language" name="dc:language">
+        <select id="dc:language" name="dc:language">
           <option stl:repeat="lang languages" value="${lang/code}"
             selected="${lang/isdefault}">${lang/name}</option>
         </select>
@@ -36,12 +32,12 @@
   </form>
 
   <script type="text/javascript">
-    focus("dc_title")
+    focus("dc:title")
   </script>
 
-<p>
-  Note: administrators can add new languages at the root of the application,
-  tab "Settings", subtab "Languages".
-</p>
+  <p>
+    Note: administrators can add new languages at the root of the application,
+    tab "Settings", subtab "Languages".
+  </p>
 
 </stl:block>

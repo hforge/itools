@@ -3,6 +3,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
   <form action=";edit" method="post">
     <dl>
       <stl:block repeat="column row">
@@ -16,4 +17,5 @@
       <input type="submit" value="Save Changes" class="button_ok" />
     </p>
   </form>
+
 </stl:block>

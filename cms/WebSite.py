@@ -478,10 +478,7 @@ class WebSite(RoleAware, Folder):
         namespace = {}
         namespace['table'] = table
         namespace['batch'] = table.batch_control()
-
-        if not objects:
-            message = u'We did not find results for "%s".' % text
-            namespace['not_found'] = self.gettext(message)
+        namespace['text'] = text
 
         hander = self.get_handler('/ui/WebSite_search.xml')
         return stl(hander, namespace)

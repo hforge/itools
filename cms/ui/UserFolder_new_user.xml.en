@@ -4,31 +4,31 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
            xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Add a New User</h2>
+  <h2>Add New User</h2>
 
-<form name="addform" action=";new_user" method="post">
-  <dl>
-    <dt>Email</dt>
-    <dd>
-      <input type="text" id="email" name="email" />
-    </dd>
-    <dt>Password</dt>
-    <dd>
-      <input type="password" name="password" />
-    </dd>
-    <dt>Repeat Password</dt>
-    <dd>
-      <input type="password" name="password2" />
-    </dd>
-  </dl>
-  <p>
-    <input type="submit" name="add_and_view" value="Add and view" class="button_ok"/>
-    <input type="submit" name="add_and_return" value="Add and return"/>
-  </p>
-</form>
+  <form name="addform" action=";new_user" method="post">
+    <dl>
+      <dt>Email</dt>
+      <dd>
+        <input type="text" id="email" name="email" />
+      </dd>
+      <dt>Password</dt>
+      <dd>
+        <input type="password" name="password" />
+      </dd>
+      <dt>Repeat Password</dt>
+      <dd>
+        <input type="password" name="password2" />
+      </dd>
+    </dl>
+    <p>
+      <input type="submit" name="add_and_view" value="Add and view" class="button_ok"/>
+      <input type="submit" name="add_and_return" value="Add and return"/>
+    </p>
+  </form>
 
-<script language="javascript">
-  focus("email");
-</script>
+  <script language="javascript">
+    focus("email");
+  </script>
 
 </stl:block>

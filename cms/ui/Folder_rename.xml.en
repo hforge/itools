@@ -4,21 +4,21 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Rename Objects</h2>
+  <h2>Rename Objects</h2>
 
-<form action=";rename" method="post">
-  <dl>
-    <stl:block repeat="object objects">
-      <dt>${object/name}</dt>
-      <dd>
-        <input type="hidden" name="names" value="${object/real_name}" />
-        to <input type="text" name="new_names" value="${object/name}" />
-      </dd>
-    </stl:block>
-  </dl>
-  <p>
-    <input type="submit" value="Rename" class="button_rename" />
-  </p>
-</form>
+  <form action=";rename" method="post">
+    <dl>
+      <stl:block repeat="object objects">
+        <dt>${object/name}</dt>
+        <dd>
+          <input type="hidden" name="names" value="${object/real_name}" />
+          to <input type="text" name="new_names" value="${object/name}" />
+        </dd>
+      </stl:block>
+    </dl>
+    <p>
+      <input type="submit" value="Rename" class="button_rename" />
+    </p>
+  </form>
 
 </stl:block>

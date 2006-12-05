@@ -152,7 +152,11 @@ if __name__ == '__main__':
         for language in target_languages:
             message_catalog = message_catalogs[language]
             target = '%s.%s' % (path[:n], language)
-            open(target, 'w').write(handler.translate(message_catalog))
+            try:
+                open(target, 'w').write(handler.translate(message_catalog))
+            except:
+                print 'Error with file "%s"' % path
+                raise
             # Add to the manifest
             manifest.append(target[2:])
         # Done

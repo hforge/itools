@@ -31,9 +31,10 @@
 
 
 /**************************************************************************
- * Import from Python
+ * Global variables
  *************************************************************************/
 
+/* Import from Python */
 PyObject* p_schemas;
 PyObject* p_get_datatype_by_uri;
 
@@ -41,11 +42,13 @@ PyObject* p_htmlentitydefs;
 PyObject* p_name2codepoint;
 
 
-/**************************************************************************
- * Exceptions
- *************************************************************************/
-
+/* Exceptions */
 static PyObject* XMLError;
+
+
+/* Constants */
+PyObject* xml_prefix;
+PyObject* xml_ns;
 
 
 
@@ -1045,7 +1048,9 @@ static PyObject* Parser_iternext(Parser* self) {
                 /* Find out the attribute URI */
                 attr_name = PyTuple_GetItem(attr, 0);
                 attr_prefix = PyTuple_GetItem(attr_name, 0);
-                if (namespaces == NULL)
+                if (PyObject_Compare(attr_prefix, xml_prefix) == 0)
+                    attr_uri = xml_ns;
+                else if (namespaces == NULL)
                     attr_uri = Py_None;
                 else {
                     attr_uri = PyDict_GetItem(namespaces, attr_prefix);
@@ -1230,6 +1235,10 @@ initparser(void) {
     /* from htmlentitydefs import name2codepoint */
     p_htmlentitydefs = PyImport_ImportModule("htmlentitydefs");
     p_name2codepoint = PyObject_GetAttrString(p_htmlentitydefs, "name2codepoint");
+
+    /* Constants */
+    xml_prefix = PyString_FromString("xml");
+    xml_ns = PyString_FromString("http://www.w3.org/XML/1998/namespace");
 
     /* Initialize the module */
     module = Py_InitModule3("parser", module_methods, "Low-level XML parser");

@@ -13,10 +13,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
 import smtplib
+from sys import stdout
 from time import time
 import traceback
 
@@ -345,14 +346,19 @@ class Root(WebSite):
 
 
     def _update_catalog(self):
-        t0 = time()
+        print 'Updating the catalog:'
         # Start fresh
         self.del_handler('.catalog')
         self.set_handler('.catalog', Catalog(fields=self._catalog_fields))
         catalog = self.get_handler('.catalog')
 
         # Go
-        n = 0
+        stdout.write('0')
+        stdout.flush()
+        str_len = 1
+        max_len = 1
+
+        doc_n = 0
         for handler, ctx in self.traverse2(caching=False):
             # Skip virtual handlers
             if handler.real_handler is not None:
@@ -362,19 +368,31 @@ class Root(WebSite):
             if not isinstance(handler, CatalogAware):
                 ctx.skip = True
                 continue
+
+            doc_n += 1
+            # Print progress message 
+            stdout.write('\b' * max_len)
+            str = '%d %s' % (doc_n, handler.get_abspath())
+            str_len = len(str)
+            if str_len > max_len:
+                max_len = str_len
+            stdout.write(str)
+            stdout.write(' ' * (max_len - str_len))
+            stdout.flush()
             # Index the document
-            print n, handler.get_abspath()
             catalog.index_document(handler.get_catalog_indexes())
-            n += 1
 
         # It is done
-        t = time() - t0
-        print 'Updating catalog, total:', t
+        return doc_n
 
 
     update_catalog__access__ = 'is_admin'
     def update_catalog(self, context):
-        self._update_catalog()
+        t0 = time()
+        n = self._update_catalog()
+        t = time() - t0
+        print
+        print 'Done. Time taken: %.02f seconds' % t
 
         message = u'$n handlers have been indexed in $time seconds.'
         return context.come_back(message, n=n, time=('%.02f' % t))

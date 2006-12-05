@@ -71,8 +71,11 @@ def inspect_documents(target):
     for i in range(n):
         base = i * 8
         pointer = decode_link(index[base:base+4])
-        size = decode_uint32(index[base+4:base+8])
+        if pointer is None:
+            continue
+
         print 'DOC', i
+        size = decode_uint32(index[base+4:base+8])
         doc = docs[pointer:pointer+size]
 
         while doc:

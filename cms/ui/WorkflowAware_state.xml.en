@@ -58,45 +58,4 @@
     </tbody>
   </table>
         
-
-
-      <dd stl:repeat="transition transitions">
-        <input type="radio" name="transition" value="${transition/name}" />
-        <label>${transition/description}</label>
-      </dd>
-      <dt>Comments (optional):</dt>
-      <dd>
-        <textarea name="comments" cols="66" rows="7" />
-      </dd>
-    </dl>
-    <p>
-      <input type="submit" value="Change" class="button_ok" />
-    </p>
-  </form>
-
-  <h2>State History</h2>
-
-  <p stl:if="not history">
-    No history.
-  </p>
-
-  <table border="0" cellpadding="2" cellspacing="2" stl:if="history">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Action</th>
-        <th>By</th>
-        <th>Comments</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="transition history">
-        <td>${transition/date}</td>
-        <td>${transition/name}</td>
-        <td>${transition/user}</td>
-        <td>${transition/comments}</td>
-      </tr>
-    </tbody>
-  </table>
-      
 </stl:block>

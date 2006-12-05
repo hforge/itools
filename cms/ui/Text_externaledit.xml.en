@@ -28,8 +28,8 @@
   <form action=";external_edit" method="get">
     <dl>
       <p>You may need to change the character encoding if your application
-        doesn't support UTF-8 (not recommended).</dt>
-      <p>
+        doesn't support UTF-8 (not recommended).
+      </p>
       <dt><label for="encoding">Character encoding</label></dt>
       <dd>
         <select id="encoding" name="encoding">

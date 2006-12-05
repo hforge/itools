@@ -148,6 +148,7 @@ class Documents(Folder):
             for doc_n in self.removed_documents:
                 index_file.seek(doc_n * 8)
                 index_file.write(NULL)
+                index_file.write(encode_uint32(0))
                 # Update data structure
                 if doc_n in self.documents:
                     del self.documents[doc_n]

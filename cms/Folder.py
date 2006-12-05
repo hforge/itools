@@ -557,11 +557,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 selected_image = None
 
         # look up available images
-        namespace = self.browse_namespace(48, batchsize='0')
-        table = namespace['table']
+        query = queries.Equal('parent_path', self.get_abspath())
+        namespace = self.browse_namespace(48, query=query, batchsize=0)
         objects = []
         offset = 0
-        for index, object in enumerate(table.objects):
+        for index, object in enumerate(namespace['objects']):
             name = object['name']
             handler = self.get_handler(name)
             if not isinstance(handler, Image):
@@ -571,11 +571,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 selected_image = name
             if selected_image == name:
                 selected_index = index - offset
-            object['url'] = '?selected_image=%s' % name
-            object['icon'] = '%s/;icon48?width=128&height=128' % name
+            object['name'] = name
             objects.append(object)
 
-        table.objects = objects
+        namespace['objects'] = objects
 
         # selected image namespace
         if selected_image is None:

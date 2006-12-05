@@ -4,9 +4,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <div id="gallery_vpane">
-    <a stl:repeat="image table/objects" href="${image/url}">
-      <img src="${image/icon}" />
-    </a>
+    <a stl:repeat="image objects" href="?selected=${image/name}"><img
+      src="${image/name}/;icon48?width=128&amp;height=128" /></a>
   </div>
   <div id="gallery_main" stl:if="selected">
     <div id="gallery_center">

@@ -38,6 +38,7 @@
           <input type="submit" class="button_search" value="Search" />
         </p>
       </form>
+      <div class="clear"></div>
     </div>
     <div class="clear"></div>
     <!-- http://www.fu2k.org/alex/css/onetruelayout/ -->

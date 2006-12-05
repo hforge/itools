@@ -35,7 +35,7 @@ a img { border: 0; }
 td, th { padding: 0 0.2em; }
 
 #header {
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
   padding: 30px 0.5em 0.5em;
   background: #729fcf url(images/logo.png) left bottom no-repeat;
 }
@@ -126,8 +126,9 @@ td, th { padding: 0 0.2em; }
 #body form dt {
   clear: both;
   float: left;
-  width: 20em;
+  width: 12em;
   padding-right: 0.5em;
+  text-align: right;
 }
 #body form dd { padding-bottom: 0.5em; }
 #body form p { clear: both; }

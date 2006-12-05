@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2006 Juan David IbÃ¡Ã±ez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -225,7 +225,8 @@ class Documents(Folder):
     def unindex_document(self, doc_n):
         if doc_n in self.added_documents:
             self.added_documents.remove(doc_n)
-        self.removed_documents.append(doc_n)
+        else:
+            self.removed_documents.append(doc_n)
 
 
     def get_document(self, doc_n):

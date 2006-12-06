@@ -10,7 +10,7 @@
     <dl>
       <dt><label for="dc:title">Title</label></dt>
       <dd>
-        <input type="text" size="57" id="dc:title" name="dc:title"
+        <input type="text" size="40" id="dc:title" name="dc:title"
           value="${title}" />
       </dd>
       <dt><label for="dc:description">Description</label></dt>

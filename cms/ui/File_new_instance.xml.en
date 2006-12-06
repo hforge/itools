@@ -11,7 +11,7 @@
     <dl>
       <dt><label for="file">File</label></dt>
       <dd>
-        <input type="file" id="file" name="file" size="50" />
+        <input type="file" id="file" name="file" size="35" />
       </dd>
     </dl>
     <p>

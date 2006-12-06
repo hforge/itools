@@ -16,18 +16,20 @@
 </p>
 <ul>
   <li>
-    <a href="http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe">Download
-      External Editor for Windows</a>.
+    <a href="http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe">Download External Editor for Windows</a>.
   </li>
   <li>
     <a href="http://plope.org/software/ExternalEditor/zopeedit-0.9.1-src.tgz">Download External Editor for Unix and MacOSX</a>.
   </li> 
 </ul>
 
+<p>
+To open this document with External Editor, please click the
+<strong>External Editor...</strong> button.
+</p>
 <form action=";external_edit" method="get">
   <dl>
-    <dt>To open this document with External Editor, please click the
-      <strong>External Editor...</strong> button.</dt>
+    <dt></dt>
     <dd>
       <input type="submit" value="External Editor.." class="button_external"/>
     </dd>

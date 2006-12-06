@@ -4,17 +4,17 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Add Resource of Type "${class_title}" />"</h2>
+  <h2>Add Resource of Type "${class_title}"</h2>
 
   <form name="new_folder" action=";new_resource" method="post">
     <dl>
       <dt><label for="dc:title">Title</label></dt>
       <dd>
-        <input type="text" id="dc:title" name="dc:title" size="50" />
+        <input type="text" id="dc:title" name="dc:title" size="40" />
       </dd>
       <dt>(optional)<label for="name">Name</label></dt>
       <dd>
-        <input type="text" id="name" name="name" size="50" />
+        <input type="text" id="name" name="name" size="40" />
       </dd>
     </dl>
     <p>

@@ -400,7 +400,7 @@ def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
             elif node.name == 'link':
                 if local_name == 'href':
                     value = resolve_pointer(value, prefix)
-            # <param name="movie value="X" />
+            # <param name="movie" value="X" />
             elif node.name == 'param':
                 if local_name == 'value':
                     param_name = node.get_attribute(namespace, 'name')

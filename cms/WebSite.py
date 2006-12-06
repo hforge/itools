@@ -23,7 +23,7 @@ from string import ascii_letters, Template
 # Import from itools
 from itools import uri
 from itools.uri import Path
-from itools.datatypes import Email, Unicode
+from itools.datatypes import Email, Integer, Unicode
 from itools import i18n
 from itools.catalog import queries
 from itools.stl import stl
@@ -419,39 +419,34 @@ class WebSite(RoleAware, Folder):
     # User search UI
     site_search__access__ = True
     def site_search(self, context):
+        # Get and check input data
         text = context.get_form_value('site_search_text').strip()
         if not text:
             return context.come_back(u"Empty search value.")
         text = Unicode.decode(text)
+        # Batch
+        start = context.get_form_value('start', type=Integer, default=0)
+        size = 10
 
+        # Search
         on_title = queries.Equal('title', text)
         on_text = queries.Equal('text', text)
         query = queries.Or(on_title, on_text)
-        results = self.search(query=query).get_documents()
+        results = self.search(query=query)
+        documents = results.get_documents(start=start, size=size)
 
         # put the metadatas in a dictionary list to be managed with Table
         root = context.root
-        fields = root.get_catalog_metadata_fields()
-        table_content = []
-        for result in results:
-            line = {}
-            for field in fields:
-                # put a '' if the brain doesn't have the given field
-                line[field] = getattr(result, field, '')
-            table_content.append(line)
 
-        # Build the table
-        path_to_root = context.path.get_pathtoroot()
-        table = Table(path_to_root, 'site_search', table_content, sortby=None,
-            batchstart='0', batchsize='10')
-
-        # get the handler for the visibles documents and extracts values
+        # Get the handler for the visibles documents and extracts values
         user = context.user
         objects = []
-        for object in table.objects:
-            abspath = object['abspath']
+        for object in documents:
+            abspath = object.abspath
             document = root.get_handler(abspath)
 
+            # XXX The access control check should be done for the entire
+            # set, but it would be too slow.
             ac = document.get_access_control()
             if not ac.is_allowed_to_view(user, document):
                 continue
@@ -464,24 +459,29 @@ class WebSite(RoleAware, Folder):
             info['url'] = '%s/;%s' % (self.get_pathto(document),
                     document.get_firstview())
 
-            path_to_icon = document.get_path_to_icon(16, from_handler=self)
-            if path_to_icon.startswith(';'):
-                path_to_icon = uri.Path('%s/' % document.name).resolve(path_to_icon)
-            info['icon'] = path_to_icon
-
-            language = object.get('language')
-            if language:
-                language_name = i18n.get_language_name(language)
-                line['language'] = self.gettext(language_name)
-            else:
-                line['language'] = ''
+            icon = document.get_path_to_icon(16, from_handler=self)
+            if icon.startswith(';'):
+                icon = Path('%s/' % document.name).resolve(icon)
+            info['icon'] = icon
             objects.append(info)
 
-        table.objects = objects
+        total = results.get_n_documents()
+        end = start + len(documents)
 
         namespace = {}
-        namespace['table'] = table
-        namespace['batch'] = table.batch_control()
+        namespace['total'] = total
+        namespace['objects'] = objects
+        namespace['batchstart'] = start + 1
+        namespace['batchend'] = end
+        namespace['batch_previous'] = None
+        if start > 0:
+            prev = max(start - size, 0)
+            prev = str(prev)
+            namespace['batch_previous'] = context.uri.replace(start=prev)
+        namespace['batch_next'] = None
+        if end < total:
+            next = str(end)
+            namespace['batch_next'] = context.uri.replace(start=next)
         namespace['text'] = text
 
         hander = self.get_handler('/ui/WebSite_search.xml')

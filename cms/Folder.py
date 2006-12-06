@@ -451,11 +451,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
         end = min(start + size, total)
         namespace['batchend'] = end
         namespace['batch_previous'] = None
-        previous = start - size
-        if previous < 0:
-            previous = 0
-        if previous > start:
-            namespace['batch_previous'] = context.uri.replace(batchstart=str(previous))
+        if start > 0:
+            prev = max(start - size, 0)
+            prev = str(prev)
+            namespace['batch_previous'] = context.uri.replace(batchstart=prev)
         namespace['batch_next'] = None
         if end < total:
             namespace['batch_next'] = context.uri.replace(batchstart=str(end))

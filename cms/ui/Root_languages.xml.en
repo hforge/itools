@@ -7,8 +7,8 @@
   <h2>Language Settings</h2>
 
   <form action="." method="post">
-
-    <table border="0" cellpadding="4" cellspacing="4" summary="Language settings">
+    <table border="0" cellpadding="4" cellspacing="4"
+      summary="Language settings">
       <thead>
         <tr>
           <th></th>
@@ -20,7 +20,8 @@
       <tbody>
         <tr stl:repeat="language active_languages">
           <td>
-            <input class="checkbox" type="checkbox" name="codes" value="${language/code}" />
+            <input class="checkbox" type="checkbox" name="codes"
+              value="${language/code}" />
           </td>
           <td>${language/name}</td>
           <td>${language/code}</td>
@@ -33,23 +34,27 @@
     <p>
       <input type="submit" name=";change_default_language"
         value="Change default for the selected one" class="button_ok"/>
-      <input type="submit" name=";remove_languages" value="Remove selected ones"
-        class="button_delete"/>
+      <input type="submit" name=";remove_languages" class="button_delete"
+        value="Remove selected ones" />
+        
     </p>
+  </form>
 
+  <form action=";add_language" method="post">
+    <p>You can add other languages support to your application</p>
     <dl stl:if="non_active_languages">
-      <dt>You can add other languages support to your application</dt>
+      <dt></dt>
       <dd>
         <select name="code">
           <option value="">Choose a language</option>
-          <option stl:repeat="language non_active_languages" value="{language/code}">${language/name}</option>
+          <option stl:repeat="language non_active_languages"
+            value="${language/code}">${language/name}</option>
         </select>
       </dd>
     </dl>
     <p>
-      <input type="submit" name=";add_language" value="Add" class="button_ok"/>
+      <input type="submit" value="Add" class="button_ok"/>
     </p>
-
   </form>
 
 </stl:block>

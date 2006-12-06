@@ -51,7 +51,7 @@
     <tbody>
       <tr stl:repeat="transition history">
         <td>${transition/date}</td>
-        <td>${transition/title_or_name}</td>
+        <td>${transition/title}</td>
         <td>${transition/user}</td>
         <td>${transition/comments}</td>
       </tr>

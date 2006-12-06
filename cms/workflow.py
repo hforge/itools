@@ -103,7 +103,7 @@ class WorkflowAware(iWorkflowAware):
             comments = transition[(None, 'comments')]
             # XXX The property comments should be a unicode string
             comments = unicode(comments, 'utf-8')
-            transitions.append({'name': transition[(None, 'name')],
+            transitions.append({'title': transition[(None, 'name')],
                                 'date': date,
                                 'user': transition[(None, 'user')],
                                 'comments': comments})

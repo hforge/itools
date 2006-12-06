@@ -1,15 +1,16 @@
-# J. David Ibáñez <jdavid@itaapy.com>, 2003, 2004.
+# translation of es.po to Spanish
+# J. David Ibáñez <jdavid@itaapy.com>, 2003, 2004, 2006.
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "POT-Creation-Date: 2006-12-05 17:12+CET\n"
-"PO-Revision-Date: 2004-05-29 19:03+0200\n"
+"PO-Revision-Date: 2006-12-06 16:23+0100\n"
 "Last-Translator: J. David Ibáñez <jdavid@itaapy.com>\n"
-"Language-Team:  <es@li.org>\n"
+"Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.3.1\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: cms/root.py:397
 msgid "$n handlers have been indexed in $time seconds."
@@ -81,9 +82,8 @@ msgid "${day/name}"
 msgstr ""
 
 #: cms/ui/Handler_edit_metadata.xml.en:0
-#, fuzzy
 msgid "${description}"
-msgstr "Descripción"
+msgstr ""
 
 #: cms/ui/User_tasks.xml.en:0
 msgid "${doc/title}"
@@ -130,14 +130,12 @@ msgid "${lang/name}"
 msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
-#, fuzzy
 msgid "${language/code}"
-msgstr "Idioma"
+msgstr ""
 
 #: cms/ui/User_edit.xml.en:0
-#, fuzzy
 msgid "${language/name}"
-msgstr "Idioma"
+msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
 msgid ""
@@ -149,9 +147,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "${message}"
-msgstr "Mensaje"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${metadata/title}"
@@ -166,9 +163,8 @@ msgid "${msgstr}"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "${navigation}"
-msgstr "Navigación"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/class_title}"
@@ -179,9 +175,8 @@ msgid "${object/mtime}"
 msgstr ""
 
 #: cms/ui/Folder_rename.xml.en:0
-#, fuzzy
 msgid "${object/name}"
-msgstr "Objetos renombrados."
+msgstr ""
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid "${object/object_type}"
@@ -272,9 +267,8 @@ msgid "${timetable/timetable}"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "${title}"
-msgstr "Título"
+msgstr ""
 
 #: cms/ui/Root_internal_server_error.xml.en:0
 msgid "${traceback}"
@@ -305,9 +299,8 @@ msgid "${tt/start}"
 msgstr ""
 
 #: cms/ui/Folder_new_resource.xml.en:0
-#, fuzzy
 msgid "${type/description}"
-msgstr "Descripción"
+msgstr ""
 
 #: cms/ui/Folder_new_resource.xml.en:0
 msgid "${type/title}"
@@ -913,21 +906,19 @@ msgstr "Acerca de"
 
 #: cms/workflow.py:51
 msgid "Accept the document."
-msgstr ""
+msgstr "Aceptar el documento."
 
 #: cms/root.py:160
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
 #: cms/users.py:187
-#, fuzzy
 msgid "Account"
-msgstr "Acerca de"
+msgstr "Cuenta"
 
 #: cms/ui/User_edit_account.xml.en:0
-#, fuzzy
 msgid "Account Change"
-msgstr "Modificar"
+msgstr ""
 
 #: cms/users.py:224
 msgid "Account changed."
@@ -948,23 +939,20 @@ msgid "Add"
 msgstr "Agregar"
 
 #: cms/ui/Text_new_instance.xml.en:0
-#, fuzzy
 msgid "Add Document"
-msgstr "Nuevo Documento"
+msgstr "Añadir Documento"
 
 #: cms/ui/UserFolder_new_user.xml.en:0
-#, fuzzy
 msgid "Add New User"
-msgstr "Usuario"
+msgstr "Añadir un Nuevo Usuario"
 
 #: cms/ui/Folder_new_instance.xml.en:0
 msgid "Add Resource of Type \"${class_title}\" />\""
 msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
 msgid "Add a member"
-msgstr "Usuario"
+msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
 msgid "Add a new translator skill:"
@@ -1019,9 +1007,8 @@ msgid "Anonymous"
 msgstr "Anónimo"
 
 #: cms/ui/WebSite_anonymous.xml.en:0
-#, fuzzy
 msgid "Anonymous Settings."
-msgstr "Idiomas"
+msgstr ""
 
 #: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Anonymous users allowed to join this web site"
@@ -1042,9 +1029,8 @@ msgid "Application"
 msgstr "Aplicación"
 
 #: cms/ui/User_edit.xml.en:0
-#, fuzzy
 msgid "Application Preferences"
-msgstr "Preferencias"
+msgstr "Preferencias de la Aplicación"
 
 #: cms/users.py:180
 msgid "Application preferences changed."
@@ -1052,7 +1038,7 @@ msgstr ""
 
 #: cms/ical.py:68
 msgid "April"
-msgstr ""
+msgstr "Abril"
 
 #: cms/Folder.py:491
 msgid "As Icons"
@@ -1076,16 +1062,15 @@ msgstr ""
 
 #: cms/ical.py:69
 msgid "August"
-msgstr ""
+msgstr "Agosto"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Background Color"
-msgstr ""
+msgstr "Color de Fondo"
 
 #: cms/users.py:119
-#, fuzzy
 msgid "Bad key."
-msgstr "Nombre incorrecto"
+msgstr ""
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
@@ -1100,9 +1085,8 @@ msgid "Border"
 msgstr "Borde"
 
 #: cms/ui/Folder_browsedir.xml.en:0
-#, fuzzy
 msgid "Browse-Directories"
-msgstr "Examinar"
+msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1114,7 +1098,7 @@ msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "By"
-msgstr ""
+msgstr "Por"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1144,27 +1128,24 @@ msgid "Calendar"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Cancel"
-msgstr "Modificar"
+msgstr "Cancelar"
 
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Cataloguing of Content"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Center"
-msgstr "Alemán"
+msgstr "Centrar"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Change"
 msgstr "Modificar"
 
 #: cms/ui/User_edit_account.xml.en:0
-#, fuzzy
 msgid "Change account"
-msgstr "Modificar defecto"
+msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "Change default for the selected one"
@@ -1175,14 +1156,12 @@ msgid "Change password"
 msgstr "Modificar clave de acceso"
 
 #: cms/ui/User_edit.xml.en:0
-#, fuzzy
 msgid "Change preferences"
-msgstr "Preferencias"
+msgstr "Modificar preferencias"
 
 #: cms/csv.py:66
-#, fuzzy
 msgid "Changes saved."
-msgstr "Idioma"
+msgstr "Modificaciones guardadas"
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Character encoding"
@@ -1213,9 +1192,8 @@ msgid "Comma Separated Values"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Comment"
-msgstr "Comentarios"
+msgstr "Comentario"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments"
@@ -1226,9 +1204,8 @@ msgid "Comments (optional):"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Common name"
-msgstr "Catalán"
+msgstr ""
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "Confirm"
@@ -1267,9 +1244,8 @@ msgid "Cut"
 msgstr "Cortar"
 
 #: cms/ical.py:758
-#, fuzzy
 msgid "Data updated"
-msgstr "Roles actualizados."
+msgstr "Datos actualizados"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Date"
@@ -1312,9 +1288,8 @@ msgid "Document Flash"
 msgstr "Documento Flash"
 
 #: cms/ui/File_history.xml.en:0
-#, fuzzy
 msgid "Document History"
-msgstr "Documento editado."
+msgstr "Historia del Documento"
 
 #: cms/binary.py:329
 msgid "Document PDF"
@@ -1325,19 +1300,16 @@ msgid "Document PowerPoint"
 msgstr "Documento PowerPoint"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
-#, fuzzy
 msgid "Document State"
-msgstr "Documento editado."
+msgstr "Estado del Documento"
 
 #: cms/binary.py:204
-#, fuzzy
 msgid "Document Word"
 msgstr "Documento Word"
 
 #: cms/html.py:159
-#, fuzzy
 msgid "Document changed."
-msgstr "Documento editado."
+msgstr "Documento modificado."
 
 #: cms/text.py:116
 msgid "Document edited."
@@ -1378,21 +1350,18 @@ msgid "Edit Metadata in Current Language"
 msgstr ""
 
 #: cms/ui/Text_edit.xml.en:0
-#, fuzzy
 msgid "Edit Text"
-msgstr "Editar"
+msgstr "Editar Texto"
 
 #: cms/ui/User_profile.xml.en:0
 msgid "Edit account details;"
 msgstr ""
 
 #: cms/ui/User_profile.xml.en:0
-#, fuzzy
 msgid "Edit preferences;"
-msgstr "Preferencias"
+msgstr "Editar Preferencias;"
 
 #: cms/ui/UserFolder_new_user.xml.en:0
-#, fuzzy
 msgid "Email"
 msgstr "Correo electrónico"
 
@@ -1453,9 +1422,8 @@ msgid "External Editor.."
 msgstr "Editor Externo.."
 
 #: cms/ui/Text_externaledit.xml.en:0
-#, fuzzy
 msgid "External Editor..."
-msgstr "Editor Externo.."
+msgstr "Editor Externo..."
 
 #: cms/ical.py:68
 msgid "February"
@@ -1555,12 +1523,11 @@ msgstr "Formato:"
 
 #: cms/ical.py:72
 msgid "Friday"
-msgstr ""
+msgstr "Viernes"
 
 #: cms/ui/ical_edit_timetables.xml.en:0
-#, fuzzy
 msgid "From"
-msgstr "Formato"
+msgstr ""
 
 #: cms/ui/User_edit_account.xml.en:0
 msgid "Full name"
@@ -1571,9 +1538,8 @@ msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
 #: cms/root.py:443
-#, fuzzy
 msgid "Groups fixed."
-msgstr "Usuarios"
+msgstr "Grupos corregidos"
 
 #: cms/versioning.py:49
 msgid "History"
@@ -1668,7 +1634,7 @@ msgstr ""
 
 #: cms/binary.py:44
 msgid "Image"
-msgstr ""
+msgstr "Imagen"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1710,7 +1676,7 @@ msgstr "Insertar Enlace"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Rule"
-msgstr ""
+msgstr "Insertar Regla"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Table"
@@ -1740,7 +1706,7 @@ msgstr ""
 
 #: cms/ical.py:68
 msgid "January"
-msgstr ""
+msgstr "Enero"
 
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Join the Community"
@@ -1748,11 +1714,11 @@ msgstr ""
 
 #: cms/ical.py:69
 msgid "July"
-msgstr ""
+msgstr "Julio"
 
 #: cms/ical.py:69
 msgid "June"
-msgstr ""
+msgstr "Junio"
 
 #: cms/text.py:40
 msgid "Keep your notes with plain text files."
@@ -1763,23 +1729,20 @@ msgid "Language"
 msgstr "Idioma"
 
 #: cms/ui/Root_languages.xml.en:0
-#, fuzzy
 msgid "Language Settings"
-msgstr "Idiomas"
+msgstr "Configuración de los Idiomas"
 
 #: cms/WebSite.py:219
-#, fuzzy
 msgid "Language added."
-msgstr "Idioma"
+msgstr "Idioma añadido."
 
 #: cms/WebSite.py:147
 msgid "Languages"
 msgstr "Idiomas"
 
 #: cms/WebSite.py:206
-#, fuzzy
 msgid "Languages removed."
-msgstr "Idioma"
+msgstr "Idiomas suprimidos."
 
 #: cms/root.py:328
 msgid "License"
@@ -1790,9 +1753,8 @@ msgid "Link"
 msgstr "Enlace"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Location"
-msgstr "Acción"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Location:"
@@ -1807,13 +1769,12 @@ msgid "Log out"
 msgstr ""
 
 #: cms/WebSite.py:318
-#, fuzzy
 msgid "Login"
-msgstr "Enlace"
+msgstr ""
 
 #: cms/root.py:413
 msgid "Maintenance"
-msgstr ""
+msgstr "Mantenimiento"
 
 #: cms/ui/User_profile.xml.en:0
 msgid "Manage personal content;"
@@ -1827,13 +1788,12 @@ msgid ""
 msgstr ""
 
 #: cms/ical.py:68
-#, fuzzy
 msgid "March"
-msgstr "Buscar"
+msgstr "Marzo"
 
 #: cms/ical.py:69
 msgid "May"
-msgstr ""
+msgstr "Mayo"
 
 #: cms/access.py:133
 msgid "Member"
@@ -1844,18 +1804,16 @@ msgid "Members"
 msgstr ""
 
 #: cms/access.py:288
-#, fuzzy
 msgid "Members added."
-msgstr "Usuarios"
+msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Members and roles"
 msgstr ""
 
 #: cms/access.py:281
-#, fuzzy
 msgid "Members deleted."
-msgstr "No se ha encontrado ningún objeto."
+msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "Message"
@@ -1871,7 +1829,7 @@ msgstr ""
 
 #: cms/text.py:144
 msgid "Message Catalog"
-msgstr ""
+msgstr "Catalogo de Mensajes"
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "Message Translation"
@@ -1899,11 +1857,11 @@ msgstr ""
 
 #: cms/ical.py:71
 msgid "Monday"
-msgstr ""
+msgstr "Lunes"
 
 #: cms/ical.py:440
 msgid "Monthly"
-msgstr ""
+msgstr "Mensualmente"
 
 #: cms/sql.py:35
 msgid "MySQL Database"
@@ -1930,18 +1888,16 @@ msgid "Navigation"
 msgstr "Navigación"
 
 #: cms/ui/User_edit_password.xml.en:0
-#, fuzzy
 msgid "New Password"
-msgstr "Clave de acceso"
+msgstr "Nueca Clave de Acceso"
 
 #: cms/Folder.py:880
 msgid "New Resource"
 msgstr "Nuevo Recurso"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
-#, fuzzy
 msgid "New WebSite"
-msgstr "Sitio Web"
+msgstr "Nuevo Sitio Web"
 
 #: cms/Folder.py:957
 msgid "New resource added."
@@ -1960,9 +1916,8 @@ msgid "No history."
 msgstr ""
 
 #: cms/Folder.py:734
-#, fuzzy
 msgid "No objects selected."
-msgstr "No se ha encontrado ningún objeto."
+msgstr "No se ha seleccionado ningún objeto."
 
 #: cms/ui/Root_not_found.xml.en:0
 msgid "Not Found"
@@ -1977,9 +1932,8 @@ msgid "Note:"
 msgstr "Nota:"
 
 #: cms/ical.py:808
-#, fuzzy
 msgid "Nothing to change."
-msgstr "Documento editado."
+msgstr "Nada para cambiar."
 
 #: cms/ical.py:814
 msgid "Nothing to remove."
@@ -1998,14 +1952,12 @@ msgid "OOo Calc"
 msgstr ""
 
 #: cms/binary.py:317
-#, fuzzy
 msgid "OOo Impress"
-msgstr "Documento editado."
+msgstr ""
 
 #: cms/binary.py:295
-#, fuzzy
 msgid "OOo Writer"
-msgstr "escribir"
+msgstr ""
 
 #: cms/Folder.py:721
 msgid "Objects copied."
@@ -2020,9 +1972,8 @@ msgid "Objects pasted."
 msgstr "Objetos pegados."
 
 #: cms/Folder.py:633
-#, fuzzy
 msgid "Objects removed: $objects."
-msgstr "No se ha encontrado ningún objeto."
+msgstr "Objetos suprimidos: $objects"
 
 #: cms/Folder.py:700
 msgid "Objects renamed."
@@ -2061,9 +2012,8 @@ msgid "Order down"
 msgstr ""
 
 #: cms/ui/Folder_order_items.xml.en:0
-#, fuzzy
 msgid "Order top"
-msgstr "Nueva Carpeta"
+msgstr ""
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "Order up"
@@ -2169,9 +2119,8 @@ msgid "Preferences"
 msgstr "Preferencias"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Presence"
-msgstr "Preferencias"
+msgstr "Presencia"
 
 #: cms/workflow.py:32
 msgid "Private"
@@ -2221,9 +2170,8 @@ msgid "Remove"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-#, fuzzy
 msgid "Remove Format"
-msgstr "Formato"
+msgstr "Suprimir Formato"
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "Remove selected ones"
@@ -2304,18 +2252,16 @@ msgid "Search"
 msgstr "Buscar"
 
 #: cms/ui/WebSite_search.xml.en:0
-#, fuzzy
 msgid "Search Results"
-msgstr "Buscar"
+msgstr "Resultados de la Búsqueda"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search subfolders"
 msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
-#, fuzzy
 msgid "Search term"
-msgstr "Buscar"
+msgstr ""
 
 #: cms/WebSite.py:225
 msgid "Security"
@@ -2342,9 +2288,8 @@ msgid "Skin"
 msgstr "Piel"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Start"
-msgstr "Estado"
+msgstr "Empezar"
 
 #: cms/ical.py:725
 msgid "Start date MUST be earlier than end date."
@@ -2363,7 +2308,6 @@ msgid "State History"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Status"
 msgstr "Estado"
 
@@ -2398,8 +2342,7 @@ msgid "TENTATIVE"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
-msgid ""
-"THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
+msgid "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
 msgstr ""
 
 #: cms/ui/epoz_script_table.xml.en:0
@@ -2411,9 +2354,8 @@ msgid "Table rows"
 msgstr ""
 
 #: cms/ui/Folder_translate.xml.en:0
-#, fuzzy
 msgid "Target language"
-msgstr "Idioma"
+msgstr ""
 
 #: cms/users.py:286
 msgid "Tasks"
@@ -2429,7 +2371,7 @@ msgstr "Texto"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Text Color"
-msgstr ""
+msgstr "Color del Texto"
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "Text being translated"
@@ -2444,9 +2386,8 @@ msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
 #: cms/ical.py:432
-#, fuzzy
 msgid "Text view"
-msgstr "Texto"
+msgstr ""
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "Thank you for using ikaaro."
@@ -2484,9 +2425,8 @@ msgid "The documents below await review for publication:"
 msgstr ""
 
 #: cms/users.py:413
-#, fuzzy
 msgid "The email is wrong, please try again."
-msgstr "Ha habido un error, por favor intentalo más tarde."
+msgstr "La dirección de correo electrónico es incorrecta, por favor intentelo de nuevo."
 
 #: cms/Folder.py:985
 msgid "The file must be entered"
@@ -2524,7 +2464,7 @@ msgstr ""
 
 #: cms/WebSite.py:286
 msgid "The passwords do not match."
-msgstr ""
+msgstr "Las claves de acceso no concuerdan."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2608,9 +2548,8 @@ msgid "This folder is empty."
 msgstr "Esta carpeta está vacía."
 
 #: cms/ui/Folder_browse_list.xml.en:0
-#, fuzzy
 msgid "This folder or query is empty."
-msgstr "Esta carpeta está vacía."
+msgstr ""
 
 #: cms/ui/User_profile.xml.en:0
 msgid ""
@@ -2639,9 +2578,8 @@ msgid "Timetable(s) removed successfully."
 msgstr ""
 
 #: cms/ical.py:777
-#, fuzzy
 msgid "Timetables"
-msgstr "Título"
+msgstr ""
 
 #: cms/ical.py:856
 msgid "Timetables updated successfully."
@@ -2710,7 +2648,7 @@ msgstr ""
 
 #: cms/workflow.py:138
 msgid "Transition done."
-msgstr ""
+msgstr "Transición realizada."
 
 #: cms/ui/Folder_translate.xml.en:0
 msgid "Translate"
@@ -2721,7 +2659,6 @@ msgid "Tuesday"
 msgstr ""
 
 #: cms/Folder.py:466
-#, fuzzy
 msgid "Type"
 msgstr "Tipo"
 
@@ -2772,9 +2709,8 @@ msgid "User"
 msgstr "Usuario"
 
 #: cms/users.py:443
-#, fuzzy
 msgid "User added."
-msgstr "Usuarios"
+msgstr "Usuario añadido."
 
 #: cms/root.py:140
 msgid "Users"
@@ -2785,9 +2721,8 @@ msgid "Version 2, June 1991"
 msgstr ""
 
 #: cms/html.py:189
-#, fuzzy
 msgid "Version edited."
-msgstr "Documento editado."
+msgstr "Versión editada."
 
 #: cms/File.py:197
 msgid "Version uploaded."
@@ -2830,11 +2765,11 @@ msgstr ""
 
 #: cms/ical.py:265
 msgid "Week "
-msgstr ""
+msgstr "Semana"
 
 #: cms/ical.py:491
 msgid "Weekly"
-msgstr ""
+msgstr "Semanalmente"
 
 #: cms/ui/Root_about.xml.en:0
 msgid "Welcome to the iKaaro Content Management System"
@@ -2895,9 +2830,8 @@ msgid "You can add other languages support to your application"
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
-#, fuzzy
 msgid "You can do the following actions:"
-msgstr "Usted pertenece a los siguientes grupos:"
+msgstr "Usted puede realizar las siguientes acciones:"
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid ""
@@ -2982,9 +2916,8 @@ msgid "and that you know you can do these things."
 msgstr ""
 
 #: i18n/oracle.py:51
-#, fuzzy
 msgid "are"
-msgstr "Comparar"
+msgstr ""
 
 #: i18n/oracle.py:53
 msgid "aux"
@@ -2999,9 +2932,8 @@ msgid "como"
 msgstr ""
 
 #: i18n/oracle.py:56
-#, fuzzy
 msgid "con"
-msgstr "Acerca de"
+msgstr ""
 
 #: i18n/oracle.py:58
 msgid "del"
@@ -3024,9 +2956,8 @@ msgid "elles"
 msgstr ""
 
 #: i18n/oracle.py:66
-#, fuzzy
 msgid "est"
-msgstr "Sí"
+msgstr ""
 
 #: i18n/oracle.py:67
 msgid "está"
@@ -3056,9 +2987,8 @@ msgid ""
 msgstr ""
 
 #: i18n/oracle.py:74
-#, fuzzy
 msgid "ils"
-msgstr "Detalles"
+msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -3109,9 +3039,8 @@ msgid "por"
 msgstr ""
 
 #: i18n/oracle.py:95
-#, fuzzy
 msgid "que"
-msgstr "Vasco"
+msgstr ""
 
 #: i18n/oracle.py:96
 msgid "qué"
@@ -3136,9 +3065,8 @@ msgid "sur"
 msgstr ""
 
 #: i18n/oracle.py:100
-#, fuzzy
 msgid "that"
-msgstr "Fecha"
+msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -3151,9 +3079,8 @@ msgid "the"
 msgstr ""
 
 #: handlers/Folder.py:195
-#, fuzzy
 msgid "the resource \"%s\" does not exist"
-msgstr "Título"
+msgstr ""
 
 #: i18n/oracle.py:102
 msgid "their"
@@ -3228,244 +3155,3 @@ msgstr ""
 msgid "» Type the url to add:"
 msgstr ""
 
-#~ msgid "%(start)s-%(end)s of %(total)s"
-#~ msgstr "%(start)s-%(end)s de %(total)s"
-
-#~ msgid "-- Choose a language --"
-#~ msgstr "-- Elije un idioma --"
-
-#~ msgid "<b>%s</b> is already a member of this group."
-#~ msgstr "<b>%s</b> ya es un miembro de este grupo."
-
-#, fuzzy
-#~ msgid "<em stl:i18n=\"\">not logged in</em>"
-#~ msgstr "<em>no autenticado</em>"
-
-#, fuzzy
-#~ msgid "Active Item"
-#~ msgstr "Título"
-
-#, fuzzy
-#~ msgid "Add Users"
-#~ msgstr "Usuarios"
-
-#, fuzzy
-#~ msgid "Add a Folder"
-#~ msgstr "Nueva Carpeta"
-
-#~ msgid "Add a new member to the group, type the username:"
-#~ msgstr "Agregar un nuevo miembro al grupo. Teclee nombre de usuario:"
-
-#~ msgid "Add a new user to the application:"
-#~ msgstr "Agregar usuario nuevo a la aplicación:"
-
-#~ msgid "Browse"
-#~ msgstr "Examinar"
-
-#, fuzzy
-#~ msgid "Browse users"
-#~ msgstr "Examinar"
-
-#~ msgid "Catalan"
-#~ msgstr "Catalán"
-
-#, fuzzy
-#~ msgid "Catalog"
-#~ msgstr "Catalán"
-
-#~ msgid "Choose a language"
-#~ msgstr "Elije un idioma"
-
-#, fuzzy
-#~ msgid "Choose interface"
-#~ msgstr "Elije tu idioma:"
-
-#, fuzzy
-#~ msgid "Choose language"
-#~ msgstr "Elije un idioma"
-
-#, fuzzy
-#~ msgid "Choose your interface:"
-#~ msgstr "Elije tu idioma:"
-
-#~ msgid "Choose your language:"
-#~ msgstr "Elije tu idioma:"
-
-#, fuzzy
-#~ msgid "Content-Language: %s\n"
-#~ msgstr "Idioma"
-
-#~ msgid "Copy to present"
-#~ msgstr "Copiar como versión actual."
-
-#, fuzzy
-#~ msgid "Create a New Group"
-#~ msgstr "Crear un grupo nuevo"
-
-#~ msgid "Details"
-#~ msgstr "Detalles"
-
-#, fuzzy
-#~ msgid "Document Calc"
-#~ msgstr "Documento editado."
-
-#, fuzzy
-#~ msgid "Document Writer"
-#~ msgstr "Documento editado."
-
-#, fuzzy
-#~ msgid "Document translations created."
-#~ msgstr "Documento editado."
-
-#~ msgid "English"
-#~ msgstr "Inglés"
-
-#, fuzzy
-#~ msgid "Formatted"
-#~ msgstr "Formato"
-
-#~ msgid "French"
-#~ msgstr "Francés"
-
-#, fuzzy
-#~ msgid "General"
-#~ msgstr "Alemán"
-
-#~ msgid "German"
-#~ msgstr "Alemán"
-
-#, fuzzy
-#~ msgid "Group added."
-#~ msgstr "Usuarios"
-
-#~ msgid "Help"
-#~ msgstr "Ayuda"
-
-#~ msgid "Hungarian"
-#~ msgstr "Húngaro"
-
-#, fuzzy
-#~ msgid "Inactive Item"
-#~ msgstr "Título"
-
-#~ msgid "Japanese"
-#~ msgstr "Japonés"
-
-#, fuzzy
-#~ msgid "Language:"
-#~ msgstr "Idioma"
-
-#, fuzzy
-#~ msgid "Message!"
-#~ msgstr "Catalán"
-
-#~ msgid "New Folder"
-#~ msgstr "Nueva Carpeta"
-
-#, fuzzy
-#~ msgid "New Workplace"
-#~ msgstr "Nueva Carpeta"
-
-#, fuzzy
-#~ msgid "New folder"
-#~ msgstr "Nueva Carpeta"
-
-#, fuzzy
-#~ msgid "No objects selected"
-#~ msgstr "No se ha encontrado ningún objeto."
-
-#, fuzzy
-#~ msgid "No user added"
-#~ msgstr "Usuarios"
-
-#~ msgid "Normal"
-#~ msgstr "Normal"
-
-#~ msgid "Paragraph"
-#~ msgstr "Parágrafo"
-
-#~ msgid "Portuguese"
-#~ msgstr "Portugués"
-
-#, fuzzy
-#~ msgid "Record added."
-#~ msgstr "Usuarios"
-
-#, fuzzy
-#~ msgid "Record edited."
-#~ msgstr "Documento editado."
-
-#, fuzzy
-#~ msgid "Revision copied to present."
-#~ msgstr "Copiar como versión actual."
-
-#, fuzzy
-#~ msgid "Save"
-#~ msgstr "Fecha"
-
-#~ msgid "Spanish"
-#~ msgstr "Español"
-
-#, fuzzy
-#~ msgid "State:"
-#~ msgstr "Fecha"
-
-#, fuzzy
-#~ msgid "The active item"
-#~ msgstr "Título"
-
-#, fuzzy
-#~ msgid "The inactive item"
-#~ msgstr "Título"
-
-#~ msgid "The message"
-#~ msgstr "El mensaje"
-
-#~ msgid "The resource title"
-#~ msgstr "El título del recurso"
-
-#~ msgid "The title"
-#~ msgstr "El título"
-
-#~ msgid "This group is empty."
-#~ msgstr "Este grupo está vacio."
-
-#, fuzzy
-#~ msgid "Title:"
-#~ msgstr "Título"
-
-#, fuzzy
-#~ msgid "Translation saved."
-#~ msgstr "Documento editado."
-
-#, fuzzy
-#~ msgid "User added"
-#~ msgstr "Usuarios"
-
-#, fuzzy
-#~ msgid "User groups edited."
-#~ msgstr "Usuarios"
-
-#, fuzzy
-#~ msgid "Users added"
-#~ msgstr "Usuarios"
-
-#, fuzzy
-#~ msgid "Users removed."
-#~ msgstr "Usuarios"
-
-#~ msgid "You are a member of the following groups:"
-#~ msgstr "Usted pertenece a los siguientes grupos:"
-
-#~ msgid "You don't belong to any group."
-#~ msgstr "Usted no pertenece a ningún grupo."
-
-#, fuzzy
-#~ msgid "format:"
-#~ msgstr "Formato"
-
-#~ msgid "not logged in"
-#~ msgstr "no autenticado"
-
-#~ msgid "read"
-#~ msgstr "leer"

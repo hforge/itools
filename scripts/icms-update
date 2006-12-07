@@ -17,21 +17,50 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from ConfigParser import RawConfigParser
 from optparse import OptionParser
 
 # Import from itools
 import itools
 from itools import uri
 from itools import vfs
-from itools.cms.server import get_config, get_root, ask_confirmation
+from itools.handlers.config import Config
 from itools.vfs.database import DatabaseFS
+from itools.cms.server import get_config, get_root, ask_confirmation
 from itools.cms.server import Server
 
 
 def update(parser, options, target):
+    # Update the config file (renamed from "config.ini" to "config.conf")
+    folder = vfs.open(target)
+    if folder.exists('config.ini'):
+        message = ('Update config file (will rename "config.ini" to'
+                   ' "config.conf")? (y/N)')
+        if ask_confirmation(message) is False:
+            return
+        print '  * Updating the configuration file...'
+        # Load the old config file
+        old_config = RawConfigParser()
+        #old_config.add_section('instance')
+        old_config.read(['%s/config.ini' % target])
+        # Read the different options
+        kw = {}
+        for name in old_config.options('instance'):
+            kw[name] = old_config.get('instance', name)
+        # Remove the obsolete option "root"
+        if 'root' in kw:
+            if 'modules' in kw:
+                del kw['root']
+            else:
+                kw['modules'] = kw['root']
+        # Create the new config file
+        new_config = Config(**kw)
+        new_config.save_state_to('%s/config.conf' % target)
+        # Remove the old confi file
+        folder.remove('config.ini')
+
     # Update the database, add "database/.catalog.bak" and remove
     # "database.bak" (XXX remove for 0.16)
-    folder = vfs.open(target)
     if folder.exists('database.bak'):
         message = ('Update database (will remove "database.bak" and add '
                    '"database/.catalog.bak")? (y/N)')

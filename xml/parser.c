@@ -22,6 +22,7 @@
 #define MISMATCH "mismatched tag: line %d, column %d"
 #define BAD_ENTITY_REF "error parsing entity reference: line %d, column %d"
 #define BAD_CHAR_REF "error parsing character reference: line %d, column %d"
+#define DUP_ATTR "duplicate attribute: line %d, column %d"
 
 #define ERROR(msg, line, column) PyErr_Format(XMLError, msg, line, column)
 
@@ -957,6 +958,15 @@ static PyObject* Parser_iternext(Parser* self) {
                         Py_DECREF(attr_name);
                         return ERROR(INVALID_TOKEN, line, column);
                     }
+                    /* Check for duplicates */
+                    if (PyDict_Contains(namespace_decls, attr_name)) {
+                        Py_DECREF(tag);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
+                        Py_DECREF(attr_name);
+                        Py_DECREF(attr_value);
+                        return ERROR(DUP_ATTR, line, column);
+                    }
                     /* Set the namespace */
                     PyDict_SetItem(namespace_decls, attr_name, attr_value);
                     Py_DECREF(attr_name);
@@ -981,6 +991,14 @@ static PyObject* Parser_iternext(Parser* self) {
                         Py_DECREF(attributes_list);
                         Py_DECREF(namespace_decls);
                         return ERROR(INVALID_TOKEN, line, column);
+                    }
+                    /* Check for duplicates */
+                    if (PyDict_Contains(namespace_decls, Py_None)) {
+                        Py_DECREF(tag);
+                        Py_DECREF(attributes_list);
+                        Py_DECREF(namespace_decls);
+                        Py_DECREF(attr_value);
+                        return ERROR(DUP_ATTR, line, column);
                     }
                     /* Set the default namespace */
                     PyDict_SetItem(namespace_decls, Py_None, attr_value);
@@ -1061,9 +1079,18 @@ static PyObject* Parser_iternext(Parser* self) {
                 attr_name = PyTuple_GetItem(attr_name, 1);
                 /* Find out the attribute value */
                 attr_value = PyTuple_GetItem(attr, 1);
-                /* Update to the dict */
-                /* XXX Check for duplicates */
+                /* Check for duplicates */
                 attr_name = Py_BuildValue("(OO)", attr_uri, attr_name);
+                if (PyDict_Contains(attributes, attr_name)) {
+                    Py_DECREF(attr_name);
+                    Py_DECREF(tag);
+                    Py_DECREF(attributes_list);
+                    Py_DECREF(namespace_decls);
+                    Py_DECREF(attributes);
+                    Py_XDECREF(namespaces);
+                    return ERROR(DUP_ATTR, line, column);
+                }
+                /* Deserialize the value */
                 p_datatype = PyObject_CallObject(p_get_datatype_by_uri, attr_name);
                 if (p_datatype == NULL) {
                     Py_DECREF(attr_name);
@@ -1089,6 +1116,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     Py_XDECREF(namespaces);
                     return NULL;
                 }
+                /* Update the dict */
                 PyDict_SetItem(attributes, attr_name, attr_value2);
                 Py_DECREF(attr_name);
                 Py_DECREF(p_datatype);

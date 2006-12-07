@@ -73,14 +73,16 @@
     </tbody>
   </table>
   <p>
-    <stl:block if="objects">
-      <input type="submit" name=";remove" value="Remove" class="button_delete"
-             onclick="return confirmation();"  />
-      <input type="submit" name=";rename_form" value="Rename.." class="button_rename"/>
-      <input type="submit" name=";copy" value="Copy" class="button_copy"/>
-      <input type="submit" name=";cut" value="Cut" class="button_cut"/>
-    </stl:block>
-    <input type="submit" name=";paste" value="Paste" stl:if="paste" class="button_paste"/>
+    <input type="submit" name=";remove" value="Remove" class="button_delete"
+      onclick="return confirmation();" stl:if="remove" />
+    <input type="submit" name=";rename_form" value="Rename.."
+      class="button_rename" stl:if="rename" />
+    <input type="submit" name=";copy" value="Copy" class="button_copy"
+      stl:if="copy" />
+    <input type="submit" name=";cut" value="Cut" class="button_cut"
+      stl:if="cut" />
+    <input type="submit" name=";paste" value="Paste" class="button_paste"
+      stl:if="paste" />
   </p>
 </form>
 

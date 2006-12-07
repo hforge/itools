@@ -391,6 +391,11 @@ class UserFolder(Folder):
     # Back-Office
     #######################################################################
 
+    rename_form__access__ = False
+    rename__access__ = False
+    cut__access__ = False
+
+
     #######################################################################
     # Add
     new_user_form__access__ = 'is_admin'

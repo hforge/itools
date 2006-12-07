@@ -478,10 +478,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
                             'no': (sort == 'none')})
         namespace['columns'] = aux
 
-        # Paste?
-        cp = context.get_cookie('ikaaro_cp')
-        namespace['paste'] = cp is not None
-
         return namespace
 
 
@@ -536,6 +532,22 @@ class Folder(Handler, BaseFolder, CalendarAware):
             {'id': x['id'], 'title': self.gettext(x['title']),
              'selected': x['id'] == field or None}
             for x in self.get_search_criteria() ]
+
+        # Actions
+        user = context.user
+        ac = self.get_access_control()
+        namespace['remove'] = False
+        namespace['rename'] = False
+        namespace['copy'] = False
+        namespace['cut'] = False
+        namespace['paste'] = False
+        if namespace['total']:
+            namespace['remove'] = ac.is_access_allowed(user, self, 'remove')
+            namespace['rename'] = ac.is_access_allowed(user, self, 'rename')
+            namespace['copy'] = ac.is_access_allowed(user, self, 'copy')
+            namespace['cut'] = ac.is_access_allowed(user, self, 'cut')
+        if context.has_cookie('ikaaro_cp'):
+            namespace['paste'] = ac.is_access_allowed(user, self, 'paste')
 
         handler = self.get_handler('/ui/Folder_browse_list.xml')
         return stl(handler, namespace)

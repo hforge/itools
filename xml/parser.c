@@ -363,9 +363,7 @@ PyObject* xml_prefix_name(Parser* self) {
         PyObject* name = xml_name(self);
         if (name == NULL)
             return NULL;
-        PyObject* result = Py_BuildValue("(s#O)", base, size, name);
-        Py_DECREF(name);
-        return result;
+        return Py_BuildValue("(s#N)", base, size, name);
     }
 
     /* No Prefix */
@@ -653,12 +651,8 @@ PyObject* parse_document_type(Parser* self) {
     self->cursor++;
     self->column++;
 
-    PyObject* result = Py_BuildValue("(OOOO)", name, system_id, public_id,
-                                     has_internal_subset);
-    Py_DECREF(name);
-    Py_DECREF(public_id);
-    Py_DECREF(system_id);
-    return result;
+    return Py_BuildValue("(NNNO)", name, system_id, public_id,
+                         has_internal_subset);
 }
 
 
@@ -733,9 +727,7 @@ static PyObject* Parser_iternext(Parser* self) {
             if (value == NULL)
                 return ERROR(MISMATCH, line, column);
  
-            result = Py_BuildValue("(iOi)", END_ELEMENT, value, line);
-            Py_DECREF(value);
-            return result;
+            return Py_BuildValue("(iNi)", END_ELEMENT, value, line);
         } else if (c == '!') {
             /* "<!" */
             self->cursor++;
@@ -771,9 +763,7 @@ static PyObject* Parser_iternext(Parser* self) {
                 value = parse_document_type(self);
                 if (value == NULL)
                     return ERROR(INVALID_TOKEN, line, column);
-                result = Py_BuildValue("(iOi)", DOCUMENT_TYPE, value, line);
-                Py_DECREF(value);
-                return result;
+                return Py_BuildValue("(iNi)", DOCUMENT_TYPE, value, line);
             } else if (c == '[') {
                 /* CData section */
                 if (read_string(self, "[CDATA["))
@@ -857,12 +847,8 @@ static PyObject* Parser_iternext(Parser* self) {
                 }
                 self->cursor += 2;
                 self->column += 2;
-                result = Py_BuildValue("(i(OOO)i)", XML_DECL, version, encoding,
-                                       standalone, line);
-                Py_DECREF(version);
-                Py_DECREF(encoding);
-                Py_DECREF(standalone);
-                return result;
+                return Py_BuildValue("(i(NNN)i)", XML_DECL, version, encoding,
+                                     standalone, line);
             } else {
                 value = xml_name(self);
                 if (value == NULL)
@@ -875,7 +861,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     if ((self->cursor[0] == '?') && (self->cursor[1] == '>'))
                         break;
                 self->cursor += 2;
-                return Py_BuildValue("(i(Os#)i)", PI, value, base, size, line);
+                return Py_BuildValue("(i(Ns#)i)", PI, value, base, size, line);
             }
         } else {
             /* Start Element */
@@ -1036,9 +1022,7 @@ static PyObject* Parser_iternext(Parser* self) {
                         PyTuple_SetItem(attr_name, 0, tag_prefix);
                     }
                     PyList_Append(attributes_list,
-                        Py_BuildValue("(OO)", attr_name, attr_value));
-                    Py_DECREF(attr_name);
-                    Py_DECREF(attr_value);
+                        Py_BuildValue("(NN)", attr_name, attr_value));
                 }
             }
 
@@ -1125,17 +1109,14 @@ static PyObject* Parser_iternext(Parser* self) {
             }
 
             if (namespaces == NULL)
-                result = Py_BuildValue("(i(OOO{})i)", START_ELEMENT, tag_uri,
+                result = Py_BuildValue("(i(OON{})i)", START_ELEMENT, tag_uri,
                                        tag_name, attributes, line);
-            else {
-                result = Py_BuildValue("(i(OOOO)i)", START_ELEMENT, tag_uri,
+            else
+                result = Py_BuildValue("(i(OONN)i)", START_ELEMENT, tag_uri,
                                        tag_name, attributes, namespaces, line);
-                Py_DECREF(namespaces);
-            }
             Py_DECREF(tag);
             Py_DECREF(attributes_list);
             Py_DECREF(namespace_decls);
-            Py_DECREF(attributes);
             return result;
         }
     } else if (c == '&') {
@@ -1148,17 +1129,13 @@ static PyObject* Parser_iternext(Parser* self) {
             value = xml_char_reference(self);
             if (value == NULL)
                 return ERROR(BAD_CHAR_REF, line, column);
-            result = Py_BuildValue("(iOi)", TEXT, value, line);
-            Py_DECREF(value);
-            return result;
+            return Py_BuildValue("(iNi)", TEXT, value, line);
         } else {
             /* Entity reference */
             value = xml_entity_reference(self);
             if (value == NULL)
                 return ERROR(BAD_ENTITY_REF, line, column);
-            result = Py_BuildValue("(iOi)", TEXT, value, line);
-            Py_DECREF(value);
-            return result;
+            return Py_BuildValue("(iNi)", TEXT, value, line);
         }
     } else {
         /* Text */

@@ -1021,8 +1021,9 @@ static PyObject* Parser_iternext(Parser* self) {
                         Py_INCREF(tag_prefix);
                         PyTuple_SetItem(attr_name, 0, tag_prefix);
                     }
-                    PyList_Append(attributes_list,
-                        Py_BuildValue("(NN)", attr_name, attr_value));
+                    attr = Py_BuildValue("(NN)", attr_name, attr_value);
+                    PyList_Append(attributes_list, attr);
+                    Py_DECREF(attr);
                 }
             }
 

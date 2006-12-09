@@ -75,6 +75,8 @@ class Node(object):
 
 
     def acquire(self, name):
+        if self.has_handler(name):
+            return self.get_handler(name)
         if self.parent is None:
             raise AcquisitionError, name
         return self.parent.acquire(name)

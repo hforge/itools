@@ -23,7 +23,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import Path, get_absolute_reference
-from itools.vfs import api as vfs
+from itools.vfs import vfs
 from base import Handler
 import registry
 

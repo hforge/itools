@@ -24,7 +24,7 @@ from subprocess import call
 
 # Import from itools
 from itools.uri import Path, Reference
-from api import READ, WRITE
+from vfs import READ, WRITE
 from base import BaseFS
 from registry import register_file_system
 

@@ -24,7 +24,7 @@ from cStringIO import StringIO
 import datetime
 
 # Import from itools
-from itools.vfs import api as vfs
+from itools.vfs import vfs
 from itools.handlers.registry import register_handler_class
 from base import Handler
 

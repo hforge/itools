@@ -21,7 +21,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import uri, Path
-from itools.vfs import api as vfs
+from itools.vfs import vfs
 from exceptions import AcquisitionError
 from transactions import get_transaction
 

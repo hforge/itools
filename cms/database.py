@@ -22,8 +22,8 @@ from os import remove, rename
 from subprocess import call
 
 # Import from itools
-from file import FileFS
-from registry import register_file_system
+from itools.vfs.file import FileFS
+from itools.vfs.registry import register_file_system
 
 
 def get_reference_on_change(reference):

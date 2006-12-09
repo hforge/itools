@@ -21,10 +21,10 @@ import sys
 
 # Import from itools
 from itools import uri
-from itools.vfs.database import DatabaseFS
 from itools.handlers.config import Config
 from itools.handlers.transactions import get_transaction
 from itools import web
+from itools.cms.database import DatabaseFS
 from itools.cms.handlers import Metadata
 from itools.cms import registry
 

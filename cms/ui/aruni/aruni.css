@@ -438,3 +438,22 @@ dl.new_resource_thumb { width: 20em; }
 .nav_active {
   font-weight: bold;
 }
+
+/* Tables sorted by column */
+th a.sort_up {
+  background: transparent url(images/order-up.png) right top no-repeat;
+  padding-right: 20px;
+  text-decoration: none;
+}
+
+th a.sort_down {
+  background: transparent url(images/order-down.png) right top no-repeat;
+  padding-right: 20px;
+  text-decoration: none;
+}
+
+th a.sort_none {
+  background: transparent url(images/order-none.png) right top no-repeat;
+  padding-right: 20px;
+  text-decoration: none;
+}

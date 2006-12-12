@@ -44,7 +44,7 @@ from LocaleAware import LocaleAware
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import checkid, reduce_string
-from widgets import Breadcrumb, sortcontrol
+from widgets import Breadcrumb, table_head
 from registry import register_object_class, get_object_class
 
 
@@ -460,23 +460,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
             namespace['batch_next'] = context.uri.replace(batchstart=str(end))
 
         # The column headers
-        columns = [(None, None), (None, None), ('name', u'Name'),
-                   ('title', u'Title'),
-                   ('format', u'Type'), ('mtime', u'Date'), (None, u'Size'),
-                   ('workflow_state', u'State')]
-        aux = []
-        for name, title in columns:
-            if title is None:
-                aux.append(None)
-            elif name is None:
-                aux.append({'title': self.gettext(title), 'href': None})
-            else:
-                href, sort = sortcontrol(name, sortby, sortorder)
-                aux.append({'title': title, 'href': href,
-                            'up': (sort == 'up'),
-                            'down': (sort == 'down'),
-                            'no': (sort == 'none')})
-        namespace['columns'] = aux
+        columns = [
+            (None, None), (None, None), ('name', u'Name'),
+            ('title', u'Title'), ('format', u'Type'), ('mtime', u'Date'),
+            (None, u'Size'), ('workflow_state', u'State')]
+        namespace['thead'] = table_head(columns, sortby, sortorder,
+                                        self.gettext)
 
         return namespace
 

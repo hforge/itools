@@ -22,6 +22,8 @@ from string import Template
 # Import from itools
 from itools.uri import Path
 from itools.handlers.Folder import Folder
+from itools.xhtml import XHTML
+from itools.stl import stl
 from itools.web import get_context
 
 # Import from itools.cms
@@ -30,7 +32,50 @@ from Handler import Handler
 
 
 
-def sortcontrol(column, sortby, sortorder):
+###########################################################################
+# Table
+###########################################################################
+table_head_template_string = """
+<thead xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <tr>
+    <th stl:repeat="column columns" valign="bottom">
+      <stl:block if="column">
+        <stl:block if="not column/href">${column/title}</stl:block>
+
+        <a stl:if="column/href" href="${column/href}"
+          class="sort_${column/order}">${column/title}</a>
+      </stl:block>
+    </th>
+  </tr>
+</thead>
+"""
+
+table_head_template = XHTML.Document()
+table_head_template.load_state_from_string(table_head_template_string)
+
+
+
+def table_head(columns, sortby, sortorder, gettext=lambda x: x):
+    # Build the namespace
+    namespace = {}
+    namespace['columns'] = []
+    for name, title in columns:
+        if title is None:
+            namespace['columns'].append(None)
+        elif name is None:
+            namespace['columns'].append({
+                'title': gettext(title), 'href': None})
+        else:
+            href, sort = table_sortcontrol(name, sortby, sortorder)
+            namespace['columns'].append(
+                {'title': title, 'href': href, 'order': sort})
+    # Go
+    return stl(table_head_template, namespace)
+
+
+
+def table_sortcontrol(column, sortby, sortorder):
     """
     Returns an html snippet with a link that lets to order a column
     in a table.
@@ -57,6 +102,9 @@ def sortcontrol(column, sortby, sortorder):
     return href, value
 
 
+###########################################################################
+# Breadcrumb
+###########################################################################
 class Breadcrumb(object):
     """
     Instances of this class will be used as namespaces for STL templates.

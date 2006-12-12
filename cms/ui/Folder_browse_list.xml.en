@@ -32,20 +32,7 @@
   </div>
   <table border="0" cellspacing="2" cellpadding="2" stl:if="objects"
     summary="listing of folder content or query result">
-    <thead>
-      <tr>
-        <th stl:repeat="column columns" valign="bottom">
-          <stl:block if="column">
-            ${column/title}
-            <a stl:if="column/href" href="${column/href}">
-              <img src="/ui/images/order-none.png" stl:if="column/no" />
-              <img src="/ui/images/order-up.png" stl:if="column/up" />
-              <img src="/ui/images/order-down.png" stl:if="column/down" />
-            </a>
-          </stl:block>
-        </th>
-      </tr>
-    </thead>
+    ${thead}
     <tbody>
       <tr stl:repeat="object objects">
         <td>

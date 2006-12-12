@@ -72,7 +72,7 @@ class CSV(Text, iCSV):
     class_id = 'text/comma-separated-values'
     class_title = u'Comma Separated Values'
     class_views = [['view'],
-                   ['externaledit'],
+                   ['externaledit', 'upload_form'],
                    ['edit_metadata_form'],
                    ['history_form']]
 

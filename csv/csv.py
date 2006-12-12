@@ -450,4 +450,8 @@ class CSV(Text):
         return documents
 
 
+    def get_unique_values(self, name):
+        return set([ x.get_value(name) for x in self.lines ])
+
+
 register_handler_class(CSV)

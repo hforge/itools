@@ -34,14 +34,13 @@ from message import Message
 
 class Request(Message):
 
-    def get_skeleton(self, path='/'):
-        return 'GET %s HTTP/1.1\r\n\r\n' % path
+    def get_skeleton(self, method='GET', path='/'):
+        return '%s %s HTTP/1.1\r\n\r\n' % (method, path)
 
 
     def _load_state(self, resource):
-        # XXX
-        ## list(self.non_blocking_load(resource))
-        pass
+        for x in self.non_blocking_load(resource):
+            pass
 
 
     def non_blocking_load(self, file):
@@ -76,6 +75,7 @@ class Request(Message):
                 yield None
                 continue
             # End of headers?
+            line = line.strip()
             if not line:
                 break
             # Parse the line

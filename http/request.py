@@ -106,6 +106,7 @@ class Request(Message):
                 yield None
                 continue
             # End of headers?
+            line = line.strip()
             if not line:
                 break
             # Parse the line

@@ -101,6 +101,26 @@
   - Improving unit tests. By Hervé Cauwelier.
 
 
+0.9.5 (2006/12/13)
+
+ Bugs fixed
+ - Fix encoding detection in PO files (found by Josef Meile).
+
+
+0.9.4 (2005/12/08)
+
+  URI
+  - Add the scheme "mailto" to the the "Mailto".
+
+  Resources
+  - Fix resources for Windows.
+  - New method "traverse2" to folder resources.
+
+  Handlers
+  - Fix FileName to detect extensions in uppercase.
+  - Fix "copy_handler" (and speed-up).
+
+
 0.9.3 (2005/08/02)
 
   Minor features

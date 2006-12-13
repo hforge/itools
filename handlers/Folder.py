@@ -302,12 +302,13 @@ class Folder(Handler):
     # Other methods
     def copy_handler(self):
         resource = memory.Folder()
-        for handler in self.traverse():
-            if handler.real_handler is not None:
-                continue
-            if handler is not self:
-                path = self.get_pathto(handler)
-                resource.set_resource(path, handler.resource)
+        for handler, context in self.traverse2():
+            if handler.real_handler is None:
+                if handler is not self:
+                    path = self.get_pathto(handler)
+                    resource.set_resource(path, handler.resource)
+            else:
+                context.skip = True
         self.save_state(resource)
         return self.__class__(resource)
 

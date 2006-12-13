@@ -17,12 +17,13 @@
 
 # Import from itools
 from itools import uri
+from itools.uri.generic import Query
 from itools.schemas import get_datatype
 from itools.resources import memory
 from itools.i18n.accept import AcceptCharset, AcceptLanguage
+from itools.http.request import Request
+from itools.http.entities import Entity
 from itools.web.context import Context, set_context
-from itools.web.request import Request
-from itools.web.entities import Entity
 
 
 def init(zope_request):
@@ -35,11 +36,11 @@ def init(zope_request):
     query = zope_request.environ.get('QUERY_STRING', '')
     if query:
         request_uri = '%s?%s' % (request_uri, query)
-    # The request hqndler
+    # The request handler
     request = Request(method=request_method, uri=request_uri)
 
     # The query
-    query = uri.generic.Query(query)
+    query = Query.decode(query)
 
     # The header
     # XXX Check header X-Base-Path
@@ -68,7 +69,7 @@ def init(zope_request):
         else:
             type = ''
         if type == 'application/x-www-form-urlencoded':
-            parameters = uri.generic.Query(body)
+            parameters = Query.decode(body)
         elif type.startswith('multipart/'):
             boundary = type_parameters.get('boundary')
             boundary = '--%s' % boundary

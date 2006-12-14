@@ -300,6 +300,8 @@ def process(node, stack, repeat_stack, encoding='UTF-8', prefix=None):
         data = node.encode(encoding)
         # Process "${...}" expressions
         data, kk = substitute(data, stack, repeat_stack, encoding)
+        if data is None:
+            return []
         return [data]
     elif isinstance(node, XML.Comment):
         return [node.to_str()]

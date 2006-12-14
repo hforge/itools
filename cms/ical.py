@@ -123,7 +123,7 @@ class Calendar(Text, icalendar):
 
     # Get namespace for one selected day, filling given fields
     def get_events(self, date, method='monthly_view', timetable=None, 
-                   fields=None, resource_name=None):
+                   fields=None, resource_name=None, show_conflicts=False):
         # If no date, return []
         if date is None:
             return []
@@ -144,6 +144,12 @@ class Calendar(Text, icalendar):
             base_url = '%stimetable=%s&' % (base_url, index)
         else:
             events = self.get_events_in_date(date)
+
+        if show_conflicts:
+            conflicts = self.get_conflicts(date)
+            conflicts_list = set()
+            if conflicts:
+                [conflicts_list.update(uids) for uids in conflicts]
 
         # For each event, fill namespace
         namespace = []
@@ -194,6 +200,10 @@ class Calendar(Text, icalendar):
                 if field not in ('DTSTART', 'DTEND'):
                     values = event.get_property_values(field)
                     ns_event[field] = self.ns_values(values)
+
+            # Set a class for conflicting events
+            if show_conflicts and uid in conflicts_list:
+                ns_event['STATUS'] = 'cal_conflict'
 
             ns_event['url'] = '%sdate=%s&uid=%s&method=%s'\
                               % (base_url, Date.encode(date), uid, method)
@@ -385,7 +395,7 @@ class Calendar(Text, icalendar):
 
     # Get a week beginning at start date as a list to be given to namespace
     def get_timetables_ns(self, start, method='weekly_view', 
-                          resource_name=None, ndays=7):
+                          resource_name=None, ndays=7, show_conflicts=False):
         ns = []
         # Initialize url and parameters
         base_url = ';edit_event_form?'
@@ -411,7 +421,8 @@ class Calendar(Text, icalendar):
                          % (base_param, Date.encode(day), index)
                 ns_day['url'] = '%s%s' % (base_url, params)
                 ns_day['events'] = self.get_events(day, method, timetable, 
-                                                   resource_name=resource_name)
+                                                   resource_name=resource_name,
+                                                   show_conflicts=show_conflicts)
                 ns_days.append(ns_day)
                 day = day + timedelta(1)
             ns_timetable['days'] = ns_days
@@ -984,10 +995,10 @@ class CalendarAware(object):
 
         # Get conflicts in events if activated
         if show_conflicts:
-             conflicts = calendar.get_conflicts(c_date)
-             conflicts_list = set()
-             if conflicts:
-                 [conflicts_list.update(uids) for uids in conflicts]
+            conflicts = calendar.get_conflicts(c_date)
+            conflicts_list = set()
+            if conflicts:
+                [conflicts_list.update(uids) for uids in conflicts]
 
         ###############################################################
         # Organize events in rows

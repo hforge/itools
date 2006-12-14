@@ -8,25 +8,24 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-12-05 17:12+CET\n"
-"PO-Revision-Date: 2006-07-27 12:09+0200\n"
+"PO-Revision-Date: 2006-12-14 14:18+0100\n"
 "Last-Translator: nderam <hcauwelier@oursours.net>\n"
 "Language-Team:  <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: cms/root.py:397
-#, fuzzy
 msgid "$n handlers have been indexed in $time seconds."
-msgstr "$n objets ont été réindexés."
+msgstr "$n objets ont été réindexés en $time secondes."
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${DESCRIPTION}"
-msgstr ""
+msgstr "${DESCRIPTION}"
 
 #: cms/ui/WebSite_search.xml.en:0
 msgid "${batch/control}"
-msgstr ""
+msgstr "${batch/control}"
 
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid ""
@@ -34,26 +33,29 @@ msgid ""
 "\"${batch_previous}\">&lt;&lt;</a> <a stl:if=\"batch_next\" href="
 "\"${batch_next}\">>></a>"
 msgstr ""
+"${batchstart}-${batchend} de ${total} <a stl:if=\"batch_previous\" href="
+"\"${batch_previous}\">&lt;&lt;</a> <a stl:if=\"batch_next\" href="
+"\"${batch_next}\">>></a>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${body}"
-msgstr ""
+msgstr "${body}"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${calendar/name}"
-msgstr ""
+msgstr "${calendar/name}"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "${class_title}"
-msgstr ""
+msgstr "${class_title}"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${col/SUMMARY}"
-msgstr ""
+msgstr "${col/SUMMARY}"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${col/new_value}"
-msgstr ""
+msgstr "${col/new_value}"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid ""
@@ -64,84 +66,88 @@ msgid ""
 ">\n"
 "            </a>"
 msgstr ""
+"${column/title} <a stl:if=\"column/href\" href=\"${column/href}\">\n"
+"              <img stl:if=\"column/no\" src=\"/ui/images/order-none.png\"/>\n"
+"              <img stl:if=\"column/up\" src=\"/ui/images/order-up.png\"/>\n"
+"              <img stl:if=\"column/down\" src=\"/ui/images/order-down.png\"/"
+">\n"
+"            </a>"
 
 #: cms/ui/CSV_view.xml.en:0
 msgid "${column}"
-msgstr ""
+msgstr "${column}"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${comment/value}"
-msgstr ""
+msgstr "${comment/value}"
 
 #: cms/ui/Archive_view.xml.en:0
-#, fuzzy
 msgid "${contents}"
-msgstr "Contenu"
+msgstr "${contents}"
 
 #: cms/ui/Text_edit.xml.en:0
 msgid "${data}"
-msgstr ""
+msgstr "${data}"
 
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid "${day/name}"
-msgstr ""
+msgstr "${day/name}"
 
 #: cms/ui/Handler_edit_metadata.xml.en:0
-#, fuzzy
 msgid "${description}"
-msgstr "Description"
+msgstr "${description}"
 
 #: cms/ui/User_tasks.xml.en:0
 msgid "${doc/title}"
-msgstr ""
+msgstr "${doc/title}"
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "${encoding/title}"
-msgstr ""
+msgstr "${encoding/title}"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "${event/SUMMARY}"
-msgstr ""
+msgstr "${event/SUMMARY}"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${field/title}"
-msgstr ""
+msgstr "${field/title}"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "${folder/name>}"
-msgstr ""
+msgstr "${folder/name>}"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "${folder/title}"
-msgstr ""
+msgstr "${folder/title}"
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "${group/path}:"
-msgstr ""
+msgstr "${group/path}:"
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "${group/users}"
-msgstr ""
+msgstr "${group/users}"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${item/name}"
-msgstr ""
+msgstr "${item/name}"
 
 #: cms/ui/epoz.xml.en:0
 msgid "${js_data}"
-msgstr ""
+msgstr "${js_data}"
 
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "${lang/name}"
-msgstr ""
+msgstr "${lang/name}"
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "${language/code}"
-msgstr ""
+msgstr "${language/code}"
 
 #: cms/ui/User_edit.xml.en:0
 msgid "${language/name}"
-msgstr ""
+msgstr "${language/name}"
 
 #: cms/ui/PO_edit.xml.en:0
 msgid ""
@@ -151,182 +157,179 @@ msgid ""
 "\"${messages_last}\">>></a> <textarea name=\"msgid\" cols=\"65\" rows=\"8\" "
 "readonly=\"\">${msgid}></textarea>"
 msgstr ""
+"${messages_index} / ${messages_total} <a href=\"${messages_first}\">&lt;&lt;"
+"</a> <a style=\"font-size: 10px\" href=\"${messages_previous}\">&lt;</a> <a "
+"style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a href="
+"\"${messages_last}\">>></a> <textarea name=\"msgid\" cols=\"65\" rows=\"8\" "
+"readonly=\"\">${msgid}></textarea>"
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "${message}"
-msgstr "Message"
+msgstr "${message}"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${metadata/title}"
-msgstr ""
+msgstr "${metadata/title}"
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "${msgid}"
-msgstr ""
+msgstr "${msgid}"
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "${msgstr}"
-msgstr ""
+msgstr "${msgstr}"
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "${navigation}"
-msgstr "Navigation"
+msgstr "${navigation}"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/class_title}"
-msgstr ""
+msgstr "${object/class_title}"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/mtime}"
-msgstr ""
+msgstr "${object/mtime}"
 
 #: cms/ui/Folder_rename.xml.en:0
-#, fuzzy
 msgid "${object/name}"
-msgstr "Objets renommés."
+msgstr "${object/name}"
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid "${object/object_type}"
-msgstr ""
+msgstr "${object/object_type}"
 
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "${object/short_title}"
-msgstr ""
+msgstr "${object/short_title}"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/size}"
-msgstr ""
+msgstr "${object/size}"
 
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "${object/title_or_name}"
-msgstr ""
+msgstr "${object/title_or_name}"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/title}"
-msgstr ""
+msgstr "${object/title}"
 
 #: cms/ui/Folder_browse_list.xml.en:0
-#, fuzzy
 msgid "${object/workflow_state}"
-msgstr "État de workflow"
+msgstr "${object/workflow_state}"
 
 #: cms/ui/Database_view.xml.en:0
 msgid "${object}"
-msgstr ""
+msgstr "${object}"
 
 #: cms/ui/CSV_view.xml.en:0
 msgid "${repeat/row/index}"
-msgstr ""
+msgstr "${repeat/row/index}"
 
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/date}"
-msgstr ""
+msgstr "${revision/date}"
 
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/size}"
-msgstr ""
+msgstr "${revision/size}"
 
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/username}"
-msgstr ""
+msgstr "${revision/username}"
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "${role/title}"
-msgstr ""
+msgstr "${role/title}"
 
 #: cms/ui/HTML_edit.xml.en:0
 msgid "${rte}"
-msgstr ""
+msgstr "${rte}"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${s/value}"
-msgstr ""
+msgstr "${s/value}"
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/description}"
-msgstr ""
+msgstr "${selected/description}"
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/format}"
-msgstr ""
+msgstr "${selected/format}"
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/title_or_name}"
-msgstr ""
+msgstr "${selected/title_or_name}"
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/width}x${selected/height}"
-msgstr ""
+msgstr "${selected/width}x${selected/height}"
 
 #: cms/ui/User_translator.xml.en:0
 msgid "${skill/from}"
-msgstr ""
+msgstr "${skill/from}"
 
 #: cms/ui/User_translator.xml.en:0
 msgid "${skill/to}"
-msgstr ""
+msgstr "${skill/to}"
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "${text}"
-msgstr ""
+msgstr "${text}"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "${timetable/timetable}"
-msgstr ""
+msgstr "${timetable/timetable}"
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid "${title}"
-msgstr "Titre"
+msgstr "${title}"
 
 #: cms/ui/Root_internal_server_error.xml.en:0
 msgid "${traceback}"
-msgstr ""
+msgstr "${traceback}"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/comments}"
-msgstr ""
+msgstr "${transition/comments}"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
-#, fuzzy
 msgid "${transition/date}"
-msgstr "Action effectuée."
+msgstr "${transition/date}"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/description}"
-msgstr ""
+msgstr "${transition/description}"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/title_or_name}"
-msgstr ""
+msgstr "${transition/title_or_name}"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
-#, fuzzy
 msgid "${transition/user}"
-msgstr "traduction"
+msgstr "${transition/user}"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${tt/start}"
-msgstr ""
+msgstr "${tt/start}"
 
 #: cms/ui/Folder_new_resource.xml.en:0
-#, fuzzy
 msgid "${type/description}"
-msgstr "Description"
+msgstr "${type/description}"
 
 #: cms/ui/Folder_new_resource.xml.en:0
 msgid "${type/title}"
-msgstr ""
+msgstr "${type/title}"
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "${user/title_or_name}"
-msgstr ""
+msgstr "${user/title_or_name}"
 
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid "${week/month}"
-msgstr ""
+msgstr "${week/month}"
 
 #: cms/Handler.py:174
 msgid "%.01f KB"
@@ -376,9 +379,8 @@ msgstr ""
 "vides.)"
 
 #: cms/ui/Text_new_instance.xml.en:0
-#, fuzzy
 msgid "(optional)"
-msgstr "Commentaires (optionnel)&nbsp;:"
+msgstr "(optionnel)"
 
 #: ical/icalendar.py:311
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
@@ -401,18 +403,24 @@ msgid ""
 "<a href=\"${previous_month}\">«</a> ${current_month} <a href=\"${next_month}"
 "\">»</a>"
 msgstr ""
+"<a href=\"${previous_month}\">«</a> ${current_month} <a href=\"${next_month}"
+"\">»</a>"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid ""
 "<a href=\"${previous_week}\">«</a> ${current_week} <a href=\"${next_week}"
 "\">»</a>"
 msgstr ""
+"<a href=\"${previous_week}\">«</a> ${current_week} <a href=\"${next_week}"
+"\">»</a>"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid ""
 "<a href=\"${previous_year}\">«</a> ${current_year} <a href=\"${next_year}"
 "\">»</a>"
 msgstr ""
+"<a href=\"${previous_year}\">«</a> ${current_year} <a href=\"${next_year}"
+"\">»</a>"
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid ""
@@ -423,7 +431,6 @@ msgstr ""
 "\">Télécharger External Editor pour Unix et MacOSX</a>."
 
 #: cms/ui/Text_externaledit.xml.en:0
-#, fuzzy
 msgid ""
 "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe"
 "\">Download\n"
@@ -453,18 +460,27 @@ msgid ""
 "\"${selected/next}\">></a> <span id=\"gallery_next\" stl:if=\"not selected/"
 "next\">></span>"
 msgstr ""
+"<a id=\"gallery_previous\" stl:if=\"selected/previous\" href=\"${selected/"
+"previous}\">&lt;</a> <span id=\"gallery_previous\" stl:if=\"not selected/"
+"previous\">&lt;</span> <a id=\"gallery_next\" stl:if=\"selected/next\" href="
+"\"${selected/next}\">></a> <span id=\"gallery_next\" stl:if=\"not selected/"
+"next\">></span>"
 
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
 "<a stl:if=\"batch/previous\" href=\"${batch/previous}\">&lt;&lt;</a> <a stl:"
 "if=\"batch/next\" href=\"${batch/next}\">>></a>"
 msgstr ""
+"<a stl:if=\"batch/previous\" href=\"${batch/previous}\">&lt;&lt;</a> <a stl:"
+"if=\"batch/next\" href=\"${batch/next}\">>></a>"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid ""
 "<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/"
 "evt_value}</a> <span stl:if=\"col/SUMMARY\">${col/SUMMARY}</span>"
 msgstr ""
+"<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/"
+"evt_value}</a> <span stl:if=\"col/SUMMARY\">${col/SUMMARY}</span>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -472,12 +488,17 @@ msgid ""
 "short_name}</a> <span stl:if=\"not item/url\" title=\"${item/name}\">${item/"
 "short_name}</span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 msgstr ""
+"<a stl:if=\"item/url\" title=\"${item/name}\" href=\"${item/url}\">${item/"
+"short_name}</a> <span stl:if=\"not item/url\" title=\"${item/name}\">${item/"
+"short_name}</span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid ""
 "<a stl:if=\"object/is_folder\" href=\"${object/url}\">${object/name}</a> "
 "<stl:inline stl:if=\"not object/is_folder\">${object/name}</stl:inline>"
 msgstr ""
+"<a stl:if=\"object/is_folder\" href=\"${object/url}\">${object/name}</a> "
+"<stl:inline stl:if=\"not object/is_folder\">${object/name}</stl:inline>"
 
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
@@ -486,6 +507,10 @@ msgid ""
 "class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">"
 "${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
 msgstr ""
+"<img width=\"16\" height=\"16\" src=\"${object/icon}\"/> <a class="
+"\"result_title\" href=\"${object/url}\">${object/title}</a> <br/> <span "
+"class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">"
+"${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid ""
@@ -501,6 +526,17 @@ msgid ""
 "\"text\" value=\"${DTEND_minutes}\"/>\n"
 "      </span>"
 msgstr ""
+"<input name=\"DTEND_day\" id=\"DTEND_day\" size=\"2\" type=\"text\" value="
+"\"${DTEND_day}\"/> / <input name=\"DTEND_month\" id=\"DTEND_month\" size=\"2"
+"\" type=\"text\" value=\"${DTEND_month}\"/> / <input name=\"DTEND_year\" id="
+"\"DTEND_year\" size=\"4\" type=\"text\" value=\"${DTEND_year}\"/> <input id="
+"\"trigger_dtend\" type=\"button\" value=\"...\"/> <span style=\"padding-"
+"left: 10px\">\n"
+"        <input name=\"DTEND_hours\" id=\"DTSTART_hours\" size=\"2\" type="
+"\"text\" value=\"${DTEND_hours}\"/> :\n"
+"        <input name=\"DTEND_minutes\" id=\"DTSTART_minutes\" size=\"2\" type="
+"\"text\" value=\"${DTEND_minutes}\"/>\n"
+"      </span>"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid ""
@@ -516,54 +552,81 @@ msgid ""
 "type=\"text\" value=\"${DTSTART_minutes}\"/>\n"
 "      </span>"
 msgstr ""
+"<input name=\"DTSTART_day\" id=\"DTSTART_day\" size=\"2\" type=\"text\" "
+"value=\"${DTSTART_day}\"/> / <input name=\"DTSTART_month\" id=\"DTSTART_month"
+"\" size=\"2\" type=\"text\" value=\"${DTSTART_month}\"/> / <input name="
+"\"DTSTART_year\" id=\"DTSTART_year\" size=\"4\" type=\"text\" value="
+"\"${DTSTART_year}\"/> <input id=\"trigger_dtstart\" type=\"button\" value="
+"\"...\"/> <span style=\"padding-left: 10px\">\n"
+"        <input name=\"DTSTART_hours\" id=\"DTSTART_hours\" size=\"2\" type="
+"\"text\" value=\"${DTSTART_hours}\"/> :\n"
+"        <input name=\"DTSTART_minutes\" id=\"DTSTART_minutes\" size=\"2\" "
+"type=\"text\" value=\"${DTSTART_minutes}\"/>\n"
+"      </span>"
 
 #: cms/ui/Folder_translate.xml.en:0
 msgid ""
 "<input name=\"names\" type=\"hidden\" value=\"${document/name}\"/> "
 "${document/title_or_name}"
 msgstr ""
+"<input name=\"names\" type=\"hidden\" value=\"${document/name}\"/> "
+"${document/title_or_name}"
 
 #: cms/ui/Folder_rename.xml.en:0
 msgid ""
 "<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> to "
 "<input name=\"new_names\" type=\"text\" value=\"${object/name}\"/>"
 msgstr ""
+"<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> en "
+"<input name=\"new_names\" type=\"text\" value=\"${object/name}\"/>"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid ""
 "<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/"
 "title}<br/> <img src=\"${skin/image_uri}\"/>"
 msgstr ""
+"<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/"
+"title}<br/> <img src=\"${skin/image_uri}\"/>"
 
 #: cms/ui/User_translator.xml.en:0
 msgid ""
 "<option value=\"\">-- Choose a language --</option> <option stl:repeat="
 "\"lang languages\" value=\"${lang/code}\">${lang/name}</option>"
 msgstr ""
+"<option value=\"\">-- Choisissez une langue --</option> <option stl:repeat="
+"\"lang languages\" value=\"${lang/code}\">${lang/name}</option>"
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid ""
 "<option value=\"\">Any</option> <option stl:repeat=\"state states\" value="
 "\"${state/key}\">${state/value}</option>"
 msgstr ""
+"<option value=\"\">Tous</option> <option stl:repeat=\"state states\" value="
+"\"${state/key}\">${state/value}</option>"
 
 #: cms/ui/Folder_translate.xml.en:0
 msgid ""
 "<option value=\"\">Choose a language</option> <option stl:repeat=\"language "
 "document/languages\" value=\"${language/code}\">${language/name}</option>"
 msgstr ""
+"<option value=\"\">Choisissez une langue</option> <option stl:repeat=\"language "
+"document/languages\" value=\"${language/code}\">${language/name}</option>"
 
 #: cms/ui/Root_languages.xml.en:0
 msgid ""
 "<option value=\"\">Choose a language</option> <option stl:repeat=\"language "
 "non_active_languages\" value=\"{language/code}\">${language/name}</option>"
 msgstr ""
+"<option value=\"\">Choisissez une langue</option> <option stl:repeat=\"language "
+"non_active_languages\" value=\"{language/code}\">${language/name}</option>"
 
 #: cms/ui/epoz_script_table.xml.en:0
 msgid ""
 "<option value=\"0\">Without head</option> <option value=\"1\">With head</"
 "option>"
 msgstr ""
+"<option value=\"0\">Sans en-tête</option> <option value=\"1\">Avec en-tête</"
+"option>"
 
 #: cms/ui/epoz.xml.en:0
 msgid ""
@@ -579,89 +642,183 @@ msgid ""
 "        <option value=\"h6>\">Heading 6</option>\n"
 "        <option value=\"pre>\">Formatted</option>\n"
 "      </select> <br/> <img src=\"images/epoz/epoz_button_bold.png\" alt="
-"\"Bold\" title=\"Bold\" name=\"epoz_button_bold\" class=\"button "
+"\"Gras\" title=\"Gras\" name=\"epoz_button_bold\" class=\"button "
 "epoz_button_bold\" onclick=\"FormatText('bold', '');\"/><img height=\"22\" "
-"src=\"images/epoz/epoz_button_italic.png\" alt=\"Italic\" title=\"Italic\" "
+"src=\"images/epoz/epoz_button_italic.png\" alt=\"Italique\" title=\"Italique\" "
 "name=\"epoz_button_italic\" width=\"23\" class=\"button epoz_button_italic\" "
 "onclick=\"FormatText('italic', '');\"/><img height=\"22\" src=\"images/epoz/"
-"epoz_button_underline.png\" alt=\"Underline\" title=\"Underline\" name="
+"epoz_button_underline.png\" alt=\"Souligné\" title=\"Souligné\" name="
 "\"epoz_button_underline\" width=\"23\" class=\"button epoz_button_underline"
 "\" onclick=\"FormatText('underline', '');\"/><img height=\"22\" src=\"images/"
-"epoz/epoz_button_strikethrough.png\" alt=\"Strikethrough\" title="
-"\"Strikethrough\" name=\"epoz_button_strikethrough\" width=\"23\" class="
+"epoz/epoz_button_strikethrough.png\" alt=\"Barré\" title="
+"\"Barré\" name=\"epoz_button_strikethrough\" width=\"23\" class="
 "\"button epoz_button_strikethrough\" onclick=\"FormatText('strikethrough', "
 "'');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space."
 "gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_subscript.gif\" alt="
-"\"Subscript\" title=\"Subscript\" name=\"epoz_button_subscript\" width=\"23"
+"\"Indice\" title=\"Indice\" name=\"epoz_button_subscript\" width=\"23"
 "\" class=\"button epoz_button_subscript\" onclick=\"FormatText('subscript', "
 "'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_superscript.gif\" "
-"alt=\"Superscript\" title=\"Superscript\" name=\"epoz_button_superscript\" "
+"alt=\"Exposant\" title=\"Exposant\" name=\"epoz_button_superscript\" "
 "width=\"23\" class=\"button epoz_button_superscript\" onclick=\"FormatText"
 "('superscript', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
 "epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
-"epoz_button_unformat.png\" alt=\"Remove Format\" title=\"Remove Format\" "
+"epoz_button_unformat.png\" alt=\"Format par défaut\" title=\"Format par défaut\" "
 "name=\"epoz_button_unformat\" width=\"23\" class=\"button "
 "epoz_button_unformat\" onclick=\"FormatText('removeformat', '');\"/> <img "
 "width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img "
-"height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" alt=\"Text Color"
-"\" title=\"Text Color\" name=\"epoz_button_textcolor\" width=\"23\" class="
+"height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" alt=\"Couleur du texte"
+"\" title=\"Couleur du texte\" name=\"epoz_button_textcolor\" width=\"23\" class="
 "\"button epoz_button_textcolor\" onclick=\"SetTextColor(';epoz_color_form');"
 "\"/><img height=\"22\" src=\"images/epoz/epoz_button_bgcolor.png\" alt="
-"\"Background Color\" title=\"Background Color\" name=\"epoz_button_bgcolor\" "
+"\"Couleur de fond\" title=\"Couleur de fond\" name=\"epoz_button_bgcolor\" "
 "width=\"23\" class=\"button epoz_button_bgcolor\" onclick=\"SetBackColor(';"
 "epoz_color_form');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
 "epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
-"epoz_button_left_just.png\" alt=\"Align Left\" title=\"Align Left\" name="
+"epoz_button_left_just.png\" alt=\"Aligné à gauche\" title=\"Aligné à gauche\" name="
 "\"epoz_button_left_just\" width=\"23\" class=\"button epoz_button_left_just"
 "\" onclick=\"FormatText('justifyleft',\n"
 "        '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_centre.png"
-"\" alt=\"Center\" title=\"Center\" name=\"epoz_button_centre\" width=\"23\" "
+"\" alt=\"Centré\" title=\"Centré\" name=\"epoz_button_centre\" width=\"23\" "
 "class=\"button epoz_button_centre\" onclick=\"FormatText('justifycenter', "
 "'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_right_just.png\" "
-"alt=\"Align Right\" title=\"Align Right\" name=\"epoz_button_right_just\" "
+"alt=\"Aligné à droite\" title=\"Aligné à droite\" name=\"epoz_button_right_just\" "
 "width=\"23\" class=\"button epoz_button_right_just\" onclick=\"FormatText"
 "('justifyright', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
 "epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
-"epoz_button_numbered_list.gif\" alt=\"Ordered List\" title=\"Ordered List\" "
+"epoz_button_numbered_list.gif\" alt=\"Liste numérotée\" title=\"Liste numérotée\" "
 "name=\"epoz_button_numbered_list\" width=\"23\" class=\"button "
 "epoz_button_numbered_list\" onclick=\"FormatText('insertorderedlist', '');\"/"
-"><img height=\"22\" src=\"images/epoz/epoz_button_list.gif\" alt=\"Unordered "
-"List\" title=\"Unordered List\" name=\"epoz_button_list\" width=\"23\" class="
+"><img height=\"22\" src=\"images/epoz/epoz_button_list.gif\" alt=\"Liste à puce\"
+title=\"Liste à puce\" name=\"epoz_button_list\" width=\"23\" class="
 "\"button epoz_button_list\" onclick=\"FormatText('insertunorderedlist', '');"
 "\"/><img height=\"22\" src=\"images/epoz/epoz_button_outdent.png\" alt="
-"\"Outdent\" title=\"Outdent\" name=\"epoz_button_outdent\" width=\"23\" "
+"\"Désindenter\" title=\"Désindenter\" name=\"epoz_button_outdent\" width=\"23\" "
 "class=\"button epoz_button_outdent\" onclick=\"FormatText('outdent', '');\"/"
-"><img height=\"22\" src=\"images/epoz/epoz_button_indent.png\" alt=\"Indent"
-"\" title=\"Indent\" name=\"epoz_button_indent\" width=\"23\" class=\"button "
+"><img height=\"22\" src=\"images/epoz/epoz_button_indent.png\" alt=\"Indenter"
+"\" title=\"Indenter\" name=\"epoz_button_indent\" width=\"23\" class=\"button "
 "epoz_button_indent\" onclick=\"FormatText('indent', '');\"/> <img width=\"2"
 "\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22"
-"\" src=\"images/epoz/epoz_button_hyperlink.png\" alt=\"Insert Link\" title="
-"\"Insert Link\" name=\"epoz_button_hyperlink\" width=\"23\" class=\"button "
-"epoz_button_hyperlink\" onclick=\"window.open(';addlink_form', "
-"'EpozToolbox',\n"
+"\" src=\"images/epoz/epoz_button_hyperlink.png\" alt=\"Insérer lien\" title="
+"\"Insérer lien (sélectionner texte d'abord)\" name=\"epoz_button_hyperlink\"
+width=\"23\" class=\"button " "epoz_button_hyperlink\"
+onclick=\"window.open(';addlink_form', " "'EpozToolbox',\n"
 "          'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,"
 "resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/"
-"epoz/epoz_button_anchor.png\" alt=\"Insert Anchor\" title=\"Insert Anchor\" "
+"epoz/epoz_button_anchor.png\" alt=\"Insérer ancre\" title=\"Insérer ancre\" "
 "name=\"epoz_button_anchor\" width=\"23\" class=\"button epoz_button_anchor\" "
 "onclick=\"CreateAnchor();\"/><img height=\"22\" src=\"images/epoz/"
-"epoz_button_image.png\" alt=\"Insert Image\" title=\"Insert Image\" name="
+"epoz_button_image.png\" alt=\"Insérer image\" title=\"Insérer image\" name="
 "\"epoz_button_image\" width=\"23\" class=\"button epoz_button_image\" "
 "onclick=\"window.open(';addimage_form', 'EpozToolbox', 'toolbar=no,"
 "location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,"
 "height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_hr.gif\" "
-"alt=\"Insert Rule\" title=\"Insert Rule\" name=\"epoz_button_hr\" width=\"23"
+"alt=\"Insérer règle\" title=\"Insérer règle (liseret)\" name=\"epoz_button_hr\" width=\"23"
 "\" class=\"button epoz_button_hr\" onclick=\"FormatText"
 "('inserthorizontalrule', '');\"/><img height=\"22\" src=\"images/epoz/"
-"epoz_button_table.gif\" alt=\"Insert Table\" title=\"Insert Table\" name="
+"epoz_button_table.gif\" alt=\"Insérer table\" title=\"Insérer table\" name="
 "\"epoz_button_table\" width=\"23\" class=\"button epoz_button_table\" "
 "onclick=\"SetTable(';epoz_table_form')\"/> <img width=\"2\" height=\"1\" src="
 "\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
-"epoz_button_undo.png\" alt=\"Undo\" title=\"Undo\" name=\"epoz_button_undo\" "
+"epoz_button_undo.png\" alt=\"Annuler\" title=\"Annuler\" name=\"epoz_button_undo\" "
 "width=\"23\" class=\"button epoz_button_undo\" onclick=\"FormatText('undo', "
 "'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_redo.png\" alt="
-"\"Redo\" title=\"Redo\" name=\"epoz_button_redo\" width=\"23\" class="
+"\"Restaurer\" title=\"Restaurer\" name=\"epoz_button_redo\" width=\"23\" class="
 "\"button epoz_button_redo\" onclick=\"FormatText('redo', '');\"/> <br/>"
 msgstr ""
+"<select id=\"formatblock\" style=\"margin-bottom: 2px;\" onchange="
+"\"SelectFormat(this);\">\n"
+"        <option value=\"\">Normal</option>\n"
+"        <option value=\"p>\">Paragraph</option>\n"
+"        <option value=\"h1>\">Heading 1</option>\n"
+"        <option value=\"h2>\">Heading 2</option>\n"
+"        <option value=\"h3>\">Heading 3</option>\n"
+"        <option value=\"h4>\">Heading 4</option>\n"
+"        <option value=\"h5>\">Heading 5</option>\n"
+"        <option value=\"h6>\">Heading 6</option>\n"
+"        <option value=\"pre>\">Formatted</option>\n"
+"      </select> <br/> <img src=\"images/epoz/epoz_button_bold.png\" alt="
+"\"Gras\" title=\"Gras\" name=\"epoz_button_bold\" class=\"button "
+"epoz_button_bold\" onclick=\"FormatText('bold', '');\"/><img height=\"22\" "
+"src=\"images/epoz/epoz_button_italic.png\" alt=\"Italique\" title=\"Italique\" "
+"name=\"epoz_button_italic\" width=\"23\" class=\"button epoz_button_italic\" "
+"onclick=\"FormatText('italic', '');\"/><img height=\"22\" src=\"images/epoz/"
+"epoz_button_underline.png\" alt=\"Souligné\" title=\"Souligné\" name="
+"\"epoz_button_underline\" width=\"23\" class=\"button epoz_button_underline"
+"\" onclick=\"FormatText('underline', '');\"/><img height=\"22\" src=\"images/"
+"epoz/epoz_button_strikethrough.png\" alt=\"Barré\" title="
+"\"Barré\" name=\"epoz_button_strikethrough\" width=\"23\" class="
+"\"button epoz_button_strikethrough\" onclick=\"FormatText('strikethrough', "
+"'');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space."
+"gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_subscript.gif\" alt="
+"\"Indice\" title=\"Indice\" name=\"epoz_button_subscript\" width=\"23"
+"\" class=\"button epoz_button_subscript\" onclick=\"FormatText('subscript', "
+"'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_superscript.gif\" "
+"alt=\"Exposant\" title=\"Exposant\" name=\"epoz_button_superscript\" "
+"width=\"23\" class=\"button epoz_button_superscript\" onclick=\"FormatText"
+"('superscript', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
+"epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
+"epoz_button_unformat.png\" alt=\"Format par défaut\" title=\"Format par défaut\" "
+"name=\"epoz_button_unformat\" width=\"23\" class=\"button "
+"epoz_button_unformat\" onclick=\"FormatText('removeformat', '');\"/> <img "
+"width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img "
+"height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" alt=\"Couleur du texte"
+"\" title=\"Couleur du texte\" name=\"epoz_button_textcolor\" width=\"23\" class="
+"\"button epoz_button_textcolor\" onclick=\"SetTextColor(';epoz_color_form');"
+"\"/><img height=\"22\" src=\"images/epoz/epoz_button_bgcolor.png\" alt="
+"\"Couleur de fond\" title=\"Couleur de fond\" name=\"epoz_button_bgcolor\" "
+"width=\"23\" class=\"button epoz_button_bgcolor\" onclick=\"SetBackColor(';"
+"epoz_color_form');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
+"epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
+"epoz_button_left_just.png\" alt=\"Aligné à gauche\" title=\"Aligné à gauche\" name="
+"\"epoz_button_left_just\" width=\"23\" class=\"button epoz_button_left_just"
+"\" onclick=\"FormatText('justifyleft',\n"
+"        '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_centre.png"
+"\" alt=\"Centré\" title=\"Centré\" name=\"epoz_button_centre\" width=\"23\" "
+"class=\"button epoz_button_centre\" onclick=\"FormatText('justifycenter', "
+"'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_right_just.png\" "
+"alt=\"Aligné à droite\" title=\"Aligné à droite\" name=\"epoz_button_right_just\" "
+"width=\"23\" class=\"button epoz_button_right_just\" onclick=\"FormatText"
+"('justifyright', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
+"epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
+"epoz_button_numbered_list.gif\" alt=\"Liste numérotée\" title=\"Liste numérotée\" "
+"name=\"epoz_button_numbered_list\" width=\"23\" class=\"button "
+"epoz_button_numbered_list\" onclick=\"FormatText('insertorderedlist', '');\"/"
+"><img height=\"22\" src=\"images/epoz/epoz_button_list.gif\" alt=\"Liste à puce\"
+title=\"Liste à puce\" name=\"epoz_button_list\" width=\"23\" class="
+"\"button epoz_button_list\" onclick=\"FormatText('insertunorderedlist', '');"
+"\"/><img height=\"22\" src=\"images/epoz/epoz_button_outdent.png\" alt="
+"\"Désindenter\" title=\"Désindenter\" name=\"epoz_button_outdent\" width=\"23\" "
+"class=\"button epoz_button_outdent\" onclick=\"FormatText('outdent', '');\"/"
+"><img height=\"22\" src=\"images/epoz/epoz_button_indent.png\" alt=\"Indenter"
+"\" title=\"Indenter\" name=\"epoz_button_indent\" width=\"23\" class=\"button "
+"epoz_button_indent\" onclick=\"FormatText('indent', '');\"/> <img width=\"2"
+"\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22"
+"\" src=\"images/epoz/epoz_button_hyperlink.png\" alt=\"Insérer lien\" title="
+"\"Insérer lien (sélectionner texte d'abord)\" name=\"epoz_button_hyperlink\"
+width=\"23\" class=\"button " "epoz_button_hyperlink\"
+onclick=\"window.open(';addlink_form', " "'EpozToolbox',\n"
+"          'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,"
+"resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/"
+"epoz/epoz_button_anchor.png\" alt=\"Insérer ancre\" title=\"Insérer ancre\" "
+"name=\"epoz_button_anchor\" width=\"23\" class=\"button epoz_button_anchor\" "
+"onclick=\"CreateAnchor();\"/><img height=\"22\" src=\"images/epoz/"
+"epoz_button_image.png\" alt=\"Insérer image\" title=\"Insérer image\" name="
+"\"epoz_button_image\" width=\"23\" class=\"button epoz_button_image\" "
+"onclick=\"window.open(';addimage_form', 'EpozToolbox', 'toolbar=no,"
+"location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,"
+"height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_hr.gif\" "
+"alt=\"Insérer règle\" title=\"Insérer règle (liseret)\" name=\"epoz_button_hr\" width=\"23"
+"\" class=\"button epoz_button_hr\" onclick=\"FormatText"
+"('inserthorizontalrule', '');\"/><img height=\"22\" src=\"images/epoz/"
+"epoz_button_table.gif\" alt=\"Insérer table\" title=\"Insérer table\" name="
+"\"epoz_button_table\" width=\"23\" class=\"button epoz_button_table\" "
+"onclick=\"SetTable(';epoz_table_form')\"/> <img width=\"2\" height=\"1\" src="
+"\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
+"epoz_button_undo.png\" alt=\"Annuler\" title=\"Annuler\" name=\"epoz_button_undo\" "
+"width=\"23\" class=\"button epoz_button_undo\" onclick=\"FormatText('undo', "
+"'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_redo.png\" alt="
+"\"Restaurer\" title=\"Restaurer\" name=\"epoz_button_redo\" width=\"23\" class="
+"\"button epoz_button_redo\" onclick=\"FormatText('redo', '');\"/> <br/>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -669,6 +826,9 @@ msgid ""
 "\">${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
 "class=\"tab_dummy\"><a> </a></span>"
 msgstr ""
+"<span class=\"${tab/style}\" stl:repeat=\"tab subtabs\"><a href=\"${tab/name}"
+"\">${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
+"class=\"tab_dummy\"><a> </a></span>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -676,12 +836,17 @@ msgid ""
 "${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
 "class=\"tab_dummy\"><a> </a></span>"
 msgstr ""
+"<span class=\"${tab/style}\" stl:repeat=\"tab tabs\"><a href=\"${tab/name}\">"
+"${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
+"class=\"tab_dummy\"><a> </a></span>"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid ""
 "<span stl:if=\"col/DTSTART\">${col/DTSTART}</span> <span stl:if=\"col/DTEND"
 "\">${col/DTEND}</span>"
 msgstr ""
+"<span stl:if=\"col/DTSTART\">${col/DTSTART}</span> <span stl:if=\"col/DTEND"
+"\">${col/DTEND}</span>"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid ""
@@ -690,6 +855,9 @@ msgid ""
 "                  <span stl:if=\"event/DTEND\"> - </span></span> <span stl:"
 "if=\"event/DTEND\">${event/DTEND}</span>"
 msgstr ""
+"<span stl:if=\"event/DTSTART\">\n"
+"                  <span>${event/DTSTART}</span>\n"
+"                  <span stl:if=\"event/DTEND\"> - ${event/DTEND}</span>"
 
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid ""
@@ -698,6 +866,10 @@ msgid ""
 "class=\"add_event\" href=\"${day/url}\"><img src=\"${add_icon}\" height=\"16"
 "\" width=\"16\"/></a>"
 msgstr ""
+"<span stl:if=\"not day/selected\" class=\"bold\">${day/nday}</span> <span "
+"stl:if=\"day/selected\" class=\"cal_day_selected\">${day/nday}</span> <a "
+"class=\"add_event\" href=\"${day/url}\"><img src=\"${add_icon}\" height=\"16"
+"\" width=\"16\"/></a>"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid ""
@@ -708,10 +880,16 @@ msgid ""
 "<input id=\"update\" name=\";browse_calendar\" type=\"submit\" value=\"OK\" "
 "class=\"button_ok\"/>"
 msgstr ""
+"<span>\n"
+"      Date : <input name=\"date\" id=\"date\" size=\"11\" type=\"text\" "
+"value=\"${date}\"/>\n"
+"      <input id=\"trigger_date\" type=\"button\" value=\"...\"/> </span> "
+"<input id=\"update\" name=\";browse_calendar\" type=\"submit\" value=\"OK\" "
+"class=\"button_ok\"/>"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "<span>${day/name}</span> <span>${day/nday}</span>"
-msgstr ""
+msgstr "<span>${day/name}</span> <span>${day/nday}</span>"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid ""
@@ -729,15 +907,27 @@ msgid ""
 "                    <option selected=\"yes\">NONE</option> \n"
 "                </stl:block>"
 msgstr ""
+"<stl:block stl:if=\"att/v_role/required\">\n"
+"                    <option selected=\"yes\">Obligatoire</option> \n"
+"                    <option>Optionnel</option>\n"
+"                    <option>Sans objet</option>\n"
+"                </stl:block> <stl:block stl:if=\"att/v_role/optionnal\">\n"
+"                    <option>Obligatoire</option>\n"
+"                    <option selected=\"yes\">Optionnel</option> \n"
+"                    <option>Sans objet</option>\n"
+"                </stl:block> <stl:block stl:if=\"att/v_role/no\">\n"
+"                    <option>Obligatoire</option>\n"
+"                    <option>Optionnel</option>\n"
+"                    <option selected=\"yes\">Sans objet</option> \n"
+"                </stl:block>"
 
 #: cms/ui/aruni/template.xhtml.en:0
-#, fuzzy
 msgid ""
 "<stl:inline stl:if=\"user/info\">${user/info/title}</stl:inline> <stl:inline "
 "stl:if=\"not user/info\">not logged in</stl:inline>"
 msgstr ""
-"<stl:inline stl:if=\"user/info\" stl:content=\"user/info/title\"></stl:"
-"inline> <stl:inline stl:if=\"not user/info\">Authentification</stl:inline>"
+"<stl:inline stl:if=\"user/info\">${user/info/title}</stl:inline> <stl:inline "
+"stl:if=\"not user/info\">Authentification</stl:inline>"
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid ""
@@ -745,10 +935,13 @@ msgid ""
 "              / <a href=\"${x/url}\">${x/name}</a>\n"
 "            </stl:inline> <br/>"
 msgstr ""
+"<stl:inline stl:repeat=\"x bc/path\">\n"
+"              / <a href=\"${x/url}\">${x/name}</a>\n"
+"            </stl:inline> <br/>"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "<strong>${state}</strong>"
-msgstr ""
+msgstr "<strong>${state}</strong>"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -906,6 +1099,11 @@ msgid ""
 "\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\"/> <span style="
 "\"font-size: 10px;\">HTML</span>"
 msgstr ""
+"<textarea id=\"${form_name}\" style=\"display: none; width: 100%; height: "
+"300px\" name=\"${form_name}\" disabled=\"1\">${js_data}</textarea> <input id="
+"\"CB_${form_name}\" style=\"margin: 0px; width: 10px; height: 10px\" type="
+"\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\"/> <span style="
+"\"font-size: 10px;\">HTML</span>"
 
 #: cms/workflow.py:36
 msgid "A pending document awaits review from authorized users to be published."
@@ -928,7 +1126,7 @@ msgstr "Une action doit être sélectionnée."
 
 #: cms/WebSite.py:266
 msgid "A valid email address must be provided."
-msgstr ""
+msgstr "Une adresse de courriel valide est nécessaire."
 
 #: cms/root.py:327
 msgid "About"
@@ -969,21 +1167,17 @@ msgid "Add"
 msgstr "Ajouter"
 
 #: cms/ui/Text_new_instance.xml.en:0
-#, fuzzy
 msgid "Add Document"
 msgstr "Ajouter un document"
 
 #: cms/ui/UserFolder_new_user.xml.en:0
-#, fuzzy
 msgid "Add New User"
 msgstr "Créer un utilisateur"
 
 #: cms/ui/Folder_new_instance.xml.en:0
-#, fuzzy
 msgid "Add Resource of Type \"${class_title}\" />\""
 msgstr ""
-"Ajouter une ressource de type &laquo;&nbsp;<span stl:content=\"class_title"
-"\"></span>&nbsp;&raquo;"
+"Ajouter une ressource de type &laquo;&nbsp;${class_title}&nbsp;&raquo;"
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Add a member"
@@ -1031,7 +1225,8 @@ msgstr ""
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
-msgstr ""
+msgstr "Un e-mail vient de vous être envoyé, avec les instructions pour "
+"valider votre inscription."
 
 #: cms/ui/Root_license.xml.en:0
 msgid "And you must show them these terms so they know their rights."
@@ -1061,7 +1256,7 @@ msgstr "Veuillez nous excuser pour la gêne occasionnée."
 
 #: cms/users.py:154
 msgid "Application"
-msgstr ""
+msgstr "Application"
 
 #: cms/ui/User_edit.xml.en:0
 msgid "Application Preferences"
@@ -1093,7 +1288,7 @@ msgstr "Calendrier"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Attendees"
-msgstr ""
+msgstr "Participants"
 
 #: cms/ical.py:69
 msgid "August"
@@ -1144,11 +1339,11 @@ msgstr ""
 
 #: cms/ical.py:43
 msgid "CANCELLED"
-msgstr "ANNULE"
+msgstr "Annulé"
 
 #: cms/ical.py:42
 msgid "CONFIRMED"
-msgstr "CONFIRME"
+msgstr "Confirmé"
 
 #: cms/csv.py:30
 msgid "CSV Row"
@@ -1156,7 +1351,7 @@ msgstr "Enregistrement CSV"
 
 #: csv/csv.py:59
 msgid "CSV syntax error: wrong number of columns at line %d"
-msgstr ""
+msgstr "Erreur de syntaxe CSV : nombre de colonnes erroné à la ligne %d"
 
 #: cms/ical.py:51
 msgid "Calendar"
@@ -1216,7 +1411,7 @@ msgstr "Choisir un modèle&nbsp;:"
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "Code"
-msgstr ""
+msgstr "Code"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "Come back to today"
@@ -1244,7 +1439,7 @@ msgstr "Nom"
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmation"
 
 #: cms/ical.py:1165
 msgid "Contents"
@@ -1332,7 +1527,7 @@ msgstr "Document PDF"
 
 #: cms/binary.py:249
 msgid "Document PowerPoint"
-msgstr "Document PowerPoint"
+msgstr "Présentation PowerPoint"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Document State"
@@ -1387,9 +1582,8 @@ msgid "Edit Metadata in Current Language"
 msgstr "Modifier les métadonnées dans la langue courante"
 
 #: cms/ui/Text_edit.xml.en:0
-#, fuzzy
 msgid "Edit Text"
-msgstr "Texte intégral"
+msgstr "Modifier le texte"
 
 #: cms/ui/User_profile.xml.en:0
 msgid "Edit account details;"
@@ -1400,13 +1594,12 @@ msgid "Edit preferences;"
 msgstr "Modifier les préférences&nbsp;:"
 
 #: cms/ui/UserFolder_new_user.xml.en:0
-#, fuzzy
 msgid "Email"
 msgstr "Courriel"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Email address"
-msgstr "Adresse de courrier"
+msgstr "Adresse de courriel"
 
 #: cms/WebSite.py:424
 msgid "Empty search value."
@@ -1418,7 +1611,7 @@ msgstr "Fin"
 
 #: cms/ui/epoz_script_table.xml.en:0
 msgid "Epoz"
-msgstr ""
+msgstr "Epoz"
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid "Epoz-Toolbox"
@@ -1426,15 +1619,15 @@ msgstr "boite à outils Epoz"
 
 #: cms/ical.py:525
 msgid "Event"
-msgstr "Evènement"
+msgstr "Evénement"
 
 #: cms/ical.py:772
 msgid "Event definitely deleted."
-msgstr "Evènement définitivement supprimé."
+msgstr "Evénement définitivement supprimé."
 
 #: cms/ical.py:571
 msgid "Event not found"
-msgstr "Evènement non trouvé"
+msgstr "Evénement introuvable"
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "Everything is alright."
@@ -1442,11 +1635,11 @@ msgstr "Tout est sous contrôle."
 
 #: cms/binary.py:219
 msgid "Excel"
-msgstr "Excel"
+msgstr "MS Excel"
 
 #: cms/ical.py:426
 msgid "Export in ical format"
-msgstr "Exporter au format ical"
+msgstr "Exporter au format iCal"
 
 #: cms/File.py:104
 msgid "External"
@@ -1461,7 +1654,6 @@ msgid "External Editor.."
 msgstr "Éditeur externe..."
 
 #: cms/ui/Text_externaledit.xml.en:0
-#, fuzzy
 msgid "External Editor..."
 msgstr "Éditeur externe..."
 
@@ -1487,7 +1679,7 @@ msgstr ""
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "Fix"
-msgstr "Corriger."
+msgstr "Corriger"
 
 #: cms/binary.py:116
 msgid "Flash"
@@ -1507,7 +1699,7 @@ msgstr "Dossiers déjà tout en bas"
 
 #: cms/future.py:128
 msgid "Folders already on top."
-msgstr "Dossiers déjà en haut."
+msgstr "Dossiers déjà tout en haut."
 
 #: cms/future.py:81
 msgid "Folders already up."
@@ -1519,11 +1711,11 @@ msgstr "Dossiers descendus."
 
 #: cms/future.py:156
 msgid "Folders ordered on bottom."
-msgstr "Dossiers déplacés en bas."
+msgstr "Dossiers déplacés tout en bas."
 
 #: cms/future.py:135
 msgid "Folders ordered on top."
-msgstr "Dossiers déplacés en haut."
+msgstr "Dossiers déplacés tout en haut."
 
 #: cms/future.py:90
 msgid "Folders ordered up."
@@ -1712,11 +1904,11 @@ msgstr "Insérer image"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Link"
-msgstr "Insérer lien"
+msgstr "Insérer lien (sélectionner texte d'abord)"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Rule"
-msgstr "Insérer séparateur"
+msgstr "Insérer règle (liseret)"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Insert Table"
@@ -1724,7 +1916,7 @@ msgstr "Insérer table"
 
 #: cms/ui/epoz_script_table.xml.en:0
 msgid "Insert table"
-msgstr "Insérer table"
+msgstr "Insérer une table"
 
 #: cms/ui/Root_internal_server_error.xml.en:0
 msgid "Internal Server Error"
@@ -1750,7 +1942,7 @@ msgstr "Janvier"
 
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Join the Community"
-msgstr "Rejoignez-nous"
+msgstr "Rejoignez nous"
 
 #: cms/ical.py:69
 msgid "July"
@@ -1770,7 +1962,7 @@ msgstr "Langue"
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "Language Settings"
-msgstr "Configuration des langues "
+msgstr "Configuration des langues"
 
 #: cms/WebSite.py:219
 msgid "Language added."
@@ -1866,6 +2058,10 @@ msgid ""
 "\">&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a "
 "href=\"${messages_last}\">>></a>"
 msgstr ""
+"Message ${messages_index} / ${messages_total} <a href=\"${messages_first}"
+"\">&lt;&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_previous}"
+"\">&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a "
+"href=\"${messages_last}\">>></a>"
 
 #: cms/text.py:144
 msgid "Message Catalog"
@@ -1877,7 +2073,7 @@ msgstr "Traduction de message"
 
 #: cms/text.py:209
 msgid "Message edited."
-msgstr "Message modifié"
+msgstr "Message modifié."
 
 #: cms/ical.py:81
 msgid "Metadata"
@@ -1928,18 +2124,16 @@ msgid "Navigation"
 msgstr "Navigation"
 
 #: cms/ui/User_edit_password.xml.en:0
-#, fuzzy
 msgid "New Password"
-msgstr "Mot de passe"
+msgstr "Nouveau mot de passe"
 
 #: cms/Folder.py:880
 msgid "New Resource"
 msgstr "Nouvelle ressource"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
-#, fuzzy
 msgid "New WebSite"
-msgstr "Site Web"
+msgstr "Nouveau site Web"
 
 #: cms/Folder.py:957
 msgid "New resource added."
@@ -1987,7 +2181,7 @@ msgstr "Novembre"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: cms/binary.py:306
 msgid "OOo Calc"
@@ -2015,7 +2209,7 @@ msgstr "Objets collés."
 
 #: cms/Folder.py:633
 msgid "Objects removed: $objects."
-msgstr "Objets supprimés: $objects."
+msgstr "Objets supprimés&nbsp;: $objects."
 
 #: cms/Folder.py:700
 msgid "Objects renamed."
@@ -2122,7 +2316,7 @@ msgstr "Voir vos tâches en cours."
 
 #: cms/access.py:240
 msgid "Permissions"
-msgstr ""
+msgstr "Permissions"
 
 #: cms/text.py:39
 msgid "Plain Text"
@@ -2145,17 +2339,16 @@ msgid "Please select the folders to order up."
 msgstr "Veuillez sélectionner les dossiers à monter."
 
 #: cms/Folder.py:519
-#, fuzzy
 msgid "Please type a search term."
-msgstr "Merci de réessayer plus tard."
+msgstr "Veuillez taper un terme de recherche."
 
 #: cms/binary.py:248
 msgid "PowerPoint"
-msgstr "PowerPoint"
+msgstr "MS PowerPoint"
 
 #: cms/ui/Root_license.xml.en:0
 msgid "Preamble"
-msgstr "Préambule"
+msgstr ""
 
 #: cms/users.py:230
 msgid "Preferences"
@@ -2191,7 +2384,7 @@ msgstr "Inscription"
 
 #: cms/users.py:124
 msgid "Registration confirmed, please log in"
-msgstr ""
+msgstr "Inscription acceptée, veuillez vous connecter"
 
 #: cms/ui/Root_catalog.xml.en:0
 msgid "Reindex"
@@ -2245,11 +2438,11 @@ msgstr "Demander la publication du document."
 
 #: cms/text.py:244
 msgid "Restructured Text"
-msgstr ""
+msgstr "Texte au format Restructured Text"
 
 #: cms/workflow.py:53
 msgid "Retire the document."
-msgstr "Retirer le document."
+msgstr "Dépublier le document."
 
 #: cms/workflow.py:47
 msgid "Retract the document."
@@ -2291,7 +2484,7 @@ msgstr "Sauvegarder la traduction"
 
 #: cms/ical.py:52
 msgid "Schedule your time with calendar files."
-msgstr "Organisez votre temps à l'aide de fichiers ical."
+msgstr "Organisez votre temps à l'aide d'agendas."
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "Search"
@@ -2343,7 +2536,7 @@ msgstr "La date de début DOIT être antérieure à la date de fin."
 
 #: cms/ical.py:851
 msgid "Start time must be earlier than end time."
-msgstr "L'heure de début doit être antérieure à l'heure de fin."
+msgstr "L'heure de début DOIT être antérieure à l'heure de fin."
 
 #: cms/workflow.py:84
 msgid "State"
@@ -2351,11 +2544,11 @@ msgstr "État"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "State History"
-msgstr "Historique de workflow"
+msgstr "Historique de publication"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Status"
-msgstr "État"
+msgstr "Statut"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Strikethrough"
@@ -2474,9 +2667,8 @@ msgstr ""
 "Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
 
 #: cms/users.py:413
-#, fuzzy
 msgid "The email is wrong, please try again."
-msgstr "L'identifiant est incorrect, veuillez réessayer."
+msgstr "Le courriel est incorrect, veuillez réessayer."
 
 #: cms/Folder.py:985
 msgid "The file must be entered"
@@ -2516,7 +2708,7 @@ msgstr "Le mot de passe est incorrect."
 
 #: cms/WebSite.py:286
 msgid "The passwords do not match."
-msgstr "Le mot de passe est incorrect."
+msgstr "Les mots de passe ne correspondent pas."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2525,11 +2717,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/Root_not_found.xml.en:0
-#, fuzzy
 msgid "The requested URL ${uri} was not found on this server."
-msgstr ""
-"L'URL demandée <stl:inline stl:content=\"uri\"></stl:inline> est introuvable "
-"sur ce serveur."
+msgstr "L'URL demandée ${uri} est introuvable sur ce serveur."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2542,7 +2731,6 @@ msgid "The user \"$username\" does not exist."
 msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
 #: cms/WebSite.py:361
-#, fuzzy
 msgid "The user \"$username\" is not active."
 msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
@@ -2556,7 +2744,7 @@ msgstr "Une erreur s'est produite, veuillez réessayer plus tard."
 
 #: cms/WebSite.py:274
 msgid "There is already a user with that email."
-msgstr "Il existe déjà un utilisateur avec cet email."
+msgstr "Il existe déjà un utilisateur avec cette adresse de courriel."
 
 #: cms/Folder.py:936
 msgid "There is already another object with this name."
@@ -2564,14 +2752,13 @@ msgstr "Il existe déjà un autre objet avec ce nom."
 
 #: cms/Folder.py:1010
 msgid "There is already another resource with this name."
-msgstr "Il existe déjà une ressource de ce nom."
+msgstr "Il existe déjà un autre objet avec ce nom."
 
 #: cms/users.py:421
-#, fuzzy
 msgid "There is another user with the email \"%s\", please try again"
 msgstr ""
-"Il existe déjà un utilisateur avec l'identifiant &laquo;&nbsp;%s&nbsp;"
-"&raquo;, veuillez en changer."
+"Il existe déjà un utilisateur avec le courriel &laquo;&nbsp;%s&nbsp;&raquo;"
+", veuillez en changer."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2660,7 +2847,7 @@ msgstr "Pour"
 
 #: cms/ical.py:536
 msgid "To add an event, click on + symbol from the views."
-msgstr "Pour ajouter un évènement, cliquer sur le symbôle + à partir des vues."
+msgstr "Pour ajouter un événement, cliquer sur le symbole + à partir des vues."
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
@@ -2668,11 +2855,9 @@ msgstr ""
 "Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
 
 #: cms/ui/File_download_form.xml.en:0
-#, fuzzy
 msgid "To download this file, click on <a href=\"${url}\">${title_or_name}</a>"
 msgstr ""
-"Pour télécharger ce fichier, cliquez sur <a stl:content=\"title_or_name\" "
-"href=\"\" stl:attributes=\"href url\"></a>"
+"Pour télécharger ce fichier, cliquez sur <a href=\"${url}\">${title_or_name}</a>"
 
 #: cms/ui/File_externaledit.xml.en:0
 msgid ""
@@ -2728,11 +2913,11 @@ msgstr "Mardi"
 
 #: cms/Folder.py:466
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: cms/WebSite.py:338
 msgid "Type your email please."
-msgstr ""
+msgstr "Veuillez taper votre adresse de courriel."
 
 #: cms/ui/epoz.xml.en:0
 msgid "Underline"
@@ -2756,11 +2941,11 @@ msgstr "Mettre à jour le catalogue"
 
 #: cms/ui/File_upload.xml.en:0
 msgid "Upload"
-msgstr "Télécharger"
+msgstr "Importer"
 
 #: cms/ui/File_upload.xml.en:0
 msgid "Upload File"
-msgstr "Télécharger un fichier"
+msgstr "Importer un fichier"
 
 #: cms/File.py:193
 msgid ""
@@ -2773,7 +2958,7 @@ msgstr ""
 #: cms/File.py:38
 msgid "Upload office documents, images, media files, etc."
 msgstr ""
-"Téléchargez des documents bureautiques, des images, des fichiers de média, "
+"Importer des documents bureautiques, des images, des fichiers de média, "
 "etc."
 
 #: cms/ui/File_history.xml.en:0
@@ -2798,7 +2983,7 @@ msgstr "Version modifiée."
 
 #: cms/File.py:197
 msgid "Version uploaded."
-msgstr "Version téléchargée."
+msgstr "Version importée."
 
 #: cms/binary.py:89
 msgid "Video"
@@ -2809,9 +2994,8 @@ msgid "View"
 msgstr "Voir"
 
 #: cms/ui/WebSite_search.xml.en:0
-#, fuzzy
 msgid "We did not find results for \"${text}\"."
-msgstr "Aucun résultat pour &laquo;&nbsp;%s&nbsp;&raquo;."
+msgstr "Aucun résultat pour &laquo;&nbsp;${text}&nbsp;&raquo;."
 
 #: cms/ui/Root_license.xml.en:0
 msgid "We protect your rights with two steps:"
@@ -2858,7 +3042,7 @@ msgstr ""
 
 #: cms/binary.py:203
 msgid "Word"
-msgstr "Word"
+msgstr "MS Word"
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
@@ -2886,7 +3070,7 @@ msgstr "Vous n'êtes pas traducteur, <em>woaaahh</em>"
 
 #: cms/ical.py:674
 msgid "You are not authorized to modify this event."
-msgstr "Accès refusé, vous n'êtes pas autorisé à modifier cet évènement."
+msgstr "Accès refusé, vous n'êtes pas autorisé à modifier cet événement."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2922,12 +3106,12 @@ msgstr "Vous ne pouvez pas supprimer la langue par défaut."
 msgid "You can specify timetables to limit the range when an event can be set."
 msgstr ""
 "Vous pouvez spécifier des horaires afin de limiter les plages de temps ou un "
-"évènement peut être saisi."
+"événement peut être saisi."
 
 #: cms/ui/File_upload.xml.en:0
 msgid "You can upload a new file to replace the current one."
 msgstr ""
-"Vous pouvez charger un fichier de votre ordinateur pour remplacer l'actuel."
+"Vous pouvez importer un fichier de votre ordinateur pour remplacer l'actuel."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -3044,9 +3228,8 @@ msgid "elles"
 msgstr ""
 
 #: i18n/oracle.py:66
-#, fuzzy
 msgid "est"
-msgstr "Oui"
+msgstr ""
 
 #: i18n/oracle.py:67
 msgid "está"
@@ -3201,6 +3384,8 @@ msgid ""
 "translation<br/> <textarea name=\"msgstr\" cols=\"65\" rows=\"8\">${msgstr}</"
 "textarea>"
 msgstr ""
+"traduction<br/> <textarea name=\"msgstr\" cols=\"65\" rows=\"8\">${msgstr}</"
+"textarea>"
 
 #: i18n/oracle.py:107
 msgid "una"
@@ -3223,9 +3408,8 @@ msgid "when"
 msgstr ""
 
 #: i18n/oracle.py:111
-#, fuzzy
 msgid "where"
-msgstr "Thème"
+msgstr ""
 
 #: i18n/oracle.py:113
 msgid "you"
@@ -3241,482 +3425,8 @@ msgstr "» Parcourir l'application pour sélectionner une image&nbsp;:"
 
 #: cms/ui/Folder_browsedir.xml.en:0
 msgid "» Browse and link an object from the workspace:"
-msgstr "» Parcourir  et lier un document de l'application&nbsp;:"
+msgstr "» Parcourir l'application pour sélectionner un document&nbsp;:"
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid "» Type the url to add:"
 msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
-
-#~ msgid "%(start)s-%(end)s of %(total)s"
-#~ msgstr "%(start)s-%(end)s de %(total)s"
-
-#~ msgid ""
-#~ "(optional) You can use a specific name to store your document, as a file "
-#~ "name, and this name will appear in the URL."
-#~ msgstr ""
-#~ "(optionnel) Vous pouvez utiliser un nom pour stocker votre document, "
-#~ "comme un nom de fichier, et qui apparaîtra dans l'URL."
-
-#~ msgid ""
-#~ "(optional) You can use a specific name to store your folder, and this "
-#~ "name will appear in the URL."
-#~ msgstr ""
-#~ "(optionnel) Vous pouvez utiliser un nom spécifique pour stocker votre "
-#~ "dossier, et qui apparaîtra dans l'URL."
-
-#~ msgid "++"
-#~ msgstr "++"
-
-#~ msgid "-- Choose a language --"
-#~ msgstr "-- Choisissez une langue --"
-
-#~ msgid ""
-#~ "<a id=\"action_home\" class=\"icon_home\" href=\"#\" stl:attributes="
-#~ "\"href user/info/home\">\n"
-#~ "                Home\n"
-#~ "              </a> <a id=\"action_logout\" class=\"icon_logout\" href=\"#"
-#~ "\" stl:attributes=\"href user/info/logout\">\n"
-#~ "                Log out\n"
-#~ "              </a>"
-#~ msgstr ""
-#~ "<a id=\"action_home\" class=\"icon_home\" href=\"#\" stl:attributes="
-#~ "\"href user/info/home\">\n"
-#~ "                Accueil\n"
-#~ "              </a> <a id=\"action_logout\" class=\"icon_logout\" href=\"#"
-#~ "\" stl:attributes=\"href user/info/logout\">\n"
-#~ "                Déconnexion\n"
-#~ "              </a>"
-
-#~ msgid ""
-#~ "<a id=\"action_login\" class=\"icon_login\" href=\"#\" stl:attributes="
-#~ "\"href user/login_url\">\n"
-#~ "                Log in\n"
-#~ "              </a> <a stl:if=\"user/joinisopen\" id=\"action_join\" class="
-#~ "\"icon_join\" href=\"#\" stl:attributes=\"href user/join_url\">\n"
-#~ "                Join\n"
-#~ "              </a>"
-#~ msgstr ""
-#~ "<a id=\"action_login\" class=\"icon_login\" href=\"#\" stl:attributes="
-#~ "\"href user/login_url\">\n"
-#~ "                Connexion\n"
-#~ "              </a> <a stl:if=\"user/joinisopen\" id=\"action_join\" class="
-#~ "\"icon_join\" href=\"#\" stl:attributes=\"href user/join_url\">\n"
-#~ "                Inscription\n"
-#~ "              </a>"
-
-#~ msgid ""
-#~ "<span stl:if=\"user\" stl:content=\"user/name\"></span> <span stl:if="
-#~ "\"not user\">\n"
-#~ "                                <em>not logged in</em>\n"
-#~ "                              </span>"
-#~ msgstr ""
-#~ "<span stl:if=\"user\" stl:content=\"user/name\"></span> <span stl:if="
-#~ "\"not user\">\n"
-#~ "                                <em>non authentifié</em>\n"
-#~ "                              </span>"
-
-#~ msgid "Add Users"
-#~ msgstr "Ajouter des utilisateurs"
-
-#~ msgid "Add a Folder"
-#~ msgstr "Ajouter un dossier"
-
-#~ msgid "All users are already added."
-#~ msgstr "Tous les utilisateurs sont déjà ajoutés."
-
-#~ msgid "Allow joining"
-#~ msgstr "Autoriser l'inscription"
-
-#~ msgid "Any"
-#~ msgstr "N'importe"
-
-#~ msgid "Available views:"
-#~ msgstr "Vues disponibles&nbsp;:"
-
-#~ msgid "Browse"
-#~ msgstr "Naviguer"
-
-#~ msgid "Choose a language"
-#~ msgstr "Choisir une langue"
-
-#~ msgid "Compare selected revisions"
-#~ msgstr "Comparer les versions séléctionnées"
-
-#~ msgid "Copy to present the selected revision"
-#~ msgstr "Rétablir la version sélectionnée"
-
-#~ msgid "Create a New Group"
-#~ msgstr "Créer un groupe"
-
-#~ msgid ""
-#~ "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
-#~ msgstr ""
-#~ "Date <stl:inline stl:content=\"table/sortcontrol(mtime)\"></stl:inline>"
-
-#~ msgid "Details"
-#~ msgstr "Détails"
-
-#~ msgid "Document translations created."
-#~ msgstr "Traductions du document créées."
-
-#~ msgid "Documents are where the data is stored"
-#~ msgstr "Les documents servent à stocker les données"
-
-#~ msgid "Edit Groups"
-#~ msgstr "Modifier les groupes"
-
-#~ msgid "Email address *"
-#~ msgstr "Adresse email *"
-
-#~ msgid "Folders are used to classify documents."
-#~ msgstr "Les dossiers servent à classer des documents."
-
-#~ msgid "Formatted"
-#~ msgstr "Chasse fixe"
-
-#~ msgid ""
-#~ "Fullname <stl:inline stl:content=\"table/sortcontrol(fullname)\"></stl:"
-#~ "inline>"
-#~ msgstr ""
-#~ "Nom complet <stl:inline stl:content=\"table/sortcontrol(fullname)\"></stl:"
-#~ "inline>"
-
-#~ msgid "General"
-#~ msgstr "Général"
-
-#~ msgid "General settings changed."
-#~ msgstr "Réglages globaux modifiés."
-
-#~ msgid "Group"
-#~ msgstr "Groupe"
-
-#~ msgid "Group added."
-#~ msgstr "Groupe ajouté."
-
-#~ msgid ""
-#~ "Group name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:"
-#~ "inline>"
-#~ msgstr ""
-#~ "Nom du groupe <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:"
-#~ "inline>"
-
-#~ msgid "Groups"
-#~ msgstr "Groupes"
-
-#~ msgid "Heading 1"
-#~ msgstr "Niveau 1"
-
-#~ msgid "Heading 2"
-#~ msgstr "Niveau 2"
-
-#~ msgid "Heading 3"
-#~ msgstr "Niveau 3"
-
-#~ msgid "Heading 4"
-#~ msgstr "Niveau 4"
-
-#~ msgid "Heading 5"
-#~ msgstr "Niveau 5"
-
-#~ msgid "Heading 6"
-#~ msgstr "Niveau 6"
-
-#~ msgid "Help"
-#~ msgstr "Aide"
-
-#~ msgid "If you type a new password, you must confirm it."
-#~ msgstr "Si vous saisissez un nouveau mot de passe, vous devez le confirmer."
-
-#~ msgid "It has been logged and a report sent to the system administrator."
-#~ msgstr "Cette anomalie vient d'être notifiée à l'administrateur système."
-
-#~ msgid "Join"
-#~ msgstr "Inscription"
-
-#~ msgid ""
-#~ "Keeps an historical record with the changes made, it is possible to come "
-#~ "back to an older version."
-#~ msgstr ""
-#~ "Un historique des modifications est constitué. Vous pouvez ainsi revenir "
-#~ "sur une version antérieure."
-
-#~ msgid ""
-#~ "Lets to edit the document, it is possible to use an external editor if "
-#~ "you install it or to upload a file from the filesystem."
-#~ msgstr ""
-#~ "Permet l'édition du document. Il est possible d'utiliser un éditeur "
-#~ "externe (votre éditeur habituel par exemple) si celui-ci est installé. "
-#~ "Vous pouvez aussi télécharger un document depuis votre disque vers votre "
-#~ "application iKaaro."
-
-#~ msgid ""
-#~ "Name <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
-#~ msgstr ""
-#~ "Nom <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
-
-#~ msgid "No objects selected"
-#~ msgstr "Aucun objet sélectionné."
-
-#~ msgid "No user added"
-#~ msgstr "Aucun utilisateur ajouté "
-
-#~ msgid "No users to add in this group."
-#~ msgstr "Aucun utilisateur à ajouter dans ce groupe."
-
-#~ msgid "Normal"
-#~ msgstr "Normal"
-
-#~ msgid "Paragraph"
-#~ msgstr "Paragraphe"
-
-#~ msgid "Please choose a name for this new group."
-#~ msgstr "Veuillez choisir un nom pour ce nouveau groupe."
-
-#~ msgid ""
-#~ "Please click the <strong>Upload</strong> button below to import the file "
-#~ "and create a new resource."
-#~ msgstr ""
-#~ "Veuillez cliquer sur le bouton <strong>Télécharger</strong> ci-dessous "
-#~ "pour importer le fichier et créer une nouvelle ressource."
-
-#~ msgid ""
-#~ "Please click the <strong>Upload</strong> button below to import the new "
-#~ "file."
-#~ msgstr ""
-#~ "Veuillez cliquer sur le bouton <strong>Télécharger</strong> ci-dessous "
-#~ "pour importer le nouveau fichier."
-
-#~ msgid "Please enter a password for protecting your account."
-#~ msgstr "Veuillez saisir un mot de passe pour sécuriser votre compte."
-
-#~ msgid "Please enter the username you want to use on this website, e.g."
-#~ msgstr ""
-#~ "Veuillez saisir le nom d'utilisateur que vous souhaitez, par exemple"
-
-#~ msgid "Please enter your email address."
-#~ msgstr "Veuillez saisir votre adresse de courriel"
-
-#~ msgid "Please enter your login (e.g."
-#~ msgstr "Veuillez saisir votre identifiant, par exemple"
-
-#~ msgid "Please enter your password (it will not be displayed in clear text)."
-#~ msgstr ""
-#~ "Veuillez saisir votre mot de passe (il ne sera pas affiché en clair)."
-
-#~ msgid "Please fill date AND end times."
-#~ msgstr "Veuillez saisir la date ET l'heure."
-
-#~ msgid "Please give a title to your folder."
-#~ msgstr "Veuillez saisir un titre pour ce dossier."
-
-#~ msgid ""
-#~ "Please put a value for your search criteria if you include subfolders."
-#~ msgstr "Merci de saisir une recherche si vous incluez les sous-dossiers."
-
-#~ msgid "Please repeat your password to prevent any typing mistake."
-#~ msgstr ""
-#~ "Veuillez saisir à nouveau votre mot de passe pour éviter les erreurs de "
-#~ "frappe."
-
-#~ msgid ""
-#~ "Please select a file from your system using the <strong>Browse...</"
-#~ "strong> button below."
-#~ msgstr ""
-#~ "Veuillez choisir un fichier de votre ordinateur à l'aide du bouton "
-#~ "<strong>Parcourir...</strong> ci-dessous."
-
-#~ msgid "Please select the source language of your document."
-#~ msgstr "Veuillez sélectionner la langue source de votre document."
-
-#, fuzzy
-#~ msgid ""
-#~ "Please type the name, it will be used to store it and it will appear in "
-#~ "the URL."
-#~ msgstr ""
-#~ "Veuillez saisir le nom du dossier, il sera enregistré sous ce nom et il "
-#~ "apparaîtra dans l'adresse URL."
-
-#~ msgid ""
-#~ "Please type the name, this is not the title of your document but the file "
-#~ "name."
-#~ msgstr ""
-#~ "Veuillez saisir le nom, pas le titre du document mais le nom du fichier."
-
-#~ msgid "Please type the title of your document."
-#~ msgstr "Veuillez saisir le titre de votre document."
-
-#~ msgid "Preview"
-#~ msgstr "Aperçu"
-
-#~ msgid "Publish your own web pages."
-#~ msgstr "Publiez vos propres pages Web."
-
-#~ msgid "Revision copied to present."
-#~ msgstr "La version choisie est maintenant la version actuelle."
-
-#~ msgid "Select users you want to add in this group."
-#~ msgstr "Sélectionnez des utilisateurs à ajouter à ce groupe."
-
-#~ msgid "Settings"
-#~ msgstr "Configuration"
-
-#~ msgid ""
-#~ "State <stl:inline stl:content=\"table/sortcontrol(workflow_state)\"></stl:"
-#~ "inline>"
-#~ msgstr ""
-#~ "État <stl:inline stl:content=\"table/sortcontrol(workflow_state)\"></stl:"
-#~ "inline>"
-
-#~ msgid "Thanks for register, please log in"
-#~ msgstr "Merci de votre inscription, veuillez vous connecter."
-
-#~ msgid ""
-#~ "The metadata describes the document (title, subject, description, etc..)."
-#~ msgstr ""
-#~ "Les méta-données décrivent le document (titre, sujet, description, etc)."
-
-#~ msgid "The name contains illegal characters, choose another one."
-#~ msgstr "Le nom contient des caractères interdits, choisissez-en un autre."
-
-#~ msgid "The requested resource has not been found."
-#~ msgstr "La ressource demandée est introuvable."
-
-#~ msgid "The selected objects can not be translated."
-#~ msgstr ""
-#~ "Les documents sélectionnés ne peuvent pas être traduits ou sont déjà "
-#~ "traduits."
-
-#~ msgid "There are no images."
-#~ msgstr "Aucune image."
-
-#~ msgid "There has been an internal server error."
-#~ msgstr "Une erreur interne s'est déclarée."
-
-#~ msgid "This group is empty."
-#~ msgstr "Ce groupe est vide."
-
-#~ msgid "This help screen."
-#~ msgstr "Cet onglet d'aide."
-
-#~ msgid "This is a preview of your document, it doesnt really look like that."
-#~ msgstr "Ceci est un aperçu du document, pas l'original."
-
-#~ msgid "This is a tar file, you can untar it by clicking the button below:"
-#~ msgstr ""
-#~ "Ceci est un fichier d'archive (.tar), vous pouvez le transformer en "
-#~ "dossier utilisable en cliquant sur le bouton ci-dessous."
-
-#~ msgid "Tip:"
-#~ msgstr "Astuce&nbsp;:"
-
-#~ msgid ""
-#~ "Title <stl:inline stl:content=\"table/sortcontrol(title)\"></stl:inline>"
-#~ msgstr ""
-#~ "Titre <stl:inline stl:content=\"table/sortcontrol(title)\"></stl:inline>"
-
-#~ msgid "To add a folder enter its name and click the <tt>Add</tt> button."
-#~ msgstr ""
-#~ "Pour ajouter un dossier saisissez son nom et cliquez sur le bouton "
-#~ "<strong>Ajouter</strong>."
-
-#~ msgid "Translate.."
-#~ msgstr "Traduire..."
-
-#~ msgid "Translation saved."
-#~ msgstr "Traduction sauvegardée."
-
-#~ msgid ""
-#~ "Type <stl:inline stl:content=\"table/sortcontrol(format)\"></stl:inline>"
-#~ msgstr ""
-#~ "Type <stl:inline stl:content=\"table/sortcontrol(format)\"></stl:inline>"
-
-#~ msgid "Unpack"
-#~ msgstr "Décompacter"
-
-#~ msgid "Upload a File"
-#~ msgstr "Télécharger un fichier"
-
-#~ msgid "Upload and return"
-#~ msgstr "Télécharger et revenir"
-
-#~ msgid "Upload and view"
-#~ msgstr "Télécharger et voir"
-
-#~ msgid "User added"
-#~ msgstr "Utilisateur ajouté."
-
-#~ msgid "User groups edited."
-#~ msgstr "Groupes de l'utilisateur modifiés."
-
-#~ msgid "User removed."
-#~ msgstr "Utilisateur supprimé."
-
-#~ msgid "Username"
-#~ msgstr "Identifiant"
-
-#~ msgid "Username (Do not use accents.)"
-#~ msgstr "Identifiant (Ne pas utiliser de lettre accentuée.)"
-
-#~ msgid ""
-#~ "Username <stl:inline stl:content=\"table/sortcontrol(name)\"></stl:inline>"
-#~ msgstr ""
-#~ "Nom d'utilisateur <stl:inline stl:content=\"table/sortcontrol(name)\"></"
-#~ "stl:inline>"
-
-#~ msgid "Users added"
-#~ msgstr "Utilisateurs ajoutés."
-
-#~ msgid "Users removed."
-#~ msgstr "Utilisateurs supprimés."
-
-#~ msgid "Web Page"
-#~ msgstr "Page Web"
-
-#~ msgid "With head"
-#~ msgstr "Avec en-tête"
-
-#~ msgid "Without head"
-#~ msgstr "Sans en-tête"
-
-#~ msgid "You are a member of the following groups:"
-#~ msgstr "Vous êtes membre des groupes suivants&nbsp;:"
-
-#~ msgid "You can change your password by typing a new one."
-#~ msgstr "Vous pouvez changer votre mot de passe en en saisissant un autre."
-
-#~ msgid "You don't belong to any group."
-#~ msgstr "Vous n'appartenez à aucun groupe."
-
-#~ msgid "You mistyped your actual password, you account is not changed."
-#~ msgstr ""
-#~ "Vous avez mal saisi votre mot de passe actuel, votre compte n'a pas été "
-#~ "modifié."
-
-#~ msgid "You must add user(s) in parent group:"
-#~ msgstr ""
-#~ "Vous devez ajouter le(s) utilisateur(s) dans un groupe parent&nbsp;:"
-
-#~ msgid "You must select one and only one revision."
-#~ msgstr "Vous ne devez sélectionner qu'une révision."
-
-#~ msgid "You must select one or two revisions."
-#~ msgstr "Vous devez sélectionner une ou deux révisions."
-
-#~ msgid "You must select the members to remove."
-#~ msgstr "Vous devez sélectionner les membres à supprimer."
-
-#~ msgid "jsmith)."
-#~ msgstr "adupont)."
-
-#~ msgid "jsmith."
-#~ msgstr "adupont."
-
-#~ msgid "not logged in"
-#~ msgstr "non authentifié"
-
-#~ msgid ""
-#~ "use CTRL to select or unselected a user, use shift to select contiguous "
-#~ "users."
-#~ msgstr ""
-#~ "Utilisez la touche Ctrl pour sélectionner ou désélectionner un "
-#~ "utilisateur, la touche Shift pour sélectionner une suite d'utilisateurs."

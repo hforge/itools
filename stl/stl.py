@@ -256,7 +256,12 @@ def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
 
 
 def substitute(data, stack, repeat_stack, encoding='utf-8'):
-    data = str(data)
+    if isinstance(data, str):
+        pass
+    elif isinstance(data, unicode):
+        data = data.encode('utf-8')
+    else:
+        data = str(data)
     # Solo, preserve the value None
     match = subs_expr_solo.match(data)
     if match is not None:

@@ -155,7 +155,13 @@ class Request(Message):
                                 mimetype = entity.get_header('content-type')[0]
                                 self.body[name] = filename, mimetype, body
                         else:
-                            self.body[name] = body
+                            if name not in self.body:
+                                self.body[name] = body
+                            else:
+                                if isinstance(self.body[name], list):
+                                    self.body[name].append(body)
+                                else:
+                                    self.body[name] = [self.body[name], body]
                 else:
                     self.body['body'] = body
 

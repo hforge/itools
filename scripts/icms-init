@@ -28,9 +28,6 @@ import itools
 from itools.handlers.config import Config
 from itools.handlers import transactions
 from itools.cms.root import Root
-from itools.cms.versioning import VersioningAware
-from itools.cms import skins
-from itools.cms.catalog import CatalogAware
 
 
 def init(parser, options, target):
@@ -79,18 +76,7 @@ def init(parser, options, target):
 
     # Index everything
     root = root_class('%s/database' % target)
-    for handler, context in root.traverse2():
-        abspath = handler.get_abspath()
-        if handler.name.startswith('.'):
-            context.skip = True
-            continue
-        if isinstance(handler, skins.UI):
-            context.skip = True
-            continue
-        if isinstance(handler, CatalogAware):
-            root.index_handler(handler)
-        if isinstance(handler, VersioningAware):
-            handler.commit_revision()
+    root._update_catalog(quiet=True)
 
     transaction = transactions.get_transaction()
     transaction.commit()

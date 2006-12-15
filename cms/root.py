@@ -345,18 +345,20 @@ class Root(WebSite):
         return stl(handler)
 
 
-    def _update_catalog(self):
-        print 'Updating the catalog:'
+    def _update_catalog(self, quiet=False):
+        if quiet is False:
+            print 'Updating the catalog:'
         # Start fresh
         self.del_handler('.catalog')
         self.set_handler('.catalog', Catalog(fields=self._catalog_fields))
         catalog = self.get_handler('.catalog')
 
         # Go
-        stdout.write('0')
-        stdout.flush()
-        str_len = 1
-        max_len = 1
+        if quiet is False:
+            stdout.write('0')
+            stdout.flush()
+            str_len = 1
+            max_len = 1
 
         doc_n = 0
         for handler, ctx in self.traverse2(caching=False):
@@ -371,14 +373,15 @@ class Root(WebSite):
 
             doc_n += 1
             # Print progress message 
-            stdout.write('\b' * max_len)
-            str = '%d %s' % (doc_n, handler.get_abspath())
-            str_len = len(str)
-            if str_len > max_len:
-                max_len = str_len
-            stdout.write(str)
-            stdout.write(' ' * (max_len - str_len))
-            stdout.flush()
+            if quiet is False:
+                stdout.write('\b' * max_len)
+                str = '%d %s' % (doc_n, handler.get_abspath())
+                str_len = len(str)
+                if str_len > max_len:
+                    max_len = str_len
+                stdout.write(str)
+                stdout.write(' ' * (max_len - str_len))
+                stdout.flush()
             # Index the document
             catalog.index_document(handler.get_catalog_indexes())
 

@@ -155,7 +155,7 @@ class RoleAware(AccessControl):
         False otherwise.
         """
         for role in roles:
-            if user_id in self.get_property(rolename):
+            if user_id in self.get_property(role):
                 return True
         return False
  

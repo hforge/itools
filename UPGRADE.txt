@@ -6,88 +6,174 @@ itools 0.15.0
 1. itools.catalog
 =================
 
- - Now the the method "search" is not anymore a generator, now it returns
-   an object "SearchResults" which offers two methods: "get_n_documents"
-   and "get_documents"; the former returns the number of documents found
-   (replaces "catalog.how_many"), the last one is a generator that returns
-   the documents.
+The search interface has changed to include new features and to be more
+performant.
 
- - Batching and sorting has been added to the API. The method "get_documents"
-   accepts the optional parameters "sort_by" and "reverse" for sorting,
-   "start" and "size" for batching.
+Before:
+
+    >>> documents = catalog.search(query)
+    >>> n_documents = catalog.how_many(query)
+
+Now: 
+
+    >>> results = catalog.search(query)
+    >>> documents = results.get_documents()
+    >>> n_documents = results.get_n_documents()
+
 
 2. itools.xml
 =============
 
- - The XML parser has been rewritten in C.
+The XML parser has been rewritten in C, as a side effect the programming
+interface has some small changes:
+
+  - Now we import the type "Parser" instead of the function "parse":
+
+  - We have the new events XML_DECL, PI and CDATA
+
+  - The event NAMESPACE has been removed, to replace it the event
+    START_ELEMENT returns the namespace declarations.
+
+To illustrate these changes see the example below.
+
+Before:
+
+    from itools.xml.parser import parse
+    from itools.xml.parser import START_ELEMENT, NAMESPACE
+    ...
+    for event, value, line_number in parse(data):
+        if event == START_ELEMENT:
+            namespace_uri, local_name, attributes = value
+            ...
+        elif event == NAMESPACE:
+            ...
+
+Now:
+
+    from itools.xml.parser import Parser
+    from itools.xml.parser import START_ELEMENT, XML_DECL
+    ...
+    for event, value, line_number in Parser(data):
+        if event == XML_DECL:
+            ...
+        elif event == START_ELEMENT:
+            namespace_uri, local_name, attributes, ns_decls = value
+            ...
+
 
 3. itools.stl
 =============
 
- - Implement a new syntax for variable substitution, it replaces the
-   attributes "stl:content" and "stl:attributes". For example, before
-   we wrote:
+3.1 Variable substitution
+·························
 
-     <a stl:attributes="href object_uri" stl:content="object_title" />
+A new syntax has been implemented for variable substitution, it replaces the
+attributes "stl:content" and "stl:attributes".
 
-   And now it will be:
+Before:
 
-     <a href="${object_uri}">${object_title}</a>
+  <a stl:attributes="href object_uri" stl:content="object_title" />
 
- - STL expressions do not accept parameters anymore. This feature was
-   not documented, and experience has shown it useless.
+Now:
 
- - A new feature has been added to STL, now the method "stl" accepts
-   an optional argument "prefix". If given some relative URIs (images
-   and links to CSS stylesheets) will be rewritten, adding the given
-   prefix.
+   <a href="${object_uri}">${object_title}</a>
 
-4. itools.web
+
+3.2 Expressions
+···············
+
+Now STL expressions do not accept parameters anymore. This feature was
+not documented, and experience has shown it useless.
+
+
+4. itools.cms
 =============
 
- - Now the method "context.get_form_value" accepts the optional parameter
-   "type", which if given will be used to deserialize the form value.
+4.1 The config file
+···················
 
- - The method "context.get_form_values" accepts the optional parameter
-   "default", whose value will be returned if the requested variable is
-   not in the form.
+The format of the configuration file has changed from INI [1] to a more
+simple and UNIX-like format. The file is renamed from "config.ini" to
+"config.conf".
 
-5. itools.cms
-=============
-
- - Change the format of the configuration file from INI [1] to a more
-   simple and UNIX-like format. The file is renamed from "config.ini"
-   to "config.conf".
-
- - Now users are identified by their email address. A user that registers
-   to the site must confirm the registration with a confirmation email.
-   Now users are internally identified with a number, the only visible
-   change in the interface is that numbers will appear in the path instead
-   of the user's login.
-
- - Use the library tidy (through utidylib [2]) instead of the command line
-   programm "tidy".
-
- - Remove the widget "Table".
-
- - New database code.
-
- - Roles are now metadata, so you don't have to care about ".*.users" files,
-   and you can set roles on File handlers.  The API has changed a bit, useless
-   methods were removed and "is_in_role" is now "has_role" with a different
-   signature. The sequence of usernames is a tuple (because of the datatype
-   Tokens). If you override ".metadata" in your Root.new, notice how the
-   initial administrator is set.
-
-[1] http://en.wikipedia.org/wiki/INI_file
-[2] http://utidylib.berlios.de/
+The configuration file will be automatically changed with the "icms-update"
+script.
 
 
-6. Packaging
+4.2 Users
+·········
+
+Now users are internally identified with a number, the only visible change
+in the user interface is that numbers will appear in the path instead of
+the user's login.
+
+The register and login screens have been updated so the user's email will
+be used to identify the him/her (instead of a username). The registration
+interface requires confirmation by email to validate the registration
+proces, this way we are sure the email address is good.
+
+The upgrade code is made so for the existing users we will still use the
+username, so they won't be disturbed.
+
+
+4.3 Roles
+·········
+
+Roles are now stored in the metadata file. This allows files to have roles
+associated to them, not just folders.
+
+The programming interface has changed too.
+
+Before:
+
+    >>> handler.is_in_role(rolename, username)
+    >>> handler.del_roles(username)
+    >>> handler.set_role(rolename, username)
+
+Now:
+
+    >>> handler.has_user_role(username, rolename)
+    >>> handler.set_user_role(username, None)
+    >>> handler.set_user_role(username, rolename)
+
+In the method "has_user_role" more than one rolename may be given. In the
+method "set_user_role" the parameter "username" may be a list of usernames.
+
+The methods "has_role", "get_role" and "get_roles" have been removed.
+
+
+4.4 Widgets and the "browse list" view
+······················ ··············· 
+
+The widget "Table" has been removed. To see how to do the same thing now
+check the method "Folder.browse_list".
+
+
+5. Packaging
 ============
 
- - Normalize some filenames: "csv/itools_csv.py" becomes "csv/csv.py",
-   "cms/csv_.py" becomes "cms/csv.py".
+5.1 Dependencies
+················
+
+Now we use the library tidy (through "utidylib") instead of the calling
+the command line programm "tidy". Download "utidylib" from:
+
+  http://utidylib.berlios.de/
+
+5.1 Imports
+···········
+
+Very few imports have changed in this release:
+
+Before:
+
+  from itools.cms.csv_ import CSV
+
+Now:
+
+  from itools.cms.csv_ import CSV
+
+
 
 **************************************************************************
 itools 0.14.0

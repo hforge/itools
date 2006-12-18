@@ -456,7 +456,7 @@ class UserFolder(Folder):
             root = self.get_root()
             for group_path in handler.get_groups():
                 group = root.get_handler(group_path)
-                group.del_roles(name)
+                group.set_user_role(name, None)
         Folder.on_del_handler(self, segment)
 
 

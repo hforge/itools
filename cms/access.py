@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
 from itools.web import get_context
@@ -26,7 +26,8 @@ class AccessControl(AccessControlBase):
     def is_admin(self, user, object=None):
         if user is None:
             return False
-        return get_context().root.has_role(user.name, 'ikaaro:admins')
+        root = get_context().root
+        return root.user_has_role(user.name, 'ikaaro:admins')
 
 
     def is_allowed_to_view(self, user, object):
@@ -84,7 +85,8 @@ class RoleAware(AccessControl):
     #########################################################################
     __roles__ = [
         {'name': 'ikaaro:members', 'title': u"Members", 'unit': u"Member"},
-        {'name': 'ikaaro:reviewers', 'title': u"Reviewers", 'unit': u"Reviewer"},
+        {'name': 'ikaaro:reviewers', 'title': u"Reviewers",
+         'unit': u"Reviewer"},
     ]
 
 
@@ -101,12 +103,8 @@ class RoleAware(AccessControl):
             return True
 
         # Reviewers and Members are allowed to edit
-        username = user.name
-        if (self.has_role(username, 'ikaaro:reviewers') or
-                self.has_role(username, 'ikaaro:members')):
-            return True
-
-        return False
+        roles = 'ikaaro:reviewers', 'ikaaro:members'
+        return self.user_has_role(user.name, *roles)
 
 
     def is_allowed_to_trans(self, user, object, name):
@@ -120,52 +118,80 @@ class RoleAware(AccessControl):
 
         # Reviewers can do everything
         username = user.name
-        if self.has_role(username, 'ikaaro:reviewers'):
+        if self.user_has_role(username, 'ikaaro:reviewers'):
             return True
 
         # Members only can request and retract
-        if self.has_role(username, 'ikaaro:members'):
+        if self.user_has_role(username, 'ikaaro:members'):
             return name in ('request', 'unrequest')
 
         return False
 
 
     #########################################################################
-    # API
+    # API / Public
     #########################################################################
     def get_role_names(self):
+        """
+        Return the names of the roles available.
+        """
         return [r['name'] for r in self.__roles__]
 
 
-    def has_role(self, username, rolename):
-        return username in self.get_property(rolename)
-  
-  
-    def del_roles(self, usernames):
-        if isinstance(usernames, str):
-            usernames = (usernames,)
-        for rolename in self.get_role_names():
-            current_users = self.get_property(rolename)
-            current_users = tuple([x for x in current_users
-                    if x not in usernames])
-            self.set_property(rolename, current_users)
-        get_context().root.reindex_handler(self)
+    def get_user_role(self, user_id):
+        """
+        Return the role the user has here, or "None" if the user has not
+        any role.
+        """
+        for role in self.get_role_names():
+            if user_id in self.get_property(role):
+                return role
+        return None
 
 
-    def set_role(self, new_role, usernames):
-        if isinstance(usernames, str):
-            usernames = (usernames,)
-        for rolename in self.get_role_names():
-            current_users = self.get_property(rolename)
-            if new_role == rolename:
-                current_users += tuple([x for x in usernames
-                    if x not in current_users])
-                self.set_property(rolename, current_users)
-            else:
-                current_users = tuple([x for x in current_users
-                    if x not in usernames])
-                self.set_property(rolename, current_users)
-        get_context().root.reindex_handler(self)
+    def user_has_role(self, user_id, *roles):
+        """
+        Return True if the given user has any of the the given roles,
+        False otherwise.
+        """
+        for role in roles:
+            if user_id in self.get_property(rolename):
+                return True
+        return False
+ 
+
+    def set_user_role(self, user_ids, role):
+        """
+        Sets the role for the given users. If "role" is None, removes the
+        role of the users.
+        """
+        # The input parameter "user_ids" should be a list
+        if isinstance(user_ids, str):
+            user_ids = [user_ids]
+
+        # Change "user_ids" to a set, to simplify the rest of the code
+        user_ids = set(user_ids)
+
+        # Build the list of roles from where the users will be removed
+        roles = self.get_role_names()
+        if role is not None:
+            roles.remove(role)
+
+        # Add the users to the given role
+        if role is not None:
+            users = self.get_property(role)
+            users = set(users)
+            if user_ids - users:
+                users = tuple(users | user_ids)
+                self.set_property(role, users)
+
+        # Remove the user from the other roles
+        for role in roles:
+            users = self.get_property(role)
+            users = set(users)
+            if users & user_ids:
+                users = tuple(users - user_ids)
+                self.set_property(role, users)
 
 
     def get_members(self):
@@ -182,13 +208,12 @@ class RoleAware(AccessControl):
     def get_roles_namespace(self, username):
         namespace = []
 
+        user_role = self.get_user_role(username)
         for role in self.__roles__:
             rolename = role['name']
-            namespace.append({
-                'name': rolename,
-                'title': role['unit'],
-                'selected': self.has_role(username, rolename),
-            })
+            namespace.append({'name': rolename,
+                              'title': role['unit'],
+                              'selected': user_role == rolename})
 
         return namespace
 
@@ -235,18 +260,16 @@ class RoleAware(AccessControl):
         # Permissions to remove
         if context.has_form_value('delete'):
             usernames = context.get_form_values('delusers')
-            self.del_roles(usernames)
-            return context.come_back(u"Members deleted.")
-
+            self.set_user_role(usernames, None)
+            message = u"Members deleted."
         # Permissions to add
-        if context.has_form_value('add'):
+        elif context.has_form_value('add'):
             default_role = self.get_role_names()[0]
             usernames = context.get_form_values('addusers')
-            self.set_role(default_role, usernames)
-            return context.come_back(u"Members added.")
-
+            self.set_user_role(usernames, default_role)
+            message = u"Members added."
         # Permissions to change
-        if context.has_form_value('update'):
+        elif context.has_form_value('update'):
             new_roles = {}
             for key in context.get_form_keys():
                 if key in ['delusers', 'addusers', 'update', 'delete', 'add']:
@@ -255,5 +278,13 @@ class RoleAware(AccessControl):
                 new_role = context.get_form_value(username)
                 new_roles.setdefault(new_role, []).append(username)
             for new_role, usernames in new_roles.items():
-                self.set_role(new_role, usernames)
-            return context.come_back(u"Roles updated.")
+                self.set_user_role(new_role, usernames)
+            message = u"Roles updated."
+
+        # Reindex
+        root = context.root
+        root.reindex_handler(self)
+
+        # Back
+        return context.come_back(message)
+

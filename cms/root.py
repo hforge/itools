@@ -132,18 +132,17 @@ class Root(WebSite):
 
         # Create sub-handlers
         cache = self.cache
-        cache['.metadata'] = self.build_metadata(self,
-                **{'ikaaro:admins': (username,)})
+        cache['.metadata'] = self.build_metadata(self)
         cache['.catalog'] = Catalog(fields=self._catalog_fields)
         # Users
         users = UserFolder()
         cache['users'] = users
-        metadata = self.build_metadata(users, owner=None,
-                                       **{'dc:title': {'en': u'Users'}})
-        cache['users.metadata'] = metadata
+        cache['users.metadata'] = self.build_metadata(users, owner=None,
+                                        **{'dc:title': {'en': u'Users'}})
 
         # Add user
         user = users.set_user(username, password)
+        self.set_user_role(user.name, 'ikaaro:admins')
 
 
     def get_catalog_metadata_fields(self):

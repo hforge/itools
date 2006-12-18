@@ -84,6 +84,67 @@ http://bugs.ikaaro.org/
 
 
 
+itools 0.14.7 (2006/12/18)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+In this release a bunch of bugs have been fixed:
+
+ - [itools.handlers] The method "acquire" works (#597).
+
+ - [itools.catalog] Fix unindexing in some obscure conditions. Fix search
+   for on-memory catalogs.
+
+ - [itools.xml] Raise "NotImplementedError" when building a bare XML
+   document from scratch, instead of failing later with an obscure error.
+
+ - [itools.ical] Fix problem with CRLF in property values (#594).
+
+ - [itools.http] Fix loading form values from multimart requests, when
+   there is more than one value assigned to the same name.
+
+   Loading request objects from files or strings works now (not just from
+   sockets).
+
+ - [itools.web] The response "304 Not Modified" is working again (#601).
+
+ - [itools.cms] Now the calendar widget can show conflicts for the week
+   and month views (#626).
+
+Credits:
+
+ - Hervé Cauwelier fixed some bugs;
+ - Nicolas Deram fixed some bugs;
+ - J. David Ibáñez fixed some bugs;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.7.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.14.6 (2006/11/24)
 ==========================
 

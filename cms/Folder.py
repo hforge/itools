@@ -38,7 +38,7 @@ import File
 from Handler import Handler
 from binary import Image
 from catalog import CatalogAware
-from handlers import Lock, Metadata
+from handlers import Lock, Metadata, ListOfUsers
 from ical import CalendarAware
 from LocaleAware import LocaleAware
 from versioning import VersioningAware
@@ -119,6 +119,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Locks
         if name.endswith('.lock'):
             return Lock(uri)
+        # XXX ListOfUsers (to be removed in 0.16)
+        if name.startswith('.') and name.endswith('.users'):
+            return ListOfUsers(uri)
 
         # cms objects
         if self.has_handler('%s.metadata' % name):

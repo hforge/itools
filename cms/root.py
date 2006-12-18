@@ -441,8 +441,7 @@ class Root(WebSite):
         for path in self.get_groups():
             group = self.get_handler(path)
             members = group.get_members()
-            for username in members - root_users:
-                group.del_roles(username)
+            group.set_user_role(members - root_users, None)
 
         return context.come_back(u'Groups fixed.')
 
@@ -450,7 +449,21 @@ class Root(WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20061203(self):
+    def update_20061216(self):
+        # Update roles
+        for path in self.get_groups():
+            handler = self.get_handler(path)
+            for role in handler.get_role_names():
+                # Get the users
+                filename = '.%s.users' % role.split(':')[1]
+                users = handler.get_handler(filename)
+                users = tuple(users.usernames)
+                # Add to the metadata
+                handler.set_property(role, users)
+                # Remove the old ".users" file
+                handler.del_handler(filename)
+
+        # Update users
         users = self.get_handler('users')
         i = 0
         for name in users.get_handler_names():
@@ -459,12 +472,11 @@ class Root(WebSite):
             user = users.get_handler(name) 
             # Update roles
             user_id = str(i)
-            for role_aware_object_path in user.get_groups():
-                role_aware_object = self.get_handler(role_aware_object_path)
-                for role_name in role_aware_object.get_role_names():
-                    role = role_aware_object.get_role(role_name)
-                    if name in role.get_usernames():
-                        role.add(user_id)
+            for path in user.get_groups():
+                group = self.get_handler(path)
+                user_role = group.get_user_role(name)
+                if user_role is not None:
+                    group.set_user_role(user_id, user_role)
             # Rename user
             users.set_handler(user_id, user, move=True)
             users.del_handler(name)
@@ -472,37 +484,7 @@ class Root(WebSite):
             # Keep the username
             user.set_property('ikaaro:username', name)
             i += 1
-        # Update catalog
-        self._update_catalog()
 
-
-    def update_20061216(self):
-        # Move user roles to metadata
-        root = vfs.open(self.uri)
-        stack = [root]
-        while stack:
-            folder = stack.pop()
-            for name in folder.get_names():
-                # Update metadata
-                if name.endswith('.users'):
-                    with folder.open(name) as file:
-                        users = tuple([x.strip() for x in file.readlines()])
-                    if folder is root:
-                        path = '.metadata'
-                    else:
-                        foldername = folder.uri.path[-1].name
-                        path = '../%s.metadata' % foldername
-                    metadata = Metadata(folder.uri.resolve2(path))
-                    rolename = 'ikaaro:' + name[1:-6]
-                    metadata.set_property(rolename, users)
-                    metadata.save_state()
-                    folder.remove(name)
-                # Skip hidden handlers
-                elif name.startswith('.'):
-                    continue
-                # Recursive
-                elif folder.is_folder(name):
-                    stack.append(folder.open(name))
         # Update 'members' index
         self._update_catalog()
 

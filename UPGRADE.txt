@@ -72,6 +72,13 @@ itools 0.15.0
 
  - New database code.
 
+ - Roles are now metadata, so you don't have to care about ".*.users" files,
+   and you can set roles on File handlers.  The API has changed a bit, useless
+   methods were removed and "is_in_role" is now "has_role" with a different
+   signature. The sequence of usernames is a tuple (because of the datatype
+   Tokens). If you override ".metadata" in your Root.new, notice how the
+   initial administrator is set.
+
 [1] http://en.wikipedia.org/wiki/INI_file
 [2] http://utidylib.berlios.de/
 

@@ -18,65 +18,12 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from subprocess import call
 
 # Import from itools
 import itools
 from itools import vfs
 from itools.cms.server import ask_confirmation
-
-
-def commit(database):
-    stack = [database]
-    while stack:
-        folder = stack.pop()
-        for name in folder.get_names():
-            if name[0] == '~':
-                marker = name[-3:]
-                original = name[1:-4]
-                if marker == 'tmp':
-                    if folder.exists(original):
-                        folder.remove(original)
-                    folder.move(name, original)
-                elif marker == 'add' or marker == 'del':
-                    folder.remove(name)
-            elif name == '.catalog':
-                src = str(folder.uri.path.resolve2('.catalog/'))
-                dst = str(folder.uri.path.resolve2('.catalog.bak'))
-                call(['rsync', '-a', '--delete', src, dst])
-            elif name == '.catalog.bak':
-                continue
-            elif folder.is_folder(name):
-                stack.append(folder.open(name))
-
-
-
-def rollback(database):
-    stack = [database]
-    while stack:
-        folder = stack.pop()
-        for name in folder.get_names():
-            if name[0] == '~':
-                marker = name[-3:]
-                original = name[1:-4]
-                if marker == 'tmp':
-                    folder.remove(name)
-                elif marker == 'add':
-                    folder.remove(original)
-                    folder.remove(name)
-                elif marker == 'del':
-                    if folder.exists(original):
-                        folder.remove(original)
-                    folder.move(name, original)
-            elif name == '.catalog':
-                src = str(folder.uri.path.resolve2('.catalog.bak/'))
-                dst = str(folder.uri.path.resolve2('.catalog'))
-                call(['rsync', '-a', '--delete', src, dst])
-            elif name == '.catalog.bak':
-                continue
-            elif folder.is_folder(name):
-                stack.append(folder.open(name))
-
+from itools.cms.database import DatabaseFS
 
 
 def restore(parser, options, target):
@@ -88,14 +35,14 @@ def restore(parser, options, target):
         message = 'Restore database from backup (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Restoring...',
-            rollback(database)
+            DatabaseFS.rollback_all(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     elif state == 'END':
         message = 'Backup disrupted, update backup from database (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Backup...',
-            commit(database)
+            DatabaseFS.commit_all(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     else:

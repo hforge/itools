@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from __future__ import with_statement
 import smtplib
 from sys import stdout
 from time import time
@@ -34,7 +35,7 @@ from itools.web import get_context
 from text import PO
 from users import UserFolder
 from WebSite import WebSite
-from handlers import ListOfUsers, Metadata
+from handlers import Metadata
 from registry import register_object_class
 from Folder import Folder
 from catalog import CatalogAware
@@ -45,7 +46,7 @@ class Root(WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20061203'
+    class_version = '20061216'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
     class_views = [['browse_thumbnails', 'browse_list'],
@@ -60,7 +61,7 @@ class Root(WebSite):
 
 
     __roles__ = [
-        {'name': 'admins', 'title': u'Admins', 'unit': u'Admin'}]
+        {'name': 'ikaaro:admins', 'title': u'Admins', 'unit': u'Admin'}]
 
 
     ########################################################################
@@ -131,7 +132,8 @@ class Root(WebSite):
 
         # Create sub-handlers
         cache = self.cache
-        cache['.metadata'] = self.build_metadata(self)
+        cache['.metadata'] = self.build_metadata(self,
+                **{'ikaaro:admins': (username,)})
         cache['.catalog'] = Catalog(fields=self._catalog_fields)
         # Users
         users = UserFolder()
@@ -142,7 +144,6 @@ class Root(WebSite):
 
         # Add user
         user = users.set_user(username, password)
-        self.set_role('admins', user.name)
 
 
     def get_catalog_metadata_fields(self):
@@ -472,6 +473,37 @@ class Root(WebSite):
             user.set_property('ikaaro:username', name)
             i += 1
         # Update catalog
+        self._update_catalog()
+
+
+    def update_20061216(self):
+        # Move user roles to metadata
+        root = vfs.open(self.uri)
+        stack = [root]
+        while stack:
+            folder = stack.pop()
+            for name in folder.get_names():
+                # Update metadata
+                if name.endswith('.users'):
+                    with folder.open(name) as file:
+                        users = tuple([x.strip() for x in file.readlines()])
+                    if folder is root:
+                        path = '.metadata'
+                    else:
+                        foldername = folder.uri.path[-1].name
+                        path = '../%s.metadata' % foldername
+                    metadata = Metadata(folder.uri.resolve2(path))
+                    rolename = 'ikaaro:' + name[1:-6]
+                    metadata.set_property(rolename, users)
+                    metadata.save_state()
+                    folder.remove(name)
+                # Skip hidden handlers
+                elif name.startswith('.'):
+                    continue
+                # Recursive
+                elif folder.is_folder(name):
+                    stack.append(folder.open(name))
+        # Update 'members' index
         self._update_catalog()
 
 

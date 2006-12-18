@@ -140,8 +140,7 @@ class User(AccessControl, Folder):
         is_owner = user is not None and user.name == self.name
         namespace['is_owner'] = is_owner
         # Owner or Admin
-        is_admin = user is not None and root.is_in_role('admins', user.name)
-        namespace['is_owner_or_admin'] = is_owner or is_admin
+        namespace['is_owner_or_admin'] = is_owner or root.is_admin(user)
 
         handler = self.get_handler('/ui/User_profile.xml')
         return stl(handler, namespace)
@@ -422,8 +421,9 @@ class UserFolder(Folder):
         catalog = root.get_handler('.catalog')
         results = catalog.search(email=email)
         if results.get_n_documents():
-            return context.come_back(
-                u'There is another user with the email "%s", please try again')
+            message = (u'There is another user with the email "%s", '
+                    u'please try again')
+            return context.come_back(message % email)
 
         # Check the password is right
         if not password or password != password2:

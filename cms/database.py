@@ -114,7 +114,7 @@ class DatabaseFS(FileFS):
 
 
     @staticmethod
-    def commit(database):
+    def commit_transaction(database):
         transaction = get_transaction()
         for reference in transaction:
             path = reference.path
@@ -134,7 +134,7 @@ class DatabaseFS(FileFS):
 
 
     @staticmethod
-    def rollback(database):
+    def rollback_transaction(database):
         transaction = get_transaction()
         for reference in transaction:
             path = reference.path
@@ -154,6 +154,59 @@ class DatabaseFS(FileFS):
         src = str(database.path.resolve2('.catalog.bak/'))
         dst = str(database.path.resolve2('.catalog'))
         call(['rsync', '-a', '--delete', src, dst])
+
+
+    @staticmethod
+    def commit_all(database):
+        stack = [database]
+        while stack:
+            folder = stack.pop()
+            for name in folder.get_names():
+                if name[0] == '~':
+                    marker = name[-3:]
+                    original = name[1:-4]
+                    if marker == 'tmp':
+                        if folder.exists(original):
+                            folder.remove(original)
+                        folder.move(name, original)
+                    elif marker == 'add' or marker == 'del':
+                        folder.remove(name)
+                elif name == '.catalog':
+                    src = str(folder.uri.path.resolve2('.catalog/'))
+                    dst = str(folder.uri.path.resolve2('.catalog.bak'))
+                    call(['rsync', '-a', '--delete', src, dst])
+                elif name == '.catalog.bak':
+                    continue
+                elif folder.is_folder(name):
+                    stack.append(folder.open(name))
+
+
+    @staticmethod
+    def rollback_all(database):
+        stack = [database]
+        while stack:
+            folder = stack.pop()
+            for name in folder.get_names():
+                if name[0] == '~':
+                    marker = name[-3:]
+                    original = name[1:-4]
+                    if marker == 'tmp':
+                        folder.remove(name)
+                    elif marker == 'add':
+                        folder.remove(original)
+                        folder.remove(name)
+                    elif marker == 'del':
+                        if folder.exists(original):
+                            folder.remove(original)
+                        folder.move(name, original)
+                elif name == '.catalog':
+                    src = str(folder.uri.path.resolve2('.catalog.bak/'))
+                    dst = str(folder.uri.path.resolve2('.catalog'))
+                    call(['rsync', '-a', '--delete', src, dst])
+                elif name == '.catalog.bak':
+                    continue
+                elif folder.is_folder(name):
+                    stack.append(folder.open(name))
 
 
 

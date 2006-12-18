@@ -56,12 +56,6 @@ class WebSite(RoleAware, Folder):
     __fixed_handlers__ = ['skin', 'index']
 
 
-    __roles__ = [
-        {'name': 'members', 'title': u"Members", 'unit': u"Member"},
-        {'name': 'reviewers', 'title': u"Reviewers", 'unit': u"Reviewer"},
-    ]
-
-
 ##    def get_skeleton(self, skin_name=None, **kw):
 ##        skeleton = {}
 ##        # The Skin

@@ -116,6 +116,10 @@ class Schema(schemas.base.Schema):
         'username': String,
         # Future
         'order': Tokens(default=()),
+        # roles
+        'admins': Tokens(default=()),
+        'members': Tokens(default=()),
+        'reviewers': Tokens(default=()),
         }
 
 

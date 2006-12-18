@@ -135,7 +135,7 @@ class Server(web.server.Server):
     def end_commit_on_success(self):
         state_filename = self.state_filename
         open(state_filename, 'w').write('END')
-        DatabaseFS.commit(self.database)
+        DatabaseFS.commit_transaction(self.database)
         # Finish with the backup
         open(state_filename, 'w').write('OK')
         # Clean the transaction
@@ -143,6 +143,6 @@ class Server(web.server.Server):
 
 
     def end_commit_on_error(self):
-        DatabaseFS.rollback(self.database)
+        DatabaseFS.rollback_transaction(self.database)
         # Finish with the rollback
         open(self.state_filename, 'w').write('OK')

@@ -22,11 +22,10 @@ from optparse import OptionParser
 
 # Import from itools
 import itools
-from itools import uri
 from itools import vfs
 from itools.handlers.config import Config
-from itools.vfs.database import DatabaseFS
-from itools.cms.server import get_config, get_root, ask_confirmation
+from itools.cms.database import DatabaseFS
+from itools.cms.server import ask_confirmation
 from itools.cms.server import Server
 
 
@@ -75,6 +74,7 @@ def update(parser, options, target):
     server = Server(target)
     target = server.target
     root = server.root
+    database = folder.open('database')
 
     instance_version = root.get_property('version')
     class_version = root.class_version
@@ -92,10 +92,10 @@ def update(parser, options, target):
                 root.update()
             except:
                 # Restore from backup
-                DatabaseFS.rollback(server.database)
+                DatabaseFS.rollback_all(database)
                 raise
             # Update backup
-            DatabaseFS.commit(server.database)
+            DatabaseFS.commit_all(database)
 
 
 

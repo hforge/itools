@@ -255,36 +255,48 @@ class RoleAware(AccessControl):
         return stl(handler, namespace)
 
 
-    permissions__access__ = 'is_admin'
-    def permissions(self, context):
-        # Permissions to remove
-        if context.has_form_value('delete'):
-            usernames = context.get_form_values('delusers')
-            self.set_user_role(usernames, None)
-            message = u"Members deleted."
-        # Permissions to add
-        elif context.has_form_value('add'):
-            default_role = self.get_role_names()[0]
-            usernames = context.get_form_values('addusers')
-            self.set_user_role(usernames, default_role)
-            message = u"Members added."
-        # Permissions to change
-        elif context.has_form_value('update'):
-            new_roles = {}
-            for key in context.get_form_keys():
-                if key in ['delusers', 'addusers', 'update', 'delete', 'add']:
-                    continue
-                username = key
-                new_role = context.get_form_value(username)
-                new_roles.setdefault(new_role, []).append(username)
-            for new_role, usernames in new_roles.items():
-                self.set_user_role(new_role, usernames)
-            message = u"Roles updated."
+    permissions_update_members__access__ = 'is_admin'
+    def permissions_update_members(self, context):
+        # Get the list of users to update
+        root = context.root
+        users = root.get_handler('users')
+        usernames = users.get_usernames()
+        form_keys = context.get_form_keys()
+        usernames = set(usernames) & set(form_keys)
+
+        # Update the user roles
+        for username in usernames:
+            role = context.get_form_value(username)
+            self.set_user_role(username, role)
 
         # Reindex
-        root = context.root
-        root.reindex_handler(self)
+        context.root.reindex_handler(self)
 
         # Back
-        return context.come_back(message)
+        return context.come_back(u"Roles updated.")
 
+
+    permissions__access__ = 'is_admin'
+    def permissions_del_members(self, context):
+        usernames = context.get_form_values('delusers')
+        self.set_user_role(usernames, None)
+
+        # Reindex
+        context.root.reindex_handler(self)
+
+        # Back
+        return context.come_back(u"Members deleted.")
+
+    
+    permissions_add_members__access__ = 'is_admin'
+    def permissions_add_members(self, context):
+        usernames = context.get_form_values('addusers')
+
+        default_role = self.get_role_names()[0]
+        self.set_user_role(usernames, default_role)
+
+        # Reindex
+        context.root.reindex_handler(self)
+
+        # Back
+        return context.come_back(u"Members added.")

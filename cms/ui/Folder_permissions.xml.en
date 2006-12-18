@@ -4,9 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <form action=";permissions" method="post">
-    <div style="width: 300; float: left; padding: 0px 10px 10px 10px;">
-      <h2>Members and roles</h2>
+  <h2>Access Control</h2>
+
+  <div style="width: 300; float: left; padding: 0px 10px 10px 10px;">
+    Remove members or update the roles:
+    <form action="." method="post">
       <table cellpadding="4" cellspacing="0" border="1" width="300">
         <thead>
           <tr>
@@ -22,7 +24,7 @@
             </td>
             <td>${user/title_or_name}</td>
             <td>
-              <select name="${user/name}">
+              <select name="${user/name}" style="width: 100%">
                 <option stl:repeat="role user/roles" value="${role/name}"
                   selected="${role/selected}">${role/title}</option>
               </select>
@@ -31,20 +33,25 @@
         </tbody>
       </table>
       <p style="width: 300px">
-        <input type="submit" name="update" value="Update" style="float: right" />
-        <input type="submit" name="delete" value="Delete" />
+        <input type="submit" name=";permissions_update_members" value="Update"
+          style="float: right" />
+        <input type="submit" name=";permissions_del_members" value="Delete" />
       </p>
-    </div>
-    <div style="width: 300px; margin-left: 320px">
-      <h2>Add a member</h2>
+    </form>
+  </div>
+
+  <div style="margin-left: 360px" stl:if="others">
+    Add a new member:
+    <form action=";permissions_add_members" method="post">
       <select name="addusers" size="15" multiple="multiple">
-        <option stl:repeat="user others" value="${user/name}">${user/title_or_name}</option>
+        <option stl:repeat="user others"
+          value="${user/name}">${user/title_or_name}</option>
       </select>
       <p style="width: 200px">
-        <input type="submit" name="add" value="Add" />
+        <input type="submit" value="Add" />
       </p>
-    </div>
-    <div class="clear"></div>
-  </form>
+    </form>
+  </div>
+  <div class="clear"></div>
 
 </stl:block>

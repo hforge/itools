@@ -27,7 +27,7 @@ class AccessControl(AccessControlBase):
         if user is None:
             return False
         root = get_context().root
-        return root.user_has_role(user.name, 'ikaaro:admins')
+        return root.has_user_role(user.name, 'ikaaro:admins')
 
 
     def is_allowed_to_view(self, user, object):
@@ -104,7 +104,7 @@ class RoleAware(AccessControl):
 
         # Reviewers and Members are allowed to edit
         roles = 'ikaaro:reviewers', 'ikaaro:members'
-        return self.user_has_role(user.name, *roles)
+        return self.has_user_role(user.name, *roles)
 
 
     def is_allowed_to_trans(self, user, object, name):
@@ -118,11 +118,11 @@ class RoleAware(AccessControl):
 
         # Reviewers can do everything
         username = user.name
-        if self.user_has_role(username, 'ikaaro:reviewers'):
+        if self.has_user_role(username, 'ikaaro:reviewers'):
             return True
 
         # Members only can request and retract
-        if self.user_has_role(username, 'ikaaro:members'):
+        if self.has_user_role(username, 'ikaaro:members'):
             return name in ('request', 'unrequest')
 
         return False
@@ -149,7 +149,7 @@ class RoleAware(AccessControl):
         return None
 
 
-    def user_has_role(self, user_id, *roles):
+    def has_user_role(self, user_id, *roles):
         """
         Return True if the given user has any of the the given roles,
         False otherwise.

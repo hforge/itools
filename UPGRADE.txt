@@ -143,10 +143,34 @@ The methods "has_role", "get_role" and "get_roles" have been removed.
 
 
 4.4 Widgets and the "browse list" view
-······················ ··············· 
+······································ 
 
 The widget "Table" has been removed. To see how to do the same thing now
 check the method "Folder.browse_list".
+
+
+4.5 Rewrite URLs (was "set_template_prefix")
+············································ 
+
+The way to rewrite the URLs has changed. Now we do it in one step, instead
+of two, so it is faster. The template language STL provides the feature now.
+
+Before:
+
+    handler = self.get_handler('.../template.xhtml')
+    # Rewrite the URLs
+    here = uri.Path(here.get_abspath())
+    there = uri.Path(handler.get_abspath())
+    handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
+    # STL
+    body = stl(handler, namespace)
+
+Now:
+
+    handler = self.get_handler('.../template.xhtml')
+    # STL and rewrite the URLs
+    prefix = uri.Path(handler.get_abspath())
+    body = stl(handler, namespace, prefix=prefix)
 
 
 5. Packaging

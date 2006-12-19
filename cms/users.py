@@ -371,7 +371,7 @@ class UserFolder(Folder):
         password = crypt_password(password)
         self.set_handler(user_id, user, **{'ikaaro:email': email,
                                            'ikaaro:password': password,
-                                           'dc:title': email})
+                                           'dc:title': {'en': email}})
 
         # Return the user
         return self.get_handler(user_id)

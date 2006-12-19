@@ -13,7 +13,7 @@
       <p id="breadcrumb">
         You are here:
         <span stl:repeat="item breadcrumb">
-          <a stl:attributes="href item/url" stl:content="item/name"/>
+          <a href="${item/url}">${item/name}</a>
           <span stl:if="not repeat/item/end">&raquo;</span>
         </span>
       </p>
@@ -22,20 +22,17 @@
       <h2>Navigation</h2>
       <ul>
         <li stl:repeat="item folders">
-          <a class="in_path"
-             stl:if="item/in_path"
-             stl:attributes="href item/url" stl:content="item/name"/>
-          <a stl:if="not item/in_path"
-             stl:attributes="href item/url"
-             stl:content="item/name"/>
+          <a stl:if="item/in_path" href="${item/url}" class="in_path"
+            >${item/name}</a>
+          <a stl:if="not item/in_path" href="${item/url}">${item/name}</a>
         </li>
       </ul>
     </div>
-    <div id="content" stl:content="body">Body</div>
+    <div id="content">${body}</div>
     <div class="clear"></div>
     <div id="footer">
-      <a stl:if="is_allowed_to_edit"
-        stl:attributes="href switch_skin">Back to back-office</a>
+      <a stl:if="is_allowed_to_edit" href="${switch_skin}"
+        >Back to back-office</a>
     </div>
   </body>
 </html>

@@ -3,13 +3,12 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <h2 stl:content="title">Folder Title</h2>
+  <h2>${title}</h2>
   <p>Latest News&nbsp;:</p>
   <ul stl:if="documents">
     <li stl:repeat="document documents">
-      <a href="" stl:attributes="href document/path"
-        stl:content="document/title">
-      </a> (<span stl:content="document/mtime"></span>)
+      <a href="${document/path}">${document/title}</a>
+      (<span>${document/mtime}</span>)
     </li>
   </ul>
   <p stl:if="not documents">

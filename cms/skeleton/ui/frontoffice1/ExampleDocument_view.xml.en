@@ -3,6 +3,6 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <h2 stl:content="title">Document Title</h2>
-  <p stl:content="body">Document Content</p>
+  <h2>${title}</h2>
+  <p>${body}</p>
 </stl:block>

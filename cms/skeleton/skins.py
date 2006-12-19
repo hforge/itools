@@ -65,17 +65,15 @@ class FrontOffice1(Skin):
         # Set the encoding to UTF-8
         context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
+        # Load the template
         handler = self.get_handler('/ui/frontoffice1/template.xhtml')
-        # set_template_prefix dynamicly rewrites URL for images and CSS
-        here = uri.Path(here.get_abspath())
-        there = uri.Path(handler.get_abspath())
-        handler = XHTML.set_template_prefix(handler, here.get_pathto(there))
 
-        # STL
+        # Process the header (XXX strips XML declaration, because it makes
+        # IE6 fall into quirks mode, see "http://hsivonen.iki.fi/doctype/")
         header = handler.header_to_str()
-        # XXX Strip XML declaration, because it makes IE6 fall into quirks
-        # mode (see http://hsivonen.iki.fi/doctype/)
         header = header.split('\n', 1)[1]
-        body = stl(handler, namespace)
+        # STL and rewrite URLs (for images and CSS)
+        prefix = uri.Path(handler.get_abspath())
+        body = stl(handler, namespace, prefix=prefix)
 
         return header + body

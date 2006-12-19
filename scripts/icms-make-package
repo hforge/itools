@@ -14,15 +14,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+# Import from the future
+from __future__ import with_statement
 
 # Import from the Standard Library
-from __future__ import with_statement
 from optparse import OptionParser
 from os import makedirs, getcwd
 from os.path import exists, basename, dirname, join
 from shutil import copyfile
 from subprocess import call
+from sys import stdout
 
 # Import from itools
 import itools
@@ -37,10 +40,8 @@ def create(parser, options, target):
     package = basename(target)
     skeleton = join(dirname(cms.__file__), 'skeleton')
 
-    # Copy source files
-
-    print "Creating...",
-
+    # Copy source files (XXX The files MANIFEST and version.txt should not
+    # be included in the skeleton)
     with open(join(skeleton, 'MANIFEST')) as manifest:
         for line in manifest.readlines():
             path = line.strip()
@@ -50,12 +51,8 @@ def create(parser, options, target):
             if basedir and not exists(basedir):
                 makedirs(basedir)
             copyfile(source, dest)
-            print ".",
-
-    print "Done."
 
     # Set up package
-
     setup = join(target, 'setup.conf')
     new_setup = []
     with open(setup) as file:
@@ -67,15 +64,17 @@ def create(parser, options, target):
     with open(setup, 'w') as file:
         file.write(''.join(new_setup))
 
-    # Build package
-
-    cwd = uri.Path(getcwd())
-    binary = cwd.resolve2(__file__.replace('icms-make-package', 'isetup-build'))
-    target = cwd.resolve2(target)
-    print "Calling", binary
-    call(str(binary), cwd=str(target))
-
-    print "Package '%s' created in '%s'." % (package, target)
+    # Print a helpful message
+    print '*'
+    print '* Package "%s" created' % package
+    print '*'
+    print '* To install it type:'
+    print '*'
+    print '*   $ cd %s' % target
+    print '*   $ %s' % __file__.replace('icms-make-package', 'isetup-build')
+    print '*   ...'
+    print '*   $ %s setup.py install' % __file__.replace('icms-make-package', 'python')
+    print '*'
 
 
 

@@ -1,5 +1,5 @@
 
-itools 0.15.0 (2006/12/XX)
+itools 0.15.0 (2006/12/2X)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -55,9 +55,9 @@ can be certain the email address is valid.
 
 
 There have been also some smaller improvements to the programming
-interface of other packages, most notably "itools.vfs", "itools.catalog"
-and "itools.web". See the file UPGRADE.txt file for the incompatible
-changes.
+interface of other packages, most notably "itools.vfs", "itools.catalog",
+"itools.web" and "itools.cms". See the file UPGRADE.txt file for the
+incompatible changes.
 
 
 [1] http://download.ikaaro.org/doc/itools/itools.html
@@ -65,6 +65,10 @@ changes.
 
 Credits:
 
+ - Hervé Cauwelier wrote the new database code and made other important
+   changes in "itools.cms" (metadata stored roles);
+ - J. David Ibáñez did almost everything else;
+ - Norman Khine helped testing.
 
 
 Resources

@@ -1,5 +1,5 @@
 
-itools 0.15.0 (2006/12/2X)
+itools 0.15.0 (2006/12/20)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single

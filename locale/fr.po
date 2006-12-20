@@ -763,7 +763,8 @@ msgid ""
 msgstr ""
 "<span stl:if=\"event/DTSTART\">\n"
 "                  <span>${event/DTSTART}</span>\n"
-"                  <span stl:if=\"event/DTEND\"> - ${event/DTEND}</span>"
+"                  <span stl:if=\"event/DTEND\"> - </span></span> <span stl:"
+"if=\"event/DTEND\">${event/DTEND}</span>"
 
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid ""

@@ -16,7 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import other libraries
-import tidy
+try:
+    import tidy
+except ImportError:
+    print 'uTidylib is not installed, download from http://utidylib.berlios.de/'
 
 # Import from itools
 from itools.xml import XML

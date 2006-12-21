@@ -208,7 +208,7 @@ class Skin(Folder):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        return tree(context, depth=6)
+        return tree(context, depth=6, filter=Folder)
 
 
     def get_message(self, context):

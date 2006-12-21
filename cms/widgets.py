@@ -212,9 +212,7 @@ pattern2 = Template(
     '</dd>\n')
 
 
-def _tree(context, handler, depth):
-    from Folder import Folder
-
+def _tree(context, handler, depth, filter):
     # Define local variables
     here = context.handler
     here_path = str(context.path)
@@ -250,19 +248,26 @@ def _tree(context, handler, depth):
             depth = depth - 1
             user = context.user
             children = []
-            for child in handler.search_handlers(handler_class=Folder):
+
+            # Filter the handlers by the given class (don't filter by default)
+            if filter is None:
+                search = handler.search_handlers()
+            else:
+                search = handler.search_handlers(handler_class=filter)
+
+            for child in search:
                 ac = child.get_access_control()
                 if ac.is_allowed_to_view(user, child):
-                    children.append(_tree(context, child, depth))
+                    children.append(_tree(context, child, depth, filter))
             namespace['children'] = '\n'.join(children)
  
     return pattern.substitute(namespace)
 
 
 
-def tree(context, root=None, depth=6):
+def tree(context, root=None, depth=6, filter=None):
     if root is None:
         root = context.root
 
-    return '<dl>\n' + _tree(context, root, depth) + '</dl>\n'
+    return '<dl>\n' + _tree(context, root, depth, filter) + '</dl>\n'
 

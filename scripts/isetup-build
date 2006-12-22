@@ -67,7 +67,10 @@ def get_version():
 
     # And the version name is...
     if tags:
-        tags.sort()
+        # Sort so "0.13.10" > "0.13.9"
+        key = lambda tag: tuple([ int(x) for x in tag.split('.')])
+        tags.sort(key=key)
+        # Get the version name
         version_name = tags[-1]
     else:
         version_name = branch_name

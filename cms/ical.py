@@ -415,15 +415,18 @@ class Calendar(Text, icalendar):
                                         Time.encode(tt_end, False)
             # ndays days
             ns_days = []
-            for d in range(ndays):
-                ns_day = {}
-                params = '%sdate=%s&timetable=%s'\
-                         % (base_param, Date.encode(day), index)
-                ns_day['url'] = '%s%s' % (base_url, params)
-                ns_day['events'] = self.get_events(day, method, timetable, 
-                                                   resource_name=resource_name,
-                                                   show_conflicts=show_conflicts)
-                ns_days.append(ns_day)
+            # 7 days a week
+            for d in range(7):
+                # day in timetable
+                if d < ndays:
+                    ns_day = {}
+                    params = '%sdate=%s&timetable=%s'\
+                             % (base_param, Date.encode(day), index)
+                    ns_day['url'] = '%s%s' % (base_url, params)
+                    ns_day['events'] = self.get_events(day, method, timetable, 
+                                                       resource_name=resource_name,
+                                                       show_conflicts=show_conflicts)
+                    ns_days.append(ns_day)
                 day = day + timedelta(1)
             ns_timetable['days'] = ns_days
             ns.append(ns_timetable)
@@ -475,17 +478,19 @@ class Calendar(Text, icalendar):
         # 5 weeks
         for w in range(5):
             ns_week = {'days': [], 'month': u''}
-            # 7 days
+            # 7 days a week
             for d in range(7):
-                ns_day = {}
-                ns_day['nday'] = day.day
-                ns_day['selected'] = (day == c_date)
-                ns_day['url'] = ';edit_event_form?date=%s' % Date.encode(day)
-                ns_day['events'] = self.get_events(day, 'monthly_view')
-                ns_week['days'].append(ns_day)
-                if day.day == 1:
-                    month = self.gettext(self.months[day.month])
-                    ns_week['month'] = month
+                # day in timetable
+                if d < ndays:
+                    ns_day = {}
+                    ns_day['nday'] = day.day
+                    ns_day['selected'] = (day == c_date)
+                    ns_day['url'] = ';edit_event_form?date=%s' % Date.encode(day)
+                    ns_day['events'] = self.get_events(day, 'monthly_view')
+                    ns_week['days'].append(ns_day)
+                    if day.day == 1:
+                        month = self.gettext(self.months[day.month])
+                        ns_week['month'] = month
                 day = day + timedelta(1)
             namespace['weeks'].append(ns_week)
 

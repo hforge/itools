@@ -1,3 +1,17 @@
+0.13.10 (2006/12/22)
+
+  HTTP
+  - Fix load of request objects from strings or files.
+
+  Web
+  - Close connections on error.
+  - Remove the module "zope2" (not required anymore by Localizer).
+
+  CMS
+  - browse_image: do not force at 128 images smaller than 128 (#416).
+  - Fix highlighting the tab when changing subtab (#308).
+
+
 0.13.9 (2006/07/25)
 
   URI

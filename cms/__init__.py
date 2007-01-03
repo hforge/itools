@@ -39,10 +39,8 @@ from . import ical
 from . import text
 try:
     from . import wiki
-    __WIKI__ = True
 except ImportError:
-    print "docutils is not installed, wiki deactivated."
-    __WIKI__ = False
+    wiki = None
 
 
 
@@ -54,7 +52,7 @@ Folder.register_document_type(File.File)
 Folder.register_document_type(text.Text)
 Folder.register_document_type(Document.HTML)
 Folder.register_document_type(ical.Calendar)
-if __WIKI__ is True:
+if wiki is not None:
     Folder.register_document_type(wiki.WikiFolder)
 
 # Register domain (i18n)

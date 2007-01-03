@@ -114,11 +114,11 @@ class Calendar(Text, icalendar):
 
 
     @classmethod
-    def get_current_date(cls, date=None):
+    def get_current_date(cls, value=None):
         try:
-            return Date.decode(date or datetime.today())
+            return Date.decode(value or date.today())
         except:
-            return datetime.today()
+            return date.today()
 
 
     # Get namespace for one selected day, filling given fields

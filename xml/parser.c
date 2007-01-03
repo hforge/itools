@@ -293,7 +293,7 @@ int read_string(Parser* self, char* expected) {
     int size;
 
     size = strlen(expected);
-    if strncmp(self->cursor, expected, size)
+    if (strncmp(self->cursor, expected, size))
         return -1;
 
     self->cursor += size;

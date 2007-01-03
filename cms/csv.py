@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,9 +13,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
+from itools.datatypes import Integer
 from itools.csv.csv import CSV as iCSV, Row as iRow
 from itools.stl import stl
 
@@ -102,7 +103,31 @@ class CSV(Text, iCSV):
 
     def view(self, context):
         namespace = {}
-        namespace['rows'] = self.lines
+
+        # The input parameters
+        start = context.get_form_value('batchstart', type=Integer, default=0)
+        size = 50
+
+        # The rows
+        namespace['rows'] = self.lines[start:start+size]
+
+        # Number of lines
+        total = len(self.lines)
+        namespace['total'] = total
+
+        # The batch
+        namespace['batchstart'] = start + 1
+        end = min(start + size, total)
+        namespace['batchend'] = end
+        namespace['batch_previous'] = None
+        if start > 0:
+            prev = max(start - size, 0)
+            prev = str(prev)
+            namespace['batch_previous'] = context.uri.replace(batchstart=prev)
+        namespace['batch_next'] = None
+        if end < total:
+            namespace['batch_next'] = context.uri.replace(batchstart=str(end))
+
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)
 

@@ -4,9 +4,15 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+  <div class="batchcontrol" stl:if="total">
+    ${batchstart}-${batchend} of ${total}
+
+    <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
+    <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
+  </div>
+
   <table border="1" cellpadding="2" cellspacing="2">
     <tr stl:repeat="row rows">
-      <td valign="top">${repeat/row/index}</td>
       <td valign="top" stl:repeat="column row">${column}</td>
     </tr>
   </table>

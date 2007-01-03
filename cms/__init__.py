@@ -37,6 +37,12 @@ from . import handlers
 from . import html
 from . import ical
 from . import text
+try:
+    from . import wiki
+    __WIKI__ = True
+except ImportError:
+    print "docutils is not installed, wiki deactivated."
+    __WIKI__ = False
 
 
 
@@ -48,6 +54,8 @@ Folder.register_document_type(File.File)
 Folder.register_document_type(text.Text)
 Folder.register_document_type(Document.HTML)
 Folder.register_document_type(ical.Calendar)
+if __WIKI__ is True:
+    Folder.register_document_type(wiki.WikiFolder)
 
 # Register domain (i18n)
 path = os.path.join(os.path.split(globals()['__path__'][0])[0], 'locale')

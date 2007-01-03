@@ -1,0 +1,22 @@
+.reference.external_reference:link,
+.reference.external_reference:visited {
+  padding-left: 18px;
+  color: blue;
+  background: url(images/WebSite16.png) top left no-repeat;
+}
+
+.reference.wiki:link,
+.reference.wiki:visited {
+  color: green;
+}
+
+.nowiki .reference.wiki:link,
+.nowiki .reference.wiki:visited {
+  color: red;
+}
+
+.literal-block {
+  padding: 1em;
+  border: 1px solid #999;
+  background: #ffe;
+}

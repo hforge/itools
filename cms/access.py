@@ -226,6 +226,10 @@ class RoleAware(AccessControl):
         userfolder = root.get_handler('users')
         namespace = {}
 
+        # Roles
+        namespace['roles'] = self.__roles__
+
+        # Users (members and non-members)
         members = self.get_members()
 
         users = []
@@ -291,9 +295,10 @@ class RoleAware(AccessControl):
     permissions_add_members__access__ = 'is_admin'
     def permissions_add_members(self, context):
         usernames = context.get_form_values('addusers')
+        role = context.get_form_value('role')
 
-        default_role = self.get_role_names()[0]
-        self.set_user_role(usernames, default_role)
+        # Add member
+        self.set_user_role(usernames, role)
 
         # Reindex
         context.root.reindex_handler(self)

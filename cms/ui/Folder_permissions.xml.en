@@ -41,8 +41,13 @@
   </div>
 
   <div style="margin-left: 360px" stl:if="others">
-    Add a new member:
     <form action=";permissions_add_members" method="post">
+      Add a new 
+      <select name="role" style="font-size: 1em">
+        <option stl:repeat="role roles" value="${role/name}"
+          >${role/unit}</option>
+      </select>
+      <br/><br/>
       <select name="addusers" size="15" multiple="multiple">
         <option stl:repeat="user others"
           value="${user/name}">${user/title_or_name}</option>

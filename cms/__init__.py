@@ -37,6 +37,7 @@ from . import handlers
 from . import html
 from . import ical
 from . import text
+from .forum import Forum
 try:
     from . import wiki
 except ImportError:
@@ -52,6 +53,7 @@ Folder.register_document_type(File.File)
 Folder.register_document_type(text.Text)
 Folder.register_document_type(Document.HTML)
 Folder.register_document_type(ical.Calendar)
+Folder.register_document_type(Forum)
 if wiki is not None:
     Folder.register_document_type(wiki.WikiFolder)
 

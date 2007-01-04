@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+  "-//W3C//DTD XHTML 1.0 Strict//EN">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h1>${title}</h1>
+  <p><em>${description}</em></p>
+
+  <table border="0" cellpadding="5" cellspacing="0" width="100%"
+    id="forum_message_list">
+    <colgroup>
+      <col width="0*" />
+      <col width="1*" />
+    </colgroup>
+    <tbody>
+      <tr stl:repeat="message messages" class="${message/class}">
+        <td valign="top" class="forum_message_info">
+          <p class="forum_message_author">${message/author}</p>
+          <p class="forum_message_date">${message/mtime}</p>
+          <form method="GET" stl:if="message/editable"
+            action="${message/edit_form}">
+            <input type="submit" value="Edit" />
+          </form>
+        </td>
+        <td valign="top" class="forum_message_body">
+          <p>${message/body}</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <a name="new_reply" />
+  <form action=";new_reply">
+    <h3>Post a Reply</h3>
+    <p>
+      <textarea name="body" cols="72" rows="10" />
+      <input type="submit" value="Reply" />
+    </p>
+  </form>
+
+</stl:block>

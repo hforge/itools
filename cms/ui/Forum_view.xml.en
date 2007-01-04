@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+  "-//W3C//DTD XHTML 1.0 Strict//EN">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h1>${title}</h1>
+  <p><em>${description}</em></p>
+
+  <form action=";new_thread_form">
+    <p>
+      <input type="submit" value="New Thread" />
+    </p>
+  </form>
+
+  <table border="0" cellpadding="5" cellspacing="0" width="100%"
+    id="forum_thread_list">
+    <colgroup>
+      <col width="1*" />
+      <col width="0*" />
+      <col width="0*" />
+      <col width="0*" />
+      <col width="0*" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Replies</th>
+        <th>Last Post</th>
+        <th>By</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr stl:repeat="thread threads" class="${thread/class}">
+        <td>
+          <a class="forum_thread_title" href="${thread/name}"
+            >${thread/title}</a>
+          <br />
+          <em>${thread/description}</em>
+        </td>
+        <td>
+          <span class="forum_thread_author">${thread/author}</span>
+        </td>
+        <td>
+          <span class="forum_thread_replies">${thread/replies}</span>
+        </td>
+        <td>
+          <span class="forum_thread_date">${thread/last_date}</span>
+        </td>
+        <td>
+          <span class="forum_thread_by">${thread/last_author}</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <form action=";new_thread_form">
+    <p>
+      <input type="submit" value="New Thread" />
+    </p>
+  </form>
+
+</stl:block>

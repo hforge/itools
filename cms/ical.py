@@ -453,8 +453,7 @@ class Calendar(Text, icalendar):
     monthly_view__label__ = u'View'
     monthly_view__sublabel__ = u'Monthly'
     def monthly_view(self, context):
-        context = get_context()
-        root = context.root
+        ndays = 7
 
         # Current date
         c_date = self.get_current_date(context.get_form_value('date', None))
@@ -497,7 +496,7 @@ class Calendar(Text, icalendar):
         add_icon = self.get_handler('/ui/images/button_add.png')
         namespace['add_icon'] = self.get_pathto(add_icon)
 
-        handler = root.get_handler('ui/ical_monthly_view.xml')
+        handler = self.get_handler('/ui/ical_monthly_view.xml')
         return stl(handler, namespace)
 
 
@@ -506,9 +505,6 @@ class Calendar(Text, icalendar):
     weekly_view__label__ = u'View'
     weekly_view__sublabel__ = u'Weekly'
     def weekly_view(self, context):
-        context = get_context()
-        root = context.root
-
         # Current date
         c_date = self.get_current_date(context.get_form_value('date', None))
 
@@ -532,7 +528,7 @@ class Calendar(Text, icalendar):
         add_icon = self.get_handler('/ui/images/button_add.png')
         namespace['add_icon'] = self.get_pathto(add_icon)
 
-        handler = root.get_handler('ui/ical_weekly_view.xml')
+        handler = self.get_handler('/ui/ical_weekly_view.xml')
         return stl(handler, namespace)
 
 
@@ -540,9 +536,6 @@ class Calendar(Text, icalendar):
     edit_event_form__label__ = u'Edit'
     edit_event_form__sublabel__ = u'Event'
     def edit_event_form(self, context):
-        context = get_context()
-        root = context.root
-
         uid = context.get_form_value('uid', None)
         method = context.get_form_value('method', 'monthly_view')
         goto = ';%s' % method 
@@ -653,7 +646,7 @@ class Calendar(Text, icalendar):
         # Keep params
         namespace['method'] = method
 
-        handler = root.get_handler('ui/ical_edit_event_form.xml')
+        handler = self.get_handler('/ui/ical_edit_event_form.xml')
         return stl(handler, namespace)
 
 
@@ -792,8 +785,6 @@ class Calendar(Text, icalendar):
     edit_timetables_form__label__ = u'Edit'
     edit_timetables_form__sublabel__ = u'Timetables'
     def edit_timetables_form(self, context):
-        context = get_context()
-        root = context.root
         # Initialization
         namespace = {}
         namespace['timetables'] = []
@@ -809,7 +800,7 @@ class Calendar(Text, icalendar):
                 ns['start'] = Time.encode(timetable['start'], False)
                 ns['end'] = Time.encode(timetable['end'], False)
                 namespace['timetables'].append(ns)
-        handler = root.get_handler('ui/ical_edit_timetables.xml')
+        handler = self.get_handler('/ui/ical_edit_timetables.xml')
         return stl(handler, namespace)
 
 
@@ -1181,8 +1172,6 @@ class CalendarAware(object):
     browse_calendar__label__ = u'Contents'
     browse_calendar__sublabel__ = u'As calendar'
     def browse_calendar(self, context):
-        root = context.root
-
         # Set calendar as selected browse view
         context.set_cookie('browse', 'calendar')
 
@@ -1225,6 +1214,6 @@ class CalendarAware(object):
             ns_calendars.append(ns_calendar)
         namespace['calendars'] = ns_calendars
 
-        handler = root.get_handler('/ui/Folder_browse_calendar.xml')
+        handler = self.get_handler('/ui/Folder_browse_calendar.xml')
         return stl(handler, namespace)
 

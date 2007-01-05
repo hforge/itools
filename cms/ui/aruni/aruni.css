@@ -35,10 +35,27 @@ a img { border: 0; }
 td, th { padding: 0 0.2em; }
 
 #header {
-  margin-bottom: 1em;
-  padding: 30px 0.5em 0.5em;
   background: #729fcf url(images/logo.png) left bottom no-repeat;
+  margin-bottom: 1em;
+  padding: 30px 1.0em 0.5em 0.5em;
+  text-align: right;
 }
+
+#header a {
+  color: white;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#header a img {
+  vertical-align: middle;
+}
+
+#header a:hover {
+  text-decoration: underline;
+}
+
 
 #site_search_form { float: right; }
 #site_search_form input { font-size: 1em; }

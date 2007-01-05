@@ -32,12 +32,8 @@
   </head>
   <body>
     <div id="header">
-      <form id="site_search_form" method="get" action="${site_search/action}">
-        <p>
-          <input type="text" name="site_search_text" value="${site_search/text}" />
-          <input type="submit" class="button_search" value="Search" />
-        </p>
-      </form>
+      <a href="/;site_search"><img src="../images/button_search.png" />
+        Search</a>
       <div class="clear"></div>
     </div>
     <div class="clear"></div>

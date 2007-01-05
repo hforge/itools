@@ -413,11 +413,11 @@ class WebSite(RoleAware, Folder):
     # User search UI
     site_search__access__ = True
     def site_search(self, context):
+        namespace = {}
         # Get and check input data
-        text = context.get_form_value('site_search_text').strip()
-        if not text:
-            return context.come_back(u"Empty search value.")
+        text = context.get_form_value('site_search_text', default='').strip()
         text = Unicode.decode(text)
+        namespace['site_search_text'] = text
         # Batch
         start = context.get_form_value('start', type=Integer, default=0)
         size = 10
@@ -462,7 +462,6 @@ class WebSite(RoleAware, Folder):
         total = results.get_n_documents()
         end = start + len(documents)
 
-        namespace = {}
         namespace['total'] = total
         namespace['objects'] = objects
         namespace['batchstart'] = start + 1

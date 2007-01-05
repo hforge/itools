@@ -47,11 +47,12 @@ class WebSite(RoleAware, Folder):
     class_description = u'Create a new Web Site or Work Place.'
     class_icon16 = 'images/WebSite16.png'
     class_icon48 = 'images/WebSite48.png'
-    class_views = [['browse_thumbnails', 'browse_list', 'browse_image'],
-                   ['new_resource_form'],
-                   ['edit_metadata_form'],
-                   ['languages_form'],
-                   ['permissions_form', 'anonymous_form']]
+    class_views = [
+        ['browse_thumbnails', 'browse_list', 'browse_image'],
+        ['new_resource_form'],
+        ['edit_metadata_form'],
+        ['languages_form', 'anonymous_form', 'contact_options_form'],
+        ['permissions_form']]
 
     __fixed_handlers__ = ['skin', 'index']
 
@@ -132,13 +133,11 @@ class WebSite(RoleAware, Folder):
     # User interface
     ########################################################################
 
-    permissions_form__label__ = u"Security"
-
-
     ######################################################################
-    # Languages
+    # Settings / Languages
     languages_form__access__ = 'is_allowed_to_edit'
-    languages_form__label__ = u'Languages'
+    languages_form__label__ = u'Settings'
+    languages_form__sublabel__ = u'Languages'
     def languages_form(self, context):
         namespace = {}
 
@@ -214,10 +213,10 @@ class WebSite(RoleAware, Folder):
 
 
     ######################################################################
-    # Security / Anonymous
+    # Settings / Registration
     anonymous_form__access__ = 'is_allowed_to_edit'
-    anonymous_form__label__ = u'Security'
-    anonymous_form__sublabel__ = u'Anonymous'
+    anonymous_form__label__ = u'Settings'
+    anonymous_form__sublabel__ = u'Registration'
     def anonymous_form(self, context):
         # Build the namespace
         namespace = {}
@@ -234,6 +233,45 @@ class WebSite(RoleAware, Folder):
         # Boolean properties
         for name in ['ikaaro:website_is_open']:
             self.set_property(name, context.get_form_value(name, False))
+
+        return context.come_back(u'Changes saved.')
+
+
+    ######################################################################
+    # Settings / Contact
+    contact_options_form__access__ = 'is_allowed_to_edit'
+    contact_options_form__label__ = u'Settings'
+    contact_options_form__sublabel__ = u'Contact'
+    def contact_options_form(self, context):
+        # Find out the contacts
+        contacts = self.get_property('ikaaro:contacts')
+
+        # Build the namespace
+        users = self.get_handler('/users')
+
+        namespace = {}
+        namespace['contacts'] = []
+        for user in users.search_handlers():
+            username = user.name
+            email = user.get_property('ikaaro:email')
+            if not email:
+                continue
+            namespace['contacts'].append(
+                {'name': username, 'email': email,
+                 'is_selected': username in contacts})
+
+        # Sort
+        namespace['contacts'].sort(key=lambda x: x['email'])
+
+        handler = self.get_handler('/ui/WebSite_contact_options.xml')
+        return stl(handler, namespace)
+
+
+    edit_contact_options__access__ = 'is_allowed_to_edit'
+    def edit_contact_options(self, context):
+        contacts = context.get_form_values('contacts')
+        contacts = tuple(contacts)
+        self.set_property('ikaaro:contacts', contacts)
 
         return context.come_back(u'Changes saved.')
 
@@ -504,8 +542,18 @@ class WebSite(RoleAware, Folder):
     # Contact
     contact_form__access__ = True
     def contact_form(self, context):
+        # Build the namespace
         namespace = {}
 
+        # To
+        users = self.get_handler('/users')
+        namespace['contacts'] = []
+        for name in self.get_property('ikaaro:contacts'):
+            user = users.get_handler(name)
+            email = user.get_property('ikaaro:email')
+            namespace['contacts'].append({'name': name, 'title': email})
+
+        # From
         user = context.user
         if user is None:
             namespace['from'] = None
@@ -518,17 +566,22 @@ class WebSite(RoleAware, Folder):
 
     contact__access__ = True
     def contact(self, context):
+        contact = context.get_form_value('to')
         from_addr = context.get_form_value('from').strip()
         subject = context.get_form_value('subject').strip()
         body = context.get_form_value('body').strip()
 
         # Check the input data
-        if not from_addr or not subject or not body:
+        if not contact or not from_addr or not subject or not body:
             return context.come_back(u'Please fill the missing fields.')
+
+        # Find out the "to" address
+        contact = self.get_handler('/users/%s' % contact)
+        contact = contact.get_property('ikaaro:email')
 
         # Send the email
         root = self.get_root()
-        root.send_email(from_addr, to_addr, subject, body)
+        root.send_email(from_addr, contact, subject, body)
 
         return context.come_back(u'Message sent.')
 

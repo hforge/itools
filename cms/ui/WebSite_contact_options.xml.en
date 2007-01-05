@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2>Contact Options</h2>
+
+  <form action=";edit_contact_options" method="post">
+    <dl>
+      <dt><label for="contacts">Contacts</label></dt>
+      <dd>
+        <select name="contacts" id="contacts"
+          multiple="multiple" size="15">
+          <option stl:repeat="contact contacts" value="${contact/name}"
+            selected="${contact/is_selected}">${contact/email}</option>
+        </select>
+      </dd>
+    </dl>
+    <input type="submit" value="Change" class="button_ok"/>
+  </form>
+
+</stl:block>

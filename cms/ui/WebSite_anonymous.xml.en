@@ -4,11 +4,12 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Anonymous Settings.</h2>
+  <h2>Registration Options</h2>
 
   <form action=";edit_anonymous" method="post">
     <p>
-      <label for="ikaaro:website_is_open">Anonymous users allowed to join this web site</label>
+      <label for="ikaaro:website_is_open">Anonymous users allowed to join
+        this web site</label>
       <input name="ikaaro:website_is_open" id="ikaaro:website_is_open"
         type="checkbox" value="1" class="checkbox"
         checked="${ikaaro:website_is_open}" />

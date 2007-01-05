@@ -49,13 +49,14 @@ class Root(WebSite):
     class_version = '20061216'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
-    class_views = [['browse_thumbnails', 'browse_list'],
-                   ['new_resource_form'],
-                   ['edit_metadata_form'],
-                   ['languages_form'],
-                   ['permissions_form', 'anonymous_form'],
-                   ['catalog_form', 'check_groups'],
-                   ['about', 'credits', 'license']]
+    class_views = [
+        ['browse_thumbnails', 'browse_list'],
+        ['new_resource_form'],
+        ['edit_metadata_form'],
+        ['languages_form', 'anonymous_form', 'contact_options_form'],
+        ['permissions_form'],
+        ['catalog_form', 'check_groups'],
+        ['about', 'credits', 'license']]
 
     __fixed_handlers__ = ['users', 'ui']
 

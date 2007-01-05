@@ -8,6 +8,14 @@
 
   <form action=";contact" method="post">
     <dl>
+      <dt><label for="to">To</label></dt>
+      <dd>
+        <stl:block repeat="contact contacts">
+          <input type="radio" name="to" value="${contact/name}"/>
+          ${contact/title}
+          <br/>
+        </stl:block>
+      </dd>
       <dt><label for="from">From</label></dt>
       <dd>
         <input type="text" id="from" name="from" size="40" value="${from}" />

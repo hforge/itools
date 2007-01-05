@@ -36,15 +36,22 @@ td, th { padding: 0 0.2em; }
 
 #header {
   background: #729fcf url(images/logo.png) left bottom no-repeat;
+  color: white;
+  font-size: 1.1em;
   margin-bottom: 1em;
-  padding: 30px 1.0em 0.5em 0.5em;
+  padding: 10px 1.0em 0.5em 0.5em;
   text-align: right;
 }
 
 #header a {
+  background-color: transparent;
+  background-position: left center;
+  background-repeat: no-repeat;
   color: white;
   font-size: 1.1em;
   font-weight: bold;
+  margin: 0px 0px 0px 10px;
+  padding: 4px 0px 4px 20px;
   text-decoration: none;
 }
 
@@ -56,6 +63,25 @@ td, th { padding: 0 0.2em; }
   text-decoration: underline;
 }
 
+#header a#top_menu_login {
+  background-image: url(images/action_login.png);
+}
+
+#header a#top_menu_register {
+  background-image: url(images/action_join.png);
+}
+
+#header a#top_menu_home {
+  background-image: url(images/action_home.png);
+}
+
+#header a#top_menu_logout {
+  background-image: url(images/action_logout.png);
+}
+
+#header a#top_menu_search {
+  background-image: url(../images/button_search.png);
+}
 
 #site_search_form { float: right; }
 #site_search_form input { font-size: 1em; }

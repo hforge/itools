@@ -32,8 +32,20 @@
   </head>
   <body>
     <div id="header">
-      <a href="/;site_search"><img src="../images/button_search.png" />
-        Search</a>
+      <stl:block if="not user/info">
+        (not logged in)<br/><br/>
+        <a href="/;login_form" id="top_menu_login">Log in</a>
+        <a href="/;register_form" id="top_menu_register"
+          stl:if="user/joinisopen">Register</a>
+      </stl:block>
+
+      <stl:block if="user/info">
+        (logged in as ${user/info/title})<br /><br />
+        <a href="${user/info/home}" id="top_menu_home">Home</a>
+        <a href="/;logout" id="top_menu_logout">Log out</a>
+      </stl:block>
+
+      <a href="/;site_search" id="top_menu_search">Search</a>
       <div class="clear"></div>
     </div>
     <div class="clear"></div>
@@ -76,28 +88,6 @@
           </div>
         </div>
         <div id="block_2">
-          <div id="actions">
-          <label>
-            <stl:inline if="user/info">${user/info/title}</stl:inline>
-            <stl:inline if="not user/info">not logged in</stl:inline>
-          </label>
-            <ul stl:if="not user/info">
-              <li id="action_login">
-                <a href="/;login_form">Log in</a>
-              </li>
-              <li id="action_join" stl:if="user/joinisopen">
-                <a href="/;register_form">Register</a>
-              </li>
-            </ul>
-            <ul stl:if="user/info">
-              <li id="action_home">
-                <a href="${user/info/home}">Home</a>
-              </li>
-              <li id="action_logout">
-                <a href="/;logout">Log out</a>
-              </li>
-            </ul>
-          </div>
           <div class="navigation">
             <label>Navigation</label>
             ${navigation}

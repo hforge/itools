@@ -83,6 +83,11 @@ td, th { padding: 0 0.2em; }
   background-image: url(../images/button_search.png);
 }
 
+#header a#top_menu_contact {
+  background-image: url(images/action_contact.png);
+}
+
+
 #site_search_form { float: right; }
 #site_search_form input { font-size: 1em; }
 

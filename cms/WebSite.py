@@ -410,7 +410,7 @@ class WebSite(RoleAware, Folder):
 
     
     ########################################################################
-    # User search UI
+    # Search
     site_search__access__ = True
     def site_search(self, context):
         namespace = {}
@@ -498,6 +498,39 @@ class WebSite(RoleAware, Folder):
 
         handler = self.get_handler('/ui/WebSite_search_form.xml')
         return stl(handler, namespace)
+
+
+    ########################################################################
+    # Contact
+    contact_form__access__ = True
+    def contact_form(self, context):
+        namespace = {}
+
+        user = context.user
+        if user is None:
+            namespace['from'] = None
+        else:
+            namespace['from'] = user.get_property('ikaaro:email')
+
+        handler = self.get_handler('/ui/WebSite_contact_form.xml')
+        return stl(handler, namespace)
+
+
+    contact__access__ = True
+    def contact(self, context):
+        from_addr = context.get_form_value('from').strip()
+        subject = context.get_form_value('subject').strip()
+        body = context.get_form_value('body').strip()
+
+        # Check the input data
+        if not from_addr or not subject or not body:
+            return context.come_back(u'Please fill the missing fields.')
+
+        # Send the email
+        root = self.get_root()
+        root.send_email(from_addr, to_addr, subject, body)
+
+        return context.come_back(u'Message sent.')
 
 
 register_object_class(WebSite)

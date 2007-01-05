@@ -46,6 +46,7 @@
       </stl:block>
 
       <a href="/;site_search" id="top_menu_search">Search</a>
+      <a href="/;contact_form" id="top_menu_contact">Contact</a>
       <div class="clear"></div>
     </div>
     <div class="clear"></div>

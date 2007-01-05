@@ -4,19 +4,44 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Welcome to the iKaaro Content Management System</h2>
+  <h2>About</h2>
 
   <p>
-    iKaaro provides state of the art Content Management technology: a friendly
-    user interface, high end multilingual features, powerful versioning system,
-    desktop integration, web services support and more.
+    iKaaro is a Content Management System, written in the
+    <a href="http://www.python.org">Python</a> programming language,
+    and based on the <a href="http://www.ikaaro.org/itools">itools</a>
+    library.
   </p>
 
   <p>
-    Released to the world under the terms and conditions of the <a
-      href=";license">GNU General Public License</a>, iKaaro is a free software
-    project, built by its community: <a
-      href="http://www.ikaaro.org">ikaaro.org</a>.
+   Its functional scope, what it is able to do <em>out of the box</em>,
+   is quite narrow so far, but evolving quickly.
   </p>
+
+  <p>
+   Its real power is what you don't see, when it is
+   used as a web framework.
+  </p>
+
+  <p>
+    Resources:
+  </p>
+
+  <ul>
+    <li>
+      Check the <a href=";license">License</a>;
+    </li>
+    <li>
+      Want to know who is behind this software? Check the
+      <a href=";credits">Credits</a>;
+    </li>
+    <li>
+      Visit the project's <a href="http://www.ikaaro.org/">Web Site</a>;
+    </li>
+    <li>
+      If you find a bug or wish some new feature, please
+      <a href="http://bugs.ikaaro.org">file a bug report</a>.
+    </li>
+  </ul>
 
 </stl:block>

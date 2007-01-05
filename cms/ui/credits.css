@@ -1,0 +1,14 @@
+
+div#credits table {
+  width: 500px;
+}
+
+div#credits th {
+  text-align: right;
+  vertical-align: top;
+  width: 33%;
+}
+
+div#credits td {
+  vertical-align: top;
+}

@@ -55,7 +55,7 @@ class Root(WebSite):
                    ['languages_form'],
                    ['permissions_form', 'anonymous_form'],
                    ['catalog_form', 'check_groups'],
-                   ['about', 'license']]
+                   ['about', 'credits', 'license']]
 
     __fixed_handlers__ = ['users', 'ui']
 
@@ -315,9 +315,21 @@ class Root(WebSite):
     # About
     about__access__ = True
     about__label__ = u'About'
-    about__sublabel__ = u'iKaaro'
+    about__sublabel__ = u'About'
     def about(self, context):
         handler = self.get_handler('/ui/Root_about.xml')
+        return stl(handler)
+
+
+    ########################################################################
+    # Credits
+    credits__access__ = True
+    credits__label__ = u'About'
+    credits__sublabel__ = u'Credits'
+    def credits(self, context):
+        context.styles.append('/ui/credits.css')
+
+        handler = self.get_handler('/ui/Root_credits.xml')
         return stl(handler)
 
 

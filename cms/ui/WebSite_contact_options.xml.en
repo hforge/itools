@@ -13,7 +13,7 @@
         <select name="contacts" id="contacts"
           multiple="multiple" size="15">
           <option stl:repeat="contact contacts" value="${contact/name}"
-            selected="${contact/is_selected}">${contact/email}</option>
+            selected="${contact/is_selected}">${contact/title} (${contact/email})</option>
         </select>
       </dd>
     </dl>

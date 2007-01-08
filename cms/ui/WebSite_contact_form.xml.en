@@ -10,14 +10,10 @@
     <dl>
       <dt><label for="to">Recipient</label></dt>
       <dd>
-        <ul id="contact_to">
-          <li stl:repeat="contact contacts">
-            <input type="radio" name="to" id="contact_${contact/name}"
-              value="${contact/name}"/>
-            <label for="contact_${contact/name}">${contact/title}</label>
-          </li>
-        </ul>
-        <br class="clear" />
+        <select id="to" name="to" style="width: 25em">
+          <option stl:repeat="contact contacts"
+            value="${contact/name}">${contact/title}</option>
+        </select>
       </dd>
       <dt><label for="from">Sender</label></dt>
       <dd>

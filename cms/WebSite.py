@@ -253,12 +253,13 @@ class WebSite(RoleAware, Folder):
         namespace['contacts'] = []
         for user in users.search_handlers():
             username = user.name
+            title = user.get_title_or_name()
             email = user.get_property('ikaaro:email')
             if not email:
                 continue
             namespace['contacts'].append(
                 {'name': username, 'email': email,
-                 'is_selected': username in contacts})
+                 'title': title, 'is_selected': username in contacts})
 
         # Sort
         namespace['contacts'].sort(key=lambda x: x['email'])
@@ -550,8 +551,9 @@ class WebSite(RoleAware, Folder):
         namespace['contacts'] = []
         for name in self.get_property('ikaaro:contacts'):
             user = users.get_handler(name)
-            email = user.get_property('ikaaro:email')
-            namespace['contacts'].append({'name': name, 'title': email})
+            email = user.get_property('ikaaro:email').replace('@', '&nbsp;@ ')
+            title = user.get_title() or email
+            namespace['contacts'].append({'name': name, 'title': title})
 
         # From
         user = context.user
@@ -574,6 +576,10 @@ class WebSite(RoleAware, Folder):
         # Check the input data
         if not contact or not from_addr or not subject or not body:
             return context.come_back(u'Please fill the missing fields.')
+
+        # Check the from address
+        if not Email.is_valid(from_addr):
+            return context.come_back(u'A valid email address must be provided.')
 
         # Find out the "to" address
         contact = self.get_handler('/users/%s' % contact)

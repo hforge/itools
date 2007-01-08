@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2006-12-05 17:12+CET\n"
+"POT-Creation-Date: 2007-01-08 17:01+CET\n"
 "PO-Revision-Date: 2004-11-25 22:33+0100\n"
 "Last-Translator: Luis Belmar Letelier <luis@itaapy.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cms/root.py:397
+#: cms/root.py:413
 #, fuzzy
 msgid "$n handlers have been indexed in $time seconds."
 msgstr "没有文件被写入."
@@ -21,10 +21,6 @@ msgid "${DESCRIPTION}"
 msgstr ""
 
 #: cms/ui/WebSite_search.xml.en:0
-msgid "${batch/control}"
-msgstr ""
-
-#: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid ""
 "${batchstart}-${batchend} of ${total} <a stl:if=\"batch_previous\" href="
 "\"${batch_previous}\">&lt;&lt;</a> <a stl:if=\"batch_next\" href="
@@ -51,16 +47,6 @@ msgstr ""
 msgid "${col/new_value}"
 msgstr ""
 
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid ""
-"${column/title} <a stl:if=\"column/href\" href=\"${column/href}\">\n"
-"              <img stl:if=\"column/no\" src=\"/ui/images/order-none.png\"/>\n"
-"              <img stl:if=\"column/up\" src=\"/ui/images/order-up.png\"/>\n"
-"              <img stl:if=\"column/down\" src=\"/ui/images/order-down.png\"/"
-">\n"
-"            </a>"
-msgstr ""
-
 #: cms/ui/CSV_view.xml.en:0
 msgid "${column}"
 msgstr ""
@@ -68,6 +54,15 @@ msgstr ""
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${comment/value}"
 msgstr ""
+
+#: cms/ui/WebSite_contact_options.xml.en:0
+msgid "${contact/email}"
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+#, fuzzy
+msgid "${contact/title}"
+msgstr "用户资料列单"
 
 #: cms/ui/Archive_view.xml.en:0
 msgid "${contents}"
@@ -81,7 +76,7 @@ msgstr ""
 msgid "${day/name}"
 msgstr ""
 
-#: cms/ui/Handler_edit_metadata.xml.en:0
+#: cms/ui/Thread_view.xml.en:0
 msgid "${description}"
 msgstr ""
 
@@ -138,6 +133,21 @@ msgstr "语言"
 #, fuzzy
 msgid "${language/name}"
 msgstr "语言"
+
+#: cms/ui/Thread_view.xml.en:0
+#, fuzzy
+msgid "${message/author}"
+msgstr "信息"
+
+#: cms/ui/Thread_view.xml.en:0
+#, fuzzy
+msgid "${message/body}"
+msgstr "信息"
+
+#: cms/ui/Thread_view.xml.en:0
+#, fuzzy
+msgid "${message/mtime}"
+msgstr "信息"
 
 #: cms/ui/PO_edit.xml.en:0
 msgid ""
@@ -211,10 +221,6 @@ msgstr ""
 msgid "${object}"
 msgstr ""
 
-#: cms/ui/CSV_view.xml.en:0
-msgid "${repeat/row/index}"
-msgstr ""
-
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/date}"
 msgstr ""
@@ -267,6 +273,28 @@ msgstr ""
 msgid "${text}"
 msgstr ""
 
+#: cms/ui/Folder_browse_list.xml.en:0
+#, fuzzy
+msgid "${thead}"
+msgstr "名称"
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "${thread/author}"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "${thread/last_author}"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+#, fuzzy
+msgid "${thread/last_date}"
+msgstr "用户资料列单"
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "${thread/replies}"
+msgstr ""
+
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "${timetable/timetable}"
 msgstr ""
@@ -293,8 +321,9 @@ msgid "${transition/description}"
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
-msgid "${transition/title_or_name}"
-msgstr ""
+#, fuzzy
+msgid "${transition/title}"
+msgstr "用户资料列单"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/user}"
@@ -366,6 +395,20 @@ msgstr ""
 msgid "(To add an event lasting all day long, leave time fields empty.)"
 msgstr ""
 
+#: cms/ui/aruni/template.xhtml.en:0
+msgid ""
+"(logged in as ${user/info/title})<br/><br/> <a id=\"top_menu_home\" href="
+"\"${user/info/home}\">Home</a> <a id=\"top_menu_logout\" href=\"/;logout"
+"\">Log out</a>"
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
+msgid ""
+"(not logged in)<br/><br/> <a id=\"top_menu_login\" href=\"/;login_form\">Log "
+"in</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href=\"/;"
+"register_form\">Register</a>"
+msgstr ""
+
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "(optional)"
 msgstr ""
@@ -384,6 +427,12 @@ msgstr ""
 
 #: cms/skins.py:234
 msgid "404 Not Found"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid ""
+"<a class=\"forum_thread_title\" href=\"${thread/name}\">${thread/title}</a> "
+"<br/> <em>${thread/description}</em>"
 msgstr ""
 
 #: cms/ui/ical_weekly_view.xml.en:0
@@ -420,12 +469,7 @@ msgstr ""
 #: cms/ui/File_externaledit.xml.en:0
 msgid ""
 "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe"
-"\">Download\n"
-"      External Editor for Windows</a>."
-msgstr ""
-
-#: cms/ui/Root_about.xml.en:0
-msgid "<a href=\"http://www.ikaaro.org\">ikaaro.org</a>."
+"\">Download External Editor for Windows</a>."
 msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
@@ -437,10 +481,16 @@ msgid ""
 "next\">></span>"
 msgstr ""
 
+#: cms/ui/aruni/template.xhtml.en:0
+msgid ""
+"<a id=\"top_menu_search\" href=\"/;site_search\">Search</a> <a id="
+"\"top_menu_contact\" href=\"/;contact_form\">Contact</a>"
+msgstr ""
+
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
-"<a stl:if=\"batch/previous\" href=\"${batch/previous}\">&lt;&lt;</a> <a stl:"
-"if=\"batch/next\" href=\"${batch/next}\">>></a>"
+"<a stl:if=\"batch_previous\" href=\"${batch_previous}\">&lt;&lt;</a> <a stl:"
+"if=\"batch_next\" href=\"${batch_next}\">>></a>"
 msgstr ""
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
@@ -468,6 +518,15 @@ msgid ""
 "\"result_title\" href=\"${object/url}\">${object/title}</a> <br/> <span "
 "class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">"
 "${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
+msgstr ""
+
+#: cms/ui/WikiPage_new_instance.xml.en:0
+msgid ""
+"<input id=\"name\" name=\"name\" size=\"40\" type=\"text\" stl:if=\"not name"
+"\"/> <stl:inline stl:if=\"name\">\n"
+"          <input name=\"name\" type=\"hidden\" value=\"${name}\"/>\n"
+"          <span id=\"name\">${name}</span>\n"
+"        </stl:inline>"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
@@ -539,7 +598,7 @@ msgstr ""
 #: cms/ui/Root_languages.xml.en:0
 msgid ""
 "<option value=\"\">Choose a language</option> <option stl:repeat=\"language "
-"non_active_languages\" value=\"{language/code}\">${language/name}</option>"
+"non_active_languages\" value=\"${language/code}\">${language/name}</option>"
 msgstr ""
 
 #: cms/ui/epoz_script_table.xml.en:0
@@ -711,12 +770,6 @@ msgid ""
 "                    <option>OPTIONNAL</option>\n"
 "                    <option selected=\"yes\">NONE</option> \n"
 "                </stl:block>"
-msgstr ""
-
-#: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"<stl:inline stl:if=\"user/info\">${user/info/title}</stl:inline> <stl:inline "
-"stl:if=\"not user/info\">not logged in</stl:inline>"
 msgstr ""
 
 #: cms/ui/HTML_addlink.xml.en:0
@@ -899,15 +952,19 @@ msgstr ""
 msgid "A public document can be reached by even anonymous users."
 msgstr ""
 
+#: cms/forum.py:79
+msgid "A thread to discuss"
+msgstr ""
+
 #: cms/workflow.py:123
 msgid "A transition must be selected."
 msgstr ""
 
-#: cms/WebSite.py:266
+#: cms/WebSite.py:298
 msgid "A valid email address must be provided."
 msgstr ""
 
-#: cms/root.py:327
+#: cms/ui/Root_about.xml.en:0
 msgid "About"
 msgstr "关于IKAARO"
 
@@ -915,11 +972,15 @@ msgstr "关于IKAARO"
 msgid "Accept the document."
 msgstr "进入文档"
 
-#: cms/root.py:160
+#: cms/ui/Folder_permissions.xml.en:0
+msgid "Access Control"
+msgstr ""
+
+#: cms/root.py:161
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
-#: cms/users.py:187
+#: cms/users.py:186
 #, fuzzy
 msgid "Account"
 msgstr "关于IKAARO"
@@ -929,7 +990,7 @@ msgstr "关于IKAARO"
 msgid "Account Change"
 msgstr "改换"
 
-#: cms/users.py:224
+#: cms/users.py:223
 #, fuzzy
 msgid "Account changed."
 msgstr "用户资料被变更."
@@ -959,31 +1020,38 @@ msgid "Add New User"
 msgstr "新用户"
 
 #: cms/ui/Folder_new_instance.xml.en:0
-msgid "Add Resource of Type \"${class_title}\" />\""
+msgid "Add Resource of Type \"${class_title}\""
 msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
-#, fuzzy
-msgid "Add a member"
-msgstr "新用户"
+msgid ""
+"Add a new <select name=\"role\" style=\"font-size: 1em\">\n"
+"        <option stl:repeat=\"role roles\" value=\"${role/name}\">${role/unit}"
+"</option>\n"
+"      </select> <br/><br/> <select name=\"addusers\" size=\"15\" multiple="
+"\"multiple\">\n"
+"        <option stl:repeat=\"user others\" value=\"${user/name}\">${user/"
+"title_or_name}</option>\n"
+"      </select>"
+msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
 msgid "Add a new translator skill:"
 msgstr "加入一新翻译技术"
 
-#: cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Add and return"
 msgstr ""
 
-#: cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Add and view"
 msgstr ""
 
-#: cms/root.py:63
+#: cms/root.py:65
 msgid "Admin"
 msgstr ""
 
-#: cms/root.py:63
+#: cms/root.py:65
 msgid "Admins"
 msgstr ""
 
@@ -1006,24 +1074,19 @@ msgid ""
 "everyone understands that there is no warranty for this free software."
 msgstr ""
 
-#: cms/WebSite.py:310
+#: cms/WebSite.py:342
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
 msgstr ""
 
+#: cms/forum.py:188
+msgid "An iKaaro forum"
+msgstr ""
+
 #: cms/ui/Root_license.xml.en:0
 msgid "And you must show them these terms so they know their rights."
 msgstr ""
-
-#: cms/WebSite.py:226
-msgid "Anonymous"
-msgstr ""
-
-#: cms/ui/WebSite_anonymous.xml.en:0
-#, fuzzy
-msgid "Anonymous Settings."
-msgstr "总设置被改变"
 
 #: cms/ui/WebSite_anonymous.xml.en:0
 #, fuzzy
@@ -1040,7 +1103,7 @@ msgstr ""
 msgid "Apologies for the inconvenience."
 msgstr ""
 
-#: cms/users.py:154
+#: cms/users.py:153
 msgid "Application"
 msgstr ""
 
@@ -1049,7 +1112,7 @@ msgstr ""
 msgid "Application Preferences"
 msgstr "优先"
 
-#: cms/users.py:180
+#: cms/users.py:179
 msgid "Application preferences changed."
 msgstr ""
 
@@ -1057,19 +1120,19 @@ msgstr ""
 msgid "April"
 msgstr ""
 
-#: cms/Folder.py:491
+#: cms/Folder.py:478
 msgid "As Icons"
 msgstr "图标"
 
-#: cms/Folder.py:547
+#: cms/Folder.py:550
 msgid "As Image Gallery"
 msgstr ""
 
-#: cms/Folder.py:504
+#: cms/Folder.py:491
 msgid "As List"
 msgstr "目录"
 
-#: cms/ical.py:1166
+#: cms/ical.py:1173
 msgid "As calendar"
 msgstr ""
 
@@ -1079,6 +1142,10 @@ msgstr ""
 
 #: cms/ical.py:69
 msgid "August"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "Author"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -1092,6 +1159,11 @@ msgstr ""
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
 msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+#, fuzzy
+msgid "Body"
+msgstr "文件夹"
 
 #: cms/ui/epoz.xml.en:0
 #, fuzzy
@@ -1134,7 +1206,7 @@ msgstr ""
 msgid "CONFIRMED"
 msgstr ""
 
-#: cms/csv.py:30
+#: cms/csv.py:31
 msgid "CSV Row"
 msgstr ""
 
@@ -1183,7 +1255,7 @@ msgstr "改变内设"
 msgid "Change preferences"
 msgstr "优先"
 
-#: cms/csv.py:66
+#: cms/csv.py:67
 #, fuzzy
 msgid "Changes saved."
 msgstr "语言被改变."
@@ -1192,12 +1264,24 @@ msgstr "语言被改变."
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:414
+#: cms/root.py:430
 msgid "Check Groups"
 msgstr ""
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "Check groups for <em>phantom</em> users"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid "Check the <a href=\";credits\">Credits</a>;"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid "Check the <a href=\";license\">License</a>;"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Chinese (zh)"
 msgstr ""
 
 #: cms/ui/WebSite_new_instance.xml.en:0
@@ -1213,7 +1297,7 @@ msgstr "编码"
 msgid "Come back to today"
 msgstr ""
 
-#: cms/csv.py:73
+#: cms/csv.py:74
 msgid "Comma Separated Values"
 msgstr ""
 
@@ -1239,7 +1323,23 @@ msgstr "分类名称"
 msgid "Confirm"
 msgstr ""
 
-#: cms/ical.py:1165
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Contact"
+msgstr ""
+
+#: cms/ui/WebSite_contact_options.xml.en:0
+msgid "Contact Options"
+msgstr ""
+
+#: cms/ui/WebSite_contact_options.xml.en:0
+msgid "Contacts"
+msgstr ""
+
+#: cms/wiki.py:95
+msgid "Container for a wiki"
+msgstr ""
+
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Contents"
 msgstr ""
 
@@ -1259,10 +1359,14 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:47
+#: cms/html.py:50
 #, fuzzy
 msgid "Create and publish a Web Document."
 msgstr "列出文档"
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Credits"
+msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
@@ -1272,7 +1376,7 @@ msgstr ""
 msgid "Cut"
 msgstr "剪切"
 
-#: cms/ical.py:758
+#: cms/ical.py:767
 #, fuzzy
 msgid "Data updated"
 msgstr "文件被上载."
@@ -1346,7 +1450,7 @@ msgstr "编辑文档"
 msgid "Document Word"
 msgstr "编辑文档"
 
-#: cms/html.py:159
+#: cms/html.py:162
 #, fuzzy
 msgid "Document changed."
 msgstr "编辑文档"
@@ -1363,7 +1467,7 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#: cms/html.py:147
+#: cms/html.py:150
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
@@ -1381,7 +1485,7 @@ msgstr ""
 msgid "Each version is given a distinguishing version number."
 msgstr ""
 
-#: cms/text.py:155
+#: cms/ui/Thread_view.xml.en:0
 msgid "Edit"
 msgstr "编辑"
 
@@ -1411,10 +1515,6 @@ msgstr ""
 msgid "Email address"
 msgstr ""
 
-#: cms/WebSite.py:424
-msgid "Empty search value."
-msgstr ""
-
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "End"
 msgstr ""
@@ -1427,15 +1527,15 @@ msgstr ""
 msgid "Epoz-Toolbox"
 msgstr ""
 
-#: cms/ical.py:525
+#: cms/ical.py:537
 msgid "Event"
 msgstr ""
 
-#: cms/ical.py:772
+#: cms/ical.py:781
 msgid "Event definitely deleted."
 msgstr ""
 
-#: cms/ical.py:571
+#: cms/ical.py:580
 msgid "Event not found"
 msgstr ""
 
@@ -1448,7 +1548,7 @@ msgstr ""
 msgid "Excel"
 msgstr "外部"
 
-#: cms/ical.py:426
+#: cms/ical.py:440
 msgid "Export in ical format"
 msgstr ""
 
@@ -1483,7 +1583,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: cms/Folder.py:1026
+#: cms/Folder.py:1029
 msgid "File uploaded."
 msgstr "文件被上载."
 
@@ -1573,6 +1673,16 @@ msgstr ""
 msgid "Format:"
 msgstr "格式"
 
+#: cms/forum.py:187
+#, fuzzy
+msgid "Forum"
+msgstr "格式"
+
+#: cms/ui/Root_credits.xml.en:0
+#, fuzzy
+msgid "French (fr)"
+msgstr "法语"
+
 #: cms/ical.py:72
 msgid "Friday"
 msgstr ""
@@ -1580,6 +1690,10 @@ msgstr ""
 #: cms/ui/ical_edit_timetables.xml.en:0
 msgid "From"
 msgstr "格式"
+
+#: cms/wiki.py:112
+msgid "Front Page"
+msgstr ""
 
 #: cms/ui/User_edit_account.xml.en:0
 msgid "Full name"
@@ -1589,18 +1703,39 @@ msgstr "你的全名"
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr "GNU通用公共许可证(GPL)\t"
 
-#: cms/root.py:443
+#: cms/root.py:458
 #, fuzzy
 msgid "Groups fixed."
 msgstr "组件加入"
 
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hackers"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hacks a little everywhere"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid ""
+"Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
+msgstr ""
+
+#: cms/forum.py:285
+msgid "Help"
+msgstr "帮助"
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hervé Cauwelier"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hervé Cauwelier<br/> Nicolas Deram"
+msgstr ""
+
 #: cms/versioning.py:49
 msgid "History"
 msgstr "记录"
-
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "Home"
-msgstr "主页"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1685,6 +1820,12 @@ msgstr ""
 msgid "If you don't, you can download it from a link below."
 msgstr ""
 
+#: cms/ui/Root_about.xml.en:0
+msgid ""
+"If you find a bug or wish some new feature, please <a href=\"http://bugs."
+"ikaaro.org\">file a bug report</a>."
+msgstr ""
+
 #: cms/binary.py:44
 msgid "Image"
 msgstr ""
@@ -1744,10 +1885,18 @@ msgstr ""
 msgid "Internal Server Error"
 msgstr ""
 
+#: cms/forum.py:261
+msgid "Invalid title."
+msgstr ""
+
 #: cms/ui/Root_license.xml.en:0
 msgid ""
 "It is not the purpose of this section to induce you to infringe any patents "
 "or other property right claims or to contest validity of any such claims;"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Italian (it)"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -1756,7 +1905,14 @@ msgid "Italic"
 msgstr "意在利语"
 
 #: cms/ui/Root_about.xml.en:0
-msgid "J. David Ibáñez, lead developer"
+msgid ""
+"Its functional scope, what it is able to do <em>out of the box</em>, is "
+"quite narrow so far, but evolving quickly."
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid ""
+"Its real power is what you don't see, when it is used as a web framework."
 msgstr ""
 
 #: cms/ical.py:68
@@ -1767,6 +1923,10 @@ msgstr ""
 #, fuzzy
 msgid "Join the Community"
 msgstr "加入社区"
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Juan David Ibáñez Palomar"
+msgstr ""
 
 #: cms/ical.py:69
 msgid "July"
@@ -1789,19 +1949,27 @@ msgstr "语言"
 msgid "Language Settings"
 msgstr "语言"
 
-#: cms/WebSite.py:219
+#: cms/WebSite.py:212
 msgid "Language added."
 msgstr "语言被加入."
 
-#: cms/WebSite.py:147
+#: cms/WebSite.py:140
 msgid "Languages"
 msgstr "语言"
 
-#: cms/WebSite.py:206
+#: cms/WebSite.py:199
 msgid "Languages removed."
 msgstr "语言被改变."
 
-#: cms/root.py:328
+#: cms/ui/Forum_view.xml.en:0
+msgid "Last Post"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Lead Developer"
+msgstr ""
+
+#: cms/root.py:341
 msgid "License"
 msgstr "许可证"
 
@@ -1818,19 +1986,23 @@ msgstr "登录"
 msgid "Location:"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Log in"
 msgstr "登录"
 
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "Log out"
-msgstr "登录"
-
-#: cms/WebSite.py:318
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Login"
 msgstr "登录"
 
-#: cms/root.py:413
+#: cms/ui/Root_credits.xml.en:0
+msgid "Luis Belmar-Letelier"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Main developer of the iCalendar module, hacks a little everywhere"
+msgstr ""
+
+#: cms/root.py:429
 msgid "Maintenance"
 msgstr ""
 
@@ -1854,24 +2026,20 @@ msgstr "搜索"
 msgid "May"
 msgstr ""
 
-#: cms/access.py:133
+#: cms/access.py:87
 msgid "Member"
 msgstr ""
 
-#: cms/access.py:133
+#: cms/access.py:87
 msgid "Members"
 msgstr ""
 
-#: cms/access.py:288
+#: cms/access.py:307
 #, fuzzy
 msgid "Members added."
 msgstr "加入用户"
 
-#: cms/ui/Folder_permissions.xml.en:0
-msgid "Members and roles"
-msgstr ""
-
-#: cms/access.py:281
+#: cms/access.py:292
 #, fuzzy
 msgid "Members deleted."
 msgstr "没有物件被选中"
@@ -1901,6 +2069,21 @@ msgstr ""
 msgid "Message edited."
 msgstr "信息被修正."
 
+#: cms/forum.py:45
+#, fuzzy
+msgid "Message in a thread"
+msgstr "信息被修正."
+
+#: cms/WebSite.py:586
+#, fuzzy
+msgid "Message sent."
+msgstr "信息被修正."
+
+#: cms/ui/Forum_new_thread.xml.en:0
+#, fuzzy
+msgid "Message:"
+msgstr "信息"
+
 #: cms/ical.py:81
 msgid "Metadata"
 msgstr "附加信息"
@@ -1921,7 +2104,7 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
-#: cms/ical.py:440
+#: cms/ical.py:454
 msgid "Monthly"
 msgstr ""
 
@@ -1933,7 +2116,7 @@ msgstr ""
 msgid "NO WARRANTY"
 msgstr ""
 
-#: cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Name"
 msgstr "姓名"
 
@@ -1955,18 +2138,35 @@ msgstr ""
 msgid "New Password"
 msgstr "密码"
 
-#: cms/Folder.py:880
+#: cms/Folder.py:883
 msgid "New Resource"
 msgstr "新文件夹"
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "New Thread"
+msgstr ""
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "New WebSite"
 msgstr ""
 
-#: cms/Folder.py:957
+#: cms/ui/WikiPage_new_instance.xml.en:0
+#, fuzzy
+msgid "New Wiki Page"
+msgstr "新工作界面"
+
+#: cms/Folder.py:960
 #, fuzzy
 msgid "New resource added."
 msgstr "新资料被加入."
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Nicolas Deram"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Nicolas Oyez"
+msgstr ""
 
 #: cms/ui/User_tasks.xml.en:0
 msgid "No document awaits your review."
@@ -1981,9 +2181,13 @@ msgstr "没有文件被写入."
 msgid "No history."
 msgstr "记录"
 
-#: cms/Folder.py:734
+#: cms/Folder.py:737
 msgid "No objects selected."
 msgstr "没有物件被选中"
+
+#: cms/forum.py:257
+msgid "No title given."
+msgstr ""
 
 #: cms/ui/Root_not_found.xml.en:0
 #, fuzzy
@@ -1994,16 +2198,16 @@ msgstr "未发现物件."
 msgid "Note the name and title won't change."
 msgstr ""
 
-#: cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Note:"
 msgstr ""
 
-#: cms/ical.py:808
+#: cms/ical.py:815
 #, fuzzy
 msgid "Nothing to change."
 msgstr "用户资料被变更."
 
-#: cms/ical.py:814
+#: cms/ical.py:821
 msgid "Nothing to remove."
 msgstr ""
 
@@ -2029,24 +2233,24 @@ msgstr "编辑文档"
 msgid "OOo Writer"
 msgstr "写入"
 
-#: cms/Folder.py:721
+#: cms/Folder.py:724
 msgid "Objects copied."
 msgstr "物件被复制"
 
-#: cms/Folder.py:741
+#: cms/Folder.py:744
 msgid "Objects cut."
 msgstr "物件被剪切"
 
-#: cms/Folder.py:798
+#: cms/Folder.py:801
 msgid "Objects pasted."
 msgstr "物件被粘贴"
 
-#: cms/Folder.py:633
+#: cms/Folder.py:636
 #, fuzzy
 msgid "Objects removed: $objects."
 msgstr "Objects removed: %s."
 
-#: cms/Folder.py:700
+#: cms/Folder.py:703
 msgid "Objects renamed."
 msgstr "物件被更名"
 
@@ -2054,7 +2258,7 @@ msgstr "物件被更名"
 msgid "October"
 msgstr ""
 
-#: cms/ical.py:720
+#: cms/ical.py:729
 msgid "One or more field is invalid."
 msgstr ""
 
@@ -2124,6 +2328,10 @@ msgstr ""
 msgid "PDF"
 msgstr ""
 
+#: cms/ui/Root_credits.xml.en:0
+msgid "Paolo Dina"
+msgstr ""
+
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Password"
 msgstr "密码"
@@ -2133,11 +2341,11 @@ msgstr "密码"
 msgid "Password Change"
 msgstr "密码被修改."
 
-#: cms/users.py:280
+#: cms/users.py:279
 msgid "Password changed."
 msgstr "密码被修改."
 
-#: cms/users.py:263
+#: cms/users.py:262
 #, fuzzy
 msgid "Passwords mismatch, please try again."
 msgstr "密码错误,请再输入."
@@ -2154,14 +2362,22 @@ msgstr ""
 msgid "Pending tasks."
 msgstr ""
 
-#: cms/access.py:240
+#: cms/access.py:223
 #, fuzzy
 msgid "Permissions"
 msgstr "个人"
 
+#: cms/ui/Root_credits.xml.en:0
+msgid "Piotr Macuk"
+msgstr ""
+
 #: cms/text.py:39
 msgid "Plain Text"
 msgstr "简易文件"
+
+#: cms/WebSite.py:576
+msgid "Please fill the missing fields."
+msgstr ""
 
 #: cms/future.py:99
 #, fuzzy
@@ -2183,8 +2399,17 @@ msgstr "你必须选择删除成员."
 msgid "Please select the folders to order up."
 msgstr "你必须选择删除成员."
 
-#: cms/Folder.py:519
+#: cms/Folder.py:506
 msgid "Please type a search term."
+msgstr ""
+
+#: cms/ui/Forum_new_thread.xml.en:0
+#, fuzzy
+msgid "Post"
+msgstr "粘贴"
+
+#: cms/ui/Thread_view.xml.en:0
+msgid "Post a Reply"
 msgstr ""
 
 #: cms/binary.py:248
@@ -2195,7 +2420,7 @@ msgstr ""
 msgid "Preamble"
 msgstr ""
 
-#: cms/users.py:230
+#: cms/users.py:229
 msgid "Preferences"
 msgstr "优先"
 
@@ -2222,15 +2447,33 @@ msgstr "公共"
 msgid "Publish the document."
 msgstr "列出文档"
 
+#: cms/forum.py:288
+msgid "Read the doc in README file."
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+#, fuzzy
+msgid "Recipient"
+msgstr "查阅"
+
 #: cms/ui/epoz.xml.en:0
 #, fuzzy
 msgid "Redo"
 msgstr "删除"
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 #, fuzzy
 msgid "Register"
 msgstr "查阅"
+
+#: cms/WebSite.py:219
+#, fuzzy
+msgid "Registration"
+msgstr "查阅"
+
+#: cms/ui/WebSite_anonymous.xml.en:0
+msgid "Registration Options"
+msgstr ""
 
 #: cms/users.py:124
 msgid "Registration confirmed, please log in"
@@ -2244,13 +2487,6 @@ msgstr ""
 msgid "Reject the document."
 msgstr "删除文档"
 
-#: cms/ui/Root_about.xml.en:0
-msgid ""
-"Released to the world under the terms and conditions of the <a href=\";"
-"license\">GNU General Public License</a>, iKaaro is a free software project, "
-"built by its community:"
-msgstr ""
-
 #: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Remove"
 msgstr "删除"
@@ -2259,6 +2495,10 @@ msgstr "删除"
 #, fuzzy
 msgid "Remove Format"
 msgstr "删除"
+
+#: cms/ui/Folder_permissions.xml.en:0
+msgid "Remove members or update the roles:"
+msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "Remove selected ones"
@@ -2282,13 +2522,36 @@ msgstr "重命名"
 msgid "Repeat Password"
 msgstr "重复密码"
 
+#: cms/ui/Forum_view.xml.en:0
+#, fuzzy
+msgid "Replies"
+msgstr "查阅"
+
+#: cms/ui/Thread_view.xml.en:0
+msgid "Reply"
+msgstr ""
+
+#: cms/forum.py:180
+msgid "Reply Posted."
+msgstr ""
+
 #: cms/workflow.py:45
 msgid "Request the document publication."
 msgstr ""
 
+#: cms/ui/Root_about.xml.en:0
+#, fuzzy
+msgid "Resources:"
+msgstr "新文件夹"
+
 #: cms/text.py:244
 msgid "Restructured Text"
 msgstr ""
+
+#: cms/ui/WebSite_search.xml.en:0
+#, fuzzy
+msgid "Results"
+msgstr "搜索替代文件夹"
 
 #: cms/workflow.py:53
 msgid "Retire the document."
@@ -2299,12 +2562,12 @@ msgstr "删除文档"
 msgid "Retract the document."
 msgstr "删除文档"
 
-#: cms/access.py:134
+#: cms/access.py:89
 #, fuzzy
 msgid "Reviewer"
 msgstr "查阅"
 
-#: cms/access.py:134
+#: cms/access.py:88
 #, fuzzy
 msgid "Reviewers"
 msgstr "查阅"
@@ -2314,7 +2577,7 @@ msgstr "查阅"
 msgid "Role"
 msgstr "删除"
 
-#: cms/access.py:300
+#: cms/access.py:280
 #, fuzzy
 msgid "Roles updated."
 msgstr "文件被上载."
@@ -2342,14 +2605,9 @@ msgstr ""
 msgid "Schedule your time with calendar files."
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Search"
 msgstr "搜索"
-
-#: cms/ui/WebSite_search.xml.en:0
-#, fuzzy
-msgid "Search Results"
-msgstr "搜索替代文件夹"
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "Search subfolders"
@@ -2360,16 +2618,24 @@ msgstr "搜索替代文件夹"
 msgid "Search term"
 msgstr "搜索"
 
-#: cms/WebSite.py:225
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Send"
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
 #, fuzzy
-msgid "Security"
-msgstr "安全"
+msgid "Sender"
+msgstr "概略"
 
 #: cms/ical.py:69
 msgid "September"
 msgstr ""
 
-#: cms/Folder.py:466
+#: cms/WebSite.py:243
+msgid "Settings"
+msgstr "设置"
+
+#: cms/Folder.py:469
 msgid "Size"
 msgstr "尺寸"
 
@@ -2386,16 +2652,21 @@ msgstr "尺寸"
 msgid "Skin"
 msgstr ""
 
+#: cms/ui/Root_credits.xml.en:0
+#, fuzzy
+msgid "Spanish (es)"
+msgstr "西班牙语"
+
 #: cms/ui/ical_edit_event_form.xml.en:0
 #, fuzzy
 msgid "Start"
 msgstr "状态"
 
-#: cms/ical.py:725
+#: cms/ical.py:734
 msgid "Start date MUST be earlier than end date."
 msgstr ""
 
-#: cms/ical.py:851
+#: cms/ical.py:858
 msgid "Start time must be earlier than end time."
 msgstr ""
 
@@ -2415,6 +2686,10 @@ msgstr "状态"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Strikethrough"
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Subject"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -2462,7 +2737,7 @@ msgstr ""
 msgid "Target language"
 msgstr "语言"
 
-#: cms/users.py:286
+#: cms/users.py:285
 msgid "Tasks"
 msgstr ""
 
@@ -2490,7 +2765,7 @@ msgstr ""
 msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
-#: cms/ical.py:432
+#: cms/ical.py:446
 #, fuzzy
 msgid "Text view"
 msgstr "名称"
@@ -2518,11 +2793,11 @@ msgid ""
 "that is true depends on what the Program does."
 msgstr ""
 
-#: cms/WebSite.py:189
+#: cms/WebSite.py:182
 msgid "The default language has been changed."
 msgstr "预设语言已被改变."
 
-#: cms/Folder.py:1005
+#: cms/Folder.py:1008
 msgid "The document name contains illegal characters, choose another one."
 msgstr "文件名中含有不符规定的符号,请更名."
 
@@ -2530,12 +2805,12 @@ msgstr "文件名中含有不符规定的符号,请更名."
 msgid "The documents below await review for publication:"
 msgstr ""
 
-#: cms/users.py:413
+#: cms/users.py:417
 #, fuzzy
 msgid "The email is wrong, please try again."
 msgstr "用户名错误,请再输入."
 
-#: cms/Folder.py:985
+#: cms/Folder.py:988
 msgid "The file must be entered"
 msgstr "必须写入文件."
 
@@ -2553,25 +2828,25 @@ msgstr ""
 msgid "The list below describes your skills as a translator:"
 msgstr "以下目录详述你作为翻译者的技巧"
 
-#: cms/Folder.py:918
+#: cms/Folder.py:921
 msgid "The name must be entered"
 msgstr "必须输入一个文件名"
 
-#: cms/WebSite.py:280
+#: cms/WebSite.py:312
 #, fuzzy
 msgid "The password is mandatory."
 msgstr "密码错误,请再输入."
 
-#: cms/users.py:426
+#: cms/users.py:431
 msgid "The password is wrong, please try again."
 msgstr "密码错误,请再输入."
 
-#: cms/WebSite.py:366
+#: cms/WebSite.py:398
 #, fuzzy
 msgid "The password is wrong."
 msgstr "密码错误,请再输入."
 
-#: cms/WebSite.py:286
+#: cms/WebSite.py:318
 #, fuzzy
 msgid "The passwords do not match."
 msgstr "密码错误,请再输入."
@@ -2592,11 +2867,11 @@ msgid ""
 "modifications to it."
 msgstr ""
 
-#: cms/WebSite.py:352
+#: cms/WebSite.py:384
 msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: cms/WebSite.py:361
+#: cms/WebSite.py:393
 msgid "The user \"$username\" is not active."
 msgstr ""
 
@@ -2609,21 +2884,21 @@ msgstr "此处无内容."
 msgid "There has been an error, please try again later."
 msgstr "用户名错误,请再输入."
 
-#: cms/WebSite.py:274
+#: cms/WebSite.py:306
 #, fuzzy
 msgid "There is already a user with that email."
 msgstr "此文件名已被另外资源占有."
 
-#: cms/Folder.py:936
+#: cms/Folder.py:939
 #, fuzzy
 msgid "There is already another object with this name."
 msgstr "此名称已被另外物件名有."
 
-#: cms/Folder.py:1010
+#: cms/Folder.py:1013
 msgid "There is already another resource with this name."
 msgstr "此文件名已被另外资源占有."
 
-#: cms/users.py:421
+#: cms/users.py:424
 #, fuzzy
 msgid "There is another user with the email \"%s\", please try again"
 msgstr "此用户名已登记\"%s\", 请输入另一用户名."
@@ -2648,6 +2923,14 @@ msgstr ""
 msgid ""
 "These restrictions translate to certain responsibilities for you if you "
 "distribute copies of the software, or if you modify it."
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Thierry Fromon"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Thilo Ernst"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2679,6 +2962,19 @@ msgid ""
 "consequence of the rest of this License."
 msgstr ""
 
+#: cms/forum.py:264
+msgid "This thread already exists."
+msgstr ""
+
+#: cms/forum.py:78
+#, fuzzy
+msgid "Thread"
+msgstr "读入"
+
+#: cms/forum.py:282
+msgid "Thread Created."
+msgstr ""
+
 #: cms/ical.py:71
 msgid "Thursday"
 msgstr ""
@@ -2689,16 +2985,16 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
-#: cms/ical.py:820
+#: cms/ical.py:827
 msgid "Timetable(s) removed successfully."
 msgstr ""
 
-#: cms/ical.py:777
+#: cms/ical.py:786
 #, fuzzy
 msgid "Timetables"
 msgstr "名称"
 
-#: cms/ical.py:856
+#: cms/ical.py:863
 msgid "Timetables updated successfully."
 msgstr ""
 
@@ -2710,11 +3006,16 @@ msgstr "名称"
 msgid "Title contains"
 msgstr ""
 
+#: cms/ui/Forum_new_thread.xml.en:0
+#, fuzzy
+msgid "Title:"
+msgstr "名称"
+
 #: cms/ui/User_translator.xml.en:0
 msgid "To"
 msgstr ""
 
-#: cms/ical.py:536
+#: cms/ical.py:545
 msgid "To add an event, click on + symbol from the views."
 msgstr ""
 
@@ -2753,7 +3054,7 @@ msgstr "你可以通过击打如下键浏览全网站"
 msgid "To save the translation above click the button below:"
 msgstr "你可以通过击打如下键浏览全网站"
 
-#: cms/root.py:287
+#: cms/root.py:288
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -2772,17 +3073,26 @@ msgstr ""
 msgid "Translate"
 msgstr ""
 
+#: cms/ui/Root_credits.xml.en:0
+#, fuzzy
+msgid "Translations"
+msgstr "保存翻译件"
+
 #: cms/ical.py:71
 msgid "Tuesday"
 msgstr ""
 
-#: cms/Folder.py:466
+#: cms/Folder.py:468
 #, fuzzy
 msgid "Type"
 msgstr "种类"
 
-#: cms/WebSite.py:338
+#: cms/WebSite.py:370
 msgid "Type your email please."
+msgstr ""
+
+#: cms/ui/WikiPage_new_instance.xml.en:0
+msgid "Type your text here..."
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -2804,7 +3114,7 @@ msgstr "目录"
 msgid "Update"
 msgstr "更新目录"
 
-#: cms/root.py:342
+#: cms/root.py:355
 #, fuzzy
 msgid "Update Catalog"
 msgstr "更新目录"
@@ -2831,12 +3141,12 @@ msgstr ""
 msgid "User"
 msgstr "用户"
 
-#: cms/users.py:443
+#: cms/users.py:448
 #, fuzzy
 msgid "User added."
 msgstr "加入用户"
 
-#: cms/root.py:140
+#: cms/root.py:142
 msgid "Users"
 msgstr "用户"
 
@@ -2844,7 +3154,7 @@ msgstr "用户"
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:189
+#: cms/html.py:192
 msgid "Version edited."
 msgstr "版本被修正."
 
@@ -2861,6 +3171,14 @@ msgstr "浏览"
 msgid "View"
 msgstr "浏览"
 
+#: cms/ui/Root_about.xml.en:0
+msgid "Visit the project's <a href=\"http://www.ikaaro.org/\">Web Site</a>;"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid "Want to know who is behind this software?"
+msgstr ""
+
 #: cms/ui/WebSite_search.xml.en:0
 msgid "We did not find results for \"${text}\"."
 msgstr ""
@@ -2876,7 +3194,7 @@ msgid ""
 "proprietary."
 msgstr ""
 
-#: cms/html.py:46
+#: cms/html.py:49
 #, fuzzy
 msgid "Web Document"
 msgstr "新文件"
@@ -2889,16 +3207,12 @@ msgstr ""
 msgid "Wednesday"
 msgstr ""
 
-#: cms/ical.py:265
+#: cms/ical.py:275
 msgid "Week "
 msgstr ""
 
-#: cms/ical.py:491
+#: cms/ical.py:506
 msgid "Weekly"
-msgstr ""
-
-#: cms/ui/Root_about.xml.en:0
-msgid "Welcome to the iKaaro Content Management System"
 msgstr ""
 
 #: cms/ui/User_profile.xml.en:0
@@ -2909,19 +3223,48 @@ msgstr ""
 msgid "When we speak of free software, we are referring to freedom, not price."
 msgstr ""
 
+#: cms/wiki.py:94
+#, fuzzy
+msgid "Wiki Folder"
+msgstr "文件夹"
+
+#: cms/wiki.py:151
+msgid "Wiki Page"
+msgstr ""
+
+#: cms/wiki.py:152
+msgid "Wiki contents"
+msgstr ""
+
 #: cms/binary.py:203
 msgid "Word"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the Internationalization framework"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the Workflow engine"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the support for the CSV and RSS file formats"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the support for the TMX, XLIFF and iCalendar file formats"
 msgstr ""
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
 msgstr ""
 
-#: cms/ical.py:848
+#: cms/ical.py:855
 msgid "Wrong time selection (HH:MM)."
 msgstr ""
 
-#: cms/ical.py:844
+#: cms/ical.py:851
 msgid "Wrong time selection."
 msgstr ""
 
@@ -2937,7 +3280,7 @@ msgstr ""
 msgid "You are not a translator, <em>woaaahh</em>"
 msgstr ""
 
-#: cms/ical.py:674
+#: cms/ical.py:683
 msgid "You are not authorized to modify this event."
 msgstr ""
 
@@ -2966,7 +3309,7 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:200
+#: cms/WebSite.py:193
 msgid "You can not remove the default language."
 msgstr "你不能改变预设语言."
 
@@ -2997,11 +3340,11 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:256
+#: cms/users.py:255
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
-#: cms/WebSite.py:213
+#: cms/WebSite.py:206
 msgid "You must choose a language"
 msgstr "你必须选择一种语言."
 
@@ -3009,7 +3352,7 @@ msgstr "你必须选择一种语言."
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: cms/WebSite.py:181
+#: cms/WebSite.py:174
 msgid "You must select one and only one language."
 msgstr "你只能选择一种语言."
 
@@ -3017,13 +3360,11 @@ msgstr "你只能选择一种语言."
 msgid "Your login information has been cleared."
 msgstr ""
 
-#: cms/ui/Root_about.xml.en:0
-msgid ""
-"a friendly user interface, high end multilingual features, powerful "
-"versioning system, desktop integration, web services support and more."
+#: cms/ui/Root_credits.xml.en:0
+msgid "Zhou Li"
 msgstr ""
 
-#: cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid ""
 "administrators can add new languages at the root of the application, tab "
 "\"Settings\", subtab \"Languages\"."
@@ -3103,12 +3444,15 @@ msgstr "格式"
 msgid "hay"
 msgstr ""
 
-#: cms/root.py:318
+#: cms/root.py:48
 msgid "iKaaro"
 msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
-msgid "iKaaro provides state of the art Content Management technology:"
+msgid ""
+"iKaaro is a Content Management System, written in the <a href=\"http://www."
+"python.org\">Python</a> programming language, and based on the <a href="
+"\"http://www.ikaaro.org/itools\">itools</a> library."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -3212,11 +3556,6 @@ msgstr ""
 msgid "the"
 msgstr ""
 
-#: handlers/Folder.py:195
-#, fuzzy
-msgid "the resource \"%s\" does not exist"
-msgstr "名称"
-
 #: i18n/oracle.py:102
 msgid "their"
 msgstr ""
@@ -3306,8 +3645,16 @@ msgstr "禄 Type the url to add:"
 #~ msgstr "文件夹"
 
 #, fuzzy
+#~ msgid "Add a member"
+#~ msgstr "新用户"
+
+#, fuzzy
 #~ msgid "All users are already added."
 #~ msgstr "用户被加入."
+
+#, fuzzy
+#~ msgid "Anonymous Settings."
+#~ msgstr "总设置被改变"
 
 #~ msgid "Browse"
 #~ msgstr "浏览"
@@ -3391,9 +3738,6 @@ msgstr "禄 Type the url to add:"
 #~ msgid "Formatted"
 #~ msgstr "格式"
 
-#~ msgid "French"
-#~ msgstr "法语"
-
 #~ msgid "General"
 #~ msgstr "概略"
 
@@ -3407,8 +3751,8 @@ msgstr "禄 Type the url to add:"
 #~ msgid "Group added."
 #~ msgstr "组件加入"
 
-#~ msgid "Help"
-#~ msgstr "帮助"
+#~ msgid "Home"
+#~ msgstr "主页"
 
 #~ msgid "Hungarian"
 #~ msgstr "匈牙利语"
@@ -3440,6 +3784,9 @@ msgstr "禄 Type the url to add:"
 #~ msgid "Links are ..."
 #~ msgstr "链接加入"
 
+#~ msgid "Log out"
+#~ msgstr "登录"
+
 #~ msgid "Message subject"
 #~ msgstr "信息目的"
 
@@ -3448,9 +3795,6 @@ msgstr "禄 Type the url to add:"
 
 #~ msgid "New Folder"
 #~ msgstr "新文件夹"
-
-#~ msgid "New Workplace"
-#~ msgstr "新工作界面"
 
 #~ msgid "No objects selected"
 #~ msgstr "没有物件被选中"
@@ -3498,11 +3842,9 @@ msgstr "禄 Type the url to add:"
 #~ msgid "Save"
 #~ msgstr "保存"
 
-#~ msgid "Settings"
-#~ msgstr "设置"
-
-#~ msgid "Spanish"
-#~ msgstr "西班牙语"
+#, fuzzy
+#~ msgid "Security"
+#~ msgstr "安全"
 
 #~ msgid "State:"
 #~ msgstr "状态"
@@ -3550,10 +3892,6 @@ msgstr "禄 Type the url to add:"
 #~ msgid "This is a tar file, you can untar it by clicking the button below:"
 #~ msgstr "这是个tar文件, 你可以通过击打如下键获得"
 
-#, fuzzy
-#~ msgid "Title:"
-#~ msgstr "名称"
-
 #~ msgid "To add a folder enter its name and click the <tt>Add</tt> button."
 #~ msgstr ""
 #~ "文件夹被用于分类存储文档. 为了加入一个新文件夹请输入文件夹名称并击打"
@@ -3579,9 +3917,6 @@ msgstr "禄 Type the url to add:"
 #~ "To upload a new version of the file choose it and click the <tt>Upload</"
 #~ "tt> button:"
 #~ msgstr "请选择一个新的文件版本并点击登录"
-
-#~ msgid "Translation saved."
-#~ msgstr "保存翻译件"
 
 #~ msgid "Unpack"
 #~ msgstr "卸下"
@@ -3646,8 +3981,9 @@ msgstr "禄 Type the url to add:"
 #~ msgid "name"
 #~ msgstr "姓名"
 
-#~ msgid "read"
-#~ msgstr "读入"
+#, fuzzy
+#~ msgid "the resource \"%s\" does not exist"
+#~ msgstr "名称"
 
 #, fuzzy
 #~ msgid "» <a stl:attributes=\"href join_url\">Join</a>"

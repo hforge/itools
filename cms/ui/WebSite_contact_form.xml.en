@@ -8,7 +8,7 @@
 
   <form action=";contact" method="post" id="contact_form">
     <dl>
-      <dt><label for="to">To</label></dt>
+      <dt><label for="to">Recipient</label></dt>
       <dd>
         <ul id="contact_to">
           <li stl:repeat="contact contacts">
@@ -19,7 +19,7 @@
         </ul>
         <br class="clear" />
       </dd>
-      <dt><label for="from">From</label></dt>
+      <dt><label for="from">Sender</label></dt>
       <dd>
         <input type="text" id="from" name="from" size="40" value="${from}" />
       </dd>

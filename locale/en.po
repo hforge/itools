@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2006-12-05 17:12+CET\n"
+"POT-Creation-Date: 2007-01-08 17:01+CET\n"
 "PO-Revision-Date: 2001-07-08 17:07+CET\n"
 "Last-Translator: jdavid\n"
 "Language-Team: ??\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: cms/root.py:397
+#: cms/root.py:413
 msgid "$n handlers have been indexed in $time seconds."
 msgstr ""
 
@@ -18,10 +18,6 @@ msgid "${DESCRIPTION}"
 msgstr ""
 
 #: cms/ui/WebSite_search.xml.en:0
-msgid "${batch/control}"
-msgstr ""
-
-#: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid ""
 "${batchstart}-${batchend} of ${total} <a stl:if=\"batch_previous\" href="
 "\"${batch_previous}\">&lt;&lt;</a> <a stl:if=\"batch_next\" href="
@@ -48,22 +44,20 @@ msgstr ""
 msgid "${col/new_value}"
 msgstr ""
 
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid ""
-"${column/title} <a stl:if=\"column/href\" href=\"${column/href}\">\n"
-"              <img stl:if=\"column/no\" src=\"/ui/images/order-none.png\"/>\n"
-"              <img stl:if=\"column/up\" src=\"/ui/images/order-up.png\"/>\n"
-"              <img stl:if=\"column/down\" src=\"/ui/images/order-down.png\"/"
-">\n"
-"            </a>"
-msgstr ""
-
 #: cms/ui/CSV_view.xml.en:0
 msgid "${column}"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${comment/value}"
+msgstr ""
+
+#: cms/ui/WebSite_contact_options.xml.en:0
+msgid "${contact/email}"
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "${contact/title}"
 msgstr ""
 
 #: cms/ui/Archive_view.xml.en:0
@@ -78,7 +72,7 @@ msgstr ""
 msgid "${day/name}"
 msgstr ""
 
-#: cms/ui/Handler_edit_metadata.xml.en:0
+#: cms/ui/Thread_view.xml.en:0
 msgid "${description}"
 msgstr ""
 
@@ -132,6 +126,18 @@ msgstr ""
 
 #: cms/ui/User_edit.xml.en:0
 msgid "${language/name}"
+msgstr ""
+
+#: cms/ui/Thread_view.xml.en:0
+msgid "${message/author}"
+msgstr ""
+
+#: cms/ui/Thread_view.xml.en:0
+msgid "${message/body}"
+msgstr ""
+
+#: cms/ui/Thread_view.xml.en:0
+msgid "${message/mtime}"
 msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
@@ -203,10 +209,6 @@ msgstr ""
 msgid "${object}"
 msgstr ""
 
-#: cms/ui/CSV_view.xml.en:0
-msgid "${repeat/row/index}"
-msgstr ""
-
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/date}"
 msgstr ""
@@ -259,6 +261,26 @@ msgstr ""
 msgid "${text}"
 msgstr ""
 
+#: cms/ui/Folder_browse_list.xml.en:0
+msgid "${thead}"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "${thread/author}"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "${thread/last_author}"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "${thread/last_date}"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "${thread/replies}"
+msgstr ""
+
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "${timetable/timetable}"
 msgstr ""
@@ -284,7 +306,7 @@ msgid "${transition/description}"
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
-msgid "${transition/title_or_name}"
+msgid "${transition/title}"
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
@@ -356,6 +378,20 @@ msgstr ""
 msgid "(To add an event lasting all day long, leave time fields empty.)"
 msgstr ""
 
+#: cms/ui/aruni/template.xhtml.en:0
+msgid ""
+"(logged in as ${user/info/title})<br/><br/> <a id=\"top_menu_home\" href="
+"\"${user/info/home}\">Home</a> <a id=\"top_menu_logout\" href=\"/;logout"
+"\">Log out</a>"
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
+msgid ""
+"(not logged in)<br/><br/> <a id=\"top_menu_login\" href=\"/;login_form\">Log "
+"in</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href=\"/;"
+"register_form\">Register</a>"
+msgstr ""
+
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "(optional)"
 msgstr ""
@@ -374,6 +410,12 @@ msgstr ""
 
 #: cms/skins.py:234
 msgid "404 Not Found"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid ""
+"<a class=\"forum_thread_title\" href=\"${thread/name}\">${thread/title}</a> "
+"<br/> <em>${thread/description}</em>"
 msgstr ""
 
 #: cms/ui/ical_weekly_view.xml.en:0
@@ -410,12 +452,7 @@ msgstr ""
 #: cms/ui/File_externaledit.xml.en:0
 msgid ""
 "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.1.exe"
-"\">Download\n"
-"      External Editor for Windows</a>."
-msgstr ""
-
-#: cms/ui/Root_about.xml.en:0
-msgid "<a href=\"http://www.ikaaro.org\">ikaaro.org</a>."
+"\">Download External Editor for Windows</a>."
 msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
@@ -427,10 +464,16 @@ msgid ""
 "next\">></span>"
 msgstr ""
 
+#: cms/ui/aruni/template.xhtml.en:0
+msgid ""
+"<a id=\"top_menu_search\" href=\"/;site_search\">Search</a> <a id="
+"\"top_menu_contact\" href=\"/;contact_form\">Contact</a>"
+msgstr ""
+
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
-"<a stl:if=\"batch/previous\" href=\"${batch/previous}\">&lt;&lt;</a> <a stl:"
-"if=\"batch/next\" href=\"${batch/next}\">>></a>"
+"<a stl:if=\"batch_previous\" href=\"${batch_previous}\">&lt;&lt;</a> <a stl:"
+"if=\"batch_next\" href=\"${batch_next}\">>></a>"
 msgstr ""
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
@@ -458,6 +501,15 @@ msgid ""
 "\"result_title\" href=\"${object/url}\">${object/title}</a> <br/> <span "
 "class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">"
 "${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
+msgstr ""
+
+#: cms/ui/WikiPage_new_instance.xml.en:0
+msgid ""
+"<input id=\"name\" name=\"name\" size=\"40\" type=\"text\" stl:if=\"not name"
+"\"/> <stl:inline stl:if=\"name\">\n"
+"          <input name=\"name\" type=\"hidden\" value=\"${name}\"/>\n"
+"          <span id=\"name\">${name}</span>\n"
+"        </stl:inline>"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
@@ -529,7 +581,7 @@ msgstr ""
 #: cms/ui/Root_languages.xml.en:0
 msgid ""
 "<option value=\"\">Choose a language</option> <option stl:repeat=\"language "
-"non_active_languages\" value=\"{language/code}\">${language/name}</option>"
+"non_active_languages\" value=\"${language/code}\">${language/name}</option>"
 msgstr ""
 
 #: cms/ui/epoz_script_table.xml.en:0
@@ -701,12 +753,6 @@ msgid ""
 "                    <option>OPTIONNAL</option>\n"
 "                    <option selected=\"yes\">NONE</option> \n"
 "                </stl:block>"
-msgstr ""
-
-#: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"<stl:inline stl:if=\"user/info\">${user/info/title}</stl:inline> <stl:inline "
-"stl:if=\"not user/info\">not logged in</stl:inline>"
 msgstr ""
 
 #: cms/ui/HTML_addlink.xml.en:0
@@ -889,15 +935,19 @@ msgstr ""
 msgid "A public document can be reached by even anonymous users."
 msgstr ""
 
+#: cms/forum.py:79
+msgid "A thread to discuss"
+msgstr ""
+
 #: cms/workflow.py:123
 msgid "A transition must be selected."
 msgstr ""
 
-#: cms/WebSite.py:266
+#: cms/WebSite.py:298
 msgid "A valid email address must be provided."
 msgstr ""
 
-#: cms/root.py:327
+#: cms/ui/Root_about.xml.en:0
 msgid "About"
 msgstr ""
 
@@ -905,11 +955,15 @@ msgstr ""
 msgid "Accept the document."
 msgstr ""
 
-#: cms/root.py:160
+#: cms/ui/Folder_permissions.xml.en:0
+msgid "Access Control"
+msgstr ""
+
+#: cms/root.py:161
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
-#: cms/users.py:187
+#: cms/users.py:186
 msgid "Account"
 msgstr ""
 
@@ -917,7 +971,7 @@ msgstr ""
 msgid "Account Change"
 msgstr ""
 
-#: cms/users.py:224
+#: cms/users.py:223
 msgid "Account changed."
 msgstr ""
 
@@ -944,30 +998,38 @@ msgid "Add New User"
 msgstr ""
 
 #: cms/ui/Folder_new_instance.xml.en:0
-msgid "Add Resource of Type \"${class_title}\" />\""
+msgid "Add Resource of Type \"${class_title}\""
 msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
-msgid "Add a member"
+msgid ""
+"Add a new <select name=\"role\" style=\"font-size: 1em\">\n"
+"        <option stl:repeat=\"role roles\" value=\"${role/name}\">${role/unit}"
+"</option>\n"
+"      </select> <br/><br/> <select name=\"addusers\" size=\"15\" multiple="
+"\"multiple\">\n"
+"        <option stl:repeat=\"user others\" value=\"${user/name}\">${user/"
+"title_or_name}</option>\n"
+"      </select>"
 msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
 msgid "Add a new translator skill:"
 msgstr ""
 
-#: cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Add and return"
 msgstr ""
 
-#: cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Add and view"
 msgstr ""
 
-#: cms/root.py:63
+#: cms/root.py:65
 msgid "Admin"
 msgstr ""
 
-#: cms/root.py:63
+#: cms/root.py:65
 msgid "Admins"
 msgstr ""
 
@@ -989,22 +1051,18 @@ msgid ""
 "everyone understands that there is no warranty for this free software."
 msgstr ""
 
-#: cms/WebSite.py:310
+#: cms/WebSite.py:342
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
 msgstr ""
 
+#: cms/forum.py:188
+msgid "An iKaaro forum"
+msgstr ""
+
 #: cms/ui/Root_license.xml.en:0
 msgid "And you must show them these terms so they know their rights."
-msgstr ""
-
-#: cms/WebSite.py:226
-msgid "Anonymous"
-msgstr ""
-
-#: cms/ui/WebSite_anonymous.xml.en:0
-msgid "Anonymous Settings."
 msgstr ""
 
 #: cms/ui/WebSite_anonymous.xml.en:0
@@ -1021,7 +1079,7 @@ msgstr ""
 msgid "Apologies for the inconvenience."
 msgstr ""
 
-#: cms/users.py:154
+#: cms/users.py:153
 msgid "Application"
 msgstr ""
 
@@ -1029,7 +1087,7 @@ msgstr ""
 msgid "Application Preferences"
 msgstr ""
 
-#: cms/users.py:180
+#: cms/users.py:179
 msgid "Application preferences changed."
 msgstr ""
 
@@ -1037,19 +1095,19 @@ msgstr ""
 msgid "April"
 msgstr ""
 
-#: cms/Folder.py:491
+#: cms/Folder.py:478
 msgid "As Icons"
 msgstr ""
 
-#: cms/Folder.py:547
+#: cms/Folder.py:550
 msgid "As Image Gallery"
 msgstr ""
 
-#: cms/Folder.py:504
+#: cms/Folder.py:491
 msgid "As List"
 msgstr ""
 
-#: cms/ical.py:1166
+#: cms/ical.py:1173
 msgid "As calendar"
 msgstr ""
 
@@ -1059,6 +1117,10 @@ msgstr ""
 
 #: cms/ical.py:69
 msgid "August"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "Author"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -1071,6 +1133,10 @@ msgstr ""
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "Be sure your have the external editor plug-in installed."
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Body"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -1112,7 +1178,7 @@ msgstr ""
 msgid "CONFIRMED"
 msgstr ""
 
-#: cms/csv.py:30
+#: cms/csv.py:31
 msgid "CSV Row"
 msgstr ""
 
@@ -1156,7 +1222,7 @@ msgstr ""
 msgid "Change preferences"
 msgstr ""
 
-#: cms/csv.py:66
+#: cms/csv.py:67
 msgid "Changes saved."
 msgstr ""
 
@@ -1164,12 +1230,24 @@ msgstr ""
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:414
+#: cms/root.py:430
 msgid "Check Groups"
 msgstr ""
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "Check groups for <em>phantom</em> users"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid "Check the <a href=\";credits\">Credits</a>;"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid "Check the <a href=\";license\">License</a>;"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Chinese (zh)"
 msgstr ""
 
 #: cms/ui/WebSite_new_instance.xml.en:0
@@ -1184,7 +1262,7 @@ msgstr ""
 msgid "Come back to today"
 msgstr ""
 
-#: cms/csv.py:73
+#: cms/csv.py:74
 msgid "Comma Separated Values"
 msgstr ""
 
@@ -1208,7 +1286,23 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
-#: cms/ical.py:1165
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Contact"
+msgstr ""
+
+#: cms/ui/WebSite_contact_options.xml.en:0
+msgid "Contact Options"
+msgstr ""
+
+#: cms/ui/WebSite_contact_options.xml.en:0
+msgid "Contacts"
+msgstr ""
+
+#: cms/wiki.py:95
+msgid "Container for a wiki"
+msgstr ""
+
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Contents"
 msgstr ""
 
@@ -1228,8 +1322,12 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:47
+#: cms/html.py:50
 msgid "Create and publish a Web Document."
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Credits"
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
@@ -1240,7 +1338,7 @@ msgstr ""
 msgid "Cut"
 msgstr ""
 
-#: cms/ical.py:758
+#: cms/ical.py:767
 msgid "Data updated"
 msgstr ""
 
@@ -1304,7 +1402,7 @@ msgstr ""
 msgid "Document Word"
 msgstr ""
 
-#: cms/html.py:159
+#: cms/html.py:162
 msgid "Document changed."
 msgstr ""
 
@@ -1320,7 +1418,7 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#: cms/html.py:147
+#: cms/html.py:150
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
@@ -1338,7 +1436,7 @@ msgstr ""
 msgid "Each version is given a distinguishing version number."
 msgstr ""
 
-#: cms/text.py:155
+#: cms/ui/Thread_view.xml.en:0
 msgid "Edit"
 msgstr ""
 
@@ -1366,10 +1464,6 @@ msgstr ""
 msgid "Email address"
 msgstr ""
 
-#: cms/WebSite.py:424
-msgid "Empty search value."
-msgstr ""
-
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "End"
 msgstr ""
@@ -1382,15 +1476,15 @@ msgstr ""
 msgid "Epoz-Toolbox"
 msgstr ""
 
-#: cms/ical.py:525
+#: cms/ical.py:537
 msgid "Event"
 msgstr ""
 
-#: cms/ical.py:772
+#: cms/ical.py:781
 msgid "Event definitely deleted."
 msgstr ""
 
-#: cms/ical.py:571
+#: cms/ical.py:580
 msgid "Event not found"
 msgstr ""
 
@@ -1402,7 +1496,7 @@ msgstr ""
 msgid "Excel"
 msgstr ""
 
-#: cms/ical.py:426
+#: cms/ical.py:440
 msgid "Export in ical format"
 msgstr ""
 
@@ -1434,7 +1528,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: cms/Folder.py:1026
+#: cms/Folder.py:1029
 msgid "File uploaded."
 msgstr ""
 
@@ -1518,12 +1612,24 @@ msgstr ""
 msgid "Format:"
 msgstr ""
 
+#: cms/forum.py:187
+msgid "Forum"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "French (fr)"
+msgstr ""
+
 #: cms/ical.py:72
 msgid "Friday"
 msgstr ""
 
 #: cms/ui/ical_edit_timetables.xml.en:0
 msgid "From"
+msgstr ""
+
+#: cms/wiki.py:112
+msgid "Front Page"
 msgstr ""
 
 #: cms/ui/User_edit_account.xml.en:0
@@ -1534,16 +1640,37 @@ msgstr ""
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
-#: cms/root.py:443
+#: cms/root.py:458
 msgid "Groups fixed."
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hackers"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hacks a little everywhere"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid ""
+"Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
+msgstr ""
+
+#: cms/forum.py:285
+msgid "Help"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hervé Cauwelier"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Hervé Cauwelier<br/> Nicolas Deram"
 msgstr ""
 
 #: cms/versioning.py:49
 msgid "History"
-msgstr ""
-
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "Home"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -1629,6 +1756,12 @@ msgstr ""
 msgid "If you don't, you can download it from a link below."
 msgstr ""
 
+#: cms/ui/Root_about.xml.en:0
+msgid ""
+"If you find a bug or wish some new feature, please <a href=\"http://bugs."
+"ikaaro.org\">file a bug report</a>."
+msgstr ""
+
 #: cms/binary.py:44
 msgid "Image"
 msgstr ""
@@ -1687,10 +1820,18 @@ msgstr ""
 msgid "Internal Server Error"
 msgstr ""
 
+#: cms/forum.py:261
+msgid "Invalid title."
+msgstr ""
+
 #: cms/ui/Root_license.xml.en:0
 msgid ""
 "It is not the purpose of this section to induce you to infringe any patents "
 "or other property right claims or to contest validity of any such claims;"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Italian (it)"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -1698,7 +1839,14 @@ msgid "Italic"
 msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
-msgid "J. David Ibáñez, lead developer"
+msgid ""
+"Its functional scope, what it is able to do <em>out of the box</em>, is "
+"quite narrow so far, but evolving quickly."
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid ""
+"Its real power is what you don't see, when it is used as a web framework."
 msgstr ""
 
 #: cms/ical.py:68
@@ -1707,6 +1855,10 @@ msgstr ""
 
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Join the Community"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Juan David Ibáñez Palomar"
 msgstr ""
 
 #: cms/ical.py:69
@@ -1729,19 +1881,27 @@ msgstr ""
 msgid "Language Settings"
 msgstr ""
 
-#: cms/WebSite.py:219
+#: cms/WebSite.py:212
 msgid "Language added."
 msgstr ""
 
-#: cms/WebSite.py:147
+#: cms/WebSite.py:140
 msgid "Languages"
 msgstr ""
 
-#: cms/WebSite.py:206
+#: cms/WebSite.py:199
 msgid "Languages removed."
 msgstr ""
 
-#: cms/root.py:328
+#: cms/ui/Forum_view.xml.en:0
+msgid "Last Post"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Lead Developer"
+msgstr ""
+
+#: cms/root.py:341
 msgid "License"
 msgstr ""
 
@@ -1757,19 +1917,23 @@ msgstr ""
 msgid "Location:"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Log in"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "Log out"
-msgstr ""
-
-#: cms/WebSite.py:318
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Login"
 msgstr ""
 
-#: cms/root.py:413
+#: cms/ui/Root_credits.xml.en:0
+msgid "Luis Belmar-Letelier"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Main developer of the iCalendar module, hacks a little everywhere"
+msgstr ""
+
+#: cms/root.py:429
 msgid "Maintenance"
 msgstr ""
 
@@ -1792,23 +1956,19 @@ msgstr ""
 msgid "May"
 msgstr ""
 
-#: cms/access.py:133
+#: cms/access.py:87
 msgid "Member"
 msgstr ""
 
-#: cms/access.py:133
+#: cms/access.py:87
 msgid "Members"
 msgstr ""
 
-#: cms/access.py:288
+#: cms/access.py:307
 msgid "Members added."
 msgstr ""
 
-#: cms/ui/Folder_permissions.xml.en:0
-msgid "Members and roles"
-msgstr ""
-
-#: cms/access.py:281
+#: cms/access.py:292
 msgid "Members deleted."
 msgstr ""
 
@@ -1836,6 +1996,18 @@ msgstr ""
 msgid "Message edited."
 msgstr ""
 
+#: cms/forum.py:45
+msgid "Message in a thread"
+msgstr ""
+
+#: cms/WebSite.py:586
+msgid "Message sent."
+msgstr ""
+
+#: cms/ui/Forum_new_thread.xml.en:0
+msgid "Message:"
+msgstr ""
+
 #: cms/ical.py:81
 msgid "Metadata"
 msgstr ""
@@ -1856,7 +2028,7 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
-#: cms/ical.py:440
+#: cms/ical.py:454
 msgid "Monthly"
 msgstr ""
 
@@ -1868,7 +2040,7 @@ msgstr ""
 msgid "NO WARRANTY"
 msgstr ""
 
-#: cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Name"
 msgstr ""
 
@@ -1888,16 +2060,32 @@ msgstr ""
 msgid "New Password"
 msgstr ""
 
-#: cms/Folder.py:880
+#: cms/Folder.py:883
 msgid "New Resource"
+msgstr ""
+
+#: cms/ui/Forum_view.xml.en:0
+msgid "New Thread"
 msgstr ""
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "New WebSite"
 msgstr ""
 
-#: cms/Folder.py:957
+#: cms/ui/WikiPage_new_instance.xml.en:0
+msgid "New Wiki Page"
+msgstr ""
+
+#: cms/Folder.py:960
 msgid "New resource added."
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Nicolas Deram"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Nicolas Oyez"
 msgstr ""
 
 #: cms/ui/User_tasks.xml.en:0
@@ -1912,8 +2100,12 @@ msgstr ""
 msgid "No history."
 msgstr ""
 
-#: cms/Folder.py:734
+#: cms/Folder.py:737
 msgid "No objects selected."
+msgstr ""
+
+#: cms/forum.py:257
+msgid "No title given."
 msgstr ""
 
 #: cms/ui/Root_not_found.xml.en:0
@@ -1924,15 +2116,15 @@ msgstr ""
 msgid "Note the name and title won't change."
 msgstr ""
 
-#: cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Note:"
 msgstr ""
 
-#: cms/ical.py:808
+#: cms/ical.py:815
 msgid "Nothing to change."
 msgstr ""
 
-#: cms/ical.py:814
+#: cms/ical.py:821
 msgid "Nothing to remove."
 msgstr ""
 
@@ -1956,23 +2148,23 @@ msgstr ""
 msgid "OOo Writer"
 msgstr ""
 
-#: cms/Folder.py:721
+#: cms/Folder.py:724
 msgid "Objects copied."
 msgstr ""
 
-#: cms/Folder.py:741
+#: cms/Folder.py:744
 msgid "Objects cut."
 msgstr ""
 
-#: cms/Folder.py:798
+#: cms/Folder.py:801
 msgid "Objects pasted."
 msgstr ""
 
-#: cms/Folder.py:633
+#: cms/Folder.py:636
 msgid "Objects removed: $objects."
 msgstr ""
 
-#: cms/Folder.py:700
+#: cms/Folder.py:703
 msgid "Objects renamed."
 msgstr ""
 
@@ -1980,7 +2172,7 @@ msgstr ""
 msgid "October"
 msgstr ""
 
-#: cms/ical.py:720
+#: cms/ical.py:729
 msgid "One or more field is invalid."
 msgstr ""
 
@@ -2047,6 +2239,10 @@ msgstr ""
 msgid "PDF"
 msgstr ""
 
+#: cms/ui/Root_credits.xml.en:0
+msgid "Paolo Dina"
+msgstr ""
+
 #: cms/ui/WebSite_register.xml.en:0
 msgid "Password"
 msgstr ""
@@ -2055,11 +2251,11 @@ msgstr ""
 msgid "Password Change"
 msgstr ""
 
-#: cms/users.py:280
+#: cms/users.py:279
 msgid "Password changed."
 msgstr ""
 
-#: cms/users.py:263
+#: cms/users.py:262
 msgid "Passwords mismatch, please try again."
 msgstr ""
 
@@ -2075,12 +2271,20 @@ msgstr ""
 msgid "Pending tasks."
 msgstr ""
 
-#: cms/access.py:240
+#: cms/access.py:223
 msgid "Permissions"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Piotr Macuk"
 msgstr ""
 
 #: cms/text.py:39
 msgid "Plain Text"
+msgstr ""
+
+#: cms/WebSite.py:576
+msgid "Please fill the missing fields."
 msgstr ""
 
 #: cms/future.py:99
@@ -2099,8 +2303,16 @@ msgstr ""
 msgid "Please select the folders to order up."
 msgstr ""
 
-#: cms/Folder.py:519
+#: cms/Folder.py:506
 msgid "Please type a search term."
+msgstr ""
+
+#: cms/ui/Forum_new_thread.xml.en:0
+msgid "Post"
+msgstr ""
+
+#: cms/ui/Thread_view.xml.en:0
+msgid "Post a Reply"
 msgstr ""
 
 #: cms/binary.py:248
@@ -2111,7 +2323,7 @@ msgstr ""
 msgid "Preamble"
 msgstr ""
 
-#: cms/users.py:230
+#: cms/users.py:229
 msgid "Preferences"
 msgstr ""
 
@@ -2135,12 +2347,28 @@ msgstr ""
 msgid "Publish the document."
 msgstr ""
 
+#: cms/forum.py:288
+msgid "Read the doc in README file."
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Recipient"
+msgstr ""
+
 #: cms/ui/epoz.xml.en:0
 msgid "Redo"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/WebSite_register.xml.en:0
 msgid "Register"
+msgstr ""
+
+#: cms/WebSite.py:219
+msgid "Registration"
+msgstr ""
+
+#: cms/ui/WebSite_anonymous.xml.en:0
+msgid "Registration Options"
 msgstr ""
 
 #: cms/users.py:124
@@ -2155,19 +2383,16 @@ msgstr ""
 msgid "Reject the document."
 msgstr ""
 
-#: cms/ui/Root_about.xml.en:0
-msgid ""
-"Released to the world under the terms and conditions of the <a href=\";"
-"license\">GNU General Public License</a>, iKaaro is a free software project, "
-"built by its community:"
-msgstr ""
-
 #: cms/ui/ical_edit_timetables.xml.en:0
 msgid "Remove"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Remove Format"
+msgstr ""
+
+#: cms/ui/Folder_permissions.xml.en:0
+msgid "Remove members or update the roles:"
 msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
@@ -2190,12 +2415,32 @@ msgstr ""
 msgid "Repeat Password"
 msgstr ""
 
+#: cms/ui/Forum_view.xml.en:0
+msgid "Replies"
+msgstr ""
+
+#: cms/ui/Thread_view.xml.en:0
+msgid "Reply"
+msgstr ""
+
+#: cms/forum.py:180
+msgid "Reply Posted."
+msgstr ""
+
 #: cms/workflow.py:45
 msgid "Request the document publication."
 msgstr ""
 
+#: cms/ui/Root_about.xml.en:0
+msgid "Resources:"
+msgstr ""
+
 #: cms/text.py:244
 msgid "Restructured Text"
+msgstr ""
+
+#: cms/ui/WebSite_search.xml.en:0
+msgid "Results"
 msgstr ""
 
 #: cms/workflow.py:53
@@ -2206,11 +2451,11 @@ msgstr ""
 msgid "Retract the document."
 msgstr ""
 
-#: cms/access.py:134
+#: cms/access.py:89
 msgid "Reviewer"
 msgstr ""
 
-#: cms/access.py:134
+#: cms/access.py:88
 msgid "Reviewers"
 msgstr ""
 
@@ -2218,7 +2463,7 @@ msgstr ""
 msgid "Role"
 msgstr ""
 
-#: cms/access.py:300
+#: cms/access.py:280
 msgid "Roles updated."
 msgstr ""
 
@@ -2244,12 +2489,8 @@ msgstr ""
 msgid "Schedule your time with calendar files."
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/WebSite_search_form.xml.en:0
 msgid "Search"
-msgstr ""
-
-#: cms/ui/WebSite_search.xml.en:0
-msgid "Search Results"
 msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
@@ -2260,15 +2501,23 @@ msgstr ""
 msgid "Search term"
 msgstr ""
 
-#: cms/WebSite.py:225
-msgid "Security"
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Send"
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Sender"
 msgstr ""
 
 #: cms/ical.py:69
 msgid "September"
 msgstr ""
 
-#: cms/Folder.py:466
+#: cms/WebSite.py:243
+msgid "Settings"
+msgstr ""
+
+#: cms/Folder.py:469
 msgid "Size"
 msgstr ""
 
@@ -2284,15 +2533,19 @@ msgstr ""
 msgid "Skin"
 msgstr ""
 
+#: cms/ui/Root_credits.xml.en:0
+msgid "Spanish (es)"
+msgstr ""
+
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Start"
 msgstr ""
 
-#: cms/ical.py:725
+#: cms/ical.py:734
 msgid "Start date MUST be earlier than end date."
 msgstr ""
 
-#: cms/ical.py:851
+#: cms/ical.py:858
 msgid "Start time must be earlier than end time."
 msgstr ""
 
@@ -2310,6 +2563,10 @@ msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "Strikethrough"
+msgstr ""
+
+#: cms/ui/WebSite_contact_form.xml.en:0
+msgid "Subject"
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -2355,7 +2612,7 @@ msgstr ""
 msgid "Target language"
 msgstr ""
 
-#: cms/users.py:286
+#: cms/users.py:285
 msgid "Tasks"
 msgstr ""
 
@@ -2383,7 +2640,7 @@ msgstr ""
 msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
-#: cms/ical.py:432
+#: cms/ical.py:446
 msgid "Text view"
 msgstr ""
 
@@ -2410,11 +2667,11 @@ msgid ""
 "that is true depends on what the Program does."
 msgstr ""
 
-#: cms/WebSite.py:189
+#: cms/WebSite.py:182
 msgid "The default language has been changed."
 msgstr ""
 
-#: cms/Folder.py:1005
+#: cms/Folder.py:1008
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 
@@ -2422,11 +2679,11 @@ msgstr ""
 msgid "The documents below await review for publication:"
 msgstr ""
 
-#: cms/users.py:413
+#: cms/users.py:417
 msgid "The email is wrong, please try again."
 msgstr ""
 
-#: cms/Folder.py:985
+#: cms/Folder.py:988
 msgid "The file must be entered"
 msgstr ""
 
@@ -2444,23 +2701,23 @@ msgstr ""
 msgid "The list below describes your skills as a translator:"
 msgstr ""
 
-#: cms/Folder.py:918
+#: cms/Folder.py:921
 msgid "The name must be entered"
 msgstr ""
 
-#: cms/WebSite.py:280
+#: cms/WebSite.py:312
 msgid "The password is mandatory."
 msgstr ""
 
-#: cms/users.py:426
+#: cms/users.py:431
 msgid "The password is wrong, please try again."
 msgstr ""
 
-#: cms/WebSite.py:366
+#: cms/WebSite.py:398
 msgid "The password is wrong."
 msgstr ""
 
-#: cms/WebSite.py:286
+#: cms/WebSite.py:318
 msgid "The passwords do not match."
 msgstr ""
 
@@ -2480,11 +2737,11 @@ msgid ""
 "modifications to it."
 msgstr ""
 
-#: cms/WebSite.py:352
+#: cms/WebSite.py:384
 msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: cms/WebSite.py:361
+#: cms/WebSite.py:393
 msgid "The user \"$username\" is not active."
 msgstr ""
 
@@ -2496,19 +2753,19 @@ msgstr ""
 msgid "There has been an error, please try again later."
 msgstr ""
 
-#: cms/WebSite.py:274
+#: cms/WebSite.py:306
 msgid "There is already a user with that email."
 msgstr ""
 
-#: cms/Folder.py:936
+#: cms/Folder.py:939
 msgid "There is already another object with this name."
 msgstr ""
 
-#: cms/Folder.py:1010
+#: cms/Folder.py:1013
 msgid "There is already another resource with this name."
 msgstr ""
 
-#: cms/users.py:421
+#: cms/users.py:424
 msgid "There is another user with the email \"%s\", please try again"
 msgstr ""
 
@@ -2532,6 +2789,14 @@ msgstr ""
 msgid ""
 "These restrictions translate to certain responsibilities for you if you "
 "distribute copies of the software, or if you modify it."
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Thierry Fromon"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Thilo Ernst"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2561,6 +2826,18 @@ msgid ""
 "consequence of the rest of this License."
 msgstr ""
 
+#: cms/forum.py:264
+msgid "This thread already exists."
+msgstr ""
+
+#: cms/forum.py:78
+msgid "Thread"
+msgstr ""
+
+#: cms/forum.py:282
+msgid "Thread Created."
+msgstr ""
+
 #: cms/ical.py:71
 msgid "Thursday"
 msgstr ""
@@ -2571,15 +2848,15 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
-#: cms/ical.py:820
+#: cms/ical.py:827
 msgid "Timetable(s) removed successfully."
 msgstr ""
 
-#: cms/ical.py:777
+#: cms/ical.py:786
 msgid "Timetables"
 msgstr ""
 
-#: cms/ical.py:856
+#: cms/ical.py:863
 msgid "Timetables updated successfully."
 msgstr ""
 
@@ -2591,11 +2868,15 @@ msgstr ""
 msgid "Title contains"
 msgstr ""
 
+#: cms/ui/Forum_new_thread.xml.en:0
+msgid "Title:"
+msgstr ""
+
 #: cms/ui/User_translator.xml.en:0
 msgid "To"
 msgstr ""
 
-#: cms/ical.py:536
+#: cms/ical.py:545
 msgid "To add an event, click on + symbol from the views."
 msgstr ""
 
@@ -2633,7 +2914,7 @@ msgstr ""
 msgid "To save the translation above click the button below:"
 msgstr ""
 
-#: cms/root.py:287
+#: cms/root.py:288
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -2652,16 +2933,24 @@ msgstr ""
 msgid "Translate"
 msgstr ""
 
+#: cms/ui/Root_credits.xml.en:0
+msgid "Translations"
+msgstr ""
+
 #: cms/ical.py:71
 msgid "Tuesday"
 msgstr ""
 
-#: cms/Folder.py:466
+#: cms/Folder.py:468
 msgid "Type"
 msgstr ""
 
-#: cms/WebSite.py:338
+#: cms/WebSite.py:370
 msgid "Type your email please."
+msgstr ""
+
+#: cms/ui/WikiPage_new_instance.xml.en:0
+msgid "Type your text here..."
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
@@ -2680,7 +2969,7 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: cms/root.py:342
+#: cms/root.py:355
 msgid "Update Catalog"
 msgstr ""
 
@@ -2706,11 +2995,11 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: cms/users.py:443
+#: cms/users.py:448
 msgid "User added."
 msgstr ""
 
-#: cms/root.py:140
+#: cms/root.py:142
 msgid "Users"
 msgstr ""
 
@@ -2718,7 +3007,7 @@ msgstr ""
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:189
+#: cms/html.py:192
 msgid "Version edited."
 msgstr ""
 
@@ -2732,6 +3021,14 @@ msgstr ""
 
 #: cms/text.py:93
 msgid "View"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid "Visit the project's <a href=\"http://www.ikaaro.org/\">Web Site</a>;"
+msgstr ""
+
+#: cms/ui/Root_about.xml.en:0
+msgid "Want to know who is behind this software?"
 msgstr ""
 
 #: cms/ui/WebSite_search.xml.en:0
@@ -2749,7 +3046,7 @@ msgid ""
 "proprietary."
 msgstr ""
 
-#: cms/html.py:46
+#: cms/html.py:49
 msgid "Web Document"
 msgstr ""
 
@@ -2761,16 +3058,12 @@ msgstr ""
 msgid "Wednesday"
 msgstr ""
 
-#: cms/ical.py:265
+#: cms/ical.py:275
 msgid "Week "
 msgstr ""
 
-#: cms/ical.py:491
+#: cms/ical.py:506
 msgid "Weekly"
-msgstr ""
-
-#: cms/ui/Root_about.xml.en:0
-msgid "Welcome to the iKaaro Content Management System"
 msgstr ""
 
 #: cms/ui/User_profile.xml.en:0
@@ -2781,19 +3074,47 @@ msgstr ""
 msgid "When we speak of free software, we are referring to freedom, not price."
 msgstr ""
 
+#: cms/wiki.py:94
+msgid "Wiki Folder"
+msgstr ""
+
+#: cms/wiki.py:151
+msgid "Wiki Page"
+msgstr ""
+
+#: cms/wiki.py:152
+msgid "Wiki contents"
+msgstr ""
+
 #: cms/binary.py:203
 msgid "Word"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the Internationalization framework"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the Workflow engine"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the support for the CSV and RSS file formats"
+msgstr ""
+
+#: cms/ui/Root_credits.xml.en:0
+msgid "Worked on the support for the TMX, XLIFF and iCalendar file formats"
 msgstr ""
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
 msgstr ""
 
-#: cms/ical.py:848
+#: cms/ical.py:855
 msgid "Wrong time selection (HH:MM)."
 msgstr ""
 
-#: cms/ical.py:844
+#: cms/ical.py:851
 msgid "Wrong time selection."
 msgstr ""
 
@@ -2809,7 +3130,7 @@ msgstr ""
 msgid "You are not a translator, <em>woaaahh</em>"
 msgstr ""
 
-#: cms/ical.py:674
+#: cms/ical.py:683
 msgid "You are not authorized to modify this event."
 msgstr ""
 
@@ -2837,7 +3158,7 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:200
+#: cms/WebSite.py:193
 msgid "You can not remove the default language."
 msgstr ""
 
@@ -2867,11 +3188,11 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:256
+#: cms/users.py:255
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
-#: cms/WebSite.py:213
+#: cms/WebSite.py:206
 msgid "You must choose a language"
 msgstr ""
 
@@ -2879,7 +3200,7 @@ msgstr ""
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: cms/WebSite.py:181
+#: cms/WebSite.py:174
 msgid "You must select one and only one language."
 msgstr ""
 
@@ -2887,13 +3208,11 @@ msgstr ""
 msgid "Your login information has been cleared."
 msgstr ""
 
-#: cms/ui/Root_about.xml.en:0
-msgid ""
-"a friendly user interface, high end multilingual features, powerful "
-"versioning system, desktop integration, web services support and more."
+#: cms/ui/Root_credits.xml.en:0
+msgid "Zhou Li"
 msgstr ""
 
-#: cms/ui/Text_new_instance.xml.en:0
+#: cms/ui/WikiPage_new_instance.xml.en:0
 msgid ""
 "administrators can add new languages at the root of the application, tab "
 "\"Settings\", subtab \"Languages\"."
@@ -2969,12 +3288,15 @@ msgstr ""
 msgid "hay"
 msgstr ""
 
-#: cms/root.py:318
+#: cms/root.py:48
 msgid "iKaaro"
 msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
-msgid "iKaaro provides state of the art Content Management technology:"
+msgid ""
+"iKaaro is a Content Management System, written in the <a href=\"http://www."
+"python.org\">Python</a> programming language, and based on the <a href="
+"\"http://www.ikaaro.org/itools\">itools</a> library."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -3074,10 +3396,6 @@ msgstr ""
 
 #: i18n/oracle.py:101
 msgid "the"
-msgstr ""
-
-#: handlers/Folder.py:195
-msgid "the resource \"%s\" does not exist"
 msgstr ""
 
 #: i18n/oracle.py:102

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -13,7 +13,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+# Import from the Standard Library
+from textwrap import wrap
 
 # Import from itools
 from itools.handlers.Text import Text
@@ -22,30 +25,101 @@ from itools.handlers.Text import Text
 
 class Config(Text):
 
+    """
+    The data structure of this handler is:
+        
+      self.lines:
+        [None, <block>, None, None, <block>]
+
+    Where "None" is a blank line, and block is a tuple:
+
+        ([comment_line_1, ..., comment_line_n], <variable>)
+
+    A comment is stored as list of strings, one for every comment line. The
+    variable may be None (then the comment is isolated), or a tuple with the
+    variable name and value.
+
+    The "values" data structure is:
+        
+        self.values:
+            {<var name>: line no}
+
+    This is, a mapping from the name of the variable to a reference to the
+    "self.lines" data structure, from which we will retrieve the variable
+    value and associated comment.
+    """
+
     class_extension = None
 
-    
+
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'values', 'lines']
+                 'lines', 'values']
 
 
     def new(self, **kw):
-        self.values = kw
-        # XXX
+        # Comments are not supported here
+        self.values = {}
         self.lines = []
+
+        n = 0
+        for name, value in kw.items():
+            # Add the variable, with an empty comment
+            self.lines.append(([], (name, value)))
+            # Separate with a blank line
+            self.lines.append(None)
+            # Keep reference from the variable name
+            self.values[name] = n
+            # Next
+            n += 2
 
 
     def _load_state_from_file(self, file):
         values = {}
         lines = []
-        for line in file.readlines():
+
+        line = file.readline()
+        while line:
             line = line.strip()
-            lines.append(line)
-            if line and not line.startswith('#'):
+            if not line:
+                # Blank
+                lines.append(None)
+                # Next line
+                line = file.readline()
+            elif line[0] == '#':
+                # Just a comment, or a comment with a variable
+                comment = [line.lstrip('#').strip()]
+                # Parse the comment
+                line = file.readline()
+                while line:
+                    line = line.strip()
+                    if line[0] != '#':
+                        break
+                    comment.append(line.lstrip('#').strip())
+                    line = file.readline()
+
+                # Is there a variable?
+                if line:
+                    # Parse the variable
+                    name, value = line.split('=', 1)
+                    name = name.strip()
+                    value = value.strip()
+                    # Update the data structure
+                    lines.append((comment, (name, value)))
+                    values[name] = len(lines) - 1
+                    # Next
+                    line = file.readline()
+                else:
+                    # A solitary comment 
+                    lines.append(comment, None)
+            else:
+                # Variable without a comment
                 name, value = line.split('=', 1)
                 name = name.strip()
                 value = value.strip()
-                values[name] = value
+                lines.append(([], (name, value)))
+                values[name] = len(lines) - 1
+                # Next line
+                line = file.readline()
 
         self.lines = lines
         self.values = values
@@ -58,35 +132,78 @@ class Config(Text):
 
         lines = []
         for line in self.lines:
-            if line and not line.startswith('#'):
-                name, value = line.split('=', 1)
-                name = name.strip()
-                if name in values:
-                    value = values[name]
-                    names.remove(name)
-                else:
-                    value = value.strip()
-                line = '%s = %s' % (name, value)
+            if line is None:
+                # Blank line
+                lines.append('\n')
+            else:
+                comment, var = line
+                for line in comment:
+                    lines.append('# %s\n' % line)
+                if var is not None:
+                    lines.append('%s = %s\n' % var)
 
-            lines.append(line)
-
-        # Append new values
-        for name in names:
-            lines.append('%s = %s' % (name, values[name]))
-
-        return '\n'.join(lines)
+        return ''.join(lines)
 
 
     #########################################################################
     # API
     #########################################################################
-    def set_value(self, name, value):
+    def set_value(self, name, value, comment=None):
+        """
+        Sets a variable with the given value, and optionally a comment.
+        """
+        if isinstance(comment, str):
+            comment = wrap(comment)
+
         self.set_changed()
-        self.values[name] = value
+        if name in self.values:
+            n = self.values[name]
+            line = self.lines[n]
+            if comment is None:
+                comment = line[0]
+            self.lines[n] = comment, (name, value)
+        else:
+            # A new variable
+            if comment is None:
+                comment = []
+            self.lines.append((comment, (name, value)))
+            self.values[name] = len(self.lines) - 1
+            # Append a blank line
+            self.lines.append(None)
+
+
+    def append_comment(self, comment):
+        """
+        Appends a solitary comment.
+        """
+        # The comment should be a list
+        if isinstance(comment, str):
+            comment = wrap(comment)
+        # Change
+        self.set_changed()
+        self.lines.append((comment, None))
+        # Append a blank line
+        self.lines.append(None)
 
 
     def get_value(self, name):
-        return self.values.get(name)
+        if name not in self.values:
+            return None
+        # Get the line
+        n = self.values[name]
+        line = self.lines[n]
+        # Return the variable value
+        return line[1][1]
+
+
+    def get_comment(self, name):
+        if name not in self.values:
+            return None
+        # Get the line
+        n = self.values[name]
+        line = self.lines[n]
+        # Return the comment
+        return ' '.join(line[0])
 
 
     def has_value(self, name):

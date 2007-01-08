@@ -38,14 +38,47 @@ def init(parser, options, target):
 
     # Create the config file
     config = Config()
+    # The modules
+    comment = [
+        'The variable "modules" lists the Python modules or packages that',
+        ' will be loaded when the applications starts.',
+        '',
+        'modules = ']
     if options.root:
-        config.set_value('modules', options.root)
+        config.set_value('modules', options.root, comment=comment)
+    else:
+        config.append_comment(comment)
+    # The address
+    comment = [
+        'The variable "address" defines the internet address the web server',
+        ' will listen to for HTTP connections.',
+        '',
+        'address = 127.0.0.1']
     if options.address:
-        config.set_value('address', options.address)
+        config.set_value('address', options.address, comment=comment)
+    else:
+        config.append_comment(comment)
+    # The port
+    comment = [
+        'The variable "port" defines the port number the web server will',
+        ' listen to for HTTP connections.',
+        '',
+        'port = 8080']
     if options.port:
-        config.set_value('port', options.port)
+        config.set_value('port', options.port, comment=comment)
+    else:
+        config.append_comment(comment)
+    # The SMTP host
+    comment = [
+        'The variable "smtp-host" defines the name or IP address of the SMTP',
+        ' relay. This option is required for the application to send emails.',
+        '',
+        'smpt-host = localhost']
     if options.smtp_host:
-        config.set_value('smtp-host', options.smtp_host)
+        config.set_value('smtp-host', options.smtp_host, comment=comment)
+    else:
+        config.append_comment(comment)
+    # Save the file
     config.save_state_to('%s/config.conf' % target)
 
     # Load the root class

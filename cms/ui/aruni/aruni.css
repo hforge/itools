@@ -35,16 +35,15 @@ a img { border: 0; }
 td, th { padding: 0 0.2em; }
 
 #header {
-  background: #729fcf url(images/logo.png) left bottom no-repeat;
-  color: white;
-  font-size: 1.1em;
   margin-bottom: 1em;
   padding: 10px 1.0em 0.5em 0.5em;
+  color: white;
+  background: #729fcf url(images/logo.png) left bottom no-repeat;
+  font-size: 1.1em;
   text-align: right;
 }
 
 #header a {
-  background-color: transparent;
   background-position: left center;
   background-repeat: no-repeat;
   color: white;
@@ -87,7 +86,6 @@ td, th { padding: 0 0.2em; }
   background-image: url(images/action_contact.png);
 }
 
-
 #site_search_form { float: right; }
 #site_search_form input { font-size: 1em; }
 
@@ -125,7 +123,7 @@ td, th { padding: 0 0.2em; }
 #tabs .tab_active a,
 #tabs .tab a:hover {
   color: #eeeeec;
-  background: #3465a4 url(images/tab_bg.png) left top repeat-x;
+  background: #3465a4;
 }
 #tabs .tab_active a { color: #eeeeec; }
 #subtabs {
@@ -136,7 +134,7 @@ td, th { padding: 0 0.2em; }
 }
 #subtabs a { color: #eeeeec; }
 #subtabs .tab_active a, #subtabs .tab a:hover {
-  background: #f57900 url(images/subtab_bg.png) left top repeat-x;
+  background: #c17d11;
 }
 #tabs .tab_dummy a, #subtabs .tab_dummy a { border-style: none; }
 
@@ -148,7 +146,6 @@ td, th { padding: 0 0.2em; }
 }
 
 #body {
-  overflow: auto;
   padding: 0.3em;
   font-size: 1.4em;
 }
@@ -185,10 +182,6 @@ td, th { padding: 0 0.2em; }
   font-weight: bold;
 }
 
-* html #block_1 {
-  overflow: auto;
-}
-
 #block_2 {
   font-size: 1.1em;
 }
@@ -201,15 +194,15 @@ td, th { padding: 0 0.2em; }
   color: #3465a4;
 }
 #block_2 label {
+  display: block;
   margin: 0.3em;
   padding: 0.3em 0.6em;
   color: #fff;
-  background: #729fcf;
+  background: #c17d11;
 }
 #block_2 ul,
 #block_2 dl {
   margin: 0.3em 0.6em 1em 0.3em;
-  border: 1px solid #729fcf;
 }
 #block_2 ul {
   list-style: none;
@@ -236,6 +229,7 @@ td, th { padding: 0 0.2em; }
 #block_2 dt {
   overflow: hidden;
   line-height: 1.6em;
+  border-bottom: 1px solid #d1d1d1;
 }
 #block_2 dd {
   margin-left: 0.9em;

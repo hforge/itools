@@ -92,7 +92,7 @@ class Config(Text):
                 line = file.readline()
                 while line:
                     line = line.strip()
-                    if line[0] != '#':
+                    if line == '' or line[0] != '#':
                         break
                     comment.append(line.lstrip('#').strip())
                     line = file.readline()
@@ -110,7 +110,7 @@ class Config(Text):
                     line = file.readline()
                 else:
                     # A solitary comment 
-                    lines.append(comment, None)
+                    lines.append((comment, None))
             else:
                 # Variable without a comment
                 name, value = line.split('=', 1)

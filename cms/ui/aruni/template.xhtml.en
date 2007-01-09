@@ -95,8 +95,9 @@
       </div>
     </div>
     <div id="footer">
-      <a id="powered" href="http://ikaaro.org/"><img title="Powered by ikaaro!"
-        alt="Powered by ikaaro!" src="../images/ikaaro_powered.png" /></a>
+      <a href="/;about">About</a>
+      <a href="/;credits">Credits</a>
+      <a href="/;license">License</a>
     </div>
   </body>
 </html>

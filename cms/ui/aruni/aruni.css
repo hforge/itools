@@ -236,10 +236,24 @@ td, th { padding: 0 0.2em; }
 }
 
 #footer {
-  margin-top: 0.3em;
+  text-align: center;
+  border-top: 1px solid #729fcf;
+  font-size: 1.0em;
+  margin: 3.5em auto auto auto;
   padding: 0.3em;
-  font-size: 0.9em;
+  width: 500px;
 }
+
+#footer a {
+  margin-left: 2em;
+  margin-right: 2em;
+  text-decoration: none;
+}
+
+#footer a:hover {
+  text-decoration: underline;
+}
+
 
 #powered {
   float: right;

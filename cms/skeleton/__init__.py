@@ -16,34 +16,20 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-if __name__ == 'itools.cms.skeleton':
-    raise ImportError, "This package is not to import"
-
-# Import from the Standard Library
-from os import path
-
 # Import from itools
 from itools import get_abspath, get_version
 from itools.gettext import domains
 
-# Import from itools.cms
-from itools.cms.skins import register_skin
-
 # Import from our package
-from skins import FrontOffice1
-
-# Import in order to register handlers
+import skins
 from root import Root
 import metadata
 import folder
 import document
 
-__version__ = get_version(globals())
 
-# Register the site interface to the default interface handler
-path = get_abspath(globals(), 'ui/frontoffice1')
-frontoffice1 = FrontOffice1(path)
-register_skin('frontoffice1', frontoffice1)
+# Make the product version available to Python code
+__version__ = get_version(globals())
 
 # Register domain (i18n)
 path = get_abspath(globals(), 'locale')

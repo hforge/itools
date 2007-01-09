@@ -1,3 +1,35 @@
-README for $package_name
 
-Blah
+The structure of a minimal iCMS application is:
+    
+  [1] __init__.py
+  [2] locale/
+        locale.pot
+        en.po
+  [3] root.py
+  [4] setup.conf
+  [5] setup.py
+  [6] ui/
+
+
+[1] The Python initialization file, "__init__.py", transforms a folder
+into a Python package. It contains initialization code.
+
+[2] The "locale" folder keeps the translations required to have a
+mutlingual product. The file "locale.pot" is the template, it just
+keeps the messages without any translation. The file "en.po" should
+be empty, since english is most of the time the source language.
+
+[3] The "root" module is where we will define the class for the
+application's root. This way we take the control of iCMS, so we
+can override its default behaviour. We want to do this most of
+the time.
+
+[4] The configuration file, "setup.conf", defines some variables
+for use by "distutils", the Python's packaging system.
+
+[5] The "setup.py" file is required by "distutils", but with itools
+it should always be the same few lines, since we use the file "setup.conf"
+instead.
+
+[6] The folder "ui" will keep the product's skins. We need skins to publish
+content to the web, like images and CSS files.

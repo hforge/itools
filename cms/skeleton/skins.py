@@ -16,15 +16,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
 # Import from itools
+from itools import get_abspath
 from itools import uri
 from itools.web import get_context
 from itools.stl import stl
 from itools.xhtml import XHTML
 
 # Import from itools.cms
-from itools.cms.skins import Skin
+from itools.cms.skins import Skin, register_skin
 
 
 class FrontOffice1(Skin):
@@ -77,3 +77,9 @@ class FrontOffice1(Skin):
         body = stl(handler, namespace, prefix=prefix)
 
         return header + body
+
+
+# Register the skin
+path = get_abspath(globals(), 'ui/frontoffice1')
+frontoffice1 = FrontOffice1(path)
+register_skin('frontoffice1', frontoffice1)

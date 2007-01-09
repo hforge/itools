@@ -278,9 +278,6 @@ class Root(WebSite):
     ########################################################################
     # Email
     def send_email(self, from_addr, to_addr, subject, body, **kw):
-        context = get_context()
-        response = context.response
-
         # Hard coded encoding, to UTF-8
         encoding = 'UTF-8'
         # Build the message
@@ -299,10 +296,13 @@ class Root(WebSite):
                                      'encoding': encoding}
         message = message.encode(encoding)
         # Send email
+        context = get_context()
         smtp_host = context.server.smtp_host
-        # XXX Fallback for backwards compatibility, introduced in 0.14.2
         if smtp_host is None:
-            smtp_host = self.smtp_host
+            msg = ('the configuration variable "smtp-host" is not defined,'
+                   ' check the "config.conf" file')
+            raise RuntimeError, msg
+
         smtp = smtplib.SMTP(smtp_host)
         smtp.sendmail(from_addr, to_addr, message)
         smtp.quit()

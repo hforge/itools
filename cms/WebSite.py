@@ -346,7 +346,7 @@ class WebSite(RoleAware, Folder):
 
 
     ########################################################################
-    # Login and logout
+    # Login
     login_form__access__ = True
     login_form__label__ = u'Login'
     def login_form(self, context):
@@ -425,6 +425,54 @@ class WebSite(RoleAware, Folder):
         return uri.get_reference('users/%s' % user.name)
 
 
+    ########################################################################
+    # Forgotten password
+    forgotten_password_form__access__ = True
+    def forgotten_password_form(self, context):
+        handler = self.get_handler('/ui/WebSite_forgotten_password_form.xml')
+        return stl(handler)
+
+
+    forgotten_password__access__ = True
+    def forgotten_password(self, context):
+        # TODO Don't generate the password, send instead a link to a form
+        # where the user will be able to type his new password.
+        root = context.root
+
+        # Get the email address
+        email = context.get_form_value('ikaaro:email')
+
+        # Get the user with the given email address
+        catalog = root.get_handler('.catalog')
+        results = catalog.search(email=email)
+        if results.get_n_documents() == 0:
+            message = u'There is not a user with the email address "$email"'
+            return context.come_back(message, email=email)
+
+        user = results.get_documents()[0]
+        user = self.get_handler('/users/%s' % user.name)
+
+        # Generate the password
+        password = ''.join([ random.choice(ascii_letters) for x in range(6) ])
+
+        # Send the email
+        subject = u"Forgotten password"
+        body = self.gettext(
+            u"Your new password:\n"
+            u"\n"
+            u"  $password")
+        body = Template(body).substitute({'password': password})
+        root.send_email(None, email, subject, body)
+
+        # Change the password
+        user.set_password(password)
+
+        handler = self.get_handler('/ui/WebSite_forgotten_password.xml')
+        return stl(handler)
+
+
+    ########################################################################
+    # Logout
     logout__access__ = True
     def logout(self, context):
         """Logs out of the application."""

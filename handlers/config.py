@@ -90,15 +90,15 @@ class Config(Text):
                 comment = [line.lstrip('#').strip()]
                 # Parse the comment
                 line = file.readline()
-                while line:
-                    line = line.strip()
-                    if line == '' or line[0] != '#':
+                while True:
+                    line_stripped = line.strip()
+                    if not line_stripped.startswith('#'):
                         break
-                    comment.append(line.lstrip('#').strip())
+                    comment.append(line_stripped.lstrip('#').strip())
                     line = file.readline()
 
                 # Is there a variable?
-                if line:
+                if line_stripped:
                     # Parse the variable
                     name, value = line.split('=', 1)
                     name = name.strip()

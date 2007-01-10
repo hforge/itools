@@ -1,0 +1,55 @@
+
+itools 0.12
+===========
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.web
+  itools.cms            itools.ical             itools.workflow
+  itools.csv            itools.resources        itools.xhtml
+  itools.datatypes      itools.rss              itools.xliff
+  itools.gettext        itools.schemas          itools.xml
+  itools.handlers       itools.tmx
+  itools.html           itools.uri
+
+
+The twelfth release defines an inflection point in the development of itools,
+to celebrate it we start writing "release notes" for the first time.
+
+The ikaaro CMS (Content Management System), that before was distributed as
+a separate Zope package, has now been included in itools as "itools.cms".
+And it does not requires Zope anymore (note that the ZODB and PIL packages
+are still needed).
+
+The new script "icms.py" makes it easier than ever to deploy and manage
+an ikaaro instance. Type "icms.py --help" for an start.
+
+On other news, Hervé Cauwelier has been working hard to deploy a new sexy
+skin for ikaaro. Codenamed Aruni, the new skin, alongside of major
+improvements to the user interface, makes of this release an important
+milestone in the road for prime-time use.
+
+A demo is online for a taste, http://demo.ikaaro.org (login as admin/admin).
+
+And last but not least, the new top package "itools.csv" implements a higher
+level API to work with CSV files. Brought to you by Piotr Macuk.
+
+For a more detailed list of the changes see the CHANGES.txt file, or go
+directly to the Changelog file.
+
+
+Resources
+---------
+
+Download
+http://www.ikaaro.org/download/itools/itools-0.12.0.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://in-girum.net/mailman/listinfo/ikaaro
+
+Bug Tracker
+http://in-girum.net/cgi-bin/bugzilla/index.cgi

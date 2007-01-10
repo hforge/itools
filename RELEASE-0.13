@@ -1,0 +1,68 @@
+
+itools 0.13
+===========
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.uri
+  itools.cms            itools.ical             itools.web
+  itools.csv            itools.resources        itools.workflow
+  itools.datatypes      itools.rss              itools.xhtml
+  itools.gettext        itools.schemas          itools.xliff
+  itools.handlers       itools.stl              itools.xml
+  itools.html           itools.tmx
+
+
+The most relevant news in this release are...
+
+The "itools.cms" package does not depends on the ZODB anymore, now it
+stores the information directly in the filesystem, as files and folders.
+This enables us to use all the tools we like and love for introspection
+and manipulation of the database (grep, vi, etc.). It also means a
+boost to the application's performance.
+
+The Command Line Interface has been updated to use our new conventions.
+The script "icms.py" has been split into: icms-init, icms-start,
+icms-stop, icms-update and icms-restore; "igettext.py" has been split
+into: igettext-extract, igettext-merge and igettext-build; and so on.
+The consequences basically are shell completion for free, and a better
+online documentation.
+
+The packaging has also seen deep changes. Unit tests are all centralized
+into the "test" directory. The new family of "isetup" scripts
+(isetup-update-locale, isetup-build and isetup-test) will simplify the
+localization, build and test processes, hence helping us to deliver a
+better product.
+
+While only visible to us developers of itools, the switch from GNU arch
+to GIT [1] to manage the source code, will streamline the development
+process, reduce the entry barrier to new contributors, and in the end
+help us to get out a better product.
+
+Last, but probably most important, we have changed the licensing of itools
+from LGPL to GPL. While this change may not be for the taste of many Python
+developers, we believe that itools belongs to the group of libraries that
+"make a difference", hence it is better served by the GPL license [2].
+
+For a more detailed list of the changes see the CHANGES.txt file.
+
+[1] http://git.or.cz/
+[2] http://www.gnu.org/licenses/why-not-lgpl.html
+
+
+Resources
+---------
+
+Download
+http://www.ikaaro.org/download/itools/itools-0.13.0.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://in-girum.net/mailman/listinfo/ikaaro
+
+Bug Tracker
+http://bugs.lleu.org
+

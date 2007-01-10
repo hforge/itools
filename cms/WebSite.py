@@ -29,7 +29,6 @@ from itools.catalog import queries
 from itools.stl import stl
 from itools.web import get_context
 from Folder import Folder
-from LocaleAware import LocaleAware
 from skins import Skin
 from access import RoleAware
 from workflow import WorkflowAware
@@ -74,59 +73,6 @@ class WebSite(RoleAware, Folder):
         elif name in ('users', 'users.metadata'):
             return self.get_handler('/%s' % name)
         return Folder._get_virtual_handler(self, segment)
-
-
-    ########################################################################
-    # New instances
-    ########################################################################
-##    @classmethod
-##    def new_instance_form(cls):
-##        context = get_context()
-##        root = context.root
-
-##        namespace = {}
-##        namespace['class_id'] = cls.class_id
-##        namespace['class_title'] = cls.class_title
-##        # Skins
-##        skins = []
-##        here = context.handler
-##        templates = root.get_handler('ui/web_site_templates')
-##        for name, title in [('community', cls.gettext('Community Site'))]:
-##            image = templates.get_handler('%s/thumbnail.png' % name)
-##            skins.append({'name': name,
-##                          'title': title,
-##                          'image_uri': here.get_pathto(image)})
-##        namespace['skins'] = skins
-
-##        handler = root.get_handler('ui/WebSite_new_instance.xml')
-##        return stl(handler, namespace)
-
-
-##    @classmethod
-##    def new_instance(cls, **kw):
-##        web_site = cls(**kw)
-
-##        root = get_context().root
-##        templates = root.get_handler('ui/web_site_templates')
-##        template = templates.get_handler(kw['skin_name'])
-##        for handler, context in template.traverse2():
-##            name = handler.name
-##            if name.startswith('.'):
-##                context.skip = True
-##            elif handler is template:
-##                pass
-##            elif getattr(handler, 'is_phantom', False):
-##                context.skip = True
-##            else:
-##                path = template.get_pathto(handler)
-##                properties = {}
-##                if not web_site.has_handler(path):
-##                    if isinstance(handler, LocaleAware):
-##                        properties['dc:language'] = 'en'
-##                    if isinstance(handler, WorkflowAware):
-##                        properties['state'] = 'public'
-##                    web_site.set_handler(path, handler, **properties)
-##        return web_site
 
 
     ########################################################################

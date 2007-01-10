@@ -270,7 +270,7 @@ class Metadata(File):
             return default_value
 
         if isinstance(value, dict):
-            # LocaleAware
+            # Multiple languages
             if language is None:
                 # Language negotiation
                 context = get_context()

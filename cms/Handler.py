@@ -35,7 +35,6 @@ from itools.web import get_context
 from itools.web.access import AccessControl
 from handlers import Lock
 from catalog import CatalogAware
-from LocaleAware import LocaleAware
 import webdav
 
 
@@ -480,14 +479,6 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
         request = context.request
         return request.referrer
 
-##        handler = self.get_version_handler(language=kw['dc:language'])
-##        print kw['dc:language'], handler.abspath
-##        method_name = request.referrer.path[-1].param
-##
-##        goto = '%s/;%s' % (self.get_pathto(handler), method_name)
-##        return uri.get_reference(goto)
-
-
 
     ########################################################################
     # Metadata
@@ -534,12 +525,12 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
         description = context.get_form_value('dc:description')
         language = context.get_form_value('dc:language')
 
-        if isinstance(self, LocaleAware):
-            self.set_property('dc:title', title)
-            self.set_property('dc:description', description)
-        else:
+        if language is None:
             self.set_property('dc:title', title, language=language)
             self.set_property('dc:description', description, language=language)
+        else:
+            self.set_property('dc:title', title)
+            self.set_property('dc:description', description)
 
         # Reindex
         root = context.root

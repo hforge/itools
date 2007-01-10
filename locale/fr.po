@@ -1,19 +1,22 @@
+# translation of fr.po to Français (France)
+#
+#
 # Belmar-Letelier <luis@in-girum.net>, 2003.
 # J. David Ibáñez <jdavid@itaapy.com>, 2003, 2004.
 # Hervé Cauwelier <herve@oursours.net>, 2005.
-# 
-# 
+# Hervé Cauwelier <herve@itaapy.com>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-01-08 17:01+CET\n"
-"PO-Revision-Date: 2007-01-08 18:06+0100\n"
-"Last-Translator: nderam <hcauwelier@oursours.net>\n"
-"Language-Team:  <fr@li.org>\n"
+"PO-Revision-Date: 2007-01-10 13:50+0100\n"
+"Last-Translator: Hervé Cauwelier <herve@itaapy.com>\n"
+"Language-Team: Français (France) <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: cms/root.py:413
 msgid "$n handlers have been indexed in $time seconds."
@@ -21,7 +24,7 @@ msgstr "$n objets ont été réindexés en $time secondes."
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${DESCRIPTION}"
-msgstr "${DESCRIPTION}"
+msgstr ""
 
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
@@ -35,31 +38,31 @@ msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${body}"
-msgstr "${body}"
+msgstr ""
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${calendar/name}"
-msgstr "${calendar/name}"
+msgstr ""
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "${class_title}"
-msgstr "${class_title}"
+msgstr ""
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${col/SUMMARY}"
-msgstr "${col/SUMMARY}"
+msgstr ""
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${col/new_value}"
-msgstr "${col/new_value}"
+msgstr ""
 
 #: cms/ui/CSV_view.xml.en:0
 msgid "${column}"
-msgstr "${column}"
+msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${comment/value}"
-msgstr "${comment/value}"
+msgstr ""
 
 #: cms/ui/WebSite_contact_options.xml.en:0
 msgid "${contact/email}"
@@ -71,71 +74,71 @@ msgstr ""
 
 #: cms/ui/Archive_view.xml.en:0
 msgid "${contents}"
-msgstr "${contents}"
+msgstr ""
 
 #: cms/ui/Text_edit.xml.en:0
 msgid "${data}"
-msgstr "${data}"
+msgstr ""
 
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid "${day/name}"
-msgstr "${day/name}"
+msgstr ""
 
 #: cms/ui/Thread_view.xml.en:0
 msgid "${description}"
-msgstr "${description}"
+msgstr ""
 
 #: cms/ui/User_tasks.xml.en:0
 msgid "${doc/title}"
-msgstr "${doc/title}"
+msgstr ""
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid "${encoding/title}"
-msgstr "${encoding/title}"
+msgstr ""
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "${event/SUMMARY}"
-msgstr "${event/SUMMARY}"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${field/title}"
-msgstr "${field/title}"
+msgstr ""
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "${folder/name>}"
-msgstr "${folder/name>}"
+msgstr ""
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "${folder/title}"
-msgstr "${folder/title}"
+msgstr ""
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "${group/path}:"
-msgstr "${group/path}:"
+msgstr ""
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "${group/users}"
-msgstr "${group/users}"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${item/name}"
-msgstr "${item/name}"
+msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "${js_data}"
-msgstr "${js_data}"
+msgstr ""
 
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "${lang/name}"
-msgstr "${lang/name}"
+msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "${language/code}"
-msgstr "${language/code}"
+msgstr ""
 
 #: cms/ui/User_edit.xml.en:0
 msgid "${language/name}"
-msgstr "${language/name}"
+msgstr ""
 
 #: cms/ui/Thread_view.xml.en:0
 msgid "${message/author}"
@@ -157,123 +160,118 @@ msgid ""
 "\"${messages_last}\">>></a> <textarea name=\"msgid\" cols=\"65\" rows=\"8\" "
 "readonly=\"\">${msgid}></textarea>"
 msgstr ""
-"${messages_index} / ${messages_total} <a href=\"${messages_first}\">&lt;&lt;"
-"</a> <a style=\"font-size: 10px\" href=\"${messages_previous}\">&lt;</a> <a "
-"style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a href="
-"\"${messages_last}\">>></a> <textarea name=\"msgid\" cols=\"65\" rows=\"8\" "
-"readonly=\"\">${msgid}></textarea>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${message}"
-msgstr "${message}"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${metadata/title}"
-msgstr "${metadata/title}"
+msgstr ""
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "${msgid}"
-msgstr "${msgid}"
+msgstr ""
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "${msgstr}"
-msgstr "${msgstr}"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${navigation}"
-msgstr "${navigation}"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/class_title}"
-msgstr "${object/class_title}"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/mtime}"
-msgstr "${object/mtime}"
+msgstr ""
 
 #: cms/ui/Folder_rename.xml.en:0
 msgid "${object/name}"
-msgstr "${object/name}"
+msgstr ""
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid "${object/object_type}"
-msgstr "${object/object_type}"
+msgstr ""
 
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "${object/short_title}"
-msgstr "${object/short_title}"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/size}"
-msgstr "${object/size}"
+msgstr ""
 
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "${object/title_or_name}"
-msgstr "${object/title_or_name}"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/title}"
-msgstr "${object/title}"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${object/workflow_state}"
-msgstr "${object/workflow_state}"
+msgstr ""
 
 #: cms/ui/Database_view.xml.en:0
 msgid "${object}"
-msgstr "${object}"
+msgstr ""
 
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/date}"
-msgstr "${revision/date}"
+msgstr ""
 
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/size}"
-msgstr "${revision/size}"
+msgstr ""
 
 #: cms/ui/File_history.xml.en:0
 msgid "${revision/username}"
-msgstr "${revision/username}"
+msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "${role/title}"
-msgstr "${role/title}"
+msgstr ""
 
 #: cms/ui/HTML_edit.xml.en:0
 msgid "${rte}"
-msgstr "${rte}"
+msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "${s/value}"
-msgstr "${s/value}"
+msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/description}"
-msgstr "${selected/description}"
+msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/format}"
-msgstr "${selected/format}"
+msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/title_or_name}"
-msgstr "${selected/title_or_name}"
+msgstr ""
 
 #: cms/ui/Folder_browse_image.xml.en:0
 msgid "${selected/width}x${selected/height}"
-msgstr "${selected/width}x${selected/height}"
+msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
 msgid "${skill/from}"
-msgstr "${skill/from}"
+msgstr ""
 
 #: cms/ui/User_translator.xml.en:0
 msgid "${skill/to}"
-msgstr "${skill/to}"
+msgstr ""
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "${text}"
-msgstr "${text}"
+msgstr ""
 
 #: cms/ui/Folder_browse_list.xml.en:0
 msgid "${thead}"
@@ -297,27 +295,27 @@ msgstr ""
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "${timetable/timetable}"
-msgstr "${timetable/timetable}"
+msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${title}"
-msgstr "${title}"
+msgstr ""
 
 #: cms/ui/Root_internal_server_error.xml.en:0
 msgid "${traceback}"
-msgstr "${traceback}"
+msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/comments}"
-msgstr "${transition/comments}"
+msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/date}"
-msgstr "${transition/date}"
+msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/description}"
-msgstr "${transition/description}"
+msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/title}"
@@ -325,27 +323,27 @@ msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "${transition/user}"
-msgstr "${transition/user}"
+msgstr ""
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid "${tt/start}"
-msgstr "${tt/start}"
+msgstr ""
 
 #: cms/ui/Folder_new_resource.xml.en:0
 msgid "${type/description}"
-msgstr "${type/description}"
+msgstr ""
 
 #: cms/ui/Folder_new_resource.xml.en:0
 msgid "${type/title}"
-msgstr "${type/title}"
+msgstr ""
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "${user/title_or_name}"
-msgstr "${user/title_or_name}"
+msgstr ""
 
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid "${week/month}"
-msgstr "${week/month}"
+msgstr ""
 
 #: cms/Handler.py:174
 msgid "%.01f KB"
@@ -400,6 +398,9 @@ msgid ""
 "\"${user/info/home}\">Home</a> <a id=\"top_menu_logout\" href=\"/;logout"
 "\">Log out</a>"
 msgstr ""
+"(connecté en ${user/info/title})<br/><br/> <a id=\"top_menu_home\" href="
+"\"${user/info/home}\">Page personnelle</a> <a id=\"top_menu_logout\" href=\"/;logout"
+"\">Déconnexion</a>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -407,6 +408,8 @@ msgid ""
 "in</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href=\"/;"
 "register_form\">Register</a>"
 msgstr ""
+"(déconnecté)<br/><br/> <a id=\"top_menu_login\" href=\"/;login_form\">Connexion</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href=\"/;"
+"register_form\">Inscription</a>"
 
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "(optional)"
@@ -439,24 +442,18 @@ msgid ""
 "<a href=\"${previous_month}\">«</a> ${current_month} <a href=\"${next_month}"
 "\">»</a>"
 msgstr ""
-"<a href=\"${previous_month}\">«</a> ${current_month} <a href=\"${next_month}"
-"\">»</a>"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid ""
 "<a href=\"${previous_week}\">«</a> ${current_week} <a href=\"${next_week}"
 "\">»</a>"
 msgstr ""
-"<a href=\"${previous_week}\">«</a> ${current_week} <a href=\"${next_week}"
-"\">»</a>"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid ""
 "<a href=\"${previous_year}\">«</a> ${current_year} <a href=\"${next_year}"
 "\">»</a>"
 msgstr ""
-"<a href=\"${previous_year}\">«</a> ${current_year} <a href=\"${next_year}"
-"\">»</a>"
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid ""
@@ -491,11 +488,6 @@ msgid ""
 "\"${selected/next}\">></a> <span id=\"gallery_next\" stl:if=\"not selected/"
 "next\">></span>"
 msgstr ""
-"<a id=\"gallery_previous\" stl:if=\"selected/previous\" href=\"${selected/"
-"previous}\">&lt;</a> <span id=\"gallery_previous\" stl:if=\"not selected/"
-"previous\">&lt;</span> <a id=\"gallery_next\" stl:if=\"selected/next\" href="
-"\"${selected/next}\">></a> <span id=\"gallery_next\" stl:if=\"not selected/"
-"next\">></span>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -514,8 +506,6 @@ msgid ""
 "<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/"
 "evt_value}</a> <span stl:if=\"col/SUMMARY\">${col/SUMMARY}</span>"
 msgstr ""
-"<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/"
-"evt_value}</a> <span stl:if=\"col/SUMMARY\">${col/SUMMARY}</span>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -523,17 +513,12 @@ msgid ""
 "short_name}</a> <span stl:if=\"not item/url\" title=\"${item/name}\">${item/"
 "short_name}</span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 msgstr ""
-"<a stl:if=\"item/url\" title=\"${item/name}\" href=\"${item/url}\">${item/"
-"short_name}</a> <span stl:if=\"not item/url\" title=\"${item/name}\">${item/"
-"short_name}</span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 
 #: cms/ui/HTML_addlink.xml.en:0
 msgid ""
 "<a stl:if=\"object/is_folder\" href=\"${object/url}\">${object/name}</a> "
 "<stl:inline stl:if=\"not object/is_folder\">${object/name}</stl:inline>"
 msgstr ""
-"<a stl:if=\"object/is_folder\" href=\"${object/url}\">${object/name}</a> "
-"<stl:inline stl:if=\"not object/is_folder\">${object/name}</stl:inline>"
 
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
@@ -542,10 +527,6 @@ msgid ""
 "class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">"
 "${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
 msgstr ""
-"<img width=\"16\" height=\"16\" src=\"${object/icon}\"/> <a class="
-"\"result_title\" href=\"${object/url}\">${object/title}</a> <br/> <span "
-"class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">"
-"${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
 
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid ""
@@ -570,17 +551,6 @@ msgid ""
 "\"text\" value=\"${DTEND_minutes}\"/>\n"
 "      </span>"
 msgstr ""
-"<input name=\"DTEND_day\" id=\"DTEND_day\" size=\"2\" type=\"text\" value="
-"\"${DTEND_day}\"/> / <input name=\"DTEND_month\" id=\"DTEND_month\" size=\"2"
-"\" type=\"text\" value=\"${DTEND_month}\"/> / <input name=\"DTEND_year\" id="
-"\"DTEND_year\" size=\"4\" type=\"text\" value=\"${DTEND_year}\"/> <input id="
-"\"trigger_dtend\" type=\"button\" value=\"...\"/> <span style=\"padding-"
-"left: 10px\">\n"
-"        <input name=\"DTEND_hours\" id=\"DTSTART_hours\" size=\"2\" type="
-"\"text\" value=\"${DTEND_hours}\"/> :\n"
-"        <input name=\"DTEND_minutes\" id=\"DTSTART_minutes\" size=\"2\" type="
-"\"text\" value=\"${DTEND_minutes}\"/>\n"
-"      </span>"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid ""
@@ -596,25 +566,12 @@ msgid ""
 "type=\"text\" value=\"${DTSTART_minutes}\"/>\n"
 "      </span>"
 msgstr ""
-"<input name=\"DTSTART_day\" id=\"DTSTART_day\" size=\"2\" type=\"text\" "
-"value=\"${DTSTART_day}\"/> / <input name=\"DTSTART_month\" id=\"DTSTART_month"
-"\" size=\"2\" type=\"text\" value=\"${DTSTART_month}\"/> / <input name="
-"\"DTSTART_year\" id=\"DTSTART_year\" size=\"4\" type=\"text\" value="
-"\"${DTSTART_year}\"/> <input id=\"trigger_dtstart\" type=\"button\" value="
-"\"...\"/> <span style=\"padding-left: 10px\">\n"
-"        <input name=\"DTSTART_hours\" id=\"DTSTART_hours\" size=\"2\" type="
-"\"text\" value=\"${DTSTART_hours}\"/> :\n"
-"        <input name=\"DTSTART_minutes\" id=\"DTSTART_minutes\" size=\"2\" "
-"type=\"text\" value=\"${DTSTART_minutes}\"/>\n"
-"      </span>"
 
 #: cms/ui/Folder_translate.xml.en:0
 msgid ""
 "<input name=\"names\" type=\"hidden\" value=\"${document/name}\"/> "
 "${document/title_or_name}"
 msgstr ""
-"<input name=\"names\" type=\"hidden\" value=\"${document/name}\"/> "
-"${document/title_or_name}"
 
 #: cms/ui/Folder_rename.xml.en:0
 msgid ""
@@ -629,8 +586,6 @@ msgid ""
 "<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/"
 "title}<br/> <img src=\"${skin/image_uri}\"/>"
 msgstr ""
-"<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/"
-"title}<br/> <img src=\"${skin/image_uri}\"/>"
 
 #: cms/ui/User_translator.xml.en:0
 msgid ""
@@ -778,9 +733,6 @@ msgid ""
 "\">${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
 "class=\"tab_dummy\"><a> </a></span>"
 msgstr ""
-"<span class=\"${tab/style}\" stl:repeat=\"tab subtabs\"><a href=\"${tab/name}"
-"\">${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
-"class=\"tab_dummy\"><a> </a></span>"
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
@@ -788,17 +740,12 @@ msgid ""
 "${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
 "class=\"tab_dummy\"><a> </a></span>"
 msgstr ""
-"<span class=\"${tab/style}\" stl:repeat=\"tab tabs\"><a href=\"${tab/name}\">"
-"${tab/label}</a><span stl:if=\"not repeat/tab/end\">|</span></span><span "
-"class=\"tab_dummy\"><a> </a></span>"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid ""
 "<span stl:if=\"col/DTSTART\">${col/DTSTART}</span> <span stl:if=\"col/DTEND"
 "\">${col/DTEND}</span>"
 msgstr ""
-"<span stl:if=\"col/DTSTART\">${col/DTSTART}</span> <span stl:if=\"col/DTEND"
-"\">${col/DTEND}</span>"
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid ""
@@ -807,10 +754,6 @@ msgid ""
 "                  <span stl:if=\"event/DTEND\"> - </span></span> <span stl:"
 "if=\"event/DTEND\">${event/DTEND}</span>"
 msgstr ""
-"<span stl:if=\"event/DTSTART\">\n"
-"                  <span>${event/DTSTART}</span>\n"
-"                  <span stl:if=\"event/DTEND\"> - </span></span> <span stl:"
-"if=\"event/DTEND\">${event/DTEND}</span>"
 
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid ""
@@ -819,10 +762,6 @@ msgid ""
 "class=\"add_event\" href=\"${day/url}\"><img src=\"${add_icon}\" height=\"16"
 "\" width=\"16\"/></a>"
 msgstr ""
-"<span stl:if=\"not day/selected\" class=\"bold\">${day/nday}</span> <span "
-"stl:if=\"day/selected\" class=\"cal_day_selected\">${day/nday}</span> <a "
-"class=\"add_event\" href=\"${day/url}\"><img src=\"${add_icon}\" height=\"16"
-"\" width=\"16\"/></a>"
 
 #: cms/ui/Folder_browse_calendar.xml.en:0
 msgid ""
@@ -842,7 +781,7 @@ msgstr ""
 
 #: cms/ui/ical_weekly_view.xml.en:0
 msgid "<span>${day/name}</span> <span>${day/nday}</span>"
-msgstr "<span>${day/name}</span> <span>${day/nday}</span>"
+msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid ""
@@ -880,13 +819,10 @@ msgid ""
 "              / <a href=\"${x/url}\">${x/name}</a>\n"
 "            </stl:inline> <br/>"
 msgstr ""
-"<stl:inline stl:repeat=\"x bc/path\">\n"
-"              / <a href=\"${x/url}\">${x/name}</a>\n"
-"            </stl:inline> <br/>"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "<strong>${state}</strong>"
-msgstr "<strong>${state}</strong>"
+msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1044,30 +980,22 @@ msgid ""
 "\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\"/> <span style="
 "\"font-size: 10px;\">HTML</span>"
 msgstr ""
-"<textarea id=\"${form_name}\" style=\"display: none; width: 100%; height: "
-"300px\" name=\"${form_name}\" disabled=\"1\">${js_data}</textarea> <input id="
-"\"CB_${form_name}\" style=\"margin: 0px; width: 10px; height: 10px\" type="
-"\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\"/> <span style="
-"\"font-size: 10px;\">HTML</span>"
 
 #: cms/workflow.py:36
 msgid "A pending document awaits review from authorized users to be published."
-msgstr ""
-"Un document en attente a besoin de l'aval des responsables pour être publié."
+msgstr "Un document en attente a besoin de l'aval des responsables pour être publié."
 
 #: cms/workflow.py:33
 msgid "A private document only can be reached by authorized users."
-msgstr ""
-"Un document privé ne peut être atteint que par les utilisateurs autorisés."
+msgstr "Un document privé ne peut être atteint que par les utilisateurs autorisés."
 
 #: cms/workflow.py:39
 msgid "A public document can be reached by even anonymous users."
-msgstr ""
-"Un document public peut être atteint même par les utilisateurs anonymes."
+msgstr "Un document public peut être atteint même par les utilisateurs anonymes."
 
 #: cms/forum.py:79
 msgid "A thread to discuss"
-msgstr ""
+msgstr "Un fil de discussion"
 
 #: cms/workflow.py:123
 msgid "A transition must be selected."
@@ -1087,7 +1015,7 @@ msgstr "Accepter le document"
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Access Control"
-msgstr ""
+msgstr "Contrôle d'accès"
 
 #: cms/root.py:161
 msgid "Access forbidden, you are not authorized to access this resource."
@@ -1142,6 +1070,14 @@ msgid ""
 "title_or_name}</option>\n"
 "      </select>"
 msgstr ""
+"Ajouter un nouveau <select name=\"role\" style=\"font-size: 1em\">\n"
+"        <option stl:repeat=\"role roles\" value=\"${role/name}\">${role/unit}"
+"</option>\n"
+"      </select> <br/><br/> <select name=\"addusers\" size=\"15\" multiple="
+"\"multiple\">\n"
+"        <option stl:repeat=\"user others\" value=\"${user/name}\">${user/"
+"title_or_name}</option>\n"
+"      </select>"
 
 #: cms/ui/User_translator.xml.en:0
 msgid "Add a new translator skill:"
@@ -1191,7 +1127,7 @@ msgstr ""
 
 #: cms/forum.py:188
 msgid "An iKaaro forum"
-msgstr ""
+msgstr "Un forum Ikaaro"
 
 #: cms/ui/Root_license.xml.en:0
 msgid "And you must show them these terms so they know their rights."
@@ -1253,7 +1189,7 @@ msgstr "Août"
 
 #: cms/ui/Forum_view.xml.en:0
 msgid "Author"
-msgstr ""
+msgstr "Auteur"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Background Color"
@@ -1372,15 +1308,15 @@ msgstr "Vérifier les utilisateurs <em>fantômes</em> des groupes"
 
 #: cms/ui/Root_about.xml.en:0
 msgid "Check the <a href=\";credits\">Credits</a>;"
-msgstr ""
+msgstr "Consultez les <a href=\";credits\">crédits</a>&nbsp;;"
 
 #: cms/ui/Root_about.xml.en:0
 msgid "Check the <a href=\";license\">License</a>;"
-msgstr ""
+msgstr "Consultez la <a href=\";license\">licence</a>&nbsp;;"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Chinese (zh)"
-msgstr ""
+msgstr "Chinois (zh)"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "Choose a template:"
@@ -1424,7 +1360,7 @@ msgstr ""
 
 #: cms/ui/WebSite_contact_options.xml.en:0
 msgid "Contact Options"
-msgstr ""
+msgstr "Options de contact"
 
 #: cms/ui/WebSite_contact_options.xml.en:0
 msgid "Contacts"
@@ -1432,7 +1368,7 @@ msgstr ""
 
 #: cms/wiki.py:95
 msgid "Container for a wiki"
-msgstr ""
+msgstr "Conteneur de wiki"
 
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Contents"
@@ -1452,7 +1388,7 @@ msgstr ""
 
 #: cms/WebSite.py:47
 msgid "Create a new Web Site or Work Place."
-msgstr ""
+msgstr "Créer un nouveau site Web"
 
 #: cms/html.py:50
 msgid "Create and publish a Web Document."
@@ -1460,7 +1396,7 @@ msgstr "Créer un publier un document Web."
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Credits"
-msgstr ""
+msgstr "Crédits"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
@@ -1752,7 +1688,7 @@ msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "French (fr)"
-msgstr ""
+msgstr "Français (fr)"
 
 #: cms/ical.py:72
 msgid "Friday"
@@ -1784,16 +1720,15 @@ msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Hacks a little everywhere"
-msgstr ""
+msgstr "Hacké un peu partout"
 
 #: cms/ui/Root_credits.xml.en:0
-msgid ""
-"Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
-msgstr ""
+msgid "Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
+msgstr "Hacké partout, responsable du design, de l'ergonomie et du code HTML/CSS"
 
 #: cms/forum.py:285
 msgid "Help"
-msgstr ""
+msgstr "Aide"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Hervé Cauwelier"
@@ -1895,6 +1830,8 @@ msgid ""
 "If you find a bug or wish some new feature, please <a href=\"http://bugs."
 "ikaaro.org\">file a bug report</a>."
 msgstr ""
+"Si vous trouvez un bug ou vous souhaitez une nouvelle fonctionnalité, veuillez <a href=\"http://bugs."
+"ikaaro.org\">ouvrir un ticket</a>."
 
 #: cms/binary.py:44
 msgid "Image"
@@ -1956,7 +1893,7 @@ msgstr "Erreur interne du serveur"
 
 #: cms/forum.py:261
 msgid "Invalid title."
-msgstr ""
+msgstr "Titre invalide."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -1966,7 +1903,7 @@ msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Italian (it)"
-msgstr ""
+msgstr "Italien (it)"
 
 #: cms/ui/epoz.xml.en:0
 msgid "Italic"
@@ -1976,12 +1913,11 @@ msgstr "Italique"
 msgid ""
 "Its functional scope, what it is able to do <em>out of the box</em>, is "
 "quite narrow so far, but evolving quickly."
-msgstr ""
+msgstr "Son champ fonctionnel, ses capacités <em>par défaut</em> reste simple mais il évolue rapidement."
 
 #: cms/ui/Root_about.xml.en:0
-msgid ""
-"Its real power is what you don't see, when it is used as a web framework."
-msgstr ""
+msgid "Its real power is what you don't see, when it is used as a web framework."
+msgstr "Toute la puissance est sous le capot, quand le moteur est utilisé dans une application Web."
 
 #: cms/ical.py:68
 msgid "January"
@@ -2029,11 +1965,11 @@ msgstr "Langues supprimées."
 
 #: cms/ui/Forum_view.xml.en:0
 msgid "Last Post"
-msgstr ""
+msgstr "Dernière réponse"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Lead Developer"
-msgstr ""
+msgstr "Développeur principal"
 
 #: cms/root.py:341
 msgid "License"
@@ -2065,7 +2001,7 @@ msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Main developer of the iCalendar module, hacks a little everywhere"
-msgstr ""
+msgstr "Développeur principal du module iCalendar, hacke un peu partout"
 
 #: cms/root.py:429
 msgid "Maintenance"
@@ -2080,7 +2016,7 @@ msgid ""
 "Many people have made generous contributions to the wide range of software "
 "distributed through that system in reliance on consistent application of "
 "that system;"
-msgstr ""
+msgstr "Beaucoup de personnes ont généreusement contribué à ce logiciel pour en faire ce qu'il est aujourd'hui&nbsp;;"
 
 #: cms/ical.py:68
 msgid "March"
@@ -2117,10 +2053,6 @@ msgid ""
 "\">&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a "
 "href=\"${messages_last}\">>></a>"
 msgstr ""
-"Message ${messages_index} / ${messages_total} <a href=\"${messages_first}"
-"\">&lt;&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_previous}"
-"\">&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a "
-"href=\"${messages_last}\">>></a>"
 
 #: cms/text.py:144
 msgid "Message Catalog"
@@ -2204,7 +2136,7 @@ msgstr "Nouvelle ressource"
 
 #: cms/ui/Forum_view.xml.en:0
 msgid "New Thread"
-msgstr ""
+msgstr "Nouveau fil de discussion"
 
 #: cms/ui/WebSite_new_instance.xml.en:0
 msgid "New WebSite"
@@ -2212,7 +2144,7 @@ msgstr "Nouveau site Web"
 
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "New Wiki Page"
-msgstr ""
+msgstr "Nouvelle page Wiki"
 
 #: cms/Folder.py:960
 msgid "New resource added."
@@ -2244,7 +2176,7 @@ msgstr "Aucun objet sélectionné."
 
 #: cms/forum.py:257
 msgid "No title given."
-msgstr ""
+msgstr "Aucun titre donné."
 
 #: cms/ui/Root_not_found.xml.en:0
 msgid "Not Found"
@@ -2423,7 +2355,7 @@ msgstr "Texte intégral"
 
 #: cms/WebSite.py:576
 msgid "Please fill the missing fields."
-msgstr ""
+msgstr "Veuillez remplir les champs nécessaires."
 
 #: cms/future.py:99
 msgid "Please select the folders to order down."
@@ -2451,7 +2383,7 @@ msgstr "Poster"
 
 #: cms/ui/Thread_view.xml.en:0
 msgid "Post a Reply"
-msgstr ""
+msgstr "Poster une réponse"
 
 #: cms/binary.py:248
 msgid "PowerPoint"
@@ -2487,7 +2419,7 @@ msgstr "Publier le document."
 
 #: cms/forum.py:288
 msgid "Read the doc in README file."
-msgstr ""
+msgstr "Veuillez lire la documentation du fichier README."
 
 #: cms/ui/WebSite_contact_form.xml.en:0
 msgid "Recipient"
@@ -2507,7 +2439,7 @@ msgstr "Inscription"
 
 #: cms/ui/WebSite_anonymous.xml.en:0
 msgid "Registration Options"
-msgstr ""
+msgstr "Options d'inscription"
 
 #: cms/users.py:124
 msgid "Registration confirmed, please log in"
@@ -2531,7 +2463,7 @@ msgstr "Formatage par défaut"
 
 #: cms/ui/Folder_permissions.xml.en:0
 msgid "Remove members or update the roles:"
-msgstr ""
+msgstr "Retirer les membres ou mettre à jour les rôles&nbsp;:"
 
 #: cms/ui/Root_languages.xml.en:0
 msgid "Remove selected ones"
@@ -2559,11 +2491,11 @@ msgstr "Réponses"
 
 #: cms/ui/Thread_view.xml.en:0
 msgid "Reply"
-msgstr ""
+msgstr "Répondre"
 
 #: cms/forum.py:180
 msgid "Reply Posted."
-msgstr ""
+msgstr "Réponse postée."
 
 #: cms/workflow.py:45
 msgid "Request the document publication."
@@ -2571,7 +2503,7 @@ msgstr "Demander la publication du document."
 
 #: cms/ui/Root_about.xml.en:0
 msgid "Resources:"
-msgstr ""
+msgstr "Ressources&nbsp;:"
 
 #: cms/text.py:244
 msgid "Restructured Text"
@@ -2673,7 +2605,7 @@ msgstr "Habillage"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Spanish (es)"
-msgstr ""
+msgstr "Espagnol (es)"
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Start"
@@ -2731,11 +2663,10 @@ msgstr "Exposant"
 
 #: cms/ical.py:41
 msgid "TENTATIVE"
-msgstr "TENTATIVE"
+msgstr "Tentative"
 
 #: cms/ui/Root_license.xml.en:0
-msgid ""
-"THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
+msgid "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
 msgstr ""
 
 #: cms/ui/epoz_script_table.xml.en:0
@@ -2811,13 +2742,11 @@ msgstr "La langue par défaut a été changée."
 
 #: cms/Folder.py:1008
 msgid "The document name contains illegal characters, choose another one."
-msgstr ""
-"Le nom du document contient des caractères interdits, choisissez-en un autre."
+msgstr "Le nom du document contient des caractères interdits, choisissez-en un autre."
 
 #: cms/ui/User_tasks.xml.en:0
 msgid "The documents below await review for publication:"
-msgstr ""
-"Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
+msgstr "Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
 
 #: cms/users.py:417
 msgid "The email is wrong, please try again."
@@ -2974,15 +2903,15 @@ msgstr ""
 
 #: cms/forum.py:264
 msgid "This thread already exists."
-msgstr ""
+msgstr "Ce fil de discussion existe déjà."
 
 #: cms/forum.py:78
 msgid "Thread"
-msgstr ""
+msgstr "Fil de discussion"
 
 #: cms/forum.py:282
 msgid "Thread Created."
-msgstr ""
+msgstr "Fil de discussion créé."
 
 #: cms/ical.py:71
 msgid "Thursday"
@@ -3028,8 +2957,7 @@ msgstr "Pour ajouter un événement, cliquer sur le symbole + à partir des vues
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
-msgstr ""
-"Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
+msgstr "Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
 
 #: cms/ui/File_download_form.xml.en:0
 msgid "To download this file, click on <a href=\"${url}\">${title_or_name}</a>"
@@ -3063,8 +2991,7 @@ msgstr "Pour réindexer tout le site, cliquez sur le bouton ci-dessous."
 
 #: cms/ui/Document_translate.xml.en:0
 msgid "To save the translation above click the button below:"
-msgstr ""
-"Pour sauvegarder la traduction ci-dessus, cliquez sur le bouton suivant."
+msgstr "Pour sauvegarder la traduction ci-dessus, cliquez sur le bouton suivant."
 
 #: cms/root.py:288
 msgid ""
@@ -3103,7 +3030,7 @@ msgstr "Veuillez taper votre adresse de courriel."
 
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Type your text here..."
-msgstr ""
+msgstr "Tapez votre texte ici..."
 
 #: cms/ui/epoz.xml.en:0
 msgid "Underline"
@@ -3143,8 +3070,7 @@ msgstr ""
 
 #: cms/File.py:38
 msgid "Upload office documents, images, media files, etc."
-msgstr ""
-"Importer des documents bureautiques, des images, des fichiers de média, etc."
+msgstr "Importer des documents bureautiques, des images, des fichiers de média, etc."
 
 #: cms/ui/File_history.xml.en:0
 msgid "User"
@@ -3184,7 +3110,7 @@ msgstr "Visitez le <a href=\"http://www.ikaaro.org\">site Web</a> du projet."
 
 #: cms/ui/Root_about.xml.en:0
 msgid "Want to know who is behind this software?"
-msgstr ""
+msgstr "Découvrez qui se cache derrière ce logiciel"
 
 #: cms/ui/WebSite_search.xml.en:0
 msgid "We did not find results for \"${text}\"."
@@ -3235,7 +3161,7 @@ msgstr "Wiki"
 
 #: cms/wiki.py:151
 msgid "Wiki Page"
-msgstr ""
+msgstr "Page de Wiki"
 
 #: cms/wiki.py:152
 msgid "Wiki contents"
@@ -3247,19 +3173,19 @@ msgstr "MS Word"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Worked on the Internationalization framework"
-msgstr ""
+msgstr "A travaillé sur le support de l'internationalisation"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Worked on the Workflow engine"
-msgstr ""
+msgstr "A travaillé sur le moteur de workflow"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Worked on the support for the CSV and RSS file formats"
-msgstr ""
+msgstr "A travaillé sur la prise en charge des formats CSV et RSS"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Worked on the support for the TMX, XLIFF and iCalendar file formats"
-msgstr ""
+msgstr "A travaillé sur la prise en charge des formats TMX, XLIFF et iCalendar"
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
@@ -3327,8 +3253,7 @@ msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
 msgid "You can upload a new file to replace the current one."
-msgstr ""
-"Vous pouvez importer un fichier de votre ordinateur pour remplacer l'actuel."
+msgstr "Vous pouvez importer un fichier de votre ordinateur pour remplacer l'actuel."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -3457,7 +3382,7 @@ msgstr ""
 
 #: cms/root.py:48
 msgid "iKaaro"
-msgstr "iKaaro"
+msgstr ""
 
 #: cms/ui/Root_about.xml.en:0
 msgid ""
@@ -3465,6 +3390,9 @@ msgid ""
 "python.org\">Python</a> programming language, and based on the <a href="
 "\"http://www.ikaaro.org/itools\">itools</a> library."
 msgstr ""
+"Ikaaro est un système de gestion de contenu, écrit dans le langage de programmation <a href=\"http://www."
+"python.org\">Python</a>, et basé sur la bibliothèque <a href="
+"\"http://www.ikaaro.org/itools\">itools</a>."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -3640,89 +3568,3 @@ msgstr "» Parcourir l'application pour sélectionner un document&nbsp;:"
 msgid "» Type the url to add:"
 msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 
-#~ msgid "${batch/control}"
-#~ msgstr "${batch/control}"
-
-#~ msgid ""
-#~ "${column/title} <a stl:if=\"column/href\" href=\"${column/href}\">\n"
-#~ "              <img stl:if=\"column/no\" src=\"/ui/images/order-none.png\"/"
-#~ ">\n"
-#~ "              <img stl:if=\"column/up\" src=\"/ui/images/order-up.png\"/"
-#~ ">\n"
-#~ "              <img stl:if=\"column/down\" src=\"/ui/images/order-down.png"
-#~ "\"/>\n"
-#~ "            </a>"
-#~ msgstr ""
-#~ "${column/title} <a stl:if=\"column/href\" href=\"${column/href}\">\n"
-#~ "              <img stl:if=\"column/no\" src=\"/ui/images/order-none.png\"/"
-#~ ">\n"
-#~ "              <img stl:if=\"column/up\" src=\"/ui/images/order-up.png\"/"
-#~ ">\n"
-#~ "              <img stl:if=\"column/down\" src=\"/ui/images/order-down.png"
-#~ "\"/>\n"
-#~ "            </a>"
-
-#~ msgid "${repeat/row/index}"
-#~ msgstr "${repeat/row/index}"
-
-#~ msgid "${transition/title_or_name}"
-#~ msgstr "${transition/title_or_name}"
-
-#~ msgid ""
-#~ "<stl:inline stl:if=\"user/info\">${user/info/title}</stl:inline> <stl:"
-#~ "inline stl:if=\"not user/info\">not logged in</stl:inline>"
-#~ msgstr ""
-#~ "<stl:inline stl:if=\"user/info\">${user/info/title}</stl:inline> <stl:"
-#~ "inline stl:if=\"not user/info\">Authentification</stl:inline>"
-
-#~ msgid "Add a member"
-#~ msgstr "Ajouter un membre"
-
-#~ msgid "Anonymous"
-#~ msgstr "Anonymes"
-
-#~ msgid "Anonymous Settings."
-#~ msgstr "Anonymes"
-
-#~ msgid "Empty search value."
-#~ msgstr "Rien à chercher."
-
-#~ msgid "Home"
-#~ msgstr "Dossier personnel"
-
-#~ msgid "Log out"
-#~ msgstr "Déconnexion"
-
-#~ msgid "Members and roles"
-#~ msgstr "Membres et rôles"
-
-#~ msgid ""
-#~ "Released to the world under the terms and conditions of the <a href=\";"
-#~ "license\">GNU General Public License</a>, iKaaro is a free software "
-#~ "project, built by its community:"
-#~ msgstr ""
-#~ "Diffusé sous les termes et conditions de la <a href=\";license\">Licence "
-#~ "publique générale GNU</a>, iKaaro est un projet de logiciel libre, bâti "
-#~ "par sa communauté."
-
-#~ msgid "Security"
-#~ msgstr "Sécurité"
-
-#~ msgid "Welcome to the iKaaro Content Management System"
-#~ msgstr "Bienvenue dans le système de gestion de contenu iKaaro."
-
-#~ msgid ""
-#~ "a friendly user interface, high end multilingual features, powerful "
-#~ "versioning system, desktop integration, web services support and more."
-#~ msgstr ""
-#~ "Une interface utilisateur conviviale et paramétrable en plusieurs "
-#~ "langues, un puissant système de gestion de versions, une intégration aux "
-#~ "outils bureautiques, le support des services Web, et bien plus."
-
-#~ msgid "iKaaro provides state of the art Content Management technology:"
-#~ msgstr ""
-#~ "iKaaro fournit une offre complète dans le domaine de la gestion de "
-#~ "contenu&nbsp;:"
-
-#~ msgid "the resource \"%s\" does not exist"
-#~ msgstr "La ressource &laquo;&nbsp;%s&nbsp;&raquo; n'existe pas."

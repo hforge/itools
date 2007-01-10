@@ -15,22 +15,44 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
-from itools.datatypes.primitive import Unicode, String, DateTime
+from itools.datatypes.primitive import DataType, Unicode, String, Date, Time
 from base import Schema
 import registry
 
 
+class DateTime(DataType):
+
+    @staticmethod
+    def decode(value):
+        if not value:
+            return None
+        date, time = value.split('T')
+        date = Date.decode(date)
+        time = Time.decode(time)
+
+        return datetime.combine(date, time)
+
+
+    @staticmethod
+    def encode(value):
+        if value is None:
+            return ''
+        return value.strftime('%Y-%m-%dT%H:%M:%S')
+
 
 class DublinCore(Schema):
 
-    class_uri = 'http://purl.org/dc/elements/1.1'
+    class_uri = 'http://purl.org/dc/elements/1.1/'
     class_prefix = 'dc'
 
 
     datatypes = {'contributor': None,
                  'coverage': None,
-                 'creator': None,
+                 'creator': String,
                  'date': DateTime,
                  'description': Unicode,
                  'format': None,
@@ -46,4 +68,6 @@ class DublinCore(Schema):
                  }
 
 
-registry.register_schema(DublinCore)
+# XXX For backwards compatibility, introduced in 0.15.1
+registry.register_schema(DublinCore, uri='http://purl.org/dc/elements/1.1')
+

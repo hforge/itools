@@ -24,7 +24,7 @@ from itools.schemas.dublin_core import DublinCore
 
 class Element(XML.Element):
 
-    namespace = 'http://purl.org/dc/elements/1.1'
+    namespace = 'http://purl.org/dc/elements/1.1/'
 
 
     def set_comment(self, comment):
@@ -44,19 +44,34 @@ class Element(XML.Element):
             self.value = type.decode(text)
 
 
+class BlockElement(Element):
+
+    def is_inline(self):
+        return False
+       
+    def is_block(self):
+        return True
+
 
 class Namespace(namespaces.AbstractNamespace):
 
-    class_uri = 'http://purl.org/dc/elements/1.1'
+    class_uri = 'http://purl.org/dc/elements/1.1/'
     class_prefix = 'dc'
 
 
     @staticmethod
     def get_element_schema(name):
-        if name not in schema:
+        
+        elements_schema = {
+            'creator': {'type': BlockElement, 'is_empty': False},
+            'date': {'type': BlockElement, 'is_empty': False},
+            'language': {'type': BlockElement, 'is_empty': False}
+            }
+        
+        if name not in elements_schema:
             raise XML.XMLError, 'unknown property "%s"' % name
-
-        return Element
+ 
+        return elements_schema.get(name)
 
 
 namespaces.set_namespace(Namespace)

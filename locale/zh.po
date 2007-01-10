@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2007-01-08 17:01+CET\n"
+"POT-Creation-Date: 2007-01-10 14:01+CET\n"
 "PO-Revision-Date: 2004-11-25 22:33+0100\n"
 "Last-Translator: Luis Belmar Letelier <luis@itaapy.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -55,13 +55,14 @@ msgstr ""
 msgid "${comment/value}"
 msgstr ""
 
-#: cms/ui/WebSite_contact_options.xml.en:0
-msgid "${contact/email}"
-msgstr ""
-
 #: cms/ui/WebSite_contact_form.xml.en:0
 #, fuzzy
 msgid "${contact/title}"
+msgstr "用户资料列单"
+
+#: cms/ui/WebSite_contact_options.xml.en:0
+#, fuzzy
+msgid "${contact/title} (${contact/email})"
 msgstr "用户资料列单"
 
 #: cms/ui/Archive_view.xml.en:0
@@ -168,14 +169,6 @@ msgstr "信息"
 msgid "${metadata/title}"
 msgstr "用户资料列单"
 
-#: cms/ui/Document_translate.xml.en:0
-msgid "${msgid}"
-msgstr ""
-
-#: cms/ui/Document_translate.xml.en:0
-msgid "${msgstr}"
-msgstr ""
-
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${navigation}"
 msgstr ""
@@ -261,15 +254,7 @@ msgstr ""
 msgid "${selected/width}x${selected/height}"
 msgstr ""
 
-#: cms/ui/User_translator.xml.en:0
-msgid "${skill/from}"
-msgstr ""
-
-#: cms/ui/User_translator.xml.en:0
-msgid "${skill/to}"
-msgstr ""
-
-#: cms/ui/Document_translate.xml.en:0
+#: cms/ui/Text_view.xml.en:0
 msgid "${text}"
 msgstr ""
 
@@ -349,15 +334,15 @@ msgstr ""
 msgid "${week/month}"
 msgstr ""
 
-#: cms/Handler.py:174
+#: cms/Handler.py:173
 msgid "%.01f KB"
 msgstr ""
 
-#: cms/Handler.py:172
+#: cms/Handler.py:171
 msgid "%.01f MB"
 msgstr ""
 
-#: cms/Handler.py:178
+#: cms/Handler.py:177
 #, fuzzy
 msgid "%d obs"
 msgstr "%d 字节"
@@ -453,6 +438,12 @@ msgid ""
 "\">»</a>"
 msgstr ""
 
+#: cms/ui/aruni/template.xhtml.en:0
+msgid ""
+"<a href=\"/;about\">About</a> <a href=\"/;credits\">Credits</a> <a href=\"/;"
+"license\">License</a>"
+msgstr ""
+
 #: cms/ui/Text_externaledit.xml.en:0
 msgid ""
 "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.1-src.tgz"
@@ -529,6 +520,12 @@ msgid ""
 "        </stl:inline>"
 msgstr ""
 
+#: cms/ui/WebSite_login.xml.en:0
+msgid ""
+"<input id=\"password\" name=\"password\" type=\"password\"/> <a href=\";"
+"forgotten_password_form\">I forgot my password</a>"
+msgstr ""
+
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid ""
 "<input name=\"DTEND_day\" id=\"DTEND_day\" size=\"2\" type=\"text\" value="
@@ -559,12 +556,6 @@ msgid ""
 "      </span>"
 msgstr ""
 
-#: cms/ui/Folder_translate.xml.en:0
-msgid ""
-"<input name=\"names\" type=\"hidden\" value=\"${document/name}\"/> "
-"${document/title_or_name}"
-msgstr ""
-
 #: cms/ui/Folder_rename.xml.en:0
 msgid ""
 "<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> to "
@@ -577,22 +568,10 @@ msgid ""
 "title}<br/> <img src=\"${skin/image_uri}\"/>"
 msgstr ""
 
-#: cms/ui/User_translator.xml.en:0
-msgid ""
-"<option value=\"\">-- Choose a language --</option> <option stl:repeat="
-"\"lang languages\" value=\"${lang/code}\">${lang/name}</option>"
-msgstr ""
-
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid ""
 "<option value=\"\">Any</option> <option stl:repeat=\"state states\" value="
 "\"${state/key}\">${state/value}</option>"
-msgstr ""
-
-#: cms/ui/Folder_translate.xml.en:0
-msgid ""
-"<option value=\"\">Choose a language</option> <option stl:repeat=\"language "
-"document/languages\" value=\"${language/code}\">${language/name}</option>"
 msgstr ""
 
 #: cms/ui/Root_languages.xml.en:0
@@ -960,7 +939,7 @@ msgstr ""
 msgid "A transition must be selected."
 msgstr ""
 
-#: cms/WebSite.py:298
+#: cms/WebSite.py:576
 msgid "A valid email address must be provided."
 msgstr ""
 
@@ -1035,16 +1014,16 @@ msgid ""
 "      </select>"
 msgstr ""
 
-#: cms/ui/User_translator.xml.en:0
-msgid "Add a new translator skill:"
-msgstr "加入一新翻译技术"
-
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Add and return"
 msgstr ""
 
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Add and view"
+msgstr ""
+
+#: cms/ui/Folder_new_resource.xml.en:0
+msgid "Add new content"
 msgstr ""
 
 #: cms/root.py:65
@@ -1074,7 +1053,11 @@ msgid ""
 "everyone understands that there is no warranty for this free software."
 msgstr ""
 
-#: cms/WebSite.py:342
+#: cms/ui/WebSite_forgotten_password.xml.en:0
+msgid "An email has been sent to you with your new password."
+msgstr ""
+
+#: cms/WebSite.py:289
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
@@ -1120,15 +1103,15 @@ msgstr ""
 msgid "April"
 msgstr ""
 
-#: cms/Folder.py:478
+#: cms/Folder.py:467
 msgid "As Icons"
 msgstr "图标"
 
-#: cms/Folder.py:550
+#: cms/Folder.py:539
 msgid "As Image Gallery"
 msgstr ""
 
-#: cms/Folder.py:491
+#: cms/Folder.py:480
 msgid "As List"
 msgstr "目录"
 
@@ -1174,6 +1157,11 @@ msgstr "文件夹"
 #, fuzzy
 msgid "Border"
 msgstr "文件夹"
+
+#: cms/ui/Folder_browse_thumbnails.xml.en:0
+#, fuzzy
+msgid "Browse Content"
+msgstr "浏览"
 
 #: cms/ui/Folder_browsedir.xml.en:0
 msgid "Browse-Directories"
@@ -1355,7 +1343,7 @@ msgid ""
 "allowed."
 msgstr ""
 
-#: cms/WebSite.py:47
+#: cms/WebSite.py:46
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
@@ -1410,11 +1398,6 @@ msgstr ""
 msgid "Display only contents with the following terms:"
 msgstr ""
 
-#: cms/ui/Folder_translate.xml.en:0
-#, fuzzy
-msgid "Document"
-msgstr "新文件"
-
 #: cms/binary.py:220
 #, fuzzy
 msgid "Document Excel"
@@ -1424,11 +1407,6 @@ msgstr "编辑文档"
 #, fuzzy
 msgid "Document Flash"
 msgstr "新文件"
-
-#: cms/ui/File_history.xml.en:0
-#, fuzzy
-msgid "Document History"
-msgstr "编辑文档"
 
 #: cms/binary.py:329
 #, fuzzy
@@ -1440,26 +1418,21 @@ msgstr "新文件"
 msgid "Document PowerPoint"
 msgstr "编辑文档"
 
-#: cms/ui/WorkflowAware_state.xml.en:0
-#, fuzzy
-msgid "Document State"
-msgstr "编辑文档"
-
 #: cms/binary.py:204
 #, fuzzy
 msgid "Document Word"
 msgstr "编辑文档"
 
-#: cms/html.py:162
+#: cms/html.py:166
 #, fuzzy
 msgid "Document changed."
 msgstr "编辑文档"
 
-#: cms/text.py:116
+#: cms/text.py:120
 msgid "Document edited."
 msgstr "编辑文档"
 
-#: cms/File.py:75
+#: cms/ui/File_download_form.xml.en:0
 msgid "Download"
 msgstr ""
 
@@ -1467,7 +1440,7 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#: cms/html.py:150
+#: cms/html.py:154
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
@@ -1506,6 +1479,10 @@ msgstr ""
 #, fuzzy
 msgid "Edit preferences;"
 msgstr "优先"
+
+#: cms/ui/ical_edit_timetables.xml.en:0
+msgid "Edit the timetable grid"
+msgstr ""
 
 #: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Email"
@@ -1583,7 +1560,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: cms/Folder.py:1029
+#: cms/Folder.py:938
 msgid "File uploaded."
 msgstr "文件被上载."
 
@@ -1599,7 +1576,7 @@ msgstr ""
 msgid "Flash"
 msgstr ""
 
-#: cms/Folder.py:59
+#: cms/Folder.py:58
 msgid "Folder"
 msgstr "文件夹"
 
@@ -1668,6 +1645,11 @@ msgid ""
 "the Free Software Foundation;"
 msgstr ""
 
+#: cms/ui/WebSite_forgotten_password_form.xml.en:0
+#, fuzzy
+msgid "Forgotten password"
+msgstr "改变内设"
+
 #: cms/ui/Folder_browse_image.xml.en:0
 #, fuzzy
 msgid "Format:"
@@ -1733,7 +1715,7 @@ msgstr ""
 msgid "Hervé Cauwelier<br/> Nicolas Deram"
 msgstr ""
 
-#: cms/versioning.py:49
+#: cms/ui/File_history.xml.en:0
 msgid "History"
 msgstr "记录"
 
@@ -1852,7 +1834,7 @@ msgstr ""
 msgid "Indent"
 msgstr ""
 
-#: cms/text.py:156
+#: cms/text.py:160
 msgid "Inline"
 msgstr "直接从内部写入."
 
@@ -1919,11 +1901,6 @@ msgstr ""
 msgid "January"
 msgstr ""
 
-#: cms/ui/WebSite_register.xml.en:0
-#, fuzzy
-msgid "Join the Community"
-msgstr "加入社区"
-
 #: cms/ui/Root_credits.xml.en:0
 msgid "Juan David Ibáñez Palomar"
 msgstr ""
@@ -1949,15 +1926,15 @@ msgstr "语言"
 msgid "Language Settings"
 msgstr "语言"
 
-#: cms/WebSite.py:212
+#: cms/WebSite.py:158
 msgid "Language added."
 msgstr "语言被加入."
 
-#: cms/WebSite.py:140
+#: cms/WebSite.py:86
 msgid "Languages"
 msgstr "语言"
 
-#: cms/WebSite.py:199
+#: cms/WebSite.py:145
 msgid "Languages removed."
 msgstr "语言被改变."
 
@@ -2048,24 +2025,12 @@ msgstr "没有物件被选中"
 msgid "Message"
 msgstr "信息"
 
-#: cms/ui/Document_translate.xml.en:0
-msgid ""
-"Message ${messages_index} / ${messages_total} <a href=\"${messages_first}"
-"\">&lt;&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_previous}"
-"\">&lt;</a> <a style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a "
-"href=\"${messages_last}\">>></a>"
-msgstr ""
-
-#: cms/text.py:144
+#: cms/text.py:148
 #, fuzzy
 msgid "Message Catalog"
 msgstr "信息"
 
-#: cms/ui/Document_translate.xml.en:0
-msgid "Message Translation"
-msgstr ""
-
-#: cms/text.py:209
+#: cms/text.py:213
 msgid "Message edited."
 msgstr "信息被修正."
 
@@ -2088,7 +2053,7 @@ msgstr "信息"
 msgid "Metadata"
 msgstr "附加信息"
 
-#: cms/Handler.py:548
+#: cms/Handler.py:539
 msgid "Metadata changed."
 msgstr "用户资料被变更."
 
@@ -2138,7 +2103,7 @@ msgstr ""
 msgid "New Password"
 msgstr "密码"
 
-#: cms/Folder.py:883
+#: cms/Folder.py:792
 msgid "New Resource"
 msgstr "新文件夹"
 
@@ -2155,7 +2120,7 @@ msgstr ""
 msgid "New Wiki Page"
 msgstr "新工作界面"
 
-#: cms/Folder.py:960
+#: cms/Folder.py:869
 #, fuzzy
 msgid "New resource added."
 msgstr "新资料被加入."
@@ -2181,7 +2146,7 @@ msgstr "没有文件被写入."
 msgid "No history."
 msgstr "记录"
 
-#: cms/Folder.py:737
+#: cms/Folder.py:721
 msgid "No objects selected."
 msgstr "没有物件被选中"
 
@@ -2233,24 +2198,24 @@ msgstr "编辑文档"
 msgid "OOo Writer"
 msgstr "写入"
 
-#: cms/Folder.py:724
+#: cms/Folder.py:708
 msgid "Objects copied."
 msgstr "物件被复制"
 
-#: cms/Folder.py:744
+#: cms/Folder.py:728
 msgid "Objects cut."
 msgstr "物件被剪切"
 
-#: cms/Folder.py:801
+#: cms/Folder.py:785
 msgid "Objects pasted."
 msgstr "物件被粘贴"
 
-#: cms/Folder.py:636
+#: cms/Folder.py:625
 #, fuzzy
 msgid "Objects removed: $objects."
 msgstr "Objects removed: %s."
 
-#: cms/Folder.py:703
+#: cms/Folder.py:687
 msgid "Objects renamed."
 msgstr "物件被更名"
 
@@ -2301,7 +2266,7 @@ msgstr ""
 msgid "Ordered List"
 msgstr "文件夹"
 
-#: cms/Folder.py:60
+#: cms/Folder.py:59
 msgid "Organize your files and documents with folders."
 msgstr ""
 
@@ -2375,7 +2340,7 @@ msgstr ""
 msgid "Plain Text"
 msgstr "简易文件"
 
-#: cms/WebSite.py:576
+#: cms/WebSite.py:572
 msgid "Please fill the missing fields."
 msgstr ""
 
@@ -2399,7 +2364,7 @@ msgstr "你必须选择删除成员."
 msgid "Please select the folders to order up."
 msgstr "你必须选择删除成员."
 
-#: cms/Folder.py:506
+#: cms/Folder.py:495
 msgid "Please type a search term."
 msgstr ""
 
@@ -2466,7 +2431,7 @@ msgstr "删除"
 msgid "Register"
 msgstr "查阅"
 
-#: cms/WebSite.py:219
+#: cms/ui/WebSite_register.xml.en:0
 #, fuzzy
 msgid "Registration"
 msgstr "查阅"
@@ -2544,7 +2509,7 @@ msgstr ""
 msgid "Resources:"
 msgstr "新文件夹"
 
-#: cms/text.py:244
+#: cms/text.py:248
 msgid "Restructured Text"
 msgstr ""
 
@@ -2597,10 +2562,6 @@ msgstr ""
 msgid "Save Changes"
 msgstr "改换"
 
-#: cms/ui/Document_translate.xml.en:0
-msgid "Save the translation"
-msgstr ""
-
 #: cms/ical.py:52
 msgid "Schedule your time with calendar files."
 msgstr ""
@@ -2631,11 +2592,11 @@ msgstr "概略"
 msgid "September"
 msgstr ""
 
-#: cms/WebSite.py:243
+#: cms/WebSite.py:189
 msgid "Settings"
 msgstr "设置"
 
-#: cms/Folder.py:469
+#: cms/Folder.py:458
 msgid "Size"
 msgstr "尺寸"
 
@@ -2692,6 +2653,10 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
+#: cms/ui/WebSite_forgotten_password_form.xml.en:0
+msgid "Submit"
+msgstr ""
+
 #: cms/ui/epoz.xml.en:0
 msgid "Subscript"
 msgstr ""
@@ -2732,12 +2697,7 @@ msgstr ""
 msgid "Table rows"
 msgstr ""
 
-#: cms/ui/Folder_translate.xml.en:0
-#, fuzzy
-msgid "Target language"
-msgstr "语言"
-
-#: cms/users.py:285
+#: cms/ui/User_tasks.xml.en:0
 msgid "Tasks"
 msgstr ""
 
@@ -2745,7 +2705,7 @@ msgstr ""
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: cms/Folder.py:70
+#: cms/Folder.py:69
 msgid "Text"
 msgstr ""
 
@@ -2753,15 +2713,11 @@ msgstr ""
 msgid "Text Color"
 msgstr ""
 
-#: cms/ui/Document_translate.xml.en:0
-msgid "Text being translated"
-msgstr ""
-
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Text contains"
 msgstr ""
 
-#: cms/text.py:245
+#: cms/text.py:249
 msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
@@ -2793,11 +2749,11 @@ msgid ""
 "that is true depends on what the Program does."
 msgstr ""
 
-#: cms/WebSite.py:182
+#: cms/WebSite.py:128
 msgid "The default language has been changed."
 msgstr "预设语言已被改变."
 
-#: cms/Folder.py:1008
+#: cms/Folder.py:917
 msgid "The document name contains illegal characters, choose another one."
 msgstr "文件名中含有不符规定的符号,请更名."
 
@@ -2810,7 +2766,7 @@ msgstr ""
 msgid "The email is wrong, please try again."
 msgstr "用户名错误,请再输入."
 
-#: cms/Folder.py:988
+#: cms/Folder.py:897
 msgid "The file must be entered"
 msgstr "必须写入文件."
 
@@ -2824,15 +2780,11 @@ msgid ""
 "share and change it."
 msgstr ""
 
-#: cms/ui/User_translator.xml.en:0
-msgid "The list below describes your skills as a translator:"
-msgstr "以下目录详述你作为翻译者的技巧"
-
-#: cms/Folder.py:921
+#: cms/Folder.py:830
 msgid "The name must be entered"
 msgstr "必须输入一个文件名"
 
-#: cms/WebSite.py:312
+#: cms/WebSite.py:259
 #, fuzzy
 msgid "The password is mandatory."
 msgstr "密码错误,请再输入."
@@ -2841,12 +2793,12 @@ msgstr "密码错误,请再输入."
 msgid "The password is wrong, please try again."
 msgstr "密码错误,请再输入."
 
-#: cms/WebSite.py:398
+#: cms/WebSite.py:345
 #, fuzzy
 msgid "The password is wrong."
 msgstr "密码错误,请再输入."
 
-#: cms/WebSite.py:318
+#: cms/WebSite.py:265
 #, fuzzy
 msgid "The passwords do not match."
 msgstr "密码错误,请再输入."
@@ -2867,11 +2819,11 @@ msgid ""
 "modifications to it."
 msgstr ""
 
-#: cms/WebSite.py:384
+#: cms/WebSite.py:331
 msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: cms/WebSite.py:393
+#: cms/WebSite.py:340
 msgid "The user \"$username\" is not active."
 msgstr ""
 
@@ -2884,23 +2836,28 @@ msgstr "此处无内容."
 msgid "There has been an error, please try again later."
 msgstr "用户名错误,请再输入."
 
-#: cms/WebSite.py:306
+#: cms/WebSite.py:253
 #, fuzzy
 msgid "There is already a user with that email."
 msgstr "此文件名已被另外资源占有."
 
-#: cms/Folder.py:939
+#: cms/Folder.py:848
 #, fuzzy
 msgid "There is already another object with this name."
 msgstr "此名称已被另外物件名有."
 
-#: cms/Folder.py:1013
+#: cms/Folder.py:922
 msgid "There is already another resource with this name."
 msgstr "此文件名已被另外资源占有."
 
 #: cms/users.py:424
 #, fuzzy
 msgid "There is another user with the email \"%s\", please try again"
+msgstr "此用户名已登记\"%s\", 请输入另一用户名."
+
+#: cms/WebSite.py:395
+#, fuzzy
+msgid "There is not a user with the email address \"$email\""
 msgstr "此用户名已登记\"%s\", 请输入另一用户名."
 
 #: cms/ui/Root_license.xml.en:0
@@ -3011,10 +2968,6 @@ msgstr ""
 msgid "Title:"
 msgstr "名称"
 
-#: cms/ui/User_translator.xml.en:0
-msgid "To"
-msgstr ""
-
 #: cms/ical.py:545
 msgid "To add an event, click on + symbol from the views."
 msgstr ""
@@ -3049,12 +3002,7 @@ msgstr ""
 msgid "To reindex the whole site click the button below:"
 msgstr "你可以通过击打如下键浏览全网站"
 
-#: cms/ui/Document_translate.xml.en:0
-#, fuzzy
-msgid "To save the translation above click the button below:"
-msgstr "你可以通过击打如下键浏览全网站"
-
-#: cms/root.py:288
+#: cms/root.py:285
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -3069,10 +3017,6 @@ msgstr ""
 msgid "Transition done."
 msgstr ""
 
-#: cms/ui/Folder_translate.xml.en:0
-msgid "Translate"
-msgstr ""
-
 #: cms/ui/Root_credits.xml.en:0
 #, fuzzy
 msgid "Translations"
@@ -3082,12 +3026,12 @@ msgstr "保存翻译件"
 msgid "Tuesday"
 msgstr ""
 
-#: cms/Folder.py:468
+#: cms/Folder.py:457
 #, fuzzy
 msgid "Type"
 msgstr "种类"
 
-#: cms/WebSite.py:370
+#: cms/WebSite.py:317
 msgid "Type your email please."
 msgstr ""
 
@@ -3154,7 +3098,7 @@ msgstr "用户"
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:192
+#: cms/html.py:196
 msgid "Version edited."
 msgstr "版本被修正."
 
@@ -3167,7 +3111,7 @@ msgstr "版本上载."
 msgid "Video"
 msgstr "浏览"
 
-#: cms/text.py:93
+#: cms/ui/ical_weekly_view.xml.en:0
 msgid "View"
 msgstr "浏览"
 
@@ -3199,7 +3143,7 @@ msgstr ""
 msgid "Web Document"
 msgstr "新文件"
 
-#: cms/WebSite.py:46
+#: cms/WebSite.py:45
 msgid "Web Site"
 msgstr ""
 
@@ -3256,6 +3200,10 @@ msgstr ""
 msgid "Worked on the support for the TMX, XLIFF and iCalendar file formats"
 msgstr ""
 
+#: cms/ui/WorkflowAware_state.xml.en:0
+msgid "Workflow State"
+msgstr ""
+
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid "Workflow state"
 msgstr ""
@@ -3274,10 +3222,6 @@ msgstr ""
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "You Are Now Logged out"
-msgstr ""
-
-#: cms/ui/User_translator.xml.en:0
-msgid "You are not a translator, <em>woaaahh</em>"
 msgstr ""
 
 #: cms/ical.py:683
@@ -3309,12 +3253,12 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:193
+#: cms/WebSite.py:139
 msgid "You can not remove the default language."
 msgstr "你不能改变预设语言."
 
 #: cms/ui/ical_edit_timetables.xml.en:0
-msgid "You can specify timetables to limit the range when an event can be set."
+msgid "You can specify timetables to limit the range when an event can be set"
 msgstr ""
 
 #: cms/ui/File_upload.xml.en:0
@@ -3344,7 +3288,7 @@ msgstr ""
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
-#: cms/WebSite.py:206
+#: cms/WebSite.py:152
 msgid "You must choose a language"
 msgstr "你必须选择一种语言."
 
@@ -3352,12 +3296,19 @@ msgstr "你必须选择一种语言."
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: cms/WebSite.py:174
+#: cms/WebSite.py:120
 msgid "You must select one and only one language."
 msgstr "你只能选择一种语言."
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "Your login information has been cleared."
+msgstr ""
+
+#: cms/WebSite.py:407
+msgid ""
+"Your new password:\n"
+"\n"
+"  $password"
 msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
@@ -3648,6 +3599,9 @@ msgstr "禄 Type the url to add:"
 #~ msgid "Add a member"
 #~ msgstr "新用户"
 
+#~ msgid "Add a new translator skill:"
+#~ msgstr "加入一新翻译技术"
+
 #, fuzzy
 #~ msgid "All users are already added."
 #~ msgstr "用户被加入."
@@ -3657,9 +3611,6 @@ msgstr "禄 Type the url to add:"
 #~ msgstr "总设置被改变"
 
 #~ msgid "Browse"
-#~ msgstr "浏览"
-
-#~ msgid "Browse users"
 #~ msgstr "浏览"
 
 #~ msgid "Catalan"
@@ -3709,8 +3660,20 @@ msgstr "禄 Type the url to add:"
 #~ msgstr "删除"
 
 #, fuzzy
+#~ msgid "Document"
+#~ msgstr "新文件"
+
+#, fuzzy
 #~ msgid "Document Calc"
 #~ msgstr "新文件"
+
+#, fuzzy
+#~ msgid "Document History"
+#~ msgstr "编辑文档"
+
+#, fuzzy
+#~ msgid "Document State"
+#~ msgstr "编辑文档"
 
 #, fuzzy
 #~ msgid "Document Writer"
@@ -3770,6 +3733,10 @@ msgstr "禄 Type the url to add:"
 
 #~ msgid "Join"
 #~ msgstr "汇合"
+
+#, fuzzy
+#~ msgid "Join the Community"
+#~ msgstr "加入社区"
 
 #, fuzzy
 #~ msgid "Language:"
@@ -3854,6 +3821,10 @@ msgstr "禄 Type the url to add:"
 #~ msgstr "名称"
 
 #, fuzzy
+#~ msgid "Target language"
+#~ msgstr "语言"
+
+#, fuzzy
 #~ msgid "Thanks for register, please log in"
 #~ msgstr "感谢你加入我们,请登录."
 
@@ -3864,6 +3835,9 @@ msgstr "禄 Type the url to add:"
 #, fuzzy
 #~ msgid "The inactive item"
 #~ msgstr "名称"
+
+#~ msgid "The list below describes your skills as a translator:"
+#~ msgstr "以下目录详述你作为翻译者的技巧"
 
 #, fuzzy
 #~ msgid "The message"
@@ -3907,6 +3881,10 @@ msgstr "禄 Type the url to add:"
 #~ msgstr ""
 #~ "为了从内设语言和内存翻译目录中重建文档, 请击打如下键(注意, 手工修改将遗"
 #~ "失)."
+
+#, fuzzy
+#~ msgid "To save the translation above click the button below:"
+#~ msgstr "你可以通过击打如下键浏览全网站"
 
 #~ msgid ""
 #~ "To update the catalog with the messages from this document, click the "

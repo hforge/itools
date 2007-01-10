@@ -21,13 +21,13 @@ from itools.stl import stl
 
 # Import from itools.cms
 from itools.cms.registry import register_object_class
-from itools.cms.Document import HTML
+from itools.cms.html import XHTMLFile
 
 # Import from our package
 from base import Handler
 
 
-class ExampleDocument(Handler, HTML):
+class ExampleDocument(Handler, XHTMLFile):
 
     class_id = 'ExampleDocument'
     class_title = u'Example Document'
@@ -35,13 +35,7 @@ class ExampleDocument(Handler, HTML):
     class_version = '20061021'
     class_icon48 = 'frontoffice1/images/Document48.png'
     class_icon16 = 'frontoffice1/images/Document16.png'
-
-
-    def get_views(self):
-        views = HTML.get_views(self)
-        views.append('switch_skin')
-
-        return views
+    class_views = XHTMLFile.class_views + [['switch_skin']]
 
 
     view__access__ = 'is_allowed_to_view'

@@ -29,12 +29,12 @@ from itools.gettext import domains
 # Import from itools.cms
 from . import root
 from .Folder import Folder
-from . import Document
 from . import File
 from . import binary
 from . import csv
 from . import handlers
 from . import html
+from .html import XHTMLFile as Document
 from . import ical
 from . import text
 from .forum import Forum
@@ -51,7 +51,7 @@ except ImportError:
 Folder.register_document_type(Folder)
 Folder.register_document_type(File.File)
 Folder.register_document_type(text.Text)
-Folder.register_document_type(Document.HTML)
+Folder.register_document_type(html.XHTMLFile)
 Folder.register_document_type(ical.Calendar)
 Folder.register_document_type(Forum)
 if wiki is not None:

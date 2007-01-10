@@ -37,10 +37,6 @@ class XMLFile(Text, XML.Document):
     class_id = 'text/xml'
 
 
-register_object_class(XMLFile)
-register_object_class(XMLFile, format='application/xml')
-
-
 
 class XHTMLFile(Text, XHTML.Document):
 
@@ -55,6 +51,15 @@ class XHTMLFile(Text, XHTML.Document):
                    ['edit_metadata_form'],
                    ['state_form'],
                    ['history_form']]
+
+
+    def GET(self, context):
+        method = self.get_firstview()
+        # Check access
+        if method is None:
+            raise Forbidden
+        # Redirect
+        return context.uri.resolve2(';%s' % method)
 
 
     #######################################################################
@@ -166,9 +171,6 @@ class XHTMLFile(Text, XHTML.Document):
         return context.come_back(u'Document changed.')
 
 
-register_object_class(XHTMLFile)
-
-
 
 class HTMLFile(HTML.Document, XHTMLFile):
 
@@ -196,4 +198,8 @@ class HTMLFile(HTML.Document, XHTMLFile):
         return context.come_back(u'Version edited.')
 
 
+# Register the objects
+register_object_class(XMLFile)
+register_object_class(XMLFile, format='application/xml')
+register_object_class(XHTMLFile)
 register_object_class(HTMLFile)

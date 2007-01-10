@@ -21,7 +21,7 @@ from datetime import datetime, date, time, timedelta
 
 # Import from itools
 from itools import i18n
-from itools.datatypes import Unicode, Time, Date
+from itools.datatypes import Unicode, Time as iTime, Date
 from itools.ical.icalendar import icalendar, Component, PropertyValue
 from itools.ical.icalendar import Parameter
 from itools.ical.types import data_properties, DateTime
@@ -44,6 +44,18 @@ class Status(Enumerate):
 
 
 
+class Time(iTime):
+
+    @staticmethod
+    def encode(value, seconds=True):
+        if value is None: 
+            return ''
+        if not seconds: 
+            return value.strftime('%H:%M')
+        return value.strftime('%H:%M:%S')
+
+
+
 class Calendar(Text, icalendar):
 
     class_id = 'calendar'
@@ -55,7 +67,7 @@ class Calendar(Text, icalendar):
     class_views = [['monthly_view', 'weekly_view', 'download_form'], 
                    ['upload_form', 'edit_timetables_form',
                     'edit_metadata_form', 'edit_event_form']]
-    #               ['history_form']]
+
     # default values for fields within namespace
     default_fields = {
         'UID': None, 'SUMMARY': u'', 'LOCATION': u'', 'DESCRIPTION': u'',  
@@ -63,6 +75,7 @@ class Calendar(Text, icalendar):
         'DTEND_year': None, 'DTEND_month': None, 'DTEND_day': None, 
         'ATTENDEE': [], 'COMMENT': [], 'STATUS': {}
       }
+
     # default viewed fields on monthly_view
     default_viewed_fields = ('DTSTART', 'DTEND', 'SUMMARY', 'STATUS')
     months = {1: u'January', 2: u'February', 3: u'March', 4: u'April', 
@@ -70,6 +83,7 @@ class Calendar(Text, icalendar):
               10: u'October', 11: u'November', 12: u'December'}
     days = {0: u'Monday', 1: u'Tuesday', 2: u'Wednesday', 3: u'Thursday', 
             4: u'Friday', 5: u'Saturday', 6: u'Sunday'}
+
     # class_timetables
     class_timetables = (((7,0),(8,0)), ((8,0),(9,0)), ((9,0),(10,0)), 
                         ((10,0),(11,0)), ((11,0),(12,0)), ((12,0),(13,0)), 
@@ -115,17 +129,25 @@ class Calendar(Text, icalendar):
 
     @classmethod
     def get_current_date(cls, value=None):
+        """
+        Get date as a date object from string value.
+        By default, get today's date as a date object.
+        """
         try:
             return Date.decode(value or date.today())
         except:
             return date.today()
 
 
-    # Get namespace for one selected day, filling given fields
-    def get_events(self, date, method='monthly_view', timetable=None, 
+    def get_events(self, selected_date, method='monthly_view', timetable=None, 
                    fields=None, resource_name=None, show_conflicts=False):
-        # If no date, return []
-        if date is None:
+        """
+        Get namespace for one selected_date, filling given fields  
+        We can specify a timetable, a different resource_name, and if we want
+        to show conflicts.
+        """
+        # If no selected_date, return []
+        if selected_date is None:
             return []
         # If no tuple of fields given, set default one
         if fields == None:
@@ -135,18 +157,18 @@ class Calendar(Text, icalendar):
         if resource_name:
             base_url = '%s/;edit_event_form?' % resource_name
 
-        # Get events on selected date
+        # Get events on selected_date
         if timetable:
             index = timetable['index']
-            start = datetime.combine(date, timetable['start'])
-            end = datetime.combine(date, timetable['end'])
+            start = datetime.combine(selected_date, timetable['start'])
+            end = datetime.combine(selected_date, timetable['end'])
             events = self.get_events_in_range(start, end)
             base_url = '%stimetable=%s&' % (base_url, index)
         else:
-            events = self.get_events_in_date(date)
+            events = self.get_events_in_date(selected_date)
 
         if show_conflicts:
-            conflicts = self.get_conflicts(date)
+            conflicts = self.get_conflicts(selected_date)
             conflicts_list = set()
             if conflicts:
                 [conflicts_list.update(uids) for uids in conflicts]
@@ -181,12 +203,12 @@ class Calendar(Text, icalendar):
                         ns_event['DTEND'] = v2_time
                         ns_event['TIME'] = True
                     # On first day
-                    elif v_date == date and (not timetable or \
+                    elif v_date == selected_date and (not timetable or \
                       (timetable and value == start)):
                         ns_event['DTSTART'] = '%s...' % v_time
                         ns_event['TIME'] = True
                     # On last day
-                    elif v2_date == date and (not timetable or \
+                    elif v2_date == selected_date and (not timetable or \
                       (timetable and value2 == end)):
                         ns_event['DTEND'] = '...%s' % v2_time
                         ns_event['TIME'] = True
@@ -206,15 +228,15 @@ class Calendar(Text, icalendar):
                 ns_event['STATUS'] = 'cal_conflict'
 
             ns_event['url'] = '%sdate=%s&uid=%s&method=%s'\
-                              % (base_url, Date.encode(date), uid, method)
+              % (base_url, Date.encode(selected_date), uid, method)
             namespace.append(ns_event)
 
         return namespace
 
 
-    def get_ns_events(self, date, shown_fields, timetables):
+    def get_ns_events(self, selected_date, shown_fields, timetables):
         # Get list of all events
-        events_list = self.get_events_in_date(date)
+        events_list = self.get_events_in_date(selected_date)
         # Get dict from events_list and sort events by start date
         ns_events = []
         for event in events_list:
@@ -227,8 +249,8 @@ class Calendar(Text, icalendar):
             tt_start = 0
             tt_end = len(timetables)-1
             for tt_index, tt in enumerate(timetables):
-                start = datetime.combine(date, tt['start'])
-                end = datetime.combine(date, tt['end'])
+                start = datetime.combine(selected_date, tt['start'])
+                end = datetime.combine(selected_date, tt['end'])
                 if start <= event_start:
                     tt_start = tt_index
                 if end >= event_end:
@@ -313,7 +335,7 @@ class Calendar(Text, icalendar):
         namespace['previous_year'] = previous_year
         namespace['next_year'] = next_year
         # Add today link
-        tmp_date = datetime.today()
+        tmp_date = date.today()
         namespace['today'] = ";%s?date=%s" % (method, Date.encode(tmp_date))
         return namespace
 
@@ -336,18 +358,22 @@ class Calendar(Text, icalendar):
 
     # Get days of week based on get_first_day's result 
     @classmethod
-    def days_of_week_ns(cls, date, num=None, ndays=7, c_date=None):
+    def days_of_week_ns(cls, start, num=None, ndays=7, selected=None):
+        """
+          start : start date of the week
+          num : True if we want to get number of the day too
+          ndays : number of days we want
+          selected : selected date
+        """
+        current_date = start
         ns_days = []
         for index in range(ndays):
             ns =  {}
-            ns['name'] = cls.gettext(cls.days[date.weekday()])
-            ns['nday'] = None
-            if c_date:
-                ns['selected'] = (c_date == date)
-            if num:
-                ns['nday'] = date.day
+            ns['name'] = cls.gettext(cls.days[current_date.weekday()])
+            ns['nday'] = current_date.day if num else None
+            ns['selected'] = (selected == current_date) if selected else None
             ns_days.append(ns)
-            date = date + timedelta(1)
+            current_date = current_date + timedelta(1)
         return ns_days
 
 
@@ -540,14 +566,14 @@ class Calendar(Text, icalendar):
         method = context.get_form_value('method', 'monthly_view')
         goto = ';%s' % method 
 
-        date = context.get_form_value('date', None)
-        if not date:
+        selected_date = context.get_form_value('date', None)
+        if not selected_date:
             message = u'To add an event, click on + symbol from the views.'
             return context.come_back(message, goto=goto)
         # date as a datetime object
-        c_date = self.get_current_date(date)
-        if not date:
-            date = Date.encode(c_date)
+        c_date = self.get_current_date(selected_date)
+        if not selected_date:
+            selected_date = Date.encode(c_date)
 
         # Timetables
         tt_start, tt_end = None, None
@@ -578,7 +604,7 @@ class Calendar(Text, icalendar):
             event = self.get_component_by_uid(uid)
             if not event:
                 message = u'Event not found'
-                goto = '%s?date=%s' % (goto,date)
+                goto = '%s?date=%s' % (goto,selected_date)
                 return context.come_back(message, goto=goto)
             namespace['remove'] = True
             properties = event.get_property_values()
@@ -616,7 +642,7 @@ class Calendar(Text, icalendar):
             if field not in namespace:
                 namespace[field] = self.default_fields[field]
                 if field.startswith('DTSTART_'):
-                    year, month, day = date.split('-')
+                    year, month, day = selected_date.split('-')
                     hours = minutes = ''
                     if tt_start:
                         hours, minutes = Time.encode(tt_start, False).split(':')
@@ -626,7 +652,7 @@ class Calendar(Text, icalendar):
                     namespace['DTSTART_hours'] = hours
                     namespace['DTSTART_minutes'] = minutes
                 elif field.startswith('DTEND_'):
-                    year, month, day = date.split('-')
+                    year, month, day = selected_date.split('-')
                     hours = minutes = ''
                     if tt_end:
                         hours, minutes = Time.encode(tt_end, False).split(':')
@@ -660,19 +686,19 @@ class Calendar(Text, icalendar):
         if method not in dir(self):
             goto = '../;%s' % method
 
-        # Get date from the 3 fields 'dd','mm','yyyy' into 'yyyy/mm/dd'
+        # Get selected_date from the 3 fields 'dd','mm','yyyy' into 'yyyy/mm/dd'
         v_items = []
         for item in ('year', 'month', 'day'):
             v_items.append(context.get_form_value('DTSTART_%s' % item))
-        date = '-'.join(v_items)
+        selected_date = '-'.join(v_items)
 
         # Cancel
         if context.has_form_value('cancel'):
-            goto = goto + '?date=' + date
+            goto = goto + '?date=' + selected_date 
             return context.come_back('', goto)
 
-        # Set date as a datetime object
-        date = self.get_current_date(date)
+        # Set selected_date as a date object
+        selected_date = self.get_current_date(selected_date)
 
         # Get UID and Component object
         uid = context.get_form_value('UID')
@@ -763,7 +789,7 @@ class Calendar(Text, icalendar):
         event.set_property('DTSTAMP', PropertyValue(datetime.today()))
 
         self.set_changed()
-        goto = '%s?date=%s' % (goto, Date.encode(date))
+        goto = '%s?date=%s' % (goto, Date.encode(selected_date))
         return context.come_back(u'Data updated', goto=goto)
 
 
@@ -903,14 +929,15 @@ class CalendarAware(object):
 
     @classmethod
     def get_default_timetables(cls, interval, start_time, end_time):
+        # Default datetime values
         start =  datetime(2000, 1, 1)
         end =  datetime(2000, 1, 1, 23, 59)
         # Set given start_time
         if start_time:
-            start = datetime.combine(datetime(2000, 1, 1), start_time)
+            start = datetime.combine(start.date, start_time)
         # Set given end_time
         if end_time:
-            end = datetime.combine(datetime(2000, 1, 1), end_time)
+            end = datetime.combine(start.date, end_time)
         # Get timetables for a given interval in minutes, by default 1 day 
         timetables, tt_start = [], start
         while tt_start < end:
@@ -925,24 +952,27 @@ class CalendarAware(object):
 
     # Get one line with times of timetables
     def get_header_timetables(self, timetables, delta=45):
-        date = datetime.today()
-        ns_timetables = []
+        current_date = date.today()
         timetable = timetables[0]
         last_start = timetable['start']
-        last_start = datetime.combine(date, last_start)
+        last_start = datetime.combine(current_date, last_start)
+
+        ns_timetables = []
         # Add first timetable start time
         ns_timetable =  {'start': last_start.strftime('%H:%M')}
         ns_timetables.append(ns_timetable)
+
         # Add next ones if delta time > delta minutes
         for timetable in timetables[1:]:
             tt_start = timetable['start']
-            tt_start = datetime.combine(date, tt_start)
+            tt_start = datetime.combine(current_date, tt_start)
             if tt_start - last_start > timedelta(minutes=delta):
                 ns_timetable =  {'start': tt_start.strftime('%H:%M')}
                 ns_timetables.append(ns_timetable)
                 last_start = tt_start
             else:
                 ns_timetables.append({'start': None})
+
         return ns_timetables
 
 
@@ -1176,10 +1206,10 @@ class CalendarAware(object):
         context.set_cookie('browse', 'calendar')
 
         # Current date
-        date = context.get_form_value('date', None)
+        selected_date = context.get_form_value('date', None)
         c_date = Calendar.get_current_date(date)
-        if not date:
-            date = Date.encode(c_date)
+        if not selected_date:
+            selected_date = Date.encode(c_date)
 
         # Start and end times, and interval
         c_start_time, c_end_time, interval = self.get_cal_range()
@@ -1192,7 +1222,7 @@ class CalendarAware(object):
 
         namespace = {}
         # Add date selector
-        namespace['date'] = date
+        namespace['date'] = selected_date
         namespace['firstday'] = Calendar.get_first_day()
         namespace['link_on_summary'] = True
 

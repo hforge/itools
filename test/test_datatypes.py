@@ -21,38 +21,57 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.datatypes import Time
+from itools.datatypes import ISOTime, InternetDateTime
 
 
-class DatatypesTestCase(TestCase):
+class ISOTimeTestCase(TestCase):
 
     def test_time_decode(self):
         data = '13:45:30'
-        value = Time.decode(data)
+        value = ISOTime.decode(data)
         expected = time(13, 45, 30)
         self.assertEqual(value, expected)
 
         data = '13:45'
-        value = Time.decode(data)
+        value = ISOTime.decode(data)
         expected = time(13, 45)
         self.assertEqual(value, expected)
 
 
     def test_time_encode(self):
         data = time(13, 45, 30)
-        value = Time.encode(data)
+        value = ISOTime.encode(data)
         expected = '13:45:30'
         self.assertEqual(value, expected)
 
         data = time(13, 45)
-        value = Time.encode(data)
+        value = ISOTime.encode(data)
         expected = '13:45:00'
         self.assertEqual(value, expected)
 
         data = time(13, 45)
-        value = Time.encode(data, False)
-        expected = '13:45'
+        value = ISOTime.encode(data)
+        expected = '13:45:00'
         self.assertEqual(value, expected)
+
+
+
+class InternetDateTimeTestCase(TestCase):
+
+    def test_datetime(self):
+        test_dates = {
+            'Tue, 14 Jun 2005 09:00:00 -0400': '2005-06-14 13:00:00',
+            'Tue, 14 Jun 2005 09:00:00 +0200': '2005-06-14 07:00:00',
+            'Thu, 28 Jul 2005 15:36:55 EDT': '2005-07-28 19:36:55',
+            'Fri, 29 Jul 2005 05:50:13 GMT': '2005-07-29 05:50:13',
+            '29 Jul 2005 07:27:19 UTC': '2005-07-29 07:27:19',
+            '02 Jul 2005 09:52:23 GMT': '2005-07-02 09:52:23'
+        }
+        for dt, utc in test_dates.items():
+            d = InternetDateTime.decode(dt)
+            self.assertEqual(InternetDateTime.encode(d), utc)
+
+
 
 
 

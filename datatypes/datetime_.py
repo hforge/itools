@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#               2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,9 +18,87 @@
 
 # Import from the Standard Library
 import datetime
+from datetime import tzinfo, timedelta
+from time import strptime
 
 # Import from itools
 from base import DataType
+
+
+###########################################################################
+# RFC 822/1123
+###########################################################################
+
+class TZInfo(tzinfo):
+
+    known_time_zones = {
+        'GMT': 0, 'UTC': 0, 'UT': 0, # Greenwich Mean Time
+        'EDT': -4, 'HAE': -4, # Eastern Daylight Time
+        'EST': -5, 'HNE': -5, # Eastern Standard Time
+        'CDT': -5, 'HAC': -5, # Central Daylight Time
+        'CST': -6, 'HNC': -6, # Central Standard Time
+        'MDT': -6, 'HAR': -6, # Mountain Daylight Time
+        'MST': -7, 'HNR': -7, # Mountain Standard Time
+        'PDT': -7, 'HAP': -7, # Pacific Daylight Time
+        'PST': -8, 'HNP': -8  # Pacific Standard Time
+    }
+
+    def __init__(self, offset):
+        # Offset as sign (+, -) and the number HHMM
+        if offset[0] in ('+', '-'):
+            # Strip zeros
+            off = offset[1:].lstrip('0')
+            # Offset in hours with sigh
+            off = int(offset[0] + off) / 100
+        elif self.known_time_zones.has_key(offset):
+            off = self.known_time_zones[offset]
+        else:
+            off = 0
+        self.__offset = timedelta(hours=off)
+        self.__name = None
+
+
+    def utcoffset(self, dt):
+        return self.__offset
+
+
+    def tzname(self, dt):
+        return self.__name
+
+
+    # Implementation without DST
+    def dst(self, dt):
+        return timedelta(0)
+
+
+
+class InternetDateTime(DataType):
+
+    @staticmethod
+    def decode(value):
+        # Remove the day name part if exists
+        str = value.split(',')[-1].strip()
+        # Split date and timezone part if exists
+        datetime_parts = str.split(' ')
+        date = ' '.join(datetime_parts[0:4])
+        if len(datetime_parts) > 4:
+            timezone = datetime_parts[4]
+        else:
+            # UTC is the default timezone
+            timezone = 'UTC'
+        dt = strptime(date, '%d %b %Y %H:%M:%S')
+        tz = TZInfo(timezone)
+        return datetime.datetime(dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], 0, tz)
+
+
+    @staticmethod
+    def encode(value):
+        if value is None:
+            return ''
+        else:
+            utc = TZInfo('UTC')
+            return value.astimezone(utc).strftime('%Y-%m-%d %H:%M:%S')
+
 
 
 ###########################################################################

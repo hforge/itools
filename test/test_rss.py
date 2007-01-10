@@ -20,8 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.rss.rss import RSS, TZDateTime
-from itools.resources import get_resource
+from itools.rss.rss import RSS
 from itools.handlers import get_handler
 from itools.stl import stl
 
@@ -30,9 +29,8 @@ from itools.stl import stl
 class RSSTestCase(TestCase):
 
     def test_parsing(self):
-        in_resource = get_resource('test.rss')
         template = get_handler('test.xml')
-        rss = RSS(in_resource)
+        rss = RSS('test.rss')
         html = get_handler('test.html')
 
         output = stl(template, rss.get_namespace())
@@ -41,9 +39,8 @@ class RSSTestCase(TestCase):
 
 
     def test_parsing_full(self):
-        in_resource = get_resource('test_full.rss')
         template = get_handler('test_full.xml')
-        rss = RSS(in_resource)
+        rss = RSS('test_full.rss')
         html = get_handler('test_full.html')
 
         output = stl(template, rss.get_namespace())
@@ -52,31 +49,15 @@ class RSSTestCase(TestCase):
 
 
     def test_to_str(self):
-        in_resource = get_resource('test2.rss')
         out_resource = get_handler('test2-out.rss')
-        rss = RSS(in_resource)
+        rss = RSS('test2.rss')
         self.assertEqual(rss.to_str(), out_resource.to_str().strip())
 
 
     def test_namespace(self):
-        in_resource = get_resource('test.rss')
-        rss = RSS(in_resource)
+        rss = RSS('test.rss')
         ns = rss.get_namespace()
         self.assertEqual(len(ns['channel']['items']), 2)
-
-
-    def test_datetime(self):
-        test_dates = {
-            'Tue, 14 Jun 2005 09:00:00 -0400': '2005-06-14 13:00:00',
-            'Tue, 14 Jun 2005 09:00:00 +0200': '2005-06-14 07:00:00',
-            'Thu, 28 Jul 2005 15:36:55 EDT': '2005-07-28 19:36:55',
-            'Fri, 29 Jul 2005 05:50:13 GMT': '2005-07-29 05:50:13',
-            '29 Jul 2005 07:27:19 UTC': '2005-07-29 07:27:19',
-            '02 Jul 2005 09:52:23 GMT': '2005-07-02 09:52:23'
-        }
-        for dt, utc in test_dates.items():
-            d = TZDateTime.decode(dt)
-            self.assertEqual(TZDateTime.encode(d), utc)
 
 
 

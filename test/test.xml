@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html
-     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:stl="http://xml.itools.org/namespaces/stl">
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head></head>
   <body>
-    <h1><a stl:content="channel/title" stl:attributes="href channel/link"></a></h1>
-    <p stl:content="channel/description"></p>
+    <h1><a href="${channel/link}">${channel/title}</a></h1>
+    <p>${channel/description}</p>
     <ul>
       <li stl:repeat="item channel/items">
-        <a stl:content="item/title" stl:attributes="href item/link"></a>
-        <p stl:content="item/description"></p>
+        <a href="${item/link}">${item/title}</a>
+        <p>${item/description}</p>
       </li>
     </ul>
   </body>

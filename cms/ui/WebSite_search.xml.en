@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h1>Search</h1>
+  <h2>Search</h2>
 
   <form action=";site_search" method="get">
     <p>
@@ -14,7 +14,7 @@
   </form>
 
 
-  <h3>Results</h3>
+  <h4>Results</h4>
 
   <p class="result_control" stl:if="total">
     ${batchstart}-${batchend} of ${total}

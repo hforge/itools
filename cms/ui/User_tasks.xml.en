@@ -4,6 +4,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+  <h2>Tasks</h2>
+
   <p stl:if="not documents">
     No document awaits your review.
   </p>

@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Document History</h2>
+  <h2>History</h2>
              
   <form action="." method="post">
     <table border="0" cellpadding="4" cellspacing="4">

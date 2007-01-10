@@ -8,7 +8,8 @@
 
   <form action=";edit" method="post">
     <p>
-      <textarea name="data" cols="69" rows="19" wrap="physical">${data}</textarea>
+      <textarea name="data" cols="69" rows="19" wrap="physical"
+        >${data}</textarea>
     </p>
     <p>
       <input type="submit" value="Change" class="button_ok" />

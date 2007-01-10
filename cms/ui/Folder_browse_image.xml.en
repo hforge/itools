@@ -3,6 +3,9 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2>Browse Content</h2>
+
   <div id="gallery_vpane">
     <a stl:repeat="image objects" href="?selected=${image/name}"><img
       src="${image/name}/;icon48?width=128&amp;height=128" /></a>

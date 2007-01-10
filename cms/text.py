@@ -92,7 +92,11 @@ class Text(File, BaseText):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
-        return '<pre>%s</pre>' % cgi.escape(self.to_str())
+        namespace = {}
+        namespace['text'] = cgi.escape(self.to_str())
+
+        handler = self.get_handler('/ui/Text_view.xml')
+        return stl(handler, namespace)
 
 
     #######################################################################

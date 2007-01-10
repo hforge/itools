@@ -4,6 +4,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<h2>View</h2>
+
 <div id="cal_weekly_view"> 
   <div id="selector">
     <a stl:if="today" href="${today}" class="cal_today">

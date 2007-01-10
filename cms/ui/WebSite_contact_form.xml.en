@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h1>Contact</h1>
+  <h2>Contact</h2>
 
   <form action=";contact" method="post" id="contact_form">
     <dl>

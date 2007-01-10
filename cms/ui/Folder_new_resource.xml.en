@@ -4,6 +4,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+  <h2>Add new content</h2>
+
   <stl:block repeat="type types">
     <dl class="thumb new_resource_thumb">
       <dt>

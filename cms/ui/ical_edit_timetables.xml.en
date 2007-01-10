@@ -2,7 +2,9 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h3>You can specify timetables to limit the range when an event can be set.</h3>
+<h3>Edit the timetable grid</h3>
+
+<p>You can specify timetables to limit the range when an event can be set</p>
 
 <form id="edit_timetables" action=";edit_timetables" method="post">
   <table class="form">

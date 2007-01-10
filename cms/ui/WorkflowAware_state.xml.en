@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Document State</h2>
+  <h2>Workflow State</h2>
 
   <p>
     Current state: <strong>${state}</strong>

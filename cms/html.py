@@ -104,7 +104,11 @@ class XHTMLFile(Text, XHTML.Document):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
-        return self.to_xhtml_body()
+        namespace = {}
+        namespace['text'] = self.to_xhtml_body()
+
+        handler = self.get_handler('/ui/Text_view.xml')
+        return stl(handler, namespace)
 
 
     #######################################################################

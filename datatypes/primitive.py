@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-import datetime
 import decimal
 import mimetypes
 import re
@@ -105,71 +104,6 @@ class Boolean(DataType):
             return '0'
         else:
             raise ValueError, 'value is not a boolean'
-
-
-
-class Date(DataType):
- 
-    @staticmethod
-    def decode(value):
-        if not value:
-            return None
-        year, month, day = value.split('-')
-        year, month, day = int(year), int(month), int(day)
-        return datetime.date(year, month, day)
-
-
-    @staticmethod
-    def encode(value):
-        if value is None:
-            return ''
-        return value.strftime('%Y-%m-%d')
-
-
-class Time(DataType):
- 
-    @staticmethod
-    def decode(value):
-        if not value:
-            return None
-        values = value.split(':')
-        hours = values.pop(0)
-        minutes = values.pop(0)
-        seconds = 0
-        if values:
-            seconds = values.pop(0)
-        hours, minutes, seconds = int(hours), int(minutes), int(seconds)
-        return datetime.time(hours, minutes, seconds)
-
-
-    @staticmethod
-    def encode(value, seconds=True):
-        if value is None:
-            return ''
-        if not seconds:
-            return value.strftime('%H:%M')
-        return value.strftime('%H:%M:%S')
-
-
-
-class DateTime(DataType):
-
-    @staticmethod
-    def decode(value):
-        if not value:
-            return None
-        date, time = value.split()
-        date = Date.decode(date)
-        time = Time.decode(time)
-
-        return datetime.datetime.combine(date, time)
-
-
-    @staticmethod
-    def encode(value):
-        if value is None:
-            return ''
-        return value.strftime('%Y-%m-%d %H:%M:%S')
 
 
 

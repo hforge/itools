@@ -19,29 +19,9 @@
 from datetime import datetime
 
 # Import from itools
-from itools.datatypes.primitive import DataType, Unicode, String, Date, Time
+from itools.datatypes import Unicode, String, ISODateTime
 from base import Schema
 import registry
-
-
-class DateTime(DataType):
-
-    @staticmethod
-    def decode(value):
-        if not value:
-            return None
-        date, time = value.split('T')
-        date = Date.decode(date)
-        time = Time.decode(time)
-
-        return datetime.combine(date, time)
-
-
-    @staticmethod
-    def encode(value):
-        if value is None:
-            return ''
-        return value.strftime('%Y-%m-%dT%H:%M:%S')
 
 
 class DublinCore(Schema):
@@ -53,7 +33,7 @@ class DublinCore(Schema):
     datatypes = {'contributor': None,
                  'coverage': None,
                  'creator': String,
-                 'date': DateTime,
+                 'date': ISODateTime,
                  'description': Unicode,
                  'format': None,
                  'identifier': String,

@@ -17,6 +17,8 @@
 
 # Import from itools
 from base import DataType
-from primitive import (Integer, Decimal, Unicode, String, Boolean, Date, Time, 
-                       DateTime, Email, URI, FileName, QName, Tokens, XML,
-                       XMLAttribute)
+from primitive import (Integer, Decimal, Unicode, String, Boolean, Email, URI,
+                       FileName, QName, Tokens, XML, XMLAttribute)
+from datetime_ import ISOCalendarDate, ISOTime, ISODateTime
+# XXX Backwards compatibility
+from datetime_ import ISOCalendarDate as Date, ISOTime as Time, DateTime

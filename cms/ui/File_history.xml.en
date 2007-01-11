@@ -7,7 +7,7 @@
   <h2>History</h2>
              
   <form action="." method="post">
-    <table border="0" cellpadding="4" cellspacing="4">
+    <table>
       <thead>
         <tr>
           <th>User</th>
@@ -16,7 +16,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr stl:repeat="revision revisions">
+        <tr stl:repeat="revision revisions" class="${repeat/revision/even}">
           <td>${revision/username}</td>
           <td>${revision/date}</td>
           <td class="number">${revision/size}</td>

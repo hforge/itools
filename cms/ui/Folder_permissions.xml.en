@@ -9,7 +9,7 @@
   <div style="width: 300; float: left; padding: 0px 10px 10px 10px;">
     Remove members or update the roles:
     <form action="." method="post">
-      <table cellpadding="4" cellspacing="0" border="1" width="300">
+      <table width="300">
         <thead>
           <tr>
             <th width="10"></th>
@@ -18,7 +18,7 @@
           </tr>
         </thead>
         <tbody stl:if="users">
-          <tr stl:repeat="user users">
+          <tr stl:repeat="user users" class="${repeat/user/even}">
             <td>
               <input type="checkbox" name="delusers" value="${user/name}" />
             </td>

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-10 14:01+CET\n"
+"POT-Creation-Date: 2007-01-11 13:01+CET\n"
 "PO-Revision-Date: 2007-01-10 15:16+0100\n"
 "Last-Translator: Hervé Cauwelier <herve@itaapy.com>\n"
 "Language-Team: Français (France) <fr@li.org>\n"
@@ -445,8 +445,8 @@ msgid ""
 "<a href=\"/;about\">About</a> <a href=\"/;credits\">Credits</a> <a href=\"/;"
 "license\">License</a>"
 msgstr ""
-"<a href=\"/;about\">À propos</a> <a href=\"/;credits\">Crédits</a> <a href=\"/;"
-"license\">Licence</a>"
+"<a href=\"/;about\">À propos</a> <a href=\"/;credits\">Crédits</a> <a href="
+"\"/;license\">Licence</a>"
 
 #: cms/ui/Text_externaledit.xml.en:0
 msgid ""
@@ -609,8 +609,7 @@ msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid ""
-"<select id=\"formatblock\" style=\"margin-bottom: 2px;\" onchange="
-"\"SelectFormat(this);\">\n"
+"<select class=\"formatblock\" onchange=\"SelectFormat(this);\">\n"
 "        <option value=\"\">Normal</option>\n"
 "        <option value=\"p>\">Paragraph</option>\n"
 "        <option value=\"h1>\">Heading 1</option>\n"
@@ -632,38 +631,33 @@ msgid ""
 "epoz/epoz_button_strikethrough.png\" alt=\"Strikethrough\" title="
 "\"Strikethrough\" name=\"epoz_button_strikethrough\" width=\"23\" class="
 "\"button epoz_button_strikethrough\" onclick=\"FormatText('strikethrough', "
-"'');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space."
-"gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_subscript.gif\" alt="
-"\"Subscript\" title=\"Subscript\" name=\"epoz_button_subscript\" width=\"23"
-"\" class=\"button epoz_button_subscript\" onclick=\"FormatText('subscript', "
-"'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_superscript.gif\" "
-"alt=\"Superscript\" title=\"Superscript\" name=\"epoz_button_superscript\" "
-"width=\"23\" class=\"button epoz_button_superscript\" onclick=\"FormatText"
-"('superscript', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
-"epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
-"epoz_button_unformat.png\" alt=\"Remove Format\" title=\"Remove Format\" "
-"name=\"epoz_button_unformat\" width=\"23\" class=\"button "
-"epoz_button_unformat\" onclick=\"FormatText('removeformat', '');\"/> <img "
-"width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img "
-"height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" alt=\"Text Color"
-"\" title=\"Text Color\" name=\"epoz_button_textcolor\" width=\"23\" class="
-"\"button epoz_button_textcolor\" onclick=\"SetTextColor(';epoz_color_form');"
-"\"/><img height=\"22\" src=\"images/epoz/epoz_button_bgcolor.png\" alt="
-"\"Background Color\" title=\"Background Color\" name=\"epoz_button_bgcolor\" "
-"width=\"23\" class=\"button epoz_button_bgcolor\" onclick=\"SetBackColor(';"
-"epoz_color_form');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
-"epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
-"epoz_button_left_just.png\" alt=\"Align Left\" title=\"Align Left\" name="
-"\"epoz_button_left_just\" width=\"23\" class=\"button epoz_button_left_just"
-"\" onclick=\"FormatText('justifyleft',\n"
+"'');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_subscript.gif\" "
+"alt=\"Subscript\" title=\"Subscript\" name=\"epoz_button_subscript\" width="
+"\"23\" class=\"button epoz_button_subscript\" onclick=\"FormatText"
+"('subscript', '');\"/><img height=\"22\" src=\"images/epoz/"
+"epoz_button_superscript.gif\" alt=\"Superscript\" title=\"Superscript\" name="
+"\"epoz_button_superscript\" width=\"23\" class=\"button "
+"epoz_button_superscript\" onclick=\"FormatText('superscript', '');\"/> <img "
+"height=\"22\" src=\"images/epoz/epoz_button_unformat.png\" alt=\"Remove "
+"Format\" title=\"Remove Format\" name=\"epoz_button_unformat\" width=\"23\" "
+"class=\"button epoz_button_unformat\" onclick=\"FormatText('removeformat', "
+"'');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" "
+"alt=\"Text Color\" title=\"Text Color\" name=\"epoz_button_textcolor\" width="
+"\"23\" class=\"button epoz_button_textcolor\" onclick=\"SetTextColor(';"
+"epoz_color_form');\"/><img height=\"22\" src=\"images/epoz/"
+"epoz_button_bgcolor.png\" alt=\"Background Color\" title=\"Background Color"
+"\" name=\"epoz_button_bgcolor\" width=\"23\" class=\"button "
+"epoz_button_bgcolor\" onclick=\"SetBackColor(';epoz_color_form');\"/> <img "
+"height=\"22\" src=\"images/epoz/epoz_button_left_just.png\" alt=\"Align Left"
+"\" title=\"Align Left\" name=\"epoz_button_left_just\" width=\"23\" class="
+"\"button epoz_button_left_just\" onclick=\"FormatText('justifyleft',\n"
 "        '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_centre.png"
 "\" alt=\"Center\" title=\"Center\" name=\"epoz_button_centre\" width=\"23\" "
 "class=\"button epoz_button_centre\" onclick=\"FormatText('justifycenter', "
 "'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_right_just.png\" "
 "alt=\"Align Right\" title=\"Align Right\" name=\"epoz_button_right_just\" "
 "width=\"23\" class=\"button epoz_button_right_just\" onclick=\"FormatText"
-"('justifyright', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/"
-"epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
+"('justifyright', '');\"/> <img height=\"22\" src=\"images/epoz/"
 "epoz_button_numbered_list.gif\" alt=\"Ordered List\" title=\"Ordered List\" "
 "name=\"epoz_button_numbered_list\" width=\"23\" class=\"button "
 "epoz_button_numbered_list\" onclick=\"FormatText('insertorderedlist', '');\"/"
@@ -675,8 +669,7 @@ msgid ""
 "class=\"button epoz_button_outdent\" onclick=\"FormatText('outdent', '');\"/"
 "><img height=\"22\" src=\"images/epoz/epoz_button_indent.png\" alt=\"Indent"
 "\" title=\"Indent\" name=\"epoz_button_indent\" width=\"23\" class=\"button "
-"epoz_button_indent\" onclick=\"FormatText('indent', '');\"/> <img width=\"2"
-"\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22"
+"epoz_button_indent\" onclick=\"FormatText('indent', '');\"/> <img height=\"22"
 "\" src=\"images/epoz/epoz_button_hyperlink.png\" alt=\"Insert Link\" title="
 "\"Insert Link\" name=\"epoz_button_hyperlink\" width=\"23\" class=\"button "
 "epoz_button_hyperlink\" onclick=\"window.open(';addlink_form', "
@@ -696,13 +689,13 @@ msgid ""
 "('inserthorizontalrule', '');\"/><img height=\"22\" src=\"images/epoz/"
 "epoz_button_table.gif\" alt=\"Insert Table\" title=\"Insert Table\" name="
 "\"epoz_button_table\" width=\"23\" class=\"button epoz_button_table\" "
-"onclick=\"SetTable(';epoz_table_form')\"/> <img width=\"2\" height=\"1\" src="
-"\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/"
-"epoz_button_undo.png\" alt=\"Undo\" title=\"Undo\" name=\"epoz_button_undo\" "
-"width=\"23\" class=\"button epoz_button_undo\" onclick=\"FormatText('undo', "
-"'');\"/><img height=\"22\" src=\"images/epoz/epoz_button_redo.png\" alt="
-"\"Redo\" title=\"Redo\" name=\"epoz_button_redo\" width=\"23\" class="
-"\"button epoz_button_redo\" onclick=\"FormatText('redo', '');\"/> <br/>"
+"onclick=\"SetTable(';epoz_table_form')\"/> <img height=\"22\" src=\"images/"
+"epoz/epoz_button_undo.png\" alt=\"Undo\" title=\"Undo\" name="
+"\"epoz_button_undo\" width=\"23\" class=\"button epoz_button_undo\" onclick="
+"\"FormatText('undo', '');\"/><img height=\"22\" src=\"images/epoz/"
+"epoz_button_redo.png\" alt=\"Redo\" title=\"Redo\" name=\"epoz_button_redo\" "
+"width=\"23\" class=\"button epoz_button_redo\" onclick=\"FormatText('redo', "
+"'');\"/> <br/>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -952,24 +945,26 @@ msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid ""
-"<textarea id=\"${form_name}\" style=\"display: none; width: 100%; height: "
-"300px\" name=\"${form_name}\" disabled=\"1\">${js_data}</textarea> <input id="
-"\"CB_${form_name}\" style=\"margin: 0px; width: 10px; height: 10px\" type="
-"\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\"/> <span style="
-"\"font-size: 10px;\">HTML</span>"
+"<textarea class=\"epoz_textarea\" style=\"display: none\" name=\"${form_name}"
+"\" id=\"${form_name}\" disabled=\"1\">${js_data}</textarea> <input class="
+"\"epoz_switch\" id=\"CB_${form_name}\" type=\"checkbox\" onclick="
+"\"redirectAndSwitchViewMode(this);\"/>"
 msgstr ""
 
 #: cms/workflow.py:36
 msgid "A pending document awaits review from authorized users to be published."
-msgstr "Un document en attente a besoin de l'aval des responsables pour être publié."
+msgstr ""
+"Un document en attente a besoin de l'aval des responsables pour être publié."
 
 #: cms/workflow.py:33
 msgid "A private document only can be reached by authorized users."
-msgstr "Un document privé ne peut être atteint que par les utilisateurs autorisés."
+msgstr ""
+"Un document privé ne peut être atteint que par les utilisateurs autorisés."
 
 #: cms/workflow.py:39
 msgid "A public document can be reached by even anonymous users."
-msgstr "Un document public peut être atteint même par les utilisateurs anonymes."
+msgstr ""
+"Un document public peut être atteint même par les utilisateurs anonymes."
 
 #: cms/forum.py:79
 msgid "A thread to discuss"
@@ -1028,6 +1023,10 @@ msgstr "Ajouter"
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "Add Document"
 msgstr "Ajouter un document"
+
+#: cms/ui/Root_languages.xml.en:0
+msgid "Add Language"
+msgstr "Ajouter une langue"
 
 #: cms/ui/UserFolder_new_user.xml.en:0
 msgid "Add New User"
@@ -1376,7 +1375,7 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr "Créer un nouveau site Web"
 
-#: cms/html.py:50
+#: cms/html.py:46
 msgid "Create and publish a Web Document."
 msgstr "Créer un publier un document Web."
 
@@ -1444,7 +1443,7 @@ msgstr "Présentation PowerPoint"
 msgid "Document Word"
 msgstr "Document Word"
 
-#: cms/html.py:166
+#: cms/html.py:171
 msgid "Document changed."
 msgstr "Document modifié."
 
@@ -1460,7 +1459,7 @@ msgstr "Télécharger"
 msgid "E-mail"
 msgstr "Courriel"
 
-#: cms/html.py:154
+#: cms/html.py:159
 msgid ""
 "ERROR: the document could not be changed, the input data was not proper HTML "
 "code."
@@ -1696,6 +1695,10 @@ msgstr ""
 msgid "Groups fixed."
 msgstr "Groupes corrigés."
 
+#: cms/ui/epoz.xml.en:0
+msgid "HTML"
+msgstr ""
+
 #: cms/ui/Root_credits.xml.en:0
 msgid "Hackers"
 msgstr ""
@@ -1705,8 +1708,10 @@ msgid "Hacks a little everywhere"
 msgstr "Hacké un peu partout"
 
 #: cms/ui/Root_credits.xml.en:0
-msgid "Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
-msgstr "Hacké partout, responsable du design, de l'ergonomie et du code HTML/CSS"
+msgid ""
+"Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
+msgstr ""
+"Hacké partout, responsable du design, de l'ergonomie et du code HTML/CSS"
 
 #: cms/forum.py:285
 msgid "Help"
@@ -1900,7 +1905,8 @@ msgstr ""
 "il évolue rapidement."
 
 #: cms/ui/Root_about.xml.en:0
-msgid "Its real power is what you don't see, when it is used as a web framework."
+msgid ""
+"Its real power is what you don't see, when it is used as a web framework."
 msgstr ""
 "Toute la puissance est sous le capot, quand le moteur est utilisé dans une "
 "application Web."
@@ -2638,7 +2644,8 @@ msgid "TENTATIVE"
 msgstr "Tentative"
 
 #: cms/ui/Root_license.xml.en:0
-msgid "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
+msgid ""
+"THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
 msgstr ""
 
 #: cms/ui/epoz_script_table.xml.en:0
@@ -2706,11 +2713,13 @@ msgstr "La langue par défaut a été changée."
 
 #: cms/Folder.py:917
 msgid "The document name contains illegal characters, choose another one."
-msgstr "Le nom du document contient des caractères interdits, choisissez-en un autre."
+msgstr ""
+"Le nom du document contient des caractères interdits, choisissez-en un autre."
 
 #: cms/ui/User_tasks.xml.en:0
 msgid "The documents below await review for publication:"
-msgstr "Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
+msgstr ""
+"Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
 
 #: cms/users.py:417
 msgid "The email is wrong, please try again."
@@ -2802,7 +2811,9 @@ msgstr ""
 
 #: cms/WebSite.py:395
 msgid "There is not a user with the email address \"$email\""
-msgstr "Il n'existe pas d'utilisateur avec l'adresse &laquo;&nbsp;$email&nbsp;&raquo;."
+msgstr ""
+"Il n'existe pas d'utilisateur avec l'adresse &laquo;&nbsp;$email&nbsp;"
+"&raquo;."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2915,7 +2926,8 @@ msgstr "Pour ajouter un événement, cliquer sur le symbole + à partir des vues
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
-msgstr "Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
+msgstr ""
+"Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
 
 #: cms/ui/File_download_form.xml.en:0
 msgid "To download this file, click on <a href=\"${url}\">${title_or_name}</a>"
@@ -3020,7 +3032,8 @@ msgstr ""
 
 #: cms/File.py:38
 msgid "Upload office documents, images, media files, etc."
-msgstr "Importer des documents bureautiques, des images, des fichiers de média, etc."
+msgstr ""
+"Importer des documents bureautiques, des images, des fichiers de média, etc."
 
 #: cms/ui/File_history.xml.en:0
 msgid "User"
@@ -3038,7 +3051,7 @@ msgstr "Utilisateurs"
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:196
+#: cms/html.py:198
 msgid "Version edited."
 msgstr "Version modifiée."
 
@@ -3077,7 +3090,7 @@ msgid ""
 "proprietary."
 msgstr ""
 
-#: cms/html.py:49
+#: cms/html.py:45
 msgid "Web Document"
 msgstr "Document Web"
 
@@ -3175,10 +3188,6 @@ msgstr ""
 msgid "You are now an anonymous visitor."
 msgstr "Vous êtes maintenant un visiteur anonyme."
 
-#: cms/ui/Root_languages.xml.en:0
-msgid "You can add other languages support to your application"
-msgstr "Vous pouvez ajouter le support d'autres langues à votre application."
-
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "You can do the following actions:"
 msgstr "Vous pouvez réaliser les actions suivantes&nbsp;:"
@@ -3197,11 +3206,13 @@ msgstr "Vous ne pouvez pas supprimer la langue par défaut."
 
 #: cms/ui/ical_edit_timetables.xml.en:0
 msgid "You can specify timetables to limit the range when an event can be set"
-msgstr "Vous pouvez spécifier les plages horaire où un événement peut être saisi.\t"
+msgstr ""
+"Vous pouvez spécifier les plages horaire où un événement peut être saisi.\t"
 
 #: cms/ui/File_upload.xml.en:0
 msgid "You can upload a new file to replace the current one."
-msgstr "Vous pouvez importer un fichier de votre ordinateur pour remplacer l'actuel."
+msgstr ""
+"Vous pouvez importer un fichier de votre ordinateur pour remplacer l'actuel."
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -3523,3 +3534,6 @@ msgstr "» Parcourir l'application pour sélectionner un document&nbsp;:"
 msgid "» Type the url to add:"
 msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 
+#~ msgid "You can add other languages support to your application"
+#~ msgstr ""
+#~ "Vous pouvez ajouter le support d'autres langues à votre application."

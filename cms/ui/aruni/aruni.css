@@ -32,7 +32,7 @@ input {
 a { color: #3465a4; }
 a img { border: 0; }
 
-td, th { padding: 0 0.2em; }
+td, th { padding: 3px; }
 
 #header {
   margin-bottom: 1em;
@@ -229,7 +229,7 @@ td, th { padding: 0 0.2em; }
 #block_2 dt {
   overflow: hidden;
   line-height: 1.6em;
-  border-bottom: 1px solid #d1d1d1;
+  border-bottom: 1px solid #d3d7cf;
 }
 #block_2 dd {
   margin-left: 0.9em;
@@ -495,7 +495,16 @@ dl.new_resource_thumb { width: 20em; }
   font-weight: bold;
 }
 
-/* Tables sorted by column */
+/* Browse list */
+thead td, thead th {
+  padding: 6px;
+  background: #d3d7cf;
+}
+
+tr.odd td {
+  background: #eeeeec;
+}
+
 th a.sort_up {
   background: transparent url(images/order-up.png) right top no-repeat;
   padding-right: 20px;

@@ -32,11 +32,10 @@
     <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
     <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
   </div>
-  <table border="0" cellspacing="2" cellpadding="2" stl:if="objects"
-    summary="listing of folder content or query result">
+  <table stl:if="objects" summary="listing of folder content or query result">
     ${thead}
     <tbody>
-      <tr stl:repeat="object objects">
+      <tr stl:repeat="object objects" class="${repeat/object/even}">
         <td>
           <input class="checkbox" type="checkbox" name="ids"
             stl:if="object/checkbox" value="${object/name}" />

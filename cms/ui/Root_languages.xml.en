@@ -7,8 +7,7 @@
   <h2>Language Settings</h2>
 
   <form action="." method="post">
-    <table border="0" cellpadding="4" cellspacing="4"
-      summary="Language settings">
+    <table summary="Language settings">
       <thead>
         <tr>
           <th></th>
@@ -18,7 +17,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr stl:repeat="language active_languages">
+        <tr stl:repeat="language active_languages"
+          class="${repeat/language/even}">
           <td>
             <input class="checkbox" type="checkbox" name="codes"
               value="${language/code}" />
@@ -40,10 +40,10 @@
     </p>
   </form>
 
+  <h3>Add Language</h3>
+
   <form action=";add_language" method="post">
-    <p>You can add other languages support to your application</p>
     <dl stl:if="non_active_languages">
-      <dt></dt>
       <dd>
         <select name="code">
           <option value="">Choose a language</option>

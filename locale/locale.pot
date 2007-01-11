@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2007-01-10 14:01+CET\n"
+"POT-Creation-Date: 2007-01-11 13:01+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -476,7 +476,7 @@ msgid "<option value=\"0\">Without head</option> <option value=\"1\">With head</
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-msgid "<select id=\"formatblock\" style=\"margin-bottom: 2px;\" onchange=\"SelectFormat(this);\">\n        <option value=\"\">Normal</option>\n        <option value=\"p>\">Paragraph</option>\n        <option value=\"h1>\">Heading 1</option>\n        <option value=\"h2>\">Heading 2</option>\n        <option value=\"h3>\">Heading 3</option>\n        <option value=\"h4>\">Heading 4</option>\n        <option value=\"h5>\">Heading 5</option>\n        <option value=\"h6>\">Heading 6</option>\n        <option value=\"pre>\">Formatted</option>\n      </select> <br/> <img src=\"images/epoz/epoz_button_bold.png\" alt=\"Bold\" title=\"Bold\" name=\"epoz_button_bold\" class=\"button epoz_button_bold\" onclick=\"FormatText('bold', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_italic.png\" alt=\"Italic\" title=\"Italic\" name=\"epoz_button_italic\" width=\"23\" class=\"button epoz_button_italic\" onclick=\"FormatText('italic', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_underline.png\" alt=\"Underline\" title=\"Underline\" name=\"epoz_button_underline\" width=\"23\" class=\"button epoz_button_underline\" onclick=\"FormatText('underline', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_strikethrough.png\" alt=\"Strikethrough\" title=\"Strikethrough\" name=\"epoz_button_strikethrough\" width=\"23\" class=\"button epoz_button_strikethrough\" onclick=\"FormatText('strikethrough', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_subscript.gif\" alt=\"Subscript\" title=\"Subscript\" name=\"epoz_button_subscript\" width=\"23\" class=\"button epoz_button_subscript\" onclick=\"FormatText('subscript', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_superscript.gif\" alt=\"Superscript\" title=\"Superscript\" name=\"epoz_button_superscript\" width=\"23\" class=\"button epoz_button_superscript\" onclick=\"FormatText('superscript', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_unformat.png\" alt=\"Remove Format\" title=\"Remove Format\" name=\"epoz_button_unformat\" width=\"23\" class=\"button epoz_button_unformat\" onclick=\"FormatText('removeformat', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" alt=\"Text Color\" title=\"Text Color\" name=\"epoz_button_textcolor\" width=\"23\" class=\"button epoz_button_textcolor\" onclick=\"SetTextColor(';epoz_color_form');\"/><img height=\"22\" src=\"images/epoz/epoz_button_bgcolor.png\" alt=\"Background Color\" title=\"Background Color\" name=\"epoz_button_bgcolor\" width=\"23\" class=\"button epoz_button_bgcolor\" onclick=\"SetBackColor(';epoz_color_form');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_left_just.png\" alt=\"Align Left\" title=\"Align Left\" name=\"epoz_button_left_just\" width=\"23\" class=\"button epoz_button_left_just\" onclick=\"FormatText('justifyleft',\n        '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_centre.png\" alt=\"Center\" title=\"Center\" name=\"epoz_button_centre\" width=\"23\" class=\"button epoz_button_centre\" onclick=\"FormatText('justifycenter', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_right_just.png\" alt=\"Align Right\" title=\"Align Right\" name=\"epoz_button_right_just\" width=\"23\" class=\"button epoz_button_right_just\" onclick=\"FormatText('justifyright', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_numbered_list.gif\" alt=\"Ordered List\" title=\"Ordered List\" name=\"epoz_button_numbered_list\" width=\"23\" class=\"button epoz_button_numbered_list\" onclick=\"FormatText('insertorderedlist', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_list.gif\" alt=\"Unordered List\" title=\"Unordered List\" name=\"epoz_button_list\" width=\"23\" class=\"button epoz_button_list\" onclick=\"FormatText('insertunorderedlist', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_outdent.png\" alt=\"Outdent\" title=\"Outdent\" name=\"epoz_button_outdent\" width=\"23\" class=\"button epoz_button_outdent\" onclick=\"FormatText('outdent', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_indent.png\" alt=\"Indent\" title=\"Indent\" name=\"epoz_button_indent\" width=\"23\" class=\"button epoz_button_indent\" onclick=\"FormatText('indent', '');\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_hyperlink.png\" alt=\"Insert Link\" title=\"Insert Link\" name=\"epoz_button_hyperlink\" width=\"23\" class=\"button epoz_button_hyperlink\" onclick=\"window.open(';addlink_form', 'EpozToolbox',\n          'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_anchor.png\" alt=\"Insert Anchor\" title=\"Insert Anchor\" name=\"epoz_button_anchor\" width=\"23\" class=\"button epoz_button_anchor\" onclick=\"CreateAnchor();\"/><img height=\"22\" src=\"images/epoz/epoz_button_image.png\" alt=\"Insert Image\" title=\"Insert Image\" name=\"epoz_button_image\" width=\"23\" class=\"button epoz_button_image\" onclick=\"window.open(';addimage_form', 'EpozToolbox', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_hr.gif\" alt=\"Insert Rule\" title=\"Insert Rule\" name=\"epoz_button_hr\" width=\"23\" class=\"button epoz_button_hr\" onclick=\"FormatText('inserthorizontalrule', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_table.gif\" alt=\"Insert Table\" title=\"Insert Table\" name=\"epoz_button_table\" width=\"23\" class=\"button epoz_button_table\" onclick=\"SetTable(';epoz_table_form')\"/> <img width=\"2\" height=\"1\" src=\"images/epoz/epoz_button_space.gif\"/> <img height=\"22\" src=\"images/epoz/epoz_button_undo.png\" alt=\"Undo\" title=\"Undo\" name=\"epoz_button_undo\" width=\"23\" class=\"button epoz_button_undo\" onclick=\"FormatText('undo', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_redo.png\" alt=\"Redo\" title=\"Redo\" name=\"epoz_button_redo\" width=\"23\" class=\"button epoz_button_redo\" onclick=\"FormatText('redo', '');\"/> <br/>"
+msgid "<select class=\"formatblock\" onchange=\"SelectFormat(this);\">\n        <option value=\"\">Normal</option>\n        <option value=\"p>\">Paragraph</option>\n        <option value=\"h1>\">Heading 1</option>\n        <option value=\"h2>\">Heading 2</option>\n        <option value=\"h3>\">Heading 3</option>\n        <option value=\"h4>\">Heading 4</option>\n        <option value=\"h5>\">Heading 5</option>\n        <option value=\"h6>\">Heading 6</option>\n        <option value=\"pre>\">Formatted</option>\n      </select> <br/> <img src=\"images/epoz/epoz_button_bold.png\" alt=\"Bold\" title=\"Bold\" name=\"epoz_button_bold\" class=\"button epoz_button_bold\" onclick=\"FormatText('bold', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_italic.png\" alt=\"Italic\" title=\"Italic\" name=\"epoz_button_italic\" width=\"23\" class=\"button epoz_button_italic\" onclick=\"FormatText('italic', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_underline.png\" alt=\"Underline\" title=\"Underline\" name=\"epoz_button_underline\" width=\"23\" class=\"button epoz_button_underline\" onclick=\"FormatText('underline', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_strikethrough.png\" alt=\"Strikethrough\" title=\"Strikethrough\" name=\"epoz_button_strikethrough\" width=\"23\" class=\"button epoz_button_strikethrough\" onclick=\"FormatText('strikethrough', '');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_subscript.gif\" alt=\"Subscript\" title=\"Subscript\" name=\"epoz_button_subscript\" width=\"23\" class=\"button epoz_button_subscript\" onclick=\"FormatText('subscript', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_superscript.gif\" alt=\"Superscript\" title=\"Superscript\" name=\"epoz_button_superscript\" width=\"23\" class=\"button epoz_button_superscript\" onclick=\"FormatText('superscript', '');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_unformat.png\" alt=\"Remove Format\" title=\"Remove Format\" name=\"epoz_button_unformat\" width=\"23\" class=\"button epoz_button_unformat\" onclick=\"FormatText('removeformat', '');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_textcolor.png\" alt=\"Text Color\" title=\"Text Color\" name=\"epoz_button_textcolor\" width=\"23\" class=\"button epoz_button_textcolor\" onclick=\"SetTextColor(';epoz_color_form');\"/><img height=\"22\" src=\"images/epoz/epoz_button_bgcolor.png\" alt=\"Background Color\" title=\"Background Color\" name=\"epoz_button_bgcolor\" width=\"23\" class=\"button epoz_button_bgcolor\" onclick=\"SetBackColor(';epoz_color_form');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_left_just.png\" alt=\"Align Left\" title=\"Align Left\" name=\"epoz_button_left_just\" width=\"23\" class=\"button epoz_button_left_just\" onclick=\"FormatText('justifyleft',\n        '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_centre.png\" alt=\"Center\" title=\"Center\" name=\"epoz_button_centre\" width=\"23\" class=\"button epoz_button_centre\" onclick=\"FormatText('justifycenter', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_right_just.png\" alt=\"Align Right\" title=\"Align Right\" name=\"epoz_button_right_just\" width=\"23\" class=\"button epoz_button_right_just\" onclick=\"FormatText('justifyright', '');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_numbered_list.gif\" alt=\"Ordered List\" title=\"Ordered List\" name=\"epoz_button_numbered_list\" width=\"23\" class=\"button epoz_button_numbered_list\" onclick=\"FormatText('insertorderedlist', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_list.gif\" alt=\"Unordered List\" title=\"Unordered List\" name=\"epoz_button_list\" width=\"23\" class=\"button epoz_button_list\" onclick=\"FormatText('insertunorderedlist', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_outdent.png\" alt=\"Outdent\" title=\"Outdent\" name=\"epoz_button_outdent\" width=\"23\" class=\"button epoz_button_outdent\" onclick=\"FormatText('outdent', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_indent.png\" alt=\"Indent\" title=\"Indent\" name=\"epoz_button_indent\" width=\"23\" class=\"button epoz_button_indent\" onclick=\"FormatText('indent', '');\"/> <img height=\"22\" src=\"images/epoz/epoz_button_hyperlink.png\" alt=\"Insert Link\" title=\"Insert Link\" name=\"epoz_button_hyperlink\" width=\"23\" class=\"button epoz_button_hyperlink\" onclick=\"window.open(';addlink_form', 'EpozToolbox',\n          'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_anchor.png\" alt=\"Insert Anchor\" title=\"Insert Anchor\" name=\"epoz_button_anchor\" width=\"23\" class=\"button epoz_button_anchor\" onclick=\"CreateAnchor();\"/><img height=\"22\" src=\"images/epoz/epoz_button_image.png\" alt=\"Insert Image\" title=\"Insert Image\" name=\"epoz_button_image\" width=\"23\" class=\"button epoz_button_image\" onclick=\"window.open(';addimage_form', 'EpozToolbox', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');\"/><img height=\"22\" src=\"images/epoz/epoz_button_hr.gif\" alt=\"Insert Rule\" title=\"Insert Rule\" name=\"epoz_button_hr\" width=\"23\" class=\"button epoz_button_hr\" onclick=\"FormatText('inserthorizontalrule', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_table.gif\" alt=\"Insert Table\" title=\"Insert Table\" name=\"epoz_button_table\" width=\"23\" class=\"button epoz_button_table\" onclick=\"SetTable(';epoz_table_form')\"/> <img height=\"22\" src=\"images/epoz/epoz_button_undo.png\" alt=\"Undo\" title=\"Undo\" name=\"epoz_button_undo\" width=\"23\" class=\"button epoz_button_undo\" onclick=\"FormatText('undo', '');\"/><img height=\"22\" src=\"images/epoz/epoz_button_redo.png\" alt=\"Redo\" title=\"Redo\" name=\"epoz_button_redo\" width=\"23\" class=\"button epoz_button_redo\" onclick=\"FormatText('redo', '');\"/> <br/>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -596,7 +596,7 @@ msgid "<strong>c)</strong> If the modified program normally reads commands inter
 msgstr ""
 
 #: cms/ui/epoz.xml.en:0
-msgid "<textarea id=\"${form_name}\" style=\"display: none; width: 100%; height: 300px\" name=\"${form_name}\" disabled=\"1\">${js_data}</textarea> <input id=\"CB_${form_name}\" style=\"margin: 0px; width: 10px; height: 10px\" type=\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\"/> <span style=\"font-size: 10px;\">HTML</span>"
+msgid "<textarea class=\"epoz_textarea\" style=\"display: none\" name=\"${form_name}\" id=\"${form_name}\" disabled=\"1\">${js_data}</textarea> <input class=\"epoz_switch\" id=\"CB_${form_name}\" type=\"checkbox\" onclick=\"redirectAndSwitchViewMode(this);\"/>"
 msgstr ""
 
 #: cms/workflow.py:36
@@ -665,6 +665,10 @@ msgstr ""
 
 #: cms/ui/Text_new_instance.xml.en:0
 msgid "Add Document"
+msgstr ""
+
+#: cms/ui/Root_languages.xml.en:0
+msgid "Add Language"
 msgstr ""
 
 #: cms/ui/UserFolder_new_user.xml.en:0
@@ -979,7 +983,7 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:50
+#: cms/html.py:46
 msgid "Create and publish a Web Document."
 msgstr ""
 
@@ -1047,7 +1051,7 @@ msgstr ""
 msgid "Document Word"
 msgstr ""
 
-#: cms/html.py:166
+#: cms/html.py:171
 msgid "Document changed."
 msgstr ""
 
@@ -1063,7 +1067,7 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#: cms/html.py:154
+#: cms/html.py:159
 msgid "ERROR: the document could not be changed, the input data was not proper HTML code."
 msgstr ""
 
@@ -1277,6 +1281,10 @@ msgstr ""
 
 #: cms/root.py:458
 msgid "Groups fixed."
+msgstr ""
+
+#: cms/ui/epoz.xml.en:0
+msgid "HTML"
 msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
@@ -2499,7 +2507,7 @@ msgstr ""
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:196
+#: cms/html.py:198
 msgid "Version edited."
 msgstr ""
 
@@ -2535,7 +2543,7 @@ msgstr ""
 msgid "We wish to avoid the danger that redistributors of a free program will individually obtain patent licenses, in effect making the program proprietary."
 msgstr ""
 
-#: cms/html.py:49
+#: cms/html.py:45
 msgid "Web Document"
 msgstr ""
 
@@ -2629,10 +2637,6 @@ msgstr ""
 
 #: cms/ui/WebSite_logout.xml.en:0
 msgid "You are now an anonymous visitor."
-msgstr ""
-
-#: cms/ui/Root_languages.xml.en:0
-msgid "You can add other languages support to your application"
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0

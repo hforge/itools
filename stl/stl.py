@@ -327,7 +327,8 @@ def process(node, stack, repeat_stack, encoding='UTF-8', prefix=None):
             newrepeat = repeat_stack[:]
             value = {'index': i,
                      'start': i == 0,
-                     'end': i == nvalues - 1}
+                     'end': i == nvalues - 1,
+                     'even': 'odd' if i % 2 else 'even'}
             newrepeat.append({name: value})
 
             # Process and append the clone

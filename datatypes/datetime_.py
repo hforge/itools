@@ -227,27 +227,3 @@ class ISODateTime(DataType):
             return ''
         return value.strftime('%Y-%m-%dT%H:%M:%S')
 
-
-
-###########################################################################
-# XXX Backwards compatibility
-###########################################################################
-class DateTime(DataType):
-
-    @staticmethod
-    def decode(value):
-        if not value:
-            return None
-        date, time = value.split()
-        date = ISOCalendarDate.decode(date)
-        time = ISOTime.decode(time)
-
-        return datetime.datetime.combine(date, time)
-
-
-    @staticmethod
-    def encode(value):
-        if value is None:
-            return ''
-        return value.strftime('%Y-%m-%d %H:%M:%S')
-

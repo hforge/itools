@@ -19,9 +19,29 @@
 from datetime import datetime
 
 # Import from itools
-from itools.datatypes import Unicode, String, ISODateTime
+from itools.datatypes import (Unicode, String, ISODateTime, ISOCalendarDate,
+                              ISOTime)
 from base import Schema
 import registry
+
+
+# XXX Backwards compatibility, an upgrade method needed in itools.cms to
+# update the dates
+class DateTime(ISODateTime):
+
+    @staticmethod
+    def decode(value):
+        if not value:
+            return None
+        if ' ' in value:
+            date, time = value.split()
+        else:
+            date, time = value.split('T')
+        date = ISOCalendarDate.decode(date)
+        time = ISOTime.decode(time)
+
+        return datetime.combine(date, time)
+
 
 
 class DublinCore(Schema):
@@ -33,7 +53,7 @@ class DublinCore(Schema):
     datatypes = {'contributor': None,
                  'coverage': None,
                  'creator': String,
-                 'date': ISODateTime,
+                 'date': DateTime,
                  'description': Unicode,
                  'format': None,
                  'identifier': String,

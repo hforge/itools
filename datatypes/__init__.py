@@ -20,5 +20,6 @@ from base import DataType
 from primitive import (Integer, Decimal, Unicode, String, Boolean, Email, URI,
                        FileName, QName, Tokens, XML, XMLAttribute)
 from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, InternetDateTime
-# XXX Backwards compatibility
-from datetime_ import ISOCalendarDate as Date, ISOTime as Time, DateTime
+# Define alias Date, Time and DateTime (use ISO standard)
+from datetime_ import (ISOCalendarDate as Date, ISOTime as Time,
+                       ISODateTime as DateTime)

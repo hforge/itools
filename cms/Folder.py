@@ -370,7 +370,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             results = catalog.search(query)
             reverse = (sortorder == 'down')
             documents = results.get_documents(sort_by=sortby, reverse=reverse,
-                                              start=batchstart, size=batchsize)
+                                              start=start, size=batchsize)
 
         # Get the handler for the visibles documents and extracts values
         fields = root.get_catalog_metadata_fields()

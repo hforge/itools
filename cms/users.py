@@ -23,6 +23,7 @@ from itools import uri
 from itools import i18n
 from itools import handlers
 from itools.stl import stl
+from itools.datatypes import Email
 
 # Import from ikaaro
 from access import AccessControl
@@ -213,11 +214,19 @@ class User(AccessControl, Folder):
                     u"You mistyped your actual password, your account is"
                     u" not changed.")
 
+        if not Email.is_valid(email):
+            return context.come_back(u'A valid email address must be provided.')
+
+        root = context.root
+        results = root.search(email=email)
+        if results.get_n_documents():
+            message = (u'There is another user with the email "%s", '
+                    u'please try again')
+
         self.set_property('dc:title', title, language='en')
         self.set_property('ikaaro:email', email)
 
         # Reindex
-        root = context.root
         root.reindex_handler(self)
 
         return context.come_back(u'Account changed.')
@@ -416,10 +425,12 @@ class UserFolder(Folder):
             return context.come_back(
                 u'The email is wrong, please try again.')
 
+        if not Email.is_valid(email):
+            return context.come_back(u'A valid email address must be provided.')
+
         # Check there is not already a user with that email
         root = context.root
-        catalog = root.get_handler('.catalog')
-        results = catalog.search(email=email)
+        results = root.search(email=email)
         if results.get_n_documents():
             message = (u'There is another user with the email "%s", '
                     u'please try again')

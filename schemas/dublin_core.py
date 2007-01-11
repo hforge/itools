@@ -68,6 +68,6 @@ class DublinCore(Schema):
                  }
 
 
-registry.register_schema(DublinCore)
-# XXX For backwards compatibility, introduced in 0.15.1
-registry.register_schema(DublinCore, uri='http://purl.org/dc/elements/1.1')
+# XXX For backwards compatibility, register the schema also with the old
+# and wrong uri (introduced in 0.15.1)
+registry.register_schema(DublinCore, 'http://purl.org/dc/elements/1.1')

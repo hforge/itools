@@ -31,20 +31,24 @@ schemas = {}
 prefixes = {}
 
 
-def register_schema(schema, uri=None):
+def register_schema(schema, *args):
     """
     Associates a schema handler to a schema uri. It a prefix is
     given it also associates that that prefix to the given schema.
     """
-    if uri is None:
-        uri = schema.class_uri
-    schemas[uri] = schema
+    # Register the URI
+    schemas[schema.class_uri] = schema
 
+    # Register the prefix
     prefix = schema.class_prefix
     if prefix is not None:
         if prefix in prefixes:
             warnings.warn('The prefix "%s" is already registered.' % prefix)
-        prefixes[prefix] = uri
+        prefixes[prefix] = schema.class_uri
+
+    # Register additional URIs
+    for uri in args:
+        schemas[uri] = schema
 
 
 ##############################################################################

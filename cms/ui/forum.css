@@ -1,26 +1,21 @@
-#forum_thread_list thead tr {
-  color: #fff;
-  background-color: #7492b6;
+#forum_thread_list th {
+  text-align: left;
 }
 
-#forum_thread_list th {
-      text-align: left;
+.odd {
+  background-color: #ededed;
 }
 
 .forum_message_info {
-  color: #ededed;
+  color: #fff;
 }
 
-.forum_even .forum_message_info {
-  background-color: #7492b6;
+.even .forum_message_info {
+  background-color: #c17d11;
 }
 
-.forum_odd .forum_message_info {
-  background-color: #6280a4;
-}
-
-.forum_odd {
-  background-color: #ededed;
+.odd .forum_message_info {
+  background-color: #729fcf;
 }
 
 .forum_message_author {

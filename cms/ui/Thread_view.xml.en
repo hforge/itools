@@ -4,21 +4,20 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h1>${title}</h1>
+  <h2>${title}</h2>
   <p><em>${description}</em></p>
 
-  <table border="0" cellpadding="5" cellspacing="0" width="100%"
-    id="forum_message_list">
+  <table id="forum_message_list" width="100%">
     <colgroup>
       <col width="0*" />
       <col width="1*" />
     </colgroup>
     <tbody>
-      <tr stl:repeat="message messages" class="${message/class}">
+      <tr stl:repeat="message messages" class="${repeat/message/even}">
         <td valign="top" class="forum_message_info">
           <p class="forum_message_author">${message/author}</p>
           <p class="forum_message_date">${message/mtime}</p>
-          <form method="GET" stl:if="message/editable"
+          <form method="get" stl:if="message/editable"
             action="${message/edit_form}">
             <input type="submit" value="Edit" />
           </form>
@@ -33,8 +32,8 @@
   <hr />
 
   <a name="new_reply" />
-  <form action=";new_reply">
-    <h3>Post a Reply</h3>
+  <h3>Post a Reply</h3>
+  <form action=";new_reply" method="post">
     <p>
       <textarea name="body" cols="72" rows="10" />
       <input type="submit" value="Reply" />

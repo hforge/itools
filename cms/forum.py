@@ -25,14 +25,16 @@ from cStringIO import StringIO
 from itools.datatypes import FileName
 from itools.stl import stl
 from itools.web import get_context
+
+# Import from itools.cms
 from itools.cms.registry import register_object_class
 from itools.cms.Folder import Folder
 from itools.cms.text import Text
 from itools.cms.utils import checkid
+from itools.cms.access import AccessControl
 
 
-def add_forum_style():
-    context = get_context()
+def add_forum_style(context):
     style = context.root.get_handler('ui/forum.css')
     context.styles.append(context.handler.get_pathto(style))
 
@@ -46,27 +48,20 @@ class Message(Text):
     class_views = [['edit_form'], ['history_form']]
     
 
-    def is_allowed_to_edit(self, user, object):
-        if user is None:
-            return False
-
-        if self.is_admin(user):
-            return True
-
-        owner = object.get_property('owner')
-        return owner == user.name
-
-
     # remove from searches
     def get_catalog_indexes(self):
         return None
 
 
+    # ACLs
+    edit_form__access__ = 'is_allowed_to_edit_post'
+
+
+    edit__access__ = 'is_allowed_to_edit_post'
     def edit(self, context):
         data = context.get_form_value('data')
-        data = unicode(data, 'UTF-8')
-        data = escape(data)
-        self.set_data(data)
+        data = escape(data.strip())
+        self.load_state_from_string(data)
 
         return context.come_back(u'Document edited.', goto='../;view')
 
@@ -82,20 +77,25 @@ class Thread(Folder):
     message_class = Message
 
 
-    def is_allowed_to_post(self, user, object):
-        return self.is_allowed_to_view(user, object)
+    def new(self, body=''):
+        Folder.new(self)
+        cache = self.cache
+        message = self.message_class()
+        message.load_state_from_string(body)
+        cache['0.txt'] = message
+        cache['0.txt.metadata'] = self.build_metadata(message)
 
 
     def to_text(self):
-        text = StringIO()
+        text = []
 
         # index messages in order (XXX necessary?)
         for id in ([0] + self.get_replies()):
             name = '%s.txt' % id
             message = self.get_handler(name)
-            text.write(message.to_text())
+            text.append(message.to_text())
 
-        return text.getvalue()
+        return u'\n'.join(text)
 
 
     def get_document_types(self):
@@ -104,7 +104,7 @@ class Thread(Folder):
 
     def get_replies(self):
         posts = [int(FileName.decode(x)[0]) for x in self.get_handler_names()
-                if not x.startswith(u'.')]
+                if not x.startswith(u'.') and not x.endswith('.metadata')]
         posts.sort()
 
         # deduce original post
@@ -121,23 +121,25 @@ class Thread(Folder):
         return self.get_handler('%s.txt' % last)
 
 
-    def get_message_namespace(self):
-        context = get_context()
+    def get_message_namespace(self, context):
         user = context.user
         username = user and user.name
         namespace = []
+        users = self.get_handler('/users')
+        ac = self.get_access_control()
 
         for i, id in enumerate([0] + self.get_replies()):
             name = '%s.txt' % id
             message = self.get_handler(name)
+            author_id = message.get_property('owner')
+            metadata = users.get_handler('%s.metadata' % author_id)
             namespace.append({
-                'author': message.get_property('owner'),
+                'author': (metadata.get_property('dc:title') or
+                    metadata.get_property('ikaaro:email')),
                 'mtime': message.get_mtime().strftime('%F %X'),
                 'body': message.to_str().replace('\n', '<br />'),
-                'editable': self.is_admin() or (
-                    message.get_property('owner') == username),
+                'editable': ac.is_allowed_to_edit_post(user, message),
                 'edit_form': '%s/;edit_form' % message.name,
-                'class': ((i % 2) and 'forum_odd' or 'forum_even'),
             })
 
         return namespace
@@ -150,9 +152,9 @@ class Thread(Folder):
 
         namespace['title'] = self.get_title_or_name()
         namespace['description'] = self.get_description()
-        namespace['messages'] = self.get_message_namespace()
+        namespace['messages'] = self.get_message_namespace(context)
 
-        add_forum_style()
+        add_forum_style(context)
 
         handler = self.get_handler('/ui/Thread_view.xml')
         return stl(handler, namespace)
@@ -160,8 +162,6 @@ class Thread(Folder):
 
     new_reply__access__ = 'is_allowed_to_edit'
     def new_reply(self, context):
-        body = context.get_form_value('body')
-
         replies = self.get_replies()
         if replies:
             last_reply = max(replies)
@@ -171,25 +171,24 @@ class Thread(Folder):
         next_reply = str(last_reply + 1)
         name = FileName.encode((next_reply, 'txt', None))
 
-        body = escape(body)
+        body = context.get_form_value('body')
+        body = escape(body.strip())
         reply = self.message_class()
         reply.load_state_from_string(body)
-
         self.set_handler(name, reply)
 
         return context.come_back(u"Reply Posted.", goto='#new_reply')
 
 
 
-class Forum(Folder):
+class Forum(AccessControl, Folder):
 
     class_id = 'Forum'
     class_title = u'Forum'
     class_description = u'An iKaaro forum'
     class_icon48 = 'images/Forum48.png'
     class_icon16 = 'images/Forum16.png'
-    class_views = [['view'], ['new_thread_form'], ['edit_metadata_form'],
-                   ['help']]
+    class_views = [['view'], ['new_thread_form'], ['edit_metadata_form']]
 
     thread_class = Thread
 
@@ -198,30 +197,41 @@ class Forum(Folder):
         return [self.thread_class]
 
 
-    def is_allowed_to_post(self, user, object):
-        return self.is_allowed_to_view(user, object)
+    def is_allowed_to_edit_post(self, user, object):
+        if user is None:
+            return False
+
+        if self.is_admin(user):
+            return True
+
+        owner = object.get_property('owner')
+        return owner == user.name
 
 
     def get_thread_namespace(self):
         namespace = []
+        users = self.get_handler('/users')
 
         for thread in self.search_handlers(handler_class=self.thread_class):
             first = thread.get_handler('0.txt')
+            first_author_id = first.get_property('owner')
+            first_metadata = users.get_handler('%s.metadata' % first_author_id)
             last = thread.get_last_post()
+            last_author_id = last.get_property('owner')
+            last_metadata = users.get_handler('%s.metadata' % last_author_id)
             namespace.append({
                 'name': thread.name,
                 'title': thread.get_title_or_name(),
                 'description': thread.get_description(),
-                'author': first.get_property('owner'),
+                'author': (first_metadata.get_property('dc:title') or
+                    first_metadata.get_property('ikaaro:email')),
                 'replies': len(thread.get_replies()),
                 'last_date': last.get_mtime().strftime('%F %X'),
-                'last_author': last.get_property('owner'),
+                'last_author': (last_metadata.get_property('dc:title') or
+                    last_metadata.get_property('ikaaro:email')),
             })
 
         namespace.sort(key=itemgetter('last_date'), reverse=True)
-
-        for i, thread in enumerate(namespace):
-            thread['class'] = ((i % 2) and 'forum_odd' or 'forum_even')
 
         return namespace
 
@@ -235,7 +245,7 @@ class Forum(Folder):
         namespace['description'] = self.get_description()
         namespace['threads'] = self.get_thread_namespace()
 
-        add_forum_style()
+        add_forum_style(context)
 
         handler = self.get_handler('/ui/Forum_view.xml')
         return stl(handler, namespace)
@@ -244,7 +254,7 @@ class Forum(Folder):
     new_thread_form__access__ = 'is_allowed_to_edit'
     new_thread_form__label__ = u"New Thread"
     def new_thread_form(self, context):
-        add_forum_style()
+        add_forum_style(context)
 
         handler = self.get_handler('/ui/Forum_new_thread.xml')
         return stl(handler)
@@ -261,32 +271,18 @@ class Forum(Folder):
             return context.come_back(u"Invalid title.")
 
         if self.has_handler(name):
-            raise context.come_back(u"This thread already exists.")
+            return context.come_back(u"This thread already exists.")
 
-        context = get_context()
         root = context.root
         website_languages = root.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
 
-        thread = self.thread_class()
-        self.set_handler(name, thread,
-                **{'dc:title': {default_language: title}})
-        thread = self.get_handler(name)
-
         body = context.get_form_value('body')
         body = escape(body.strip())
-        reply = thread.message_class()
-        reply.load_state_from_tring(body)
-        thread.set_handler('0.txt', reply)
+        self.set_handler(name, self.thread_class(body=body),
+                **{'dc:title': {default_language: title}})
 
         return context.come_back(u"Thread Created.", goto=name)
-
-
-    help__label__ = u'Help'
-    help__access__ = True
-    def help(self, context):
-        help = self.gettext(u"Read the doc in README file.")
-        return help.encode('utf-8')
 
 
 

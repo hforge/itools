@@ -13,8 +13,7 @@
     </p>
   </form>
 
-  <table border="0" cellpadding="5" cellspacing="0" width="100%"
-    id="forum_thread_list">
+  <table width="100%" id="forum_thread_list">
     <colgroup>
       <col width="1*" />
       <col width="0*" />
@@ -32,7 +31,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr stl:repeat="thread threads" class="${thread/class}">
+      <tr stl:repeat="thread threads" class="${repeat/thread/even}">
         <td>
           <a class="forum_thread_title" href="${thread/name}"
             >${thread/title}</a>

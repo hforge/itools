@@ -34,8 +34,9 @@
       </table>
       <p style="width: 300px">
         <input type="submit" name=";permissions_update_members" value="Update"
-          style="float: right" />
-        <input type="submit" name=";permissions_del_members" value="Delete" />
+          class="button_rename" style="float: right" />
+        <input type="submit" name=";permissions_del_members" value="Delete"
+          class="button_delete" />
       </p>
     </form>
   </div>
@@ -53,7 +54,7 @@
           value="${user/name}">${user/title_or_name}</option>
       </select>
       <p style="width: 200px">
-        <input type="submit" value="Add" />
+        <input type="submit" value="Add" class="button_add" />
       </p>
     </form>
   </div>

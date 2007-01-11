@@ -291,6 +291,7 @@ dl.new_resource_thumb { width: 20em; }
 .button_paste { padding-left: 16px; background-image: url(../images/button_paste.png); }
 .button_translate { padding-left: 16px; background-image: url(../images/button_translate.png); }
 .button_compare { padding-left: 16px; background-image: url(../images/button_compare.png); }
+.button_add { padding-left: 16px; background-image: url(../images/button_add.png); }
 
 .results li { margin: 0.3em 0.3em 0.6em; }
 .result_control { background: #deeff1; }

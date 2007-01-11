@@ -255,7 +255,7 @@ class RoleAware(AccessControl):
         namespace['users'] = users
         namespace['others'] = others
 
-        handler = self.get_handler('/ui/Folder_permissions.xml')
+        handler = self.get_handler('/ui/RoleAware_permissions.xml')
         return stl(handler, namespace)
 
 

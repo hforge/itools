@@ -12,9 +12,16 @@
   </div>
 
   <table>
-    <tr stl:repeat="row rows" class="${repeat/row/even}">
-      <td valign="top" stl:repeat="column row">${column}</td>
-    </tr>
+    <thead stl:if="columns">
+      <tr>
+        <th stl:repeat="column columns">${column}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr stl:repeat="row rows" class="${repeat/row/even}">
+        <td valign="top" stl:repeat="column row">${column}</td>
+      </tr>
+    </tbody>
   </table>
 
 </stl:block>

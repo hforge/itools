@@ -5,14 +5,14 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <form action=";edit" method="post">
-    <dl>
-      <stl:block repeat="column row">
-        <dt></dt>
-        <dd>
-          <input type="text" name="column" size="40" value="${column}" />
-        </dd>
-      </stl:block>
-    </dl>
+    <table>
+      <tr stl:repeat="row rows" class="${repeat/row/even}">
+        <th style="text-align: left">${row/column}</th>
+        <td>
+          <input type="text" name="column" size="40" value="${row/value}" />
+        </td>
+      </tr>
+    </table>
     <p>
       <input type="submit" value="Save Changes" class="button_ok" />
     </p>

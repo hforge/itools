@@ -41,8 +41,16 @@ class Row(iRow, Node):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
+        columns = self.columns
+        rows = []
+
+        for i, row in enumerate(self):
+            rows.append({
+                'column': columns[i] if columns else '',
+                'value': row})
+
         namespace = {}
-        namespace['row'] = self
+        namespace['rows'] = rows
 
         handler = self.get_handler('/ui/CSVRow_view.xml')
         return stl(handler, namespace)
@@ -51,8 +59,16 @@ class Row(iRow, Node):
     edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     def edit_form(self, context):
+        columns = self.columns
+        rows = []
+
+        for i, row in enumerate(self):
+            rows.append({
+                'column': columns[i] if columns else '',
+                'value': row})
+
         namespace = {}
-        namespace['row'] = self
+        namespace['rows'] = rows
 
         handler = self.get_handler('/ui/CSVRow_edit.xml')
         return stl(handler, namespace)
@@ -127,6 +143,8 @@ class CSV(Text, iCSV):
         namespace['batch_next'] = None
         if end < total:
             namespace['batch_next'] = context.uri.replace(batchstart=str(end))
+
+        namespace['columns'] = self.columns
 
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)

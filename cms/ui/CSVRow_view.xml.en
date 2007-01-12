@@ -4,11 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <dl>
-    <stl:block repeat="column row">
-      <dt></dt>
-      <dd>${column}</dd>
-    </stl:block>
-  </dl>
+  <table>
+    <tr stl:repeat="row rows" class="${repeat/row/even}">
+      <th style="text-align: left">${row/column}</th>
+      <td>${row/value}</td>
+    </tr>
+  </table>
 
 </stl:block>

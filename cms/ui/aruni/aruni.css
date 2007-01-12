@@ -502,7 +502,7 @@ thead td, thead th {
   background: #d3d7cf;
 }
 
-tr.odd td {
+tr.odd th, tr.odd td {
   background: #eeeeec;
 }
 

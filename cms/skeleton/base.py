@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) YEAR(S) AUTHOR_NAME <EMAIL@ADDRESS>
+# Copyright (C) ${YEAR} ${AUTHOR_NAME} <${AUTHOR_EMAIL}>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,5 +24,5 @@ from itools.cms.Handler import Handler as BaseHandler
 
 class Handler(BaseHandler):
 
-    class_domain = 'example'
+    class_domain = '${PACKAGE_NAME}'
 

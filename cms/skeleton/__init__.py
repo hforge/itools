@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) YEAR(S) AUTHOR_NAME <EMAIL@ADDRESS>
+# Copyright (C) ${YEAR} ${AUTHOR_NAME} <${AUTHOR_EMAIL}>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,8 +21,9 @@ from itools.gettext import domains
 from itools.cms import skins
 
 # Import from our package
-from root import Root
+from base import Handler
 import metadata
+from root import Root
 
 
 # Make the product version available to Python code
@@ -31,8 +32,8 @@ __version__ = get_version(globals())
 
 # Register the skin
 skin = get_abspath(globals(), 'ui')
-skins.register_skin('frontoffice1', skin)
+skins.register_skin('${PACKAGE_NAME}', skin)
 
 # Register domain (i18n)
 path = get_abspath(globals(), 'locale')
-domains.register_domain('example', path)
+domains.register_domain(Handler.class_domain, path)

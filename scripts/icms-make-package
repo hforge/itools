@@ -20,22 +20,37 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
+from datetime import date
 from optparse import OptionParser
-from os import makedirs, getcwd
+from os import environ
 from os.path import exists, basename, dirname, join
-from shutil import copyfile
-from subprocess import call
-from sys import stdout
+from string import Template
 
 # Import from itools
 import itools
 from itools import uri
-from itools import cms
+from itools import vfs
 
 
 def create(parser, options, target):
     if exists(target):
         parser.error("Directory '%s' already existing" % target)
+
+    # Find out the name of the package
+    package = basename(target)
+
+    # Build the namespace
+    namespace = {}
+    namespace['YEAR'] = date.today().year
+    namespace['PACKAGE_NAME'] = package
+    if 'GIT_AUTHOR_NAME' in environ:
+        namespace['AUTHOR_NAME'] = environ['GIT_AUTHOR_NAME']
+    if 'GIT_AUTHOR_EMAIL' in environ:
+        namespace['AUTHOR_EMAIL'] = environ['GIT_AUTHOR_EMAIL']
+
+    # Create the target folder
+    vfs.make_folder(target)
+    folder = vfs.open(target)
 
     # Copy source files
     itools_path = dirname(itools.__file__)
@@ -45,25 +60,13 @@ def create(parser, options, target):
             if not line.startswith('cms/skeleton/'):
                 continue
             path = line.strip()
+            # Read and process the data
             source = join(itools_path, path)
-            dest = join(target, path[13:])
-            basedir = dirname(dest)
-            if basedir and not exists(basedir):
-                makedirs(basedir)
-            copyfile(source, dest)
-
-    # Set up package
-    package = basename(target)
-    setup = join(target, 'setup.conf')
-    new_setup = []
-    with open(setup) as file:
-        for line in file.readlines():
-            if line.startswith('name = '):
-                new_setup.append('name = %s\n' % package)
-            else:
-                new_setup.append(line)
-    with open(setup, 'w') as file:
-        file.write(''.join(new_setup))
+            source = open(source).read()
+            data = Template(source).safe_substitute(**namespace)
+            # Create the target file
+            with folder.make_file(path[13:]) as file:
+                file.write(data)
 
     # Print a helpful message
     print '*'

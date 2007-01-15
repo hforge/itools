@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) YEAR(S) AUTHOR_NAME <EMAIL@ADDRESS>
+# Copyright (C) ${YEAR} ${AUTHOR_NAME} <${AUTHOR_EMAIL}>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -44,7 +44,7 @@ class Root(Handler, iRoot):
         """ 
         A default greeting view.
         """
-        handler = self.get_handler('/ui/frontoffice1/Root_view.xml')
+        handler = self.get_handler('/ui/${PACKAGE_NAME}/Root_view.xml')
         return stl(handler)
 
 
@@ -53,7 +53,7 @@ class Root(Handler, iRoot):
         context = get_context()
 
         cookie = context.get_cookie('skin_path')
-        if cookie == 'ui/frontoffice1':
+        if cookie == 'ui/${PACKAGE_NAME}':
             # return the frontoffice skin
             return self.get_handler(cookie)
 
@@ -66,11 +66,11 @@ class Root(Handler, iRoot):
     def switch_skin(self, context):
         cookie = context.get_cookie('skin_path') or 'ui/aruni'
 
-        if cookie == 'ui/frontoffice1':
+        if cookie == 'ui/${PACKAGE_NAME}':
             skin_path = 'ui/aruni'
             goto = context.request.referrer
         elif cookie == 'ui/aruni':
-            skin_path = 'ui/frontoffice1'
+            skin_path = 'ui/${PACKAGE_NAME}'
             goto = uri.get_reference(';view')
 
         context.set_cookie('skin_path', skin_path, path='/')

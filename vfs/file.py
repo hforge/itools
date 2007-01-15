@@ -17,9 +17,9 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import listdir, mkdir, remove, rmdir, walk
-from os.path import exists, getatime, getctime, getmtime, getsize, isfile, \
-    isdir, join
+from os import listdir, makedirs, mkdir, remove, rmdir, walk
+from os.path import (exists, getatime, getctime, getmtime, getsize, isfile,
+    isdir, join)
 from subprocess import call
 
 # Import from itools
@@ -105,7 +105,7 @@ class FileFS(BaseFS):
             if exists(file_path):
                 raise OSError, "File exists: '%s'" % reference
         else:
-            os.makedirs(folder_path)
+            makedirs(folder_path)
         return file(file_path, 'w')
 
 

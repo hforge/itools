@@ -177,6 +177,10 @@ class HTMLFile(HTML.Document, XHTMLFile):
     class_id = 'text/html'
 
 
+    def GET(self, context):
+        return Text.GET(self, context)
+
+
     def to_html(self):
         return self.to_str()
 

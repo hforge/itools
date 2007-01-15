@@ -37,22 +37,23 @@ def create(parser, options, target):
     if exists(target):
         parser.error("Directory '%s' already existing" % target)
 
-    package = basename(target)
-    skeleton = join(dirname(cms.__file__), 'skeleton')
-
-    # Copy source files (XXX The files MANIFEST and version.txt should not
-    # be included in the skeleton)
-    with open(join(skeleton, 'MANIFEST')) as manifest:
+    # Copy source files
+    itools_path = dirname(itools.__file__)
+    manifest = join(itools_path, 'MANIFEST')
+    with open(manifest) as manifest:
         for line in manifest.readlines():
+            if not line.startswith('cms/skeleton/'):
+                continue
             path = line.strip()
-            source = join(skeleton, path)
-            dest = join(target, path)
+            source = join(itools_path, path)
+            dest = join(target, path[13:])
             basedir = dirname(dest)
             if basedir and not exists(basedir):
                 makedirs(basedir)
             copyfile(source, dest)
 
     # Set up package
+    package = basename(target)
     setup = join(target, 'setup.conf')
     new_setup = []
     with open(setup) as file:

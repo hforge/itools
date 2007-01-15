@@ -27,7 +27,7 @@
     <stl:block stl:repeat="calendar calendars">
     <tr id="header_columns">
       <td rowspan="${calendar/rowspan}">
-        <a href="${calendar/url">${calendar/name}</a>
+        <a href="${calendar/url}">${calendar/name}</a>
       </td>
       <td align="center" stl:repeat="col calendar/header_columns">
         <a href="${col/new_url}" class="${col/new_class}">${col/new_value}</a>

@@ -17,8 +17,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from Python Standard Library
-from datetime import datetime
+from datetime import datetime, date, time
 from copy import deepcopy
+from operator import itemgetter
 
 # Import from itools
 from itools.handlers.Text import Text
@@ -651,11 +652,14 @@ class icalendar(Text):
         return res_events
 
 
-    # Get some events corresponding to a given dates range
     def get_events_in_range(self, dtstart, dtend, only_last=True):
         """
         Return a list of Component objects of type 'VEVENT' matching the given
-        dates range.  """
+        dates range. 
+        The only_last True value means only getting events with last sequence
+        number (history).
+        """
+
         res_events, res_event = [], None
 
         if 'VEVENT' not in self.components:
@@ -669,6 +673,71 @@ class icalendar(Text):
                 res_events.append(event)
 
         return res_events
+
+
+    def get_sorted_events_in_date(self, selected_date, only_last=True):
+        """
+        Return a list of Component objects of type 'VEVENT' matching the given
+        date and sorted chronologically.
+        The only_last True value means only getting events with last sequence
+        number (history).
+        """
+        dtstart = datetime.combine(selected_date, time(0,0))
+        dtend = datetime.combine(selected_date, time(23,59))
+
+        return self.get_sorted_events_in_range(dtstart, dtend, only_last)
+
+
+    def get_sorted_events_in_range(self, dtstart, dtend, only_last=True):
+        """
+        Return a list of Component objects of type 'VEVENT' matching the given
+        dates range and sorted chronologically.
+        The only_last True value means only getting events with last sequence
+        number (history).
+        """
+        res_events, res_event = [], None
+
+        if 'VEVENT' not in self.components:
+            return []
+
+        # Check type of dates, we need datetime for method in_range
+        if not isinstance(dtstart, datetime):
+            dtstart = datetime(dtstart.year, dtstart.month, dtstart.day)
+        if not isinstance(dtend, datetime):
+            dtend = datetime(dtend.year, dtend.month, dtend.day)
+
+        # Get only the events which matches
+        for event in self.components['VEVENT']:
+            if only_last and not self.is_last(event):
+                continue
+            if event.in_range(dtstart, dtend):
+                value = {
+                    'dtstart': event.get_property_values('DTSTART').value,
+                    'dtend': event.get_property_values('DTEND').value,
+                    'event': event
+                  }
+                res_events.append(value)
+        
+        if len(res_events) <= 1:
+            return res_events
+
+        # Sort by dtstart
+        res_events = sorted(res_events, key=itemgetter('dtstart'))
+        # Sort by dtend
+        last_end = res_events[0]['dtstart']
+        same_start, res = [], [res_events[0]]
+        for e in res_events[1:]:
+            if last_end == e['dtstart']:
+                same_start.append(e)
+            else:
+                if same_start != []:
+                    res.append(same_start)
+                    same_start = []
+                res.append(e)
+        if same_start != []:
+            res.append(same_start)
+
+        return res
 
 
     # Test if any event corresponds to a given date

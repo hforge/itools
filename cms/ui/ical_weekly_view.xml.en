@@ -55,23 +55,12 @@
 
         <!-- TIME PRECISED-->
         <div class="event" stl:repeat="event day/events">
-          <dl stl:if="event/TIME">
+          <dl>
             <dt>
               <a href="${event/url}" class="${event/STATUS}">
-                <span stl:if="event/DTSTART">
-                  <span>${event/DTSTART}</span>
-                  <span stl:if="event/DTEND"> - </span></span>
-                <span stl:if="event/DTEND">${event/DTEND}</span>
+                ${event/SUMMARY}
+                <span stl:if="event/TIME" class="time">${event/TIME}</span>
               </a>
-            </dt>
-            <dd>${event/SUMMARY}</dd>
-          </dl>  
-        </div>
-        <!-- NO TIME GIVEN (all day long) -->
-        <div class="event" stl:repeat="event day/events">
-          <dl stl:if="not event/TIME">
-            <dt>
-              <a href="${event/url}" class="${event/STATUS}">${event/SUMMARY}</a>
             </dt>
             <dd />
           </dl>  

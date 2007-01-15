@@ -405,6 +405,14 @@ dl.new_resource_thumb { width: 20em; }
   color: #8f5902;
 }
 
+#cal_monthly_view .event .time , #cal_weekly_view .event .time {
+  font-size: 0.7em;
+}
+
+#cal_monthly_view .event span, #cal_weekly_view .event span {
+  margin: 0;
+}
+
 .cal_busy {
   background: #729fcf;
 }

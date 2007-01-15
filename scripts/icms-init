@@ -73,7 +73,7 @@ def init(parser, options, target):
         'The variable "smtp-host" defines the name or IP address of the SMTP',
         'relay. This option is required for the application to send emails.',
         '',
-        'smpt-host = localhost']
+        'smtp-host = localhost']
     if options.smtp_host:
         config.set_value('smtp-host', options.smtp_host, comment=comment)
     else:

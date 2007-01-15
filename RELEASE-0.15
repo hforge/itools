@@ -1,4 +1,58 @@
 
+itools 0.15.1 (2007/01/1X)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This release brings some new features to itools.cms, and a lot of aesthetic
+and usability improvements:
+
+  - Two new object types have been added, a forum and a wiki;
+  - Added a contact form;
+  - Added a forgotten password form;
+  - Changed the layout of the menus;
+  - Updated colors, icons and views here and there.
+
+Other than this the focus of 0.15.1 has been to clean the code. Specially
+the support for dates and times, and the programming interface of
+configuration handlers, has been improved.
+
+
+Credits:
+
+ - Hervé Cauwelier contributed the Forum and Wiki objects, and worked to
+   improve the user's experience;
+ - J. David Ibáñez added the contact and forgotten password forms, and
+   worked on the user interface and cleaning the source code;
+ - Sylvain Taverne fixed the Dublin Core schema.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.15.1.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.15.0 (2006/12/20)
 ==========================
 

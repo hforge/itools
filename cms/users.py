@@ -30,7 +30,7 @@ from access import AccessControl
 from Folder import Folder
 from Handler import Handler
 from metadata import Password
-from registry import register_object_class
+from registry import register_object_class, get_object_class
 
 
 
@@ -328,7 +328,7 @@ class UserFolder(Folder):
 
 
     def get_document_types(self):
-        return [User]
+        return [get_object_class('user')]
 
 
     #######################################################################
@@ -341,7 +341,7 @@ class UserFolder(Folder):
             id = str(id)
             email, password = value
             # Add User
-            user = User()
+            user = get_object_class('user')()
             cache[id] = user
             # Add metadata
             metadata = {'owner': id, 'ikaaro:email': email,
@@ -360,7 +360,7 @@ class UserFolder(Folder):
 
 
     def set_user(self, email, password):
-        user = User()
+        user = get_object_class('user')()
 
         # Calculate the user id
         ids = []

@@ -26,7 +26,6 @@ from itools.cms.root import Root as iRoot
 
 # Import from our package
 from base import Handler
-from folder import ExampleFolder
 
 
 class Root(Handler, iRoot):
@@ -54,7 +53,7 @@ class Root(Handler, iRoot):
         """Set the default skin"""
         context = get_context()
 
-        cookie = context.get_cookie('skin_path') 
+        cookie = context.get_cookie('skin_path')
         if cookie == 'ui/frontoffice1':
             # return the frontoffice skin
             return self.get_handler(cookie)
@@ -63,10 +62,21 @@ class Root(Handler, iRoot):
         return self.get_handler('ui/aruni')
 
 
-    def get_document_types(self):
-        types = iRoot.get_document_types(self)
-        return types + [ExampleFolder]
+    switch_skin__access__ = 'is_allowed_to_edit'
+    switch_skin__label__ = u"Switch to front-office"
+    def switch_skin(self, context):
+        cookie = context.get_cookie('skin_path') or 'ui/aruni'
 
+        if cookie == 'ui/frontoffice1':
+            skin_path = 'ui/aruni'
+            goto = context.request.referrer
+        elif cookie == 'ui/aruni':
+            skin_path = 'ui/frontoffice1'
+            goto = uri.get_reference(';view')
+
+        context.set_cookie('skin_path', skin_path, path='/')
+
+        return goto
 
 
 register_object_class(Root)

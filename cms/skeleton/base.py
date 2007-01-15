@@ -20,23 +20,10 @@
 from itools import uri
 
 # Import from itools.cms
-from itools.cms.Handler import Handler as iHandler
+from itools.cms.Handler import Handler as BaseHandler
 
 
-class Handler(iHandler):
+class Handler(BaseHandler):
 
-    switch_skin__access__ = 'is_allowed_to_edit'
-    switch_skin__label__ = u"Switch to front-office"
-    def switch_skin(self, context):
-        cookie = context.get_cookie('skin_path') or 'ui/aruni'
+    class_domain = 'example'
 
-        if cookie == 'ui/frontoffice1':
-            skin_path = 'ui/aruni'
-            goto = context.request.referrer
-        elif cookie == 'ui/aruni':
-            skin_path = 'ui/frontoffice1'
-            goto = uri.get_reference(';view')
-
-        context.set_cookie('skin_path', skin_path, path='/')
-
-        return goto

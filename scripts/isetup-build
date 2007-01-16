@@ -107,7 +107,7 @@ if __name__ == '__main__':
     if git_available:
         cmd = 'git-ls-files'
     else:
-        cmd = 'find -type f|grep -Ev "^./(build|dist)"|grep -Ev "*.(~|pyc|fr|es|it|zh)"'
+        cmd = 'find -type f|grep -Ev "^./(build|dist)"|grep -Ev "*.(~|pyc|fr|es|it|zh)$"'
     for path in os.popen(cmd).readlines():
         path = path.strip()
         if not os.path.islink(path):

@@ -32,7 +32,7 @@ from itools import uri
 from itools import vfs
 
 
-def create(parser, options, target):
+def make(parser, options, target):
     if exists(target):
         parser.error("Directory '%s' already existing" % target)
 
@@ -53,19 +53,22 @@ def create(parser, options, target):
     folder = vfs.open(target)
 
     # Copy source files
+    path_prefix = 'cms/skeleton/%s/' % options.type
+    path_prefix_n = len(path_prefix)
+
     itools_path = dirname(itools.__file__)
     manifest = join(itools_path, 'MANIFEST')
     with open(manifest) as manifest:
-        for line in manifest.readlines():
-            if not line.startswith('cms/skeleton/'):
+        for path in manifest.readlines():
+            if not path.startswith(path_prefix):
                 continue
-            path = line.strip()
+            path = path.strip()
             # Read and process the data
             source = join(itools_path, path)
             source = open(source).read()
             data = Template(source).safe_substitute(**namespace)
             # Create the target file
-            with folder.make_file(path[13:]) as file:
+            with folder.make_file(path[path_prefix_n:]) as file:
                 file.write(data)
 
     # Print a helpful message
@@ -88,7 +91,10 @@ if __name__ == '__main__':
     version = 'itools %s' % itools.__version__
     description = 'Creates a new Python package for itools.cms of name TARGET.'
     parser = OptionParser(usage, version=version, description=description)
+    parser.add_option('-t', '--type', type="string", default="bare",
+                      help='Choose the type of package to make.')
 
+    # Get the name of the package to build
     options, args = parser.parse_args()
     if len(args) != 1:
         parser.error('incorrect number of arguments')
@@ -96,4 +102,4 @@ if __name__ == '__main__':
     target = args[0]
 
     # Action!
-    create(parser, options, target)
+    make(parser, options, target)

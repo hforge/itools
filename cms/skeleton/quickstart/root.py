@@ -16,10 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.web import get_context
+from itools import uri
 from itools.stl import stl
-
-# Import from itools.cms
+from itools.web import get_context
 from itools.cms.registry import register_object_class
 from itools.cms.root import Root as iRoot
 
@@ -32,11 +31,11 @@ class Root(Handler, iRoot):
     class_id = 'ExamplePortal'
     class_title = u'Example Portal'
     class_version = '20061021'
-    class_domain = 'example'
     class_views = [['view']] + iRoot.class_views + [['switch_skin']]
 
     #_catalog_fields = ikaaroRoot._catalog_fields + [
     #        ('<field>', '<analyser>', False, True)]
+
 
     view__access__ = True
     view__label__ = u'Welcome!'
@@ -44,7 +43,7 @@ class Root(Handler, iRoot):
         """ 
         A default greeting view.
         """
-        handler = self.get_handler('/ui/${PACKAGE_NAME}/Root_view.xml')
+        handler = self.get_handler('/ui/frontoffice1/Root_view.xml')
         return stl(handler)
 
 
@@ -53,7 +52,7 @@ class Root(Handler, iRoot):
         context = get_context()
 
         cookie = context.get_cookie('skin_path')
-        if cookie == 'ui/${PACKAGE_NAME}':
+        if cookie == 'ui/frontoffice1':
             # return the frontoffice skin
             return self.get_handler(cookie)
 
@@ -66,11 +65,11 @@ class Root(Handler, iRoot):
     def switch_skin(self, context):
         cookie = context.get_cookie('skin_path') or 'ui/aruni'
 
-        if cookie == 'ui/${PACKAGE_NAME}':
+        if cookie == 'ui/frontoffice1':
             skin_path = 'ui/aruni'
             goto = context.request.referrer
         elif cookie == 'ui/aruni':
-            skin_path = 'ui/${PACKAGE_NAME}'
+            skin_path = 'ui/frontoffice1'
             goto = uri.get_reference(';view')
 
         context.set_cookie('skin_path', skin_path, path='/')

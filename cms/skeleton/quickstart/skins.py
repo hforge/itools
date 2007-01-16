@@ -77,8 +77,3 @@ class FrontOffice1(Skin):
 
         return header + body
 
-
-# Register the skin
-path = get_abspath(globals(), 'ui/frontoffice1')
-frontoffice1 = FrontOffice1(path)
-register_skin('frontoffice1', frontoffice1)

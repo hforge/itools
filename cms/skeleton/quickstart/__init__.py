@@ -18,13 +18,13 @@
 # Import from itools
 from itools import get_abspath, get_version
 from itools.gettext import domains
-from itools.cms import skins
+from itools.cms.skins import register_skin
 
 # Import from our package
 from base import Handler
 import metadata
 from root import Root
-import skins
+from skins import FrontOffice1
 
 
 # Make the product version available to Python code
@@ -32,8 +32,9 @@ __version__ = get_version(globals())
 
 
 # Register the skin
-skin = get_abspath(globals(), 'ui')
-skins.register_skin('frontoffice1', skin)
+path = get_abspath(globals(), 'ui/frontoffice1')
+skin = FrontOffice1(path)
+register_skin('frontoffice1', skin)
 
 # Register domain (i18n)
 path = get_abspath(globals(), 'locale')

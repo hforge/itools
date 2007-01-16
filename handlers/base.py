@@ -34,6 +34,8 @@ handler class hierarchy.
 
 class Node(object):
 
+    parent = None
+
     def get_abspath(self):
         # XXX Should return a Path instance
         if self.parent is None:

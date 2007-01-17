@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <script type="text/javascript">
+    function set_email(value) {
+        email = document.getElementById('email');
+        password = document.getElementById('password');
+        password2 = document.getElementById('password2');
+        /* Set email and reset the password */
+        email.value = value;
+        password.value = '';
+        password2.value = '';
+        /* Disable the input forms */
+        pw = document.getElementById('pw');
+        if (value) {
+            email.setAttribute('readonly', 'readonly');
+            /* Hide the password field (does not work on IE) */
+            pw.style.visibility = 'hidden';
+        } else {
+            email.removeAttribute('readonly');
+            /* Show the password field (does not work on IE) */
+            pw.style.visibility = 'visible';
+        }
+    }
+  </script>
+
+
+  <h2>Add New User</h2>
+
+  <form name="addform" action=";new_user" method="post">
+    <dl>
+      <dt>Email</dt>
+      <dd>
+        <input id="email" type="text" name="email" />
+        <select id="users" name="email2" onchange="set_email(this.value);"
+          stl:if="emails">
+          <option value=""></option>
+          <option stl:repeat="email emails" value="${email}">${email}</option>
+        </select>
+      </dd>
+      <div id="pw">
+        <dt>Password</dt>
+        <dd>
+          <input id="password" type="password" name="password" />
+        </dd>
+        <dt>Repeat Password</dt>
+        <dd>
+          <input id="password2" type="password" name="password2" />
+        </dd>
+      </div>
+      <dt>Role</dt>
+      <dd>
+        <select name="role">
+          <option stl:repeat="role roles" value="${role/name}"
+            >${role/title}</option>
+        </select>
+      </dd>
+    </dl>
+    <p>
+      <input type="submit" name="add_and_view" value="Add and view"
+        class="button_ok" />
+      <input type="submit" name="add_and_return" value="Add and return" />
+    </p>
+  </form>
+
+  <script language="javascript">
+    focus("email");
+  </script>
+
+</stl:block>

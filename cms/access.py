@@ -16,6 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
+from itools import uri
+from itools.datatypes import Email
 from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
@@ -135,7 +137,7 @@ class RoleAware(AccessControl):
         """
         Return the names of the roles available.
         """
-        return [r['name'] for r in self.__roles__]
+        return [ r['name'] for r in self.__roles__ ]
 
 
     def get_user_role(self, user_id):
@@ -144,7 +146,10 @@ class RoleAware(AccessControl):
         any role.
         """
         for role in self.get_role_names():
-            if user_id in self.get_property(role):
+            value = self.get_property(role)
+            if value is None:
+                continue
+            if user_id in value:
                 return role
         return None
 
@@ -205,55 +210,44 @@ class RoleAware(AccessControl):
     #########################################################################
     # User Interface
     #########################################################################
-    def get_roles_namespace(self, username):
-        namespace = []
+    def get_roles_namespace(self, username=None):
+        # Build a list with the role name and unit
+        namespace = [ {'name': x['name'], 'title': x['unit']}
+                      for x in self.__roles__ ]
 
+        # If a username was not given, we are done
+        if username is None:
+            return namespace
+
+        # Add the selected field
         user_role = self.get_user_role(username)
-        for role in self.__roles__:
-            rolename = role['name']
-            namespace.append({'name': rolename,
-                              'title': role['unit'],
-                              'selected': user_role == rolename})
+        for role in namespace:
+            role['selected'] = (user_role == role['name'])
 
         return namespace
 
 
+    #######################################################################
+    # Browse
     permissions_form__access__ = 'is_admin'
     permissions_form__label__ = u"Permissions"
     permissions_form__sublabel__ = u"Permissions"
     def permissions_form(self, context):
-        root = context.root
-        userfolder = root.get_handler('users')
         namespace = {}
 
-        # Roles
-        namespace['roles'] = self.__roles__
-
-        # Users (members and non-members)
-        members = self.get_members()
-
-        users = []
-        others = []
         # XXX This code is slow when there are many users, because the
         # method "userfolder.get_handler" is too expensive.
+        members = []
+        userfolder = self.get_handler('/users')
         get_user = userfolder.get_handler
-        for name in userfolder.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
-            user = get_user(name)
-            if name in members:
-                users.append({'name': name,
-                              'title_or_name': user.get_title_or_name(),
-                              'roles': self.get_roles_namespace(name)})
-            else:
-                others.append({'name': name,
-                               'title_or_name': user.get_title_or_name()})
+        for user_id in self.get_members():
+            user = get_user(user_id)    
+            members.append({'name': user_id,
+                            'title_or_name': user.get_title_or_name(),
+                            'roles': self.get_roles_namespace(user_id)})
 
-        users.sort(key=lambda x: x['title_or_name'])
-        others.sort(key=lambda x: x['title_or_name'])
-
-        namespace['users'] = users
-        namespace['others'] = others
+        members.sort(key=lambda x: x['title_or_name'])
+        namespace['users'] = members
 
         handler = self.get_handler('/ui/RoleAware_permissions.xml')
         return stl(handler, namespace)
@@ -292,16 +286,88 @@ class RoleAware(AccessControl):
         return context.come_back(u"Members deleted.")
 
     
-    permissions_add_members__access__ = 'is_admin'
-    def permissions_add_members(self, context):
-        usernames = context.get_form_values('addusers')
+    #######################################################################
+    # Add
+    new_user_form__access__ = 'is_admin'
+    new_user_form__label__ = u'Permissions'
+    new_user_form__sublabel__ = u'New User'
+    def new_user_form(self, context):
+        namespace = {}
+
+        # Users (non-members)
+        users = self.get_handler('/users')
+        members = self.get_members()
+
+        non_members = []
+        for name in users.get_handler_names():
+            # Work with the metadata
+            if not name.endswith('.metadata'):
+                continue
+            # Check the user is not a member
+            user_id = name[:-9]
+            if user_id in members:
+                continue
+            # Add the user
+            metadata = users.get_handler(name)
+            email = metadata.get_property('ikaaro:email')
+            non_members.append(email)
+
+        non_members.sort()
+        namespace['emails'] = non_members
+
+        # Roles
+        namespace['roles'] = self.get_roles_namespace()
+
+        handler = self.get_handler('/ui/RoleAware_new_user.xml')
+        return stl(handler, namespace)
+
+
+    new_user__access__ = 'is_admin'
+    def new_user(self, context):
+        # Get the email
+        email = context.get_form_value('email2')
+        if not email:
+            email = context.get_form_value('email')
+            # Check the email is right
+            if not email:
+                message = u'The email address is missing, please type it.'
+                return context.come_back(message)
+            if not Email.is_valid(email):
+                message = u'A valid email address must be provided.'
+                return context.come_back(message)
+
+        # Check wether the user exists
+        root = context.root
+        results = root.search(email=email)
+        if results.get_n_documents():
+            user_id = results.get_documents()[0].name
+            # Check the user is not yet in the group
+            members = self.get_members()
+            if user_id in members:
+                message = u'The user is alredy here.'
+                return context.come_back(message)
+        else:
+            # A new user, add it
+            password = context.get_form_value('password')
+            password2 = context.get_form_value('password2')
+            # Check the password is right
+            if not password or password != password2:
+                message = u'The password is wrong, please try again.'
+                return context.come_back(message)
+            # Add the user
+            users = self.get_handler('/users')
+            user = users.set_user(email, password)
+            user_id = user.name
+
+        # Set the role
         role = context.get_form_value('role')
+        self.set_user_role(user_id, role)
 
-        # Add member
-        self.set_user_role(usernames, role)
+        # Come back
+        if context.has_form_value('add_and_return'):
+            goto = None
+        else:
+            goto='./%s/;%s' % (user.name, user.get_firstview())
+            goto = uri.get_reference(goto)
 
-        # Reindex
-        context.root.reindex_handler(self)
-
-        # Back
-        return context.come_back(u"Members added.")
+        return context.come_back(u'User added.', goto=goto)

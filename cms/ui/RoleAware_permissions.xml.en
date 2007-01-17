@@ -6,58 +6,36 @@
 
   <h2>Access Control</h2>
 
-  <div style="width: 300; float: left; padding: 0px 10px 10px 10px;">
-    Remove members or update the roles:
-    <form action="." method="post">
-      <table width="300">
-        <thead>
-          <tr>
-            <th width="10"></th>
-            <th width="*">Name</th>
-            <th width="100">Role</th>
-          </tr>
-        </thead>
-        <tbody stl:if="users">
-          <tr stl:repeat="user users" class="${repeat/user/even}">
-            <td>
-              <input type="checkbox" name="delusers" value="${user/name}" />
-            </td>
-            <td>${user/title_or_name}</td>
-            <td>
-              <select name="${user/name}" style="width: 100%">
-                <option stl:repeat="role user/roles" value="${role/name}"
-                  selected="${role/selected}">${role/title}</option>
-              </select>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p style="width: 300px">
-        <input type="submit" name=";permissions_update_members" value="Update"
-          class="button_rename" style="float: right" />
-        <input type="submit" name=";permissions_del_members" value="Delete"
-          class="button_delete" />
-      </p>
-    </form>
-  </div>
-
-  <div style="margin-left: 360px" stl:if="others">
-    <form action=";permissions_add_members" method="post">
-      Add a new 
-      <select name="role" style="font-size: 1em">
-        <option stl:repeat="role roles" value="${role/name}"
-          >${role/unit}</option>
-      </select>
-      <br/><br/>
-      <select name="addusers" size="15" multiple="multiple">
-        <option stl:repeat="user others"
-          value="${user/name}">${user/title_or_name}</option>
-      </select>
-      <p style="width: 200px">
-        <input type="submit" value="Add" class="button_add" />
-      </p>
-    </form>
-  </div>
-  <div class="clear"></div>
+  <form action="." method="post">
+    <table width="300">
+      <thead>
+        <tr>
+          <th width="10"></th>
+          <th width="*">Name</th>
+          <th width="100">Role</th>
+        </tr>
+      </thead>
+      <tbody stl:if="users">
+        <tr stl:repeat="user users" class="${repeat/user/even}">
+          <td>
+            <input type="checkbox" name="delusers" value="${user/name}" />
+          </td>
+          <td>${user/title_or_name}</td>
+          <td>
+            <select name="${user/name}" style="width: 100%">
+              <option stl:repeat="role user/roles" value="${role/name}"
+                selected="${role/selected}">${role/title}</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="width: 300px">
+      <input type="submit" name=";permissions_update_members" value="Update"
+        class="button_rename" style="float: right" />
+      <input type="submit" name=";permissions_del_members" value="Delete"
+        class="button_delete" />
+    </p>
+  </form>
 
 </stl:block>

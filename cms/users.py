@@ -418,7 +418,6 @@ class UserFolder(Folder):
         email = context.get_form_value('email')
         password = context.get_form_value('password')
         password2 = context.get_form_value('password2')
-        groups = context.get_form_values('groups')
 
         # Check the email is not empty
         if not email:
@@ -444,11 +443,6 @@ class UserFolder(Folder):
         # Add the user
         user = self.set_user(email, password)
 
-        # Add user in groups
-        for group_path in groups:
-            group = root.get_handler(group_path)
-            group.set_user(user.name)
-
         # Come back
         if context.has_form_value('add_and_return'):
             goto = ';%s' % self.get_browse_view()
@@ -456,8 +450,7 @@ class UserFolder(Folder):
             goto='./%s/;%s' % (user.name, user.get_firstview())
         goto = uri.get_reference(goto)
 
-        message = self.gettext(u'User added.')
-        return goto.replace(message=message)
+        return context.come_back(u'User added.', goto=goto)
 
 
     def on_del_handler(self, segment):

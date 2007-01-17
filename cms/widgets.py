@@ -193,23 +193,51 @@ class Breadcrumb(object):
 
 
 
-pattern1 = Template(
-    '<dt><a href="${href}" class="${class}"><img src="${src}" alt=""'
-    ' width="16" height="16" /> ${title}</a></dt>\n'
-    '<dd>\n'
-    '  <dl>\n'
-    '  ${children}\n'
-    '  </dl>\n'
-    '</dd>\n')
+###########################################################################
+# Tree
+###########################################################################
+def menu(options):
+    """
+    The input (options) is a tree:
 
-pattern2 = Template(
-    '<dt><span class="${class}"><img src="${src}" alt="" width="16"'
-    ' height="16" /> ${title}</span></dt>\n'
-    '<dd>\n'
-    '  <dl>\n'
-    '  ${children}\n'
-    '  </dl>\n'
-    '</dd>\n')
+      [{'href': ...,
+        'class': ...,
+        'src': ...,
+        'title': ...,
+        'items': [....]}
+       ...
+       ]
+       
+    """
+    output = '<dl>\n'
+
+    for option in options:
+        cls = option['class']
+        href = option['href']
+        src = option['src']
+        # The option
+        output += '<dt class="%s">' % cls
+        # The image
+        if option['src'] is not None:
+            output += '<img src="%s" alt="" width="16" height="16" /> ' % src
+        # The link
+        if option['href'] is None:
+            output += option['title']
+        else:
+            output += '<a href="%s">' % href
+            output += option['title']
+            output += '</a>'
+        output += '</dt>\n'
+
+        # Sub-options
+        output += '<dd>'
+        for item in option['items']:
+            output += menu(option['items'])
+        output += '</dd>'
+
+    output += '</dl>\n'
+    return output
+
 
 
 def _tree(context, handler, depth, filter):
@@ -219,18 +247,16 @@ def _tree(context, handler, depth, filter):
     handler_path = handler.abspath
     in_path = here_path.startswith(handler_path)
 
-    # Choose the pattern to use
-    firstview = handler.get_firstview()
-    if firstview is None:
-        pattern = pattern2
-    else:
-        pattern = pattern1
-
     # Build the namespace
     namespace = {}
     namespace['src'] = handler.get_path_to_icon(size=16, from_handler=here)
     namespace['title'] = handler.get_title_or_name()
-    if firstview is not None:
+
+    # The href
+    firstview = handler.get_firstview()
+    if firstview is None:
+        namespace['href'] = None
+    else:
         if handler_path == '/':
             namespace['href'] = '/;%s' % firstview
         else:
@@ -242,7 +268,7 @@ def _tree(context, handler, depth, filter):
         namespace['class'] = 'nav_active'
 
     # The children
-    namespace['children'] = ''
+    namespace['items'] = []
     if in_path:
         if depth > 0:
             depth = depth - 1
@@ -259,9 +285,9 @@ def _tree(context, handler, depth, filter):
                 ac = child.get_access_control()
                 if ac.is_allowed_to_view(user, child):
                     children.append(_tree(context, child, depth, filter))
-            namespace['children'] = '\n'.join(children)
+            namespace['items'] = children
  
-    return pattern.substitute(namespace)
+    return namespace
 
 
 
@@ -269,5 +295,6 @@ def tree(context, root=None, depth=6, filter=None):
     if root is None:
         root = context.root
 
-    return '<dl>\n' + _tree(context, root, depth, filter) + '</dl>\n'
+    options = [_tree(context, root, depth, filter)]
+    return menu(options)
 

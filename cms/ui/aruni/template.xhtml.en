@@ -9,7 +9,7 @@
 
     <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
     <link rel="stylesheet" type="text/css"
-          href="../calendar/calendar-aruni.css" />
+      href="../calendar/calendar-aruni.css" />
     <script type="text/javascript" src="../calendar/calendar.js" />
     <script type="text/javascript" src="../calendar/lang/calendar-en.js" />
     <script type="text/javascript" src="../calendar/calendar-setup.js" />
@@ -18,7 +18,8 @@
     <link rel="stylesheet" type="text/css" href="../epoz.css" />
     <script type="text/javascript" src="../epoz.js" />
 
-    <link rel="stylesheet" type="text/css" media="screen" href="../onetruelayout.css" />
+    <link rel="stylesheet" type="text/css" media="screen"
+      href="../onetruelayout.css" />
     <link rel="stylesheet" type="text/css" href="aruni.css" />
 
     <script type="text/javascript" src="../browser.js" />
@@ -89,9 +90,18 @@
       </div>
       <div id="block_2">
         <div class="navigation">
-          <label>Navigation</label>
-          ${navigation}
+          ${static_menu}
         </div>
+        <div class="navigation">
+          <label>Navigation</label>
+          ${nav_menu/content}
+        </div>
+        <!--
+        <div class="navigation">
+          <label>${content_menu/title}</label>
+          ${content_menu/content}
+        </div>
+        -->
       </div>
     </div>
     <div id="footer">

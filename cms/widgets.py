@@ -196,7 +196,7 @@ class Breadcrumb(object):
 ###########################################################################
 # Tree
 ###########################################################################
-def menu(options):
+def build_menu(options):
     """
     The input (options) is a tree:
 
@@ -231,8 +231,8 @@ def menu(options):
 
         # Sub-options
         output += '<dd>'
-        for item in option['items']:
-            output += menu(option['items'])
+        if option['items']:
+            output += build_menu(option['items'])
         output += '</dd>'
 
     output += '</dl>\n'
@@ -243,9 +243,7 @@ def menu(options):
 def _tree(context, handler, depth, filter):
     # Define local variables
     here = context.handler
-    here_path = str(context.path)
     handler_path = handler.abspath
-    in_path = here_path.startswith(handler_path)
 
     # Build the namespace
     namespace = {}
@@ -264,28 +262,36 @@ def _tree(context, handler, depth, filter):
 
     # The CSS style
     namespace['class'] = ''
-    if here_path == handler_path:
+    if handler_path == str(context.path):
         namespace['class'] = 'nav_active'
 
-    # The children
-    namespace['items'] = []
-    if in_path:
-        if depth > 0:
-            depth = depth - 1
-            user = context.user
-            children = []
+    # Expand only if in path
+    here_path = str(context.path)
+    if not here_path.startswith(handler_path):
+        namespace['items'] = []
+        return namespace
 
-            # Filter the handlers by the given class (don't filter by default)
-            if filter is None:
-                search = handler.search_handlers()
-            else:
-                search = handler.search_handlers(handler_class=filter)
+    # Expand till a given depth
+    if depth <= 0:
+        namespace['items'] = []
+        return namespace
 
-            for child in search:
-                ac = child.get_access_control()
-                if ac.is_allowed_to_view(user, child):
-                    children.append(_tree(context, child, depth, filter))
-            namespace['items'] = children
+    # Expand the children
+    depth = depth - 1
+    user = context.user
+
+    # Filter the handlers by the given class (don't filter by default)
+    if filter is None:
+        search = handler.search_handlers()
+    else:
+        search = handler.search_handlers(handler_class=filter)
+
+    children = []
+    for child in search:
+        ac = child.get_access_control()
+        if ac.is_allowed_to_view(user, child):
+            children.append(_tree(context, child, depth, filter))
+    namespace['items'] = children
  
     return namespace
 
@@ -296,5 +302,5 @@ def tree(context, root=None, depth=6, filter=None):
         root = context.root
 
     options = [_tree(context, root, depth, filter)]
-    return menu(options)
+    return build_menu(options)
 

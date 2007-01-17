@@ -32,7 +32,7 @@ from itools.uri.generic import Query
 # Import from itools.cms
 from Folder import Folder
 from utils import reduce_string
-from widgets import tree
+from widgets import tree, build_menu
 from registry import register_object_class
 
 
@@ -206,9 +206,74 @@ class Skin(Folder):
         return {'info': info, 'joinisopen': False}
 
 
+    def get_static_menu(self, context):
+        root = context.root
+        here = context.handler
+        user = context.user
+
+        options = [
+            {'path': '/', 'method': 'permissions_form'},
+            {'path': '/', 'method': 'languages_form'}]
+
+        aux = []
+        for option in options:
+            path = option['path']
+            method = option['method']
+
+            handler = root.get_handler(path)
+            ac = handler.get_access_control()
+            if ac.is_access_allowed(user, handler, method):
+                href = '%s/;%s' % (here.get_pathto(handler), method)
+                title = getattr(handler, '%s__label__' % method)
+                src = getattr(handler, '%s__icon__' % method)
+                aux.append({'href': href, 'title': title, 'class': '',
+                            'src': src, 'items': []})
+
+        return build_menu(aux)
+
+
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        return tree(context, depth=6, filter=Folder)
+        root = context.root 
+        here = context.root
+
+        title = root.get_title_or_name()
+        icon = root.get_path_to_icon(size=16, from_handler=here)
+        menu = tree(context, depth=5, filter=Folder)
+        return {'icon': icon, 'title': title, 'content': menu}
+
+
+    def get_content_menu(self, context):
+        here = context.handler
+        user = context.user
+
+        options = []
+        # Parent
+        parent = here.parent
+        if parent is not None:
+            firstview = parent.get_firstview()
+            options.append({'href': '../;%s' % (firstview),
+                            'src': None,
+                            'title': '..',
+                            'class': '',
+                            'items': []})
+
+        # Content
+        if isinstance(here, Folder):
+            for handler in here.search_handlers():
+                ac = handler.get_access_control()
+                if not ac.is_allowed_to_view(user, handler):
+                    continue
+                firstview = handler.get_firstview()
+                src = handler.get_path_to_icon(size=16, from_handler=here)
+                options.append({'href': '%s/;%s' % (handler.name, firstview),
+                                'src': src,
+                                'title': handler.get_title_or_name(),
+                                'class': '',
+                                'items': []})
+
+        menu = build_menu(options)
+        return {'title': here.get_title_or_name(), 'content': menu}
 
 
     def get_message(self, context):
@@ -217,13 +282,6 @@ class Skin(Folder):
             message = context.get_form_value('message')
             return unicode(message, 'utf8')
         return None
-
-
-    def get_site_search(self, context):
-        namespace = {}
-        namespace['action'] = '/;site_search'
-        namespace['text'] = context.get_form_value('site_search_text', '')
-        return namespace
 
 
     def get_template_title(self, context):
@@ -270,10 +328,13 @@ class Skin(Folder):
         namespace['user']= self.get_user_menu(context)
 
         # Navigation menu
-        namespace['navigation'] = self.get_navigation_menu(context)
+        namespace['static_menu'] = self.get_static_menu(context)
 
-        # Languages
-##        namespace['content_languages'] = self.get_content_languages(context)
+        # Navigation menu
+        namespace['nav_menu'] = self.get_navigation_menu(context)
+
+        # The context menu
+        namespace['content_menu'] = self.get_content_menu(context)
 
         # Breadcrumb
         namespace['breadcrumb'] = self.get_breadcrumb(context)
@@ -288,9 +349,6 @@ class Skin(Folder):
 
         # Message
         namespace['message'] = self.get_message(context)
-
-        # Root search
-        namespace['site_search'] = self.get_site_search(context)
 
         return namespace
 

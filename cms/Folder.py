@@ -59,9 +59,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
     class_description = u'Organize your files and documents with folders.'
     class_icon16 = 'images/Folder16.png'
     class_icon48 = 'images/Folder48.png'
-    class_views = [['browse_thumbnails', 'browse_list', 'browse_image'],
-                   ['new_resource_form'],
-                   ['edit_metadata_form']]
+    class_views = [
+        ['browse_content?mode=thumbnails',
+         'browse_content?mode=list',
+         'browse_content?mode=image'],
+        ['new_resource_form'],
+        ['edit_metadata_form']]
 
 
     search_criteria =  [
@@ -315,35 +318,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
     #######################################################################
     # User interface
     #######################################################################
-    def get_browse_view(self):
-        context = get_context()
-        options = {
-            'thumb': 'browse_thumbnails',
-            'list': 'browse_list',
-            'image_gallery': 'browse_image',
-        }
-        if isinstance(self, CalendarAware):
-            options['calendar'] = 'browse_calendar'
-        key = context.get_cookie('browse')
-        return options.get(key, 'browse_thumbnails')
-
-
-    def get_firstview(self):
-        """
-        Returns the first allowed object view url, or None if there aren't.
-        """
-        user = get_context().user
-        ac = self.get_access_control()
-
-        for name in self.get_views():
-            if ac.is_access_allowed(user, self, name):
-                if name in ['browse_thumbnails', 'browse_list']:
-                    name = self.get_browse_view()
-                return name
-        return None
-
-    firstview = property(get_firstview, None, None, "")
-
 
     #######################################################################
     # Browse
@@ -462,9 +436,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return namespace
 
 
-    browse_thumbnails__access__ = 'is_authenticated'
-    browse_thumbnails__label__ = u'Contents'
-    browse_thumbnails__sublabel__ = u'As Icons'
     def browse_thumbnails(self, context):
         context.set_cookie('browse', 'thumb')
 
@@ -475,9 +446,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return stl(handler, namespace)
 
 
-    browse_list__access__ = 'is_allowed_to_edit'
-    browse_list__label__ = u'Contents'
-    browse_list__sublabel__ = u'As List'
     def browse_list(self, context):
         context.set_cookie('browse', 'list')
 
@@ -534,9 +502,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return stl(handler, namespace)
 
 
-    browse_image__access__ = 'is_allowed_to_edit'
-    browse_image__label__ = u'Contents'
-    browse_image__sublabel__ = u'As Image Gallery'
     def browse_image(self, context):
         selected_image = context.get_form_value('selected_image')
         selected_index = None
@@ -683,9 +648,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 self.set_handler('%s.metadata' % new_name, handler_metadata)
                 self.del_handler(old_name)
 
-        goto = get_reference(';%s' % self.get_browse_view())
-        message = self.gettext(u'Objects renamed.')
-        return goto.replace(message=message)
+        message = u'Objects renamed.'
+        return context.come_back(message, goto=';browse_content')
 
 
     copy__access__ = 'is_allowed_to_copy'
@@ -785,6 +749,29 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return context.come_back(u'Objects pasted.')
 
 
+    browse_content__access__ = 'is_allowed_to_view'
+    browse_content__label__ = u'Contents'
+
+    def browse_content__sublabel__(self, **kw):
+        mode = kw.get('mode', 'thumbnails')
+        return {'thumbnails': u'As Icons',
+                'list': 'As List',
+                'image': 'As Image Gallery'}[mode]
+
+    def browse_content(self, context):
+        mode = context.get_form_value('mode')
+        if mode is None:
+            mode = context.get_cookie('browse_mode')
+            # Default
+            if mode is None:
+                mode = 'thumbnails'
+        else:
+            context.set_cookie('browse_mode', mode)
+
+        method = getattr(self, 'browse_%s' % mode)
+        return method(context)
+
+
     #######################################################################
     # Add / New Resource
     new_resource_form__access__ = 'is_allowed_to_add'
@@ -866,12 +853,13 @@ class Folder(Handler, BaseFolder, CalendarAware):
         handler.set_property('dc:title', title, language)
 
         # Come back
-        message = u'New resource added.'
         if context.has_form_value('add_and_return'):
-            goto = ';%s' % self.get_browse_view()
+            goto = ';browse_content'
         else:
             handler = self.get_handler(name)
             goto = './%s/;%s' % (name, handler.get_firstview())
+
+        message = u'New resource added.'
         return context.come_back(message, goto=goto)
 
 
@@ -931,12 +919,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         # Come back
         if context.has_form_value('add_and_return'):
-            goto = ';%s' % self.get_browse_view()
+            goto = ';browse_content'
         else:
             goto='./%s/;%s' % (name, handler.get_firstview())
-        goto = get_reference(goto)
-        message = self.gettext(u'File uploaded.')
-        return goto.replace(message=message)
+
+        message = u'File uploaded.'
+        return context.come_back(message, goto=goto)
 
 
     #######################################################################

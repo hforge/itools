@@ -221,9 +221,11 @@ class Node(BaseNode):
         """
         user = get_context().user
         ac = self.get_access_control()
-        for name in self.get_views():
-            if ac.is_access_allowed(user, self, name):
-                return name
+        for view in self.get_views():
+            # Check the security
+            method_name = view.split('?')[0]
+            if ac.is_access_allowed(user, self, method_name):
+                return view
         return None
 
 
@@ -233,7 +235,8 @@ class Node(BaseNode):
 
     def get_subviews(self, name):
         for block in self.class_views:
-            if name in block:
+            aux = [ x.split('?')[0] for x in block ]
+            if name in aux:
                 if len(block) == 1:
                     return []
                 return block[:]

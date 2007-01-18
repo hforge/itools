@@ -114,8 +114,8 @@ class Skin(Folder):
         tabs = []
         for view in views:
             # from method?param1=value1&param2=value2&...
-            # we separate method and arguments, 
-            # then we get a dict with the arguments and the subview active state
+            # we separate method and arguments, then we get a dict with
+            # the arguments and the subview active state
             if '?' in view:
                 name, args = view.split('?')
                 args = Query.decode(args)

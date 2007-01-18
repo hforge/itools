@@ -50,7 +50,8 @@ class Root(WebSite):
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
     class_views = [
-        ['browse_thumbnails', 'browse_list'],
+        ['browse_content?mode=thumbnails',
+         'browse_content?mode=list'],
         ['new_resource_form'],
         ['edit_metadata_form'],
         ['languages_form', 'anonymous_form', 'contact_options_form'],

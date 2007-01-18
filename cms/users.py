@@ -45,11 +45,14 @@ class User(AccessControl, Folder):
     class_title = 'User'
     class_icon16 = 'images/User16.png'
     class_icon48 = 'images/User48.png'
-    class_views = [['profile'],
-                   ['browse_thumbnails', 'browse_list', 'browse_image'],
-                   ['new_resource_form'],
-                   ['edit_form', 'edit_account_form', 'edit_password_form'],
-                   ['tasks_list']]
+    class_views = [
+        ['profile'],
+        ['browse_content?mode=thumbnails',
+         'browse_content?mode=list',
+         'browse_content?mode=image'],
+        ['new_resource_form'],
+        ['edit_form', 'edit_account_form', 'edit_password_form'],
+        ['tasks_list']]
 
 
     ########################################################################
@@ -322,7 +325,7 @@ class UserFolder(Folder):
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
-    class_views = [['browse_thumbnails', 'browse_list'],
+    class_views = [['browse_content?mode=list'],
                    ['new_user_form'],
                    ['edit_metadata_form']]
 
@@ -445,10 +448,9 @@ class UserFolder(Folder):
 
         # Come back
         if context.has_form_value('add_and_return'):
-            goto = ';%s' % self.get_browse_view()
+            goto = ';browse_content'
         else:
             goto='./%s/;%s' % (user.name, user.get_firstview())
-        goto = uri.get_reference(goto)
 
         return context.come_back(u'User added.', goto=goto)
 

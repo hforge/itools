@@ -85,12 +85,23 @@ class Context(object):
         self.response.redirect(reference, status)
 
 
-    def come_back(self, message, goto=None, **kw):
+    def come_back(self, message, goto=None, exclude=[], **kw):
+        """
+        This is a handy method that builds a URI object from some parameters.
+        It exists to make short some common patterns.
+        """
         # By default we come back to the referrer
         if goto is None:
             goto = self.request.referrer
         elif isinstance(goto, str):
             goto = uri.get_reference(goto)
+        # Preserve some form values
+        form = {}
+        for key, value in self.request.form.items():
+            if key not in exclude:
+                form[key] = value
+        if form:
+            goto = goto.replace(**form)
         # Translate the source message
         if message:
             message = self.handler.gettext(message)

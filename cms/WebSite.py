@@ -314,10 +314,14 @@ class WebSite(RoleAware, Folder):
         email = context.get_form_value('username')
         password = context.get_form_value('password')
 
+        # Don't send back the password
+        keys = ['password']
+
         # Check the email field has been filed
         email = email.strip()
         if not email:
-            return context.come_back(u'Type your email please.')
+            message = u'Type your email please.'
+            return context.come_back(message, exclude=keys)
 
         # Check the user exists
         root = context.root
@@ -330,8 +334,8 @@ class WebSite(RoleAware, Folder):
             results = catalog.search(email=email)
             # No user found
             if results.get_n_documents() == 0:
-                return context.come_back(
-                    u'The user "$username" does not exist.', username=email)
+                message = u'The user "$username" does not exist.'
+                return context.come_back(message, username=email, exclude=keys)
 
         # Get the user
         brain = results.get_documents()[0]
@@ -339,13 +343,13 @@ class WebSite(RoleAware, Folder):
 
         # Check the user is active
         if user.get_property('ikaaro:user_must_confirm'):
-            return context.come_back(
-                u'The user "$username" is not active.', username=email)
+            message = u'The user "$username" is not active.'
+            return context.come_back(message, username=email, exclude=keys)
 
         # Check the password is right
         password = crypt_password(password)
         if not user.authenticate(password):
-            return context.come_back(u'The password is wrong.')
+            return context.come_back(u'The password is wrong.', exclude=keys)
 
         # Set cookie
         username = str(user.name)

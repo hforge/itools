@@ -18,6 +18,7 @@
 
 # Import from the Standard Library
 import marshal
+from string import Template
 import urllib
 import zlib
 
@@ -321,6 +322,15 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     #######################################################################
     # Browse
+    def get_human_size(self):
+        names = self.get_handler_names()
+        names = [ x for x in names if (x[0] != '.' and x[-9:] != '.metadata') ]
+        size = len(names)
+
+        str = self.gettext('$n obs')
+        return Template(str).substitute(n=size)
+
+
     def _browse_namespace(self, object, icon_size):
         line = {}
         line['title_or_name'] = object.title_or_name

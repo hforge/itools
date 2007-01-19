@@ -68,6 +68,18 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     # User interface
     #######################################################################
 
+    def get_human_size(self):
+        bytes = vfs.get_size(self.uri)
+        size = bytes / 1024.0
+        if size >= 1024:
+            size = size / 1024.0
+            str = u'%.01f MB'
+        else:
+            str = u'%.01f KB'
+
+        return self.gettext(str) % size
+
+
     #######################################################################
     # Download
     download_form__access__ = 'is_allowed_to_view'

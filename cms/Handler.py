@@ -161,24 +161,6 @@ class Node(BaseNode):
         return '%sui/%s' % (from_handler.get_pathtoroot(), path_to_icon)
 
 
-    def get_human_size(self):
-        uri = self.uri
-        if vfs.is_file(uri):
-            bytes = vfs.get_size(uri)
-            kbytes = bytes / 1024.0
-            if kbytes >= 1024:
-                mbytes = kbytes / 1024.0
-                size = self.gettext(u'%.01f MB') % mbytes
-            else:
-                size = self.gettext(u'%.01f KB') % kbytes
-        else:
-            size = len([ x for x in vfs.get_names(self.uri)
-                         if not x.startswith('.') ])
-            size = self.gettext(u'%d obs') % size
-
-        return size
-
-
     ########################################################################
     # Internationalization
     ########################################################################

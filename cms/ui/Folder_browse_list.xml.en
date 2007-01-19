@@ -32,34 +32,10 @@
     <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
     <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
   </div>
-  <table stl:if="objects" summary="listing of folder content or query result">
-    ${thead}
-    <tbody>
-      <tr stl:repeat="object objects" class="${repeat/object/even}">
-        <td>
-          <input class="checkbox" type="checkbox" name="ids"
-            stl:if="object/checkbox" value="${object/name}" />
-        </td>
-        <td>
-          <a href="${object/url}">
-            <img src="${object/icon}" title="${object/format}" border="0" />
-          </a>
-        </td>
-        <td>
-          <a href="${object/url}">${object/name}</a>
-        </td>
-        <td>
-          <a href="${object/url}">${object/title}</a>
-        </td>
-        <td>${object/class_title}</td>
-        <td>${object/mtime}</td>
-        <td style="text-align: right">${object/size}</td>
-        <td>
-          <stl:block if="object/workflow_state">${object/workflow_state}</stl:block>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  ${table}
+  <p stl:if="not total">
+    This folder or query is empty.
+  </p>
   <p>
     <input type="submit" name=";remove" value="Remove" class="button_delete"
       onclick="return confirmation();" stl:if="remove" />
@@ -73,9 +49,5 @@
       stl:if="paste" />
   </p>
 </form>
-
-<p stl:if="not objects">
-  This folder or query is empty.
-</p>
 
 </stl:block>

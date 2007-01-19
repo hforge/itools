@@ -35,46 +35,6 @@ from Handler import Handler
 ###########################################################################
 # Table
 ###########################################################################
-table_head_template_string = """
-<thead xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <tr>
-    <th stl:repeat="column columns" valign="bottom">
-      <stl:block if="column">
-        <stl:block if="not column/href">${column/title}</stl:block>
-
-        <a stl:if="column/href" href="${column/href}"
-          class="sort_${column/order}">${column/title}</a>
-      </stl:block>
-    </th>
-  </tr>
-</thead>
-"""
-
-table_head_template = XHTML.Document()
-table_head_template.load_state_from_string(table_head_template_string)
-
-
-
-def table_head(columns, sortby, sortorder, gettext=lambda x: x):
-    # Build the namespace
-    namespace = {}
-    namespace['columns'] = []
-    for name, title in columns:
-        if title is None:
-            namespace['columns'].append(None)
-        elif name is None:
-            namespace['columns'].append({
-                'title': gettext(title), 'href': None})
-        else:
-            href, sort = table_sortcontrol(name, sortby, sortorder)
-            namespace['columns'].append(
-                {'title': title, 'href': href, 'order': sort})
-    # Go
-    return stl(table_head_template, namespace)
-
-
-
 def table_sortcontrol(column, sortby, sortorder):
     """
     Returns an html snippet with a link that lets to order a column
@@ -100,6 +60,90 @@ def table_sortcontrol(column, sortby, sortorder):
 
     href = get_context().uri.replace(**data)
     return href, value
+
+
+def table_head(columns, sortby, sortorder, gettext=lambda x: x):
+    # Build the namespace
+    columns_ = []
+    for name, title in columns:
+        if title is None:
+            column = None
+        else:
+            column = {'title': gettext(title)}
+            if name is None:
+                column['href'] = None
+            else:
+                href, sort = table_sortcontrol(name, sortby, sortorder)
+                column['href'] = href
+                column['order'] = sort
+        columns_.append(column)
+    # Go
+    return columns_
+
+
+table_template_string = """
+<table xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <thead stl:if="columns">
+    <tr>
+      <th stl:repeat="column columns" valign="bottom">
+        <stl:block if="column">
+          <stl:block if="not column/href">${column/title}</stl:block>
+          <a stl:if="column/href" href="${column/href}"
+            class="sort_${column/order}">${column/title}</a>
+        </stl:block>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr stl:repeat="row rows" class="${repeat/row/even}">
+      <td>
+        <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
+          value="${row/id}" />
+      </td>
+      <td>
+        <img border="0" src="${row/img}" stl:if="row/img" />
+      </td>
+      <td stl:repeat="column row/columns" class="${column/class}">
+        <a href="${column/href}" stl:if="column/href">${column/title}</a>
+        <stl:block if="not column/href">${column/title}</stl:block>
+      </td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+table_template = XHTML.Document()
+table_template.load_state_from_string(table_template_string)
+
+
+def table(rows, columns, sortby, sortorder, gettext=lambda x: x):
+    """
+    The parameters are:
+        
+      rows --
+        [{'id': ..., 'img': ...,
+          'columns': [{'href': ..., 'title': ..., 'class': ...}, ...]}
+         ...]
+
+      columns --
+        [None, None, (name, title), (name, title), ...]
+
+      sortby --
+        The column to sort.
+
+      sortorder --
+        The order the column must be sorted by.
+
+      gettext --
+        The translation function.
+    """
+    namespace = {}
+    namespace['rows'] = rows
+    namespace['columns'] = table_head(columns, sortby, sortorder, gettext)
+
+    return stl(table_template, namespace)
+
 
 
 ###########################################################################
@@ -194,7 +238,7 @@ class Breadcrumb(object):
 
 
 ###########################################################################
-# Tree
+# Menu
 ###########################################################################
 def build_menu(options):
     """

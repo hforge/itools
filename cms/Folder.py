@@ -43,7 +43,7 @@ from ical import CalendarAware
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import checkid, reduce_string
-from widgets import Breadcrumb, table_head
+import widgets
 from registry import register_object_class, get_object_class
 
 
@@ -321,8 +321,38 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     #######################################################################
     # Browse
-    def _browse_namespace(self, line, object):
-        pass
+    def _browse_namespace(self, object, icon_size):
+        line = {}
+        line['title_or_name'] = object.title_or_name
+        line['name'] = str(self.get_pathto(object))
+        line['format'] = object.get_property('format')
+        line['class_title'] = self.gettext(object.class_title)
+        line['title'] = object.get_property('dc:title')
+        # Filesystem information
+        uri = object.uri
+        line['mtime'] = vfs.get_mtime(uri)
+        # Titles
+        line['short_title'] = reduce_string(object.title_or_name, 12, 40)
+        # The size
+        line['size'] = object.get_human_size()
+        # The url
+        line['url'] = '%s/;%s' % (line['name'], object.get_firstview())
+        # The icon
+        path_to_icon = object.get_path_to_icon(icon_size, from_handler=self)
+        if path_to_icon.startswith(';'):
+            path_to_icon = Path('%s/' % object.name).resolve(path_to_icon)
+        line['icon'] = path_to_icon
+        # The modification time
+        line['mtime'] = object.mtime.strftime('%Y-%m-%d %H:%M')
+        # The workflow state
+        line['workflow_state'] = ''
+        if isinstance(object, WorkflowAware):
+            state = object.get_state()
+            line['workflow_state'] = self.gettext(state['title'])
+        # Objects that should not be removed/renamed/etc
+        line['checkbox'] = object.name not in self.__fixed_handlers__
+
+        return line
 
 
     def browse_namespace(self, icon_size, sortby=['title_or_name'],
@@ -347,63 +377,15 @@ class Folder(Handler, BaseFolder, CalendarAware):
                                               start=start, size=batchsize)
 
         # Get the handler for the visibles documents and extracts values
-        fields = root.get_catalog_metadata_fields()
         user = context.user
         objects = []
         for document in documents:
-            line = {}
-            # Initialize the line with all the stored fields
-            for field in fields:
-                line[field] = getattr(document, field, '')
             # Complete the namespace
-            abspath = line['abspath']
-            document = root.get_handler(abspath)
-            ac = document.get_access_control()
-            if ac.is_allowed_to_view(user, document):
-                uri = document.uri
-                line = {}
-                name = document.name
-                line['abspath'] = abspath
-                line['title_or_name'] = document.title_or_name
-                line['name'] = str(self.get_pathto(document))
-                line['format'] = document.get_property('format')
-                line['class_title'] = self.gettext(document.class_title)
-                line['title'] = document.get_property('dc:title')
-                line['description'] = document.get_property('dc:description')
-                line['is_folder'] = vfs.is_folder(uri)
-                line['ctime'] = vfs.get_ctime(uri)
-                line['mtime'] = vfs.get_mtime(uri)
-                line['atime'] = vfs.get_atime(uri)
-
-                # compute size
-                line['size'] = document.get_human_size()
-                line['url'] = '%s/;%s' % (line['name'],
-                                          document.get_firstview())
-                path_to_icon = document.get_path_to_icon(icon_size,
-                                                         from_handler=self)
-                if path_to_icon.startswith(';'):
-                    path_to_icon = Path('%s/' % name).resolve(path_to_icon)
-                line['icon'] = path_to_icon
-                line['short_title'] = reduce_string(document.title_or_name,
-                                                    12, 40)
-                if 'language' in line.keys():
-                    language = line['language']
-                    if language:
-                        language_name = i18n.get_language_name(language)
-                        line['language'] = self.gettext(language_name)
-                else:
-                    line['language'] = ''
-                line['mtime'] = document.mtime.strftime('%Y-%m-%d %H:%M')
-
-                line['workflow_state'] = ''
-                if isinstance(document, WorkflowAware):
-                    state = document.get_state()
-                    line['workflow_state'] = self.gettext(state['title'])
-
-                # Objects that should not be removed/renamed/etc
-                line['checkbox'] = name not in self.__fixed_handlers__
-                #
-                self._browse_namespace(line, document)
+            abspath = document.abspath
+            object = root.get_handler(abspath)
+            ac = object.get_access_control()
+            if ac.is_allowed_to_view(user, object):
+                line = self._browse_namespace(object, icon_size)
                 objects.append(line)
  
         # Build namespace
@@ -426,12 +408,29 @@ class Folder(Handler, BaseFolder, CalendarAware):
             namespace['batch_next'] = context.uri.replace(batchstart=str(end))
 
         # The column headers
+        rows = []
+        for object in objects:
+            row = {}
+            if object['checkbox'] is False:
+                row['id'] = None
+            else:
+                row['id'] = object['name']
+            row['img'] = object['icon']
+            row['columns'] = [
+                {'href': object['url'], 'title': object['name'], 'class': None},
+                {'href': object['url'], 'title': object['title'], 'class': None},
+                {'href': None, 'title': object['class_title'], 'class': None},
+                {'href': None, 'title': object['mtime'], 'class': None},
+                {'href': None, 'title': object['size'], 'class': 'XXX'},
+                {'href': None, 'title': object['workflow_state'], 'class': None},
+            ]
+            rows.append(row)
         columns = [
             (None, None), (None, None), ('name', u'Name'),
             ('title', u'Title'), ('format', u'Type'), ('mtime', u'Date'),
             (None, u'Size'), ('workflow_state', u'State')]
-        namespace['thead'] = table_head(columns, sortby, sortorder,
-                                        self.gettext)
+        namespace['table'] = widgets.table(rows, columns, sortby, sortorder,
+                                           self.gettext)
 
         return namespace
 
@@ -866,7 +865,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     browse_dir__access__ = 'is_authenticated'
     def browse_dir(self, context):
         namespace = {}
-        namespace['bc'] = Breadcrumb(filter_type=File.File, start=self)
+        namespace['bc'] = widgets.Breadcrumb(filter_type=File.File, start=self)
 
         # Avoid general template
         response = context.response

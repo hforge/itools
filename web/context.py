@@ -98,8 +98,17 @@ class Context(object):
         # Preserve some form values
         form = {}
         for key, value in self.request.form.items():
-            if key not in exclude:
-                form[key] = value
+            # Omit methods
+            if key[0] == ';':
+                continue
+            # Omit files
+            if isinstance(value, tuple) and len(value) == 3:
+                continue
+            # Omit explicitly excluded fields
+            if key in exclude:
+                continue
+            # Keep form field
+            form[key] = value
         if form:
             goto = goto.replace(**form)
         # Translate the source message

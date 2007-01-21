@@ -335,7 +335,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         line = {}
         line['title_or_name'] = object.title_or_name
         line['name'] = str(self.get_pathto(object))
-        line['format'] = object.get_property('format')
         line['class_title'] = self.gettext(object.class_title)
         line['title'] = object.get_property('dc:title')
         # Filesystem information

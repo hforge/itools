@@ -83,6 +83,8 @@ table_template_string = """
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <thead stl:if="columns">
     <tr>
+      <th></th>
+      <th></th>
       <th stl:repeat="column columns" valign="bottom">
         <a stl:if="column" href="${column/href}" class="sort_${column/order}"
           >${column/title}</a>
@@ -98,9 +100,11 @@ table_template_string = """
       <td>
         <img border="0" src="${row/img}" stl:if="row/img" />
       </td>
-      <td stl:repeat="column row/columns" class="${column/class}">
-        <a href="${column/href}" stl:if="column/href">${column/title}</a>
-        <stl:block if="not column/href">${column/title}</stl:block>
+      <td>
+        <a href="${row/href}">${row/name}</a>
+      </td>
+      <td stl:repeat="column row/columns">
+        ${column}
       </td>
     </tr>
   </tbody>
@@ -111,17 +115,15 @@ table_template = XHTML.Document()
 table_template.load_state_from_string(table_template_string)
 
 
-def table(rows, columns, sortby, sortorder, gettext=lambda x: x):
+def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
     """
     The parameters are:
         
-      rows --
-        [{'id': ..., 'img': ...,
-          'columns': [{'href': ..., 'title': ..., 'class': ...}, ...]}
-         ...]
-
       columns --
-        [None, None, (name, title), (name, title), ...]
+        [(name, title), (name, title), ...]
+
+      rows --
+        [{'id': ..., 'img': ..., 'columns': [value, ...]}, ...]
 
       sortby --
         The column to sort.
@@ -133,7 +135,24 @@ def table(rows, columns, sortby, sortorder, gettext=lambda x: x):
         The translation function.
     """
     namespace = {}
-    namespace['rows'] = rows
+
+    aux = []
+    for row in rows:
+        x = {}
+        if row['checkbox'] is False:
+            x['id'] = None
+        else:
+            x['id'] = row['name']
+        x['img'] = row['icon']
+        x['href'] = row['url']
+        x['name'] = row['name']
+        x['columns'] = []
+        for column, kk in columns[1:]:
+            value = row.get(column)
+            x['columns'].append(value)
+        aux.append(x)
+
+    namespace['rows'] = aux
     namespace['columns'] = table_head(columns, sortby, sortorder, gettext)
 
     return stl(table_template, namespace)

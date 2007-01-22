@@ -422,28 +422,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
             namespace['batch_next'] = context.uri.replace(batchstart=str(end))
 
         # The column headers
-        rows = []
-        for object in objects:
-            row = {}
-            if object['checkbox'] is False:
-                row['id'] = None
-            else:
-                row['id'] = object['name']
-            row['img'] = object['icon']
-            row['columns'] = [
-                {'href': object['url'], 'title': object['name'], 'class': None},
-                {'href': object['url'], 'title': object['title'], 'class': None},
-                {'href': None, 'title': object['class_title'], 'class': None},
-                {'href': None, 'title': object['mtime'], 'class': None},
-                {'href': None, 'title': object['size'], 'class': 'XXX'},
-                {'href': None, 'title': object['workflow_state'], 'class': None},
-            ]
-            rows.append(row)
         columns = [
-            (None, None), (None, None), ('name', u'Name'),
-            ('title', u'Title'), ('format', u'Type'), ('mtime', u'Date'),
-            ('size', u'Size'), ('workflow_state', u'State')]
-        namespace['table'] = widgets.table(rows, columns, sortby, sortorder,
+            ('name', u'Name'), ('title', u'Title'), ('format', u'Type'),
+            ('mtime', u'Date'), ('size', u'Size'),
+            ('workflow_state', u'State')]
+        namespace['table'] = widgets.table(columns, objects, sortby, sortorder,
                                            self.gettext)
 
         return namespace

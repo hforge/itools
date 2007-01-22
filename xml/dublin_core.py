@@ -27,23 +27,6 @@ class Element(XML.Element):
     namespace = 'http://purl.org/dc/elements/1.1/'
 
 
-    def set_comment(self, comment):
-        raise ValueError
-
-
-    def set_element(self, element):
-        raise ValueError
-
-
-    def set_text(self, text, encoding='UTF-8'):
-        text = text.strip()
-        type = DublinCore.datatypes[self.name]
-        if type is Unicode:
-            self.value = type.decode(text, encoding)
-        else:
-            self.value = type.decode(text)
-
-
 class BlockElement(Element):
 
     def is_inline(self):

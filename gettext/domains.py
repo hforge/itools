@@ -20,7 +20,8 @@ import os
 
 # Import from itools
 from itools.handlers.Folder import Folder
-from itools.i18n.accept import AcceptLanguage
+from itools.i18n.accept import get_accept
+
 
 domains = {}
 
@@ -61,12 +62,7 @@ class DomainAware(object):
         if languages is None:
             languages = cls.get_languages()
 
-        language = os.environ.get('LANGUAGE')
-        if language is None:
-            return None
-        language = language.split('.')[0]
-        language = language.replace('_', '-')
-        accept_language = AcceptLanguage(language)
+        accept = get_accept()
         return accept_language.select_language(languages)
 
 

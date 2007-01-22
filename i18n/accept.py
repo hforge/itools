@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2001-2005 J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2001-2007 J. David Ibáñez <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -15,7 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-
 """
 This module implements the Accept-Charset and Accept-Language request
 headers of the HTTP protocol.
@@ -26,6 +25,13 @@ and AcceptLanguage.
 The public interface is provided by the two last classes, AcceptCharset and
 AcceptLanguage. The other four shouldn't be used directly.
 """
+
+# Import from the future
+from __future__ import absolute_import
+
+# Import from the Standard Library
+from locale import getdefaultlocale
+
 
 
 class Node(object):
@@ -295,3 +301,13 @@ class AcceptLanguageType(object):
 
 ##    This class provides a subset of a mapping interface.
 ##    """
+
+
+
+def get_accept():
+    locale = getdefaultlocale()
+    language = locale[0]
+    language = language.replace('_', '-')
+    return AcceptLanguage(language)
+
+

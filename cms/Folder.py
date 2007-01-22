@@ -23,6 +23,7 @@ import urllib
 import zlib
 
 # Import from itools
+from itools.i18n.locale import format_datetime
 from itools.uri import Path, get_reference
 from itools.catalog import queries
 from itools.datatypes import Boolean, FileName, Integer, Unicode
@@ -352,7 +353,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
             path_to_icon = Path('%s/' % object.name).resolve(path_to_icon)
         line['icon'] = path_to_icon
         # The modification time
-        line['mtime'] = object.mtime.strftime('%Y-%m-%d %H:%M')
+        accept = get_context().request.accept_language
+        line['mtime'] = format_datetime(object.mtime, accept=accept)
         # The workflow state
         line['workflow_state'] = ''
         if isinstance(object, WorkflowAware):

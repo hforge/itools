@@ -70,12 +70,9 @@ def table_head(columns, sortby, sortorder, gettext=lambda x: x):
             column = None
         else:
             column = {'title': gettext(title)}
-            if name is None:
-                column['href'] = None
-            else:
-                href, sort = table_sortcontrol(name, sortby, sortorder)
-                column['href'] = href
-                column['order'] = sort
+            href, sort = table_sortcontrol(name, sortby, sortorder)
+            column['href'] = href
+            column['order'] = sort
         columns_.append(column)
     # Go
     return columns_
@@ -87,11 +84,8 @@ table_template_string = """
   <thead stl:if="columns">
     <tr>
       <th stl:repeat="column columns" valign="bottom">
-        <stl:block if="column">
-          <stl:block if="not column/href">${column/title}</stl:block>
-          <a stl:if="column/href" href="${column/href}"
-            class="sort_${column/order}">${column/title}</a>
-        </stl:block>
+        <a stl:if="column" href="${column/href}" class="sort_${column/order}"
+          >${column/title}</a>
       </th>
     </tr>
   </thead>

@@ -156,6 +156,7 @@ class Root(WebSite):
                        ('name', 'keyword', True, True),
                        ('title_or_name', 'keyword', True, True),
                        ('mtime', 'keyword', False, True),
+                       ('size', 'keyword', False, True),
                        ]
 
 

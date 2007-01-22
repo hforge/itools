@@ -387,18 +387,21 @@ class Folder(Handler, BaseFolder, CalendarAware):
             documents = results.get_documents(sort_by=sortby, reverse=reverse,
                                               start=start, size=batchsize)
 
-        # Get the handler for the visibles documents and extracts values
+        # Get the handlers, check security
         user = context.user
-        objects = []
+        handlers = []
         for document in documents:
-            # Complete the namespace
-            abspath = document.abspath
-            object = root.get_handler(abspath)
-            ac = object.get_access_control()
-            if ac.is_allowed_to_view(user, object):
-                line = self._browse_namespace(object, icon_size)
-                objects.append(line)
- 
+            handler = root.get_handler(document.abspath)
+            ac = handler.get_access_control()
+            if ac.is_allowed_to_view(user, handler):
+                handlers.append(handler)
+
+        # Get the handler for the visible documents and extracts values
+        objects = []
+        for handler in handlers:
+            line = self._browse_namespace(handler, icon_size)
+            objects.append(line)
+
         # Build namespace
         namespace = {}
         total = results.get_n_documents()
@@ -439,7 +442,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         columns = [
             (None, None), (None, None), ('name', u'Name'),
             ('title', u'Title'), ('format', u'Type'), ('mtime', u'Date'),
-            (None, u'Size'), ('workflow_state', u'State')]
+            ('size', u'Size'), ('workflow_state', u'State')]
         namespace['table'] = widgets.table(rows, columns, sortby, sortorder,
                                            self.gettext)
 

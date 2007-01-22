@@ -29,6 +29,7 @@ class CatalogAware(object):
 
     def get_catalog_indexes(self):
         from access import RoleAware
+        from File import File
 
         name = self.name
         abspath = self.get_abspath()
@@ -61,6 +62,18 @@ class CatalogAware(object):
         # All paths
         abspath = Path(abspath)
         document['paths'] = [ abspath[:x] for x in range(len(abspath) + 1) ]
+
+        # Size
+        if isinstance(self, File):
+            size = len(self.to_str())
+            # This will stop working for files bigger than 10G bytes
+            document['size'] = 'X%010d' % size
+        else:
+            names = [ x for x in self.get_handler_names()
+                      if (x[0] != '.' and x[-9:] != '.metadata') ]
+            size = len(names)
+            # This will stop working for folders with more than 10G objects
+            document['size'] = '%10d' % size
 
         # Workflow state
         if isinstance(self, WorkflowAware):

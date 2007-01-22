@@ -6,7 +6,7 @@
 
 <h2>Browse Content</h2>
 
-<form action=";browse_list" method="get" stl:if="search_fields">
+<form action=";browse_content" method="get" stl:if="search_fields">
   <fieldset>
     <legend>Display only contents with the following terms:</legend>
     <label for="search_term">Search term</label>

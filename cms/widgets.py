@@ -118,12 +118,12 @@ table_template.load_state_from_string(table_template_string)
 def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
     """
     The parameters are:
-        
+
       columns --
         [(name, title), (name, title), ...]
 
       rows --
-        [{'id': ..., 'img': ..., 'columns': [value, ...]}, ...]
+        [{'checkbox': , 'img': , 'href': , 'name': , ...}, ...]
 
       sortby --
         The column to sort.
@@ -139,13 +139,13 @@ def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
     aux = []
     for row in rows:
         x = {}
-        if row['checkbox'] is False:
-            x['id'] = None
+        if row['checkbox'] is True:
+            x['id'] = row['id']
         else:
-            x['id'] = row['name']
-        x['img'] = row['icon']
-        x['href'] = row['url']
-        x['name'] = row['name']
+            x['id'] = None
+        x['img'] = row['img']
+        x['href'] = row['href']
+        x['name'] = row[columns[0][0]]
         x['columns'] = []
         for column, kk in columns[1:]:
             value = row.get(column)

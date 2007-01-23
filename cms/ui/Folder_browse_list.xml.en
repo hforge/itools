@@ -25,13 +25,14 @@
   </fieldset>
 </form>
 
-<form action="." method="post">
-  <div class="batchcontrol" stl:if="total">
-    ${batchstart}-${batchend} of ${total}
+<!-- Batch -->
+<div class="batchcontrol" stl:if="total">
+  ${batchstart}-${batchend} of ${total}
+  <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
+  <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
+</div>
 
-    <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
-    <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
-  </div>
+<form action="." method="post">
   ${table}
   <p stl:if="not total">
     This folder or query is empty.

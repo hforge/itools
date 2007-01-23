@@ -15,10 +15,10 @@
   <stl:block repeat="object objects">
     <dl class="thumb">
       <dt>
-        <a href="${object/url}"><img alt="" src="${object/icon}" /></a>
+        <a href="${object/href}"><img alt="" src="${object/img}" /></a>
       </dt>
       <dd>
-        <a href="${object/url}" title="${object/title_or_name}"
+        <a href="${object/href}" title="${object/title_or_name}"
           >${object/short_title}</a>
       </dd>
     </dl>

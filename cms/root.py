@@ -109,6 +109,12 @@ class Root(WebSite):
     ########################################################################
     # Override RoleAware
     ########################################################################
+    def get_role_unit(self, name):
+        if name == 'members':
+            return u'Member'
+        return WebSite.get_role_unit(self, name)
+
+
     def get_user_role(self, user_id):
         user_role = WebSite.get_user_role(self, user_id)
         if user_role is not None:

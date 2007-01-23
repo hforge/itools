@@ -21,6 +21,7 @@ from itools.datatypes import Email
 from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
+from itools.cms import widgets
 
 
 class AccessControl(AccessControlBase):
@@ -133,6 +134,13 @@ class RoleAware(AccessControl):
     #########################################################################
     # API / Public
     #########################################################################
+    def get_role_unit(self, name):
+        for role in self.__roles__:
+            if role['name'] == name:
+                return role['unit']
+        return None
+
+
     def get_role_names(self):
         """
         Return the names of the roles available.
@@ -236,19 +244,37 @@ class RoleAware(AccessControl):
     def permissions_form(self, context):
         namespace = {}
 
-        # XXX This code is slow when there are many users, because the
-        # method "userfolder.get_handler" is too expensive.
+        sortby = context.get_form_values('sortby', default=['email'])
+        sortorder = context.get_form_value('sortorder', 'up')
+
+        # The members
         members = []
         userfolder = self.get_handler('/users')
         get_user = userfolder.get_handler
         for user_id in self.get_members():
             user = get_user(user_id)    
-            members.append({'name': user_id,
-                            'title_or_name': user.get_title_or_name(),
-                            'roles': self.get_roles_namespace(user_id)})
+            email = user.get_property('ikaaro:email')
+            role = self.get_user_role(user_id)
+            members.append({
+                'checkbox': True,
+                'id': user_id,
+                'img': None,
+                'href': '/users/%s/;%s' % (user_id, user.get_firstview()),
+                'email': email,
+                'title': user.get_title_or_name(),
+                'role': self.get_role_unit(role)})
 
-        members.sort(key=lambda x: x['title_or_name'])
-        namespace['users'] = members
+        # Sort
+        members.sort(key=lambda x: x[sortby[0]])
+        if sortorder == 'down':
+            members.reverse()
+
+        # The columns
+        columns = [
+            ('email', u'E-Mail'), ('title', u'Name'), ('role', u'Role')]
+
+        namespace['table'] = widgets.table(columns, members, sortby, sortorder,
+                                           self.gettext)
 
         handler = self.get_handler('/ui/RoleAware_permissions.xml')
         return stl(handler, namespace)

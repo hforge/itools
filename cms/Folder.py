@@ -334,9 +334,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def _browse_namespace(self, object, icon_size):
         line = {}
+        id = str(self.get_pathto(object))
+        line['id'] = id
         line['title_or_name'] = object.title_or_name
-        line['name'] = str(self.get_pathto(object))
-        line['class_title'] = self.gettext(object.class_title)
+        line['name'] = id
+        line['format'] = self.gettext(object.class_title)
         line['title'] = object.get_property('dc:title')
         # Filesystem information
         uri = object.uri
@@ -346,12 +348,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # The size
         line['size'] = object.get_human_size()
         # The url
-        line['url'] = '%s/;%s' % (line['name'], object.get_firstview())
+        line['href'] = '%s/;%s' % (line['name'], object.get_firstview())
         # The icon
         path_to_icon = object.get_path_to_icon(icon_size, from_handler=self)
         if path_to_icon.startswith(';'):
             path_to_icon = Path('%s/' % object.name).resolve(path_to_icon)
-        line['icon'] = path_to_icon
+        line['img'] = path_to_icon
         # The modification time
         accept = get_context().request.accept_language
         line['mtime'] = format_datetime(object.mtime, accept=accept)

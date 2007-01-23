@@ -407,7 +407,7 @@ class RoleAware(AccessControl):
         if context.has_form_value('add_and_return'):
             goto = None
         else:
-            goto='./%s/;%s' % (user.name, user.get_firstview())
+            goto='/users/%s/;%s' % (user.name, user.get_firstview())
             goto = uri.get_reference(goto)
 
         return context.come_back(u'User added.', goto=goto)

@@ -23,7 +23,7 @@ import urllib
 import zlib
 
 # Import from itools
-from itools.i18n.locale import format_datetime
+from itools.i18n.locale_ import format_datetime
 from itools.uri import Path, get_reference
 from itools.catalog import queries
 from itools.datatypes import Boolean, FileName, Integer, Unicode
@@ -337,7 +337,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
         id = str(self.get_pathto(object))
         line['id'] = id
         line['title_or_name'] = object.title_or_name
-        line['name'] = id
+        href = '%s/;%s' % (id, object.get_firstview())
+        line['name'] = (id, href)
         line['format'] = self.gettext(object.class_title)
         line['title'] = object.get_property('dc:title')
         # Filesystem information
@@ -348,7 +349,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # The size
         line['size'] = object.get_human_size()
         # The url
-        line['href'] = '%s/;%s' % (line['name'], object.get_firstview())
+        line['href'] = href
         # The icon
         path_to_icon = object.get_path_to_icon(icon_size, from_handler=self)
         if path_to_icon.startswith(';'):

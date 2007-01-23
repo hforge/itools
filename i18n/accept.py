@@ -26,13 +26,6 @@ The public interface is provided by the two last classes, AcceptCharset and
 AcceptLanguage. The other four shouldn't be used directly.
 """
 
-# Import from the future
-from __future__ import absolute_import
-
-# Import from the Standard Library
-from locale import getdefaultlocale
-
-
 
 class Node(object):
     """
@@ -305,6 +298,9 @@ class AcceptLanguageType(object):
 
 
 def get_accept():
+    # Import from the Standard Library
+    from locale import getdefaultlocale
+
     locale = getdefaultlocale()
     language = locale[0]
     language = language.replace('_', '-')

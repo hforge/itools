@@ -110,7 +110,7 @@ class Root(WebSite):
     # Override RoleAware
     ########################################################################
     def get_role_unit(self, name):
-        if name == 'members':
+        if name == 'ikaaro:members':
             return u'Member'
         return WebSite.get_role_unit(self, name)
 
@@ -121,7 +121,7 @@ class Root(WebSite):
             return user_role
         users = self.get_handler('users')
         if users.has_handler(user_id):
-            return 'members'
+            return 'ikaaro:members'
         return None
 
 
@@ -131,7 +131,7 @@ class Root(WebSite):
 
 
     def set_user_role(self, user_ids, role):
-        if role == 'members':
+        if role == 'ikaaro:members':
             role = None
         WebSite.set_user_role(self, user_ids, role)
 

@@ -100,11 +100,9 @@ table_template_string = """
       <td>
         <img border="0" src="${row/img}" stl:if="row/img" />
       </td>
-      <td>
-        <a href="${row/href}">${row/name}</a>
-      </td>
       <td stl:repeat="column row/columns">
-        ${column}
+        <a stl:if="column/href" href="${column/href}">${column/value}</a>
+        <stl:block if="not column/href">${column/value}</stl:block>
       </td>
     </tr>
   </tbody>
@@ -123,7 +121,7 @@ def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
         [(name, title), (name, title), ...]
 
       rows --
-        [{'checkbox': , 'img': , 'href': , 'name': , ...}, ...]
+        [{'checkbox': , 'img': }, ...]
 
       sortby --
         The column to sort.
@@ -144,12 +142,14 @@ def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
         else:
             x['id'] = None
         x['img'] = row['img']
-        x['href'] = row['href']
-        x['name'] = row[columns[0][0]]
         x['columns'] = []
-        for column, kk in columns[1:]:
+        for column, kk in columns:
             value = row.get(column)
-            x['columns'].append(value)
+            if isinstance(value, tuple):
+                value, href = value
+            else:
+                href = None
+            x['columns'].append({'value': value, 'href': href})
         aux.append(x)
 
     namespace['rows'] = aux

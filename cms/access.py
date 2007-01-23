@@ -253,16 +253,23 @@ class RoleAware(AccessControl):
         get_user = userfolder.get_handler
         for user_id in self.get_members():
             user = get_user(user_id)    
+            ns = {}
+            ns['checkbox'] = True
+            ns['id'] = user_id
+            ns['img'] = None
+            # Email
             email = user.get_property('ikaaro:email')
+            href = '/users/%s/;%s' % (user_id, user.get_firstview())
+            ns['email'] = email, href
+            # Title
+            ns['title'] = user.get_title_or_name()
+            # Role
             role = self.get_user_role(user_id)
-            members.append({
-                'checkbox': True,
-                'id': user_id,
-                'img': None,
-                'href': '/users/%s/;%s' % (user_id, user.get_firstview()),
-                'email': email,
-                'title': user.get_title_or_name(),
-                'role': self.get_role_unit(role)})
+            role = self.get_role_unit(role)
+            href = ';edit_membership_form?id=%s' % user_id
+            ns['role'] = role, href
+            # Append
+            members.append(ns)
 
         # Sort
         members.sort(key=lambda x: x[sortby[0]])
@@ -280,27 +287,6 @@ class RoleAware(AccessControl):
         return stl(handler, namespace)
 
 
-    permissions_update_members__access__ = 'is_admin'
-    def permissions_update_members(self, context):
-        # Get the list of users to update
-        root = context.root
-        users = root.get_handler('users')
-        usernames = users.get_usernames()
-        form_keys = context.get_form_keys()
-        usernames = set(usernames) & set(form_keys)
-
-        # Update the user roles
-        for username in usernames:
-            role = context.get_form_value(username)
-            self.set_user_role(username, role)
-
-        # Reindex
-        context.root.reindex_handler(self)
-
-        # Back
-        return context.come_back(u"Roles updated.")
-
-
     permissions__access__ = 'is_admin'
     def permissions_del_members(self, context):
         usernames = context.get_form_values('delusers')
@@ -312,7 +298,34 @@ class RoleAware(AccessControl):
         # Back
         return context.come_back(u"Members deleted.")
 
-    
+
+    edit_membership_form__access__ = 'is_admin'
+    def edit_membership_form(self, context):
+        user_id = context.get_form_value('id')
+        user = self.get_handler('/users/%s' % user_id)
+
+        namespace = {}
+        namespace['id'] = user_id
+        namespace['name'] = user.get_property('dc:title')
+        namespace['email'] = user.get_property('ikaaro:email')
+        namespace['roles'] = self.get_roles_namespace(user_id)
+
+        handler = self.get_handler('/ui/RoleAware_edit_membership_form.xml')
+        return stl(handler, namespace)
+
+
+    edit_membership__access__ = 'is_admin'
+    def edit_membership(self, context):
+        user_id = context.get_form_value('id')
+        role = context.get_form_value('role')
+
+        self.set_user_role(user_id, role)
+        # Reindex
+        context.root.reindex_handler(self)
+
+        return context.come_back(u"Role updated.")
+
+
     #######################################################################
     # Add
     new_user_form__access__ = 'is_admin'

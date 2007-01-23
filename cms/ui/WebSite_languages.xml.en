@@ -33,19 +33,18 @@
     </table>
     <p>
       <input type="submit" name=";change_default_language"
-        value="Change default for the selected one" class="button_ok"/>
+        value="Change default" class="button_ok"/>
       <input type="submit" name=";remove_languages" class="button_delete"
-        value="Remove selected ones" />
-        
+        value="Remove" />
     </p>
   </form>
 
-  <h3>Add Language</h3>
-
+  <br/>
   <form action=";add_language" method="post">
     <dl stl:if="non_active_languages">
+      <dt><label for="new_language">New Language:</label></dt>
       <dd>
-        <select name="code">
+        <select name="code" id="new_language">
           <option value="">Choose a language</option>
           <option stl:repeat="language non_active_languages"
             value="${language/code}">${language/name}</option>

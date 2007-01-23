@@ -111,7 +111,7 @@ class WebSite(RoleAware, Folder):
         languages.sort(lambda x, y: cmp(x['name'], y['name']))
         namespace['non_active_languages'] = languages
 
-        handler = self.get_handler('/ui/Root_languages.xml')
+        handler = self.get_handler('/ui/WebSite_languages.xml')
         return stl(handler, namespace)
 
 

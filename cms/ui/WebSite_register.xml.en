@@ -8,6 +8,10 @@
 
   <form name="joinform" action=";register" method="post">
     <dl>
+      <dt><label for="dc:title">Full Name</label></dt>
+      <dd>
+        <input type="text" id="dc:title" name="dc:title" />
+      </dd>
       <dt><label for="ikaaro:email">Email address</label></dt>
       <dd>
         <input type="text" id="ikaaro:email" name="ikaaro:email" />

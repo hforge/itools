@@ -241,6 +241,13 @@ class WebSite(RoleAware, Folder):
 
     register__access__ = 'is_allowed_to_register'
     def register(self, context):
+        # Check the real name
+        title = context.get_form_value('dc:title')
+        title = title.strip()
+        if not title:
+            message = u'The fullname is mandatory.'
+            return context.come_back(message)
+
         # Check the email
         email = context.get_form_value('ikaaro:email')
         email = email.strip()
@@ -273,6 +280,7 @@ class WebSite(RoleAware, Folder):
         user = users.set_user(email, password)
         key = ''.join([ random.choice(ascii_letters) for x in range(30) ])
         user.set_property('ikaaro:user_must_confirm', key)
+        user.set_property('dc:title', title, language='en')
 
         # Send confirmation email
         subject = self.gettext("Register confirmation required.")

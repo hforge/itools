@@ -238,8 +238,8 @@ class RoleAware(AccessControl):
     #######################################################################
     # Browse
     permissions_form__access__ = 'is_admin'
-    permissions_form__label__ = u"Permissions"
-    permissions_form__sublabel__ = u"Permissions"
+    permissions_form__label__ = u"Members"
+    permissions_form__sublabel__ = u"Browse Members"
     permissions_form__icon__ = "/ui/images/UserFolder16.png"
     def permissions_form(self, context):
         namespace = {}
@@ -329,8 +329,8 @@ class RoleAware(AccessControl):
     #######################################################################
     # Add
     new_user_form__access__ = 'is_admin'
-    new_user_form__label__ = u'Permissions'
-    new_user_form__sublabel__ = u'New User'
+    new_user_form__label__ = u'Members'
+    new_user_form__sublabel__ = u'New Member'
     def new_user_form(self, context):
         namespace = {}
 

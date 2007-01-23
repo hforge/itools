@@ -326,7 +326,6 @@ class UserFolder(Folder):
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
     class_views = [['browse_content?mode=list'],
-                   ['new_user_form'],
                    ['edit_metadata_form']]
 
 
@@ -405,54 +404,9 @@ class UserFolder(Folder):
     rename_form__access__ = False
     rename__access__ = False
     cut__access__ = False
-
-
-    #######################################################################
-    # Add
-    new_user_form__access__ = 'is_admin'
-    new_user_form__label__ = u'Add'
-    def new_user_form(self, context):
-        handler = self.get_handler('/ui/UserFolder_new_user.xml')
-        return stl(handler)
-
-
-    new_user__access__ = 'is_admin'
-    def new_user(self, context):
-        email = context.get_form_value('email')
-        password = context.get_form_value('password')
-        password2 = context.get_form_value('password2')
-
-        # Check the email is not empty
-        if not email:
-            return context.come_back(
-                u'The email is wrong, please try again.')
-
-        if not Email.is_valid(email):
-            return context.come_back(u'A valid email address must be provided.')
-
-        # Check there is not already a user with that email
-        root = context.root
-        results = root.search(email=email)
-        if results.get_n_documents():
-            message = (u'There is another user with the email "%s", '
-                    u'please try again')
-            return context.come_back(message % email)
-
-        # Check the password is right
-        if not password or password != password2:
-            return context.come_back(
-                u'The password is wrong, please try again.')
-
-        # Add the user
-        user = self.set_user(email, password)
-
-        # Come back
-        if context.has_form_value('add_and_return'):
-            goto = ';browse_content'
-        else:
-            goto='./%s/;%s' % (user.name, user.get_firstview())
-
-        return context.come_back(u'User added.', goto=goto)
+    remove__access__ = False
+    copy__access__ = False
+    paste__access__ = False
 
 
     def on_del_handler(self, segment):

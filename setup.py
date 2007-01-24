@@ -28,7 +28,6 @@ This script can be tested with the folowing::
   sudo python setup.py -q install
 
 Make sure the following files are shipped:
-  - Changelog
   - Makefile
   - i18n/languages.txt
 
@@ -135,8 +134,7 @@ setup(name = "itools",
                      'Topic :: Text Processing',
                      'Topic :: Text Processing :: Markup',
                      'Topic :: Text Processing :: Markup :: XML'],
-      package_data = {'itools': ['Changelog'],
-                      'itools.catalog': [os.path.join('tests', '*.txt')],
+      package_data = {'itools.catalog': [os.path.join('tests', '*.txt')],
                       'itools.i18n': ['languages.txt'],
                       'itools.resources': [os.path.join('tests', 'index.html.en')],
                       'itools.rss': ['*.html', '*.rss', '*.xml'],

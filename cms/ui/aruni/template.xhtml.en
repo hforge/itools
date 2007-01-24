@@ -23,8 +23,6 @@
     <script type="text/javascript" src="../main.js" />
 
     <!-- Aruni CSS -->
-    <link rel="stylesheet" type="text/css" media="screen"
-      href="../onetruelayout.css" />
     <link rel="stylesheet" type="text/css" href="aruni.css" />
 
     <!-- Additional resources that maybe needed to render the page -->
@@ -54,6 +52,14 @@
     <div class="clear"></div>
     <!-- http://www.fu2k.org/alex/css/onetruelayout/ -->
     <div id="wrapper">
+      <table width="100%"><tr><td valign="top">
+      <div id="block_2">
+        <div class="navigation" stl:repeat="menu left_menus">
+          <label>${menu/title}</label>
+          ${menu/content}
+        </div>
+      </div>
+      </td><td valign="top">
       <div id="block_1">
         <div id="maintitle">
           <img alt="" height="48" width="48" src="${metadata/icon}"
@@ -90,12 +96,7 @@
           <div id="content">${body}</div>
         </div>
       </div>
-      <div id="block_2">
-        <div class="navigation" stl:repeat="menu left_menus">
-          <label>${menu/title}</label>
-          ${menu/content}
-        </div>
-      </div>
+      </td></tr></table>
     </div>
     <div id="footer">
       <a href="/;about">About</a>

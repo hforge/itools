@@ -303,7 +303,10 @@ def get_accept():
 
     locale = getdefaultlocale()
     language = locale[0]
-    language = language.replace('_', '-')
+    if language is None:
+        language = ''
+    else:
+        language = language.replace('_', '-')
     return AcceptLanguage(language)
 
 

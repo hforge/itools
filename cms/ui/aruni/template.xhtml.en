@@ -52,14 +52,14 @@
     <div class="clear"></div>
     <!-- http://www.fu2k.org/alex/css/onetruelayout/ -->
     <div id="wrapper">
-      <table width="100%"><tr><td valign="top">
+      <table width="100%"><tr><td valign="top" width="20%">
       <div id="block_2">
         <div class="navigation" stl:repeat="menu left_menus">
           <label>${menu/title}</label>
           ${menu/content}
         </div>
       </div>
-      </td><td valign="top">
+      </td><td valign="top" width="80%">
       <div id="block_1">
         <div id="maintitle">
           <img alt="" height="48" width="48" src="${metadata/icon}"

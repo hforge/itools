@@ -325,8 +325,7 @@ class UserFolder(Folder):
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
-    class_views = [['browse_content?mode=list'],
-                   ['edit_metadata_form']]
+    class_views = [['edit_metadata_form']]
 
 
     def get_document_types(self):
@@ -401,12 +400,15 @@ class UserFolder(Folder):
     # Back-Office
     #######################################################################
 
+    browse_content__access__ = False
     rename_form__access__ = False
     rename__access__ = False
     cut__access__ = False
     remove__access__ = False
     copy__access__ = False
     paste__access__ = False
+    edit_metadata_form__access__ = 'is_admin'
+    edit_metadata__access__ = 'is_admin'
 
 
     def on_del_handler(self, segment):

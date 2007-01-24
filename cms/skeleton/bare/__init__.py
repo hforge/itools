@@ -22,7 +22,6 @@ from itools.cms import skins
 
 # Import from our package
 from base import Handler
-import metadata
 from root import Root
 
 

@@ -28,7 +28,6 @@ This script can be tested with the folowing::
   sudo python setup.py -q install
 
 Make sure the following files are shipped:
-  - Changelog
   - Makefile
   - i18n/languages.txt
 
@@ -120,8 +119,7 @@ setup(name = "itools",
                      'Topic :: Text Processing',
                      'Topic :: Text Processing :: Markup',
                      'Topic :: Text Processing :: Markup :: XML'],
-      data_files=[('itools', ['Changelog']),
-                  (os.path.join('itools', 'i18n'),
+      data_files=[(os.path.join('itools', 'i18n'),
                    [os.path.join('i18n', 'languages.txt')])],
       scripts = [os.path.join('scripts', 'igettext.py')],
       cmdclass={'install_data': install_module_data},

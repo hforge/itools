@@ -1,5 +1,4 @@
 include *.txt
-include Changelog
 include resources/tests/index.html.en
 recursive-include xml test.rdf test*.xml simple.xml simple.xsd
 recursive-include i18n *.txt

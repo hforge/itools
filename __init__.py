@@ -50,25 +50,3 @@ def get_abspath(globals_namespace, local_path):
 
 
 
-def get_arch_revision():
-    """
-    Get the arch revision name from the Changelog file.
-    """
-    changelog_path = get_abspath(globals(), 'Changelog')
-
-    # Open Changelog file and take the first line after the first 'Revision:'
-    try:
-        file = open(changelog_path, 'r')
-    except IOError:
-        print 'arch revision of itools: not found '
-        tla_revision = None
-    else:
-        line = ''
-        while not line.startswith('Revision:'):
-            line = file.readline().strip()
-        tla_revision = file.readline().strip()
-
-    return tla_revision
-
-
-__arch_revision__ = get_arch_revision()

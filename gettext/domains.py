@@ -63,7 +63,7 @@ class DomainAware(object):
             languages = cls.get_languages()
 
         accept = get_accept()
-        return accept_language.select_language(languages)
+        return accept.select_language(languages)
 
 
     @classmethod

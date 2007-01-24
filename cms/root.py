@@ -288,20 +288,9 @@ class Root(WebSite):
 
 
     ########################################################################
-    # Skins and themes (themes are a sub-set of the skins)
-    def get_themes(self):
-        return ['aruni']
-
-
+    # Skins
     def get_skin(self):
-        context = get_context()
-
-
-        # Default
-        themes = self.get_themes()
-        theme = themes[0]
-
-        return self.get_handler('ui/%s' % theme)
+        return self.get_handler('ui/aruni')
 
 
     ########################################################################

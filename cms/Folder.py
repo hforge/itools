@@ -519,6 +519,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
         offset = 0
         for index, object in enumerate(namespace['objects']):
             name = object['name']
+            if isinstance(name, tuple):
+                name = name[0]
             handler = self.get_handler(name)
             if not isinstance(handler, Image):
                 offset = offset + 1

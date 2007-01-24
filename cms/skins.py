@@ -16,6 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+from string import Template
+
 # Import from itools
 from itools import uri
 from itools import get_abspath
@@ -47,6 +50,111 @@ class Skin(Folder):
     __fixed_handlers__ = ['template.xhtml.en']
 
 
+    #######################################################################
+    # Left Menu
+    #######################################################################
+    def get_main_menu(self, context):
+        root = context.root
+        here = context.handler
+        user = context.user
+
+        options = []
+        append = options.append
+        if user is not None:
+            path = '/users/%s' % user.name
+            append({'path': path, 'method': 'profile', 'title': u'My Profile',
+                    'icon': '/ui/aruni/images/action_home.png'})
+            append({'path': path, 'method': 'browse_content',
+                    'title': u'My Content',
+                    'icon': '/ui/images/Folder16.png'})
+        append({'path': '/', 'method': 'permissions_form',
+                'title': u'Users Directory',
+                'icon': '/ui/images/UserFolder16.png'})
+        append({'path': '/', 'method': 'languages_form', 'title': u'Settings',
+                'icon': '/ui/images/Settings16.png'})
+
+        aux = []
+        for option in options:
+            path = option['path']
+            method = option['method']
+            title = option['title']
+            src = option['icon']
+
+            handler = root.get_handler(path)
+            ac = handler.get_access_control()
+            if ac.is_access_allowed(user, handler, method):
+                href = '%s/;%s' % (here.get_pathto(handler), method)
+                aux.append({'href': href, 'title': title, 'class': '',
+                            'src': src, 'items': []})
+    
+        if not aux:
+            return None
+
+        return {'title': u'Main Menu', 'content': build_menu(aux)}
+
+
+    def get_navigation_menu(self, context):
+        """Build the namespace for the navigation menu."""
+        menu = tree(context, depth=6, filter=Folder)
+        return {'title': u'Navigation', 'content': menu}
+
+
+    def get_content_menu(self, context):
+        here = context.handler
+        user = context.user
+
+        options = []
+        # Parent
+        parent = here.parent
+        if parent is not None:
+            firstview = parent.get_firstview()
+            options.append({'href': '../;%s' % (firstview),
+                            'src': None,
+                            'title': '<<',
+                            'class': '',
+                            'items': []})
+
+        # Content
+        size = 0
+        if isinstance(here, Folder):
+            for handler in here.search_handlers():
+                ac = handler.get_access_control()
+                if not ac.is_allowed_to_view(user, handler):
+                    continue
+                firstview = handler.get_firstview()
+                src = handler.get_path_to_icon(size=16, from_handler=here)
+                options.append({'href': '%s/;%s' % (handler.name, firstview),
+                                'src': src,
+                                'title': handler.get_title_or_name(),
+                                'class': '',
+                                'items': []})
+                size += 1
+
+        menu = build_menu(options)
+        title = Template(u'Content ($size)').substitute(size=size)
+
+        return {'title': title, 'content': menu}
+
+
+    def get_left_menus(self, context):
+        menus = []
+        # Main Menu
+        menu = self.get_main_menu(context)
+        if menu is not None:
+            menus.append(menu)
+        # Navigation
+        menu = self.get_navigation_menu(context)
+        menus.append(menu)
+        # Content
+        #menu = self.get_content_menu(context)
+        #menus.append(menu)
+
+        return menus
+
+
+    #######################################################################
+    # 
+    #######################################################################
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
         here = context.handler
@@ -206,78 +314,6 @@ class Skin(Folder):
         return {'info': info, 'joinisopen': False}
 
 
-    def get_static_menu(self, context):
-        root = context.root
-        here = context.handler
-        user = context.user
-
-        options = [
-            {'path': '/', 'method': 'permissions_form'},
-            {'path': '/', 'method': 'languages_form'}]
-
-        aux = []
-        for option in options:
-            path = option['path']
-            method = option['method']
-
-            handler = root.get_handler(path)
-            ac = handler.get_access_control()
-            if ac.is_access_allowed(user, handler, method):
-                href = '%s/;%s' % (here.get_pathto(handler), method)
-                title = getattr(handler, '%s__label__' % method)
-                src = getattr(handler, '%s__icon__' % method)
-                aux.append({'href': href, 'title': title, 'class': '',
-                            'src': src, 'items': []})
-
-        return build_menu(aux)
-
-
-    def get_navigation_menu(self, context):
-        """Build the namespace for the navigation menu."""
-        root = context.root 
-        here = context.root
-
-        title = root.get_title_or_name()
-        icon = root.get_path_to_icon(size=16, from_handler=here)
-        menu = tree(context, depth=6, filter=Folder)
-        return {'icon': icon, 'title': title, 'content': menu}
-
-
-    def get_content_menu(self, context):
-        here = context.handler
-        user = context.user
-
-        options = []
-        # Parent
-        parent = here.parent
-        if parent is not None:
-            firstview = parent.get_firstview()
-            options.append({'href': '../;%s' % (firstview),
-                            'src': None,
-                            'title': '<<',
-                            'class': '',
-                            'items': []})
-
-        # Content
-        size = 0
-        if isinstance(here, Folder):
-            for handler in here.search_handlers():
-                ac = handler.get_access_control()
-                if not ac.is_allowed_to_view(user, handler):
-                    continue
-                firstview = handler.get_firstview()
-                src = handler.get_path_to_icon(size=16, from_handler=here)
-                options.append({'href': '%s/;%s' % (handler.name, firstview),
-                                'src': src,
-                                'title': handler.get_title_or_name(),
-                                'class': '',
-                                'items': []})
-                size += 1
-
-        menu = build_menu(options)
-        return {'content': menu, 'size': size}
-
-
     def get_message(self, context):
         """Return a message string from de request."""
         if context.has_form_value('message'):
@@ -329,14 +365,8 @@ class Skin(Folder):
         # User menu
         namespace['user']= self.get_user_menu(context)
 
-        # Navigation menu
-        namespace['static_menu'] = self.get_static_menu(context)
-
-        # Navigation menu
-        namespace['nav_menu'] = self.get_navigation_menu(context)
-
-        # The context menu
-        namespace['content_menu'] = self.get_content_menu(context)
+        # Left menus
+        namespace['left_menus'] = self.get_left_menus(context)
 
         # Breadcrumb
         namespace['breadcrumb'] = self.get_breadcrumb(context)

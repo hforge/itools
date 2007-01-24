@@ -240,7 +240,6 @@ class RoleAware(AccessControl):
     permissions_form__access__ = 'is_authenticated'
     permissions_form__label__ = u"Members"
     permissions_form__sublabel__ = u"Browse Members"
-    permissions_form__icon__ = "/ui/images/UserFolder16.png"
     def permissions_form(self, context):
         namespace = {}
 

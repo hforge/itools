@@ -83,10 +83,9 @@ class WebSite(RoleAware, Folder):
 
     ######################################################################
     # Settings / Languages
-    languages_form__access__ = 'is_allowed_to_edit'
+    languages_form__access__ = 'is_admin'
     languages_form__label__ = u'Settings'
     languages_form__sublabel__ = u'Languages'
-    languages_form__icon__ = '/ui/images/Settings16.png'
     def languages_form(self, context):
         namespace = {}
 

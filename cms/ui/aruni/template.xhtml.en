@@ -90,6 +90,7 @@
       </div>
       <div id="block_2">
         <div class="navigation">
+          <label>Main Menu</label>
           ${static_menu}
         </div>
         <div class="navigation">
@@ -98,7 +99,7 @@
         </div>
         <!--
         <div class="navigation">
-          <label>${content_menu/title}</label>
+          <label>Content (${content_menu/size})</label>
           ${content_menu/content}
         </div>
         -->

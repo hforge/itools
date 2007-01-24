@@ -239,7 +239,7 @@ class Skin(Folder):
 
         title = root.get_title_or_name()
         icon = root.get_path_to_icon(size=16, from_handler=here)
-        menu = tree(context, depth=5, filter=Folder)
+        menu = tree(context, depth=6, filter=Folder)
         return {'icon': icon, 'title': title, 'content': menu}
 
 
@@ -254,11 +254,12 @@ class Skin(Folder):
             firstview = parent.get_firstview()
             options.append({'href': '../;%s' % (firstview),
                             'src': None,
-                            'title': '..',
+                            'title': '<<',
                             'class': '',
                             'items': []})
 
         # Content
+        size = 0
         if isinstance(here, Folder):
             for handler in here.search_handlers():
                 ac = handler.get_access_control()
@@ -271,9 +272,10 @@ class Skin(Folder):
                                 'title': handler.get_title_or_name(),
                                 'class': '',
                                 'items': []})
+                size += 1
 
         menu = build_menu(options)
-        return {'title': here.get_title_or_name(), 'content': menu}
+        return {'content': menu, 'size': size}
 
 
     def get_message(self, context):

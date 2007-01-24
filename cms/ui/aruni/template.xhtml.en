@@ -18,12 +18,14 @@
     <link rel="stylesheet" type="text/css" href="../epoz.css" />
     <script type="text/javascript" src="../epoz.js" />
 
+    <!-- JavaScript utils -->
+    <script type="text/javascript" src="../browser.js" />
+    <script type="text/javascript" src="../main.js" />
+
+    <!-- Aruni CSS -->
     <link rel="stylesheet" type="text/css" media="screen"
       href="../onetruelayout.css" />
     <link rel="stylesheet" type="text/css" href="aruni.css" />
-
-    <script type="text/javascript" src="../browser.js" />
-    <script type="text/javascript" src="../main.js" />
 
     <!-- Additional resources that maybe needed to render the page -->
     <link href="${style}" rel="stylesheet" type="text/css"
@@ -63,7 +65,8 @@
               <li stl:repeat="item breadcrumb">
                 <a stl:if="item/url" href="${item/url}"
                   title="${item/name}">${item/short_name}</a>
-                <span stl:if="not item/url" title="${item/name}">${item/short_name}</span>
+                <span stl:if="not item/url" title="${item/name}"
+                  >${item/short_name}</span>
                 <stl:inline if="not repeat/item/end">/</stl:inline> 
               </li>
             </ul>

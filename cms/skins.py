@@ -20,8 +20,8 @@
 from string import Template
 
 # Import from itools
-from itools import uri
 from itools import get_abspath
+from itools.uri import Path, Query
 from itools.datatypes import URI
 from itools.handlers.File import File
 from itools.xml import XML
@@ -30,7 +30,6 @@ from itools.xhtml import XHTML
 from itools import i18n
 from itools.web import get_context
 from itools.web.access import AccessControl
-from itools.uri.generic import Query
 
 # Import from itools.cms
 from Folder import Folder
@@ -153,7 +152,7 @@ class Skin(Folder):
 
 
     #######################################################################
-    # 
+    # Breadcrumb
     #######################################################################
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
@@ -185,21 +184,9 @@ class Skin(Folder):
         return breadcrumb
 
 
-    def get_metadata_ns(self, context):
-        here = context.handler
-        if here is None:
-            return {'title': '',
-                    'format': '',
-                    'language': '',
-                    'mtime': '',
-                    'icon': ''}
-        return {'title': here.get_title_or_name(),
-                'format': here.class_title,
-                'language': here.get_property('dc:language'),
-                'mtime': here.get_mtime().strftime('%Y-%m-%d %H:%M'),
-                'icon': here.get_path_to_icon(size=48)}
-
-
+    #######################################################################
+    # Tabs
+    #######################################################################
     def get_tabs(self, context):
         """
         Return tabs and subtabs as a dict {tabs, subtabs} of list of dicts
@@ -275,30 +262,27 @@ class Skin(Folder):
         return {'tabs': tabs, 'subtabs': subtabs}
 
 
-##    def get_languages(self):
-##        """
-##        Compute available languages.
-##        Return of list of dicts [{id, title, selected}...]
-##        """
-##        context = get_context()
-##        request = context.request
-##        root, handler = context.root, context.handler
-
-##        language_action = '%s/;change_language' % handler.get_pathto(root)
-
-##        accept = request.accept_language
-##        available_languages = root.get_available_languages()
-##        default_language = root.get_default_language()
-##        selected_language = accept.select_language(available_languages) \
-##                            or default_language
-
-##        languages = [ {'id': x, 'title': i18n.get_language_name(x),
-##                       'selected': x == selected_language}
-##                      for x in available_languages ]
-
-##        return {'language_action': language_action, 'languages': languages}
+    #######################################################################
+    # Objects metadata (context.handler)
+    #######################################################################
+    def get_metadata_ns(self, context):
+        here = context.handler
+        if here is None:
+            return {'title': '',
+                    'format': '',
+                    'language': '',
+                    'mtime': '',
+                    'icon': ''}
+        return {'title': here.get_title_or_name(),
+                'format': here.class_title,
+                'language': here.get_property('dc:language'),
+                'mtime': here.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                'icon': here.get_path_to_icon(size=48)}
 
 
+    #######################################################################
+    # Users info (context.user)
+    #######################################################################
     def get_user_menu(self, context):
         """Return a dict {user_icon, user, joinisopen}."""
         user = context.user
@@ -314,6 +298,9 @@ class Skin(Folder):
         return {'info': info, 'joinisopen': False}
 
 
+    #######################################################################
+    # Users info (context.user)
+    #######################################################################
     def get_message(self, context):
         """Return a message string from de request."""
         if context.has_form_value('message'):
@@ -322,6 +309,9 @@ class Skin(Folder):
         return None
 
 
+    #######################################################################
+    # 
+    #######################################################################
     def get_template_title(self, context):
         """Return the title to give to the template document."""
         here = context.handler
@@ -336,23 +326,6 @@ class Skin(Folder):
         mapping = {'root_title': root.get_title_or_name(),
                    'here_title': here.get_title_or_name()}
         return here.gettext("%(root_title)s: %(here_title)s") % mapping
-
-
-    def get_content_languages(self, context):
-        """Return a namespace with the content languages."""
-        here = context.handler
-        # The current language
-        if here is None:
-            language = None
-        else:
-            language = here.get_content_language()
-        # The content languages
-        root = context.root
-        available_languages = root.get_property('ikaaro:website_languages')
-        # Build and return the namespace
-        return [ {'name': x, 'title': i18n.get_language_name(x),
-                  'is_selected': x == language}
-                 for x in available_languages ]
 
 
     def build_namespace(self, context):
@@ -382,6 +355,9 @@ class Skin(Folder):
         # Message
         namespace['message'] = self.get_message(context)
 
+        # Title
+        namespace['title'] = self.get_template_title(context)
+
         return namespace
 
 
@@ -396,28 +372,28 @@ class Skin(Folder):
         context = get_context()
         # Build the namespace
         namespace = self.build_namespace(context)
-
-        # Content
-        namespace['title'] = self.get_template_title(context)
         namespace['body'] = content
-        namespace['handler'] = context.handler
 
         # Set the encoding to UTF-8
         context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
-        # Transform the tree
+        # Load the template
         handler = self.get_template()
-        prefix = uri.Path(handler.get_abspath())
 
-        # STL
+        # Build the output
         s = []
+        # Keep the header, but strip the XML declaration (because it makes
+        # IE6 fall into quirks mode, see http://hsivonen.iki.fi/doctype/).
+        # XXX There may be a better way to do this, from the API's point
+        # of view.
         header = handler.header_to_str()
-        # XXX Strip XML declaration, because it makes IE6 fall into quirks
-        # mode (see http://hsivonen.iki.fi/doctype/)
         header = header.split('\n', 1)[1]
         s.append(header)
+        # STL
+        prefix = Path(handler.get_abspath())
         data = stl(handler, namespace, prefix=prefix)
         s.append(data)
+
         return ''.join(s)
 
 

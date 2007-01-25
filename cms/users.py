@@ -360,7 +360,7 @@ class UserFolder(Folder):
         return handlers.Folder.Folder._get_handler_names(self)
 
 
-    def set_user(self, email, password):
+    def set_user(self, email=None, password=None):
         user = get_object_class('user')()
 
         # Calculate the user id
@@ -377,14 +377,20 @@ class UserFolder(Folder):
         else:
             user_id = '0'
 
+        # Add the user
+        self.set_handler(user_id, user)
+        user = self.get_handler(user_id)
+
         # Set the email and paswword
-        password = crypt_password(password)
-        self.set_handler(user_id, user, **{'ikaaro:email': email,
-                                           'ikaaro:password': password,
-                                           'dc:title': {'en': email}})
+        if email is not None:
+            user.set_property('ikaaro:email', email)
+            user.set_property('dc:title', email, language='en')
+        if password is not None:
+            password = crypt_password(password)
+            user.set_property('ikaaro:password', password)
 
         # Return the user
-        return self.get_handler(user_id)
+        return user
 
 
     def get_usernames(self):

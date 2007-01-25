@@ -385,6 +385,13 @@ class Skin(Folder):
         return namespace
 
 
+    def get_template(self):
+        if self.has_handler('template.xhtml'):
+            return self.get_handler('template.xhtml')
+        # Default, aruni
+        return self.get_handler('/ui/aruni/template.xhtml')
+
+
     def template(self, content):
         context = get_context()
         # Build the namespace
@@ -399,7 +406,7 @@ class Skin(Folder):
         context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
         # Transform the tree
-        handler = self.get_handler('template.xhtml')
+        handler = self.get_template()
         prefix = uri.Path(handler.get_abspath())
 
         # STL

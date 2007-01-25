@@ -52,9 +52,7 @@ class Skin(Folder):
     #######################################################################
     # Left Menu
     #######################################################################
-    def get_main_menu(self, context):
-        root = context.root
-        here = context.handler
+    def get_main_menu_options(self, context):
         user = context.user
 
         options = []
@@ -72,8 +70,16 @@ class Skin(Folder):
         append({'path': '/', 'method': 'languages_form', 'title': u'Settings',
                 'icon': '/ui/images/Settings16.png'})
 
-        aux = []
-        for option in options:
+        return options
+
+
+    def get_main_menu(self, context):
+        user = context.user
+        root = context.root
+        here = context.handler
+
+        menu = []
+        for option in self.get_main_menu_options(context):
             path = option['path']
             method = option['method']
             title = option['title']
@@ -83,13 +89,13 @@ class Skin(Folder):
             ac = handler.get_access_control()
             if ac.is_access_allowed(user, handler, method):
                 href = '%s/;%s' % (here.get_pathto(handler), method)
-                aux.append({'href': href, 'title': title, 'class': '',
+                menu.append({'href': href, 'title': title, 'class': '',
                             'src': src, 'items': []})
     
-        if not aux:
+        if not menu:
             return None
 
-        return {'title': u'Main Menu', 'content': build_menu(aux)}
+        return {'title': u'Main Menu', 'content': build_menu(menu)}
 
 
     def get_navigation_menu(self, context):

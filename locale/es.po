@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
-"POT-Creation-Date: 2007-01-11 13:01+CET\n"
+"POT-Creation-Date: 2007-01-25 15:01+CET\n"
 "PO-Revision-Date: 2006-12-06 16:23+0100\n"
 "Last-Translator: J. David Ibáñez <jdavid@itaapy.com>\n"
 "Language-Team: Spanish\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: cms/root.py:413
+#: cms/root.py:441
 msgid "$n handlers have been indexed in $time seconds."
 msgstr ""
 
@@ -111,10 +111,6 @@ msgstr ""
 msgid "${group/users}"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "${item/name}"
-msgstr ""
-
 #: cms/ui/epoz.xml.en:0
 msgid "${js_data}"
 msgstr ""
@@ -123,12 +119,20 @@ msgstr ""
 msgid "${lang/name}"
 msgstr ""
 
-#: cms/ui/Root_languages.xml.en:0
+#: cms/ui/WebSite_languages.xml.en:0
 msgid "${language/code}"
 msgstr ""
 
-#: cms/ui/User_edit.xml.en:0
+#: cms/ui/WebSite_languages.xml.en:0
 msgid "${language/name}"
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
+msgid "${menu/content}"
+msgstr ""
+
+#: cms/ui/aruni/template.xhtml.en:0
+msgid "${menu/title}"
 msgstr ""
 
 #: cms/ui/Thread_view.xml.en:0
@@ -160,18 +164,6 @@ msgstr ""
 msgid "${metadata/title}"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
-msgid "${navigation}"
-msgstr ""
-
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid "${object/class_title}"
-msgstr ""
-
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid "${object/mtime}"
-msgstr ""
-
 #: cms/ui/Folder_rename.xml.en:0
 msgid "${object/name}"
 msgstr ""
@@ -184,20 +176,8 @@ msgstr ""
 msgid "${object/short_title}"
 msgstr ""
 
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid "${object/size}"
-msgstr ""
-
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "${object/title_or_name}"
-msgstr ""
-
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid "${object/title}"
-msgstr ""
-
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid "${object/workflow_state}"
 msgstr ""
 
 #: cms/ui/Database_view.xml.en:0
@@ -216,8 +196,16 @@ msgstr ""
 msgid "${revision/username}"
 msgstr ""
 
-#: cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/RoleAware_new_user.xml.en:0
 msgid "${role/title}"
+msgstr ""
+
+#: cms/ui/CSVRow_view.xml.en:0
+msgid "${row/column}"
+msgstr ""
+
+#: cms/ui/CSVRow_view.xml.en:0
+msgid "${row/value}"
 msgstr ""
 
 #: cms/ui/HTML_edit.xml.en:0
@@ -244,12 +232,12 @@ msgstr ""
 msgid "${selected/width}x${selected/height}"
 msgstr ""
 
-#: cms/ui/Text_view.xml.en:0
-msgid "${text}"
+#: cms/ui/RoleAware_permissions.xml.en:0
+msgid "${table}"
 msgstr ""
 
-#: cms/ui/Folder_browse_list.xml.en:0
-msgid "${thead}"
+#: cms/ui/Text_view.xml.en:0
+msgid "${text}"
 msgstr ""
 
 #: cms/ui/Forum_view.xml.en:0
@@ -312,24 +300,16 @@ msgstr ""
 msgid "${type/title}"
 msgstr ""
 
-#: cms/ui/Folder_permissions.xml.en:0
-msgid "${user/title_or_name}"
-msgstr ""
-
 #: cms/ui/ical_monthly_view.xml.en:0
 msgid "${week/month}"
 msgstr ""
 
-#: cms/Handler.py:173
+#: cms/File.py:78
 msgid "%.01f KB"
 msgstr ""
 
-#: cms/Handler.py:171
+#: cms/File.py:76
 msgid "%.01f MB"
-msgstr ""
-
-#: cms/Handler.py:177
-msgid "%d obs"
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -367,9 +347,8 @@ msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid ""
-"(logged in as ${user/info/title})<br/><br/> <a id=\"top_menu_home\" href="
-"\"${user/info/home}\">Home</a> <a id=\"top_menu_logout\" href=\"/;logout"
-"\">Log out</a>"
+"(logged in as ${user/info/title})<br/><br/> <a id=\"top_menu_logout\" href="
+"\"/;logout\">Log out</a>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -395,7 +374,7 @@ msgstr ""
 msgid "2.0"
 msgstr ""
 
-#: cms/skins.py:234
+#: cms/skins.py:326
 msgid "404 Not Found"
 msgstr ""
 
@@ -496,6 +475,16 @@ msgid ""
 "${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
 msgstr ""
 
+#: cms/ui/RoleAware_new_user.xml.en:0
+msgid ""
+"<input id=\"email\" name=\"email\" type=\"text\"/> <select id=\"users\" name="
+"\"email2\" stl:if=\"emails\" onchange=\"set_email(this.value);\">\n"
+"          <option value=\"\"></option>\n"
+"          <option stl:repeat=\"email emails\" value=\"${email}\">${email}</"
+"option>\n"
+"        </select>"
+msgstr ""
+
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid ""
 "<input id=\"name\" name=\"name\" size=\"40\" type=\"text\" stl:if=\"not name"
@@ -559,7 +548,7 @@ msgid ""
 "\"${state/key}\">${state/value}</option>"
 msgstr ""
 
-#: cms/ui/Root_languages.xml.en:0
+#: cms/ui/WebSite_languages.xml.en:0
 msgid ""
 "<option value=\"\">Choose a language</option> <option stl:repeat=\"language "
 "non_active_languages\" value=\"${language/code}\">${language/name}</option>"
@@ -908,7 +897,7 @@ msgstr ""
 msgid "A public document can be reached by even anonymous users."
 msgstr ""
 
-#: cms/forum.py:79
+#: cms/forum.py:74
 msgid "A thread to discuss"
 msgstr ""
 
@@ -916,7 +905,7 @@ msgstr ""
 msgid "A transition must be selected."
 msgstr ""
 
-#: cms/WebSite.py:576
+#: cms/users.py:221
 msgid "A valid email address must be provided."
 msgstr ""
 
@@ -928,15 +917,15 @@ msgstr "Acerca de"
 msgid "Accept the document."
 msgstr "Aceptar el documento."
 
-#: cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/RoleAware_permissions.xml.en:0
 msgid "Access Control"
 msgstr ""
 
-#: cms/root.py:161
+#: cms/root.py:200
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
-#: cms/users.py:186
+#: cms/users.py:190
 msgid "Account"
 msgstr "Cuenta"
 
@@ -944,7 +933,7 @@ msgstr "Cuenta"
 msgid "Account Change"
 msgstr ""
 
-#: cms/users.py:223
+#: cms/users.py:235
 msgid "Account changed."
 msgstr ""
 
@@ -966,29 +955,12 @@ msgstr "Agregar"
 msgid "Add Document"
 msgstr "Añadir Documento"
 
-#: cms/ui/Root_languages.xml.en:0
-#, fuzzy
-msgid "Add Language"
-msgstr "Idioma"
-
-#: cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/RoleAware_new_user.xml.en:0
 msgid "Add New User"
 msgstr "Añadir un Nuevo Usuario"
 
 #: cms/ui/Folder_new_instance.xml.en:0
 msgid "Add Resource of Type \"${class_title}\""
-msgstr ""
-
-#: cms/ui/Folder_permissions.xml.en:0
-msgid ""
-"Add a new <select name=\"role\" style=\"font-size: 1em\">\n"
-"        <option stl:repeat=\"role roles\" value=\"${role/name}\">${role/unit}"
-"</option>\n"
-"      </select> <br/><br/> <select name=\"addusers\" size=\"15\" multiple="
-"\"multiple\">\n"
-"        <option stl:repeat=\"user others\" value=\"${user/name}\">${user/"
-"title_or_name}</option>\n"
-"      </select>"
 msgstr ""
 
 #: cms/ui/WikiPage_new_instance.xml.en:0
@@ -1003,11 +975,11 @@ msgstr "Agregar y ver"
 msgid "Add new content"
 msgstr ""
 
-#: cms/root.py:65
+#: cms/root.py:67
 msgid "Admin"
 msgstr ""
 
-#: cms/root.py:65
+#: cms/root.py:67
 msgid "Admins"
 msgstr ""
 
@@ -1033,7 +1005,7 @@ msgstr ""
 msgid "An email has been sent to you with your new password."
 msgstr ""
 
-#: cms/WebSite.py:289
+#: cms/WebSite.py:299
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
@@ -1061,7 +1033,7 @@ msgstr ""
 msgid "Apologies for the inconvenience."
 msgstr ""
 
-#: cms/users.py:153
+#: cms/users.py:157
 msgid "Application"
 msgstr "Aplicación"
 
@@ -1069,27 +1041,19 @@ msgstr "Aplicación"
 msgid "Application Preferences"
 msgstr "Preferencias de la Aplicación"
 
-#: cms/users.py:179
+#: cms/users.py:183
 msgid "Application preferences changed."
 msgstr ""
 
-#: cms/ical.py:68
+#: cms/ical.py:81
 msgid "April"
 msgstr "Abril"
 
-#: cms/Folder.py:467
+#: cms/Folder.py:758
 msgid "As Icons"
 msgstr "Como Iconos"
 
-#: cms/Folder.py:539
-msgid "As Image Gallery"
-msgstr ""
-
-#: cms/Folder.py:480
-msgid "As List"
-msgstr ""
-
-#: cms/ical.py:1173
+#: cms/ical.py:1203
 msgid "As calendar"
 msgstr ""
 
@@ -1097,7 +1061,7 @@ msgstr ""
 msgid "Attendees"
 msgstr ""
 
-#: cms/ical.py:69
+#: cms/ical.py:82
 msgid "August"
 msgstr "Agosto"
 
@@ -1109,7 +1073,7 @@ msgstr ""
 msgid "Background Color"
 msgstr "Color de Fondo"
 
-#: cms/users.py:119
+#: cms/users.py:123
 msgid "Bad key."
 msgstr ""
 
@@ -1132,6 +1096,10 @@ msgstr "Borde"
 
 #: cms/ui/Folder_browse_thumbnails.xml.en:0
 msgid "Browse Content"
+msgstr ""
+
+#: cms/access.py:242
+msgid "Browse Members"
 msgstr ""
 
 #: cms/ui/Folder_browsedir.xml.en:0
@@ -1173,7 +1141,7 @@ msgstr ""
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
-#: cms/ical.py:51
+#: cms/ical.py:63
 msgid "Calendar"
 msgstr ""
 
@@ -1193,13 +1161,18 @@ msgstr "Centrar"
 msgid "Change"
 msgstr "Modificar"
 
+#: cms/ui/RoleAware_edit_membership_form.xml.en:0
+msgid "Change Role of ${name} (${email})"
+msgstr ""
+
 #: cms/ui/User_edit_account.xml.en:0
 msgid "Change account"
 msgstr ""
 
-#: cms/ui/Root_languages.xml.en:0
-msgid "Change default for the selected one"
-msgstr ""
+#: cms/ui/WebSite_languages.xml.en:0
+#, fuzzy
+msgid "Change default"
+msgstr "Modificar"
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "Change password"
@@ -1209,7 +1182,7 @@ msgstr "Modificar clave de acceso"
 msgid "Change preferences"
 msgstr "Modificar preferencias"
 
-#: cms/csv.py:67
+#: cms/csv.py:83
 msgid "Changes saved."
 msgstr "Modificaciones guardadas"
 
@@ -1217,7 +1190,7 @@ msgstr "Modificaciones guardadas"
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:430
+#: cms/root.py:458
 msgid "Check Groups"
 msgstr ""
 
@@ -1241,7 +1214,7 @@ msgstr ""
 msgid "Choose a template:"
 msgstr "Elije una plantilla:"
 
-#: cms/ui/Root_languages.xml.en:0
+#: cms/ui/WebSite_languages.xml.en:0
 msgid "Code"
 msgstr "Código"
 
@@ -1249,7 +1222,7 @@ msgstr "Código"
 msgid "Come back to today"
 msgstr ""
 
-#: cms/csv.py:74
+#: cms/csv.py:90
 msgid "Comma Separated Values"
 msgstr ""
 
@@ -1290,6 +1263,10 @@ msgstr "Comentarios"
 msgid "Container for a wiki"
 msgstr ""
 
+#: cms/skins.py:139
+msgid "Content ($size)"
+msgstr ""
+
 #: cms/ui/WikiPage_new_instance.xml.en:0
 msgid "Contents"
 msgstr ""
@@ -1326,7 +1303,7 @@ msgstr "Estado actual:"
 msgid "Cut"
 msgstr "Cortar"
 
-#: cms/ical.py:767
+#: cms/ical.py:793
 msgid "Data updated"
 msgstr "Datos actualizados"
 
@@ -1334,11 +1311,11 @@ msgstr "Datos actualizados"
 msgid "Date"
 msgstr "Fecha"
 
-#: cms/ical.py:70
+#: cms/ical.py:83
 msgid "December"
 msgstr ""
 
-#: cms/ui/Root_languages.xml.en:0
+#: cms/ui/WebSite_languages.xml.en:0
 msgid "Default"
 msgstr ""
 
@@ -1346,7 +1323,7 @@ msgstr ""
 msgid "Definitely remove"
 msgstr ""
 
-#: cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/RoleAware_permissions.xml.en:0
 msgid "Delete"
 msgstr ""
 
@@ -1389,6 +1366,11 @@ msgstr "Documento editado."
 #: cms/ui/File_download_form.xml.en:0
 msgid "Download"
 msgstr ""
+
+#: cms/access.py:280
+#, fuzzy
+msgid "E-Mail"
+msgstr "Correo electrónico"
 
 #: cms/ui/User_edit_account.xml.en:0
 msgid "E-mail"
@@ -1436,7 +1418,7 @@ msgstr "Editar Preferencias;"
 msgid "Edit the timetable grid"
 msgstr ""
 
-#: cms/ui/UserFolder_new_user.xml.en:0
+#: cms/ui/RoleAware_new_user.xml.en:0
 msgid "Email"
 msgstr "Correo electrónico"
 
@@ -1456,15 +1438,15 @@ msgstr ""
 msgid "Epoz-Toolbox"
 msgstr ""
 
-#: cms/ical.py:537
+#: cms/ical.py:563
 msgid "Event"
 msgstr ""
 
-#: cms/ical.py:781
+#: cms/ical.py:807
 msgid "Event definitely deleted."
 msgstr ""
 
-#: cms/ical.py:580
+#: cms/ical.py:606
 msgid "Event not found"
 msgstr ""
 
@@ -1476,11 +1458,11 @@ msgstr ""
 msgid "Excel"
 msgstr "Excel"
 
-#: cms/ical.py:440
+#: cms/ical.py:466
 msgid "Export in ical format"
 msgstr ""
 
-#: cms/File.py:104
+#: cms/File.py:116
 msgid "External"
 msgstr "Externo"
 
@@ -1496,7 +1478,7 @@ msgstr "Editor Externo.."
 msgid "External Editor..."
 msgstr "Editor Externo..."
 
-#: cms/ical.py:68
+#: cms/ical.py:81
 msgid "February"
 msgstr ""
 
@@ -1508,7 +1490,7 @@ msgstr "Campo"
 msgid "File"
 msgstr "Fichero"
 
-#: cms/Folder.py:938
+#: cms/Folder.py:927
 msgid "File uploaded."
 msgstr ""
 
@@ -1524,7 +1506,7 @@ msgstr ""
 msgid "Flash"
 msgstr ""
 
-#: cms/Folder.py:58
+#: cms/Folder.py:60
 msgid "Folder"
 msgstr "Carpeta"
 
@@ -1606,7 +1588,7 @@ msgstr "Formato:"
 msgid "French (fr)"
 msgstr ""
 
-#: cms/ical.py:72
+#: cms/ical.py:85
 msgid "Friday"
 msgstr "Viernes"
 
@@ -1614,9 +1596,14 @@ msgstr "Viernes"
 msgid "From"
 msgstr ""
 
-#: cms/wiki.py:112
+#: cms/wiki.py:115
 msgid "Front Page"
 msgstr ""
+
+#: cms/ui/WebSite_register.xml.en:0
+#, fuzzy
+msgid "Full Name"
+msgstr "Nombre completo"
 
 #: cms/ui/User_edit_account.xml.en:0
 msgid "Full name"
@@ -1626,7 +1613,7 @@ msgstr "Nombre completo"
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
-#: cms/root.py:458
+#: cms/root.py:486
 msgid "Groups fixed."
 msgstr "Grupos corregidos"
 
@@ -1645,10 +1632,6 @@ msgstr ""
 #: cms/ui/Root_credits.xml.en:0
 msgid ""
 "Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
-msgstr ""
-
-#: cms/forum.py:285
-msgid "Help"
 msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
@@ -1810,7 +1793,7 @@ msgstr "Insertar tabla"
 msgid "Internal Server Error"
 msgstr ""
 
-#: cms/forum.py:261
+#: cms/forum.py:271
 msgid "Invalid title."
 msgstr ""
 
@@ -1839,7 +1822,7 @@ msgid ""
 "Its real power is what you don't see, when it is used as a web framework."
 msgstr ""
 
-#: cms/ical.py:68
+#: cms/ical.py:81
 msgid "January"
 msgstr "Enero"
 
@@ -1847,11 +1830,11 @@ msgstr "Enero"
 msgid "Juan David Ibáñez Palomar"
 msgstr ""
 
-#: cms/ical.py:69
+#: cms/ical.py:82
 msgid "July"
 msgstr "Julio"
 
-#: cms/ical.py:69
+#: cms/ical.py:82
 msgid "June"
 msgstr "Junio"
 
@@ -1863,19 +1846,19 @@ msgstr ""
 msgid "Language"
 msgstr "Idioma"
 
-#: cms/ui/Root_languages.xml.en:0
+#: cms/ui/WebSite_languages.xml.en:0
 msgid "Language Settings"
 msgstr "Configuración de los Idiomas"
 
-#: cms/WebSite.py:158
+#: cms/WebSite.py:160
 msgid "Language added."
 msgstr "Idioma añadido."
 
-#: cms/WebSite.py:86
+#: cms/WebSite.py:88
 msgid "Languages"
 msgstr "Idiomas"
 
-#: cms/WebSite.py:145
+#: cms/WebSite.py:147
 msgid "Languages removed."
 msgstr "Idiomas suprimidos."
 
@@ -1887,7 +1870,7 @@ msgstr ""
 msgid "Lead Developer"
 msgstr ""
 
-#: cms/root.py:341
+#: cms/root.py:369
 msgid "License"
 msgstr "Licencia"
 
@@ -1915,11 +1898,16 @@ msgstr ""
 msgid "Luis Belmar-Letelier"
 msgstr ""
 
+#: cms/skins.py:98
+#, fuzzy
+msgid "Main Menu"
+msgstr "Mantenimiento"
+
 #: cms/ui/Root_credits.xml.en:0
 msgid "Main developer of the iCalendar module, hacks a little everywhere"
 msgstr ""
 
-#: cms/root.py:429
+#: cms/root.py:457
 msgid "Maintenance"
 msgstr "Mantenimiento"
 
@@ -1934,27 +1922,23 @@ msgid ""
 "that system;"
 msgstr ""
 
-#: cms/ical.py:68
+#: cms/ical.py:81
 msgid "March"
 msgstr "Marzo"
 
-#: cms/ical.py:69
+#: cms/ical.py:82
 msgid "May"
 msgstr "Mayo"
 
-#: cms/access.py:87
+#: cms/root.py:114
 msgid "Member"
 msgstr ""
 
-#: cms/access.py:87
+#: cms/root.py:66
 msgid "Members"
 msgstr ""
 
-#: cms/access.py:307
-msgid "Members added."
-msgstr ""
-
-#: cms/access.py:292
+#: cms/access.py:298
 msgid "Members deleted."
 msgstr ""
 
@@ -1970,12 +1954,12 @@ msgstr "Catalogo de Mensajes"
 msgid "Message edited."
 msgstr ""
 
-#: cms/forum.py:45
+#: cms/forum.py:47
 #, fuzzy
 msgid "Message in a thread"
 msgstr "Catalogo de Mensajes"
 
-#: cms/WebSite.py:586
+#: cms/WebSite.py:600
 #, fuzzy
 msgid "Message sent."
 msgstr "Mensaje"
@@ -1985,11 +1969,11 @@ msgstr "Mensaje"
 msgid "Message:"
 msgstr "Mensaje"
 
-#: cms/ical.py:81
+#: cms/ical.py:95
 msgid "Metadata"
 msgstr ""
 
-#: cms/Handler.py:539
+#: cms/Handler.py:524
 msgid "Metadata changed."
 msgstr ""
 
@@ -2001,13 +1985,22 @@ msgstr ""
 msgid "Modified before"
 msgstr ""
 
-#: cms/ical.py:71
+#: cms/ical.py:84
 msgid "Monday"
 msgstr "Lunes"
 
-#: cms/ical.py:454
+#: cms/ical.py:480
 msgid "Monthly"
 msgstr "Mensualmente"
+
+#: cms/skins.py:65
+msgid "My Content"
+msgstr ""
+
+#: cms/skins.py:62
+#, fuzzy
+msgid "My Profile"
+msgstr "Perfil"
 
 #: cms/sql.py:35
 msgid "MySQL Database"
@@ -2029,15 +2022,25 @@ msgstr ""
 msgid "Name:"
 msgstr "Nombre:"
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/skins.py:104
 msgid "Navigation"
 msgstr "Navigación"
+
+#: cms/ui/WebSite_languages.xml.en:0
+#, fuzzy
+msgid "New Language:"
+msgstr "Idioma"
+
+#: cms/access.py:332
+#, fuzzy
+msgid "New Member"
+msgstr "Nuevo Sitio Web"
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "New Password"
 msgstr "Nueca Clave de Acceso"
 
-#: cms/Folder.py:792
+#: cms/Folder.py:780
 msgid "New Resource"
 msgstr "Nuevo Recurso"
 
@@ -2053,7 +2056,7 @@ msgstr "Nuevo Sitio Web"
 msgid "New Wiki Page"
 msgstr ""
 
-#: cms/Folder.py:869
+#: cms/Folder.py:863
 msgid "New resource added."
 msgstr "Nuevo recurso agregado."
 
@@ -2069,7 +2072,7 @@ msgstr ""
 msgid "No document awaits your review."
 msgstr ""
 
-#: cms/File.py:185
+#: cms/File.py:197
 msgid "No file has been entered."
 msgstr ""
 
@@ -2077,11 +2080,11 @@ msgstr ""
 msgid "No history."
 msgstr ""
 
-#: cms/Folder.py:721
+#: cms/Folder.py:686
 msgid "No objects selected."
 msgstr "No se ha seleccionado ningún objeto."
 
-#: cms/forum.py:257
+#: cms/forum.py:267
 msgid "No title given."
 msgstr ""
 
@@ -2097,15 +2100,15 @@ msgstr ""
 msgid "Note:"
 msgstr "Nota:"
 
-#: cms/ical.py:815
+#: cms/ical.py:841
 msgid "Nothing to change."
 msgstr "Nada para cambiar."
 
-#: cms/ical.py:821
+#: cms/ical.py:847
 msgid "Nothing to remove."
 msgstr ""
 
-#: cms/ical.py:70
+#: cms/ical.py:83
 msgid "November"
 msgstr ""
 
@@ -2125,31 +2128,31 @@ msgstr ""
 msgid "OOo Writer"
 msgstr ""
 
-#: cms/Folder.py:708
+#: cms/Folder.py:673
 msgid "Objects copied."
 msgstr "Objetos copiados."
 
-#: cms/Folder.py:728
+#: cms/Folder.py:693
 msgid "Objects cut."
 msgstr ""
 
-#: cms/Folder.py:785
+#: cms/Folder.py:750
 msgid "Objects pasted."
 msgstr "Objetos pegados."
 
-#: cms/Folder.py:625
+#: cms/Folder.py:591
 msgid "Objects removed: $objects."
 msgstr "Objetos suprimidos: $objects"
 
-#: cms/Folder.py:687
+#: cms/Folder.py:652
 msgid "Objects renamed."
 msgstr "Objetos renombrados."
 
-#: cms/ical.py:70
+#: cms/ical.py:83
 msgid "October"
 msgstr ""
 
-#: cms/ical.py:729
+#: cms/ical.py:755
 msgid "One or more field is invalid."
 msgstr ""
 
@@ -2189,7 +2192,7 @@ msgstr ""
 msgid "Ordered List"
 msgstr "Lista Ordenada"
 
-#: cms/Folder.py:59
+#: cms/Folder.py:61
 msgid "Organize your files and documents with folders."
 msgstr ""
 
@@ -2228,11 +2231,11 @@ msgstr "Clave de acceso"
 msgid "Password Change"
 msgstr ""
 
-#: cms/users.py:279
+#: cms/users.py:291
 msgid "Password changed."
 msgstr ""
 
-#: cms/users.py:262
+#: cms/users.py:274
 msgid "Passwords mismatch, please try again."
 msgstr ""
 
@@ -2248,10 +2251,6 @@ msgstr ""
 msgid "Pending tasks."
 msgstr "Tareas pendientes."
 
-#: cms/access.py:223
-msgid "Permissions"
-msgstr "Permisos"
-
 #: cms/ui/Root_credits.xml.en:0
 msgid "Piotr Macuk"
 msgstr ""
@@ -2260,7 +2259,7 @@ msgstr ""
 msgid "Plain Text"
 msgstr ""
 
-#: cms/WebSite.py:572
+#: cms/WebSite.py:586
 msgid "Please fill the missing fields."
 msgstr ""
 
@@ -2280,7 +2279,7 @@ msgstr ""
 msgid "Please select the folders to order up."
 msgstr ""
 
-#: cms/Folder.py:495
+#: cms/Folder.py:462
 msgid "Please type a search term."
 msgstr ""
 
@@ -2301,7 +2300,7 @@ msgstr ""
 msgid "Preamble"
 msgstr "Preámbulo"
 
-#: cms/users.py:229
+#: cms/users.py:241
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -2313,7 +2312,7 @@ msgstr "Presencia"
 msgid "Private"
 msgstr "Privado"
 
-#: cms/users.py:132
+#: cms/users.py:136
 msgid "Profile"
 msgstr "Perfil"
 
@@ -2323,10 +2322,6 @@ msgstr "Público"
 
 #: cms/workflow.py:43
 msgid "Publish the document."
-msgstr ""
-
-#: cms/forum.py:288
-msgid "Read the doc in README file."
 msgstr ""
 
 #: cms/ui/WebSite_contact_form.xml.en:0
@@ -2351,7 +2346,7 @@ msgstr "Descripción"
 msgid "Registration Options"
 msgstr ""
 
-#: cms/users.py:124
+#: cms/users.py:128
 msgid "Registration confirmed, please log in"
 msgstr ""
 
@@ -2370,14 +2365,6 @@ msgstr ""
 #: cms/ui/epoz.xml.en:0
 msgid "Remove Format"
 msgstr "Suprimir Formato"
-
-#: cms/ui/Folder_permissions.xml.en:0
-msgid "Remove members or update the roles:"
-msgstr ""
-
-#: cms/ui/Root_languages.xml.en:0
-msgid "Remove selected ones"
-msgstr ""
 
 #: cms/ui/Folder_rename.xml.en:0
 msgid "Rename"
@@ -2434,20 +2421,21 @@ msgstr "Retirar el documento."
 msgid "Retract the document."
 msgstr ""
 
-#: cms/access.py:89
+#: cms/access.py:92
 msgid "Reviewer"
 msgstr "Revisor"
 
-#: cms/access.py:88
+#: cms/access.py:91
 msgid "Reviewers"
 msgstr "Revisores"
 
-#: cms/ui/Folder_permissions.xml.en:0
+#: cms/ui/RoleAware_new_user.xml.en:0
 msgid "Role"
 msgstr "Rol"
 
-#: cms/access.py:280
-msgid "Roles updated."
+#: cms/access.py:325
+#, fuzzy
+msgid "Role updated."
 msgstr "Roles actualizados."
 
 #: cms/ui/Root_license.xml.en:0
@@ -2456,7 +2444,7 @@ msgid ""
 "SERVICING, REPAIR OR CORRECTION."
 msgstr ""
 
-#: cms/ical.py:72
+#: cms/ical.py:85
 msgid "Saturday"
 msgstr ""
 
@@ -2464,7 +2452,7 @@ msgstr ""
 msgid "Save Changes"
 msgstr "Guardar Cambios"
 
-#: cms/ical.py:52
+#: cms/ical.py:64
 msgid "Schedule your time with calendar files."
 msgstr ""
 
@@ -2489,16 +2477,16 @@ msgstr ""
 msgid "Sender"
 msgstr "Centrar"
 
-#: cms/ical.py:69
+#: cms/ical.py:82
 msgid "September"
 msgstr ""
 
-#: cms/WebSite.py:189
+#: cms/skins.py:70
 #, fuzzy
 msgid "Settings"
 msgstr "Configuración de los Idiomas"
 
-#: cms/Folder.py:458
+#: cms/Folder.py:430
 msgid "Size"
 msgstr "Tamaño"
 
@@ -2510,7 +2498,7 @@ msgstr "Tamaño (octetos)"
 msgid "Size:"
 msgstr "Tamaño:"
 
-#: cms/skins.py:43
+#: cms/skins.py:45
 msgid "Skin"
 msgstr "Piel"
 
@@ -2522,11 +2510,11 @@ msgstr ""
 msgid "Start"
 msgstr "Empezar"
 
-#: cms/ical.py:734
+#: cms/ical.py:760
 msgid "Start date MUST be earlier than end date."
 msgstr ""
 
-#: cms/ical.py:858
+#: cms/ical.py:884
 msgid "Start time must be earlier than end time."
 msgstr ""
 
@@ -2568,7 +2556,7 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-#: cms/ical.py:72
+#: cms/ical.py:85
 msgid "Sunday"
 msgstr ""
 
@@ -2601,7 +2589,7 @@ msgstr "Tareas"
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: cms/Folder.py:69
+#: cms/Folder.py:74
 msgid "Text"
 msgstr "Texto"
 
@@ -2617,7 +2605,7 @@ msgstr ""
 msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
-#: cms/ical.py:446
+#: cms/ical.py:472
 msgid "Text view"
 msgstr ""
 
@@ -2644,11 +2632,11 @@ msgid ""
 "that is true depends on what the Program does."
 msgstr ""
 
-#: cms/WebSite.py:128
+#: cms/WebSite.py:130
 msgid "The default language has been changed."
 msgstr ""
 
-#: cms/Folder.py:917
+#: cms/Folder.py:906
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 
@@ -2656,18 +2644,23 @@ msgstr ""
 msgid "The documents below await review for publication:"
 msgstr ""
 
-#: cms/users.py:417
-msgid "The email is wrong, please try again."
+#: cms/access.py:372
+#, fuzzy
+msgid "The email address is missing, please type it."
 msgstr ""
 "La dirección de correo electrónico es incorrecta, por favor intentelo de "
 "nuevo."
 
-#: cms/Folder.py:897
+#: cms/Folder.py:886
 msgid "The file must be entered"
 msgstr ""
 
 #: cms/ui/Root_check_groups.xml.en:0
 msgid "The following groups contain users that don't exist anymore:"
+msgstr ""
+
+#: cms/WebSite.py:247
+msgid "The fullname is mandatory."
 msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
@@ -2676,23 +2669,23 @@ msgid ""
 "share and change it."
 msgstr ""
 
-#: cms/Folder.py:830
+#: cms/Folder.py:818
 msgid "The name must be entered"
 msgstr ""
 
-#: cms/WebSite.py:259
+#: cms/WebSite.py:268
 msgid "The password is mandatory."
 msgstr ""
 
-#: cms/users.py:431
+#: cms/access.py:394
 msgid "The password is wrong, please try again."
 msgstr ""
 
-#: cms/WebSite.py:345
+#: cms/WebSite.py:359
 msgid "The password is wrong."
 msgstr ""
 
-#: cms/WebSite.py:265
+#: cms/WebSite.py:274
 msgid "The passwords do not match."
 msgstr "Las claves de acceso no concuerdan."
 
@@ -2712,12 +2705,16 @@ msgid ""
 "modifications to it."
 msgstr ""
 
-#: cms/WebSite.py:331
+#: cms/WebSite.py:344
 msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: cms/WebSite.py:340
+#: cms/WebSite.py:353
 msgid "The user \"$username\" is not active."
+msgstr ""
+
+#: cms/access.py:386
+msgid "The user is alredy here."
 msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
@@ -2728,23 +2725,23 @@ msgstr "No hay mensajes."
 msgid "There has been an error, please try again later."
 msgstr "Ha habido un error, por favor intentalo más tarde."
 
-#: cms/WebSite.py:253
+#: cms/WebSite.py:262
 msgid "There is already a user with that email."
 msgstr ""
 
-#: cms/Folder.py:848
+#: cms/Folder.py:836
 msgid "There is already another object with this name."
 msgstr ""
 
-#: cms/Folder.py:922
+#: cms/Folder.py:911
 msgid "There is already another resource with this name."
 msgstr ""
 
-#: cms/users.py:424
+#: cms/users.py:226
 msgid "There is another user with the email \"%s\", please try again"
 msgstr ""
 
-#: cms/WebSite.py:395
+#: cms/WebSite.py:409
 msgid "There is not a user with the email address \"$email\""
 msgstr ""
 
@@ -2805,19 +2802,19 @@ msgid ""
 "consequence of the rest of this License."
 msgstr ""
 
-#: cms/forum.py:264
+#: cms/forum.py:274
 msgid "This thread already exists."
 msgstr ""
 
-#: cms/forum.py:78
+#: cms/forum.py:73
 msgid "Thread"
 msgstr ""
 
-#: cms/forum.py:282
+#: cms/forum.py:285
 msgid "Thread Created."
 msgstr ""
 
-#: cms/ical.py:71
+#: cms/ical.py:84
 msgid "Thursday"
 msgstr ""
 
@@ -2827,15 +2824,15 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
-#: cms/ical.py:827
+#: cms/ical.py:853
 msgid "Timetable(s) removed successfully."
 msgstr ""
 
-#: cms/ical.py:786
+#: cms/ical.py:812
 msgid "Timetables"
 msgstr ""
 
-#: cms/ical.py:863
+#: cms/ical.py:889
 msgid "Timetables updated successfully."
 msgstr ""
 
@@ -2852,7 +2849,7 @@ msgstr ""
 msgid "Title:"
 msgstr "Título"
 
-#: cms/ical.py:545
+#: cms/ical.py:571
 msgid "To add an event, click on + symbol from the views."
 msgstr ""
 
@@ -2886,7 +2883,7 @@ msgstr ""
 msgid "To reindex the whole site click the button below:"
 msgstr ""
 
-#: cms/root.py:285
+#: cms/root.py:313
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -2906,15 +2903,15 @@ msgstr "Transición realizada."
 msgid "Translations"
 msgstr "Traducir"
 
-#: cms/ical.py:71
+#: cms/ical.py:84
 msgid "Tuesday"
 msgstr ""
 
-#: cms/Folder.py:457
+#: cms/Folder.py:429
 msgid "Type"
 msgstr "Tipo"
 
-#: cms/WebSite.py:317
+#: cms/WebSite.py:330
 msgid "Type your email please."
 msgstr ""
 
@@ -2938,7 +2935,7 @@ msgstr ""
 msgid "Update"
 msgstr "Actualizar"
 
-#: cms/root.py:355
+#: cms/root.py:383
 msgid "Update Catalog"
 msgstr ""
 
@@ -2950,7 +2947,7 @@ msgstr ""
 msgid "Upload File"
 msgstr ""
 
-#: cms/File.py:193
+#: cms/File.py:205
 msgid ""
 "Upload failed: either the file does not match this document type ($mimetype) "
 "or it contains errors."
@@ -2964,23 +2961,27 @@ msgstr ""
 msgid "User"
 msgstr "Usuario"
 
-#: cms/users.py:448
+#: cms/access.py:412
 msgid "User added."
 msgstr "Usuario añadido."
 
-#: cms/root.py:142
+#: cms/root.py:181
 msgid "Users"
 msgstr "Usuarios"
+
+#: cms/skins.py:68
+msgid "Users Directory"
+msgstr ""
 
 #: cms/ui/Root_license.xml.en:0
 msgid "Version 2, June 1991"
 msgstr ""
 
-#: cms/html.py:198
+#: cms/html.py:202
 msgid "Version edited."
 msgstr "Versión editada."
 
-#: cms/File.py:197
+#: cms/File.py:209
 msgid "Version uploaded."
 msgstr ""
 
@@ -3023,15 +3024,15 @@ msgstr ""
 msgid "Web Site"
 msgstr "Sitio Web"
 
-#: cms/ical.py:71
+#: cms/ical.py:84
 msgid "Wednesday"
 msgstr ""
 
-#: cms/ical.py:275
+#: cms/ical.py:297
 msgid "Week "
 msgstr "Semana"
 
-#: cms/ical.py:506
+#: cms/ical.py:532
 msgid "Weekly"
 msgstr "Semanalmente"
 
@@ -3048,11 +3049,11 @@ msgstr ""
 msgid "Wiki Folder"
 msgstr "Carpeta"
 
-#: cms/wiki.py:151
+#: cms/wiki.py:154
 msgid "Wiki Page"
 msgstr ""
 
-#: cms/wiki.py:152
+#: cms/wiki.py:155
 msgid "Wiki contents"
 msgstr ""
 
@@ -3084,15 +3085,15 @@ msgstr ""
 msgid "Workflow state"
 msgstr ""
 
-#: cms/ical.py:855
+#: cms/ical.py:881
 msgid "Wrong time selection (HH:MM)."
 msgstr ""
 
-#: cms/ical.py:851
+#: cms/ical.py:877
 msgid "Wrong time selection."
 msgstr ""
 
-#: cms/ui/Root_languages.xml.en:0
+#: cms/ui/WebSite_languages.xml.en:0
 msgid "Yes"
 msgstr "Sí"
 
@@ -3100,7 +3101,7 @@ msgstr "Sí"
 msgid "You Are Now Logged out"
 msgstr ""
 
-#: cms/ical.py:683
+#: cms/ical.py:709
 msgid "You are not authorized to modify this event."
 msgstr ""
 
@@ -3124,7 +3125,7 @@ msgid ""
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/WebSite.py:139
+#: cms/WebSite.py:141
 msgid "You can not remove the default language."
 msgstr ""
 
@@ -3154,11 +3155,11 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:255
+#: cms/users.py:267
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
-#: cms/WebSite.py:152
+#: cms/WebSite.py:154
 msgid "You must choose a language"
 msgstr "Debes elijir un idioma"
 
@@ -3166,7 +3167,7 @@ msgstr "Debes elijir un idioma"
 msgid "You must make sure that they, too, receive or can get the source code."
 msgstr ""
 
-#: cms/WebSite.py:120
+#: cms/WebSite.py:122
 msgid "You must select one and only one language."
 msgstr ""
 
@@ -3174,7 +3175,7 @@ msgstr ""
 msgid "Your login information has been cleared."
 msgstr ""
 
-#: cms/WebSite.py:407
+#: cms/WebSite.py:421
 msgid ""
 "Your new password:\n"
 "\n"
@@ -3444,6 +3445,10 @@ msgstr ""
 msgid "» Type the url to add:"
 msgstr ""
 
+#, fuzzy
+#~ msgid "Add Language"
+#~ msgstr "Idioma"
+
 #~ msgid "Anonymous"
 #~ msgstr "Anónimo"
 
@@ -3455,6 +3460,9 @@ msgstr ""
 
 #~ msgid "Document State"
 #~ msgstr "Estado del Documento"
+
+#~ msgid "Permissions"
+#~ msgstr "Permisos"
 
 #~ msgid "Security"
 #~ msgstr "Seguridad"

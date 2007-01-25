@@ -89,8 +89,8 @@ class Skin(Folder):
             ac = handler.get_access_control()
             if ac.is_access_allowed(user, handler, method):
                 href = '%s/;%s' % (here.get_pathto(handler), method)
-                menu.append({'href': href, 'title': title, 'class': '',
-                            'src': src, 'items': []})
+                menu.append({'href': href, 'title': self.gettext(title),
+                             'class': '', 'src': src, 'items': []})
     
         if not menu:
             return None

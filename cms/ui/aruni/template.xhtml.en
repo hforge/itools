@@ -23,6 +23,8 @@
     <script type="text/javascript" src="../main.js" />
 
     <!-- Aruni CSS -->
+    <link rel="stylesheet" type="text/css" media="screen"
+      href="../onetruelayout.css" />
     <link rel="stylesheet" type="text/css" href="aruni.css" />
 
     <!-- Additional resources that maybe needed to render the page -->
@@ -47,35 +49,22 @@
 
       <a href="/;site_search" id="top_menu_search">Search</a>
       <a href="/;contact_form" id="top_menu_contact">Contact</a>
-      <div class="clear"></div>
     </div>
-    <div class="clear"></div>
-    <!-- http://www.fu2k.org/alex/css/onetruelayout/ -->
     <div id="wrapper">
-      <table width="100%"><tr><td valign="top" width="20%">
-      <div id="block_2">
-        <div class="navigation" stl:repeat="menu left_menus">
-          <label>${menu/title}</label>
-          ${menu/content}
-        </div>
-      </div>
-      </td><td valign="top" width="80%">
-      <div id="block_1">
+      <div id="center" class="column">
         <div id="maintitle">
           <img alt="" height="48" width="48" src="${metadata/icon}"
             style="float: left; margin-right: 9px" stl:if="metadata/icon" />
           <h1>${metadata/title}</h1>
           <div id="breadcrumbs">
             <label>Location:</label>
-            <ul>
-              <li stl:repeat="item breadcrumb">
-                <a stl:if="item/url" href="${item/url}"
-                  title="${item/name}">${item/short_name}</a>
-                <span stl:if="not item/url" title="${item/name}"
-                  >${item/short_name}</span>
-                <stl:inline if="not repeat/item/end">/</stl:inline> 
-              </li>
-            </ul>
+            <span stl:repeat="item breadcrumb">
+              <a stl:if="item/url" href="${item/url}"
+                title="${item/name}">${item/short_name}</a>
+              <span stl:if="not item/url"
+                title="${item/name}">${item/short_name}</span>
+              <stl:inline if="not repeat/item/end">/</stl:inline> 
+            </span>
           </div>
           <div class="clear"></div>
         </div>
@@ -96,9 +85,15 @@
           <div id="content">${body}</div>
         </div>
       </div>
-      </td></tr></table>
+      <div id="left" class="column">
+        <div class="navigation" stl:repeat="menu left_menus">
+          <label>${menu/title}</label>
+          ${menu/content}
+        </div>
+      </div>
+      <!-- div id="right" class="column"></div -->
     </div>
-    <div id="footer">
+    <div id="footer" class="clear">
       <a href="/;about">About</a>
       <a href="/;credits">Credits</a>
       <a href="/;license">License</a>

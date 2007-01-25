@@ -1,9 +1,3 @@
-/* get rid of default margins/paddings */
-* {
-    padding: 0;
-    margin:  0;
-}
-
 body {
   color: #000;
   background: #fff;
@@ -36,8 +30,8 @@ td, th { padding: 3px; }
 
 #header {
   margin-bottom: 1em;
-  padding: 10px 1.0em 0.5em 0.5em;
-  color: white;
+  padding: 10px 1em;
+  color: #fff;
   background: #729fcf url(images/logo.png) left bottom no-repeat;
   font-size: 1.1em;
   text-align: right;
@@ -95,11 +89,6 @@ td, th { padding: 3px; }
 #action_logout { background-image: url(images/action_logout.png); }
 
 #breadcrumbs { margin-bottom: .5em; }
-#breadcrumbs ul { display: inline; }
-#breadcrumbs li {
-  display: inline;
-  margin: 0;
-}
 #breadcrumbs a, #breadcrumbs span { color: #888a85; }
 
 #tabs span, #subtabs span { display: inline-block; }
@@ -182,32 +171,28 @@ td, th { padding: 3px; }
   font-weight: bold;
 }
 
-#block_2 {
+#left {
   font-size: 1.1em;
 }
-#block_2 a,
-#block_2 a:link,
-#block_2 a:visited,
-#block_2 a:hover,
-#block_2 a:active {
+#left a, #left a:link, #left a:visited, #left a:hover, #left a:active {
   text-decoration: none;
   color: #3465a4;
 }
-#block_2 label {
+#left label {
   display: block;
   margin: 0.3em;
   padding: 0.3em 0.6em;
   color: #fff;
   background: #c17d11;
 }
-#block_2 ul,
-#block_2 dl {
+#left ul,
+#left dl {
   margin: 0.3em 0.6em 1em 0.3em;
 }
-#block_2 ul {
+#left ul {
   list-style: none;
 }
-#block_2 li {
+#left li {
   margin: 0.3em;
   padding: 0;
   background-repeat: no-repeat;
@@ -215,23 +200,23 @@ td, th { padding: 3px; }
   line-height: 1.6em;
   list-style: none;
 }
-#block_2 li a {
+#left li a {
   padding-left: 2em;
 }
-#block_2 dl {
+#left dl {
   padding: 0.3em;
 }
-#block_2 dl dl {
+#left dl dl {
   margin: 0;
   border: 0;
   padding: 0;
 }
-#block_2 dt {
+#left dt {
   overflow: hidden;
   line-height: 1.6em;
   border-bottom: 1px solid #d3d7cf;
 }
-#block_2 dd {
+#left dd {
   margin-left: 0.9em;
 }
 
@@ -239,7 +224,7 @@ td, th { padding: 3px; }
   text-align: center;
   border-top: 1px solid #729fcf;
   font-size: 1.0em;
-  margin: 3.5em auto auto auto;
+  margin: 3.5em auto 0 auto;
   padding: 0.3em;
   width: 500px;
 }
@@ -252,15 +237,6 @@ td, th { padding: 3px; }
 
 #footer a:hover {
   text-decoration: underline;
-}
-
-
-#powered {
-  float: right;
-}
-#powered img {
-  clear: both;
-  vertical-align: bottom;
 }
 
 .clear {

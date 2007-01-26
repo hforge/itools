@@ -348,6 +348,9 @@ class Skin(Folder):
         # Aruni (default skin)
         scripts.append('/ui/browser.js')
         scripts.append('/ui/main.js')
+        # This skin's JavaScript
+        if self.has_handler('javascript.js'):
+            scripts.append('%s/javascript.js' % self.abspath)
         # Dynamic scripts
         for script in context.scripts:
             scripts.append(script)

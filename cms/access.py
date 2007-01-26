@@ -402,6 +402,9 @@ class RoleAware(AccessControl):
         role = context.get_form_value('role')
         self.set_user_role(user_id, role)
 
+        # Index the user
+        root.reindex_handler(user)
+
         # Come back
         if context.has_form_value('add_and_return'):
             goto = None

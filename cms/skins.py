@@ -316,6 +316,46 @@ class Skin(Folder):
 
 
     #######################################################################
+    # Styles and Scripts
+    #######################################################################
+    def get_styles(self, context):
+        styles = []
+        # Epoz
+        styles.append('/ui/epoz.css')
+        # Calendar (http://dynarch.com/mishoo/calendar.epl)
+        styles.append('/ui/calendar/calendar-aruni.css')
+        # Aruni (default skin)
+        styles.append('/ui/onetruelayout.css')
+        styles.append('/ui/aruni/aruni.css')
+        # This skin's style
+        if self.has_handler('style.css'):
+            styles.append('%s/style.css' % self.abspath)
+        # Dynamic styles
+        for style in context.styles:
+            styles.append(style)
+
+        return styles
+
+
+    def get_scripts(self, context):
+        scripts = []
+        # Epoz
+        scripts.append('/ui/epoz.js')
+        # Calendar (http://dynarch.com/mishoo/calendar.epl)
+        scripts.append('/ui/calendar/calendar.js')
+        scripts.append('/ui/calendar/lang/calendar-en.js')
+        scripts.append('/ui/calendar/calendar-setup.js')
+        # Aruni (default skin)
+        scripts.append('/ui/browser.js')
+        scripts.append('/ui/main.js')
+        # Dynamic scripts
+        for script in context.scripts:
+            scripts.append(script)
+
+        return scripts
+
+
+    #######################################################################
     # 
     #######################################################################
     def get_template_title(self, context):
@@ -338,8 +378,8 @@ class Skin(Folder):
         namespace = {}
 
         # Resources
-        namespace['styles'] = [ x for x in context.styles ]
-        namespace['scripts'] = [ x for x in context.scripts ]
+        namespace['styles'] = self.get_styles(context)
+        namespace['scripts'] = self.get_scripts(context)
 
         # User menu
         namespace['user']= self.get_user_menu(context)

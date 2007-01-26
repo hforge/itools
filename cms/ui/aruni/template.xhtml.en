@@ -7,31 +7,14 @@
     <title>${title}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-    <!-- Calendar widget (from http://dynarch.com/mishoo/calendar.epl) -->
-    <link rel="stylesheet" type="text/css"
-      href="../calendar/calendar-aruni.css" />
-    <script type="text/javascript" src="../calendar/calendar.js" />
-    <script type="text/javascript" src="../calendar/lang/calendar-en.js" />
-    <script type="text/javascript" src="../calendar/calendar-setup.js" />
+    <!-- CSS -->
+    <link type="text/css" rel="stylesheet" stl:repeat="style styles"
+      href="${style}" />
 
-    <!-- Epoz -->
-    <link rel="stylesheet" type="text/css" href="../epoz.css" />
-    <script type="text/javascript" src="../epoz.js" />
-
-    <!-- JavaScript utils -->
-    <script type="text/javascript" src="../browser.js" />
-    <script type="text/javascript" src="../main.js" />
-
-    <!-- Aruni CSS -->
-    <link rel="stylesheet" type="text/css" media="screen"
-      href="../onetruelayout.css" />
-    <link rel="stylesheet" type="text/css" href="aruni.css" />
-
-    <!-- Additional resources that maybe needed to render the page -->
-    <link href="${style}" rel="stylesheet" type="text/css"
-      stl:repeat="style styles" />
-    <script src="${script}" stl:repeat="script scripts" type="text/javascript"
+    <!-- JavaScript -->
+    <script type="text/javascript" stl:repeat="script scripts" src="${script}" 
       />
+
   </head>
   <body>
     <div id="header">

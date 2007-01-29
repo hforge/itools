@@ -279,8 +279,12 @@ class RoleAware(AccessControl):
         columns = [
             ('email', u'E-Mail'), ('title', u'Name'), ('role', u'Role')]
 
+        # The actions
+        actions = [
+            ('permissions_del_members', u'Delete', 'butto_delete', None)]
+
         namespace['table'] = widgets.table(columns, members, sortby, sortorder,
-                                           self.gettext)
+                                           actions, self.gettext)
 
         handler = self.get_handler('/ui/RoleAware_permissions.xml')
         return stl(handler, namespace)

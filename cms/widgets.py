@@ -79,41 +79,52 @@ def table_head(columns, sortby, sortorder, gettext=lambda x: x):
 
 
 table_template_string = """
-<table xmlns="http://www.w3.org/1999/xhtml"
+<form action="." method="post"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <thead stl:if="columns">
-    <tr>
-      <th></th>
-      <th></th>
-      <th stl:repeat="column columns" valign="bottom">
-        <a stl:if="column" href="${column/href}" class="sort_${column/order}"
-          >${column/title}</a>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr stl:repeat="row rows" class="${repeat/row/even}">
-      <td>
-        <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
-          value="${row/id}" />
-      </td>
-      <td>
-        <img border="0" src="${row/img}" stl:if="row/img" />
-      </td>
-      <td stl:repeat="column row/columns">
-        <a stl:if="column/href" href="${column/href}">${column/value}</a>
-        <stl:block if="not column/href">${column/value}</stl:block>
-      </td>
-    </tr>
-  </tbody>
-</table>
+
+  <table xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <thead stl:if="columns">
+      <tr>
+        <th></th>
+        <th></th>
+        <th stl:repeat="column columns" valign="bottom">
+          <a stl:if="column" href="${column/href}" class="sort_${column/order}"
+            >${column/title}</a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr stl:repeat="row rows" class="${repeat/row/even}">
+        <td>
+          <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
+            value="${row/id}" />
+        </td>
+        <td>
+          <img border="0" src="${row/img}" stl:if="row/img" />
+        </td>
+        <td stl:repeat="column row/columns">
+          <a stl:if="column/href" href="${column/href}">${column/value}</a>
+          <stl:block if="not column/href">${column/value}</stl:block>
+        </td>
+      </tr>
+    </tbody>
+  </table> 
+  <p stl:if="actions">
+    <stl:block repeat="action actions">
+      <input type="submit" name=";${action/name}" value="${action/value}"
+        class="${action/class}" onclick="${action/onclick}" />
+    </stl:block>
+  </p>
+</form>
 """
 
 table_template = XHTML.Document()
 table_template.load_state_from_string(table_template_string)
 
 
-def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
+def table(columns, rows, sortby, sortorder, actions, gettext=lambda x: x):
     """
     The parameters are:
 
@@ -129,18 +140,22 @@ def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
       sortorder --
         The order the column must be sorted by.
 
+      actions --
+        [{'name': , 'value': , 'class': , 'onclick': }, ...]
+
       gettext --
         The translation function.
     """
     namespace = {}
-
+    # The columns
+    namespace['columns'] = table_head(columns, sortby, sortorder, gettext)
+    # The rows
     aux = []
     for row in rows:
         x = {}
-        if row['checkbox'] is True:
+        x['id'] = None
+        if actions and row['checkbox'] is True:
             x['id'] = row['id']
-        else:
-            x['id'] = None
         x['img'] = row['img']
         x['columns'] = []
         for column, kk in columns:
@@ -153,7 +168,10 @@ def table(columns, rows, sortby, sortorder, gettext=lambda x: x):
         aux.append(x)
 
     namespace['rows'] = aux
-    namespace['columns'] = table_head(columns, sortby, sortorder, gettext)
+    # The actions
+    namespace['actions'] = [
+        {'name': name, 'value': value, 'class': cls, 'onclick': onclick}
+        for name, value, cls, onclick in actions ]
 
     return stl(table_template, namespace)
 

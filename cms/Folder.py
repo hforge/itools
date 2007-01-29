@@ -378,8 +378,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
                          query=None, results=None):
         context = get_context()
         # Load variables from the request
-        sortby = context.get_form_values('sortby', default=sortby)
-        sortorder = context.get_form_value('sortorder', sortorder)
         start = context.get_form_value('batchstart', type=Integer,
                                        default=batchstart)
         size = context.get_form_value('batchsize', type=Integer,
@@ -428,14 +426,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         if end < total:
             namespace['batch_next'] = context.uri.replace(batchstart=str(end))
 
-        # The column headers
-        columns = [
-            ('name', u'Name'), ('title', u'Title'), ('format', u'Type'),
-            ('mtime', u'Date'), ('size', u'Size'),
-            ('workflow_state', u'State')]
-        namespace['table'] = widgets.table(columns, objects, sortby, sortorder,
-                                           self.gettext)
-
         return namespace
 
 
@@ -449,7 +439,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return stl(handler, namespace)
 
 
-    def browse_list(self, context):
+    def browse_list(self, context, sortby=['title_or_name'], sortorder='up'):
         context.set_cookie('browse', 'list')
 
         # Get the form values
@@ -458,6 +448,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         field = get_form_value('search_field')
         search_subfolders = get_form_value('search_subfolders', type=Boolean,
                                            default=False)
+
+        sortby = context.get_form_values('sortby', default=sortby)
+        sortorder = context.get_form_value('sortorder', sortorder)
 
         # Check the form values
         if context.has_form_value('search_term'):
@@ -477,7 +470,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
             query = queries.Equal('parent_path', abspath)
 
         # Build the namespace
-        namespace = self.browse_namespace(16, query=query)
+        namespace = self.browse_namespace(16, query=query, sortby=sortby,
+                                          sortorder=sortorder)
         namespace['search_term'] = term
         namespace['search_subfolders'] = search_subfolders
         namespace['search_fields'] = [
@@ -485,21 +479,33 @@ class Folder(Handler, BaseFolder, CalendarAware):
              'selected': x['id'] == field or None}
             for x in self.get_search_criteria() ]
 
+        # The column headers
+        columns = [
+            ('name', u'Name'), ('title', u'Title'), ('format', u'Type'),
+            ('mtime', u'Date'), ('size', u'Size'),
+            ('workflow_state', u'State')]
+
         # Actions
         user = context.user
         ac = self.get_access_control()
-        namespace['remove'] = False
-        namespace['rename'] = False
-        namespace['copy'] = False
-        namespace['cut'] = False
-        namespace['paste'] = False
+        actions = []
         if namespace['total']:
-            namespace['remove'] = ac.is_access_allowed(user, self, 'remove')
-            namespace['rename'] = ac.is_access_allowed(user, self, 'rename')
-            namespace['copy'] = ac.is_access_allowed(user, self, 'copy')
-            namespace['cut'] = ac.is_access_allowed(user, self, 'cut')
+            actions = [
+                ('remove', u'Remove', 'button_delete',
+                 'return confirmation();'),
+                ('rename_form', u'Rename', 'button_rename', None),
+                ('copy', u'Copy', 'button_copy', None),
+                ('cut', u'Cut', 'button_cut', None)]
+            actions = [
+                x for x in actions if ac.is_access_allowed(user, self, x[0]) ]
         if context.has_cookie('ikaaro_cp'):
-            namespace['paste'] = ac.is_access_allowed(user, self, 'paste')
+            if ac.is_access_allowed(user, self, 'paste'):
+                actions.append(('paste', u'Paste', 'button_paste', None))
+
+        # Go!
+        namespace['table'] = widgets.table(
+            columns, namespace['objects'], sortby, sortorder, actions,
+            self.gettext)
 
         handler = self.get_handler('/ui/Folder_browse_list.xml')
         return stl(handler, namespace)

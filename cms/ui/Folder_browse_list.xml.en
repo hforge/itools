@@ -32,23 +32,10 @@
   <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
 </div>
 
-<form action="." method="post">
-  ${table}
-  <p stl:if="not total">
-    This folder or query is empty.
-  </p>
-  <p>
-    <input type="submit" name=";remove" value="Remove" class="button_delete"
-      onclick="return confirmation();" stl:if="remove" />
-    <input type="submit" name=";rename_form" value="Rename.."
-      class="button_rename" stl:if="rename" />
-    <input type="submit" name=";copy" value="Copy" class="button_copy"
-      stl:if="copy" />
-    <input type="submit" name=";cut" value="Cut" class="button_cut"
-      stl:if="cut" />
-    <input type="submit" name=";paste" value="Paste" class="button_paste"
-      stl:if="paste" />
-  </p>
-</form>
+<p stl:if="not total">
+  This folder or query is empty.
+</p>
+
+${table}
 
 </stl:block>

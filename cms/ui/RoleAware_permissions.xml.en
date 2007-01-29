@@ -6,12 +6,6 @@
 
   <h2>Access Control</h2>
 
-  <form action="." method="post">
-    ${table}
-    <p style="width: 300px">
-      <input type="submit" name=";permissions_del_members" value="Delete"
-        class="button_delete" />
-    </p>
-  </form>
+  ${table}
 
 </stl:block>

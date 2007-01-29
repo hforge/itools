@@ -344,7 +344,13 @@ class Skin(Folder):
         scripts.append('/ui/epoz.js')
         # Calendar (http://dynarch.com/mishoo/calendar.epl)
         scripts.append('/ui/calendar/calendar.js')
-        scripts.append('/ui/calendar/lang/calendar-en.js')
+        languages = [
+            'af', 'al', 'bg', 'br', 'ca', 'da', 'de', 'du', 'el', 'en', 'es',
+            'fi', 'fr', 'hr', 'hu', 'it', 'jp', 'ko', 'lt', 'lv', 'nl', 'no',
+            'pl', 'pt', 'ro', 'ru', 'si', 'sk', 'sp', 'sv', 'tr', 'zh']
+        accept = context.request.accept_language
+        language = accept.select_language(languages)
+        scripts.append('/ui/calendar/lang/calendar-%s.js' % language)
         scripts.append('/ui/calendar/calendar-setup.js')
         # Aruni (default skin)
         scripts.append('/ui/browser.js')

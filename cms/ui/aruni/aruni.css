@@ -91,6 +91,9 @@ td, th { padding: 3px; }
 #breadcrumbs { margin-bottom: .5em; }
 #breadcrumbs a, #breadcrumbs span { color: #888a85; }
 
+/**************************************************************************
+ * Tabs
+ * ***********************************************************************/
 #tabs span, #subtabs span { display: inline-block; }
 #tabs a,
 #subtabs a {
@@ -100,6 +103,7 @@ td, th { padding: 3px; }
   text-decoration: none;
   white-space: nowrap;
 }
+
 #tabs > span, #subtabs > span { display: -moz-inline-box; }
 #tabs span > a, #subtabs span > a { display: block; }
 #tabs span span, #subtabs span span { display: none; }
@@ -108,12 +112,14 @@ td, th { padding: 3px; }
   border-style: solid solid none solid;
   border-color: #babdb6;
 }
+
 #tabs a { color: #2e3436; }
 #tabs .tab_active a,
 #tabs .tab a:hover {
   color: #eeeeec;
   background: #3465a4;
 }
+
 #tabs .tab_active a { color: #eeeeec; }
 #subtabs {
   border-width: 0 1px 1px;
@@ -121,12 +127,53 @@ td, th { padding: 3px; }
   border-color: #babdb6;
   background: #3465a4;
 }
+
 #subtabs a { color: #eeeeec; }
 #subtabs .tab_active a, #subtabs .tab a:hover {
   background: #c17d11;
 }
+
 #tabs .tab_dummy a, #subtabs .tab_dummy a { border-style: none; }
 
+/* Background images */
+/*
+#tabs a {
+  border-right: none;
+}
+
+#tabs .tab a , #tabs .tab_active a,
+#tabs .tab a:hover , #tabs .tab_active a:hover {
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 18px;
+  xpadding-right: 10px;
+  margin-right: 10px;
+}
+
+#tabs #tab_contents a {
+  background-image: url(../images/Folder16.png);
+}
+
+#tabs #tab_add a {
+  background-image: url(../images/new16.png);
+}
+
+#tabs #tab_metadata a {
+  background-image: url(../images/metadata16.png);
+}
+
+#tabs #tab_members a {
+  background-image: url(../images/UserFolder16.png);
+}
+
+#tabs #tab_about a {
+  background-image: url(../images/about16.png);
+}
+*/
+
+/**************************************************************************
+ * 
+ * ***********************************************************************/
 #message {
   margin: 0.3em;
   padding: 0.3em 0 0.3em 24px;

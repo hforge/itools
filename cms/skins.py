@@ -234,7 +234,8 @@ class Skin(Folder):
                 label = getattr(here, '%s__label__' % name)
                 if callable(label):
                     label = label(**args)
-                tabs.append({'name': ';%s' % view,
+                tabs.append({'id': 'tab_%s' % label.lower(),
+                             'name': ';%s' % view,
                              'label': here.gettext(label),
                              'active': active,
                              'style': active and 'tab_active' or 'tab'})

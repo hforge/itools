@@ -6,6 +6,10 @@
 
   <h2>Access Control</h2>
 
+  <!-- Batch -->
+  ${batch}
+
+  <!-- Content -->
   ${table}
 
 </stl:block>

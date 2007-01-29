@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools import uri
-from itools.datatypes import Email
+from itools.datatypes import Email, Integer
 from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
@@ -245,6 +245,8 @@ class RoleAware(AccessControl):
 
         sortby = context.get_form_values('sortby', default=['email'])
         sortorder = context.get_form_value('sortorder', 'up')
+        start = context.get_form_value('batchstart', default=0, type=Integer)
+        size = 20
 
         # The members
         members = []
@@ -275,6 +277,10 @@ class RoleAware(AccessControl):
         if sortorder == 'down':
             members.reverse()
 
+        # Batch
+        total = len(members)
+        members = members[start:start+size]
+
         # The columns
         columns = [
             ('email', u'E-Mail'), ('title', u'Name'), ('role', u'Role')]
@@ -282,6 +288,8 @@ class RoleAware(AccessControl):
         # The actions
         actions = [
             ('permissions_del_members', u'Delete', 'butto_delete', None)]
+
+        namespace['batch'] = widgets.batch(context.uri, start, size, total)
 
         namespace['table'] = widgets.table(columns, members, sortby, sortorder,
                                            actions, self.gettext)

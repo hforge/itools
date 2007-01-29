@@ -325,7 +325,8 @@ class UserFolder(Folder):
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
-    class_views = [['edit_metadata_form']]
+    class_views = [['browse_content?mode=list'],
+                   ['edit_metadata_form']]
 
 
     def get_document_types(self):
@@ -406,7 +407,6 @@ class UserFolder(Folder):
     # Back-Office
     #######################################################################
 
-    browse_content__access__ = False
     rename_form__access__ = False
     rename__access__ = False
     cut__access__ = False

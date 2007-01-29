@@ -15,7 +15,9 @@
   <stl:block repeat="object objects">
     <dl class="thumb">
       <dt>
-        <a href="${object/href}"><img alt="" src="${object/img}" /></a>
+        <a stl:if="object/href" href="${object/href}"
+          ><img alt="" src="${object/img}" /></a>
+        <img stl:if="not object/href" alt="" src="${object/img}" />
       </dt>
       <dd>
         <a href="${object/href}" title="${object/title_or_name}"

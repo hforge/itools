@@ -337,7 +337,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         id = str(self.get_pathto(object))
         line['id'] = id
         line['title_or_name'] = object.title_or_name
-        href = '%s/;%s' % (id, object.get_firstview())
+        firstview = object.get_firstview()
+        if firstview is None:
+            href = None
+        else:
+            href = '%s/;%s' % (id, firstview)
         line['name'] = (id, href)
         line['format'] = self.gettext(object.class_title)
         line['title'] = object.get_property('dc:title')

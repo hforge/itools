@@ -435,18 +435,13 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Get the form values
         get_form_value = context.get_form_value
         term = get_form_value('search_term', type=Unicode)
+        term = term.strip()
         field = get_form_value('search_field')
         search_subfolders = get_form_value('search_subfolders', type=Boolean,
                                            default=False)
 
         sortby = context.get_form_values('sortby', default=sortby)
         sortorder = context.get_form_value('sortorder', sortorder)
-
-        # Check the form values
-        if context.has_form_value('search_term'):
-            term = term.strip()
-            if not term:
-                return context.come_back(u'Please type a search term.')
 
         # Build the query
         abspath = self.get_abspath()

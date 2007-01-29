@@ -252,10 +252,7 @@ class RoleAware(AccessControl):
         # The search form
         field = context.get_form_value('search_field')
         term = context.get_form_value('search_term', type=Unicode)
-        if context.has_form_value('search_term'):
-            term = term.strip()
-            if not term:
-                return context.come_back(u'Please type a search term.')
+        term = term.strip()
 
         search_fields = [('email', u'E-Mail'),
                          ('title', u'Name')]

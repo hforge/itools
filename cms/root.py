@@ -464,6 +464,7 @@ class Root(WebSite):
         for path in self.get_groups():
             group = self.get_handler(path)
             members = group.get_members()
+            members = set(members)
             if not members.issubset(root_users):
                 missing = list(members - root_users)
                 missing.sort()

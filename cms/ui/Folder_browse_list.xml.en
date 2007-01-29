@@ -7,22 +7,23 @@
 <h2>Browse Content</h2>
 
 <!-- Search/Filter -->
-<form action=";browse_content" method="get" stl:if="search_fields">
+<form action=";browse_content?mode=list" method="get" stl:if="search_fields">
   <fieldset>
-    <legend>Display only contents with the following terms:</legend>
-    <label for="search_term">Search term</label>
-    <input type="text" name="search_term" size="15" value="${search_term}" />
-
-    <label for="search_field">Field</label>
+    <legend>Search</legend>
+    <!-- Field -->
     <select name="search_field">
       <option value="${field/id}" selected="${field/selected}"
         stl:repeat="field search_fields">${field/title}</option>
     </select>
-
-    <label for="search_subfolders">Search subfolders</label>
+    <!-- Term -->
+    <input type="text" name="search_term" size="35" value="${search_term}" />
+    <!-- OK -->
+    <input type="submit" value="OK" class="button_search"/>
+    <br/>
+    <!-- SubFolders -->
     <input type="checkbox" name="search_subfolders" id="search_subfolders"
       checked="${search_subfolders}" value="1" />
-    <input type="submit" value="Search" class="button_search"/>
+    <label for="search_subfolders">Search subfolders</label>
   </fieldset>
 </form>
 

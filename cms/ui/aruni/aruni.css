@@ -198,7 +198,10 @@ td, th { padding: 3px; }
   margin: .5em .5em .5em 1.5em;
 }
 
-#body form fieldset { border-bottom: 1px solid #d3d7cf; }
+#body form fieldset {
+  border-bottom: 1px solid #d3d7cf;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+}
 #body form legend {
   margin: 0 0 0.5em 1em;
   font-size: 0.9em;

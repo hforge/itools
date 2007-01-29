@@ -6,6 +6,7 @@
 
 <h2>Browse Content</h2>
 
+<!-- Search/Filter -->
 <form action=";browse_content" method="get" stl:if="search_fields">
   <fieldset>
     <legend>Display only contents with the following terms:</legend>
@@ -26,16 +27,9 @@
 </form>
 
 <!-- Batch -->
-<div class="batchcontrol" stl:if="total">
-  ${batchstart}-${batchend} of ${total}
-  <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
-  <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
-</div>
+${batch}
 
-<p stl:if="not total">
-  This folder or query is empty.
-</p>
-
+<!-- Content -->
 ${table}
 
 </stl:block>

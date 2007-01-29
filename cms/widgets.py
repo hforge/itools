@@ -35,6 +35,69 @@ from Handler import Handler
 ###########################################################################
 # Table
 ###########################################################################
+
+def batch(uri, start, size, total):
+    """
+    Outputs an HTML snippet with navigation links to move through a set
+    of objects.
+
+    Input data:
+        
+        uri -- The base URI to use to build the navigation links.
+
+        start -- The start of the batch (from 0).
+
+        size -- The size of the batch.
+
+        total -- The total number of objects.
+    """
+    # Plural forms (XXX Use gettext)
+    if total == 1:
+        msg1 = u"There is 1 object."
+    else:
+        msg1 = u"There are ${n} objects."
+        msg1 = Template(msg1).substitute(n=total)
+
+    # Calculate end
+    end = min(start + size, total)
+
+    # Previous
+    previous = None
+    if start > 0:
+        previous = max(start - size, 0)
+        previous = str(previous)
+        previous = uri.replace(batchstart=previous)
+        previous = '<a href="%s" title="Previous">&lt;&lt;</a>' % previous
+    # Next
+    next = None
+    if end < total:
+        next = str(end)
+        next = uri.replace(batchstart=next)
+        next = '<a href="%s" title="Next">&gt;&gt;</a>' % next
+
+    # Output
+    if previous is None and next is None:
+        msg = msg1
+    else:
+        # View more
+        if previous is None:
+            link = next
+        elif next is None:
+            link = previous
+        else:
+            link = '%s %s' % (previous, next)
+
+        msg2 = u"View from ${start} to ${end} (${link}):"
+        msg2 = Template(msg2)
+        msg2 = msg2.substitute(start=(start+1), end=end, link=link)
+
+        msg = '%s %s' % (msg1, msg2)
+
+    # Wrap around a paragraph
+    return '<p class="batchcontrol">%s</p>' % msg
+
+
+
 def table_sortcontrol(column, sortby, sortorder):
     """
     Returns an html snippet with a link that lets to order a column
@@ -79,45 +142,47 @@ def table_head(columns, sortby, sortorder, gettext=lambda x: x):
 
 
 table_template_string = """
-<form action="." method="post"
-  xmlns="http://www.w3.org/1999/xhtml"
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <table xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:stl="http://xml.itools.org/namespaces/stl">
-    <thead stl:if="columns">
-      <tr>
-        <th></th>
-        <th></th>
-        <th stl:repeat="column columns" valign="bottom">
-          <a stl:if="column" href="${column/href}" class="sort_${column/order}"
-            >${column/title}</a>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="row rows" class="${repeat/row/even}">
-        <td>
-          <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
-            value="${row/id}" />
-        </td>
-        <td>
-          <img border="0" src="${row/img}" stl:if="row/img" />
-        </td>
-        <td stl:repeat="column row/columns">
-          <a stl:if="column/href" href="${column/href}">${column/value}</a>
-          <stl:block if="not column/href">${column/value}</stl:block>
-        </td>
-      </tr>
-    </tbody>
-  </table> 
-  <p stl:if="actions">
-    <stl:block repeat="action actions">
-      <input type="submit" name=";${action/name}" value="${action/value}"
-        class="${action/class}" onclick="${action/onclick}" />
-    </stl:block>
-  </p>
-</form>
+  <!-- Content -->
+  <form action="." method="post">
+    <table xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:stl="http://xml.itools.org/namespaces/stl">
+      <thead stl:if="columns">
+        <tr>
+          <th></th>
+          <th></th>
+          <th stl:repeat="column columns" valign="bottom">
+            <a stl:if="column" href="${column/href}"
+              class="sort_${column/order}">${column/title}</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr stl:repeat="row rows" class="${repeat/row/even}">
+          <td>
+            <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
+              value="${row/id}" />
+          </td>
+          <td>
+            <img border="0" src="${row/img}" stl:if="row/img" />
+          </td>
+          <td stl:repeat="column row/columns">
+            <a stl:if="column/href" href="${column/href}">${column/value}</a>
+            <stl:block if="not column/href">${column/value}</stl:block>
+          </td>
+        </tr>
+      </tbody>
+    </table> 
+    <p stl:if="actions">
+      <stl:block repeat="action actions">
+        <input type="submit" name=";${action/name}" value="${action/value}"
+          class="${action/class}" onclick="${action/onclick}" />
+      </stl:block>
+    </p>
+  </form>
+</stl:block>
 """
 
 table_template = XHTML.Document()

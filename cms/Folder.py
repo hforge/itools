@@ -414,17 +414,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace['objects'] = objects
 
         # The batch
-        namespace['batchstart'] = start + 1
-        end = min(start + size, total)
-        namespace['batchend'] = end
-        namespace['batch_previous'] = None
-        if start > 0:
-            prev = max(start - size, 0)
-            prev = str(prev)
-            namespace['batch_previous'] = context.uri.replace(batchstart=prev)
-        namespace['batch_next'] = None
-        if end < total:
-            namespace['batch_next'] = context.uri.replace(batchstart=str(end))
+        namespace['batch'] = widgets.batch(context.uri, start, size, total)
 
         return namespace
 

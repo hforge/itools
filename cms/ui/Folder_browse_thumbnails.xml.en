@@ -6,12 +6,10 @@
 
   <h2>Browse Content</h2>
 
-  <p class="batchcontrol" stl:if="total">
-    ${batchstart}-${batchend} of ${total}
-    <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
-    <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
-  </p>
+  <!-- Batch -->
+  ${batch}
 
+  <!-- Content -->
   <stl:block repeat="object objects">
     <dl class="thumb">
       <dt>
@@ -26,9 +24,5 @@
     </dl>
   </stl:block>
   <div class="clear"></div>
-
-  <p stl:if="not objects">
-    This folder is empty.
-  </p>
 
 </stl:block>

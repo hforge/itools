@@ -154,7 +154,7 @@ class Root(WebSite):
                        ('abspath', 'keyword', True, True),
                        ('members', 'keyword', True, False),
                        # Users
-                       ('email', 'keyword', True, False),
+                       ('email', 'keyword', True, True),
                        ('username', 'keyword', True, False),
                        # Folder's view
                        ('parent_path', 'keyword', True, False),

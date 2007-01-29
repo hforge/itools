@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools import uri
-from itools.datatypes import Email, Integer
+from itools.datatypes import Email, Integer, Unicode
 from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
@@ -243,27 +243,53 @@ class RoleAware(AccessControl):
     def permissions_form(self, context):
         namespace = {}
 
+        # Get values from the request
         sortby = context.get_form_values('sortby', default=['email'])
         sortorder = context.get_form_value('sortorder', 'up')
         start = context.get_form_value('batchstart', default=0, type=Integer)
         size = 20
 
-        # The members
+        # The search form
+        field = context.get_form_value('search_field')
+        term = context.get_form_value('search_term', type=Unicode)
+        if context.has_form_value('search_term'):
+            term = term.strip()
+            if not term:
+                return context.come_back(u'Please type a search term.')
+
+        search_fields = [('email', u'E-Mail'),
+                         ('title', u'Name')]
+
+        namespace['search_term'] = term
+        namespace['search_fields'] = [
+            {'id': name, 'title': self.gettext(title),
+             'selected': name == field or None}
+            for name, title in search_fields ]
+
+        # Search
+        catalog = self.get_handler('/.catalog')
+        query = {'format': 'user'}
+        if field:
+            query[field] = term
+        results = catalog.search(**query)
+        # Only those that belong to this group
+        members = self.get_members()
+        users = [ x for x in results.get_documents() if x.name in members ]
+
+        # Build the namespace
         members = []
-        userfolder = self.get_handler('/users')
-        get_user = userfolder.get_handler
-        for user_id in self.get_members():
-            user = get_user(user_id)    
+        for user in users:
+            user_id = user.name
             ns = {}
             ns['checkbox'] = True
             ns['id'] = user_id
             ns['img'] = None
             # Email
-            email = user.get_property('ikaaro:email')
-            href = '/users/%s/;%s' % (user_id, user.get_firstview())
+            email = user.email
+            href = '/users/%s' % user_id
             ns['email'] = email, href
             # Title
-            ns['title'] = user.get_title_or_name()
+            ns['title'] = user.title_or_name
             # Role
             role = self.get_user_role(user_id)
             role = self.get_role_unit(role)

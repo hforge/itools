@@ -137,6 +137,11 @@ td, th { padding: 3px; }
 
 /* Background images */
 /*
+#tabs {
+  border-left: none;
+  border-right: none;
+}
+
 #tabs a {
   border-right: none;
 }
@@ -150,25 +155,20 @@ td, th { padding: 3px; }
   margin-right: 10px;
 }
 
-#tabs #tab_contents a {
-  background-image: url(../images/Folder16.png);
-}
-
-#tabs #tab_add a {
-  background-image: url(../images/new16.png);
-}
-
-#tabs #tab_metadata a {
-  background-image: url(../images/metadata16.png);
-}
-
-#tabs #tab_members a {
-  background-image: url(../images/UserFolder16.png);
-}
-
-#tabs #tab_about a {
-  background-image: url(../images/about16.png);
-}
+#tabs #tab_contents a { background-image: url(../images/Folder16.png); }
+#tabs #tab_add a { background-image: url(../images/new16.png); }
+#tabs #tab_metadata a { background-image: url(../images/metadata16.png); }
+#tabs #tab_members a { background-image: url(../images/UserFolder16.png); }
+#tabs #tab_about a { background-image: url(../images/about16.png); }
+#tabs #tab_profile a { background-image: url(images/action_home.png); }
+#tabs #tab_preferences a { background-image: url(../images/Settings16.png); }
+#tabs #tab_settings a { background-image: url(../images/Settings16.png); }
+#tabs #tab_tasks a { background-image: url(../images/tasks16.png); }
+#tabs #tab_maintenance a { background-image: url(../images/clear16.png); }
+#tabs #tab_view a { background-image: url(../images/view16.png); }
+#tabs #tab_edit a { background-image: url(../images/edit16.png); }
+#tabs #tab_state a { background-image: url(../images/state16.png); }
+#tabs #tab_history a { background-image: url(../images/history16.png); }
 */
 
 /**************************************************************************

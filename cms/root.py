@@ -56,8 +56,7 @@ class Root(WebSite):
         ['edit_metadata_form'],
         ['languages_form', 'anonymous_form', 'contact_options_form'],
         ['permissions_form', 'new_user_form'],
-        ['catalog_form', 'check_groups'],
-        ['about']]
+        ['catalog_form', 'check_groups']]
 
     __fixed_handlers__ = ['users', 'ui']
 

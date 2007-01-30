@@ -94,64 +94,48 @@ td, th { padding: 3px; }
 /**************************************************************************
  * Tabs
  * ***********************************************************************/
-#tabs span, #subtabs span { display: inline-block; }
-#tabs a,
-#subtabs a {
-  display: inline-block;
-  border-right: 1px solid #babdb6;
-  padding: 0.6em;
-  text-decoration: none;
+
+#tabs {
+  border-bottom: 1px solid #babdb6;
+  border-top: 1px solid #babdb6;
+}
+
+#tabs .tabs {
+  padding: 4px 0px 4px 0px;
   white-space: nowrap;
 }
 
-#tabs > span, #subtabs > span { display: -moz-inline-box; }
-#tabs span > a, #subtabs span > a { display: block; }
-#tabs span span, #subtabs span span { display: none; }
-#tabs {
-  border-width: 1px;
-  border-style: solid solid none solid;
-  border-color: #babdb6;
-}
-
-#tabs a { color: #2e3436; }
-#tabs .tab_active a,
-#tabs .tab a:hover {
-  color: #eeeeec;
-  background: #3465a4;
-}
-
-#tabs .tab_active a { color: #eeeeec; }
-#subtabs {
-  border-width: 0 1px 1px;
-  border-style: solid;
-  border-color: #babdb6;
-  background: #3465a4;
-}
-
-#subtabs a { color: #eeeeec; }
-#subtabs .tab_active a, #subtabs .tab a:hover {
-  background: #c17d11;
-}
-
-#tabs .tab_dummy a, #subtabs .tab_dummy a { border-style: none; }
-
-/* Background images */
-/*
-#tabs {
-  border-left: none;
-  border-right: none;
-}
-
 #tabs a {
-  border-right: none;
+  text-decoration: none;
 }
 
-#tabs .tab a , #tabs .tab_active a,
-#tabs .tab a:hover , #tabs .tab_active a:hover {
+#tabs .tab,
+#tabs .tab_active {
+  background-color: #ffffff;
+  padding: 4px;
+}
+
+#tabs .tab_active,
+#tabs .tab:hover,
+#tabs .tab_active:hover {
+  background-color: #3465a4;
+  color: #ffffff;
+}
+
+#tabs .tab_active a,
+#tabs .tab:hover a,
+#tabs .tab_active:hover a {
+  background-color: #3465a4;
+  color: #ffffff;
+}
+
+#tabs .tab a,
+#tabs .tab_active a,
+#tabs .tab a:hover,
+#tabs .tab_active a:hover {
   background-position: left center;
   background-repeat: no-repeat;
-  padding-left: 18px;
-  xpadding-right: 10px;
+  padding: 0.2em 0em 0.2em 18px;
   margin-right: 10px;
 }
 
@@ -169,7 +153,31 @@ td, th { padding: 3px; }
 #tabs #tab_edit a { background-image: url(../images/edit16.png); }
 #tabs #tab_state a { background-image: url(../images/state16.png); }
 #tabs #tab_history a { background-image: url(../images/history16.png); }
-*/
+
+
+#tabs .subtabs {
+  background-color: #ffffff;
+  border: 1px solid #babdb6;
+  margin: 4px 0px 0px 0px;
+  padding: 0px;
+  position: absolute;
+  visibility: hidden;
+}
+
+#tabs ul {
+  list-style-type: none;
+}
+
+#tabs .subtabs li {
+  xpadding: 2px;
+}
+
+#tabs .subtabs a {
+  display: block;
+  margin: 0px;
+  padding: 2px 4px 2px 22px;
+}
+
 
 /**************************************************************************
  * 

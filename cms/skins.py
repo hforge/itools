@@ -240,33 +240,28 @@ class Skin(Folder):
                              'active': active,
                              'style': active and 'tab_active' or 'tab'})
 
-        # Subtabs
-        subtabs = []
-        for subview in subviews:
-            # same thing, separate method and arguments
-            if '?' in subview:
-                name, args = subview.split('?')
-                args = Query.decode(args)
-                active = name == context.method
-                for key, value in args.items():
-                    request_param = request.get_parameter(key)
-                    if request_param != value:
-                        active = False
-                        break
-            else:
-                name, args = subview, {}
-                active = name == context.method
+            # Subtabs
+            subtabs = []
+            for subview in here.get_subviews(view):
+                # same thing, separate method and arguments
+                if '?' in subview:
+                    name, args = subview.split('?')
+                    args = Query.decode(args)
+                    for key, value in args.items():
+                        request_param = request.get_parameter(key)
+                else:
+                    name, args = subview, {}
 
-            if ac.is_access_allowed(user, here, name):
-                label = getattr(here, '%s__sublabel__' % name)
-                if callable(label):
-                    label = label(**args)
-                subtabs.append({'name': ';%s' % subview,
-                                'label': here.gettext(label),
-                                'active': active,
-                                'style': active and 'tab_active' or 'tab'})
+                if ac.is_access_allowed(user, here, name):
+                    label = getattr(here, '%s__sublabel__' % name)
+                    if callable(label):
+                        label = label(**args)
+                    subtabs.append({'name': ';%s' % subview,
+                                    'label': here.gettext(label),
+                                    'style': 'tab'})
+            tabs[-1]['options'] = subtabs
 
-        return {'tabs': tabs, 'subtabs': subtabs}
+        return tabs
 
 
     #######################################################################
@@ -404,9 +399,7 @@ class Skin(Folder):
         namespace['metadata'] = self.get_metadata_ns(context)
 
         # Tabs
-        tabs = self.get_tabs(context)
-        namespace['tabs'] = tabs['tabs']
-        namespace['subtabs'] = tabs['subtabs']
+        namespace['tabs'] = self.get_tabs(context)
 
         # Message
         namespace['message'] = self.get_message(context)

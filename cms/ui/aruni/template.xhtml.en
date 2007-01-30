@@ -51,16 +51,28 @@
           </div>
           <div class="clear"></div>
         </div>
+        <!-- Object Menu (aka Tabs) -->
         <div id="tabs">
-          <span stl:repeat="tab tabs" class="${tab/style}" id="${tab/id}"><a
-            href="${tab/name}">${tab/label}</a></span><span class="tab_dummy"
-            ><a>&nbsp;</a></span>
+          <table border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td stl:repeat="tab tabs" class="tabs" valign="top"
+                onmouseover="show('menu_${tab/id}')"
+                onmouseout="hide('menu_${tab/id}')">
+                <span class="${tab/style}" id="${tab/id}"><a href="${tab/name}"
+                  >${tab/label}</a></span>
+                <div class="subtabs"  id="menu_${tab/id}" stl:if="tab/options">
+                <ul>
+                  <li stl:repeat="option tab/options">
+                    <a href="${option/name}" class="${option/style}"
+                      >${option/label}</a>
+                  </li>
+                </ul>
+                </div>
+              </td>
+            </tr>
+          </table>
         </div>
-        <div id="subtabs">
-          <span stl:repeat="tab subtabs" class="${tab/style}"><a
-            href="${tab/name}">${tab/label}</a></span><span
-            class="tab_dummy"><a>&nbsp;</a></span>
-        </div>
+        <!-- The Body -->
         <div id="body">
           <div id="message" stl:if="message">${message}</div>
           <div id="content">${body}</div>

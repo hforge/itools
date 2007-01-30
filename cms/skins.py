@@ -76,7 +76,7 @@ class Skin(Folder):
     def get_main_menu(self, context):
         user = context.user
         root = context.root
-        here = context.handler
+        here = context.handler or root
 
         menu = []
         for option in self.get_main_menu_options(context):

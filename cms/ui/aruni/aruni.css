@@ -229,6 +229,14 @@ td, th { padding: 3px; }
   font-weight: bold;
 }
 
+#body .field_required {
+  font-style: italic;
+}
+
+#body form .missing {
+  color: #ff0000;
+}
+
 #left {
   font-size: 1.1em;
 }

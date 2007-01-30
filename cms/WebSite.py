@@ -231,21 +231,87 @@ class WebSite(RoleAware, Folder):
         return self.get_property('ikaaro:website_is_open')
 
 
+    register_fields = [('dc:title', True),
+                       ('ikaaro:email', True),
+                       ('password', True),
+                       ('password2', True)]
+
+
+    @staticmethod
+    def build_namespace(context, fields):
+        from itools.schemas import get_datatype
+        from metadata import Enumerate
+
+        namespace = {}
+        for field, is_mandatory in fields:
+            datatype = get_datatype(field)
+            # The value
+            value = context.get_form_value(field)
+            if issubclass(datatype, Enumerate):
+                value = datatype.get_namespace(value)
+            # The style
+            # Is the field required
+            cls = []
+            if is_mandatory:
+                cls.append('field_required')
+            # Missing or not valid
+            if context.has_form_value(field):
+                if is_mandatory and not value:
+                    cls.append('missing')
+                elif not datatype.is_valid(value):
+                    cls.append('missing')
+            if cls:
+                cls = ' '.join(cls)
+            else:
+                cls = None
+            namespace[field] = {'value': value, 'class': cls}
+
+        return namespace
+
+
+    @staticmethod
+    def check_input(context, fields):
+        from itools.schemas import get_datatype
+
+        message = (
+            u'Some required fields are missing, or some values are not valid.'
+            u' Please correct them and continue.')
+        # Check mandatory fields
+        for field, is_mandatory in fields:
+            datatype = get_datatype(field)
+            value = context.get_form_value(field)
+            if is_mandatory:
+                if value is None:
+                    return message
+                value = value.strip()
+                if not value:
+                    return message
+            # Check if the value is valid
+            if not datatype.is_valid(value):
+                return message
+
+        return None
+
+
     register_form__access__ = 'is_allowed_to_register'
     register_form__label__ = u'Register'
     def register_form(self, context):
+        namespace = self.build_namespace(context, self.register_fields)
+
         handler = self.get_handler('/ui/WebSite_register.xml')
-        return stl(handler)
+        return stl(handler, namespace)
 
 
     register__access__ = 'is_allowed_to_register'
     def register(self, context):
+        # Check input data
+        error = self.check_input(context, self.register_fields)
+        if error is not None:
+            return context.come_back(error)
+
         # Check the real name
         title = context.get_form_value('dc:title')
         title = title.strip()
-        if not title:
-            message = u'The fullname is mandatory.'
-            return context.come_back(message)
 
         # Check the email
         email = context.get_form_value('ikaaro:email')

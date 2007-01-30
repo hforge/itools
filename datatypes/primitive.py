@@ -124,8 +124,8 @@ class Email(String):
 
     @staticmethod
     def is_valid(value):
-        return re.match("^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,4}$",
-                        value.lower()) is not None
+        expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,4}$"
+        return re.match(expr, value.lower()) is not None
 
 
 

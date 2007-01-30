@@ -6,21 +6,39 @@
 
   <h2>Registration</h2>
 
+  <p>
+  The <span class="field_required">emphasized</span> fields are required.
+  </p>
+
   <form name="joinform" action=";register" method="post">
     <dl>
-      <dt><label for="dc:title">Full Name</label></dt>
+      <dt>
+        <label for="dc:title" class="${dc:title/class}">
+          Full Name</label>
+      </dt>
       <dd>
-        <input type="text" id="dc:title" name="dc:title" />
+        <input type="text" id="dc:title" name="dc:title"
+          value="${dc:title/value}" />
       </dd>
-      <dt><label for="ikaaro:email">Email address</label></dt>
+      <dt>
+        <label for="ikaaro:email" class="${ikaaro:email/class}">
+          Email address</label>
+      </dt>
       <dd>
-        <input type="text" id="ikaaro:email" name="ikaaro:email" />
+        <input type="text" id="ikaaro:email" name="ikaaro:email"
+          value="${ikaaro:email/value}" />
       </dd>
-      <dt><label for="password">Password</label></dt>
+      <dt>
+        <label for="password" class="${password/class}">
+          Password</label>
+      </dt>
       <dd>
         <input type="password" id="password" name="password" />
       </dd>
-      <dt><label for="password2">Repeat Password</label></dt>
+      <dt>
+        <label for="password2" class="${password2/class}">
+          Repeat Password</label>
+      </dt>
       <dd>
         <input type="password" id="password2" name="password2" />
       </dd>

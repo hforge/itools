@@ -255,7 +255,8 @@ class RoleAware(AccessControl):
         term = term.strip()
 
         search_fields = [('email', u'E-Mail'),
-                         ('title', u'Name')]
+                         ('lastname', u'Last Name'),
+                         ('firstname', u'First Name')]
 
         namespace['search_term'] = term
         namespace['search_fields'] = [
@@ -286,7 +287,8 @@ class RoleAware(AccessControl):
             href = '/users/%s' % user_id
             ns['email'] = email, href
             # Title
-            ns['title'] = user.title_or_name
+            ns['firstname'] = user.firstname
+            ns['lastname'] = user.lastname
             # Role
             role = self.get_user_role(user_id)
             role = self.get_role_unit(role)
@@ -305,8 +307,10 @@ class RoleAware(AccessControl):
         members = members[start:start+size]
 
         # The columns
-        columns = [
-            ('email', u'E-Mail'), ('title', u'Name'), ('role', u'Role')]
+        columns = [('email', u'E-Mail'),
+                   ('firstname', u'First Name'),
+                   ('lastname', u'Last Name'),
+                   ('role', u'Role')]
 
         # The actions
         actions = [

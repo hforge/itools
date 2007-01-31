@@ -30,6 +30,7 @@ class CatalogAware(object):
     def get_catalog_indexes(self):
         from access import RoleAware
         from File import File
+        from users import User
 
         name = self.name
         abspath = self.get_abspath()
@@ -74,6 +75,11 @@ class CatalogAware(object):
             size = len(names)
             # This will stop working for folders with more than 10G objects
             document['size'] = '%10d' % size
+
+        # Users
+        if isinstance(self, User):
+            document['firstname'] = self.get_property('ikaaro:firstname')
+            document['lastname'] = self.get_property('ikaaro:lastname')
 
         # Workflow state
         if isinstance(self, WorkflowAware):

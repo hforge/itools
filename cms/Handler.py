@@ -217,8 +217,7 @@ class Node(BaseNode):
 
     def get_subviews(self, name):
         for block in self.class_views:
-            aux = [ x.split('?')[0] for x in block ]
-            if name in aux:
+            if name in block:
                 if len(block) == 1:
                     return []
                 return block[:]

@@ -42,5 +42,6 @@
 
 /*** IE Fix ***/
 * html #left {
-  left: 150px;            /* RC fullwidth */
+  /*left: 150px;            * RC fullwidth */
+  left: 0px;
 }

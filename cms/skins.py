@@ -238,7 +238,7 @@ class Skin(Folder):
                              'name': ';%s' % view,
                              'label': here.gettext(label),
                              'active': active,
-                             'style': active and 'tab_active' or 'tab'})
+                             'class': active and 'active' or None})
 
             # Subtabs
             subtabs = []
@@ -257,8 +257,7 @@ class Skin(Folder):
                     if callable(label):
                         label = label(**args)
                     subtabs.append({'name': ';%s' % subview,
-                                    'label': here.gettext(label),
-                                    'style': 'tab'})
+                                    'label': here.gettext(label)})
             tabs[-1]['options'] = subtabs
 
         return tabs

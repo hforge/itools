@@ -51,11 +51,15 @@ function focus(id) {
 
 function hide(id) {
   var element = document.getElementById(id);
-  element.style.visibility = 'hidden'; 
+  if (element) {
+    element.style.visibility = 'hidden'; 
+  }
 }
 
 function show(id) {
   element = document.getElementById(id);
-  element.style.visibility = 'visible';
+  if (element) {
+    element.style.visibility = 'visible';
+  }
 }
 

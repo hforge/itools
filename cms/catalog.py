@@ -34,7 +34,7 @@ class CatalogAware(object):
         name = self.name
         abspath = self.get_abspath()
         get_property = self.get_metadata().get_property
-        title = get_property('dc:title')
+        title = self.get_title()
 
         mtime = self.timestamp
         if mtime is None:

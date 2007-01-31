@@ -267,7 +267,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
 
 
     def get_title_or_name(self):
-        return self.get_property('dc:title') or self.name
+        return self.get_title() or self.name
 
     title_or_name = property(get_title_or_name, None, None, '')
 

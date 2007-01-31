@@ -231,7 +231,8 @@ class WebSite(RoleAware, Folder):
         return self.get_property('ikaaro:website_is_open')
 
 
-    register_fields = [('dc:title', True),
+    register_fields = [('ikaaro:firstname', True),
+                       ('ikaaro:lastname', True),
                        ('ikaaro:email', True),
                        ('password', True),
                        ('password2', True)]
@@ -310,8 +311,8 @@ class WebSite(RoleAware, Folder):
             return context.come_back(error)
 
         # Check the real name
-        title = context.get_form_value('dc:title')
-        title = title.strip()
+        firstname = context.get_form_value('ikaaro:firstname').strip()
+        lastname = context.get_form_value('ikaaro:lastname').strip()
 
         # Check the email
         email = context.get_form_value('ikaaro:email')
@@ -345,7 +346,8 @@ class WebSite(RoleAware, Folder):
         user = users.set_user(email, password)
         key = ''.join([ random.choice(ascii_letters) for x in range(30) ])
         user.set_property('ikaaro:user_must_confirm', key)
-        user.set_property('dc:title', title, language='en')
+        user.set_property('ikaaro:firstname', firstname, language='en')
+        user.set_property('ikaaro:lastname', lastname, language='en')
 
         # Send confirmation email
         subject = self.gettext("Register confirmation required.")
@@ -359,6 +361,9 @@ class WebSite(RoleAware, Folder):
             'key': user.get_property('ikaaro:user_must_confirm')}
         body = Template(body).substitute({'confirm_url': str(confirm_url)})
         root.send_email(None, email, subject, body)
+
+        # Reindex
+        root.reindex_handler(user)
 
         # Bring the user to the login form
         message = self.gettext(

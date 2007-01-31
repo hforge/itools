@@ -68,6 +68,13 @@ class User(AccessControl, Folder):
     ########################################################################
     # API
     ########################################################################
+    def get_title(self):
+        firstname = self.get_property('ikaaro:firstname')
+        lastname = self.get_property('ikaaro:lastname')
+
+        return '%s %s' % (firstname, lastname)
+
+
     def set_password(self, value):
         self.set_property('ikaaro:password', crypt_password(value))
 
@@ -191,7 +198,8 @@ class User(AccessControl, Folder):
     def edit_account_form(self, context):
         # Build the namespace
         namespace = {}
-        namespace['fullname'] = self.get_property('dc:title')
+        namespace['firstname'] = self.get_property('ikaaro:firstname')
+        namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
 
         if self.name != context.user.name:
@@ -205,7 +213,8 @@ class User(AccessControl, Folder):
 
     edit_account__access__ = 'is_allowed_to_edit'
     def edit_account(self, context):
-        title = context.get_form_value('dc:title')
+        firstname = context.get_form_value('ikaaro:firstname')
+        lastname = context.get_form_value('ikaaro:lastname')
         email = context.get_form_value('email')
         password = context.get_form_value('password')
 
@@ -218,7 +227,8 @@ class User(AccessControl, Folder):
                     u" not changed.")
 
         if not Email.is_valid(email):
-            return context.come_back(u'A valid email address must be provided.')
+            message = u'A valid email address must be provided.'
+            return context.come_back(message)
 
         root = context.root
         results = root.search(email=email)
@@ -226,7 +236,8 @@ class User(AccessControl, Folder):
             message = (u'There is another user with the email "%s", '
                     u'please try again')
 
-        self.set_property('dc:title', title, language='en')
+        self.set_property('ikaaro:firstname', firstname, language='en')
+        self.set_property('ikaaro:lastname', lastname, language='en')
         self.set_property('ikaaro:email', email)
 
         # Reindex

@@ -13,12 +13,20 @@
   <form name="joinform" action=";register" method="post">
     <dl>
       <dt>
-        <label for="dc:title" class="${dc:title/class}">
-          Full Name</label>
+        <label for="ikaaro:firstname" class="${ikaaro:firstname/class}">
+          First Name</label>
       </dt>
       <dd>
-        <input type="text" id="dc:title" name="dc:title"
-          value="${dc:title/value}" />
+        <input type="text" id="ikaaro:firstname" name="ikaaro:firstname"
+          value="${ikaaro:firstname/value}" />
+      </dd>
+      <dt>
+        <label for="ikaaro:lastname" class="${ikaaro:lastname/class}">
+          Last Name</label>
+      </dt>
+      <dd>
+        <input type="text" id="ikaaro:lastname" name="ikaaro:lastname"
+          value="${ikaaro:lastname/value}" />
       </dd>
       <dt>
         <label for="ikaaro:email" class="${ikaaro:email/class}">

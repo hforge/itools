@@ -18,7 +18,7 @@
 # Import from itools
 from base import DataType
 from primitive import (Integer, Decimal, Unicode, String, Boolean, Email, URI,
-                       FileName, QName, Tokens, XML, XMLAttribute)
+                       FileName, QName, Tokens, Enumerate, XML, XMLAttribute)
 from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, InternetDateTime
 # Define alias Date, Time and DateTime (use ISO standard)
 from datetime_ import (ISOCalendarDate as Date, ISOTime as Time,

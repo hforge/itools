@@ -21,7 +21,7 @@ from datetime import datetime, date, time, timedelta
 
 # Import from itools
 from itools import i18n
-from itools.datatypes import Unicode, Time as iTime
+from itools.datatypes import Enumerate, Unicode, Time as iTime
 from itools.datatypes.datetime_ import ISOCalendarDate as Date
 from itools.ical.icalendar import icalendar, Component, PropertyValue
 from itools.ical.icalendar import Parameter
@@ -34,7 +34,6 @@ from registry import register_object_class
 # Import from itools.cms
 from itools.cms.text import Text
 from itools.cms.Handler import Handler
-from itools.cms.metadata import Enumerate
 
 
 class Status(Enumerate):

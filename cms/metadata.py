@@ -59,34 +59,6 @@ class Record(object):
 
 
 
-class Enumerate(String):
-
-    options = []
-
-    @classmethod
-    def get_options(cls):
-        """Returns a copy of options list of dictionaries."""
-        return [dict(option) for option in cls.options]
-
-
-    @classmethod
-    def get_namespace(cls, name):
-        options = cls.get_options()
-        for option in options:
-            option['selected'] = option['name'] == name
-        return options
-
-
-    @classmethod
-    def get_value(cls, name, default=None):
-        for option in cls.options:
-            if option['name'] == name:
-                return option['value']
-
-        return default
-
-
-
 class Schema(schemas.base.Schema):
 
     class_uri = 'http://xml.ikaaro.org/namespaces/metadata'

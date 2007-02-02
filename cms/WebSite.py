@@ -240,8 +240,8 @@ class WebSite(RoleAware, Folder):
 
     @staticmethod
     def build_namespace(context, fields):
+        from itools.datatypes import Enumerate
         from itools.schemas import get_datatype
-        from metadata import Enumerate
 
         namespace = {}
         for field, is_mandatory in fields:

@@ -7,11 +7,7 @@
   <h1>${title}</h1>
   <p><em>${description}</em></p>
 
-  <form action=";new_thread_form">
-    <p>
-      <input type="submit" value="New Thread" />
-    </p>
-  </form>
+  <a href=";new_thread_form">New Thread</a>
 
   <table width="100%" id="forum_thread_list">
     <colgroup>
@@ -54,10 +50,6 @@
     </tbody>
   </table>
 
-  <form action=";new_thread_form">
-    <p>
-      <input type="submit" value="New Thread" />
-    </p>
-  </form>
+  <a href=";new_thread_form">New Thread</a>
 
 </stl:block>

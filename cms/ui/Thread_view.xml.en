@@ -17,10 +17,7 @@
         <td valign="top" class="forum_message_info">
           <p class="forum_message_author">${message/author}</p>
           <p class="forum_message_date">${message/mtime}</p>
-          <form method="get" stl:if="message/editable"
-            action="${message/edit_form}">
-            <input type="submit" value="Edit" />
-          </form>
+          <a stl:if="message/editable" href="${message/edit_form}">Edit</a>
         </td>
         <td valign="top" class="forum_message_body">
           <p>${message/body}</p>

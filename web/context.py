@@ -24,6 +24,8 @@ from time import strptime
 
 # Import from itools
 from itools import uri
+from itools.datatypes import Enumerate
+from itools.schemas import get_datatype
 from itools.http.response import Response
 
 
@@ -83,40 +85,6 @@ class Context(object):
     def redirect(self, reference, status=302):
         reference = self.uri.resolve(reference)
         self.response.redirect(reference, status)
-
-
-    def come_back(self, message, goto=None, exclude=[], **kw):
-        """
-        This is a handy method that builds a URI object from some parameters.
-        It exists to make short some common patterns.
-        """
-        # By default we come back to the referrer
-        if goto is None:
-            goto = self.request.referrer
-        elif isinstance(goto, str):
-            goto = uri.get_reference(goto)
-        # Preserve some form values
-        form = {}
-        for key, value in self.request.form.items():
-            # Omit methods
-            if key[0] == ';':
-                continue
-            # Omit files
-            if isinstance(value, tuple) and len(value) == 3:
-                continue
-            # Omit explicitly excluded fields
-            if key in exclude:
-                continue
-            # Keep form field
-            form[key] = value
-        if form:
-            goto = goto.replace(**form)
-        # Translate the source message
-        if message:
-            message = self.handler.gettext(message)
-            message = Template(message).substitute(kw)
-            return goto.replace(message=message)
-        return goto
 
 
     ########################################################################
@@ -180,6 +148,124 @@ class Context(object):
 
     def del_cookie(self, name):
         self.response.del_cookie(name)
+
+
+    ########################################################################
+    # API / high level
+    def come_back(self, message, goto=None, exclude=[], **kw):
+        """
+        This is a handy method that builds a URI object from some parameters.
+        It exists to make short some common patterns.
+        """
+        # By default we come back to the referrer
+        if goto is None:
+            goto = self.request.referrer
+        elif isinstance(goto, str):
+            goto = uri.get_reference(goto)
+        # Preserve some form values
+        form = {}
+        for key, value in self.request.form.items():
+            # Omit methods
+            if key[0] == ';':
+                continue
+            # Omit files
+            if isinstance(value, tuple) and len(value) == 3:
+                continue
+            # Omit explicitly excluded fields
+            if key in exclude:
+                continue
+            # Keep form field
+            form[key] = value
+        if form:
+            goto = goto.replace(**form)
+        # Translate the source message
+        if message:
+            message = self.handler.gettext(message)
+            message = Template(message).substitute(kw)
+            return goto.replace(message=message)
+        return goto
+
+
+    def build_form_namespace(self, fields):
+        """
+        This utility method builds a namespace suitable to use to produce
+        an HTML form. Its input data is a list (fields) that defines the
+        form variables to consider:
+            
+            [(<field name>, <is field required>),
+             ...]
+
+        Every element of the list is a tuple with the name of the field
+        and a boolean value that specifies whether the field is mandatory
+        or not.
+
+        The output is like:
+            
+            {<field name>: {'value': <field value>,
+                            'class': <CSS class>}
+             ...}
+        """
+        namespace = {}
+        for field, is_mandatory in fields:
+            datatype = get_datatype(field)
+            # The value
+            value = self.get_form_value(field)
+            if issubclass(datatype, Enumerate):
+                value = datatype.get_namespace(value)
+            # The style
+            # Is the field required
+            cls = []
+            if is_mandatory:
+                cls.append('field_required')
+            # Missing or not valid
+            if self.has_form_value(field):
+                if is_mandatory and not value:
+                    cls.append('missing')
+                elif not datatype.is_valid(value):
+                    cls.append('missing')
+            if cls:
+                cls = ' '.join(cls)
+            else:
+                cls = None
+            namespace[field] = {'value': value, 'class': cls}
+
+        return namespace
+
+
+    def check_form_input(self, fields):
+        """
+        This utility method checks the request form and returns an error
+        code if there is something wrong (a mandatory field is missing,
+        or a value is not valid) or None if everything is ok.
+
+        Its input data is a list (fields) that defines the form variables
+        to consider:
+            
+            [(<field name>, <is field required>),
+             ...]
+
+        Every element of the list is a tuple with the name of the field
+        and a boolean value that specifies whether the field is mandatory
+        or not.
+        """
+        message = (
+            u'Some required fields are missing, or some values are not valid.'
+            u' Please correct them and continue.')
+        # Check mandatory fields
+        for field, is_mandatory in fields:
+            datatype = get_datatype(field)
+            value = self.get_form_value(field)
+            if is_mandatory:
+                if value is None:
+                    return message
+                value = value.strip()
+                if not value:
+                    return message
+            # Check if the value is valid
+            if not datatype.is_valid(value):
+                return message
+
+        return None
 
 
 

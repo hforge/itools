@@ -147,6 +147,7 @@ class Root(WebSite):
         members = set(members)
         for role in roles:
             members = members - roles[role]
+        roles['ikaaro:members'] = members
         return roles
 
  

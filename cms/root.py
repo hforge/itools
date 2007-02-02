@@ -140,6 +140,15 @@ class Root(WebSite):
         return [ x for x in users.get_handler_names()
                  if not x.endswith('.metadata') ]
 
+
+    def get_members_classified_by_role(self):
+        roles = WebSite.get_members_classified_by_role(self)
+        members = self.get_handler_names('users')
+        members = set(members)
+        for role in roles:
+            members = members - roles[role]
+        return roles
+
  
     ########################################################################
     # Skeleton

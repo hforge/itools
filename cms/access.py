@@ -155,9 +155,7 @@ class RoleAware(AccessControl):
         """
         for role in self.get_role_names():
             value = self.get_property(role)
-            if value is None:
-                continue
-            if user_id in value:
+            if (value is not None) and (user_id in value):
                 return role
         return None
 
@@ -215,6 +213,14 @@ class RoleAware(AccessControl):
         return members
 
 
+    def get_members_classified_by_role(self):
+        roles = {}
+        for rolename in self.get_role_names():
+            usernames = self.get_property(rolename)
+            roles[rolename] = set(usernames)
+        return roles
+
+
     #########################################################################
     # User Interface
     #########################################################################
@@ -270,14 +276,21 @@ class RoleAware(AccessControl):
         if field:
             query[field] = term
         results = catalog.search(**query)
-        # Only those that belong to this group
-        members = self.get_members()
-        users = [ x for x in results.get_documents() if x.name in members ]
+
+        roles = self.get_members_classified_by_role()
 
         # Build the namespace
         members = []
-        for user in users:
+        for user in results.get_documents():
             user_id = user.name
+            # Find out the user role. Skip the user if does not belong to
+            # this group
+            for role in roles:
+                if user_id in roles[role]:
+                    break
+            else:
+                continue
+            # Build the namespace for the user
             ns = {}
             ns['checkbox'] = True
             ns['id'] = user_id
@@ -290,7 +303,6 @@ class RoleAware(AccessControl):
             ns['firstname'] = user.firstname
             ns['lastname'] = user.lastname
             # Role
-            role = self.get_user_role(user_id)
             role = self.get_role_unit(role)
             href = ';edit_membership_form?id=%s' % user_id
             ns['role'] = role, href

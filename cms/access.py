@@ -296,10 +296,10 @@ class RoleAware(AccessControl):
             ns['id'] = user_id
             ns['img'] = None
             # Email
-            email = user.email
             href = '/users/%s' % user_id
-            ns['email'] = email, href
+            ns['user_id'] = user_id, href
             # Title
+            ns['email'] = user.email
             ns['firstname'] = user.firstname
             ns['lastname'] = user.lastname
             # Role
@@ -319,7 +319,8 @@ class RoleAware(AccessControl):
         members = members[start:start+size]
 
         # The columns
-        columns = [('email', u'E-Mail'),
+        columns = [('user_id', u'User ID'),
+                   ('email', u'E-Mail'),
                    ('firstname', u'First Name'),
                    ('lastname', u'Last Name'),
                    ('role', u'Role')]

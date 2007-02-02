@@ -1,4 +1,67 @@
 
+itools 0.15.2 (2007/02/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+The prioritary focus of this release has been the user interface of
+"itools.cms" and the related API.
+
+On the user interface side we have:
+
+  - Replace the tabs (object views) with a drop-down menu.
+  - Add a "Main Menu" to the left bar with links to the user's most
+    common tasks.
+  - New user interface to manage users.
+  - Add the fields firstname and lastname for users.
+  - Improve the folder's browse view: sort by size, localize the dates.
+  - Internationalize the calendar widget.
+
+On the programming interface we have:
+
+  - Add a new module "itools.i18n.locale" that provides support for
+    locale information like dates.
+  - Improve the "itools.web.context" API to provide basic support for
+    form validation.
+  - Simplify building a custom skin from the default (Aruni) skin.
+  - Rework the API to produce "tables" (like in the Folder's browse
+    view).
+
+Credits:
+
+ - Hervé Cauwelier worked on the style (CSS) of "itools.cms", and got
+   the API of "itools.web" working as documented;
+ - Nicolas Deram worked on the programming interface for iCalendar;
+ - J. David Ibáñez worked on the user interface of "itools.cms" and
+   the related programming interface.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.15.2.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.15.1 (2007/01/15)
 ==========================
 

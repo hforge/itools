@@ -348,8 +348,9 @@ class Calendar(Text, icalendar):
         if event:
             organizer = event.get_property_values('ORGANIZER')
             return organizer and context.user.get_abspath() == organizer.value
-        return False
-          
+        ac = self.parent.get_access_control()
+        return ac.is_allowed_to_edit(context.user, self.parent)
+
 
     # 0 means Sunday, 1 means Monday
     @classmethod
@@ -519,12 +520,12 @@ class Calendar(Text, icalendar):
     # User interface
     #######################################################################
 
-    download_form__access__ = True #'is_allowed_to_view'
+    download_form__access__ = 'is_allowed_to_view'
     download_form__sublabel__ = u'Export in ical format'
 
 
     # View
-    text_view__access__ = True #'is_allowed_to_view'
+    text_view__access__ = 'is_allowed_to_edit'
     text_view__label__ = u'Text view'
     text_view__sublabel__ = u'Text view'
     def text_view(self, context):
@@ -587,15 +588,16 @@ class Calendar(Text, icalendar):
             ns['STATUS'] = properties('STATUS').value
 
         ###############################################################
-        # Det url to edit_event_form
+        # Set url to edit_event_form
         uid = properties('UID').value
+        ns['UID'] = '%s' % uid
         ns['url'] = ';edit_event_form?uid=%s' % uid
 
         return ns
 
 
     # Monthly view
-    monthly_view__access__ = True #'is_allowed_to_view'
+    monthly_view__access__ = 'is_allowed_to_view'
     monthly_view__label__ = u'View'
     monthly_view__sublabel__ = u'Monthly'
     def monthly_view(self, context):
@@ -694,7 +696,7 @@ class Calendar(Text, icalendar):
 
 
     # Weekly view
-    weekly_view__access__ = True #'is_allowed_to_view'
+    weekly_view__access__ = 'is_allowed_to_view'
     weekly_view__label__ = u'View'
     weekly_view__sublabel__ = u'Weekly'
     def weekly_view(self, context):
@@ -735,7 +737,7 @@ class Calendar(Text, icalendar):
         return stl(handler, namespace)
 
 
-    edit_event_form__access__ = True #'is_allowed_to_edit'
+    edit_event_form__access__ = 'is_allowed_to_edit'
     edit_event_form__label__ = u'Edit'
     edit_event_form__sublabel__ = u'Event'
     def edit_event_form(self, context):
@@ -854,7 +856,7 @@ class Calendar(Text, icalendar):
         return stl(handler, namespace)
 
 
-    edit_event__access__ = True #'is_allowed_to_edit'
+    edit_event__access__ = 'is_allowed_to_edit'
     def edit_event(self, context):
         if context.has_form_value('remove'):
             return self.remove(context)
@@ -970,7 +972,7 @@ class Calendar(Text, icalendar):
         return context.come_back(u'Data updated', goto=goto)
 
 
-    remove__access__ = True
+    remove__access__ = 'is_allowed_to_edit'
     def remove(self, context):
         method = context.get_form_value('method', 'monthly_view')
         goto = ';%s?%s' % (method, self.get_current_date())
@@ -984,7 +986,7 @@ class Calendar(Text, icalendar):
         return context.come_back(u'Event definitely deleted.', goto=goto)
 
 
-    edit_timetables_form__access__ = True
+    edit_timetables_form__access__ = 'is_allowed_to_edit'
     edit_timetables_form__label__ = u'Edit'
     edit_timetables_form__sublabel__ = u'Timetables'
     def edit_timetables_form(self, context):

@@ -320,6 +320,20 @@ class Folder(Handler, BaseFolder, CalendarAware):
     #######################################################################
     # User interface
     #######################################################################
+    def get_subviews(self, name):
+        if name == 'new_resource_form':
+            return [ 'new_resource_form?type=%s' % x.class_id
+                     for x in self.get_document_types() ]
+        return Handler.get_subviews(self, name)
+
+
+    def new_resource_form__sublabel__(self, **kw):
+        type = kw.get('type')
+        for cls in self.get_document_types():
+            if cls.class_id == type:
+                return cls.class_title
+        return u'New Resource'
+
 
     #######################################################################
     # Browse
@@ -772,7 +786,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
     # Add / New Resource
     new_resource_form__access__ = 'is_allowed_to_add'
     new_resource_form__label__ = u'Add'
-    new_resource_form__sublabel__ = u'New Resource'
     def new_resource_form(self, context):
         type = context.get_form_value('type')
         if type is None:

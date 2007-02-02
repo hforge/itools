@@ -31,7 +31,6 @@ from itools.cms.registry import register_object_class
 from itools.cms.Folder import Folder
 from itools.cms.text import Text
 from itools.cms.utils import checkid
-from itools.cms.access import AccessControl
 
 
 def add_forum_style(context):
@@ -48,16 +47,16 @@ class Message(Text):
     class_views = [['edit_form'], ['history_form']]
     
 
-    # remove from searches
+    # Remove from searches (XXX)
     def get_catalog_indexes(self):
         return None
 
 
     # ACLs
-    edit_form__access__ = 'is_allowed_to_edit_post'
+    edit_form__access__ = 'is_admin'
 
 
-    edit__access__ = 'is_allowed_to_edit_post'
+    edit__access__ = 'is_admin'
     def edit(self, context):
         data = context.get_form_value('data')
         data = escape(data.strip())
@@ -138,7 +137,7 @@ class Thread(Folder):
                     metadata.get_property('ikaaro:email')),
                 'mtime': message.get_mtime().strftime('%F %X'),
                 'body': message.to_str().replace('\n', '<br />'),
-                'editable': ac.is_allowed_to_edit_post(user, message),
+                'editable': ac.is_admin(user, message),
                 'edit_form': '%s/;edit_form' % message.name,
             })
 
@@ -181,7 +180,7 @@ class Thread(Folder):
 
 
 
-class Forum(AccessControl, Folder):
+class Forum(Folder):
 
     class_id = 'Forum'
     class_title = u'Forum'
@@ -195,17 +194,6 @@ class Forum(AccessControl, Folder):
 
     def get_document_types(self):
         return [self.thread_class]
-
-
-    def is_allowed_to_edit_post(self, user, object):
-        if user is None:
-            return False
-
-        if self.is_admin(user):
-            return True
-
-        owner = object.get_property('owner')
-        return owner == user.name
 
 
     def get_thread_namespace(self):

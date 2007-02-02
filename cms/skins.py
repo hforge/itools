@@ -214,7 +214,7 @@ class Skin(Folder):
 
         tabs = []
         for view in views:
-            # from method?param1=value1&param2=value2&...
+            # From method?param1=value1&param2=value2&...
             # we separate method and arguments, then we get a dict with
             # the arguments and the subview active state
             if '?' in view:
@@ -230,15 +230,19 @@ class Skin(Folder):
                 name, args = view, {}
                 active = name == context.method or name in subviews
 
-            if ac.is_access_allowed(user, here, name):
-                label = getattr(here, '%s__label__' % name)
-                if callable(label):
-                    label = label(**args)
-                tabs.append({'id': 'tab_%s' % label.lower(),
-                             'name': ';%s' % view,
-                             'label': here.gettext(label),
-                             'active': active,
-                             'class': active and 'active' or None})
+            # Check security
+            if not ac.is_access_allowed(user, here, name):
+                continue
+
+            # Add the menu
+            label = getattr(here, '%s__label__' % name)
+            if callable(label):
+                label = label(**args)
+            tabs.append({'id': 'tab_%s' % label.lower(),
+                         'name': ';%s' % view,
+                         'label': here.gettext(label),
+                         'active': active,
+                         'class': active and 'active' or None})
 
             # Subtabs
             subtabs = []

@@ -146,7 +146,7 @@ class User(AccessControl, Folder):
         user = context.user
 
         namespace = {}
-        namespace['title'] = self.get_property('dc:title') or self.name
+        namespace['title'] = self.get_title_or_name()
         # Owner
         is_owner = user is not None and user.name == self.name
         namespace['is_owner'] = is_owner

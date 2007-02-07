@@ -322,8 +322,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
     #######################################################################
     def get_subviews(self, name):
         if name == 'new_resource_form':
-            return [ 'new_resource_form?type=%s' % x.class_id
-                     for x in self.get_document_types() ]
+            subviews = []
+            for cls in self.get_document_types():
+                id = cls.class_id
+                ref = 'new_resource_form?type=%s' % urllib.quote_plus(id)
+                subviews.append(ref)
+            return subviews
         return Handler.get_subviews(self, name)
 
 

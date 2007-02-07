@@ -110,7 +110,7 @@ class Root(WebSite):
     ########################################################################
     def get_role_unit(self, name):
         if name == 'ikaaro:members':
-            return u'Member'
+            return self.gettext(u'Member')
         return WebSite.get_role_unit(self, name)
 
 

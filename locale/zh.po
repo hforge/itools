@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2007-02-07 15:02+CET\n"
+"POT-Creation-Date: 2007-02-07 17:02+CET\n"
 "PO-Revision-Date: 2004-11-25 22:33+0100\n"
 "Last-Translator: Luis Belmar Letelier <luis@itaapy.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -1364,7 +1364,7 @@ msgstr "设置"
 msgid "Definitely remove"
 msgstr ""
 
-#: cms/access.py:330
+#: cms/access.py:329
 #, fuzzy
 msgid "Delete"
 msgstr "设置"
@@ -2130,6 +2130,10 @@ msgstr "新工作界面"
 msgid "New resource added."
 msgstr "新资料被加入."
 
+#: cms/widgets.py:78
+msgid "Next"
+msgstr ""
+
 #: cms/ui/Root_credits.xml.en:0
 msgid "Nicolas Deram"
 msgstr ""
@@ -2389,6 +2393,11 @@ msgstr "优先"
 #, fuzzy
 msgid "Presence"
 msgstr "优先"
+
+#: cms/widgets.py:71
+#, fuzzy
+msgid "Previous"
+msgstr "查阅"
 
 #: cms/workflow.py:32
 #, fuzzy
@@ -2811,7 +2820,7 @@ msgstr ""
 
 #: cms/access.py:438
 #, fuzzy
-msgid "The user is alredy here."
+msgid "The user is already here."
 msgstr "用户被加入."
 
 #: cms/widgets.py:58
@@ -3111,7 +3120,7 @@ msgstr "浏览"
 msgid "View"
 msgstr "浏览"
 
-#: cms/widgets.py:90
+#: cms/widgets.py:92
 msgid "View from ${start} to ${end} (${link}):"
 msgstr ""
 
@@ -3787,9 +3796,6 @@ msgstr "禄 Type the url to add:"
 
 #~ msgid "Portuguese"
 #~ msgstr "葡萄牙语"
-
-#~ msgid "Preview"
-#~ msgstr "查阅"
 
 #, fuzzy
 #~ msgid "Publishers of the Future"

@@ -137,7 +137,7 @@ class RoleAware(AccessControl):
     def get_role_unit(self, name):
         for role in self.__roles__:
             if role['name'] == name:
-                return role['unit']
+                return self.gettext(role['unit'])
         return None
 
 
@@ -226,7 +226,7 @@ class RoleAware(AccessControl):
     #########################################################################
     def get_roles_namespace(self, username=None):
         # Build a list with the role name and unit
-        namespace = [ {'name': x['name'], 'title': x['unit']}
+        namespace = [ {'name': x['name'], 'title': self.gettext(x['unit'])}
                       for x in self.__roles__ ]
 
         # If a username was not given, we are done
@@ -326,8 +326,8 @@ class RoleAware(AccessControl):
                    ('role', u'Role')]
 
         # The actions
-        actions = [
-            ('permissions_del_members', u'Delete', 'butto_delete', None)]
+        actions = [('permissions_del_members', self.gettext(u'Delete'),
+                    'butto_delete', None)]
 
         namespace['batch'] = widgets.batch(context.uri, start, size, total)
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-07 15:02+CET\n"
+"POT-Creation-Date: 2007-02-07 17:02+CET\n"
 "PO-Revision-Date: 2007-01-10 15:16+0100\n"
 "Last-Translator: Hervé Cauwelier <herve@itaapy.com>\n"
 "Language-Team: Français (France) <fr@li.org>\n"
@@ -467,6 +467,8 @@ msgid ""
 "<a id=\"top_menu_search\" href=\"/;site_search\">Search</a> <a id="
 "\"top_menu_contact\" href=\"/;contact_form\">Contact</a>"
 msgstr ""
+"<a id=\"top_menu_search\" href=\"/;site_search\">Rechercher</a> <a id="
+"\"top_menu_contact\" href=\"/;contact_form\">Contact</a>"
 
 #: cms/ui/WebSite_search.xml.en:0
 msgid ""
@@ -1229,8 +1231,8 @@ msgid "Change account"
 msgstr "Modifier le compte"
 
 #: cms/ui/WebSite_languages.xml.en:0
-msgid "Changer la langue par défault"
-msgstr "Modifier le compte"
+msgid "Change default"
+msgstr "Modifier la langue par défaut"
 
 #: cms/ui/User_edit_password.xml.en:0
 msgid "Change password"
@@ -1380,7 +1382,7 @@ msgstr "Défaut"
 msgid "Definitely remove"
 msgstr "Supprimer définitivement"
 
-#: cms/access.py:330
+#: cms/access.py:329
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -2113,6 +2115,10 @@ msgstr "Nouvelle page Wiki"
 msgid "New resource added."
 msgstr "Nouvelle ressource ajoutée."
 
+#: cms/widgets.py:78
+msgid "Next"
+msgstr "Suivant"
+
 #: cms/ui/Root_credits.xml.en:0
 msgid "Nicolas Deram"
 msgstr ""
@@ -2355,6 +2361,10 @@ msgstr "Préférences"
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Presence"
 msgstr "Présence"
+
+#: cms/widgets.py:71
+msgid "Previous"
+msgstr ""
 
 #: cms/workflow.py:32
 msgid "Private"
@@ -3043,7 +3053,7 @@ msgstr "Vidéo"
 msgid "View"
 msgstr "Voir"
 
-#: cms/widgets.py:90
+#: cms/widgets.py:92
 msgid "View from ${start} to ${end} (${link}):"
 msgstr "Vue de ${start} à ${end} (${link}):"
 
@@ -3550,6 +3560,9 @@ msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 
 #~ msgid "Change default for the selected one"
 #~ msgstr "Changer la langue par défaut pour celle sélectionnée"
+
+#~ msgid "Changer la langue par défault"
+#~ msgstr "Modifier le compte"
 
 #~ msgid "Display only contents with the following terms:"
 #~ msgstr "N'afficher que le contenu qui contient&nbsp;:"

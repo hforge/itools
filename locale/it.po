@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2007-02-07 15:02+CET\n"
+"POT-Creation-Date: 2007-02-07 17:02+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -1514,7 +1514,7 @@ msgstr "Default"
 msgid "Definitely remove"
 msgstr ""
 
-#: cms/access.py:330
+#: cms/access.py:329
 #, fuzzy
 msgid "Delete"
 msgstr "Default"
@@ -2352,6 +2352,11 @@ msgstr "Nuova area di lavoro"
 msgid "New resource added."
 msgstr "Aggiunta nuova risorsa"
 
+#: cms/widgets.py:78
+#, fuzzy
+msgid "Next"
+msgstr "Testo"
+
 #: cms/ui/Root_credits.xml.en:0
 msgid "Nicolas Deram"
 msgstr ""
@@ -2620,6 +2625,11 @@ msgstr "Preferenze"
 #, fuzzy
 msgid "Presence"
 msgstr "Preferenze"
+
+#: cms/widgets.py:71
+#, fuzzy
+msgid "Previous"
+msgstr "Gruppi"
 
 #: cms/workflow.py:32
 #, fuzzy
@@ -3065,7 +3075,7 @@ msgstr "L'utente \"%s\" non esiste"
 
 #: cms/access.py:438
 #, fuzzy
-msgid "The user is alredy here."
+msgid "The user is already here."
 msgstr "Tutti gli utenti sono stati aggiunti."
 
 #: cms/widgets.py:58
@@ -3388,7 +3398,7 @@ msgstr "Vedi"
 msgid "View"
 msgstr "Vedi"
 
-#: cms/widgets.py:90
+#: cms/widgets.py:92
 msgid "View from ${start} to ${end} (${link}):"
 msgstr ""
 

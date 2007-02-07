@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2007-02-07 15:02+CET\n"
+"POT-Creation-Date: 2007-02-07 17:02+CET\n"
 "PO-Revision-Date: 2001-07-08 17:07+CET\n"
 "Last-Translator: jdavid\n"
 "Language-Team: ??\n"
@@ -1318,7 +1318,7 @@ msgstr ""
 msgid "Definitely remove"
 msgstr ""
 
-#: cms/access.py:330
+#: cms/access.py:329
 msgid "Delete"
 msgstr ""
 
@@ -2040,6 +2040,10 @@ msgstr ""
 msgid "New resource added."
 msgstr ""
 
+#: cms/widgets.py:78
+msgid "Next"
+msgstr ""
+
 #: cms/ui/Root_credits.xml.en:0
 msgid "Nicolas Deram"
 msgstr ""
@@ -2281,6 +2285,10 @@ msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid "Presence"
+msgstr ""
+
+#: cms/widgets.py:71
+msgid "Previous"
 msgstr ""
 
 #: cms/workflow.py:32
@@ -2673,7 +2681,7 @@ msgid "The user \"$username\" is not active."
 msgstr ""
 
 #: cms/access.py:438
-msgid "The user is alredy here."
+msgid "The user is already here."
 msgstr ""
 
 #: cms/widgets.py:58
@@ -2954,7 +2962,7 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: cms/widgets.py:90
+#: cms/widgets.py:92
 msgid "View from ${start} to ${end} (${link}):"
 msgstr ""
 

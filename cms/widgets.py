@@ -36,7 +36,7 @@ from Handler import Handler
 # Table
 ###########################################################################
 
-def batch(uri, start, size, total):
+def batch(uri, start, size, total, gettext=Handler.gettext):
     """
     Outputs an HTML snippet with navigation links to move through a set
     of objects.
@@ -51,11 +51,11 @@ def batch(uri, start, size, total):
 
         total -- The total number of objects.
     """
-    # Plural forms (XXX Use gettext)
+    # Plural forms (XXX do it the gettext way)
     if total == 1:
-        msg1 = u"There is 1 object."
+        msg1 = gettext(u"There is 1 object.")
     else:
-        msg1 = u"There are ${n} objects."
+        msg1 = gettext(u"There are ${n} objects.")
         msg1 = Template(msg1).substitute(n=total)
 
     # Calculate end
@@ -67,13 +67,15 @@ def batch(uri, start, size, total):
         previous = max(start - size, 0)
         previous = str(previous)
         previous = uri.replace(batchstart=previous)
-        previous = '<a href="%s" title="Previous">&lt;&lt;</a>' % previous
+        previous = '<a href="%s" title="%s">&lt;&lt;</a>' \
+                   % (previous, gettext(u'Previous'))
     # Next
     next = None
     if end < total:
         next = str(end)
         next = uri.replace(batchstart=next)
-        next = '<a href="%s" title="Next">&gt;&gt;</a>' % next
+        next = '<a href="%s" title="%s">&gt;&gt;</a>' \
+               % (next, gettext(u'Next'))
 
     # Output
     if previous is None and next is None:
@@ -87,7 +89,7 @@ def batch(uri, start, size, total):
         else:
             link = '%s %s' % (previous, next)
 
-        msg2 = u"View from ${start} to ${end} (${link}):"
+        msg2 = gettext(u"View from ${start} to ${end} (${link}):")
         msg2 = Template(msg2)
         msg2 = msg2.substitute(start=(start+1), end=end, link=link)
 

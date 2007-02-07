@@ -86,9 +86,8 @@
           ${menu/content}
         </div>
       </div>
-      <!-- div id="right" class="column"></div -->
     </div>
-    <div id="footer" class="clear">
+    <div id="footer">
       <a href="/;about">About</a>
       <a href="/;credits">Credits</a>
       <a href="/;license">License</a>

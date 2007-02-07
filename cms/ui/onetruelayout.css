@@ -7,41 +7,23 @@
     padding: 0;
     margin:  0;
 }
-
+#header, #footer {
+  clear: both;
+}
 #wrapper {
-  padding-left: 245px;    /* LC fullwidth */
-  /* w/ right col */
-  /* padding-right: 190px; * RC fullwidth + CC padding */
-  /* w/o right col */
-  padding-right: 20px;
-  min-width: 290px;       /* LC fullwidth + CC padding */
+  padding-left: 250px; /* The width of the left column */
+  zoom: 1; /* So IE plays nice */
 }
-
-.column {
-  position: relative;
-  float: left;
-}
-
 #center {
-  padding: 0 10px;
+  float: right;
   width: 100%;
+  margin-left: -250px; /* Hat tip to Ryan Brill */
+  border-left: 250px solid #fff; /* The width and color of the left column */
+}
+#left{
+  float: left;
+  display: inline; /* So IE plays nice */
+  width: 250px;
+  margin-left: -250px;
 }
 
-#left {
-  width: 245px;           /* LC width */
-  padding: 0 10px;        /* LC padding */
-  right: 270px;           /* LC fullwidth + CC padding */
-  margin-left: -100%;
-}
-
-#right {
-  width: 130px;           /* RC width */
-  padding: 0 10px;        /* RC padding */
-  margin-right: -100%;
-}
-
-/*** IE Fix ***/
-* html #left {
-  /*left: 150px;            * RC fullwidth */
-  left: 0px;
-}

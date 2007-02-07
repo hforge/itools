@@ -435,7 +435,7 @@ class RoleAware(AccessControl):
             # Check the user is not yet in the group
             members = self.get_members()
             if user_id in members:
-                message = u'The user is alredy here.'
+                message = u'The user is already here.'
                 return context.come_back(message)
         else:
             # A new user, add it

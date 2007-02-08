@@ -414,10 +414,11 @@ class Skin(Folder):
 
 
     def get_template(self):
-        if self.has_handler('template.xhtml'):
+        try:
             return self.get_handler('template.xhtml')
-        # Default, aruni
-        return self.get_handler('/ui/aruni/template.xhtml')
+        except LookupError:
+            # Default, aruni
+            return self.get_handler('/ui/aruni/template.xhtml')
 
 
     def template(self, content):

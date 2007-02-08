@@ -23,6 +23,8 @@
           </li>
         </ul>
       </dd>
+    </dl>
+    <dl class="clear">
       <dt><label for="comments">Comments (optional):</label></dt>
       <dd>
         <textarea id="comments" name="comments" cols="52" rows="7" />

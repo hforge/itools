@@ -445,7 +445,7 @@ class Calendar(Text, icalendar):
         # Get timetables
         timetables = self.get_timetables()
         # For each defined timetable
-        for index, timetable in enumerate(timetables):
+        for tt_index, timetable in enumerate(timetables):
             tt_start, tt_end = timetable['start'], timetable['end']
             day = start
             ns_timetable = {}
@@ -459,7 +459,7 @@ class Calendar(Text, icalendar):
                 if d < ndays:
                     ns_day = {}
                     params = '%sdate=%s&timetable=%s'\
-                             % (base_param, Date.encode(day), index)
+                             % (base_param, Date.encode(day), tt_index)
                     ns_day['url'] = '%s%s' % (base_url, params)
                     
                     #######################################################
@@ -489,6 +489,7 @@ class Calendar(Text, icalendar):
                                 ns_event = self.get_ns_event(day, event,
                                                 resource_name=resource_name,
                                                 conflicts_list=conflicts_list,
+                                                timetable=str(tt_index),
                                                 starts_on=starts_on, 
                                                 ends_on=ends_on, out_on=out_on)
                                 ns_events.append(ns_event)
@@ -532,7 +533,7 @@ class Calendar(Text, icalendar):
 
 
     def get_ns_event(self, day, event, resource_name=None, conflicts_list=[],
-                     starts_on=True, ends_on=True, out_on=True):
+                     timetable=None ,starts_on=True, ends_on=True, out_on=True):
         """
         Specify the namespace given on views to represent an event.
 
@@ -540,6 +541,7 @@ class Calendar(Text, icalendar):
         event: event selected
         resource_name: specify the resource for browse_calendar
         conflicts_list: list of conflicts for current resource, [] if not used
+        timetable: timetable index
 
         By default, we get:
 
@@ -549,12 +551,14 @@ class Calendar(Text, icalendar):
   
           SUMMARY: 'xxx'
           STATUS: 'xxx' (class: cal_conflict, if uid in conflicts_list)
+          ORGANIZER: 'xxx'
 
           url: url to access edit_event_form on current event
         """
         properties = event['event'].get_property_values
         ns = {}
         ns['SUMMARY'] = properties('SUMMARY').value
+        ns['ORGANIZER'] = properties('ORGANIZER').value
 
         ###############################################################
         # Set dtstart and dtend values using '...' for events which 
@@ -584,13 +588,22 @@ class Calendar(Text, icalendar):
         if uid in conflicts_list:
             ns['STATUS'] = 'cal_conflict'
         else:
-            ns['STATUS'] = properties('STATUS').value
+            status = properties('STATUS')
+            if status:
+                ns['STATUS'] = properties('STATUS').value
+            else:
+                ns['STATUS'] = ''
 
         ###############################################################
         # Set url to edit_event_form
         uid = properties('UID').value
         ns['UID'] = '%s' % uid
-        ns['url'] = ';edit_event_form?uid=%s' % uid
+        url = ';edit_event_form?uid=%s' % uid
+        if timetable:
+            url = '%s&timetable=%s' % (url, timetable)
+        if resource_name:
+            url = '%s/%s' % (resource_name, url)
+        ns['url'] = url
 
         return ns
 
@@ -1254,7 +1267,7 @@ class CalendarAware(object):
                 # Add event
                 if event and tt_index == event['tt_start']:
                     uid = event['UID']
-                    event_params = args + '&uid=%s' % uid
+                    event_params = '%s&uid=%s' % (args, uid)
                     go_url = '%s/;edit_event_form?%s' % (calendar_url,
                                                          event_params) 
                     if show_conflicts and uid in conflicts_list:

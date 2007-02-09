@@ -186,6 +186,7 @@ class DatabaseFS(FileFS):
         stack = [database]
         while stack:
             folder = stack.pop()
+            # Process the markers first
             for name in folder.get_names():
                 if name[0] == '~':
                     marker = name[-3:]
@@ -199,7 +200,9 @@ class DatabaseFS(FileFS):
                         if folder.exists(original):
                             folder.remove(original)
                         folder.move(name, original)
-                elif name == '.catalog':
+            # Process the others
+            for name in folder.get_names():
+                if name == '.catalog':
                     src = str(folder.uri.path.resolve2('.catalog.bak/'))
                     dst = str(folder.uri.path.resolve2('.catalog'))
                     call(['rsync', '-a', '--delete', src, dst])

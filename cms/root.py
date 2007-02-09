@@ -508,12 +508,16 @@ class Root(WebSite):
             for role in handler.get_role_names():
                 # Get the users
                 filename = '.%s.users' % role.split(':')[1]
-                users = handler.get_handler(filename)
-                users = tuple(users.usernames)
-                # Add to the metadata
-                handler.set_property(role, users)
-                # Remove the old ".users" file
-                handler.del_handler(filename)
+                try:
+                    users = handler.get_handler(filename)
+                except LookupError:
+                    pass
+                else:
+                    users = tuple(users.usernames)
+                    # Add to the metadata
+                    handler.set_property(role, users)
+                    # Remove the old ".users" file
+                    handler.del_handler(filename)
 
         # Update users
         users = self.get_handler('users')

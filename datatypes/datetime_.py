@@ -17,8 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-import datetime
-from datetime import tzinfo, timedelta
+from datetime import date, datetime, time, timedelta, tzinfo
 from time import strptime
 
 # Import from itools
@@ -88,7 +87,7 @@ class InternetDateTime(DataType):
             timezone = 'UTC'
         dt = strptime(date, '%d %b %Y %H:%M:%S')
         tz = TZInfo(timezone)
-        return datetime.datetime(dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], 0, tz)
+        return datetime(dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], 0, tz)
 
 
     @staticmethod
@@ -125,7 +124,7 @@ class ISOCalendarDate(DataType):
         year = int(data[:4])
         data = data[4:]
         if not data:
-            return datetime.date(year, 1, 1)
+            return date(year, 1, 1)
 
         # Extended format
         if data[0] == '-':
@@ -133,19 +132,19 @@ class ISOCalendarDate(DataType):
             month = int(data[:2])
             data = data[2:]
             if not data:
-                return datetime.date(year, month, 1)
+                return date(year, month, 1)
             # The day
             day = int(data[1:])
-            return datetime.date(year, month, day)
+            return date(year, month, day)
 
         # Basic format
         month = int(data[:2])
         data = data[2:]
         if not data:
-            return datetime.date(year, month, 1)
+            return date(year, month, 1)
         # The day
         day = int(data)
-        return datetime.date(year, month, day)
+        return date(year, month, day)
 
 
     @staticmethod
@@ -176,7 +175,7 @@ class ISOTime(DataType):
         hour = int(data[:2])
         data = data[2:]
         if not data:
-            return datetime.time(hour)
+            return time(hour)
 
         # Extended format
         if data[0] == ':':
@@ -184,19 +183,19 @@ class ISOTime(DataType):
             minute = int(data[:2])
             data = data[2:]
             if not data:
-                return datetime.time(hour, minute)
+                return time(hour, minute)
             # The day
             second = int(data[1:])
-            return datetime.time(hour, minute, second)
+            return time(hour, minute, second)
 
         # Basic format
         minute = int(data[:2])
         data = data[2:]
         if not data:
-            return datetime.time(hour, minute)
+            return time(hour, minute)
         # The day
         second = int(data)
-        return datetime.time(hour, minute, second)
+        return time(hour, minute, second)
 
 
     @staticmethod

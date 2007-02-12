@@ -203,7 +203,7 @@ class Skin(Folder):
         user = context.user
         here = context.handler
         if here is None:
-            return {'tabs': [], 'subtabs': []}
+            return []
 
         # Get access control
         ac = here.get_access_control()

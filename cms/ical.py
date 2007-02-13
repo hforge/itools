@@ -420,18 +420,18 @@ class Calendar(Text, icalendar):
         return None
 
 
-    # Get a week beginning at start date as a list to be given to namespace
-    def get_timetables_ns(self, start, resource_name=None, ndays=7,
+    # Get a week beginning at start_date as a list to be given to namespace
+    def get_timetables_ns(self, start_date, resource_name=None, ndays=7,
                           show_conflicts=False):
         # Get events occurring into current time window
-        end = start + timedelta(ndays)
-        events = self.get_sorted_events_in_range(start, end)
+        end_date = start_date + timedelta(ndays)
+        events = self.get_sorted_events_in_range(start_date, end_date)
 
         ###################################################################
         # Get conflicts in events if activated
         conflicts_list = set()
         if show_conflicts:
-            conflicts = self.get_conflicts(c_date)
+            conflicts = self.get_conflicts(start_date)
             if conflicts:
                 [conflicts_list.update(uids) for uids in conflicts]
         ###################################################################
@@ -447,7 +447,7 @@ class Calendar(Text, icalendar):
         # For each defined timetable
         for tt_index, timetable in enumerate(timetables):
             tt_start, tt_end = timetable['start'], timetable['end']
-            day = start
+            day = start_date
             ns_timetable = {}
             ns_timetable['timetable'] = Time.encode(tt_start) + ' - ' +\
                                         Time.encode(tt_end)

@@ -223,7 +223,7 @@ def table(columns, rows, sortby, sortorder, actions, gettext=lambda x: x):
         x['id'] = None
         if actions and row['checkbox'] is True:
             x['id'] = row['id']
-        x['img'] = row['img']
+        x['img'] = row.get('img')
         x['columns'] = []
         for column, kk in columns:
             value = row.get(column)

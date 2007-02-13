@@ -106,7 +106,7 @@ td, th { padding: 3px; }
   white-space: nowrap;
 }
 
-#tabs ul {
+#tabs ul li {
   list-style: none;
 }
 

@@ -298,7 +298,7 @@ class Skin(Folder):
             return {'info': None, 'joinisopen': joinisopen}
 
         home = '/users/%s/;%s' % (user.name, user.get_firstview())
-        info = {'name': user.name, 'title': user.title or user.name,
+        info = {'name': user.name, 'title': user.get_title_or_name(),
                 'home': home}
         return {'info': info, 'joinisopen': False}
 

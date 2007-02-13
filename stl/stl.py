@@ -318,7 +318,10 @@ def process(node, stack, repeat_stack, encoding='UTF-8', prefix=None):
 
         i = 0
         values = expression.evaluate(stack, repeat_stack)
-        nvalues = len(values)
+        try:
+            nvalues = len(values)
+        except TypeError:
+            raise STLTypeError, 'stl:repeat expects a countable value, "%s" is not' % expression
         for value in values:
             # Create the new stack
             newstack = stack[:]

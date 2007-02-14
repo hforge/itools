@@ -63,3 +63,64 @@ function show(id) {
   }
 }
 
+/* X & Y Coords */
+
+function getPosX(obj)
+{
+	var curleft = 0;
+	if (obj.offsetParent) {
+		while (obj.offsetParent) {
+			curleft += obj.offsetLeft;
+			obj = obj.offsetParent;
+		}
+	}
+	else if (obj.x) {
+		curleft += obj.x;
+    }
+	return curleft;
+}
+
+function getPosY(obj)
+{
+	var curtop = 0;
+	if (obj.offsetParent) {
+		while (obj.offsetParent) {
+			curtop += obj.offsetTop;
+			obj = obj.offsetParent;
+		}
+	}
+	else if (obj.y) {
+		curtop += obj.y;
+    }
+	return curtop;
+}
+
+/* Width & Height */
+
+function getWidth(obj) {
+  if (obj.currentStyle) {
+    var y = obj.currentStyle["width"];
+  }
+  else if (window.getComputedStyle) {
+    var y = document.defaultView.getComputedStyle(obj,null).getPropertyValue("width");
+  }
+  return parseInt(y);
+}
+
+function setWidth(obj, width) {
+  obj.style.width = width + "px";
+}
+
+function getHeight(obj) {
+  if (obj.currentStyle) {
+    var y = obj.currentStyle["height"];
+  }
+  else if (window.getComputedStyle) {
+    var y = document.defaultView.getComputedStyle(obj,null).getPropertyValue("height");
+  }
+  return parseInt(y);
+}
+
+function setHeight(obj, height) {
+  obj.style.height = height + "px";
+}

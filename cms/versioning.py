@@ -18,8 +18,10 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from operator import itemgetter
 
 # Import from itools
+from itools.i18n.locale_ import format_datetime
 from itools.stl import stl
 from itools.web import get_context
 
@@ -42,6 +44,24 @@ class VersioningAware(object):
         self.set_property('ikaaro:history', property)
 
 
+    def get_revisions(self, context):
+        accept = context.request.accept_language
+        revisions = []
+
+        for revision in self.get_property('ikaaro:history'):
+            username = revision[(None, 'user')]
+            date = revision[('dc', 'date')]
+            size = revision[(None, 'size')]
+            revisions.append({
+                'username': username,
+                'date': format_datetime(date, accept=accept),
+                'sort_date': date,
+                'size': size})
+
+        revisions.sort(key=itemgetter('sort_date'), reverse=True)
+        return revisions
+
+
     ########################################################################
     # User Interface
     ########################################################################
@@ -50,19 +70,7 @@ class VersioningAware(object):
     def history_form(self, context):
         namespace = {}
 
-        revisions = []
-        for revision in self.get_property('ikaaro:history'):
-            username = revision[(None, 'user')]
-            date = revision[('dc', 'date')]
-            size = revision[(None, 'size')]
-            revisions.append((date, {
-                'username': username,
-                'date': date.strftime('%Y-%m-%d %H:%M:%S'),
-                'size': size,
-            }))
-
-        revisions.sort(reverse=True)
-        namespace['revisions'] = [r[1] for r in revisions]
+        namespace['revisions'] = self.get_revisions(context)
 
         handler = self.get_handler('/ui/File_history.xml')
         return stl(handler, namespace)

@@ -15,14 +15,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# import from the future
+# Import from the future
 from __future__ import absolute_import
 
 # Import from the Standard Library
 import re
+from operator import itemgetter
 
 # Import from itools.cms
-from .. import uri
 from ..web import get_context
 from ..stl import stl
 
@@ -32,6 +32,7 @@ from .Folder import Folder
 from .text import Text
 from .registry import register_object_class
 from .utils import checkid
+from .widgets import table
 
 # Import from docutils
 try:
@@ -101,7 +102,8 @@ class WikiFolder(Folder):
          'browse_content?mode=list',
          'browse_content?mode=image'],
         ['new_resource_form'],
-        ['edit_metadata_form']]
+        ['edit_metadata_form'],
+        ['last_changes']]
 
     __fixed_handlers__ = ['FrontPage']
 
@@ -115,24 +117,6 @@ class WikiFolder(Folder):
                 **{'dc:title': {'en': u"Front Page"}})
 
 
-    def new_resource(self, context):
-        status = Folder.new_resource(self, context)
-        class_id = context.get_form_value('class_id')
-        if class_id != 'WikiPage':
-            return status
-
-        name = context.get_form_value('name')
-        name = checkid(name) or ''
-        if not self.has_handler(name):
-            return status
-        page = self.get_handler(name)
-
-        data = context.get_form_value('data')
-        page.load_state_from_string(data)
-
-        return status
-
-
     def get_document_types(self):
         return [WikiPage, File]
 
@@ -141,7 +125,64 @@ class WikiFolder(Folder):
     # User interface
     #######################################################################
     def GET(self, context):
-        return uri.get_reference('%s/FrontPage/;view' % self.name)
+        if context.has_form_value('message'):
+            message = context.get_form_value('message')
+            return context.come_back(message, 'FrontPage')
+        return context.uri.resolve2('FrontPage')
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u"View"
+    def view(self, context):
+        if context.has_form_value('message'):
+            message = context.get_form_value('message')
+            return context.come_back(message, 'FrontPage')
+        return context.uri.resolve('FrontPage')
+
+
+
+    last_changes__access__ = 'is_allowed_to_view'
+    last_changes__label__ = u"Last Changes"
+    def last_changes(self, context, sortby=['mtime'], sortorder='down'):
+        users = self.get_handler('/users')
+        namespace = {}
+        pages = []
+
+        namespace['search_fields'] = None
+        namespace['batch'] = ''
+
+        for page in self.search_handlers(handler_class=WikiPage):
+            revisions = page.get_revisions(context)
+            if revisions:
+                last_rev = revisions[0]
+                username = last_rev['username']
+                try:
+                    user = users.get_handler(username)
+                    user_title = user.get_title()
+                    if not user_title.strip():
+                        user_title = user.get_property('ikaaro:email')
+                except LookupError:
+                    user_title = username
+            else:
+                user_title = '?'
+            pages.append({'name': (page.name, page.name),
+                          'title': page.get_title_or_name(),
+                          'mtime': page.get_mtime(),
+                          'last_author': user_title})
+
+        sortby = context.get_form_values('sortby', sortby)
+        sortorder = context.get_form_value('sortorder', sortorder)
+        pages.sort(key=itemgetter(sortby[0]), reverse=(sortorder == 'down'))
+        namespace['pages'] = pages
+
+        columns = [
+            ('name', u'Name'), ('title', u'Title'), ('mtime', u'Last Modified'),
+            ('last_author', u'Last Author')]
+        namespace['table'] = table(columns, pages, sortby, sortorder, [],
+                self.gettext)
+
+        handler = self.get_handler('/ui/Folder_browse_list.xml')
+        return stl(handler, namespace)
 
 
 register_object_class(WikiFolder)
@@ -155,20 +196,18 @@ class WikiPage(Text):
     class_description = u"Wiki contents"
     class_icon16 = 'images/WikiPage16.png'
     class_icon48 = 'images/WikiPage48.png'
+    class_views = Text.class_views + [
+            ['browse_content'],
+            ['last_changes']]
     class_extension = None
 
     _wikiLinkRE = re.compile(r'(<a [^>]* href=")!(.*?)("[^>]*>)(.*?)(</a>)',
                              re.I+re.S)
-    link_template = ('%(open_tag)s../%(page)s/;view%(open_tag_end)'
+    link_template = ('%(open_tag)s../%(page)s%(open_tag_end)'
             's%(text)s%(end_tag)s')
     new_link_template = ('<span class="nowiki">%(text)s%(open_tag)s'
             '../;new_resource_form?type=WikiPage&name=%(page)s'
             '%(open_tag_end)s?%(end_tag)s</span>')
-
-    def _exists(self, page):
-        parent = self.parent
-        name = checkid(page) or ''
-        return parent.has_handler(name)
 
 
     def _resolve_wiki_link(self, match):
@@ -177,10 +216,13 @@ class WikiPage(Text):
                      'open_tag_end': match.group(3),
                      'text': match.group(4),
                      'end_tag': match.group(5)}
-        if self._exists(namespace['page']):
+        parent = self.parent
+        name = checkid(namespace['page']) or ''
+        if parent.has_handler(name):
             return self.link_template % namespace
         else:
             return  self.new_link_template % namespace
+
 
     def _resolve_wiki_links(self, html):
         return self._wikiLinkRE.sub(self._resolve_wiki_link, ' %s ' % html)
@@ -190,7 +232,7 @@ class WikiPage(Text):
     # User interface
     #######################################################################
     def GET(self, context):
-        return self.view(context)
+        return context.uri.resolve2(';view')
 
 
     @classmethod
@@ -211,16 +253,58 @@ class WikiPage(Text):
         return stl(handler, namespace)
 
 
-    def view(self, context):
-        css = self.get_handler('/ui/wiki.css')
-        context.styles.append(str(self.get_pathto(css)))
+    def to_html(self):
         html = publish_string(source=self.to_str(), reader=Reader(),
                               parser_name='restructuredtext',
                               writer_name='html')
-        html = html[html.find('<div class="document">'):html.find('</body>')]
-        html = self._resolve_wiki_links(html)
+        html = html[html.find('<div class="document"'):html.find('</body>')]
+        return self._resolve_wiki_links(html)
 
-        return html
+
+    def view(self, context):
+        css = self.get_handler('/ui/wiki.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        return self.to_html()
+
+
+    def edit_form(self, context):
+        css = self.get_handler('/ui/wiki.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        namespace = {}
+        namespace['data'] = self.to_str()
+
+        handler = self.get_handler('/ui/WikiPage_edit.xml')
+        return stl(handler, namespace)
+
+
+    def edit(self, context):
+        goto = Text.edit(self, context)
+        # Avoid full source in the return query
+        goto = goto.replace(data=None)
+
+        message = goto.query['message']
+        if 'class="system-message"' in self.to_html():
+            message = u"Syntax error, please check the view for details."
+
+        if context.has_form_value('view'):
+            goto = ';view'
+        else:
+            goto.fragment = 'bottom'
+        return context.come_back(message, goto)
+
+
+    browse_content__access__ = WikiFolder.browse_content__access__
+    browse_content__label__ = WikiFolder.browse_content__label__
+    def browse_content(self, context):
+        return context.uri.resolve('../;browse_content')
+
+
+    last_changes__access__ = WikiFolder.last_changes__access__
+    last_changes__label__ = WikiFolder.last_changes__label__
+    def last_changes(self, context):
+        return context.uri.resolve('../;last_changes')
 
 
 register_object_class(WikiPage)

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <form action=";edit" method="post">
+    <p>
+      <textarea id="data" name="data" cols="80" rows="19"
+        wrap="physical">${data}</textarea>
+    </p>
+    <p>
+      <a name="bottom" style="float: right"></a>
+      <input type="submit" name="save" value="Save" class="button_ok" />
+      <input type="submit" name="view" value="View" class="button_ok" />
+    </p>
+  </form>
+
+  <script type="text/javascript">
+    <!--
+    var tarea = document.getElementById('data');
+    var height_orig = getHeight(tarea)
+    var posy = getPosY(tarea);
+
+    function fixHeight() {
+        var max_height = window.innerHeight - posy - 50;
+        if (max_height > height_orig) {
+          var height = max_height;
+        }
+        else {
+          var height = height_orig;
+        }
+        setHeight(tarea, height);
+    }
+
+    fixHeight();
+    addEvent(window, 'resize', fixHeight);
+    addEvent(window, 'overflow', fixHeight);
+    addEvent(window, 'underflow', fixHeight);
+    -->
+  </script>
+
+</stl:block>

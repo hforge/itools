@@ -1,3 +1,46 @@
+textarea#data {
+  font-size: 0.9em;
+}
+
+#content .document h1 {
+  margin: 15px 0 3px 0;
+}
+
+#content .document h2 {
+  margin: 12px 0 3px 9px;
+}
+
+#content .document h3 {
+  margin: 9px 0 3px 15px;
+  font-style: italic;
+}
+
+#content .document h1 a,
+#content .document h2 a,
+#content .document h3 a {
+  color: #000;
+}
+
+#content .document a:link {
+  text-decoration: none;
+}
+
+.contents.topic {
+  margin: 3px;
+  border: 1px solid #ccc;
+  background: #eec;
+}
+
+#content .contents.topic li {
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.topic-title.first {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
 .reference.external_reference:link,
 .reference.external_reference:visited {
   padding-left: 18px;
@@ -19,4 +62,16 @@
   padding: 1em;
   border: 1px solid #999;
   background: #ffe;
+}
+
+.problematic {
+  background-color: red;
+}
+
+.system-message {
+  background-color: #fdd;
+}
+
+.system-message-title {
+  font-weight: bold;
 }

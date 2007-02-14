@@ -153,8 +153,8 @@ table_template_string = """
       xmlns:stl="http://xml.itools.org/namespaces/stl">
       <thead stl:if="columns">
         <tr>
-          <th></th>
-          <th></th>
+          <th stl:if="column_checkbox"></th>
+          <th stl:if="column_image"></th>
           <th stl:repeat="column columns" valign="bottom">
             <a stl:if="column" href="${column/href}"
               class="sort_${column/order}">${column/title}</a>
@@ -163,11 +163,11 @@ table_template_string = """
       </thead>
       <tbody>
         <tr stl:repeat="row rows" class="${repeat/row/even}">
-          <td>
+          <td stl:if="column_checkbox">
             <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
               value="${row/id}" />
           </td>
-          <td>
+          <td stl:if="column_image">
             <img border="0" src="${row/img}" stl:if="row/img" />
           </td>
           <td stl:repeat="column row/columns">
@@ -214,16 +214,24 @@ def table(columns, rows, sortby, sortorder, actions, gettext=lambda x: x):
         The translation function.
     """
     namespace = {}
+    namespace['column_checkbox'] = False
+    namespace['column_image'] = False
     # The columns
     namespace['columns'] = table_head(columns, sortby, sortorder, gettext)
     # The rows
     aux = []
     for row in rows:
         x = {}
+        # The checkbox column
         x['id'] = None
         if actions and row['checkbox'] is True:
             x['id'] = row['id']
+            namespace['column_checkbox'] = True
+        # The image column
         x['img'] = row.get('img')
+        if x['img'] is not None:
+            namespace['column_image'] = True
+        # Other columns
         x['columns'] = []
         for column, kk in columns:
             value = row.get(column)

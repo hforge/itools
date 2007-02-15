@@ -75,6 +75,13 @@ class User(AccessControl, Folder):
         return '%s %s' % (firstname, lastname)
 
 
+    def get_login_name(self):
+        username = self.get_property('ikaaro:username')
+        if username:
+            return username
+        return self.get_property('ikaaro:username')
+
+
     def set_password(self, value):
         self.set_property('ikaaro:password', crypt_password(value))
 

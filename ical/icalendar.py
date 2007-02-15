@@ -731,11 +731,11 @@ class icalendar(Text):
                 same_start.append(e)
             else:
                 if same_start != []:
-                    res.append(same_start)
+                    res.extend(same_start)
                     same_start = []
                 res.append(e)
         if same_start != []:
-            res.append(same_start)
+            res.extend(same_start)
 
         return res
 

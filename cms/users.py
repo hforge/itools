@@ -79,7 +79,7 @@ class User(AccessControl, Folder):
         username = self.get_property('ikaaro:username')
         if username:
             return username
-        return self.get_property('ikaaro:username')
+        return self.get_property('ikaaro:email')
 
 
     def set_password(self, value):

@@ -340,7 +340,7 @@ class RoleAware(AccessControl):
 
     permissions__access__ = 'is_admin'
     def permissions_del_members(self, context):
-        usernames = context.get_form_values('delusers')
+        usernames = context.get_form_values('ids')
         self.set_user_role(usernames, None)
 
         # Reindex

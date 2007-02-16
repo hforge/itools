@@ -6,6 +6,11 @@
 
   <form action=";edit" method="post">
     <p>
+      For a complete reference on the wiki syntax, check the
+      <a href="http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html"
+        target="_blank">Syntax Documentation</a>.
+    </p>
+    <p>
       <textarea id="data" name="data" cols="80" rows="19"
         wrap="physical">${data}</textarea>
     </p>

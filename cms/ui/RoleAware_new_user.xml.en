@@ -7,35 +7,48 @@
   <h2>Add New User</h2>
 
   <form name="addform" action=";new_user" method="post">
-    <dl>
-      <dt>Email</dt>
-      <dd>
-        <input id="email" type="text" name="email" size="40" />
-      </dd>
-      <dt stl:if="non_members">&nbsp;</dt>
-      <dd stl:if="non_members">
-        <select name="user_id" style="font-size: 1.1em">
-          <option value=""></option>
-          <option stl:repeat="user non_members" value="${user/id}"
-            >${user/title}</option>
-        </select>
-      </dd>
-      <dt>Password</dt>
-      <dd>
-        <input id="password" type="password" name="password" />
-      </dd>
-      <dt>Repeat Password</dt>
-      <dd>
-        <input id="password2" type="password" name="password2" />
-      </dd>
-      <dt>Role</dt>
-      <dd>
-        <select name="role">
-          <option stl:repeat="role roles" value="${role/name}"
-            >${role/title}</option>
-        </select>
-      </dd>
-    </dl>
+    <fieldset>
+      <legend>Add a new user</legend>
+      <dl>
+        <dt>Email</dt>
+        <dd>
+          <input id="email" type="text" name="email" size="40" />
+        </dd>
+        <dt>Password</dt>
+        <dd>
+          <input id="password" type="password" name="password" />
+        </dd>
+        <dt>Repeat Password</dt>
+        <dd>
+          <input id="password2" type="password" name="password2" />
+        </dd>
+      </dl>
+    </fieldset>
+    <fieldset stl:if="non_members">
+      <legend>Or select an existing user</legend>
+      <dl>
+        <dt>&nbsp;</dt>
+        <dd>
+          <select name="user_id">
+            <option value=""></option>
+            <option stl:repeat="user non_members" value="${user/id}"
+              >${user/title}</option>
+          </select>
+        </dd>
+      </dl>
+    </fieldset>
+    <fieldset>
+      <legend>Choose the role for the new member</legend>
+      <dl>
+        <dt>Role</dt>
+        <dd>
+          <select name="role">
+            <option stl:repeat="role roles" value="${role/name}"
+              >${role/title}</option>
+          </select>
+        </dd>
+      </dl>
+    </fieldset>
     <p>
       <input type="submit" name="add_and_view" value="Add and view"
         class="button_ok" />

@@ -17,6 +17,7 @@
 
 # Import from itools
 from itools.datatypes import Unicode
+from itools import schemas
 from itools.handlers import File
 from itools.handlers.registry import register_handler_class
 from itools.xml import XML
@@ -24,6 +25,8 @@ from itools.xhtml import XHTML
 from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \
      END_ELEMENT, COMMENT, TEXT
 
+
+ns_uri = 'http://www.w3.org/1999/xhtml'
 
 
 class Element(XHTML.Element):
@@ -137,6 +140,8 @@ class Document(XHTML.Document):
                 element = element_class(name)
                 for attr_name in attributes:
                     attr_value = attributes[attr_name]
+                    type = schemas.get_datatype_by_uri(ns_uri, attr_name)
+                    attr_value = type.decode(attr_value)
                     element.set_attribute(element.namespace, attr_name, attr_value)
                 stack.append(element)
             elif event == END_ELEMENT:

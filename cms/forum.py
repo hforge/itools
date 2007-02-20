@@ -22,7 +22,7 @@ from cgi import escape
 from cStringIO import StringIO
 
 # Import from itools
-from itools.datatypes import FileName
+from itools.datatypes import FileName, Unicode
 from itools.stl import stl
 from itools.web import get_context
 
@@ -76,11 +76,10 @@ class Thread(Folder):
     message_class = Message
 
 
-    def new(self, body=''):
+    def new(self, body=u''):
         Folder.new(self)
         cache = self.cache
-        message = self.message_class()
-        message.load_state_from_string(body)
+        message = self.message_class(data=body)
         cache['0.txt'] = message
         cache['0.txt.metadata'] = self.build_metadata(message)
 
@@ -265,7 +264,7 @@ class Forum(Folder):
         website_languages = root.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
 
-        body = context.get_form_value('body')
+        body = context.get_form_value('body', type=Unicode)
         body = escape(body.strip())
         self.set_handler(name, self.thread_class(body=body),
                 **{'dc:title': {default_language: title}})

@@ -20,7 +20,6 @@ from __future__ import with_statement
 
 # Import from itools
 from itools import vfs
-from itools.handlers.Folder import Folder
 from IO import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
                 decode_vint, encode_vint, NULL)
@@ -109,28 +108,17 @@ class Document(object):
 
 
 
-class Documents(Folder):
+class Documents(object):
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'documents', 'n_documents',
+    __slots__ = ['uri', 'documents', 'n_documents',
                  'added_documents', 'removed_documents']
 
 
-    def new(self):
-        # State
-        self.documents = {}
-        self.n_documents = 0
-        # Changes
-        self.added_documents = []
-        self.removed_documents = []
+    def __init__(self, uri):
+        self.uri = uri
 
-
-    ######################################################################
-    # Load/Save
-    ######################################################################
-    def _load_state(self):
-        base = vfs.open(self.uri)
-        with base.open('index') as index_file:
+        base = vfs.open(uri)
+        with base.open('documents_index') as index_file:
             self.documents = {}
             index_file.seek(0, 2)
             self.n_documents = index_file.tell() / 8
@@ -139,9 +127,9 @@ class Documents(Folder):
         self.removed_documents = []
 
 
-    def _save_state(self, uri):
-        base = vfs.open(uri)
-        index_file = base.open('index')
+    def save_state(self):
+        base = vfs.open(self.uri)
+        index_file = base.open('documents_index')
         docs_file = base.open('documents')
         try:
             # Removed documents
@@ -192,24 +180,6 @@ class Documents(Folder):
         finally:
             index_file.close()
             docs_file.close()
-
-
-    def save_state(self):
-        self._save_state(self.uri)
-        # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
-
-
-    def save_state_to(self, uri):
-        # Create the index folder
-        vfs.make_folder(uri) 
-        base = vfs.open(uri)
-        # Initialize the tree file
-        base.make_file('documents')
-        base.make_file('index')
-        # XXX Remains to save the data in "self._documents"
-        # Save changes
-        self._save_state(uri)
 
 
     ######################################################################

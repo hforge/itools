@@ -29,7 +29,7 @@ from itools import vfs
 from itools.handlers import Text
 from itools.xml import XML
 from itools.html import HTML
-from itools.catalog.catalog import Catalog
+from itools.catalog.catalog import Catalog, make_catalog
 
 
 def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
@@ -62,13 +62,13 @@ class Document(HTML.Document):
 def create_catalog():
     print 'Creating catalog...',
     global catalog
-    # Create and get a new empty index
-    catalog = Catalog(fields=[('title', 'text', True, True),
-                              ('body', 'text', True, False)])
+
     if vfs.exists('/tmp/catalog_prof'):
         vfs.remove('/tmp/catalog_prof')
-    catalog.save_state_to('/tmp/catalog_prof')
-    catalog = Catalog('/tmp/catalog_prof')
+    # Create and get a new empty catalog
+    catalog = make_catalog('/tmp/catalog_prof',
+                           [('title', 'text', True, True),
+                            ('body', 'text', True, False)])
     print 'done'
 
 

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2006 Juan David IbÃ¡Ã±ez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,6 @@ from __future__ import with_statement
 
 # Import from itools
 from itools import vfs
-from itools.handlers.Folder import Folder
 from IO import (decode_character, encode_character, decode_link, encode_link,
                 decode_uint32, encode_uint32, encode_uint32_2, encode_version,
                 NULL)
@@ -464,24 +463,18 @@ class _Index(object):
 ###########################################################################
 # Handler
 ###########################################################################
-class Index(Folder):
+class Index(object):
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 '_index', 'added_terms', 'removed_terms']
-
-
-    def new(self):
-        self._index = _Index()
-        # {<term>: {<doc number>: [<position>, ..., <position>]}
-        self.added_terms = {}
-        # {<term>: set(<doc number>, ..)}
-        self.removed_terms = {}
+    __slots__ = ['uri', 'n', '_index', 'added_terms', 'removed_terms']
 
 
-    def _load_state(self):
+    def __init__(self, uri, n):
+        self.uri = uri
+        self.n = n
+
         base = vfs.open(self.uri)
-        tree_file = base.open('tree')
-        docs_file = base.open('docs')
+        tree_file = base.open('%d_tree' % n)
+        docs_file = base.open('%d_docs' % n)
         try:
             self._index = _Index(tree_file, docs_file)    
         finally:
@@ -492,10 +485,10 @@ class Index(Folder):
         self.removed_terms = {}
 
 
-    def _save_state(self, uri):
-        base = vfs.open(uri)
-        tree_file = base.open('tree')
-        docs_file = base.open('docs')
+    def save_state(self):
+        base = vfs.open(self.uri)
+        tree_file = base.open('%d_tree' % self.n)
+        docs_file = base.open('%d_docs' % self.n)
         try:
             # Removed terms
             for term in self.removed_terms:
@@ -511,26 +504,6 @@ class Index(Folder):
         finally:
             tree_file.close()
             docs_file.close()
-
-
-    def save_state(self):
-        self._save_state(self.uri)
-        # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
-
-
-    def save_state_to(self, uri):
-        # Create the index folder
-        vfs.make_folder(uri) 
-        base = vfs.open(uri)
-        # Initialize the tree file
-        with base.make_file('tree') as file:
-            self._index.init_tree_file(file)
-        # Initialize the docs file
-        base.make_file('docs')
-        # XXX Remains to save the data in "self._index"
-        # Save changes
-        self._save_state(uri)
 
 
     #######################################################################

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,12 +24,11 @@ from operator import itemgetter
 # Import from itools
 from itools.uri import get_absolute_reference
 from itools import vfs
-from itools.handlers.base import Handler
-from itools.handlers.Folder import Folder
-from index import Index
+from index import Index, VERSION, ZERO
 from documents import Documents, Document
 from analysers import get_analyser
 import queries
+from IO import NULL
 
 
 
@@ -136,39 +135,17 @@ class SearchResults(object):
 
 
 
-class Catalog(Folder):
+class Catalog(object):
 
     class_version = '20060708'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+    __slots__ = ['uri', 'timestamp', 'has_changed',
                  'fields', 'field_numbers', 'indexes', 'documents']
 
 
-    def new(self, fields=[]):
-        self.fields = []
-        self.field_numbers = {}
-        # The indexes
-        self.indexes = []
-        for number, field in enumerate(fields):
-            name, type, is_indexed, is_stored = field
-            # Keep field metadata
-            field = Field(number, name, type, is_indexed, is_stored)
-            self.fields.append(field)
-            # Keep a mapping from field name to field number
-            self.field_numbers[name] = number
-            # Initialize index
-            if is_indexed:
-                self.indexes.append(Index())
-            else:
-                self.indexes.append(None)
-        # Initialize documents
-        self.documents = Documents()
-
-
-    #########################################################################
-    # Load / Save
-    #########################################################################
-    def _load_state(self):
+    def __init__(self, ref):
+        self.uri = get_absolute_reference(ref)
+        self.has_changed = False
         self.fields = []
         self.field_numbers = {}
         self.indexes = []
@@ -190,35 +167,13 @@ class Catalog(Folder):
         # Initialize the indexes
         for field in self.fields:
             if field.is_indexed:
-                index_uri = self.uri.resolve2('index_%d' % field.number)
-                self.indexes.append(Index(index_uri))
+                self.indexes.append(Index(self.uri, field.number))
             else:
                 self.indexes.append(None)
         # Initialize the documents
-        documents_uri = self.uri.resolve2('documents')
-        self.documents = Documents(documents_uri)
+        self.documents = Documents(self.uri)
 
-
-    def save_state_to(self, uri):
-        uri = get_absolute_reference(uri)
-        # Initialize
-        vfs.make_folder(uri)
-        # Create the fields metadata file        
-        base = vfs.open(uri)
-        with base.make_file('fields') as file:
-            for field in self.fields:
-                file.write('%d#%s#%s#%d#%d\n' % (field.number, field.name,
-                                                 field.type, field.is_indexed,
-                                                 field.is_stored))
-        # Save the indexes
-        for field_number, index in enumerate(self.indexes):
-            if index is None:
-                continue
-            index_uri = uri.resolve2('index_%d' % field_number)
-            index.save_state_to(index_uri)
-        # Save the documents
-        documents_uri = uri.resolve2('documents')
-        self.documents.save_state_to(documents_uri)
+        self.timestamp = vfs.get_mtime(self.uri)
 
 
     def save_state(self):
@@ -230,9 +185,6 @@ class Catalog(Folder):
         self.documents.save_state()
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
-
-
-    copy_handler = Handler.copy_handler
 
 
     #########################################################################
@@ -260,7 +212,7 @@ class Catalog(Folder):
 
 
     def index_document(self, document):
-        self.set_changed()
+        self.has_changed = True
         # Create the document to index
         doc_number = self.documents.n_documents
         catalog_document = Document(doc_number)
@@ -313,7 +265,7 @@ class Catalog(Folder):
 
 
     def unindex_document(self, doc_number):
-        self.set_changed()
+        self.has_changed = True
         # Update the indexes
         document = self.documents.get_document(doc_number)
         for field in self.fields:
@@ -363,3 +315,33 @@ class Catalog(Folder):
         results = query.search(self)
         return SearchResults(results, self.documents, self.field_numbers)
 
+
+def make_catalog(uri, fields):
+    """
+    Creates a new catalog in the given uri.
+    """
+    uri = get_absolute_reference(uri)
+    vfs.make_folder(uri)
+    base = vfs.open(uri)
+
+    # Create the indexes
+    metadata = []
+    for i, field in enumerate(fields):
+        # The metadata file
+        name, type, is_indexed, is_stored = field
+        metadata.append('%d#%s#%s#%d#%d\n' % (i, name, type, is_indexed,
+                                              is_stored))
+        # Create the index file
+        base.make_file('%d_docs' % i)
+        with base.make_file('%d_tree' % i) as file:
+            file.write(''.join([VERSION, ZERO, NULL, NULL]))
+
+    # Writhe the metadata file
+    with base.make_file('fields') as file:
+        file.write(''.join(metadata))
+
+    # Create the documents
+    base.make_file('documents')
+    base.make_file('documents_index')
+
+    return Catalog(uri)

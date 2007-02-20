@@ -20,7 +20,6 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.handlers.spaces import get_space
 from itools.handlers import get_handler
 from itools.handlers.Text import Text
 from itools.catalog import IO
@@ -201,13 +200,16 @@ class CatalogTestCase(TestCase):
     def test01_load_and_search(self):
         catalog = Catalog('tests/catalog')
         # Search "hello"
-        results = list(catalog.search(body=u'hello'))
+        results = catalog.search(body=u'hello')
+        results = results.get_documents()
         self.assertEqual(len(results), 1)
         # Search "world"
-        results = list(catalog.search(body=u'world'))
+        results = catalog.search(body=u'world')
+        results = results.get_documents()
         self.assertEqual(len(results), 2)
         # Search "moon"
-        results = list(catalog.search(body=u'moon'))
+        results = catalog.search(body=u'moon')
+        results = results.get_documents()
         self.assertEqual(len(results), 0)
 
 
@@ -220,16 +222,13 @@ class CatalogTestCase(TestCase):
     def test03_load_and_search(self):
         catalog = Catalog('tests/catalog')
         # Search "hello"
-        results = list(catalog.search(body=u'hello'))
+        results = catalog.search(body=u'hello')
+        results = results.get_documents()
         self.assertEqual(len(results), 0)
         # Search "world"
-        results = list(catalog.search(body=u'world'))
+        results = catalog.search(body=u'world')
+        results = results.get_documents()
         self.assertEqual(len(results), 1)
-
-
-
-
-
 
 
 

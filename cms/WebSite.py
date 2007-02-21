@@ -249,10 +249,11 @@ class WebSite(RoleAware, Folder):
 
     register__access__ = 'is_allowed_to_register'
     def register(self, context):
+        keep = ['ikaaro:firstname', 'ikaaro:lastname', 'ikaaro:email']
         # Check input data
         error = context.check_form_input(self.register_fields)
         if error is not None:
-            return context.come_back(error)
+            return context.come_back(error, keep=keep)
 
         # Check the real name
         firstname = context.get_form_value('ikaaro:firstname').strip()
@@ -263,7 +264,7 @@ class WebSite(RoleAware, Folder):
         email = email.strip()
         if not Email.is_valid(email):
             message = u'A valid email address must be provided.'
-            return context.come_back(message)
+            return context.come_back(message, keep=keep)
 
         # Do we already have a user with that email?
         root = context.root
@@ -271,19 +272,19 @@ class WebSite(RoleAware, Folder):
         results = catalog.search(email=email)
         if results.get_n_documents():
             message = u'There is already a user with that email.'
-            return context.come_back(message)
+            return context.come_back(message, keep=keep)
 
         # Check the password
         password = context.get_form_value('password')
         if not password:
             message = u'The password is mandatory.'
-            return context.come_back(message)
+            return context.come_back(message, keep=keep)
 
         # Check the password
         password2 = context.get_form_value('password2')
         if password != password2:
             message = u'The passwords do not match.'
-            return context.come_back(message)
+            return context.come_back(message, keep=keep)
 
         # Add the user
         users = self.get_handler('users')
@@ -337,13 +338,13 @@ class WebSite(RoleAware, Folder):
         password = context.get_form_value('password')
 
         # Don't send back the password
-        keys = ['password']
+        keep = ['username']
 
         # Check the email field has been filed
         email = email.strip()
         if not email:
             message = u'Type your email please.'
-            return context.come_back(message, exclude=keys)
+            return context.come_back(message, keep=keep)
 
         # Check the user exists
         root = context.root
@@ -357,7 +358,7 @@ class WebSite(RoleAware, Folder):
             # No user found
             if results.get_n_documents() == 0:
                 message = u'The user "$username" does not exist.'
-                return context.come_back(message, username=email, exclude=keys)
+                return context.come_back(message, username=email, keep=keep)
 
         # Get the user
         brain = results.get_documents()[0]
@@ -366,12 +367,12 @@ class WebSite(RoleAware, Folder):
         # Check the user is active
         if user.get_property('ikaaro:user_must_confirm'):
             message = u'The user "$username" is not active.'
-            return context.come_back(message, username=email, exclude=keys)
+            return context.come_back(message, username=email, keep=keep)
 
         # Check the password is right
         password = crypt_password(password)
         if not user.authenticate(password):
-            return context.come_back(u'The password is wrong.', exclude=keys)
+            return context.come_back(u'The password is wrong.', keep=keep)
 
         # Set cookie
         username = str(user.name)

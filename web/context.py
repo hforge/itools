@@ -152,7 +152,7 @@ class Context(object):
 
     ########################################################################
     # API / high level
-    def come_back(self, message, goto=None, exclude=[], **kw):
+    def come_back(self, message, goto=None, keep=[], **kw):
         """
         This is a handy method that builds a URI object from some parameters.
         It exists to make short some common patterns.
@@ -171,11 +171,9 @@ class Context(object):
             # Omit files
             if isinstance(value, tuple) and len(value) == 3:
                 continue
-            # Omit explicitly excluded fields
-            if key in exclude:
-                continue
             # Keep form field
-            form[key] = value
+            if key in keep:
+                form[key] = value
         if form:
             goto = goto.replace(**form)
         # Translate the source message

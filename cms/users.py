@@ -24,6 +24,7 @@ from itools import i18n
 from itools import handlers
 from itools.stl import stl
 from itools.datatypes import Email
+from itools.schemas import get_datatype
 
 # Import from ikaaro
 from access import AccessControl
@@ -51,7 +52,7 @@ class User(AccessControl, Folder):
          'browse_content?mode=list',
          'browse_content?mode=image'],
         ['new_resource_form'],
-        ['edit_form', 'edit_account_form', 'edit_password_form'],
+        ['edit_account_form', 'edit_form', 'edit_password_form'],
         ['tasks_list']]
 
 
@@ -170,8 +171,8 @@ class User(AccessControl, Folder):
     #######################################################################
     # Edit
     edit_form__access__ = 'is_allowed_to_edit'
-    edit_form__label__ = u'Preferences'
-    edit_form__sublabel__ = u'Application'
+    edit_form__label__ = u'Edit'
+    edit_form__sublabel__ = u'Preferences'
     def edit_form(self, context):
         root = context.root
         user = context.user
@@ -202,16 +203,17 @@ class User(AccessControl, Folder):
 
     #######################################################################
     # Edit account
+    account_fields = ['ikaaro:firstname', 'ikaaro:lastname', 'ikaaro:email']
+
     edit_account_form__access__ = 'is_allowed_to_edit'
-    edit_account_form__label__ = u'Preferences'
+    edit_account_form__label__ = u'Edit'
     edit_account_form__sublabel__ = u'Account'
     def edit_account_form(self, context):
         # Build the namespace
         namespace = {}
-        namespace['firstname'] = self.get_property('ikaaro:firstname')
-        namespace['lastname'] = self.get_property('ikaaro:lastname')
-        namespace['email'] = self.get_property('ikaaro:email')
-
+        for key in self.account_fields:
+            namespace[key] = self.get_property(key)
+        # Ask for password to confirm the changes
         if self.name != context.user.name:
             namespace['must_confirm'] = False
         else:
@@ -223,11 +225,8 @@ class User(AccessControl, Folder):
 
     edit_account__access__ = 'is_allowed_to_edit'
     def edit_account(self, context):
-        firstname = context.get_form_value('ikaaro:firstname')
-        lastname = context.get_form_value('ikaaro:lastname')
-        email = context.get_form_value('email')
+        # Check password to confirm changes
         password = context.get_form_value('password')
-
         user = context.user
         if self.name == user.name:
             password = crypt_password(password)
@@ -236,6 +235,8 @@ class User(AccessControl, Folder):
                     u"You mistyped your actual password, your account is"
                     u" not changed.")
 
+        # Check the email is good
+        email = context.get_form_value('ikaaro:email')
         if not Email.is_valid(email):
             message = u'A valid email address must be provided.'
             return context.come_back(message)
@@ -244,11 +245,12 @@ class User(AccessControl, Folder):
         results = root.search(email=email)
         if results.get_n_documents():
             message = (u'There is another user with the email "%s", '
-                    u'please try again')
+                       u'please try again')
 
-        self.set_property('ikaaro:firstname', firstname, language='en')
-        self.set_property('ikaaro:lastname', lastname, language='en')
-        self.set_property('ikaaro:email', email)
+        # Save changes
+        for key in self.account_fields:
+            value = context.get_form_value(key)
+            self.set_property(key, value)
 
         # Reindex
         root.reindex_handler(self)
@@ -259,7 +261,7 @@ class User(AccessControl, Folder):
     #######################################################################
     # Edit password
     edit_password_form__access__ = 'is_allowed_to_edit'
-    edit_password_form__label__ = u'Preferences'
+    edit_password_form__label__ = u'Edit'
     edit_password_form__sublabel__ = u'Password'
     def edit_password_form(self, context):
         user = context.user

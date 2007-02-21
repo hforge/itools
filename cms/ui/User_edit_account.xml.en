@@ -11,16 +11,17 @@
       <dt><label for="ikaaro:firstname">First name</label></dt>
       <dd>
         <input type="text" id="ikaaro:firstname" name="ikaaro:firstname"
-          value="${firstname}" />
+          value="${ikaaro:firstname}" />
       </dd>
       <dt><label for="ikaaro:lastname">Last name</label></dt>
       <dd>
         <input type="text" id="ikaaro:lastname" name="ikaaro:lastname"
-          value="${lastname}" />
+          value="${ikaaro:lastname}" />
       </dd>
-      <dt><label for="email">E-mail</label></dt>
+      <dt><label for="ikaaro:email">E-mail</label></dt>
       <dd>
-        <input type="text" id="email" name="email" value="${email}" />
+        <input type="text" id="ikaaro:email" name="ikaaro:email"
+          value="${ikaaro:email}" />
       </dd>
       <stl:block if="must_confirm">
         <dt><strong>To confirm these changes, you must type your actual

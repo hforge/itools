@@ -20,6 +20,7 @@ from __future__ import with_statement
 
 # Import from the Standard Library
 from operator import itemgetter
+from subprocess import call
 
 # Import from itools
 from itools.uri import get_absolute_reference
@@ -165,30 +166,65 @@ class Catalog(object):
                 self.fields.append(field)
                 self.field_numbers[name] = number
         # Initialize the indexes
+        data = self.uri.resolve2('data')
         for field in self.fields:
             if field.is_indexed:
-                self.indexes.append(Index(self.uri, field.number))
+                self.indexes.append(Index(data, field.number))
             else:
                 self.indexes.append(None)
         # Initialize the documents
-        self.documents = Documents(self.uri)
+        self.documents = Documents(data)
 
-        self.timestamp = vfs.get_mtime(self.uri)
-
-
-    def save_state(self):
-        # The indexes
-        for index in self.indexes:
-            if index is not None:
-                index.save_state()
-        # The documents
-        self.documents.save_state()
-        # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
 
 
     #########################################################################
-    # Public API
+    # API / Transactions
+    #########################################################################
+    def commit(self):
+        # Start
+        state = str(self.uri.path.resolve2('state'))
+        open(state, 'w').write('START\n')
+
+        # Save
+        try:
+            for index in self.indexes:
+                if index is not None:
+                    index.save_state()
+            self.documents.save_state()
+        except:
+            # Restore from backup
+            src = str(self.uri.path.resolve2('data.bak'))
+            dst = str(self.uri.path.resolve2('data/'))
+            call(['rsync', '-a', '--delete', src, dst])
+            # Reload the catalog
+            self.__init__(self.uri)
+            # We are done
+            open(state, 'w').write('OK\n')
+            # Forward error
+            raise
+
+        # The transaction was successful
+        open(state, 'w').write('END\n')
+
+        # Backup
+        src = str(self.uri.path.resolve2('data/'))
+        dst = str(self.uri.path.resolve2('data.bak'))
+        call(['rsync', '-a', '--delete', src, dst])
+
+        # We are done
+        open(state, 'w').write('OK\n')
+
+        # Update the timestamp
+        self.timestamp = vfs.get_mtime(self.uri)
+
+
+    def rollback(self):
+        raise NotImplementedError
+
+
+    #########################################################################
+    # API / Index & Search
     #########################################################################
     def get_analyser(self, name):
         field_number = self.field_numbers[name]
@@ -316,6 +352,7 @@ class Catalog(object):
         return SearchResults(results, self.documents, self.field_numbers)
 
 
+
 def make_catalog(uri, fields):
     """
     Creates a new catalog in the given uri.
@@ -323,6 +360,8 @@ def make_catalog(uri, fields):
     uri = get_absolute_reference(uri)
     vfs.make_folder(uri)
     base = vfs.open(uri)
+
+    base.make_folder('data')
 
     # Create the indexes
     metadata = []
@@ -332,16 +371,26 @@ def make_catalog(uri, fields):
         metadata.append('%d#%s#%s#%d#%d\n' % (i, name, type, is_indexed,
                                               is_stored))
         # Create the index file
-        base.make_file('%d_docs' % i)
-        with base.make_file('%d_tree' % i) as file:
+        base.make_file('data/%d_docs' % i)
+        with base.make_file('data/%d_tree' % i) as file:
             file.write(''.join([VERSION, ZERO, NULL, NULL]))
 
-    # Writhe the metadata file
+    # Write the metadata file
     with base.make_file('fields') as file:
         file.write(''.join(metadata))
 
     # Create the documents
-    base.make_file('documents')
-    base.make_file('documents_index')
+    base.make_file('data/documents')
+    base.make_file('data/documents_index')
+
+    # Create the backup data
+    base.copy('data', 'data.bak')
+    with base.make_file('state') as file:
+        file.write('OK\n')
 
     return Catalog(uri)
+
+
+
+def recover(uri):
+    raise NotImplementedError

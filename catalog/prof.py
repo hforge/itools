@@ -98,7 +98,7 @@ def load_documents():
 def index_documents():
     for document in documents:
         catalog.index_document(document)
-    catalog.save_state()
+    catalog.commit()
 
 
 def search_documents():

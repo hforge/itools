@@ -165,6 +165,7 @@ td, th { padding: 3px; }
 #tabs a#tab_state span { background-image: url(../images/state16.png); }
 #tabs a#tab_history span { background-image: url(../images/history16.png); }
 #tabs a#tab_last_changes span { background-image: url(../images/icalendar16.png); }
+#tabs a#tab_to_pdf span { background-image: url(../images/Pdf16.png); }
 
 
 /**************************************************************************

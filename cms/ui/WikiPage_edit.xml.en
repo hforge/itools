@@ -4,11 +4,14 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <form action=";edit" method="post">
-    <p>
-      For a complete reference on the wiki syntax, check the
-      <a href="http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html"
-        target="_blank">Syntax Documentation</a>.
+  <form action=";edit" method="post" id="wiki_form">
+    <p id="wiki_toolbar">
+      <a id="wiki_tool_size_s" href="#" onclick="return text_small()" />
+      <a id="wiki_tool_size_m" href="#" onclick="return text_medium()" />
+      <a id="wiki_tool_size_l" href="#" onclick="return text_large()" />
+      <a id="wiki_tool_help"
+        href="http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html"
+        target="_blank" />
     </p>
     <p>
       <textarea id="data" name="data" cols="80" rows="19"
@@ -20,6 +23,8 @@
       <input type="submit" name="view" value="View" class="button_ok" />
     </p>
   </form>
+
+  <div class="clear" />
 
   <script type="text/javascript">
     <!--
@@ -36,6 +41,18 @@
           var height = height_orig;
         }
         setHeight(tarea, height);
+    }
+
+    function text_small() {
+      tarea.style.fontSize = '0.9em';
+    }
+
+    function text_medium() {
+      tarea.style.fontSize = '1.1em';
+    }
+
+    function text_large() {
+      tarea.style.fontSize = '1.3em';
     }
 
     fixHeight();

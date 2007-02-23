@@ -1,3 +1,26 @@
+#wiki_toolbar a {
+  padding-left: 20px;
+  line-height: 20px;
+  background-position: top left;
+  background-repeat: no-repeat;
+}
+
+#wiki_toolbar a#wiki_tool_help {
+  background-image: url(images/help16.png);
+}
+
+#wiki_toolbar a#wiki_tool_size_s {
+  background-image: url(images/text_small16.png);
+}
+
+#wiki_toolbar a#wiki_tool_size_m {
+  background-image: url(images/text_medium16.png);
+}
+
+#wiki_toolbar a#wiki_tool_size_l {
+  background-image: url(images/text_large16.png);
+}
+
 textarea#data {
   font-size: 0.9em;
 }

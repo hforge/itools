@@ -17,14 +17,19 @@
 
 # Import from the future
 from __future__ import absolute_import
+from __future__ import with_statement
 
 # Import from the Standard Library
 import re
 from operator import itemgetter
+from tempfile import mkdtemp
+from subprocess import call
 
 # Import from itools.cms
+from .. import vfs
 from ..web import get_context
 from ..stl import stl
+from ..datatypes import Unicode
 
 # Import from itools.cms
 from .File import File
@@ -121,6 +126,17 @@ class WikiFolder(Folder):
         return [WikiPage, File]
 
 
+    def before_set_handler(self, segment, handler, format=None, id=None,
+                           move=False, **kw):
+        Folder.before_set_handler(self, segment, handler, format, id,
+                                  move, **kw)
+        if isinstance(handler, WikiPage):
+            context = get_context()
+            if context is not None:
+                data = context.get_form_value('data', default='')
+                handler.load_state_from_string(data)
+
+
     #######################################################################
     # User interface
     #######################################################################
@@ -198,16 +214,19 @@ class WikiPage(Text):
     class_icon48 = 'images/WikiPage48.png'
     class_views = Text.class_views + [
             ['browse_content'],
-            ['last_changes']]
+            ['last_changes'],
+            ['to_pdf']]
     class_extension = None
 
-    _wikiLinkRE = re.compile(r'(<a [^>]* href=")!(.*?)("[^>]*>)(.*?)(</a>)',
+    _wikiLinkRE = re.compile(r'(`?)(\w+)(`?)_', re.I+re.S)
+    _wikiTagRE = re.compile(r'(<a [^>]* href=")!(.*?)("[^>]*>)(.*?)(</a>)',
                              re.I+re.S)
     link_template = ('%(open_tag)s../%(page)s%(open_tag_end)'
             's%(text)s%(end_tag)s')
     new_link_template = ('<span class="nowiki">%(text)s%(open_tag)s'
             '../;new_resource_form?type=WikiPage&name=%(page)s'
             '%(open_tag_end)s?%(end_tag)s</span>')
+
 
 
     def _resolve_wiki_link(self, match):
@@ -225,16 +244,12 @@ class WikiPage(Text):
 
 
     def _resolve_wiki_links(self, html):
-        return self._wikiLinkRE.sub(self._resolve_wiki_link, ' %s ' % html)
+        return self._wikiTagRE.sub(self._resolve_wiki_link, html)
 
 
     #######################################################################
     # User interface
     #######################################################################
-    def GET(self, context):
-        return context.uri.resolve2(';view')
-
-
     @classmethod
     def new_instance_form(cls, name=''):
         context = get_context()
@@ -242,8 +257,7 @@ class WikiPage(Text):
         namespace = {}
 
         # Page name
-        name = context.get_form_value('name', '')
-        name = unicode(name, 'utf_8')
+        name = context.get_form_value('name', default=u'', type=Unicode)
         namespace['name'] = checkid(name) or False
 
         # Class id
@@ -253,12 +267,74 @@ class WikiPage(Text):
         return stl(handler, namespace)
 
 
+    def GET(self, context):
+        return context.uri.resolve2(';view')
+
+
     def to_html(self):
         html = publish_string(source=self.to_str(), reader=Reader(),
                               parser_name='restructuredtext',
                               writer_name='html')
         html = html[html.find('<div class="document"'):html.find('</body>')]
         return self._resolve_wiki_links(html)
+
+
+    to_pdf__access__ = 'is_allowed_to_view'
+    to_pdf__label__ = u"To PDF"
+    def to_pdf(self, context):
+        parent = self.parent
+        source = self.to_str()
+        done = [self.name]
+        positions = []
+
+        for match in self._wikiLinkRE.finditer(source):
+            name = match.group(2)
+            if not name:
+                continue
+            name = checkid(name)
+            if name in done:
+                continue
+            if not parent.has_handler(name):
+                continue
+            start = match.start(1)
+            end = match.end(3) + 1
+            positions.append((name, start, end))
+            done.append(name)
+
+        for position in reversed(positions):
+            name, start, end = position
+            page = parent.get_handler(name)
+            content = page.to_str().replace('.. contents::', '.. ..')
+            source = source[:start] + '\n' + content + '\n' + source[end:]
+
+        latex = publish_string(source=source, reader=StandaloneReader(),
+                              parser_name='restructuredtext',
+                              writer_name='latex')
+
+        dirname = mkdtemp('wiki', 'itools')
+        tempdir = vfs.open(dirname)
+        with tempdir.make_file(self.name) as file:
+            file.write(latex)
+
+        call(['pdflatex', self.name], cwd=dirname)
+        call(['pdflatex', self.name], cwd=dirname)
+
+        pdfname = '%s.pdf' % self.name
+        data = None
+        with tempdir.open(pdfname) as file:
+            data = file.read()
+        vfs.remove(dirname)
+
+        if data is None:
+            message = u"PDF generation failed."
+            return context.come_back(message)
+
+        response = context.response
+        response.set_header('Content-Type', 'application/pdf')
+        response.set_header('Content-Disposition',
+                'attachment; filename=%s' % pdfname)
+
+        return data
 
 
     def view(self, context):
@@ -281,8 +357,6 @@ class WikiPage(Text):
 
     def edit(self, context):
         goto = Text.edit(self, context)
-        # Avoid full source in the return query
-        goto = goto.replace(data=None)
 
         message = goto.query['message']
         if 'class="system-message"' in self.to_html():

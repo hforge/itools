@@ -43,6 +43,7 @@ class Node(object):
         Sets the quality for a language. If the language doesn't exists
         it's added.
         """
+        key = key.lower()
         node = self._getnode(key)
         node.quality = quality
 
@@ -52,6 +53,7 @@ class Node(object):
             if key == '*':
                 key = []
             else:
+                key = key.lower()
                 key = key.split('-')
 
         if len(key) == 0:
@@ -97,6 +99,7 @@ class Root(Node):
         self.quality = 0.0
 
         # Parse the accept string and initialize the tree.
+        accept = accept.lower()
         accept = self.parse(accept)
         for key, quality in accept.items():
             self[key] = quality
@@ -140,6 +143,7 @@ class Root(Node):
         """
         Returns the quality of the given node
         """
+        key = key.lower()
         try:
             node = self[key]
         except KeyError:
@@ -153,6 +157,7 @@ class Root(Node):
         Sets the quality for a language, only if the current quality is
         not bigger. If the language doesn't exists it's added.
         """
+        key = key.lower()
         node = self._getnode(key)
         if quality > node.quality:
             node.quality = quality
@@ -198,6 +203,7 @@ class LanguageNode(Node):
         """
         Traverses the tree to get the object.
         """
+        key = key.lower()
         key = key.split('-', 1)
         x = key[0]
 

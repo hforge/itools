@@ -76,7 +76,7 @@ class Row(iRow, Node):
 
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
-        column = context.get_form_value('column')
+        column = context.get_form_values('column')
         self.__init__(column)
         self.parent.set_changed()
 

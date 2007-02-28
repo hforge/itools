@@ -266,8 +266,8 @@ class Root(WebSite):
         return self.get_handler('users').get_usernames()
 
 
-##  def get_document_types(self):
-##      return WebSite.get_document_types(self) + [WebSite]
+    def get_document_types(self):
+        return WebSite.get_document_types(self) + [WebSite]
 
 
     ########################################################################

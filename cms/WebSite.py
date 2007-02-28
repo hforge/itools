@@ -58,16 +58,6 @@ class WebSite(RoleAware, Folder):
     __fixed_handlers__ = ['skin', 'index']
 
 
-##    def get_skeleton(self, skin_name=None, **kw):
-##        skeleton = {}
-##        # The Skin
-##        skin = Skin()
-##        skeleton['skin'] = skin
-##        skeleton['skin.metadata'] = self.build_metadata(skin, **kw)
-
-##        return skeleton
-
-
     def _get_virtual_handler(self, segment):
         name = segment.name
         if name == 'ui':

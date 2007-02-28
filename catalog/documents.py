@@ -204,7 +204,7 @@ class Documents(object):
             document = Document(doc_n)
             # Load document from the documents file
             base = vfs.open(self.uri)
-            index_file = base.open('index', 'r')
+            index_file = base.open('documents_index', 'r')
             docs_file = base.open('documents', 'r')
             try:
                 # Read the index entry

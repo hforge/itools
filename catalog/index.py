@@ -539,8 +539,8 @@ class Index(object):
             docs_file = None
         else:
             base = vfs.open(self.uri)
-            tree_file = base.open('tree')
-            docs_file = base.open('docs')
+            tree_file = base.open('%s_tree' % self.n)
+            docs_file = base.open('%s_docs' % self.n)
         try:
             documents = self._index.search_word(tree_file, docs_file, word)
         finally:

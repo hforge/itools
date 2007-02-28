@@ -337,11 +337,11 @@ class RoleAware(AccessControl):
             for name, title in search_fields ]
 
         # Search
-        catalog = self.get_handler('/.catalog')
         query = {'format': 'user'}
         if field:
             query[field] = term
-        results = catalog.search(**query)
+        root = context.root
+        results = root.search(**query)
 
         roles = self.get_members_classified_by_role()
 

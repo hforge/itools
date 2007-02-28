@@ -258,8 +258,7 @@ class WebSite(RoleAware, Folder):
 
         # Do we already have a user with that email?
         root = context.root
-        catalog = root.get_handler('.catalog')
-        results = catalog.search(email=email)
+        results = root.search(email=email)
         users = self.get_handler('users')
         if results.get_n_documents():
             user = results.get_documents()[0]
@@ -321,10 +320,9 @@ class WebSite(RoleAware, Folder):
 
         # Check the user exists
         root = context.root
-        catalog = root.get_handler('.catalog')
 
         # Search the user by username (login name)
-        results = catalog.search(username=email)
+        results = root.search(username=email)
         if results.get_n_documents() == 0:
             message = u'The user "$username" does not exist.'
             return context.come_back(message, username=email, keep=keep)
@@ -380,8 +378,7 @@ class WebSite(RoleAware, Folder):
         email = context.get_form_value('ikaaro:email')
 
         # Get the user with the given email address
-        catalog = root.get_handler('.catalog')
-        results = catalog.search(email=email)
+        results = root.search(email=email)
         if results.get_n_documents() == 0:
             message = u'There is not a user with the email address "$email"'
             return context.come_back(message, email=email)

@@ -352,4 +352,3 @@ for handler_class in [ListOfUsers, Lock, Metadata]:
     for mimetype in handler_class.class_mimetypes:
         mimetypes.add_type(mimetype, '.%s' % handler_class.class_extension)
 
-mimetypes.add_type('application/x-catalog', '.catalog')

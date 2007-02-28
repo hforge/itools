@@ -28,10 +28,10 @@ import traceback
 import itools
 from itools.datatypes import FileName
 from itools import vfs
+from itools.catalog import make_catalog
 from itools.handlers.Folder import Folder as FolderHandler
 from itools.handlers.transactions import get_transaction
 from itools.stl import stl
-from itools.catalog.catalog import Catalog
 from itools.web import get_context
 
 # Import from itools.cms
@@ -143,7 +143,6 @@ class Root(WebSite):
         # Create sub-handlers
         cache = self.cache
         cache['.metadata'] = self.build_metadata(self)
-        cache['.catalog'] = Catalog(fields=self._catalog_fields)
         # Users
         users = UserFolder()
         cache['users'] = users
@@ -222,13 +221,13 @@ class Root(WebSite):
     ########################################################################
     # Index & Search
     def index_handler(self, handler):
-        catalog = self.get_handler('.catalog')
+        catalog = get_context().server.catalog
         document = handler.get_catalog_indexes()
         n = catalog.index_document(document)
 
 
     def unindex_handler(self, handler):
-        catalog = self.get_handler('.catalog')
+        catalog = get_context().server.catalog
 
         abspath = handler.get_abspath()
         for document in catalog.search(abspath=abspath).get_documents():
@@ -243,7 +242,7 @@ class Root(WebSite):
 
 
     def search(self, query=None, **kw):
-        catalog = self.get_handler('.catalog')
+        catalog = get_context().server.catalog
         return catalog.search(query, **kw)
 
 
@@ -370,33 +369,33 @@ class Root(WebSite):
             yield handler.get_catalog_indexes()
 
 
-    def _update_catalog(self):
-        print 'Updating the catalog:'
-        # Start fresh
-        self.del_handler('.catalog')
-        self.set_handler('.catalog', Catalog(fields=self._catalog_fields))
-        catalog = self.get_handler('.catalog')
-
-        doc_n = 0
-        for object in self._traverse_catalog_aware_objects():
-            print doc_n, object['abspath']
-            doc_n += 1
-            catalog.index_document(object)
-
-        # It is done
-        return doc_n
-
-
     update_catalog__access__ = 'is_admin'
     def update_catalog(self, context):
         t0 = time()
-        n = self._update_catalog()
+        print 'Updating the catalog:'
+
+        # Start fresh
+        server = context.server
+        catalog_path = '%s/catalog' % server.target
+        vfs.remove(catalog_path)
+        catalog = make_catalog(catalog_path, self._catalog_fields)
+        server.catalog = catalog
+
+        # Index the documents
+        doc_n = 0
+        for object in self._traverse_catalog_aware_objects():
+            doc_n += 1
+            print doc_n, object['abspath']
+            catalog.index_document(object)
+
+        ##catalog.commit()
+
         t = time() - t0
         print
         print 'Done. Time taken: %.02f seconds' % t
 
         message = u'$n handlers have been indexed in $time seconds.'
-        return context.come_back(message, n=n, time=('%.02f' % t))
+        return context.come_back(message, n=doc_n, time=('%.02f' % t))
 
 
     #######################################################################
@@ -447,48 +446,6 @@ class Root(WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20061216(self):
-        # Update roles
-        for path in self.get_groups():
-            handler = self.get_handler(path)
-            for role in handler.get_role_names():
-                # Get the users
-                filename = '.%s.users' % role.split(':')[1]
-                try:
-                    users = handler.get_handler(filename)
-                except LookupError:
-                    pass
-                else:
-                    users = tuple(users.usernames)
-                    # Add to the metadata
-                    handler.set_property(role, users)
-                    # Remove the old ".users" file
-                    handler.del_handler(filename)
-
-        # Update users
-        users = self.get_handler('users')
-        i = 0
-        for name in users.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
-            user = users.get_handler(name) 
-            # Update roles
-            user_id = str(i)
-            for path in user.get_groups():
-                group = self.get_handler(path)
-                user_role = group.get_user_role(name)
-                if user_role is not None:
-                    group.set_user_role(user_id, user_role)
-            # Rename user
-            users.set_handler(user_id, user, move=True)
-            users.del_handler(name)
-            user = users.get_handler(user_id)
-            # Keep the username
-            user.set_property('ikaaro:username', name)
-            i += 1
-
-        # Update 'members' index
-        self._update_catalog()
 
 
     def update_20070531(self):

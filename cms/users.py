@@ -112,8 +112,7 @@ class User(AccessControl, Folder):
         if root is None:
             return ()
 
-        catalog = root.get_handler('.catalog')
-        results = catalog.search(is_role_aware=True, members=self.name)
+        results = root.search(is_role_aware=True, members=self.name)
         groups = [ x.abspath for x in results.get_documents() ]
         return tuple(groups)
 

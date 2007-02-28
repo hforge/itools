@@ -114,10 +114,6 @@ class DatabaseFS(FileFS):
     #######################################################################
     @staticmethod
     def make_file(reference):
-        # The catalog has its own backup
-        if '.catalog' in reference.path:
-            return FileFS.make_file(reference)
-
         # Update the log
         log = get_log(reference)
         with open(log, 'a+') as log:
@@ -129,10 +125,6 @@ class DatabaseFS(FileFS):
 
     @staticmethod
     def make_folder(reference):
-        # The catalog has its own backup
-        if '.catalog' in reference.path:
-            return FileFS.make_folder(reference)
-
         # Update the log
         log = get_log(reference)
         with open(log, 'a+') as log:
@@ -144,10 +136,6 @@ class DatabaseFS(FileFS):
 
     @staticmethod
     def remove(reference):
-        # The catalog has its own backup
-        if '.catalog' in reference.path:
-            return FileFS.remove(reference)
-
         # Update the log
         log = get_log(reference)
         with open(log, 'a+') as log:
@@ -156,10 +144,6 @@ class DatabaseFS(FileFS):
 
     @staticmethod
     def open(reference, mode=None):
-        # The catalog has its own backup
-        if '.catalog' in reference.path:
-            return FileFS.open(reference, mode)
-
         if mode == 'w':
             tmp_map = get_tmp_map()
             if reference.path in tmp_map:

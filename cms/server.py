@@ -22,6 +22,7 @@ import sys
 # Import from itools
 from itools import uri
 from itools import vfs
+from itools.catalog import Catalog
 from itools.handlers.config import Config
 from itools.handlers.transactions import get_transaction
 from itools import web
@@ -68,6 +69,9 @@ class Server(web.server.Server):
             for name in modules.split():
                 name = name.strip()
                 exec('import %s' % name)
+
+        # Load the catalog
+        self.catalog = Catalog('%s/catalog' % target)
 
         # Find out the IP to listen to
         if address:

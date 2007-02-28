@@ -417,9 +417,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Search
         root = context.root
         if results is None:
-            catalog = root.get_handler('.catalog')
-            results = catalog.search(query)
-        
+            results = root.search(query)
+
         reverse = (sortorder == 'down')
         documents = results.get_documents(sort_by=sortby, reverse=reverse,
                                               start=start, size=batchsize)

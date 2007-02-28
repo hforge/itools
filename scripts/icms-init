@@ -25,8 +25,10 @@ import sys
 
 # Import from itools
 import itools
+from itools.catalog import make_catalog
 from itools.handlers.config import Config
 from itools.cms.root import Root
+from itools.cms.catalog import CatalogAware
 
 
 def init(parser, options, target):
@@ -108,11 +110,10 @@ def init(parser, options, target):
 
     # Index everything
     root = root_class('%s/database' % target)
-    catalog = root.get_handler('.catalog')
+    catalog = make_catalog('%s/catalog' % target, root._catalog_fields)
     for object in root._traverse_catalog_aware_objects():
         catalog.index_document(object)
-
-    catalog.save_state()
+    catalog.commit()
 
     # Backup the catalog
     cmd = 'cp -r %s/database/.catalog %s/database/.catalog.bak'

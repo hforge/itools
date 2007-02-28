@@ -291,10 +291,19 @@ class WikiPage(Text):
                 node['refuri'] = '../' + refuri
                 node['classes'].append(css_class)
 
-        output = core.publish_from_doctree(document, writer_name='html',
-                settings_overrides=self.overrides)
+        # Manipulate publisher directly (from publish_from_doctree)
+        reader = readers.doctree.Reader(parser_name='null')
+        pub = core.Publisher(reader, None, None,
+                source=io.DocTreeInput(document),
+                destination_class=io.StringOutput)
+        pub.set_writer('html')
+        pub.process_programmatic_settings(None, self.overrides, None)
+        pub.set_destination(None, None)
+        pub.publish(enable_exit_status=None)
+        parts = pub.writer.parts
+        body = parts['html_body']
 
-        return output
+        return body.encode('utf_8')
 
 
     to_pdf__access__ = 'is_allowed_to_view'
@@ -332,8 +341,6 @@ class WikiPage(Text):
         pub.process_programmatic_settings(None, self.overrides, None)
         pub.set_source(self.to_str(), None)
         pub.set_destination(None, None)
-
-        # Publish!
         pub.publish(enable_exit_status=None)
         document = pub.document
 

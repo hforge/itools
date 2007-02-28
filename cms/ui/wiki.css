@@ -67,11 +67,16 @@ textarea#data {
   font-weight: bold;
 }
 
-.reference.external_reference:link,
-.reference.external_reference:visited {
+.reference.external:link,
+.reference.external:visited {
   padding-left: 18px;
   color: blue;
   background: url(images/WebSite16.png) top left no-repeat;
+}
+
+.reference.internal:link,
+.reference.internal:visited {
+  color: blue;
 }
 
 .reference.wiki:link,
@@ -79,8 +84,8 @@ textarea#data {
   color: green;
 }
 
-.nowiki .reference.wiki:link,
-.nowiki .reference.wiki:visited {
+.reference.nowiki:link,
+.reference.nowiki:visited {
   color: red;
 }
 

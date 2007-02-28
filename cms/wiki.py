@@ -25,11 +25,12 @@ from operator import itemgetter
 from tempfile import mkdtemp
 from subprocess import call
 
-# Import from itools.cms
+# Import from itools
+from .. import uri
 from .. import vfs
 from ..web import get_context
 from ..stl import stl
-from ..datatypes import Unicode
+from ..datatypes import Unicode, FileName
 
 # Import from itools.cms
 from .File import File
@@ -45,53 +46,10 @@ try:
 except ImportError:
     print "docutils is not installed, wiki deactivated."
     raise
-from docutils.core import publish_string
-from docutils.nodes import SparseNodeVisitor
-from docutils.readers.standalone import Reader as StandaloneReader
-from docutils.transforms import Transform
-
-
-########################################
-# reST-specific stuff
-#
-# Inspired from http://docutils.sourceforge.net/sandbox/ianb/wiki/Wiki.py
-#
-########################################
-
-class WikiLinkResolver(SparseNodeVisitor):
-
-    def visit_reference(self, node):
-        if node.resolved:
-            node['classes'].append('external_reference')
-            return
-        if not node.hasattr('refname'):
-            return
-        refname = node['name']
-        node.resolved = 1
-        node['classes'].append('wiki')
-        # Wiki links marked with a '!' for further resolution
-        node['refuri'] = '!' + refname
-        del node['refname']
-
-
-
-class WikiLink(Transform):
-
-    default_priority = 800
-
-    def apply(self):
-        visitor = WikiLinkResolver(self.document)
-        self.document.walk(visitor)
-
-
-
-class Reader(StandaloneReader):
-
-    supported = StandaloneReader.supported + ('wiki',)
-
-    def get_transforms(self):
-        return StandaloneReader.get_transforms(self) + [WikiLink]
-
+from docutils import core
+from docutils import io
+from docutils import readers
+from docutils import nodes
 
 
 class WikiFolder(Folder):
@@ -218,9 +176,17 @@ class WikiPage(Text):
             ['to_pdf']]
     class_extension = None
 
-    _wikiLinkRE = re.compile(r'(`?)(\w+)(`?)_', re.I+re.S)
+    overrides = {
+        # Security
+        'file_insertion_enabled': 0,
+        'raw_enabled': 0,
+        # Encodings
+        'input_encoding': 'utf-8',
+        'output_encoding': 'utf-8',
+    }
+
     _wikiTagRE = re.compile(r'(<a [^>]* href=")!(.*?)("[^>]*>)(.*?)(</a>)',
-                             re.I+re.S)
+                            re.I+re.S)
     link_template = ('%(open_tag)s../%(page)s%(open_tag_end)'
             's%(text)s%(end_tag)s')
     new_link_template = ('<span class="nowiki">%(text)s%(open_tag)s'
@@ -272,57 +238,185 @@ class WikiPage(Text):
 
 
     def to_html(self):
-        html = publish_string(source=self.to_str(), reader=Reader(),
-                              parser_name='restructuredtext',
-                              writer_name='html')
-        html = html[html.find('<div class="document"'):html.find('</body>')]
-        return self._resolve_wiki_links(html)
+        parent = self.parent
+
+        # Override dandling links handling
+        StandaloneReader = readers.get_reader_class('standalone')
+        class WikiReader(StandaloneReader):
+            supported = ('wiki',)
+
+            def wiki_reference_resolver(target):
+                refname = target['name']
+                name = checkid(refname)
+                target['wiki_name'] = name
+                if parent.has_handler(name):
+                    target['wiki_refname'] = refname
+                else:
+                    target['wiki_refname'] = False
+                return True
+
+            wiki_reference_resolver.priority = 851
+            unknown_reference_resolvers = [wiki_reference_resolver]
+
+        # Manipulate publisher directly (from publish_doctree)
+        reader = WikiReader(parser_name='restructuredtext')
+        pub = core.Publisher(reader=reader, source_class=io.StringInput,
+                destination_class=io.NullOutput)
+        pub.set_components(None, 'restructuredtext', 'null')
+        pub.process_programmatic_settings(None, self.overrides, None)
+        pub.set_source(self.to_str(), None)
+        pub.set_destination(None, None)
+
+        # Publish!
+        pub.publish(enable_exit_status=None)
+        document = pub.document
+
+        # Fix the wiki links
+        for node in document.traverse(condition=nodes.reference):
+            refname = node.get('wiki_refname')
+            if refname is None:
+                if node.get('refid'):
+                    node['classes'].append('internal')
+                elif node.get('refuri'):
+                    node['classes'].append('external')
+            else:
+                name = node['wiki_name']
+                if refname is False:
+                    refuri = ";new_resource_form?type=%s&name=%s"
+                    refuri = refuri % (self.__class__.__name__, name)
+                    css_class = 'nowiki'
+                else:
+                    refuri = name
+                    css_class = 'wiki'
+                node['refuri'] = '../' + refuri
+                node['classes'].append(css_class)
+
+        output = core.publish_from_doctree(document, writer_name='html',
+                settings_overrides=self.overrides)
+
+        return output
 
 
     to_pdf__access__ = 'is_allowed_to_view'
     to_pdf__label__ = u"To PDF"
     def to_pdf(self, context):
         parent = self.parent
-        source = self.to_str()
-        done = [self.name]
-        positions = []
+        pages = [self.name]
+        images = []
 
-        for match in self._wikiLinkRE.finditer(source):
-            name = match.group(2)
-            if not name:
-                continue
-            name = checkid(name)
-            if name in done:
-                continue
-            if not parent.has_handler(name):
-                continue
-            start = match.start(1)
-            end = match.end(3) + 1
-            positions.append((name, start, end))
-            done.append(name)
+        # Override dandling links handling
+        StandaloneReader = readers.get_reader_class('standalone')
+        class WikiReader(StandaloneReader):
+            supported = ('wiki',)
 
-        for position in reversed(positions):
-            name, start, end = position
+            def wiki_reference_resolver(target):
+                refname = target['name']
+                name = checkid(refname)
+                if parent.has_handler(name):
+                    if refname not in pages:
+                        pages.append(refname)
+                    target['wiki_refname'] = refname
+                    target['wiki_name'] = name
+                    return True
+                else:
+                    return False
+
+            wiki_reference_resolver.priority = 851
+            unknown_reference_resolvers = [wiki_reference_resolver]
+
+        # Manipulate publisher directly (from publish_doctree)
+        reader = WikiReader(parser_name='restructuredtext')
+        pub = core.Publisher(reader=reader, source_class=io.StringInput,
+                destination_class=io.NullOutput)
+        pub.set_components(None, 'restructuredtext', 'null')
+        pub.process_programmatic_settings(None, self.overrides, None)
+        pub.set_source(self.to_str(), None)
+        pub.set_destination(None, None)
+
+        # Publish!
+        pub.publish(enable_exit_status=None)
+        document = pub.document
+
+        # Fix the wiki links
+        for node in document.traverse(condition=nodes.reference):
+            refname = node.get('wiki_refname')
+            if refname is None:
+                continue
+            name = node['name'].lower()
+            document.nameids[name] = refname
+            
+        # Append referenced pages
+        for refname in pages[1:]:
+            references = document.refnames[refname.lower()]
+            reference = references[0]
+            name = reference['wiki_name']
+            title = reference.astext()
             page = parent.get_handler(name)
-            content = page.to_str().replace('.. contents::', '.. ..')
-            source = source[:start] + '\n' + content + '\n' + source[end:]
+            source = page.to_str()
+            subdoc = core.publish_doctree(source,
+                    settings_overrides=self.overrides)
+            # Remove ".. contents"
+            for node in subdoc.traverse(condition=nodes.topic):
+                if 'contents' in node['names']:
+                    node.parent.remove(node)
+            children = subdoc.children
+            if not isinstance(children[0], nodes.title):
+                children.insert(0, nodes.title(rawsource=title, text=title))
+            attributes = {'ids': [refname], 'names': [title]}
+            section = nodes.section(source, *children, **attributes)
+            document.append(section)
 
-        latex = publish_string(source=source, reader=StandaloneReader(),
-                              parser_name='restructuredtext',
-                              writer_name='latex')
+        # Find the list of images to append
+        for node in document.traverse(condition=nodes.image):
+            node_uri = node['uri']
+            if self.has_handler(node_uri):
+                reference = uri.get_reference(node_uri)
+                path = reference.path
+                filename = str(path[-1])
+                name, ext, lang = FileName.decode(filename)
+                if ext == 'jpeg':
+                    # pdflatex does not support this extension
+                    ext = 'jpg'
+                filename = FileName.encode((name, ext, lang))
+                # Remove all path so the image is found in tempdir
+                node['uri'] = filename
+                images.append((node_uri, filename))
+
+        overrides = dict(self.overrides)
+        overrides['stylesheet'] = 'style.tex'
+        output = core.publish_from_doctree(document, writer_name='latex',
+                settings_overrides=overrides)
 
         dirname = mkdtemp('wiki', 'itools')
         tempdir = vfs.open(dirname)
+
+        # Save the document...
         with tempdir.make_file(self.name) as file:
-            file.write(latex)
+            file.write(output)
+        # The stylesheet...
+        stylesheet = self.get_handler('/ui/wiki/style.tex')
+        with tempdir.make_file('style.tex') as file:
+            stylesheet.save_state_to_file(file)
+        # The 'powered' image...
+        image = self.get_handler('/ui/images/ikaaro_powered.png')
+        with tempdir.make_file('ikaaro.png') as file:
+            image.save_state_to_file(file)
+        # And referenced images
+        for node_uri, filename in images:
+            image = self.get_handler(node_uri)
+            with tempdir.make_file(filename) as file:
+                image.save_state_to_file(file)
 
         call(['pdflatex', self.name], cwd=dirname)
+        # Twice for correct page numbering
         call(['pdflatex', self.name], cwd=dirname)
 
         pdfname = '%s.pdf' % self.name
-        data = None
-        with tempdir.open(pdfname) as file:
-            data = file.read()
+        try:
+            with tempdir.open(pdfname) as file:
+                data = file.read()
+        except LookupError:
+            data = None
         vfs.remove(dirname)
 
         if data is None:

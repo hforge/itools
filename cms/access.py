@@ -87,6 +87,7 @@ class RoleAware(AccessControl):
     # To override
     #########################################################################
     __roles__ = [
+        {'name': 'ikaaro:guests', 'title': u"Guests", 'unit': u"Guest"},
         {'name': 'ikaaro:members', 'title': u"Members", 'unit': u"Member"},
         {'name': 'ikaaro:reviewers', 'title': u"Reviewers",
          'unit': u"Reviewer"},
@@ -96,6 +97,20 @@ class RoleAware(AccessControl):
     #########################################################################
     # Access Control
     #########################################################################
+    def is_allowed_to_view(self, user, object):
+        # Anonymous can touch nothing
+        if user is None:
+            return False
+
+        # Admins are all powerfull
+        if self.is_admin(user):
+            return True
+
+        # Reviewers and Members are allowed to edit
+        roles = 'ikaaro:reviewers', 'ikaaro:members', 'ikaaro:guests'
+        return self.has_user_role(user.name, *roles)
+
+
     def is_allowed_to_edit(self, user, object):
         # Anonymous can touch nothing
         if user is None:

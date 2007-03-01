@@ -92,6 +92,7 @@ class Schema(schemas.base.Schema):
         'order': Tokens(default=()),
         # Roles
         'admins': Tokens(default=()),
+        'guests': Tokens(default=()),
         'members': Tokens(default=()),
         'reviewers': Tokens(default=()),
         # Settings

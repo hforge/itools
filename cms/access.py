@@ -179,6 +179,8 @@ class RoleAware(AccessControl):
         # The input parameter "user_ids" should be a list
         if isinstance(user_ids, str):
             user_ids = [user_ids]
+        elif isinstance(user_ids, unicode):
+            user_ids = [str(user_ids)]
 
         # Change "user_ids" to a set, to simplify the rest of the code
         user_ids = set(user_ids)

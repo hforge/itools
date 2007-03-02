@@ -21,7 +21,6 @@ from __future__ import with_statement
 
 # Import from the Standard Library
 import datetime
-from subprocess import call
 from tempfile import mkstemp
 import thread
 
@@ -253,12 +252,6 @@ class DatabaseFS(FileFS):
                 else:
                     raise RuntimeError, 'log file corrupted'
 
-        # The catalog
-        database = self._database
-        src = str(database.resolve2('.catalog.bak/'))
-        dst = str(database.resolve2('.catalog'))
-        call(['rsync', '-a', '--delete', src, dst])
-
         # We are done. Remove the commit.
         commit = str(self._commit)
         vfs.remove(commit)
@@ -290,12 +283,6 @@ class DatabaseFS(FileFS):
                         vfs.move(src, dst)
                 else:
                     raise RuntimeError, 'log file corrupted'
-
-        # The catalog
-        database = self._database
-        src = str(database.resolve2('.catalog/'))
-        dst = str(database.resolve2('.catalog.bak'))
-        call(['rsync', '-a', '--delete', src, dst])
 
         # We are done. Remove the commit.
         commit = str(self._commit)

@@ -182,7 +182,7 @@ class Documents(object):
             docs_file.close()
 
 
-    def rollback(self):
+    def abort(self):
         for doc_n in self.added_documents:
             del self.added_documents[doc_n]
             self.n_documents -= 1

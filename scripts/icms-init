@@ -115,10 +115,6 @@ def init(parser, options, target):
         catalog.index_document(object)
     catalog.commit()
 
-    # Backup the catalog
-    cmd = 'cp -r %s/database/.catalog %s/database/.catalog.bak'
-    os.system(cmd % (target, target))
-
     # Bravo!
     print '*'
     print '* Welcome to itools.cms'

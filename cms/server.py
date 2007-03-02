@@ -129,7 +129,7 @@ class Server(web.server.Server):
     # Override
     #######################################################################
     def get_databases(self):
-        return [self.database]
+        return [self.database, self.catalog]
 
 
     def before_commit(self):

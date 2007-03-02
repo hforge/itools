@@ -507,7 +507,7 @@ class Index(object):
             docs_file.close()
 
 
-    def rollback(self):
+    def abort(self):
         self.added_terms = {}
         self.removed_terms = {}
 

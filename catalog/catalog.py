@@ -219,11 +219,11 @@ class Catalog(object):
         self.timestamp = vfs.get_mtime(self.uri)
 
 
-    def rollback(self):
+    def abort(self):
         for index in self.indexes:
             if index is not None:
-                index.rollback()
-        self.documents.rollback()
+                index.abort()
+        self.documents.abort()
 
 
     #########################################################################

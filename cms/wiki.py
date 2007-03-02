@@ -24,6 +24,7 @@ import re
 from operator import itemgetter
 from tempfile import mkdtemp
 from subprocess import call
+import urllib
 
 # Import from itools
 from .. import uri
@@ -171,7 +172,10 @@ class WikiPage(Text):
     class_icon16 = 'images/WikiPage16.png'
     class_icon48 = 'images/WikiPage48.png'
     class_views = Text.class_views + [
-            ['browse_content'],
+            ['browse_content?mode=thumbnails',
+             'browse_content?mode=list',
+             'browse_content?mode=image'],
+            ['new_resource_form'],
             ['last_changes'],
             ['to_pdf']]
     class_extension = None
@@ -185,37 +189,20 @@ class WikiPage(Text):
         'output_encoding': 'utf-8',
     }
 
-    _wikiTagRE = re.compile(r'(<a [^>]* href=")!(.*?)("[^>]*>)(.*?)(</a>)',
-                            re.I+re.S)
-    link_template = ('%(open_tag)s../%(page)s%(open_tag_end)'
-            's%(text)s%(end_tag)s')
-    new_link_template = ('<span class="nowiki">%(text)s%(open_tag)s'
-            '../;new_resource_form?type=WikiPage&name=%(page)s'
-            '%(open_tag_end)s?%(end_tag)s</span>')
-
-
-
-    def _resolve_wiki_link(self, match):
-        namespace = {'open_tag': match.group(1),
-                     'page': checkid(match.group(2)) or '',
-                     'open_tag_end': match.group(3),
-                     'text': match.group(4),
-                     'end_tag': match.group(5)}
-        parent = self.parent
-        name = checkid(namespace['page']) or ''
-        if parent.has_handler(name):
-            return self.link_template % namespace
-        else:
-            return  self.new_link_template % namespace
-
-
-    def _resolve_wiki_links(self, html):
-        return self._wikiTagRE.sub(self._resolve_wiki_link, html)
-
-
     #######################################################################
     # User interface
     #######################################################################
+    def get_subviews(self, name):
+        if name == 'new_resource_form':
+            subviews = []
+            for cls in self.parent.get_document_types():
+                id = cls.class_id
+                ref = 'new_resource_form?type=%s' % urllib.quote_plus(id)
+                subviews.append(ref)
+            return subviews
+        return Text.get_subviews(self, name)
+
+
     @classmethod
     def new_instance_form(cls, name=''):
         context = get_context()
@@ -291,6 +278,13 @@ class WikiPage(Text):
                 node['refuri'] = '../' + refuri
                 node['classes'].append(css_class)
 
+        # Allow to reference images by name
+        for node in document.traverse(condition=nodes.image):
+            node_uri = node['uri']
+            if not self.has_handler(node_uri):
+                if parent.has_handler(node_uri):
+                    node['uri'] = '../' + node_uri
+
         # Manipulate publisher directly (from publish_from_doctree)
         reader = readers.doctree.Reader(parser_name='null')
         pub = core.Publisher(reader, None, None,
@@ -321,28 +315,18 @@ class WikiPage(Text):
             def wiki_reference_resolver(target):
                 refname = target['name']
                 name = checkid(refname)
-                if parent.has_handler(name):
-                    if refname not in pages:
-                        pages.append(refname)
-                    target['wiki_refname'] = refname
-                    target['wiki_name'] = name
-                    return True
-                else:
-                    return False
+                if refname not in pages:
+                    pages.append(refname)
+                target['wiki_refname'] = refname
+                target['wiki_name'] = name
+                return True
 
             wiki_reference_resolver.priority = 851
             unknown_reference_resolvers = [wiki_reference_resolver]
 
-        # Manipulate publisher directly (from publish_doctree)
         reader = WikiReader(parser_name='restructuredtext')
-        pub = core.Publisher(reader=reader, source_class=io.StringInput,
-                destination_class=io.NullOutput)
-        pub.set_components(None, 'restructuredtext', 'null')
-        pub.process_programmatic_settings(None, self.overrides, None)
-        pub.set_source(self.to_str(), None)
-        pub.set_destination(None, None)
-        pub.publish(enable_exit_status=None)
-        document = pub.document
+        document = core.publish_doctree(self.to_str(), reader=reader,
+                settings_overrides=self.overrides)
 
         # Fix the wiki links
         for node in document.traverse(condition=nodes.reference):
@@ -351,43 +335,47 @@ class WikiPage(Text):
                 continue
             name = node['name'].lower()
             document.nameids[name] = refname
-            
+
         # Append referenced pages
         for refname in pages[1:]:
             references = document.refnames[refname.lower()]
             reference = references[0]
+            reference.parent.remove(reference)
             name = reference['wiki_name']
+            if not parent.has_handler(name):
+                continue
             title = reference.astext()
             page = parent.get_handler(name)
             source = page.to_str()
             subdoc = core.publish_doctree(source,
                     settings_overrides=self.overrides)
-            # Remove ".. contents"
-            for node in subdoc.traverse(condition=nodes.topic):
-                if 'contents' in node['names']:
-                    node.parent.remove(node)
-            children = subdoc.children
-            if not isinstance(children[0], nodes.title):
-                children.insert(0, nodes.title(rawsource=title, text=title))
-            attributes = {'ids': [refname], 'names': [title]}
-            section = nodes.section(source, *children, **attributes)
+            if isinstance(subdoc[0], nodes.section):
+                section = subdoc[0]
+            else:
+                subtitle = subdoc.get('title', u'')
+                section = nodes.section(*subdoc.children, **subdoc.attributes)
+                section.insert(0, nodes.title(text=subtitle))
             document.append(section)
 
         # Find the list of images to append
         for node in document.traverse(condition=nodes.image):
             node_uri = node['uri']
-            if self.has_handler(node_uri):
-                reference = uri.get_reference(node_uri)
-                path = reference.path
-                filename = str(path[-1])
-                name, ext, lang = FileName.decode(filename)
-                if ext == 'jpeg':
-                    # pdflatex does not support this extension
-                    ext = 'jpg'
-                filename = FileName.encode((name, ext, lang))
-                # Remove all path so the image is found in tempdir
-                node['uri'] = filename
-                images.append((node_uri, filename))
+            if not self.has_handler(node_uri):
+                if parent.has_handler(node_uri):
+                    node_uri = '../' + node_uri
+                else:
+                    continue
+            reference = uri.get_reference(node_uri)
+            path = reference.path
+            filename = str(path[-1])
+            name, ext, lang = FileName.decode(filename)
+            if ext == 'jpeg':
+                # pdflatex does not support this extension
+                ext = 'jpg'
+            filename = FileName.encode((name, ext, lang))
+            # Remove all path so the image is found in tempdir
+            node['uri'] = filename
+            images.append((node_uri, filename))
 
         overrides = dict(self.overrides)
         overrides['stylesheet'] = 'style.tex'
@@ -414,9 +402,9 @@ class WikiPage(Text):
             with tempdir.make_file(filename) as file:
                 image.save_state_to_file(file)
 
-        call(['pdflatex', self.name], cwd=dirname)
+        call(['pdflatex', '-8bit', '-no-file-line-error', '-interaction=batchmode', self.name], cwd=dirname)
         # Twice for correct page numbering
-        call(['pdflatex', self.name], cwd=dirname)
+        call(['pdflatex', '-8bit', '-no-file-line-error', '-interaction=batchmode', self.name], cwd=dirname)
 
         pdfname = '%s.pdf' % self.name
         try:
@@ -472,8 +460,37 @@ class WikiPage(Text):
 
     browse_content__access__ = WikiFolder.browse_content__access__
     browse_content__label__ = WikiFolder.browse_content__label__
+
+    def browse_content__sublabel__(self, **kw):
+        mode = kw.get('mode', 'thumbnails')
+        return {'thumbnails': u'As Icons',
+                'list': 'As List',
+                'image': 'As Image Gallery'}[mode]
+
     def browse_content(self, context):
-        return context.uri.resolve('../;browse_content')
+        mode = context.get_form_value('mode')
+        if mode is None:
+            mode = context.get_cookie('browse_mode') or 'thumbnails'
+        return context.uri.resolve('../;browse_content?mode=%s' % mode)
+
+
+    new_resource_form__access__ = WikiFolder.new_resource_form__access__
+    new_resource_form__label__ = WikiFolder.new_resource_form__label__
+
+    def new_resource_form__sublabel__(self, **kw):
+        type = kw.get('type')
+        for cls in self.parent.get_document_types():
+            if cls.class_id == type:
+                return cls.class_title
+        return u'New Resource'
+
+    def new_resource_form(self, context):
+        type = context.get_form_value('type')
+        if type:
+            reference = '../;new_resource_form?type=%s' % type
+        else:
+            reference = '../;new_resource_form'
+        return context.uri.resolve(reference)
 
 
     last_changes__access__ = WikiFolder.last_changes__access__

@@ -24,30 +24,31 @@ from optparse import OptionParser
 import itools
 from itools import uri
 from itools import vfs
+from itools.catalog import make_catalog, Catalog
 from itools.handlers.config import Config
 from itools.cms.database import DatabaseFS
 from itools.cms.server import ask_confirmation
-from itools.cms.server import Server
+from itools.cms.server import get_root
 
 
 def update(parser, options, target):
-    # Update the database, add "database/.catalog.bak" and remove
-    # "database.bak" (XXX remove for 0.16)
-    if folder.exists('database.bak'):
-        message = ('Update database (will remove "database.bak" and add '
-                   '"database/.catalog.bak")? (y/N)')
+    # Get the root
+    folder = vfs.open(target)
+    root = get_root(uri.get_reference(target))
+
+    # Update the catalog (XXX remove for 0.17)
+    if folder.exists('database/.catalog'):
+        message = ('Update database (will move the catalog out of the '
+                   'database folder)? (y/N)')
         if ask_confirmation(message) is False:
             return
-        print '  * Removing "database.bak"...'
-        folder.remove('database.bak')
-        print '  * Adding "database/.catalog.bak"...'
-        folder.copy('database/.catalog', 'database/.catalog.bak')
+        print '  * Remove "database/.catalog" ...'
+        folder.remove('database/.catalog')
+        folder.remove('database/.catalog.bak')
+        print '  * Create "catalog" ...'
+        catalog = make_catalog('%s/catalog' % target, root._catalog_fields)
 
     # Build the server object
-    server = Server(target)
-    target = server.target
-    root = server.root
-
     instance_version = root.get_property('version')
     class_version = root.class_version
     if instance_version == class_version:
@@ -71,6 +72,12 @@ def update(parser, options, target):
         print 'Commit...'
         database = server.database
         database.commit()
+
+    # Update catalog (XXX remove for 0.17)
+    catalog = Catalog('%s/catalog' % target)
+    for object in root._traverse_catalog_aware_objects():
+        catalog.index_document(object)
+    catalog.commit()
 
 
 

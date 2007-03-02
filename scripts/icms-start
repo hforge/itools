@@ -29,9 +29,9 @@ from itools.cms.server import Server
 
 
 def start(parser, options, target):
-    # Check wether the instance uses a backup database (XXX remove for 0.16).
+    # Check wether the instance uses a backup database (XXX remove for 0.17).
     folder = vfs.open(target)
-    if folder.exists('config.ini') or folder.exists('database.bak'):
+    if folder.exists('database/.catalog'):
         print ('The database must be updated, type:')
         print
         print '    $ icms-update <instance>'

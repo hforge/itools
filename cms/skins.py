@@ -49,6 +49,18 @@ class Skin(Folder):
     __fixed_handlers__ = ['template.xhtml.en']
 
 
+    # XXX This belongs to the context
+    def _get_site_root(self, context):
+        root = context.root
+
+        request = context.request
+        if request.has_header('X-Base-Path'):
+            path = request.get_header('X-Base-Path')
+            return root.get_handler(path)
+                
+        return root
+
+
     #######################################################################
     # Left Menu
     #######################################################################
@@ -100,7 +112,8 @@ class Skin(Folder):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        menu = tree(context, depth=6, filter=Folder)
+        root = self._get_site_root(context)
+        menu = tree(context, root=root, depth=6, filter=Folder)
         return {'title': u'Navigation', 'content': menu}
 
 
@@ -163,15 +176,17 @@ class Skin(Folder):
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
         here = context.handler
+        root = self._get_site_root(context)
 
-        #
-        handlers = []
-        handler = here
-        while handler is not None:
-            handlers.insert(0, handler)
-            handler = handler.parent
+        # Build the list of handlers that make up the breadcrumb
+        handlers = [root]
+        for segment in context.uri.path:
+            name = segment.name
+            if name:
+                handler = handlers[-1].get_handler(name)
+                handlers.append(handler)
 
-        # 
+        #  Build the namespace
         breadcrumb = []
         for handler in handlers:
             # The link

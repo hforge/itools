@@ -395,7 +395,7 @@ def build_menu(options):
 def _tree(context, handler, depth, filter):
     # Define local variables
     here = context.handler
-    handler_path = handler.abspath
+    handler_path = handler.get_abspath()
 
     # Build the namespace
     namespace = {}
@@ -407,10 +407,8 @@ def _tree(context, handler, depth, filter):
     if firstview is None:
         namespace['href'] = None
     else:
-        if handler_path == '/':
-            namespace['href'] = '/;%s' % firstview
-        else:
-            namespace['href'] = '%s/;%s' % (handler_path, firstview)
+        path = here.get_pathto(handler)
+        namespace['href'] = '%s/;%s' % (path, firstview)
 
     # The CSS style
     namespace['class'] = ''

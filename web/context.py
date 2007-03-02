@@ -23,7 +23,7 @@ from thread import get_ident, allocate_lock
 from time import strptime
 
 # Import from itools
-from itools import uri
+from itools.uri import Path, get_reference
 from itools.datatypes import Enumerate
 from itools.schemas import get_datatype
 from itools.http.response import Response
@@ -59,15 +59,15 @@ class Context(object):
         request_uri = request.uri
         path = request_uri.path
         if request.has_header('X-Base-Path'):
-            base_path = uri.Path(request.get_header('X-Base-Path'))
+            base_path = Path(request.get_header('X-Base-Path'))
             request_uri = deepcopy(request_uri)
             diff_path = base_path.get_pathto(request_uri.path)
             if request_uri.path.endswith_slash:
-                request_uri.path = uri.Path('/%s/' % diff_path)
+                request_uri.path = Path('/%s/' % diff_path)
             else:
-                request_uri.path = uri.Path('/%s' % diff_path)
+                request_uri.path = Path('/%s' % diff_path)
         reference = 'http://%s%s' % (host, request_uri)
-        self.uri = uri.get_reference(reference)
+        self.uri = get_reference(reference)
 
         # Split the path into path and method ("a/b/c/;view")
         path = request.uri.path
@@ -161,7 +161,7 @@ class Context(object):
         if goto is None:
             goto = self.request.referrer
         elif isinstance(goto, str):
-            goto = uri.get_reference(goto)
+            goto = get_reference(goto)
         # Preserve some form values
         form = {}
         for key, value in self.request.form.items():

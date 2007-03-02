@@ -308,7 +308,7 @@ class Skin(Folder):
         user = context.user
 
         if user is None:
-            root = context.root
+            root = self._get_site_root(context)
             joinisopen = root.get_property('ikaaro:website_is_open')
             return {'info': None, 'joinisopen': joinisopen}
 

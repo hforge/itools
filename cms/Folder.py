@@ -109,7 +109,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def GET(self, context):
         # Try index
         for name in ['index.xhtml', 'index.html']:
-            if self.has_handler(name):
+            try:
+                self.get_handler(name)
+            except LookupError:
+                pass
+            else:
                 return context.uri.resolve2(name)
 
         return Handler.GET(self, context)

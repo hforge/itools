@@ -98,6 +98,14 @@ class RoleAware(AccessControl):
     # Access Control
     #########################################################################
     def is_allowed_to_view(self, user, object):
+        # Objects with workflow
+        from workflow import WorkflowAware
+        if isinstance(object, WorkflowAware):
+            state = object.workflow_state
+            # Anybody can see public objects
+            if state == 'public':
+                return True
+
         # Anonymous can touch nothing
         if user is None:
             return False

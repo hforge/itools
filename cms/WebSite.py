@@ -158,9 +158,10 @@ class WebSite(RoleAware, Folder):
     def anonymous_form(self, context):
         # Build the namespace
         namespace = {}
-        # Monolingual properties
-        for name in ['ikaaro:website_is_open']:
-            namespace[name] = self.get_property(name)
+        # Intranet or Extranet
+        is_open = self.get_property('ikaaro:website_is_open')
+        namespace['is_open'] = is_open
+        namespace['is_closed'] = not is_open
 
         handler = self.get_handler('/ui/WebSite_anonymous.xml')
         return stl(handler, namespace)

@@ -232,7 +232,8 @@ class _Node(object):
             else:
                 c_right = None
             # Run query
-            child_documents = self.children[c].search_range(tree_file, docs_file,
+            child_documents = self.children[c].search_range(tree_file,
+                                                            docs_file,
                                                             c_left, c_right)
             for n in child_documents:
                 if n in documents:
@@ -504,6 +505,11 @@ class Index(object):
         finally:
             tree_file.close()
             docs_file.close()
+
+
+    def rollback(self):
+        self.added_terms = {}
+        self.removed_terms = {}
 
 
     #######################################################################

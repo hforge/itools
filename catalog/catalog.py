@@ -220,7 +220,10 @@ class Catalog(object):
 
 
     def rollback(self):
-        raise NotImplementedError
+        for index in self.indexes:
+            if index is not None:
+                index.rollback()
+        self.documents.rollback()
 
 
     #########################################################################

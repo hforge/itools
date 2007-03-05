@@ -348,7 +348,8 @@ class UserFolder(Folder):
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
-    class_views = [['browse_content?mode=list'],
+    class_views = [['view'],
+                   ['browse_content?mode=list'],
                    ['edit_metadata_form']]
 
 
@@ -426,20 +427,6 @@ class UserFolder(Folder):
         return frozenset(usernames)
 
 
-    #######################################################################
-    # Back-Office
-    #######################################################################
-
-    rename_form__access__ = False
-    rename__access__ = False
-    cut__access__ = False
-    #remove__access__ = False
-    copy__access__ = False
-    paste__access__ = False
-    edit_metadata_form__access__ = 'is_admin'
-    edit_metadata__access__ = 'is_admin'
-
-
     def on_del_handler(self, segment):
         name = segment.name
         handler = self.get_handler(name)
@@ -449,6 +436,31 @@ class UserFolder(Folder):
                 group = root.get_handler(group_path)
                 group.set_user_role(name, None)
         Folder.on_del_handler(self, segment)
+
+    #######################################################################
+    # Back-Office
+    #######################################################################
+    browse_content__access__ = 'is_admin'
+    rename_form__access__ = False
+    rename__access__ = False
+    cut__access__ = False
+    #remove__access__ = False
+    copy__access__ = False
+    paste__access__ = False
+
+    edit_metadata_form__access__ = 'is_admin'
+    edit_metadata__access__ = 'is_admin'
+
+
+    #######################################################################
+    # View
+    view__access__ = 'is_admin'
+    view__label__ = u'View'
+    def view(self, context):
+        message = (u'To manage the users please go '
+                   u'<a href="/;permissions_form">here</a>.')
+        return self.gettext(message).encode('utf-8')
+
 
 
 register_object_class(UserFolder)

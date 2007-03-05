@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>View</h2>
+
+<div id="cal_weekly_view"> 
+  <div id="selector">
+    <a stl:if="today" href="${today}" class="cal_today">
+      Come back to today</a>
+    <ul>
+      <li>
+        <a href="${previous_week}">&laquo;</a>
+        ${current_week}
+        <a href="${next_week}">&raquo;</a>
+      </li>
+      <li>
+        <a href="${previous_month}">&laquo;</a>
+        ${current_month}
+        <a href="${next_month}">&raquo;</a>
+      </li>
+      <li>
+        <a href="${previous_year}">&laquo;</a>
+        ${current_year}
+        <a href="${next_year}">&raquo;</a>
+      </li>
+    </ul>
+  </div>
+
+  <table class="timetable" border="1" width="100%">
+    <tr>
+      <th></th>
+      <th stl:repeat="header timetable_data/headers"
+          colspan="${header/width}"
+          class="header">
+        <div>${header/header}</div>
+      </th>
+    </tr>
+
+    <tr stl:repeat="row timetable_data/body">
+      <th class="time" width="10%">
+        <div>${row/start}-${row/end}</div>
+      </th>
+      <div stl:repeat="item row/items">
+        <div stl:repeat="cell item/cells">
+          <div stl:if="cell/new">${cell/ns}</div>
+
+          <div stl:if="cell/free">
+            <td colspan="${cell/colspan}" class="free">
+              <a stl:if="cell/newurl" class="add_event" href="${cell/newurl}">
+                <img width="16" height="16" src="${add_icon}" />
+              </a>
+              <div>&nbsp;</div>
+            </td>
+          </div>
+        </div>
+      </div>
+    </tr>
+
+  <!-- FULL DAYS SPECIAL BEHAVIOUR
+    <div stl:condition="timetable_data/full_day_events" stl:omit-tag="">
+      <tr>
+        <th class="time">&nbsp;</th>
+        <td stl:repeat="events timetable_data/full_day_events"
+            stl:attributes="colspan events/width"
+            class="fullday">
+          <div stl:repeat="event events/events"
+               stl:omit-tag="">
+            <div mestl:define-slot="fullday"
+                 stl:replace="structure event/title">
+              Full day event
+            </div>
+            <br>
+          </div>
+          &nbsp;
+        </td>
+      </tr>
+    </div>
+  -->
+  </table>
+
+</div>
+</stl:block>

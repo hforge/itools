@@ -23,6 +23,7 @@ from datetime import datetime, date, time, timedelta
 from itools import i18n
 from itools.datatypes import Enumerate, Unicode, Time as iTime
 from itools.datatypes.datetime_ import ISOCalendarDate as Date
+from itools.ical import gridlayout
 from itools.ical.icalendar import icalendar, Component, PropertyValue
 from itools.ical.icalendar import Parameter
 from itools.ical.types import data_properties, DateTime
@@ -64,7 +65,9 @@ class Calendar(Text, icalendar):
     class_description = u'Schedule your time with calendar files.'
     class_icon16 = 'images/icalendar16.png'
     class_icon48 = 'images/icalendar48.png'
-    class_views = [['monthly_view', 'weekly_view', 'download_form'], 
+
+    class_views = [['monthly_view', 'weekly_view', 'grid_weekly_view',
+                    'download_form'],
                    ['upload_form', 'edit_timetables_form',
                     'edit_metadata_form', 'edit_event_form']]
 
@@ -72,15 +75,19 @@ class Calendar(Text, icalendar):
     default_fields = {
         'UID': None, 'SUMMARY': u'', 'LOCATION': u'', 'DESCRIPTION': u'',  
         'DTSTART_year': None, 'DTSTART_month': None, 'DTSTART_day': None, 
+        'DTSTART_hours': '', 'DTSTART_minutes': '',
         'DTEND_year': None, 'DTEND_month': None, 'DTEND_day': None, 
+        'DTEND_hours': '', 'DTEND_minutes': '',
         'ATTENDEE': [], 'COMMENT': [], 'STATUS': {}
       }
 
     # default viewed fields on monthly_view
     default_viewed_fields = ('DTSTART', 'DTEND', 'SUMMARY', 'STATUS')
+
     months = {1: u'January', 2: u'February', 3: u'March', 4: u'April', 
               5: u'May', 6: u'June', 7: u'July', 8: u'August', 9: u'September',
               10: u'October', 11: u'November', 12: u'December'}
+
     days = {0: u'Monday', 1: u'Tuesday', 2: u'Wednesday', 3: u'Thursday', 
             4: u'Friday', 5: u'Saturday', 6: u'Sunday'}
 
@@ -90,9 +97,6 @@ class Calendar(Text, icalendar):
                         ((13,0),(14,0)), ((14,0),(15,0)), ((15,0),(16,0)), 
                         ((16,0),(17,0)), ((17,0),(18,0)), ((18,0),(19,0)), 
                         ((19,0),(20,0)), ((20,0),(21,0)))
-
-
-    edit_metadata_form__sublabel__ = u'Metadata'
 
 
     @classmethod
@@ -139,6 +143,161 @@ class Calendar(Text, icalendar):
             return date.today()
 
 
+    @classmethod
+    def get_defaults(cls, selected_date=None, tt_start=None, tt_end=None):
+        """ Return a dic with default values for default fields. """
+
+        # Default values for DTSTART and DTEND
+        default = cls.default_fields
+
+        if selected_date:
+            year, month, day = selected_date.split('-')
+            default['DTSTART_year'] = default['DTEND_year'] = year
+            default['DTSTART_month'] = default['DTEND_month'] = month
+            default['DTSTART_day'] = default['DTEND_day'] = day
+        if tt_start:
+            hours, minutes = Time.encode(tt_start).split(':')
+            default['DTSTART_hours'] = hours
+            default['DTSTART_minutes'] = minutes
+        if tt_end:
+            hours, minutes = Time.encode(tt_end).split(':')
+            default['DTEND_hours'] = hours
+            default['DTEND_minutes'] = minutes
+
+        return default
+
+
+    @classmethod
+    def add_selector_ns(cls, c_date, method, namespace):
+        """
+        Set header used to navigate into time.
+
+          datetime.strftime('%U') gives week number, starting week by Sunday
+          datetime.strftime('%W') gives week number, starting week by Monday
+          This week number is calculated as "Week O1" begins on the first
+          Sunday/Monday of the year. Its range is [0,53]. 
+
+        We adjust week numbers to fit rules which are used by french people.
+        XXX Check for other countries
+        """
+        format = '%W' if cls.get_first_day() == 1 else '%U'
+        week_number = Unicode.encode(c_date.strftime(format))
+        # Get day of 1st January, if < friday and != monday then number++
+        day, xxx = monthrange(c_date.year, 1)
+        if day in (1,2,3):
+            week_number = str(int(week_number) + 1)
+            if len(week_number) == 1:
+                week_number = '0%s' % week_number
+        current_week = cls.gettext(u'Week ') + week_number
+        tmp_date = c_date - timedelta(7)
+        previous_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
+        tmp_date = c_date + timedelta(7)
+        next_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
+        # Month
+        current_month = cls.gettext(cls.months[c_date.month])
+        delta = 31
+        if c_date.month != 1:
+            xxx, delta = monthrange(c_date.year, c_date.month - 1)
+        tmp_date = c_date - timedelta(delta)
+        previous_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
+        xxx, delta = monthrange(c_date.year, c_date.month)
+        tmp_date = c_date + timedelta(delta)
+        next_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
+        # Year
+        date_before = date(c_date.year, 2, 28)
+        date_after = date(c_date.year, 3, 1)
+        delta = 365
+        if (isleap(c_date.year - 1) and c_date <= date_before) \
+          or (isleap(c_date.year) and c_date > date_before):
+            delta = 366
+        tmp_date = c_date - timedelta(delta)
+        previous_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
+        delta = 365
+        if (isleap(c_date.year) and c_date <= date_before) \
+          or (isleap(c_date.year +1) and c_date >= date_after):
+            delta = 366
+        tmp_date = c_date + timedelta(delta)
+        next_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
+        # Set value into namespace
+        namespace['current_week'] = current_week
+        namespace['previous_week'] = previous_week
+        namespace['next_week'] = next_week
+        namespace['current_month'] = current_month
+        namespace['previous_month'] = previous_month
+        namespace['next_month'] = next_month
+        namespace['current_year'] = c_date.year
+        namespace['previous_year'] = previous_year
+        namespace['next_year'] = next_year
+        # Add today link
+        tmp_date = date.today()
+        namespace['today'] = ";%s?date=%s" % (method, Date.encode(tmp_date))
+        return namespace
+
+
+    # Test if user in context is the organizer of a given event (or is admin)
+    def is_organizer_or_admin(self, context, event):
+        if self.get_access_control().is_admin(context.user):
+            return True
+        if event:
+            organizer = event.get_property_values('ORGANIZER')
+            return organizer and context.user.get_abspath() == organizer.value
+        ac = self.parent.get_access_control()
+        return ac.is_allowed_to_edit(context.user, self.parent)
+
+
+    # 0 means Sunday, 1 means Monday
+    @classmethod
+    def get_first_day(cls):
+        return 1
+
+
+    def get_timetables(self):
+        """
+        Get timetables as a list of dict with keys (index, start, end).
+        Search into metadata or into class_timetables if nothing in metadata.
+        """
+        timetables = []
+        src_timetables = self.get_property('timetables')
+
+        # Nothing in file, so get from class variable (tuple)
+        if not src_timetables:
+            src_timetables = self.class_timetables
+            for index, timetable in enumerate(src_timetables):
+                start, end = timetable
+                start = time(start[0], start[1])
+                end = time(end[0], end[1])
+                ns_timetable = {}
+                ns_timetable['index'] = index 
+                ns_timetable['start'] = start
+                ns_timetable['end'] = end
+                timetables.append(ns_timetable)
+            return timetables
+
+        # From file
+        for index, timetable in enumerate(src_timetables.split(';')):
+            ns_timetable = {}
+            ns_timetable['index'] = index 
+            start, end = timetable.split('),(')
+            start, end = start[1:], end[:-1]
+            hours, minutes = start.split(',')
+            hours, minutes = int(hours), int(minutes)
+            ns_timetable['start'] = time(hours, minutes)
+            hours, minutes = end.split(',')
+            hours, minutes = int(hours), int(minutes)
+            ns_timetable['end'] = time(hours, minutes)
+            timetables.append(ns_timetable)
+        return timetables
+
+
+    # Get timetable as dict from its index (used in projects)
+    def get_timetable_by_index(self, index):
+        timetable = self.get_timetables()
+        if timetable:
+            return timetable[index]
+        return None
+
+
+    # XXX DEPRECATED, not completely replaced yet
     def get_events(self, selected_date, method='monthly_view', timetable=None, 
                    fields=None, resource_name=None, show_conflicts=False):
         """
@@ -234,6 +393,7 @@ class Calendar(Text, icalendar):
         return namespace
 
 
+    # XXX DEPRECATED, not completely replaced yet
     def get_ns_events(self, selected_date, shown_fields, timetables):
         # Get list of all events
         events_list = self.get_events_in_date(selected_date)
@@ -265,96 +425,13 @@ class Calendar(Text, icalendar):
         return ns_events
 
 
+    # XXX DEPRECATED
     def ns_values(self, values):
         if not isinstance(values, list):
             return values.value
         for value in values:
             value = values.value
         return values
-
-
-    @classmethod
-    def add_selector_ns(cls, c_date, method, namespace):
-        """
-        Set header used to navigate into time.
-
-          datetime.strftime('%U') gives week number, starting week by Sunday
-          datetime.strftime('%W') gives week number, starting week by Monday
-          This week number is calculated as "Week O1" begins on the first
-          Sunday/Monday of the year. Its range is [0,53]. 
-
-        We adjust week numbers to fit rules which are used by french people.
-        XXX Check for other countries
-        """
-        format = '%W' if cls.get_first_day() == 1 else '%U'
-        week_number = Unicode.encode(c_date.strftime(format))
-        # Get day of 1st January, if < friday and != monday then number++
-        day, xxx = monthrange(c_date.year, 1)
-        if day in (1,2,3):
-            week_number = str(int(week_number) + 1)
-            if len(week_number) == 1:
-                week_number = '0%s' % week_number
-        current_week = cls.gettext(u'Week ') + week_number
-        tmp_date = c_date - timedelta(7)
-        previous_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        tmp_date = c_date + timedelta(7)
-        next_week = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        # Month
-        current_month = cls.gettext(cls.months[c_date.month])
-        delta = 31
-        if c_date.month != 1:
-            xxx, delta = monthrange(c_date.year, c_date.month - 1)
-        tmp_date = c_date - timedelta(delta)
-        previous_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        xxx, delta = monthrange(c_date.year, c_date.month)
-        tmp_date = c_date + timedelta(delta)
-        next_month = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        # Year
-        date_before = date(c_date.year, 2, 28)
-        date_after = date(c_date.year, 3, 1)
-        delta = 365
-        if (isleap(c_date.year - 1) and c_date <= date_before) \
-          or (isleap(c_date.year) and c_date > date_before):
-            delta = 366
-        tmp_date = c_date - timedelta(delta)
-        previous_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        delta = 365
-        if (isleap(c_date.year) and c_date <= date_before) \
-          or (isleap(c_date.year +1) and c_date >= date_after):
-            delta = 366
-        tmp_date = c_date + timedelta(delta)
-        next_year = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        # Set value into namespace
-        namespace['current_week'] = current_week
-        namespace['previous_week'] = previous_week
-        namespace['next_week'] = next_week
-        namespace['current_month'] = current_month
-        namespace['previous_month'] = previous_month
-        namespace['next_month'] = next_month
-        namespace['current_year'] = c_date.year
-        namespace['previous_year'] = previous_year
-        namespace['next_year'] = next_year
-        # Add today link
-        tmp_date = date.today()
-        namespace['today'] = ";%s?date=%s" % (method, Date.encode(tmp_date))
-        return namespace
-
-
-    # Test if user in context is the organizer of a given event (or is admin)
-    def is_organizer_or_admin(self, context, event):
-        if self.get_access_control().is_admin(context.user):
-            return True
-        if event:
-            organizer = event.get_property_values('ORGANIZER')
-            return organizer and context.user.get_abspath() == organizer.value
-        ac = self.parent.get_access_control()
-        return ac.is_allowed_to_edit(context.user, self.parent)
-
-
-    # 0 means Sunday, 1 means Monday
-    @classmethod
-    def get_first_day(cls):
-        return 1
 
 
     # Get days of week based on get_first_day's result 
@@ -376,48 +453,6 @@ class Calendar(Text, icalendar):
             ns_days.append(ns)
             current_date = current_date + timedelta(1)
         return ns_days
-
-
-    def get_timetables(self):
-        timetables = []
-        src_timetables = self.get_property('timetables')
-
-        # Nothing in file, so get from class variable (tuple)
-        if not src_timetables:
-            src_timetables = self.class_timetables
-            for index, timetable in enumerate(src_timetables):
-                start, end = timetable
-                start = time(start[0], start[1])
-                end = time(end[0], end[1])
-                ns_timetable = {}
-                ns_timetable['index'] = index 
-                ns_timetable['start'] = start
-                ns_timetable['end'] = end
-                timetables.append(ns_timetable)
-            return timetables
-
-        # From file
-        for index, timetable in enumerate(src_timetables.split(';')):
-            ns_timetable = {}
-            ns_timetable['index'] = index 
-            start, end = timetable.split('),(')
-            start, end = start[1:], end[:-1]
-            hours, minutes = start.split(',')
-            hours, minutes = int(hours), int(minutes)
-            ns_timetable['start'] = time(hours, minutes)
-            hours, minutes = end.split(',')
-            hours, minutes = int(hours), int(minutes)
-            ns_timetable['end'] = time(hours, minutes)
-            timetables.append(ns_timetable)
-        return timetables
-
-
-    # Get timetable as dict from its index (used in projects)
-    def get_timetable_by_index(self, index):
-        timetable = self.get_timetables()
-        if timetable:
-            return timetable[index]
-        return None
 
 
     # Get a week beginning at start_date as a list to be given to namespace
@@ -516,9 +551,54 @@ class Calendar(Text, icalendar):
         return ns
 
 
+
+    #########################################################################
+    # Get timetables as a list of string containing time start of each one
+    def get_timetables_grid_ns(self, start_date):
+        """ Build namespace to give as grid to gridlayout factory."""
+        timetables = self.get_timetables()
+
+        ns_timetables = []
+        for timetable in timetables:
+            ns_timetables.append(Time.encode(timetable['start']))
+
+        return ns_timetables
+
+
+    def get_grid_events(self, start_date, resource_name=None, ndays=7,
+                        headers=None, step=timedelta(1)):
+        """ Build namespace to give as data to gridlayout factory."""
+        # Get events by day
+        ns_days = []
+        current_date = start_date
+
+        if headers is None:
+            headers = [None] * ndays
+
+        for header in headers:
+            ns_day = {}
+            # Add header if given
+            ns_day['header'] = header
+
+            # Add each event by day
+            ns_events = []
+            for event in self.get_sorted_events_in_date(current_date):
+                ns_event = self.get_grid_ns_event(current_date, event,
+                                                  resource_name=resource_name)
+                ns_events.append(ns_event)
+            ns_day['events'] = ns_events
+
+            ns_days.append(ns_day)
+            current_date = current_date + step
+
+        return ns_days
+
+
     #######################################################################
     # User interface
     #######################################################################
+
+    edit_metadata_form__sublabel__ = u'Metadata'
 
     download_form__access__ = 'is_allowed_to_view'
     download_form__sublabel__ = u'Export in ical format'
@@ -549,9 +629,9 @@ class Calendar(Text, icalendar):
             or
           DTSTART: '', DTEND: '', TIME: False
   
-          SUMMARY: 'xxx'
-          STATUS: 'xxx' (class: cal_conflict, if uid in conflicts_list)
-          ORGANIZER: 'xxx'
+          SUMMARY: 'summary of the event'
+          STATUS: 'status' (class: cal_conflict, if uid in conflicts_list)
+          ORGANIZER: 'organizer of the event'
 
           url: url to access edit_event_form on current event
         """
@@ -582,6 +662,70 @@ class Calendar(Text, icalendar):
                         value = '...' + value
                 ns['TIME'] = '(' + value + ')'
                 
+        ns['DTSTART'] = Time.encode(properties('DTSTART').value.time())
+        ns['DTEND'] = Time.encode(properties('DTEND').value.time())
+
+        ###############################################################
+        # Set class for conflicting events or just from status value
+        uid = properties('UID').value
+        if uid in conflicts_list:
+            ns['STATUS'] = 'cal_conflict'
+        else:
+            status = properties('STATUS')
+            if status:
+                ns['STATUS'] = properties('STATUS').value
+            else:
+                ns['STATUS'] = ''
+
+        ###############################################################
+        # Set url to edit_event_form
+        uid = properties('UID').value
+        ns['UID'] = '%s' % uid
+        url = ';edit_event_form?uid=%s' % uid
+        if timetable:
+            url = '%s&timetable=%s' % (url, timetable)
+        if resource_name:
+            url = '%s/%s' % (resource_name, url)
+        ns['url'] = url
+
+        return ns
+
+
+    def get_grid_ns_event(self, day, event, resource_name=None,
+                          conflicts_list=[], timetable=None):
+        """
+        Specify the namespace given on views to represent an event.
+
+        day: date selected XXX not used for now
+        event: event selected
+        resource_name: specify the resource for browse_calendar
+        conflicts_list: list of conflicts for current resource, [] if not used
+        timetable: timetable index
+
+        By default, we get:
+
+          DTSTART: HH:MM, DTEND: HH:MM, TIME: True
+            or
+          DTSTART: '', DTEND: '', TIME: False
+  
+          SUMMARY: 'summary of the event'
+          STATUS: 'status' (class: cal_conflict, if uid in conflicts_list)
+          ORGANIZER: 'organizer of the event'
+
+          url: url to access edit_event_form on current event
+        """
+        properties = event['event'].get_property_values
+        ns = {}
+        ns['SUMMARY'] = properties('SUMMARY').value
+        ns['ORGANIZER'] = properties('ORGANIZER').value
+
+        ###############################################################
+        # Set dtstart and dtend values as time
+        ns['start'] = Time.encode(properties('DTSTART').value.time())
+        ns['end'] = Time.encode(properties('DTEND').value.time())
+        # Add both of these dates into one item
+        ns['TIME'] = '%s - %s' % (ns['start'], ns['end']) 
+
         ###############################################################
         # Set class for conflicting events or just from status value
         uid = properties('UID').value
@@ -619,6 +763,11 @@ class Calendar(Text, icalendar):
         c_date = self.get_current_date(context.get_form_value('date', None))
         # Save selected date
         context.set_cookie('selected_date', c_date)
+        
+        # Method
+        method = context.get_cookie('method')
+        if method != 'monthly_view':
+            context.set_cookie('method', 'monthly_view')
 
         ###################################################################
         # Calculate start of previous week
@@ -722,6 +871,11 @@ class Calendar(Text, icalendar):
         # Save selected date
         context.set_cookie('selected_date', c_date)
 
+        # Method
+        method = context.get_cookie('method')
+        if method != 'weekly_view':
+            context.set_cookie('method', 'weekly_view')
+
         ###################################################################
         # Calculate start of current week
         # 0 = Monday, ..., 6 = Sunday
@@ -749,17 +903,77 @@ class Calendar(Text, icalendar):
         return stl(handler, namespace)
 
 
+    # Grid Weekly view
+    grid_weekly_view__access__ = 'is_allowed_to_view'
+    grid_weekly_view__sublabel__ = u'Grid_Weekly'
+    def grid_weekly_view(self, context):
+        ndays = 7
+
+        # Current date
+        c_date = context.get_form_value('date', None)
+        if not c_date:
+            c_date = context.get_cookie('selected_date')
+        c_date = self.get_current_date(c_date)
+        # Save selected date
+        context.set_cookie('selected_date', c_date)
+
+        # Method
+        method = context.get_cookie('method')
+        if method != 'grid_weekly_view':
+            context.set_cookie('method', 'grid_weekly_view')
+
+        ###################################################################
+        # Calculate start of current week
+        # 0 = Monday, ..., 6 = Sunday
+        weekday = c_date.weekday()
+        start = c_date - timedelta(weekday)
+        if self.get_first_day() == 0:
+            start = start - timedelta(1)
+
+        ###################################################################
+        namespace = {}
+        # Add header to navigate into time
+        namespace = self.add_selector_ns(c_date, 'grid_weekly_view' ,namespace)
+
+        ###################################################################
+        # Get icon to appear to add a new event
+        add_icon = self.get_handler('/ui/images/button_add.png')
+        namespace['add_icon'] = self.get_pathto(add_icon)
+
+        ###################################################################
+        # Get header line with days of the week
+        days_of_week_ns = self.days_of_week_ns(start, True, ndays, c_date)
+        ns_headers = []
+        for day in days_of_week_ns:
+            ns_header = '%s %s' % (day['name'], day['nday'])
+            # XXX Use 'selected' for css class to highlight selected date
+            ns_headers.append(ns_header)
+
+        ###################################################################
+        # Calculate timetables and events occurring for current week
+        timetables = self.get_timetables_grid_ns(start)
+        events = self.get_grid_events(start, headers=ns_headers)
+        ###################################################################
+        # Fill data with grid (timetables) and data (events for each day)
+        timetable = gridlayout.get_data(events, timetables, start)
+        namespace['timetable_data'] = timetable
+
+        handler = self.get_handler('/ui/ical_grid_weekly_view.xml')
+        return stl(handler, namespace)
+
+
     edit_event_form__access__ = 'is_allowed_to_edit'
     edit_event_form__label__ = u'Edit'
     edit_event_form__sublabel__ = u'Event'
     def edit_event_form(self, context):
         uid = context.get_form_value('uid', None)
-        method = context.get_form_value('method', 'monthly_view')
+        # Method
+        method = context.get_cookie('method') or 'monthly_view'
         goto = ';%s' % method 
 
         # Get date to add event
+        selected_date = context.get_form_value('date', None)
         if not uid:
-            selected_date = context.get_form_value('date', None)
             if not selected_date:
                 message = u'To add an event, click on + symbol from the views.'
                 return context.come_back(message, goto=goto)
@@ -769,8 +983,9 @@ class Calendar(Text, icalendar):
                 selected_date = Date.encode(c_date)
 
         # Timetables
-        tt_start, tt_end = None, None
         timetable = context.get_form_value('timetable', None)
+        tt_start = context.get_form_value('start', None)
+        tt_end = None
         if timetable:
             timetables = self.get_timetables()
             if timetables != []:
@@ -778,7 +993,7 @@ class Calendar(Text, icalendar):
                 tt_start = timetable['start']
                 tt_end = timetable['end']
         else:
-            tt_start = context.get_form_value('start_time', None)
+            tt_start = context.get_form_value('start_time', tt_start)
             tt_end = context.get_form_value('end_time', None)
             if tt_start:
                 tt_start = Time.decode(tt_start)
@@ -806,7 +1021,7 @@ class Calendar(Text, icalendar):
                 if isinstance(value, list):
                     namespace[key] = value
                 elif key == 'STATUS':
-                    namespace['STATUS'] = status.get_namespace(value.value)
+                    namespace['STATUS'] = value.value
                 # Split date fields into dd/mm/yyyy and hh:mm
                 elif key in ('DTSTART', 'DTEND'):
                     value, params = value.value, value.parameters
@@ -817,52 +1032,47 @@ class Calendar(Text, icalendar):
                     param = params.get('VALUE', '')
                     if not param or param.values != ['DATE']:
                         hours, minutes = Time.encode(value).split(':')
-                        namespace['%s_hours'%key] = hours
-                        namespace['%s_minutes'%key] = minutes
+                        namespace['%s_hours' % key] = hours
+                        namespace['%s_minutes' % key] = minutes
                     else:
-                        namespace['%s_hours'%key] = ''
-                        namespace['%s_minutes'%key] = ''
+                        namespace['%s_hours' % key] = ''
+                        namespace['%s_minutes' % key] = ''
                 else:
                     namespace[key] = value.value
 
         # Default managed fields are :
         # SUMMARY, LOCATION, DTSTART, DTEND, DESCRIPTION, 
         # STATUS ({}), ATTENDEE ([]), COMMENT ([])
-        fields = self.default_fields
-        fields['STATUS'] = status.get_namespace('TENTATIVE')
-        for field in self.default_fields:
+        defaults = self.get_defaults(selected_date, tt_start, tt_end)
+        # Set values from context or default, if not already set
+        for field in defaults:
             if field not in namespace:
-                namespace[field] = self.default_fields[field]
-                if field.startswith('DTSTART_'):
-                    year, month, day = selected_date.split('-')
-                    hours = minutes = ''
-                    if tt_start:
-                        hours, minutes = Time.encode(tt_start).split(':')
-                    namespace['DTSTART_year'] = year
-                    namespace['DTSTART_month'] = month
-                    namespace['DTSTART_day'] = day
-                    namespace['DTSTART_hours'] = hours
-                    namespace['DTSTART_minutes'] = minutes
-                elif field.startswith('DTEND_'):
-                    year, month, day = selected_date.split('-')
-                    hours = minutes = ''
-                    if tt_end:
-                        hours, minutes = Time.encode(tt_end).split(':')
-                    namespace['DTEND_year'] = year
-                    namespace['DTEND_month'] = month
-                    namespace['DTEND_day'] = day
-                    namespace['DTEND_hours'] = hours
-                    namespace['DTEND_minutes'] = minutes
-
+                if field.startswith('DTSTART_') or field.startswith('DTEND_'):
+                    for attr in ('year', 'month', 'day', 'hours', 'minutes'):
+                        key = 'DTSTART_%s' % attr
+                        if field.startswith('DTEND_'):
+                            key = 'DTEND_%s' % attr
+                        value = context.get_form_value(key) or defaults[key]
+                        namespace[key] = value
+                # Get value from context, used when invalid input given
+                elif context.has_form_value(field):
+                    namespace[field] = context.get_form_value(field)
+                else:
+                    # Set default value in the right format
+                    namespace[field] = defaults[field]
+        # STATUS is an enumerate
+        try:
+            namespace['STATUS'] = status.get_namespace(namespace['STATUS'])
+        except:
+            namespace['STATUS'] = status.get_namespace('TENTATIVE')
         # Call to gettext on Status values
-        for status in namespace['STATUS']:
-            status['value'] = self.gettext(status['value'])
+        for value in namespace['STATUS']:
+            value['value'] = self.gettext(value['value'])
+
         # Show action buttons only if current user is authorized
         namespace['allowed'] = self.is_organizer_or_admin(context, event)
         # Set first day of week
         namespace['firstday'] = self.get_first_day()
-        # Keep params
-        namespace['method'] = method
 
         handler = self.get_handler('/ui/ical_edit_event_form.xml')
         return stl(handler, namespace)
@@ -873,10 +1083,14 @@ class Calendar(Text, icalendar):
         if context.has_form_value('remove'):
             return self.remove(context)
 
-        method = context.get_form_value('method', 'monthly_view')
+        # Method
+        method = context.get_cookie('method') or 'monthly_view'
         goto = ';%s' % method
         if method not in dir(self):
             goto = '../;%s' % method
+
+        # Keys to exclude from url
+        keys = context.get_form_keys()
 
         # Get selected_date from the 3 fields 'dd','mm','yyyy' into 'yyyy/mm/dd'
         v_items = []
@@ -886,10 +1100,7 @@ class Calendar(Text, icalendar):
 
         # Cancel
         if context.has_form_value('cancel'):
-            return context.come_back('', goto)
-
-        # Set selected_date as a date object
-        selected_date = self.get_current_date(selected_date)
+            return context.come_back('', goto, exclude=keys)
 
         # Get UID and Component object
         uid = context.get_form_value('UID')
@@ -898,7 +1109,7 @@ class Calendar(Text, icalendar):
             # Test if current user is admin or organizer of this event
             if not self.is_organizer_or_admin(context, event):
                 message = u'You are not authorized to modify this event.'
-                return context.come_back(goto, message)
+                return context.come_back(goto, message, exclude=keys)
             self.add(event)
         else:
             event = Component('VEVENT')
@@ -911,7 +1122,7 @@ class Calendar(Text, icalendar):
         for key in context.get_form_keys():
             if key == 'UID':
                 continue
-            elif key in ('update', 'method'):
+            elif key == 'update':
                 continue
             # Get date and time for DTSTART and DTEND
             elif key.startswith('DTSTART_day'):
@@ -943,17 +1154,18 @@ class Calendar(Text, icalendar):
                         if not uid:
                             uid = event.get_property_values('UID').value
                             icalendar.remove(self, 'VEVENT', uid)
+                        goto = ';edit_event_form?date=%s' % selected_date
                         message = u'One or more field is invalid.'
                         return context.come_back(goto=goto, message=message)
                     values[real_key] = value, params
                 # Check if start <= end
                 if values['DTSTART'][0] > values['DTEND'][0]:
                     message = u'Start date MUST be earlier than end date.'
-                    goto = ';edit_event_form'
-                    goto = goto + '?date=%s' + Date.encode(values['DTSTART'][0])
+                    goto = ';edit_event_form?date=%s' % \
+                                             Date.encode(values['DTSTART'][0])
                     if uid:
                         goto = goto + '&uid=%s' % uid
-                    else:
+                    elif context.has_form_value('timetable'):
                         timetable = context.get_form_value('timetable', 0)
                         goto = goto + '&timetable=%s' % timetable
                     # Remove event if new one
@@ -980,22 +1192,27 @@ class Calendar(Text, icalendar):
         event.set_property('DTSTAMP', PropertyValue(datetime.today()))
 
         self.set_changed()
-        goto = '%s?date=%s' % (goto, Date.encode(selected_date))
-        return context.come_back(u'Data updated', goto=goto)
+        goto = '%s?date=%s' % (goto, selected_date)
+        return context.come_back(u'Data updated', goto=goto, exclude=keys)
 
 
     remove__access__ = 'is_allowed_to_edit'
     def remove(self, context):
-        method = context.get_form_value('method', 'monthly_view')
+        # Method
+        method = context.get_cookie('method') or 'monthly_view'
         goto = ';%s?%s' % (method, self.get_current_date())
         if method not in dir(self):
             goto = '../;%s?%s' % (method, self.get_current_date())
+
+        # Keys to exclude
+        keys = context.get_form_keys()
 
         uid = context.get_form_value('UID') 
         if not uid:
             return context.come_back('', goto)
         icalendar.remove(self, 'VEVENT', uid)
-        return context.come_back(u'Event definitely deleted.', goto=goto)
+        return context.come_back(u'Event definitely deleted.', goto=goto, 
+                                 exclude=keys)
 
 
     edit_timetables_form__access__ = 'is_allowed_to_edit'
@@ -1304,72 +1521,6 @@ class CalendarAware(object):
                 ns_columns.append(column)
                 ns_row['columns'] = ns_columns
             ns_rows.append(ns_row)
-
-        ###############################################################
-        # Extend cells below if possible
-#            for index, row in enumerate(ns_rows[:-1]):
-#                tt_index = 0
-#                for col in row['columns']:
-#                    if col['class'] == None:
-#                        continue
-#                    colspan = col['colspan']
-#                    tt_start = timetables[tt_index]['start']
-#                    tt_end =  timetables[tt_index + colspan]['end']
-#                    tt_start = tt_start.strftime('%H:%M')
-#                    tt_end = tt_end.strftime('%H:%M')
-#                    extendable = True
-#                    # For each row below current row
-#                    for subrow in ns_rows[index+1:]:
-#                        print '-------', tt_start, tt_end
-#                        if extendable == False:
-#                            break
-#                        subindexes = []
-#                        sub_tt_index = 0
-#                        for subindex, subcol in enumerate(subrow['columns']):
-#                            print '+++', subindex
-#                            substart = subcol['start']
-#                            subend = subcol['end']
-#
-#                            sub_tt_start = timetables[sub_tt_index]['start']
-#                            sub_tt_end = timetables[sub_tt_index]['end']
-#                            sub_tt_start = sub_tt_start.strftime('%H:%M')
-#                            sub_tt_end = sub_tt_end.strftime('%H:%M')
-#
-#                            # end of while
-#                            end = False
-#                            # Go to next in for
-#                            next = False
-#                            while not end and sub_tt_end < subend:
-#                                # Ends before
-#                                if sub_tt_end <= tt_start:
-#                                    next = end = True
-#                                # Begins after
-#                                if sub_tt_start >= tt_end:
-#                                    end = True
-#                                # Busy
-#                                if subcol['class'] != None:
-#                                    extendable = False
-#                                    end = True
-#                                else:
-#                                    if subindex not in subindexes:
-#                                        subindexes.append(subindex)
-#                                    print subindexes
-#                                # Update sub_tt
-#                                sub_tt_index = sub_tt_index + 1
-#                                sub_tt_start = timetables[sub_tt_index]['start']
-#                                sub_tt_end = timetables[sub_tt_index]['end']
-#                                sub_tt_start = sub_tt_start.strftime('%H:%M')
-#                                sub_tt_end = sub_tt_end.strftime('%H:%M')
-#                            if not next and end:
-#                                break
-#
-#                        # Delete columns below and extend rowspan
-#                        if extendable:
-#                            col['rowspan'] = col['rowspan'] + 1
-#                            subindexes.reverse()
-#                            for i in subindexes:
-#                                del subrow['columns'][i]
-#                    tt_index = tt_index + colspan
 
         ###############################################################
         # Add ns_rows to namespace

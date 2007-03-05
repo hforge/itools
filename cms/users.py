@@ -433,7 +433,7 @@ class UserFolder(Folder):
     rename_form__access__ = False
     rename__access__ = False
     cut__access__ = False
-    remove__access__ = False
+    #remove__access__ = False
     copy__access__ = False
     paste__access__ = False
     edit_metadata_form__access__ = 'is_admin'

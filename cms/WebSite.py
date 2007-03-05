@@ -470,6 +470,8 @@ class WebSite(RoleAware, Folder):
     # Search
     site_search__access__ = True
     def site_search(self, context):
+        root = context.root
+
         namespace = {}
         # Get and check input data
         text = context.get_form_value('site_search_text', default='').strip()
@@ -483,7 +485,7 @@ class WebSite(RoleAware, Folder):
         on_title = queries.Equal('title', text)
         on_text = queries.Equal('text', text)
         query = queries.Or(on_title, on_text)
-        results = self.search(query=query)
+        results = root.search(query=query)
         documents = results.get_documents(start=start, size=size)
 
         # put the metadatas in a dictionary list to be managed with Table

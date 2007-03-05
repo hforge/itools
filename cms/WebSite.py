@@ -284,6 +284,9 @@ class WebSite(RoleAware, Folder):
         user.set_property('ikaaro:user_must_confirm', key)
         user.set_property('ikaaro:firstname', firstname, language='en')
         user.set_property('ikaaro:lastname', lastname, language='en')
+        # Set the role
+        default_role = self.__roles__[0]['name']
+        self.set_user_role(user.name, default_role)
 
         # Send confirmation email
         subject = self.gettext("Register confirmation required.")

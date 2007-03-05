@@ -65,7 +65,7 @@ class VersioningAware(object):
     ########################################################################
     # User Interface
     ########################################################################
-    history_form__access__ = 'is_allowed_to_edit'
+    history_form__access__ = 'is_allowed_to_view'
     history_form__label__ = u'History'
     def history_form(self, context):
         namespace = {}

@@ -120,6 +120,7 @@ class RoleAware(AccessControl):
 
 
     def is_allowed_to_edit(self, user, object):
+        from workflow import WorkflowAware
         # Anonymous can touch nothing
         if user is None:
             return False
@@ -128,9 +129,19 @@ class RoleAware(AccessControl):
         if self.is_admin(user):
             return True
 
-        # Reviewers and Members are allowed to edit
-        roles = 'ikaaro:reviewers', 'ikaaro:members'
-        return self.has_user_role(user.name, *roles)
+        # Reviewers too
+        if self.has_user_role(user.name, 'ikaaro:reviewers'):
+            return True
+
+        # Members only can touch not-yet-published documents
+        if self.has_user_role(user.name, 'ikaaro:members'):
+            if isinstance(object, WorkflowAware):
+                state = object.workflow_state
+                # Anybody can see public objects
+                if state != 'public':
+                    return True
+
+        return False
 
 
     def is_allowed_to_trans(self, user, object, name):

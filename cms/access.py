@@ -98,25 +98,35 @@ class RoleAware(AccessControl):
     # Access Control
     #########################################################################
     def is_allowed_to_view(self, user, object):
-        # Objects with workflow
+        # Get the variables to resolve the formula
+        # Intranet or Extranet
+        is_open = self.get_property('ikaaro:website_is_open')
+        # The role of the user
+        if user is None:
+            role = None
+        elif self.is_admin(user):
+            role = 'ikaaro:admins'
+        else:
+            role = self.get_user_role(user.name)
+        # The state of the object
         from workflow import WorkflowAware
         if isinstance(object, WorkflowAware):
             state = object.workflow_state
-            # Anybody can see public objects
+        else:
+            state = 'public'
+
+        # The formula
+        # Extranet
+        if is_open:
             if state == 'public':
                 return True
-
-        # Anonymous can touch nothing
-        if user is None:
-            return False
-
-        # Admins are all powerfull
-        if self.is_admin(user):
+            return role is not None
+        # Intranet
+        if role in ('ikaaro:admins', 'ikaaro:reviewers', 'ikaaro:members'):
             return True
-
-        # Reviewers and Members are allowed to edit
-        roles = 'ikaaro:reviewers', 'ikaaro:members', 'ikaaro:guests'
-        return self.has_user_role(user.name, *roles)
+        elif role == 'ikaaro:guests':
+            return state == 'public'
+        return False
 
 
     def is_allowed_to_edit(self, user, object):

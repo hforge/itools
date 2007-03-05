@@ -62,7 +62,6 @@ class Root(WebSite):
 
 
     __roles__ = [
-        {'name': 'ikaaro:members', 'title': u'Members', 'unit': u'Member'},
         {'name': 'ikaaro:admins', 'title': u'Admins', 'unit': u'Admin'}]
 
 
@@ -105,52 +104,6 @@ class Root(WebSite):
         return self.get_skin().template(body)
 
 
-    ########################################################################
-    # Override RoleAware
-    ########################################################################
-    def get_role_unit(self, name):
-        if name == 'ikaaro:members':
-            return self.gettext(u'Member')
-        return WebSite.get_role_unit(self, name)
-
-
-    def get_user_role(self, user_id):
-        user_role = WebSite.get_user_role(self, user_id)
-        if user_role is not None:
-            return user_role
-        users = self.get_handler('users')
-        if users.has_handler(user_id):
-            return 'ikaaro:members'
-        return None
-
-
-    def has_user_role(self, user_id, *roles):
-        user_role = self.get_user_role(user_id)
-        return user_role in roles
-
-
-    def set_user_role(self, user_ids, role):
-        if role == 'ikaaro:members':
-            role = None
-        WebSite.set_user_role(self, user_ids, role)
-
-
-    def get_members(self):
-        users = self.get_handler('users')
-        return [ x for x in users.get_handler_names()
-                 if not x.endswith('.metadata') ]
-
-
-    def get_members_classified_by_role(self):
-        roles = WebSite.get_members_classified_by_role(self)
-        members = self.get_handler_names('users')
-        members = set(members)
-        for role in roles:
-            members = members - roles[role]
-        roles['ikaaro:members'] = members
-        return roles
-
- 
     ########################################################################
     # Skeleton
     ########################################################################

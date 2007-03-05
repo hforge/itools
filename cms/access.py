@@ -352,7 +352,11 @@ class RoleAware(AccessControl):
 
         # The actions
         actions = [('permissions_del_members', self.gettext(u'Delete'),
-                    'butto_delete', None)]
+                    'button_delete', None)]
+        user = context.user
+        ac = self.get_access_control()
+        actions = [
+            x for x in actions if ac.is_access_allowed(user, self, x[0]) ]
 
         namespace['batch'] = widgets.batch(context.uri, start, size, total)
 
@@ -363,7 +367,7 @@ class RoleAware(AccessControl):
         return stl(handler, namespace)
 
 
-    permissions__access__ = 'is_admin'
+    permissions_del_members__access__ = 'is_admin'
     def permissions_del_members(self, context):
         usernames = context.get_form_values('ids')
         self.set_user_role(usernames, None)

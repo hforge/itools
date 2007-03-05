@@ -87,8 +87,7 @@ class Node(BaseNode):
                 user = context.user
                 ac = self.get_access_control()
                 if not ac.is_access_allowed(user, self, method_name):
-                    # XXX Forbidden or Unauthorized
-                    pass
+                    raise Forbidden
                 # Call the method
                 return method(context)
 

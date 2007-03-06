@@ -1,5 +1,5 @@
 
-itools 0.15.2 (2007/02/XX)
+itools 0.15.2 (2007/03/XX)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -13,20 +13,26 @@ meta-package for easier development and deployment:
   itools.handlers       itools.stl              itools.xliff
   itools.html           itools.tmx              itools.xml
 
-The prioritary focus of this release has been the user interface of
-"itools.cms" and the related API.
+Regardless this being a minor release, there have been important
+improvements to the user and programming interfaces, as well as
+lot of bug fixing.
 
-On the user interface side we have:
+Changes to the user interface of "itools.cms":
 
-  - Replace the tabs (object views) with a drop-down menu.
-  - Add a "Main Menu" to the left bar with links to the user's most
-    common tasks.
-  - New user interface to manage users.
-  - Add the fields firstname and lastname for users.
+  - The general template has been improved, most notably with a drop-down
+    menu that replaces the tabs. There is also a "Main Menu" in the left
+    column with quick links to the important views.
+  - The interface to manage users and define the access rights has been
+    reworked.
+  - Now users have the fields "firstname" and "lastname", instead of just
+    a single field for the whole name.
+  - New object WebSite, to host multiple web sites with the same instance.
+  - Vast functional and interface improvements specially to the Wiki, but
+    also to the Calendar and, to a lesser degree, the Forum.
   - Improve the folder's browse view: sort by size, localize the dates.
   - Internationalize the calendar widget.
 
-On the programming interface we have:
+Changes to the programming interface:
 
   - Add a new module "itools.i18n.locale" that provides support for
     locale information like dates.
@@ -36,13 +42,21 @@ On the programming interface we have:
   - Rework the API to produce "tables" (like in the Folder's browse
     view).
 
+Important bugs fixed:
+
+  - Critical security bug fixed: with specially constructed requests it
+    was possible to use the POST method even without authentication.
+  - Fix database rollback under certain conditions.
+
 Credits:
 
- - Hervé Cauwelier worked on the style (CSS) of "itools.cms", and got
-   the API of "itools.web" working as documented;
- - Nicolas Deram worked on the programming interface for iCalendar;
+ - Luis Belmar Letelier helped fixing bugs;
+ - Hervé Cauwelier worked on "itools.cms" (Wiki, CSS), got the API of
+   "itools.web" working as documented, and fixed bugs;
+ - Nicolas Deram worked on "itools.ical", "itools.cms.ical", and fixed
+   bugs;
  - J. David Ibáñez worked on the user interface of "itools.cms" and
-   the related programming interface.
+   the related programming interface, and fixed bugs.
 
 
 Resources

@@ -191,11 +191,13 @@ Very few imports have changed in this release:
 
 Before:
 
+  from itools.csv.itools_csv import CSV
   from itools.cms.csv_ import CSV
 
 Now:
 
-  from itools.cms.csv_ import CSV
+  from itools.csv.csv import CSV
+  from itools.cms.csv import CSV
 
 
 

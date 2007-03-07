@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005 Nicolas Deram <nderam@gmail.com>
+# Copyright (C) 2005-2007 Nicolas Deram <nderam@itaapy.com>
+#               2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #               2005 Nicolas Oyez <nicoyez@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
@@ -20,10 +21,13 @@
 from datetime import datetime, date, time
 from copy import deepcopy
 from operator import itemgetter
+from time import time as get_time
 
 # Import from itools
-from itools.handlers.Text import Text
 from itools.datatypes import Unicode, String
+from itools.catalog import queries
+from itools.handlers.Text import Text
+from itools.csv.csv import Catalog
 from itools.ical.types import PropertyType, ComponentType
 from itools.ical.types import data_properties
 
@@ -138,6 +142,22 @@ class Component(object):
     #######################################################################
     # API
     #######################################################################
+    def get_value(self, name):
+        """
+        Returns the value of a property if it exists. Otherwise returns None.
+        """
+        # Case insensitive
+        name = name.upper()
+
+        # The type
+        if name == 'TYPE':
+            return self.c_type
+
+        # Properties
+        if name not in self.properties:
+            return None
+        return self.properties[name].value
+
 
     # Get a property of current component
     def get_property_values(self, name=None):
@@ -298,7 +318,7 @@ class icalendar(Text):
     """
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'properties', 'components', 'encoding']
+                 'properties', 'components', 'catalog', 'encoding']
     class_mimetypes = ['text/calendar']
     class_extension = 'ics'
 
@@ -306,32 +326,42 @@ class icalendar(Text):
     #########################################################################
     # New
     #########################################################################
+    def _init_ical(self):
+        self.properties = {}
+        self.components = []
+        self.catalog = Catalog()
+        self.catalog.add_index('type', 'keyword')
+        self.catalog.add_index('uid', 'keyword')
+        self.catalog.add_index('dtstart', 'keyword')
+        self.catalog.add_index('dtend', 'keyword')
+
+
     def new(self):
+        self._init_ical()
+
         properties = (
             ('VERSION', {}, u'2.0'), 
             ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
           )
-        self.properties = {}
         for name, param, value in properties:
             self.properties[name] = PropertyValue(value, param)
 
-        self.components = {}
+        # The encoding
         self.encoding = 'UTF-8'
 
 
     def _load_state_from_file(self, file):
-        """ """
-        self.properties = {}
-        self.components = {}
+        self._init_ical()
 
         data = None
         data = file.read()
-        self.encoding = Text.guess_encoding(data)
+        encoding = Text.guess_encoding(data)
+        self.encoding = encoding
 
         value = []
         for line in unfold_lines(data):
             # Add tuple (name, PropertyValue) to list value keeping order
-            prop = PropertyType.decode(line, self.encoding)
+            prop = PropertyType.decode(line, encoding)
             value.append((prop.name, prop.value))
 
         status = 0
@@ -375,9 +405,8 @@ class icalendar(Text):
         # GET COMPONENTS INTO self.<component> #
         ########################################
         c_type = ''
-        
+ 
         for prop_name, prop_value in value[nbproperties+1:-1]:
-
             if prop_name in ('PRODID', 'VERSION'):
                 raise ValueError, 'PRODID and VERSION must appear before '\
                                   'any component'
@@ -385,33 +414,27 @@ class icalendar(Text):
                 if prop_name == 'BEGIN':
                     c_type = prop_value.value
                     component = ()
-            else:
-                if prop_name == 'END':
-                    if prop_value.value == c_type:
-                        comp = ComponentType.decode(component, c_type,
-                                                    self.encoding)
-                        # Initialize state for current type if don't exist yet
-                        if not c_type in self.components:
-                            self.components[c_type] = []
-                        self.components[c_type].append(comp)
-                        c_type = ''
-                    #elif prop_value.value in component_list:
-                    #    raise ValueError, '%s component can NOT be inserted '\
-                    #          'into %s component' % (prop_value.value, c_type)
-                    else:
-                        raise ValueError, 'Inner components are not managed yet'
-                else:
-                    component = component + ((prop_name, prop_value,),)
+                continue
 
-        if self.components == {}:
+            if prop_name == 'END':
+                if prop_value.value == c_type:
+                    comp = ComponentType.decode(component, c_type, encoding)
+                    self.add_component(comp)
+                    c_type = ''
+                #elif prop_value.value in component_list:
+                #    raise ValueError, '%s component can NOT be inserted '\
+                #          'into %s component' % (prop_value.value, c_type)
+                else:
+                    raise ValueError, 'Inner components are not managed yet'
+            else:
+                component = component + ((prop_name, prop_value,),)
+
+        if len(self.components) == 0:
             print 'WARNING : '\
                   'an icalendar file should contain at least ONE component'
-            #raise ValueError, 'an icalendar file must contain '\
-            #                  'at least ONE component'
 
 
     def to_str(self, encoding='UTF-8'):
-        """ """
         lines = []
 
         line = 'BEGIN:VCALENDAR\n'
@@ -426,8 +449,8 @@ class icalendar(Text):
                 for property_value in self.properties[key]:
                     lines.append(PropertyType.encode(key, property_value))
         # Calendar components
-        for type_component in self.components:
-            for component in self.components[type_component]:
+        for component in self.components:
+            if component is not None:
                 lines.append(ComponentType.encode(component))
 
         line = 'END:VCALENDAR\n'
@@ -439,6 +462,15 @@ class icalendar(Text):
     #######################################################################
     # API
     #######################################################################
+    def add_component(self, component):
+        # The (internal) component id
+        n = len(self.components)
+        # Add the component
+        self.components.append(component)
+        # Index the component
+        self.catalog.index_document(component, n)
+
+
     def add(self, element):
         """
         Add an element to the current icalendar object.
@@ -446,17 +478,14 @@ class icalendar(Text):
         element -- Component/Property object
         """
         if isinstance(element, Component):
-            c_type = element.c_type
-            if not c_type in self.components:
-                self.components[c_type] = []
-            self.components[c_type].append(element)
+            self.add_component(element)
         elif isinstance(element, Property):
             name = element.name
             if not name in self.properties:
                 self.properties[name] = element.value
         else:
-            raise ValueError, 'Only Property and Component object types can be'\
-                              ' added to an icalendar object.'
+            raise ValueError, ('Only Property and Component object types can'
+                               ' be added to an icalendar object.')
 
 
     def remove(self, type, uid):
@@ -464,14 +493,12 @@ class icalendar(Text):
         Definitely remove from the calendar each occurrence of an existant
         component. 
         """
-        indexes = []
-        for index, component in enumerate(self.components[type]):
-            c_uid  = component.get_property_values('UID')
-            if c_uid and c_uid.value == uid:
-                indexes.insert(0, index)
-        for index in indexes:
-            del self.components[type][index]
         self.set_changed()
+        for n in self.search(uid=uid):
+            component = self.components[n]
+            self.components[n] = None
+            # Unindex
+            self.catalog.unindex_document(component, n)
 
 
     def get_property_values(self, name=None):
@@ -498,8 +525,8 @@ class icalendar(Text):
         # Get a list if it is not.
         if not isinstance(values, list):
             values = [values, ]
-        # If the property can occur only once, set the first value of the list,
-        # ignoring others
+        # If the property can occur only once, set the first value of the
+        # list, ignoring others
         occurs = PropertyType.nb_occurrences(name)
         if occurs == 1:
             values = values[0]
@@ -515,15 +542,7 @@ class icalendar(Text):
         if type is None:
             return self.components
 
-        components = []
-        if type in self.components:
-            components = self.components[type]
-        if type == 'others':
-            for key in self.components:
-                if key not in ('VEVENT', 'VTODO', 'VJOURNAL', 'VFREEBUSY',
-                               'VTIMEZONE'):
-                    components.append(self.components[key])
-        return components
+        return [ self.components[x] for x in self.search(type=type) ]
 
 
     def duplicate_component(self, component):
@@ -549,12 +568,13 @@ class icalendar(Text):
         components = self.get_component_by_uid(uid, False)
         return sequence.value == (len(components) - 1)
 
-        
+ 
     # Get some events corresponding to arguments
     def search_events(self, only_last=True, **kw):
         """
-        Return a list of Component objects of type 'VEVENT' corresponding to the
-        given filters.
+        Return a list of Component objects of type 'VEVENT' corresponding to
+        the given filters.
+
         It should be used like this, for example:
 
             events = cal.search_events(
@@ -565,17 +585,13 @@ class icalendar(Text):
 
         ** With a list of values, events match if at least one value matches
         """
-        res_events, res_event = [], None
+        res_events = []
 
         # Get the list of differents property names used to filter
         filters = kw.keys()
 
-        # If no event
-        if 'VEVENT' not in self.components:
-            return []
-
         # For each events
-        for event in self.components['VEVENT']:
+        for event in self.get_components(type='VEVENT'):
             if only_last and not self.is_last(event):
                 continue
             add_to_res = False
@@ -638,13 +654,10 @@ class icalendar(Text):
         date. 
         If only_last is True, return only the last occurrences.
         """
-        res_events, res_event = [], None
-
-        if 'VEVENT' not in self.components:
-            return []
+        res_events = []
 
         # Get only the events which matches
-        for event in self.components['VEVENT']:
+        for event in self.get_components('VEVENT'):
             if event.correspond_to_date(date):
                 if not only_last or self.is_last(event):
                     res_events.append(event)
@@ -659,14 +672,10 @@ class icalendar(Text):
         The only_last True value means only getting events with last sequence
         number (history).
         """
-
-        res_events, res_event = [], None
-
-        if 'VEVENT' not in self.components:
-            return []
+        res_events = []
 
         # Get only the events which matches
-        for event in self.components['VEVENT']:
+        for event in self.get_components('VEVENT'):
             if only_last and not self.is_last(event):
                 continue
             if event.in_range(dtstart, dtend):
@@ -695,10 +704,7 @@ class icalendar(Text):
         The only_last True value means only getting events with last sequence
         number (history).
         """
-        res_events, res_event = [], None
-
-        if 'VEVENT' not in self.components:
-            return []
+        res_events = []
 
         # Check type of dates, we need datetime for method in_range
         if not isinstance(dtstart, datetime):
@@ -707,7 +713,9 @@ class icalendar(Text):
             dtend = datetime(dtend.year, dtend.month, dtend.day)
 
         # Get only the events which matches
-        for event in self.components['VEVENT']:
+        t0 = get_time()
+        for n in self.search(type='VEVENT'):
+            event = self.components[n]
             if only_last and not self.is_last(event):
                 continue
             if event.in_range(dtstart, dtend):
@@ -717,6 +725,8 @@ class icalendar(Text):
                     'event': event
                   }
                 res_events.append(value)
+        t1 = get_time()
+        print t1-t0
         
         if len(res_events) <= 1:
             return res_events
@@ -781,4 +791,35 @@ class icalendar(Text):
                 conflicts[index] = (i, j)
 
         return conflicts
+
+
+    #######################################################################
+    # API / Search
+    def get_index(self, name):
+        try:
+            return self.catalog.indexes[name]
+        except KeyError:
+            raise ValueError, 'the field "%s" is not indexed' % name
+
+
+    def search(self, query=None, **kw):
+        """
+        Return list of component internal ids returned by executing the query.
+        """
+        if query is None:
+            if kw:
+                atoms = []
+                for key, value in kw.items():
+                    atoms.append(queries.Equal(key, value))
+
+                query = queries.And(*atoms)
+            else:
+                raise ValueError, "expected a query"
+
+        documents = query.search(self)
+        # Sort by weight
+        documents = documents.keys()
+        documents.sort()
+
+        return documents
 

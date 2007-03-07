@@ -150,7 +150,7 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(properties, expected_properties)
 
         # Test components
-        self.assertEqual(cal.get_components(), {})
+        self.assertEqual(len(cal.get_components()), 0)
         self.assertEqual(cal.get_components('VEVENT'), [])
 
 

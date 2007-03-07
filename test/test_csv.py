@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #                    2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ ruby,http://ruby-lang.org,42352,2001-03-28"""
 
 TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 
-TEST_SYNTAX_ERROR = 'one,,\n,two,,\n,,three'
+TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
 
 
@@ -42,9 +42,9 @@ class CSVTestCase(TestCase):
         data = '"Martin von Löwis","Marc André Lemburg","Guido van Rossum"\n'
         handler = CSV()
         handler.load_state_from_string(data)
-        self.assertEqual(handler.get_rows(), [[u"Martin von Löwis",
-                                               u"Marc André Lemburg",
-                                               u"Guido van Rossum"]])
+        rows = list(handler.get_rows())
+        self.assertEqual(rows, [[u"Martin von Löwis", u"Marc André Lemburg",
+                                 u"Guido van Rossum"]])
 
 
     def test_num_of_lines(self):
@@ -68,7 +68,8 @@ class CSVTestCase(TestCase):
         handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
                           'date': Date}
         handler.load_state_from_string(TEST_DATA_1)
-        self.assertEqual(handler.get_rows(), [
+        rows = list(handler.get_rows())
+        self.assertEqual(rows, [
             [u"python", URI.decode('http://python.org'), 52343,
              Date.decode('2003-10-23')], 
             [u"ruby", URI.decode('http://ruby-lang.org'), 42352,
@@ -77,10 +78,9 @@ class CSVTestCase(TestCase):
 
     def test_load_state_without_schema(self):
         handler = CSV()
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
-                          'date': Date}
         handler.load_state_from_string(TEST_DATA_1)
-        self.assertEqual(handler.get_rows(), [
+        rows = list(handler.get_rows())
+        self.assertEqual(rows, [
             [u"python", u'http://python.org', u'52343', u'2003-10-23'], 
             [u"ruby", u'http://ruby-lang.org', u'42352', u'2001-03-28']])
 
@@ -115,9 +115,9 @@ class CSVTestCase(TestCase):
     def test_get_rows(self):
         handler = CSV()
         handler.load_state_from_string(TEST_DATA_2)
-        self.assertEqual(handler.get_rows([0, 1]), [
-            ['one', 'two', 'three'], 
-            ['four', 'five', 'six']])
+        rows = list(handler.get_rows([0, 1]))
+        self.assertEqual(rows, [['one', 'two', 'three'], 
+                                ['four', 'five', 'six']])
 
 
     def test_add_row(self):
@@ -131,23 +131,24 @@ class CSVTestCase(TestCase):
         handler = CSV()
         handler.load_state_from_string(TEST_DATA_2)
         handler.del_row(1)
-        self.assertEqual(handler.get_row(1), ['seven', 'eight', 'nine'])
+        self.assertRaises(IndexError, handler.get_row, 1)
 
 
     def test_del_rows(self):
         handler = CSV()
         handler.load_state_from_string(TEST_DATA_2)
         handler.del_rows([0, 1])
-        self.assertEqual(handler.get_row(0), ['seven', 'eight', 'nine'])
+        self.assertRaises(IndexError, handler.get_row, 0)
 
 
     def test_set_state_in_memory_resource(self):
         handler = CSV()
         handler.load_state_from_string(TEST_DATA_2)
         handler.add_row(['a', 'b', 'c'])
-        handler.save_state()
+        data = handler.to_str()
+
         handler2 = CSV()
-        handler2.load_state_from_string(TEST_DATA_2)
+        handler2.load_state_from_string(data)
         self.assertEqual(handler2.get_row(3), ['a', 'b', 'c'])
 
 
@@ -172,7 +173,6 @@ class CSVTestCase(TestCase):
                           'number': Integer(index='keyword'),
                           'date': Date(index='keyword')}
         handler.load_state_from_string(TEST_DATA_1)
-        self.assertEqual(len(handler.indexes), 4)
         self.assertEqual(handler.search(number=52343), [0])
         self.assertEqual(handler.search(date=Date.decode('2001-03-28')), [1])
 
@@ -207,11 +207,12 @@ class CSVTestCase(TestCase):
         handler.schema = {'name': Unicode(index='text'),
                           'date': Date(index='keyword')}
         handler.load_state_from_string(data)
+
         self.assertEqual(handler.search(name='window'), [1])
         handler.del_row(1)
         self.assertEqual(handler.search(name='window'), [])
-        self.assertEqual(handler.search(name='computer'), [1])
-        handler.del_row(1)
+        self.assertEqual(handler.search(name='computer'), [2])
+        handler.del_row(2)
         self.assertEqual(handler.search(name='computer'), [])
 
 
@@ -223,13 +224,13 @@ class CSVTestCase(TestCase):
         handler.load_state_from_string('')
         handler.add_row(['Piotr', 'Macuk', '1975-12-08'])
         handler.add_row(['Basia', 'Macuk', '2002-02-14'])
-        self.assertEqual(handler.search(surname='Macuk'), [0, 1])
+        self.assertEqual(handler.search(surname='macuk'), [0, 1])
         handler.add_row(['Pawe³', 'Macuk', '1977-05-13'])
-        self.assertEqual(handler.search(surname='Macuk'), [0, 1, 2])
+        self.assertEqual(handler.search(surname='macuk'), [0, 1, 2])
         handler.del_row(2)
-        self.assertEqual(handler.search(surname='Macuk'), [0, 1])
+        self.assertEqual(handler.search(surname='macuk'), [0, 1])
         handler.del_row(0)
-        self.assertEqual(handler.search(surname='Macuk'), [0])
+        self.assertEqual(handler.search(surname='macuk'), [1])
 
 
     def test_advanced_search(self):
@@ -237,14 +238,14 @@ class CSVTestCase(TestCase):
         handler.columns = ['id', 'name', 'country', 'date']
         handler.schema = {'id': Integer, 'name': Unicode(index='text'),
                           'country': Unicode(index='text'),
-                          'date': Date(index='text')}
-        handler.load_state_from_file('test_adv.csv')
-        result1 = handler.search(name='dde', country='Sweden')
+                          'date': Date(index='keyword')}
+        handler.load_state_from('test_adv.csv')
+        result1 = handler.search(name='dde', country='sweden')
         self.assertEqual(result1, [5, 6])
 
         q1 = queries.Or(queries.Equal('name', 'dde'),
                         queries.Equal('name', 'fse'))
-        q2 = queries.Equal('country', 'France')
+        q2 = queries.Equal('country', 'france')
         q3 = queries.And(q1, q2)
         result2 = handler.search(q3)
         self.assertEqual(result2, [4])
@@ -252,8 +253,8 @@ class CSVTestCase(TestCase):
         # previous results as query items
         q1 = queries.Or(queries.Equal('name', 'dde'),
                         queries.Equal('name', 'fse'))
-        q2 = queries.Or(queries.Equal('country', 'Poland'),
-                        queries.Equal('country', 'France'))
+        q2 = queries.Or(queries.Equal('country', 'poland'),
+                        queries.Equal('country', 'france'))
         q = queries.And(q1, q2)
         result5 = handler.search(q)
         self.assertEqual(result5, [1, 4])

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #                    2005 Piotr Macuk <piotr@macuk.pl>
 #
 # This program is free software; you can redistribute it and/or
@@ -61,38 +61,14 @@ def parse(data, n_columns=None):
             yield line
 
 
-
-class Row(list):
-
-    def get_value(self, name):
-        if self.columns is None:
-            raise ValueError, 'schema not defined'
-
-        column = self.columns.index(name)
-        return self[column]
-
-
-    def set_value(self, name, value):
-        if self.columns is None:
-            raise ValueError, 'schema not defined'
-
-        column = self.columns.index(name)
-        self[column] = value
-
-
-    def copy(self):
-        clone = self.__class__(self)
-        clone.number = self.number
-        clone.columns = self.columns
-
-        return clone
-
-
+###########################################################################
+# Index & Search
+###########################################################################
 
 class Index(dict):
 
     def _normalise_word(self, word):
-        # XXX temporary until we analyse as the catalog do
+        # XXX temporary until we analyse as the catalog does
         if isinstance(word, bool):
             word = unicode(int(word))
         elif not isinstance(word, basestring):
@@ -138,6 +114,72 @@ class Index(dict):
 
 
 
+class Catalog(object):
+
+    __slots__ = ['indexes', 'analysers']
+
+    def __init__(self):
+        self.indexes = {}
+        self.analysers = {}
+
+
+    def add_index(self, name, analyser_name):
+        self.indexes[name] = Index()
+        self.analysers[name] = analysers.get_analyser(analyser_name)
+
+
+    def index_document(self, document, number):
+        for name in self.indexes:
+            index = self.indexes[name]
+            analyser = self.analysers[name]
+
+            value = document.get_value(name)
+            for word, position in analyser(value):
+                index.setdefault(word, {})
+                index[word].setdefault(number, [])
+                index[word][number].append(position)
+
+
+    def unindex_document(self, document, number):
+        for name in self.indexes:
+            index = self.indexes[name]
+            analyser = self.analysers[name]
+
+            value = document.get_value(name)
+            for word, position in analyser(value):
+                del index[word][number]
+
+
+###########################################################################
+# Handler
+###########################################################################
+class Row(list):
+
+    def get_value(self, name):
+        if self.columns is None:
+            raise ValueError, 'schema not defined'
+
+        column = self.columns.index(name)
+        return self[column]
+
+
+    def set_value(self, name, value):
+        if self.columns is None:
+            raise ValueError, 'schema not defined'
+
+        column = self.columns.index(name)
+        self[column] = value
+
+
+    def copy(self):
+        clone = self.__class__(self)
+        clone.number = self.number
+        clone.columns = self.columns
+
+        return clone
+
+
+
 class CSV(Text):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
@@ -145,16 +187,10 @@ class CSV(Text):
     class_version = '20040625'
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'lines', 'indexes']
+                 'lines', 'n_lines', 'catalog']
 
-
-    def new(self, **kw):
-        self.lines = []        
-        if self.is_schema_defined():
-            self._index_init()
-        else:
-            self.indexes = None
-
+    # By default we don't index anything
+    catalog = None
 
     # Hash with column names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
@@ -174,151 +210,42 @@ class CSV(Text):
 
 
     #########################################################################
-    # Parsing
+    # Load & Save
     #########################################################################
-    def _parse(self, data):
-        """Parse the csv data"""
-        # Only if the schema and columns are set, else the schema or
-        # columns definition is ignored.
-        if self.is_schema_defined():
-            schema = self.schema
-            columns = self.columns
-
-            n_columns = len(columns)
-            for line in parse(data, n_columns):
-                yield [ schema[columns[i]].decode(value)
-                        for i, value in enumerate(line) ]
-        else:
-            encoding = Text.guess_encoding(data)
-            for line in parse(data):
-                yield [ unicode(x, encoding) for x in line ]
-
-
-    def _index_init(self):
-        """Initialize csv values index list"""
-        indexes = self.indexes = []
-        for column in self.columns:
-            datatype = self.schema[column]
-            if getattr(datatype, 'index', None) is not None:
-                indexes.append(Index())
-            else:
-                indexes.append(None)
-
-
-    def _index_all(self):
-        """Index parsed lines from the csv data according to the schema. 
-           The index keys are decoded data.
-        """
-        self._index_init()
-        for row_number, line in enumerate(self.lines):
-            self._index_row(line, row_number)
-
-
-    def _index_row(self, row, row_number):
-        """Index one line"""
-        indexes = self.indexes
-        for i, value in enumerate(row):
-            datatype = self.schema[self.columns[i]]
-            analyser_name = getattr(datatype, 'index', None)
-            if analyser_name is None:
-                continue
-            analyser = analysers.get_analyser(analyser_name)
-            if indexes[i] is None:
-                indexes[i] = Index()
-            index = indexes[i]
-            for word, position in analyser(value):
-                index.setdefault(word, {})
-                index[word].setdefault(row_number, [])
-                index[word][row_number].append(position)
-
-
-    def _unindex_row(self, row_number):
-        """Unindex deleted row"""
-        # XXX We should un-index directly looking from the row values, as
-        # the commented code below shows. The difficulty comes from the
-        # fact that row numbers change when a row before is deleted; in
-        # other words, when we remove a row, we must re-index all rows
-        # after. The solution is to use internal ids, different from the
-        # row number, which don't change through the handler's live.
-##        indexes = self.indexes
-##        for i, value in enumerate(row):
-##            index = indexes[i]
-##            if index is not None:
-##                del index[value][row_number]
-
-        indexes = self.indexes
-        for reverse_index in indexes:
-            if reverse_index is not None:
-                for key in reverse_index.keys():
-                    idx = reverse_index[key]
-                    # Remove deleted row index
-                    try:
-                        del idx[row_number]
-                    except KeyError:
-                        pass
-                    if idx:
-                        # Reindex remaining row indexes
-                        # decrease row numbers above the deleted row
-                        new_idx = {}
-                        for number in idx:
-                            if number > row_number:
-                                new_number = number - 1
-                            else:
-                                new_number = number
-                            new_idx[new_number] = idx[number]
-                        reverse_index[key] = new_idx
-                    else:
-                        del reverse_index[key]
+    def new(self, **kw):
+        self.lines = []
+        self.n_lines = 0
+        # Initialize the catalog if needed (Index&Search)
+        if self.schema is not None:
+            self.catalog = Catalog()
+            for column in self.columns:
+                datatype = self.schema[column]
+                index = getattr(datatype, 'index', None)
+                if index is not None:
+                    self.catalog.add_index(column, index)
 
 
     def _load_state_from_file(self, file):
+        # Initialize
+        self.new()
+
+        # Read the data, and find out the encoding
         data = file.read()
-
-        # Collection of None and reverse indexes.
-        # When the column is indexed there will be dictionary with 
-        # value: list of row indexes 
-        # When there is no index associate with column, the None value
-        # is placed into self.indexes list at the non indexed column position.
-        # Example (with above indexed schema): [None, None, <reverse index>] 
-        self.indexes = None
-
-        lines = []
-        for row_number, line in enumerate(self._parse(data)):
-            row = self.row_class(line)
-            row.number = row_number
-            row.columns = self.columns
-            lines.append(row)
-
-        self.lines = lines
         self.encoding = self.guess_encoding(data)
 
-        if self.is_schema_defined():
-            # Index lines data
-            self._index_all()
+        schema = self.schema
+        if schema is None:
+            for line in parse(data):
+                row = [ unicode(x, self.encoding) for x in line ]
+                self._add_row(row)
+        else:
+            columns = self.columns
+            for line in parse(data, len(columns)):
+                row = [ schema[columns[i]].decode(value)
+                        for i, value in enumerate(line) ]
+                self._add_row(row)
 
 
-    # XXX This can't work until the virtual handler overhaul is done
-    def _get_virtual_handler(self, segment):
-        index = int(segment.name)
-        return self.lines[index]
-
-
-    #########################################################################
-    # Catalog API
-    def get_index(self, name):
-        if name not in self.schema:
-            raise ValueError, 'the field "%s" is not defined' % name
-
-        datatype = self.schema[name]
-        if getattr(datatype, 'index', False) is False:
-            raise ValueError, 'the field "%s" is not indexed' % name
-
-        return self.indexes[self.columns.index(name)]
-
-
-    #########################################################################
-    # API
-    #########################################################################
     def to_str(self, encoding='UTF-8'):
         lines = []
         # When schema or columns (or both) are None there is plain 
@@ -327,108 +254,136 @@ class CSV(Text):
         columns = self.columns
         if schema and columns:
             datatypes = [ (i, schema[x]) for i, x in enumerate(columns) ]
-            for row in self.lines:
+            for row in self.get_rows():
                 line = [ '"%s"' % datatype.encode(row[i]).replace('"', '""')
                          for i, datatype in datatypes ]
                 lines.append(','.join(line))
         else:
-            for line in self.lines:
+            for row in self.get_rows():
                 line = [ '"%s"' % x.encode(encoding).replace('"', '""')
-                         for x in line ]
+                         for x in row ]
                 lines.append(','.join(line))
         return '\n'.join(lines)
 
 
-    def is_schema_defined(self):
-        """Check if the handler schema is defined. Returns True of False"""
-        if self.schema and self.columns:
-            return True
-        else:
-            return False
+    #########################################################################
+    # Traverse
+    #########################################################################
+    def _get_virtual_handler(self, segment):
+        index = int(segment.name)
+        try:
+            row = self.lines[index]
+        except IndexError:
+            raise LookupError
+        if row is None:
+            raise LookupError
+        return row
 
 
+    #########################################################################
+    # API / Private
+    #########################################################################
+    def get_index(self, name):
+        if self.schema is None:
+            raise ValueError, 'schema not defined'
+
+        if name not in self.schema:
+            raise ValueError, 'the field "%s" is not defined' % name
+
+        try:
+            return self.catalog.indexes[name]
+        except KeyError:
+            raise ValueError, 'the field "%s" is not indexed' % name
+
+
+    def _add_row(self, row):
+        """Append new row as an instance of row class."""
+        # Build the row
+        row = self.row_class(row)
+        row.number = self.n_lines
+        row.columns = self.columns
+        # Add
+        self.lines.append(row)
+        self.n_lines += 1
+        # Index
+        if self.schema is not None:
+            self.catalog.index_document(row, row.number)
+
+
+    #########################################################################
+    # API / Public
+    #########################################################################
     def is_indexed(self):
         """Check if at least one index is available for searching, etc."""
-        indexes = self.indexes
-        if indexes is None:
+        if self.catalog is None:
             return False
-        indexes = [i for i in indexes if i is not None]
-        if indexes:
-            return True
-
-        return False
+        return bool(self.catalog.indexes)
 
 
     def get_nrows(self):
-        return len(self.lines)
+        return len([ x for x in self.lines if x is not None])
 
 
     def get_row(self, number):
-        """Return row at the given line number.
-
-        Count begins at 0.
         """
-        return self.lines[number]
+        Return row at the given line number. Count begins at 0.
+
+        Raise an exception (IndexError) if the row is not available.
+        XXX Maybe it should be better to return None.
+        """
+        row = self.lines[number]
+        if row is None:
+            raise IndexError, 'list index out of range'
+        return row
 
 
     def get_rows(self, numbers=None):
-        """Return rows at the given list of line numbers.
-           If no numbers are given, then all rows are returned.
+        """
+        Return rows at the given list of line numbers. If no numbers
+        are given, then all rows are returned.
 
         Count begins at 0.
         """
         if numbers is None:
             for row in self.lines:
-                yield row
+                if row is not None:
+                    yield row
         else:
             for i in numbers:
-                yield self.lines[i]
+                yield self.get_row(i)
 
 
     def add_row(self, row):
         """Append new row as an instance of row class."""
         self.set_changed()
-        new_row = self.row_class(row)
-        number = self.get_nrows()
-        new_row.number = number
-        new_row.columns = self.columns
-        self.lines.append(new_row)
-
-        if self.is_schema_defined():
-            # Index the new line
-            self._index_row(new_row, number)
+        self._add_row(row)
 
 
     def del_row(self, number):
-        """Delete row at the given line number.
-
-        Count begins at 0.
-        """
+        """Delete row at the given line number. Count begins at 0."""
         self.set_changed()
-        row = self.lines[number]
-        del self.lines[number]
 
-        if self.is_schema_defined():
-            # Unindex deleted row
-            self._unindex_row(number)
+        # Remove
+        row = self.lines[number]
+        if row is None:
+            raise IndexError, 'list assignment index out of range'
+        self.lines[number] = None
+
+        # Unindex
+        if self.schema is not None:
+            self.catalog.unindex_document(row, row.number)
 
 
     def del_rows(self, numbers):
-        """Delete rows at the given line numbers.
-           
-        Count begins at 0.
-        """
+        """Delete rows at the given line numbers. Count begins at 0."""
         self.set_changed()
         # Indexes are changing while deleting process
-        number_offset = 0
         for i in numbers:
-            self.del_row(i + number_offset)
-            number_offset = number_offset - 1
+            self.del_row(i)
 
 
     def search(self, query=None, **kw):
-        """Return list of row numbers returned by executing the query.
-        """
+        """Return list of row numbers returned by executing the query."""
         if not self.is_indexed():
             raise IndexError, 'no index is defined in the schema'
 
@@ -451,7 +406,7 @@ class CSV(Text):
 
 
     def get_unique_values(self, name):
-        return set([ x.get_value(name) for x in self.lines ])
+        return set([ x.get_value(name) for x in self.get_rows() ])
 
 
 register_handler_class(CSV)

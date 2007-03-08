@@ -1104,6 +1104,7 @@ class Calendar(Text, icalendar):
 
         # Get UID and Component object
         uid = context.get_form_value('UID')
+        self.set_changed()
         if uid:
             event = self.duplicate_component(self.get_component_by_uid(uid))
             # Test if current user is admin or organizer of this event
@@ -1191,7 +1192,6 @@ class Calendar(Text, icalendar):
         # Change timestamp
         event.set_property('DTSTAMP', PropertyValue(datetime.today()))
 
-        self.set_changed()
         goto = '%s?date=%s' % (goto, selected_date)
         return context.come_back(u'Data updated', goto=goto, exclude=keys)
 

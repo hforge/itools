@@ -21,11 +21,11 @@
 from datetime import datetime, date, time
 from copy import deepcopy
 from operator import itemgetter
-from time import time as get_time
 
 # Import from itools
 from itools.datatypes import Unicode, String
 from itools.catalog import queries
+from itools.catalog.queries import Equal, Range, Or, And
 from itools.handlers.Text import Text
 from itools.csv.csv import Catalog
 from itools.ical.types import PropertyType, ComponentType
@@ -713,21 +713,23 @@ class icalendar(Text):
             dtend = datetime(dtend.year, dtend.month, dtend.day)
 
         # Get only the events which matches
-        t0 = get_time()
-        for n in self.search(type='VEVENT'):
+        query = And(Equal('type', 'VEVENT'),
+                    Or(Range('dtstart', dtstart, dtend),
+                       Range('dtend', dtstart, dtend),
+                       And(Range('dtstart', None, dtstart),
+                           Range('dtend', dtend, None))))
+
+        for n in self.search(query):
             event = self.components[n]
             if only_last and not self.is_last(event):
                 continue
-            if event.in_range(dtstart, dtend):
-                value = {
-                    'dtstart': event.get_property_values('DTSTART').value,
-                    'dtend': event.get_property_values('DTEND').value,
-                    'event': event
-                  }
-                res_events.append(value)
-        t1 = get_time()
-        print t1-t0
-        
+            value = {
+                'dtstart': event.get_property_values('DTSTART').value,
+                'dtend': event.get_property_values('DTEND').value,
+                'event': event
+              }
+            res_events.append(value)
+
         if len(res_events) <= 1:
             return res_events
 

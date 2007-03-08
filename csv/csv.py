@@ -254,8 +254,13 @@ class CSV(Text):
         if schema and columns:
             datatypes = [ (i, schema[x]) for i, x in enumerate(columns) ]
             for row in self.get_rows():
-                line = [ '"%s"' % datatype.encode(row[i]).replace('"', '""')
-                         for i, datatype in datatypes ]
+                line = []
+                for i, datatype in datatypes:
+                    try:
+                        data = datatype.encode(row[i], encoding=encoding)
+                    except TypeError:
+                        data = datatype.encode(row[i])
+                    line.append('"%s"' % data.replace('"', '""'))
                 lines.append(','.join(line))
         else:
             for row in self.get_rows():

@@ -18,7 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from Python Standard Library
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from copy import deepcopy
 from operator import itemgetter
 
@@ -30,6 +30,21 @@ from itools.handlers.Text import Text
 from itools.csv.csv import Catalog
 from itools.ical.types import PropertyType, ComponentType
 from itools.ical.types import data_properties
+
+
+# The smallest possible difference between non-equal timedelta objects.
+#
+# XXX To be used to work-around the fact that range searches don't include
+# the righ limit. So if we want to search a date between 'dtstart' and
+# 'dtend', we must write:
+#
+#    Range('date', dtstart, dtend + resolution)
+#
+# To be used systematically. Till the day we replace Range searches by the
+# more complete set: GreaterThan, GreaterThanOrEqual, LesserThan and
+# LesserThanOrEqual.
+resolution = timedelta.resolution
+
 
 
 def unfold_lines(data):
@@ -101,7 +116,7 @@ class PropertyValue(object):
 
 class Component(object):
     """
-        Parses and evaluates a component block.
+    Parses and evaluates a component block.
         
         input :   string values for c_type and encoding 
                   a list of Property objects 
@@ -112,8 +127,8 @@ class Component(object):
                   a dictionnary {'property_name': Property[] } for properties
     """
     # XXX A parse method should be added to test properties inside of current 
-    # component-type/properties (for example to test if property can appear more
-    # than one time, ...)
+    # component-type/properties (for example to test if property can appear
+    # more than one time, ...)
 
     def __init__ (self, c_type, properties=None, encoding='UTF-8'):
         """
@@ -184,7 +199,7 @@ class Component(object):
         occurs = PropertyType.nb_occurrences(name)
         if occurs != 1:
             if not isinstance(values, list):
-                values = [values, ]
+                values = [values]
         else:
             if isinstance(values, list):
                 if len(values) == 1:
@@ -205,7 +220,7 @@ class Component(object):
             set it except if a value is already set for it.
         """
         if not isinstance(property, Property):
-            raise 'ValueError', 'Add method take a Property object as parameter'
+            raise ValueError, 'Add method take a Property object as parameter'
 
         # Build PropertyValue
         property_name, property_value = property.name, property.value
@@ -227,15 +242,15 @@ class Component(object):
         if property_name not in self.properties:
             self.properties[property_name] = property_value
         else:
-            raise 'ValueError', 'Property already set for current component, '\
-                                'use set_property method.'
+            raise ValueError, 'Property already set for current component, '\
+                              'use set_property method.'
 
 
     # Test if a given date corresponds to current component
     def correspond_to_date(self, date):
         """
-        Return False if date < 'DTSTART' or date > 'DTEND', 
-        return True in all other cases
+        Return False if date < 'DTSTART' or date > 'DTEND', return True
+        in all other cases
         """
         tuple_date = (date.year, date.month, date.day)
 
@@ -524,7 +539,7 @@ class icalendar(Text):
         """
         # Get a list if it is not.
         if not isinstance(values, list):
-            values = [values, ]
+            values = [values]
         # If the property can occur only once, set the first value of the
         # list, ignoring others
         occurs = PropertyType.nb_occurrences(name)
@@ -638,29 +653,41 @@ class icalendar(Text):
         Return components with the given uid, None if it doesn't appear.
         If only_last is True, return only the last occurrence.
         """
-        components = self.search_events(only_last, UID='%s' %uid)
-        if not only_last and components:
-            return components
-        for component in components:
-            if self.is_last(component):
-                return component
-        return None
+        # Search
+        uid = str(uid)
+        results = self.search(uid=uid)
+
+        # Only last
+        if only_last is True:
+            for n in results:
+                component = self.components[n]
+                if self.is_last(component):
+                    return component
+            return None
+
+        # All
+        return [ self.components[x] for x in results ]
 
 
     # Get some events corresponding to a given date
     def get_events_in_date(self, date, only_last=True):
         """
-        Return a list of Component objects of type 'VEVENT' matching the given
-        date. 
+        Return a list of Component objects of type 'VEVENT' matching the
+        given date. 
+
         If only_last is True, return only the last occurrences.
         """
         res_events = []
 
-        # Get only the events which matches
-        for event in self.get_components('VEVENT'):
-            if event.correspond_to_date(date):
-                if not only_last or self.is_last(event):
-                    res_events.append(event)
+        # Get only the events which match
+        query = And(Equal('type', 'VEVENT'),
+                    Range('dtstart', None, date + resolution),
+                    Range('dtend', date, None))
+
+        for n in self.search(query):
+            event = self.components[n]
+            if not only_last or self.is_last(event):
+                res_events.append(event)
 
         return res_events
 
@@ -714,9 +741,9 @@ class icalendar(Text):
 
         # Get only the events which matches
         query = And(Equal('type', 'VEVENT'),
-                    Or(Range('dtstart', dtstart, dtend),
-                       Range('dtend', dtstart, dtend),
-                       And(Range('dtstart', None, dtstart),
+                    Or(Range('dtstart', dtstart, dtend + resolution),
+                       Range('dtend', dtstart, dtend + resolution),
+                       And(Range('dtstart', None, dtstart + resolution),
                            Range('dtend', dtend, None))))
 
         for n in self.search(query):

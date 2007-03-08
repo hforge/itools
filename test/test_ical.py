@@ -695,7 +695,7 @@ class icalTestCase(unittest.TestCase):
         conflicts = cal.get_conflicts(date)
         self.assertEqual(conflicts, None) 
 
-        # set a conflict
+        # Set a conflict
         uid1 = '581361a0-1dd2-11b2-9a42-bd3958eeac9a'
         uid2 = '581361a0-1dd2-11b2-9a42-bd3958eeac9b'
         event = cal.get_component_by_uid(uid2)

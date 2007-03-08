@@ -282,10 +282,9 @@ class PropertyType(object):
     # Get number of occurrences for given property name
     @classmethod
     def nb_occurrences(cls, name):
-        occurs = 0
         if name in data_properties:
-            occurs = data_properties[name].occurs
-        return occurs
+            return data_properties[name].occurs
+        return 0
 
 
 

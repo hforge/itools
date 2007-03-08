@@ -189,9 +189,6 @@ class CSV(Text):
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'lines', 'n_lines', 'catalog']
 
-    # By default we don't index anything
-    catalog = None
-
     # Hash with column names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some columns the schema should be declared as:
@@ -216,7 +213,9 @@ class CSV(Text):
         self.lines = []
         self.n_lines = 0
         # Initialize the catalog if needed (Index&Search)
-        if self.schema is not None:
+        if self.schema is None:
+            self.catalog = None
+        else:
             self.catalog = Catalog()
             for column in self.columns:
                 datatype = self.schema[column]

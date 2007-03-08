@@ -40,7 +40,7 @@ def parse(data, n_columns=None):
     """
     # Find out the dialect
     if data:
-        lines = data.splitlines()
+        lines = data.splitlines(True)
         dialect = sniffer.sniff('\n'.join(lines[:10]))
         # Fix the fucking sniffer
         dialect.doublequote = True

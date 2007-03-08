@@ -7,7 +7,7 @@
   <table>
     <tr stl:repeat="row rows" class="${repeat/row/even}">
       <th style="text-align: left">${row/column}</th>
-      <td>${row/value}</td>
+      <td style="white-space: pre">${row/value}</td>
     </tr>
   </table>
 

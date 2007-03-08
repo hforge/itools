@@ -19,7 +19,8 @@
     </thead>
     <tbody>
       <tr stl:repeat="row rows" class="${repeat/row/even}">
-        <td valign="top" stl:repeat="column row">${column}</td>
+        <td valign="top" stl:repeat="column row"
+          style="white-space: pre">${column}</td>
       </tr>
     </tbody>
   </table>

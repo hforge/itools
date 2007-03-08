@@ -69,7 +69,9 @@ class Index(dict):
 
     def _normalise_word(self, word):
         # XXX temporary until we analyse as the catalog does
-        if isinstance(word, bool):
+        if word is None:
+            return None
+        elif isinstance(word, bool):
             word = unicode(int(word))
         elif not isinstance(word, basestring):
             word = unicode(word)
@@ -84,7 +86,7 @@ class Index(dict):
 
         if word in self:
             return self[word].copy()
-        
+
         return {}
 
 
@@ -93,7 +95,7 @@ class Index(dict):
         right = self._normalise_word(right)
 
         rows = {}
-        
+
         if not left:
             for key in self.keys():
                 if  key < right:

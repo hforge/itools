@@ -194,7 +194,7 @@ data_properties = {
   'RECURRENCE-ID': DateTime(occurs=1), 
   'RELATED-TO': Unicode(occurs=1), 
   'URL': URI(occurs=1), 
-  'UID': Unicode(occurs=1)
+  'UID': String(occurs=1)
 }
 
 ################################################################
@@ -416,7 +416,8 @@ class PropertyValueType(object):
         for token, lexeme in PropertyValueType.get_tokens(property):
             if token == TPARAM:
                 param_name, param_value = lexeme.split('=')
-                parameters[param_name] = ParameterType.decode(lexeme)
+                param_value = param_value.split(',')
+                parameters[param_name] = param_value
             elif token == TVALUE:
                 #####################################
                 # Change types of values when needed
@@ -436,9 +437,9 @@ class PropertyValueType(object):
         lines = ''
         # Property parameters
         if property_value.parameters:
-            for key_param in property_value.parameters:
-                lines = lines + ';' + \
-                   ParameterType.encode(property_value.parameters[key_param])
+            for param_name in property_value.parameters:
+                param_value = property_value.parameters[param_name]
+                lines = lines + ';%s=%s' % (param_name, ','.join(param_value))
 
         # property_value value
         vtype = data_properties.get(name, String)
@@ -463,127 +464,6 @@ class PropertyValueType(object):
                 tokens.append(token)
             value = u'\\'.join(tokens)
         from itools.ical.icalendar import PropertyValue
-        return PropertyValue(value, parameters)
+        return PropertyValue(value, **parameters)
 
-
-
-class ParameterType(object):
-    """
-    Manage an icalendar parameter :
-    
-      ;param-name=param-value1[, param-value2, ...]
-      
-    """
-
-    ###################################################################
-    # Semantic analysis. 
-    #
-    #   XXX test if the parameter accepts the given values
-    #       could be a great idea
-    # 
-    #   property name  >  name
-    #   values list    >  values
-    # 
-    ###################################################################
-    @classmethod
-    def parse(cls, parameter, encoding='UTF-8'):
-        name, values = None, []
-        name, values_str = parameter.split('=')
-        values = values_str.split(',')
-        return name, values
-
-
-    @classmethod
-    def decode(cls, parameter, encoding='UTF-8'):
-        name, values = None, []
-
-        # Parsing (omitting first character ';')
-        name, values = ParameterType.parse(parameter, encoding)
-
-        from itools.ical.icalendar import Parameter
-        return Parameter(name, values)
-
-
-    @classmethod
-    def encode(cls, parameter):
-        # Parameter name
-        param = str(parameter.name) + '='
-        # Parameter values
-        param = param + str(parameter.values[0])
-        for value in parameter.values[1:]:
-            param = param + ',' + str(value)
-        return param
-
-
-
-class ComponentType(object):
-    """
-    Manage an icalendar component :
-    
-      BEGIN:componentName
-      
-        ... properties ...
-
-      END:componentName
-    """
-
-    ###################################################################
-    # Semantic analysis. 
-    #
-    #   - Regroup values of the same property into a list when allowed
-    # 
-    #   XXX test if number of occurrences of properties is correct
-    # 
-    ###################################################################
-    @classmethod
-    def parse(cls, properties, c_type, encoding='UTF-8'):
-        props = {}
-
-        for prop_name, prop_value in properties:
-            occurs = PropertyType.nb_occurrences(prop_name)
-            # If always found
-            if prop_name in props:
-                if occurs == 1:
-                    raise SyntaxError, 'Property %s can be assigned only one '\
-                                       'value' % prop_name
-                props[prop_name].extend(prop_value)
-            #elif occurs == 1:
-            #    props[prop_name] = prop_value
-            else:
-                props[prop_name] = prop_value
-
-        return props
-
-
-    @classmethod
-    def decode(cls, properties, c_type, encoding='UTF-8'):
-        props = {}
-
-        # Parsing
-        props = ComponentType.parse(properties, c_type, encoding)
-
-        from itools.ical.icalendar import Component
-        return Component(c_type, props)
-
-
-    @classmethod
-    def encode(cls, component):
-        lines = []
-
-        line = 'BEGIN:%s\n' % component.c_type
-        lines.append(Unicode.encode(line))
-
-        for key in component.properties:
-            occurs = PropertyType.nb_occurrences(key)
-            if occurs == 1:
-                line = PropertyType.encode(key, component.properties[key])
-                lines.append(line)
-            else:
-                for item in component.properties[key]:
-                    lines.append(PropertyType.encode(key, item))
-
-        line = 'END:%s\n' % component.c_type
-        lines.append(Unicode.encode(line))
-
-        return ''.join(lines)
 

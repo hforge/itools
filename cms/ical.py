@@ -25,7 +25,6 @@ from itools.datatypes import Enumerate, Unicode, Time as iTime
 from itools.datatypes.datetime_ import ISOCalendarDate as Date
 from itools.ical import gridlayout
 from itools.ical.icalendar import icalendar, Component, PropertyValue
-from itools.ical.icalendar import Parameter
 from itools.ical.types import data_properties, DateTime
 from itools.stl import stl
 from itools.web import get_context
@@ -648,7 +647,7 @@ class Calendar(Text, icalendar):
         if not out_on:
             dtstart = properties('DTSTART')
             dtstart, param = dtstart.value, dtstart.parameters
-            if not param or 'DATE' not in param['VALUE'].values:
+            if not param or 'DATE' not in param['VALUE']:
                 value = ''
                 if starts_on:
                     value = Time.encode(event['dtstart'].time())
@@ -667,7 +666,7 @@ class Calendar(Text, icalendar):
 
         ###############################################################
         # Set class for conflicting events or just from status value
-        uid = properties('UID').value
+        uid = event['event'].uid
         if uid in conflicts_list:
             ns['STATUS'] = 'cal_conflict'
         else:
@@ -679,7 +678,6 @@ class Calendar(Text, icalendar):
 
         ###############################################################
         # Set url to edit_event_form
-        uid = properties('UID').value
         ns['UID'] = '%s' % uid
         url = ';edit_event_form?uid=%s' % uid
         if timetable:
@@ -728,7 +726,7 @@ class Calendar(Text, icalendar):
 
         ###############################################################
         # Set class for conflicting events or just from status value
-        uid = properties('UID').value
+        uid = event['event'].uid
         if uid in conflicts_list:
             ns['STATUS'] = 'cal_conflict'
         else:
@@ -740,7 +738,6 @@ class Calendar(Text, icalendar):
 
         ###############################################################
         # Set url to edit_event_form
-        uid = properties('UID').value
         ns['UID'] = '%s' % uid
         url = ';edit_event_form?uid=%s' % uid
         if timetable:
@@ -1103,22 +1100,18 @@ class Calendar(Text, icalendar):
             return context.come_back('', goto, exclude=keys)
 
         # Get UID and Component object
+        properties = {}
         uid = context.get_form_value('UID')
-        self.set_changed()
         if uid:
-            event = self.duplicate_component(self.get_component_by_uid(uid))
+            event = self.get_component_by_uid(uid)
             # Test if current user is admin or organizer of this event
             if not self.is_organizer_or_admin(context, event):
                 message = u'You are not authorized to modify this event.'
                 return context.come_back(goto, message, exclude=keys)
-            self.add(event)
         else:
-            event = Component('VEVENT')
             # Add user as Organizer
             organizer = context.user.get_abspath()
-            organizer = PropertyValue(organizer)
-            event.set_property('ORGANIZER', organizer)
-            self.add(event)
+            properties['organizer'] = PropertyValue(organizer)
 
         for key in context.get_form_keys():
             if key == 'UID':
@@ -1144,7 +1137,7 @@ class Calendar(Text, icalendar):
                     params = {}
                     if v_time == ':':
                         value = v_date
-                        params['VALUE'] = Parameter('VALUE', ['DATE'])
+                        params['VALUE'] = ['DATE']
                     else:
                         value = ' '.join([v_date, v_time])
                     # Get value as a datetime object
@@ -1177,7 +1170,7 @@ class Calendar(Text, icalendar):
                 # Save values
                 for key in ('DTSTART', 'DTEND'):
                     value = PropertyValue(values[key][0], values[key][1])
-                    event.set_property(key, value)
+                    properties[key] = value
             elif key.startswith('DTSTART') or key.startswith('DTEND'):
                 continue
             else:
@@ -1188,9 +1181,12 @@ class Calendar(Text, icalendar):
                 for value in values:
                     value = type.decode(value)
                     decoded_values.append(PropertyValue(value))
-                event.set_property(key, decoded_values)
-        # Change timestamp
-        event.set_property('DTSTAMP', PropertyValue(datetime.today()))
+                properties[key] = decoded_values
+
+        if uid:
+            self.update_component(uid, **properties)
+        else:
+            self.add_component('VEVENT', **properties)
 
         goto = '%s?date=%s' % (goto, selected_date)
         return context.come_back(u'Data updated', goto=goto, exclude=keys)

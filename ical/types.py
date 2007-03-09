@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005 Nicolas Deram <nderam@gmail.com>  
+# Copyright (C) 2005-2007 Nicolas Deram <nderam@itaapy.com>  
+#               2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -310,8 +311,8 @@ class PropertyValueType(object):
     #     7 --> value to begin (just after ':')
     #     8 --> value begun 
     ###################################################################
-    @classmethod
-    def get_tokens(cls, property):
+    @staticmethod
+    def get_tokens(property):
         status, lexeme, last = 0, '', ''
 
         # Init status
@@ -408,8 +409,8 @@ class PropertyValueType(object):
     ###################################################################
     # Parse parameters and value                                      #
     ###################################################################
-    @classmethod
-    def parse(cls, name, property, encoding='UTF-8'):
+    @staticmethod
+    def parse(name, property, encoding='UTF-8'):
         """
         Parse content line property parameters and value.
         """
@@ -434,8 +435,8 @@ class PropertyValueType(object):
         return value, parameters
 
 
-    @classmethod
-    def encode(cls, name, property_value):
+    @staticmethod
+    def encode(name, property_value):
         lines = ''
         # Property parameters
         if property_value.parameters:
@@ -454,8 +455,8 @@ class PropertyValueType(object):
         return lines
 
 
-    @classmethod
-    def decode(cls, name, string, encoding='UTF-8'):
+    @staticmethod
+    def decode(name, string, encoding='UTF-8'):
         value, parameters = None, {}
         # Parsing
         value, parameters = PropertyValueType.parse(name, string, encoding)

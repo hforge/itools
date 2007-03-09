@@ -25,7 +25,7 @@ from datetime import datetime
 from itools.handlers.Text import Text
 from itools.datatypes import URI
 from itools.ical.icalendar import icalendar, Component
-from itools.ical.icalendar import Property, PropertyValue
+from itools.ical.icalendar import PropertyValue
 from itools.ical.icalendar import unfold_lines
 from itools.ical import types as icalTypes
 from itools.ical.types import PropertyType, PropertyValueType
@@ -163,14 +163,12 @@ class icalTestCase(unittest.TestCase):
 
         # no parameters builder
         property_value = PropertyValue('This is the summary')
-        property = Property('SUMMARY', property_value)
-        self.assertEqual(property.name, 'SUMMARY')
-        self.assertEqual(property.value, property_value)
-        self.assertEqual(PropertyType.encode(property.name, property), expected)
+        self.assertEqual(PropertyType.encode('SUMMARY', property_value),
+                         expected)
 
         # with parameters builder
-        property = Property('SUMMARY', PropertyValue('This is the summary'))
-        self.assertEqual(PropertyType.encode(property.name, property), expected)
+        property = PropertyValue('This is the summary')
+        self.assertEqual(PropertyType.encode('SUMMARY', property), expected)
 
         ##################################################################
         # property with one parameter
@@ -179,10 +177,7 @@ class icalTestCase(unittest.TestCase):
         # property with one parameter
         params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
         value = PropertyValue('mailto:darwin@itaapy.com', **params)
-        property = Property('ATTENDEE', value)
-                            
-        self.assertEqual(PropertyType.encode(property.name, property), 
-                         expected)
+        self.assertEqual(PropertyType.encode('ATTENDEE', value), expected)
 
 
     def test_get_property_values(self):

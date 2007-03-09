@@ -220,8 +220,8 @@ class PropertyType(object):
     #       could be a great idea but could be done on Component
     # 
     ###################################################################
-    @classmethod
-    def parse(cls, property, encoding='UTF-8'):
+    @staticmethod
+    def parse(property, encoding='UTF-8'):
         """
         Parse content line property splitting it into 2 parts:
             name | [parameters]value
@@ -245,29 +245,31 @@ class PropertyType(object):
         return lexeme, property
 
 
-    @classmethod
-    def decode(cls, line, encoding='UTF-8'):
+    @staticmethod
+    def decode(line, encoding='UTF-8'):
         # XXX get only one property line instead of all of this name and so
         # multiple lines in input
-        name, value, parameters = None, None, {}
         # Get name
         name, value = PropertyType.parse(line, encoding)
         # Get PropertyValue (parameters and value)
         value = PropertyValueType.decode(name, value, encoding)
-        from itools.ical.icalendar import Property
-        return Property(name, value)
+
+        # Check type        
+        occurs = PropertyType.nb_occurrences(name)
+        if occurs == 1:
+            # If occurs == 1, then value is the first given value
+            if isinstance(value, list):
+                value = value[0]
+        else:
+            if not isinstance(value, list):
+                value = [value]
+
+        return name, value
 
 
-    @classmethod
-    def encode(cls, name, property):
+    @staticmethod
+    def encode(name, property_values):
         lines = ''
-        # If we get a PropertyValue, we recreate a whole Property
-        from itools.ical.icalendar import Property, PropertyValue
-        if isinstance(property, PropertyValue):
-            property = Property(name, property)
-        # Property name
-        name = property.name
-        property_values = property.value
         # For each property_value
         if isinstance(property_values, list):
             for property_value in property_values:
@@ -280,8 +282,8 @@ class PropertyType(object):
 
 
     # Get number of occurrences for given property name
-    @classmethod
-    def nb_occurrences(cls, name):
+    @staticmethod
+    def nb_occurrences(name):
         if name in data_properties:
             return data_properties[name].occurs
         return 0

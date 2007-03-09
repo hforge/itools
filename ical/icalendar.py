@@ -68,27 +68,6 @@ def unfold_lines(data):
 
 
 
-class Property(object):
-
-    def __init__(self, name, property_value):
-        """
-        Initialize the property.
-
-        name -- name of the property as a string
-        property_value -- PropertyValue object or PropertyValue[]
-        """
-        occurs = PropertyType.nb_occurrences(name)
-        if occurs == 1:
-            # If occurs == 1, then value is the first given value
-            if isinstance(property_value, list):
-                property_value = property_value[0]
-        else:
-            if not isinstance(property_value, list):
-                property_value = [property_value]
-        self.name, self.value = name, property_value
-
-
-
 class PropertyValue(object):
 
     def __init__(self, value, **kw):
@@ -289,8 +268,8 @@ class icalendar(Text):
         value = []
         for line in unfold_lines(data):
             # Add tuple (name, PropertyValue) to list value keeping order
-            prop = PropertyType.decode(line, encoding)
-            value.append((prop.name, prop.value))
+            prop_name, prop_value = PropertyType.decode(line, encoding)
+            value.append((prop_name, prop_value))
 
         status = 0
         nbproperties = 0

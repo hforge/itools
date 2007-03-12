@@ -143,10 +143,10 @@ class Calendar(Text, icalendar):
 
     @classmethod
     def get_defaults(cls, selected_date=None, tt_start=None, tt_end=None):
-        """ Return a dic with default values for default fields. """
+        """Return a dic with default values for default fields. """
 
         # Default values for DTSTART and DTEND
-        default = cls.default_fields
+        default = cls.default_fields.copy()
 
         if selected_date:
             year, month, day = selected_date.split('-')
@@ -296,102 +296,6 @@ class Calendar(Text, icalendar):
 
 
     # XXX DEPRECATED, not completely replaced yet
-    def get_events(self, selected_date, method='monthly_view', timetable=None, 
-                   fields=None, resource_name=None, show_conflicts=False):
-        """
-        Get namespace for one selected_date, filling given fields  
-        We can specify a timetable, a different resource_name, and if we want
-        to show conflicts.
-        """
-        # If no selected_date, return []
-        if selected_date is None:
-            return []
-        # If no tuple of fields given, set default one
-        if fields == None:
-            fields = self.default_viewed_fields
-        # Initialize url
-        base_url = ';edit_event_form?'
-        if resource_name:
-            base_url = '%s/;edit_event_form?' % resource_name
-
-        # Get events on selected_date
-        if timetable:
-            index = timetable['index']
-            start = datetime.combine(selected_date, timetable['start'])
-            end = datetime.combine(selected_date, timetable['end'])
-            events = self.get_events_in_range(start, end)
-            base_url = '%stimetable=%s&' % (base_url, index)
-        else:
-            events = self.get_events_in_date(selected_date)
-
-        if show_conflicts:
-            conflicts = self.get_conflicts(selected_date)
-            conflicts_list = set()
-            if conflicts:
-                [conflicts_list.update(uids) for uids in conflicts]
-
-        # For each event, fill namespace
-        namespace = []
-        for event in events:
-            uid = event.get_property_values('UID').value
-            ns_event = {'DTSTART': None, 'DTEND': None, 'TIME': None, 
-                        'STATUS': 'TENTATIVE'}
-
-            # - Show start-end times only if event starts and ends on the
-            # same day and has no parameter VALUE=DATE, as a string HH:MM
-            # - Show only "start time...", "..." and "...end time" if xx days
-            if 'DTSTART' in fields:
-                value = event.get_property_values('DTSTART')
-                value, params = value.value, value.parameters
-                param = params.get('VALUE', '')
-                if not param or param.values != ['DATE']:
-                    # Get DTEND value
-                    if 'DTEND' not in fields:
-                        value2 = value
-                    else:
-                        value2 = event.get_property_values('DTEND').value
-                    v_date, v2_date = value.date(), value2.date()
-                    # Set times as printable times HH:MM
-                    v_time = Time.encode(value.time())
-                    v2_time = Time.encode(value2.time())
-                    # Only one day
-                    if v_date == v2_date:
-                        ns_event['DTSTART'] = v_time
-                        ns_event['DTEND'] = v2_time
-                        ns_event['TIME'] = True
-                    # On first day
-                    elif v_date == selected_date and (not timetable or \
-                      (timetable and value == start)):
-                        ns_event['DTSTART'] = '%s...' % v_time
-                        ns_event['TIME'] = True
-                    # On last day
-                    elif v2_date == selected_date and (not timetable or \
-                      (timetable and value2 == end)):
-                        ns_event['DTEND'] = '...%s' % v2_time
-                        ns_event['TIME'] = True
-                    # Neither first nor last day
-                    else:
-                        ns_event['DTSTART'] = '...'
-                        ns_event['TIME'] = True
-
-            # Manage other fields
-            for field in fields:
-                if field not in ('DTSTART', 'DTEND'):
-                    values = event.get_property_values(field)
-                    ns_event[field] = self.ns_values(values)
-
-            # Set a class for conflicting events
-            if show_conflicts and uid in conflicts_list:
-                ns_event['STATUS'] = 'cal_conflict'
-
-            ns_event['url'] = '%sdate=%s&uid=%s&method=%s'\
-              % (base_url, Date.encode(selected_date), uid, method)
-            namespace.append(ns_event)
-
-        return namespace
-
-
-    # XXX DEPRECATED, not completely replaced yet
     def get_ns_events(self, selected_date, shown_fields, timetables):
         # Get list of all events
         events_list = self.get_events_in_date(selected_date)
@@ -421,15 +325,6 @@ class Calendar(Text, icalendar):
             ns_events.append(ns_event)
         ns_events.sort(lambda x, y: cmp(x['tt_start'], y['tt_start']))
         return ns_events
-
-
-    # XXX DEPRECATED
-    def ns_values(self, values):
-        if not isinstance(values, list):
-            return values.value
-        for value in values:
-            value = values.value
-        return values
 
 
     # Get days of week based on get_first_day's result 
@@ -826,10 +721,11 @@ class Calendar(Text, icalendar):
 
         # Get date to add event
         selected_date = context.get_form_value('date', None)
-        if not uid:
+        if uid is None:
             if not selected_date:
                 message = u'To add an event, click on + symbol from the views.'
                 return context.come_back(message, goto=goto)
+        else:
             # Get it as a datetime object
             if not selected_date:
                 c_date = self.get_current_date(selected_date)
@@ -862,6 +758,7 @@ class Calendar(Text, icalendar):
 
         # Existant event
         if uid:
+            namespace['UID'] = uid
             event = self.get_component_by_uid(uid)
             if not event:
                 message = u'Event not found'
@@ -957,7 +854,7 @@ class Calendar(Text, icalendar):
 
         # Get UID and Component object
         properties = {}
-        uid = context.get_form_value('UID')
+        uid = context.get_form_value('uid')
         if uid:
             event = self.get_component_by_uid(uid)
             # Test if current user is admin or organizer of this event
@@ -967,10 +864,10 @@ class Calendar(Text, icalendar):
         else:
             # Add user as Organizer
             organizer = context.user.get_abspath()
-            properties['organizer'] = PropertyValue(organizer)
+            properties['ORGANIZER'] = PropertyValue(organizer)
 
         for key in context.get_form_keys():
-            if key == 'UID':
+            if key == 'uid':
                 continue
             elif key == 'update':
                 continue
@@ -1002,7 +899,7 @@ class Calendar(Text, icalendar):
                     except:
                         # Remove event if new one
                         if not uid:
-                            uid = event.get_property_values('UID').value
+                            uid = event.uid
                             icalendar.remove(self, 'VEVENT', uid)
                         goto = ';edit_event_form?date=%s' % selected_date
                         message = u'One or more field is invalid.'
@@ -1020,24 +917,28 @@ class Calendar(Text, icalendar):
                         goto = goto + '&timetable=%s' % timetable
                     # Remove event if new one
                     if not uid:
-                        uid = event.get_property_values('UID').value
+                        uid = event.uid
                         icalendar.remove(self, 'VEVENT', uid)
                     return context.come_back(goto=goto, message=message)
                 # Save values
                 for key in ('DTSTART', 'DTEND'):
-                    value = PropertyValue(values[key][0], values[key][1])
+                    value = PropertyValue(values[key][0], **values[key][1])
                     properties[key] = value
             elif key.startswith('DTSTART') or key.startswith('DTEND'):
                 continue
             else:
+                datatype = self.get_datatype(key)
                 values = context.get_form_values(key)
-                type = data_properties.get(key, Unicode)
 
                 decoded_values = []
                 for value in values:
-                    value = type.decode(value)
+                    value = datatype.decode(value)
                     decoded_values.append(PropertyValue(value))
-                properties[key] = decoded_values
+
+                if datatype.occurs == 1:
+                    properties[key] = decoded_values[0]
+                else:
+                    properties[key] = decoded_values
 
         if uid:
             self.update_component(uid, **properties)

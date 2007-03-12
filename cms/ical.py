@@ -65,8 +65,7 @@ class Calendar(Text, icalendar):
     class_icon16 = 'images/icalendar16.png'
     class_icon48 = 'images/icalendar48.png'
 
-    class_views = [['monthly_view', 'weekly_view', 'grid_weekly_view',
-                    'download_form'],
+    class_views = [['monthly_view', 'weekly_view', 'download_form'],
                    ['upload_form', 'edit_timetables_form',
                     'edit_metadata_form', 'edit_event_form']]
 
@@ -454,103 +453,6 @@ class Calendar(Text, icalendar):
         return ns_days
 
 
-    # Get a week beginning at start_date as a list to be given to namespace
-    def get_timetables_ns(self, start_date, resource_name=None, ndays=7,
-                          show_conflicts=False):
-        # Get events occurring into current time window
-        end_date = start_date + timedelta(ndays)
-        events = self.get_sorted_events_in_range(start_date, end_date)
-
-        ###################################################################
-        # Get conflicts in events if activated
-        conflicts_list = set()
-        if show_conflicts:
-            conflicts = self.get_conflicts(start_date)
-            if conflicts:
-                [conflicts_list.update(uids) for uids in conflicts]
-        ###################################################################
-
-        ns = []
-        # Initialize url and parameters
-        base_url = ';edit_event_form?'
-        if resource_name:
-            base_url = '%s/;edit_event_form?' % resource_name
-        base_param = ''
-        # Get timetables
-        timetables = self.get_timetables()
-        # For each defined timetable
-        for tt_index, timetable in enumerate(timetables):
-            tt_start, tt_end = timetable['start'], timetable['end']
-            day = start_date
-            ns_timetable = {}
-            ns_timetable['timetable'] = Time.encode(tt_start) + ' - ' +\
-                                        Time.encode(tt_end)
-            # ndays days
-            ns_days = []
-            # 7 days a week
-            for d in range(7):
-                # day in timetable
-                if d < ndays:
-                    ns_day = {}
-                    params = '%sdate=%s&timetable=%s'\
-                             % (base_param, Date.encode(day), tt_index)
-                    ns_day['url'] = '%s%s' % (base_url, params)
-                    
-                    #######################################################
-                    # For each day, we add events occuring on this day
-                    # We keep events until they end.
-                    ns_events = []
-                    if events != []:
-                        index = 0
-                        tt_date_start = datetime.combine(day, tt_start)
-                        tt_date_end = datetime.combine(day, tt_end)
-                        while index < len(events):
-                            event = events[index]
-                            e_dtstart = event['dtstart']
-                            e_dtend = event['dtend']
-                            # Current event occurs on current date and tt
-                            # event begins during current tt
-                            starts_on = (e_dtstart >= tt_date_start and
-                                         e_dtstart < tt_date_end)
-                            # event ends during current tt
-                            ends_on = (e_dtend > tt_date_start and
-                                       e_dtend <= tt_date_end)
-                            # event begins before and ends after
-                            out_on = (e_dtstart < tt_date_start and 
-                                      e_dtend > tt_date_end)
-
-                            if starts_on or ends_on or out_on:
-                                ns_event = self.get_ns_event(day, event,
-                                                resource_name=resource_name,
-                                                conflicts_list=conflicts_list,
-                                                timetable=str(tt_index),
-                                                starts_on=starts_on, 
-                                                ends_on=ends_on, out_on=out_on)
-                                ns_events.append(ns_event)
-                                # Remove finished event
-                                if e_dtstart.date() == e_dtend.date() and \
-                                   e_dtend.time() <= tt_end:
-                                    events.remove(event)
-                                    if events == []:
-                                        break
-                                else:
-                                    index = index + 1
-                            # current event occurs only later
-                            elif e_dtstart > tt_date_end:
-                                break
-                            else:
-                                index = index + 1
-                    #######################################################
-                    ns_day['events'] = ns_events
-
-                    ns_days.append(ns_day)
-                day = day + timedelta(1)
-            ns_timetable['days'] = ns_days
-            ns.append(ns_timetable)
-        return ns
-
-
-
     #########################################################################
     # Get timetables as a list of string containing time start of each one
     def get_timetables_grid_ns(self, start_date):
@@ -885,52 +787,6 @@ class Calendar(Text, icalendar):
         namespace = {}
         # Add header to navigate into time
         namespace = self.add_selector_ns(c_date, 'weekly_view' ,namespace)
-        # Get header line with days of the week
-        namespace['days_of_week'] = self.days_of_week_ns(start, True, ndays,
-                                                         c_date)
-        ###################################################################
-
-        # Get 1 week with all defined timetables or none (just one line)
-        namespace['timetables'] = self.get_timetables_ns(start)
-
-        add_icon = self.get_handler('/ui/images/button_add.png')
-        namespace['add_icon'] = self.get_pathto(add_icon)
-
-        handler = self.get_handler('/ui/ical_weekly_view.xml')
-        return stl(handler, namespace)
-
-
-    # Grid Weekly view
-    grid_weekly_view__access__ = 'is_allowed_to_view'
-    grid_weekly_view__sublabel__ = u'Grid_Weekly'
-    def grid_weekly_view(self, context):
-        ndays = 7
-
-        # Current date
-        c_date = context.get_form_value('date', None)
-        if not c_date:
-            c_date = context.get_cookie('selected_date')
-        c_date = self.get_current_date(c_date)
-        # Save selected date
-        context.set_cookie('selected_date', c_date)
-
-        # Method
-        method = context.get_cookie('method')
-        if method != 'grid_weekly_view':
-            context.set_cookie('method', 'grid_weekly_view')
-
-        ###################################################################
-        # Calculate start of current week
-        # 0 = Monday, ..., 6 = Sunday
-        weekday = c_date.weekday()
-        start = c_date - timedelta(weekday)
-        if self.get_first_day() == 0:
-            start = start - timedelta(1)
-
-        ###################################################################
-        namespace = {}
-        # Add header to navigate into time
-        namespace = self.add_selector_ns(c_date, 'grid_weekly_view' ,namespace)
 
         ###################################################################
         # Get icon to appear to add a new event
@@ -1027,7 +883,7 @@ class Calendar(Text, icalendar):
                     namespace['%s_month' % key] = month
                     namespace['%s_day' % key] = day
                     param = params.get('VALUE', '')
-                    if not param or param.values != ['DATE']:
+                    if not param or param != ['DATE']:
                         hours, minutes = Time.encode(value).split(':')
                         namespace['%s_hours' % key] = hours
                         namespace['%s_minutes' % key] = minutes

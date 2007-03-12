@@ -29,34 +29,34 @@
     </ul>
   </div>
 
-  <table class="timetable" border="1" width="100%">
+  <table class="timetable" border="0" width="100%">
     <tr>
       <th></th>
       <th stl:repeat="header timetable_data/headers"
           colspan="${header/width}"
-          class="header">
-        <div>${header/header}</div>
+          class="${header/class}">
+        ${header/header}
       </th>
     </tr>
 
     <tr stl:repeat="row timetable_data/body">
       <th class="time" width="10%">
-        <div>${row/start}-${row/end}</div>
+        ${row/start}-${row/end}
       </th>
-      <div stl:repeat="item row/items">
-        <div stl:repeat="cell item/cells">
+      <stl:block repeat="item row/items">
+        <stl:block repeat="cell item/cells">
           <div stl:if="cell/new">${cell/ns}</div>
 
           <div stl:if="cell/free">
-            <td colspan="${cell/colspan}" class="free">
+            <td colspan="${cell/colspan}" class="free" valign="top">
               <a stl:if="cell/newurl" class="add_event" href="${cell/newurl}">
                 <img width="16" height="16" src="${add_icon}" />
               </a>
               <div>&nbsp;</div>
             </td>
           </div>
-        </div>
-      </div>
+        </stl:block>
+      </stl:block>
     </tr>
 
   <!-- FULL DAYS SPECIAL BEHAVIOUR

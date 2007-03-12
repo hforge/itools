@@ -336,11 +336,13 @@ class Skin(Folder):
         styles = []
         # Epoz
         styles.append('/ui/epoz.css')
-        # Calendar (http://dynarch.com/mishoo/calendar.epl)
+        # Calendar JavaScript Widget (http://dynarch.com/mishoo/calendar.epl)
         styles.append('/ui/calendar/calendar-aruni.css')
         # Aruni (default skin)
         styles.append('/ui/onetruelayout.css')
         styles.append('/ui/aruni/aruni.css')
+        # Calendar
+        styles.append('/ui/calendar.css')
         # This skin's style
         if self.has_handler('style.css'):
             styles.append('%s/style.css' % self.abspath)

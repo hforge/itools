@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from Standard Library
-from datetime import timedelta
+from datetime import date, timedelta
 
 # Import from itools
 from itools.datatypes.datetime_ import ISOCalendarDate as Date
@@ -26,18 +26,14 @@ from itools.xhtml.XHTML import Document
 
 
 template_string = """
-  <td colspan="${cell/colspan}" rowspan="${cell/rowspan}" 
-      class="event">
+  <td colspan="${cell/colspan}" rowspan="${cell/rowspan}" class="event"
+    valign="top">
       <a stl:if="cell/newurl" class="add_event"
          href="${cell/newurl}">
         <img width="16" height="16" src="${add_icon}" />
       </a>
       <a href="${cell/content/url}">
         <div class="summary">${cell/content/SUMMARY}</div>
-        <div stl:if="cell/content/ORGANIZER" class="organizer">
-          ${cell/content/ORGANIZER}</div>
-        <div stl:if="cell/content/TIME" class="time">
-          (${cell/content/TIME})</div>
       </a>
   </td>
 """
@@ -389,6 +385,8 @@ class TimeGridsCollection:
 
     def __init__(self, time_grids, headers, times, full_day_events,
                  start_date=None):
+        today = date.today()
+
         if filter(lambda x: x, full_day_events):
             full_day = []
         else:
@@ -405,7 +403,11 @@ class TimeGridsCollection:
         for i in range(len(time_grids)):
             table, ncols = time_grids[i].render_namespace(times)
             if headers is not None:
-                self.headers.append({'header': headers[i], 'width': ncols})
+                self.headers.append(
+                    {'header': headers[i], 'width': ncols,
+                     'class': 'header'})
+                if current_date == today:
+                    self.headers[-1]['class'] = 'cal_day_selected'
 
             if full_day is not None:
                 full_day.append({'events': full_day_events[i], 'width': ncols})

@@ -332,7 +332,6 @@ class icalendar(Text):
                     component = Component(c_type, uid)
                     component.add_version(c_properties)
                     self.components[uid] = component
-                    self.catalog.index_document(component, uid)
                     # Next
                     c_type = None
                     uid = None
@@ -352,6 +351,11 @@ class icalendar(Text):
                                             ' one value' % prop_name)
                 else:
                     c_properties[prop_name] = prop_value
+
+        # Index
+        for uid in self.components:
+            component = self.components[uid]
+            self.catalog.index_document(component, uid)
 
 
     def to_str(self, encoding='UTF-8'):
@@ -595,7 +599,7 @@ class icalendar(Text):
         date and sorted chronologically.
         """
         dtstart = datetime.combine(selected_date, time(0,0))
-        dtend = datetime.combine(selected_date, time(23,59))
+        dtend = dtstart + timedelta(days=1) - resolution
 
         return self.get_sorted_events_in_range(dtstart, dtend)
 

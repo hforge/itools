@@ -28,7 +28,8 @@ from itools.catalog import queries
 from itools.catalog.queries import Equal, Range, Or, And
 from itools.handlers.Text import Text
 from itools.csv.csv import Catalog
-from itools.ical.types import PropertyType, data_properties
+from itools.ical.parser import parse
+from itools.ical.types import data_properties, fold_line
 
 
 # The smallest possible difference between non-equal timedelta objects.
@@ -43,28 +44,6 @@ from itools.ical.types import PropertyType, data_properties
 # more complete set: GreaterThan, GreaterThanOrEqual, LesserThan and
 # LesserThanOrEqual.
 resolution = timedelta.resolution
-
-
-
-def unfold_lines(data):
-    """
-    Unfold the folded lines.
-    """
-    i = 0
-    lines = data.splitlines()
-
-    line = ''
-    while i < len(lines):
-        next = lines[i]
-        if next.startswith(' ') or next.startswith('\t'):
-            line += next[1:]
-        else:
-            if line:
-                yield line
-            line = next
-        i += 1
-    if line:
-        yield line
 
 
 
@@ -150,21 +129,6 @@ class Component(object):
 
 
     def add_version(self, properties):
-        # Check value
-        for name in properties:
-            value = properties[name]
-
-            occurs = PropertyType.nb_occurrences(name)
-            if occurs != 1:
-                if not isinstance(value, list):
-                    properties[name] = [value]
-            else:
-                if isinstance(value, list):
-                    if len(value) != 1:
-                        raise ValueError, ('property "%s" requires only one'
-                                           ' value' % name)
-                    properties[name] = value[0]
-
         # Sequence
         if 'SEQUENCE' in properties:
             sequence = properties.pop('SEQUENCE')
@@ -232,6 +196,26 @@ class icalendar(Text):
     class_extension = 'ics'
 
 
+    # To override a component proerty from the spec, or to add a new one,
+    # define this class variable.
+    schema = {
+##        'DTSTART': DateTime(occurs=1, index='keyword'),
+##        'DTEND': DateTime(occurs=1, index='keyword'),
+    }
+
+
+    @classmethod
+    def get_datatype(cls, name):
+        # Overriden schema
+        if name in cls.schema:
+            return cls.schema[name]
+        # The specs schema
+        if name in data_properties:
+            return data_properties[name]
+        # Default
+        return String(occurs=0)
+
+
     #########################################################################
     # New
     #########################################################################
@@ -258,63 +242,70 @@ class icalendar(Text):
         self.encoding = 'UTF-8'
 
 
+    #########################################################################
+    # Load State
+    #########################################################################
     def _load_state_from_file(self, file):
+        # Initialize the data structures
         self._init_ical()
 
+        # Read the data and figure out the encoding
         data = file.read()
         encoding = Text.guess_encoding(data)
         self.encoding = encoding
 
-        value = []
-        for line in unfold_lines(data):
-            # Add tuple (name, PropertyValue) to list value keeping order
-            prop_name, prop_value = PropertyType.decode(line, encoding)
-            value.append((prop_name, prop_value))
+        # Parse
+        lines = []
+        for name, value, parameters in parse(data):
+            # Deserialize
+            datatype = self.get_datatype(name)
+            if isinstance(datatype, Unicode):
+                value = datatype.decode(value, encoding=encoding)
+            else:
+                value = datatype.decode(value)
+            # Build the value (a PropertyValue instance)
+            value = PropertyValue(value, **parameters)
+            # Append
+            lines.append((name, value))
 
-        status = 0
-        nbproperties = 0
-        optproperties = []
-
-        if (value[0][0]!='BEGIN' or value[0][1].value!='VCALENDAR'
-            or len(value[0][1].parameters)!=0): 
+        # Read first line
+        first = lines[0]
+        if (first[0] != 'BEGIN' or first[1].value != 'VCALENDAR'
+            or len(first[1].parameters) != 0): 
             raise ValueError, 'icalendar must begin with BEGIN:VCALENDAR'
 
+        lines = lines[1:]
 
-        ##################################
-        # GET PROPERTIES INTO properties #
-        ##################################
-
-        # Get number of properties
-        for prop_name, prop_value in value[1:-1]:
-            if prop_name == 'BEGIN':
+        ###################################################################
+        # Read properties
+        n_line = 0
+        for name, value in lines:
+            if name == 'BEGIN':
                 break
-            nbproperties = nbproperties + 1
-
-        # Get properties
-        done = []
-        for prop_name, prop_value in value[1:nbproperties+1]:
-            if prop_name == 'VERSION':
-                if 'VERSION' in done:
+            elif name == 'END':
+                break
+            elif name == 'VERSION':
+                if 'VERSION' in self.properties:
                     raise ValueError, 'VERSION can appear only one time'
-                done.append('VERSION')
-            if prop_name == 'PRODID':
-                if 'PRODID' in done:
+            elif name == 'PRODID':
+                if 'PRODID' in self.properties:
                     raise ValueError, 'PRODID can appear only one time'
-                done.append('PRODID')
-            self.properties[prop_name] = prop_value
-
-        # Check if VERSION and PRODID properties don't miss
-        if 'VERSION' not in done or 'PRODID' not in done:
+            # Add the property
+            self.properties[name] = value
+            n_line += 1
+        
+        # The properties VERSION and PRODID are mandatory
+        if 'VERSION' not in self.properties or 'PRODID' not in self.properties:
             raise ValueError, 'PRODID or VERSION parameter missing'
 
+        lines = lines[n_line:]
 
-        ########################################
-        # GET COMPONENTS INTO self.<component> #
-        ########################################
+        ###################################################################
+        # Read components
         c_type = None
         uid = None
  
-        for prop_name, prop_value in value[nbproperties+1:-1]:
+        for prop_name, prop_value in lines[:-1]:
             if prop_name in ('PRODID', 'VERSION'):
                 raise ValueError, 'PRODID and VERSION must appear before '\
                                   'any component'
@@ -343,19 +334,64 @@ class icalendar(Text):
             else:
                 if prop_name == 'UID':
                     uid = prop_value.value
-                elif prop_name in c_properties:
-                    try:
-                        c_properties[prop_name].extend(prop_value)
-                    except AttributeError:
-                        raise SyntaxError, ('Property %s can be assigned only'
-                                            ' one value' % prop_name)
                 else:
-                    c_properties[prop_name] = prop_value
+                    datatype = self.get_datatype(prop_name)
+                    if datatype.occurs == 1:
+                        # Check the property has not yet being found
+                        if prop_name in c_properties:
+                            msg = ('the property %s can be assigned only one'
+                                   ' value' % prop_name)
+                            raise ValueError, msg
+                        # Set the property
+                        c_properties[prop_name] = prop_value
+                    else:
+                        value = c_properties.setdefault(prop_name, [])
+                        value.append(prop_value)
 
-        # Index
+        ###################################################################
+        # Index components
         for uid in self.components:
             component = self.components[uid]
             self.catalog.index_document(component, uid)
+
+
+    #########################################################################
+    # Save State
+    #########################################################################
+    @classmethod
+    def encode_property(cls, name, property_values, encoding='utf-8'):
+        if not isinstance(property_values, list):
+            property_values = [property_values]
+
+        datatype = cls.get_datatype(name)
+
+        lines = []
+        for property_value in property_values:
+            # The parameters
+            parameters = ''
+            for param_name in property_value.parameters:
+                param_value = property_value.parameters[param_name]
+                parameters += ';%s=%s' % (param_name, ','.join(param_value))
+
+            # The value (encode)
+            value = property_value.value
+            if isinstance(datatype, Unicode):
+                value = datatype.encode(value, encoding=encoding)
+            else:
+                value = datatype.encode(value)
+            # The value (escape)
+            value = value.replace("\\", "\\\\")
+            value = value.replace("\r", "\\r").replace("\n", "\\n")
+
+            # Build the line
+            line = '%s%s:%s\n' % (name, parameters, value)
+            if len(line) > 75:
+                line = fold_line(line)
+
+            # Append
+            lines.append(line)
+
+        return lines
 
 
     def to_str(self, encoding='UTF-8'):
@@ -366,19 +402,16 @@ class icalendar(Text):
 
         # Calendar properties
         for key in self.properties:
-            occurs = PropertyType.nb_occurrences(key) 
-            if occurs == 1:
-                lines.append(PropertyType.encode(key, self.properties[key]))
-            else:
-                for property_value in self.properties[key]:
-                    lines.append(PropertyType.encode(key, property_value))
+            value = self.properties[key]
+            line = self.encode_property(key, value, encoding)
+            lines.extend(line)
         # Calendar components
         for uid in self.components:
             component = self.components[uid]
             c_type = component.c_type
             for sequence in component.get_sequences():
                 version = component.versions[sequence]
-                # Serialize
+                # Begin
                 line = 'BEGIN:%s\n' % c_type
                 lines.append(Unicode.encode(line))
                 # UID, SEQUENCE
@@ -387,13 +420,9 @@ class icalendar(Text):
                 # Properties
                 for key in version:
                     value = version[key]
-                    occurs = PropertyType.nb_occurrences(key)
-                    if occurs == 1:
-                        lines.append(PropertyType.encode(key, value))
-                    else:
-                        for item in value:
-                            lines.append(PropertyType.encode(key, item))
-
+                    line = self.encode_property(key, value, encoding)
+                    lines.extend(line)
+                # End
                 line = 'END:%s\n' % c_type
                 lines.append(Unicode.encode(line))
 
@@ -413,7 +442,24 @@ class icalendar(Text):
     #######################################################################
     # API
     #######################################################################
+    def check_properties(self, properties):
+        for name, value in properties.items():
+            datatype = self.get_datatype(name)
+            if datatype.occurs == 1:
+                if isinstance(value, list):
+                    msg = 'property "%s" requires only one value' % name
+                    raise TypeError, msg
+            else:
+                if not isinstance(value, list):
+                    properties[name] = [value]
+
+        return properties
+
+
     def add_component(self, c_type, **kw):
+        # Check the properties
+        kw = self.check_properties(kw)
+
         # Build the component
         uid = self.generate_uid(c_type)
         component = Component(c_type, uid)
@@ -430,6 +476,9 @@ class icalendar(Text):
 
 
     def update_component(self, uid, **kw):
+        # Check the properties
+        kw = self.check_properties(kw)
+
         # Build the new version
         component = self.components[uid]
         version = component.get_version()
@@ -478,8 +527,8 @@ class icalendar(Text):
         name -- name of the property as a string
         values -- PropertyValue[]
         """
-        occurs = PropertyType.nb_occurrences(name)
-        if occurs == 1:
+        datatype = self.get_datatype(name)
+        if datatype.occurs == 1:
             # If the property can occur only once, set the first value of the
             # list, ignoring others
             if isinstance(values, list):
@@ -538,8 +587,8 @@ class icalendar(Text):
                 # Test filter
                 expected = kw.get(filter)
                 property_value = version[filter]
-                occurs = PropertyType.nb_occurrences(filter) 
-                if occurs == 1:
+                datatype = self.get_datatype(filter)
+                if datatype.occurs == 1:
                     if property_value.value != expected:
                         break
                 else:

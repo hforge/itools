@@ -24,11 +24,9 @@ from datetime import datetime
 # Import from itools
 from itools.handlers.Text import Text
 from itools.datatypes import URI
-from itools.ical.icalendar import icalendar, Component
-from itools.ical.icalendar import PropertyValue
-from itools.ical.icalendar import unfold_lines
+from itools.ical.icalendar import icalendar, Component, PropertyValue
+from itools.ical.parser import unfold_lines
 from itools.ical import types as icalTypes
-from itools.ical.types import PropertyType, PropertyValueType
 
 
 # Example with 1 event
@@ -155,29 +153,24 @@ class icalTestCase(unittest.TestCase):
 
     def test_property(self):
         """
-        Test to create, access and encode a property with or without parameters.
+        Test to create, access and encode a property with or without
+        parameters.
         """
-        ##################################################################
-        # property without parameter
-        expected = 'SUMMARY:This is the summary\n'
+        # Property without parameter
+        expected = ['SUMMARY:This is the summary\n']
 
-        # no parameters builder
         property_value = PropertyValue('This is the summary')
-        self.assertEqual(PropertyType.encode('SUMMARY', property_value),
-                         expected)
+        output = icalendar.encode_property('SUMMARY', property_value)
+        self.assertEqual(output, expected)
 
-        # with parameters builder
-        property = PropertyValue('This is the summary')
-        self.assertEqual(PropertyType.encode('SUMMARY', property), expected)
+        # Property with one parameter
+        expected = ['ATTENDEE;MEMBER="mailto:DEV-GROUP@host.com":'
+                    'mailto:darwin@itaapy.com\n']
 
-        ##################################################################
-        # property with one parameter
-        expected = 'ATTENDEE;MEMBER="mailto:DEV-GROUP@host.com":'\
-                   'mailto:darwin@itaapy.com\n'
-        # property with one parameter
         params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
         value = PropertyValue('mailto:darwin@itaapy.com', **params)
-        self.assertEqual(PropertyType.encode('ATTENDEE', value), expected)
+        output = icalendar.encode_property('ATTENDEE', value)
+        self.assertEqual(output, expected)
 
 
     def test_get_property_values(self):
@@ -272,8 +265,8 @@ class icalTestCase(unittest.TestCase):
         event = cal.get_components('VEVENT')[0]
         version = event.get_version()
         for prop_name in version:
-            occurs = PropertyType.nb_occurrences(prop_name)
-            if occurs == 1:
+            datatype = cal.get_datatype(prop_name)
+            if datatype.occurs == 1:
                 prop = version[prop_name]
                 property = self.property_to_string(prop_name, prop)
                 properties.append(property)
@@ -341,8 +334,8 @@ class icalTestCase(unittest.TestCase):
             for prop_name in version:
                 if prop_name == 'DTSTAMP':
                     continue
-                occurs = PropertyType.nb_occurrences(prop_name)
-                if occurs == 1:
+                datatype = cal.get_datatype(prop_name)
+                if datatype.occurs == 1:
                     prop = version[prop_name]
                     property = self.property_to_string(prop_name, prop)
                     properties.append(property)

@@ -24,29 +24,6 @@ from itools.datatypes.base import DataType
 from itools.datatypes import Integer, URI, Unicode, String
 
 
-def fold_line(line):
-    """
-    Fold the unfolded line over 75 characters.
-    """
-    i = 1
-    lines = line.split(' ')
-    res = lines[0] 
-    size = len(res)
-    while i < len(lines):
-        # Still less than 75c
-        if size+len(lines[i]) <= 75:
-            res = res + ' ' + lines[i] 
-            size = size + 1 + len(lines[i]) 
-            i = i + 1
-        # More than 75c, insert new line
-        else:
-            res = res + '\n ' + lines[i]
-            size = len(lines[i]) 
-            i = i + 1
-    return res
-
-
-
 class DateTime(DataType):
 
     @staticmethod
@@ -132,10 +109,6 @@ class DateTime(DataType):
 
 
 
-# Tokens
-TPARAM, TVALUE = range(2)
-token_name = ['name', 'parameter', 'value']
-
 # data types for each property
 # --> TO VERIFY AND COMPLETE
 # occurs = 0  means 0..n occurrences
@@ -204,269 +177,42 @@ data_properties = {
 #classvalue = ['PRIVATE', 'PUBLIC', 'CONFIDENTIAL']
 ################################################################
 
-class PropertyType(object):
+###################################################################
+# Manage an icalendar content line property :
+#
+#   name *(;param-name=param-value1[, param-value2, ...]) : value CRLF
+#
+#
+# Parse the property line separating as :  
+#
+#   property name  >  name
+#   value & parameter list > property_value 
+# 
+#   XXX test if the property accepts the given parameters 
+#       could be a great idea but could be done on Component
+# 
+###################################################################
+
+def fold_line(line):
     """
-    Manage an icalendar content line property :
-    
-      name *(;param-name=param-value1[, param-value2, ...]) : value CRLF
-      
+    Fold the unfolded line over 75 characters.
     """
-    ###################################################################
-    # Parse the property line separating as :  
-    #
-    #   property name  >  name
-    #   value & parameter list > property_value 
-    # 
-    #   XXX test if the property accepts the given parameters 
-    #       could be a great idea but could be done on Component
-    # 
-    ###################################################################
-    @staticmethod
-    def parse(property, encoding='UTF-8'):
-        """
-        Parse content line property splitting it into 2 parts:
-            name | [parameters]value
-        """
-        c, lexeme = property[0], ''
-        # Test first character of name
-        if not c.isalnum() and c != '-':
-            raise SyntaxError, 'unexpected character (%s)' % c
-        # Test if property contains ':'
-        if not ':' in property:
-            raise SyntaxError, 'character (:) must appear at least one time'
-        # Cut name
-        while not c in (';', ':'):
-            property = property[1:]
-            if c.isalnum() or c == '-':
-                lexeme += c
-            else:
-                raise SyntaxError, "unexpected character '%s' (%s)" % (c, ord(c))
-            c = property[0]
-
-        return lexeme, property
-
-
-    @staticmethod
-    def decode(line, encoding='UTF-8'):
-        # XXX get only one property line instead of all of this name and so
-        # multiple lines in input
-        # Get name
-        name, value = PropertyType.parse(line, encoding)
-        # Get PropertyValue (parameters and value)
-        value = PropertyValueType.decode(name, value, encoding)
-
-        # Check type        
-        occurs = PropertyType.nb_occurrences(name)
-        if occurs == 1:
-            # If occurs == 1, then value is the first given value
-            if isinstance(value, list):
-                value = value[0]
+    i = 1
+    lines = line.split(' ')
+    res = lines[0] 
+    size = len(res)
+    while i < len(lines):
+        # Still less than 75c
+        if size+len(lines[i]) <= 75:
+            res = res + ' ' + lines[i] 
+            size = size + 1 + len(lines[i]) 
+            i = i + 1
+        # More than 75c, insert new line
         else:
-            if not isinstance(value, list):
-                value = [value]
+            res = res + '\n ' + lines[i]
+            size = len(lines[i]) 
+            i = i + 1
+    return res
 
-        return name, value
-
-
-    @staticmethod
-    def encode(name, property_values):
-        lines = ''
-        # For each property_value
-        if isinstance(property_values, list):
-            for property_value in property_values:
-                current = name + PropertyValueType.encode(name, property_value)
-                lines = lines + current + '\n'
-        else:
-            current = name + PropertyValueType.encode(name, property_values)
-            lines = current + '\n'
-        return lines
-
-
-    # Get number of occurrences for given property name
-    @staticmethod
-    def nb_occurrences(name):
-        if name in data_properties:
-            return data_properties[name].occurs
-        return 0
-
-
-
-class PropertyValueType(object):
-    """
-    Manage an icalendar content line value property [with parameters] :
-    
-      *(;param-name=param-value1[, param-value2, ...]) : value CRLF
-      
-    """
-
-    ###################################################################
-    # Lexical & syntaxic analysis
-    #   status :
-    #     1 --> parameter begun (just after ';')
-    #     2 --> param-name begun 
-    #     3 --> param-name ended, param-value beginning
-    #     4 --> param-value quoted begun (just after '"')
-    #     5 --> param-value NOT quoted begun 
-    #     6 --> param-value ended (just after '"' for quoted ones)
-    #     7 --> value to begin (just after ':')
-    #     8 --> value begun 
-    ###################################################################
-    @staticmethod
-    def get_tokens(property):
-        status, lexeme, last = 0, '', ''
-
-        # Init status
-        c, property = property[0], property[1:]
-        if c == ';':
-            status = 1
-        elif c == ':':
-            status = 7
-            
-        for c in property:
-            # parameter begun (just after ';')
-            if status == 1:
-                if c.isalnum() or c in ('-'):
-                    lexeme, status = c, 2
-                else:
-                    raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                        % (c, status)
-
-            # param-name begun 
-            elif status == 2:
-                if c.isalnum() or c in ('-'):
-                    lexeme += c
-                elif c == '=':
-                    lexeme += c
-                    status = 3
-                else:
-                    raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                        % (c, status)
-
-            # param-name ended, param-value beginning
-            elif status == 3:
-                if c == '"':
-                    lexeme += c
-                    status = 4
-                elif c in (';',':',',') :
-                    raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                        % (c, status)
-                else:    
-                    lexeme += c
-                    status = 5
-
-            # param-value quoted begun (just after '"')
-            elif status == 4:
-                if c == '"':
-                    lexeme += c
-                    status = 6
-                else:
-                    lexeme += c
-
-            # param-value NOT quoted begun 
-            elif status == 5:
-                if c in (':',';',',') :
-                    status = 6
-                elif c=='"':
-                    raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                        % (c, status)
-                else:    
-                    lexeme += c
-
-            # value to begin (just after ':')
-            elif status == 7:
-                lexeme, status = c, 8
-
-            # value begun 
-            elif status == 8:
-                lexeme += c
-
-            # param-value ended (just after '"' for quoted ones)
-            if status == 6:
-                if c == ':':
-                    status = 7
-                    yield TPARAM, lexeme
-                elif c == ';': 
-                    status = 1
-                    yield TPARAM, lexeme
-                elif c == ',': 
-                    lexeme += c
-                    status = 3
-                elif c == '"':
-                    if last == '"':
-                        raise SyntaxError, 'unexpected repeated character (%s)'\
-                              ' at status %s' % (c, status)
-                    last = '"'
-                else:
-                    raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                        % (c, status)
-
-        if status not in (7, 8):
-            raise SyntaxError, 'unexpected property (%s)' % property
-
-        yield TVALUE, lexeme
-
-
-    ###################################################################
-    # Parse parameters and value                                      #
-    ###################################################################
-    @staticmethod
-    def parse(name, property, encoding='UTF-8'):
-        """
-        Parse content line property parameters and value.
-        """
-        value, parameters = None, {}
-
-        for token, lexeme in PropertyValueType.get_tokens(property):
-            if token == TPARAM:
-                param_name, param_value = lexeme.split('=')
-                param_value = param_value.split(',')
-                parameters[param_name] = param_value
-            elif token == TVALUE:
-                #####################################
-                # Change types of values when needed
-                vtype = data_properties.get(name, String)
-                if isinstance(vtype, Unicode):
-                    value = vtype.decode(lexeme, encoding)
-                else:
-                    value = vtype.decode(lexeme)
-            else:
-                raise SyntaxError, 'unexpected %s' % token_name[token]
-
-        return value, parameters
-
-
-    @staticmethod
-    def encode(name, property_value):
-        lines = ''
-        # Property parameters
-        if property_value.parameters:
-            for param_name in property_value.parameters:
-                param_value = property_value.parameters[param_name]
-                lines = lines + ';%s=%s' % (param_name, ','.join(param_value))
-
-        # property_value value
-        vtype = data_properties.get(name, String)
-        value = vtype.encode(property_value.value)
-        value = value.replace("\\", "\\\\").replace("\r", "\\r").replace("\n", "\\n")
-        lines = lines + ':' + value
-        # property_value folded if necessary
-        if len(lines) > 75:
-            lines = fold_line(lines)
-        return lines
-
-
-    @staticmethod
-    def decode(name, string, encoding='UTF-8'):
-        value, parameters = None, {}
-        # Parsing
-        value, parameters = PropertyValueType.parse(name, string, encoding)
-        if isinstance(value, unicode):
-            tokens = []
-            for token in value.split(u'\\\\'):
-                token = token.replace(u"\\r", u"\r").replace(u"\\n", u"\n")
-                tokens.append(token)
-            value = u'\\'.join(tokens)
-        from itools.ical.icalendar import PropertyValue
-        return PropertyValue(value, **parameters)
 
 

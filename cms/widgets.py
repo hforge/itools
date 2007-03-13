@@ -392,34 +392,37 @@ def build_menu(options):
 
 
 
-def _tree(context, handler, depth, filter):
-    # Define local variables
-    here = context.handler
-    handler_path = handler.get_abspath()
-
+def _tree(node, root, depth, active_node, filter, user):
     # Build the namespace
     namespace = {}
-    namespace['src'] = handler.get_path_to_icon(size=16, from_handler=here)
-    namespace['title'] = handler.get_title_or_name()
+    namespace['src'] = node.get_path_to_icon(size=16, from_handler=active_node)
+    namespace['title'] = node.get_title_or_name()
 
     # The href
-    firstview = handler.get_firstview()
+    firstview = node.get_firstview()
     if firstview is None:
         namespace['href'] = None
     else:
-        path = here.get_pathto(handler)
+        path = active_node.get_pathto(node)
         namespace['href'] = '%s/;%s' % (path, firstview)
 
     # The CSS style
     namespace['class'] = ''
-    if handler_path == str(context.path):
+    if node is active_node:
         namespace['class'] = 'nav_active'
 
     # Expand only if in path
-    here_path = str(context.path)
-    if not here_path.startswith(handler_path):
-        namespace['items'] = []
-        return namespace
+    aux = active_node
+    while True:
+        # Match
+        if aux is node:
+            break
+        # Reach the root, do not expand
+        if aux is root:
+            namespace['items'] = []
+            return namespace
+        # Next
+        aux = aux.parent
 
     # Expand till a given depth
     if depth <= 0:
@@ -428,29 +431,26 @@ def _tree(context, handler, depth, filter):
 
     # Expand the children
     depth = depth - 1
-    user = context.user
 
     # Filter the handlers by the given class (don't filter by default)
     if filter is None:
-        search = handler.search_handlers()
+        search = node.search_handlers()
     else:
-        search = handler.search_handlers(handler_class=filter)
+        search = node.search_handlers(handler_class=filter)
 
     children = []
     for child in search:
         ac = child.get_access_control()
         if ac.is_allowed_to_view(user, child):
-            children.append(_tree(context, child, depth, filter))
+            aux = _tree(child, root, depth, active_node, filter, user)
+            children.append(aux)
     namespace['items'] = children
  
     return namespace
 
 
 
-def tree(context, root=None, depth=6, filter=None):
-    if root is None:
-        root = context.root
-
-    options = [_tree(context, root, depth, filter)]
+def tree(root, depth=6, active_node=None, filter=None, user=None):
+    options = [_tree(root, root, depth, active_node, filter, user)]
     return build_menu(options)
 

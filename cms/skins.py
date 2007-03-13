@@ -113,7 +113,8 @@ class Skin(Folder):
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
         root = self._get_site_root(context)
-        menu = tree(context, root=root, depth=6, filter=Folder)
+        menu = tree(root, active_node=context.handler, filter=Folder,
+                    user=context.user)
         return {'title': u'Navigation', 'content': menu}
 
 

@@ -92,10 +92,10 @@ def update(parser, options, target):
                 root.update()
             except:
                 # Restore from backup
-                DatabaseFS.rollback_all(database)
+                DatabaseFS.rollback_transaction(database)
                 raise
             # Update backup
-            DatabaseFS.commit_all(database)
+            DatabaseFS.commit_transaction(database)
 
 
 

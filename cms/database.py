@@ -16,29 +16,29 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
-import thread
 from os import remove, rename
 from subprocess import call
+from tempfile import mkstemp
+import thread
 
 # Import from itools
+from itools.uri import get_reference
+from itools import vfs
 from itools.vfs.file import FileFS
 from itools.vfs.registry import register_file_system
 
 
-def get_reference_on_change(reference):
-    backup = '~' + reference.path[-1].name + '.tmp'
-    return reference.resolve(backup)
+def split_path(reference):
+    path = reference.path
+    for i, segment in enumerate(path):
+        if segment.name == 'database':
+            return path[:i].resolve2('~database'), path[i+1:]
 
-
-def get_reference_on_add(reference):
-    backup = '~' + reference.path[-1].name + '.add'
-    return reference.resolve(backup)
-
-
-def get_reference_on_remove(reference):
-    backup = '~' + reference.path[-1].name + '.del'
-    return reference.resolve(backup)
+    raise RuntimeError, 'path "%s" is not a database path' % reference
 
 
 
@@ -50,7 +50,7 @@ def get_transaction():
     ident = thread.get_ident()
     thread_lock.acquire()
     try:
-        transaction = _transactions.setdefault(ident, set())
+        transaction = _transactions.setdefault(ident, {})
     finally:
         thread_lock.release()
 
@@ -66,9 +66,12 @@ class DatabaseFS(FileFS):
         if '.catalog' in reference.path:
             return FileFS.make_file(reference)
 
-        marker = get_reference_on_add(reference)
-        FileFS.make_file(marker)
-        get_transaction().add(marker)
+        # Update the log
+        commit, path = split_path(reference)
+        with open('%s/log' % commit, 'a+') as log:
+            log.write('+%s\n' % reference.path)
+
+        # Create the file
         return FileFS.make_file(reference)
 
 
@@ -78,9 +81,12 @@ class DatabaseFS(FileFS):
         if '.catalog' in reference.path:
             return FileFS.make_folder(reference)
 
-        marker = get_reference_on_add(reference)
-        FileFS.make_file(marker)
-        get_transaction().add(marker)
+        # Update the log
+        commit, path = split_path(reference)
+        with open('%s/log' % commit, 'a+') as log:
+            log.write('+%s\n' % reference.path)
+
+        # Create the folder
         return FileFS.make_folder(reference)
 
 
@@ -90,11 +96,10 @@ class DatabaseFS(FileFS):
         if '.catalog' in reference.path:
             return FileFS.remove(reference)
 
-        src = str(reference.path)
-        reference = get_reference_on_remove(reference)
-        get_transaction().add(reference)
-        dst = str(reference.path)
-        rename(src, dst)
+        # Update the log
+        commit, path = split_path(reference)
+        with open('%s/log' % commit, 'a+') as log:
+            log.write('-%s\n' % reference.path)
 
 
     @staticmethod
@@ -104,30 +109,49 @@ class DatabaseFS(FileFS):
             return FileFS.open(reference, mode)
 
         if mode == 'w':
-            reference = get_reference_on_change(reference)
-            if FileFS.exists(reference):
-                return FileFS.open(reference, mode)
-            get_transaction().add(reference)
-            return FileFS.make_file(reference)
+            transaction = get_transaction()
+            if reference.path in transaction:
+                tmp_path = transaction[reference.path]
+            else:
+                commit, path = split_path(reference)
+                commit = str(commit)
+                tmp_file, tmp_path = mkstemp(dir=commit)
+                tmp_path = get_reference(tmp_path)
+                transaction[reference.path] = tmp_path
+                with open('%s/log' % commit, 'a+') as log:
+                    log.write('~%s#%s\n' % (reference.path, tmp_path))
+
+            return FileFS.open(tmp_path, mode)
 
         return FileFS.open(reference, mode)
 
 
     @staticmethod
     def commit_transaction(database):
-        transaction = get_transaction()
-        for reference in transaction:
-            path = reference.path
-            filename = path[-1].name
-            marker = filename[-3:]
-            original = str(path.resolve(filename[1:-4]))
-            if marker == 'tmp':
-                remove(original)
-                backup = str(path)
-                rename(backup, original)
-            elif marker == 'add' or marker == 'del':
-                FileFS.remove(reference)
-        transaction.clear()
+        # The data
+        transaction = database.path
+        transaction = transaction.resolve2('../~database')
+        log = transaction.resolve2('log')
+        log = str(log)
+        with open(log) as log:
+            for line in log.readlines():
+                line = line.strip()
+                action, line = line[0], line[1:]
+                if action == '-':
+                    vfs.remove(line)
+                elif action == '+':
+                    pass
+                elif action == '~':
+                    dst, src = line.rsplit('#', 1)
+                    vfs.move(src, dst)
+                else:
+                    raise ValueError, 'log file corrupted'
+
+        # Clean transaction
+        vfs.remove(transaction)
+        get_transaction().clear()
+
+        # The catalog
         src = str(database.path.resolve2('.catalog/'))
         dst = str(database.path.resolve2('.catalog.bak'))
         call(['rsync', '-a', '--delete', src, dst])
@@ -135,81 +159,32 @@ class DatabaseFS(FileFS):
 
     @staticmethod
     def rollback_transaction(database):
-        transaction = get_transaction()
-        for reference in transaction:
-            path = reference.path
-            filename = path[-1].name
-            marker = filename[-3:]
-            original = path.resolve(filename[1:-4])
-            backup = str(path)
-            if marker == 'tmp':
-                remove(backup)
-            elif marker == 'add':
-                FileFS.remove(original)
-                remove(backup)
-            elif marker == 'del':
-                original = str(original)
-                rename(backup, original)
-        transaction.clear()
+        # The data
+        transaction = database.path
+        transaction = transaction.resolve2('../~database')
+        log = transaction.resolve2('log')
+        log = str(log)
+        with open(log) as log:
+            for line in log.readlines():
+                line = line.strip()
+                action, line = line[0], line[1:]
+                if action == '-':
+                    pass
+                elif action == '+':
+                    vfs.remove(line)
+                elif action == '~':
+                    pass
+                else:
+                    raise ValueError, 'log file corrupted'
+
+        # Clean transaction
+        vfs.remove(transaction)
+        get_transaction().clear()
+
+        # The catalog
         src = str(database.path.resolve2('.catalog.bak/'))
         dst = str(database.path.resolve2('.catalog'))
         call(['rsync', '-a', '--delete', src, dst])
-
-
-    @staticmethod
-    def commit_all(database):
-        stack = [database]
-        while stack:
-            folder = stack.pop()
-            for name in folder.get_names():
-                if name[0] == '~':
-                    marker = name[-3:]
-                    original = name[1:-4]
-                    if marker == 'tmp':
-                        if folder.exists(original):
-                            folder.remove(original)
-                        folder.move(name, original)
-                    elif marker == 'add' or marker == 'del':
-                        folder.remove(name)
-                elif name == '.catalog':
-                    src = str(folder.uri.path.resolve2('.catalog/'))
-                    dst = str(folder.uri.path.resolve2('.catalog.bak'))
-                    call(['rsync', '-a', '--delete', src, dst])
-                elif name == '.catalog.bak':
-                    continue
-                elif folder.is_folder(name):
-                    stack.append(folder.open(name))
-
-
-    @staticmethod
-    def rollback_all(database):
-        stack = [database]
-        while stack:
-            folder = stack.pop()
-            # Process the markers first
-            for name in folder.get_names():
-                if name[0] == '~':
-                    marker = name[-3:]
-                    original = name[1:-4]
-                    if marker == 'tmp':
-                        folder.remove(name)
-                    elif marker == 'add':
-                        folder.remove(original)
-                        folder.remove(name)
-                    elif marker == 'del':
-                        if folder.exists(original):
-                            folder.remove(original)
-                        folder.move(name, original)
-            # Process the others
-            for name in folder.get_names():
-                if name == '.catalog':
-                    src = str(folder.uri.path.resolve2('.catalog.bak/'))
-                    dst = str(folder.uri.path.resolve2('.catalog'))
-                    call(['rsync', '-a', '--delete', src, dst])
-                elif name == '.catalog.bak':
-                    continue
-                elif folder.is_folder(name):
-                    stack.append(folder.open(name))
 
 
 

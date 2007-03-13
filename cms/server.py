@@ -21,6 +21,7 @@ import sys
 
 # Import from itools
 from itools import uri
+from itools import vfs
 from itools.handlers.config import Config
 from itools.handlers.transactions import get_transaction
 from itools import web
@@ -130,6 +131,10 @@ class Server(web.server.Server):
 
     def start_commit(self):
         open(self.state_filename, 'w').write('START')
+        # Create the commit folder
+        path = self.target.path.resolve2('~database')
+        path = str(path)
+        vfs.make_folder(path)
 
 
     def end_commit_on_success(self):

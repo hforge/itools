@@ -35,14 +35,14 @@ def restore(parser, options, target):
         message = 'Restore database from backup (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Restoring...',
-            DatabaseFS.rollback_all(database)
+            DatabaseFS.rollback_transaction(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     elif state == 'END':
         message = 'Backup disrupted, update backup from database (y/N)? '
         if ask_confirmation(message) is True:
             print '  * Backup...',
-            DatabaseFS.commit_all(database)
+            DatabaseFS.commit_transaction(database)
             open('%s/state' % target, 'w').write('OK')
             print 'DONE'
     else:

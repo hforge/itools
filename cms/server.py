@@ -132,9 +132,9 @@ class Server(web.server.Server):
     def start_commit(self):
         open(self.state_filename, 'w').write('START')
         # Create the commit folder
-        path = self.target.path.resolve2('~database')
+        path = self.target.path.resolve2('~database/log')
         path = str(path)
-        vfs.make_folder(path)
+        vfs.make_file(path)
 
 
     def end_commit_on_success(self):

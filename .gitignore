@@ -1,0 +1,17 @@
+*~
+*.pyc
+*.swp
+build
+dist
+MANIFEST
+version.txt
+locale/*.mo
+*.xml.es
+*.xml.fr
+*.xml.it
+*.xml.zh
+*.xhtml.es
+*.xhtml.fr
+*.xhtml.it
+*.xhtml.zh
+test/fables/catalog

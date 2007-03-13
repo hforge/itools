@@ -900,7 +900,7 @@ class Calendar(Text, icalendar):
                         # Remove event if new one
                         if not uid:
                             uid = event.uid
-                            icalendar.remove(self, 'VEVENT', uid)
+                            icalendar.remove(self, uid)
                         goto = ';edit_event_form?date=%s' % selected_date
                         message = u'One or more field is invalid.'
                         return context.come_back(goto=goto, message=message)
@@ -918,7 +918,7 @@ class Calendar(Text, icalendar):
                     # Remove event if new one
                     if not uid:
                         uid = event.uid
-                        icalendar.remove(self, 'VEVENT', uid)
+                        icalendar.remove(self, uid)
                     return context.come_back(goto=goto, message=message)
                 # Save values
                 for key in ('DTSTART', 'DTEND'):
@@ -963,7 +963,7 @@ class Calendar(Text, icalendar):
         uid = context.get_form_value('UID') 
         if not uid:
             return context.come_back('', goto)
-        icalendar.remove(self, 'VEVENT', uid)
+        icalendar.remove(self, uid)
         return context.come_back(u'Event definitely deleted.', goto=goto, 
                                  exclude=keys)
 

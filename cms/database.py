@@ -135,7 +135,10 @@ class DatabaseFS(FileFS):
         log = str(log)
         with open(log) as log:
             for line in log.readlines():
-                line = line.strip()
+                if line[-1] == '\n':
+                    line = line[:-1]
+                else:
+                    raise RuntimeError, 'log file corrupted'
                 action, line = line[0], line[1:]
                 if action == '-':
                     vfs.remove(line)
@@ -145,7 +148,7 @@ class DatabaseFS(FileFS):
                     dst, src = line.rsplit('#', 1)
                     vfs.move(src, dst)
                 else:
-                    raise ValueError, 'log file corrupted'
+                    raise RuntimeError, 'log file corrupted'
 
         # Clean transaction
         vfs.remove(transaction)
@@ -166,7 +169,10 @@ class DatabaseFS(FileFS):
         log = str(log)
         with open(log) as log:
             for line in log.readlines():
-                line = line.strip()
+                if line[-1] == '\n':
+                    line = line[:-1]
+                else:
+                    raise RuntimeError, 'log file corrupted'
                 action, line = line[0], line[1:]
                 if action == '-':
                     pass
@@ -175,7 +181,7 @@ class DatabaseFS(FileFS):
                 elif action == '~':
                     pass
                 else:
-                    raise ValueError, 'log file corrupted'
+                    raise RuntimeError, 'log file corrupted'
 
         # Clean transaction
         vfs.remove(transaction)

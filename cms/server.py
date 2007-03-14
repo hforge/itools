@@ -70,9 +70,6 @@ class Server(web.server.Server):
                 name = name.strip()
                 exec('import %s' % name)
 
-        # Load the catalog
-        self.catalog = Catalog('%s/catalog' % target)
-
         # Find out the IP to listen to
         if address:
             pass
@@ -92,6 +89,8 @@ class Server(web.server.Server):
         cls = get_root_class(root)
         database = DatabaseFS(target.path, cls=cls)
         self.database = database
+        # The catalog
+        self.catalog = Catalog('%s/catalog' % target)
 
         # Fix the root's name
         root = database.root
@@ -106,7 +105,6 @@ class Server(web.server.Server):
 
         # The SMTP host
         self.smtp_host = config.get_value('smtp-host')
-
 
 
     def get_pid(self):

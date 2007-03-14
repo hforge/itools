@@ -22,6 +22,7 @@ from optparse import OptionParser
 
 # Import from itools
 import itools
+from itools import uri
 from itools import vfs
 from itools.handlers.config import Config
 from itools.cms.database import DatabaseFS
@@ -74,7 +75,6 @@ def update(parser, options, target):
     server = Server(target)
     target = server.target
     root = server.root
-    database = folder.open('database')
 
     instance_version = root.get_property('version')
     class_version = root.class_version
@@ -87,6 +87,8 @@ def update(parser, options, target):
         message = 'Update instance from version %s to version %s (y/N)? ' \
                   % (instance_version, class_version)
         if ask_confirmation(message) is True:
+            database = uri.get_reference('%s/database' % target)
+            folder.make_file('~database/log')
             print 'Updating...'
             try:
                 root.update()

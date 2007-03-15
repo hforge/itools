@@ -13,9 +13,8 @@ meta-package for easier development and deployment:
   itools.handlers       itools.stl              itools.xliff
   itools.html           itools.tmx              itools.xml
 
-Regardless this being a minor release, there have been important
-improvements to the user and programming interfaces, as well as
-lot of bug fixing.
+This release brings tons of changes, many more than it is reasonable
+to do for just a minor version bump.
 
 Changes to the user interface of "itools.cms":
 
@@ -26,7 +25,8 @@ Changes to the user interface of "itools.cms":
     reworked.
   - Now users have the fields "firstname" and "lastname", instead of just
     a single field for the whole name.
-  - New object WebSite, to host multiple web sites with the same instance.
+  - New object WebSite, to host multiple web sites with the same ikaaro
+    instance.
   - Vast functional and interface improvements specially to the Wiki, but
     also to the Calendar and, to a lesser degree, the Forum.
   - Improve the folder's browse view: sort by size, localize the dates.
@@ -34,6 +34,9 @@ Changes to the user interface of "itools.cms":
 
 Changes to the programming interface:
 
+  - The module "itools.ical" has been reworked to radically improve
+    speed for searches. As a side effect the API has changed in a
+    backwards-incompatible manner.
   - Add a new module "itools.i18n.locale" that provides support for
     locale information like dates.
   - Improve the "itools.web.context" API to provide basic support for
@@ -46,7 +49,10 @@ Important bugs fixed:
 
   - Critical security bug fixed: with specially constructed requests it
     was possible to use the POST method even without authentication.
-  - Fix database rollback under certain conditions.
+  - The database system for "itools.cms" has been reworked to fix some
+    bugs, most notably one that reset the database cache on some write
+    operations.
+
 
 Credits:
 

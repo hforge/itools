@@ -20,7 +20,6 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
-from os import remove, rename
 from subprocess import call
 from tempfile import mkstemp
 import thread
@@ -31,25 +30,19 @@ from itools import vfs
 from itools.vfs.file import FileFS
 from itools.vfs.registry import register_file_system
 from itools.handlers.registry import get_handler_class
-from itools.handlers import transactions
+from itools.handlers.transactions import get_transaction
 
 
 
-thread_lock = thread.allocate_lock()
-_transactions = {}
+# The database states
+READY = 0
+TRANSACTION_PHASE1 = 1
+TRANSACTION_PHASE2 = 2
 
 
-def get_transaction():
-    ident = thread.get_ident()
-    thread_lock.acquire()
-    try:
-        transaction = _transactions.setdefault(ident, {})
-    finally:
-        thread_lock.release()
-
-    return transaction
-
-
+###########################################################################
+# Methods to find out the database path from a URI reference
+###########################################################################
 def get_log(reference):
     path = reference.path
     for i, segment in enumerate(path):
@@ -72,7 +65,28 @@ def get_commit_and_log(reference):
     raise RuntimeError, 'path "%s" is not a database path' % reference
 
 
+###########################################################################
+# Map from handler path to temporal file
+###########################################################################
+thread_lock = thread.allocate_lock()
+_tmp_maps = {}
 
+
+def get_tmp_map():
+    ident = thread.get_ident()
+    thread_lock.acquire()
+    try:
+        tmp_map = _tmp_maps.setdefault(ident, {})
+    finally:
+        thread_lock.release()
+
+    return tmp_map
+
+
+
+###########################################################################
+# The database instance and VFS layer
+###########################################################################
 class DatabaseFS(FileFS):
 
     def __init__(self, path, cls=None):
@@ -94,6 +108,9 @@ class DatabaseFS(FileFS):
         self.root = root
 
 
+    #######################################################################
+    # Override FileFS methods
+    #######################################################################
     @staticmethod
     def make_file(reference):
         # The catalog has its own backup
@@ -143,14 +160,14 @@ class DatabaseFS(FileFS):
             return FileFS.open(reference, mode)
 
         if mode == 'w':
-            transaction = get_transaction()
-            if reference.path in transaction:
-                tmp_path = transaction[reference.path]
+            tmp_map = get_tmp_map()
+            if reference.path in tmp_map:
+                tmp_path = tmp_map[reference.path]
             else:
                 commit, log = get_commit_and_log(reference)
                 tmp_file, tmp_path = mkstemp(dir=commit)
                 tmp_path = get_reference(tmp_path)
-                transaction[reference.path] = tmp_path
+                tmp_map[reference.path] = tmp_path
                 with open(log, 'a+') as log:
                     log.write('~%s#%s\n' % (reference.path, tmp_path))
 
@@ -159,12 +176,26 @@ class DatabaseFS(FileFS):
         return FileFS.open(reference, mode)
 
 
+    #######################################################################
+    # API
+    #######################################################################
+    def get_state(self):
+        commit = self._commit
+        commit = str(commit)
+        if vfs.exists(commit):
+            if vfs.exists('%s/done' % commit):
+                return TRANSACTION_PHASE2
+            return TRANSACTION_PHASE1
+
+        return READY
+
+
     def commit(self):
         # 1. Start
         vfs.make_file(self._log)
 
         # Write changes to disk
-        transaction = transactions.get_transaction()
+        transaction = get_transaction()
         try:
             transaction.commit()
         except:
@@ -174,7 +205,7 @@ class DatabaseFS(FileFS):
         finally:
             # Clear
             transaction.clear()
-            get_transaction().clear()
+            get_tmp_map().clear()
 
         # 2. Transaction commited successfully.
         # Once we pass this point, we will save the changes permanently,
@@ -195,7 +226,7 @@ class DatabaseFS(FileFS):
         This method is to be used by the programmer whe he changes his
         mind and decides not to commit.
         """
-        transaction = transactions.get_transaction()
+        transaction = get_transaction()
         transaction.rollback()
 
 
@@ -219,7 +250,8 @@ class DatabaseFS(FileFS):
                 if action == '-':
                     pass
                 elif action == '+':
-                    vfs.remove(line)
+                    if vfs.exists(line):
+                        vfs.remove(line)
                 elif action == '~':
                     pass
                 else:
@@ -252,12 +284,14 @@ class DatabaseFS(FileFS):
                     raise RuntimeError, 'log file corrupted'
                 action, line = line[0], line[1:]
                 if action == '-':
-                    vfs.remove(line)
+                    if vfs.exists(line):
+                        vfs.remove(line)
                 elif action == '+':
                     pass
                 elif action == '~':
                     dst, src = line.rsplit('#', 1)
-                    vfs.move(src, dst)
+                    if vfs.exists(src):
+                        vfs.move(src, dst)
                 else:
                     raise RuntimeError, 'log file corrupted'
 

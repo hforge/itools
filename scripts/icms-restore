@@ -23,28 +23,30 @@ from optparse import OptionParser
 import itools
 from itools import vfs
 from itools.cms.server import ask_confirmation
-from itools.cms.database import DatabaseFS
+from itools.cms.database import (DatabaseFS, READY, TRANSACTION_PHASE1,
+                                 TRANSACTION_PHASE2)
 
 
 def restore(parser, options, target):
     database = DatabaseFS(target)
-    commit = '%s/database.commit' % target
-    if vfs.exists(commit):
-        done = '%s/done' % commit
-        if vfs.exists(done):
-            msg = 'The latest transaction was not saved. Finish now (y/N)?'
-            if ask_confirmation(message) is True:
-                print '  * Saving transaction...'
-                database.save_changes_forever()
-                print 'DONE'
-        else:
-            msg = 'The latest transaction failed. Clean up database (y/N)? '
-            if ask_confirmation(msg) is True:
-                print '  * Cleaning...'
-                database.rollback()
-                print 'DONE'
-    else:
+
+    state = database.get_state()
+    if state == READY:
         print 'Everything seems fine.'
+    elif state == TRANSACTION_PHASE1:
+        msg = 'The latest transaction failed. Clean up database (y/N)? '
+        if ask_confirmation(msg) is True:
+            print '  * Cleaning...'
+            database.rollback()
+            print 'DONE'
+    elif state == TRANSACTION_PHASE2:
+        msg = 'The latest transaction was not saved. Finish now (y/N)?'
+        if ask_confirmation(message) is True:
+            print '  * Saving transaction...'
+            database.save_changes_forever()
+            print 'DONE'
+    else:
+        raise ValueError, 'unknown database state'
 
 
 

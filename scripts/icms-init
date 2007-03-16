@@ -26,7 +26,6 @@ import sys
 # Import from itools
 import itools
 from itools.handlers.config import Config
-from itools.handlers import transactions
 from itools.cms.root import Root
 
 
@@ -109,10 +108,11 @@ def init(parser, options, target):
 
     # Index everything
     root = root_class('%s/database' % target)
-    root._update_catalog(quiet=True)
+    catalog = root.get_handler('.catalog')
+    for object in root._traverse_catalog_aware_objects():
+        catalog.index_document(object)
 
-    transaction = transactions.get_transaction()
-    transaction.commit()
+    catalog.save_state()
 
     # Backup the catalog
     cmd = 'cp -r %s/database/.catalog %s/database/.catalog.bak'

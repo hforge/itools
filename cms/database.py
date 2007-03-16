@@ -20,6 +20,7 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
+import datetime
 from subprocess import call
 from tempfile import mkstemp
 import thread
@@ -197,9 +198,15 @@ class DatabaseFS(FileFS):
         # Write changes to disk
         transaction = get_transaction()
         try:
-            transaction.commit()
+            for handler in transaction:
+                mtime = vfs.get_mtime(handler.uri)
+                if mtime is not None:
+                    handler.save_state()
         except:
-            # Rollback
+            # Rollback the changes in memory
+            for handler in transaction:
+                handler.timestamp = datetime.datetime(1900, 1, 1)
+            # Rollback the changes in disk
             self.rollback()
             raise
         finally:
@@ -227,7 +234,12 @@ class DatabaseFS(FileFS):
         mind and decides not to commit.
         """
         transaction = get_transaction()
-        transaction.rollback()
+        for handler in transaction:
+            # TODO Give the handler a chance to recover: call the method
+            # "handler.abort_changes" (or something similar), whose default
+            # behaviour will be to set an old timestamp.
+            handler.timestamp = datetime.datetime(1900, 1, 1)
+        transaction.clear()
 
 
     def rollback(self):

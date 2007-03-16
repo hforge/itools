@@ -16,69 +16,19 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-import datetime
 import thread
-
-# Import from itools
-from itools.vfs import vfs
 
 
 thread_lock = thread.allocate_lock()
-
-
-class Transaction(set):
-
-    def rollback(self):
-        if not self:
-            return
-
-        # Reset handlers
-        for handler in self:
-            handler.timestamp = datetime.datetime(1900, 1, 1)
-        # Reset the transaction
-        self.clear()
-
-
-    def commit(self):
-        if not self:
-            return
-
-        self.lock()
-        try:
-            # Errors should not happen in this stage.
-            for handler in self:
-                mtime = vfs.get_mtime(handler.uri)
-                if mtime is not None:
-                    handler.save_state()
-        except:
-            # Rollback the transaction, so handlers state will be consistent.
-            # Note that the resource layer maybe incosistent anyway, true
-            # ACID support must be implemented in a layer above.
-            self.rollback()
-            self.release()
-            raise
-        else:
-            # Release the thread lock
-            self.release()
-
-
-    def lock(self):
-        thread_lock.acquire()
-
-
-    def release(self):
-        thread_lock.release()
-
-
-
 _transactions = {}
+
 
 def get_transaction():
     ident = thread.get_ident()
 
     thread_lock.acquire()
     try:
-        transaction = _transactions.setdefault(ident, Transaction())
+        transaction = _transactions.setdefault(ident, set())
     finally:
         thread_lock.release()
 

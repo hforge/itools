@@ -30,7 +30,6 @@ from urllib import unquote
 # Import from itools
 from itools import uri
 ##from itools.resources.socket import File
-from itools.handlers.transactions import get_transaction
 from itools.http.exceptions import (Forbidden, HTTPError, NotFound,
                                     Unauthorized)
 from itools.http.request import Request
@@ -494,40 +493,20 @@ class Server(object):
 
 
     def commit_transaction(self, context):
-        # Get the transaction
-        transaction = get_transaction()
-        # Nothing to do
-        if not transaction:
-            return
+        databases = self.get_databases()
 
-        # Abort transaction if safe method, or if explicitly stated
+        # Abort transaction if code says so
         if context.commit is False:
-            transaction.rollback()
+            for db in databases:
+                db.abort()
             return
 
         # Before commit (hook)
-        self.before_commit(transaction)
+        self.before_commit()
 
-        # Transaction metadata
-        user = context.user
-        username = user and user.name or 'NONE'
-        note = str(context.request.uri.path)
-
-        # Start commit (hook)
-        self.start_commit()
-
-        try:
-            transaction.commit(username, note)
-        except:
-            # Abort transaction
-            transaction.rollback()
-            # End commit, error (hook)
-            self.end_commit_on_error()
-            # Forward error
-            raise
-
-        # End commit, success (hook)
-        self.end_commit_on_success()
+        # Commit
+        for db in databases:
+            db.commit()
 
 
     ########################################################################
@@ -582,17 +561,9 @@ class Server(object):
     ########################################################################
     # Hooks (to be overriden)
     ########################################################################
-    def before_commit(self, transaction):
-        pass
+    def get_databases(self):
+        return []
 
 
-    def start_commit(self):
-        pass
-
-
-    def end_commit_on_success(self):
-        get_transaction().clear()
-
-
-    def end_commit_on_error(self):
+    def before_commit(self):
         pass

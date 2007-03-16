@@ -350,7 +350,6 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
                             object_version, version)
                 self.set_property('version', version)
                 object_version = version
-            get_transaction().commit()
 
 
     ########################################################################

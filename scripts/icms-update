@@ -87,17 +87,13 @@ def update(parser, options, target):
         message = 'Update instance from version %s to version %s (y/N)? ' \
                   % (instance_version, class_version)
         if ask_confirmation(message) is True:
-            database = uri.get_reference('%s/database' % target)
-            folder.make_file('~database/log')
             print 'Updating...'
-            try:
-                root.update()
-            except:
-                # Restore from backup
-                DatabaseFS.rollback_transaction(database)
-                raise
+            root.update()
+
             # Update backup
-            DatabaseFS.commit_transaction(database)
+            print 'Commit...'
+            database = server.database
+            database.commit()
 
 
 

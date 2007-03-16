@@ -494,9 +494,6 @@ class Root(WebSite):
             user.set_property('ikaaro:username', name)
             i += 1
 
-        # Save
-        get_transaction().commit()
-
         # Update 'members' index
         self._update_catalog()
 

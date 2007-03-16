@@ -43,22 +43,19 @@ def get_config(target):
 
 
 
-def get_root(target):
+def get_root_class(root):
     # Get the root resource
-    metadata = Metadata(target.resolve2('database/.metadata'))
+    metadata = Metadata(root.resolve2('.metadata'))
     format = metadata.get_property('format')
     # Build and return the root handler
-    cls = registry.get_object_class(format)
-    return cls(target.resolve2('database'))
+    return registry.get_object_class(format)
 
 
 
 class Server(web.server.Server):
 
     def __init__(self, target, address=None, port=None):
-        # Set the target under the control of the Database FS
         target = uri.get_absolute_reference2(target)
-        target.scheme = 'database'
         self.target = target
 
         # Load the config
@@ -70,10 +67,6 @@ class Server(web.server.Server):
             for name in modules.split():
                 name = name.strip()
                 exec('import %s' % name)
-
-        # Load the root handler
-        root = get_root(target)
-        root.name = root.class_title
 
         # Find out the IP to listen to
         if address:
@@ -89,9 +82,18 @@ class Server(web.server.Server):
             if port is not None:
                 port = int(port)
 
-        path = target.path
+        # The database
+        root = target.resolve2('database')
+        cls = get_root_class(root)
+        database = DatabaseFS(target.path, cls=cls)
+        self.database = database
+
+        # Fix the root's name
+        root = database.root
+        root.name = root.class_title
 
         # Initialize
+        path = target.path
         web.server.Server.__init__(self, root, address=address, port=port,
                                    access_log='%s/access_log' % path,
                                    error_log='%s/error_log' % path,
@@ -100,11 +102,6 @@ class Server(web.server.Server):
         # The SMTP host
         self.smtp_host = config.get_value('smtp-host')
 
-        # The state file
-        self.state_filename = '%s/state' % path
-
-        # The database root
-        self.database = target.resolve2('database')
 
 
     def get_pid(self):
@@ -123,31 +120,16 @@ class Server(web.server.Server):
         return pid
 
 
-    def before_commit(self, transaction):
+    #######################################################################
+    # Override
+    #######################################################################
+    def get_databases(self):
+        return [self.database]
+
+
+    def before_commit(self):
+        transaction = get_transaction()
         for handler in list(transaction):
             if hasattr(handler, 'before_commit'):
                 handler.before_commit()
 
-
-    def start_commit(self):
-        open(self.state_filename, 'w').write('START')
-        # Create the commit folder
-        path = self.target.path.resolve2('~database/log')
-        path = str(path)
-        vfs.make_file(path)
-
-
-    def end_commit_on_success(self):
-        state_filename = self.state_filename
-        open(state_filename, 'w').write('END')
-        DatabaseFS.commit_transaction(self.database)
-        # Finish with the backup
-        open(state_filename, 'w').write('OK')
-        # Clean the transaction
-        get_transaction().clear()
-
-
-    def end_commit_on_error(self):
-        DatabaseFS.rollback_transaction(self.database)
-        # Finish with the rollback
-        open(self.state_filename, 'w').write('OK')

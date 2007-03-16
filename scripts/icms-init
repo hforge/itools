@@ -118,9 +118,6 @@ def init(parser, options, target):
     cmd = 'cp -r %s/database/.catalog %s/database/.catalog.bak'
     os.system(cmd % (target, target))
 
-    # Transaction state
-    open('%s/state' % target, 'w').write('OK')
-
     # Bravo!
     print '*'
     print '* Welcome to itools.cms'

@@ -39,7 +39,7 @@ class Transaction(set):
         self.clear()
 
 
-    def commit(self, username='', note=''):
+    def commit(self):
         if not self:
             return
 

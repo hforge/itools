@@ -154,6 +154,20 @@ class RoleAware(AccessControl):
         return False
 
 
+    def is_allowed_to_add(self, user, object):
+        # Anonymous can touch nothing
+        if user is None:
+            return False
+
+        # Admins are all powerfull
+        if self.is_admin(user):
+            return True
+
+        # Reviewers too
+        return self.has_user_role(user.name, 'ikaaro:reviewers',
+                                  'ikaaro:members')
+
+
     def is_allowed_to_trans(self, user, object, name):
         # Anonymous can touch nothing
         if user is None:

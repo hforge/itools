@@ -16,42 +16,46 @@ meta-package for easier development and deployment:
 This release brings tons of changes, many more than it is reasonable
 to do for just a minor version bump.
 
-Changes to the user interface of "itools.cms":
+Highlights:
 
-  - The general template has been improved, most notably with a drop-down
-    menu that replaces the tabs. There is also a "Main Menu" in the left
-    column with quick links to the important views.
-  - The interface to manage users and define the access rights has been
-    reworked.
-  - Now users have the fields "firstname" and "lastname", instead of just
-    a single field for the whole name.
-  - New object WebSite, to host multiple web sites with the same ikaaro
-    instance.
-  - Vast functional and interface improvements specially to the Wiki, but
-    also to the Calendar and, to a lesser degree, the Forum.
-  - Improve the folder's browse view: sort by size, localize the dates.
-  - Internationalize the calendar widget.
+ - The speed of the iCalendar handler has been radically improved,
+   specifically for searches. We have added reverse indexes and now
+   the method "search" offers the same API as the CSV handler.
 
-Changes to the programming interface:
+ - A new module, "itools.i18n.locale", has been added to provide support
+   for locale information like dates.
 
-  - The module "itools.ical" has been reworked to radically improve
-    speed for searches. As a side effect the API has changed in a
-    backwards-incompatible manner.
-  - Add a new module "itools.i18n.locale" that provides support for
-    locale information like dates.
-  - Improve the "itools.web.context" API to provide basic support for
-    form validation.
-  - Simplify building a custom skin from the default (Aruni) skin.
-  - Rework the API to produce "tables" (like in the Folder's browse
-    view).
+ - The database system for "itools.cms" has been re-worked. The code
+   is cleaner, faster and more robust.
 
-Important bugs fixed:
+ - There have been major user interface improvements in "itools.cms".
+   Most notably, a drop-down menu has replaced the tabs. There is also
+   a new menu in the left column called "Main Menu", with links to the
+   most frequently used views.
 
-  - Critical security bug fixed: with specially constructed requests it
-    was possible to use the POST method even without authentication.
-  - The database system for "itools.cms" has been reworked to fix some
-    bugs, most notably one that reset the database cache on some write
-    operations.
+   Other improvements involve the folder's browse view (sort by size,
+   localized last modification time), and the JavaScript calendar
+   widget, which is multilingual now.
+
+ - The Wiki and Calendar objects of "itools.cms" have been improved.
+   The first has a new "export to PDF" feature and has a generally
+   better user interface. The second has an improved weekly view.
+
+ - A new object has been added to "itools.cms": Web-Site. Its intended
+   purpose is to be the root of a public (extranet) or private (intranet)
+   site; so a single "itools.cms" instance may host several web sites,
+   with a shared user database.
+
+ - The user management and control access interfaces of "itools.cms" have
+   been re-worked. And now we have two security policies: intranet or
+   extranet.
+
+   Also, now users have the fields "firstname" and "lastname" (instead of
+   just one field for the fullname).
+
+ - The API of "itools.cms" has been tweaked to make easier several tasks,
+   most notably to define custom skins, to use the "table" widget, and
+   to validate forms.
 
 
 Credits:
@@ -62,7 +66,8 @@ Credits:
  - Nicolas Deram worked on "itools.ical", "itools.cms.ical", and fixed
    bugs;
  - J. David Ibáñez worked on the user interface of "itools.cms" and
-   the related programming interface, and fixed bugs.
+   the related programming interface, on the performance of "itools.ical"
+   and fixed bugs.
 
 
 Resources

@@ -22,7 +22,7 @@ from unittest import TestCase
 # Import from itools
 from itools.handlers import get_handler
 from itools.handlers.Text import Text
-from itools.catalog import IO
+from itools.catalog import io
 from itools.catalog import analysers
 from itools.catalog.index import Index
 from itools.catalog.catalog import Catalog
@@ -35,44 +35,44 @@ class IOTestCase(TestCase):
 
     def test_byte(self):
         value = 27
-        encoded_value = IO.encode_byte(value)
-        self.assertEqual(IO.decode_byte(encoded_value), value)
+        encoded_value = io.encode_byte(value)
+        self.assertEqual(io.decode_byte(encoded_value), value)
 
 
     def test_unit32(self):
         value = 1234
-        encoded_value = IO.encode_uint32(value)
-        self.assertEqual(IO.decode_uint32(encoded_value), value)
+        encoded_value = io.encode_uint32(value)
+        self.assertEqual(io.decode_uint32(encoded_value), value)
 
 
     def test_vint(self):
         value = 1234567890
-        encoded_value = IO.encode_vint(value)
-        self.assertEqual(IO.decode_vint(encoded_value)[0], value)
+        encoded_value = io.encode_vint(value)
+        self.assertEqual(io.decode_vint(encoded_value)[0], value)
 
 
     def test_character(self):
         value = u'X'
-        encoded_value = IO.encode_character(value)
-        self.assertEqual(IO.decode_character(encoded_value), value)
+        encoded_value = io.encode_character(value)
+        self.assertEqual(io.decode_character(encoded_value), value)
 
 
     def test_string(self):
         value = u'aquilas non captis muscas'
-        encoded_value = IO.encode_string(value)
-        self.assertEqual(IO.decode_string(encoded_value)[0], value)
+        encoded_value = io.encode_string(value)
+        self.assertEqual(io.decode_string(encoded_value)[0], value)
 
 
     def test_link(self):
         for value in [0, 513]:
-            encoded_value = IO.encode_link(value)
-            self.assertEqual(IO.decode_link(encoded_value), value)
+            encoded_value = io.encode_link(value)
+            self.assertEqual(io.decode_link(encoded_value), value)
 
 
     def test_version(self):
         value = '20050217'
-        encoded_value = IO.encode_version(value)
-        self.assertEqual(IO.decode_version(encoded_value), value)
+        encoded_value = io.encode_version(value)
+        self.assertEqual(io.decode_version(encoded_value), value)
 
 
 

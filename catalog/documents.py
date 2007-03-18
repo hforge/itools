@@ -20,7 +20,7 @@ from __future__ import with_statement
 
 # Import from itools
 from itools import vfs
-from IO import (decode_byte, encode_byte, decode_link, encode_link,
+from io import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
                 decode_vint, encode_vint, NULL)
 

@@ -29,7 +29,7 @@ from index import Index, VERSION, ZERO
 from documents import Documents, Document
 from analysers import get_analyser
 import queries
-from IO import NULL
+from io import NULL
 
 
 

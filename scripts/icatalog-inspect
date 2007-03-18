@@ -25,7 +25,7 @@ from optparse import OptionParser
 # Import from itools
 import itools
 from itools import vfs
-from itools.catalog.IO import (decode_byte, decode_character, decode_link,
+from itools.catalog.io import (decode_byte, decode_character, decode_link,
                                decode_string, decode_uint32, decode_vint)
 
 

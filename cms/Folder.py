@@ -121,8 +121,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return Handler.GET(self, context)
 
 
-    def _get_handler(self, segment, uri):
-        name = segment.name
+    def _get_handler(self, name, uri):
         # Check the layout first
         cls = self.class_layout.get(name)
         if cls is not None:
@@ -172,9 +171,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return names
 
 
-    def _get_virtual_handler(self, segment):
-        name = segment.name
-
+    def _get_virtual_handler(self, name):
         languages = [ x.split('.')[-1] for x in self.cache
                       if x.startswith(name) ]
         languages = [ x for x in languages if x in i18n.languages ]
@@ -195,12 +192,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 language = languages[0]
             return self.get_handler('%s.%s' % (name, language))
 
-        return BaseFolder._get_virtual_handler(self, segment)
+        return BaseFolder._get_virtual_handler(self, name)
 
 
-    def before_set_handler(self, segment, handler, format=None, id=None,
+    def before_set_handler(self, name, handler, format=None, id=None,
                            move=False, **kw):
-        name = segment.name
         if not isinstance(handler, Handler):
             return
         if name.startswith('.'):
@@ -213,11 +209,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
         self.set_handler('%s.metadata' % name, metadata)
 
 
-    def after_set_handler(self, segment, handler, format=None, id=None,
+    def after_set_handler(self, name, handler, format=None, id=None,
                           move=False, **kw):
         from root import Root
 
-        name = segment.name
         if not isinstance(handler, Handler):
             return
         if name.startswith('.'):
@@ -226,7 +221,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         root = self.get_root()
         if isinstance(root, Root):
             # Index
-            handler = self.get_handler(segment)
+            handler = self.get_handler(name)
             if isinstance(handler, Folder):
                 for x, context in handler.traverse2():
                     if x.real_handler is not None:
@@ -250,16 +245,15 @@ class Folder(Handler, BaseFolder, CalendarAware):
                             handler.commit_revision()
 
 
-    def on_del_handler(self, segment):
+    def on_del_handler(self, name):
         from root import Root
 
-        name = segment.name
         if (name.startswith('.')
             or name.endswith('.metadata')
             or name.endswith('.lock')):
             return
 
-        handler = self.get_handler(segment)
+        handler = self.get_handler(name)
         # Unindex
         root = self.get_root()
         if isinstance(root, Root):
@@ -543,7 +537,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # check selected image
         if selected_image is not None:
             path = Path(selected_image)
-            selected_image = path[-1].name
+            selected_image = path[-1]
             if not selected_image in self.get_handler_names():
                 selected_image = None
 

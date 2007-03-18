@@ -113,8 +113,7 @@ class Node(object):
         if not isinstance(path, Path):
             path = Path(path)
 
-        path, segment = path[:-1], path[-1]
-        name = segment.name
+        path, name = path[:-1], path[-1]
 
         container = self.get_handler(path)
         return name in container.get_handler_names()
@@ -134,15 +133,14 @@ class Node(object):
         if len(path) == 0:
             return self
 
-        if path[0].name == '..':
+        if path[0] == '..':
             if self.parent is None:
                 raise ValueError, 'this handler is the root handler'
             return self.parent.get_handler(path[1:])
 
-        segment, path = path[0], path[1:]
-        name = segment.name
+        name, path = path[0], path[1:]
 
-        handler = self._get_virtual_handler(segment)
+        handler = self._get_virtual_handler(name)
 ##        handler = build_virtual_handler(handler)
         # Set parent and name
         handler.parent = self
@@ -154,7 +152,7 @@ class Node(object):
         return handler
 
 
-    def _get_virtual_handler(self, segment):
+    def _get_virtual_handler(self, name):
         raise LookupError, 'file handlers can not be traversed'
 
 

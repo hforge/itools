@@ -499,15 +499,14 @@ class UserFolder(Folder):
         return frozenset(usernames)
 
 
-    def on_del_handler(self, segment):
-        name = segment.name
+    def on_del_handler(self, name):
         handler = self.get_handler(name)
         if isinstance(handler, User):
             root = self.get_root()
             for group_path in handler.get_groups():
                 group = root.get_handler(group_path)
                 group.set_user_role(name, None)
-        Folder.on_del_handler(self, segment)
+        Folder.on_del_handler(self, name)
 
     #######################################################################
     # Back-Office

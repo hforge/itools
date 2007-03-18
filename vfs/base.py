@@ -78,7 +78,7 @@ class BaseFS(object):
 
         XXX Use magic numbers too (like file -i).
         """
-        name = reference.path[-1].name
+        name = reference.path[-1]
         # Parse the filename
         name, type, language = FileName.decode(name)
 

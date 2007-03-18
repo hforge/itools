@@ -151,16 +151,16 @@ class Folder(Handler):
         return registry.get_handler_class(uri)
 
 
-    def _get_virtual_handler(self, segment):
+    def _get_virtual_handler(self, name):
         """
-        This method must return a handler for the given segment, or raise
+        This method must return a handler for the given name, or raise
         the exception LookupError. We know there is not a resource with
         the given name, this method is used to return 'virtual' handlers.
         """
-        raise LookupError, 'the resource "%s" does not exist' % segment.name
+        raise LookupError, 'the resource "%s" does not exist' % name
 
 
-    def _get_handler(self, segment, uri):
+    def _get_handler(self, name, uri):
         handler_class = self.get_handler_class(uri)
         return handler_class(uri)
 
@@ -181,19 +181,17 @@ class Folder(Handler):
         if len(path) == 0:
             return self
 
-        if path[0].name == '..':
+        if path[0] == '..':
             if self.parent is None:
                 raise ValueError, 'this handler is the root handler'
             return self.parent.get_handler(path[1:], caching=caching)
 
         here = self
-        for segment in path:
-            name = segment.name
-
+        for name in path:
             # Check wether it is a folder or not
             if not isinstance(here, Folder):
                 # Virtual handler
-                handler = here._get_virtual_handler(segment)
+                handler = here._get_virtual_handler(name)
                 # Set parent and name
                 handler.parent = here
                 handler.name = name
@@ -204,7 +202,7 @@ class Folder(Handler):
             # Check wether the resource exists or not
             if name not in here.cache:
                 # Virtual handler
-                handler = here._get_virtual_handler(segment)
+                handler = here._get_virtual_handler(name)
                 handler = build_virtual_handler(handler)
                 # Set parent and name
                 handler.parent = here
@@ -222,8 +220,8 @@ class Folder(Handler):
             handler = here.cache[name]
             if handler is None:
                 # Miss
-                uri = here.uri.resolve2(str(segment))
-                handler = here._get_handler(segment, uri)
+                uri = here.uri.resolve2(name)
+                handler = here._get_handler(name, uri)
                 if caching is True:
                     # Update the cache
                     here.cache[name] = handler
@@ -254,14 +252,14 @@ class Folder(Handler):
             path = Path(path)
 
         # Get the container
-        path, segment = path[:-1], path[-1]
+        path, name = path[:-1], path[-1]
         try:
             container = self.get_handler(path)
         except LookupError:
             return False
 
         # Check wether the container has the handler or not
-        return segment.name in container.cache
+        return name in container.cache
 
 
     def get_handler_names(self, path='.'):
@@ -283,8 +281,7 @@ class Folder(Handler):
         if not isinstance(path, Path):
             path = Path(path)
 
-        path, segment = path[:-1], path[-1]
-        name = segment.name
+        path, name = path[:-1], path[-1]
 
         container = self.get_handler(path)
         # Check if there is already a handler with that name
@@ -297,7 +294,7 @@ class Folder(Handler):
         if name in container.removed_handlers:
             container.removed_handlers.remove(name)
         # Event: before set handler
-        container.before_set_handler(segment, handler, **kw)
+        container.before_set_handler(name, handler, **kw)
         # Make a copy of the handler
         handler = handler.copy_handler()
         handler.parent = container
@@ -306,7 +303,7 @@ class Folder(Handler):
         container.added_handlers.add(name)
         container.cache[name] = handler
         # Event: after set handler
-        container.after_set_handler(segment, handler, **kw)
+        container.after_set_handler(name, handler, **kw)
         return handler
 
 
@@ -314,8 +311,7 @@ class Folder(Handler):
         if not isinstance(path, Path):
             path = Path(path)
 
-        path, segment = path[:-1], path[-1]
-        name = segment.name
+        path, name = path[:-1], path[-1]
 
         container = self.get_handler(path)
         # Check wether the handler really exists
@@ -326,7 +322,7 @@ class Folder(Handler):
         container.set_changed()
         # Event, on del handler
         if hasattr(container, 'on_del_handler'):
-            container.on_del_handler(segment)
+            container.on_del_handler(name)
         # Clean the 'added_handlers' data structure if needed
         if name in container.added_handlers:
             container.added_handlers.remove(name)
@@ -337,11 +333,11 @@ class Folder(Handler):
 
     ########################################################################
     # Other methods
-    def before_set_handler(self, segment, handler, **kw):
+    def before_set_handler(self, name, handler, **kw):
         pass
 
 
-    def after_set_handler(self, segment, handler, **kw):
+    def after_set_handler(self, name, handler, **kw):
         pass
 
 

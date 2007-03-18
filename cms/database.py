@@ -45,8 +45,8 @@ TRANSACTION_PHASE2 = 2
 ###########################################################################
 def get_log(reference):
     path = reference.path
-    for i, segment in enumerate(path):
-        if segment.name == 'database':
+    for i, name in enumerate(path):
+        if name == 'database':
             log = path[:i].resolve2('database.commit/log')
             return str(log)
 
@@ -55,8 +55,8 @@ def get_log(reference):
 
 def get_commit_and_log(reference):
     path = reference.path
-    for i, segment in enumerate(path):
-        if segment.name == 'database':
+    for i, name in enumerate(path):
+        if name == 'database':
             path = path[:i]
             commit = path.resolve2('database.commit')
             log = commit.resolve2('log')

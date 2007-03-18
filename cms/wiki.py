@@ -81,10 +81,9 @@ class WikiFolder(Folder):
         return [WikiPage, File]
 
 
-    def before_set_handler(self, segment, handler, format=None, id=None,
+    def before_set_handler(self, name, handler, format=None, id=None,
                            move=False, **kw):
-        Folder.before_set_handler(self, segment, handler, format, id,
-                                  move, **kw)
+        Folder.before_set_handler(self, name, handler, format, id, move, **kw)
         if isinstance(handler, WikiPage):
             context = get_context()
             if context is not None:

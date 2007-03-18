@@ -125,11 +125,11 @@ def normalize_path(path):
 
     # Transform 'a/..' to ''
     stack = []
-    for segment in path:
-        if segment == '..' and stack and stack[-1] != '..':
+    for name in path:
+        if name == '..' and stack and stack[-1] != '..':
             stack.pop()
         else:
-            stack.append(segment)
+            stack.append(name)
     path = stack
 
     # Absolute or Relative
@@ -152,41 +152,29 @@ def normalize_path(path):
 
 
 
-class Segment(object):
+class Segment(str):
 
-    def __init__(self, segment=''):
-        if isinstance(segment, Segment):
-            self.name = segment.name
-            self.param = segment.param
-        elif isinstance(segment, str) or isinstance(segment, unicode):
-            if ';' in segment:
-                self.name, self.param = segment.split(';', 1)
-            else:
-                self.name = segment
-                self.param = None
-        else:
-            raise TypeError, \
-                  'segment or string expected, "%s" found' % type(segment)
+    __slots__ = []
+
+    def get_name(self):
+        return self.split(';', 1)[0]
+
+    name = property(get_name, None, None, '')
 
 
-    def __eq__(self, other):
-        if isinstance(other, str):
-            other = Segment(other)
+    def get_params(self):
+        if ';' in self:
+            return self.split(';')[1:]
+        return ''
 
-        return str(self) == str(other)
-
-
-    def __str__(self):
-        if self.param is not None:
-            return '%s;%s' % (self.name, self.param)
-        return self.name
+    params = property(get_params, None, None, '')
 
 
 
 class Path(list):
     """
     A path is a sequence of segments. A segment is has a name and,
-    optionally a parameter.
+    optionally one or more parameters.
 
     A path may start and/or end by an slash. This information is only
     useful when resolving paths. When a path starts by an slash it is
@@ -194,9 +182,7 @@ class Path(list):
     """
 
     def __init__(self, path):
-        if isinstance(path, Segment):
-            path = str(path)
-        elif isinstance(path, tuple) or isinstance(path, list):
+        if isinstance(path, tuple) or isinstance(path, list):
             path = '/'.join([ str(x) for x in path ])
 
         path = normalize_path(path)
@@ -327,7 +313,7 @@ class Path(list):
             path = Path(path)
 
         i = 0
-        while i < len(self) and i < len(path) and self[i].name == path[i].name:
+        while i < len(self) and i < len(path) and self[i] == path[i]:
             i = i + 1
         return self[:i]
 

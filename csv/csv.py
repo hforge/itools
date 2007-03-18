@@ -283,8 +283,8 @@ class CSV(Text):
     #########################################################################
     # Traverse
     #########################################################################
-    def _get_virtual_handler(self, segment):
-        index = int(segment.name)
+    def _get_virtual_handler(self, name):
+        index = int(name)
         try:
             row = self.lines[index]
         except IndexError:

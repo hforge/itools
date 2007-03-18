@@ -59,13 +59,12 @@ class WebSite(RoleAware, Folder):
         {'name': 'ikaaro:admins', 'title': u'Admins', 'unit': u'Admin'}]
 
 
-    def _get_virtual_handler(self, segment):
-        name = segment.name
+    def _get_virtual_handler(self, name):
         if name == 'ui':
             return ui
         elif name in ('users', 'users.metadata'):
             return self.get_handler('/%s' % name)
-        return Folder._get_virtual_handler(self, segment)
+        return Folder._get_virtual_handler(self, name)
 
 
     ########################################################################
@@ -351,7 +350,7 @@ class WebSite(RoleAware, Folder):
         if referrer:
             if not referrer.path:
                 return referrer
-            elif referrer.path[-1].param != 'login_form':
+            elif referrer.path[-1].params[0] != 'login_form':
                 return referrer
 
         if goto is not None:

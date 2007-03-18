@@ -134,7 +134,7 @@ class Folder(object):
         target_fs, target_ref = self.get_fs_and_reference(target)
         # If the target exists and is a folder, copy the source within it
         if target_fs.is_folder(target_ref):
-            target_ref = target_ref.resolve2(source_ref.path[-1].name)
+            target_ref = target_ref.resolve2(source_ref.path[-1])
 
         # File
         if source_fs.is_file(source_ref):

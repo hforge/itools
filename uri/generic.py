@@ -52,6 +52,9 @@ class Authority(object):
     The userinfo component could be further processed.
     """
 
+    __slots__ = ['userinfo', 'host', 'port']
+
+
     def __init__(self, auth):
         # The userinfo
         if '@' in auth:
@@ -180,6 +183,9 @@ class Path(list):
     useful when resolving paths. When a path starts by an slash it is
     called an absolute path, otherwise it is called a relative path.
     """
+
+    __slots__ = ['startswith_slash', 'endswith_slash']
+
 
     def __init__(self, path):
         if isinstance(path, tuple) or isinstance(path, list):
@@ -432,6 +438,9 @@ class Reference(object):
     /rfc/rfc2616.txt
     XXX
     """
+
+    __slots__ = ['scheme', 'authority', 'path', 'query', 'fragment']
+
 
     def __init__(self, scheme, authority, path, query, fragment=None):
         self.scheme = scheme

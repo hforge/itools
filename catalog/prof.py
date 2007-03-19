@@ -29,7 +29,8 @@ from itools import vfs
 from itools.handlers import Text
 from itools.xml import XML
 from itools.html import HTML
-from itools.catalog.catalog import Catalog, make_catalog
+from itools.catalog import Catalog, make_catalog, TextField
+
 
 
 def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
@@ -67,8 +68,8 @@ def create_catalog():
         vfs.remove('/tmp/catalog_prof')
     # Create and get a new empty catalog
     catalog = make_catalog('/tmp/catalog_prof',
-                           [('title', 'text', True, True),
-                            ('body', 'text', True, False)])
+                           TextField('title', is_stored=True),
+                           TextField('body'))
     print 'done'
 
 

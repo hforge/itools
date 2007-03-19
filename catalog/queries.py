@@ -15,9 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from itools
-from analysers import get_analyser
-
 
 """
 To build a query:
@@ -78,7 +75,7 @@ class Phrase(object):
         analyser = catalog.get_analyser(self.name)
 
         documents = {}
-        for value, offset in analyser(self.value):
+        for value, offset in field.split(self.value):
             result = index.search_word(value)
             if offset == 0:
                 documents = result

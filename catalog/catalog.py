@@ -27,7 +27,7 @@ from itools.uri import get_absolute_reference
 from itools import vfs
 from index import Index, VERSION, ZERO
 from documents import Documents, Document
-from analysers import get_analyser
+import fields
 import queries
 from io import NULL
 
@@ -162,7 +162,9 @@ class Catalog(object):
                 number = int(number)
                 is_indexed = bool(int(is_indexed))
                 is_stored = bool(int(is_stored))
-                field = Field(number, name, type, is_indexed, is_stored)
+                cls = fields.get_field(type)
+                field = cls(name, is_indexed=is_indexed, is_stored=is_stored)
+                field.number = number
                 self.fields.append(field)
                 self.field_numbers[name] = number
         # Initialize the indexes
@@ -231,8 +233,7 @@ class Catalog(object):
     #########################################################################
     def get_analyser(self, name):
         field_number = self.field_numbers[name]
-        field = self.fields[field_number]
-        return get_analyser(field.type)
+        return self.fields[field_number]
 
 
     def get_index(self, name):
@@ -276,8 +277,7 @@ class Catalog(object):
                 index = self.indexes[field.number]
                 # Tokenize
                 terms = set()
-                analyser = get_analyser(field.type)
-                for word, position in analyser(value):
+                for word, position in field.split(value):
                     terms.add(word)
                     # Update the inverted index
                     index.index_term(word, doc_number, position)
@@ -317,8 +317,7 @@ class Catalog(object):
                 continue
             # If the field is stored, find out the terms to unindex
             if field.is_stored:
-                analyser = get_analyser(field.type)
-                terms = [ term for term, position in analyser(value) ]
+                terms = [ term for term, position in field.split(value) ]
                 terms = set(terms)
             else:
                 terms = value
@@ -356,7 +355,7 @@ class Catalog(object):
 
 
 
-def make_catalog(uri, fields):
+def make_catalog(uri, *fields):
     """
     Creates a new catalog in the given uri.
     """
@@ -370,9 +369,10 @@ def make_catalog(uri, fields):
     metadata = []
     for i, field in enumerate(fields):
         # The metadata file
-        name, type, is_indexed, is_stored = field
-        metadata.append('%d#%s#%s#%d#%d\n' % (i, name, type, is_indexed,
-                                              is_stored))
+        metadata.append('%d#%s#%s#%d#%d\n' % (i, field.name,
+                                              field.type,
+                                              field.is_indexed,
+                                              field.is_stored))
         # Create the index file
         base.make_file('data/%d_docs' % i)
         with base.make_file('data/%d_tree' % i) as file:

@@ -21,6 +21,7 @@ from os.path import isfile, join
 
 # Import from itools
 from catalog import Catalog, make_catalog
+from fields import TextField, KeywordField, BoolField
 
 
 # Check rsync is installed

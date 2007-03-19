@@ -111,7 +111,7 @@ ZERO = encode_uint32(0)
 ##########################################################################
 # Data Structure
 ##########################################################################
-class _Node(object):
+class Node(object):
     
     __slots__ = ['children', 'documents', 'block']
 
@@ -137,7 +137,7 @@ class _Node(object):
             child = tree_file.read(16)
             # Add the child
             c = decode_character(child[:4])
-            children[c] = _Node(None, None, child_n)
+            children[c] = Node(None, None, child_n)
             # Next
             child_n = decode_link(child[12:])
 
@@ -244,37 +244,42 @@ class _Node(object):
         return documents
 
 
+###########################################################################
+# Handler
+###########################################################################
+class Index(object):
 
-class _Index(object):
+    __slots__ = ['uri', 'n', 'root', 'tree_n_blocks', 'docs_n_slots',
+                 'added_terms', 'removed_terms']
 
-    __slots__ = ['root', 'tree_n_blocks', 'docs_n_slots']
 
+    def __init__(self, uri, n):
+        self.uri = uri
+        self.n = n
 
-    def __init__(self, tree_file=None, docs_file=None):
-        if tree_file is None and docs_file is None:
-            self.root = _Node({}, {}, 0)
-            self.tree_n_blocks = 1
-            self.docs_n_slots = 0
-        else:
-            self.root = _Node(None, {}, 0)
+        base = vfs.open(self.uri)
+        tree_file = base.open('%d_tree' % n)
+        docs_file = base.open('%d_docs' % n)
+        try:
+            self.root = Node(None, {}, 0)
             # The number of blocks in the tree file
             tree_file.seek(0, 2)
             self.tree_n_blocks = tree_file.tell() / 16
             # The number of slots in the docs file
             docs_file.seek(0, 2)
             self.docs_n_slots = docs_file.tell() / 4
+        finally:
+            tree_file.close()
+            docs_file.close()
+        # Nothing changed yet
+        self.added_terms = {}
+        self.removed_terms = {}
 
 
     #######################################################################
-    # Init
-    def init_tree_file(self, tree_file):
-        tree_file.write(''.join([VERSION, ZERO, NULL, NULL]))
-
-
+    # API / Private
     #######################################################################
-    # Index
-    #######################################################################
-    def index_term(self, tree_file, docs_file, word, documents):
+    def _index_term(self, tree_file, docs_file, word, documents):
         """
         Indexes the given documents for the given words.
 
@@ -323,7 +328,7 @@ class _Index(object):
                 seek(slot_number * 16)
                 write(encode_character(c) + NULL2 + old_first_child)
                 # Add node, and continue
-                children[c] = node = _Node({}, {}, slot_number)
+                children[c] = node = Node({}, {}, slot_number)
 
         # Update the number of blocks
         self.tree_n_blocks = tree_n_blocks
@@ -370,10 +375,7 @@ class _Index(object):
         self.docs_n_slots = docs_n_slots
 
 
-    #######################################################################
-    # Unindex
-    #######################################################################
-    def unindex_term(self, tree_file, docs_file, word, documents):
+    def _unindex_term(self, tree_file, docs_file, word, documents):
         """
         Un-indexes the given term. The parameter 'documents' is a list with
         the numbers of the documents that must be un-indexed.
@@ -426,10 +428,7 @@ class _Index(object):
             docs_slot_r = next_slot_r
 
 
-    #######################################################################
-    # Search
-    #######################################################################
-    def search_word(self, tree_file, docs_file, word):
+    def _search_word(self, tree_file, docs_file, word):
         node = self.root
         for c in word:
             if node.children is None:
@@ -448,44 +447,9 @@ class _Index(object):
         return node.documents.copy()
 
 
-    def search_range(self, tree_file, docs_file, left, right):
-        """
-        Searches the index from 'left' to 'right', left included and right
-        excluded: [left, right[
-
-        Returns a mapping with all the documents found, the values of the
-        mapping are the weights.
-        """
-        # XXX Recursive implementation. Maybe we should try an iterative one
-        # for speed.
-        return self.root.search_range(tree_file, docs_file, left, right)
-
-
-###########################################################################
-# Handler
-###########################################################################
-class Index(object):
-
-    __slots__ = ['uri', 'n', '_index', 'added_terms', 'removed_terms']
-
-
-    def __init__(self, uri, n):
-        self.uri = uri
-        self.n = n
-
-        base = vfs.open(self.uri)
-        tree_file = base.open('%d_tree' % n)
-        docs_file = base.open('%d_docs' % n)
-        try:
-            self._index = _Index(tree_file, docs_file)    
-        finally:
-            tree_file.close()
-            docs_file.close()
-        # Nothing changed yet
-        self.added_terms = {}
-        self.removed_terms = {}
-
-
+    #######################################################################
+    # API / Public
+    #######################################################################
     def save_state(self):
         base = vfs.open(self.uri)
         tree_file = base.open('%d_tree' % self.n)
@@ -494,11 +458,11 @@ class Index(object):
             # Removed terms
             for term in self.removed_terms:
                 documents = self.removed_terms[term]
-                self._index.unindex_term(tree_file, docs_file, term, documents)
+                self._unindex_term(tree_file, docs_file, term, documents)
             # Added terms
             for term in self.added_terms:
                 documents = self.added_terms[term]
-                self._index.index_term(tree_file, docs_file, term, documents)
+                self._index_term(tree_file, docs_file, term, documents)
             # Clean the data structure
             self.added_terms = {}
             self.removed_terms = {}
@@ -512,9 +476,6 @@ class Index(object):
         self.removed_terms = {}
 
 
-    #######################################################################
-    # Public API
-    #######################################################################
     def index_term(self, term, doc_number, position):
         # Removed terms
         if term in self.removed_terms:
@@ -548,7 +509,7 @@ class Index(object):
             tree_file = base.open('%s_tree' % self.n)
             docs_file = base.open('%s_docs' % self.n)
         try:
-            documents = self._index.search_word(tree_file, docs_file, word)
+            documents = self._search_word(tree_file, docs_file, word)
         finally:
             if self.uri is not None:
                 tree_file.close()
@@ -572,6 +533,13 @@ class Index(object):
 
 
     def search_range(self, left, right):
+        """
+        Searches the index from 'left' to 'right', left included and right
+        excluded: [left, right[
+
+        Returns a mapping with all the documents found, the values of the
+        mapping are the weights.
+        """
         if self.uri is None:
             tree_file = None
             docs_file = None
@@ -581,7 +549,10 @@ class Index(object):
             docs_file = base.open('docs')
         # Search in the data structure
         try:
-            documents = self._index.search_range(tree_file, docs_file, left, right)
+            # XXX Recursive implementation. Maybe we should try an iterative
+            # one for speed.
+            root = self.root
+            documents = root.search_range(tree_file, docs_file, left, right)
         finally:
             if self.uri is not None:
                 tree_file.close()

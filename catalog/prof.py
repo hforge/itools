@@ -146,10 +146,10 @@ if __name__ == '__main__':
     elif option == 'bench-memory':
         load_catalog()
         index = catalog.get_index('body')
-        tree_file = vfs.open(index.uri.resolve2('tree'))
+        tree_file = vfs.open(index.uri.resolve2('%d_tree' % index.n))
         m0 = vmsize()
         try:
-            index._index.root._load_children_deep(tree_file)
+            index.root._load_children_deep(tree_file)
         finally:
             tree_file.close()
         m1 = vmsize()

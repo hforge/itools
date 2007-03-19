@@ -1,5 +1,5 @@
 
-itools 0.14.8 (2007/03/17)
+itools 0.14.8 (2007/03/19)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -15,9 +15,9 @@ meta-package for easier development and deployment:
 
 This is a security release:
 
- - A critical bug has been fixed in "itools.cms". Before 0.14.8, it was
-   possible to build a POST request in a special way so authentication
-   was not required for the request to succeed.
+ - A serious bug has been fixed in "itools.cms". Before 0.14.8, an
+   authenticated user was able to succesfully perform any POST request,
+   if specially constructed.
 
 Other bugs fixed:
 

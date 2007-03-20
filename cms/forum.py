@@ -47,9 +47,9 @@ class Message(Text):
     class_views = [['edit_form'], ['history_form']]
     
 
-    # Remove from searches (XXX)
-    def get_catalog_indexes(self):
-        return None
+    # Remove from searches
+    def to_text(self):
+        return u''
 
 
     # ACLs

@@ -352,12 +352,14 @@ class WikiPage(Text):
             subdoc = core.publish_doctree(source,
                     settings_overrides=self.overrides)
             if isinstance(subdoc[0], nodes.section):
-                section = subdoc[0]
+                for node in subdoc.children:
+                    if isinstance(node, nodes.section):
+                        document.append(node)
             else:
                 subtitle = subdoc.get('title', u'')
                 section = nodes.section(*subdoc.children, **subdoc.attributes)
                 section.insert(0, nodes.title(text=subtitle))
-            document.append(section)
+                document.append(section)
 
         # Find the list of images to append
         for node in document.traverse(condition=nodes.image):

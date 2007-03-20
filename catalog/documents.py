@@ -184,7 +184,7 @@ class Documents(object):
 
     def abort(self):
         for doc_n in self.added_documents:
-            del self.added_documents[doc_n]
+            del self.documents[doc_n]
             self.n_documents -= 1
 
         self.added_documents = []

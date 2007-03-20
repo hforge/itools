@@ -162,7 +162,7 @@ table_template_string = """
         </tr>
       </thead>
       <tbody>
-        <tr stl:repeat="row rows" class="${repeat/row/even}">
+        <tr stl:repeat="row rows" class="${repeat/row/even} ${row/class}">
           <td stl:if="column_checkbox">
             <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
               value="${row/id}" />
@@ -231,6 +231,8 @@ def table(columns, rows, sortby, sortorder, actions, gettext=lambda x: x):
         x['img'] = row.get('img')
         if x['img'] is not None:
             namespace['column_image'] = True
+        # A CSS class on the TR
+        x['class'] = row.get('class')
         # Other columns
         x['columns'] = []
         for column, kk in columns:

@@ -60,14 +60,13 @@ class WikiFolder(Folder):
     class_description = u"Container for a wiki"
     class_icon16 = 'images/WikiFolder16.png'
     class_icon48 = 'images/WikiFolder48.png'
-    class_views = [
-        ['view'],
-        ['browse_content?mode=thumbnails',
-         'browse_content?mode=list',
-         'browse_content?mode=image'],
-        ['new_resource_form'],
-        ['edit_metadata_form'],
-        ['last_changes']]
+    class_views = [['view'],
+                   ['browse_content?mode=thumbnails',
+                    'browse_content?mode=list',
+                    'browse_content?mode=image'],
+                   ['new_resource_form'],
+                   ['edit_metadata_form'],
+                   ['last_changes']]
 
     __fixed_handlers__ = ['FrontPage']
 
@@ -171,13 +170,16 @@ class WikiPage(Text):
     class_description = u"Wiki contents"
     class_icon16 = 'images/WikiPage16.png'
     class_icon48 = 'images/WikiPage48.png'
-    class_views = Text.class_views + [
-            ['browse_content?mode=thumbnails',
-             'browse_content?mode=list',
-             'browse_content?mode=image'],
-            ['new_resource_form'],
-            ['last_changes'],
-            ['to_pdf']]
+    class_views = [['view'],
+                   ['edit_form', 'externaledit', 'upload_form'],
+                   ['state_form', 'edit_metadata_form'],
+                   ['browse_content?mode=thumbnails',
+                    'browse_content?mode=list',
+                    'browse_content?mode=image'],
+                   ['new_resource_form'],
+                   ['last_changes'],
+                   ['to_pdf'],
+                   ['help']]
     class_extension = None
 
     overrides = {
@@ -216,7 +218,7 @@ class WikiPage(Text):
         # Class id
         namespace['class_id'] = cls.class_id
 
-        handler = root.get_handler('ui/WikiPage_new_instance.xml')
+        handler = root.get_handler('ui/wiki/WikiPage_new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -427,20 +429,20 @@ class WikiPage(Text):
 
 
     def view(self, context):
-        css = self.get_handler('/ui/wiki.css')
+        css = self.get_handler('/ui/wiki/wiki.css')
         context.styles.append(str(self.get_pathto(css)))
 
         return self.to_html()
 
 
     def edit_form(self, context):
-        css = self.get_handler('/ui/wiki.css')
+        css = self.get_handler('/ui/wiki/wiki.css')
         context.styles.append(str(self.get_pathto(css)))
 
         namespace = {}
         namespace['data'] = self.to_str()
 
-        handler = self.get_handler('/ui/WikiPage_edit.xml')
+        handler = self.get_handler('/ui/wiki/WikiPage_edit.xml')
         return stl(handler, namespace)
 
 
@@ -497,6 +499,25 @@ class WikiPage(Text):
     last_changes__label__ = WikiFolder.last_changes__label__
     def last_changes(self, context):
         return context.uri.resolve('../;last_changes')
+
+
+    help__access__ = 'is_allowed_to_view'
+    help__label__ = u"Help"
+    def help(self, context):
+        namespace = {}
+        css = self.get_handler('/ui/wiki/wiki.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        source = self.get_handler('/ui/wiki/help.txt')
+        source = source.to_str()
+        html = core.publish_string(source, writer_name='html',
+                settings_overrides=self.overrides)
+
+        namespace['help_source'] = source.replace('&', '&amp;').replace('<', '&lt;')
+        namespace['help_html'] = html
+
+        handler = self.get_handler('/ui/wiki/WikiPage_help.xml')
+        return stl(handler, namespace)
 
 
 register_object_class(WikiPage)

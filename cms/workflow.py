@@ -82,6 +82,7 @@ class WorkflowAware(iWorkflowAware):
     ########################################################################
     state_form__access__ = 'is_allowed_to_edit'
     state_form__label__ = u'State'
+    state_form__sublabel__ = u'Workflow State'
     def state_form(self, context):
         namespace = {}
         # State

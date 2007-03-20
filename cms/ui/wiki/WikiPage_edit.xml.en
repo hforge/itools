@@ -44,15 +44,15 @@
     }
 
     function text_small() {
-      tarea.style.fontSize = '0.9em';
+      tarea.style.fontSize = '1.2em';
     }
 
     function text_medium() {
-      tarea.style.fontSize = '1.1em';
+      tarea.style.fontSize = '1.4em';
     }
 
     function text_large() {
-      tarea.style.fontSize = '1.4em';
+      tarea.style.fontSize = '1.6em';
     }
 
     fixHeight();

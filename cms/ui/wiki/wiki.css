@@ -6,23 +6,23 @@
 }
 
 #wiki_toolbar a#wiki_tool_help {
-  background-image: url(images/help16.png);
+  background-image: url(../images/help16.png);
 }
 
 #wiki_toolbar a#wiki_tool_size_s {
-  background-image: url(images/text_small16.png);
+  background-image: url(../images/text_small16.png);
 }
 
 #wiki_toolbar a#wiki_tool_size_m {
-  background-image: url(images/text_medium16.png);
+  background-image: url(../images/text_medium16.png);
 }
 
 #wiki_toolbar a#wiki_tool_size_l {
-  background-image: url(images/text_large16.png);
+  background-image: url(../images/text_large16.png);
 }
 
 textarea#data {
-  font-size: 0.9em;
+  font-size: 1.2em;
 }
 
 #content .document h1 {
@@ -52,6 +52,7 @@ textarea#data {
 
 
 .contents.topic {
+  display: table;
   margin: 3px;
   border: 1px solid #ccc;
   background: #eec;
@@ -67,11 +68,18 @@ textarea#data {
   font-weight: bold;
 }
 
+.figure {
+  display: table;
+  padding: 1em;
+  border: 1px solid #999;
+  background: #ffe;
+}
+
 .reference.external:link,
 .reference.external:visited {
   padding-left: 18px;
   color: blue;
-  background: url(images/WebSite16.png) top left no-repeat;
+  background: url(../images/WebSite16.png) top left no-repeat;
 }
 
 .reference.internal:link,

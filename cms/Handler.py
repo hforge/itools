@@ -482,6 +482,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
 
     edit_metadata_form__access__ = 'is_allowed_to_edit'
     edit_metadata_form__label__ = u'Metadata'
+    edit_metadata_form__sublabel__ = u'Metadata'
     def edit_metadata_form(self, context):
         # Build the namespace
         namespace = {}

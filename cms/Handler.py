@@ -243,7 +243,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
     # Properties
     ########################################################################
     def get_property(self, name, language=None):
-        metadata = self.metadata
+        metadata = self.get_metadata()
         if metadata is None:
             return Node.get_property(self, name)
         return metadata.get_property(name, language=language)

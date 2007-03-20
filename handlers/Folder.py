@@ -232,15 +232,19 @@ class Folder(Handler):
                 if handler.is_outdated():
                     handler.load_state()
 
-            # Virtual handlers propagate
-            if here.real_handler is not None:
-                handler = build_virtual_handler(handler)
-
             # Set parent and name
             handler.parent = here
             handler.name = name
+
+            # Virtual handlers propagate
+            if here.real_handler is not None:
+                handler = build_virtual_handler(handler)
+                handler.parent = here
+                handler.name = name
+
             # Next
             here = handler
+
         return here
 
 

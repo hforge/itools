@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.datatypes import Integer
+from itools.datatypes import Integer, Enumerate
 from itools.csv.csv import CSV as iCSV, Row as iRow
 from itools.stl import stl
 
@@ -188,7 +188,19 @@ class CSV(Text, iCSV):
             column['title'] = title
             # FIXME The widget may be something else than an input field
             # (e.g. a select field)
-            column['widget'] = '<input type="text" name="%s" />' % name
+            datatype = self.schema[name]
+            is_enumerate = getattr(datatype, 'is_enumerate', False)
+            if is_enumerate:
+                widget = ['<select style="width: 200px" name="%s">\n' % name]
+                widget.append('<option value=""></option>')
+                for option in datatype.get_options():
+                    widget.append(
+                        '<option value="%(name)s">%(value)s</option>' % option)
+                widget.append('</select>\n')
+                widget = ''.join(widget)
+            else:
+                widget = '<input type="text" name="%s" />' % name
+            column['widget'] = widget
             columns.append(column)
         namespace['columns'] = columns
 

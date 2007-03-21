@@ -224,6 +224,8 @@ class Tokens(DataType):
 
 class Enumerate(String):
 
+    is_enumerate = True
+
     options = []
 
 

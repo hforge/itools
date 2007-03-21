@@ -639,11 +639,14 @@ class GenericDataType(object):
 
         # All other cases, split the reference in its components
         scheme, authority, path, query, fragment = urlsplit(data)
+        # The path
+        if path:
+            path = urllib.unquote(path)
+        elif authority:
+            path = '/'
         # The authority
         authority = urllib.unquote(authority)
         authority = Authority(authority)
-        # The path
-        path = urllib.unquote(path)
         # The query
         try:
             query = Query.decode(query)

@@ -191,7 +191,7 @@ table_template = XHTML.Document()
 table_template.load_state_from_string(table_template_string)
 
 
-def table(columns, rows, sortby, sortorder, actions, gettext=lambda x: x):
+def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x):
     """
     The parameters are:
 

@@ -15,6 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+from operator import itemgetter
+
 # Import from itools
 from itools.datatypes import Integer, Enumerate
 from itools.csv.csv import CSV as iCSV, Row as iRow
@@ -156,11 +159,14 @@ class CSV(Text, iCSV):
             rows[-1]['id'] = str(index)
             rows[-1]['checkbox'] = True
             index += 1
-        # TODO Sort
-        sortby = None
-        sortorder = None
-        namespace['table'] = widgets.table(columns, rows, sortby, sortorder,
-                                           actions)
+
+        # Sorting
+        sortby = context.get_form_value('sortby')
+        sortorder = context.get_form_value('sortorder', 'up')
+        if sortby and sortby in self.columns:
+            rows.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
+
+        namespace['table'] = widgets.table(columns, rows, [sortby], sortorder)
 
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)

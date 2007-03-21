@@ -30,25 +30,25 @@ def stop(parser, options, target):
     server = Server(target)
     pid = server.get_pid()
     if pid is None:
-        print 'The server is not running.'
+        print 'The server "%s" is not running.' % target
     else:
         os.kill(pid, signal.SIGINT)
-        print 'Shutting down the server (gracefully)...'
+        print 'Shutting down "%s" (gracefully)...' % target
 
 
 if __name__ == '__main__':
     # The command line parser
-    usage = '%prog TARGET'
+    usage = '%prog TARGET [TARGET]*'
     version = 'itools %s' % itools.__version__
     description = ('Stops the web server that is publishing the TARGET'
-                   ' itools.cms instance (if it is running).')
+                   ' itools.cms instance (if it is running). Accepts'
+                   ' several TARGETs at once, to stop several servers.')
     parser = OptionParser(usage, version=version, description=description)
 
     options, args = parser.parse_args()
-    if len(args) != 1:
+    if len(args) == 0:
         parser.error('incorrect number of arguments')
 
-    target = args[0]
-
     # Action!
-    stop(parser, options, target)
+    for target in args:
+        stop(parser, options, target)

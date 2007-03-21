@@ -61,10 +61,10 @@ def start(parser, options, target):
     # Check the server is not running
     pid = server.get_pid()
     if pid is not None:
-        print 'The server is already running.'
+        print '%s: The server is already running.' % target
         return
 
-    print 'Listen port %s' % server.port
+    print '%s: Listen port %s' % (target, server.port)
 
     # Debuggin mode (XXX does not works on Windows)
     if options.debug is False:
@@ -73,7 +73,7 @@ def start(parser, options, target):
         pid = os.fork()
         # The father exits
         if pid > 0:
-            sys.exit(0)
+            return
         # The child becomes its own session leader with its own tty
         # that doesn't exist for now but may be affected later
         os.setsid()
@@ -98,10 +98,13 @@ def start(parser, options, target):
 
 if __name__ == '__main__':
     # The command line parser
-    usage = '%prog [OPTIONS] TARGET'
+    usage = ('%prog [OPTIONS] TARGET\n'
+             '       %prog TARGET [TARGET]*')
     version = 'itools %s' % itools.__version__
     description = ('Starts a web server that publishes the TARGET itools.cms'
-                   ' instance to the world.')
+                   ' instance to the world. If several TARGETs are given, one'
+                   ' server will be started for each one (in this mode no'
+                   ' options are available).')
     parser = OptionParser(usage, version=version, description=description)
     parser.add_option(
         '-d', '--debug', action="store_true", default=False,
@@ -112,10 +115,15 @@ if __name__ == '__main__':
         '-p', '--port', type='int', help='listen to PORT number')
 
     options, args = parser.parse_args()
-    if len(args) != 1:
-        parser.error('incorrect number of arguments')
-
-    target = args[0]
+    n_args = len(args)
+    if n_args == 0:
+        parser.error('The TARGET argument is missing.')
+    elif n_args == 1:
+        pass
+    elif options.address or options.debug or options.port:
+        parser.error(
+            'Options are not available when starting several servers at once.')
 
     # Action!
-    start(parser, options, target)
+    for target in args:
+        start(parser, options, target)

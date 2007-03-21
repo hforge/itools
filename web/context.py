@@ -100,13 +100,16 @@ class Context(object):
         return value
 
 
-    def get_form_values(self, name, default=[]):
+    def get_form_values(self, name, default=[], type=None):
         request = self.request
         if request.has_parameter(name):
             value = request.get_parameter(name)
-            if isinstance(value, list):
+            if not isinstance(value, list):
+                value = [value]
+
+            if type is None:
                 return value
-            return [value]
+            return [ type.decode(x) for x in value ]
 
         return default
 

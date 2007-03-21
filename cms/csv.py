@@ -120,22 +120,39 @@ class CSV(Text, iCSV):
                                            self.gettext)
 
         # The table
+        actions = []
+        if total:
+            ac = self.get_access_control()
+            if ac.is_allowed_to_edit(context.user, self):
+                actions = [('del_row_action', u'Remove', 'button_delete',None)]
+
         columns = [ (x, x) for x in self.columns ]
         rows = []
+        index = start
         for row in self.lines[start:start+size]:
             rows.append({})
             for column in self.columns:
                 rows[-1][column] = row.get_value(column)
+            rows[-1]['id'] = str(index)
+            rows[-1]['checkbox'] = True
+            index += 1
         # TODO Sort
         sortby = None
         sortorder = None
-        # TODO Remove
-        actions = []
         namespace['table'] = widgets.table(columns, rows, sortby, sortorder,
                                            actions)
 
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)
+
+
+    del_row_action__access__ = 'is_allowed_to_edit'
+    def del_row_action(self, context):
+        ids = context.get_form_values('ids', type=Integer)
+        self.del_rows(ids)
+
+        message = u'Row deleted.'
+        return context.come_back(message)
 
 
     #########################################################################

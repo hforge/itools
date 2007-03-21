@@ -102,6 +102,26 @@ class CSV(Text, iCSV):
     #########################################################################
     # User Interface
     #########################################################################
+    def get_columns(self):
+        """
+        Returns a list of tuples with the name and title of every column.
+        """
+        columns = []
+        for name in self.columns:
+            datatype = self.schema[name]
+            title = getattr(datatype, 'title', None)
+            if title is None:
+                title = name
+            else:
+                title = self.gettext(title)
+            columns.append((name, title))
+
+        return columns
+
+
+    #########################################################################
+    # User Interface
+    #########################################################################
     edit_form__access__ = False
 
 
@@ -126,7 +146,7 @@ class CSV(Text, iCSV):
             if ac.is_allowed_to_edit(context.user, self):
                 actions = [('del_row_action', u'Remove', 'button_delete',None)]
 
-        columns = [ (x, x) for x in self.columns ]
+        columns = self.get_columns()
         rows = []
         index = start
         for row in self.lines[start:start+size]:
@@ -163,12 +183,12 @@ class CSV(Text, iCSV):
         namespace = {}
 
         columns = []
-        for column_name in self.columns:
+        for name, title in self.get_columns():
             column = {}
-            column['title'] = column_name
+            column['title'] = title
             # FIXME The widget may be something else than an input field
             # (e.g. a select field)
-            column['widget'] = '<input type="text" name="%s" />' % column_name
+            column['widget'] = '<input type="text" name="%s" />' % name
             columns.append(column)
         namespace['columns'] = columns
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form action=";add_row_action" method="post">
+  <dl>
+    <stl:block repeat="column columns">
+      <dt>${column/title}</dt>
+      <dd>
+        ${column/widget}
+      </dd>
+    </stl:block>
+  </dl>
+  <input type="submit" value="Add" class="button_ok" />
+</form>
+
+
+</stl:block>

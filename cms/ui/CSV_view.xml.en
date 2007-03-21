@@ -1,28 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <div class="batchcontrol" stl:if="total">
-    ${batchstart}-${batchend} of ${total}
-
-    <a stl:if="batch_previous" href="${batch_previous}">&lt;&lt;</a>
-    <a stl:if="batch_next" href="${batch_next}">&gt;&gt;</a>
-  </div>
-
-  <table>
-    <thead stl:if="columns">
-      <tr>
-        <th stl:repeat="column columns">${column}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="row rows" class="${repeat/row/even}">
-        <td valign="top" stl:repeat="column row"
-          style="white-space: pre">${column}</td>
-      </tr>
-    </tbody>
-  </table>
+  ${batch}
+  ${table}
 
 </stl:block>

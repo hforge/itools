@@ -24,6 +24,7 @@ from itools.stl import stl
 from Handler import Node
 from text import Text
 from registry import register_object_class
+import widgets
 
 
 class Row(iRow, Node):
@@ -89,26 +90,13 @@ class CSV(Text, iCSV):
     class_id = 'text/comma-separated-values'
     class_title = u'Comma Separated Values'
     class_views = [['view'],
+                   ['add_row_form'],
                    ['externaledit', 'upload_form'],
                    ['edit_metadata_form'],
                    ['history_form']]
 
 
     row_class = Row
-
-##    def _load_state_from_file(self, file):
-##        data = file.read()
-
-##        lines = []
-##        index = 0
-##        for line in parse(data, self.schema):
-##            row = Row(line)
-##            row.index = index
-##            lines.append(row)
-##            index = index + 1
-
-##        self.lines = lines
-##        self.encoding = self.guess_encoding(data)
 
 
     #########################################################################
@@ -117,6 +105,8 @@ class CSV(Text, iCSV):
     edit_form__access__ = False
 
 
+    #########################################################################
+    # View
     def view(self, context):
         namespace = {}
 
@@ -124,30 +114,65 @@ class CSV(Text, iCSV):
         start = context.get_form_value('batchstart', type=Integer, default=0)
         size = 50
 
-        # The rows
-        namespace['rows'] = self.lines[start:start+size]
-
-        # Number of lines
-        total = len(self.lines)
-        namespace['total'] = total
-
         # The batch
-        namespace['batchstart'] = start + 1
-        end = min(start + size, total)
-        namespace['batchend'] = end
-        namespace['batch_previous'] = None
-        if start > 0:
-            prev = max(start - size, 0)
-            prev = str(prev)
-            namespace['batch_previous'] = context.uri.replace(batchstart=prev)
-        namespace['batch_next'] = None
-        if end < total:
-            namespace['batch_next'] = context.uri.replace(batchstart=str(end))
+        total = len(self.lines)
+        namespace['batch'] = widgets.batch(context.uri, start, size, total,
+                                           self.gettext)
 
-        namespace['columns'] = self.columns
+        # The table
+        columns = [ (x, x) for x in self.columns ]
+        rows = []
+        for row in self.lines[start:start+size]:
+            rows.append({})
+            for column in self.columns:
+                rows[-1][column] = row.get_value(column)
+        # TODO Sort
+        sortby = None
+        sortorder = None
+        # TODO Remove
+        actions = []
+        namespace['table'] = widgets.table(columns, rows, sortby, sortorder,
+                                           actions)
 
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)
+
+
+    #########################################################################
+    # Add
+    add_row_form__access__ = 'is_allowed_to_edit'
+    add_row_form__label__ = u'Add'
+    def add_row_form(self, context):
+        namespace = {}
+
+        columns = []
+        for column_name in self.columns:
+            column = {}
+            column['title'] = column_name
+            # FIXME The widget may be something else than an input field
+            # (e.g. a select field)
+            column['widget'] = '<input type="text" name="%s" />' % column_name
+            columns.append(column)
+        namespace['columns'] = columns
+
+        handler = self.get_handler('/ui/CSV_add_row.xml')
+        return stl(handler, namespace)
+
+
+    add_row_action__access__ = 'is_allowed_to_edit'
+    def add_row_action(self, context):
+        row = []
+        for name in self.columns:
+            value = context.get_form_value(name)
+            datatype = self.schema[name]
+            value = datatype.decode(value)
+            row.append(value)
+
+        self.add_row(row)
+
+        message = u'New row added.'
+        return context.come_back(message)
+
 
 
 register_object_class(CSV)

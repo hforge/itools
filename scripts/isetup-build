@@ -25,6 +25,7 @@ import sys
 # Import from itools
 import itools
 from itools.uri.generic import Path
+from itools import vfs
 from itools.handlers import get_handler
 import itools.gettext
 from itools.xhtml import XHTML
@@ -140,7 +141,8 @@ if __name__ == '__main__':
     # Load message catalogs
     message_catalogs = {}
     for language in languages:
-        message_catalogs[language] = get_handler('locale/%s.po' % language)
+        path = 'locale/%s.po' % language
+        message_catalogs[language] = (get_handler(path), vfs.get_mtime(path))
 
     # Build the templates in the target languages
     print '(2) Building XHTML files',
@@ -151,21 +153,33 @@ if __name__ == '__main__':
     for path in os.popen(cmd).readlines():
         # Load the handler
         path = path.strip()
-        handler = XHTML.Document(path)
+        src_mtime = vfs.get_mtime(path)
+        src = XHTML.Document(path)
+        done = False
         # Build the translation
         n = path.rfind('.')
         for language in target_languages:
-            message_catalog = message_catalogs[language]
-            target = '%s.%s' % (path[:n], language)
+            po, po_mtime = message_catalogs[language]
+            dst = '%s.%s' % (path[:n], language)
+            # Skip the file if it is already up-to-date
+            if vfs.exists(dst):
+                dst_mtime = vfs.get_mtime(dst)
+                if dst_mtime > src_mtime and dst_mtime > po_mtime:
+                    continue
             try:
-                open(target, 'w').write(handler.translate(message_catalog))
+                data = src.translate(po)
             except:
                 print 'Error with file "%s"' % path
                 raise
+            open(dst, 'w').write(data)
             # Add to the manifest
-            manifest.append(target[2:])
+            manifest.append(dst[2:])
+            done = True
         # Done
-        sys.stdout.write('.')
+        if done is True:
+            sys.stdout.write('*')
+        else:
+            sys.stdout.write('.')
         sys.stdout.flush()
     print ' OK'
 

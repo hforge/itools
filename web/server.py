@@ -271,6 +271,9 @@ class Server(object):
             self.access_log.close()
         if self.error_log is not None:
             self.error_log.close()
+        # Remove pid file
+        if self.pid_file is not None:
+            os.remove(self.pid_file)
 
 
     ########################################################################

@@ -239,8 +239,8 @@ class Catalog(Folder):
     # Public API
     #########################################################################
     def get_analyser(self, name):
-        field_number = catalog.field_numbers[name]
-        field = catalog.fields[field_number]
+        field_number = self.field_numbers[name]
+        field = self.fields[field_number]
         return get_analyser(field.type)
 
 

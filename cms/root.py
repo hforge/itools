@@ -28,7 +28,7 @@ import traceback
 import itools
 from itools.datatypes import FileName
 from itools import vfs
-from itools.catalog import make_catalog
+from itools.catalog import make_catalog, TextField, KeywordField, BoolField
 from itools.handlers.Folder import Folder as FolderHandler
 from itools.handlers.transactions import get_transaction
 from itools.stl import stl
@@ -112,28 +112,29 @@ class Root(WebSite):
     ########################################################################
     # Skeleton
     ########################################################################
-    _catalog_fields = [('text', 'text', True, False),
-                       ('title', 'text', True, True),
-                       ('owner', 'keyword', True, True),
-                       ('is_role_aware', 'bool', True, False),
-                       ('is_version_aware', 'bool', True, False),
-                       ('format', 'keyword', True, True),
-                       ('workflow_state', 'keyword', True, True),
-                       ('abspath', 'keyword', True, True),
-                       ('members', 'keyword', True, False),
-                       # Users
-                       ('email', 'keyword', True, True),
-                       ('lastname', 'text', True, True),
-                       ('firstname', 'text', True, True),
-                       ('username', 'keyword', True, False), # Login Name
-                       # Folder's view
-                       ('parent_path', 'keyword', True, False),
-                       ('paths', 'keyword', True, False),
-                       ('name', 'keyword', True, True),
-                       ('title_or_name', 'keyword', True, True),
-                       ('mtime', 'keyword', False, True),
-                       ('size', 'keyword', False, True),
-                       ]
+    _catalog_fields = [
+        TextField('text'),
+        TextField('title', is_stored=True),
+        KeywordField('owner', is_stored=True),
+        BoolField('is_role_aware'),
+        BoolField('is_version_aware'),
+        KeywordField('format', is_stored=True),
+        KeywordField('workflow_state', is_stored=True),
+        KeywordField('abspath', is_stored=True),
+        KeywordField('members'),
+        # Users
+        KeywordField('email', is_stored=True),
+        TextField('lastname', is_stored=True),
+        TextField('firstname', is_stored=True),
+        KeywordField('username'), # Login Name
+        # Folder's view
+        KeywordField('parent_path'),
+        KeywordField('paths'),
+        KeywordField('name', is_stored=True),
+        KeywordField('title_or_name', is_stored=True),
+        KeywordField('mtime', is_indexed=False, is_stored=True),
+        KeywordField('size', is_indexed=False, is_stored=True),
+        ]
 
 
     def new(self, username=None, password=None):
@@ -378,7 +379,7 @@ class Root(WebSite):
         server = context.server
         catalog_path = '%s/catalog' % server.target
         vfs.remove(catalog_path)
-        catalog = make_catalog(catalog_path, self._catalog_fields)
+        catalog = make_catalog(catalog_path, *self._catalog_fields)
         server.catalog = catalog
 
         # Index the documents

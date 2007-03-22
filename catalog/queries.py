@@ -72,7 +72,7 @@ class Phrase(object):
         # Get the index
         index = catalog.get_index(self.name)
         # Get the analyser
-        analyser = catalog.get_analyser(self.name)
+        field = catalog.get_analyser(self.name)
 
         documents = {}
         for value, offset in field.split(self.value):

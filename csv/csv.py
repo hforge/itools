@@ -27,7 +27,7 @@ from itools.datatypes import Unicode, Integer
 from itools.handlers.Text import Text
 from itools.handlers.registry import register_handler_class
 from itools.catalog import queries
-from itools.catalog.analysers import get_analyser
+from itools.catalog.fields import get_field
 
 
 ###########################################################################
@@ -129,7 +129,7 @@ class Catalog(object):
 
     def add_index(self, name, analyser_name):
         self.indexes[name] = Index()
-        self.analysers[name] = get_analyser(analyser_name)
+        self.analysers[name] = get_field(analyser_name)
 
 
     def index_document(self, document, number):
@@ -311,7 +311,7 @@ class CSV(Text):
 
     def get_analyser(self, name):
         datatype = self.schema[name]
-        return get_analyser(datatype.index)
+        return get_field(datatype.index)
 
 
     def get_index(self, name):

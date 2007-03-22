@@ -21,7 +21,9 @@ from os.path import isfile, join
 
 # Import from itools
 from catalog import Catalog, make_catalog
-from fields import TextField, KeywordField, BoolField
+from fields import (BaseField, TextField, KeywordField, BoolField,
+                    register_field, get_field)
+from queries import Equal, Range, Phrase, And, Or
 
 
 # Check rsync is installed

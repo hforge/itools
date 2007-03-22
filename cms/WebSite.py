@@ -23,7 +23,7 @@ from itools import uri
 from itools.uri import Path
 from itools.datatypes import Email, Integer, Unicode
 from itools import i18n
-from itools.catalog import queries
+from itools.catalog import Equal, Or
 from itools.stl import stl
 from Folder import Folder
 from skins import Skin
@@ -445,9 +445,9 @@ class WebSite(RoleAware, Folder):
         size = 10
 
         # Search
-        on_title = queries.Equal('title', text)
-        on_text = queries.Equal('text', text)
-        query = queries.Or(on_title, on_text)
+        on_title = Equal('title', text)
+        on_text = Equal('text', text)
+        query = Or(on_title, on_text)
         results = root.search(query=query)
         documents = results.get_documents(start=start, size=size)
 

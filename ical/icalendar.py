@@ -24,8 +24,7 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import Unicode, String
-from itools.catalog import queries
-from itools.catalog.queries import Equal, Range, Or, And
+from itools.catalog import Equal, Range, Or, And
 from itools.handlers import Text
 from itools.csv.csv import Catalog
 from itools.ical.parser import parse
@@ -775,9 +774,9 @@ class icalendar(Text):
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    atoms.append(queries.Equal(key, value))
+                    atoms.append(Equal(key, value))
 
-                query = queries.And(*atoms)
+                query = And(*atoms)
             else:
                 raise ValueError, "expected a query"
 

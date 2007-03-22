@@ -21,12 +21,10 @@ from unittest import TestCase
 
 # Import from itools
 from itools.handlers import get_handler, Text
+from itools.catalog import Catalog, Range, TextField
 from itools.catalog import io
-from itools.catalog import analysers
 from itools.catalog.index import Index
-from itools.catalog.catalog import Catalog
 from itools.catalog.documents import Document, Documents
-from itools.catalog import queries
 
 
 
@@ -78,19 +76,19 @@ class IOTestCase(TestCase):
 class AnalysersTestCase(TestCase):
 
     def test_hello(self):
-        words = list(analysers.Text(u'Hello world'))
+        words = list(TextField.split(u'Hello world'))
         self.assertEqual(words, [(u'hello', 0), (u'world', 1)])
 
 
     def test_accents(self):
-        words = list(analysers.Text(u'Te doy una canción'))
+        words = list(TextField.split(u'Te doy una canción'))
         self.assertEqual(words, [(u'te', 0), (u'doy', 1), (u'una', 2),
                                  (u'canción', 3)])
 
 
     def test_russian(self):
         text = u'Это наш дом'
-        words = list(analysers.Text(text))
+        words = list(TextField.split(text))
         self.assertEqual(words, [(u'это', 0), (u'наш', 1),  (u'дом', 2)])
 
 
@@ -297,7 +295,7 @@ class CatalogTestCase(TestCase):
 
 
 #    def test_range(self):
-#        query = queries.Range('body', 'home', 'horse')
+#        query = Range('body', 'home', 'horse')
 #        documents = catalog.search(query)
 #        doc_numbers = [ x.__number__ for x in documents ]
 #        self.assertEqual(doc_numbers,

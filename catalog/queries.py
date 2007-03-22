@@ -19,11 +19,11 @@
 """
 To build a query:
 
-  from itools.catalog import queries
-  s1 = queries.Equal('format', 'Actu')
-  s2 = queries.Equal('archive', True)
-  s3 = queries.Equal('workflow_state', 'public')
-  query = queries.And(s1, s2, s3)
+  from itools.catalog import Equal, And
+  s1 = Equal('format', 'Actu')
+  s2 = Equal('archive', True)
+  s3 = Equal('workflow_state', 'public')
+  query = And(s1, s2, s3)
 """
 
 

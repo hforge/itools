@@ -23,7 +23,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI
-from itools.catalog import queries
+from itools.catalog import And, Or, Equal
 from itools.csv import CSV
 
 
@@ -243,19 +243,16 @@ class CSVTestCase(TestCase):
         result1 = handler.search(name='dde', country='sweden')
         self.assertEqual(result1, [5, 6])
 
-        q1 = queries.Or(queries.Equal('name', 'dde'),
-                        queries.Equal('name', 'fse'))
-        q2 = queries.Equal('country', 'france')
-        q3 = queries.And(q1, q2)
+        q1 = Or(Equal('name', 'dde'), Equal('name', 'fse'))
+        q2 = Equal('country', 'france')
+        q3 = And(q1, q2)
         result2 = handler.search(q3)
         self.assertEqual(result2, [4])
 
         # previous results as query items
-        q1 = queries.Or(queries.Equal('name', 'dde'),
-                        queries.Equal('name', 'fse'))
-        q2 = queries.Or(queries.Equal('country', 'poland'),
-                        queries.Equal('country', 'france'))
-        q = queries.And(q1, q2)
+        q1 = Or(Equal('name', 'dde'), Equal('name', 'fse'))
+        q2 = Or(Equal('country', 'poland'), Equal('country', 'france'))
+        q = And(q1, q2)
         result5 = handler.search(q)
         self.assertEqual(result5, [1, 4])
 

@@ -25,8 +25,7 @@ import csv as python_csv
 # Import from itools
 from itools.datatypes import Unicode, Integer
 from itools.handlers import Text, register_handler_class
-from itools.catalog import queries
-from itools.catalog.fields import get_field
+from itools.catalog import Equal, And, get_field
 
 
 ###########################################################################
@@ -437,9 +436,9 @@ class CSV(Text):
                 for key, value in kw.items():
                     # FIXME This should be "Phrase", to have the same
                     # behaviour of "itools.catalog"
-                    atoms.append(queries.Equal(key, value))
+                    atoms.append(Equal(key, value))
 
-                query = queries.And(*atoms)
+                query = And(*atoms)
             else:
                 raise ValueError, "expected a query"
 

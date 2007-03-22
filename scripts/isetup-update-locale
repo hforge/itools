@@ -25,7 +25,7 @@ import sys
 # Import from itools
 import itools
 from itools import vfs
-from itools.handlers.python import Python
+from itools.handlers import Python
 from itools.gettext import PO
 from itools.xhtml import XHTML
 import itools.stl

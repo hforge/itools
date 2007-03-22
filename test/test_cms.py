@@ -22,8 +22,7 @@ from unittest import TestCase
 # Import from itools
 from itools.uri import get_absolute_reference2
 from itools import vfs
-from itools.handlers import get_handler
-from itools.handlers.Text import Text
+from itools.handlers import get_handler, Text
 from itools.cms.database import DatabaseFS
 
 

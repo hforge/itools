@@ -29,8 +29,7 @@ from itools.uri import get_reference, Path
 from itools import vfs
 from itools.vfs.file import FileFS
 from itools.vfs.registry import register_file_system
-from itools.handlers.registry import get_handler_class
-from itools.handlers.transactions import get_transaction
+from itools.handlers import get_handler_class, get_transaction
 
 
 

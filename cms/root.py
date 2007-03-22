@@ -29,8 +29,7 @@ import itools
 from itools.datatypes import FileName
 from itools import vfs
 from itools.catalog import make_catalog, TextField, KeywordField, BoolField
-from itools.handlers.Folder import Folder as FolderHandler
-from itools.handlers.transactions import get_transaction
+from itools.handlers import Folder as FolderHandler, get_transaction
 from itools.stl import stl
 from itools.web import get_context
 

@@ -26,7 +26,7 @@ import sys
 # Import from itools
 import itools
 from itools.catalog import make_catalog
-from itools.handlers.config import Config
+from itools.handlers import Config
 from itools.cms.root import Root
 from itools.cms.catalog import CatalogAware
 

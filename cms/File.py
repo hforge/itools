@@ -21,7 +21,7 @@ from datetime import datetime
 # Import from itools
 from itools.uri import get_reference
 from itools import vfs
-from itools.handlers.File import File as BaseFile
+from itools.handlers import File as BaseFile
 from itools.stl import stl
 from itools.web import get_context
 from Handler import Handler

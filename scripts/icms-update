@@ -25,7 +25,7 @@ import itools
 from itools import uri
 from itools import vfs
 from itools.catalog import make_catalog, Catalog
-from itools.handlers.config import Config
+from itools.handlers import Config
 from itools.cms.database import DatabaseFS
 from itools.cms.server import ask_confirmation
 from itools.cms.server import get_root

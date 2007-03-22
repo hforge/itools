@@ -19,7 +19,7 @@
 import os
 
 # Import from itools
-from itools.handlers.Folder import Folder
+from itools.handlers import Folder
 from itools.i18n.accept import get_accept
 
 

@@ -22,7 +22,7 @@ from urllib import urlencode
 from itools.uri import get_reference, Query
 from itools.datatypes import QName
 from itools import schemas
-from itools.handlers.base import Handler
+from itools.handlers import Handler
 from itools.i18n.accept import AcceptLanguage
 from exceptions import BadRequest, NotImplemented
 import headers

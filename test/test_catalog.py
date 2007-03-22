@@ -20,8 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.handlers import get_handler
-from itools.handlers.Text import Text
+from itools.handlers import get_handler, Text
 from itools.catalog import io
 from itools.catalog import analysers
 from itools.catalog.index import Index

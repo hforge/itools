@@ -20,9 +20,8 @@ import cgi
 
 # Import from itools
 from itools import i18n
-from itools.handlers.Text import Text as BaseText
-from itools.handlers.python import Python as BasePython
-from itools.handlers.rest import RestructuredText as iRestructuredText
+from itools.handlers import (Text as BaseText, Python as BasePython,
+                             RestructuredText as iRestructuredText)
 from itools.gettext import PO as BasePO
 from itools.stl import stl
 from itools.web import get_context

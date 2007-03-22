@@ -38,10 +38,10 @@ def get_handler_class(uri):
             return handler_classes[main_type]
 
     if vfs.is_file(uri):
-        from File import File
+        from file import File
         return File
     elif vfs.is_folder(uri):
-        from Folder import Folder
+        from folder import Folder
         return Folder
 
     raise ValueError

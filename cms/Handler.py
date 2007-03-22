@@ -24,8 +24,7 @@ from itools import get_abspath
 from itools import uri
 from itools.datatypes import QName
 from itools import vfs
-from itools.handlers.base import Handler as BaseHandler
-from itools.handlers.transactions import get_transaction
+from itools.handlers import Handler as BaseHandler
 from itools import schemas
 from itools.stl import stl
 from itools.xhtml import XHTML

@@ -20,9 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.handlers import get_handler
-from itools.handlers.python import Python
-from itools.handlers.dot import class_diagram_from_python
+from itools.handlers import get_handler, Python
 
 
 

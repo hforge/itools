@@ -26,8 +26,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools import vfs
-from itools.handlers.Image import Image as iImage
-from itools.handlers.archive import (ZipArchive as iZipArchive,
+from itools.handlers import Image as (iImage, ZipArchive as iZipArchive,
                                      TarArchive as iTarArchive)
 from itools.xml import xml_to_text
 from itools.stl import stl

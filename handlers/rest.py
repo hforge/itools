@@ -22,7 +22,7 @@ except ImportError:
     publish_string = None
 
 # Import from itools
-from Text import Text
+from text import Text
 from registry import register_handler_class
 
 

@@ -23,8 +23,8 @@ from string import Template
 # Import from itools
 from itools import uri
 from itools import i18n
-from itools import handlers
 from itools.catalog.queries import Equal, And, Or
+from itools.handlers import Folder as BaseFolder
 from itools.stl import stl
 from itools.datatypes import Email
 
@@ -457,7 +457,7 @@ class UserFolder(Folder):
     # XXX This method should not be defined, instead we should be able to
     # label the handlers that are multilingual.
     def _get_handler_names(self):
-        return handlers.Folder.Folder._get_handler_names(self)
+        return BaseFolder._get_handler_names(self)
 
 
     def set_user(self, email=None, password=None):

@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.handlers.Text import Text
+from itools.handlers import Text
 from itools.xml import parser
 
 

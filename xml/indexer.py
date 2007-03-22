@@ -19,7 +19,7 @@
 from htmlentitydefs import name2codepoint
 
 # Import from itools
-from itools.handlers.Text import Text
+from itools.handlers import Text
 
 
 guess_encoding = Text.guess_encoding

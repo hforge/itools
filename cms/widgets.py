@@ -21,7 +21,7 @@ from string import Template
 
 # Import from itools
 from itools.uri import Path
-from itools.handlers.Folder import Folder
+from itools.handlers import Folder
 from itools.xhtml import XHTML
 from itools.stl import stl
 from itools.web import get_context

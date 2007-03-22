@@ -18,8 +18,7 @@
 # Import from itools
 from itools.datatypes import Unicode
 from itools import schemas
-from itools.handlers import File
-from itools.handlers.registry import register_handler_class
+from itools.handlers import File, register_handler_class
 from itools.xml import XML
 from itools.xhtml import XHTML
 from itools.html.parser import Parser, DOCUMENT_TYPE, START_ELEMENT, \

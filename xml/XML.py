@@ -21,11 +21,10 @@ import sys
 import warnings
 
 # Import from itools
-from itools.handlers import File, Text
 from itools.datatypes import Unicode, XML as XMLContent, XMLAttribute
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
-from itools.handlers.registry import register_handler_class
+from itools.handlers import Text, register_handler_class
 from itools.xml.exceptions import XMLError
 from itools.xml import namespaces
 from itools.xml import parser
@@ -293,7 +292,7 @@ class Context(object):
 
 
 
-class Document(Text.Text):
+class Document(Text):
     """
     An XML file is represented in memory as a tree where the nodes are
     instances of the classes 'Element' and 'Raw'. The 'Element' class

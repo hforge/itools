@@ -22,7 +22,7 @@ from tarfile import TarFile
 from cStringIO import StringIO
 
 # Import from itools
-from File import File
+from file import File
 from registry import register_handler_class
 
 

@@ -25,9 +25,7 @@ from time import time
 from itools.datatypes import (DateTime, QName, String, Unicode,
                               XML as XMLDataType)
 from itools import schemas
-from itools.handlers.File import File
-from itools.handlers.Text import Text
-from itools.handlers.registry import register_handler_class
+from itools.handlers import File, Text, register_handler_class
 from itools.xml import namespaces, parser
 from itools.web import get_context
 from metadata import Record

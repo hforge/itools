@@ -24,8 +24,7 @@ import csv as python_csv
 
 # Import from itools
 from itools.datatypes import Unicode, Integer
-from itools.handlers.Text import Text
-from itools.handlers.registry import register_handler_class
+from itools.handlers import Text, register_handler_class
 from itools.catalog import queries
 from itools.catalog.fields import get_field
 

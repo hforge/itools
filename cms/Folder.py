@@ -29,9 +29,7 @@ from itools.uri import Path, get_reference
 from itools.catalog import queries
 from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
-from itools.handlers.Folder import Folder as BaseFolder
-from itools.handlers.registry import get_handler_class
-from itools.handlers.Text import Text
+from itools.handlers import Folder as BaseFolder, Text, get_handler_class
 from itools import i18n
 from itools.stl import stl
 from itools.web import get_context

@@ -22,7 +22,7 @@ import unittest
 from datetime import datetime
 
 # Import from itools
-from itools.handlers.Text import Text
+from itools.handlers import Text
 from itools.datatypes import URI
 from itools.ical.icalendar import icalendar, Component, PropertyValue
 from itools.ical.parser import unfold_lines

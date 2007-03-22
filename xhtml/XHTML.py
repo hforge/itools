@@ -26,7 +26,7 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
                               XMLAttribute)
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
-from itools.handlers.registry import register_handler_class
+from itools.handlers import register_handler_class
 from itools.xml import XML, namespaces
 from itools.i18n.segment import Message
 

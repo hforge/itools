@@ -25,7 +25,7 @@ import itools
 from itools.gettext import PO
 from itools.xhtml import XHTML
 import itools.stl
-from itools.handlers.python import Python
+from itools.handlers import Python
 
 
 

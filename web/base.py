@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.handlers.base import Node as TreeNode
+from itools.handlers import Node as TreeNode
 from access import AccessControl
 
 

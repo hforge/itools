@@ -23,8 +23,7 @@ import sys
 from itools import uri
 from itools import vfs
 from itools.catalog import Catalog
-from itools.handlers.config import Config
-from itools.handlers.transactions import get_transaction
+from itools.handlers import Config, get_transaction
 from itools import web
 from itools.cms.database import DatabaseFS
 from itools.cms.handlers import Metadata

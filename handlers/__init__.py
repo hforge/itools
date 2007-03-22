@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,14 +35,18 @@ files, etc...
 import mimetypes
 
 # Import from itools
-import base
-import File
-import Folder
-import archive
-import Image
-import python
-import rest
-import Text
+from archive import Archive, ZipArchive, TarArchive
+from base import Node, Handler
+from config import Config
+from exceptions import AcquisitionError
+from file import File
+from folder import Folder
+from image import Image
+from python import Python
+from registry import get_handler_class, register_handler_class
+from rest import RestructuredText
+from text import Text
+from transactions import get_transaction
 from utils import get_handler
 
 

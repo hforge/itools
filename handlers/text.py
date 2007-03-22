@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from File import File
-from itools.handlers.registry import register_handler_class
+from file import File
+from registry import register_handler_class
 
 
 class Text(File):

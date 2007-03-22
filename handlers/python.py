@@ -22,8 +22,8 @@ from compiler.ast import Name, Getattr, Node
 from pprint import pprint
 
 # Import from itools
-from Text import Text
-from itools.handlers.registry import register_handler_class
+from text import Text
+from registry import register_handler_class
 
 
 class VisitorUnicode(object):

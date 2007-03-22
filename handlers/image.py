@@ -25,8 +25,8 @@ except ImportError:
     PILImage = None
 
 # Import from itools
-from File import File
-from itools.handlers.registry import register_handler_class
+from file import File
+from registry import register_handler_class
 
 
 class Image(File):

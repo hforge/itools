@@ -18,9 +18,6 @@
 # Import from the Standard Library
 import os
 
-# Import from itools
-from Text import Text
-
 
 
 def class_diagram_from_python(handlers, base_path=None):

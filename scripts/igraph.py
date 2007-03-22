@@ -23,7 +23,6 @@ import subprocess
 
 # import from itools
 from itools.handlers import get_handler
-from itools.handlers.dot import class_diagram_from_python
 
 
 if __name__ == "__main__":

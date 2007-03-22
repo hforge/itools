@@ -19,7 +19,7 @@
 from textwrap import wrap
 
 # Import from itools
-from itools.handlers.Text import Text
+from text import Text
 
 
 

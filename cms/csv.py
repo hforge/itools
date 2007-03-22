@@ -109,6 +109,10 @@ class CSV(Text, iCSV):
         """
         Returns a list of tuples with the name and title of every column.
         """
+        if self.columns is None:
+            row = self.lines[0]
+            return [ (str(x), str(x)) for x in range(len(row)) ]
+
         columns = []
         for name in self.columns:
             datatype = self.schema[name]
@@ -152,10 +156,15 @@ class CSV(Text, iCSV):
         columns = self.get_columns()
         rows = []
         index = start
+        if self.schema is not None:
+            getter = lambda x, y: x.get_value(y)
+        else:
+            getter = lambda x, y: x[int(y)]
+
         for row in self.lines[start:start+size]:
             rows.append({})
-            for column in self.columns:
-                rows[-1][column] = row.get_value(column)
+            for column, column_title in columns:
+                rows[-1][column] = getter(row, column)
             rows[-1]['id'] = str(index)
             rows[-1]['checkbox'] = True
             index += 1
@@ -163,7 +172,7 @@ class CSV(Text, iCSV):
         # Sorting
         sortby = context.get_form_value('sortby')
         sortorder = context.get_form_value('sortorder', 'up')
-        if sortby and sortby in self.columns:
+        if sortby:
             rows.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
 
         namespace['table'] = widgets.table(columns, rows, [sortby], sortorder)

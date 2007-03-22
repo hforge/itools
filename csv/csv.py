@@ -24,7 +24,8 @@ import csv as python_csv
 
 # Import from itools
 from itools.handlers.Text import Text
-from itools.catalog import queries, analysers
+from itools.catalog import queries
+from itools.catalog.analysers import get_analyser
 from itools.handlers.registry import register_handler_class
 
 
@@ -127,7 +128,7 @@ class Catalog(object):
 
     def add_index(self, name, analyser_name):
         self.indexes[name] = Index()
-        self.analysers[name] = analysers.get_analyser(analyser_name)
+        self.analysers[name] = get_analyser(analyser_name)
 
 
     def index_document(self, document, number):
@@ -289,6 +290,11 @@ class CSV(Text):
     #########################################################################
     # API / Private
     #########################################################################
+    def get_analyser(self, name):
+        datatype = self.schema[name]
+        return get_analyser(datatype.index)
+
+
     def get_index(self, name):
         if self.schema is None:
             raise ValueError, 'schema not defined'
@@ -397,6 +403,8 @@ class CSV(Text):
             if kw:
                 atoms = []
                 for key, value in kw.items():
+                    # FIXME This should be "Phrase", to have the same
+                    # behaviour of "itools.catalog"
                     atoms.append(queries.Equal(key, value))
 
                 query = queries.And(*atoms)

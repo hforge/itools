@@ -75,9 +75,7 @@ class Phrase(object):
         # Get the index
         index = catalog.get_index(self.name)
         # Get the analyser
-        field_number = catalog.field_numbers[self.name]
-        field = catalog.fields[field_number]
-        analyser = get_analyser(field.type)
+        analyser = catalog.get_analyser(self.name)
 
         documents = {}
         for value, offset in analyser(self.value):

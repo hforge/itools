@@ -447,7 +447,7 @@ class UserFolder(Folder):
             # Add metadata
             metadata = {'owner': id, 'ikaaro:email': email,
                         'ikaaro:password': crypt_password(password)}
-            cache['%s.metadata' % id] = self.build_metadata(user, **metadata)
+            cache['%s.metadata' % id] = user.build_metadata(**metadata)
 
 
     #######################################################################

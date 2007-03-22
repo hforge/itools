@@ -81,7 +81,7 @@ class Thread(Folder):
         cache = self.cache
         message = self.message_class(data=body)
         cache['0.txt'] = message
-        cache['0.txt.metadata'] = self.build_metadata(message)
+        cache['0.txt.metadata'] = message.build_metadata()
 
 
     def to_text(self):

@@ -205,7 +205,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Set metadata
         metadata = handler.get_metadata()
         if metadata is None:
-            metadata = self.build_metadata(handler, format=format, **kw)
+            metadata = handler.build_metadata(format=format, **kw)
         self.set_handler('%s.metadata' % name, metadata)
 
 
@@ -268,25 +268,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         # Remove metadata
         self.del_handler('%s.metadata' % name)
-
-
-    def build_metadata(self, handler, owner=None, format=None, **kw):
-        """Return a Metadata object with sensible default values."""
-        if owner is None:
-            owner = ''
-            context = get_context()
-            if context is not None:
-                if context.user is not None:
-                    owner = context.user.name
-
-        if format is None:
-            format = handler.class_id
-
-        if isinstance(handler, WorkflowAware):
-            kw['state'] = handler.workflow.initstate
-
-        return Metadata(handler_class=handler.__class__, owner=owner,
-                        format=format, **kw)
 
 
     #######################################################################

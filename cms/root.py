@@ -142,11 +142,11 @@ class Root(WebSite):
 
         # Create sub-handlers
         cache = self.cache
-        cache['.metadata'] = self.build_metadata(self)
+        cache['.metadata'] = self.build_metadata()
         # Users
         users = UserFolder()
         cache['users'] = users
-        cache['users.metadata'] = self.build_metadata(users, owner=None,
+        cache['users.metadata'] = users.build_metadata(owner=None,
                                         **{'dc:title': {'en': u'Users'}})
 
         # Add user

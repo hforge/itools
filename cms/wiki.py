@@ -73,7 +73,7 @@ class WikiFolder(Folder):
         cache = self.cache
         page = WikiPage()
         cache['FrontPage'] = page
-        cache['FrontPage.metadata'] = self.build_metadata(page,
+        cache['FrontPage.metadata'] = page.build_metadata(
                 **{'dc:title': {'en': u"Front Page"}})
 
 

@@ -33,9 +33,10 @@ from itools.gettext import domains
 from itools.http.exceptions import Forbidden
 from itools.web import get_context
 from itools.web.base import Node as BaseNode
-from handlers import Lock
+from handlers import Lock, Metadata
 from catalog import CatalogAware
 import webdav
+from workflow import WorkflowAware
 
 
 # Initialize logger
@@ -450,6 +451,25 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
     ########################################################################
     # Metadata
     ########################################################################
+    @classmethod
+    def build_metadata(cls, owner=None, format=None, **kw):
+        """Return a Metadata object with sensible default values."""
+        if owner is None:
+            owner = ''
+            context = get_context()
+            if context is not None:
+                if context.user is not None:
+                    owner = context.user.name
+
+        if format is None:
+            format = cls.class_id
+
+        if isinstance(cls, WorkflowAware):
+            kw['state'] = cls.workflow.initstate
+
+        return Metadata(handler_class=cls, owner=owner, format=format, **kw)
+
+
     def get_metadata(self):
         if self.real_handler is not None:
             return self.real_handler.get_metadata()

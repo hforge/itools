@@ -15,7 +15,7 @@
       <tbody>
         <tr stl:repeat="folder folders" class="${repeat/folder/even}">
           <td><input type="checkbox" name="names" value="${folder/name}" /></td>
-          <td>${folder/name>}</td>
+          <td>${folder/name}</td>
           <td>${folder/title}</td>
         </tr>
       </tbody>

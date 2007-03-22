@@ -46,7 +46,7 @@ if __name__ == '__main__':
         parser.error('incorrect number of arguments')
 
     # Initialize message catalog
-    po = PO.PO()
+    po = PO()
 
     # Process Python files
     print '(1) Processing Python files',

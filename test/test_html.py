@@ -21,7 +21,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.html import HTML
-from itools.gettext.PO import PO
+from itools.gettext import PO
 
 
 class HMLTestCase(TestCase):

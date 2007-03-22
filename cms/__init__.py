@@ -24,7 +24,7 @@ import os
 
 # Import from itools
 from itools import get_abspath
-from itools.gettext import domains
+from itools.gettext import register_domain
 
 # Import from itools.cms
 from . import root
@@ -61,7 +61,7 @@ if wiki is not None:
 
 # Register domain (i18n)
 path = os.path.join(os.path.split(globals()['__path__'][0])[0], 'locale')
-domains.register_domain('itools', path)
+register_domain('itools', path)
 
 
 ###########################################################################

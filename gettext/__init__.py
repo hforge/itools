@@ -19,8 +19,9 @@
 import mimetypes
 
 # Import from itools
-import MO
-import PO
+from domains import DomainAware, register_domain, get_domain
+from mo import MO
+from po import PO
 
 
 mimetypes.add_type('text/x-po', '.po')

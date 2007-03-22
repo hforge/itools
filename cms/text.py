@@ -23,7 +23,7 @@ from itools import i18n
 from itools.handlers.Text import Text as BaseText
 from itools.handlers.python import Python as BasePython
 from itools.handlers.rest import RestructuredText as iRestructuredText
-from itools import gettext
+from itools.gettext import PO as BasePO
 from itools.stl import stl
 from itools.web import get_context
 from itools.xhtml.XHTML import Document
@@ -140,7 +140,7 @@ register_object_class(Text)
 
 
 
-class PO(Text, gettext.PO.PO):
+class PO(Text, BasePO):
 
     class_id = 'text/x-po'
     class_title = u'Message Catalog'

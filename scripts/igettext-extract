@@ -49,7 +49,7 @@ if __name__ == '__main__':
         output = open(options.output, 'w')
 
     try:
-        po = PO.PO()
+        po = PO()
         for source_file in args:
             # Load the source handler
             if source_file.endswith('.py'):

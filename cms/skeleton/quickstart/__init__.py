@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools import get_abspath, get_version
-from itools.gettext import domains
+from itools.gettext import register_domain
 from itools.cms.skins import register_skin
 
 # Import from our package
@@ -38,4 +38,4 @@ register_skin('frontoffice1', skin)
 
 # Register domain (i18n)
 path = get_abspath(globals(), 'locale')
-domains.register_domain(Handler.class_domain, path)
+register_domain(Handler.class_domain, path)

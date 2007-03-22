@@ -30,6 +30,10 @@ def register_domain(name, locale_path):
         domains[name] = Domain(locale_path)
 
 
+def get_domain(name):
+    return domains[name]
+
+
 
 class Domain(Folder):
 

@@ -29,7 +29,7 @@ from itools.handlers.transactions import get_transaction
 from itools import schemas
 from itools.stl import stl
 from itools.xhtml import XHTML
-from itools.gettext import domains
+from itools.gettext import DomainAware, get_domain
 from itools.http.exceptions import Forbidden
 from itools.web import get_context
 from itools.web.base import Node as BaseNode
@@ -163,7 +163,7 @@ class Node(BaseNode):
 
     @classmethod
     def gettext(cls, message, language=None):
-        gettext = domains.DomainAware.gettext
+        gettext = DomainAware.gettext
 
         if cls.class_domain == 'itools':
             domain_names = ['itools']
@@ -172,7 +172,7 @@ class Node(BaseNode):
 
         for domain_name in domain_names:
             if language is None:
-                domain = domains.domains[domain_name]
+                domain = get_domain(domain_name)
                 languages = domain.get_languages()
                 language = cls.select_language(languages)
 
@@ -214,7 +214,7 @@ class Node(BaseNode):
 
 
 
-class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
+class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
     def before_commit(self):
         from root import Root

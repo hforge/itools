@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.gettext.PO import PO
+from itools.gettext import PO
 
 
 

@@ -20,8 +20,9 @@ import unittest
 
 # Import from itools
 from itools.handlers import get_handler
+from itools.stl import stl
 from itools.stl.stl import (TID, TSLASH, TEOF, TNONE, Expression,
-                            NamespaceStack, stl, substitute)
+                            NamespaceStack, substitute)
 
 
 class SubstituteTestCase(unittest.TestCase):

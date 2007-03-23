@@ -25,7 +25,7 @@ except ImportError:
 from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML
-from itools.html import HTML
+from itools.html import Document as HTMLDocument
 
 # Import from ikaaro
 from text import Text
@@ -171,7 +171,7 @@ class XHTMLFile(Text, XHTML.Document):
 
 
 
-class HTMLFile(HTML.Document, XHTMLFile):
+class HTMLFile(HTMLDocument, XHTMLFile):
 
     class_id = 'text/html'
 
@@ -190,7 +190,7 @@ class HTMLFile(HTML.Document, XHTMLFile):
         # tidy part)
         new_body = context.get_form_value('data')
         # Parse the new data
-        doc = HTML.Document()
+        doc = HTMLDocument()
         doc.load_state_from_string(new_body)
         children = doc.get_root_element().children
         # Save the changes

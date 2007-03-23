@@ -16,4 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-import HTML
+from html import Document 
+from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
+                    COMMENT, TEXT)

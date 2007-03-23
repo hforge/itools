@@ -28,7 +28,7 @@ from time import time
 from itools import vfs
 from itools.handlers import Text
 from itools.xml import XML
-from itools.html import HTML
+from itools.html import Document as HTMLDocument
 from itools.catalog import Catalog, make_catalog, TextField
 
 
@@ -47,7 +47,7 @@ def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
 docs_path = '/usr/share/doc/python-docs-2.4.3/html/lib'
 
 
-class Document(HTML.Document):
+class Document(HTMLDocument):
 
     def title(self):
         head = self.get_head()

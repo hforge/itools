@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.html import HTML
+from itools.html import Document
 from itools.gettext import PO
 
 
@@ -29,7 +29,7 @@ class HMLTestCase(TestCase):
     def test_case1(self):
         """Test element content."""
         data = '<p>hello world</p>'
-        doc = HTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
         messages = list(doc.get_messages())
 
@@ -39,7 +39,7 @@ class HMLTestCase(TestCase):
     def test_case2(self):
         """Test simple attribute."""
         data = '<img alt="The beach" src="beach.jpg">'
-        doc = HTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
         messages = list(doc.get_messages())
 
@@ -52,7 +52,7 @@ class HMLTestCase(TestCase):
                '<input type="text" name="id">\n' \
                '<input type="submit" value="Change">\n' \
                '</html>'
-        doc = HTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
         messages = list(doc.get_messages())
 
@@ -62,7 +62,7 @@ class HMLTestCase(TestCase):
     def test_case4(self):
         """Test translation of an element content"""
         data = '<p>hello world</p>'
-        doc = HTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
 
         po = 'msgid "hello world"\n' \
@@ -76,7 +76,7 @@ class HMLTestCase(TestCase):
     def test_case5(self):
         """Test translation of an element content"""
         data = '<img alt="The beach" src="beach.jpg">'
-        doc = HTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
 
         po = 'msgid "The beach"\n' \
@@ -92,7 +92,7 @@ class HMLTestCase(TestCase):
         """Test translation of an element content"""
         data = '<input type="text" name="id">\n' \
                '<input type="submit" value="Change">'
-        doc = HTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
 
         po = 'msgid "Change"\n' \

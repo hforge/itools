@@ -29,10 +29,8 @@ from urllib import unquote
 
 # Import from itools
 from itools import uri
-from itools.http.exceptions import (Forbidden, HTTPError, NotFound,
-                                    Unauthorized)
-from itools.http.request import Request
-from itools.http.response import Response
+from itools.http import (Forbidden, HTTPError, NotFound, Unauthorized,
+                         Request, Response)
 from context import Context, get_context, set_context
 from base import Node
 

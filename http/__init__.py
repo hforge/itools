@@ -16,4 +16,27 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
+from exceptions import (HTTPError, ClientError, BadRequest, Unauthorized,
+                        Forbidden, NotFound, ServerError, InternalServerError,
+                        NotImplemented, BadGateway, ServiceUnavailable)
+from request import Request
+from response import Response
 import vfs
+
+
+__all__ = [
+    # Exceptions
+    'HTTPError',
+    'ClientError',
+    'BadRequest',
+    'Unauthorized',
+    'Forbidden',
+    'NotFound',
+    'ServerError',
+    'InternalServerError',
+    'NotImplemented',
+    'BadGateway',
+    'ServiceUnavailable',
+    # Classes
+    'Request',
+    'Response']

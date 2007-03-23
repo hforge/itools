@@ -29,7 +29,7 @@ from itools import schemas
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.gettext import DomainAware, get_domain
-from itools.http.exceptions import Forbidden
+from itools.http import Forbidden
 from itools.web import get_context
 from itools.web.base import Node as BaseNode
 from handlers import Lock, Metadata

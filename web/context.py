@@ -26,7 +26,7 @@ from time import strptime
 from itools.uri import Path, get_reference
 from itools.datatypes import Enumerate, is_datatype
 from itools.schemas import get_datatype
-from itools.http.response import Response
+from itools.http import Response
 
 
 

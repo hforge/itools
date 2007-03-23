@@ -16,6 +16,40 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-import XML
 import dublin_core
+from exceptions import XMLError
+from namespaces import (XMLNamespace, XMLNSNamespace, get_namespace,
+                        AbstractNamespace, set_namespace)
+from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
+                    END_ELEMENT, TEXT, COMMENT, PI, CDATA)
+from xml import Document, Element, Comment
 from indexer import xml_to_text
+
+
+
+__all__ = [
+    # Exceptions
+    'XMLError',
+    # Namespaces
+    'XMLNamespace',
+    'XMLNSNamespace',
+    'get_namespace',
+    'AbstractNamespace',
+    'set_namespace',
+    # Parsing
+    'Parser',
+    'XML_DECL',
+    'DOCUMENT_TYPE',
+    'START_ELEMENT',
+    'END_ELEMENT',
+    'TEXT',
+    'COMMENT',
+    'PI',
+    'CDATA',
+    # Handlers
+    'Document',
+    'Element',
+    'Comment',
+    # Functions
+    'xml_to_text',
+]

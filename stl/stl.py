@@ -29,7 +29,9 @@ from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
-from itools.xml import XML, namespaces
+from itools.xml import (Comment, Element as XMLElement, XMLError,
+                        XMLNSNamespace, get_namespace, AbstractNamespace,
+                        set_namespace)
 
 
 
@@ -39,7 +41,7 @@ stl_uri = 'http://xml.itools.org/namespaces/stl'
 ########################################################################
 # Exceptions
 ########################################################################
-class STLSyntaxError(XML.XMLError):
+class STLSyntaxError(XMLError):
     pass
 
 
@@ -196,7 +198,7 @@ class NamespaceStack(list):
 # The tree
 ###########################################################################
 
-class Element(XML.Element):
+class Element(XMLElement):
 
     namespace = stl_uri
 
@@ -311,7 +313,7 @@ def process(node, stack, repeat_stack, encoding='UTF-8', prefix=None):
         if data is None:
             return []
         return [data]
-    elif isinstance(node, XML.Comment):
+    elif isinstance(node, Comment):
         return [node.to_str()]
 
     s = []
@@ -375,7 +377,7 @@ def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
     s = ['<%s' % node.qname]
 
     # Process attributes
-    xmlns_uri = namespaces.XMLNSNamespace.class_uri
+    xmlns_uri = XMLNSNamespace.class_uri
 
     # Output existing attributes
     for namespace, local_name, value in node.get_attributes():
@@ -424,7 +426,7 @@ def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
         s.append(' %s="%s"' % (qname, value))
 
     # The element schema, we need it
-    namespace = namespaces.get_namespace(node.namespace)
+    namespace = get_namespace(node.namespace)
     schema = namespace.get_element_schema(node.name)
     is_empty = schema.get('is_empty', False)
     # Close the open tag
@@ -459,7 +461,7 @@ elements_schema = {
     }
 
 
-class Namespace(namespaces.AbstractNamespace):
+class Namespace(AbstractNamespace):
 
     class_uri = 'http://xml.itools.org/namespaces/stl'
     class_prefix = 'stl'
@@ -472,7 +474,7 @@ class Namespace(namespaces.AbstractNamespace):
         except KeyError:
             raise STLSyntaxError, 'unexpected element name: %s' % name
 
-namespaces.set_namespace(Namespace)
+set_namespace(Namespace)
 
 
 class Schema(BaseSchema):

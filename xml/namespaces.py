@@ -19,9 +19,9 @@
 import warnings
 
 # Import from itools
-from itools.xml.exceptions import XMLError
 from itools.datatypes import String, Unicode
 from itools.schemas import Schema as BaseSchema, register_schema
+from exceptions import XMLError
 
 
 

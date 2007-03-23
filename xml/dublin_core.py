@@ -17,12 +17,13 @@
 
 # Import from itools
 from itools.datatypes import Unicode
-from itools.xml import XML, namespaces
 from itools.schemas import DublinCore
+from namespaces import AbstractNamespace, set_namespace
+from xml import XMLError, Element
 
 
 
-class Element(XML.Element):
+class Element(Element):
 
     namespace = 'http://purl.org/dc/elements/1.1/'
 
@@ -36,7 +37,7 @@ class BlockElement(Element):
         return True
 
 
-class Namespace(namespaces.AbstractNamespace):
+class Namespace(AbstractNamespace):
 
     class_uri = 'http://purl.org/dc/elements/1.1/'
     class_prefix = 'dc'
@@ -52,9 +53,9 @@ class Namespace(namespaces.AbstractNamespace):
             }
         
         if name not in elements_schema:
-            raise XML.XMLError, 'unknown property "%s"' % name
+            raise XMLError, 'unknown property "%s"' % name
  
         return elements_schema.get(name)
 
 
-namespaces.set_namespace(Namespace)
+set_namespace(Namespace)

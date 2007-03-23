@@ -26,7 +26,7 @@ from itools.datatypes import (DateTime, QName, String, Unicode,
                               XML as XMLDataType)
 from itools.schemas import get_schema_by_uri, get_schema, get_datatype
 from itools.handlers import File, Text, register_handler_class
-from itools.xml import namespaces, parser
+from itools.xml import XMLNamespace, Parser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.web import get_context
 from metadata import Record
 
@@ -146,8 +146,8 @@ class Metadata(File):
         p_language = None
         p_value = ''
         stack = []
-        for event, value, line_number in parser.Parser(file.read()):
-            if event == parser.START_ELEMENT:
+        for event, value, line_number in Parser(file.read()):
+            if event == START_ELEMENT:
                 namespace_uri, local_name, attributes, ns_decls = value
                 # Update prefixes
                 for ns_uri in ns_decls.values():
@@ -170,9 +170,9 @@ class Metadata(File):
                         p_value = ''
 
                     # xml:lang
-                    attr_key = (namespaces.XMLNamespace.class_uri, 'lang')
+                    attr_key = (XMLNamespace.class_uri, 'lang')
                     p_language = attributes.get(attr_key)
-            elif event == parser.END_ELEMENT:
+            elif event == END_ELEMENT:
                 namespace_uri, local_name = value
                 # Get the property type
                 schema = get_schema_by_uri(namespace_uri)
@@ -203,7 +203,7 @@ class Metadata(File):
                     datatype = None
                     p_language = None
                     p_value = ''
-            elif event == parser.TEXT:
+            elif event == TEXT:
                 if p_key is not None:
                     p_value += value
 

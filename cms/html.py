@@ -22,7 +22,7 @@ except ImportError:
     print 'uTidylib is not installed, download from http://utidylib.berlios.de/'
 
 # Import from itools
-from itools.xml import XML
+from itools.xml import Document as XMLDocument, Element as XMLElement
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.html import Document as HTMLDocument
@@ -32,7 +32,7 @@ from text import Text
 from registry import register_object_class
 
 
-class XMLFile(Text, XML.Document):
+class XMLFile(Text, XMLDocument):
 
     class_id = 'text/xml'
 
@@ -91,7 +91,7 @@ class XHTMLFile(Text, XHTML.Document):
             if isinstance(node, unicode):
                 if node.replace('&nbsp;', '').strip():
                     break
-            elif isinstance(node, XML.Element):
+            elif isinstance(node, XMLElement):
                 if node.name == 'img':
                     break
         else:

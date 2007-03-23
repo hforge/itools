@@ -24,7 +24,6 @@ from itools import get_abspath
 from itools.uri import Path, Query
 from itools.datatypes import URI
 from itools.handlers import File
-from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.web import get_context

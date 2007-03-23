@@ -20,10 +20,8 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.xml import XML
-from itools.xml.parser import Parser, XMLError
-from itools.xml.parser import XML_DECL, DOCUMENT_TYPE, START_ELEMENT, \
-    END_ELEMENT, TEXT, COMMENT, PI, CDATA
+from itools.xml import (Document, Parser, XMLError, XML_DECL, DOCUMENT_TYPE,
+                        START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA)
 
 
 #class CParserTestCase(TestCase):
@@ -132,9 +130,9 @@ class XMLTestCase(TestCase):
                ' this is a <span style="color: red">test</span>\n' \
                '</body>\n' \
                '</html>'
-        h1 = XML.Document()
+        h1 = Document()
         h1.load_state_from_string(data)
-        h2 = XML.Document()
+        h2 = Document()
         h2.load_state_from_string(data)
 
         self.assertEqual(h1, h2)

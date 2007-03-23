@@ -27,7 +27,6 @@ from time import time
 # Import from itools
 from itools import vfs
 from itools.handlers import Text
-from itools.xml import XML
 from itools.html import Document as HTMLDocument
 from itools.catalog import Catalog, make_catalog, TextField
 

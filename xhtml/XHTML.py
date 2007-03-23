@@ -25,7 +25,8 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
 from itools.handlers import register_handler_class
-from itools.xml import XML, namespaces
+from itools.xml import (Document as XMLDocument, Element as XMLElement,
+                        AbstractNamespace, set_namespace, get_namespace)
 from itools.i18n import Message
 
 
@@ -47,7 +48,7 @@ class Boolean(Boolean):
 
 
 
-class Element(XML.Element):
+class Element(XMLElement):
 
     namespace = 'http://www.w3.org/1999/xhtml'
 
@@ -207,7 +208,7 @@ elements_schema = {
     }
 
 
-class Namespace(namespaces.AbstractNamespace):
+class Namespace(AbstractNamespace):
 
     class_uri = 'http://www.w3.org/1999/xhtml'
     class_prefix = None
@@ -219,7 +220,7 @@ class Namespace(namespaces.AbstractNamespace):
                           'is_empty': False}
         return elements_schema.get(name, default_schema)
 
-namespaces.set_namespace(Namespace)
+set_namespace(Namespace)
 
 
 
@@ -364,7 +365,7 @@ register_schema(Schema)
 #############################################################################
 # Document
 #############################################################################
-class Document(XML.Document):
+class Document(XMLDocument):
     """
     This class adds one thing to the XML class, the semantics of translatable
     text.
@@ -450,7 +451,7 @@ class Document(XML.Document):
                 value = XMLAttribute.encode(value)
                 buffer.write(' %s="%s"' % (qname, value))
             # Close the start tag
-            namespace = namespaces.get_namespace(node.namespace)
+            namespace = get_namespace(node.namespace)
             schema = namespace.get_element_schema(node.name)
             is_empty = schema.get('is_empty', False)
             if is_empty:
@@ -476,7 +477,7 @@ class Document(XML.Document):
             # Process
             if message:
                 # XXX
-                if len(message) == 1 and isinstance(message[0], XML.Element):
+                if len(message) == 1 and isinstance(message[0], XMLElement):
                     node = message[0]
                     open_tag(node)
                     message = Message(node.children)
@@ -489,7 +490,7 @@ class Document(XML.Document):
                         if isinstance(x, unicode):
                             if x.strip():
                                 break
-                        elif isinstance(x, XML.Element):
+                        elif isinstance(x, XMLElement):
                             for node in x.traverse():
                                 if isinstance(node, unicode):
                                     if node.strip():
@@ -502,7 +503,7 @@ class Document(XML.Document):
                         for x in message:
                             if isinstance(x, unicode):
                                 yield XMLDataType.encode(x)
-                            elif isinstance(x, XML.Element):
+                            elif isinstance(x, XMLElement):
                                 open_tag(x)
                                 msg = Message(x.children)
                                 for y in process_message(msg, keep_spaces):
@@ -536,7 +537,7 @@ class Document(XML.Document):
         for node, context in self.traverse2():
             if isinstance(node, unicode):
                 message.append(node)
-            elif isinstance(node, XML.Element):
+            elif isinstance(node, XMLElement):
                 if context.start:
                     # Inline or block
                     if node.is_inline():
@@ -592,7 +593,7 @@ class Document(XML.Document):
             # Process
             if message:
                 # Check wether the message is only one element
-                if len(message) == 1 and isinstance(message[0], XML.Element):
+                if len(message) == 1 and isinstance(message[0], XMLElement):
                     node = message[0]
                     message = Message(node.children)
                     for x in process_message(message, keep_spaces):
@@ -603,7 +604,7 @@ class Document(XML.Document):
                         if isinstance(x, unicode):
                             if x.strip():
                                 break
-                        elif isinstance(x, XML.Element):
+                        elif isinstance(x, XMLElement):
                             for node in x.traverse():
                                 if isinstance(node, unicode):
                                     if node.strip():
@@ -624,7 +625,7 @@ class Document(XML.Document):
         for node, context in self.traverse2():
             if isinstance(node, unicode):
                 message.append(node)
-            elif isinstance(node, XML.Element):
+            elif isinstance(node, XMLElement):
                 if context.start:
                     if node.name in ['script', 'style']:
                         for x in process_message(message, keep_spaces):
@@ -663,7 +664,7 @@ class Document(XML.Document):
                             keep_spaces = False
 
 
-XML.Document.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
+XMLDocument.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
 register_handler_class(Document)
 
 

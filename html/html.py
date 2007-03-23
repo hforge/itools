@@ -19,7 +19,7 @@
 from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
-from itools.xml import XML
+from itools.xml import Comment
 from itools.xhtml import XHTML
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
@@ -158,7 +158,7 @@ class Document(XHTML.Document):
                 else:
                     children.append(element)
             elif event == COMMENT:
-                comment = XML.Comment(value)
+                comment = Comment(value)
                 if stack:
                     stack[-1].set_comment(comment)
                 else:

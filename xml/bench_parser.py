@@ -21,15 +21,14 @@ from time import time
 
 # Import from itools
 import itools
-from itools.xml import XML
-from itools.xml.parser import parse
+from itools.xml import Document, Parser
 
 
 
 # itools.xml.parser: 0.0062
 ##data = open('bench_parser.xml').read()
 ##t0 = time()
-##for event, value, line_number in parse(data):
+##for event, value, line_number in Parser(data):
 ##    pass
 ##print time() - t0
 

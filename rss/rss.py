@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.handlers import Text, register_handler_class
-from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.datatypes import Unicode, URI, Integer, String, InternetDateTime
 
 

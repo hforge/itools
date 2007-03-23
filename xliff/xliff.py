@@ -17,7 +17,8 @@
 
 # Import from itools
 from itools.handlers import Text
-from itools.xml import parser
+from itools.xml import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, 
+                        COMMENT, TEXT)
 
 
 
@@ -144,10 +145,10 @@ class XLIFF(Text):
     # Load
     def _load_state_from_file(self, file):
         self.files = []
-        for event, value, line_number in parser.parse(file.read()):
-            if event == parser.DOCUMENT_TYPE:
+        for event, value, line_number in Parser(file.read()):
+            if event == DOCUMENT_TYPE:
                 self.document_type = value
-            elif event == parser.START_ELEMENT:
+            elif event == START_ELEMENT:
                 namespace, local_name, attributes = value
                 # Attributes, get rid of the namespace uri (XXX bad)
                 aux = {}
@@ -168,7 +169,7 @@ class XLIFF(Text):
                     notes = []
                 elif local_name == 'note':
                     note = Note(attributes)
-            elif event == parser.END_ELEMENT:
+            elif event == END_ELEMENT:
                 namespace, local_name = value
 
                 if local_name == 'file':
@@ -185,9 +186,9 @@ class XLIFF(Text):
                 elif local_name == 'note':
                     note.text = text
                     notes.append(note)
-            elif event == parser.COMMENT:
+            elif event == COMMENT:
                 pass
-            elif event == parser.TEXT:
+            elif event == TEXT:
                 text = unicode(value, 'UTF-8')
 
 

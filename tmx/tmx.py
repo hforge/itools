@@ -18,7 +18,8 @@
 
 # Import from itools
 from itools.handlers import Text, register_handler_class
-from itools.xml import parser
+from itools.xml import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
+                        COMMENT, TEXT)
 
 
 
@@ -126,10 +127,10 @@ class TMX(Text):
         self.header = {}
         messages = {}
         self.header_notes = {}
-        for event, value, line_number in parser.parse(file.read()):
-            if event == parser.DOCUMENT_TYPE:
+        for event, value, line_number in Parser(file.read()):
+            if event == DOCUMENT_TYPE:
                 self.document_type = value
-            elif event == parser.START_ELEMENT:
+            elif event == START_ELEMENT:
                 namespace, local_name, attributes = value
                 # Attributes, get rid of the namespace uri (XXX bad)
                 aux = {}
@@ -153,7 +154,7 @@ class TMX(Text):
                     tuv = Sentence(attributes)
                     notes = []
                     segment = None
-            elif event == parser.END_ELEMENT:
+            elif event == END_ELEMENT:
                 namespace, local_name = value
                 if local_name == 'header':
                     self.header_notes = notes
@@ -175,9 +176,9 @@ class TMX(Text):
                         tu.msgstr[tuv.attributes['lang']] = tuv
                 elif local_name == 'seg':
                     segment = text
-            elif event == parser.COMMENT:
+            elif event == COMMENT:
                 pass
-            elif event == parser.TEXT:
+            elif event == TEXT:
                 text = unicode(value, 'UTF-8')
 
         self.messages = messages

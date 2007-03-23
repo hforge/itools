@@ -24,9 +24,10 @@ import warnings
 from itools.datatypes import Unicode, XML as XMLContent, XMLAttribute
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
-from itools.xml.exceptions import XMLError
-from itools.xml import namespaces
-from itools.xml import parser
+from exceptions import XMLError
+from namespaces import get_namespace, XMLNSNamespace
+from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT,
+                    COMMENT)
 
 
 #############################################################################
@@ -76,7 +77,7 @@ class Element(object):
         """Returns the fully qualified name"""
         if self.namespace is None:
             return self.name
-        prefix = namespaces.get_namespace(self.namespace).class_prefix
+        prefix = get_namespace(self.namespace).class_prefix
         if prefix is None:
             return self.name
         return '%s:%s' % (prefix, self.name)
@@ -130,7 +131,7 @@ class Element(object):
             value = XMLAttribute.encode(value)
             s += ' %s="%s"' % (qname, value)
         # Close the start tag
-        namespace = namespaces.get_namespace(self.namespace)
+        namespace = get_namespace(self.namespace)
         schema = namespace.get_element_schema(self.name)
         is_empty = schema.get('is_empty', False)
         if is_empty:
@@ -140,7 +141,7 @@ class Element(object):
 
 
     def get_end_tag(self):
-        namespace = namespaces.get_namespace(self.namespace)
+        namespace = get_namespace(self.namespace)
         schema = namespace.get_element_schema(self.name)
         is_empty = schema.get('is_empty', False)
         if is_empty:
@@ -188,7 +189,7 @@ class Element(object):
         if namespace is None:
             return local_name
 
-        prefix = namespaces.get_namespace(namespace).class_prefix
+        prefix = get_namespace(namespace).class_prefix
         if prefix is None:
             return local_name
 
@@ -351,14 +352,14 @@ class Document(Text):
         xml_namespaces = set()
         # Parse
         stack = []
-        for event, value, line_number in parser.Parser(file.read()):
-            if event == parser.DOCUMENT_TYPE:
+        for event, value, line_number in Parser(file.read()):
+            if event == DOCUMENT_TYPE:
                 self.document_type = value
-            elif event == parser.START_ELEMENT:
+            elif event == START_ELEMENT:
                 namespace_uri, element_name, attributes, ns_decls = value
                 for ns_decl in ns_decls:
                     xml_namespaces.add(ns_decls[ns_decl])
-                namespace = namespaces.get_namespace(namespace_uri)
+                namespace = get_namespace(namespace_uri)
                 try:
                     schema = namespace.get_element_schema(element_name)
                 except XMLError, e:
@@ -368,26 +369,26 @@ class Document(Text):
                 element = element_type(element_name)
                 element.attributes = attributes
                 stack.append(element)
-            elif event == parser.END_ELEMENT:
+            elif event == END_ELEMENT:
                 element = stack.pop()
                 if stack:
                     stack[-1].set_element(element)
                 else:
                     self.root_element = element
-            elif event == parser.COMMENT:
+            elif event == COMMENT:
                 # Comments out of the root element are discarded (XXX)
                 if stack:
                     value = Unicode.decode(value, 'UTF-8')
                     stack[-1].set_comment(Comment(value))
-            elif event == parser.TEXT:
+            elif event == TEXT:
                 if stack:
                     stack[-1].set_text(value, 'UTF-8')
 
         # Add the XML namespaces to the root element
         root_element = self.root_element
-        xmlns_uri = namespaces.XMLNSNamespace.class_uri
+        xmlns_uri = XMLNSNamespace.class_uri
         for xml_namespace in xml_namespaces:
-            prefix = namespaces.get_namespace(xml_namespace).class_prefix
+            prefix = get_namespace(xml_namespace).class_prefix
             root_element.set_attribute(xmlns_uri, prefix, xml_namespace)
 
 
@@ -462,10 +463,10 @@ def guess_doctype(resource):
     resource.open()
     data = resource.read()
     resource.close()
-    for event, value, line_number in parser.parse(data):
-        if event == parser.DOCUMENT_TYPE:
+    for event, value, line_number in Parser(data):
+        if event == DOCUMENT_TYPE:
             return value
-        elif event == parser.START_ELEMENT:
+        elif event == START_ELEMENT:
             return None
     return None
 

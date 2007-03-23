@@ -191,10 +191,9 @@ td, th { padding: 3px; }
 #body h5 { margin: 0.1em; }
 #body h6 { margin: 0.1em; }
 #body p { margin: .5em; }
-#body li {
-  list-style-type: square;
-  margin: .5em .5em .5em 1.5em;
-}
+#body li { margin: .5em .5em .5em 1.5em; }
+#body ol li { list-style-type: decimal; }
+#body ul li { list-style-type: square; }
 
 #body form fieldset {
   border-bottom: 1px solid #d3d7cf;

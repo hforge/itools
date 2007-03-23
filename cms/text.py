@@ -19,7 +19,7 @@
 import cgi
 
 # Import from itools
-from itools import i18n
+from itools.i18n import get_language_name
 from itools.handlers import (Text as BaseText, Python as BasePython,
                              RestructuredText as iRestructuredText)
 from itools.gettext import PO as BasePO
@@ -59,7 +59,7 @@ class Text(File, BaseText):
         website_languages = root.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
         for code in website_languages:
-            language_name = i18n.get_language_name(code)
+            language_name = get_language_name(code)
             languages.append({'code': code,
                               'name': cls.gettext(language_name),
                               'isdefault': code == default_language})

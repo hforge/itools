@@ -21,7 +21,7 @@ from datetime import datetime
 from operator import itemgetter
 
 # Import from itools
-from itools.i18n.locale_ import format_datetime
+from itools.i18n import format_datetime
 from itools.stl import stl
 from itools.web import get_context
 

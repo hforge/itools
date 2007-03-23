@@ -20,7 +20,7 @@ import os
 
 # Import from itools
 from itools.handlers import Folder
-from itools.i18n.accept import get_accept
+from itools.i18n import get_accept
 
 
 domains = {}

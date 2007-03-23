@@ -24,13 +24,12 @@ import zlib
 import mimetypes
 
 # Import from itools
-from itools.i18n.locale_ import format_datetime
+from itools.i18n import format_datetime, guess_language, has_language
 from itools.uri import Path, get_reference
 from itools.catalog import Equal, And, Phrase
 from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
 from itools.handlers import Folder as BaseFolder, Text, get_handler_class
-from itools import i18n
 from itools.stl import stl
 from itools.web import get_context
 
@@ -172,7 +171,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def _get_virtual_handler(self, name):
         languages = [ x.split('.')[-1] for x in self.cache
                       if x.startswith(name) ]
-        languages = [ x for x in languages if x in i18n.languages ]
+        languages = [ x for x in languages if has_language(x) ]
 
         if languages:
             # Get the best variant
@@ -915,7 +914,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 # Guess the language
                 encoding = Text.guess_encoding(body)
                 data = unicode(body, encoding)
-                language = i18n.oracle.guess_language(data)
+                language = guess_language(data)
                 # Rebuild the name
                 name = FileName.encode((short_name, type, language))
 

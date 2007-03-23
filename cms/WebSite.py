@@ -22,7 +22,7 @@ from string import Template
 from itools import uri
 from itools.uri import Path
 from itools.datatypes import Email, Integer, Unicode
-from itools import i18n
+from itools.i18n import get_language_name, get_languages
 from itools.catalog import Equal, Or
 from itools.stl import stl
 from Folder import Folder
@@ -84,7 +84,7 @@ class WebSite(RoleAware, Folder):
         website_languages = self.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
         for code in website_languages:
-            language_name = i18n.get_language_name(code)
+            language_name = get_language_name(code)
             languages.append({'code': code,
                               'name': self.gettext(language_name),
                               'isdefault': code == default_language})
@@ -92,7 +92,7 @@ class WebSite(RoleAware, Folder):
 
         # List of non active languages
         languages = []
-        for language in i18n.get_languages():
+        for language in get_languages():
             code = language['code']
             if code not in website_languages:
                 languages.append({'code': code,

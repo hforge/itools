@@ -22,8 +22,8 @@ from string import Template
 
 # Import from itools
 from itools import uri
-from itools import i18n
-from itools.catalog.queries import Equal, And, Or
+from itools.catalog import Equal, And, Or
+from itools.i18n import get_language_name
 from itools.handlers import Folder as BaseFolder
 from itools.stl import stl
 from itools.datatypes import Email
@@ -256,7 +256,7 @@ class User(AccessControl, Folder):
         user_language = self.get_property('ikaaro:user_language')
         for language_code in root.get_available_languages():
             languages.append({'code': language_code,
-                              'name': i18n.get_language_name(language_code),
+                              'name': get_language_name(language_code),
                               'is_selected': language_code == user_language})
         namespace['languages'] = languages
 

@@ -23,7 +23,7 @@ from itools.uri import get_reference, Query
 from itools.datatypes import QName
 from itools import schemas
 from itools.handlers import Handler
-from itools.i18n.accept import AcceptLanguage
+from itools.i18n import AcceptLanguage
 from exceptions import BadRequest, NotImplemented
 import headers
 import entities

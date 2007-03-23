@@ -27,7 +27,6 @@ from itools.handlers import File
 from itools.xml import XML
 from itools.stl import stl
 from itools.xhtml import XHTML
-from itools import i18n
 from itools.web import get_context
 from itools.web.access import AccessControl
 

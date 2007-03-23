@@ -22,7 +22,7 @@ import re
 
 # Import from itools
 from itools.uri import get_reference
-from itools.i18n import languages as i18n_languages
+from itools.i18n import has_language
 from base import DataType
 
 
@@ -166,7 +166,7 @@ class FileName(DataType):
             if '.%s' % data[-1].lower() in mimetypes.types_map:
                 name, type = data
                 return name, type, None
-            elif data[-1] in i18n_languages:
+            elif has_language(data[-1]):
                 name, language = data
                 return name, None, language
             else:
@@ -179,7 +179,7 @@ class FileName(DataType):
             if '.%s' % data[-1].lower() in mimetypes.encodings_map:
                 encoding = data[-1]
                 data = data[:-1]
-            elif data[-1] in i18n_languages:
+            elif has_language(data[-1]):
                 language = data[-1]
                 data = data[:-1]
 

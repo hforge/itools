@@ -20,10 +20,8 @@
 import unittest
 
 # Import from itools
-from itools.i18n.accept import AcceptCharset, AcceptLanguage
-from itools.i18n import fuzzy
-from itools.i18n import oracle
-from itools.i18n.segment import Message
+from itools.i18n import (is_similar, get_most_similar, guess_language,
+                         AcceptCharset, AcceptLanguage, Message)
 
 
 
@@ -120,25 +118,25 @@ class IsSimilarTestCase(unittest.TestCase):
     def test_different(self):
         a = "Good morning"
         b = "How do you do?"
-        self.assertEqual(fuzzy.is_similar(a, b), False)
+        self.assertEqual(is_similar(a, b), False)
 
 
     def test_not_so_far(self):
         a = "Good morning"
         b = "Good afternoon"
-        self.assertEqual(fuzzy.is_similar(a, b), False)
+        self.assertEqual(is_similar(a, b), False)
 
 
     def test_close(self):
         a = "You are wonderful"
         b = "You're wonderful"
-        self.assertEqual(fuzzy.is_similar(a, b), True)
+        self.assertEqual(is_similar(a, b), True)
 
 
     def test_bingo(self):
         a = "In the middle of nowhere"
         b = "In the middle of nowhere"
-        self.assertEqual(fuzzy.is_similar(a, b), True)
+        self.assertEqual(is_similar(a, b), True)
 
 
 
@@ -150,19 +148,19 @@ class MostSimilarTestCase(unittest.TestCase):
 
     def test_good_evening(self):
         a = 'Good evening'
-        most_similar = fuzzy.get_most_similar(a, *self.database)
+        most_similar = get_most_similar(a, *self.database)
         self.assertEqual(most_similar, 'Good morning')
 
 
     def test_where_is_my_dog(self):
         a = 'Where is my dog?'
-        most_similar = fuzzy.get_most_similar(a, *self.database)
+        most_similar = get_most_similar(a, *self.database)
         self.assertEqual(most_similar, 'Where is my cat?')
 
 
     def test_free_beer(self):
         a = 'Free beer'
-        most_similar = fuzzy.get_most_similar(a, *self.database)
+        most_similar = get_most_similar(a, *self.database)
         self.assertEqual(most_similar, 'Freedom as in speak')
 
 
@@ -191,7 +189,7 @@ class OracleTestCase(unittest.TestCase):
         de Estudios sobre la Universidad (CESU) y el Instituto de
         Investigaciones Económicas tendrán nuevas instalaciones, decisión que
         está más que justificada y, repito, se agradece."""
-        self.assertEqual(oracle.guess_language(text), 'es')
+        self.assertEqual(guess_language(text), 'es')
 
 
     def test_spain_short(self):
@@ -199,12 +197,12 @@ class OracleTestCase(unittest.TestCase):
         doctora Olga Hansberg, el pasado martes 17 tomó posesión como
         coordinadora de Humanidades de la UNAM la doctora Mari Carmen Serra
         Puche."""
-        self.assertEqual(oracle.guess_language(text), 'es')
+        self.assertEqual(guess_language(text), 'es')
 
 
     def test_spain_very_sort(self):
         text = """Nueva coordinadora de Humanidades."""
-        print self.assertEqual(oracle.guess_language(text), 'es')
+        print self.assertEqual(guess_language(text), 'es')
 
 
     def test_french_long(self):
@@ -217,19 +215,19 @@ class OracleTestCase(unittest.TestCase):
         leur épargner enlèvements, embuscades et autres attentats mortels Pour
         les soldats sur le terrain, loccupation de lIrak se transforme en une
         descente aux enfers."""
-        self.assertEqual(oracle.guess_language(text), 'fr')
+        self.assertEqual(guess_language(text), 'fr')
                 
 
     def test_french_short(self):
         text = u"""un dossier spécial consacré à la « révolution de velours »
         géorgienne sur le site de lagence Radio Free Europe fondée par le
         Congrès des Etats-Unis."""
-        self.assertEqual(oracle.guess_language(text), 'fr')
+        self.assertEqual(guess_language(text), 'fr')
                 
 
     def test_french_very_sort(self):
         text = u"""Les déclarations du président Vladimir Poutine"""
-        self.assertEqual(oracle.guess_language(text), 'fr')
+        self.assertEqual(guess_language(text), 'fr')
                 
 
     def test_english_long(self):
@@ -244,19 +242,19 @@ class OracleTestCase(unittest.TestCase):
         .
         U.S. companies account for 70 percent of the revenue. Karnik forecast
         growth of 30 percent to 32 percent in the current"""
-        self.assertEqual(oracle.guess_language(text), 'en')
+        self.assertEqual(guess_language(text), 'en')
 
 
     def test_english_short(self):
         text = """The French, too, paid much attention to French-German
         reconciliation and interpreted the ceremonies as a celebration of
         European integration and peace."""
-        self.assertEqual(oracle.guess_language(text), 'en')
+        self.assertEqual(guess_language(text), 'en')
 
 
     def test_english_very_sort(self):
         text = """But from a cloudless blue sky"""
-        self.assertEqual(oracle.guess_language(text), 'en')
+        self.assertEqual(guess_language(text), 'en')
 
 
 

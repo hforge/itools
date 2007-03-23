@@ -20,10 +20,8 @@ import re
 from cStringIO import StringIO
 
 # Import from itools
-from itools import datatypes
-from itools.datatypes import XML as XMLDataType
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
-                              XMLAttribute)
+                              XML as XMLDataType, XMLAttribute)
 from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import register_handler_class
@@ -78,7 +76,7 @@ class Element(XML.Element):
         s = []
         for node in self.children:
             if isinstance(node, unicode):
-                s.append(datatypes.XML.encode(Unicode.encode(node, encoding)))
+                s.append(XMLDataType.encode(Unicode.encode(node, encoding)))
             elif isinstance(node, Element):
                 s.append(node.get_start_tag_as_html())
                 s.append(node.get_content_as_html())

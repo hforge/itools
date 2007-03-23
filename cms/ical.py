@@ -21,8 +21,7 @@ from datetime import datetime, date, time, timedelta
 
 # Import from itools
 from itools import i18n
-from itools.datatypes import Enumerate, Unicode, Time as iTime
-from itools.datatypes.datetime_ import ISOCalendarDate as Date
+from itools.datatypes import Enumerate, Unicode, ISOTime, Date
 from itools.ical import gridlayout
 from itools.ical.icalendar import icalendar, Component, PropertyValue
 from itools.ical.types import data_properties, DateTime
@@ -44,7 +43,7 @@ class Status(Enumerate):
 
 
 
-class Time(iTime):
+class Time(ISOTime):
 
     @staticmethod
     def encode(value, seconds=False):

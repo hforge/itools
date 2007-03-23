@@ -20,8 +20,7 @@
 from datetime import datetime
 
 # Import from itools
-from itools.datatypes.base import DataType
-from itools.datatypes import Integer, URI, Unicode, String
+from itools.datatypes import DataType, Integer, URI, Unicode, String
 
 
 class DateTime(DataType):

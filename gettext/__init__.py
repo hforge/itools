@@ -24,5 +24,13 @@ from mo import MO
 from po import PO
 
 
+__all__ = [
+    'DomainAware,',
+    'register_domain,',
+    'get_domain',
+    'MO',
+    'PO']
+
+
 mimetypes.add_type('text/x-po', '.po')
 mimetypes.add_type('application/x-mo', '.mo')

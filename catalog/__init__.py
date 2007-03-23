@@ -26,6 +26,25 @@ from fields import (BaseField, TextField, KeywordField, BoolField,
 from queries import Equal, Range, Phrase, And, Or
 
 
+__all__ = [
+    'make_catalog',
+    'Catalog',
+    # Fields
+    'BaseField',
+    'TextField',
+    'KeywordField',
+    'BoolField',
+    'register_field',
+    'get_field',
+    # Queries
+    'Equal',
+    'Range',
+    'Phrase',
+    'And',
+    'Or']
+
+
+
 # Check rsync is installed
 paths = os.getenv('PATH').split(':')
 for path in paths:

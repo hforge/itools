@@ -50,6 +50,32 @@ from transactions import get_transaction
 from utils import get_handler
 
 
+__all__ = [
+    # Exceptions
+    'AcquisitionError',
+    # Abstract classes
+    'Node',
+    'Handler',
+    'Archive',
+    # Handlers
+    'ZipArchive',
+    'TarArchive',
+    'Config',
+    'File',
+    'Folder',
+    'Image',
+    'Python',
+    'RestructuredText',
+    'Text',
+    # Registry
+    'get_handler_class',
+    'register_handler_class',
+    # Other functions
+    'get_transaction',
+    'get_handler']
+
+
+
 mimetypes.add_type('text/comma-separated-values', '.csv')
 mimetypes.add_type('text/x-restructured-text', '.rst')
 mimetypes.encodings_map['.bz2'] = 'bzip2'

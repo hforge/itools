@@ -25,7 +25,7 @@ from subprocess import call
 import urllib
 
 # Import from itools
-from .. import uri
+from ..uri import get_reference
 from .. import vfs
 from ..web import get_context
 from ..stl import stl
@@ -320,7 +320,7 @@ class WikiPage(Text):
                     node_uri = '../' + node_uri
                 else:
                     continue
-            reference = uri.get_reference(node_uri)
+            reference = get_reference(node_uri)
             path = reference.path
             filename = str(path[-1])
             name, ext, lang = FileName.decode(filename)

@@ -19,7 +19,7 @@
 from __future__ import with_statement
 
 # Import from itools
-from itools.uri import uri
+from itools.uri import get_absolute_reference2
 from registry import get_file_system
 
 
@@ -46,7 +46,7 @@ class Folder(object):
         builds the absolute URI reference. Then find outs which is the
         protocol handler for it (layer), and returns both.
         """
-        reference = uri.get_absolute_reference2(reference, base=self.uri)
+        reference = get_absolute_reference2(reference, base=self.uri)
         fs = get_file_system(reference.scheme)
         return fs, reference
 

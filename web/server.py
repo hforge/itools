@@ -28,7 +28,7 @@ import traceback
 from urllib import unquote
 
 # Import from itools
-from itools import uri
+from itools.uri import Reference
 from itools.http import (Forbidden, HTTPError, NotFound, Unauthorized,
                          Request, Response)
 from context import Context, get_context, set_context
@@ -343,7 +343,7 @@ class Server(object):
         if isinstance(body, str):
             # Post-process (used to wrap the body in a skin)
             body = context.root.after_traverse(context, body)
-        elif isinstance(body, uri.Reference):
+        elif isinstance(body, Reference):
             # Redirection
             status = 302
         elif body is not None:
@@ -389,7 +389,7 @@ class Server(object):
         if isinstance(body, str):
             # Post-process (used to wrap the body in a skin)
             body = context.root.after_traverse(context, body)
-        elif isinstance(body, uri.Reference):
+        elif isinstance(body, Reference):
             # Redirection
             status = 302
         elif body is not None:
@@ -463,7 +463,7 @@ class Server(object):
         # Set body
         if isinstance(body, str):
             response.set_body(body)
-        elif isinstance(body, uri.Reference):
+        elif isinstance(body, Reference):
             context.redirect(body)
 
         # Set status

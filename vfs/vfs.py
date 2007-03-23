@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.uri import uri
 from registry import get_file_system
 from folders import Folder
 

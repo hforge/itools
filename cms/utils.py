@@ -22,7 +22,6 @@ import string
 import random
 
 # Import from itools
-from itools import uri
 from itools.web import get_context
 
 

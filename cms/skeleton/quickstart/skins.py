@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools import get_abspath
-from itools import uri
+from itools.uri import Path
 from itools.web import get_context
 from itools.stl import stl
 from itools.xhtml import XHTML
@@ -72,7 +72,7 @@ class FrontOffice1(Skin):
         header = handler.header_to_str()
         header = header.split('\n', 1)[1]
         # STL and rewrite URLs (for images and CSS)
-        prefix = uri.Path(handler.get_abspath())
+        prefix = Path(handler.get_abspath())
         body = stl(handler, namespace, prefix=prefix)
 
         return header + body

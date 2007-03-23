@@ -21,7 +21,7 @@ import logging
 
 # Import from itools
 from itools import get_abspath
-from itools import uri
+from itools.uri import Path
 from itools.datatypes import QName
 from itools import vfs
 from itools.handlers import Handler as BaseHandler
@@ -542,9 +542,9 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace['js_data'] = js_data
         namespace['iframe'] = ';epoz_iframe'
 
-        here = uri.Path(self.get_abspath())
+        here = Path(self.get_abspath())
         handler = self.get_handler('/ui/epoz.xml')
-        there = uri.Path(handler.get_abspath())
+        there = Path(handler.get_abspath())
         prefix = here.get_pathto(there)
         return stl(handler, namespace, prefix=prefix)
 
@@ -557,8 +557,8 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         response = context.response
         response.set_header('Content-Type', 'text/html; charset=UTF-8')
         handler = self.get_handler('/ui/epoz_iframe.xml')
-        here = uri.generic.Path(self.get_abspath())
-        there = uri.generic.Path(handler.get_abspath())
+        here = Path(self.get_abspath())
+        there = Path(handler.get_abspath())
         prefix = here.get_pathto(there)
         return stl(handler, namespace, prefix=prefix)
 

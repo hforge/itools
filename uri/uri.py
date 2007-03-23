@@ -21,7 +21,7 @@ import os
 # Import from itools
 import mailto
 import generic
-from generic import Path, Reference, Segment
+from generic import Path, Reference
 import registry
 
 

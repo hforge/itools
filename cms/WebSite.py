@@ -19,8 +19,7 @@
 from string import Template
 
 # Import from itools
-from itools import uri
-from itools.uri import Path
+from itools.uri import Path, get_reference
 from itools.datatypes import Email, Integer, Unicode
 from itools.i18n import get_language_name, get_languages
 from itools.catalog import Equal, Or
@@ -354,9 +353,9 @@ class WebSite(RoleAware, Folder):
                 return referrer
 
         if goto is not None:
-            return uri.get_reference(goto)
+            return get_reference(goto)
 
-        return uri.get_reference('users/%s' % user.name)
+        return get_reference('users/%s' % user.name)
 
 
     ########################################################################

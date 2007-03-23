@@ -22,7 +22,7 @@ from optparse import OptionParser
 
 # Import from itools
 import itools
-from itools import uri
+from itools.uri import get_reference
 from itools import vfs
 from itools.catalog import make_catalog, Catalog
 from itools.handlers import Config
@@ -34,7 +34,7 @@ from itools.cms.server import get_root
 def update(parser, options, target):
     # Get the root
     folder = vfs.open(target)
-    root = get_root(uri.get_reference(target))
+    root = get_root(get_reference(target))
 
     # Update the catalog (XXX remove for 0.17)
     if folder.exists('database/.catalog'):

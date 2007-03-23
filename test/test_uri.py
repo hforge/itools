@@ -20,12 +20,9 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.uri import get_reference
-from itools.uri import generic
-from itools.uri.generic import normalize_path, Path, Reference, GenericDataType
-from itools.uri import mailto
-from itools.uri.mailto import Mailto
-from itools.uri.mailto import MailtoDataType
+from itools.uri import get_reference, Path, Reference
+from itools.uri.generic import normalize_path, GenericDataType
+from itools.uri.mailto import Mailto, MailtoDataType
 
 
 
@@ -200,7 +197,7 @@ class PathTestCase(TestCase):
         - './a'   = 'a'
         - 'a/'    = 'a'
         """
-        path = generic.Path('./a/./b//c/')
+        path = Path('./a/./b//c/')
         self.assertEqual(str(path), 'a/b/c/')
 
 
@@ -208,7 +205,7 @@ class PathTestCase(TestCase):
         """
         Test the normalization 'a/../b' = 'b'
         """
-        path = generic.Path('a/b/c/../d')
+        path = Path('a/b/c/../d')
         self.assertEqual(str(path), 'a/b/d')
 
 
@@ -216,7 +213,7 @@ class PathTestCase(TestCase):
         """
         Test the normalization '/..' = '/'
         """
-        path = generic.Path('/../../a/b/c')
+        path = Path('/../../a/b/c')
         self.assertEqual(str(path), '/a/b/c')
 
 
@@ -224,7 +221,7 @@ class PathTestCase(TestCase):
         """
         Check that '../' = '../'
         """
-        path = generic.Path('../../a//.//b/c')
+        path = Path('../../a//.//b/c')
         self.assertEqual(str(path), '../../a/b/c')
 
 
@@ -375,7 +372,7 @@ class MailtoTestCase(unittest.TestCase):
 
     def test_mailto(self):
         """Regular Mailto object."""
-        ob = mailto.Mailto(self.address)
+        ob = Mailto(self.address)
         self.assertEqual(ob.username, self.username)
         self.assertEqual(ob.host, self.host)
         self.assertEqual(str(ob), self.uri)
@@ -383,7 +380,7 @@ class MailtoTestCase(unittest.TestCase):
 
     def test_mailto_no_host(self):
         """Mailto object with no host."""
-        ob = mailto.Mailto(self.username)
+        ob = Mailto(self.username)
         self.assertEqual(ob.username, None)
         self.assertEqual(ob.host, None)
         self.assertEqual(str(ob), self.uri_no_host)
@@ -392,7 +389,7 @@ class MailtoTestCase(unittest.TestCase):
     def test_decode(self):
         """Decoding of a regular "mailto:" reference."""
         ob = MailtoDataType.decode(self.uri)
-        self.assert_(isinstance(ob, mailto.Mailto))
+        self.assert_(isinstance(ob, Mailto))
         self.assertEqual(ob.username, self.username)
         self.assertEqual(ob.host, self.host)
         self.assertEqual(str(ob), self.uri)
@@ -401,7 +398,7 @@ class MailtoTestCase(unittest.TestCase):
     def test_decode_no_host(self):
         """Decoding of a "mailto:" reference with no @host."""
         ob = MailtoDataType.decode(self.uri_no_host)
-        self.assert_(isinstance(ob, mailto.Mailto))
+        self.assert_(isinstance(ob, Mailto))
         self.assertEqual(ob.username, None)
         self.assertEqual(ob.host, None)
         self.assertEqual(str(ob), self.uri_no_host)
@@ -409,7 +406,7 @@ class MailtoTestCase(unittest.TestCase):
 
     def test_compare(self):
         """Compare two Mailto objects with same parameters."""
-        ob = mailto.Mailto(self.address)
+        ob = Mailto(self.address)
         copy = MailtoDataType.decode(self.uri)
         self.assert_(type(ob) is type(copy))
         self.assertEqual(ob.username, copy.username)

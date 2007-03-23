@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools import uri
+from itools.uri import Path
 
 
 ###########################################################################
@@ -128,8 +128,8 @@ class PathField(BaseField):
 
     @staticmethod
     def split(value):
-        if not isinstance(value, uri.Path):
-            value = uri.Path(value)
+        if not isinstance(value, Path):
+            value = Path(value)
 
         i = 0
         for segment in value:

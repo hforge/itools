@@ -21,7 +21,7 @@ from copy import deepcopy
 from string import Template
 
 # Import from itools
-from itools import uri
+from itools.uri import Path
 from itools.catalog import Equal, And, Or
 from itools.i18n import get_language_name
 from itools.handlers import Folder as BaseFolder
@@ -162,7 +162,7 @@ class User(AccessControl, Folder):
                             u"  $confirm_url")
         confirm_url = deepcopy(context.uri)
         path = '/users/%s/;confirm_registration_form' % self.name
-        confirm_url.path = uri.Path(path)
+        confirm_url.path = Path(path)
         key = self.get_property('ikaaro:user_must_confirm')
         confirm_url.query = {'key': key}
         body = Template(body).substitute({'confirm_url': str(confirm_url)})

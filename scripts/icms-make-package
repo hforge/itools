@@ -28,7 +28,6 @@ from string import Template
 
 # Import from itools
 import itools
-from itools import uri
 from itools import vfs
 
 

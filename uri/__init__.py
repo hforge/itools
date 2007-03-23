@@ -17,6 +17,19 @@
 
 # Import from itools
 import mailto
-from generic import Path, Reference, Segment, Query
-from uri import *
+from generic import Path, Reference, Query, Authority
+from uri import get_reference, get_absolute_reference, get_absolute_reference2
+from registry import register_scheme, get_scheme
 
+
+
+__all__ = [
+    'Path',
+    'Reference',
+    'Query',
+    'Authority',
+    'get_reference',
+    'get_absolute_reference',
+    'get_absolute_reference2',
+    'register_scheme',
+    'get_scheme']

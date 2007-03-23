@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools import uri
+from itools.uri import get_reference
 from itools.stl import stl
 from itools.web import get_context
 from itools.cms.registry import register_object_class
@@ -70,7 +70,7 @@ class Root(Handler, iRoot):
             goto = context.request.referrer
         elif cookie == 'ui/aruni':
             skin_path = 'ui/frontoffice1'
-            goto = uri.get_reference(';view')
+            goto = get_reference(';view')
 
         context.set_cookie('skin_path', skin_path, path='/')
 

@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools import uri
+from itools.uri import get_reference
 from itools.datatypes import Email, Integer, Unicode
 from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
@@ -532,6 +532,6 @@ class RoleAware(AccessControl):
             goto = None
         else:
             goto='/users/%s/;%s' % (user.name, user.get_firstview())
-            goto = uri.get_reference(goto)
+            goto = get_reference(goto)
 
         return context.come_back(u'User added.', goto=goto)

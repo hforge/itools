@@ -503,11 +503,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 ('rename_form', u'Rename', 'button_rename', None),
                 ('copy', u'Copy', 'button_copy', None),
                 ('cut', u'Cut', 'button_cut', None)]
-            actions = [
-                x for x in actions if ac.is_access_allowed(user, self, x[0]) ]
+            actions = [(x[0], self.gettext(x[1]), x[2], x[3])
+                    for x in actions if ac.is_access_allowed(user, self, x[0])]
         if context.has_cookie('ikaaro_cp'):
             if ac.is_access_allowed(user, self, 'paste'):
-                actions.append(('paste', u'Paste', 'button_paste', None))
+                actions.append(('paste', self.gettext(u'Paste'),
+                                'button_paste', None))
 
         # Go!
         namespace['table'] = widgets.table(

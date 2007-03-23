@@ -26,7 +26,7 @@ from operator import itemgetter
 from itools.datatypes import Unicode, String
 from itools.catalog import Equal, Range, Or, And
 from itools.handlers import Text
-from itools.csv.csv import Catalog
+from itools.csv import Catalog
 from itools.ical.parser import parse
 from itools.ical.types import data_properties, fold_line, DateTime
 

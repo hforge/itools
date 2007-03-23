@@ -20,7 +20,7 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import Boolean, Enumerate, Integer, is_datatype
-from itools.csv.csv import CSV as iCSV, Row as iRow, IntegerKey
+from itools.csv import CSV as iCSV, Row as iRow, IntegerKey
 from itools.stl import stl
 from Handler import Node
 from text import Text

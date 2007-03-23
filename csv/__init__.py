@@ -22,6 +22,6 @@ from __future__ import absolute_import
 import mimetypes
 
 # Import from itools
-from .csv import parse, CSV, Row
+from .csv import parse, CSV, Row, Catalog, IntegerKey
 
 mimetypes.add_type('text/comma-separated-values', '.csv')

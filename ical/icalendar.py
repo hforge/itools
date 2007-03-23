@@ -27,8 +27,8 @@ from itools.datatypes import Unicode, String
 from itools.catalog import Equal, Range, Or, And
 from itools.handlers import Text
 from itools.csv import Catalog
-from itools.ical.parser import parse
-from itools.ical.types import data_properties, fold_line, DateTime
+from parser import parse
+from types import data_properties, fold_line
 
 
 # The smallest possible difference between non-equal timedelta objects.

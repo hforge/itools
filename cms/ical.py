@@ -22,9 +22,7 @@ from datetime import datetime, date, time, timedelta
 # Import from itools
 from itools.i18n import get_language_name
 from itools.datatypes import Enumerate, Unicode, ISOTime, Date
-from itools.ical import gridlayout
-from itools.ical.icalendar import icalendar, Component, PropertyValue
-from itools.ical.types import data_properties, DateTime
+from itools.ical import get_grid_data, icalendar, PropertyValue, DateTime
 from itools.stl import stl
 from itools.web import get_context
 from File import File
@@ -692,7 +690,7 @@ class Calendar(Text, icalendar):
         events = self.get_grid_events(start, headers=ns_headers)
         ###################################################################
         # Fill data with grid (timetables) and data (events for each day)
-        timetable = gridlayout.get_data(events, timetables, start)
+        timetable = get_grid_data(events, timetables, start)
         namespace['timetable_data'] = timetable
 
         handler = self.get_handler('/ui/ical/ical_grid_weekly_view.xml')

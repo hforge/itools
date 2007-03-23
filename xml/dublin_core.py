@@ -18,7 +18,7 @@
 # Import from itools
 from itools.datatypes import Unicode
 from itools.xml import XML, namespaces
-from itools.schemas.dublin_core import DublinCore
+from itools.schemas import DublinCore
 
 
 

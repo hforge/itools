@@ -22,8 +22,8 @@ from cStringIO import StringIO
 # Import from itools
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
                               XML as XMLDataType, XMLAttribute)
-from itools import schemas
-from itools.schemas import get_datatype_by_uri
+from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
+                            register_schema)
 from itools.handlers import register_handler_class
 from itools.xml import XML, namespaces
 from itools.i18n import Message
@@ -65,7 +65,7 @@ class Element(XML.Element):
         # Output the attributes
         for namespace_uri, local_name, value in self.get_attributes():
             qname = self.get_attribute_qname(namespace_uri, local_name)
-            type = schemas.get_datatype_by_uri(namespace_uri, local_name)
+            type = get_datatype_by_uri(namespace_uri, local_name)
             value = type.encode(value)
             value = XMLAttribute.encode(value)
             s += ' %s="%s"' % (qname, value)
@@ -223,7 +223,7 @@ namespaces.set_namespace(Namespace)
 
 
 
-class Schema(schemas.base.Schema):
+class Schema(BaseSchema):
 
     class_uri = 'http://www.w3.org/1999/xhtml'
     class_prefix = None
@@ -357,7 +357,7 @@ class Schema(schemas.base.Schema):
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
 
-schemas.register_schema(Schema)
+register_schema(Schema)
 
 
 
@@ -445,7 +445,7 @@ class Document(XML.Document):
                         value = catalog.get_translation(value)
                         #value = catalog.get_msgstr(value) or value
                 qname = node.get_attribute_qname(namespace, local_name)
-                datatype = schemas.get_datatype_by_uri(namespace, local_name)
+                datatype = get_datatype_by_uri(namespace, local_name)
                 value = datatype.encode(value)
                 value = XMLAttribute.encode(value)
                 buffer.write(' %s="%s"' % (qname, value))

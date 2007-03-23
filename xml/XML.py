@@ -22,7 +22,6 @@ import warnings
 
 # Import from itools
 from itools.datatypes import Unicode, XML as XMLContent, XMLAttribute
-from itools import schemas
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
 from itools.xml.exceptions import XMLError

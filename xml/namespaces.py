@@ -21,7 +21,7 @@ import warnings
 # Import from itools
 from itools.xml.exceptions import XMLError
 from itools.datatypes import String, Unicode
-from itools import schemas
+from itools.schemas import Schema as BaseSchema, register_schema
 
 
 
@@ -149,7 +149,7 @@ class DefaultNamespace(AbstractNamespace):
 
 
 
-class XMLNamespace(schemas.base.Schema):
+class XMLNamespace(BaseSchema):
 
     class_uri = 'http://www.w3.org/XML/1998/namespace'
     class_prefix = 'xml'
@@ -163,7 +163,7 @@ class XMLNamespace(schemas.base.Schema):
 
 
 
-class XMLNSNamespace(schemas.base.Schema):
+class XMLNSNamespace(BaseSchema):
 
     class_uri = 'http://www.w3.org/2000/xmlns/'
     class_prefix = 'xmlns'
@@ -177,7 +177,7 @@ class XMLNSNamespace(schemas.base.Schema):
 
 # Register the namespaces
 set_namespace(DefaultNamespace)
-schemas.register_schema(XMLNamespace)
-schemas.register_schema(XMLNSNamespace)
+register_schema(XMLNamespace)
+register_schema(XMLNSNamespace)
 set_namespace(XMLNamespace)
 set_namespace(XMLNSNamespace)

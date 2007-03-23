@@ -25,7 +25,7 @@ from itools import uri
 from itools.datatypes import QName
 from itools import vfs
 from itools.handlers import Handler as BaseHandler
-from itools import schemas
+from itools.schemas import get_datatype
 from itools.stl import stl
 from itools.xhtml import XHTML
 from itools.gettext import DomainAware, get_domain
@@ -127,7 +127,7 @@ class Node(BaseNode):
     # Properties
     ########################################################################
     def get_property(self, name, language=None):
-        return schemas.get_datatype(name).default
+        return get_datatype(name).default
 
 
     def get_title_or_name(self):

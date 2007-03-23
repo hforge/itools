@@ -17,5 +17,19 @@
 
 # Import from itools
 from base import Schema
-from registry import register_schema, get_schema, get_schema_by_uri, \
-     get_datatype, get_datatype_by_uri
+from dublin_core import DublinCore
+from registry import (register_schema, get_schema, get_schema_by_uri,
+                      get_datatype, get_datatype_by_uri)
+
+
+__all__ = [
+    # Abstract classes
+    'Schema',
+    # Schemas
+    'DublinCore',
+    # Functions
+    'register_schema',
+    'get_schema',
+    'get_schema_by_uri',
+    'get_datatype',
+    'get_datatype_by_uri']

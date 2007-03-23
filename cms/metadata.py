@@ -20,9 +20,9 @@ import base64
 import urllib
 
 # Import from itools
-from itools.datatypes import (DataType, Boolean, Email, Integer, String,
+from itools.datatypes import (DataType, Boolean, Email, String,
     Tokens, Unicode, QName, XML)
-from itools import schemas
+from itools.schemas import Schema as BaseSchema, get_datatype, register_schema
 
 
 
@@ -50,7 +50,7 @@ class Record(object):
         lines = []
         for key, value in value.items():
             prefix, local_name = key
-            datatype = schemas.get_datatype(key)
+            datatype = get_datatype(key)
             value = datatype.encode(value)
             value = XML.encode(value)
             qname = QName.encode(key)
@@ -59,7 +59,7 @@ class Record(object):
 
 
 
-class Schema(schemas.base.Schema):
+class Schema(BaseSchema):
 
     class_uri = 'http://xml.ikaaro.org/namespaces/metadata'
     class_prefix = 'ikaaro'
@@ -100,5 +100,5 @@ class Schema(schemas.base.Schema):
         }
 
 
-schemas.register_schema(Schema)
+register_schema(Schema)
 

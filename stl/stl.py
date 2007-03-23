@@ -27,7 +27,8 @@ import re
 # Import from itools
 from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
     XML as XMLContent)
-from itools import schemas
+from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
+                            register_schema)
 from itools.xml import XML, namespaces
 
 
@@ -387,7 +388,7 @@ def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
 
         qname = node.get_attribute_qname(namespace, local_name)
         # Process "${...}" expressions
-        datatype = schemas.get_datatype_by_uri(namespace, local_name)
+        datatype = get_datatype_by_uri(namespace, local_name)
         # Boolean attributes
         if issubclass(datatype, Boolean):
             value = substitute_boolean(value, stack, repeat, encoding)
@@ -474,7 +475,7 @@ class Namespace(namespaces.AbstractNamespace):
 namespaces.set_namespace(Namespace)
 
 
-class Schema(schemas.base.Schema):
+class Schema(BaseSchema):
 
     class_uri = 'http://xml.itools.org/namespaces/stl'
     class_prefix = 'stl'
@@ -483,4 +484,4 @@ class Schema(schemas.base.Schema):
     datatypes = {'repeat': RepeatAttr,
                  'if': IfAttr}
 
-schemas.register_schema(Schema)
+register_schema(Schema)

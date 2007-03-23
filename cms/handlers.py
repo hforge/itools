@@ -24,7 +24,7 @@ from time import time
 # Import from itools
 from itools.datatypes import (DateTime, QName, String, Unicode,
                               XML as XMLDataType)
-from itools import schemas
+from itools.schemas import get_schema_by_uri, get_schema, get_datatype
 from itools.handlers import File, Text, register_handler_class
 from itools.xml import namespaces, parser
 from itools.web import get_context
@@ -151,7 +151,7 @@ class Metadata(File):
                 namespace_uri, local_name, attributes, ns_decls = value
                 # Update prefixes
                 for ns_uri in ns_decls.values():
-                    schema = schemas.get_schema_by_uri(ns_uri)
+                    schema = get_schema_by_uri(ns_uri)
                     prefix = schema.class_prefix
                     if prefix is not None:
                         self.prefixes.add(prefix)
@@ -159,7 +159,7 @@ class Metadata(File):
                     stack.append({})
                 else:
                     # Get the property type
-                    schema = schemas.get_schema_by_uri(namespace_uri)
+                    schema = get_schema_by_uri(namespace_uri)
                     datatype = schema.get_datatype(local_name)
                     # Build the property key
                     p_key = (schema.class_prefix, local_name)
@@ -175,7 +175,7 @@ class Metadata(File):
             elif event == parser.END_ELEMENT:
                 namespace_uri, local_name = value
                 # Get the property type
-                schema = schemas.get_schema_by_uri(namespace_uri)
+                schema = get_schema_by_uri(namespace_uri)
                 datatype = schema.get_datatype(local_name)
                 p_default = datatype.default
                 # Build the property key
@@ -213,8 +213,7 @@ class Metadata(File):
 
         # Insert open root element with the required namespace declarations
         if self.prefixes:
-            aux = [ (x, schemas.get_schema(x).class_uri)
-                    for x in self.prefixes ]
+            aux = [ (x, get_schema(x).class_uri) for x in self.prefixes ]
             aux = '\n          '.join([ 'xmlns:%s="%s"' % x for x in aux ])
             lines.append('<metadata %s>' % aux)
         else:
@@ -224,7 +223,7 @@ class Metadata(File):
             prefix, local_name = key
 
             # Get the type
-            datatype = schemas.get_datatype(key)
+            datatype = get_datatype(key)
             # Get the qualified name
             if prefix is None:
                 qname = local_name
@@ -259,7 +258,7 @@ class Metadata(File):
         key = QName.decode(name)
 
         # Default value
-        datatype = schemas.get_datatype(key)
+        datatype = get_datatype(key)
         default_value = datatype.default
 
         if key in self.properties:
@@ -305,7 +304,7 @@ class Metadata(File):
 
         # Set the value
         if language is None:
-            datatype = schemas.get_datatype(key)
+            datatype = get_datatype(key)
 
             default = datatype.default
             if isinstance(default, list):

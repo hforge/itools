@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.xliff.XLIFF import XLIFF
+from itools.xliff import XLIFF
 
 
 

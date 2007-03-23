@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.rss.rss import RSS
+from itools.rss import RSS
 from itools.handlers import get_handler
 from itools.stl import stl
 

@@ -19,6 +19,12 @@
 import mimetypes
 
 # Import from itools
-import rss
+from rss import RSS
+
+
+
+__all__ = ['RSS']
+
+
 
 mimetypes.add_type('application/rss+xml', '.rss')

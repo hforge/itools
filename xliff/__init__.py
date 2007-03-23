@@ -18,5 +18,13 @@
 # Import from the Standard Library
 import mimetypes
 
+# Import from itools
+from itools.xliff import XLIFF
+
+
+__all__ = ['XLIFF']
+
+
+
 mimetypes.add_type('application/x-xliff', '.xlf')
 

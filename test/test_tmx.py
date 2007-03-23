@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.tmx.TMX import TMX
+from itools.tmx import TMX
 
 
 

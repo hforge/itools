@@ -18,5 +18,12 @@
 # Import from the Standard Library
 import mimetypes
 
+# Import from itools
+from tmx import TMX
+
+
+__all__ = ['TMX']
+
+
 mimetypes.add_type('application/x-tmx', '.tmx')
 

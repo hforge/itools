@@ -21,7 +21,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.workflow.workflow import Workflow, WorkflowAware
+from itools.workflow import Workflow, WorkflowAware
 
 
 # Definition of the workflow

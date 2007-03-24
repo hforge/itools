@@ -19,3 +19,13 @@
 from html import Document 
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
+
+
+__all__ = [
+    'Document',
+    'Parser'
+    'DOCUMENT_TYPE',
+    'START_ELEMENT',
+    'END_ELEMENT',
+    'COMMENT',
+    'TEXT']

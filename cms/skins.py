@@ -25,8 +25,7 @@ from itools.uri import Path, Query
 from itools.datatypes import URI
 from itools.handlers import File
 from itools.stl import stl
-from itools.web import get_context
-from itools.web.access import AccessControl
+from itools.web import get_context, AccessControl
 
 # Import from itools.cms
 from Handler import Node

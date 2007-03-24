@@ -16,5 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
+from access import AccessControl
 from context import get_context
-import server
+from server import Server
+from base import Root, Node
+
+
+__all__ = ['get_context', 'AccessControl', 'Server', 'Root', 'Node']

@@ -18,8 +18,7 @@
 # Import from itools
 from itools.uri import get_reference
 from itools.datatypes import Email, Integer, Unicode
-from itools.web import get_context
-from itools.web.access import AccessControl as AccessControlBase
+from itools.web import get_context, AccessControl as AccessControlBase
 from itools.stl import stl
 from itools.cms import widgets
 from utils import generate_password

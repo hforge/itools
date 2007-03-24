@@ -30,7 +30,7 @@ from itools.handlers import Image as (iImage, ZipArchive as iZipArchive,
                                      TarArchive as iTarArchive)
 from itools.xml import xml_to_text
 from itools.stl import stl
-from itools.web.context import get_context
+from itools.web import get_context
 from File import File
 from registry import register_object_class
 

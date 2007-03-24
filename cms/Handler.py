@@ -29,8 +29,7 @@ from itools.schemas import get_datatype
 from itools.stl import stl
 from itools.gettext import DomainAware, get_domain
 from itools.http import Forbidden
-from itools.web import get_context
-from itools.web.base import Node as BaseNode
+from itools.web import get_context, Node as BaseNode
 from handlers import Lock, Metadata
 from catalog import CatalogAware
 import webdav

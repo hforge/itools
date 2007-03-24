@@ -24,7 +24,7 @@ from itools.uri import get_absolute_reference2
 from itools import vfs
 from itools.catalog import Catalog
 from itools.handlers import Config, get_transaction
-from itools import web
+from itools.web import Server as BaseServer
 from itools.cms.database import DatabaseFS
 from itools.cms.handlers import Metadata
 from itools.cms import registry
@@ -53,7 +53,7 @@ def get_root_class(root):
 
 
 
-class Server(web.server.Server):
+class Server(BaseServer):
 
     def __init__(self, target, address=None, port=None):
         target = get_absolute_reference2(target)
@@ -97,10 +97,10 @@ class Server(web.server.Server):
 
         # Initialize
         path = target.path
-        web.server.Server.__init__(self, root, address=address, port=port,
-                                   access_log='%s/access_log' % path,
-                                   error_log='%s/error_log' % path,
-                                   pid_file='%s/pid' % path)
+        BaseServer.__init__(self, root, address=address, port=port,
+                            access_log='%s/access_log' % path,
+                            error_log='%s/error_log' % path,
+                            pid_file='%s/pid' % path)
 
         # The SMTP host
         self.smtp_host = config.get_value('smtp-host')

@@ -22,8 +22,7 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 import itools.http
-from itools.web.server import Server
-from itools.web.tree import Root
+from itools.web import Server, Root
 
 
 

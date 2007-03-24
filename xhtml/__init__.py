@@ -19,7 +19,14 @@
 import mimetypes
 
 # Import from itools
-import XHTML
+from xhtml import Document, Element, InlineElement, BlockElement
+
+
+__all__ = [
+    'Document',
+    'Element',
+    'InlineElement',
+    'BlockElement']
 
 
 mimetypes.add_type('application/xhtml+xml', '.xhtml')

@@ -25,7 +25,7 @@ from itools.handlers import (Text as BaseText, Python as BasePython,
 from itools.gettext import PO as BasePO
 from itools.stl import stl
 from itools.web import get_context
-from itools.xhtml.XHTML import Document
+from itools.xhtml import Document
 from utils import get_parameters
 from File import File
 from registry import register_object_class

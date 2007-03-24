@@ -27,7 +27,7 @@ import itools
 from itools import vfs
 from itools.handlers import Python
 from itools.gettext import PO
-from itools.xhtml import XHTML
+from itools.xhtml import Document
 import itools.stl
 
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
                 continue
             sys.stdout.write('.')
             sys.stdout.flush()
-            handler = XHTML.Document(path)
+            handler = Document(path)
             for msgid, line_number in handler.get_messages():
                 if len(msgid) > 1:
                     po.set_message(msgid, references={path: [line_number]})

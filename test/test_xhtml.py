@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.xhtml import XHTML
+from itools.xhtml import Document
 from itools.gettext import PO
 
 
@@ -34,7 +34,7 @@ class SegmentationTestCase(TestCase):
                '<em>innovation</em> on the Internet. Developing the\n' \
                'acclaimed, <em>open source</em>, <b>Mozilla 1.6</b>.\n' \
                '</p>'
-        doc = XHTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
@@ -60,7 +60,7 @@ class SegmentationTestCase(TestCase):
                '    <td>even longer</td>\n' \
                '  </tr>\n' \
                '</table>'
-        doc = XHTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
@@ -82,7 +82,7 @@ class SegmentationTestCase(TestCase):
                '  <p><em>hello world</em></p><br/>' \
                '  bye <em>J. David Ibanez Palomar</em>\n' \
                '</body>'
-        doc = XHTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
@@ -99,7 +99,7 @@ class SegmentationTestCase(TestCase):
                '  <input type="text" name="id" />\n' \
                '  <input type="submit" value="Change" />\n' \
                '</form>'
-        doc = XHTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
@@ -126,7 +126,7 @@ class TranslationTestCase(TestCase):
     def test_case1(self):
         """Test element content."""
         data = self.template % '<p>hello litle world</p>'
-        doc = XHTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
         messages = list(doc.get_messages())
 
@@ -136,7 +136,7 @@ class TranslationTestCase(TestCase):
     def test_case2(self):
         """Test simple attribute."""
         data = self.template % '<img alt="The beach" src="beach.jpg" />' 
-        doc = XHTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
         messages = list(doc.get_messages())
 
@@ -147,7 +147,7 @@ class TranslationTestCase(TestCase):
         """Test complex attribute."""
         data = self.template % """<input type="text" name="id" />
                                   <input type="submit" value="Change" />""" 
-        doc = XHTML.Document()
+        doc = Document()
         doc.load_state_from_string(data)
         messages = list(doc.get_messages())
 
@@ -163,11 +163,11 @@ class TranslationTestCase(TestCase):
 
         p = PO()
         p.load_state_from_string(po)
-        xhtml = XHTML.Document()
+        xhtml = Document()
         xhtml.load_state_from_string(html)
 
         html = xhtml.translate(p)
-        xhtml = XHTML.Document()
+        xhtml = Document()
         xhtml.load_state_from_string(html)
         
         messages = list(xhtml.get_messages())
@@ -182,11 +182,11 @@ class TranslationTestCase(TestCase):
 
         p = PO()
         p.load_state_from_string(po)
-        xhtml = XHTML.Document()
+        xhtml = Document()
         xhtml.load_state_from_string(html)
 
         html = xhtml.translate(p)
-        xhtml = XHTML.Document()
+        xhtml = Document()
         xhtml.load_state_from_string(html)
 
         messages = list(xhtml.get_messages())

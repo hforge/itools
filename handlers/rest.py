@@ -37,7 +37,7 @@ class RestructuredText(Text):
     }
 
     def to_html(self):
-        from itools.xhtml.XHTML import Document, Element
+        from itools.xhtml import Document, Element
 
         if publish_string is None:
             output = Document()

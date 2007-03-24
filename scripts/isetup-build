@@ -28,7 +28,7 @@ from itools.uri import Path
 from itools import vfs
 from itools.handlers import get_handler
 import itools.gettext
-from itools.xhtml import XHTML
+from itools.xhtml import Document
 import itools.stl
 
 
@@ -154,7 +154,7 @@ if __name__ == '__main__':
         # Load the handler
         path = path.strip()
         src_mtime = vfs.get_mtime(path)
-        src = XHTML.Document(path)
+        src = Document(path)
         done = False
         # Build the translation
         n = path.rfind('.')

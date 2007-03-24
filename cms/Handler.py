@@ -27,7 +27,6 @@ from itools import vfs
 from itools.handlers import Handler as BaseHandler
 from itools.schemas import get_datatype
 from itools.stl import stl
-from itools.xhtml import XHTML
 from itools.gettext import DomainAware, get_domain
 from itools.http import Forbidden
 from itools.web import get_context

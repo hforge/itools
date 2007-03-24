@@ -20,7 +20,6 @@ from itools import get_abspath
 from itools.uri import Path
 from itools.web import get_context
 from itools.stl import stl
-from itools.xhtml import XHTML
 
 # Import from itools.cms
 from itools.cms.skins import Skin, register_skin

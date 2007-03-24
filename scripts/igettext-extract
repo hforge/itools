@@ -23,7 +23,7 @@ import sys
 # Import from itools
 import itools
 from itools.gettext import PO
-from itools.xhtml import XHTML
+from itools.xhtml import Document
 import itools.stl
 from itools.handlers import Python
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
                 handler = Python(source_file)
             else:
                 # XXX Suppose it is XHTML
-                handler = XHTML.Document(source_file)
+                handler = Document(source_file)
             # Extract the messages
             for msgid, line_number in handler.get_messages():
                 po.set_message(msgid, references={source_file: [line_number]})

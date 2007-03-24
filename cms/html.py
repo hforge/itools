@@ -24,7 +24,7 @@ except ImportError:
 # Import from itools
 from itools.xml import Document as XMLDocument, Element as XMLElement
 from itools.stl import stl
-from itools.xhtml import XHTML
+from itools.xhtml import Document as XHTMLDocument
 from itools.html import Document as HTMLDocument
 
 # Import from ikaaro
@@ -38,7 +38,7 @@ class XMLFile(Text, XMLDocument):
 
 
 
-class XHTMLFile(Text, XHTML.Document):
+class XHTMLFile(Text, XHTMLDocument):
 
     class_id = 'application/xhtml+xml'
     class_title = u'Web Document'
@@ -78,7 +78,7 @@ class XHTMLFile(Text, XHTML.Document):
 
 
     def to_text(self):
-        return XHTML.Document.to_text(self)
+        return XHTMLDocument.to_text(self)
 
 
     def is_empty(self):
@@ -159,7 +159,7 @@ class XHTMLFile(Text, XHTML.Document):
                 u' data was not proper HTML code.')
 
         # Parse the new data
-        doc = XHTML.Document()
+        doc = XHTMLDocument()
         doc.load_state_from_string(new_body)
         children = doc.get_body().children
         # Save the changes

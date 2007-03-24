@@ -20,7 +20,9 @@ from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
 from itools.xml import Comment
-from itools.xhtml import XHTML
+from itools.xhtml import (Document as XHTMLDocument, Element as XHTMLElement,
+                          InlineElement as XHTMLInlineElement,
+                          BlockElement as XHTMLBlockElement)
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
 
@@ -28,20 +30,20 @@ from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
 ns_uri = 'http://www.w3.org/1999/xhtml'
 
 
-class Element(XHTML.Element):
+class Element(XHTMLElement):
 
-    get_start_tag = XHTML.Element.get_start_tag_as_html
+    get_start_tag = XHTMLElement.get_start_tag_as_html
 
 
-class InlineElement(Element, XHTML.InlineElement):
+class InlineElement(Element, XHTMLInlineElement):
     pass
 
 
-class BlockElement(Element, XHTML.BlockElement):
+class BlockElement(Element, XHTMLBlockElement):
     pass
 
 
-# XXX This class is almost identical to 'XHTML.Element'
+# XXX This class is almost identical to 'XHTMLElement'
 class HeadElement(BlockElement):
 
     def to_str(self, encoding='UTF-8'):
@@ -79,7 +81,7 @@ elements_schema = {
 # Documents
 #############################################################################
 
-class Document(XHTML.Document):
+class Document(XHTMLDocument):
     """
     HTML files are a lot like XHTML, only the parsing and the output is
     different, so we inherit from XHTML instead of Text, even if the

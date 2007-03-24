@@ -22,7 +22,7 @@ from string import Template
 # Import from itools
 from itools.uri import Path
 from itools.handlers import Folder
-from itools.xhtml import XHTML
+from itools.xhtml import Document as XHTMLDocument
 from itools.stl import stl
 from itools.web import get_context
 
@@ -187,7 +187,7 @@ table_template_string = """
 </stl:block>
 """
 
-table_template = XHTML.Document()
+table_template = XHTMLDocument()
 table_template.load_state_from_string(table_template_string)
 
 

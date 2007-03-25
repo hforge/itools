@@ -143,7 +143,7 @@ class DefaultNamespace(AbstractNamespace):
 
     @staticmethod
     def get_element_schema(name):
-        from XML import Element
+        from xml import Element
         return {'type': Element,
                 'is_empty': False}
 

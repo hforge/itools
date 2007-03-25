@@ -21,7 +21,6 @@ from time import time
 
 # Import from itools
 import itools
-from itools.resources import get_resource
 from itools.xml import XML
 from itools.xml.parser import parse
 
@@ -36,14 +35,14 @@ from itools.xml.parser import parse
 
 
 if __name__ == '__main__':
-    resource = get_resource('bench_parser.xml')
     if 1:
         # The old parser: 0.0234 (reference time)
         # The new parser: 0.0309
+        doc = Document('bench_parser.xml')
         t0 = time()
-        XML.Document(resource)
+        doc.load_state()
         t1 = time()
         print itools.__version__, t1 - t0
     else:
         data = open('bench_parser.xml').read()
-        profile.run('list(parse(data))')
+        profile.run('list(Parser(data))')

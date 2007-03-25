@@ -20,7 +20,6 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.resources.memory import File as mFile
 from itools.gettext.PO import PO
 
 
@@ -31,8 +30,8 @@ class POTestCase(TestCase):
         """Test for newlines."""
         content = 'msgid "Add"\n' \
                   'msgstr "Ajouter\\n"\n'
-        da = mFile(content)
-        po = PO(da)
+        po = PO()
+        po.load_state_from_string(content)
 
         self.assertEqual(po.get_msgstr('Add'), u'Ajouter\n')
 
@@ -43,8 +42,8 @@ class POTestCase(TestCase):
                   'msgstr ""\n' \
                   '"Hola "\n' \
                   '"mundo"\n'
-        da = mFile(content)
-        po = PO(da)
+        po = PO()
+        po.load_state_from_string(content)
 
         self.assertEqual(po.get_msgstr('Hello world'), u'Hola mundo')
 
@@ -53,8 +52,8 @@ class POTestCase(TestCase):
         """Test for double quotes."""
         content = 'msgid "test"\n' \
                   'msgstr "Esto es una \\"prueba\\""\n'
-        da = mFile(content)
-        po = PO(da)
+        po = PO()
+        po.load_state_from_string(content)
 
         self.assertEqual(po.get_msgstr('test'), u'Esto es una "prueba"')
 
@@ -67,8 +66,8 @@ class POTestCase(TestCase):
                   'msgid "Hello"\n' \
                   'msgstr ""\n' \
                   '"Hola\\n"\n'
-        da = mFile(content)
-        po = PO(da)
+        po = PO()
+        po.load_state_from_string(content)
 
         self.assertEqual((po.get_messages())[0].to_str(), content)
 
@@ -81,10 +80,10 @@ class POTestCase(TestCase):
                   'msgid "Hello"\n' \
                   'msgstr ""\n' \
                   '"Hola\\n"\n'
-        da = mFile(content)
-        po = PO(da)
-        translation = po.get_translation('Hello')
+        po = PO()
+        po.load_state_from_string(content)
 
+        translation = po.get_translation('Hello')
         self.assertEqual(translation, 'Hello')
 
 
@@ -93,10 +92,10 @@ class POTestCase(TestCase):
         content = '#, fuzzy\n' \
                   '#~ msgid "Hello"\n' \
                   '#~ msgstr "Hola"\n'
-        da = mFile(content)
-        po = PO(da)
-        translation = po.get_translation('Hello')
+        po = PO()
+        po.load_state_from_string(content)
 
+        translation = po.get_translation('Hello')
         self.assertEqual(translation,'Hello')
 
 

@@ -29,7 +29,6 @@ from urllib import unquote
 
 # Import from itools
 from itools import uri
-##from itools.resources.socket import File
 from itools.http.exceptions import (Forbidden, HTTPError, NotFound,
                                     Unauthorized)
 from itools.http.request import Request

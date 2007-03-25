@@ -20,18 +20,15 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.resources import get_resource
 from itools.xliff.XLIFF import XLIFF
 
-
-src = get_resource('gettext_en_es.xlf')
 
 
 class TMXTestCase(TestCase):
 
     def test_input(self):
         """Test input."""
-        xliff = XLIFF(src)
+        xliff = XLIFF('gettext_en_es.xlf')
         xliff.to_str()
 
  

@@ -20,18 +20,15 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.resources import get_resource
 from itools.tmx.TMX import TMX
 
-
-src = get_resource('localizermsgs.tmx')
 
 
 class TMXTestCase(TestCase):
 
     def test_input(self):
         """Test input."""
-        tmx = TMX(src)
+        tmx = TMX('localizermsgs.tmx')
         tmx.to_str()
 
 

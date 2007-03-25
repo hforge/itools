@@ -24,7 +24,7 @@ from itools.datatypes import Email, Integer, Unicode
 from itools.i18n import get_language_name, get_languages
 from itools.catalog import Equal, Or
 from itools.stl import stl
-from Folder import Folder
+from folder import Folder
 from skins import Skin
 from access import RoleAware
 from workflow import WorkflowAware

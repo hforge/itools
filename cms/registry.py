@@ -39,8 +39,8 @@ def get_object_class(class_id):
 
 
 ##def build_handler(resource, format=None):
-##    from File import File
-##    from Folder import Folder
+##    from file import File
+##    from folder import Folder
 
 ##    if format in registry:
 ##        handler_class = registry[format]

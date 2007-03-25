@@ -28,7 +28,7 @@ from itools.web import get_context
 
 # Import from itools.cms
 from utils import get_parameters
-from Handler import Handler
+from base import Handler
 
 
 

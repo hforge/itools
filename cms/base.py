@@ -96,7 +96,7 @@ class Node(BaseNode):
     # Tree
     ########################################################################
     def get_site_root(self):
-        from WebSite import WebSite
+        from website import WebSite
         handler = self
         while not isinstance(handler, WebSite):
             handler = handler.parent
@@ -107,7 +107,7 @@ class Node(BaseNode):
     # instead)
     def get_workplace(self):
         from users import User
-        from WebSite import WebSite
+        from website import WebSite
 
         user = get_context().user
         # Get the "workplace"
@@ -579,7 +579,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     # Edit / Inline / toolbox: add links
     addlink_form__access__ = 'is_allowed_to_edit'
     def addlink_form(self, context):
-        from File import File
+        from file import File
         from widgets import Breadcrumb
 
         namespace = {}

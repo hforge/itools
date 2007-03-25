@@ -34,8 +34,8 @@ from itools.stl import stl
 from itools.web import get_context
 
 # Import from itools.cms
-import File
-from Handler import Handler
+from file import File
+from base import Handler
 from binary import Image
 from catalog import CatalogAware
 from handlers import Lock, Metadata, ListOfUsers
@@ -882,7 +882,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     browse_dir__access__ = 'is_authenticated'
     def browse_dir(self, context):
         namespace = {}
-        namespace['bc'] = widgets.Breadcrumb(filter_type=File.File, start=self)
+        namespace['bc'] = widgets.Breadcrumb(filter_type=File, start=self)
 
         # Avoid general template
         response = context.response

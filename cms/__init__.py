@@ -28,8 +28,8 @@ from itools.gettext import register_domain
 
 # Import from itools.cms
 from . import root
-from .Folder import Folder
-from . import File
+from .folder import Folder
+from .file import File
 from . import binary
 from . import csv
 from . import handlers
@@ -50,7 +50,7 @@ except ImportError:
 # Register
 ###########################################################################
 Folder.register_document_type(Folder)
-Folder.register_document_type(File.File)
+Folder.register_document_type(File)
 Folder.register_document_type(text.Text)
 Folder.register_document_type(html.XHTMLFile)
 Folder.register_document_type(ical.Calendar)

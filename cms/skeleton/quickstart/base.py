@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools.cms
-from itools.cms.Handler import Handler as BaseHandler
+from itools.cms.base import Handler as BaseHandler
 
 
 class Handler(BaseHandler):

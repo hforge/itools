@@ -36,10 +36,10 @@ from itools.web import get_context
 # Import from itools.cms
 from text import PO
 from users import UserFolder
-from WebSite import WebSite
+from website import WebSite
 from handlers import Metadata
 from registry import register_object_class
-from Folder import Folder
+from folder import Folder
 from catalog import CatalogAware
 
 

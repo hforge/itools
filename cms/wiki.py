@@ -32,8 +32,8 @@ from ..stl import stl
 from ..datatypes import Unicode, FileName
 
 # Import from itools.cms
-from .File import File
-from .Folder import Folder
+from .file import File
+from .folder import Folder
 from .text import Text
 from .registry import register_object_class
 from .utils import checkid

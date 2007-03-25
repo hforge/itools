@@ -27,7 +27,7 @@ from itools.stl import stl
 from itools.web import get_context
 from itools.xhtml import Document
 from utils import get_parameters
-from File import File
+from file import File
 from registry import register_object_class
 
 

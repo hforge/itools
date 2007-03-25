@@ -25,12 +25,11 @@ from itools.datatypes import Enumerate, Unicode, ISOTime, Date
 from itools.ical import get_grid_data, icalendar, PropertyValue, DateTime
 from itools.stl import stl
 from itools.web import get_context
-from File import File
 from registry import register_object_class
 
 # Import from itools.cms
-from itools.cms.text import Text
-from itools.cms.Handler import Handler
+from text import Text
+from base import Handler
 
 
 class Status(Enumerate):

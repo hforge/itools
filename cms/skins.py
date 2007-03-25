@@ -28,8 +28,8 @@ from itools.stl import stl
 from itools.web import get_context, AccessControl
 
 # Import from itools.cms
-from Handler import Node
-from Folder import Folder
+from base import Node
+from folder import Folder
 from utils import reduce_string
 from widgets import tree, build_menu
 from registry import register_object_class

@@ -24,7 +24,7 @@ from itools import vfs
 from itools.handlers import File as BaseFile
 from itools.stl import stl
 from itools.web import get_context
-from Handler import Handler
+from base import Handler
 from registry import register_object_class
 from versioning import VersioningAware
 from workflow import WorkflowAware

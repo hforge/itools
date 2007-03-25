@@ -22,7 +22,7 @@ from operator import itemgetter
 from itools.datatypes import Boolean, Enumerate, Integer, is_datatype
 from itools.csv import CSV as iCSV, Row as iRow, IntegerKey
 from itools.stl import stl
-from Handler import Node
+from base import Node
 from text import Text
 from registry import register_object_class
 import widgets

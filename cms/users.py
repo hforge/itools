@@ -30,7 +30,7 @@ from itools.datatypes import Email
 
 # Import from ikaaro
 from access import AccessControl
-from Folder import Folder
+from folder import Folder
 from metadata import Password
 from registry import register_object_class, get_object_class
 

@@ -27,10 +27,10 @@ from itools.stl import stl
 from itools.web import get_context
 
 # Import from itools.cms
-from itools.cms.registry import register_object_class
-from itools.cms.Folder import Folder
-from itools.cms.text import Text
-from itools.cms.utils import checkid
+from registry import register_object_class
+from folder import Folder
+from text import Text
+from utils import checkid
 
 
 def add_forum_style(context):

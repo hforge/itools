@@ -33,7 +33,7 @@ class CatalogAware(object):
 
     def get_catalog_indexes(self):
         from .access import RoleAware
-        from .File import File
+        from .file import File
         from .users import User
 
         name = self.name

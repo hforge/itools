@@ -27,8 +27,7 @@ import thread
 # Import from itools
 from itools.uri import get_reference, Path
 from itools import vfs
-from itools.vfs.file import FileFS
-from itools.vfs.registry import register_file_system
+from itools.vfs import FileFS, register_file_system
 from itools.handlers import get_handler_class, get_transaction
 
 

@@ -19,7 +19,7 @@
 import mimetypes
 
 # Import from itools
-from itools.xliff import XLIFF
+from xliff import XLIFF
 
 
 __all__ = ['XLIFF']

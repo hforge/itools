@@ -43,8 +43,8 @@ class FileFS(BaseFS):
         return isfile(path)
 
 
-    @staticmethod
-    def is_folder(reference):
+    @classmethod
+    def is_folder(cls, reference):
         path = str(reference.path)
         return isdir(path)
 
@@ -191,8 +191,8 @@ class FileFS(BaseFS):
 
     ######################################################################
     # Folders only
-    @staticmethod
-    def get_names(reference):
+    @classmethod
+    def get_names(cls, reference):
         path = str(reference.path)
         return listdir(path)
 

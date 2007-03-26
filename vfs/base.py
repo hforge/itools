@@ -37,8 +37,8 @@ class BaseFS(object):
         raise NotImplementedError
 
 
-    @staticmethod
-    def is_folder(reference):
+    @classmethod
+    def is_folder(cls, reference):
         raise NotImplementedError
 
 
@@ -120,6 +120,19 @@ class BaseFS(object):
 
     ######################################################################
     # Folders only
-    @staticmethod
-    def get_names(reference):
+    @classmethod
+    def get_names(cls, reference):
         raise NotImplementedError
+
+
+    @classmethod
+    def traverse(cls, reference):
+        stack = [reference]
+        while stack:
+            folder = stack.pop()
+            for name in cls.get_names(folder):
+                ref = folder.resolve2(name)
+                yield ref
+                if cls.is_folder(ref):
+                    stack.append(ref)
+

@@ -132,6 +132,11 @@ class FileTestCase(TestCase):
         vfs.remove('tests/hello.txt.old')
 
 
+    def test19_traverse(self):
+        for x in vfs.traverse('.'):
+            self.assertEqual(vfs.exists(x), True)
+
+
 
 class FoldersTestCase(TestCase):
  
@@ -142,6 +147,7 @@ class FoldersTestCase(TestCase):
     def test00_exists(self):
         exists = self.tests.exists('index.html.en')
         self.assertEqual(exists, True)
+
 
 
 class CopyTestCase(TestCase):

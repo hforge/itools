@@ -175,3 +175,8 @@ class Folder(object):
     def get_names(self, reference='.'):
         fs, reference = self.get_fs_and_reference(reference)
         return fs.get_names(reference)
+
+
+    def traverse(self, reference='.'):
+        fs, reference = self.get_fs_and_reference(reference)
+        return fs.traverse(reference)

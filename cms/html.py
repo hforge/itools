@@ -77,10 +77,6 @@ class XHTMLFile(Text, XHTMLDocument):
         return unicode(str(doc), 'utf-8')
 
 
-    def to_text(self):
-        return XHTMLDocument.to_text(self)
-
-
     def is_empty(self):
         """Test if XML doc is empty"""
         body = self.get_body()

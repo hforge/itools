@@ -78,4 +78,8 @@ class Text(File):
         return self.data.encode(encoding)
 
 
+    def to_text(self):
+        return unicode(self.to_str(), 'utf-8')
+
+
 register_handler_class(Text)

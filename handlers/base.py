@@ -276,6 +276,12 @@ class Handler(Node):
             get_transaction().add(self)
 
 
+    ########################################################################
+    # Indexing
+    def to_text(self):
+        raise NotImplementedError
+
+
     def get_mimetype(self):
         return vfs.get_mimetype(self.uri)
 

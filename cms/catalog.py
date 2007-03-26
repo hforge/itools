@@ -50,11 +50,16 @@ class CatalogAware(object):
             'abspath': abspath,
             'format': get_property('format'),
             'title': title,
-            'text': self.to_text(),
             'owner': get_property('owner'),
             'title_or_name': title or name,
             'mtime': mtime.strftime('%Y%m%d%H%M%S'),
             }
+
+        # Full text
+        try:
+            document['text'] = self.to_text()
+        except NotImplementedError:
+            pass
 
         # Parent path
         parent = self.parent

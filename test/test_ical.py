@@ -514,66 +514,97 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(len(events), 1)
 
 
-    def test_get_events_in_date(self):
-        """Test get events filtered by date."""
+    def test_search_events_in_date(self):
+        """Test search events by date."""
         cal = icalendar()
         cal.load_state_from_string(content)
 
         date = datetime(2005, 5, 29)
-        events = cal.get_events_in_date(date)
+        events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 0)
         self.assertEqual(cal.has_event_in_date(date), False)
 
         date = datetime(2005, 5, 30)
-        events = cal.get_events_in_date(date)
+        events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 1)
         self.assertEqual(cal.has_event_in_date(date), True)
 
+        events = cal.search_events_in_date(date, STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
+        events = cal.search_events_in_date(date, STATUS='CONFIRMED')
+        self.assertEqual(len(events), 0)
+
+        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        events = cal.search_events_in_date(date, ATTENDEE=attendee_value)
+        self.assertEqual(len(events), 1)
+        events = cal.search_events_in_date(date, ATTENDEE=attendee_value, 
+                                                 STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
+        events = cal.search_events_in_date(date, ATTENDEE=attendee_value, 
+                                                 STATUS='CONFIRMED')
+        self.assertEqual(len(events), 0)
+
         date = datetime(2005, 7, 30)
-        events = cal.get_events_in_date(date)
+        events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 0)
         self.assertEqual(cal.has_event_in_date(date), False)
 
 
-    def test_get_events_in_range(self):
-        """Test get events matching given dates range."""
+    def test_search_events_in_range(self):
+        """Test search events matching given dates range."""
         cal = icalendar()
         cal.load_state_from_string(content2)
 
         dtstart = datetime(2005, 1, 1)
         dtend = datetime(2005, 1, 1, 20, 0)
-        events = cal.get_events_in_range(dtstart, dtend)
+        events = cal.search_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 0)
 
         dtstart = datetime(2005, 5, 28)
         dtend = datetime(2005, 5, 30, 0, 50)
-        events = cal.get_events_in_range(dtstart, dtend)
+        events = cal.search_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 1)
 
         dtstart = datetime(2005, 5, 29)
         dtend = datetime(2005, 5, 30, 0, 1)
-        events = cal.get_events_in_range(dtstart, dtend)
+        events = cal.search_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 1)
 
         dtstart = datetime(2005, 5, 30, 23, 59, 59)
         dtend = datetime(2005, 5, 31, 0, 0)
-        events = cal.get_events_in_range(dtstart, dtend)
+        events = cal.search_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 1)
 
         dtstart = datetime(2005, 5, 1)
         dtend = datetime(2005, 8, 1)
-        events = cal.get_events_in_range(dtstart, dtend)
+        events = cal.search_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 2)
 
         dtstart = datetime(2005, 5, 30, 23)
         dtend = datetime(2005, 6, 1)
-        events = cal.get_events_in_range(dtstart, dtend)
+        events = cal.search_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 1)
 
         dtstart = datetime(2005, 5, 31, 0, 0, 1)
         dtend = datetime(2005, 6, 1)
-        events = cal.get_events_in_range(dtstart, dtend)
+        events = cal.search_events_in_range(dtstart, dtend)
         self.assertEqual(len(events), 1)
+
+        events = cal.search_events_in_range(dtstart, dtend, STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
+        events = cal.search_events_in_range(dtstart, dtend, STATUS='CONFIRMED')
+        self.assertEqual(len(events), 0)
+
+        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        events = cal.search_events_in_range(dtstart, dtend, 
+                                            ATTENDEE=attendee_value)
+        self.assertEqual(len(events), 1)
+        events = cal.search_events_in_range(dtstart, dtend,
+                                  ATTENDEE=attendee_value, STATUS='TENTATIVE')
+        self.assertEqual(len(events), 1)
+        events = cal.search_events_in_range(dtstart, dtend,
+                                  ATTENDEE=attendee_value, STATUS='CONFIRMED')
+        self.assertEqual(len(events), 0)
 
 
     def test_get_conflicts(self):

@@ -29,7 +29,7 @@ from itools.catalog.queries import Equal, Range, Or, And
 from itools.handlers.Text import Text
 from itools.csv.csv import Catalog
 from itools.ical.parser import parse
-from itools.ical.types import data_properties, fold_line
+from itools.ical.types import data_properties, fold_line, DateTime
 
 
 # The smallest possible difference between non-equal timedelta objects.
@@ -436,7 +436,7 @@ class icalendar(Text):
     # To override
     #######################################################################
     def generate_uid(self, c_type):
-        return c_type +'-'+ datetime.now().strftime('%Y-%m-%d %H:%M:%S %p')
+        return ' '.join([c_type, datetime.now().isoformat()])
 
 
     #######################################################################
@@ -555,7 +555,7 @@ class icalendar(Text):
 
 
     # Get some events corresponding to arguments
-    def search_events(self, **kw):
+    def search_events(self, subset=None, **kw):
         """
         Return a list of Component objects of type 'VEVENT' corresponding to
         the given filters.
@@ -569,14 +569,19 @@ class icalendar(Text):
                           URI.decode('mailto:jsmith@itaapy.com')])
 
         ** With a list of values, events match if at least one value matches
+
+        If subset is not None, it tests only given components.
+        Else it tests components in this list.
         """
         res_events = []
 
         # Get the list of differents property names used to filter
         filters = kw.keys()
 
-        # For each events
-        for event in self.get_components(type='VEVENT'):
+        # For each event
+        events = subset or [self.components[x] 
+                            for x in self.search(type='VEVENT')]
+        for event in events:
             version = event.get_version()
 
             # For each filter
@@ -602,7 +607,6 @@ class icalendar(Text):
                         break
             else:
                 res_events.append(event)
-
         return res_events
 
 
@@ -613,68 +617,54 @@ class icalendar(Text):
         return self.components.get(uid)
 
 
-    # Get some events corresponding to a given date
-    def get_events_in_date(self, date):
-        """
-        Return a list of Component objects of type 'VEVENT' matching the
-        given date. 
-        """
-        # Get only the events which match
-        query = And(Equal('type', 'VEVENT'),
-                    Range('dtstart', None, date + resolution),
-                    Range('dtend', date, None))
-
-        return [ self.components[x] for x in self.search(query) ]
-
-
-    def get_events_in_range(self, dtstart, dtend):
+    def search_events_in_date(self, selected_date, sortby=None, **kw):
         """
         Return a list of Component objects of type 'VEVENT' matching the given
-        dates range. 
+        date and sorted if requested.
         """
-        # Get only the events which matches
-        query = And(Equal('type', 'VEVENT'),
-                    Or(Range('dtstart', dtstart, dtend + resolution),
-                       Range('dtend', dtstart, dtend + resolution),
-                       And(Range('dtstart', None, dtstart + resolution),
-                           Range('dtend', dtend, None))))
-
-        return [ self.components[x] for x in self.search(query) ]
-
-
-    def get_sorted_events_in_date(self, selected_date):
-        """
-        Return a list of Component objects of type 'VEVENT' matching the given
-        date and sorted chronologically.
-        """
-        dtstart = datetime.combine(selected_date, time(0,0))
+        dtstart = datetime(selected_date.year, selected_date.month,
+                           selected_date.day)
         dtend = dtstart + timedelta(days=1) - resolution
+        return self.search_events_in_range(dtstart, dtend, sortby=sortby, **kw)
 
-        return self.get_sorted_events_in_range(dtstart, dtend)
 
-
-    def get_sorted_events_in_range(self, dtstart, dtend):
+    def search_events_in_range(self, dtstart, dtend, sortby=None, **kw):
         """
         Return a list of Component objects of type 'VEVENT' matching the given
-        dates range and sorted chronologically.
+        dates range and sorted  if requested.
+        If kw is filled, it calls search_events on the found subset to return
+        only components matching filters.
         """
-        res_events = []
-
         # Check type of dates, we need datetime for method in_range
         if not isinstance(dtstart, datetime):
             dtstart = datetime(dtstart.year, dtstart.month, dtstart.day)
         if not isinstance(dtend, datetime):
             dtend = datetime(dtend.year, dtend.month, dtend.day)
+            # dtend is include into range
+            dtend = dtend + timedelta(days=1) - resolution
 
         # Get only the events which matches
         query = And(Equal('type', 'VEVENT'),
-                    Or(Range('dtstart', dtstart, dtend + resolution),
-                       Range('dtend', dtstart, dtend + resolution),
+                    Or(Range('dtstart', dtstart + resolution, dtend),
+                       Range('dtend', dtstart + resolution, dtend),
                        And(Range('dtstart', None, dtstart + resolution),
                            Range('dtend', dtend, None))))
+        results = [self.components[uid] for uid in self.search(query)]
 
-        for n in self.search(query):
-            event = self.components[n]
+        if results == []:
+            return []
+
+        # Check filters
+        if kw:
+            results = self.search_events(subset=results, **kw)
+
+        # Nothing to sort or inactive
+        if sortby is None or len(results) <= 1:
+            return results
+
+        # Get results as a dict to sort them
+        res_events = []
+        for event in results:
             version = event.get_version()
             value = {
                 'dtstart': version['DTSTART'].value,
@@ -682,26 +672,20 @@ class icalendar(Text):
                 'event': event
               }
             res_events.append(value)
-
-        if len(res_events) <= 1:
-            return res_events
-
         # Sort by dtstart
         res_events = sorted(res_events, key=itemgetter('dtstart'))
         # Sort by dtend
-        last_end = res_events[0]['dtstart']
-        same_start, res = [], [res_events[0]]
+        res = []
+        current = [res_events[0]]
         for e in res_events[1:]:
-            if last_end == e['dtstart']:
-                same_start.append(e)
+            if e['dtstart'] == current[0]['dtstart']:
+                current.append(e)
             else:
-                if same_start != []:
-                    res.extend(same_start)
-                    same_start = []
-                res.append(e)
-        if same_start != []:
-            res.extend(same_start)
-
+                res.extend(x['event'] 
+                           for x in sorted(current, key=itemgetter('dtend')))
+                current = [e]
+        res.extend(x['event'] for x in sorted(current, 
+                                              key=itemgetter('dtend')))
         return res
 
 
@@ -710,7 +694,7 @@ class icalendar(Text):
         """
         Return True if there is at least one event matching the given date.
         """
-        return self.get_events_in_date(date) != []
+        return self.search_events_in_date(date) != []
 
 
     def get_conflicts(self, date):
@@ -718,7 +702,7 @@ class icalendar(Text):
         Returns a list of uid couples which happen at the same time.
         We check only last occurrence of events.
         """
-        events = self.get_events_in_date(date)
+        events = self.search_events_in_date(date)
         if len(events) <= 1:
             return None
 

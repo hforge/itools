@@ -298,7 +298,7 @@ class Calendar(Text, icalendar):
     # XXX DEPRECATED, not completely replaced yet
     def get_ns_events(self, selected_date, shown_fields, timetables):
         # Get list of all events
-        events_list = self.get_events_in_date(selected_date)
+        events_list = self.search_events_in_date(selected_date)
         # Get dict from events_list and sort events by start date
         ns_events = []
         for event in events_list:
@@ -357,6 +357,8 @@ class Calendar(Text, icalendar):
         ns_timetables = []
         for timetable in timetables:
             ns_timetables.append(Time.encode(timetable['start']))
+        if ns_timetables != []:
+            ns_timetables.append(Time.encode(timetables[-1]['end']))
 
         return ns_timetables
 
@@ -378,7 +380,8 @@ class Calendar(Text, icalendar):
 
             # Add each event by day
             ns_events = []
-            for event in self.get_sorted_events_in_date(current_date):
+            for event in self.search_events_in_date(current_date, 
+                                                    sortby='date'):
                 ns_event = self.get_grid_ns_event(current_date, event,
                                                   resource_name=resource_name)
                 ns_events.append(ns_event)
@@ -431,7 +434,7 @@ class Calendar(Text, icalendar):
 
           url: url to access edit_event_form on current event
         """
-        properties = event['event'].get_property_values
+        properties = event.get_property_values
         ns = {}
         ns['SUMMARY'] = properties('SUMMARY').value
         ns['ORGANIZER'] = properties('ORGANIZER').value
@@ -440,6 +443,8 @@ class Calendar(Text, icalendar):
         # Set dtstart and dtend values using '...' for events which 
         # appear into more than one cell
         ns['TIME'] = None
+        ns['DTSTART'] = Time.encode(properties('DTSTART').value.time())
+        ns['DTEND'] = Time.encode(properties('DTEND').value.time())
 
         if not out_on:
             dtstart = properties('DTSTART')
@@ -447,23 +452,20 @@ class Calendar(Text, icalendar):
             if not param or 'DATE' not in param['VALUE']:
                 value = ''
                 if starts_on:
-                    value = Time.encode(event['dtstart'].time())
+                    value = ns['DTSTART']
                     if ends_on:
                         value = value + '-'
                     else:
                         value = value + '...' 
                 if ends_on:
-                    value = value + Time.encode(event['dtend'].time())
+                    value = value + ns['DTEND']
                     if not starts_on:
                         value = '...' + value
                 ns['TIME'] = '(' + value + ')'
                 
-        ns['DTSTART'] = Time.encode(properties('DTSTART').value.time())
-        ns['DTEND'] = Time.encode(properties('DTEND').value.time())
-
         ###############################################################
         # Set class for conflicting events or just from status value
-        uid = event['event'].uid
+        uid = event.uid
         if uid in conflicts_list:
             ns['STATUS'] = 'cal_conflict'
         else:
@@ -509,7 +511,7 @@ class Calendar(Text, icalendar):
 
           url: url to access edit_event_form on current event
         """
-        properties = event['event'].get_property_values
+        properties = event.get_property_values
         ns = {}
         ns['SUMMARY'] = properties('SUMMARY').value
         ns['ORGANIZER'] = properties('ORGANIZER').value
@@ -523,7 +525,7 @@ class Calendar(Text, icalendar):
 
         ###############################################################
         # Set class for conflicting events or just from status value
-        uid = event['event'].uid
+        uid = event.uid
         if uid in conflicts_list:
             ns['STATUS'] = 'cal_conflict'
         else:
@@ -575,7 +577,7 @@ class Calendar(Text, icalendar):
         ###################################################################
 
         # Get events occurring into current time window
-        events = self.get_sorted_events_in_range(start, end)
+        events = self.search_events_in_range(start, end, sortby='date')
 
         ###################################################################
         namespace = {}
@@ -606,8 +608,10 @@ class Calendar(Text, icalendar):
                         index = 0
                         while index < len(events):
                             event = events[index]
-                            e_dtstart = event['dtstart'].date()
-                            e_dtend = event['dtend'].date()
+                            e_dtstart = event.get_property_values('DTSTART')
+                            e_dtstart = e_dtstart.value.date()
+                            e_dtend = event.get_property_values('DTEND')
+                            e_dtend = e_dtend.value.date()
                             # Current event occurs on current date
                             # event begins during current tt
                             starts_on = e_dtstart == day
@@ -957,15 +961,11 @@ class Calendar(Text, icalendar):
         if method not in dir(self):
             goto = '../;%s?%s' % (method, self.get_current_date())
 
-        # Keys to exclude
-        keys = context.get_form_keys()
-
-        uid = context.get_form_value('UID') 
+        uid = context.get_form_value('uid') 
         if not uid:
             return context.come_back('', goto)
         icalendar.remove(self, uid)
-        return context.come_back(u'Event definitely deleted.', goto=goto, 
-                                 exclude=keys)
+        return context.come_back(u'Event definitely deleted.', goto=goto)
 
 
     edit_timetables_form__access__ = 'is_allowed_to_edit'

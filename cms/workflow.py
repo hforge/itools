@@ -86,6 +86,7 @@ class WorkflowAware(iWorkflowAware):
     def state_form(self, context):
         namespace = {}
         # State
+        namespace['statename'] = self.get_statename()
         state = self.get_state()
         namespace['state'] = self.gettext(state['title'])
         # Posible transitions

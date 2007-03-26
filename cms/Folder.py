@@ -387,8 +387,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # The workflow state
         line['workflow_state'] = ''
         if isinstance(object, WorkflowAware):
+            statename = object.get_statename()
             state = object.get_state()
-            line['workflow_state'] = self.gettext(state['title'])
+            line['workflow_state'] = u'<strong class="wf_%s">%s</strong>' %\
+                    (statename, self.gettext(state['title']))
         # Objects that should not be removed/renamed/etc
         line['checkbox'] = object.name not in self.__fixed_handlers__
 

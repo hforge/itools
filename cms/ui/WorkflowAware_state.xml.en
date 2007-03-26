@@ -7,7 +7,7 @@
   <h2>Workflow State</h2>
 
   <p>
-    Current state: <strong>${state}</strong>
+    Current state: <strong class="wf_${statename}">${state}</strong>
   </p>
 
   <form action=";edit_state" method="post">

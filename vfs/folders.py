@@ -145,14 +145,19 @@ class Folder(object):
             return
 
         # Folder
+        source_root = source_ref
+        target_root = target_ref
         if source_fs.is_folder(source_ref):
-            target_fs.make_folder(target_ref)
-            # XXX Implement the method traverse and use it to write a
-            # cross-scheme copy method.
-            if source_fs is target_fs:
-                source_fs.copy_folder(source_ref, target_ref)
-            else:
-                raise NotImplementedError
+            for source_ref in source_fs.traverse(source_root):
+                offset = source_root.path.get_pathto(source_ref.path)
+                target_ref = target_root.resolve2(offset)
+                if source_fs.is_folder(source_ref):
+                    target_fs.make_folder(target_ref)
+                else:
+                    with source_fs.open(source_ref, 'r') as file:
+                        data = file.read()
+                    with target_fs.make_file(target_ref) as file:
+                        file.write(data)
             return
 
         # Something else

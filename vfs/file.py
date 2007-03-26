@@ -159,26 +159,6 @@ class FileFS(BaseFS):
 
 
     @staticmethod
-    def copy_folder(source, target):
-        # XXX This method is here until we have a "traverse" method and
-        # a cross-scheme "copy" method.
-
-        # The source and the target
-        source = str(source.path)
-        target = str(target.path)
-        # A folder
-        source_n = len(source)
-        for root, folders, files in walk(source):
-            aux = join(target, root[source_n:].lstrip('/'))
-            for name in files:
-                src = join(root, name)
-                dst = join(aux, name)
-                open(dst, 'w').write(open(src).read())
-            for name in folders:
-                mkdir(join(aux, name))
-
-
-    @staticmethod
     def move(source, target):
         # XXX Windows (and maybe other platforms) is not supported, yet
         try:

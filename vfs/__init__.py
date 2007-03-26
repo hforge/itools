@@ -21,7 +21,7 @@ from file import FileFS
 from registry import register_file_system
 from vfs import (exists, is_file, is_folder, can_read, can_write, get_ctime,
                  get_mtime, get_atime, get_mimetype, get_size, make_file,
-                 make_folder, remove, open, copy, move, get_names)
+                 make_folder, remove, open, copy, move, get_names, traverse)
     
 
 __all__ = [
@@ -46,6 +46,7 @@ __all__ = [
     'open',
     'copy',
     'move',
-    'get_names']
+    'get_names',
+    'traverse']
     
 

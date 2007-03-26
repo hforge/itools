@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+# Import from the future
+from __future__ import with_statement
+
+# Import from the Standard Library
+from optparse import OptionParser
+from os import getenv
+
+# Import from itools
+import itools
+from itools import vfs
+from itools.catalog import make_catalog, Catalog, KeywordField, TextField
+from itools.handlers import get_handler
+
+
+# These are the fields we index
+fields = [KeywordField('path', is_indexed=False, is_stored=True),
+          TextField('text')]
+
+
+
+def index(parser, options, target):
+    # Create the catalog
+    catalog = getenv('ICATALOG_DIR')
+    if catalog is None:
+        print 'Error: The environment variable ICATALOG_DIR is missing'
+        return
+
+    # Create the catalog
+    catalog = make_catalog(catalog, *fields)
+
+    # Index
+    for ref in vfs.traverse(target):
+        # We only index files
+        if not vfs.is_file(ref):
+            continue
+
+        # Load the handler
+        handler = get_handler(ref)
+
+        # Build the indexes
+        indexes = {}
+        path = str(ref.path)
+        indexes['path'] = path
+
+        try:
+            text = handler.to_text()
+        except NotImplementedError:
+            continue
+        indexes['text'] = text
+
+        # Index
+        print path
+        catalog.index_document(indexes)
+
+    catalog.commit()
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog FOLDER'
+    version = 'itools %s' % itools.__version__
+    description = ('Index all the files within the given FOLDER, into the'
+                   ' catalog defined by the environment variable'
+                   ' ICATALOG_DIR.')
+    parser = OptionParser(usage, version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    index(parser, options, target)
+

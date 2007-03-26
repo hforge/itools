@@ -447,8 +447,9 @@ class RoleAware(AccessControl):
     new_user_form__label__ = u'Members'
     new_user_form__sublabel__ = u'New Member'
     def new_user_form(self, context):
-        namespace = {}
+        from users import User
 
+        namespace = {}
         # Users (non-members)
         users = self.get_handler('/users')
         members = self.get_members()
@@ -461,8 +462,12 @@ class RoleAware(AccessControl):
             # Check the user is not a member
             if name in members:
                 continue
-            # Add the user
+            # Get the user
             user = users.get_handler(name)
+            # Skip non-users (intruders like ".0.metadata.swp")
+            if not isinstance(user, User):
+                continue
+            # Add the user
             login_name = user.get_login_name()
             title = user.get_title()
             if title:

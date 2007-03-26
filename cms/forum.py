@@ -34,7 +34,7 @@ from itools.cms.utils import checkid
 
 
 def add_forum_style(context):
-    style = context.root.get_handler('ui/forum.css')
+    style = context.root.get_handler('ui/forum/forum.css')
     context.styles.append(context.handler.get_pathto(style))
 
 
@@ -154,7 +154,7 @@ class Thread(Folder):
 
         add_forum_style(context)
 
-        handler = self.get_handler('/ui/Thread_view.xml')
+        handler = self.get_handler('/ui/forum/Thread_view.xml')
         return stl(handler, namespace)
 
 
@@ -234,7 +234,7 @@ class Forum(Folder):
 
         add_forum_style(context)
 
-        handler = self.get_handler('/ui/Forum_view.xml')
+        handler = self.get_handler('/ui/forum/Forum_view.xml')
         return stl(handler, namespace)
 
 
@@ -243,7 +243,7 @@ class Forum(Folder):
     def new_thread_form(self, context):
         add_forum_style(context)
 
-        handler = self.get_handler('/ui/Forum_new_thread.xml')
+        handler = self.get_handler('/ui/forum/Forum_new_thread.xml')
         return stl(handler)
 
 

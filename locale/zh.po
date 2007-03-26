@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2007-03-10 11:03+CET\n"
+"POT-Creation-Date: 2007-03-26 09:03+CET\n"
 "PO-Revision-Date: 2004-11-25 22:33+0100\n"
 "Last-Translator: Luis Belmar Letelier <luis@itaapy.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cms/root.py:405
+#: cms/root.py:391
 #, fuzzy
 msgid "$n handlers have been indexed in $time seconds."
 msgstr "没有文件被写入."
@@ -61,8 +61,13 @@ msgstr ""
 msgid "${col/new_value}"
 msgstr ""
 
-#: cms/ui/CSV_view.xml.en:0
-msgid "${column}"
+#: cms/ui/CSV_add_row.xml.en:0
+#, fuzzy
+msgid "${column/title}"
+msgstr "名称"
+
+#: cms/ui/CSV_add_row.xml.en:0
+msgid "${column/widget}"
 msgstr ""
 
 #: cms/ui/ical_edit_event_form.xml.en:0
@@ -83,7 +88,7 @@ msgstr "用户资料列单"
 msgid "${contents}"
 msgstr ""
 
-#: cms/ui/WikiPage_edit.xml.en:0
+#: cms/ui/wiki/WikiPage_edit.xml.en:0
 msgid "${data}"
 msgstr ""
 
@@ -91,7 +96,7 @@ msgstr ""
 msgid "${day/name}"
 msgstr ""
 
-#: cms/ui/Thread_view.xml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 msgid "${description}"
 msgstr ""
 
@@ -103,15 +108,16 @@ msgstr ""
 msgid "${encoding/title}"
 msgstr ""
 
-#: cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/ical_monthly_view.xml.en:0
 msgid ""
 "${event/SUMMARY} <span stl:if=\"event/TIME\" class=\"time\">${event/TIME}</"
 "span>"
 msgstr ""
 
 #: cms/ui/Folder_order_items.xml.en:0
-msgid "${folder/name>}"
-msgstr ""
+#, fuzzy
+msgid "${folder/name}"
+msgstr "物件被更名"
 
 #: cms/ui/Folder_order_items.xml.en:0
 msgid "${folder/title}"
@@ -129,6 +135,14 @@ msgstr ""
 #, fuzzy
 msgid "${header/header}"
 msgstr "用户资料列单"
+
+#: cms/ui/wiki/WikiPage_help.xml.en:0
+msgid "${help_html}"
+msgstr ""
+
+#: cms/ui/wiki/WikiPage_help.xml.en:0
+msgid "${help_source}"
+msgstr ""
 
 #: cms/ui/epoz.xml.en:0
 msgid "${js_data}"
@@ -162,17 +176,17 @@ msgstr "名称"
 msgid "${menu/title}"
 msgstr "名称"
 
-#: cms/ui/Thread_view.xml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 #, fuzzy
 msgid "${message/author}"
 msgstr "信息"
 
-#: cms/ui/Thread_view.xml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 #, fuzzy
 msgid "${message/body}"
 msgstr "信息"
 
-#: cms/ui/Thread_view.xml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 #, fuzzy
 msgid "${message/mtime}"
 msgstr "信息"
@@ -274,28 +288,24 @@ msgstr ""
 msgid "${text}"
 msgstr ""
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "${thread/author}"
 msgstr ""
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "${thread/last_author}"
 msgstr ""
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 #, fuzzy
 msgid "${thread/last_date}"
 msgstr "用户资料列单"
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "${thread/replies}"
 msgstr ""
 
-#: cms/ui/ical_weekly_view.xml.en:0
-msgid "${timetable/timetable}"
-msgstr ""
-
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 #, fuzzy
 msgid "${title}"
 msgstr "名称"
@@ -399,37 +409,37 @@ msgstr ""
 msgid "(optional)"
 msgstr ""
 
-#: ical/icalendar.py:252
+#: ical/icalendar.py:236
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ical/icalendar.py:251
+#: ical/icalendar.py:235
 msgid "2.0"
 msgstr ""
 
-#: cms/skins.py:389
+#: cms/skins.py:392
 msgid "404 Not Found"
 msgstr ""
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid ""
 "<a class=\"forum_thread_title\" href=\"${thread/name}\">${thread/title}</a> "
 "<br/> <em>${thread/description}</em>"
 msgstr ""
 
-#: cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/ical_monthly_view.xml.en:0
 msgid ""
 "<a href=\"${previous_month}\">«</a> ${current_month} <a href=\"${next_month}"
 "\">»</a>"
 msgstr ""
 
-#: cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/ical_monthly_view.xml.en:0
 msgid ""
 "<a href=\"${previous_week}\">«</a> ${current_week} <a href=\"${next_week}"
 "\">»</a>"
 msgstr ""
 
-#: cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/ical_monthly_view.xml.en:0
 msgid ""
 "<a href=\"${previous_year}\">«</a> ${current_year} <a href=\"${next_year}"
 "\">»</a>"
@@ -518,7 +528,7 @@ msgid ""
 "${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid ""
 "<input id=\"name\" name=\"name\" size=\"40\" type=\"text\" stl:if=\"not name"
 "\"/> <stl:inline stl:if=\"name\">\n"
@@ -735,10 +745,6 @@ msgid ""
 "class=\"button_ok\"/>"
 msgstr ""
 
-#: cms/ui/ical_weekly_view.xml.en:0
-msgid "<span>${day/name}</span> <span>${day/nday}</span>"
-msgstr ""
-
 #: cms/ui/ical_edit_event_form.xml.en:0
 msgid ""
 "<stl:block stl:if=\"att/v_role/required\">\n"
@@ -939,7 +945,7 @@ msgstr ""
 msgid "A thread to discuss"
 msgstr ""
 
-#: cms/workflow.py:123
+#: cms/workflow.py:124
 msgid "A transition must be selected."
 msgstr ""
 
@@ -1011,11 +1017,11 @@ msgstr ""
 msgid "Add a new user"
 msgstr "新用户"
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Add and return"
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Add and view"
 msgstr ""
 
@@ -1087,15 +1093,15 @@ msgstr "优先"
 msgid "Application preferences changed."
 msgstr ""
 
-#: cms/ical.py:86
+#: cms/ical.py:85
 msgid "April"
 msgstr ""
 
-#: cms/wiki.py:466
+#: cms/wiki.py:470
 msgid "As Icons"
 msgstr "图标"
 
-#: cms/ical.py:1541
+#: cms/ical.py:1298
 msgid "As calendar"
 msgstr ""
 
@@ -1103,11 +1109,11 @@ msgstr ""
 msgid "Attendees"
 msgstr ""
 
-#: cms/ical.py:87
+#: cms/ical.py:86
 msgid "August"
 msgstr ""
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "Author"
 msgstr ""
 
@@ -1143,7 +1149,7 @@ msgstr "文件夹"
 msgid "Browse Content"
 msgstr "浏览"
 
-#: cms/access.py:294
+#: cms/access.py:308
 #, fuzzy
 msgid "Browse Members"
 msgstr "浏览"
@@ -1160,7 +1166,7 @@ msgid ""
 "whole, and thus to each and every part regardless of who wrote it."
 msgstr ""
 
-#: cms/ui/WorkflowAware_state.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "By"
 msgstr ""
 
@@ -1179,11 +1185,11 @@ msgstr ""
 msgid "CONFIRMED"
 msgstr ""
 
-#: cms/csv.py:31
+#: cms/csv.py:35
 msgid "CSV Row"
 msgstr ""
 
-#: csv/csv.py:59
+#: csv/csv.py:60
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
@@ -1233,7 +1239,7 @@ msgstr "改变内设"
 msgid "Change preferences"
 msgstr "优先"
 
-#: cms/csv.py:83
+#: cms/csv.py:87
 #, fuzzy
 msgid "Changes saved."
 msgstr "语言被改变."
@@ -1242,7 +1248,7 @@ msgstr "语言被改变."
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:422
+#: cms/root.py:408
 msgid "Check Groups"
 msgstr ""
 
@@ -1275,11 +1281,11 @@ msgstr ""
 msgid "Code"
 msgstr "编码"
 
-#: cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/ical_monthly_view.xml.en:0
 msgid "Come back to today"
 msgstr ""
 
-#: cms/csv.py:90
+#: cms/csv.py:94
 msgid "Comma Separated Values"
 msgstr ""
 
@@ -1321,11 +1327,11 @@ msgstr ""
 msgid "Container for a wiki"
 msgstr ""
 
-#: cms/skins.py:152
+#: cms/skins.py:153
 msgid "Content ($size)"
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Contents"
 msgstr ""
 
@@ -1362,7 +1368,7 @@ msgstr ""
 msgid "Cut"
 msgstr "剪切"
 
-#: cms/ical.py:1192
+#: cms/ical.py:949
 #, fuzzy
 msgid "Data updated"
 msgstr "文件被上载."
@@ -1371,7 +1377,7 @@ msgstr "文件被上载."
 msgid "Date"
 msgstr "日期"
 
-#: cms/ical.py:88
+#: cms/ical.py:87
 msgid "December"
 msgstr ""
 
@@ -1383,7 +1389,7 @@ msgstr "设置"
 msgid "Definitely remove"
 msgstr ""
 
-#: cms/access.py:375
+#: cms/access.py:389
 #, fuzzy
 msgid "Delete"
 msgstr "设置"
@@ -1430,7 +1436,7 @@ msgstr "编辑文档"
 msgid "Download"
 msgstr ""
 
-#: cms/access.py:369
+#: cms/access.py:383
 msgid "E-Mail"
 msgstr ""
 
@@ -1456,7 +1462,7 @@ msgstr ""
 msgid "Each version is given a distinguishing version number."
 msgstr ""
 
-#: cms/ui/Thread_view.xml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 msgid "Edit"
 msgstr "编辑"
 
@@ -1502,15 +1508,15 @@ msgstr ""
 msgid "Epoz-Toolbox"
 msgstr ""
 
-#: cms/ical.py:964
+#: cms/ical.py:715
 msgid "Event"
 msgstr ""
 
-#: cms/ical.py:1210
+#: cms/ical.py:967
 msgid "Event definitely deleted."
 msgstr ""
 
-#: cms/ical.py:1011
+#: cms/ical.py:764
 msgid "Event not found"
 msgstr ""
 
@@ -1523,7 +1529,7 @@ msgstr ""
 msgid "Excel"
 msgstr "外部"
 
-#: cms/ical.py:603
+#: cms/ical.py:400
 msgid "Export in ical format"
 msgstr ""
 
@@ -1551,7 +1557,7 @@ msgstr "外部"
 msgid "Extranet"
 msgstr "外部"
 
-#: cms/ical.py:86
+#: cms/ical.py:85
 msgid "February"
 msgstr ""
 
@@ -1559,7 +1565,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: cms/Folder.py:943
+#: cms/Folder.py:944
 msgid "File uploaded."
 msgstr "文件被上载."
 
@@ -1674,7 +1680,7 @@ msgstr "格式"
 msgid "French (fr)"
 msgstr "法语"
 
-#: cms/ical.py:91
+#: cms/ical.py:90
 msgid "Friday"
 msgstr ""
 
@@ -1682,7 +1688,7 @@ msgstr ""
 msgid "From"
 msgstr "格式"
 
-#: cms/wiki.py:81
+#: cms/wiki.py:80
 msgid "Front Page"
 msgstr ""
 
@@ -1690,11 +1696,7 @@ msgstr ""
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr "GNU通用公共许可证(GPL)\t"
 
-#: cms/ical.py:905
-msgid "Grid_Weekly"
-msgstr ""
-
-#: cms/root.py:451
+#: cms/root.py:437
 #, fuzzy
 msgid "Groups fixed."
 msgstr "组件加入"
@@ -1724,6 +1726,10 @@ msgstr ""
 msgid ""
 "Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
 msgstr ""
+
+#: cms/wiki.py:507
+msgid "Help"
+msgstr "帮助"
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Hervé Cauwelier"
@@ -1919,7 +1925,7 @@ msgid ""
 "Its real power is what you don't see, when it is used as a web framework."
 msgstr ""
 
-#: cms/ical.py:86
+#: cms/ical.py:85
 msgid "January"
 msgstr ""
 
@@ -1927,11 +1933,11 @@ msgstr ""
 msgid "Juan David Ibáñez Palomar"
 msgstr ""
 
-#: cms/ical.py:87
+#: cms/ical.py:86
 msgid "July"
 msgstr ""
 
-#: cms/ical.py:87
+#: cms/ical.py:86
 msgid "June"
 msgstr ""
 
@@ -1960,16 +1966,16 @@ msgstr "语言"
 msgid "Languages removed."
 msgstr "语言被改变."
 
-#: cms/wiki.py:155
+#: cms/wiki.py:154
 msgid "Last Author"
 msgstr ""
 
-#: cms/wiki.py:120
+#: cms/wiki.py:119
 #, fuzzy
 msgid "Last Changes"
 msgstr "改换"
 
-#: cms/wiki.py:154
+#: cms/wiki.py:153
 msgid "Last Modified"
 msgstr ""
 
@@ -1978,7 +1984,7 @@ msgstr ""
 msgid "Last Name"
 msgstr "姓名"
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "Last Post"
 msgstr ""
 
@@ -2028,7 +2034,7 @@ msgstr ""
 msgid "Main developer of the iCalendar module, hacks a little everywhere"
 msgstr ""
 
-#: cms/root.py:421
+#: cms/root.py:407
 msgid "Maintenance"
 msgstr ""
 
@@ -2043,12 +2049,12 @@ msgid ""
 "that system;"
 msgstr ""
 
-#: cms/ical.py:86
+#: cms/ical.py:85
 #, fuzzy
 msgid "March"
 msgstr "搜索"
 
-#: cms/ical.py:87
+#: cms/ical.py:86
 msgid "May"
 msgstr ""
 
@@ -2056,11 +2062,11 @@ msgstr ""
 msgid "Member"
 msgstr ""
 
-#: cms/access.py:433
+#: cms/access.py:447
 msgid "Members"
 msgstr ""
 
-#: cms/access.py:400
+#: cms/access.py:414
 #, fuzzy
 msgid "Members deleted."
 msgstr "没有物件被选中"
@@ -2088,16 +2094,16 @@ msgstr "信息被修正."
 msgid "Message sent."
 msgstr "信息被修正."
 
-#: cms/ui/Forum_new_thread.xml.en:0
+#: cms/ui/forum/Forum_new_thread.xml.en:0
 #, fuzzy
 msgid "Message:"
 msgstr "信息"
 
-#: cms/ical.py:600
+#: cms/ical.py:397
 msgid "Metadata"
 msgstr "附加信息"
 
-#: cms/Handler.py:522
+#: cms/Handler.py:529
 msgid "Metadata changed."
 msgstr "用户资料被变更."
 
@@ -2109,11 +2115,11 @@ msgstr ""
 msgid "Modified before"
 msgstr ""
 
-#: cms/ical.py:90
+#: cms/ical.py:89
 msgid "Monday"
 msgstr ""
 
-#: cms/ical.py:755
+#: cms/ical.py:552
 msgid "Monthly"
 msgstr ""
 
@@ -2130,7 +2136,7 @@ msgstr ""
 msgid "NO WARRANTY"
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Name"
 msgstr "姓名"
 
@@ -2143,7 +2149,7 @@ msgstr ""
 msgid "Name:"
 msgstr "姓名"
 
-#: cms/skins.py:117
+#: cms/skins.py:118
 msgid "Navigation"
 msgstr ""
 
@@ -2152,7 +2158,7 @@ msgstr ""
 msgid "New Language:"
 msgstr "语言"
 
-#: cms/access.py:434
+#: cms/access.py:448
 #, fuzzy
 msgid "New Member"
 msgstr "新文件夹"
@@ -2162,11 +2168,11 @@ msgstr "新文件夹"
 msgid "New Password"
 msgstr "密码"
 
-#: cms/wiki.py:485
+#: cms/wiki.py:489
 msgid "New Resource"
 msgstr "新文件夹"
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "New Thread"
 msgstr ""
 
@@ -2174,14 +2180,19 @@ msgstr ""
 msgid "New WebSite"
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 #, fuzzy
 msgid "New Wiki Page"
 msgstr "新工作界面"
 
-#: cms/Folder.py:879
+#: cms/Folder.py:880
 #, fuzzy
 msgid "New resource added."
+msgstr "新资料被加入."
+
+#: cms/csv.py:237
+#, fuzzy
+msgid "New row added."
 msgstr "新资料被加入."
 
 #: cms/widgets.py:78
@@ -2209,7 +2220,7 @@ msgstr "没有文件被写入."
 msgid "No history."
 msgstr "记录"
 
-#: cms/Folder.py:703
+#: cms/Folder.py:704
 msgid "No objects selected."
 msgstr "没有物件被选中"
 
@@ -2226,20 +2237,20 @@ msgstr "未发现物件."
 msgid "Note the name and title won't change."
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Note:"
 msgstr ""
 
-#: cms/ical.py:1245
+#: cms/ical.py:1002
 #, fuzzy
 msgid "Nothing to change."
 msgstr "用户资料被变更."
 
-#: cms/ical.py:1251
+#: cms/ical.py:1008
 msgid "Nothing to remove."
 msgstr ""
 
-#: cms/ical.py:88
+#: cms/ical.py:87
 msgid "November"
 msgstr ""
 
@@ -2261,32 +2272,32 @@ msgstr "编辑文档"
 msgid "OOo Writer"
 msgstr "写入"
 
-#: cms/Folder.py:690
+#: cms/Folder.py:691
 msgid "Objects copied."
 msgstr "物件被复制"
 
-#: cms/Folder.py:710
+#: cms/Folder.py:711
 msgid "Objects cut."
 msgstr "物件被剪切"
 
-#: cms/Folder.py:767
+#: cms/Folder.py:768
 msgid "Objects pasted."
 msgstr "物件被粘贴"
 
-#: cms/Folder.py:608
+#: cms/Folder.py:609
 #, fuzzy
 msgid "Objects removed: $objects."
 msgstr "Objects removed: %s."
 
-#: cms/Folder.py:669
+#: cms/Folder.py:670
 msgid "Objects renamed."
 msgstr "物件被更名"
 
-#: cms/ical.py:88
+#: cms/ical.py:87
 msgid "October"
 msgstr ""
 
-#: cms/ical.py:1152
+#: cms/ical.py:905
 msgid "One or more field is invalid."
 msgstr ""
 
@@ -2364,7 +2375,7 @@ msgstr ""
 msgid "PDF"
 msgstr ""
 
-#: cms/wiki.py:418
+#: cms/wiki.py:422
 msgid "PDF generation failed."
 msgstr ""
 
@@ -2434,12 +2445,12 @@ msgstr "你必须选择删除成员."
 msgid "Please select the folders to order up."
 msgstr "你必须选择删除成员."
 
-#: cms/ui/Forum_new_thread.xml.en:0
+#: cms/ui/forum/Forum_new_thread.xml.en:0
 #, fuzzy
 msgid "Post"
 msgstr "粘贴"
 
-#: cms/ui/Thread_view.xml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 msgid "Post a Reply"
 msgstr ""
 
@@ -2538,12 +2549,12 @@ msgstr "重命名物件"
 msgid "Repeat Password"
 msgstr "重复密码"
 
-#: cms/ui/Forum_view.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 #, fuzzy
 msgid "Replies"
 msgstr "查阅"
 
-#: cms/ui/Thread_view.xml.en:0
+#: cms/ui/forum/Thread_view.xml.en:0
 msgid "Reply"
 msgstr ""
 
@@ -2593,10 +2604,15 @@ msgstr "查阅"
 msgid "Role"
 msgstr "删除"
 
-#: cms/access.py:427
+#: cms/access.py:441
 #, fuzzy
 msgid "Role updated."
 msgstr "文件被上载."
+
+#: cms/csv.py:189
+#, fuzzy
+msgid "Row deleted."
+msgstr "没有物件被选中"
 
 #: cms/ui/Root_license.xml.en:0
 msgid ""
@@ -2604,11 +2620,11 @@ msgid ""
 "SERVICING, REPAIR OR CORRECTION."
 msgstr ""
 
-#: cms/ical.py:91
+#: cms/ical.py:90
 msgid "Saturday"
 msgstr ""
 
-#: cms/ui/WikiPage_edit.xml.en:0
+#: cms/ui/wiki/WikiPage_edit.xml.en:0
 msgid "Save"
 msgstr "保存"
 
@@ -2643,7 +2659,7 @@ msgstr ""
 msgid "Sender"
 msgstr "概略"
 
-#: cms/ical.py:87
+#: cms/ical.py:86
 msgid "September"
 msgstr ""
 
@@ -2668,7 +2684,7 @@ msgstr "尺寸"
 msgid "Skin"
 msgstr ""
 
-#: web/context.py:250
+#: web/context.py:253
 msgid ""
 "Some required fields are missing, or some values are not valid. Please "
 "correct them and continue."
@@ -2684,11 +2700,11 @@ msgstr "西班牙语"
 msgid "Start"
 msgstr "状态"
 
-#: cms/ical.py:1157
+#: cms/ical.py:910
 msgid "Start date MUST be earlier than end date."
 msgstr ""
 
-#: cms/ical.py:1288
+#: cms/ical.py:1045
 msgid "Start time must be earlier than end time."
 msgstr ""
 
@@ -2732,7 +2748,7 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-#: cms/ical.py:91
+#: cms/ical.py:90
 msgid "Sunday"
 msgstr ""
 
@@ -2741,7 +2757,7 @@ msgstr ""
 msgid "Superscript"
 msgstr "安全"
 
-#: cms/wiki.py:452
+#: cms/wiki.py:456
 msgid "Syntax error, please check the view for details."
 msgstr ""
 
@@ -2786,7 +2802,7 @@ msgstr ""
 msgid "Text files with Restructured Text syntax support."
 msgstr ""
 
-#: cms/ical.py:609
+#: cms/ical.py:406
 #, fuzzy
 msgid "Text view"
 msgstr "名称"
@@ -2819,7 +2835,7 @@ msgstr ""
 msgid "The default language has been changed."
 msgstr "预设语言已被改变."
 
-#: cms/Folder.py:922
+#: cms/Folder.py:923
 msgid "The document name contains illegal characters, choose another one."
 msgstr "文件名中含有不符规定的符号,请更名."
 
@@ -2827,12 +2843,12 @@ msgstr "文件名中含有不符规定的符号,请更名."
 msgid "The documents below await review for publication:"
 msgstr ""
 
-#: cms/access.py:486
+#: cms/access.py:505
 #, fuzzy
 msgid "The email address is missing, please type it."
 msgstr "用户名错误,请再输入."
 
-#: cms/Folder.py:902
+#: cms/Folder.py:903
 msgid "The file must be entered"
 msgstr "必须写入文件."
 
@@ -2846,7 +2862,7 @@ msgid ""
 "share and change it."
 msgstr ""
 
-#: cms/Folder.py:834
+#: cms/Folder.py:835
 msgid "The name must be entered"
 msgstr "必须输入一个文件名"
 
@@ -2855,7 +2871,7 @@ msgstr "必须输入一个文件名"
 msgid "The password is mandatory."
 msgstr "密码错误,请再输入."
 
-#: cms/access.py:505
+#: cms/access.py:524
 msgid "The password is wrong, please try again."
 msgstr "密码错误,请再输入."
 
@@ -2893,12 +2909,12 @@ msgstr ""
 msgid "The user \"$username\" is not active."
 msgstr ""
 
-#: cms/access.py:480
+#: cms/access.py:499
 #, fuzzy
 msgid "The user $user_id does not exist."
 msgstr "名称"
 
-#: cms/access.py:515
+#: cms/access.py:534
 #, fuzzy
 msgid "The user is already here."
 msgstr "用户被加入."
@@ -2926,12 +2942,12 @@ msgstr ""
 msgid "There is already a user with that email."
 msgstr "此文件名已被另外资源占有."
 
-#: cms/Folder.py:852
+#: cms/Folder.py:853
 #, fuzzy
 msgid "There is already another object with this name."
 msgstr "此名称已被另外物件名有."
 
-#: cms/Folder.py:927
+#: cms/Folder.py:928
 msgid "There is already another resource with this name."
 msgstr "此文件名已被另外资源占有."
 
@@ -3007,7 +3023,7 @@ msgstr "读入"
 msgid "Thread Created."
 msgstr ""
 
-#: cms/ical.py:90
+#: cms/ical.py:89
 msgid "Thursday"
 msgstr ""
 
@@ -3017,20 +3033,20 @@ msgid ""
 "rights to work written entirely by you;"
 msgstr ""
 
-#: cms/ical.py:1257
+#: cms/ical.py:1014
 msgid "Timetable(s) removed successfully."
 msgstr ""
 
-#: cms/ical.py:1216
+#: cms/ical.py:973
 #, fuzzy
 msgid "Timetables"
 msgstr "名称"
 
-#: cms/ical.py:1293
+#: cms/ical.py:1050
 msgid "Timetables updated successfully."
 msgstr ""
 
-#: cms/ui/WebSite_new_instance.xml.en:0
+#: cms/ui/forum/Forum_view.xml.en:0
 msgid "Title"
 msgstr "名称"
 
@@ -3038,16 +3054,16 @@ msgstr "名称"
 msgid "Title contains"
 msgstr ""
 
-#: cms/ui/Forum_new_thread.xml.en:0
+#: cms/ui/forum/Forum_new_thread.xml.en:0
 #, fuzzy
 msgid "Title:"
 msgstr "名称"
 
-#: cms/wiki.py:304
+#: cms/wiki.py:306
 msgid "To PDF"
 msgstr ""
 
-#: cms/ical.py:975
+#: cms/ical.py:726
 msgid "To add an event, click on + symbol from the views."
 msgstr ""
 
@@ -3096,7 +3112,7 @@ msgid ""
 "%(body)s\n"
 msgstr ""
 
-#: cms/workflow.py:138
+#: cms/workflow.py:139
 msgid "Transition done."
 msgstr ""
 
@@ -3105,7 +3121,7 @@ msgstr ""
 msgid "Translations"
 msgstr "保存翻译件"
 
-#: cms/ical.py:90
+#: cms/ical.py:89
 msgid "Tuesday"
 msgstr ""
 
@@ -3118,7 +3134,7 @@ msgstr "种类"
 msgid "Type your email please."
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Type your text here..."
 msgstr ""
 
@@ -3168,12 +3184,12 @@ msgstr ""
 msgid "User"
 msgstr "用户"
 
-#: cms/access.py:368
+#: cms/access.py:382
 #, fuzzy
 msgid "User ID"
 msgstr "用户"
 
-#: cms/access.py:532
+#: cms/access.py:551
 #, fuzzy
 msgid "User added."
 msgstr "加入用户"
@@ -3204,7 +3220,7 @@ msgstr "版本上载."
 msgid "Video"
 msgstr "浏览"
 
-#: cms/ui/ical_weekly_view.xml.en:0
+#: cms/ui/wiki/WikiPage_edit.xml.en:0
 msgid "View"
 msgstr "浏览"
 
@@ -3244,15 +3260,15 @@ msgstr "新文件"
 msgid "Web Site"
 msgstr ""
 
-#: cms/ical.py:90
+#: cms/ical.py:89
 msgid "Wednesday"
 msgstr ""
 
-#: cms/ical.py:190
+#: cms/ical.py:189
 msgid "Week "
 msgstr ""
 
-#: cms/ical.py:859
+#: cms/ical.py:656
 msgid "Weekly"
 msgstr ""
 
@@ -3269,11 +3285,11 @@ msgstr ""
 msgid "Wiki Folder"
 msgstr "文件夹"
 
-#: cms/wiki.py:170
+#: cms/wiki.py:169
 msgid "Wiki Page"
 msgstr ""
 
-#: cms/wiki.py:171
+#: cms/wiki.py:170
 msgid "Wiki contents"
 msgstr ""
 
@@ -3305,11 +3321,11 @@ msgstr ""
 msgid "Workflow state"
 msgstr ""
 
-#: cms/ical.py:1285
+#: cms/ical.py:1042
 msgid "Wrong time selection (HH:MM)."
 msgstr ""
 
-#: cms/ical.py:1281
+#: cms/ical.py:1038
 msgid "Wrong time selection."
 msgstr ""
 
@@ -3321,7 +3337,7 @@ msgstr ""
 msgid "You Are Now Logged out"
 msgstr ""
 
-#: cms/ical.py:1109
+#: cms/ical.py:862
 msgid "You are not authorized to modify this event."
 msgstr ""
 
@@ -3408,7 +3424,7 @@ msgstr ""
 msgid "Zhou Li"
 msgstr ""
 
-#: cms/ui/WikiPage_new_instance.xml.en:0
+#: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid ""
 "administrators can add new languages at the root of the application, tab "
 "\"Settings\", subtab \"Languages\"."
@@ -3814,9 +3830,6 @@ msgstr "禄 Type the url to add:"
 
 #~ msgid "Group added."
 #~ msgstr "组件加入"
-
-#~ msgid "Help"
-#~ msgstr "帮助"
 
 #~ msgid "Home"
 #~ msgstr "主页"

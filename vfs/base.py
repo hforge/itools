@@ -131,10 +131,12 @@ class BaseFS(object):
         stack = [reference]
         while stack:
             folder = stack.pop()
+            yield folder
             for name in cls.get_names(folder):
                 name = quote(name)
                 ref = folder.resolve2(name)
-                yield ref
                 if cls.is_folder(ref):
                     stack.append(ref)
+                else:
+                    yield ref
 

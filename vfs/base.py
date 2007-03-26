@@ -19,6 +19,7 @@
 from datetime import datetime
 import mimetypes
 import os
+from urllib import quote
 
 # Import from itools
 from itools.datatypes import FileName
@@ -131,6 +132,7 @@ class BaseFS(object):
         while stack:
             folder = stack.pop()
             for name in cls.get_names(folder):
+                name = quote(name)
                 ref = folder.resolve2(name)
                 yield ref
                 if cls.is_folder(ref):

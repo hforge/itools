@@ -436,6 +436,17 @@ class icalendar(Text):
         return ''.join(lines)
 
 
+    def to_text(self):
+        text = []
+        for component in self.search_components():
+            version = component.get_version()
+            for key in ['SUMMARY', 'DESCRIPTION']:
+                if key in version:
+                    value = version[key]
+                    text.append(value)
+        return ' '.join(text)
+
+
     #######################################################################
     # To override
     #######################################################################

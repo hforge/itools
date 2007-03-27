@@ -117,14 +117,6 @@ class Calendar(Text, icalendar):
         return stl(handler, namespace)
 
 
-    def to_str(self):
-        return icalendar.to_str(self)
-
-
-    def to_text(self):
-        return self.to_str()
-
-
     @classmethod
     def get_current_date(cls, value=None):
         """

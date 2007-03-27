@@ -149,7 +149,8 @@ class CSV(Text, iCSV):
         if sortby:
             rows.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
 
-        namespace['table'] = widgets.table(columns, rows, [sortby], sortorder)
+        namespace['table'] = widgets.table(columns, rows, [sortby], sortorder,
+                                           actions)
 
         handler = self.get_handler('/ui/CSV_view.xml')
         return stl(handler, namespace)

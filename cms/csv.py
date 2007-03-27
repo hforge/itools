@@ -22,8 +22,6 @@ from operator import itemgetter
 from itools.datatypes import Integer, Enumerate
 from itools.csv.csv import CSV as iCSV, Row as iRow
 from itools.stl import stl
-
-# Import from ikaaro
 from Handler import Node
 from text import Text
 from registry import register_object_class
@@ -58,33 +56,6 @@ class Row(iRow, Node):
 
         handler = self.get_handler('/ui/CSVRow_view.xml')
         return stl(handler, namespace)
-
-
-    edit_form__access__ = 'is_allowed_to_edit'
-    edit_form__label__ = u'Edit'
-    def edit_form(self, context):
-        columns = self.columns
-        rows = []
-
-        for i, row in enumerate(self):
-            rows.append({
-                'column': columns[i] if columns else '',
-                'value': row})
-
-        namespace = {}
-        namespace['rows'] = rows
-
-        handler = self.get_handler('/ui/CSVRow_edit.xml')
-        return stl(handler, namespace)
-
-
-    edit__access__ = 'is_allowed_to_edit'
-    def edit(self, context):
-        column = context.get_form_values('column')
-        self.__init__(column)
-        self.parent.set_changed()
-
-        return context.come_back(u'Changes saved.')
 
 
 
@@ -154,6 +125,7 @@ class CSV(Text, iCSV):
                 actions = [('del_row_action', u'Remove', 'button_delete',None)]
 
         columns = self.get_columns()
+        columns.insert(0, ('index', u''))
         rows = []
         index = start
         if self.schema is not None:
@@ -163,10 +135,12 @@ class CSV(Text, iCSV):
 
         for row in self.lines[start:start+size]:
             rows.append({})
-            for column, column_title in columns:
-                rows[-1][column] = getter(row, column)
             rows[-1]['id'] = str(index)
             rows[-1]['checkbox'] = True
+            # Columns
+            rows[-1]['index'] = index, ';edit_row_form?index=%s' % index
+            for column, column_title in columns[1:]:
+                rows[-1][column] = getter(row, column)
             index += 1
 
         # Sorting
@@ -200,22 +174,16 @@ class CSV(Text, iCSV):
         columns = []
         for name, title in self.get_columns():
             column = {}
+            column['name'] = name
             column['title'] = title
-            # FIXME The widget may be something else than an input field
-            # (e.g. a select field)
+            column['value'] = None
+            # Enumerates, use a selection box
             datatype = self.schema[name]
             is_enumerate = getattr(datatype, 'is_enumerate', False)
+            column['is_enumerate'] = is_enumerate
             if is_enumerate:
-                widget = ['<select style="width: 200px" name="%s">\n' % name]
-                widget.append('<option value=""></option>')
-                for option in datatype.get_options():
-                    widget.append(
-                        '<option value="%(name)s">%(value)s</option>' % option)
-                widget.append('</select>\n')
-                widget = ''.join(widget)
-            else:
-                widget = '<input type="text" name="%s" />' % name
-            column['widget'] = widget
+                column['options'] = datatype.get_namespace(None)
+            # Append
             columns.append(column)
         namespace['columns'] = columns
 
@@ -237,6 +205,55 @@ class CSV(Text, iCSV):
         message = u'New row added.'
         return context.come_back(message)
 
+
+    #########################################################################
+    # Edit
+    edit_row_form__access__ = 'is_allowed_to_edit'
+    def edit_row_form(self, context):
+        # Get the row
+        index = context.get_form_value('index', type=Integer)
+        row = self.get_row(index)
+
+        # Build the namespace
+        namespace = {}
+        namespace['index'] = index
+        # Columns
+        columns = []
+        for name, title in self.get_columns():
+            column = {}
+            column['name'] = name
+            column['title'] = title
+            value = row.get_value(name)
+            # Enumerates, use a selection box
+            datatype = self.schema[name]
+            is_enumerate = getattr(datatype, 'is_enumerate', False)
+            column['is_enumerate'] = is_enumerate
+            if is_enumerate:
+                column['options'] = datatype.get_namespace(value)
+            else:
+                column['value'] = value
+            # Append
+            columns.append(column)
+        namespace['columns'] = columns
+
+        handler = self.get_handler('/ui/CSV_edit_row.xml')
+        return stl(handler, namespace)
+
+
+    edit_row__access__ = 'is_allowed_to_edit'
+    def edit_row(self, context):
+        # Get the row
+        index = context.get_form_value('index', type=Integer)
+        row = self.get_row(index)
+
+        for name in self.columns:
+            value = context.get_form_value(name)
+            datatype = self.schema[name]
+            value = datatype.decode(value)
+            row.set_value(name, value)
+
+        message = u'Changes saved.'
+        return context.come_back(message)
 
 
 register_object_class(CSV)

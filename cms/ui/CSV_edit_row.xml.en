@@ -2,9 +2,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h4>Add a new row</h4>
+<h4>Edit row ${index}</h4>
 
-<form action=";add_row_action" method="post">
+<form action=";edit_row" method="post">
+  <input type="hidden" name="index" value="${index}" />
   <dl>
     <stl:block repeat="column columns">
       <dt>${column/title}</dt>
@@ -21,7 +22,7 @@
       </dd>
     </stl:block>
   </dl>
-  <input type="submit" value="Add" class="button_ok" />
+  <input type="submit" value="Change" class="button_ok" />
 </form>
 
 

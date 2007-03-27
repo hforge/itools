@@ -140,7 +140,13 @@ class CSV(Text, iCSV):
             # Columns
             rows[-1]['index'] = index, ';edit_row_form?index=%s' % index
             for column, column_title in columns[1:]:
-                rows[-1][column] = getter(row, column)
+                value = getter(row, column)
+                datatype = self.schema[column]
+                is_enumerate = getattr(datatype, 'is_enumerate', False)
+                if is_enumerate:
+                    rows[-1][column] = datatype.get_value(value)
+                else:
+                    rows[-1][column] = value
             index += 1
 
         # Sorting

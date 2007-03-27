@@ -270,6 +270,12 @@ class Root(WebSite):
     ########################################################################
     # Email
     def send_email(self, from_addr, to_addr, subject, body, **kw):
+        # Check input data
+        if not isinstance(subject, unicode):
+            raise TypeError, 'the subject must be a Unicode string'
+        if not isinstance(body, unicode):
+            raise TypeError, 'the body must be a Unicode string'
+
         # Hard coded encoding, to UTF-8
         encoding = 'UTF-8'
         # Build the message

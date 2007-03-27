@@ -343,7 +343,7 @@ class Skin(Folder):
         styles.append('/ui/onetruelayout.css')
         styles.append('/ui/aruni/aruni.css')
         # Calendar
-        styles.append('/ui/calendar.css')
+        styles.append('/ui/ical/calendar.css')
         # This skin's style
         if self.has_handler('style.css'):
             styles.append('%s/style.css' % self.abspath)

@@ -111,6 +111,7 @@ class Root(WebSite):
                        ('title', 'text', True, True),
                        ('owner', 'keyword', True, True),
                        ('is_role_aware', 'bool', True, False),
+                       ('is_version_aware', 'bool', True, False),
                        ('format', 'keyword', True, True),
                        ('workflow_state', 'keyword', True, True),
                        ('abspath', 'keyword', True, True),

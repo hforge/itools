@@ -15,22 +15,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the future
+from __future__ import absolute_import
+
 # Import from the Standard Library
 from datetime import datetime
 
 # Import from itools
-from itools.uri import Path
-from itools import vfs
-from workflow import WorkflowAware
+from ..uri import Path
+from .. import vfs
+from .workflow import WorkflowAware
+from .versioning import VersioningAware
 
 
 
 class CatalogAware(object):
 
     def get_catalog_indexes(self):
-        from access import RoleAware
-        from File import File
-        from users import User
+        from .access import RoleAware
+        from .File import File
+        from .users import User
 
         name = self.name
         abspath = self.get_abspath()
@@ -89,5 +93,9 @@ class CatalogAware(object):
         if isinstance(self, RoleAware):
             document['is_role_aware'] = True
             document['members'] = self.get_members()
+
+        # Versioning
+        if isinstance(self, VersioningAware):
+            document['is_version_aware'] = True
 
         return document

@@ -956,5 +956,69 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return self.search_criteria
 
 
+    #######################################################################
+    # Last Changes
+    last_changes__access__ = 'is_allowed_to_view'
+    last_changes__label__ = u"Last Changes"
+    def last_changes(self, context, sortby=['mtime'], sortorder='down',
+                     batchstart=0, batchsize=20):
+        root = context.root
+        user = context.user
+        users = root.get_handler('users')
+        namespace = {}
+
+        start = context.get_form_value('batchstart', type=Integer,
+                                       default=batchstart)
+        sortby = context.get_form_values('sortby', sortby)
+        sortorder = context.get_form_value('sortorder', sortorder)
+
+        results = root.search(is_version_aware=True,
+                              paths=self.get_abspath())
+        documents = results.get_documents(sortby, (sortorder == 'down'), start,
+                                          batchsize)
+
+        lines = []
+        for document in documents:
+            handler = root.get_handler(document.abspath)
+            ac = handler.get_access_control()
+            if not ac.is_allowed_to_view(user, handler):
+                continue
+            line = self._browse_namespace(handler, 16)
+            revisions = handler.get_revisions(context)
+            if revisions:
+                last_rev = revisions[0]
+                username = last_rev['username']
+                try:
+                    user = users.get_handler(username)
+                    user_title = user.get_title()
+                    if not user_title.strip():
+                        user_title = user.get_property('ikaaro:email')
+                except LookupError:
+                    user_title = username
+            else:
+                user_title = u"<em>Unavailable</em>"
+            line['last_author'] = user_title
+            lines.append(line)
+
+        # The filter (none)
+        namespace['search_fields'] = None
+
+        # The batch
+        total = results.get_n_documents()
+        namespace['batch'] = widgets.batch(context.uri, start, batchsize,
+                                           total)
+
+        # The table
+        columns = [('name', u'Name'), ('title', u'Title'),
+                   ('mtime', u'Last Modified'),
+                   ('last_author', u'Last Author'),
+                   ('workflow_state', u'State')]
+        namespace['table'] = widgets.table(columns, lines, sortby, sortorder,
+                                           gettext=self.gettext)
+
+        handler = self.get_handler('/ui/Folder_browse_list.xml')
+        return stl(handler, namespace)
+
+
 register_object_class(Folder)
 register_object_class(Folder, format="application/x-not-regular-file")

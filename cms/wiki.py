@@ -20,8 +20,6 @@ from __future__ import absolute_import
 from __future__ import with_statement
 
 # Import from the Standard Library
-import re
-from operator import itemgetter
 from tempfile import mkdtemp
 from subprocess import call
 import urllib
@@ -39,7 +37,6 @@ from .Folder import Folder
 from .text import Text
 from .registry import register_object_class
 from .utils import checkid
-from .widgets import table
 
 # Import from docutils
 try:
@@ -109,54 +106,9 @@ class WikiFolder(Folder):
     view__label__ = u"View"
     def view(self, context):
         if context.has_form_value('message'):
-            message = context.get_form_value('message')
+            message = context.get_form_value('message', type=Unicode)
             return context.come_back(message, 'FrontPage')
         return context.uri.resolve('FrontPage')
-
-
-
-    last_changes__access__ = 'is_allowed_to_view'
-    last_changes__label__ = u"Last Changes"
-    def last_changes(self, context, sortby=['mtime'], sortorder='down'):
-        users = self.get_handler('/users')
-        namespace = {}
-        pages = []
-
-        namespace['search_fields'] = None
-        namespace['batch'] = ''
-
-        for page in self.search_handlers(handler_class=WikiPage):
-            revisions = page.get_revisions(context)
-            if revisions:
-                last_rev = revisions[0]
-                username = last_rev['username']
-                try:
-                    user = users.get_handler(username)
-                    user_title = user.get_title()
-                    if not user_title.strip():
-                        user_title = user.get_property('ikaaro:email')
-                except LookupError:
-                    user_title = username
-            else:
-                user_title = '?'
-            pages.append({'name': (page.name, page.name),
-                          'title': page.get_title_or_name(),
-                          'mtime': page.get_mtime(),
-                          'last_author': user_title})
-
-        sortby = context.get_form_values('sortby', sortby)
-        sortorder = context.get_form_value('sortorder', sortorder)
-        pages.sort(key=itemgetter(sortby[0]), reverse=(sortorder == 'down'))
-        namespace['pages'] = pages
-
-        columns = [
-            ('name', u'Name'), ('title', u'Title'), ('mtime', u'Last Modified'),
-            ('last_author', u'Last Author')]
-        namespace['table'] = table(columns, pages, sortby, sortorder, [],
-                self.gettext)
-
-        handler = self.get_handler('/ui/Folder_browse_list.xml')
-        return stl(handler, namespace)
 
 
 register_object_class(WikiFolder)

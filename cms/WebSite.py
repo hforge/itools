@@ -190,8 +190,8 @@ class WebSite(RoleAware, Folder):
 
         namespace = {}
         namespace['contacts'] = []
-        for user in users.search_handlers():
-            username = user.name
+        for username in users.get_usernames():
+            user = users.get_handler(username)
             title = user.get_title_or_name()
             email = user.get_property('ikaaro:email')
             if not email:
@@ -590,8 +590,8 @@ class WebSite(RoleAware, Folder):
     def contact(self, context):
         contact = context.get_form_value('to')
         from_addr = context.get_form_value('from').strip()
-        subject = context.get_form_value('subject').strip()
-        body = context.get_form_value('body').strip()
+        subject = context.get_form_value('subject', type=Unicode).strip()
+        body = context.get_form_value('body', type=Unicode).strip()
 
         # Check the input data
         if not contact or not from_addr or not subject or not body:

@@ -11,11 +11,11 @@
 
   <table width="100%" id="forum_thread_list">
     <colgroup>
-      <col width="1*" />
-      <col width="0*" />
-      <col width="0*" />
-      <col width="0*" />
-      <col width="0*" />
+      <col width="50%" />
+      <col width="10%" />
+      <col width="10%" />
+      <col width="20%" />
+      <col width="10%" />
     </colgroup>
     <thead>
       <tr>

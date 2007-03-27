@@ -9,8 +9,8 @@
 
   <table id="forum_message_list" width="100%">
     <colgroup>
-      <col width="0*" />
-      <col width="1*" />
+      <col width="20%" />
+      <col width="80%" />
     </colgroup>
     <tbody>
       <tr stl:repeat="message messages" class="${repeat/message/even}">

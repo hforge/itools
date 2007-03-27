@@ -52,7 +52,7 @@
     }
 
     function text_large() {
-      tarea.style.fontSize = '1.3em';
+      tarea.style.fontSize = '1.4em';
     }
 
     fixHeight();

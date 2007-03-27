@@ -38,15 +38,18 @@ textarea#data {
   font-style: italic;
 }
 
+#content .document a:link,
+#content .document a:hover,
+#content .document a:visited {
+  text-decoration: none;
+}
+
 #content .document h1 a,
 #content .document h2 a,
 #content .document h3 a {
   color: #000;
 }
 
-#content .document a:link {
-  text-decoration: none;
-}
 
 .contents.topic {
   margin: 3px;

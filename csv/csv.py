@@ -23,10 +23,11 @@ from __future__ import absolute_import
 import csv as python_csv
 
 # Import from itools
+from itools.datatypes import Unicode
 from itools.handlers.Text import Text
+from itools.handlers.registry import register_handler_class
 from itools.catalog import queries
 from itools.catalog.analysers import get_analyser
-from itools.handlers.registry import register_handler_class
 
 
 ###########################################################################
@@ -160,17 +161,19 @@ class Row(list):
 
     def get_value(self, name):
         if self.columns is None:
-            raise ValueError, 'schema not defined'
+            column = int(name)
+        else:
+            column = self.columns.index(name)
 
-        column = self.columns.index(name)
         return self[column]
 
 
     def set_value(self, name, value):
         if self.columns is None:
-            raise ValueError, 'schema not defined'
+            column = int(name)
+        else:
+            column = self.columns.index(name)
 
-        column = self.columns.index(name)
         self[column] = value
 
 
@@ -320,6 +323,13 @@ class CSV(Text):
         # Index
         if self.schema is not None:
             self.catalog.index_document(row, row.number)
+
+
+    def get_datatype(self, name):
+        if self.schema is None:
+            # Default
+            return Unicode
+        return self.schema[name]
 
 
     #########################################################################

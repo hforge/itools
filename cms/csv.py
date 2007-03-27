@@ -141,7 +141,7 @@ class CSV(Text, iCSV):
             rows[-1]['index'] = index, ';edit_row_form?index=%s' % index
             for column, column_title in columns[1:]:
                 value = getter(row, column)
-                datatype = self.schema[column]
+                datatype = self.get_datatype(column)
                 is_enumerate = getattr(datatype, 'is_enumerate', False)
                 if is_enumerate:
                     rows[-1][column] = datatype.get_value(value)
@@ -185,7 +185,7 @@ class CSV(Text, iCSV):
             column['title'] = title
             column['value'] = None
             # Enumerates, use a selection box
-            datatype = self.schema[name]
+            datatype = self.get_datatype(name)
             is_enumerate = getattr(datatype, 'is_enumerate', False)
             column['is_enumerate'] = is_enumerate
             if is_enumerate:
@@ -201,9 +201,9 @@ class CSV(Text, iCSV):
     add_row_action__access__ = 'is_allowed_to_edit'
     def add_row_action(self, context):
         row = []
-        for name in self.columns:
+        for name, title in self.get_columns():
             value = context.get_form_value(name)
-            datatype = self.schema[name]
+            datatype = self.get_datatype(name)
             value = datatype.decode(value)
             row.append(value)
 
@@ -232,7 +232,7 @@ class CSV(Text, iCSV):
             column['title'] = title
             value = row.get_value(name)
             # Enumerates, use a selection box
-            datatype = self.schema[name]
+            datatype = self.get_datatype(name)
             is_enumerate = getattr(datatype, 'is_enumerate', False)
             column['is_enumerate'] = is_enumerate
             if is_enumerate:
@@ -253,9 +253,9 @@ class CSV(Text, iCSV):
         index = context.get_form_value('index', type=Integer)
         row = self.get_row(index)
 
-        for name in self.columns:
+        for name, title in self.get_columns():
             value = context.get_form_value(name)
-            datatype = self.schema[name]
+            datatype = self.get_datatype(name)
             value = datatype.decode(value)
             row.set_value(name, value)
 

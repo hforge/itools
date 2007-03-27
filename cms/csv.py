@@ -265,4 +265,5 @@ class CSV(Text, iCSV):
 
 register_object_class(CSV)
 register_object_class(CSV, 'text/x-comma-separated-values')
+register_object_class(CSV, 'text/csv')
 

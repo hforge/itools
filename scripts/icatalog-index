@@ -26,8 +26,9 @@ from os import getenv
 # Import from itools
 import itools
 from itools import vfs
-from itools.catalog import make_catalog, Catalog, KeywordField, TextField
 from itools.handlers import get_handler
+from itools.catalog import make_catalog, Catalog, KeywordField, TextField
+import itools.xml
 
 
 # These are the fields we index
@@ -57,7 +58,7 @@ def index(parser, options, target):
 
         # Build the indexes
         indexes = {}
-        path = str(ref.path)
+        path = unicode(str(ref.path), 'utf-8', 'replace')
         indexes['path'] = path
 
         try:

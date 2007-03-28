@@ -24,6 +24,8 @@ from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, PI, CDATA)
 from xml import Document, Element, Comment
 from indexer import xml_to_text
+from office import (MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc,
+                    OOImpress, PDF)
 
 
 
@@ -50,6 +52,14 @@ __all__ = [
     'Document',
     'Element',
     'Comment',
+    # Office
+    'MSWord',
+    'MSExcel',
+    'MSPowerPoint',
+    'OOWriter',
+    'OOCalc',
+    'OOImpress',
+    'PDF',
     # Functions
     'xml_to_text',
 ]

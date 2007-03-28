@@ -16,21 +16,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the Standard Library
-import mimetypes
-from os.path import join as path_join
-import tempfile
-from zipfile import ZipFile, BadZipfile
-from subprocess import call
-from cStringIO import StringIO
-
 # Import from itools
-from itools import vfs
-from itools.handlers import Image as (iImage, ZipArchive as iZipArchive,
-                                     TarArchive as iTarArchive)
-from itools.xml import xml_to_text
+from itools.handlers import (Image as BaseImage, ZipArchive as BaseZipArchive,
+                             TarArchive as BaseTarArchive)
+from itools.xml import (MSWord as BaseMSWord,
+                        MSExcel as BaseMSExcel,
+                        MSPowerPoint as BaseMSPowerPoint,
+                        OOWriter as BaseOOWriter,
+                        OOCalc as BaseOOCalc,
+                        OOImpress as BaseOOImpress,
+                        PDF as BasePDF)
 from itools.stl import stl
-from itools.web import get_context
 from file import File
 from registry import register_object_class
 
@@ -38,7 +34,7 @@ from registry import register_object_class
 ###########################################################################
 # Images, Video & Flash
 ###########################################################################
-class Image(File, iImage):
+class Image(File, BaseImage):
 
     class_id = 'image'
     class_title = u'Image'
@@ -129,74 +125,7 @@ class Flash(File):
 ###########################################################################
 # Office Documents
 ###########################################################################
-def convert(handler, cmdline, outfile=None):
-    cmdline = cmdline % 'stdin'
-
-    # Serialize the handler to a temporary file in the file system
-    path = tempfile.mkdtemp('itools')
-    file_path = path_join(path, 'stdin')
-    open(file_path, 'w').write(handler.to_str())
-
-    # stdout & stderr
-    stdout_path = path_join(path, 'stdout')
-    stdout = open(stdout_path, 'w')
-    stderr_path =path_join(path, 'stderr')
-    stderr = open(stderr_path, 'w')
-
-    # Call convert method
-    try:
-        # XXX do not use pipes, not enough buffer to hold stdout
-        call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
-    except OSError:
-        vfs.remove(path)
-        raise
-
-    # Read output
-    if outfile is not None:
-        stdout_path = path_join(path, outfile)
-    try:
-        stdout = open(stdout_path).read()
-    except IOError:
-        vfs.remove(path)
-        raise
-    stderr = open(stderr_path).read()
-
-    # Remove the temporary files
-    vfs.remove(path)
-
-    return stdout, stderr
-
-
-
-class OfficeDocument(File):
-
-    source_encoding = 'UTF-8'
-
-
-    def to_text(self, outfile=None):
-        try:
-            stdout, stderr = convert(self, self.source_converter, outfile)
-        except (OSError, IOError):
-            context = get_context()
-            if context is not None:
-                context.server.log_error(context)
-            return u''
-
-        if stderr != "":
-            text = u''
-        else:
-            try:
-                text = unicode(stdout, self.source_encoding, 'replace')
-            except UnicodeDecodeError:
-                context = get_context()
-                context.server.log_error(context)
-                text = u''
-
-        return text
-
-
-
-class MSWord(OfficeDocument):
+class MSWord(File, BaseMSWord):
 
     class_id = 'application/msword'
     class_title = u'Word'
@@ -204,133 +133,65 @@ class MSWord(OfficeDocument):
     class_icon16 = 'images/Word16.png'
     class_icon48 = 'images/Word48.png'
 
-    source_converter = 'wvText %s out.txt'
 
 
-    def to_text(self):
-        return OfficeDocument.to_text(self, 'out.txt')
-
-
-
-class MSExcel(OfficeDocument):
+class MSExcel(File, BaseMSExcel):
 
     class_id = 'application/vnd.ms-excel'
     class_title = u'Excel'
     class_description = u'Document Excel'
     class_icon16 = 'images/Excel16.png'
     class_icon48 = 'images/Excel48.png'
-    class_extension = 'xls'
-    
-    source_converter = 'xlhtml -a -fw -nc -nh -te %s'
-
-
-    def to_text(self):
-        try:
-            stdout, stderr = convert(self, self.source_converter)
-        except (OSError, IOError):
-            context = get_context()
-            context.server.log_error(context)
-            return u''
-
-        if stderr != "":
-            text = u''
-        else:
-            text = xml_to_text(stdout)
-
-        return text
 
 
 
-class MSPowerPoint(OfficeDocument):
+class MSPowerPoint(File, BaseMSPowerPoint):
 
     class_id = 'application/vnd.ms-powerpoint'
     class_title = u'PowerPoint'
     class_description = u'Document PowerPoint'
     class_icon16 = 'images/PowerPoint16.png'
     class_icon48 = 'images/PowerPoint48.png'
-    class_extension = 'ppt'
-
-    source_converter = 'ppthtml %s'
-
-
-    def to_text(self):
-        try:
-            stdout, stderr = convert(self, self.source_converter)
-        except (OSError, IOError):
-            context = get_context()
-            context.server.log_error(context)
-            return u''
-
-        if stderr != "":
-            text = u''
-        else:
-            text = xml_to_text(stdout)
-
-        return text
 
 
 
-class OOffice(OfficeDocument):
-
-    def to_text(self):
-        file = StringIO(self.to_str())
-        try:
-            zip = ZipFile(file)
-            content = zip.read('content.xml')
-            zip.close()
-            text = xml_to_text(content)
-        except BadZipfile:
-            context = get_context()
-            context.server.log_error(context)
-            text = u''
-
-        return text
-
-
-
-class OOWriter(OOffice):
+class OOWriter(File, BaseOOWriter):
 
     class_id = 'application/vnd.sun.xml.writer'
     class_title = u'OOo Writer'
     class_description = u'OpenOffice.org Document'
     class_icon16 = 'images/OOWriter16.png'
     class_icon48 = 'images/OOWriter48.png'
-    class_extension = 'sxw'
 
 
 
-class OOCalc(OOffice):
+class OOCalc(File, BaseOOCalc):
 
     class_id = 'application/vnd.sun.xml.calc'
     class_title = u'OOo Calc'
     class_description = u'OpenOffice.org Spreadsheet'
     class_icon16 = 'images/OOCalc16.png'
     class_icon48 = 'images/OOCalc48.png'
-    class_extension = 'sxc'
 
 
 
-class OOImpress(OOffice):
+class OOImpress(File, BaseOOImpress):
 
     class_id = 'application/vnd.sun.xml.impress'
     class_title = u'OOo Impress'
     class_description = u'OpenOffice.org Presentation'
     class_icon16 = 'images/OOImpress16.png'
     class_icon48 = 'images/OOImpress48.png'
-    class_extension = 'sxi'
 
 
 
-class PDF(OfficeDocument):
+class PDF(File, BasePDF):
 
     class_id = 'application/pdf'
     class_title = u'PDF'
     class_description = u'PDF Document'
     class_icon16 = 'images/Pdf16.png'
     class_icon48 = 'images/Pdf48.png'
-    class_extension = 'pdf'
-
-    source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
 
 
 
@@ -376,14 +237,14 @@ class Archive(File):
 
 
 
-class ZipArchive(Archive, iZipArchive):
+class ZipArchive(Archive, BaseZipArchive):
 
     class_id = 'application/zip'
     class_title = u"Zip Archive"
 
 
 
-class TarArchive(Archive, iTarArchive):
+class TarArchive(Archive, BaseTarArchive):
 
     class_id = 'application/x-tar'
     class_title = u"Tar Archive"
@@ -393,10 +254,6 @@ class TarArchive(Archive, iTarArchive):
 ###########################################################################
 # Register
 ###########################################################################
-mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
-mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
-mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
-
 register_object_class(Image)
 register_object_class(Video)
 register_object_class(Flash)

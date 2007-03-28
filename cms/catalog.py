@@ -24,6 +24,7 @@ from datetime import datetime
 # Import from itools
 from ..uri import Path
 from .. import vfs
+from ..web import get_context
 from .workflow import WorkflowAware
 from .versioning import VersioningAware
 
@@ -57,9 +58,15 @@ class CatalogAware(object):
 
         # Full text
         try:
-            document['text'] = self.to_text()
+            text = self.to_text()
         except NotImplementedError:
             pass
+        except:
+            context = get_context()
+            if context is not None:
+                context.server.log_error(context)
+        else:
+            document['text'] = text
 
         # Parent path
         parent = self.parent

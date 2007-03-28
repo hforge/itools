@@ -132,7 +132,13 @@ class BaseFS(object):
         while stack:
             folder = stack.pop()
             yield folder
-            for name in cls.get_names(folder):
+            try:
+                names = cls.get_names(folder)
+            except OSError:
+                # Don't traverse the folder if we can't (e.g. no permissions)
+                continue
+
+            for name in names:
                 name = quote(name)
                 ref = folder.resolve2(name)
                 if cls.is_folder(ref):

@@ -1,4 +1,70 @@
 
+itools 0.15.3 (2007/0X/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This release bring some fixes and a few programing and user interface
+improvements.
+
+We have added a new method "traverse" to the package "itools.vfs". It is
+a generator that traverses a folder and returns the path of every file and
+folder within it. The method "copy" has been reimplemented using "traverse",
+so now it is possible to copy folders from one scheme to another.
+
+We have done yet another round through the API of "itools.ical". This time
+to simplify the search API, which has been reduced to: "search_events",
+"search_events_in_date" and "search_events_in_range" (besides the more
+low-level method "search").
+
+The rest of the work has gone to "itools.cms".
+
+We have a few user interface improvements: now WebSite objects have a view
+that shows the objects that have been modified recently; the column for the
+workflow state in the folder's browse list view has been colorized; and the
+user interface to work with CSV files has been finished.
+
+In the API department we have just added the method "has_property" to all
+CMS handlers. It is a short way to call the metadata's "has_property".
+
+And there are few fixes too. The contact form now works when the user enters
+non-ascii characters. Some missing buttons have been internationalized. And 
+the ordered folder template works again.
+
+
+Credits:
+
+ - Hervé Cauwelier worked on "itools.cms" intarface and bug fixing.
+ - Nicolas Deram worked on "itools.ical";
+ - J. David Ibáñez worked on "itools.vfs" and "itools.cms";
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.15.3.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.15.2 (2007/03/22)
 ==========================
 

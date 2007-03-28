@@ -65,6 +65,9 @@ def index(parser, options, target):
             text = handler.to_text()
         except NotImplementedError:
             continue
+        except:
+            print '!', path
+            continue
         indexes['text'] = text
 
         # Index

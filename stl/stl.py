@@ -202,13 +202,6 @@ class Element(XMLElement):
 
     namespace = stl_uri
 
-    def is_block(self):
-        return self.name == 'block'
-
-
-    def is_inline(self):
-        return self.name == 'inline'
-
 
 
 class IfAttr(DataType):
@@ -456,8 +449,8 @@ def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
 ########################################################################
 
 elements_schema = {
-    'block': {'type': Element},
-    'inline': {'type': Element}
+    'block': {'type': Element, 'is_inline': False},
+    'inline': {'type': Element, 'is_inline': True}
     }
 
 

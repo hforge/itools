@@ -100,6 +100,11 @@ def get_namespace_by_prefix(prefix):
     return namespaces[None]
 
 
+def get_element_schema(namespace, name):
+    return get_namespace(namespace).get_element_schema(name)
+
+
+
 #############################################################################
 # Namespaces
 #############################################################################

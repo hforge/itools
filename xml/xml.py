@@ -36,7 +36,8 @@ from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT,
 
 class Comment(object):
 
-    parent = None
+    __slots__ = ['data']
+
 
     def __init__(self, data):
         self.data = data
@@ -50,16 +51,24 @@ class Comment(object):
         return Comment(self.data)
 
 
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        return cmp(self.data, other.data)
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.data == other.data
+        return False
+
+
+    def __ne__(self, other):
+        if isinstance(other, self.__class__):
+            return self.data != other.data
+        return True
 
 
 
 class Element(object):
 
     namespace = None
+
+    __slots__ = ['name', 'attributes', 'children']
 
 
     def __init__(self, name):

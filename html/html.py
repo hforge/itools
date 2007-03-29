@@ -20,9 +20,7 @@ from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
 from itools.xml import Comment
-from itools.xhtml import (Document as XHTMLDocument, Element as XHTMLElement,
-                          InlineElement as XHTMLInlineElement,
-                          BlockElement as XHTMLBlockElement)
+from itools.xhtml import Document as XHTMLDocument, Element as XHTMLElement
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
 
@@ -35,16 +33,9 @@ class Element(XHTMLElement):
     get_start_tag = XHTMLElement.get_start_tag_as_html
 
 
-class InlineElement(Element, XHTMLInlineElement):
-    pass
-
-
-class BlockElement(Element, XHTMLBlockElement):
-    pass
-
 
 # XXX This class is almost identical to 'XHTMLElement'
-class HeadElement(BlockElement):
+class HeadElement(Element, Element):
 
     def to_str(self, encoding='UTF-8'):
         head = []
@@ -56,24 +47,24 @@ class HeadElement(BlockElement):
 
 
 elements_schema = {
-    'a': {'type': InlineElement},
-    'abbr': {'type': InlineElement},
-    'acronym': {'type': InlineElement},
-    'b': {'type': InlineElement},
-    'cite': {'type': InlineElement},
-    'code': {'type': InlineElement},
-    'dfn': {'type': InlineElement},
-    'em': {'type': InlineElement},
-    'head': {'type': HeadElement},
-    'kbd': {'type': InlineElement},
-    'q': {'type': InlineElement},
-    'samp': {'type': InlineElement},
-    'span': {'type': InlineElement},
-    'strong': {'type': InlineElement},
-    'sub': {'type': InlineElement},
-    'sup': {'type': InlineElement},
-    'tt': {'type': InlineElement},
-    'var': {'type': InlineElement},
+    'a': {'type': Element, 'is_inline': True},
+    'abbr': {'type': Element, 'is_inline': True},
+    'acronym': {'type': Element, 'is_inline': True},
+    'b': {'type': Element, 'is_inline': True},
+    'cite': {'type': Element, 'is_inline': True},
+    'code': {'type': Element, 'is_inline': True},
+    'dfn': {'type': Element, 'is_inline': True},
+    'em': {'type': Element, 'is_inline': True},
+    'head': {'type': HeadElement, 'is_inline': False},
+    'kbd': {'type': Element, 'is_inline': True},
+    'q': {'type': Element, 'is_inline': True},
+    'samp': {'type': Element, 'is_inline': True},
+    'span': {'type': Element, 'is_inline': True},
+    'strong': {'type': Element, 'is_inline': True},
+    'sub': {'type': Element, 'is_inline': True},
+    'sup': {'type': Element, 'is_inline': True},
+    'tt': {'type': Element, 'is_inline': True},
+    'var': {'type': Element, 'is_inline': True},
     }
 
 
@@ -136,7 +127,8 @@ class Document(XHTMLDocument):
                 self.document_type = value
             elif event == START_ELEMENT:
                 name, attributes = value
-                schema = elements_schema.get(name, {'type': BlockElement})
+                schema = elements_schema.get(name, {'type': Element,
+                                                    'is_inline': False})
                 element_class = schema['type']
                 element = element_class(name)
                 for attr_name in attributes:
@@ -181,7 +173,8 @@ class Document(XHTMLDocument):
                 # after the "<html>" tag.
                 break
         else:
-            schema = elements_schema.get('html', {'type': BlockElement})
+            schema = elements_schema.get('html', {'type': Element,
+                                                  'is_inline': False})
             element_class = schema['type']
             element = element_class('html')
             element.children = children

@@ -28,15 +28,6 @@ class Element(Element):
     namespace = 'http://purl.org/dc/elements/1.1/'
 
 
-class BlockElement(Element):
-
-    def is_inline(self):
-        return False
-       
-    def is_block(self):
-        return True
-
-
 class Namespace(AbstractNamespace):
 
     class_uri = 'http://purl.org/dc/elements/1.1/'
@@ -45,11 +36,10 @@ class Namespace(AbstractNamespace):
 
     @staticmethod
     def get_element_schema(name):
-        
         elements_schema = {
-            'creator': {'type': BlockElement, 'is_empty': False},
-            'date': {'type': BlockElement, 'is_empty': False},
-            'language': {'type': BlockElement, 'is_empty': False}
+            'creator': {'type': Element, 'is_empty': False, 'is_inline': False},
+            'date': {'type': Element, 'is_empty': False, 'is_inline': False},
+            'language': {'type': Element, 'is_empty': False, 'is_inline': False}
             }
         
         if name not in elements_schema:

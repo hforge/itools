@@ -26,7 +26,8 @@ from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
 from itools.handlers import register_handler_class
 from itools.xml import (Document as XMLDocument, Element as XMLElement,
-                        AbstractNamespace, set_namespace, get_namespace)
+                        AbstractNamespace, set_namespace, get_namespace,
+                        get_element_schema)
 from itools.i18n import Message
 
 
@@ -51,14 +52,6 @@ class Boolean(Boolean):
 class Element(XMLElement):
 
     namespace = 'http://www.w3.org/1999/xhtml'
-
-
-    def is_inline(self):
-        raise NotImplementedError
-
-
-    def is_block(self):
-        raise NotImplementedError
 
 
     def get_start_tag_as_html(self):
@@ -100,29 +93,7 @@ class Element(XMLElement):
 
 
 
-class InlineElement(Element):
-
-    def is_inline(self):
-        return True
-
-
-    def is_block(self):
-        return False
-
-
-
-class BlockElement(Element):
-
-    def is_inline(self):
-        return False
-
-
-    def is_block(self):
-        return True
-
-
-
-class HeadElement(BlockElement):
+class HeadElement(Element):
 
     def to_str(self, encoding='UTF-8'):
         head = []
@@ -159,51 +130,51 @@ class HeadElement(BlockElement):
 
 elements_schema = {
     # XHTML 1.0 strict
-    'a': {'type': InlineElement, 'is_empty': False},
-    'abbr': {'type': InlineElement, 'is_empty': False},
-    'acronym': {'type': InlineElement, 'is_empty': False},
-    'area': {'type': BlockElement, 'is_empty': True},
-    'b': {'type': InlineElement, 'is_empty': False},
-    'base': {'type': BlockElement, 'is_empty': True},
-    'bdo': {'type': InlineElement, 'is_empty': False},
-    'big': {'type': InlineElement, 'is_empty': False},
-    'br': {'type': InlineElement, 'is_empty': True},
-    'cite': {'type': InlineElement, 'is_empty': False},
-    'code': {'type': InlineElement, 'is_empty': False},
-    'col': {'type': BlockElement, 'is_empty': True},
-    'dfn': {'type': InlineElement, 'is_empty': False},
-    'em': {'type': InlineElement, 'is_empty': False},
-    'head': {'type': HeadElement, 'is_empty': False},
-    'hr': {'type': BlockElement, 'is_empty': True},
-    'i': {'type': InlineElement, 'is_empty': False},
-    'img': {'type': InlineElement, 'is_empty': True},
-    'input': {'type': InlineElement, 'is_empty': True},
-    'kbd': {'type': InlineElement, 'is_empty': False},
-    'link': {'type': BlockElement, 'is_empty': True},
-    'meta': {'type': BlockElement, 'is_empty': True},
-    'param': {'type': BlockElement, 'is_empty': True},
-    'q': {'type': InlineElement, 'is_empty': False},
-    'samp': {'type': InlineElement, 'is_empty': False},
-    'select': {'type': InlineElement, 'is_empty': False},
-    'small': {'type': InlineElement, 'is_empty': False},
-    'span': {'type': InlineElement, 'is_empty': False},
-    'strong': {'type': InlineElement, 'is_empty': False},
-    'sub': {'type': InlineElement, 'is_empty': False},
-    'sup': {'type': InlineElement, 'is_empty': False},
-    'textarea': {'type': InlineElement, 'is_empty': False},
-    'tt': {'type': InlineElement, 'is_empty': False},
-    'var': {'type': InlineElement, 'is_empty': False},
+    'a': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'abbr': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'acronym': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'area': {'type': Element, 'is_empty': True, 'is_inline': False},
+    'b': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'base': {'type': Element, 'is_empty': True, 'is_inline': False},
+    'bdo': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'big': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'br': {'type': Element, 'is_empty': True, 'is_inline': True},
+    'cite': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'code': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'col': {'type': Element, 'is_empty': True, 'is_inline': False},
+    'dfn': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'em': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'head': {'type': HeadElement, 'is_empty': False, 'is_inline': False},
+    'hr': {'type': Element, 'is_empty': True, 'is_inline': False},
+    'i': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'img': {'type': Element, 'is_empty': True, 'is_inline': True},
+    'input': {'type': Element, 'is_empty': True, 'is_inline': True},
+    'kbd': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'link': {'type': Element, 'is_empty': True, 'is_inline': False},
+    'meta': {'type': Element, 'is_empty': True, 'is_inline': False},
+    'param': {'type': Element, 'is_empty': True, 'is_inline': False},
+    'q': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'samp': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'select': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'small': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'span': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'strong': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'sub': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'sup': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'textarea': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'tt': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'var': {'type': Element, 'is_empty': False, 'is_inline': True},
     # XHTML 1.0 transitional
-    'basefont': {'type': InlineElement, 'is_empty': True},
-    'font': {'type': InlineElement, 'is_empty': False},
-    'isindex': {'type': BlockElement, 'is_empty': True},
-    's': {'type': InlineElement, 'is_empty': False},
-    'strike': {'type': InlineElement, 'is_empty': False},
-    'u': {'type': InlineElement, 'is_empty': False},
+    'basefont': {'type': Element, 'is_empty': True, 'is_inline': True},
+    'font': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'isindex': {'type': Element, 'is_empty': True, 'is_inline': False},
+    's': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'strike': {'type': Element, 'is_empty': False, 'is_inline': True},
+    'u': {'type': Element, 'is_empty': False, 'is_inline': True},
     # XHTML 1.0 frameset
-    'frame': {'type': BlockElement, 'is_empty': True},
+    'frame': {'type': Element, 'is_empty': True, 'is_inline': False},
     # Vendor specific, not approved by W3C
-    'embed': {'type': BlockElement, 'is_empty': True},
+    'embed': {'type': Element, 'is_empty': True, 'is_inline': False},
     # Unclassified
     }
 
@@ -216,8 +187,8 @@ class Namespace(AbstractNamespace):
 
     @staticmethod
     def get_element_schema(name):
-        default_schema = {'type': BlockElement,
-                          'is_empty': False}
+        default_schema = {'type': Element, 'is_empty': False,
+                          'is_inline': False}
         return elements_schema.get(name, default_schema)
 
 set_namespace(Namespace)
@@ -451,8 +422,7 @@ class Document(XMLDocument):
                 value = XMLAttribute.encode(value)
                 buffer.write(' %s="%s"' % (qname, value))
             # Close the start tag
-            namespace = get_namespace(node.namespace)
-            schema = namespace.get_element_schema(node.name)
+            schema = get_element_schema(node.namespace, node.name)
             is_empty = schema.get('is_empty', False)
             if is_empty:
                 buffer.write('/>')
@@ -540,7 +510,8 @@ class Document(XMLDocument):
             elif isinstance(node, XMLElement):
                 if context.start:
                     # Inline or block
-                    if node.is_inline():
+                    schema = get_element_schema(node.namespace, node.name)
+                    if schema['is_inline']:
                         message.append(node)
                         context.skip = True
                     else:
@@ -554,7 +525,8 @@ class Document(XMLDocument):
                         if node.name == 'pre':
                             keep_spaces = True
                 else:
-                    if node.is_block():
+                    schema = get_element_schema(node.namespace, node.name)
+                    if not schema['is_inline']:
                         for x in process_message(message, keep_spaces):
                             buffer.write(x.encode('utf-8'))
                         message = Message()
@@ -642,7 +614,8 @@ class Document(XMLDocument):
                                     if value not in messages:
                                         yield value, 0
                         # Inline or Block
-                        if node.is_inline():
+                        schema = get_element_schema(node.namespace, node.name)
+                        if schema['is_inline']:
                             message.append(node)
                             context.skip = True
                         else:
@@ -654,7 +627,8 @@ class Document(XMLDocument):
                             if node.name == 'pre':
                                 context.keep_spaces = True
                 else:
-                    if node.is_block():
+                    schema = get_element_schema(node.namespace, node.name)
+                    if not schema['is_inline']:
                         for x in process_message(message, keep_spaces):
                             if x not in messages:
                                 yield x, 0

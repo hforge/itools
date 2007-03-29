@@ -54,7 +54,7 @@ class PropertyValue(object):
         Initialize the property value.
 
         value -- value as a string
-        parameters -- {param1_name: Parameter object, ...}
+        kw    -- {param1_name: [param_values], ...}
         """
         self.value = value
         self.parameters = kw
@@ -64,13 +64,14 @@ class Component(object):
     """
     Parses and evaluates a component block.
         
-        input :   string values for c_type and encoding 
+        input :   string values for c_type and uid
                   a list of Property objects 
                   (Property objects can share the same name as a property
                   name can appear more than one time in a component)
         
-        output :  string values for c_type and encoding
-                  a dictionnary {'property_name': Property[] } for properties
+        output :  unchanged c_type and uid
+                  a dictionnary of versions of this component including
+                  a dict {'property_name': PropertyValue[] } for properties
     """
     # XXX A parse method should be added to test properties inside of current 
     # component-type/properties (for example to test if property can appear
@@ -80,7 +81,6 @@ class Component(object):
         """
         Initialize the component.
 
-        properties -- {property1_name: Property object, ...}
         c_type -- type of component as a string (i.e. 'VEVENT')
         """
         self.c_type = c_type
@@ -151,6 +151,9 @@ class Component(object):
     # API / Public
     #######################################################################
     def get_version(self, sequence=None):
+        """
+        Return the last version of current component or the sequence's one.
+        """
         if sequence is None:
             sequence = self.get_sequences()[-1]
         return self.versions[sequence]
@@ -165,6 +168,8 @@ class Component(object):
         Return icalendar property values as a dict {name: value, ...} where
         value is a PropertyValue or a list of PropertyValue objects if it can
         occur more than once.
+
+        Note that it return values for the last version of this component.
         """
         version = self.get_version()
         if name:
@@ -436,6 +441,7 @@ class icalendar(Text):
     # To override
     #######################################################################
     def generate_uid(self, c_type):
+        """ Generate a uid based on c_type and current datetime. """
         return ' '.join([c_type, datetime.now().isoformat()])
 
 
@@ -443,6 +449,11 @@ class icalendar(Text):
     # API
     #######################################################################
     def check_properties(self, properties):
+        """
+        Check each property has a correct number of occurrences.
+        It replaces a unique value of a multiple occurrences allowed
+        property by a list with this value.
+        """
         for name, value in properties.items():
             datatype = self.get_datatype(name)
             if datatype.occurs == 1:
@@ -457,6 +468,10 @@ class icalendar(Text):
 
 
     def add_component(self, c_type, **kw):
+        """
+        Add a new component of type c_type.
+        It generates a uid and a new version with the given properties if any.
+        """
         # Check the properties
         kw = self.check_properties(kw)
 
@@ -476,6 +491,10 @@ class icalendar(Text):
 
 
     def update_component(self, uid, **kw):
+        """
+        Update component with given uid with properties given as kw, 
+        creating a new version based on the previous one.
+        """
         # Check the properties
         kw = self.check_properties(kw)
 
@@ -495,8 +514,8 @@ class icalendar(Text):
 
     def remove(self, uid):
         """
-        Definitely remove from the calendar each occurrence of an existant
-        component. 
+        Definitely remove from the calendar an existant component with all its
+        versions. 
         """
         self.set_changed()
         # Remove
@@ -522,7 +541,7 @@ class icalendar(Text):
 
     def set_property(self, name, values):
         """
-        Set values to the given property, removing previous ones.
+        Set values to the given calendar property, removing previous ones.
 
         name -- name of the property as a string
         values -- PropertyValue[]
@@ -570,8 +589,8 @@ class icalendar(Text):
 
         ** With a list of values, events match if at least one value matches
 
-        If subset is not None, it tests only given components.
-        Else it tests components in this list.
+        It searches into all components or in the provided subset list of
+        components.
         """
         res_events = []
 

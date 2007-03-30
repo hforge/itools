@@ -66,12 +66,16 @@ def Bool(value):
 
 def Keyword(value):
     # TODO write a Numeric analyser
-    if value or value == 0:
-        if isinstance(value, (tuple, list, set, frozenset)):
-            for x in value:
-                yield unicode(x), 0
-        else:
-            yield unicode(value), 0
+    if value is None:
+        return
+
+    if isinstance(value, (tuple, list, set, frozenset)):
+        for x in value:
+            yield unicode(x), 0
+    else:
+        value = unicode(value)
+        if value:
+            yield value, 0
 
 
 

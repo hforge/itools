@@ -148,7 +148,7 @@ table_template_string = """
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <!-- Content -->
-  <form action="." method="post">
+  <form action="." method="post" id="browse_list" name="browse_list">
     <table xmlns="http://www.w3.org/1999/xhtml"
       xmlns:stl="http://xml.itools.org/namespaces/stl">
       <thead stl:if="columns">

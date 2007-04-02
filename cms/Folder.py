@@ -453,6 +453,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return stl(handler, namespace)
 
 
+    # Allow displaying the "Select All/None" Javascript buttons
+    select__access__ = True
+
     def browse_list(self, context, sortby=['title_or_name'], sortorder='up'):
         context.set_cookie('browse', 'list')
 
@@ -500,6 +503,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
         actions = []
         if namespace['total']:
             actions = [
+                ('select', u'Select All', 'button_select_all',
+                 "return select_checkboxes('browse_list', true);"),
+                ('select', u'Select None', 'button_select_none',
+                 "return select_checkboxes('browse_list', false);"),
                 ('remove', u'Remove', 'button_delete',
                  'return confirmation();'),
                 ('rename_form', u'Rename', 'button_rename', None),

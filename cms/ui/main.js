@@ -124,3 +124,13 @@ function getHeight(obj) {
 function setHeight(obj, height) {
   obj.style.height = height + "px";
 }
+
+/* Browse: select all/none */
+function select_checkboxes(form_id, checked) {
+  var form = document.getElementById(form_id);
+  var checkboxes = form.ids;
+  for (i = 0; i < checkboxes.length; i++) {
+    checkboxes[i].checked = checked;
+  }
+  return false;
+}

@@ -17,6 +17,8 @@
 
 # Import from the Standard Library
 import sha
+from copy import deepcopy
+from string import Template
 
 # Import from itools
 from itools import uri
@@ -24,15 +26,12 @@ from itools import i18n
 from itools import handlers
 from itools.stl import stl
 from itools.datatypes import Email
-from itools.schemas import get_datatype
 
 # Import from ikaaro
 from access import AccessControl
 from Folder import Folder
-from Handler import Handler
 from metadata import Password
 from registry import register_object_class, get_object_class
-
 
 
 def crypt_password(password):
@@ -86,14 +85,20 @@ class User(AccessControl, Folder):
         return self.get_property('ikaaro:email')
 
 
-    def set_password(self, value):
-        self.set_property('ikaaro:password', crypt_password(value))
+    def set_password(self, password):
+        crypted = crypt_password(password)
+        self.set_property('ikaaro:password', crypted)
 
 
     def authenticate(self, password):
         if self.get_property('ikaaro:user_must_confirm'):
             return False
-        return password == self.get_property('ikaaro:password')
+        # Is password crypted?
+        if password == self.get_property('ikaaro:password'):
+            return True
+        # Is password clear?
+        crypted = crypt_password(password)
+        return crypted == self.get_property('ikaaro:password')
 
 
     def get_groups(self):
@@ -108,6 +113,18 @@ class User(AccessControl, Folder):
         results = catalog.search(is_role_aware=True, members=self.name)
         groups = [ x.abspath for x in results.get_documents() ]
         return tuple(groups)
+
+
+    def set_auth_cookie(self, context, password):
+        username = str(self.name)
+        crypted = crypt_password(password)
+        cookie = Password.encode('%s:%s' % (username, crypted))
+        request = context.request
+        expires = request.form.get('iAuthExpires', None)
+        if expires is None:
+            context.set_cookie('__ac', cookie, path='/')
+        else:
+            context.set_cookie('__ac', cookie, path='/', expires=expires)
 
 
     ########################################################################
@@ -134,17 +151,69 @@ class User(AccessControl, Folder):
 
     #######################################################################
     # Registration
+    def send_confirmation(self, context, email):
+        hostname = context.uri.authority.host
+        subject = u"[%s] Register confirmation required" % hostname
+        subject = self.gettext(subject)
+        body = self.gettext(u"To confirm your registration click the link:\n"
+                            u"\n"
+                            u"  $confirm_url")
+        confirm_url = deepcopy(context.uri)
+        path = '/users/%s/;confirm_registration_form' % self.name
+        confirm_url.path = uri.Path(path)
+        key = self.get_property('ikaaro:user_must_confirm')
+        confirm_url.query = {'key': key}
+        body = Template(body).substitute({'confirm_url': str(confirm_url)})
+        root = context.root
+        root.send_email(None, email, subject, body)
+
+
+    confirm_registration_form__access__ = True
+    def confirm_registration_form(self, context):
+        # Check register key
+        must_confirm = self.get_property('ikaaro:user_must_confirm')
+        if (must_confirm is None
+                or context.get_form_value('key') != must_confirm):
+            return self.gettext(u"Bad key.").encode('utf-8')
+
+        namespace = {'key': must_confirm}
+
+        handler = self.get_handler('/ui/User_confirm_registration.xml')
+        return stl(handler, namespace)
+
+
     confirm_registration__access__ = True
     def confirm_registration(self, context):
+        keep = ['key']
+        register_fields = [('newpass', True),
+                           ('newpass2', True)]
+
+        # Check register key
         must_confirm = self.get_property('ikaaro:user_must_confirm')
         if context.get_form_value('key') != must_confirm:
             return self.gettext(u"Bad key.").encode('utf-8')
 
-        self.del_property('ikaaro:user_must_confirm')
-        context.commit = True
+        # Check input data
+        error = context.check_form_input(register_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
 
-        message = u'Registration confirmed, please log in'
-        goto = '/;login_form?username=%s' % self.get_property('ikaaro:email')
+        # Check passwords
+        password = context.get_form_value('newpass')
+        password2 = context.get_form_value('newpass2')
+        if password != password2:
+            message = u'The passwords do not match.'
+            return context.come_back(message, keep=keep)
+
+        # Set user
+        self.set_password(password)
+        self.del_property('ikaaro:user_must_confirm')
+
+        # Set cookie
+        self.set_auth_cookie(context, password)
+
+        message = u'Registration confirmed, welcome.'
+        goto = "./;%s" % self.get_firstview()
         return context.come_back(message, goto=goto)
 
 
@@ -229,7 +298,6 @@ class User(AccessControl, Folder):
         password = context.get_form_value('password')
         user = context.user
         if self.name == user.name:
-            password = crypt_password(password)
             if not self.authenticate(password):
                 return context.come_back(
                     u"You mistyped your actual password, your account is"
@@ -285,7 +353,6 @@ class User(AccessControl, Folder):
         user = context.user
 
         if self.name == user.name:
-            password = crypt_password(password)
             if not self.authenticate(password):
                 return context.come_back(u"You mistyped your actual password, "
                                          u"your account is not changed.")
@@ -299,17 +366,7 @@ class User(AccessControl, Folder):
             self.set_password(newpass)
             # Update the cookie if we updated our own password
             if self.name == user.name:
-                # XXX This is a copy of the code in WebSite.login, should
-                # refactor
-                newpass = crypt_password(newpass)
-                cookie = Password.encode('%s:%s' % (self.name, newpass))
-                request = context.request
-                expires = request.form.get('iAuthExpires', None)
-                if expires is None:
-                    context.set_cookie('__ac', cookie, path='/')
-                else:
-                    context.set_cookie('__ac', cookie, path='/',
-                                       expires=expires)
+                self.set_auth_cookie(context, newpass)
 
         return context.come_back(u'Password changed.')
 
@@ -411,8 +468,7 @@ class UserFolder(Folder):
             user.set_property('ikaaro:email', email)
             user.set_property('dc:title', email, language='en')
         if password is not None:
-            password = crypt_password(password)
-            user.set_property('ikaaro:password', password)
+            user.set_password(password)
 
         # Return the user
         return user

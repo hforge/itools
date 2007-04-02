@@ -36,20 +36,6 @@
         <input type="text" id="ikaaro:email" name="ikaaro:email"
           value="${ikaaro:email/value}" />
       </dd>
-      <dt>
-        <label for="password" class="${password/class}">
-          Password</label>
-      </dt>
-      <dd>
-        <input type="password" id="password" name="password" />
-      </dd>
-      <dt>
-        <label for="password2" class="${password2/class}">
-          Repeat Password</label>
-      </dt>
-      <dd>
-        <input type="password" id="password2" name="password2" />
-      </dd>
     </dl>
     <p>
       <input type="submit" value="Register" class="button_ok"/>
@@ -57,7 +43,7 @@
   </form>
 
   <script language="javascript">
-    focus("ikaaro:email")
+    focus("ikaaro:firstname")
   </script>
 
 </stl:block>

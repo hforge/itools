@@ -22,6 +22,7 @@ from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
 from itools.cms import widgets
+from utils import generate_password
 
 
 class AccessControl(AccessControlBase):
@@ -448,28 +449,9 @@ class RoleAware(AccessControl):
     new_user_form__sublabel__ = u'New Member'
     def new_user_form(self, context):
         namespace = {}
-        # Users (non-members)
-        users = self.get_handler('/users')
-        members = self.get_members()
 
-        non_members = []
-        for name in users.get_usernames():
-            # Check the user is not a member
-            if name in members:
-                continue
-            # Get the user
-            user = users.get_handler(name)
-            # Add the user
-            login_name = user.get_login_name()
-            title = user.get_title()
-            if title:
-                title = '%s (%s)' % (login_name, title)
-            else:
-                title = login_name
-            non_members.append({'id': name, 'title': title})
-
-        non_members.sort(key=lambda x: x['title'])
-        namespace['non_members'] = non_members
+        # Admin can set the password directly
+        namespace['is_admin'] = self.is_admin(context.user)
 
         # Roles
         namespace['roles'] = self.get_roles_namespace()
@@ -481,43 +463,50 @@ class RoleAware(AccessControl):
     new_user__access__ = 'is_admin'
     def new_user(self, context):
         root = context.root
+        user = context.user
         users = root.get_handler('users')
 
-        # Get the user id (it will be None for new users), and check the
-        # input data.
-        user_id = context.get_form_value('user_id')
-        if user_id:
-            if not users.has_handler(user_id):
-                message = u"The user $user_id does not exist."
-                return context.come_back(message, user_id=user_id)
+        email = context.get_form_value('email')
+        # Check the email is right
+        if not email:
+            message = u'The email address is missing, please type it.'
+            return context.come_back(message)
+        if not Email.is_valid(email):
+            message = u'A valid email address must be provided.'
+            return context.come_back(message)
+
+        # Check whether the user already exists
+        results = root.search(email=email)
+        if results.get_n_documents():
+            user_id = results.get_documents()[0].name
         else:
-            email = context.get_form_value('email')
-            # Check the email is right
-            if not email:
-                message = u'The email address is missing, please type it.'
-                return context.come_back(message)
-            if not Email.is_valid(email):
-                message = u'A valid email address must be provided.'
-                return context.come_back(message)
-            # Check whether the user already exists
-            results = root.search(email=email)
-            if results.get_n_documents():
-                user_id = results.get_documents()[0].name
-            else:
-                user_id = None
+            user_id = None
  
         # Get the user (create it if needed)
         if user_id is None:
             # New user
-            password = context.get_form_value('password')
-            password2 = context.get_form_value('password2')
-            # Check the password is right
-            if not password or password != password2:
-                message = u'The password is wrong, please try again.'
-                return context.come_back(message)
+            is_admin = self.is_admin(user)
+            if is_admin:
+                password = context.get_form_value('newpass')
+                password2 = context.get_form_value('newpass2')
+                # Check the password is right
+                if password != password2:
+                    message = u'The password is wrong, please try again.'
+                    return context.come_back(message)
+                if not password:
+                    # Admin can set no password
+                    # so the user must activate its account
+                    password = None
+            else:
+                password = None
             # Add the user
             user = users.set_user(email, password)
             user_id = user.name
+            if password is None:
+                key = generate_password(30)
+                user.set_property('ikaaro:user_must_confirm', key)
+                # Send confirmation email to activate the account
+                user.send_confirmation(context, email)
         else:
             user = users.get_handler(user_id)
             # Check the user is not yet in the group

@@ -17,8 +17,9 @@
 
 # Import from the Standard Library
 from copy import copy
-from string import translate, maketrans
 from urllib import quote
+import string
+import random
 
 # Import from itools
 from itools import uri
@@ -144,3 +145,17 @@ def reduce_string(title='', word_treshold=15, phrase_treshold=40):
     if len(title) > phrase_treshold:
         title = title[:phrase_treshold] + '...'
     return title
+
+
+###########################################################################
+# User and Authentication
+###########################################################################
+def generate_password(length=6):
+    tokens = list(string.ascii_letters + string.digits)
+    # Remove ambiguity
+    for char in ('1', 'l', '0', 'o'):
+        tokens.remove(char)
+    password = random.sample(tokens, length)
+    return ''.join(password)
+
+

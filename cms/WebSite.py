@@ -16,9 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-from copy import deepcopy
-import random
-from string import ascii_letters, Template
+from string import Template
 
 # Import from itools
 from itools import uri
@@ -27,15 +25,13 @@ from itools.datatypes import Email, Integer, Unicode
 from itools import i18n
 from itools.catalog import queries
 from itools.stl import stl
-from itools.web import get_context
 from Folder import Folder
 from skins import Skin
 from access import RoleAware
 from workflow import WorkflowAware
-from users import crypt_password
-from metadata import Password
 from skins import ui
 from registry import register_object_class
+from utils import generate_password
 
 
 
@@ -225,9 +221,7 @@ class WebSite(RoleAware, Folder):
 
     register_fields = [('ikaaro:firstname', True),
                        ('ikaaro:lastname', True),
-                       ('ikaaro:email', True),
-                       ('password', True),
-                       ('password2', True)]
+                       ('ikaaro:email', True)]
 
 
     register_form__access__ = 'is_allowed_to_register'
@@ -266,41 +260,19 @@ class WebSite(RoleAware, Folder):
             message = u'There is already a user with that email.'
             return context.come_back(message, keep=keep)
 
-        # Check the password
-        password = context.get_form_value('password')
-        if not password:
-            message = u'The password is mandatory.'
-            return context.come_back(message, keep=keep)
-
-        # Check the password
-        password2 = context.get_form_value('password2')
-        if password != password2:
-            message = u'The passwords do not match.'
-            return context.come_back(message, keep=keep)
-
         # Add the user
         users = self.get_handler('users')
-        user = users.set_user(email, password)
-        key = ''.join([ random.choice(ascii_letters) for x in range(30) ])
-        user.set_property('ikaaro:user_must_confirm', key)
+        user = users.set_user(email, None)
         user.set_property('ikaaro:firstname', firstname, language='en')
         user.set_property('ikaaro:lastname', lastname, language='en')
+        key = generate_password(30)
+        user.set_property('ikaaro:user_must_confirm', key)
         # Set the role
         default_role = self.__roles__[0]['name']
         self.set_user_role(user.name, default_role)
 
         # Send confirmation email
-        subject = self.gettext("Register confirmation required.")
-        body = self.gettext(
-            "To confirm your registration click the link:\n"
-            "\n"
-            "  $confirm_url")
-        confirm_url = deepcopy(context.uri)
-        confirm_url.path = Path('/users/%s/;confirm_registration' % user.name)
-        confirm_url.query = {
-            'key': user.get_property('ikaaro:user_must_confirm')}
-        body = Template(body).substitute({'confirm_url': str(confirm_url)})
-        root.send_email(None, email, subject, body)
+        user.send_confirmation(context, email)
 
         # Reindex
         root.reindex_handler(user)
@@ -365,25 +337,17 @@ class WebSite(RoleAware, Folder):
             return context.come_back(message, username=email, keep=keep)
 
         # Check the password is right
-        password = crypt_password(password)
         if not user.authenticate(password):
             return context.come_back(u'The password is wrong.', keep=keep)
 
         # Set cookie
-        username = str(user.name)
-        cookie = Password.encode('%s:%s' % (username, password))
-        request = context.request
-        expires = request.form.get('iAuthExpires', None)
-        if expires is None:
-            context.set_cookie('__ac', cookie, path='/')
-        else:
-            context.set_cookie('__ac', cookie, path='/', expires=expires)
+        user.set_auth_cookie(context, password)
 
         # Set context
         context.user = user
 
         # Come back
-        referrer = request.referrer
+        referrer = context.request.referrer
         if referrer:
             if not referrer.path:
                 return referrer
@@ -424,7 +388,7 @@ class WebSite(RoleAware, Folder):
         user = self.get_handler('/users/%s' % user.name)
 
         # Generate the password
-        password = ''.join([ random.choice(ascii_letters) for x in range(6) ])
+        password = generate_password()
 
         # Send the email
         subject = u"Forgotten password"

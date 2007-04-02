@@ -14,27 +14,16 @@
         <dd>
           <input id="email" type="text" name="email" size="40" />
         </dd>
-        <dt>Password</dt>
-        <dd>
-          <input id="password" type="password" name="password" />
-        </dd>
-        <dt>Repeat Password</dt>
-        <dd>
-          <input id="password2" type="password" name="password2" />
-        </dd>
-      </dl>
-    </fieldset>
-    <fieldset stl:if="non_members">
-      <legend>Or select an existing user</legend>
-      <dl>
-        <dt>&nbsp;</dt>
-        <dd>
-          <select name="user_id">
-            <option value=""></option>
-            <option stl:repeat="user non_members" value="${user/id}"
-              >${user/title}</option>
-          </select>
-        </dd>
+        <stl:block if="is_admin">
+          <dt>Password</dt>
+          <dd>
+            <input id="newpass" type="password" name="newpass" />
+          </dd>
+          <dt>Repeat Password</dt>
+          <dd>
+            <input id="newpass2" type="password" name="newpass2" />
+          </dd>
+        </stl:block>
       </dl>
     </fieldset>
     <fieldset>

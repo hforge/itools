@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2>Registration</h2>
+
+  <p>
+    To confirm your registration, please type a password.
+  </p>
+
+  <form name="confirm_registration" action=";confirm_registration" method="post">
+    <dl>
+      <dt>
+        <label for="newpass">Password</label>
+      </dt>
+      <dd>
+        <input type="password" id="newpass" name="newpass" />
+      </dd>
+      <dt>
+        <label for="password2">Repeat Password</label>
+      </dt>
+      <dd>
+        <input type="password" id="newpass2" name="newpass2" />
+      </dd>
+    </dl>
+    <p>
+      <input type="hidden" name="key" value="${key}" />
+      <input type="submit" value="Confirm Registration" class="button_ok"/>
+    </p>
+  </form>
+
+  <script language="javascript">
+    focus("newpass")
+  </script>
+
+</stl:block>

@@ -38,10 +38,9 @@ function removeEvent( obj, type, fn ) {
 
 /* REMOVE CONFIRMATION */
 /* XXX needs translation */
-function confirmation()
+function confirmation(message)
 {
-  if (!confirm ("Delete this objet, are you sure?"))
-    return false;
+  return confirm(message)
 }
 
 function focus(id) {

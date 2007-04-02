@@ -501,6 +501,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         user = context.user
         ac = self.get_access_control()
         actions = []
+        message = self.gettext(u"Delete this objet, are you sure?")
         if namespace['total']:
             actions = [
                 ('select', u'Select All', 'button_select_all',
@@ -508,7 +509,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 ('select', u'Select None', 'button_select_none',
                  "return select_checkboxes('browse_list', false);"),
                 ('remove', u'Remove', 'button_delete',
-                 'return confirmation();'),
+                 'return confirmation("%s");' % message.encode('utf_8')),
                 ('rename_form', u'Rename', 'button_rename', None),
                 ('copy', u'Copy', 'button_copy', None),
                 ('cut', u'Cut', 'button_cut', None)]

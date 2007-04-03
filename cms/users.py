@@ -139,7 +139,7 @@ class User(AccessControl, Folder):
             return True
 
         # The all-powerfull
-        return self.is_admin(user)
+        return self.is_admin(user, object)
 
 
     is_allowed_to_edit = is_self_or_admin
@@ -231,7 +231,7 @@ class User(AccessControl, Folder):
         is_owner = user is not None and user.name == self.name
         namespace['is_owner'] = is_owner
         # Owner or Admin
-        namespace['is_owner_or_admin'] = is_owner or root.is_admin(user)
+        namespace['is_owner_or_admin'] = is_owner or root.is_admin(user, object)
 
         handler = self.get_handler('/ui/User_profile.xml')
         return stl(handler, namespace)

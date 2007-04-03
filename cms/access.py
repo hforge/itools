@@ -27,9 +27,14 @@ from utils import generate_password
 
 class AccessControl(AccessControlBase):
 
-    def is_admin(self, user, object=None):
+    def is_admin(self, user, object):
         if user is None:
             return False
+        # WebSite admin?
+        root = object.get_site_root()
+        if root.has_user_role(user.name, 'ikaaro:admins'):
+            return True
+        # Global admin?
         root = get_context().root
         return root.has_user_role(user.name, 'ikaaro:admins')
 
@@ -52,7 +57,7 @@ class AccessControl(AccessControlBase):
 
     def is_allowed_to_edit(self, user, object):
         # By default only the admin can touch stuff
-        return self.is_admin(user)
+        return self.is_admin(user, object)
 
 
     # By default all other change operations (add, remove, copy, etc.)
@@ -105,7 +110,7 @@ class RoleAware(AccessControl):
         # The role of the user
         if user is None:
             role = None
-        elif self.is_admin(user):
+        elif self.is_admin(user, object):
             role = 'ikaaro:admins'
         else:
             role = self.get_user_role(user.name)
@@ -137,7 +142,7 @@ class RoleAware(AccessControl):
             return False
 
         # Admins are all powerfull
-        if self.is_admin(user):
+        if self.is_admin(user, object):
             return True
 
         # Reviewers too
@@ -161,7 +166,7 @@ class RoleAware(AccessControl):
             return False
 
         # Admins are all powerfull
-        if self.is_admin(user):
+        if self.is_admin(user, object):
             return True
 
         # Reviewers too
@@ -175,7 +180,7 @@ class RoleAware(AccessControl):
             return False
 
         # Admins are all powerfull
-        if self.is_admin(user):
+        if self.is_admin(user, object):
             return True
 
         # Reviewers can do everything
@@ -451,7 +456,7 @@ class RoleAware(AccessControl):
         namespace = {}
 
         # Admin can set the password directly
-        namespace['is_admin'] = self.is_admin(context.user)
+        namespace['is_admin'] = self.is_admin(context.user, self)
 
         # Roles
         namespace['roles'] = self.get_roles_namespace()
@@ -485,7 +490,7 @@ class RoleAware(AccessControl):
         # Get the user (create it if needed)
         if user_id is None:
             # New user
-            is_admin = self.is_admin(user)
+            is_admin = self.is_admin(user, self)
             if is_admin:
                 password = context.get_form_value('newpass')
                 password2 = context.get_form_value('newpass2')

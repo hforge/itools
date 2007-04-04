@@ -54,6 +54,47 @@ class Element(XMLElement):
     namespace = 'http://www.w3.org/1999/xhtml'
 
 
+    meta = ('<meta http-equiv="Content-Type"'
+            '  content="application/xhtml+xml; charset=%s" />\n')
+
+    def to_str(self, encoding='UTF-8'):
+        # This method is almost identical to XMLElement.to_str, but we must
+        # override it to be sure the document has the correct encoding set
+        # (<meta http-equiv="Content-Type" content="...">)
+        data = []
+        key = ('http://www.w3.org/1999/xhtml', 'http-equiv')
+        for node, context in self.traverse2():
+            if isinstance(node, unicode):
+                node = node.encode(encoding)
+                data.append(node)
+            elif isinstance(node, Element):
+                # Filter the <meta http-equiv="Content-Type"> element
+                if node.namespace == self.namespace:
+                    if node.name == 'meta':
+                        if key in node.attributes:
+                            if node.attributes[key] == 'Content-Type':
+                                continue
+                    elif node.name == 'head':
+                        if context.start is True:
+                            data.append(node.get_start_tag())
+                            data.append(self.meta % encoding)
+                        else:
+                            data.append(node.get_end_tag())
+                        continue
+
+                if context.start is True:
+                    data.append(node.get_start_tag())
+                else:
+                    data.append(node.get_end_tag())
+            elif isinstance(node, Comment):
+                node = node.data
+                node = node.encode(encoding)
+                data.append('<!--%s-->' % node)
+            else:
+                raise NotImplementedError, repr(node)
+        return ''.join(data)
+
+
     def get_start_tag_as_html(self):
         s = '<%s' % self.qname
         # Output the attributes
@@ -92,38 +133,6 @@ class Element(XMLElement):
         return False
 
 
-
-class HeadElement(Element):
-
-    def to_str(self, encoding='UTF-8'):
-        head = []
-        head.append('<head>\n')
-
-        # The content type
-        head.append('    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=%s" />\n' % encoding)
-
-        # The rest of the head
-        content = self.get_content(encoding)
-        lines = content.splitlines()
-        while lines and lines[0].strip() == u'':
-            lines = lines[1:]
-        head.append('\n'.join(lines))
-
-        head.append('</head>')
-        return ''.join(head)
-
-
-    def set_element(self, element):
-        # Skip content type declaration
-        xhtml_namespace = Namespace.class_uri
-        if element.namespace == xhtml_namespace and element.name == 'meta':
-            if element.has_attribute(xhtml_namespace, 'http-equiv'):
-                value = element.get_attribute(xhtml_namespace, 'http-equiv')
-                if value == 'Content-Type':
-                    return
-        self.children.append(element)
-
-
 #############################################################################
 # Namespace
 #############################################################################
@@ -144,7 +153,7 @@ elements_schema = {
     'col': {'type': Element, 'is_empty': True, 'is_inline': False},
     'dfn': {'type': Element, 'is_empty': False, 'is_inline': True},
     'em': {'type': Element, 'is_empty': False, 'is_inline': True},
-    'head': {'type': HeadElement, 'is_empty': False, 'is_inline': False},
+    'head': {'type': Element, 'is_empty': False, 'is_inline': False},
     'hr': {'type': Element, 'is_empty': True, 'is_inline': False},
     'i': {'type': Element, 'is_empty': False, 'is_inline': True},
     'img': {'type': Element, 'is_empty': True, 'is_inline': True},

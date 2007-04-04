@@ -125,9 +125,23 @@ class Element(object):
     #######################################################################
     # Serialization
     def to_str(self, encoding='UTF-8'):
-        return self.get_start_tag() \
-               + self.get_content(encoding) \
-               + self.get_end_tag()
+        data = []
+        for node, context in self.traverse2():
+            if isinstance(node, unicode):
+                node = node.encode(encoding)
+                data.append(node)
+            elif isinstance(node, Element):
+                if context.start is True:
+                    data.append(node.get_start_tag())
+                else:
+                    data.append(node.get_end_tag())
+            elif isinstance(node, Comment):
+                node = node.data
+                node = node.encode(encoding)
+                data.append('<!--%s-->' % node)
+            else:
+                raise NotImplementedError, repr(node)
+        return ''.join(data)
 
 
     def get_start_tag(self):

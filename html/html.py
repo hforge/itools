@@ -28,22 +28,13 @@ from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
 ns_uri = 'http://www.w3.org/1999/xhtml'
 
 
+
 class Element(XHTMLElement):
 
     get_start_tag = XHTMLElement.get_start_tag_as_html
 
-
-
-# XXX This class is almost identical to 'XHTMLElement'
-class HeadElement(Element, Element):
-
-    def to_str(self, encoding='UTF-8'):
-        head = []
-        head.append('<head>\n')
-        head.append('    <meta http-equiv="Content-Type" content="text/html; charset=%s" />\n' % encoding)
-        head.append(self.get_content(encoding))
-        head.append('</head>')
-        return ''.join(head)
+    meta = ('<meta http-equiv="Content-Type"'
+            '  content="text/html; charset=%s" />\n')
 
 
 elements_schema = {
@@ -55,7 +46,7 @@ elements_schema = {
     'code': {'type': Element, 'is_inline': True},
     'dfn': {'type': Element, 'is_inline': True},
     'em': {'type': Element, 'is_inline': True},
-    'head': {'type': HeadElement, 'is_inline': False},
+    'head': {'type': Element, 'is_inline': False},
     'kbd': {'type': Element, 'is_inline': True},
     'q': {'type': Element, 'is_inline': True},
     'samp': {'type': Element, 'is_inline': True},

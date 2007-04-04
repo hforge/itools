@@ -20,21 +20,13 @@ from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
 from itools.xml import Comment
-from itools.xhtml import Document as XHTMLDocument, Element as XHTMLElement
+from itools.xhtml import Document as XHTMLDocument, Element
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
 
 
 ns_uri = 'http://www.w3.org/1999/xhtml'
 
-
-
-class Element(XHTMLElement):
-
-    get_start_tag = XHTMLElement.get_start_tag_as_html
-
-    meta = ('<meta http-equiv="Content-Type"'
-            '  content="text/html; charset=%s" />\n')
 
 
 elements_schema = {
@@ -100,6 +92,14 @@ class Document(XHTMLDocument):
             '  <body></body>\n' \
             '</html>'
         return s % {'title': title}
+
+
+    def to_str(self, encoding='UTF-8'):
+        root = self.get_root_element()
+        data = [self.header_to_str(encoding),
+                element_to_str_as_html(root, encoding)]
+
+        return ''.join(data)
 
 
     #######################################################################

@@ -48,49 +48,93 @@ class Boolean(Boolean):
         return value
 
 
+xhtml_meta = ('<meta http-equiv="Content-Type"'
+              '  content="application/xhtml+xml; charset=%s" />\n')
+
+def element_to_str_as_xhtml(element, encoding='UTF-8'):
+    # This method is almost identical to XMLElement.to_str, but we must
+    # override it to be sure the document has the correct encoding set
+    # (<meta http-equiv="Content-Type" content="...">)
+    data = []
+    key = ('http://www.w3.org/1999/xhtml', 'http-equiv')
+    for node, context in element.traverse2():
+        if isinstance(node, unicode):
+            node = node.encode(encoding)
+            data.append(node)
+        elif isinstance(node, Element):
+            # Filter the <meta http-equiv="Content-Type"> element
+            if node.namespace == Namespace.class_uri:
+                if node.name == 'meta':
+                    if key in node.attributes:
+                        if node.attributes[key] == 'Content-Type':
+                            continue
+                elif node.name == 'head':
+                    if context.start is True:
+                        data.append(node.get_start_tag())
+                        data.append(xhtml_meta % encoding)
+                    else:
+                        data.append(node.get_end_tag())
+                    continue
+
+            if context.start is True:
+                data.append(node.get_start_tag())
+            else:
+                data.append(node.get_end_tag())
+        elif isinstance(node, Comment):
+            node = node.data
+            node = node.encode(encoding)
+            data.append('<!--%s-->' % node)
+        else:
+            raise NotImplementedError, repr(node)
+    return ''.join(data)
+
+
+
+html_meta = (
+    '<meta http-equiv="Content-Type" content="text/html; charset=%s" />\n')
+
+def element_to_str_as_html(element, encoding='UTF-8'):
+    # This method is almost identical to XMLElement.to_str, but we must
+    # override it to be sure the document has the correct encoding set
+    # (<meta http-equiv="Content-Type" content="...">)
+    data = []
+    key = ('http://www.w3.org/1999/xhtml', 'http-equiv')
+    for node, context in element.traverse2():
+        if isinstance(node, unicode):
+            node = node.encode(encoding)
+            data.append(node)
+        elif isinstance(node, Element):
+            # Filter the <meta http-equiv="Content-Type"> element
+            if node.namespace == Namespace.class_uri:
+                if node.name == 'meta':
+                    if key in node.attributes:
+                        if node.attributes[key] == 'Content-Type':
+                            continue
+                elif node.name == 'head':
+                    if context.start is True:
+                        data.append(node.get_start_tag_as_html())
+                        data.append(html_meta % encoding)
+                    else:
+                        data.append(node.get_end_tag())
+                    continue
+
+            if context.start is True:
+                data.append(node.get_start_tag_as_html())
+            else:
+                data.append(node.get_end_tag())
+        elif isinstance(node, Comment):
+            node = node.data
+            node = node.encode(encoding)
+            data.append('<!--%s-->' % node)
+        else:
+            raise NotImplementedError, repr(node)
+    return ''.join(data)
+
+
+
+
 
 class Element(XMLElement):
-
-    meta = ('<meta http-equiv="Content-Type"'
-            '  content="application/xhtml+xml; charset=%s" />\n')
-
-    def to_str(self, encoding='UTF-8'):
-        # This method is almost identical to XMLElement.to_str, but we must
-        # override it to be sure the document has the correct encoding set
-        # (<meta http-equiv="Content-Type" content="...">)
-        data = []
-        key = ('http://www.w3.org/1999/xhtml', 'http-equiv')
-        for node, context in self.traverse2():
-            if isinstance(node, unicode):
-                node = node.encode(encoding)
-                data.append(node)
-            elif isinstance(node, Element):
-                # Filter the <meta http-equiv="Content-Type"> element
-                if node.namespace == self.namespace:
-                    if node.name == 'meta':
-                        if key in node.attributes:
-                            if node.attributes[key] == 'Content-Type':
-                                continue
-                    elif node.name == 'head':
-                        if context.start is True:
-                            data.append(node.get_start_tag())
-                            data.append(self.meta % encoding)
-                        else:
-                            data.append(node.get_end_tag())
-                        continue
-
-                if context.start is True:
-                    data.append(node.get_start_tag())
-                else:
-                    data.append(node.get_end_tag())
-            elif isinstance(node, Comment):
-                node = node.data
-                node = node.encode(encoding)
-                data.append('<!--%s-->' % node)
-            else:
-                raise NotImplementedError, repr(node)
-        return ''.join(data)
-
 
     def get_start_tag_as_html(self):
         s = '<%s' % self.qname
@@ -381,6 +425,14 @@ class Document(XMLDocument):
                 '  <body></body>\n'
                 '</html>')
         return data % {'title': title}
+
+
+    def to_str(self, encoding='UTF-8'):
+        root = self.get_root_element()
+        data = [self.header_to_str(encoding),
+                element_to_str_as_xhtml(root, encoding)]
+
+        return ''.join(data)
 
 
     ########################################################################

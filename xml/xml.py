@@ -64,6 +64,26 @@ class Comment(object):
 
 
 
+def element_to_str(element, encoding='UTF-8'):
+    data = []
+    for node, context in element.traverse2():
+        if isinstance(node, unicode):
+            node = node.encode(encoding)
+            data.append(node)
+        elif isinstance(node, Element):
+            if context.start is True:
+                data.append(node.get_start_tag())
+            else:
+                data.append(node.get_end_tag())
+        elif isinstance(node, Comment):
+            node = node.data
+            node = node.encode(encoding)
+            data.append('<!--%s-->' % node)
+        else:
+            raise NotImplementedError, repr(node)
+    return ''.join(data)
+
+
 class Element(object):
 
     __slots__ = ['namespace', 'name', 'attributes', 'children']
@@ -123,26 +143,6 @@ class Element(object):
 
     #######################################################################
     # Serialization
-    def to_str(self, encoding='UTF-8'):
-        data = []
-        for node, context in self.traverse2():
-            if isinstance(node, unicode):
-                node = node.encode(encoding)
-                data.append(node)
-            elif isinstance(node, Element):
-                if context.start is True:
-                    data.append(node.get_start_tag())
-                else:
-                    data.append(node.get_end_tag())
-            elif isinstance(node, Comment):
-                node = node.data
-                node = node.encode(encoding)
-                data.append('<!--%s-->' % node)
-            else:
-                raise NotImplementedError, repr(node)
-        return ''.join(data)
-
-
     def get_start_tag(self):
         s = '<%s' % self.qname
         # Output the attributes
@@ -432,8 +432,9 @@ class Document(Text):
 
 
     def to_str(self, encoding='UTF-8'):
+        root = self.get_root_element()
         data = [self.header_to_str(encoding),
-                self.get_root_element().to_str(encoding)]
+                element_to_str(root, encoding)]
 
         return ''.join(data)
 

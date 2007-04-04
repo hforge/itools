@@ -503,6 +503,13 @@ class icalendar(Text):
         version = component.get_version()
         version = version.copy()
         version.update(kw)
+        # Remove deleted properties (value is None or [None])
+        keys = []
+        for key in version:
+            if version[key] is None or version[key] == [None]:
+                keys.append(key)
+        for key in keys:
+            del version[key]
 
         # Add the new version
         self.set_changed()

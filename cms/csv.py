@@ -20,7 +20,7 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import Integer, Enumerate
-from itools.csv.csv import CSV as iCSV, Row as iRow
+from itools.csv.csv import CSV as iCSV, Row as iRow, IntegerKey
 from itools.stl import stl
 from Handler import Node
 from text import Text
@@ -87,12 +87,13 @@ class CSV(Text, iCSV):
         columns = []
         for name in self.columns:
             datatype = self.schema[name]
-            title = getattr(datatype, 'title', None)
-            if title is None:
-                title = name
-            else:
-                title = self.gettext(title)
-            columns.append((name, title))
+            if datatype != IntegerKey:
+                title = getattr(datatype, 'title', None)
+                if title is None:
+                    title = name
+                else:
+                    title = self.gettext(title)
+                columns.append((name, title))
 
         return columns
 
@@ -206,6 +207,13 @@ class CSV(Text, iCSV):
             datatype = self.get_datatype(name)
             value = datatype.decode(value)
             row.append(value)
+        
+        if self.columns is not None:
+            # Insert the generated values of the IntegerKey columns
+            for index, column in enumerate(self.columns):
+                datatype = self.schema[column]
+                if datatype == IntegerKey:
+                    row.insert(index, self.get_key(column))
 
         self.add_row(row)
 

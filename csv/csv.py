@@ -23,7 +23,7 @@ from __future__ import absolute_import
 import csv as python_csv
 
 # Import from itools
-from itools.datatypes import Unicode
+from itools.datatypes import Unicode, Integer
 from itools.handlers.Text import Text
 from itools.handlers.registry import register_handler_class
 from itools.catalog import queries
@@ -186,6 +186,12 @@ class Row(list):
 
 
 
+class IntegerKey(Integer):
+
+    index = 'keyword'
+
+
+
 class CSV(Text):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
@@ -210,7 +216,6 @@ class CSV(Text):
 
     # The class to use for each row (this allows easy specialization)
     row_class = Row
-
 
     #########################################################################
     # Load & Save
@@ -293,6 +298,18 @@ class CSV(Text):
     #########################################################################
     # API / Private
     #########################################################################
+    def get_key(self, name):
+        if self.columns is None:
+            return None
+
+        size = self.get_nrows()
+        if size == 0:
+            return 0
+
+        row = self.get_row(size - 1)
+        return row.get_value(name) + 1
+
+
     def get_analyser(self, name):
         datatype = self.schema[name]
         return get_analyser(datatype.index)

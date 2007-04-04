@@ -234,7 +234,7 @@ class Calendar(Text, icalendar):
 
     # Test if user in context is the organizer of a given event (or is admin)
     def is_organizer_or_admin(self, context, event):
-        if self.get_access_control().is_admin(context.user, event):
+        if self.get_access_control().is_admin(context.user, self):
             return True
         if event:
             organizer = event.get_property_values('ORGANIZER')

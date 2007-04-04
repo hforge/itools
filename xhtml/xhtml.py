@@ -51,9 +51,6 @@ class Boolean(Boolean):
 
 class Element(XMLElement):
 
-    namespace = 'http://www.w3.org/1999/xhtml'
-
-
     meta = ('<meta http-equiv="Content-Type"'
             '  content="application/xhtml+xml; charset=%s" />\n')
 

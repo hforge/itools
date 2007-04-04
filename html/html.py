@@ -121,7 +121,7 @@ class Document(XHTMLDocument):
                 schema = elements_schema.get(name, {'type': Element,
                                                     'is_inline': False})
                 element_class = schema['type']
-                element = element_class(name)
+                element = element_class(ns_uri, name)
                 for attr_name in attributes:
                     attr_value = attributes[attr_name]
                     type = get_datatype_by_uri(ns_uri, attr_name)

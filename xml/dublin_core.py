@@ -16,16 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.datatypes import Unicode
 from itools.schemas import DublinCore
 from namespaces import AbstractNamespace, set_namespace
 from xml import XMLError, Element
 
-
-
-class Element(Element):
-
-    namespace = 'http://purl.org/dc/elements/1.1/'
 
 
 class Namespace(AbstractNamespace):
@@ -37,9 +31,11 @@ class Namespace(AbstractNamespace):
     @staticmethod
     def get_element_schema(name):
         elements_schema = {
-            'creator': {'type': Element, 'is_empty': False, 'is_inline': False},
+            'creator': {'type': Element, 'is_empty': False,
+                        'is_inline': False},
             'date': {'type': Element, 'is_empty': False, 'is_inline': False},
-            'language': {'type': Element, 'is_empty': False, 'is_inline': False}
+            'language': {'type': Element, 'is_empty': False,
+                         'is_inline': False}
             }
         
         if name not in elements_schema:

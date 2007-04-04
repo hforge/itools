@@ -66,12 +66,11 @@ class Comment(object):
 
 class Element(object):
 
-    namespace = None
-
-    __slots__ = ['name', 'attributes', 'children']
+    __slots__ = ['namespace', 'name', 'attributes', 'children']
 
 
-    def __init__(self, name):
+    def __init__(self, namespace, name):
+        self.namespace = namespace
         self.name = name
         # Attributes (including namespace declarations)
         self.attributes = {}
@@ -389,7 +388,7 @@ class Document(Text):
                     e.line_number = line_number
                     raise e
                 element_type = schema['type']
-                element = element_type(element_name)
+                element = element_type(namespace_uri, element_name)
                 element.attributes = attributes
                 stack.append(element)
             elif event == END_ELEMENT:

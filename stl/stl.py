@@ -29,9 +29,8 @@ from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
-from itools.xml import (Comment, Element as XMLElement, XMLError,
-                        XMLNSNamespace, get_namespace, AbstractNamespace,
-                        set_namespace)
+from itools.xml import (Comment, Element, XMLError, XMLNSNamespace,
+                        get_namespace, AbstractNamespace, set_namespace)
 
 
 
@@ -197,12 +196,6 @@ class NamespaceStack(list):
 ###########################################################################
 # The tree
 ###########################################################################
-
-class Element(XMLElement):
-
-    namespace = stl_uri
-
-
 
 class IfAttr(DataType):
 
@@ -435,7 +428,7 @@ def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
 
     # Remove the element but preserves its children if it is a stl:block or
     # a stl:inline
-    if isinstance(node, Element):
+    if node.namespace == stl_uri:
         return content
 
     s.extend(content)

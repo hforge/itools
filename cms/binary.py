@@ -27,7 +27,8 @@ from cStringIO import StringIO
 # Import from itools
 from itools import vfs
 from itools.handlers.Image import Image as iImage
-from itools.handlers.archive import Archive as iArchive
+from itools.handlers.archive import (ZipArchive as iZipArchive,
+                                     TarArchive as iTarArchive)
 from itools.xml import xml_to_text
 from itools.stl import stl
 from itools.web.context import get_context
@@ -336,11 +337,10 @@ class PDF(OfficeDocument):
 
 
 ###########################################################################
-# Archive (zip, tar)
+# Archives
 ###########################################################################
-class Archive(File, iArchive):
+class Archive(File):
 
-    class_id = 'Archive'
     class_icon16 = 'images/Archive16.png'
     class_icon48 = 'images/Archive48.png'
 
@@ -358,6 +358,20 @@ class Archive(File, iArchive):
 
 
 
+class ZipArchive(Archive, iZipArchive):
+
+    class_id = 'application/zip'
+    class_title = u"Zip Archive"
+
+
+
+class TarArchive(Archive, iTarArchive):
+
+    class_id = 'application/x-tar'
+    class_title = u"Tar Archive"
+
+
+
 ###########################################################################
 # Register
 ###########################################################################
@@ -371,8 +385,11 @@ register_object_class(Flash)
 register_object_class(MSWord)
 register_object_class(MSExcel)
 register_object_class(MSPowerPoint)
+register_object_class(PDF)
+# Open Document Format
 register_object_class(OOWriter, 'application/vnd.oasis.opendocument.text')
 register_object_class(OOCalc, 'application/vnd.oasis.opendocument.spreadsheet')
 register_object_class(OOImpress, 'application/vnd.oasis.opendocument.presentation')
-register_object_class(PDF)
-register_object_class(Archive)
+# Archives
+register_object_class(ZipArchive)
+register_object_class(TarArchive)

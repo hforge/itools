@@ -21,6 +21,7 @@ import marshal
 from string import Template
 import urllib
 import zlib
+import mimetypes
 
 # Import from itools
 from itools.i18n.locale_ import format_datetime
@@ -914,6 +915,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         # Build a memory resource
         name, mimetype, body = file
+        # The mimetype sent by the browser can be minimalistic
+        guessed = mimetypes.guess_type(name)[0]
+        if guessed is not None:
+            mimetype = guessed
 
         # Guess the language if it is not included in the filename
         if mimetype.startswith('text/'):

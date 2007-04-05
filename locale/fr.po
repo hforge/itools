@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-02 10:04+CET\n"
+"POT-Creation-Date: 2007-04-05 12:04+CET\n"
 "PO-Revision-Date: 2007-01-10 15:16+0100\n"
 "Last-Translator: Hervé Cauwelier <herve@itaapy.com>\n"
 "Language-Team: Français (France) <fr@li.org>\n"
@@ -408,7 +408,7 @@ msgstr ""
 msgid "2.0"
 msgstr ""
 
-#: cms/skins.py:392
+#: cms/skins.py:395
 msgid "404 Not Found"
 msgstr "404 Introuvable"
 
@@ -524,7 +524,7 @@ msgid ""
 "to register by themselves."
 msgstr ""
 
-#: cms/Folder.py:1007
+#: cms/Folder.py:1012
 msgid "<em>Unavailable</em>"
 msgstr "<em>Indisponible</em>"
 
@@ -618,15 +618,6 @@ msgid ""
 "<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/"
 "title}<br/> <img src=\"${skin/image_uri}\"/>"
 msgstr ""
-
-#: cms/ui/RoleAware_new_user.xml.en:0
-#, fuzzy
-msgid ""
-"<option value=\"\"></option> <option stl:repeat=\"user non_members\" value="
-"\"${user/id}\">${user/title}</option>"
-msgstr ""
-"<option value=\"\">Tous</option> <option stl:repeat=\"state states\" value="
-"\"${state/key}\">${state/value}</option>"
 
 #: cms/ui/WebSite_search_form.xml.en:0
 msgid ""
@@ -836,7 +827,7 @@ msgstr ""
 msgid "<strong class=\"wf_${statename}\">${state}</strong>"
 msgstr ""
 
-#: cms/Folder.py:392
+#: cms/Folder.py:393
 msgid "<strong class=\"wf_%s\">%s</strong>"
 msgstr ""
 
@@ -1019,7 +1010,7 @@ msgstr "Un fil de discussion"
 msgid "A transition must be selected."
 msgstr "Une action doit être sélectionnée."
 
-#: cms/users.py:241
+#: cms/users.py:309
 msgid "A valid email address must be provided."
 msgstr "Une adresse de courriel valide est nécessaire."
 
@@ -1039,7 +1030,7 @@ msgstr "Contrôle d'accès"
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr "Accès refusé, vous n'êtes pas autorisé à accéder à cette ressource."
 
-#: cms/users.py:210
+#: cms/users.py:279
 msgid "Account"
 msgstr "Compte"
 
@@ -1047,7 +1038,7 @@ msgstr "Compte"
 msgid "Account Change"
 msgstr "Modifier le compte"
 
-#: cms/users.py:258
+#: cms/users.py:326
 msgid "Account changed."
 msgstr "Compte modifié."
 
@@ -1129,7 +1120,7 @@ msgstr ""
 msgid "An email has been sent to you with your new password."
 msgstr "Un courriel contenant votre nouveau mot de passe vous a été envoyé."
 
-#: cms/WebSite.py:310
+#: cms/WebSite.py:286
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
@@ -1159,7 +1150,7 @@ msgstr "Veuillez nous excuser pour la gêne occasionnée."
 msgid "Application Preferences"
 msgstr "Préférences de l'application"
 
-#: cms/users.py:201
+#: cms/users.py:270
 msgid "Application preferences changed."
 msgstr "Préférences de l'application modifiées."
 
@@ -1191,7 +1182,7 @@ msgstr "Auteur"
 msgid "Background Color"
 msgstr "Couleur de fond"
 
-#: cms/users.py:141
+#: cms/users.py:194
 msgid "Bad key."
 msgstr "Clé invalide."
 
@@ -1215,7 +1206,7 @@ msgstr "Bordure"
 msgid "Browse Content"
 msgstr "Parcourir"
 
-#: cms/access.py:308
+#: cms/access.py:314
 msgid "Browse Members"
 msgstr "Membres"
 
@@ -1298,7 +1289,7 @@ msgstr "Modifier le mot de passe"
 msgid "Change preferences"
 msgstr "Modifier les préférences"
 
-#: cms/csv.py:262
+#: cms/csv.py:270
 msgid "Changes saved."
 msgstr "Modifications sauvegardées"
 
@@ -1366,6 +1357,11 @@ msgstr "Nom"
 msgid "Confirm"
 msgstr "Confirmation"
 
+#: cms/ui/User_confirm_registration.xml.en:0
+#, fuzzy
+msgid "Confirm Registration"
+msgstr "Inscription"
+
 #: cms/ui/WebSite_contact_form.xml.en:0
 msgid "Contact"
 msgstr ""
@@ -1390,7 +1386,7 @@ msgstr "Contenu ($size)"
 msgid "Contents"
 msgstr "Contenu"
 
-#: cms/Folder.py:514
+#: cms/Folder.py:515
 msgid "Copy"
 msgstr "Copier"
 
@@ -1402,7 +1398,7 @@ msgid ""
 "allowed."
 msgstr ""
 
-#: cms/WebSite.py:46
+#: cms/WebSite.py:42
 msgid "Create a new Web Site or Work Place."
 msgstr "Créer un nouveau site Web"
 
@@ -1418,7 +1414,7 @@ msgstr "Crédits"
 msgid "Current state:"
 msgstr "État actuel&nbsp;:"
 
-#: cms/Folder.py:515
+#: cms/Folder.py:516
 msgid "Cut"
 msgstr "Couper"
 
@@ -1442,11 +1438,11 @@ msgstr "Défaut"
 msgid "Definitely remove"
 msgstr "Supprimer définitivement"
 
-#: cms/access.py:389
+#: cms/access.py:395
 msgid "Delete"
 msgstr "Supprimer"
 
-#: cms/Folder.py:504
+#: cms/Folder.py:505
 msgid "Delete this objet, are you sure?"
 msgstr "Êtes-vous sûr de vouloir supprimer la sélection ?"
 
@@ -1454,23 +1450,23 @@ msgstr "Êtes-vous sûr de vouloir supprimer la sélection ?"
 msgid "Description"
 msgstr "Description"
 
-#: cms/binary.py:220
+#: cms/binary.py:221
 msgid "Document Excel"
 msgstr "Classeur Excel"
 
-#: cms/binary.py:117
+#: cms/binary.py:118
 msgid "Document Flash"
 msgstr "Document Flash"
 
-#: cms/binary.py:329
+#: cms/binary.py:330
 msgid "Document PDF"
 msgstr "Document PDF"
 
-#: cms/binary.py:249
+#: cms/binary.py:250
 msgid "Document PowerPoint"
 msgstr "Présentation PowerPoint"
 
-#: cms/binary.py:204
+#: cms/binary.py:205
 msgid "Document Word"
 msgstr "Document Word"
 
@@ -1486,7 +1482,7 @@ msgstr "Document modifié."
 msgid "Download"
 msgstr "Télécharger"
 
-#: cms/access.py:383
+#: cms/access.py:389
 msgid "E-Mail"
 msgstr "Courriel"
 
@@ -1578,7 +1574,7 @@ msgstr "Evénement introuvable"
 msgid "Everything is alright."
 msgstr "Tout est sous contrôle."
 
-#: cms/binary.py:219
+#: cms/binary.py:220
 msgid "Excel"
 msgstr "MS Excel"
 
@@ -1615,7 +1611,7 @@ msgstr "Février"
 msgid "File"
 msgstr "Fichier"
 
-#: cms/Folder.py:954
+#: cms/Folder.py:959
 msgid "File uploaded."
 msgstr "Fichier téléchargé."
 
@@ -1635,11 +1631,11 @@ msgstr "Prénom"
 msgid "Fix"
 msgstr "Corriger"
 
-#: cms/binary.py:116
+#: cms/binary.py:117
 msgid "Flash"
 msgstr "Flash"
 
-#: cms/Folder.py:60
+#: cms/Folder.py:61
 msgid "Folder"
 msgstr "Dossier"
 
@@ -1739,11 +1735,11 @@ msgstr ""
 msgid "Groups fixed."
 msgstr "Groupes corrigés."
 
-#: cms/access.py:90
+#: cms/access.py:96
 msgid "Guest"
 msgstr ""
 
-#: cms/access.py:90
+#: cms/access.py:96
 #, fuzzy
 msgid "Guests"
 msgstr "Résultat de la recherche"
@@ -1873,7 +1869,7 @@ msgstr ""
 "Si vous trouvez un bug ou vous souhaitez une nouvelle fonctionnalité, "
 "veuillez <a href=\"http://bugs.ikaaro.org\">ouvrir un ticket</a>."
 
-#: cms/binary.py:44
+#: cms/binary.py:45
 msgid "Image"
 msgstr "Image"
 
@@ -2008,17 +2004,17 @@ msgstr "Langues"
 msgid "Languages removed."
 msgstr "Langues supprimées."
 
-#: cms/Folder.py:1022
+#: cms/Folder.py:1027
 #, fuzzy
 msgid "Last Author"
 msgstr "Auteur"
 
-#: cms/Folder.py:970
+#: cms/Folder.py:975
 #, fuzzy
 msgid "Last Changes"
 msgstr "Sauvegarder"
 
-#: cms/Folder.py:1021
+#: cms/Folder.py:1026
 msgid "Last Modified"
 msgstr ""
 
@@ -2099,15 +2095,15 @@ msgstr "Mars"
 msgid "May"
 msgstr "Mai"
 
-#: cms/access.py:91
+#: cms/access.py:97
 msgid "Member"
 msgstr "Membre"
 
-#: cms/access.py:447
+#: cms/access.py:453
 msgid "Members"
 msgstr "Membres"
 
-#: cms/access.py:414
+#: cms/access.py:420
 msgid "Members deleted."
 msgstr "Membres supprimés."
 
@@ -2127,7 +2123,7 @@ msgstr "Message modifié."
 msgid "Message in a thread"
 msgstr "Message d'un fil de discussion"
 
-#: cms/WebSite.py:613
+#: cms/WebSite.py:581
 msgid "Message sent."
 msgstr "Message envoyé."
 
@@ -2191,7 +2187,7 @@ msgstr "Navigation"
 msgid "New Language:"
 msgstr "Nouvelle langue :"
 
-#: cms/access.py:448
+#: cms/access.py:454
 msgid "New Member"
 msgstr "Nouveau membre"
 
@@ -2215,11 +2211,11 @@ msgstr "Nouveau site Web"
 msgid "New Wiki Page"
 msgstr "Nouvelle page Wiki"
 
-#: cms/Folder.py:890
+#: cms/Folder.py:891
 msgid "New resource added."
 msgstr "Nouvelle ressource ajoutée."
 
-#: cms/csv.py:212
+#: cms/csv.py:220
 #, fuzzy
 msgid "New row added."
 msgstr "Nouvelle ressource ajoutée."
@@ -2248,7 +2244,7 @@ msgstr "Aucun fichier n'a été entré."
 msgid "No history."
 msgstr "Rien dans l'historique."
 
-#: cms/Folder.py:714
+#: cms/Folder.py:715
 msgid "No objects selected."
 msgstr "Aucun objet sélectionné."
 
@@ -2284,35 +2280,35 @@ msgstr "Novembre"
 msgid "OK"
 msgstr "OK"
 
-#: cms/binary.py:306
+#: cms/binary.py:307
 msgid "OOo Calc"
 msgstr "OpenOffice.org Calc"
 
-#: cms/binary.py:317
+#: cms/binary.py:318
 msgid "OOo Impress"
 msgstr "OpenOffice.org Impress"
 
-#: cms/binary.py:295
+#: cms/binary.py:296
 msgid "OOo Writer"
 msgstr "OpenOffice.org Writer"
 
-#: cms/Folder.py:701
+#: cms/Folder.py:702
 msgid "Objects copied."
 msgstr "Objets copiés."
 
-#: cms/Folder.py:721
+#: cms/Folder.py:722
 msgid "Objects cut."
 msgstr "Objets coupés."
 
-#: cms/Folder.py:778
+#: cms/Folder.py:779
 msgid "Objects pasted."
 msgstr "Objets collés."
 
-#: cms/Folder.py:619
+#: cms/Folder.py:620
 msgid "Objects removed: $objects."
 msgstr "Objets supprimés&nbsp;: $objects."
 
-#: cms/Folder.py:680
+#: cms/Folder.py:681
 msgid "Objects renamed."
 msgstr "Objets renommés."
 
@@ -2328,21 +2324,17 @@ msgstr "Au moins un champ est invalide."
 msgid "Only administrators will be able to register new users."
 msgstr ""
 
-#: cms/binary.py:296
+#: cms/binary.py:297
 msgid "OpenOffice.org Document"
 msgstr "Document OpenOffice.org"
 
-#: cms/binary.py:318
+#: cms/binary.py:319
 msgid "OpenOffice.org Presentation"
 msgstr "Présentation OpenOffice.org"
 
-#: cms/binary.py:307
+#: cms/binary.py:308
 msgid "OpenOffice.org Spreadsheet"
 msgstr "Classeur OpenOffice.org"
-
-#: cms/ui/RoleAware_new_user.xml.en:0
-msgid "Or select an existing user"
-msgstr ""
 
 #: cms/future.py:55
 msgid "Order"
@@ -2368,7 +2360,7 @@ msgstr "Monter"
 msgid "Ordered List"
 msgstr "Liste numérotée"
 
-#: cms/Folder.py:61
+#: cms/Folder.py:62
 msgid "Organize your files and documents with folders."
 msgstr "Organisez vos fichiers et documents dans des dossiers."
 
@@ -2391,7 +2383,7 @@ msgstr ""
 msgid "Outdent"
 msgstr "Désindenter"
 
-#: cms/binary.py:328
+#: cms/binary.py:329
 msgid "PDF"
 msgstr "PDF"
 
@@ -2403,7 +2395,7 @@ msgstr ""
 msgid "Paolo Dina"
 msgstr ""
 
-#: cms/ui/WebSite_register.xml.en:0
+#: cms/ui/WebSite_login.xml.en:0
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -2411,15 +2403,15 @@ msgstr "Mot de passe"
 msgid "Password Change"
 msgstr "Modifier le mot de passe"
 
-#: cms/users.py:314
+#: cms/users.py:371
 msgid "Password changed."
 msgstr "Mot de passe modifié."
 
-#: cms/users.py:297
+#: cms/users.py:364
 msgid "Passwords mismatch, please try again."
 msgstr "Les mots de passe sont différents, veuillez réessayez."
 
-#: cms/Folder.py:520
+#: cms/Folder.py:521
 msgid "Paste"
 msgstr "Coller"
 
@@ -2439,7 +2431,7 @@ msgstr ""
 msgid "Plain Text"
 msgstr "Texte intégral"
 
-#: cms/WebSite.py:599
+#: cms/WebSite.py:567
 msgid "Please fill the missing fields."
 msgstr "Veuillez remplir les champs nécessaires."
 
@@ -2467,7 +2459,7 @@ msgstr "Poster"
 msgid "Post a Reply"
 msgstr "Poster une réponse"
 
-#: cms/binary.py:248
+#: cms/binary.py:249
 msgid "PowerPoint"
 msgstr "MS PowerPoint"
 
@@ -2475,7 +2467,7 @@ msgstr "MS PowerPoint"
 msgid "Preamble"
 msgstr ""
 
-#: cms/users.py:175
+#: cms/users.py:244
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -2491,7 +2483,7 @@ msgstr ""
 msgid "Private"
 msgstr "Privé"
 
-#: cms/users.py:154
+#: cms/users.py:223
 msgid "Profile"
 msgstr "Profil"
 
@@ -2519,8 +2511,9 @@ msgstr "Inscription"
 msgid "Registration"
 msgstr "Inscription"
 
-#: cms/users.py:146
-msgid "Registration confirmed, please log in"
+#: cms/users.py:215
+#, fuzzy
+msgid "Registration confirmed, welcome."
 msgstr "Inscription acceptée, veuillez vous connecter"
 
 #: cms/ui/Root_catalog.xml.en:0
@@ -2547,7 +2540,7 @@ msgstr "Renommer"
 msgid "Rename Objects"
 msgstr "Renommer les objets"
 
-#: cms/ui/WebSite_register.xml.en:0
+#: cms/ui/User_confirm_registration.xml.en:0
 msgid "Repeat Password"
 msgstr "Confirmer le mot de passe"
 
@@ -2587,11 +2580,11 @@ msgstr "Dépublier le document."
 msgid "Retract the document."
 msgstr "Retirer le document."
 
-#: cms/access.py:93
+#: cms/access.py:99
 msgid "Reviewer"
 msgstr "Modérateur"
 
-#: cms/access.py:92
+#: cms/access.py:98
 msgid "Reviewers"
 msgstr "Modérateurs"
 
@@ -2599,11 +2592,11 @@ msgstr "Modérateurs"
 msgid "Role"
 msgstr "Rôle"
 
-#: cms/access.py:441
+#: cms/access.py:447
 msgid "Role updated."
 msgstr "Rôle mis à jour."
 
-#: cms/csv.py:170
+#: cms/csv.py:171
 #, fuzzy
 msgid "Row deleted."
 msgstr "Membres supprimés."
@@ -2639,11 +2632,11 @@ msgstr "Inclure les sous-dossiers"
 msgid "Security Policy"
 msgstr ""
 
-#: cms/Folder.py:507
+#: cms/Folder.py:508
 msgid "Select All"
 msgstr ""
 
-#: cms/Folder.py:509
+#: cms/Folder.py:510
 msgid "Select None"
 msgstr ""
 
@@ -2663,7 +2656,7 @@ msgstr "Septembre"
 msgid "Settings"
 msgstr "Configuration"
 
-#: cms/Folder.py:497
+#: cms/Folder.py:498
 msgid "Size"
 msgstr "Taille"
 
@@ -2768,6 +2761,10 @@ msgstr "Colonnes"
 msgid "Table rows"
 msgstr "Lignes"
 
+#: cms/binary.py:371
+msgid "Tar Archive"
+msgstr ""
+
 #: cms/ui/User_tasks.xml.en:0
 msgid "Tasks"
 msgstr "Tâches"
@@ -2776,7 +2773,7 @@ msgstr "Tâches"
 msgid "Terms and Conditions for Copying, Distribution and Modification"
 msgstr ""
 
-#: cms/Folder.py:74
+#: cms/Folder.py:75
 msgid "Text"
 msgstr "Texte"
 
@@ -2824,7 +2821,7 @@ msgstr ""
 msgid "The default language has been changed."
 msgstr "La langue par défaut a été changée."
 
-#: cms/Folder.py:933
+#: cms/Folder.py:938
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 "Le nom du document contient des caractères interdits, choisissez-en un autre."
@@ -2834,11 +2831,11 @@ msgid "The documents below await review for publication:"
 msgstr ""
 "Les documents ci-dessous nécessitent une validation pour être publiés&nbsp;:"
 
-#: cms/access.py:497
+#: cms/access.py:477
 msgid "The email address is missing, please type it."
 msgstr "Le courriel est incorrect, veuillez réessayer."
 
-#: cms/Folder.py:913
+#: cms/Folder.py:914
 msgid "The file must be entered"
 msgstr "Le fichier doit être saisi."
 
@@ -2852,23 +2849,19 @@ msgid ""
 "share and change it."
 msgstr ""
 
-#: cms/Folder.py:845
+#: cms/Folder.py:846
 msgid "The name must be entered"
 msgstr "Le nom doit être saisi."
 
-#: cms/WebSite.py:272
-msgid "The password is mandatory."
-msgstr "Le mot de passe est requis."
-
-#: cms/access.py:516
+#: cms/access.py:499
 msgid "The password is wrong, please try again."
 msgstr "Le mot de passe est incorrect, veuillez réessayer."
 
-#: cms/WebSite.py:370
+#: cms/WebSite.py:345
 msgid "The password is wrong."
 msgstr "Le mot de passe est incorrect."
 
-#: cms/WebSite.py:278
+#: cms/users.py:205
 msgid "The passwords do not match."
 msgstr "Les mots de passe ne correspondent pas."
 
@@ -2888,20 +2881,15 @@ msgid ""
 "modifications to it."
 msgstr ""
 
-#: cms/WebSite.py:355
+#: cms/WebSite.py:331
 msgid "The user \"$username\" does not exist."
 msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
-#: cms/WebSite.py:364
+#: cms/WebSite.py:340
 msgid "The user \"$username\" is not active."
 msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
-#: cms/access.py:491
-#, fuzzy
-msgid "The user $user_id does not exist."
-msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
-
-#: cms/access.py:526
+#: cms/access.py:520
 msgid "The user is already here."
 msgstr "L'utilisateur est déjà membre."
 
@@ -2921,25 +2909,25 @@ msgstr "Une erreur s'est produite, veuillez réessayer plus tard."
 msgid "There is 1 object."
 msgstr "Il y a 1 objet."
 
-#: cms/WebSite.py:266
+#: cms/WebSite.py:264
 msgid "There is already a user with that email."
 msgstr "Il existe déjà un utilisateur avec cette adresse de courriel."
 
-#: cms/Folder.py:863
+#: cms/Folder.py:864
 msgid "There is already another object with this name."
 msgstr "Il existe déjà un autre objet avec ce nom."
 
-#: cms/Folder.py:938
+#: cms/Folder.py:943
 msgid "There is already another resource with this name."
 msgstr "Il existe déjà un autre objet avec ce nom."
 
-#: cms/users.py:247
+#: cms/users.py:315
 msgid "There is another user with the email \"%s\", please try again"
 msgstr ""
 "Il existe déjà un utilisateur avec le courriel &laquo;&nbsp;%s&nbsp;&raquo;, "
 "veuillez en changer."
 
-#: cms/WebSite.py:420
+#: cms/WebSite.py:388
 msgid "There is not a user with the email address \"$email\""
 msgstr ""
 "Il n'existe pas d'utilisateur avec l'adresse &laquo;&nbsp;$email&nbsp;"
@@ -3056,13 +3044,26 @@ msgid "To confirm these changes, you must type your actual password."
 msgstr ""
 "Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
 
+#: cms/users.py:158
+msgid ""
+"To confirm your registration click the link:\n"
+"\n"
+"  $confirm_url"
+msgstr ""
+
+#: cms/ui/User_confirm_registration.xml.en:0
+#, fuzzy
+msgid "To confirm your registration, please type a password."
+msgstr ""
+"Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
+
 #: cms/ui/File_download_form.xml.en:0
 msgid "To download this file, click on <a href=\"${url}\">${title_or_name}</a>"
 msgstr ""
 "Pour télécharger ce fichier, cliquez sur <a href=\"${url}\">${title_or_name}"
 "</a>"
 
-#: cms/users.py:458
+#: cms/users.py:514
 msgid "To manage the users please go <a href=\"/;permissions_form\">here</a>."
 msgstr ""
 
@@ -3113,11 +3114,11 @@ msgstr "Traductions"
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: cms/Folder.py:496
+#: cms/Folder.py:497
 msgid "Type"
 msgstr "Type"
 
-#: cms/WebSite.py:341
+#: cms/WebSite.py:317
 msgid "Type your email please."
 msgstr "Veuillez taper votre adresse de courriel."
 
@@ -3170,11 +3171,11 @@ msgstr ""
 msgid "User"
 msgstr "Utilisateur"
 
-#: cms/access.py:382
+#: cms/access.py:388
 msgid "User ID"
 msgstr "ID utilisateur"
 
-#: cms/access.py:543
+#: cms/access.py:537
 msgid "User added."
 msgstr "Utilisateur ajouté."
 
@@ -3198,7 +3199,7 @@ msgstr "Version modifiée."
 msgid "Version uploaded."
 msgstr "Version importée."
 
-#: cms/binary.py:89
+#: cms/binary.py:90
 msgid "Video"
 msgstr "Vidéo"
 
@@ -3237,7 +3238,7 @@ msgstr ""
 msgid "Web Document"
 msgstr "Document Web"
 
-#: cms/WebSite.py:45
+#: cms/WebSite.py:41
 msgid "Web Site"
 msgstr "Site Web"
 
@@ -3273,7 +3274,7 @@ msgstr "Page de Wiki"
 msgid "Wiki contents"
 msgstr "Contenu du wiki"
 
-#: cms/binary.py:203
+#: cms/binary.py:204
 msgid "Word"
 msgstr "MS Word"
 
@@ -3377,7 +3378,7 @@ msgid ""
 "the rights granted herein."
 msgstr ""
 
-#: cms/users.py:290
+#: cms/users.py:357
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 "Vous avez mal saisi votre mot de passe actuel, votre compte n'a pas été "
@@ -3399,7 +3400,7 @@ msgstr "Vous ne devez sélectionner qu'une langue."
 msgid "Your login information has been cleared."
 msgstr "Vos informations de connexion ont été effacées."
 
-#: cms/WebSite.py:432
+#: cms/WebSite.py:400
 msgid ""
 "Your new password:\n"
 "\n"
@@ -3411,6 +3412,14 @@ msgstr ""
 
 #: cms/ui/Root_credits.xml.en:0
 msgid "Zhou Li"
+msgstr ""
+
+#: cms/binary.py:364
+msgid "Zip Archive"
+msgstr ""
+
+#: cms/users.py:156
+msgid "[%s] Register confirmation required"
 msgstr ""
 
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
@@ -3683,6 +3692,14 @@ msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 #~ msgid "%d obs"
 #~ msgstr "%d obj"
 
+#, fuzzy
+#~ msgid ""
+#~ "<option value=\"\"></option> <option stl:repeat=\"user non_members\" "
+#~ "value=\"${user/id}\">${user/title}</option>"
+#~ msgstr ""
+#~ "<option value=\"\">Tous</option> <option stl:repeat=\"state states\" "
+#~ "value=\"${state/key}\">${state/value}</option>"
+
 #~ msgid "Add Language"
 #~ msgstr "Ajouter une langue"
 
@@ -3773,6 +3790,13 @@ msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 #, fuzzy
 #~ msgid "The fullname is mandatory."
 #~ msgstr "Le mot de passe est requis."
+
+#~ msgid "The password is mandatory."
+#~ msgstr "Le mot de passe est requis."
+
+#, fuzzy
+#~ msgid "The user $user_id does not exist."
+#~ msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
 #~ msgid "This folder is empty."
 #~ msgstr "Ce dossier est vide."

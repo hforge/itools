@@ -1074,9 +1074,8 @@ msgid "Add a new row"
 msgstr "Créer un utilisateur"
 
 #: cms/ui/RoleAware_new_user.xml.en:0
-#, fuzzy
 msgid "Add a new user"
-msgstr "Créer un utilisateur"
+msgstr "Ajouter un utilisateur"
 
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Add and return"
@@ -1323,7 +1322,7 @@ msgstr "Choisir un modèle&nbsp;:"
 
 #: cms/ui/RoleAware_new_user.xml.en:0
 msgid "Choose the role for the new member"
-msgstr ""
+msgstr "Choisir le rôle de l'utilisateur"
 
 #: cms/ui/WebSite_languages.xml.en:0
 msgid "Code"

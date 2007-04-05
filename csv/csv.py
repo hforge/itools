@@ -256,7 +256,7 @@ class CSV(Text):
                 self._add_row(row)
 
 
-    def to_str(self, encoding='UTF-8'):
+    def to_str(self, encoding='UTF-8', separator=','):
         lines = []
         # When schema or columns (or both) are None there is plain 
         # string to string conversion
@@ -277,7 +277,7 @@ class CSV(Text):
             for row in self.get_rows():
                 line = [ '"%s"' % x.encode(encoding).replace('"', '""')
                          for x in row ]
-                lines.append(','.join(line))
+                lines.append(separator.join(line))
         return '\n'.join(lines)
 
 

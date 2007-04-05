@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,8 @@ from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
 from itools.xml import Comment
-from itools.xhtml import Document as XHTMLDocument, Element
+from itools.xhtml import (Document as XHTMLDocument, Element,
+                          element_to_str_as_html)
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
 
@@ -30,24 +31,24 @@ ns_uri = 'http://www.w3.org/1999/xhtml'
 
 
 elements_schema = {
-    'a': {'type': Element, 'is_inline': True},
-    'abbr': {'type': Element, 'is_inline': True},
-    'acronym': {'type': Element, 'is_inline': True},
-    'b': {'type': Element, 'is_inline': True},
-    'cite': {'type': Element, 'is_inline': True},
-    'code': {'type': Element, 'is_inline': True},
-    'dfn': {'type': Element, 'is_inline': True},
-    'em': {'type': Element, 'is_inline': True},
-    'head': {'type': Element, 'is_inline': False},
-    'kbd': {'type': Element, 'is_inline': True},
-    'q': {'type': Element, 'is_inline': True},
-    'samp': {'type': Element, 'is_inline': True},
-    'span': {'type': Element, 'is_inline': True},
-    'strong': {'type': Element, 'is_inline': True},
-    'sub': {'type': Element, 'is_inline': True},
-    'sup': {'type': Element, 'is_inline': True},
-    'tt': {'type': Element, 'is_inline': True},
-    'var': {'type': Element, 'is_inline': True},
+    'a': {'is_inline': True},
+    'abbr': {'is_inline': True},
+    'acronym': {'is_inline': True},
+    'b': {'is_inline': True},
+    'cite': {'is_inline': True},
+    'code': {'is_inline': True},
+    'dfn': {'is_inline': True},
+    'em': {'is_inline': True},
+    'head': {'is_inline': False},
+    'kbd': {'is_inline': True},
+    'q': {'is_inline': True},
+    'samp': {'is_inline': True},
+    'span': {'is_inline': True},
+    'strong': {'is_inline': True},
+    'sub': {'is_inline': True},
+    'sup': {'is_inline': True},
+    'tt': {'is_inline': True},
+    'var': {'is_inline': True},
     }
 
 
@@ -118,10 +119,8 @@ class Document(XHTMLDocument):
                 self.document_type = value
             elif event == START_ELEMENT:
                 name, attributes = value
-                schema = elements_schema.get(name, {'type': Element,
-                                                    'is_inline': False})
-                element_class = schema['type']
-                element = element_class(ns_uri, name)
+                schema = elements_schema.get(name, {'is_inline': False})
+                element = Element(ns_uri, name)
                 for attr_name in attributes:
                     attr_value = attributes[attr_name]
                     type = get_datatype_by_uri(ns_uri, attr_name)
@@ -164,10 +163,8 @@ class Document(XHTMLDocument):
                 # after the "<html>" tag.
                 break
         else:
-            schema = elements_schema.get('html', {'type': Element,
-                                                  'is_inline': False})
-            element_class = schema['type']
-            element = element_class('html')
+            schema = elements_schema.get('html', {'is_inline': False})
+            element = Element(ns_uri, 'html')
             element.children = children
             self.root_element = element
 

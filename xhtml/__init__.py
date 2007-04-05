@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,10 +19,16 @@
 import mimetypes
 
 # Import from itools
-from xhtml import Document, Element
+from xhtml import (Document, Element,
+                   element_to_str_as_html, element_content_to_html)
 
 
-__all__ = ['Document', 'Element']
+__all__ = [
+    'Document',
+    'Element',
+    # New API (work in progress)
+    'element_to_str_as_html',
+    'element_content_to_html']
 
 
 mimetypes.add_type('application/xhtml+xml', '.xhtml')

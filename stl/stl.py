@@ -29,7 +29,7 @@ from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
-from itools.xml import (Comment, Element, XMLError, XMLNSNamespace,
+from itools.xml import (Comment, XMLError, XMLNSNamespace,
                         get_namespace, AbstractNamespace, set_namespace)
 
 
@@ -442,8 +442,8 @@ def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
 ########################################################################
 
 elements_schema = {
-    'block': {'type': Element, 'is_inline': False},
-    'inline': {'type': Element, 'is_inline': True}
+    'block': {'is_inline': False},
+    'inline': {'is_inline': True}
     }
 
 

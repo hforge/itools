@@ -22,9 +22,10 @@ except ImportError:
     print 'uTidylib is not installed, download from http://utidylib.berlios.de/'
 
 # Import from itools
-from itools.xml import Document as XMLDocument, Element as XMLElement
+from itools.xml import (Document as XMLDocument, Element as XMLElement,
+                        element_content_to_str)
 from itools.stl import stl
-from itools.xhtml import Document as XHTMLDocument
+from itools.xhtml import Document as XHTMLDocument, element_content_to_html
 from itools.html import Document as HTMLDocument
 
 # Import from ikaaro
@@ -64,13 +65,6 @@ class XHTMLFile(Text, XHTMLDocument):
     #######################################################################
     # API
     #######################################################################
-    def to_xhtml_body(self):
-        body = self.get_body()
-        if body is None:
-            return None
-        return body.get_content()
-
-
     def to_html(self):
         doc = tidy.parseString(self.to_str(), indent=1, char_encoding='utf8',
                                output_html=1)
@@ -105,7 +99,11 @@ class XHTMLFile(Text, XHTMLDocument):
     view__label__ = u'View'
     def view(self, context):
         namespace = {}
-        namespace['text'] = self.to_xhtml_body()
+        body = self.get_body()
+        if body is None:
+            namespace['text'] = None
+        else:
+            namespace['text'] = element_content_to_str(body)
 
         handler = self.get_handler('/ui/HTML_view.xml')
         return stl(handler, namespace)
@@ -114,7 +112,8 @@ class XHTMLFile(Text, XHTMLDocument):
     #######################################################################
     # Edit / Inline
     def get_epoz_data(self):
-        return self.get_body().get_content_as_html()
+        body = self.get_body()
+        return element_content_to_html(body)
 
 
     edit_form__access__ = 'is_allowed_to_edit'
@@ -130,7 +129,7 @@ class XHTMLFile(Text, XHTMLDocument):
         # Edit with a rich text editor
         namespace = {}
         # Epoz expects HTML
-        data = body.get_content_as_html()
+        data = element_content_to_html(body)
         namespace['rte'] = self.get_rte('data', data)
 
         handler = self.get_handler('/ui/HTML_edit.xml')

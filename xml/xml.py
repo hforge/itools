@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2003-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -63,10 +63,17 @@ class Comment(object):
         return True
 
 
+# Strams
+def filter_root_stream(root):
+    for node, context in root.traverse2():
+        if node is not root:
+            yield node, context
 
-def element_to_str(element, encoding='UTF-8'):
+
+# Serialize
+def stream_to_str(stream, encoding='UTF-8'):
     data = []
-    for node, context in element.traverse2():
+    for node, context in stream:
         if isinstance(node, unicode):
             node = node.encode(encoding)
             data.append(node)
@@ -82,6 +89,16 @@ def element_to_str(element, encoding='UTF-8'):
         else:
             raise NotImplementedError, repr(node)
     return ''.join(data)
+
+
+# API
+def element_to_str(element, encoding='UTF-8'):
+    return stream_to_str(element.traverse2(), encoding)
+
+
+def element_content_to_str(element, encoding='UTF-8'):
+    return stream_to_str(filter_root_stream(element), encoding)
+
 
 
 class Element(object):
@@ -184,7 +201,7 @@ class Element(object):
 
     def to_unicode(self):
         # Used today only by 'itools.i18n.segment' (XHTML translation)
-        return unicode(self.to_str(), 'utf-8')
+        return unicode(element_to_str(self), 'utf-8')
 
 
     #######################################################################
@@ -285,23 +302,6 @@ class Element(object):
         yield self, context
 
 
-    #######################################################################
-    # Internationalization
-    def is_translatable(self, attribute_name=None):
-        """
-        Some elements may contain text addressed to users, that is, text
-        that could be translated in different human languages, for example
-        the 'p' element of XHTML. This method should return 'True' in that
-        cases, False (the default) otherwise.
-
-        If the parameter 'attribute_name' is given, then we are being asked
-        wether that attribute is or not translatable. An example is the 'alt'
-        attribute of the 'img' elements of XHTML.
-        """
-        return False
-
-
-
 #############################################################################
 # Documents
 #############################################################################
@@ -387,8 +387,7 @@ class Document(Text):
                 except XMLError, e:
                     e.line_number = line_number
                     raise e
-                element_type = schema['type']
-                element = element_type(namespace_uri, element_name)
+                element = Element(namespace_uri, element_name)
                 element.attributes = attributes
                 stack.append(element)
             elif event == END_ELEMENT:

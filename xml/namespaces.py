@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -135,6 +135,23 @@ class AbstractNamespace(object):
         raise XMLError, 'undefined element "%s"' % name
 
 
+    #######################################################################
+    # Internationalization
+    @classmethod
+    def is_translatable(cls, node, attribute_name=None):
+        """
+        Some elements may contain text addressed to users, that is, text
+        that could be translated in different human languages, for example
+        the 'p' element of XHTML. This method should return 'True' in that
+        cases, False (the default) otherwise.
+
+        If the parameter 'attribute_name' is given, then we are being asked
+        wether that attribute is or not translatable. An example is the 'alt'
+        attribute of the 'img' elements of XHTML.
+        """
+        return False
+
+
 
 class DefaultNamespace(AbstractNamespace):
     """
@@ -149,12 +166,11 @@ class DefaultNamespace(AbstractNamespace):
     @staticmethod
     def get_element_schema(name):
         from xml import Element
-        return {'type': Element,
-                'is_empty': False}
+        return {'is_empty': False}
 
 
 
-class XMLNamespace(BaseSchema):
+class XMLNamespace(AbstractNamespace, BaseSchema):
 
     class_uri = 'http://www.w3.org/XML/1998/namespace'
     class_prefix = 'xml'
@@ -168,7 +184,7 @@ class XMLNamespace(BaseSchema):
 
 
 
-class XMLNSNamespace(BaseSchema):
+class XMLNSNamespace(AbstractNamespace, BaseSchema):
 
     class_uri = 'http://www.w3.org/2000/xmlns/'
     class_prefix = 'xmlns'

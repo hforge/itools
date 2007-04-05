@@ -18,7 +18,7 @@
 # Import from itools
 from itools.schemas import DublinCore
 from namespaces import AbstractNamespace, set_namespace
-from xml import XMLError, Element
+from xml import XMLError
 
 
 
@@ -31,11 +31,9 @@ class Namespace(AbstractNamespace):
     @staticmethod
     def get_element_schema(name):
         elements_schema = {
-            'creator': {'type': Element, 'is_empty': False,
-                        'is_inline': False},
-            'date': {'type': Element, 'is_empty': False, 'is_inline': False},
-            'language': {'type': Element, 'is_empty': False,
-                         'is_inline': False}
+            'creator': {'is_empty': False, 'is_inline': False},
+            'date': {'is_empty': False, 'is_inline': False},
+            'language': {'is_empty': False, 'is_inline': False}
             }
         
         if name not in elements_schema:

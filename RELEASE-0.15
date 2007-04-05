@@ -1,5 +1,5 @@
 
-itools 0.15.3 (2007/0X/XX)
+itools 0.15.3 (2007/04/0X)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -13,39 +13,35 @@ meta-package for easier development and deployment:
   itools.handlers       itools.stl              itools.xliff
   itools.html           itools.tmx              itools.xml
 
-This release bring some fixes and a few programing and user interface
-improvements.
+This release brings some fixes and a few programing and user interface
+improvements. The list of the most important changes, classified by
+package, follows.
 
-We have added a new method "traverse" to the package "itools.vfs". It is
-a generator that traverses a folder and returns the path of every file and
-folder within it. The method "copy" has been reimplemented using "traverse",
-so now it is possible to copy folders from one scheme to another.
+[itools.vfs] The new method "traverse" is a generator that traverses a
+  folder and returns the path of every file and folder within it.
 
-We have done yet another round through the API of "itools.ical". This time
-to simplify the search API, which has been reduced to: "search_events",
-"search_events_in_date" and "search_events_in_range" (besides the more
-low-level method "search").
+[itools.csv] Now it is possible to define a column as an internal key that
+  uniquely identifies a row within the CSV file. See the type "IntegerKey"
+  and the method "get_key".
 
-The rest of the work has gone to "itools.cms".
+[itools.ical] The search API has been reduced to methods "search_events",
+  "search_events_in_date" and "search_events_in_range" (besides the more
+  low-level method "search").
 
-We have a few user interface improvements: now WebSite objects have a view
-that shows the objects that have been modified recently; the column for the
-workflow state in the folder's browse list view has been colorized; and the
-user interface to work with CSV files has been finished.
+[itools.cms] The registration process and the user management interfaces
+  have been improved. WebSite objects have gained the role "admins" (now
+  we have four access levels: guest, member, reviewer and admin).
 
-In the API department we have just added the method "has_property" to all
-CMS handlers. It is a short way to call the metadata's "has_property".
-
-And there are few fixes too. The contact form now works when the user enters
-non-ascii characters. Some missing buttons have been internationalized. And 
-the ordered folder template works again.
+  Regarding thhe API, the method "has_property" has been added to all
+  CMS objects (it is a short way to call the metadata's "has_property").
 
 
 Credits:
 
- - Hervé Cauwelier worked on "itools.cms" intarface and bug fixing.
+ - Hervé Cauwelier worked on "itools.cms".
  - Nicolas Deram worked on "itools.ical";
  - J. David Ibáñez worked on "itools.vfs" and "itools.cms";
+ - Henry Obein worked on "itools.csv";
 
 
 Resources

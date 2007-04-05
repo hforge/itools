@@ -255,7 +255,10 @@ class Folder(Handler):
 
         # Get the container
         path, segment = path[:-1], path[-1]
-        container = self.get_handler(path)
+        try:
+            container = self.get_handler(path)
+        except LookupError:
+            return False
 
         # Check wether the container has the handler or not
         return segment.name in container.cache

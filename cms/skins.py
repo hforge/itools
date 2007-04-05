@@ -184,7 +184,10 @@ class Skin(Folder):
         for segment in context.uri.path:
             name = segment.name
             if name:
-                handler = handlers[-1].get_handler(name)
+                try:
+                    handler = handlers[-1].get_handler(name)
+                except LookupError:
+                    continue
                 handlers.append(handler)
 
         #  Build the namespace

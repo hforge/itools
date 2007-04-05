@@ -479,7 +479,15 @@ class Server(object):
         try:
             handler = context.handler = root.get_handler(context.path)
         except LookupError:
-            context.handler = None
+            # Find an ancestor to render the page
+            abspath = context.path
+            for x in range(len(abspath) - 1, 0, -1):
+                path = abspath[:x]
+                if root.has_handler(path):
+                    context.handler = root.get_handler(path)
+                    break
+            else:
+                context.handler = root
             return 404, root.not_found
         method = handler.get_method(context.method)
         if method is None:

@@ -1,5 +1,5 @@
 
-itools 0.15.3 (2007/04/0X)
+itools 0.15.3 (2007/04/06)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -32,8 +32,8 @@ package, follows.
   have been improved. WebSite objects have gained the role "admins" (now
   we have four access levels: guest, member, reviewer and admin).
 
-  Regarding thhe API, the method "has_property" has been added to all
-  CMS objects (it is a short way to call the metadata's "has_property").
+  The method "has_property" has been added to all CMS objects (it is a
+  short way to call the metadata's "has_property").
 
 
 Credits:

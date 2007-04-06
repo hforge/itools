@@ -354,6 +354,8 @@ class WikiPage(Text):
             image.save_state_to_file(file)
         # And referenced images
         for node_uri, filename in images:
+            if tempdir.exists(filename):
+                continue
             image = self.get_handler(node_uri)
             with tempdir.make_file(filename) as file:
                 image.save_state_to_file(file)
@@ -401,17 +403,24 @@ class WikiPage(Text):
 
 
     def edit(self, context):
-        goto = Text.edit(self, context)
+        data = context.get_form_value('data', type=Unicode)
+        # Ensure source is encoded to UTF-8
+        data = data.encode('utf_8')
+        self.load_state_from_string(data)
 
-        message = goto.query['message']
         if 'class="system-message"' in self.to_html():
             message = u"Syntax error, please check the view for details."
+        else:
+            message = u"Document edited."
 
+        goto = context.come_back(message)
         if context.has_form_value('view'):
-            goto = ';view'
+            query = goto.query
+            goto = goto.resolve(';view')
+            goto.query = query
         else:
             goto.fragment = 'bottom'
-        return context.come_back(message, goto)
+        return goto
 
 
     browse_content__access__ = WikiFolder.browse_content__access__

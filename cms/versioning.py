@@ -30,10 +30,11 @@ class VersioningAware(object):
 
     def commit_revision(self):
         context = get_context()
-        if context is None:
-            username = ''
-        else:
-            username = context.user.name
+        username = ''
+        if context is not None:
+            user = context.user
+            if user is not None:
+                username = user.name
 
         property = {
             (None, 'user'): username,

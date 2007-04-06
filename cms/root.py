@@ -15,10 +15,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the Standard Library
+# Import from the future
 from __future__ import with_statement
+
+# Import from the Standard Library
+from email.Utils import formatdate
 import smtplib
-from sys import stdout
 from time import time
 import traceback
 
@@ -283,6 +285,7 @@ class Root(WebSite):
         message_pattern = (
             u'To: %(to_addr)s\n'
             u'From: %(from_addr)s\n'
+            u'Date: %(date)s\n'
             u'Subject: %(subject)s\n'
             u'Content-Transfer-Encoding: 8bit\n'
             u'Content-Type: text/plain; charset="%(encoding)s"\n'
@@ -290,6 +293,7 @@ class Root(WebSite):
             u'%(body)s\n')
         message = message_pattern % {'to_addr': to_addr,
                                      'from_addr': from_addr,
+                                     'date': formatdate(localtime=True),
                                      'subject': subject,
                                      'body': body,
                                      'encoding': encoding}

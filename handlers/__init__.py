@@ -35,7 +35,7 @@ files, etc...
 import mimetypes
 
 # Import from itools
-from archive import Archive, ZipArchive, TarArchive
+from archive import ZipArchive, TarArchive
 from base import Node, Handler
 from config import Config
 from exceptions import AcquisitionError
@@ -56,7 +56,6 @@ __all__ = [
     # Abstract classes
     'Node',
     'Handler',
-    'Archive',
     # Handlers
     'ZipArchive',
     'TarArchive',

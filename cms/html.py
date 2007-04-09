@@ -22,8 +22,8 @@ except ImportError:
     print 'uTidylib is not installed, download from http://utidylib.berlios.de/'
 
 # Import from itools
-from itools.xml import (Document as XMLDocument, Element as XMLElement,
-                        element_content_to_str)
+from itools.xml import (Document as XMLDocument, element_content_to_str,
+                        TEXT, START_ELEMENT)
 from itools.stl import stl
 from itools.xhtml import Document as XHTMLDocument, element_content_to_html
 from itools.html import Document as HTMLDocument
@@ -77,11 +77,11 @@ class XHTMLFile(Text, XHTMLDocument):
         if body is None:
             return True
         is_empty = False
-        for node in body.traverse():
-            if isinstance(node, unicode):
+        for event, node in body.traverse():
+            if event == TEXT:
                 if node.replace('&nbsp;', '').strip():
                     break
-            elif isinstance(node, XMLElement):
+            elif event == START_ELEMENT:
                 if node.name == 'img':
                     break
         else:

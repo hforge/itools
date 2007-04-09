@@ -25,10 +25,10 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
 from itools.handlers import register_handler_class
-from itools.xml import (Document as XMLDocument, Element,
-                        Comment,
+from itools.xml import (Document as XMLDocument, Element, Comment,
+                        START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
                         AbstractNamespace, set_namespace, get_namespace,
-                        get_element_schema, filter_root_stream, Context)
+                        get_element_schema, filter_root_stream)
 from itools.i18n import Message
 
 
@@ -55,29 +55,28 @@ class Boolean(Boolean):
 
 def stream_to_html(stream, encoding='UTF-8'):
     data = []
-    for node, context in stream:
-        if isinstance(node, unicode):
+    for event, node in stream:
+        if event == TEXT:
             node = node.encode(encoding)
             data.append(node)
-        elif isinstance(node, Element):
-            if context.start is True:
-                s = '<%s' % node.qname
-                # Output the attributes
-                for namespace_uri, local_name, value in node.get_attributes():
-                    qname = node.get_attribute_qname(namespace_uri, local_name)
-                    type = get_datatype_by_uri(namespace_uri, local_name)
-                    value = type.encode(value)
-                    value = XMLAttribute.encode(value)
-                    s += ' %s="%s"' % (qname, value)
-                data.append(s + '>')
-            else:
-                data.append(node.get_end_tag())
-        elif isinstance(node, Comment):
+        elif event == START_ELEMENT:
+            s = '<%s' % node.qname
+            # Output the attributes
+            for namespace_uri, local_name, value in node.get_attributes():
+                qname = node.get_attribute_qname(namespace_uri, local_name)
+                type = get_datatype_by_uri(namespace_uri, local_name)
+                value = type.encode(value)
+                value = XMLAttribute.encode(value)
+                s += ' %s="%s"' % (qname, value)
+            data.append(s + '>')
+        elif event == END_ELEMENT:
+            data.append(node.get_end_tag())
+        elif event == COMMENT:
             node = node.data
             node = node.encode(encoding)
             data.append('<!--%s-->' % node)
         else:
-            raise NotImplementedError, repr(node)
+            raise NotImplementedError, str(event)
     return ''.join(data)
 
 
@@ -91,8 +90,8 @@ def element_to_str_as_xhtml(element, encoding='UTF-8'):
         key1 = (xhtml_uri, 'http-equiv')
         key2 = (xhtml_uri, 'content')
         key2_value = 'application/xhtml+xml; charset=%s'
-        for node, context in root.traverse2():
-            if isinstance(node, Element):
+        for event, node in root.traverse():
+            if event == START_ELEMENT:
                 if node.namespace == Namespace.class_uri:
                     # Skip <meta http-equiv="Content-Type">
                     if node.name == 'meta':
@@ -100,19 +99,22 @@ def element_to_str_as_xhtml(element, encoding='UTF-8'):
                             if node.attributes[key1] == 'Content-Type':
                                 continue
                     elif node.name == 'head':
-                        if context.start is True:
-                            yield node, context
-                            # Add <meta http-equiv="Content-Type">
-                            meta = Element(xhtml_uri, 'meta')
-                            meta.attributes[key1] = 'Content-Type'
-                            meta.attributes[key2] = key2_value % encoding
-                            context = Context()
-                            context.start = True
-                            yield meta, context
-                            context.start = False
-                            yield meta, context
-                            continue
-            yield node, context
+                        yield event, node
+                        # Add <meta http-equiv="Content-Type">
+                        meta = Element(xhtml_uri, 'meta')
+                        meta.attributes[key1] = 'Content-Type'
+                        meta.attributes[key2] = key2_value % encoding
+                        yield START_ELEMENT, meta
+                        yield END_ELEMENT, meta
+                        continue
+            elif event == END_ELEMENT:
+                if node.namespace == Namespace.class_uri:
+                    # Skip <meta http-equiv="Content-Type">
+                    if node.name == 'meta':
+                        if key1 in node.attributes:
+                            if node.attributes[key1] == 'Content-Type':
+                                continue
+            yield event, node
 
     return stream_to_str(filter(element, encoding), encoding)
 
@@ -123,8 +125,8 @@ def element_to_str_as_html(element, encoding='UTF-8'):
         key1 = (xhtml_uri, 'http-equiv')
         key2 = (xhtml_uri, 'content')
         key2_value = 'text/html; charset=%s'
-        for node, context in root.traverse2():
-            if isinstance(node, Element):
+        for event, node in root.traverse():
+            if event == START_ELEMENT:
                 if node.namespace == Namespace.class_uri:
                     # Skip <meta http-equiv="Content-Type">
                     if node.name == 'meta':
@@ -132,19 +134,23 @@ def element_to_str_as_html(element, encoding='UTF-8'):
                             if node.attributes[key1] == 'Content-Type':
                                 continue
                     elif node.name == 'head':
-                        if context.start is True:
-                            yield node, context
-                            # Add <meta http-equiv="Content-Type">
-                            meta = Element(xhtml_uri, 'meta')
-                            meta.attributes[key1] = 'Content-Type'
-                            meta.attributes[key2] = key2_value % encoding
-                            context = Context()
-                            context.start = True
-                            yield meta, context
-                            context.start = False
-                            yield meta, context
-                            continue
-            yield node, context
+                        yield event, node
+                        # Add <meta http-equiv="Content-Type">
+                        meta = Element(xhtml_uri, 'meta')
+                        meta.attributes[key1] = 'Content-Type'
+                        meta.attributes[key2] = key2_value % encoding
+                        yield START_ELEMENT, meta
+                        yield END_ELEMENT, meta
+                        continue
+            elif event == END_ELEMENT:
+                if node.namespace == Namespace.class_uri:
+                    # Skip <meta http-equiv="Content-Type">
+                    if node.name == 'meta':
+                        if key1 in node.attributes:
+                            if node.attributes[key1] == 'Content-Type':
+                                continue
+
+            yield event, node
 
     return stream_to_html(filter(element, encoding), encoding)
 
@@ -513,8 +519,8 @@ class Document(XMLDocument):
                             if x.strip():
                                 break
                         elif isinstance(x, Element):
-                            for node in x.traverse():
-                                if isinstance(node, unicode):
+                            for event, node in x.traverse():
+                                if event == TEXT:
                                     if node.strip():
                                         break
                             else:
@@ -555,38 +561,37 @@ class Document(XMLDocument):
         buffer.write(self.header_to_str())
         message = Message()
         keep_spaces = False
-        root_element = self.get_root_element()
-        for node, context in self.traverse2():
-            if isinstance(node, unicode):
+        stream = self.traverse()
+        for event, node in stream:
+            if event == TEXT:
                 message.append(node)
-            elif isinstance(node, Element):
-                if context.start:
-                    # Inline or block
-                    schema = get_element_schema(node.namespace, node.name)
-                    if schema['is_inline']:
-                        message.append(node)
-                        context.skip = True
-                    else:
-                        # Process any previous message
-                        for x in process_message(message, keep_spaces):
-                            buffer.write(x.encode('utf-8'))
-                        message = Message()
-                        # The open tag
-                        open_tag(node)
-                        # Presarve spaces if <pre>
-                        if node.name == 'pre':
-                            keep_spaces = True
+            elif event == START_ELEMENT:
+                # Inline or block
+                schema = get_element_schema(node.namespace, node.name)
+                if schema['is_inline']:
+                    message.append(node)
+                    stream.send(1)
                 else:
-                    schema = get_element_schema(node.namespace, node.name)
-                    if not schema['is_inline']:
-                        for x in process_message(message, keep_spaces):
-                            buffer.write(x.encode('utf-8'))
-                        message = Message()
-                        # The close tag
-                        buffer.write(node.get_end_tag())
-                        # </pre> don't preserve spaces any more
-                        if node.name == 'pre':
-                            keep_spaces = False
+                    # Process any previous message
+                    for x in process_message(message, keep_spaces):
+                        buffer.write(x.encode('utf-8'))
+                    message = Message()
+                    # The open tag
+                    open_tag(node)
+                    # Presarve spaces if <pre>
+                    if node.name == 'pre':
+                        keep_spaces = True
+            elif event == END_ELEMENT:
+                schema = get_element_schema(node.namespace, node.name)
+                if not schema['is_inline']:
+                    for x in process_message(message, keep_spaces):
+                        buffer.write(x.encode('utf-8'))
+                    message = Message()
+                    # The close tag
+                    buffer.write(node.get_end_tag())
+                    # </pre> don't preserve spaces any more
+                    if node.name == 'pre':
+                        keep_spaces = False
             else:
                 buffer.write(node.to_str())
 
@@ -629,8 +634,8 @@ class Document(XMLDocument):
                             if x.strip():
                                 break
                         elif isinstance(x, Element):
-                            for node in x.traverse():
-                                if isinstance(node, unicode):
+                            for event, node in x.traverse():
+                                if event == TEXT:
                                     if node.strip():
                                         break
                             else:
@@ -646,49 +651,49 @@ class Document(XMLDocument):
         messages = []
         message = Message()
         keep_spaces = False
-        for node, context in self.traverse2():
-            if isinstance(node, unicode):
+        stream = self.traverse()
+        for event, node in stram:
+            if event == TEXT:
                 message.append(node)
-            elif isinstance(node, Element):
-                if context.start:
-                    if node.name in ['script', 'style']:
-                        for x in process_message(message, keep_spaces):
-                            if x not in messages:
-                                yield x, 0
-                        message = Message()
-                        # Don't go through this node
-                        context.skip = True
-                    else:
-                        # Attributes
-                        for ns_uri, name, value in node.get_attributes():
-                            namespace = get_namespace(ns_uri)
-                            if namespace.is_translatable(node, name):
-                                if value.strip():
-                                    if value not in messages:
-                                        yield value, 0
-                        # Inline or Block
-                        schema = get_element_schema(node.namespace, node.name)
-                        if schema['is_inline']:
-                            message.append(node)
-                            context.skip = True
-                        else:
-                            for x in process_message(message, keep_spaces):
-                                if x not in messages:
-                                    yield x, 0
-                            message = Message()
-                            # Presarve spaces if <pre>
-                            if node.name == 'pre':
-                                context.keep_spaces = True
+            elif event == START_ELEMENT:
+                if node.name in ['script', 'style']:
+                    for x in process_message(message, keep_spaces):
+                        if x not in messages:
+                            yield x, 0
+                    message = Message()
+                    # Don't go through this node
+                    stream.send(1)
                 else:
+                    # Attributes
+                    for ns_uri, name, value in node.get_attributes():
+                        namespace = get_namespace(ns_uri)
+                        if namespace.is_translatable(node, name):
+                            if value.strip():
+                                if value not in messages:
+                                    yield value, 0
+                    # Inline or Block
                     schema = get_element_schema(node.namespace, node.name)
-                    if not schema['is_inline']:
+                    if schema['is_inline']:
+                        message.append(node)
+                        stream.send(1)
+                    else:
                         for x in process_message(message, keep_spaces):
                             if x not in messages:
                                 yield x, 0
                         message = Message()
-                        # </pre> don't preserve spaces any more
+                        # Presarve spaces if <pre>
                         if node.name == 'pre':
-                            keep_spaces = False
+                            keep_spaces = True
+            elif event == END_ELEMENT:
+                schema = get_element_schema(node.namespace, node.name)
+                if not schema['is_inline']:
+                    for x in process_message(message, keep_spaces):
+                        if x not in messages:
+                            yield x, 0
+                    message = Message()
+                    # </pre> don't preserve spaces any more
+                    if node.name == 'pre':
+                        keep_spaces = False
 
 
 XMLDocument.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)

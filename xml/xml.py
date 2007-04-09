@@ -65,35 +65,34 @@ class Comment(object):
 
 # Strams
 def filter_root_stream(root):
-    for node, context in root.traverse2():
+    for event, node in root.traverse():
         if node is not root:
-            yield node, context
+            yield event, node
 
 
 # Serialize
 def stream_to_str(stream, encoding='UTF-8'):
     data = []
-    for node, context in stream:
-        if isinstance(node, unicode):
+    for event, node in stream:
+        if event == TEXT:
             node = node.encode(encoding)
             data.append(node)
-        elif isinstance(node, Element):
-            if context.start is True:
-                data.append(node.get_start_tag())
-            else:
-                data.append(node.get_end_tag())
-        elif isinstance(node, Comment):
+        elif event == START_ELEMENT:
+            data.append(node.get_start_tag())
+        elif event == END_ELEMENT:
+            data.append(node.get_end_tag())
+        elif event == COMMENT:
             node = node.data
             node = node.encode(encoding)
             data.append('<!--%s-->' % node)
         else:
-            raise NotImplementedError, repr(node)
+            raise NotImplementedError, 'unknown event "%s"' % event
     return ''.join(data)
 
 
 # API
 def element_to_str(element, encoding='UTF-8'):
-    return stream_to_str(element.traverse2(), encoding)
+    return stream_to_str(element.traverse(), encoding)
 
 
 def element_content_to_str(element, encoding='UTF-8'):
@@ -271,49 +270,28 @@ class Element(object):
     #######################################################################
     # Traverse
     def traverse(self):
-        stack = [self]
-        pop = stack.pop
-        extend = stack.extend
+        stack = [(END_ELEMENT, self), (START_ELEMENT, self)]
         while stack:
-            node = pop()
-            yield node
-            if isinstance(node, Element):
-                extend(node.children[::-1])
+            event, node = stack.pop()
+            command = yield event, node
+            if event == START_ELEMENT:
+                if command == 1:
+                    yield END_ELEMENT, node
+                    continue
+                for child in reversed(node.children):
+                    if isinstance(child, unicode):
+                        stack.append((TEXT, child))
+                    elif isinstance(child, Comment):
+                        stack.append((COMMENT, child))
+                    elif isinstance(child, Element):
+                        stack.append((END_ELEMENT, child))
+                        stack.append((START_ELEMENT, child))
 
-
-    def traverse2(self, context=None):
-        if context is None:
-            context = Context()
-        # Down
-        context.start = True
-        yield self, context
-        # Children
-        if context.skip is True:
-            context.skip = False
-        else:
-            for child in self.children:
-                if isinstance(child, Element):
-                    for x, context in child.traverse2(context):
-                        yield x, context
-                else:
-                    yield child, context
-        # Up
-        context.start = False
-        yield self, context
 
 
 #############################################################################
 # Documents
 #############################################################################
-
-class Context(object):
-    """Used by 'traverse2' to control the traversal."""
-
-    def __init__(self):
-        self.skip = False
-
-
-
 class Document(Text):
     """
     An XML file is represented in memory as a tree where the nodes are
@@ -452,16 +430,7 @@ class Document(Text):
 
 
     def traverse(self):
-        for x in self.get_root_element().traverse():
-            yield x
-
-
-    def traverse2(self, context=None):
-        if context is None:
-            context = Context()
-        # Children
-        for x, context in self.get_root_element().traverse2(context):
-            yield x, context
+        return self.get_root_element().traverse()
 
 
     def to_text(self):
@@ -469,8 +438,8 @@ class Document(Text):
         Removes the markup and returns a plain text string.
         """
         text = []
-        for node in self.traverse():
-            if isinstance(node, unicode):
+        for event, node in self.traverse():
+            if event == TEXT:
                 text.append(node)
         return u' '.join(text)
 

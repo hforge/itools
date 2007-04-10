@@ -23,7 +23,8 @@ from namespaces import (XMLNamespace, XMLNSNamespace, get_namespace,
 from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, PI, CDATA)
 from xml import (Document, Element, Comment,
-                 filter_root_stream, element_to_str, element_content_to_str)
+                 filter_root_stream, element_to_str, element_content_to_str,
+                 stream_to_str)
 from indexer import xml_to_text
 from office import (MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc,
                     OOImpress, PDF)
@@ -35,6 +36,7 @@ __all__ = [
     'filter_root_stream',
     'element_to_str',
     'element_content_to_str',
+    'stream_to_str',
     # Exceptions
     'XMLError',
     # Namespaces

@@ -28,7 +28,7 @@ from itools.handlers import register_handler_class
 from itools.xml import (Document as XMLDocument, Element, Comment,
                         START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
                         AbstractNamespace, set_namespace, get_namespace,
-                        get_element_schema, filter_root_stream)
+                        get_element_schema, filter_root_stream, stream_to_str)
 from itools.i18n import Message
 
 

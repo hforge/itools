@@ -359,12 +359,16 @@ class Document(Text):
                 namespace_uri, element_name, attributes, ns_decls = value
                 for ns_decl in ns_decls:
                     xml_namespaces.add(ns_decls[ns_decl])
+
+                # Check the element is defined by the namespace
+                # XXX Maybe we should not be so strict.
                 namespace = get_namespace(namespace_uri)
                 try:
-                    schema = namespace.get_element_schema(element_name)
+                    namespace.get_element_schema(element_name)
                 except XMLError, e:
                     e.line_number = line_number
                     raise e
+
                 element = Element(namespace_uri, element_name)
                 element.attributes = attributes
                 stack.append(element)

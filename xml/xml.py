@@ -347,9 +347,9 @@ class Document(Text):
         """
         Builds a tree made of elements and raw data.
         """
+        xmlns_uri = XMLNSNamespace.class_uri
         # Default values
         self.document_type = None
-        xml_namespaces = set()
         # Parse
         stack = []
         for event, value, line_number in Parser(file.read()):
@@ -357,9 +357,6 @@ class Document(Text):
                 self.document_type = value
             elif event == START_ELEMENT:
                 namespace_uri, element_name, attributes, ns_decls = value
-                for ns_decl in ns_decls:
-                    xml_namespaces.add(ns_decls[ns_decl])
-
                 # Check the element is defined by the namespace
                 # XXX Maybe we should not be so strict.
                 namespace = get_namespace(namespace_uri)
@@ -371,6 +368,11 @@ class Document(Text):
 
                 element = Element(namespace_uri, element_name)
                 element.attributes = attributes
+                for ns_decl in ns_decls:
+                    xml_namespace = ns_decls[ns_decl]
+                    prefix = get_namespace(xml_namespace).class_prefix
+                    element.set_attribute(xmlns_uri, prefix, xml_namespace)
+
                 stack.append(element)
             elif event == END_ELEMENT:
                 element = stack.pop()
@@ -386,13 +388,6 @@ class Document(Text):
             elif event == TEXT:
                 if stack:
                     stack[-1].set_text(value, 'UTF-8')
-
-        # Add the XML namespaces to the root element
-        root_element = self.root_element
-        xmlns_uri = XMLNSNamespace.class_uri
-        for xml_namespace in xml_namespaces:
-            prefix = get_namespace(xml_namespace).class_prefix
-            root_element.set_attribute(xmlns_uri, prefix, xml_namespace)
 
 
     #######################################################################

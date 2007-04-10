@@ -1109,15 +1109,10 @@ static PyObject* Parser_iternext(Parser* self) {
                 Py_DECREF(attr_value2);
             }
 
-            if (namespaces == NULL)
-                result = Py_BuildValue("(i(OON{})i)", START_ELEMENT, tag_uri,
-                                       tag_name, attributes, line);
-            else
-                result = Py_BuildValue("(i(OONN)i)", START_ELEMENT, tag_uri,
-                                       tag_name, attributes, namespaces, line);
+            result = Py_BuildValue("(i(OONN)i)", START_ELEMENT, tag_uri,
+                                   tag_name, attributes, namespace_decls, line);
             Py_DECREF(tag);
             Py_DECREF(attributes_list);
-            Py_DECREF(namespace_decls);
             return result;
         }
     } else if (c == '&') {

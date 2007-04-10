@@ -109,7 +109,7 @@ class Metadata(File):
     class_icon48 = 'images/File48.png'
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'prefixes', 'properties']
+                 'properties']
 
 
     def new(self, handler_class=None, format=None, **kw):
@@ -119,7 +119,6 @@ class Metadata(File):
 
         # Initialize
         properties = {}
-        prefixes = set()
         # Load
         for name, value in kw.items():
             if value is None:
@@ -127,20 +126,12 @@ class Metadata(File):
             # The property
             key = QName.decode(name)
             properties[key] = value
-            # The prefix
-            prefix = key[0]
-            if prefix is not None:
-                prefixes.add(prefix)
 
         # Set state
-        self.prefixes = prefixes
         self.properties = properties
 
 
     def _load_state_from_file(self, file):
-        # Keep the namespace prefixes
-        self.prefixes = set()
-
         p_key = None
         datatype = None
         p_language = None
@@ -148,13 +139,7 @@ class Metadata(File):
         stack = []
         for event, value, line_number in Parser(file.read()):
             if event == START_ELEMENT:
-                namespace_uri, local_name, attributes, ns_decls = value
-                # Update prefixes
-                for ns_uri in ns_decls.values():
-                    schema = get_schema_by_uri(ns_uri)
-                    prefix = schema.class_prefix
-                    if prefix is not None:
-                        self.prefixes.add(prefix)
+                namespace_uri, local_name, attributes = value
                 if local_name == 'metadata':
                     stack.append({})
                 else:
@@ -212,15 +197,11 @@ class Metadata(File):
         lines = ['<?xml version="1.0" encoding="UTF-8"?>']
 
         # Insert open root element with the required namespace declarations
-        if self.prefixes:
-            aux = [ (x, get_schema(x).class_uri) for x in self.prefixes ]
-            aux = '\n          '.join([ 'xmlns:%s="%s"' % x for x in aux ])
-            lines.append('<metadata %s>' % aux)
-        else:
-            lines.append('<metadata>')
-
+        prefixes = set()
         for key, value in self.properties.items():
             prefix, local_name = key
+            if prefix is not None:
+                prefixes.add(prefix)
 
             # Get the type
             datatype = get_datatype(key)
@@ -246,6 +227,13 @@ class Metadata(File):
                 value = datatype.encode(value)
                 value = XMLDataType.encode(value)
                 lines.append('  <%s>%s</%s>' % (qname, value, qname))
+
+        if prefixes:
+            aux = [ (x, get_schema(x).class_uri) for x in prefixes ]
+            aux = '\n          '.join([ 'xmlns:%s="%s"' % x for x in aux ])
+            lines.insert(1, '<metadata %s>' % aux)
+        else:
+            lines.insert(1, '<metadata>')
 
         lines.append('</metadata>')
         return '\n'.join(lines)
@@ -318,14 +306,6 @@ class Metadata(File):
         else:
             values = self.properties.setdefault(key, {})
             values[language] = value
-
-        # Update prefixes
-        if key[0] is not None:
-            self.prefixes.add(key[0])
-        if isinstance(value, dict):
-            for prefix, local_name in value:
-                if prefix is not None:
-                    self.prefixes.add(prefix)
 
 
     def del_property(self, name, language=None):

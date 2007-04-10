@@ -50,6 +50,8 @@ static PyObject* XMLError;
 /* Constants */
 PyObject* xml_prefix;
 PyObject* xml_ns;
+PyObject* xmlns_prefix;
+PyObject* xmlns_uri;
 
 
 
@@ -964,8 +966,12 @@ static PyObject* Parser_iternext(Parser* self) {
                     }
                     /* Set the namespace */
                     PyDict_SetItem(namespace_decls, attr_name, attr_value);
-                    Py_DECREF(attr_name);
-                    Py_DECREF(attr_value);
+                    /* Set the attribute */
+                    attr = Py_BuildValue("((OO)N)", xmlns_prefix, attr_name,
+                                         attr_value);
+                    PyList_Append(attributes_list, attr);
+                    /* Decref */
+                    Py_DECREF(attr);
                 } else if ((!(strncmp(self->cursor, "xmlns", 5)))
                            && ((self->cursor[5] == '=')
                                || (isspace(self->cursor[5])))) {
@@ -997,7 +1003,12 @@ static PyObject* Parser_iternext(Parser* self) {
                     }
                     /* Set the default namespace */
                     PyDict_SetItem(namespace_decls, Py_None, attr_value);
-                    Py_DECREF(attr_value);
+                    /* Set the attribute */
+                    attr = Py_BuildValue("((OO)N)", xmlns_prefix, Py_None,
+                                         attr_value);
+                    PyList_Append(attributes_list, attr);
+                    /* Decref */
+                    Py_DECREF(attr);
                 } else {
                     /* Attribute */
                     attr_name = xml_prefix_name(self);
@@ -1062,6 +1073,8 @@ static PyObject* Parser_iternext(Parser* self) {
                 attr_prefix = PyTuple_GetItem(attr_name, 0);
                 if (PyObject_Compare(attr_prefix, xml_prefix) == 0)
                     attr_uri = xml_ns;
+                else if (PyObject_Compare(attr_prefix, xmlns_prefix) == 0)
+                    attr_uri = xmlns_uri;
                 else if (namespaces == NULL)
                     attr_uri = Py_None;
                 else {
@@ -1118,10 +1131,11 @@ static PyObject* Parser_iternext(Parser* self) {
                 Py_DECREF(attr_value2);
             }
 
-            result = Py_BuildValue("(i(OONN)i)", START_ELEMENT, tag_uri,
-                                   tag_name, attributes, namespace_decls, line);
+            result = Py_BuildValue("(i(OON)i)", START_ELEMENT, tag_uri,
+                                   tag_name, attributes, line);
             Py_DECREF(tag);
             Py_DECREF(attributes_list);
+            Py_DECREF(namespace_decls);
             return result;
         }
     } else if (c == '&') {
@@ -1249,6 +1263,8 @@ initparser(void) {
     /* Constants */
     xml_prefix = PyString_FromString("xml");
     xml_ns = PyString_FromString("http://www.w3.org/XML/1998/namespace");
+    xmlns_prefix = PyString_FromString("xmlns");
+    xmlns_uri = PyString_FromString("http://www.w3.org/2000/xmlns/");
 
     /* Initialize the module */
     module = Py_InitModule3("parser", module_methods, "Low-level XML parser");

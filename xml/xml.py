@@ -356,7 +356,7 @@ class Document(Text):
             if event == DOCUMENT_TYPE:
                 self.document_type = value
             elif event == START_ELEMENT:
-                namespace_uri, element_name, attributes, ns_decls = value
+                namespace_uri, element_name, attributes = value
                 # Check the element is defined by the namespace
                 # XXX Maybe we should not be so strict.
                 namespace = get_namespace(namespace_uri)
@@ -368,11 +368,6 @@ class Document(Text):
 
                 element = Element(namespace_uri, element_name)
                 element.attributes = attributes
-                for ns_decl in ns_decls:
-                    xml_namespace = ns_decls[ns_decl]
-                    prefix = get_namespace(xml_namespace).class_prefix
-                    element.set_attribute(xmlns_uri, prefix, xml_namespace)
-
                 stack.append(element)
             elif event == END_ELEMENT:
                 element = stack.pop()

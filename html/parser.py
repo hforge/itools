@@ -20,8 +20,9 @@ import htmlentitydefs
 from HTMLParser import HTMLParser
 import warnings
 
+# Import from itools
+from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
-DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT = range(5)
 
 
 # List of empty elements, which don't have a close tag

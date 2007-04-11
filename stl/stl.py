@@ -29,12 +29,17 @@ from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
-from itools.xml import (Comment, XMLError, XMLNSNamespace,
-                        get_namespace, AbstractNamespace, set_namespace)
+from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
+                        AbstractNamespace, get_start_tag, get_end_tag,
+                        START_ELEMENT, END_ELEMENT, TEXT, COMMENT)
+from itools.xhtml import xhtml_uri
 
 
 
 stl_uri = 'http://xml.itools.org/namespaces/stl'
+
+xmlns_uri = XMLNSNamespace.class_uri
+
 
 
 ########################################################################
@@ -191,8 +196,6 @@ class NamespaceStack(list):
 
 
 
-
-
 ###########################################################################
 # The tree
 ###########################################################################
@@ -285,56 +288,153 @@ def stl(document, namespace={}, prefix=None):
     # Initialize the repeat stack (keeps repeat/index, repeat/odd, etc...)
     repeat = NamespaceStack()
     # Get the document
-    s = process(document.get_root_element(), stack, repeat, prefix=prefix)
+    events = document.events
+    s = process(events, 0, len(events), stack, repeat, prefix=prefix)
     return ''.join(s)
 
 
-def process(node, stack, repeat_stack, encoding='UTF-8', prefix=None):
-    # Raw nodes
-    if isinstance(node, unicode):
-        data = node.encode(encoding)
-        data = XMLContent.encode(data)
+def find_end(events, start):
+    c = 1
+    i = start + 1
+    while c:
+        event, value = events[i]
+        if event == START_ELEMENT:
+            c += 1
+        elif event == END_ELEMENT:
+            c -= 1
+        i = i + 1
+    return i
+
+
+stl_repeat = stl_uri, 'repeat'
+stl_if = stl_uri, 'if'
+
+
+def process_start_tag(data, tag_uri, tag_name, attributes, stack, repeat,
+                      encoding, prefix):
+    # Skip "stl:block" and "stl:inline"
+    if tag_uri == stl_uri:
+        return
+    # Process attributes
+    aux = {}
+    for attr_uri, attr_name in attributes:
+        # Omit stl attributes
+        if attr_uri == stl_uri:
+            continue
+        # Omit stl namespace
+        if attr_uri == xmlns_uri and attr_name == 'stl':
+            continue
+
+        value = attributes[(attr_uri, attr_name)]
         # Process "${...}" expressions
-        data, kk = substitute(data, stack, repeat_stack, encoding)
-        if data is None:
-            return []
-        return [data]
-    elif isinstance(node, Comment):
-        return [node.to_str()]
+        datatype = get_datatype_by_uri(attr_uri, attr_name)
+        # Boolean attributes
+        if issubclass(datatype, Boolean):
+            value = substitute_boolean(value, stack, repeat, encoding)
+            if value is True:
+                aux[(attr_uri, attr_name)] = attr_name
+            continue
+        # Non Boolean attributes
+        value, n = substitute(value, stack, repeat, encoding)
+        # Output only values different than None
+        if value is None:
+            continue
+        # Rewrite URLs (XXX specific to HTML)
+        if prefix is None or n > 0:
+            aux[(attr_uri, attr_name)] = value
+            continue
+        if tag_uri == xhtml_uri and attr_uri == xhtml_uri:
+            # <... src="X" />
+            if attr_name == 'src':
+                value = resolve_pointer(value, prefix)
+            # <link href="X" />
+            elif tag_name == 'link':
+                if attr_name == 'href':
+                    value = resolve_pointer(value, prefix)
+            # <param name="movie" value="X" />
+            elif tag_name == 'param':
+                if attr_name == 'value':
+                    param_name = attributes.get((attr_uri, 'name'))
+                    if param_name == 'movie':
+                        value = resolve_pointer(value, prefix)
+        aux[(attr_uri, attr_name)] = value
 
-    s = []
-    # Process stl:repeat
-    if node.has_attribute(stl_uri, 'repeat'):
-        name, expression = node.get_attribute(stl_uri, 'repeat')
+    data.append(get_start_tag(tag_uri, tag_name, aux))
 
-        i = 0
-        values = expression.evaluate(stack, repeat_stack)
-        try:
-            nvalues = len(values)
-        except TypeError:
-            raise STLTypeError, 'stl:repeat expects a countable value, "%s" is not' % expression
-        for value in values:
-            # Create the new stack
-            newstack = stack[:]
-            newstack.append({name: value})
 
-            newrepeat = repeat_stack[:]
-            value = {'index': i,
-                     'start': i == 0,
-                     'end': i == nvalues - 1,
-                     'even': 'odd' if i % 2 else 'even'}
-            newrepeat.append({name: value})
+def process(events, start, end, stack, repeat_stack, encoding='UTF-8',
+            prefix=None):
+    data = []
+    i = start
+    while i < end:
+        event, value = events[i]
+        if event == TEXT:
+            value = value.encode(encoding)
+            value = XMLContent.encode(value)
+            value, kk = substitute(value, stack, repeat_stack, encoding)
+            data.append(value)
+        elif event == COMMENT:
+            value = value.encode(encoding)
+            data.append('<!--%s-->' % value)
+        elif event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            # stl:repeat
+            if stl_repeat in attributes:
+                attributes = attributes.copy()
+                name, expression = attributes.pop(stl_repeat)
+                # Build new namespace stacks
+                loops = []
+                values = expression.evaluate(stack, repeat_stack)
+                n_values = len(values)
+                for value in values:
+                    loop_stack = stack[:]
+                    loop_stack.append({name: value})
+                    loop_repeat = repeat_stack[:]
+                    loop_repeat.append(
+                        {name: {'index': i,
+                                'start': i == 0,
+                                'end': i == n_values - 1,
+                                'even': 'odd' if i % 2 else 'even'}})
+                    loops.append((loop_stack, loop_repeat))
+                # Filter the branches when "stl:if" is present
+                if stl_if in attributes:
+                    evaluate = attributes.pop(stl_if).evaluate
+                    loops = [ x for x, y in loops if evaluate(x, y) ]
+                # Process the loops
+                loop_end = find_end(events, i)
+                i += 1
+                for loop_stack, loop_repeat in loops:
+                    process_start_tag(data, tag_uri, tag_name, attributes,
+                                      loop_stack, loop_repeat, encoding,
+                                      prefix)
+                    data.extend(process(events, i, loop_end, loop_stack,
+                                        loop_repeat, encoding, prefix))
+                i = loop_end
+            # stl:if
+            elif stl_if in attributes:
+                attributes = attributes.copy()
+                expression = attributes.pop(stl_if)
+                if expression.evaluate(stack, repeat_stack):
+                    process_start_tag(data, tag_uri, tag_name, attributes,
+                                      stack, repeat_stack, encoding, prefix)
+                else:
+                    i = find_end(events, i)
+            # nothing
+            else:
+                if tag_uri != stl_uri:
+                    process_start_tag(data, tag_uri, tag_name, attributes,
+                                      stack, repeat_stack, encoding, prefix)
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_uri != stl_uri:
+                data.append(get_end_tag(tag_uri, tag_name))
+        else:
+            raise NotImplementedError
+        # Next
+        i += 1
 
-            # Process and append the clone
-            s.extend(process1(node, newstack, newrepeat, prefix=prefix))
+    return data
 
-            # Increment counter
-            i = i + 1
-
-        return s
-
-    s.extend(process1(node, stack, repeat_stack, prefix=prefix))
-    return s
 
 
 def resolve_pointer(uri, offset):
@@ -347,94 +447,6 @@ def resolve_pointer(uri, offset):
                 return str(value)
 
     return URI.encode(uri)
-
-
-def process1(node, stack, repeat, encoding='UTF-8', prefix=None):
-    """
-    Process "stl:if" and variable substitution.
-    """
-    # Remove the element if the given expression evaluates to false
-    if node.has_attribute(stl_uri, 'if'):
-        stl_expression = node.get_attribute(stl_uri, 'if')
-        if not stl_expression.evaluate(stack, repeat):
-            return []
-
-    # Print tag name
-    s = ['<%s' % node.qname]
-
-    # Process attributes
-    xmlns_uri = XMLNSNamespace.class_uri
-
-    # Output existing attributes
-    for namespace, local_name, value in node.get_attributes():
-        # Omit stl attributes
-        if namespace == stl_uri:
-            continue
-        # Omit stl namespace
-        if namespace == xmlns_uri and local_name == 'stl':
-            continue
-
-        qname = node.get_attribute_qname(namespace, local_name)
-        # Process "${...}" expressions
-        datatype = get_datatype_by_uri(namespace, local_name)
-        # Boolean attributes
-        if issubclass(datatype, Boolean):
-            value = substitute_boolean(value, stack, repeat, encoding)
-            if value is True:
-                s.append(' %s="%s"' % (qname, local_name))
-            continue
-        # Non Boolean attributes
-        value, n = substitute(value, stack, repeat, encoding)
-        # Output only values different than None
-        if value is None:
-            continue
-        # Rewrite URLs (XXX specific to HTML)
-        xhtml_ns = 'http://www.w3.org/1999/xhtml'
-        if prefix is None or n > 0:
-            value = XMLAttribute.encode(value)
-            s.append(' %s="%s"' % (qname, value))
-            continue
-        if node.namespace == xhtml_ns and namespace == xhtml_ns:
-            # <... src="X" />
-            if local_name == 'src':
-                value = resolve_pointer(value, prefix)
-            # <link href="X" />
-            elif node.name == 'link':
-                if local_name == 'href':
-                    value = resolve_pointer(value, prefix)
-            # <param name="movie" value="X" />
-            elif node.name == 'param':
-                if local_name == 'value':
-                    param_name = node.get_attribute(namespace, 'name')
-                    if param_name == 'movie':
-                        value = resolve_pointer(value, prefix)
-        value = XMLAttribute.encode(value)
-        s.append(' %s="%s"' % (qname, value))
-
-    # The element schema, we need it
-    namespace = get_namespace(node.namespace)
-    schema = namespace.get_element_schema(node.name)
-    is_empty = schema.get('is_empty', False)
-    # Close the open tag
-    if is_empty:
-        s.append('/>')
-    else:
-        s.append('>')
-
-    # Process the content
-    content = []
-    for child in node.children:
-        content.extend(process(child, stack, repeat, prefix=prefix))
-
-    # Remove the element but preserves its children if it is a stl:block or
-    # a stl:inline
-    if node.namespace == stl_uri:
-        return content
-
-    s.extend(content)
-    if not is_empty:
-        s.append('</%s>' % node.qname)
-    return s
 
 
 ########################################################################

@@ -18,13 +18,14 @@
 # Import from itools
 import dublin_core
 from exceptions import XMLError
-from namespaces import (XMLNamespace, XMLNSNamespace, get_namespace,
-                        get_element_schema, AbstractNamespace, set_namespace)
+from namespaces import (XMLNamespace, XMLNSNamespace,
+                        AbstractNamespace, get_namespace, set_namespace,
+                        get_element_schema, is_empty)
 from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, PI, CDATA)
-from xml import (Document, Element, Comment,
-                 filter_root_stream, element_to_str, element_content_to_str,
-                 stream_to_str)
+from xml import (Document, Element, filter_root_stream, element_to_str,
+                 element_content_to_str, stream_to_str,
+                 get_qname, get_attribute_qname, get_start_tag, get_end_tag)
 from indexer import xml_to_text
 from office import (MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc,
                     OOImpress, PDF)
@@ -33,6 +34,10 @@ from office import (MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc,
 
 __all__ = [
     # New API (in progress)
+    'get_qname',
+    'get_attribute_qname',
+    'get_start_tag',
+    'get_end_tag',
     'filter_root_stream',
     'element_to_str',
     'element_content_to_str',
@@ -44,6 +49,7 @@ __all__ = [
     'XMLNSNamespace',
     'get_namespace',
     'get_element_schema',
+    'is_empty',
     'AbstractNamespace',
     'set_namespace',
     # Parsing
@@ -59,7 +65,6 @@ __all__ = [
     # Handlers
     'Document',
     'Element',
-    'Comment',
     # Office
     'MSWord',
     'MSExcel',

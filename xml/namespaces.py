@@ -104,6 +104,10 @@ def get_element_schema(namespace, name):
     return get_namespace(namespace).get_element_schema(name)
 
 
+def is_empty(namespace, name):
+    schema = get_namespace(namespace).get_element_schema(name)
+    return schema.get('is_empty', False)
+
 
 #############################################################################
 # Namespaces
@@ -138,7 +142,7 @@ class AbstractNamespace(object):
     #######################################################################
     # Internationalization
     @classmethod
-    def is_translatable(cls, node, attribute_name=None):
+    def is_translatable(cls, tag_uri, tag_name, attributes, attribute_name):
         """
         Some elements may contain text addressed to users, that is, text
         that could be translated in different human languages, for example
@@ -165,7 +169,6 @@ class DefaultNamespace(AbstractNamespace):
 
     @staticmethod
     def get_element_schema(name):
-        from xml import Element
         return {'is_empty': False}
 
 

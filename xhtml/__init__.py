@@ -19,15 +19,15 @@
 import mimetypes
 
 # Import from itools
-from xhtml import (Document, Element,
-                   element_to_str_as_html, element_content_to_html)
+from xhtml import (xhtml_uri, Document, stream_to_str_as_html,
+                   element_content_to_html)
 
 
 __all__ = [
+    'xhtml_uri',
     'Document',
-    'Element',
     # New API (work in progress)
-    'element_to_str_as_html',
+    'stream_to_str_as_html',
     'element_content_to_html']
 
 

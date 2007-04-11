@@ -25,45 +25,16 @@ from itools.datatypes import Unicode, XML as XMLContent, XMLAttribute
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
 from exceptions import XMLError
-from namespaces import get_namespace, XMLNSNamespace
-from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT,
-                    COMMENT)
+from namespaces import get_namespace, is_empty, XMLNSNamespace
+from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
+                    END_ELEMENT, TEXT, COMMENT)
 
 
 #############################################################################
 # Data types
 #############################################################################
 
-class Comment(object):
-
-    __slots__ = ['data']
-
-
-    def __init__(self, data):
-        self.data = data
-
-
-    def to_str(self, encoding='UTF-8'):
-        return '<!--%s-->' % self.data.encode(encoding)
-
-
-    def copy(self):
-        return Comment(self.data)
-
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.data == other.data
-        return False
-
-
-    def __ne__(self, other):
-        if isinstance(other, self.__class__):
-            return self.data != other.data
-        return True
-
-
-# Strams
+# Streams
 def filter_root_stream(root):
     for event, node in root.traverse():
         if node is not root:
@@ -71,20 +42,72 @@ def filter_root_stream(root):
 
 
 # Serialize
+def get_qname(ns_uri, name):
+    """Returns the fully qualified name"""
+    if ns_uri is None:
+        return name
+    prefix = get_namespace(ns_uri).class_prefix
+    if prefix is None:
+        return name
+    return '%s:%s' % (prefix, name)
+
+
+def get_attribute_qname(namespace, local_name):
+    """Returns the fully qualified name"""
+    if namespace is None:
+        return local_name
+
+    prefix = get_namespace(namespace).class_prefix
+    if prefix is None:
+        return local_name
+
+    # Namespace declarations for the default namespace lack the local
+    # name (e.g. xmlns="http://www.example.org"). Here 'xmlns' is always
+    # the prefix, and there is not a local name. This an special case.
+    if local_name is None:
+        return prefix
+
+    return '%s:%s' % (prefix, local_name)
+
+
+def get_start_tag(ns_uri, name, attributes):
+    s = '<%s' % get_qname(ns_uri, name)
+    # Output the attributes
+    for namespace_uri, local_name in attributes:
+        value = attributes[(namespace_uri, local_name)]
+        qname = get_attribute_qname(namespace_uri, local_name)
+        type = get_datatype_by_uri(namespace_uri, local_name)
+        value = type.encode(value)
+        value = XMLAttribute.encode(value)
+        s += ' %s="%s"' % (qname, value)
+    # Close the start tag
+    if is_empty(ns_uri, name):
+        return s + '/>'
+    else:
+        return s + '>'
+
+
+def get_end_tag(ns_uri, name):
+    if is_empty(ns_uri, name):
+        return ''
+    return '</%s>' % get_qname(ns_uri, name)
+
+
 def stream_to_str(stream, encoding='UTF-8'):
     data = []
-    for event, node in stream:
+    for event, value in stream:
         if event == TEXT:
-            node = node.encode(encoding)
-            data.append(node)
+            value = value.encode(encoding)
+            data.append(value)
         elif event == START_ELEMENT:
-            data.append(node.get_start_tag())
+            ns_uri, name, attributes = value
+            data.append(get_start_tag(ns_uri, name, attributes))
         elif event == END_ELEMENT:
-            data.append(node.get_end_tag())
+            ns_uri, name = value
+            data.append(get_end_tag(ns_uri, name))
         elif event == COMMENT:
-            node = node.data
-            node = node.encode(encoding)
-            data.append('<!--%s-->' % node)
+            value = value.encode(encoding)
+            data.append('<!--%s-->' % value)
         else:
             raise NotImplementedError, 'unknown event "%s"' % event
     return ''.join(data)
@@ -102,33 +125,24 @@ def element_content_to_str(element, encoding='UTF-8'):
 
 class Element(object):
 
-    __slots__ = ['namespace', 'name', 'attributes', 'children']
+    __slots__ = ['namespace', 'name', 'attributes', 'end_tag']
 
 
-    def __init__(self, namespace, name):
+    def __init__(self, namespace, name, attributes=None):
         self.namespace = namespace
         self.name = name
         # Attributes (including namespace declarations)
-        self.attributes = {}
-        # Child nodes
-        self.children = []
+        if attributes is None:
+            self.attributes = {}
+        else:
+            self.attributes = attributes
+        # End tag
+        self.end_tag = None
 
 
     #######################################################################
     # API
     #######################################################################
-    def get_qname(self):
-        """Returns the fully qualified name"""
-        if self.namespace is None:
-            return self.name
-        prefix = get_namespace(self.namespace).class_prefix
-        if prefix is None:
-            return self.name
-        return '%s:%s' % (prefix, self.name)
-
-    qname = property(get_qname, None, None, '')
-
-
     def copy(self):
         """
         DOM: cloneNode.
@@ -159,34 +173,6 @@ class Element(object):
 
     #######################################################################
     # Serialization
-    def get_start_tag(self):
-        s = '<%s' % self.qname
-        # Output the attributes
-        for namespace_uri, local_name, value in self.get_attributes():
-            qname = self.get_attribute_qname(namespace_uri, local_name)
-            type = get_datatype_by_uri(namespace_uri, local_name)
-            value = type.encode(value)
-            value = XMLAttribute.encode(value)
-            s += ' %s="%s"' % (qname, value)
-        # Close the start tag
-        namespace = get_namespace(self.namespace)
-        schema = namespace.get_element_schema(self.name)
-        is_empty = schema.get('is_empty', False)
-        if is_empty:
-            return s + '/>'
-        else:
-            return s + '>'
-
-
-    def get_end_tag(self):
-        namespace = get_namespace(self.namespace)
-        schema = namespace.get_element_schema(self.name)
-        is_empty = schema.get('is_empty', False)
-        if is_empty:
-            return ''
-        return '</%s>' % self.qname
-
-
     def get_content(self, encoding='UTF-8'):
         s = []
         for node in self.children:
@@ -222,24 +208,6 @@ class Element(object):
             yield key[0], key[1], value
 
 
-    def get_attribute_qname(self, namespace, local_name):
-        """Returns the fully qualified name"""
-        if namespace is None:
-            return local_name
-
-        prefix = get_namespace(namespace).class_prefix
-        if prefix is None:
-            return local_name
-
-        # Namespace declarations for the default namespace lack the local
-        # name (e.g. xmlns="http://www.example.org"). Here 'xmlns' is always
-        # the prefix, and there is not a local name. This an special case.
-        if local_name is None:
-            return prefix
-
-        return '%s:%s' % (prefix, local_name)
-
-
     #######################################################################
     # Children
     def set_comment(self, comment):
@@ -267,25 +235,6 @@ class Element(object):
         return elements
 
 
-    #######################################################################
-    # Traverse
-    def traverse(self):
-        stack = [(END_ELEMENT, self), (START_ELEMENT, self)]
-        while stack:
-            event, node = stack.pop()
-            command = yield event, node
-            if event == START_ELEMENT:
-                if command == 1:
-                    yield END_ELEMENT, node
-                    continue
-                for child in reversed(node.children):
-                    if isinstance(child, unicode):
-                        stack.append((TEXT, child))
-                    elif isinstance(child, Comment):
-                        stack.append((COMMENT, child))
-                    elif isinstance(child, Element):
-                        stack.append((END_ELEMENT, child))
-                        stack.append((START_ELEMENT, child))
 
 
 
@@ -334,7 +283,7 @@ class Document(Text):
     #######################################################################
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'document_type', 'root_element']
+                 'document_type', 'events']
 
 
     def new(self):
@@ -351,38 +300,20 @@ class Document(Text):
         # Default values
         self.document_type = None
         # Parse
-        stack = []
+        events = []
         for event, value, line_number in Parser(file.read()):
             if event == DOCUMENT_TYPE:
                 self.document_type = value
-            elif event == START_ELEMENT:
-                namespace_uri, element_name, attributes = value
-                # Check the element is defined by the namespace
-                # XXX Maybe we should not be so strict.
-                namespace = get_namespace(namespace_uri)
-                try:
-                    namespace.get_element_schema(element_name)
-                except XMLError, e:
-                    e.line_number = line_number
-                    raise e
+            elif event == TEXT or event == COMMENT:
+                # XXX The encoding is hard-coded, should it be?
+                value = unicode(value, 'UTF-8')
+                events.append((event, value))
+            elif event == XML_DECL:
+                pass
+            else:
+                events.append((event, value))
 
-                element = Element(namespace_uri, element_name)
-                element.attributes = attributes
-                stack.append(element)
-            elif event == END_ELEMENT:
-                element = stack.pop()
-                if stack:
-                    stack[-1].set_element(element)
-                else:
-                    self.root_element = element
-            elif event == COMMENT:
-                # Comments out of the root element are discarded (XXX)
-                if stack:
-                    value = Unicode.decode(value, 'UTF-8')
-                    stack[-1].set_comment(Comment(value))
-            elif event == TEXT:
-                if stack:
-                    stack[-1].set_text(value, 'UTF-8')
+        self.events = events
 
 
     #######################################################################
@@ -403,9 +334,8 @@ class Document(Text):
 
 
     def to_str(self, encoding='UTF-8'):
-        root = self.get_root_element()
-        data = [self.header_to_str(encoding),
-                element_to_str(root, encoding)]
+        data = [self.header_to_str(encoding)]
+        data.append(stream_to_str(self.events, encoding))
 
         return ''.join(data)
 
@@ -416,15 +346,29 @@ class Document(Text):
         return cmp(self.__dict__, other.__dict__)
 
 
-    def get_root_element(self):
-        """
-        Returns the root element (XML documents have one root element).
-        """
-        return self.root_element
+    def get_element(self, name):
+        for event, value in self.events:
+            if event == START_ELEMENT:
+                if name == value[1]:
+                    # TODO Should return something else
+                    return value
+        return None
 
 
     def traverse(self):
-        return self.get_root_element().traverse()
+        skip = 0
+        for event, value in self.events:
+            if skip:
+                if event == START_ELEMENT:
+                    skip += 1
+                elif event == END_ELEMENT:
+                    skip -= 1
+            if skip:
+                continue
+
+            command = yield event, value
+            if command == 1:
+                skip = 1
 
 
     def to_text(self):

@@ -49,6 +49,8 @@ docs_path = '/usr/share/doc/python-docs-2.4.3/html/lib'
 class Document(HTMLDocument):
 
     def title(self):
+        # FIXME
+        title = self.get_element('title')
         head = self.get_head()
         title = head.get_elements('title')[0]
         return title.get_content()

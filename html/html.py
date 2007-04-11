@@ -19,14 +19,10 @@
 from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
-from itools.xml import Comment
-from itools.xhtml import (Document as XHTMLDocument, Element,
-                          element_to_str_as_html)
+from itools.xhtml import (Document as XHTMLDocument, xhtml_uri,
+                          stream_to_str_as_html)
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
-
-
-ns_uri = 'http://www.w3.org/1999/xhtml'
 
 
 
@@ -75,7 +71,7 @@ class Document(XHTMLDocument):
 
     
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'document_type', 'root_element', 'encoding']
+                 'document_type', 'events', 'encoding']
 
 
     #########################################################################
@@ -96,9 +92,8 @@ class Document(XHTMLDocument):
 
 
     def to_str(self, encoding='UTF-8'):
-        root = self.get_root_element()
         data = [self.header_to_str(encoding),
-                element_to_str_as_html(root, encoding)]
+                stream_to_str_as_html(self.events, encoding)]
 
         return ''.join(data)
 
@@ -109,64 +104,29 @@ class Document(XHTMLDocument):
     def _load_state_from_file(self, file):
         self.encoding = 'UTF-8'
         self.document_type = None
-        children = []
 
-        stack = []
         data = file.read()
         parser = Parser()
+        events = []
         for event, value, line_number in parser.parse(data):
             if event == DOCUMENT_TYPE:
                 self.document_type = value
+            elif event == TEXT:
+                value = unicode(value, parser.encoding)
+                events.append((event, value))
             elif event == START_ELEMENT:
                 name, attributes = value
                 schema = elements_schema.get(name, {'is_inline': False})
-                element = Element(ns_uri, name)
+                aux = {}
                 for attr_name in attributes:
                     attr_value = attributes[attr_name]
-                    type = get_datatype_by_uri(ns_uri, attr_name)
-                    attr_value = type.decode(attr_value)
-                    element.set_attribute(element.namespace, attr_name, attr_value)
-                stack.append(element)
-            elif event == END_ELEMENT:
-                element = stack.pop()
+                    type = get_datatype_by_uri(xhtml_uri, attr_name)
+                    aux[(xhtml_uri, attr_name)] = type.decode(attr_value)
+                events.append((event, (xhtml_uri, name, aux)))
+            else:
+                events.append((event, value))
 
-                # Detect <meta http-equiv="Content-Type" content="...">
-                if element.name == 'meta':
-                    if element.has_attribute(None, 'http-equiv'):
-                        value = element.get_attribute(None, 'http-equiv')
-                        if value == 'Content-Type':
-                            continue
-
-                if stack:
-                    stack[-1].set_element(element)
-                else:
-                    children.append(element)
-            elif event == COMMENT:
-                comment = Comment(value)
-                if stack:
-                    stack[-1].set_comment(comment)
-                else:
-                    children.append(comment)
-            elif event == TEXT:
-                if stack:
-                    stack[-1].set_text(value, parser.encoding)
-                else:
-                    value = Unicode.decode(value, parser.encoding)
-                    children.append(value)
-
-        # Semantically, the root of an HTML document is always the "<html>"
-        # element.
-        for element in children:
-            if isinstance(element, Element) and element.name == 'html':
-                self.root_element = element
-                # XXX We loss any comment or text node that is before or
-                # after the "<html>" tag.
-                break
-        else:
-            schema = elements_schema.get('html', {'is_inline': False})
-            element = Element(ns_uri, 'html')
-            element.children = children
-            self.root_element = element
+        self.events = events
 
 
     def header_to_str(self, encoding='UTF-8'):

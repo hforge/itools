@@ -20,37 +20,11 @@ from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
 from itools.xhtml import (Document as XHTMLDocument, xhtml_uri,
-                          stream_to_str_as_html)
+                          stream_to_str_as_html, elements_schema)
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
 
 
-
-elements_schema = {
-    'a': {'is_inline': True},
-    'abbr': {'is_inline': True},
-    'acronym': {'is_inline': True},
-    'b': {'is_inline': True},
-    'cite': {'is_inline': True},
-    'code': {'is_inline': True},
-    'dfn': {'is_inline': True},
-    'em': {'is_inline': True},
-    'head': {'is_inline': False},
-    'kbd': {'is_inline': True},
-    'q': {'is_inline': True},
-    'samp': {'is_inline': True},
-    'span': {'is_inline': True},
-    'strong': {'is_inline': True},
-    'sub': {'is_inline': True},
-    'sup': {'is_inline': True},
-    'tt': {'is_inline': True},
-    'var': {'is_inline': True},
-    }
-
-
-#############################################################################
-# Documents
-#############################################################################
 
 class Document(XHTMLDocument):
     """
@@ -74,9 +48,6 @@ class Document(XHTMLDocument):
                  'document_type', 'events', 'encoding']
 
 
-    #########################################################################
-    # The skeleton
-    #########################################################################
     @classmethod
     def get_skeleton(cls, title=''):
         s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"\n' \

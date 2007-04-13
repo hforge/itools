@@ -32,7 +32,8 @@ from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
 from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
                         AbstractNamespace, get_start_tag, get_end_tag,
                         START_ELEMENT, END_ELEMENT, TEXT, COMMENT)
-from itools.xhtml import xhtml_uri
+from itools.xhtml import (xhtml_uri, stream_to_str_as_html,
+                          stream_to_str_as_xhtml)
 
 
 
@@ -281,7 +282,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     return subs_expr.subn(repl, data)
 
 
-def stl(document, namespace={}, prefix=None):
+def stl(document, namespace={}, prefix=None, html=True):
     # Initialize the namespace stack
     stack = NamespaceStack()
     stack.append(namespace)
@@ -289,8 +290,12 @@ def stl(document, namespace={}, prefix=None):
     repeat = NamespaceStack()
     # Get the document
     events = document.events
-    s = process(events, 0, len(events), stack, repeat, prefix=prefix)
-    return ''.join(s)
+    encoding = 'utf-8'
+    stream = process(events, 0, len(events), stack, repeat, encoding, prefix)
+    if html is True:
+        return stream_to_str_as_html(stream, encoding)
+    else:
+        return stream_to_str_as_xhtml(stream, encoding)
 
 
 def find_end(events, start):
@@ -310,8 +315,8 @@ stl_repeat = stl_uri, 'repeat'
 stl_if = stl_uri, 'if'
 
 
-def process_start_tag(data, tag_uri, tag_name, attributes, stack, repeat,
-                      encoding, prefix):
+def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding,
+                      prefix):
     # Skip "stl:block" and "stl:inline"
     if tag_uri == stl_uri:
         return
@@ -359,12 +364,10 @@ def process_start_tag(data, tag_uri, tag_name, attributes, stack, repeat,
                         value = resolve_pointer(value, prefix)
         aux[(attr_uri, attr_name)] = value
 
-    data.append(get_start_tag(tag_uri, tag_name, aux))
+    return START_ELEMENT, (tag_uri, tag_name, aux)
 
 
-def process(events, start, end, stack, repeat_stack, encoding='UTF-8',
-            prefix=None):
-    data = []
+def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
     i = start
     while i < end:
         event, value = events[i]
@@ -372,10 +375,9 @@ def process(events, start, end, stack, repeat_stack, encoding='UTF-8',
             value = value.encode(encoding)
             value = XMLContent.encode(value)
             value, kk = substitute(value, stack, repeat_stack, encoding)
-            data.append(value)
+            yield event, value
         elif event == COMMENT:
-            value = value.encode(encoding)
-            data.append('<!--%s-->' % value)
+            yield event, value
         elif event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             # stl:repeat
@@ -404,36 +406,41 @@ def process(events, start, end, stack, repeat_stack, encoding='UTF-8',
                 loop_end = find_end(events, i)
                 i += 1
                 for loop_stack, loop_repeat in loops:
-                    process_start_tag(data, tag_uri, tag_name, attributes,
-                                      loop_stack, loop_repeat, encoding,
-                                      prefix)
-                    data.extend(process(events, i, loop_end, loop_stack,
-                                        loop_repeat, encoding, prefix))
+                    x = process_start_tag(tag_uri, tag_name, attributes,
+                                          loop_stack, loop_repeat, encoding,
+                                          prefix)
+                    if x is not None:
+                        yield x
+                    for x in process(events, i, loop_end, loop_stack,
+                                     loop_repeat, encoding, prefix):
+                        yield x
                 i = loop_end
             # stl:if
             elif stl_if in attributes:
                 attributes = attributes.copy()
                 expression = attributes.pop(stl_if)
                 if expression.evaluate(stack, repeat_stack):
-                    process_start_tag(data, tag_uri, tag_name, attributes,
-                                      stack, repeat_stack, encoding, prefix)
+                    x = process_start_tag(tag_uri, tag_name, attributes, stack,
+                                          repeat_stack, encoding, prefix)
+                    if x is not None:
+                        yield x
                 else:
                     i = find_end(events, i)
             # nothing
             else:
                 if tag_uri != stl_uri:
-                    process_start_tag(data, tag_uri, tag_name, attributes,
-                                      stack, repeat_stack, encoding, prefix)
+                    x = process_start_tag(tag_uri, tag_name, attributes, stack,
+                                          repeat_stack, encoding, prefix)
+                    if x is not None:
+                        yield x
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_uri != stl_uri:
-                data.append(get_end_tag(tag_uri, tag_name))
+                yield event, value
         else:
             raise NotImplementedError
         # Next
         i += 1
-
-    return data
 
 
 

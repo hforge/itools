@@ -20,7 +20,8 @@ import mimetypes
 
 # Import from itools
 from xhtml import (xhtml_uri, Document, stream_to_str_as_html,
-                   element_content_to_html, elements_schema)
+                   stream_to_str_as_xhtml, element_content_to_html,
+                   elements_schema)
 
 
 __all__ = [
@@ -29,6 +30,7 @@ __all__ = [
     'elements_schema',
     # New API (work in progress)
     'stream_to_str_as_html',
+    'stream_to_str_as_xhtml',
     'element_content_to_html']
 
 

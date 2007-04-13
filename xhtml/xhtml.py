@@ -56,26 +56,29 @@ class Boolean(Boolean):
 
 def stream_to_html(stream, encoding='UTF-8'):
     data = []
-    for event, node in stream:
+    for event, value in stream:
         if event == TEXT:
-            node = node.encode(encoding)
-            data.append(node)
+            value = value.encode(encoding)
+            data.append(value)
         elif event == START_ELEMENT:
-            s = '<%s' % node.qname
+            tag_uri, tag_name, attributes = value
+            qname = get_qname(tag_uri, tag_name)
+            s = '<%s' % qname
             # Output the attributes
-            for namespace_uri, local_name, value in node.get_attributes():
-                qname = node.get_attribute_qname(namespace_uri, local_name)
-                type = get_datatype_by_uri(namespace_uri, local_name)
+            for attr_uri, attr_name in attributes:
+                value = attributes[(attr_uri, attr_name)]
+                qname = get_attribute_qname(attr_uri, attr_name)
+                type = get_datatype_by_uri(attr_uri, attr_name)
                 value = type.encode(value)
                 value = XMLAttribute.encode(value)
                 s += ' %s="%s"' % (qname, value)
             data.append(s + '>')
         elif event == END_ELEMENT:
-            data.append(node.get_end_tag())
+            tag_uri, tag_name = value
+            data.append(get_end_tag(tag_uri, tag_name))
         elif event == COMMENT:
-            node = node.data
-            node = node.encode(encoding)
-            data.append('<!--%s-->' % node)
+            value = value.encode(encoding)
+            data.append('<!--%s-->' % value)
         else:
             raise NotImplementedError, str(event)
     return ''.join(data)

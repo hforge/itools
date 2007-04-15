@@ -34,13 +34,6 @@ from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
 # Data types
 #############################################################################
 
-# Streams
-def filter_root_stream(root):
-    for event, node in root.traverse():
-        if node is not root:
-            yield event, node
-
-
 # Serialize
 def get_qname(ns_uri, name):
     """Returns the fully qualified name"""
@@ -113,127 +106,33 @@ def stream_to_str(stream, encoding='UTF-8'):
     return ''.join(data)
 
 
-# API
-def element_to_str(element, encoding='UTF-8'):
-    return stream_to_str(element.traverse(), encoding)
-
-
-def element_content_to_str(element, encoding='UTF-8'):
-    return stream_to_str(filter_root_stream(element), encoding)
-
-
 
 class Element(object):
 
-    __slots__ = ['namespace', 'name', 'attributes', 'end_tag']
+    __slots__ = ['document', 'start', 'end']
+
+    def __init__(self, document, start):
+        self.document = document
+        self.start = start
+        self.end = document.find_end(start)
 
 
-    def __init__(self, namespace, name, attributes=None):
-        self.namespace = namespace
-        self.name = name
-        # Attributes (including namespace declarations)
-        if attributes is None:
-            self.attributes = {}
-        else:
-            self.attributes = attributes
-        # End tag
-        self.end_tag = None
+    def get_content_elements(self):
+        events = self.document.events
+
+        i = self.start + 1
+        while i < self.end:
+            yield events[i]
+            i += 1
 
 
-    #######################################################################
-    # API
-    #######################################################################
-    def copy(self):
-        """
-        DOM: cloneNode.
-        """
-        # Build a new node
-        clone = self.__class__(self.name)
-        # Copy the attributes
-        clone.attributes = self.attributes.copy()
-        # Copy the children
-        for child in self.children:
-            if isinstance(child, unicode):
-                self.children.append(child)
-            else:
-                self.children.append(child.copy())
-        return clone
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        if self.name == other.name:
-            if set(self.get_attributes()) == set(other.get_attributes()):
-                if self.children == other.children:
-                    return 0
-            return 0
-        return 1
-
-
-    #######################################################################
-    # Serialization
     def get_content(self, encoding='UTF-8'):
-        s = []
-        for node in self.children:
-            if isinstance(node, unicode):
-                node = node.encode(encoding)
-                s.append(XMLContent.encode(node))
-            else:
-                s.append(node.to_str(encoding=encoding))
-        return ''.join(s)
+        return stream_to_str(self.get_content_elements())
 
 
-    def to_unicode(self):
-        # Used today only by 'itools.i18n.segment' (XHTML translation)
-        return unicode(element_to_str(self), 'utf-8')
-
-
-    #######################################################################
-    # Attributes
-    def set_attribute(self, namespace, name, value):
-        self.attributes[(namespace, name)] = value
-
-
-    def get_attribute(self, namespace, local_name):
-        return self.attributes[(namespace, local_name)]
-
-
-    def has_attribute(self, namespace, local_name):
-        return (namespace, local_name) in self.attributes
-
-
-    def get_attributes(self):
-        for key, value in self.attributes.items():
-            yield key[0], key[1], value
-
-
-    #######################################################################
-    # Children
-    def set_comment(self, comment):
-        self.children.append(comment)
-
-
-    def set_element(self, element):
-        self.children.append(element)
-
-
-    def set_text(self, text, encoding='UTF-8'):
-        text = Unicode.decode(text, encoding)
-        children = self.children
-        if children and isinstance(children[-1], unicode):
-            children[-1] = children[-1] + text
-        else:
-            children.append(text)
-
-
-    def get_elements(self, name=None):
-        elements = []
-        for x in self.children:
-            if isinstance(x, Element) and (name is None or x.name == name):
-                elements.append(x)
-        return elements
-
+    def get_content_as_html(self, encoding='UTF-8'):
+        from itools.xhtml import stream_to_str_as_html
+        return stream_to_str_as_html(self.get_content_elements())
 
 
 
@@ -256,31 +155,6 @@ class Document(Text):
     class_mimetypes = ['text/xml', 'application/xml']
     class_extension = 'xml'
 
-
-    #######################################################################
-    # The Document Types registry
-    #######################################################################
-    doctype_handlers = {}
-
-
-    @classmethod
-    def set_doctype_handler(cls, public_id, handler):
-        cls.doctype_handlers[public_id] = handler
-
-
-    @classmethod
-    def get_doctype_handler(cls, public_id):
-        return cls.doctype_handlers.get(public_id)
-
-
-    @classmethod
-    def has_doctype_handler(cls, public_id):
-        return public_id in cls.doctype_handlers
-
-
-    #######################################################################
-    # Load
-    #######################################################################
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'document_type', 'events']
@@ -346,12 +220,26 @@ class Document(Text):
         return cmp(self.__dict__, other.__dict__)
 
 
+    def find_end(self, start):
+        c = 1
+        i = start + 1
+        while c:
+            event, value = self.events[i]
+            if event == START_ELEMENT:
+                c += 1
+            elif event == END_ELEMENT:
+                c -= 1
+            i = i + 1
+        return i
+
+
     def get_element(self, name):
+        i = 0
         for event, value in self.events:
             if event == START_ELEMENT:
                 if name == value[1]:
-                    # TODO Should return something else
-                    return value
+                    return Element(self, i)
+            i += 1
         return None
 
 
@@ -375,39 +263,8 @@ class Document(Text):
         """
         Removes the markup and returns a plain text string.
         """
-        text = []
-        for event, node in self.traverse():
-            if event == TEXT:
-                text.append(node)
+        text = [ value for event, value in self.events if event == TEXT ]
         return u' '.join(text)
 
 
 register_handler_class(Document)
-
-
-#############################################################################
-# XML Factory
-#############################################################################
-def guess_doctype(resource):
-    resource.open()
-    data = resource.read()
-    resource.close()
-    for event, value, line_number in Parser(data):
-        if event == DOCUMENT_TYPE:
-            return value
-        elif event == START_ELEMENT:
-            return None
-    return None
-
-
-##def get_handler(resource):
-##    """
-##    Factory for XML handlers. From a given resource, try to guess its document
-##    type, and return the proper XML handler.
-##    """
-##    doctype = guess_doctype(resource)
-##    if registry.has_doctype(doctype):
-##        handler_class = registry.get_doctype(doctype)
-##    else:
-##        handler_class = Document
-##    return handler_class(resource)

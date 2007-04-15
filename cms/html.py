@@ -22,10 +22,9 @@ except ImportError:
     print 'uTidylib is not installed, download from http://utidylib.berlios.de/'
 
 # Import from itools
-from itools.xml import (Document as XMLDocument, element_content_to_str,
-                        TEXT, START_ELEMENT)
+from itools.xml import Document as XMLDocument, TEXT, START_ELEMENT
 from itools.stl import stl
-from itools.xhtml import Document as XHTMLDocument, element_content_to_html
+from itools.xhtml import Document as XHTMLDocument
 from itools.html import Document as HTMLDocument
 
 # Import from ikaaro
@@ -103,7 +102,7 @@ class XHTMLFile(Text, XHTMLDocument):
         if body is None:
             namespace['text'] = None
         else:
-            namespace['text'] = element_content_to_str(body)
+            namespace['text'] = body.get_content()
 
         handler = self.get_handler('/ui/HTML_view.xml')
         return stl(handler, namespace)
@@ -113,7 +112,7 @@ class XHTMLFile(Text, XHTMLDocument):
     # Edit / Inline
     def get_epoz_data(self):
         body = self.get_body()
-        return element_content_to_html(body)
+        return body.get_content_as_html(body)
 
 
     edit_form__access__ = 'is_allowed_to_edit'
@@ -129,7 +128,7 @@ class XHTMLFile(Text, XHTMLDocument):
         # Edit with a rich text editor
         namespace = {}
         # Epoz expects HTML
-        data = element_content_to_html(body)
+        data = body.get_content_as_html()
         namespace['rte'] = self.get_rte('data', data)
 
         handler = self.get_handler('/ui/HTML_edit.xml')
@@ -156,11 +155,14 @@ class XHTMLFile(Text, XHTMLDocument):
         # Parse the new data
         doc = XHTMLDocument()
         doc.load_state_from_string(new_body)
-        children = doc.get_body().children
+        new_body = doc.get_body()
+        new_body = doc.events[new_body.start:new_body.end+1]
         # Save the changes
-        body = self.get_body()
+        old_body = self.get_body()
         self.set_changed()
-        body.children = children
+        self.events = (self.events[:old_body.start]
+                       + new_body
+                       + self.events[old_body.end+1:])
 
         return context.come_back(u'Document changed.')
 

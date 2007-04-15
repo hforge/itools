@@ -291,24 +291,12 @@ def stl(document, namespace={}, prefix=None, html=True):
     # Get the document
     events = document.events
     encoding = 'utf-8'
-    stream = process(events, 0, len(events), stack, repeat, encoding, prefix)
+    stream = process(document, 0, len(events), stack, repeat, encoding, prefix)
     if html is True:
         return stream_to_str_as_html(stream, encoding)
     else:
         return stream_to_str_as_xhtml(stream, encoding)
 
-
-def find_end(events, start):
-    c = 1
-    i = start + 1
-    while c:
-        event, value = events[i]
-        if event == START_ELEMENT:
-            c += 1
-        elif event == END_ELEMENT:
-            c -= 1
-        i = i + 1
-    return i
 
 
 stl_repeat = stl_uri, 'repeat'
@@ -367,7 +355,9 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding,
     return START_ELEMENT, (tag_uri, tag_name, aux)
 
 
-def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
+def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
+    events = document.events
+
     i = start
     while i < end:
         event, value = events[i]
@@ -403,7 +393,7 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                     evaluate = attributes.pop(stl_if).evaluate
                     loops = [ x for x, y in loops if evaluate(x, y) ]
                 # Process the loops
-                loop_end = find_end(events, i)
+                loop_end = document.find_end(i)
                 i += 1
                 for loop_stack, loop_repeat in loops:
                     x = process_start_tag(tag_uri, tag_name, attributes,
@@ -411,7 +401,7 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                                           prefix)
                     if x is not None:
                         yield x
-                    for x in process(events, i, loop_end, loop_stack,
+                    for x in process(document, i, loop_end, loop_stack,
                                      loop_repeat, encoding, prefix):
                         yield x
                 i = loop_end
@@ -425,7 +415,7 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                     if x is not None:
                         yield x
                 else:
-                    i = find_end(events, i)
+                    i = document.find_end(i)
             # nothing
             else:
                 if tag_uri != stl_uri:

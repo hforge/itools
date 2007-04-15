@@ -25,11 +25,11 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
 from itools.handlers import register_handler_class
-from itools.xml import (Document as XMLDocument, Element, 
+from itools.xml import (Document as XMLDocument,
                         START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
                         AbstractNamespace, set_namespace, get_namespace,
-                        get_element_schema, filter_root_stream, stream_to_str,
-                        get_qname, get_attribute_qname, is_empty, get_end_tag)
+                        get_element_schema, stream_to_str, get_qname,
+                        get_attribute_qname, is_empty, get_end_tag)
 from itools.i18n import Message
 
 
@@ -80,95 +80,56 @@ def stream_to_html(stream, encoding='UTF-8'):
             value = value.encode(encoding)
             data.append('<!--%s-->' % value)
         else:
-            raise NotImplementedError, str(event)
+            raise NotImplementedError, 'unknown event "%s"' % event
     return ''.join(data)
 
 
+def set_content_type(stream, content_type):
+    key1 = (xhtml_uri, 'http-equiv')
+    key2 = (xhtml_uri, 'content')
+    for event, value in stream:
+        if event == START_ELEMENT:
+            ns_uri, name, attributes = value
+            if ns_uri == xhtml_uri:
+                # Skip <meta http-equiv="Content-Type">
+                if name == 'meta':
+                    if key1 in attributes:
+                        if attributes[key1] == 'Content-Type':
+                            continue
+                elif name == 'head':
+                    yield event, value
+                    # Add <meta http-equiv="Content-Type">
+                    attributes = {}
+                    attributes[key1] = 'Content-Type'
+                    attributes[key2] = content_type
+                    yield START_ELEMENT, (xhtml_uri, 'meta', attributes)
+                    yield END_ELEMENT, (xhtml_uri, 'meta')
+                    continue
+        elif event == END_ELEMENT:
+            ns_uri, name = value
+            if ns_uri == xhtml_uri:
+                # Skip <meta http-equiv="Content-Type">
+                if name == 'meta':
+                    # XXX This will fail if there is another element
+                    # within the "<meta>" element (something that should
+                    # not happen).
+                    if key1 in attributes:
+                        if attributes[key1] == 'Content-Type':
+                            continue
+        yield event, value
+
 
 def stream_to_str_as_xhtml(stream, encoding='UTF-8'):
-    # This method is almost identical to Element.to_str, but we must
-    # override it to be sure the document has the correct encoding set
-    # (<meta http-equiv="Content-Type" content="...">)
-
-    def filter(stream, encoding):
-        key1 = (xhtml_uri, 'http-equiv')
-        key2 = (xhtml_uri, 'content')
-        key2_value = 'application/xhtml+xml; charset=%s'
-        for event, value in stream:
-            if event == START_ELEMENT:
-                ns_uri, name, attributes = value
-                if ns_uri == xhtml_uri:
-                    # Skip <meta http-equiv="Content-Type">
-                    if name == 'meta':
-                        if key1 in attributes:
-                            if attributes[key1] == 'Content-Type':
-                                continue
-                    elif name == 'head':
-                        yield event, value
-                        # Add <meta http-equiv="Content-Type">
-                        attributes = {}
-                        attributes[key1] = 'Content-Type'
-                        attributes[key2] = key2_value % encoding
-                        yield START_ELEMENT, (xhtml_uri, 'meta', attributes)
-                        yield END_ELEMENT, (xhtml_uri, 'meta')
-                        continue
-            elif event == END_ELEMENT:
-                ns_uri, name = value
-                if ns_uri == xhtml_uri:
-                    # Skip <meta http-equiv="Content-Type">
-                    if name == 'meta':
-                        # XXX This will fail if there is another element
-                        # within the "<meta>" element (something that should
-                        # not happen).
-                        if key1 in attributes:
-                            if attributes[key1] == 'Content-Type':
-                                continue
-            yield event, value
-
-    return stream_to_str(filter(stream, encoding), encoding)
+    content_type = 'application/xhtml+xml; charset=%s' % encoding
+    stream = set_content_type(stream, content_type)
+    return stream_to_str(stream, encoding)
 
 
 
 def stream_to_str_as_html(stream, encoding='UTF-8'):
-    def filter(stream, encoding):
-        key1 = (xhtml_uri, 'http-equiv')
-        key2 = (xhtml_uri, 'content')
-        key2_value = 'text/html; charset=%s'
-        for event, value in stream:
-            if event == START_ELEMENT:
-                ns_uri, name, attributes = value
-                if ns_uri == xhtml_uri:
-                    # Skip <meta http-equiv="Content-Type">
-                    if name == 'meta':
-                        if key1 in attributes:
-                            if attributes[key1] == 'Content-Type':
-                                continue
-                    elif name == 'head':
-                        yield event, value
-                        # Add <meta http-equiv="Content-Type">
-                        attributes = {}
-                        attributes[key1] = 'Content-Type'
-                        attributes[key2] = key2_value % encoding
-                        yield START_ELEMENT, (xhtml_uri, 'meta', attributes)
-                        yield END_ELEMENT, (xhtml_uri, 'meta')
-                        continue
-            elif event == END_ELEMENT:
-                ns_uri, name = value
-                if ns_uri == xhtml_uri:
-                    # Skip <meta http-equiv="Content-Type">
-                    if name == 'meta':
-                        if key1 in attributes:
-                            if attributes[key1] == 'Content-Type':
-                                continue
-
-            yield event, value
-
-    return stream_to_html(filter(stream, encoding), encoding)
-
-
-def element_content_to_html(element, encoding='UTF-8'):
-    return stream_to_html(filter_root_stream(element), encoding)
-
+    content_type = 'text/html; charset=%s' % encoding
+    stream = set_content_type(stream, content_type)
+    return stream_to_html(stream, encoding)
 
 
 #############################################################################
@@ -486,25 +447,13 @@ class Document(XMLDocument):
     # API
     ########################################################################
     def get_head(self):
-        """
-        Returns the head element.
-        """
-        root = self.get_root_element()
-        heads = root.get_elements(name='head')
-        if heads:
-            return heads[0]
-        return None
+        """Returns the head element."""
+        return self.get_element('head')
 
 
     def get_body(self):
-        """
-        Returns the body element.
-        """
-        root = self.get_root_element()
-        bodies = root.get_elements(name='body')
-        if bodies:
-            return bodies[0]
-        return None
+        """Returns the body element."""
+        return self.get_element('body')
 
 
     ########################################################################
@@ -529,7 +478,7 @@ class Document(XMLDocument):
             # Process
             if message:
                 # XXX
-                if len(message) == 1 and isinstance(message[0], Element):
+                if len(message) == 1 and message[0][0] == START_ELEMENT:
                     node = message[0]
                     open_tag(node)
                     message = Message(node.children)
@@ -538,11 +487,11 @@ class Document(XMLDocument):
                     yield node.get_end_tag()
                 else:
                     # Check wether the node message has real text to process.
-                    for x in message:
-                        if isinstance(x, unicode):
-                            if x.strip():
+                    for event, value in message:
+                        if event == TEXT:
+                            if value.strip():
                                 break
-                        elif isinstance(x, Element):
+                        elif event == START_ELEMENT:
                             for event, node in x.traverse():
                                 if event == TEXT:
                                     if node.strip():
@@ -639,98 +588,96 @@ class Document(XMLDocument):
         return data
 
 
-    def get_messages(self):
-        def process_message(message, keep_spaces):
-            # Normalize the message
-            normalize(message)
-            # Left strip
-            if message:
-                x = message[0]
-                if isinstance(x, unicode) and x.strip() == u'':
-                    del message[0]
-            # Right strip
-            if message:
-                x = message[-1]
-                if isinstance(x, unicode) and x.strip() == u'':
-                    del message[-1]
-            # Process
-            if message:
-                # Check wether the message is only one element
-                if len(message) == 1 and isinstance(message[0], Element):
-                    node = message[0]
-                    message = Message(node.children)
-                    for x in process_message(message, keep_spaces):
-                        yield x
-                else:
-                    # Check wether the node message has real text to process.
-                    for x in message:
-                        if isinstance(x, unicode):
-                            if x.strip():
-                                break
-                        elif isinstance(x, Element):
-                            for event, node in x.traverse():
-                                if event == TEXT:
-                                    if node.strip():
-                                        break
-                            else:
-                                continue
-                            break
-                    else:
-                        # Nothing to translate
-                        raise StopIteration
-                    # Something to translate: segmentation
-                    for segment in message.get_segments(keep_spaces):
-                        yield segment
-
-        messages = []
+    def _get_messages(self):
         message = Message()
         keep_spaces = False
         stream = self.traverse()
-        for event, node in stram:
+        for event, value in stream:
             if event == TEXT:
-                message.append(node)
+                message.append((event, value))
             elif event == START_ELEMENT:
-                if node.name in ['script', 'style']:
-                    for x in process_message(message, keep_spaces):
-                        if x not in messages:
-                            yield x, 0
+                tag_uri, tag_name, attributes = value
+                if tag_name in ['script', 'style']:
+                    yield message, keep_spaces
                     message = Message()
                     # Don't go through this node
                     stream.send(1)
                 else:
                     # Attributes
-                    for ns_uri, name, value in node.get_attributes():
-                        namespace = get_namespace(ns_uri)
-                        if namespace.is_translatable(node, name):
+                    for attr_uri, attr_name in attributes:
+                        value = attributes[(attr_uri, attr_name)]
+                        namespace = get_namespace(attr_uri)
+                        if namespace.is_translatable(tag_uri, tag_name,
+                                                     attributes, attr_name):
                             if value.strip():
-                                if value not in messages:
-                                    yield value, 0
+                                yield value, 0
                     # Inline or Block
-                    schema = get_element_schema(node.namespace, node.name)
+                    schema = get_element_schema(tag_uri, tag_name)
                     if schema['is_inline']:
-                        message.append(node)
-                        stream.send(1)
+                        message.append((event, value))
                     else:
-                        for x in process_message(message, keep_spaces):
-                            if x not in messages:
-                                yield x, 0
+                        yield message, keep_spaces
                         message = Message()
                         # Presarve spaces if <pre>
-                        if node.name == 'pre':
+                        if tag_name == 'pre':
                             keep_spaces = True
             elif event == END_ELEMENT:
-                schema = get_element_schema(node.namespace, node.name)
-                if not schema['is_inline']:
-                    for x in process_message(message, keep_spaces):
-                        if x not in messages:
-                            yield x, 0
+                tag_uri, tag_name = value
+                schema = get_element_schema(tag_uri, tag_name)
+                if schema['is_inline']:
+                    message.append((event, value))
+                else:
+                    yield message, keep_spaces
                     message = Message()
                     # </pre> don't preserve spaces any more
-                    if node.name == 'pre':
+                    if tag_name == 'pre':
                         keep_spaces = False
 
 
-XMLDocument.set_doctype_handler('-//W3C//DTD XHTML 1.0 Strict//EN', Document)
+    def get_messages(self):
+        for message, keep_spaces in self._get_messages():
+            # Normalize the message
+            normalize(message)
+            # Left strip
+            if message:
+                event, value = message[0]
+                if event == TEXT and value.strip() == u'':
+                    del message[0]
+            # Right strip
+            if message:
+                event, value = message[-1]
+                if event == TEXT and value.strip() == u'':
+                    del message[-1]
+            # If no message, do nothing
+            if not message:
+                continue
+
+            # Check wether the message is only one element
+            # FIXME This does not really work
+            if message[0][0] == START_ELEMENT:
+                if message[-1][0] == END_ELEMENT:
+                    start_uri, start_name, attributes = message[0]
+                    end_uri, end_name = message[-1]
+                    if start_uri == end_uri and start_name == end_name:
+                        children = message[0:-1]
+                        message = Message(children)
+                        for x in process_message(message, keep_spaces):
+                            yield x
+                        continue
+            # Check wether the node message has real text to process.
+            for event, value in message:
+                if event == TEXT:
+                    if value.strip():
+                        break
+            else:
+                # Nothing to translate
+                continue
+            # Something to translate: segmentation
+            for segment in message.get_segments(keep_spaces):
+                yield segment
+
+
+
 register_handler_class(Document)
 
 

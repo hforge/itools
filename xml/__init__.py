@@ -23,9 +23,8 @@ from namespaces import (XMLNamespace, XMLNSNamespace,
                         get_element_schema, is_empty)
 from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, PI, CDATA)
-from xml import (Document, Element, filter_root_stream, element_to_str,
-                 element_content_to_str, stream_to_str,
-                 get_qname, get_attribute_qname, get_start_tag, get_end_tag)
+from xml import (Document, Element, stream_to_str, get_qname,
+                 get_attribute_qname, get_start_tag, get_end_tag)
 from indexer import xml_to_text
 from office import (MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc,
                     OOImpress, PDF)
@@ -38,9 +37,6 @@ __all__ = [
     'get_attribute_qname',
     'get_start_tag',
     'get_end_tag',
-    'filter_root_stream',
-    'element_to_str',
-    'element_content_to_str',
     'stream_to_str',
     # Exceptions
     'XMLError',

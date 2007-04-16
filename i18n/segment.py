@@ -21,6 +21,9 @@ stop_sentences =[u'.', u';', u':', u'!', u'?']
 abbreviations = [u'Inc', u'Md', u'Mr', u'Dr']
 
 
+TEXT, FORMAT = range(2)
+
+
 
 class Message(list):
     """
@@ -39,17 +42,21 @@ class Message(list):
         # Initialize
         if isinstance(x, unicode):
             list.__init__(self)
-            self.append(x)
+            self.append_text(x)
         else:
             list.__init__(self, x)
 
 
-    def append(self, x):
+    def append_text(self, x):
         # Coerce str to unicode
         if isinstance(x, str):
             x = unicode(x)
         # Append
-        list.append(self, x)
+        list.append(self, (TEXT, x))
+
+
+    def append_format(self, x):
+        list.append(self, (FORMAT, x))
 
 
     def normalize(self):
@@ -59,11 +66,39 @@ class Message(list):
         i = 0
         while i < len(self) - 1:
             this, next = self[i], self[i+1]
-            if isinstance(this, unicode) and isinstance(next, unicode):
-                self[i] = this + next
+            if this[0] == TEXT and next[0] == TEXT:
+                self[i] = (TEXT, this[1] + next[1])
                 del self[i+1]
             else:
                 i = i + 1
+
+
+    def lstrip(self):
+        """Left strip"""
+        if len(self) == 0:
+            return ''
+        type, value = self[0]
+        if type == TEXT and value.strip() == u'':
+            del self[0]
+        return value
+
+
+    def rstrip(self):
+        """Right strip"""
+        if len(self) == 0:
+            return ''
+        type, value = self[-1]
+        if type == TEXT and value.strip() == u'':
+            del self[-1]
+        return value
+
+
+    def has_text_to_translate(self):
+        for type, value in self:
+            if type == TEXT:
+                if value.strip():
+                    return True
+        return False
 
 
     def get_atoms(self):
@@ -71,12 +106,12 @@ class Message(list):
         This is a generator that iters over the message and returns each
         time an atom.
         """
-        for x in self:
-            if isinstance(x, unicode):
-                for letter in x:
-                    yield letter
+        for type, value in self:
+            if type == TEXT:
+                for letter in value:
+                    yield TEXT, letter
             else:
-                yield x
+                yield type, value
 
 
     def get_words(self):
@@ -123,9 +158,9 @@ class Message(list):
         """
         token = None
         state, lexeme = 0, u''
-        for atom in self.get_atoms():
+        for type, atom in self.get_atoms():
             if state == 0:
-                if isinstance(atom, unicode):
+                if type == TEXT:
                     if atom.isspace():
                         state, lexeme = 1, atom
                     elif atom.isalnum():
@@ -136,9 +171,9 @@ class Message(list):
                         token = STOP_WORD, atom
                         yield token
                 else:
-                    state, lexeme = 2, atom.to_unicode()
+                    state, lexeme = 2, atom
             elif state == 1:
-                if isinstance(atom, unicode):
+                if type == TEXT:
                     if atom.isspace():
                         lexeme += atom
                     elif atom.isalnum():
@@ -157,9 +192,9 @@ class Message(list):
                 else:
                     token = SPACE, lexeme
                     yield token
-                    state, lexeme = 2, atom.to_unicode()
+                    state, lexeme = 2, atom
             elif state == 2:
-                if isinstance(atom, unicode):
+                if type == TEXT:
                     if atom.isspace():
                         token = WORD, lexeme
                         yield token
@@ -176,9 +211,9 @@ class Message(list):
                         yield token
                         state, lexeme = 0, ''
                 else:
-                    lexeme += atom.to_unicode()
+                    lexeme += atom
             elif state == 3:
-                if isinstance(atom, unicode):
+                if type == TEXT:
                     if atom.isspace():
                         if lexeme == '.':
                             if token is None \
@@ -204,7 +239,7 @@ class Message(list):
                         yield token
                         state, lexeme = 0, u''
                 else:
-                    lexeme += atom.to_unicode()
+                    lexeme += atom
                     state = 2
 
         if state == 1:

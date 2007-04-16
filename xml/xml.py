@@ -63,18 +63,18 @@ def get_attribute_qname(namespace, local_name):
     return '%s:%s' % (prefix, local_name)
 
 
-def get_start_tag(ns_uri, name, attributes):
-    s = '<%s' % get_qname(ns_uri, name)
+def get_start_tag(tag_uri, tag_name, attributes):
+    s = '<%s' % get_qname(tag_uri, tag_name)
     # Output the attributes
-    for namespace_uri, local_name in attributes:
-        value = attributes[(namespace_uri, local_name)]
-        qname = get_attribute_qname(namespace_uri, local_name)
-        type = get_datatype_by_uri(namespace_uri, local_name)
-        value = type.encode(value)
+    for attr_uri, attr_name in attributes:
+        value = attributes[(attr_uri, attr_name)]
+        qname = get_attribute_qname(attr_uri, attr_name)
+        datatype = get_datatype_by_uri(attr_uri, attr_name)
+        value = datatype.encode(value)
         value = XMLAttribute.encode(value)
         s += ' %s="%s"' % (qname, value)
     # Close the start tag
-    if is_empty(ns_uri, name):
+    if is_empty(tag_uri, tag_name):
         return s + '/>'
     else:
         return s + '>'
@@ -251,7 +251,6 @@ class Document(Text):
                     skip += 1
                 elif event == END_ELEMENT:
                     skip -= 1
-            if skip:
                 continue
 
             command = yield event, value

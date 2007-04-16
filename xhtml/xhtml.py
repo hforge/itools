@@ -25,12 +25,10 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
                             register_schema)
 from itools.handlers import register_handler_class
-from itools.xml import (Document as XMLDocument,
+from itools.xml import (Document as XMLDocument, Translatable,
                         START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
-                        AbstractNamespace, set_namespace, get_namespace,
-                        get_element_schema, stream_to_str, get_qname,
-                        get_attribute_qname, is_empty, get_end_tag)
-from itools.i18n import Message
+                        AbstractNamespace, set_namespace, stream_to_str,
+                        get_qname, get_attribute_qname, is_empty, get_end_tag)
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'
@@ -39,7 +37,6 @@ xhtml_uri = 'http://www.w3.org/1999/xhtml'
 #############################################################################
 # Types
 #############################################################################
-
 
 class Boolean(Boolean):
 
@@ -357,46 +354,7 @@ register_schema(Schema)
 #############################################################################
 # Document
 #############################################################################
-def open_tag(tag_uri, tag_name, attributes, buffer, catalog):
-    # The open tag
-    qname = get_qname(tag_uri, tag_name)
-    buffer.write('<%s' % qname)
-    # The attributes
-    for attr_uri, attr_name in attributes:
-        value = attributes[(attr_uri, attr_name)]
-        namespace = get_namespace(attr_uri)
-        if namespace.is_translatable(tag_uri, tag_name, attributes, attr_name):
-            value = value.strip()
-            if value:
-                value = catalog.get_translation(value)
-                #value = catalog.get_msgstr(value) or value
-        qname = get_attribute_qname(attr_uri, attr_name)
-        datatype = get_datatype_by_uri(attr_uri, attr_name)
-        value = datatype.encode(value)
-        value = XMLAttribute.encode(value)
-        buffer.write(' %s="%s"' % (qname, value))
-    # Close the start tag
-    if is_empty(tag_uri, tag_name):
-        buffer.write('/>')
-    else:
-        buffer.write('>')
-
-
-def normalize(message):
-    """
-    Concatenates adjacent text nodes.
-    """
-    i = 0
-    while i < len(message) - 1:
-        this, next = message[i], message[i+1]
-        if this[0] == TEXT and next[0] == TEXT:
-            message[i] = (TEXT, this[1] + next[1])
-            del message[i+1]
-        else:
-            i = i + 1
-
-
-class Document(XMLDocument):
+class Document(Translatable, XMLDocument):
     """
     This class adds one thing to the XML class, the semantics of translatable
     text.
@@ -456,228 +414,4 @@ class Document(XMLDocument):
         return self.get_element('body')
 
 
-    ########################################################################
-    # API / i18n
-    ########################################################################
-    def translate(self, catalog):
-        def process_message(message, keep_spaces):
-            # Normalize the message
-            normalize(message)
-            # Left strip
-            if message:
-                x = message[0]
-                if isinstance(x, unicode) and x.strip() == u'':
-                    del message[0]
-                    yield x
-            # Right strip
-            if message:
-                x = message[-1]
-                if isinstance(x, unicode) and x.strip() == u'':
-                    del message[-1]
-                    yield x
-            # Process
-            if message:
-                # XXX
-                if len(message) == 1 and message[0][0] == START_ELEMENT:
-                    node = message[0]
-                    open_tag(node)
-                    message = Message(node.children)
-                    for x in process_message(message, keep_spaces):
-                        yield x
-                    yield node.get_end_tag()
-                else:
-                    # Check wether the node message has real text to process.
-                    for event, value in message:
-                        if event == TEXT:
-                            if value.strip():
-                                break
-                        elif event == START_ELEMENT:
-                            for event, node in x.traverse():
-                                if event == TEXT:
-                                    if node.strip():
-                                        break
-                            else:
-                                continue
-                            break
-                    else:
-                        # Nothing to translate
-                        for event, value in message:
-                            if event == TEXT:
-                                yield XMLDataType.encode(value)
-                            elif event == START_ELEMENT:
-                                tag_uri, tag_name, attributes = value
-                                open_tag(tag_uri, tag_name, attributes, buffer,
-                                         catalog)
-                                #msg = Message(x.children)
-                                #for y in process_message(msg, keep_spaces):
-                                #    yield y
-                            elif event == END_ELEMENT:
-                                tag_uri, tag_name = value
-                                yield get_end_tag(tag_uri, tag_name)
-                            elif event == COMMENT:
-                                yield '<!--%s-->' % value
-                            else:
-                                raise NotImplementedError
-                        raise StopIteration
-                    # Something to translate: segmentation
-                    for segment in message.get_segments(keep_spaces):
-                        msgstr = catalog.get_translation(segment)
-                        # Escapes "&", except when it is an entity reference
-                        def f(match):
-                            x = match.group(0)
-                            if x.endswith(';'):
-                                return x
-                            return "&amp;" + x[1:]
-                        msgstr = re.sub("&[\w;]*", f, msgstr)
-                        # XXX The special characters "<" and "&" must be
-                        # escaped in text nodes (only in text nodes).
-
-                        yield msgstr
-                        if keep_spaces is False:
-                            yield u' '
-
-        buffer = StringIO()
-        buffer.write(self.header_to_str())
-        message = Message()
-        keep_spaces = False
-        stream = self.traverse()
-        for event, value in stream:
-            if event == TEXT:
-                message.append((event, value))
-            elif event == START_ELEMENT:
-                # Inline or block
-                ns_uri, name, attributes = value
-                schema = get_element_schema(ns_uri, name)
-                if schema['is_inline']:
-                    message.append((event, value))
-                    stream.send(1)
-                else:
-                    # Process any previous message
-                    for x in process_message(message, keep_spaces):
-                        buffer.write(x.encode('utf-8'))
-                    message = Message()
-                    # The open tag
-                    open_tag(ns_uri, name, attributes, buffer, catalog)
-                    # Presarve spaces if <pre>
-                    if name == 'pre':
-                        keep_spaces = True
-            elif event == END_ELEMENT:
-                ns_uri, name = value
-                schema = get_element_schema(ns_uri, name)
-                if not schema['is_inline']:
-                    for x in process_message(message, keep_spaces):
-                        buffer.write(x.encode('utf-8'))
-                    message = Message()
-                    # The close tag
-                    buffer.write(get_end_tag(ns_uri, name))
-                    # </pre> don't preserve spaces any more
-                    if name == 'pre':
-                        keep_spaces = False
-            elif event == COMMENT:
-                buffer.write('<!--%s-->' % value.encode('utf-8'))
-            else:
-                raise NotImplementedError
-
-        # Process trailing message
-        if message:
-            for x in process_message(message, keep_spaces):
-                buffer.write(x.encode('utf-8'))
-
-        data = buffer.getvalue()
-        buffer.close()
-        return data
-
-
-    def _get_messages(self):
-        message = Message()
-        keep_spaces = False
-        stream = self.traverse()
-        for event, value in stream:
-            if event == TEXT:
-                message.append((event, value))
-            elif event == START_ELEMENT:
-                tag_uri, tag_name, attributes = value
-                if tag_name in ['script', 'style']:
-                    yield message, keep_spaces
-                    message = Message()
-                    # Don't go through this node
-                    stream.send(1)
-                else:
-                    # Attributes
-                    for attr_uri, attr_name in attributes:
-                        value = attributes[(attr_uri, attr_name)]
-                        namespace = get_namespace(attr_uri)
-                        if namespace.is_translatable(tag_uri, tag_name,
-                                                     attributes, attr_name):
-                            if value.strip():
-                                yield value, 0
-                    # Inline or Block
-                    schema = get_element_schema(tag_uri, tag_name)
-                    if schema['is_inline']:
-                        message.append((event, value))
-                    else:
-                        yield message, keep_spaces
-                        message = Message()
-                        # Presarve spaces if <pre>
-                        if tag_name == 'pre':
-                            keep_spaces = True
-            elif event == END_ELEMENT:
-                tag_uri, tag_name = value
-                schema = get_element_schema(tag_uri, tag_name)
-                if schema['is_inline']:
-                    message.append((event, value))
-                else:
-                    yield message, keep_spaces
-                    message = Message()
-                    # </pre> don't preserve spaces any more
-                    if tag_name == 'pre':
-                        keep_spaces = False
-
-
-    def get_messages(self):
-        for message, keep_spaces in self._get_messages():
-            # Normalize the message
-            normalize(message)
-            # Left strip
-            if message:
-                event, value = message[0]
-                if event == TEXT and value.strip() == u'':
-                    del message[0]
-            # Right strip
-            if message:
-                event, value = message[-1]
-                if event == TEXT and value.strip() == u'':
-                    del message[-1]
-            # If no message, do nothing
-            if not message:
-                continue
-
-            # Check wether the message is only one element
-            # FIXME This does not really work
-            if message[0][0] == START_ELEMENT:
-                if message[-1][0] == END_ELEMENT:
-                    start_uri, start_name, attributes = message[0]
-                    end_uri, end_name = message[-1]
-                    if start_uri == end_uri and start_name == end_name:
-                        children = message[0:-1]
-                        message = Message(children)
-                        for x in process_message(message, keep_spaces):
-                            yield x
-                        continue
-            # Check wether the node message has real text to process.
-            for event, value in message:
-                if event == TEXT:
-                    if value.strip():
-                        break
-            else:
-                # Nothing to translate
-                continue
-            # Something to translate: segmentation
-            for segment in message.get_segments(keep_spaces):
-                yield segment
-
-
-
 register_handler_class(Document)
-
-

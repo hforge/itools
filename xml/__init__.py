@@ -25,6 +25,7 @@ from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, PI, CDATA)
 from xml import (Document, Element, stream_to_str, get_qname,
                  get_attribute_qname, get_start_tag, get_end_tag)
+from i18n import Translatable
 from indexer import xml_to_text
 from office import (MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc,
                     OOImpress, PDF)
@@ -38,6 +39,7 @@ __all__ = [
     'get_start_tag',
     'get_end_tag',
     'stream_to_str',
+    'Translatable',
     # Exceptions
     'XMLError',
     # Namespaces

@@ -272,7 +272,7 @@ class CSV(Text):
                     except TypeError:
                         data = datatype.encode(row[i])
                     line.append('"%s"' % data.replace('"', '""'))
-                lines.append(','.join(line))
+                lines.append(separator.join(line))
         else:
             for row in self.get_rows():
                 line = [ '"%s"' % x.encode(encoding).replace('"', '""')

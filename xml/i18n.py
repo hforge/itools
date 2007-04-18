@@ -16,39 +16,53 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
+from itools.datatypes import XML as XMLContent
 from itools.i18n import Message
-from itools.xml import (START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
+from itools.xml import (Parser, START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
                         get_namespace, get_element_schema, get_start_tag,
-                        get_end_tag)
+                        get_end_tag, stream_to_str)
 
 
-def open_tag(tag_uri, tag_name, attributes, catalog):
+
+def translate_stack(stack, catalog, keep_spaces):
     """
-    This method is similar to "get_start_tag", but it translates the
-    attributes.
+    This method receives as input a stack of XML events and returns 
+    another stack, the translation of the source one.
     """
-    s = '<%s' % get_qname(tag_uri, tag_name)
-    # The attributes
-    for attr_uri, attr_name in attributes:
-        value = attributes[(attr_uri, attr_name)]
-        namespace = get_namespace(attr_uri)
-        if namespace.is_translatable(tag_uri, tag_name, attributes, attr_name):
-            value = value.strip()
-            if value:
-                value = catalog.get_translation(value)
-        qname = get_attribute_qname(attr_uri, attr_name)
-        datatype = get_datatype_by_uri(attr_uri, attr_name)
-        value = datatype.encode(value)
-        value = XMLAttribute.encode(value)
-        s += ' %s="%s"' % (qname, value)
-    # Close the start tag
-    if is_empty(tag_uri, tag_name):
-        s += '/>'
-    else:
-        s += '>'
-
-    return s
-
+    # Build the message and find out if there is something to translate
+    message = Message()
+    there_is_something_to_translate = False
+    for event, value in stack:
+        if event == TEXT:
+            if value.strip():
+                there_is_something_to_translate = True
+            value = XMLContent.encode(value)
+            message.append_text(value)
+        elif event == START_ELEMENT:
+            message.append_format(get_start_tag(*value))
+        elif event == END_ELEMENT:
+            message.append_format(get_end_tag(*value))
+        else:
+            raise ValueError
+    # If there is nothing to translate, return the same input stack
+    if there_is_something_to_translate is False:
+        return stack
+    # If there is something to translate, translate the message, parse
+    # the translation and return the obtained stack
+    stack = []
+    left = message.lstrip()
+    right = message.rstrip()
+    if left:
+        stack.append((TEXT, left))
+    for segment in message.get_segments(keep_spaces):
+        segment = catalog.get_translation(segment).encode('utf-8')
+        for event, value, line in Parser(segment):
+            if event == TEXT:
+                value = unicode(value, 'utf-8')
+            stack.append((event, value))
+    if right:
+        stack.append((TEXT, right))
+    return stack
 
 
 
@@ -99,7 +113,9 @@ class Translatable(object):
                     is_translatable = get_namespace(attr_uri).is_translatable
                     if is_translatable(tag_uri, tag_name, attributes, attr_name):
                         if value.strip():
-                            yield Message(value), True
+                            aux = Message()
+                            aux.append_text(value)
+                            yield aux, True
                 # Inline or Block
                 schema = get_element_schema(tag_uri, tag_name)
                 if schema['is_inline']:
@@ -127,7 +143,6 @@ class Translatable(object):
 
     def get_messages(self):
         for message, keep_spaces in self.get_translatable_blocks():
-            message.normalize()
             message.lstrip()
             message.rstrip()
             # If no message, do nothing
@@ -154,116 +169,60 @@ class Translatable(object):
     # Translate
     #######################################################################
     def _translate(self, catalog):
-        message = Message()
+        namespaces = {}
+
+        stack = []
         keep_spaces = False
-        stream = self.traverse()
-        for event, value in stream:
+        for event, value in self.events:
             if event == TEXT:
-                message.append((event, value))
+                stack.append((event, value))
             elif event == START_ELEMENT:
                 # Inline or block
                 tag_uri, tag_name, attributes = value
                 schema = get_element_schema(tag_uri, tag_name)
                 if schema['is_inline']:
-                    message.append((event, value))
-                    stream.send(1)
+                    stack.append((event, value))
                 else:
-                    # Process any previous message
-                    for x in process_message(message, keep_spaces):
-                        buffer.write(x.encode('utf-8'))
-                    message = Message()
-                    # The open tag
-                    buffer.write(open_tag(tag_uri, tag_name, attributes, catalog))
+                    for x in translate_stack(stack, catalog, keep_spaces):
+                        yield x
+                    stack = []
+                    # The start tag (translate the attributes)
+                    aux = {}
+                    for attr_uri, attr_name in attributes:
+                        value = attributes[(attr_uri, attr_name)]
+                        is_trans = get_namespace(attr_uri).is_translatable
+                        if is_trans(tag_uri, tag_name, attributes, attr_name):
+                            value = value.strip()
+                            if value:
+                                value = catalog.get_translation(value)
+                        aux[(attr_uri, attr_name)] = value
+                    yield START_ELEMENT, (tag_uri, tag_name, aux)
                     # Presarve spaces if <pre>
                     if tag_name == 'pre':
                         keep_spaces = True
             elif event == END_ELEMENT:
                 tag_uri, tag_name = value
                 schema = get_element_schema(tag_uri, tag_name)
-                if not schema['is_inline']:
-                    for x in process_message(message, keep_spaces):
-                        buffer.write(x.encode('utf-8'))
-                    message = Message()
+                if schema['is_inline']:
+                    stack.append((event, value))
+                else:
+                    for x in translate_stack(stack, catalog, keep_spaces):
+                        yield x
+                    stack = []
                     # The close tag
-                    buffer.write(get_end_tag(tag_uri, tag_name))
+                    yield event, value
                     # </pre> don't preserve spaces any more
                     if tag_name == 'pre':
                         keep_spaces = False
-            elif event == COMMENT:
-                buffer.write('<!--%s-->' % value.encode('utf-8'))
             else:
-                raise NotImplementedError
+                yield event, value
 
         # Process trailing message
-        if message:
-            for x in process_message(message, keep_spaces):
-                buffer.write(x.encode('utf-8'))
-
-        data = buffer.getvalue()
-        buffer.close()
-        return data
+        if stack:
+            for x in translate_stack(stack, catalog, keep_spaces):
+                yield x
 
 
     def translate(self, catalog):
-        for event, value in self._translate(catalog):
-            normalize(message)
-            if not message:
-                return
-            # Process
-            if len(message) == 1 and message[0][0] == START_ELEMENT:
-                node = message[0]
-                buffer.write(open_tag(ns_uri, name, attributes, catalog))
-                message = Message(node.children)
-                for x in process_message(message, keep_spaces):
-                    yield x
-                yield node.get_end_tag()
-            else:
-                # Check wether the node message has real text to process.
-                for event, value in message:
-                    if event == TEXT:
-                        if value.strip():
-                            break
-                    elif event == START_ELEMENT:
-                        for event, node in x.traverse():
-                            if event == TEXT:
-                                if node.strip():
-                                    break
-                        else:
-                            continue
-                        break
-                else:
-                    # Nothing to translate
-                    for event, value in message:
-                        if event == TEXT:
-                            yield XMLDataType.encode(value)
-                        elif event == START_ELEMENT:
-                            tag_uri, tag_name, attributes = value
-                            buffer.write(open_tag(tag_uri, tag_name,
-                                                  attributes, catalog))
-                            #msg = Message(x.children)
-                            #for y in process_message(msg, keep_spaces):
-                            #    yield y
-                        elif event == END_ELEMENT:
-                            tag_uri, tag_name = value
-                            yield get_end_tag(tag_uri, tag_name)
-                        elif event == COMMENT:
-                            yield '<!--%s-->' % value
-                        else:
-                            raise NotImplementedError
-                    raise StopIteration
-                # Something to translate: segmentation
-                for segment in message.get_segments(keep_spaces):
-                    msgstr = catalog.get_translation(segment)
-                    # Escapes "&", except when it is an entity reference
-                    def f(match):
-                        x = match.group(0)
-                        if x.endswith(';'):
-                            return x
-                        return "&amp;" + x[1:]
-                    msgstr = re.sub("&[\w;]*", f, msgstr)
-                    # XXX The special characters "<" and "&" must be
-                    # escaped in text nodes (only in text nodes).
-
-                    yield msgstr
-                    if keep_spaces is False:
-                        yield u' '
+        stream = self._translate(catalog)
+        return stream_to_str(stream)

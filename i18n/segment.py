@@ -35,16 +35,8 @@ class Message(list):
     like an xml node (e.g. '<em>hello world</em>').
     """
 
-    def __init__(self, x=[]):
-        # Coerce str to unicode
-        if isinstance(x, str):
-            x = unicode(x)
-        # Initialize
-        if isinstance(x, unicode):
-            list.__init__(self)
-            self.append_text(x)
-        else:
-            list.__init__(self, x)
+    def __init__(self):
+        list.__init__(self)
 
 
     def append_text(self, x):
@@ -52,25 +44,14 @@ class Message(list):
         if isinstance(x, str):
             x = unicode(x)
         # Append
-        list.append(self, (TEXT, x))
+        if self and (self[-1][0] == TEXT):
+            self[-1] = TEXT, self[-1][1] + x
+        else:
+            list.append(self, (TEXT, x))
 
 
     def append_format(self, x):
         list.append(self, (FORMAT, x))
-
-
-    def normalize(self):
-        """
-        Concatenates adjacent text nodes.
-        """
-        i = 0
-        while i < len(self) - 1:
-            this, next = self[i], self[i+1]
-            if this[0] == TEXT and next[0] == TEXT:
-                self[i] = (TEXT, this[1] + next[1])
-                del self[i+1]
-            else:
-                i = i + 1
 
 
     def lstrip(self):

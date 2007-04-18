@@ -392,7 +392,7 @@ def build_menu(options):
 
 
 
-def _tree(node, root, depth, active_node, filter, user):
+def _tree(node, root, depth, active_node, filter, user, width):
     # Build the namespace
     namespace = {}
     namespace['src'] = node.get_path_to_icon(size=16, from_handler=active_node)
@@ -420,14 +420,14 @@ def _tree(node, root, depth, active_node, filter, user):
         # Reach the root, do not expand
         if aux is root:
             namespace['items'] = []
-            return namespace
+            return namespace, False
         # Next
         aux = aux.parent
 
     # Expand till a given depth
     if depth <= 0:
         namespace['items'] = []
-        return namespace
+        return namespace, True
 
     # Expand the children
     depth = depth - 1
@@ -439,18 +439,30 @@ def _tree(node, root, depth, active_node, filter, user):
         search = node.search_handlers(handler_class=filter)
 
     children = []
+    counter = 0
     for child in search:
         ac = child.get_access_control()
         if ac.is_allowed_to_view(user, child):
-            aux = _tree(child, root, depth, active_node, filter, user)
-            children.append(aux)
+            ns, in_path = _tree(child, root, depth, active_node, filter, user,
+                                width)
+            if in_path:
+                children.append(ns)
+            elif counter < width:
+                children.append(ns)
+            counter += 1
+    if counter > width:
+        children.append({'href': None,
+                         'class': '',
+                         'src': None, 
+                         'title': '...',
+                         'items': []})
     namespace['items'] = children
  
-    return namespace
+    return namespace, True
 
 
 
-def tree(root, depth=6, active_node=None, filter=None, user=None):
-    options = [_tree(root, root, depth, active_node, filter, user)]
-    return build_menu(options)
+def tree(root, depth=6, active_node=None, filter=None, user=None, width=10):
+    ns, in_path = _tree(root, root, depth, active_node, filter, user, width)
+    return build_menu([ns])
 

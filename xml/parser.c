@@ -71,6 +71,7 @@ typedef struct {
     int tag_ns_index[NS_INDEX_SIZE]; /* FIXME: hardcoded limit */
     int tag_ns_index_top;
     PyObject* namespaces;
+    PyObject* default_namespaces;
     /* The end tag in an empty element */
     PyObject* left_token; /* FIXME: hardcoded limit */
 } Parser;
@@ -106,6 +107,7 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
     self->tag_stack_top = 0;
     self->tag_ns_index_top = 0;
     self->namespaces = NULL;
+    self->default_namespaces = NULL;
     self->left_token = NULL;
 
     return (PyObject*)self;
@@ -114,9 +116,11 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
 
 static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     PyObject* data;
+    PyObject* namespaces;
 
     /* Load the input data */
-    if (!PyArg_ParseTuple(args, "S", &data))
+    namespaces = NULL;
+    if (!PyArg_ParseTuple(args, "S|O!", &data, &PyDict_Type, &namespaces))
         return -1;
 
     Py_XDECREF(self->data);
@@ -132,7 +136,7 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     int idx;
     for (idx=0; idx<self->tag_stack_top; idx++) {
         Py_DECREF(self->tag_stack[idx]);
-        Py_DECREF(self->tag_ns_stack[idx]);
+        Py_XDECREF(self->tag_ns_stack[idx]);
     }
     self->tag_stack_top = 0;
     self->tag_ns_index_top = 0;
@@ -142,7 +146,10 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     self->left_token = NULL;
 
     /* Namespaces */
-    self->namespaces = NULL;
+    self->namespaces = namespaces;
+    Py_XDECREF(self->default_namespaces);
+    Py_XINCREF(namespaces);
+    self->default_namespaces = namespaces;
 
     return 0;
 }
@@ -262,6 +269,8 @@ PyObject* pop_tag(Parser* self, PyObject* value) {
         self->tag_ns_index_top--;
         self->namespaces = self->tag_ns_stack[self->tag_ns_index[self->tag_ns_index_top - 1]];
         Py_DECREF(namespaces);
+    } else if (self->tag_ns_index_top == 0) {
+        self->namespaces = self->default_namespaces;
     }
 
     Py_DECREF(value);

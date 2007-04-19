@@ -267,6 +267,7 @@ class CSV(Text, iCSV):
             value = datatype.decode(value)
             row.set_value(name, value)
 
+        self.set_changed()
         message = u'Changes saved.'
         return context.come_back(message)
 

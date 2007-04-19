@@ -260,26 +260,28 @@ class WebSite(RoleAware, Folder):
         root = context.root
         catalog = root.get_handler('.catalog')
         results = catalog.search(email=email)
-        if results.get_n_documents():
-            message = u'There is already a user with that email.'
-            return context.come_back(message, keep=keep)
-
-        # Add the user
         users = self.get_handler('users')
-        user = users.set_user(email, None)
-        user.set_property('ikaaro:firstname', firstname, language='en')
-        user.set_property('ikaaro:lastname', lastname, language='en')
-        key = generate_password(30)
-        user.set_property('ikaaro:user_must_confirm', key)
-        # Set the role
-        default_role = self.__roles__[0]['name']
-        self.set_user_role(user.name, default_role)
+        if results.get_n_documents():
+            user = results.get_documents()[0]
+            user = users.get_handler(user.name)
+            if not user.has_property('ikaaro:user_must_confirm'):
+                message = u'There is already an active user with that email.'
+                return context.come_back(message, keep=keep)
+        else:
+            # Add the user
+            user = users.set_user(email, None)
+            user.set_property('ikaaro:firstname', firstname, language='en')
+            user.set_property('ikaaro:lastname', lastname, language='en')
+            # Set the role
+            default_role = self.__roles__[0]['name']
+            self.set_user_role(user.name, default_role)
+            # Reindex
+            root.reindex_handler(user)
 
         # Send confirmation email
+        key = generate_password(30)
+        user.set_property('ikaaro:user_must_confirm', key)
         user.send_confirmation(context, email)
-
-        # Reindex
-        root.reindex_handler(user)
 
         # Bring the user to the login form
         message = self.gettext(

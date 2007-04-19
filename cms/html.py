@@ -76,7 +76,7 @@ class XHTMLFile(Text, XHTMLDocument):
         if body is None:
             return True
         is_empty = False
-        for event, node in body.traverse():
+        for event, node in body.events:
             if event == TEXT:
                 if node.replace('&nbsp;', '').strip():
                     break

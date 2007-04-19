@@ -243,21 +243,6 @@ class Document(Text):
         return None
 
 
-    def traverse(self):
-        skip = 0
-        for event, value in self.events:
-            if skip:
-                if event == START_ELEMENT:
-                    skip += 1
-                elif event == END_ELEMENT:
-                    skip -= 1
-                continue
-
-            command = yield event, value
-            if command == 1:
-                skip = 1
-
-
     def to_text(self):
         """
         Removes the markup and returns a plain text string.

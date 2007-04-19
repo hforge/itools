@@ -112,7 +112,7 @@ class XHTMLFile(Text, XHTML.Document):
         namespace = {}
         namespace['text'] = self.to_xhtml_body()
 
-        handler = self.get_handler('/ui/Text_view.xml')
+        handler = self.get_handler('/ui/HTML_view.xml')
         return stl(handler, namespace)
 
 

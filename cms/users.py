@@ -71,11 +71,13 @@ class User(AccessControl, Folder):
     def get_title(self):
         firstname = self.get_property('ikaaro:firstname')
         lastname = self.get_property('ikaaro:lastname')
-        if not firstname:
-            return lastname
-        if not lastname:
+        if firstname:
+            if lastname:
+                return '%s %s' % (firstname, lastname)
             return firstname
-        return '%s %s' % (firstname, lastname)
+        if lastname:
+            return lastname
+        return self.get_login_name()
 
 
     def get_login_name(self):

@@ -24,11 +24,13 @@ from catalog import Catalog, make_catalog
 from fields import (BaseField, TextField, KeywordField, BoolField,
                     register_field, get_field)
 from queries import Equal, Range, Phrase, And, Or
+from prof import vmsize
 
 
 __all__ = [
     'make_catalog',
     'Catalog',
+    'vmsize',
     # Fields
     'BaseField',
     'TextField',

@@ -22,12 +22,14 @@ from __future__ import with_statement
 # Import from the Standard Library
 from optparse import OptionParser
 from os import getenv
+from time import time
 
 # Import from itools
 import itools
 from itools import vfs
 from itools.handlers import get_handler
-from itools.catalog import make_catalog, Catalog, KeywordField, TextField
+from itools.catalog import (make_catalog, Catalog, KeywordField, TextField,
+                            vmsize)
 import itools.xml
 
 
@@ -48,6 +50,9 @@ def index(parser, options, target):
     catalog = make_catalog(catalog, *fields)
 
     # Index
+    i = j = 0
+    t0 = time()
+    m0 = vmsize()
     for ref in vfs.traverse(target):
         # We only index files
         if not vfs.is_file(ref):
@@ -67,14 +72,24 @@ def index(parser, options, target):
             continue
         except:
             print '!', path
+            j += 1
             continue
         indexes['text'] = text
+        i += 1
 
         # Index
-        print path
+        print i, path
         catalog.index_document(indexes)
+        # Save changes every 1000 documents
+        if i % 1000 == 0:
+            catalog.commit()
 
     catalog.commit()
+    m1 = vmsize()
+    t1 = time()
+    print
+    print '%d files indexed (%d failed)' % (i, j)
+    print 'Time taken: %d seconds. Memory used: %d' % (t1-t0, m1-m0)
 
 
 

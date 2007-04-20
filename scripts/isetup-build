@@ -91,8 +91,7 @@ if __name__ == '__main__':
     # The command line parser
     version = 'itools %s' % itools.__version__
     description = ('Builds the package.')
-    parser = OptionParser('%prog',
-                          version=version, description=description)
+    parser = OptionParser('%prog', version=version, description=description)
 
     options, args = parser.parse_args()
     if len(args) != 0:

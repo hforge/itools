@@ -134,18 +134,15 @@ if __name__ == '__main__':
     version = 'itools %s' % itools.__version__
     description = 'Creates a new instance of itools.cms with the name TARGET.'
     parser = OptionParser(usage, version=version, description=description)
-    parser.add_option(
-        '-a', '--address', help='listen to IP ADDRESS')
-    parser.add_option(
-        '-p', '--port', type='int', help='listen to PORT number')
-    parser.add_option(
-        '-r', '--root', help='use the ROOT handler class to init the instance')
-    parser.add_option(
-        '-e', '--email', help='e-mail address of the admin user')
-    parser.add_option(
-        '-w', '--password', help='use the given PASSWORD for the admin user')
-    parser.add_option(
-        '-s', '--smtp-host', help='use the given SMTP_HOST to send emails')
+    parser.add_option('-a', '--address', help='listen to IP ADDRESS')
+    parser.add_option('-p', '--port', type='int', help='listen to PORT number')
+    parser.add_option('-r', '--root',
+        help='use the ROOT handler class to init the instance')
+    parser.add_option('-e', '--email', help='e-mail address of the admin user')
+    parser.add_option('-w', '--password',
+        help='use the given PASSWORD for the admin user')
+    parser.add_option('-s', '--smtp-host',
+        help='use the given SMTP_HOST to send emails')
 
     options, args = parser.parse_args()
     if len(args) != 1:

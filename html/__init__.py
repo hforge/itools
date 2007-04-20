@@ -23,7 +23,7 @@ from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
 
 __all__ = [
     'Document',
-    'Parser'
+    'Parser',
     'DOCUMENT_TYPE',
     'START_ELEMENT',
     'END_ELEMENT',

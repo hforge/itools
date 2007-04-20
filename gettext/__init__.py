@@ -25,8 +25,8 @@ from po import PO
 
 
 __all__ = [
-    'DomainAware,',
-    'register_domain,',
+    'DomainAware',
+    'register_domain',
     'get_domain',
     'MO',
     'PO']

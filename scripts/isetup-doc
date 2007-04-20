@@ -47,17 +47,16 @@ $doc
 
 
 latex_template = Template(
-    "\\chapter{$name}\n"
-    "\n"
-    "$doc\n"
-    "\n"
-    "$api\n"
-    )
+"""\\chapter{$name}
+\\index{$name}
+$doc
+
+$api\n""")
 
 
 latex_template_item = Template(
 """\\subsubsection{$name}
-
+\\index{$name}
 $doc
 
 """)

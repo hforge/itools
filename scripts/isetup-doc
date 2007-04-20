@@ -63,7 +63,7 @@ $doc
 """)
 
 def latex_escape(x):
-    return x.replace('_', '\\_')
+    return x.replace('_', '\\_').replace('#', '\#')
 
 
 def text(namespace, template1, template2, escape=lambda x: x):

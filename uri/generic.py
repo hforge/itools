@@ -350,65 +350,75 @@ class Path(list):
 # Query
 ##########################################################################
 
-class Query(object):
+# Implements the 'application/x-www-form-urlencoded' content type (see
+# http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1). The
+# information decode as a dictionary.
+
+# XXX This is not specified by RFC2396, so maybe we should not parse the
+# query for the generic case.
+
+# XXX The Python functions 'cgi.parse_qs' and 'urllib.urlencode' provide
+# similar functionality, maybe we should just be a thin wrapper around
+# them.
+
+def decode_query(data):
     """
-    Implements the 'application/x-www-form-urlencoded' content type (see
-    http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1). The
-    information decode as a dictionary.
+    This method decodes a query as defined by the
+    "application/x-www-form-urlencoded" content type (see
+    http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1 for
+    details)
 
-    XXX This is not specified by RFC2396, so maybe we should not parse the
-    query for the generic case.
-
-    XXX The Python functions 'cgi.parse_qs' and 'urllib.urlencode' provide
-    similar functionality, maybe we should just be a thin wrapper around
-    them.
+    The value expected is a byte string like "a=1&b=2". The value returned
+    is a dictonary like {'a': 1, 'b': 2}.
     """
+    query = {}
+    if data:
+        for x in data.split('&'):
+            if x:
+                if '=' in x:
+                    key, value = x.split('=', 1)
+                    value = urllib.unquote_plus(value)
+                else:
+                    key, value = x, None
 
-    default = {}
-
-
-    @staticmethod
-    def decode(data):
-        query = {}
-        if data:
-            for x in data.split('&'):
-                if x:
-                    if '=' in x:
-                        key, value = x.split('=', 1)
-                        value = urllib.unquote_plus(value)
+                key = urllib.unquote_plus(key)
+                if key in query:
+                    old_value = query[key]
+                    if isinstance(old_value, list):
+                        old_value.append(value)
                     else:
-                        key, value = x, None
-
-                    key = urllib.unquote_plus(key)
-                    if key in query:
-                        old_value = query[key]
-                        if isinstance(old_value, list):
-                            old_value.append(value)
-                        else:
-                            value = [old_value, value]
-                            query[key] = value
-                    else:
+                        value = [old_value, value]
                         query[key] = value
-        return query
+                else:
+                    query[key] = value
+    return query
 
 
-    @staticmethod
-    def encode(query):
-        line = []
-        for key, value in query.items():
-            key = urllib.quote_plus(key)
-            if value is None:
-                pass
-            elif isinstance(value, list):
-                for x in value:
-                    if isinstance(x, unicode):
-                        x = x.encode('UTF-8')
-                    line.append('%s=%s' % (key, urllib.quote_plus(x)))
-            else:
-                if isinstance(value, unicode):
-                    value = value.encode('UTF-8')
-                line.append('%s=%s' % (key, urllib.quote_plus(value)))
-        return '&'.join(line)
+def encode_query(query):
+    """
+    This method encodes a query as defined by the
+    "application/x-www-form-urlencoded" content type (see
+    http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1 for
+    details)
+
+    The value expected is a dictonary like {'a': 1, 'b': 2}.
+    The value returned is a byte string like "a=1&b=2".
+    """
+    line = []
+    for key, value in query.items():
+        key = urllib.quote_plus(key)
+        if value is None:
+            pass
+        elif isinstance(value, list):
+            for x in value:
+                if isinstance(x, unicode):
+                    x = x.encode('UTF-8')
+                line.append('%s=%s' % (key, urllib.quote_plus(x)))
+        else:
+            if isinstance(value, unicode):
+                value = value.encode('UTF-8')
+            line.append('%s=%s' % (key, urllib.quote_plus(value)))
+    return '&'.join(line)
 
 
 
@@ -460,7 +470,7 @@ class Reference(object):
         path = str(self.path)
         if path == '.':
             path = ''
-        query = Query.encode(self.query)
+        query = encode_query(self.query)
         reference = urlunsplit((self.scheme, str(self.authority), path, query,
                                 self.fragment))
         if reference == '':
@@ -648,7 +658,7 @@ class GenericDataType(object):
         authority = Authority(authority)
         # The query
         try:
-            query = Query.decode(query)
+            query = decode_query(query)
         except ValueError:
             pass
         # The fragment

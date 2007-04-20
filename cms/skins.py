@@ -21,7 +21,7 @@ from string import Template
 
 # Import from itools
 from itools import get_abspath
-from itools.uri import Path, Query
+from itools.uri import Path, decode_query
 from itools.datatypes import URI
 from itools.handlers import File
 from itools.stl import stl
@@ -268,7 +268,7 @@ class Skin(Folder):
                 # same thing, separate method and arguments
                 if '?' in subview:
                     name, args = subview.split('?')
-                    args = Query.decode(args)
+                    args = decode_query(args)
                     for key, value in args.items():
                         request_param = request.get_parameter(key)
                 else:

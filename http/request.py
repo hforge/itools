@@ -19,7 +19,7 @@
 from urllib import urlencode
 
 # Import from itools
-from itools.uri import get_reference, Query
+from itools.uri import get_reference, decode_query
 from itools.datatypes import QName
 from itools.schemas import get_datatype
 from itools.handlers import Handler
@@ -132,7 +132,7 @@ class Request(Message):
             if body:
                 type, type_parameters = self.get_header('content-type')
                 if type == 'application/x-www-form-urlencoded':
-                    self.body = Query.decode(body)
+                    self.body = decode_query(body)
                 elif type.startswith('multipart/'):
                     boundary = type_parameters.get('boundary')
                     boundary = '--%s' % boundary

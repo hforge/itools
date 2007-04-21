@@ -19,13 +19,36 @@
 # Import from the Standard Library
 from optparse import OptionParser
 from string import Template
-from textwrap import TextWrapper
 
 # Import from itools
 import itools
 
 
-wrapper = TextWrapper(initial_indent='  ', subsequent_indent='  ')
+def wrap(text, width=72, indent='  '):
+    # Clean text
+    text = text.strip()
+    lines = [ x.strip() + '\n' for x in text.splitlines() ]
+    text = ''.join(lines)
+    # Split paragraphs
+    paragraphs = []
+    for paragraph in text.split('\n\n'):
+        words = paragraph.split()
+        word = words.pop(0)
+        lines = [indent+word]
+        while words:
+            word = words.pop(0)
+            if len(lines[-1]) + len(word) < width:
+                lines[-1] += (' ' + word)
+            else:
+                lines[-1] += '\n'
+                lines.append(indent + word)
+        lines[-1] += '\n'
+        paragraph = ''.join(lines)
+        paragraph += '\n'
+        paragraphs.append(paragraph)
+
+    return ''.join(paragraphs)
+
 
 text_template = Template(
 """$name
@@ -39,10 +62,9 @@ $api
 
 
 text_template_item = Template(
-"""- $name
+"""* $name
 
 $doc
-
 """)
 
 
@@ -71,7 +93,7 @@ def text(namespace, template1, template2, escape=lambda x: x):
         namespace['api'] = ''.join(api)
     else:
         default = 'THIS PACKAGE HAS NOT DEFINED A PUBLIC API.\n\n'
-        namespace['api'] = wrapper.fill(default)
+        namespace['api'] = wrap(default)
 
     out = template1.substitute(namespace)
     return escape(out)
@@ -86,7 +108,7 @@ def build_namespace(pkg):
     doc = pkg.__doc__
     if doc is None:
         doc = 'THIS PACKAGE HAS NOT A DOCUMENTATION STRING.'
-    namespace['doc'] = wrapper.fill(doc)
+    namespace['doc'] = wrap(doc)
     # Public API
     all = pkg.__all__
     if all is None:
@@ -100,7 +122,7 @@ def build_namespace(pkg):
             doc = 'THIS OBJECT HAS NOT A DOCUMENTATION STRING.'
         else:
             doc = doc.strip()
-        doc = wrapper.fill(doc)
+        doc = wrap(doc)
         api.append({'name': name, 'doc': doc})
 
     namespace['api'] = api

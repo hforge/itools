@@ -19,9 +19,13 @@
 # Import from the Standard Library
 from optparse import OptionParser
 from string import Template
+from types import FunctionType, ClassType
 
 # Import from itools
 import itools
+from itools.xml import Document
+from itools.stl import stl
+
 
 
 def wrap(text, width=72, indent='  '):
@@ -115,17 +119,36 @@ def build_namespace(pkg):
         all = []
 
     all.sort(key=lambda x: x.lower())
-    api = []
+
+    # Split into exceptions, constants, functions and classes
+    exceptions = namespace['exceptions'] = []
+    constants = namespace['constatns'] = []
+    functions = namespace['functions'] = []
+    classes = namespace['classes'] = []
     for name in all:
-        doc = getattr(pkg, name).__doc__
+        object = getattr(pkg, name)
+        # Get the documentation string
+        doc = object.__doc__
         if doc is None:
             doc = 'THIS OBJECT HAS NOT A DOCUMENTATION STRING.'
         else:
             doc = doc.strip()
         doc = wrap(doc)
-        api.append({'name': name, 'doc': doc})
+        # Build the item namespace
+        ns = {'name': name, 'doc': doc}
+        # Do whatever 
+        if isinstance(object, Exception):
+            exceptions.append(ns)
+        elif isinstance(object, FunctionType):
+            functions.append(ns)
+        elif isinstance(object, type):
+            classes.append(ns)
+        elif isinstance(object, ClassType):
+            raise ValueError, ('"%s" is an old style class, don not use'
+                'old style classes, they are obsolete') % name
+        else:
+            constants.append(ns)
 
-    namespace['api'] = api
     return namespace
 
 

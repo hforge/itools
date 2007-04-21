@@ -363,13 +363,14 @@ class Path(list):
 
 def decode_query(data):
     """
-    This method decodes a query as defined by the
-    "application/x-www-form-urlencoded" content type (see
-    http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1 for
-    details)
+    Decodes a query as defined by the "application/x-www-form-urlencoded"
+    content type.
 
-    The value expected is a byte string like "a=1&b=2". The value returned
+    The value expected is a byte string like "a=1&b=2"; the value returned
     is a dictonary like {'a': 1, 'b': 2}.
+
+    See http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1
+    for details.
     """
     query = {}
     if data:

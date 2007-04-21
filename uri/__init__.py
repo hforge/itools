@@ -15,15 +15,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-"""
-The purpose of this package is to implement URIs (Uniform Resource
+"""The purpose of this package is to implement URIs (Uniform Resource
 Identifiers) as specified by RFC2396.
 """
 
 
 # Import from itools
 import mailto
-from generic import Path, Reference, decode_query, encode_query, Authority
+from generic import Path, Reference, decode_query, encode_query
 from uri import get_reference, get_absolute_reference, get_absolute_reference2
 from registry import register_scheme, get_scheme
 
@@ -34,7 +33,6 @@ __all__ = [
     'Reference',
     'decode_query',
     'encode_query',
-    'Authority',
     'get_reference',
     'get_absolute_reference',
     'get_absolute_reference2',

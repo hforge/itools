@@ -24,6 +24,7 @@ from cStringIO import StringIO
 import datetime
 
 # Import from itools
+from itools.uri import uri
 from itools.vfs import vfs
 from registry import register_handler_class
 from base import Handler
@@ -41,6 +42,26 @@ class File(Handler):
 
 
     __slots__ = ['uri', 'timestamp', 'parent', 'real_handler', 'name', 'data']
+
+
+    def __init__(self, ref=None, string=None, **kw):
+        self.parent = None
+        self.name = ''
+        self.real_handler = None
+
+        if ref is None:
+            self.uri = None
+            if string is not None:
+                # A handler from a byte string
+                self.load_state_from_string(string)
+            else:
+                # A handler from some input data
+                self.new(**kw)
+            self.timestamp = None
+        else:
+            # Calculate the URI
+            self.uri = uri.get_absolute_reference(ref)
+            ##self.timestamp = None
 
 
     def new(self, data=''):

@@ -56,7 +56,7 @@ def get_language_name(code):
 
 
 
-class Multilingual:
+class Multilingual(object):
     """
     Mixin class that defines multilingual objects.
     """

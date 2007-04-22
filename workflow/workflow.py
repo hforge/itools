@@ -163,7 +163,7 @@ class Transition(object):
 
 
 
-class WorkflowAware:
+class WorkflowAware(object):
     """
     Mixin class to be used for workflow aware objects. The instances of
     a class that inherits from WorkflowAware can be "within" the workflow,

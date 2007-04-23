@@ -108,7 +108,6 @@ class KeywordField(BaseField):
 
     @staticmethod
     def split(value):
-        # TODO write a Numeric analyser
         if value is None:
             return
 
@@ -119,6 +118,18 @@ class KeywordField(BaseField):
             value = unicode(value)
             if value:
                 yield value, 0
+
+
+
+class IntegerField(BaseField):
+    # FIXME This implementation is a quick and dirty hack
+
+    type = 'integer'
+
+    @staticmethod
+    def split(value):
+        value = '%10d' % value
+        return KeywordField.split(value)
 
 
 
@@ -152,5 +163,5 @@ def get_field(type):
 
 
 
-for cls in TextField, KeywordField, BoolField, PathField:
+for cls in TextField, KeywordField, IntegerField, BoolField, PathField:
     register_field(cls)

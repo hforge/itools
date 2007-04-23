@@ -28,7 +28,8 @@ import traceback
 import itools
 from itools.datatypes import FileName
 from itools import vfs
-from itools.catalog import make_catalog, TextField, KeywordField, BoolField
+from itools.catalog import (make_catalog, TextField, KeywordField,
+    IntegerField, BoolField)
 from itools.handlers import Folder as FolderHandler, get_transaction
 from itools.stl import stl
 from itools.web import get_context
@@ -132,7 +133,7 @@ class Root(WebSite):
         KeywordField('name', is_stored=True),
         KeywordField('title_or_name', is_stored=True),
         KeywordField('mtime', is_indexed=False, is_stored=True),
-        KeywordField('size', is_indexed=False, is_stored=True),
+        IntegerField('size', is_indexed=False, is_stored=True),
         ]
 
 

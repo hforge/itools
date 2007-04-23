@@ -288,7 +288,7 @@ class Catalog(object):
                 # XXX Coerce
                 if isinstance(value, list):
                     value = u' '.join(value)
-                elif isinstance(value, str):
+                elif not isinstance(value, unicode):
                     value = unicode(value)
                 elif isinstance(value, bool):
                     value = unicode(int(value))

@@ -82,15 +82,14 @@ class CatalogAware(object):
 
         # Size
         if isinstance(self, File):
-            size = len(self.to_str())
-            # This will stop working for files bigger than 10G bytes
-            document['size'] = 'X%010d' % size
+            # FIXME We add an arbitrary size so files will always be bigger
+            # than folders. This won't work when there is a folder with more
+            # than that size.
+            document['size'] = 2**30 + len(self.to_str())
         else:
             names = [ x for x in self.get_handler_names()
                       if (x[0] != '.' and x[-9:] != '.metadata') ]
-            size = len(names)
-            # This will stop working for folders with more than 10G objects
-            document['size'] = '%10d' % size
+            document['size'] = len(names)
 
         # Users
         if isinstance(self, User):

@@ -21,8 +21,8 @@ from os.path import isfile, join
 
 # Import from itools
 from catalog import Catalog, make_catalog
-from fields import (BaseField, TextField, KeywordField, BoolField,
-                    register_field, get_field)
+from fields import (BaseField, TextField, KeywordField, IntegerField,
+                    BoolField, register_field, get_field)
 from queries import Equal, Range, Phrase, And, Or
 from prof import vmsize
 
@@ -35,6 +35,7 @@ __all__ = [
     'BaseField',
     'TextField',
     'KeywordField',
+    'IntegerField',
     'BoolField',
     'register_field',
     'get_field',

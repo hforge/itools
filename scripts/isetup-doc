@@ -171,6 +171,24 @@ def build_namespace(pkg):
         ns = {'name': name, 'doc': doc}
         # Do whatever 
         if isinstance(object, FunctionType):
+            # Find out the function prototype
+            # FIXME Remains to find the argument names
+            func_code = object.func_code
+            parameters = []
+            defaults = object.func_defaults or ()
+            arg_name = ord('a')
+            for i in range(func_code.co_argcount - len(defaults)):
+                parameters.append('%s' % chr(arg_name))
+                arg_name += 1
+            if defaults:
+                for default in defaults:
+                    parameters.append('%s=%s' % (chr(arg_name), default))
+                    arg_name += 1
+            if func_code.co_flags & 0x04:
+                parameters.append('*args')
+            if func_code.co_flags & 0x08:
+                parameters.append('**kw')
+            ns['name'] = '%s(%s)' % (name, ', '.join(parameters))
             functions.append(ns)
         elif isinstance(object, type):
             if issubclass(object, Exception):

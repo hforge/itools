@@ -402,7 +402,7 @@ class Query(object):
         for key, value in query.items():
             key = urllib.quote_plus(key)
             if value is None:
-                line.append(key)
+                pass
             elif isinstance(value, list):
                 for x in value:
                     if isinstance(x, unicode):

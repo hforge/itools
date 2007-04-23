@@ -237,7 +237,7 @@ class Skin(Folder):
             # the arguments and the subview active state
             if '?' in view:
                 name, args = view.split('?')
-                args = Query.decode(args)
+                args = decode_query(args)
                 active = name == context.method or name in subviews
                 for key, value in args.items():
                     request_param = request.get_parameter(key)

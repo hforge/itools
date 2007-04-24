@@ -82,10 +82,13 @@ class Request(Message):
         it works for files too.
         """
         # Read the request line
-        line = file.readline()
-        while line is None:
-            yield None
+        try:
             line = file.readline()
+            while line is None:
+                yield None
+                line = file.readline()
+        except EOFError:
+            raise BadRequest
         # Parse the request line
         self.request_line = line
         method, request_uri, http_version = line.split()

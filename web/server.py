@@ -111,6 +111,20 @@ class SocketWrapper(object):
 
 
     def readline(self):
+        """
+        This method is like the file object readline method, but not exactly.
+
+        Written specifically for the HTTP protocol, it expects the sequence
+        '\r\n' to signal line ending.
+
+        This method is supposed to be called only when there is data to be
+        read. So if no data is available, we suppose the line is truncated
+        and we raise the EOFError exception.
+
+        If the end-of-line sequence was not being received the value None
+        is returned, what means: call me again when more data is available.
+        """
+        # FIXME Try to make it more like the file interface.
         buffer = self.buffer
         # Check if there is already a line in the buffer
         if '\r\n' in buffer:
@@ -118,11 +132,10 @@ class SocketWrapper(object):
             return line
         # Read as much as possible
         recv = self.socket.recv
-        while True:
-            try:
-                data = recv(512)
-            except:
-                return None
+        data = recv(512)
+        if not data:
+            raise EOFError
+        while data:
             buffer += data
             # Hit
             if '\r\n' in buffer:
@@ -132,6 +145,14 @@ class SocketWrapper(object):
             if len(data) < 512:
                 self.buffer = buffer
                 return None 
+            # If there is not any more data to read, the system may raise
+            # an exception. We prefer to send None, to say the caller to
+            # call back later.
+            # FIXME Catch only the relevant exception.
+            try:
+                data = recv(512)
+            except:
+                return None
 
 
 ###########################################################################
@@ -168,8 +189,8 @@ class Server(object):
             open(self.pid_file, 'w').write(str(pid))
 
         ear = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # Allow to reuse the address, this solves bug #199 ("icms.py won't
-        # close its connection properly"), but is probably not the right
+        # Allow to reuse the address, this solves the bug "icms.py won't
+        # close its connection properly". But is probably not the right
         # solution (XXX).
         ear.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
@@ -234,6 +255,9 @@ class Server(object):
                                 requests[fileno] = conn, response
                             except:
                                 self.log_error()
+                                # XXX Send a response to the client
+                                # (BadRequest, etc.)?
+                                conn.close()
                             else:
                                 requests[fileno] = conn, request, loader
                                 poll.register(fileno, POLL_READ)

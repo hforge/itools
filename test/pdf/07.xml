@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/07.pdf"> 
+  <story>
+    <spacer></spacer>
+    <spacer width=''></spacer>
+    <spacer length=''></spacer>
+    <spacer width='12'></spacer>
+    <spacer length='13'></spacer>
+    <spacer width='12cm'></spacer>
+    <spacer length='15cm' width='13'></spacer>
+  </story>
+</document>
+

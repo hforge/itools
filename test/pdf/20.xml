@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/20.pdf"> 
+  <stylesheet>
+    <initialize></initialize>
+  </stylesheet>
+  <story>
+  </story>
+</document>

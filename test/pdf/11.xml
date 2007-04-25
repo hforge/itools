@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/11.pdf"> 
+  <story>
+    <blockTable>
+      <tr>
+        <td>cell 1-1</td>
+        <td>cell 1-2</td>
+      </tr>
+      <tr>
+        <td>cell 2-1</td>
+        <td>cell 2-2</td>
+        <td>cell 2-3</td>
+      </tr>
+    </blockTable>
+  </story>
+</document>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/03.pdf"> 
+  <story>
+    <h1>Bonjour</h1>
+    <h2>Hello</h2>
+    <h3>Guten tag</h3>
+  </story>
+</document>
+

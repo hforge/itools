@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/13.pdf"> 
+  <story>
+    <blockTable>
+      <tr>
+        <td>0-0</td>
+        <td>0-1</td>
+      </tr>
+      <tr>
+        <td><xpre>Ceci est un xpre</xpre></td>
+        <td><para>Ceci est un paragraph</para></td>
+      </tr>
+      <tr>
+        <td><xpre>Ceci est un xpre</xpre><para backColor="teal">est un para</para></td>
+        <td><para>...</para><spacer length='13cm'/></td>
+      </tr>
+      <tr>
+        <td><para>ci dessous une image</para><image file='rml_fn/itaapy.png' width='40' height='40'/></td>
+        <td>Rien</td>
+      </tr>
+    </blockTable>
+  </story>
+</document>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/14.pdf"> 
+  <story>
+    <blockTable>
+      <tr>
+        <td>0-0</td>
+        <td>0-1</td>
+      </tr>
+      <tr>
+        <td>
+          <blockTable>
+            <tr>
+              <td>cell haut gauche</td>
+              <td>cell haut droit</td>
+            </tr>
+            <tr>
+              <td>cell bas gauche</td>
+              <td>cell bas droit</td>
+              <!--<td><image file='rml_fn/itaapy.png' width='30' height='30'/></td>-->
+            </tr>
+        </blockTable>
+      
+      </td>
+      <td>
+        <para>Ceci est un paragraphe avant une table</para>
+        <blockTable>
+          <tr>
+            <td>cell haut gauche</td>
+            <td>cell haut droit</td>
+          </tr>
+          <tr>
+            <td>cell bas gauche</td>
+            <td>
+              <para backColor='pink'>cell bas droit</para>
+              <image file='rml_fn/itaapy.png' width='30' height='30'/>
+            </td>
+          </tr>
+        </blockTable>
+        <spacer length='5' />
+        <image file='rml_fn/itaapy.png' width='20' height='20'/>
+        <xpre>Un <font color='red'><b>XPRE</b></font></xpre>
+      </td>
+    </tr>
+  </blockTable>
+  </story>
+</document>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/05.pdf"> 
+  <story>
+    <image></image>
+    <image file=''></image>
+    <image file='rml/toto'></image>
+    <image file='pdf/itaapy.png'></image>
+    <image file='pdf/itaapy.png' width='35'></image>
+    <image file='pdf/itaapy.png' width='35' height='14'></image>
+
+    <image file='pdf/itaapy.jpeg'></image>
+    <image file='pdf/itaapy.jpeg' width='35'></image>
+    <image file='pdf/itaapy.jpeg' width='35' height='14'></image>
+
+    <image file='pdf/itaapy.gif'></image>
+    <image file='pdf/itaapy.gif' width='35'></image>
+    <image file='pdf/itaapy.gif' width='35' height='14'></image>
+
+  </story>
+</document>
+

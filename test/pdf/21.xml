@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/21.pdf"> 
+  <stylesheet>
+    <initialize></initialize>
+    <paraStyle name="h1"
+      fontName="Courier-Bold"
+      fontSize="12"
+      spaceBefore="0.5 cm"
+      />
+    <paraStyle name="style1"
+      fontName="Courier"
+      fontSize="10"
+      />
+    <paraStyle name="style2"
+      parent="style1"
+      leftIndent="1in"
+      />
+    <paraStyle name="style7"
+      parent="style1"
+      leading="15"
+      leftIndent="1in"
+      rightIndent="1in"
+      />
+  </stylesheet>
+  <story>
+    <para style="h1">Paragraphe avec le style h1
+      The treat burns paragraph underneath the animal. A liver listens within a proud actor. A threat busts reportlab into the bicycle. How does reportlab proceed below paragraph?
+      Paragraph fringes a subroutine around the architecture. The paranoid perspective smiles within paragraph. Can paragraph work reportlab? An aardvark twists? Paragraph frowns in reportlab.
+    </para>
+    <para style="style1">Paragraphe avec le style style1
+      The treat burns paragraph underneath the animal. A liver listens within a proud actor. A threat busts reportlab into the bicycle. How does reportlab proceed below paragraph?
+      Paragraph fringes a subroutine around the architecture. The paranoid perspective smiles within paragraph. Can paragraph work reportlab? An aardvark twists? Paragraph frowns in reportlab.
+    </para>
+    <para style="style2">Paragraphe avec le style style2
+      The treat burns paragraph underneath the animal. A liver listens within a proud actor. A threat busts reportlab into the bicycle. How does reportlab proceed below paragraph?
+      Paragraph fringes a subroutine around the architecture. The paranoid perspective smiles within paragraph. Can paragraph work reportlab? An aardvark twists? Paragraph frowns in reportlab.
+    </para>
+    <para style="style7">Paragraphe avec le style style7
+      The treat burns paragraph underneath the animal. A liver listens within a proud actor. A threat busts reportlab into the bicycle. How does reportlab proceed below paragraph?
+      Paragraph fringes a subroutine around the architecture. The paranoid perspective smiles within paragraph. Can paragraph work reportlab? An aardvark twists? Paragraph frowns in reportlab.
+    </para>
+    <spacer length='13cm'/>
+    <para style="h1">Intra-paragraph &lt;br/&gt;</para>
+    <para style="style1">
+      And now for a break...<br/>
+      here we should be one line two. <br/>
+      Summarizing, then, we assume that the fundamental error of regarding
+      functional notions as categorial may remedy and, at the same time,
+      eliminate the levels of acceptability from fairly high (e.g. (99a)) to
+      virtual gibberish (e.g. (98d)).  Now let's fake a bullet list:
+      <br/>- bullet 1
+      <br/>- bullet 2
+      <br/>- bullet 3
+      <br/>- bullet 4
+      <br/>- bullet 15
+
+    </para>
+  </story>
+</document>

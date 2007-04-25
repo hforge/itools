@@ -24,7 +24,7 @@ from itools import get_abspath
 from itools import uri
 from itools.datatypes import QName
 from itools import vfs
-from itools.handlers.base import Node as BaseNode, Handler as BaseHandler
+from itools.handlers.base import Handler as BaseHandler
 from itools.handlers.transactions import get_transaction
 from itools import schemas
 from itools.stl import stl
@@ -32,7 +32,7 @@ from itools.xhtml import XHTML
 from itools.gettext import domains
 from itools.http.exceptions import Forbidden
 from itools.web import get_context
-from itools.web.access import AccessControl
+from itools.web.base import Node as BaseNode
 from handlers import Lock
 from catalog import CatalogAware
 import webdav
@@ -116,17 +116,6 @@ class Node(BaseNode):
         node = self
         while node is not None:
             if isinstance(node, (WebSite, User)):
-                return node
-            node = node.parent
-
-        # We never should reach here (XXX Raise an exception?)
-        return None
-
-
-    def get_access_control(self):
-        node = self
-        while node is not None:
-            if isinstance(node, AccessControl):
                 return node
             node = node.parent
 

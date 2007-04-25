@@ -73,6 +73,8 @@ class Node(TreeNode):
                 return node
             node = node.parent
 
+        return None
+
 
 
 class Root(AccessControl, Node):

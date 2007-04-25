@@ -113,6 +113,7 @@ class Root(WebSite):
     # Skeleton
     ########################################################################
     _catalog_fields = [
+        KeywordField('abspath', is_stored=True),
         TextField('text'),
         TextField('title', is_stored=True),
         KeywordField('owner', is_stored=True),
@@ -120,7 +121,6 @@ class Root(WebSite):
         BoolField('is_version_aware'),
         KeywordField('format', is_stored=True),
         KeywordField('workflow_state', is_stored=True),
-        KeywordField('abspath', is_stored=True),
         KeywordField('members'),
         # Users
         KeywordField('email', is_stored=True),
@@ -229,10 +229,8 @@ class Root(WebSite):
 
     def unindex_handler(self, handler):
         catalog = get_context().server.catalog
-
         abspath = handler.get_abspath()
-        for document in catalog.search(abspath=abspath).get_documents():
-            catalog.unindex_document(document.__number__)
+        catalog.unindex_document(abspath)
 
 
     def reindex_handler(self, handler):

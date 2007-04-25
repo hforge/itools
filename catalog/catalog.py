@@ -85,7 +85,7 @@ from itools.uri import get_absolute_reference
 from itools import vfs
 from index import Index, VERSION, ZERO
 import fields
-import queries
+from queries import Equal, And, Phrase
 from io import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
                 decode_vint, encode_vint, NULL)
@@ -495,7 +495,7 @@ class Catalog(object):
         return doc_n
 
 
-    def unindex_document(self, doc_number):
+    def _unindex_document(self, doc_number):
         self.has_changed = True
         # Update the indexes
         document = self.get_document(doc_number)
@@ -524,15 +524,21 @@ class Catalog(object):
         self.removed_documents.append(doc_number)
 
 
+    def unindex_document(self, value):
+        query = Equal(self.fields[0].name, value)
+        for document in self.search(query).get_documents():
+            self._unindex_document(document.__number__)
+
+
     def search(self, query=None, **kw):
         # Build the query if it is passed through keyword parameters
         if query is None:
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    atoms.append(queries.Phrase(key, value))
+                    atoms.append(Phrase(key, value))
 
-                query = queries.And(*atoms)
+                query = And(*atoms)
             else:
                 documents = self.documents
                 results = {}
@@ -551,8 +557,24 @@ class Catalog(object):
 
 def make_catalog(uri, *fields):
     """
-    Creates a new catalog in the given uri.
+    Creates a new catalog in the given uri. The 'id' parameter is the name
+    of the field that will be considered the external id; it will be used
+    when unindexing a document, and to retrieve the original document; this
+    field must be "indexed" and "stored".
+
+    The positional arguments define the fields to be indexed (and/or stored).
+    The first field (there must be at least one) defines the "external id",
+    which is a unique identifier used to unindex the document and to load
+    the original document; this field must be both indexed and stored.
     """
+    if len(fields) == 0:
+        raise ValueError, 'at least one field must be provided'
+
+    master = fields[0]
+    if master.is_indexed is False or master.is_stored is False:
+        msg = 'the first field (master) must be both indexed and stored'
+        raise ValueError, msg
+
     uri = get_absolute_reference(uri)
     vfs.make_folder(uri)
     base = vfs.open(uri)
@@ -563,10 +585,8 @@ def make_catalog(uri, *fields):
     metadata = []
     for i, field in enumerate(fields):
         # The metadata file
-        metadata.append('%d#%s#%s#%d#%d\n' % (i, field.name,
-                                              field.type,
-                                              field.is_indexed,
-                                              field.is_stored))
+        metadata.append('%d#%s#%s#%d#%d\n' % (i, field.name, field.type,
+            field.is_indexed, field.is_stored))
         # Create the index file
         base.make_file('data/%d_docs' % i)
         with base.make_file('data/%d_tree' % i) as file:

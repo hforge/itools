@@ -32,6 +32,7 @@ from itools.web import get_context
 from itools.web.access import AccessControl
 
 # Import from itools.cms
+from Handler import Node
 from Folder import Folder
 from utils import reduce_string
 from widgets import tree, build_menu
@@ -193,6 +194,8 @@ class Skin(Folder):
         #  Build the namespace
         breadcrumb = []
         for handler in handlers:
+            if not isinstance(handler, Node):
+                break
             # The link
             view = handler.get_firstview()
             if view is None:

@@ -34,6 +34,8 @@ from itools.http.exceptions import (Forbidden, HTTPError, NotFound,
 from itools.http.request import Request
 from itools.http.response import Response
 from context import Context, get_context, set_context
+from base import Node
+
 
 ###########################################################################
 # Some pre-historic systems (e.g. Windows and MacOS) don't implement
@@ -503,6 +505,9 @@ class Server(object):
         try:
             handler = context.handler = root.get_handler(context.path)
         except LookupError:
+            handler = None
+
+        if not isinstance(handler, Node):
             # Find an ancestor to render the page
             abspath = context.path
             for x in range(len(abspath) - 1, 0, -1):
@@ -513,6 +518,7 @@ class Server(object):
             else:
                 context.handler = root
             return 404, root.not_found
+
         method = handler.get_method(context.method)
         if method is None:
             return 404, root.not_found

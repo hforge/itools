@@ -39,8 +39,34 @@ class BaseField(object):
 
     @staticmethod
     def split(value):
+        """
+        To index a field it must be split in a sequence of words and
+        positions:
+
+          [(word, 0), (word, 1), (word, 2), ...]
+
+        Where <word> will be a unicode value. Usually this function will
+        be a generator.
+        """
         raise NotImplementedError
 
+
+    @staticmethod
+    def decode(string):
+        """
+        When a field is stored, this function allows to deserialize the
+        unicode string to the right type.
+        """
+        raise NotImplementedError
+
+
+    @staticmethod
+    def encode(value):
+        """
+        When a field is stored, this function allows to serialize the
+        value to a unicode string.
+        """
+        raise NotImplementedError
 
 
 ###########################################################################
@@ -91,6 +117,16 @@ class TextField(BaseField):
             yield lexeme, position
 
 
+    @staticmethod
+    def decode(string):
+        return string
+
+
+    @staticmethod
+    def encode(value):
+        return value
+
+
 
 class BoolField(BaseField):
 
@@ -99,6 +135,16 @@ class BoolField(BaseField):
     @staticmethod
     def split(value):
         yield unicode(int(value)), 0
+
+
+    @staticmethod
+    def decode(string):
+        return bool(int(string))
+
+
+    @staticmethod
+    def encode(value):
+        return unicode(int(value))
 
 
 
@@ -120,6 +166,19 @@ class KeywordField(BaseField):
                 yield value, 0
 
 
+    @staticmethod
+    def decode(string):
+        # XXX
+        return string
+
+
+    @staticmethod
+    def encode(value):
+        # XXX
+        return value
+
+
+
 
 class IntegerField(BaseField):
     # FIXME This implementation is a quick and dirty hack
@@ -132,20 +191,30 @@ class IntegerField(BaseField):
         return KeywordField.split(value)
 
 
+    @staticmethod
+    def decode(string):
+        return int(string)
 
-class PathField(BaseField):
-
-    type = 'path'
 
     @staticmethod
-    def split(value):
-        if not isinstance(value, Path):
-            value = Path(value)
+    def encode(value):
+        return unicode(value)
 
-        i = 0
-        for segment in value:
-            yield unicode(segment), i
-            i += 1
+
+
+#class PathField(BaseField):
+#
+#    type = 'path'
+#
+#    @staticmethod
+#    def split(value):
+#        if not isinstance(value, Path):
+#            value = Path(value)
+#
+#        i = 0
+#        for segment in value:
+#            yield unicode(segment), i
+#            i += 1
 
 
 
@@ -163,5 +232,5 @@ def get_field(type):
 
 
 
-for cls in TextField, KeywordField, IntegerField, BoolField, PathField:
+for cls in TextField, KeywordField, IntegerField, BoolField:
     register_field(cls)

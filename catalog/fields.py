@@ -23,6 +23,21 @@ from itools.uri import Path
 # Base class
 ###########################################################################
 class BaseField(object):
+    """
+    Abstract class, the base for every field class. To define a new field
+    class these methods must be implemented:
+        
+    * split(value) -- returns a sequence of two-elements tuple, where the
+      first element is a word to be indexed and the second element is the
+      position of the word. For example: [(word, 0), (word, 1), ...]. It
+      maybe a generator.
+
+    * decode(string) -- gets a unicode string and must return a value with
+      the right type (for example IntegerField returns an integer value)
+
+    * encode(value) -- gets a value with some type and must return a unicode
+      string that represents it.
+    """
 
     type = None
     is_indexed = True

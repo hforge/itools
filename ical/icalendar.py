@@ -24,7 +24,7 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import Unicode, String
-from itools.catalog import Equal, Range, Or, And
+from itools.catalog import EqQuery, RangeQuery, OrQuery, AndQuery
 from itools.handlers import Text
 from itools.csv import Catalog
 from parser import parse
@@ -37,9 +37,9 @@ from types import data_properties, fold_line
 # the righ limit. So if we want to search a date between 'dtstart' and
 # 'dtend', we must write:
 #
-#    Range('date', dtstart, dtend + resolution)
+#    RangeQuery('date', dtstart, dtend + resolution)
 #
-# To be used systematically. Till the day we replace Range searches by the
+# To be used systematically. Till the day we replace range searches by the
 # more complete set: GreaterThan, GreaterThanOrEqual, LesserThan and
 # LesserThanOrEqual.
 resolution = timedelta.resolution
@@ -680,11 +680,12 @@ class icalendar(Text):
             dtend = dtend + timedelta(days=1) - resolution
 
         # Get only the events which matches
-        query = And(Equal('type', 'VEVENT'),
-                    Or(Range('dtstart', dtstart + resolution, dtend),
-                       Range('dtend', dtstart + resolution, dtend),
-                       And(Range('dtstart', None, dtstart + resolution),
-                           Range('dtend', dtend, None))))
+        query = AndQuery(
+            EqQuery('type', 'VEVENT'),
+            OrQuery(RangeQuery('dtstart', dtstart + resolution, dtend),
+                    RangeQuery('dtend', dtstart + resolution, dtend),
+                    AndQuery(RangeQuery('dtstart', None, dtstart + resolution),
+                             RangeQuery('dtend', dtend, None))))
         results = [self.components[uid] for uid in self.search(query)]
 
         if results == []:
@@ -785,9 +786,9 @@ class icalendar(Text):
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    atoms.append(Equal(key, value))
+                    atoms.append(EqQuery(key, value))
 
-                query = And(*atoms)
+                query = AndQuery(*atoms)
             else:
                 raise ValueError, "expected a query"
 

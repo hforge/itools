@@ -86,7 +86,7 @@ from itools import vfs
 from base import CatalogAware
 from index import Index, VERSION, ZERO
 import fields
-from queries import Equal, And, Phrase
+from queries import EqQuery, AndQuery, PhraseQuery
 from io import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
                 decode_vint, encode_vint, NULL)
@@ -529,7 +529,7 @@ class Catalog(object):
 
 
     def unindex_document(self, value):
-        query = Equal(self.fields[0].name, value)
+        query = EqQuery(self.fields[0].name, value)
         for document in self.search(query).get_documents():
             self._unindex_document(document.__number__)
 
@@ -540,9 +540,9 @@ class Catalog(object):
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    atoms.append(Phrase(key, value))
+                    atoms.append(PhraseQuery(key, value))
 
-                query = And(*atoms)
+                query = AndQuery(*atoms)
             else:
                 documents = self.documents
                 results = {}

@@ -19,15 +19,15 @@
 """
 To build a query:
 
-  from itools.catalog import Equal, And
-  s1 = Equal('format', 'Actu')
-  s2 = Equal('archive', True)
-  s3 = Equal('workflow_state', 'public')
-  query = And(s1, s2, s3)
+  from itools.catalog import EqQuery, AndQuery
+  s1 = EqQuery('format', 'Actu')
+  s2 = EqQuery('archive', True)
+  s3 = EqQuery('workflow_state', 'public')
+  query = AndQuery(s1, s2, s3)
 """
 
 
-class Equal(object):
+class EqQuery(object):
 
     def __init__(self, name, value):
         self.name = name
@@ -46,7 +46,7 @@ class Equal(object):
 
 
 
-class Range(object):
+class RangeQuery(object):
 
     def __init__(self, name, left, right):
         self.name = name
@@ -61,7 +61,7 @@ class Range(object):
 
 
 
-class Phrase(object):
+class PhraseQuery(object):
 
     def __init__(self, name, value):
         self.name = name
@@ -98,7 +98,7 @@ class Phrase(object):
 ############################################################################
 # Boolean or complex searches
 ############################################################################
-class And(object):
+class AndQuery(object):
 
     def __init__(self, *args):
         self.atoms = args
@@ -118,7 +118,7 @@ class And(object):
 
 
 
-class Or(object):
+class OrQuery(object):
 
     def __init__(self, *args):
         self.atoms = args

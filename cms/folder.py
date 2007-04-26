@@ -26,7 +26,7 @@ import mimetypes
 # Import from itools
 from itools.i18n import format_datetime, guess_language, has_language
 from itools.uri import Path, get_reference
-from itools.catalog import CatalogAware, Equal, And, Phrase
+from itools.catalog import CatalogAware, EqQuery, AndQuery, PhraseQuery
 from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
 from itools.handlers import Folder as BaseFolder, Text, get_handler_class
@@ -424,7 +424,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def browse_thumbnails(self, context):
         context.set_cookie('browse', 'thumb')
 
-        query = Equal('parent_path', self.get_abspath())
+        query = EqQuery('parent_path', self.get_abspath())
         namespace = self.browse_namespace(48, query=query)
 
         handler = self.get_handler('/ui/Folder_browse_thumbnails.xml')
@@ -452,12 +452,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
         abspath = self.get_abspath()
         if term:
             if search_subfolders is True:
-                query = Equal('paths', abspath)
+                query = EqQuery('paths', abspath)
             else:
-                query = Equal('parent_path', abspath)
-            query = And(query, Phrase(field, term))
+                query = EqQuery('parent_path', abspath)
+            query = AndQuery(query, PhraseQuery(field, term))
         else:
-            query = Equal('parent_path', abspath)
+            query = EqQuery('parent_path', abspath)
 
         # Build the namespace
         namespace = self.browse_namespace(16, query=query, sortby=sortby,
@@ -519,7 +519,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 selected_image = None
 
         # look up available images
-        query = Equal('parent_path', self.get_abspath())
+        query = EqQuery('parent_path', self.get_abspath())
         namespace = self.browse_namespace(48, query=query, batchsize=0)
         objects = []
         offset = 0

@@ -24,7 +24,7 @@ from base import CatalogAware
 from catalog import Catalog, make_catalog
 from fields import (BaseField, TextField, KeywordField, IntegerField,
                     BoolField, register_field, get_field)
-from queries import Equal, Range, Phrase, And, Or
+from queries import EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery
 from prof import vmsize
 
 
@@ -42,11 +42,11 @@ __all__ = [
     'register_field',
     'get_field',
     # Queries
-    'Equal',
-    'Range',
-    'Phrase',
-    'And',
-    'Or']
+    'EqQuery',
+    'RangeQuery',
+    'PhraseQuery',
+    'AndQuery',
+    'OrQuery']
 
 
 

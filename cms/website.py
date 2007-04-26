@@ -22,7 +22,7 @@ from string import Template
 from itools.uri import Path, get_reference
 from itools.datatypes import Email, Integer, Unicode
 from itools.i18n import get_language_name, get_languages
-from itools.catalog import Equal, Or
+from itools.catalog import EqQuery, OrQuery
 from itools.stl import stl
 from folder import Folder
 from skins import Skin
@@ -444,9 +444,9 @@ class WebSite(RoleAware, Folder):
         size = 10
 
         # Search
-        on_title = Equal('title', text)
-        on_text = Equal('text', text)
-        query = Or(on_title, on_text)
+        on_title = EqQuery('title', text)
+        on_text = EqQuery('text', text)
+        query = OrQuery(on_title, on_text)
         results = root.search(query=query)
         documents = results.get_documents(start=start, size=size)
 

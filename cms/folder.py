@@ -26,7 +26,7 @@ import mimetypes
 # Import from itools
 from itools.i18n import format_datetime, guess_language, has_language
 from itools.uri import Path, get_reference
-from itools.catalog import Equal, And, Phrase
+from itools.catalog import CatalogAware, Equal, And, Phrase
 from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
 from itools.handlers import Folder as BaseFolder, Text, get_handler_class
@@ -37,7 +37,6 @@ from itools.web import get_context
 from file import File
 from base import Handler
 from binary import Image
-from catalog import CatalogAware
 from handlers import Lock, Metadata, ListOfUsers
 from ical import CalendarAware
 from versioning import VersioningAware

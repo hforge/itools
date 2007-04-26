@@ -28,8 +28,8 @@ import traceback
 import itools
 from itools.datatypes import FileName
 from itools import vfs
-from itools.catalog import (make_catalog, TextField, KeywordField,
-    IntegerField, BoolField)
+from itools.catalog import (make_catalog, CatalogAware, TextField,
+    KeywordField, IntegerField, BoolField)
 from itools.handlers import Folder as FolderHandler, get_transaction
 from itools.stl import stl
 from itools.web import get_context
@@ -41,7 +41,6 @@ from website import WebSite
 from handlers import Metadata
 from registry import register_object_class
 from folder import Folder
-from catalog import CatalogAware
 
 
 
@@ -223,14 +222,12 @@ class Root(WebSite):
     # Index & Search
     def index_handler(self, handler):
         catalog = get_context().server.catalog
-        document = handler.get_catalog_indexes()
-        n = catalog.index_document(document)
+        catalog.index_document(handler)
 
 
     def unindex_handler(self, handler):
         catalog = get_context().server.catalog
-        abspath = handler.get_abspath()
-        catalog.unindex_document(abspath)
+        catalog.unindex_document(handler.abspath)
 
 
     def reindex_handler(self, handler):
@@ -365,7 +362,7 @@ class Root(WebSite):
             if not isinstance(handler, CatalogAware):
                 ctx.skip = True
                 continue
-            yield handler.get_catalog_indexes()
+            yield handler
 
 
     update_catalog__access__ = 'is_admin'
@@ -384,7 +381,7 @@ class Root(WebSite):
         doc_n = 0
         for object in self._traverse_catalog_aware_objects():
             doc_n += 1
-            print doc_n, object['abspath']
+            print doc_n, object.abspath
             catalog.index_document(object)
 
         ##catalog.commit()

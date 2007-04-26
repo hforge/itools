@@ -83,6 +83,7 @@ from subprocess import call
 # Import from itools
 from itools.uri import get_absolute_reference
 from itools import vfs
+from base import CatalogAware
 from index import Index, VERSION, ZERO
 import fields
 from queries import Equal, And, Phrase
@@ -445,21 +446,24 @@ class Catalog(object):
 
 
     def index_document(self, document):
+        # Check the input
+        if isinstance(document, CatalogAware):
+            document = document.get_catalog_indexes()
+        elif not isinstance(document, dict):
+            raise ValueError, ('the document must be either a dictionary or'
+                ' a CatalogAware object')
+
+        # Set the catalog as dirty
         self.has_changed = True
         # Create the document to index
         doc_number = self.n_documents
         catalog_document = Document(doc_number)
 
-        # Define the function to get values from the document
-        if isinstance(document, dict):
-            getter = document.get
-        else:
-            getter = lambda x: getattr(document, x, None)
-
         # Index
+        get = document.get
         for field in self.fields:
             # Extract the field value from the document
-            value = getter(field.name)
+            value = get(field.name)
 
             # If value is None, don't go further
             if value is None:

@@ -20,6 +20,7 @@ import os
 from os.path import isfile, join
 
 # Import from itools
+from base import CatalogAware
 from catalog import Catalog, make_catalog
 from fields import (BaseField, TextField, KeywordField, IntegerField,
                     BoolField, register_field, get_field)
@@ -30,6 +31,7 @@ from prof import vmsize
 __all__ = [
     'make_catalog',
     'Catalog',
+    'CatalogAware',
     'vmsize',
     # Fields
     'BaseField',

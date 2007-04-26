@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 import cgi
+from datetime import datetime
 import logging
 
 # Import from itools
@@ -24,6 +25,7 @@ from itools import get_abspath
 from itools.uri import Path
 from itools.datatypes import QName
 from itools import vfs
+from itools.catalog import CatalogAware
 from itools.handlers import Handler as BaseHandler
 from itools.schemas import get_datatype
 from itools.stl import stl
@@ -31,8 +33,8 @@ from itools.gettext import DomainAware, get_domain
 from itools.http import Forbidden
 from itools.web import get_context, Node as BaseNode
 from handlers import Lock, Metadata
-from catalog import CatalogAware
 import webdav
+from versioning import VersioningAware
 from workflow import WorkflowAware
 
 
@@ -224,6 +226,89 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     @classmethod
     def new_instance(cls):
         return cls()
+
+
+    ########################################################################
+    # Indexing
+    ########################################################################
+    def get_catalog_indexes(self):
+        from access import RoleAware
+        from file import File
+        from users import User
+
+        name = self.name
+        abspath = self.get_abspath()
+        get_property = self.get_metadata().get_property
+        title = self.get_title()
+
+        mtime = self.timestamp
+        if mtime is None:
+            mtime = datetime.now()
+
+        document = {
+            'name': name,
+            'abspath': abspath,
+            'format': get_property('format'),
+            'title': title,
+            'owner': get_property('owner'),
+            'title_or_name': title or name,
+            'mtime': mtime.strftime('%Y%m%d%H%M%S'),
+            }
+
+        # Full text
+        try:
+            text = self.to_text()
+        except NotImplementedError:
+            pass
+        except:
+            context = get_context()
+            if context is not None:
+                context.server.log_error(context)
+        else:
+            document['text'] = text
+
+        # Parent path
+        parent = self.parent
+        if parent is not None:
+            if parent.parent is None:
+                document['parent_path'] = '/'
+            else:
+                document['parent_path'] = parent.get_abspath()
+
+        # All paths
+        abspath = Path(abspath)
+        document['paths'] = [ abspath[:x] for x in range(len(abspath) + 1) ]
+
+        # Size
+        if isinstance(self, File):
+            # FIXME We add an arbitrary size so files will always be bigger
+            # than folders. This won't work when there is a folder with more
+            # than that size.
+            document['size'] = 2**30 + len(self.to_str())
+        else:
+            names = [ x for x in self.get_handler_names()
+                      if (x[0] != '.' and x[-9:] != '.metadata') ]
+            document['size'] = len(names)
+
+        # Users
+        if isinstance(self, User):
+            document['firstname'] = self.get_property('ikaaro:firstname')
+            document['lastname'] = self.get_property('ikaaro:lastname')
+
+        # Workflow state
+        if isinstance(self, WorkflowAware):
+            document['workflow_state'] = self.get_workflow_state()
+
+        # Role Aware
+        if isinstance(self, RoleAware):
+            document['is_role_aware'] = True
+            document['members'] = self.get_members()
+
+        # Versioning
+        if isinstance(self, VersioningAware):
+            document['is_version_aware'] = True
+
+        return document
 
 
     ########################################################################

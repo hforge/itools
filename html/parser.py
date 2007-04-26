@@ -64,7 +64,7 @@ boolean_attributes = set(['checked', 'compact', 'declare', 'defer',
                           'selected'])
 
 
-class Parser(object, HTMLParser):
+class Parser(HTMLParser, object):
 
     def parse(self, data):
         self.encoding = 'UTF-8'

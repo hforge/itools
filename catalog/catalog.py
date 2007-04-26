@@ -299,6 +299,8 @@ class Catalog(Folder):
                     value = u' '.join(value)
                 elif isinstance(value, str):
                     value = unicode(value)
+                elif isinstance(value, bool):
+                    value = unicode(int(value))
                 catalog_document.fields[field.number] = value
             else:
                 # Not Stored

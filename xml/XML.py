@@ -379,6 +379,7 @@ class Document(Text.Text):
             elif event == parser.COMMENT:
                 # Comments out of the root element are discarded (XXX)
                 if stack:
+                    value = Unicode.decode(value, 'UTF-8')
                     stack[-1].set_comment(Comment(value))
             elif event == parser.TEXT:
                 if stack:

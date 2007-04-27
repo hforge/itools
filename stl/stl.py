@@ -25,7 +25,8 @@ from decimal import Decimal
 import re
 
 # Import from itools
-from itools.datatypes import Boolean, DataType, URI, XMLAttribute
+from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
+    XML as XMLContent)
 from itools import schemas
 from itools.xml import XML, namespaces
 
@@ -307,6 +308,7 @@ def process(node, stack, repeat_stack, encoding='UTF-8', prefix=None):
         data, kk = substitute(data, stack, repeat_stack, encoding)
         if data is None:
             return []
+        data = XMLContent.encode(data)
         return [data]
     elif isinstance(node, XML.Comment):
         return [node.to_str()]

@@ -17,10 +17,12 @@
 
 # Import from the Standard Library
 import re
+from cStringIO import StringIO
 
 # Import from itools
-from itools.datatypes import Unicode
+from itools.datatypes import Unicode, XML
 from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.stl.stl import stl
 
 # Import from the reportlab Library
 from reportlab.pdfgen.canvas import Canvas
@@ -37,20 +39,60 @@ __tab_para_alignment = {'left': TA_LEFT, 'right': TA_RIGHT,
                         'center': TA_CENTER, 'justify': TA_JUSTIFY}
 
 encoding = 'UTF-8'
-def rmltopdf(filename, is_test=False):
+def rmltopdf_test(filename):
     file = open(filename, 'r')
     stream = Parser(file.read())
-    return document_stream(stream)
+    return document_stream(stream, StringIO(), True)
 
 
-def document_stream(stream):
-    """ """
-    pdf_filename = 'no-name.pdf'
-    page_size = pagesizes.A4 #portrait
-    top_margin = 20.0
-    bottom_margin = 20.0
-    left_margin = 42.0
-    right_margin = 42.0
+def stl_rmltopdf_test(handler, namespace):
+    temp = stl(handler, namespace)
+    stream = Parser(temp)
+    return document_stream(stream, StringIO(), True)
+
+
+def rmltopdf(filename):
+    file = open(filename, 'r')
+    stream = Parser(file.read())
+    iostream = StringIO()
+    document_stream(stream, iostream)
+    return iostream.getvalue()
+
+
+def stl_rmltopdf(handler, namespace):
+    temp = stl(handler, namespace)
+    stream = Parser(temp)
+    iostream = StringIO()
+    document_stream(stream, iostream)
+    return iostream.getvalue()
+
+
+def rmlFirstPage(canvas, doc):
+    pass
+
+
+def rmlLaterPages(canvas, doc):
+    pass
+
+
+def document_stream(stream, pdf_stream, is_test=False):
+    """ 
+        stream : parser stream
+        pdf_stream : reportlab write the pdf into pdf_stream
+    """
+
+    document_attrs = {'showBoundary': 0,
+            'leftMargin': inch,
+            'rightMargin': inch,
+            'topMargin': inch,
+            'bottomMargin': inch,
+            'pageSize': pagesizes.A4,
+            'title': None,
+            'author': None,
+            'rotation': 0,
+            'showBoundary': 0,
+            'allowSplitting': 1
+            }
 
     pdf_stylesheet = getSampleStyleSheet()
     pdf_table_style = {}
@@ -69,7 +111,7 @@ def document_stream(stream):
                 stack.append((tag_name, attributes, None))
             elif tag_name == 'template':
                 template_stream(stream, tag_uri, tag_name, 
-                                attributes, ns_decls, pdf_stylesheet)
+                                attributes, ns_decls, document_attrs)
             elif tag_name == 'stylesheet':
                 stylesheet_stream(stream, tag_uri, tag_name, attributes, 
                                 ns_decls, pdf_stylesheet, pdf_table_style) 
@@ -89,21 +131,17 @@ def document_stream(stream):
                 stack.pop()
 
     #### BUILD PDF ####
-    pdf_file = open(pdf_filename, 'w')
-    doc = SimpleDocTemplate(pdf_file, pagesize=page_size,
-                            leftMargin=left_margin, 
-                            rightMargin=right_margin,
-                            topMargin=top_margin, 
-                            bottomMargin=bottom_margin,
-                            showBoundary=0)
-
-    _story = list(story)
-    doc.build(story)
-    return (_story, pdf_stylesheet)
+    doc = SimpleDocTemplate(pdf_stream, **document_attrs)
+    
+    if is_test == True:
+        _story = list(story)
+    doc.build(story, onFirstPage=rmlFirstPage, onLaterPages=rmlLaterPages)
+    if is_test == True:
+        return (_story, pdf_stylesheet)
 
 
 def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                    pdf_stylesheet):
+                    document_attrs):
     """ """
     stack = []
     stack.append((_tag_name, _attributes, None))
@@ -114,13 +152,40 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             return 
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            pass
+            tag_uri, tag_name, attributes, ns_decls = value
+            stack.append((tag_name, attributes, None))
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
+                for key in document_attrs.keys():
+                    if _attributes.has_key((None, key)):
+                        document_attrs[key] = _attributes[(None, key)]
+
+                if len(document_attrs['pageSize']) == 2:
+                    f = get_value_reportlab(document_attrs['pageSize'][0])
+                    s = get_value_reportlab(document_attrs['pageSize'][0])
+                    document_attrs['pageSize'] = (f, s)
+                else:
+                    document_attrs['pageSize'] = pagesizes.A4
+                document_attrs['rotation'] = \
+                        to_int(document_attrs['rotation'])
+                document_attrs['leftMargin'] = \
+                        get_value_reportlab(document_attrs['leftMargin'])
+                document_attrs['rightMargin'] = \
+                        get_value_reportlab(document_attrs['rightMargin'])
+                document_attrs['topMargin'] = \
+                        get_value_reportlab(document_attrs['topMargin'])
+                document_attrs['bottomMargin'] = \
+                        get_value_reportlab(document_attrs['bottomMargin'])
+                
+                document_attrs['showBoundary'] = \
+                        to_bool(document_attrs['showBoundary'])
+                document_attrs['allowSplitting'] = \
+                        to_bool(document_attrs['allowSplitting'])
+
                 return
             else:
-                pass
+                stack.pop()
 
 
 def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
@@ -266,6 +331,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if prev_elt[0] == _tag_name:
                     value = strip(Unicode.decode(value, encoding), True)
                     if len(value) > 0 and value != ' ':
+                        value = XML.encode(value) # entities
                         story.append(value)
 
 
@@ -305,6 +371,7 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             if stack:
                 value = strip(Unicode.decode(value, encoding), True)
                 if len(value) > 0 and value != ' ':
+                    value = XML.encode(value) # entities
                     content.append(value)
 
 
@@ -340,7 +407,10 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         elif event == TEXT:
             if stack:
                 value = strip(Unicode.decode(value, encoding), True)
-                if len(value) > 0 and value != ' ':
+                #if len(value) > 0 and value != ' ':
+                # alow to write : <para><u><i>Choix de l'appareillage</i> </u></para>
+                if len(value) > 0:
+                    value = XML.encode(value) # entities
                     content.append(value)
 
 
@@ -379,9 +449,9 @@ def preformatted_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         #### TEXT ELEMENT ####   
         elif event == TEXT:
             if stack:
-                value = strip(Unicode.decode(value, encoding), True)
-                if len(value) > 0 and value != ' ':
-                    content.append(value)
+                # we dont strip the string --> preformatted widget
+                value = XML.encode(Unicode.decode(value, encoding)) # entities
+                content.append(value)
 
 def image_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
                  pdf_stylesheet, check_dimension=False):
@@ -586,6 +656,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             elif stack[-1][0] == 'td':
                 value = strip(Unicode.decode(value, encoding))
                 if len(value) > 0 and value != ' ':
+                    value = XML.encode(value) # entities
                     table_td.append(value)
             else:
                 pass
@@ -646,6 +717,9 @@ def create_paragraph(pdf_stylesheet, element, content):
             if key == 'alignment':
                 attr_value = __tab_para_alignment.get(attr_value, 
                                                __tab_para_alignment['left'])
+            elif key in ['leftIndent', 'rightIndent']:
+                attr_value = get_value_reportlab(attr_value)
+
             style_attr[key] = attr_value
 
     if not pdf_stylesheet.has_key(parent_style):
@@ -937,6 +1011,15 @@ def add_table_style(pdf_table_style, id, table_style):
         #warning_msg('tableStyle width id "%s" already exist' % id)
 
 
+def is_str(str, check_is_unicode=True):
+    """ """
+    if type(str) != type(''):
+        if not check_is_unicode:
+            return False
+        return type(str) == type(u'')
+    return True
+
+
 def to_float(str, default=0):
     """ 
         Return the float value of str.
@@ -968,15 +1051,34 @@ def to_int(str, default=0):
     except:
         return default
 
+def to_bool(str, default=False):
+    """
+         Return the boolean value of str.
+    """
+
+    if str == 'false':
+        return False
+    elif str == 'true':
+        return True
+    else:
+        if default in [False, True]:
+            return default
+        else:
+            return False
+
 
 def get_value_reportlab(value, default=None):
     """ 
        Return the reportlab value of value
+       only if value is a string
        '2cm' -> 2 * cm
        '2in' -> 2 * inch
        '2%' -> '2%'
     """
     coef = 1
+    if not is_str(value):
+        return value
+
     value = value.strip()
     if value == "None":
         return None

@@ -21,7 +21,7 @@ import sys
 import unittest
 
 # Import from itools
-from itools.pdf.rml import rmltopdf, strip
+from itools.pdf.rml import rmltopdf_test, strip
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm
@@ -45,18 +45,18 @@ class FunctionTestCase(unittest.TestCase):
 class DocumentTestCase(unittest.TestCase):
     
     def test_no_story(self):
-        story, stylesheet = rmltopdf('pdf/01.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/01.xml')
         self.assertEqual(len(story), 0)
 
 
 class StylesheetTestCase(unittest.TestCase):
 
     def test_style_sheet_empty(self):
-        story, stylesheet = rmltopdf('pdf/20.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/20.xml')
     
 
     def test_style_sheet_para_style(self):
-        story, stylesheet = rmltopdf('pdf/21.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/21.xml')
 
         style = stylesheet['h1']
         self.assertEqual(style.name, 'Heading1')
@@ -80,69 +80,69 @@ class StylesheetTestCase(unittest.TestCase):
 
     
     #def test_style_sheet_report_lab_exemple(self):
-    #    story, stylesheet = rmltopdf('pdf/22.xml', is_test=True)
+    #    story, stylesheet = rmltopdf_test('pdf/22.xml')
 
 
     def test_style_sheet_table_style(self):
-        story, stylesheet = rmltopdf('pdf/23.xml', is_test=True)
-        story, stylesheet = rmltopdf('pdf/24.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/23.xml')
+        story, stylesheet = rmltopdf_test('pdf/24.xml')
 
 
 
 class StoryTestCase(unittest.TestCase):
     
     def test_raw(self):
-        story, stylesheet = rmltopdf('pdf/02.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/02.xml')
         self.assertEqual(len(story), 0)
 
 
     def test_heading(self):
-        story, stylesheet = rmltopdf('pdf/03.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/03.xml')
         self.assertEqual(len(story), 3)
 
     def test_pre(self):
-        story, stylesheet = rmltopdf('pdf/04.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/04.xml')
         self.assertEqual(len(story), 5)
     
     def test_para(self):
-        story, stylesheet = rmltopdf('pdf/06.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/06.xml')
         self.assertEqual(len(story), 6)
     
     def test_spacer(self):
-        story, stylesheet = rmltopdf('pdf/07.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/07.xml')
         self.assertEqual(len(story), 2)
 
     def test_spacer_not_valid(self):
-        story, stylesheet = rmltopdf('pdf/08.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/08.xml')
         self.assertEqual(len(story), 0)
 
 
 class ImageTestCase(unittest.TestCase):
 
     def test_image(self):
-        story, stylesheet = rmltopdf('pdf/05.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/05.xml')
         self.assertEqual(len(story), 9)
 
 class TableTestCase(unittest.TestCase):
 
     def test_little(self):
-        story, stylesheet = rmltopdf('pdf/10.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/10.xml')
         self.assertEqual(len(story), 1)
 
     def test_error(self):
-        self.assertRaises(ValueError, rmltopdf, 'pdf/11.xml', is_test=True)
+        self.assertRaises(ValueError, rmltopdf_test, 'pdf/11.xml')
 
     def test_big(self):
-        story, stylesheet = rmltopdf('pdf/12.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/12.xml')
         self.assertEqual(len(story), 1)
 
 
     def test_inner_widget(self):
-        story, stylesheet = rmltopdf('pdf/13.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/13.xml')
         self.assertEqual(len(story), 1)
     
     def test_inner_table(self):
-        story, stylesheet = rmltopdf('pdf/14.xml', is_test=True)
+        story, stylesheet = rmltopdf_test('pdf/14.xml')
         self.assertEqual(len(story), 1)
 
 

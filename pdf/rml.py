@@ -26,11 +26,12 @@ from itools.stl.stl import stl
 
 # Import from the reportlab Library
 from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import Paragraph, SimpleDocTemplate
-from reportlab.platypus import XPreformatted, Preformatted
+from reportlab.platypus import Paragraph, SimpleDocTemplate, PageTemplate
+from reportlab.platypus import XPreformatted, Preformatted, Frame, FrameBreak
+from reportlab.platypus import NextPageTemplate
 from reportlab.platypus import Image, Table, TableStyle, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import inch, cm
+from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib import pagesizes, colors
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
@@ -96,6 +97,7 @@ def document_stream(stream, pdf_stream, is_test=False):
 
     pdf_stylesheet = getSampleStyleSheet()
     pdf_table_style = {}
+    page_templates = []
     stack = []
     story = []
     while True:
@@ -110,7 +112,7 @@ def document_stream(stream, pdf_stream, is_test=False):
                 pdf_filename = attributes.get((None, 'filename'), 'noname.pdf')
                 stack.append((tag_name, attributes, None))
             elif tag_name == 'template':
-                template_stream(stream, tag_uri, tag_name, 
+                page_templates = template_stream(stream, tag_uri, tag_name, 
                                 attributes, ns_decls, document_attrs)
             elif tag_name == 'stylesheet':
                 stylesheet_stream(stream, tag_uri, tag_name, attributes, 
@@ -132,7 +134,8 @@ def document_stream(stream, pdf_stream, is_test=False):
 
     #### BUILD PDF ####
     doc = SimpleDocTemplate(pdf_stream, **document_attrs)
-    
+    doc.addPageTemplates(page_templates)
+   
     if is_test == True:
         _story = list(story)
     doc.build(story, onFirstPage=rmlFirstPage, onLaterPages=rmlLaterPages)
@@ -145,6 +148,38 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
     """ """
     stack = []
     stack.append((_tag_name, _attributes, None))
+    page_templates = []
+    page_template_data = None
+    show_boundary = False
+
+    for key in document_attrs.keys():
+        if _attributes.has_key((None, key)):
+            document_attrs[key] = _attributes[(None, key)]
+
+    if len(document_attrs['pageSize']) == 2:
+        f = get_value_reportlab(document_attrs['pageSize'][0])
+        s = get_value_reportlab(document_attrs['pageSize'][0])
+        document_attrs['pageSize'] = (f, s)
+    else:
+        document_attrs['pageSize'] = pagesizes.A4
+    
+    document_attrs['rotation'] = \
+        to_int(document_attrs['rotation'])
+    document_attrs['leftMargin'] = \
+        get_value_reportlab(document_attrs['leftMargin'])
+    document_attrs['rightMargin'] = \
+        get_value_reportlab(document_attrs['rightMargin'])
+    document_attrs['topMargin'] = \
+        get_value_reportlab(document_attrs['topMargin'])
+    document_attrs['bottomMargin'] = \
+        get_value_reportlab(document_attrs['bottomMargin'])
+    document_attrs['showBoundary'] = \
+        to_bool(document_attrs['showBoundary'], 0)
+    document_attrs['allowSplitting'] = \
+        to_bool(document_attrs['allowSplitting'])
+
+    show_boundary = document_attrs['showBoundary']
+
     while True:
         try:
             event, value, line_number = stream.next()
@@ -153,39 +188,59 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes, ns_decls = value
+
+            if tag_name == 'pageTemplate':
+                 page_template_data = {'frame':[]}
+
             stack.append((tag_name, attributes, None))
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
-            if tag_name == _tag_name:
-                for key in document_attrs.keys():
-                    if _attributes.has_key((None, key)):
-                        document_attrs[key] = _attributes[(None, key)]
+            prev_elt = stack[-1]
+            if prev_elt[0] == _tag_name:
+                if tag_name == _tag_name:
+                    return page_templates
 
-                if len(document_attrs['pageSize']) == 2:
-                    f = get_value_reportlab(document_attrs['pageSize'][0])
-                    s = get_value_reportlab(document_attrs['pageSize'][0])
-                    document_attrs['pageSize'] = (f, s)
-                else:
-                    document_attrs['pageSize'] = pagesizes.A4
-                document_attrs['rotation'] = \
-                        to_int(document_attrs['rotation'])
-                document_attrs['leftMargin'] = \
-                        get_value_reportlab(document_attrs['leftMargin'])
-                document_attrs['rightMargin'] = \
-                        get_value_reportlab(document_attrs['rightMargin'])
-                document_attrs['topMargin'] = \
-                        get_value_reportlab(document_attrs['topMargin'])
-                document_attrs['bottomMargin'] = \
-                        get_value_reportlab(document_attrs['bottomMargin'])
-                
-                document_attrs['showBoundary'] = \
-                        to_bool(document_attrs['showBoundary'])
-                document_attrs['allowSplitting'] = \
-                        to_bool(document_attrs['allowSplitting'])
+            elif prev_elt[0] == 'pageTemplate':
+                if tag_name == 'pageTemplate':
+                    attrs = prev_elt[1]
+                    id = attrs.get((None, 'id'), None)
+                    if id is None:
+                        # tag not well formed
+                        pass
+                    else:
+                        page_template = PageTemplate(id=id, 
+                                frames=page_template_data['frame'])
+                        page_templates.append(page_template)
+                    page_template_data = None
+            elif prev_elt[0] == 'frame':
+                if tag_name == 'frame' and page_template_data is not None:
+                    attrs = prev_elt[1]
+                    #Frame(x1, y1, width,height, leftPadding=6, bottomPadding=6,
+                    #rightPadding=6, topPadding=6, id=None, showBoundary=0)
+                    id = attrs.get((None, 'id'), None)
+                    x1 = get_value_reportlab(attrs.get((None, 'x1'), None))
+                    y1 = get_value_reportlab(attrs.get((None, 'y1'), None))
+                    width = get_value_reportlab(attrs.get((None, 'width'), 
+                                                          None))
+                    height = get_value_reportlab(attrs.get((None, 'height'), 
+                                                           None))
+                   
+                    not_ok = x1 is None or y1 is None or width is None \
+                            or height is None or id is None
+                    if not_ok:
+                        # frame tag not well formed
+                        pass
+                    else:
+                        frame_attrs = {'id': id, 'showBoundary': show_boundary,
+                                       'leftPadding': 0, 'bottomPadding': 0,
+                                       'rightPadding': 0, 'topPadding': 0, 
+                                       'id': id, 'showBoundary': show_boundary}
 
-                return
-            else:
-                stack.pop()
+                        frame = Frame(x1, y1, width, height, **frame_attrs)
+                        page_template_data['frame'].append(frame)
+                         
+            
+            stack.pop()
 
 
 def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
@@ -244,7 +299,6 @@ def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 pass
             else:
                 pass
-                #warning_msg('blockTableStyle -> unknown tag child')
 
             stack.append((tag_name, attributes, None))
 
@@ -254,8 +308,8 @@ def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 element = stack.pop()
                 id = element[1].get((None, 'id'), None)
                 if id is None:
+                    # tag not well formed
                     pass
-                    #warning_msg('blockTableStyle -> id attribute is required')
                 else:
                     add_table_style(pdf_table_style, id, current_table_style)
                 return
@@ -283,7 +337,18 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes, ns_decls = value
-            if tag_name in ['h1', 'h2', 'h3']:
+            if tag_name == 'setNextTemplate':
+                name = attributes.get((None, 'name'), None)
+                if name is not None:
+                    story.append(NextPageTemplate(name))
+                    stack.append((tag_name, attributes, None))
+                else:
+                    # tag not well formed
+                    pass
+            elif tag_name == 'nextFrame':
+                story.append(FrameBreak())
+                stack.append((tag_name, attributes, None))
+            elif tag_name in ['h1', 'h2', 'h3']:
                 story.append(heading_stream(stream, tag_uri, tag_name, 
                              attributes, ns_decls, pdf_stylesheet))
             elif tag_name == 'para':
@@ -407,9 +472,9 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         elif event == TEXT:
             if stack:
                 value = strip(Unicode.decode(value, encoding), True)
-                #if len(value) > 0 and value != ' ':
-                # alow to write : <para><u><i>Choix de l'appareillage</i> </u></para>
                 if len(value) > 0:
+                    # alow to write : 
+                    # <para><u><i>Choix de l'appareillage</i> </u></para>
                     value = XML.encode(value) # entities
                     content.append(value)
 
@@ -495,7 +560,6 @@ def spacer_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes, ns_decls = value
             stack.append((tag_name, attributes, None))
-            #warning_msg('Spacer can not have child')
         #### END ELEMENT ####   
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
@@ -509,8 +573,6 @@ def spacer_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         #### TEXT ELEMENT ####   
         elif event == TEXT:
             pass
-            #if stack:
-            #    warning_msg('Spacer can not have containt')
 
 
 def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
@@ -564,11 +626,8 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                                           True)
                     if widget is not None:
                         table_td.append(widget)
-                    #else:
-                    #    print 'image widget is None'
                 else:
                     pass
-                    #warning_msg('tr tags can only have td childs')
             elif tag_name == 'para':
                 if stack[-1][0] == 'td':
                     push = False
@@ -579,8 +638,6 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         table_td.append(widget)
                 else:
                     pass
-                    #warning_msg('tr tags can only have td childs --> %s' 
-                    #            % tag_name)
             
             elif tag_name in ['pre', 'xpre']:
                 if stack[-1][0] == 'td':
@@ -592,8 +649,6 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         table_td.append(widget)
                 else:
                     pass
-                    #warning_msg('tr tags can only have td childs --> %s' 
-                    #            % tag_name)
             
             elif tag_name == 'spacer':
                 if stack[-1][0] == 'td':
@@ -605,8 +660,6 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         table_td.append(widget)
                 else:
                     pass
-                    #warning_msg('tr tags can only have td childs --> %s' 
-                    #            % tag_name)
             
             elif tag_name == 'blockTable':
                 if stack[-1][0] == 'td':
@@ -618,9 +671,6 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         table_td.append(widget)
                 else:
                     pass
-                    #warning_msg('tr tags can only have td childs --> %s' 
-                    #            % tag_name)
-
 
             if push:
                 stack.append((tag_name, attributes, None))
@@ -660,7 +710,6 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     table_td.append(value)
             else:
                 pass
-                #warning_msg('blockTable child must be on of these tags: tr, td')
 
 
 ###############################################################################
@@ -764,38 +813,33 @@ def create_image(element, check_dimension):
         if key == 'file':
             filename = attr_value
         elif key == 'width':
-            width = float(attr_value)
+            width = get_value_reportlab(attr_value)
         elif key == 'height':
-            height = float(attr_value)
+            height = get_value_reportlab(attr_value)
     
     if filename is None:
         return None
 
     if check_dimension and width == None and height == None:
-        #warning_msg('Image tag: width and height attributes are required')
         return None
 
-    # Image dont throw exception if file dont exist
-    # perhaps bug ?
     try:
         f = open(filename, 'r')
         f.close()
     except IOError, msg:
-        #warning_msg(msg)
         return None
 
     try:
         I = Image(filename)
-        if not width is None:
-            I.drawHeight = width
-        if not height is None:
-            I.drawWidth = height
+        if height is not None:
+            I.drawHeight = height
+        if width is not None:
+            I.drawWidth = width
         return I
     except IOError, msg:
         warnings(msg)
         return None
     except Exception, msg:
-        #warning_msg(msg)
         return None
 
 
@@ -813,7 +857,6 @@ def create_spacer(element):
     if length != None:
         return Spacer(width, length)
     else:
-        #warning_msg('Spacer length attribute is required')
         return None
 
 
@@ -892,12 +935,9 @@ def add_table_style(pdf_table_style, id, table_style):
                                                 colors.black)
                     style.add('TEXTCOLOR', attr['start'], attr['stop'], 
                               attr['colorName'])
-                    #warning_msg('TEXTCOLOR, start=%s, stop=%s, colorName=%s' % 
-                    #           (attr['start'], attr['stop'], attr['colorName']))
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('blockTextColor has one required attribute: '\
-                    #            'colorName')
             elif elt_id == 'blockFont':
                 if attr.has_key('name') == True:
                     # fontname, optional fontsize and optional leading
@@ -916,8 +956,8 @@ def add_table_style(pdf_table_style, id, table_style):
                             style.add('FONT', attr['start'], attr['stop'], 
                                   attr['name'], attr['size'], attr['leading'])
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('blockFont has one required attribute: name')
             
             elif elt_id == 'blockBackground':
                 if attr.has_key('colorName') == True:
@@ -926,9 +966,8 @@ def add_table_style(pdf_table_style, id, table_style):
                     style.add('BACKGROUND', attr['start'], attr['stop'], 
                               attr['colorName'])
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('blockBackground has one required attribute: '\
-                    #            'colorName')
             
             elif elt_id == 'blockLeading':
                 if attr.has_key('length') == True:
@@ -936,38 +975,31 @@ def add_table_style(pdf_table_style, id, table_style):
                     style.add('LEADING', attr['start'], attr['stop'], 
                               attr['length'])
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('blockLeading has one required attribute: '\
-                    #            'length')
                       
             elif elt_id == 'blockAlignment':
                 if attr.has_key('value') == True:
                     if attr['value'] not in ['LEFT', 'RIGHT', 'CENTER', 
                                              'CENTRE']:
                         attr['value'] = 'LEFT'
-                        #warning_msg('blockAlignment value attribute must be '\
-                        #            'one of these values : LEFT, RIGHT,  '\
-                        #            'CENTER, CENTRE')
-
+                    
                     style.add('ALIGNMENT', attr['start'], attr['stop'], 
                               attr['value'])
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('blockAlignment has one required attribute: '\
-                    #            'value')
 
             elif elt_id == 'blockValign':
                 if attr.has_key('value') == True:
                     if attr['value'] not in ['TOP', 'MIDDLE', 'BOTTOM']:
                         attr['value'] = 'BOTTOM'
-                        #warning_msg('blockValign value attribute must be one '\
-                        #            'of these values : TOP, MIDDLE, BOTTOM')
 
                     style.add('VALIGN', attr['start'], attr['stop'], 
                               attr['value'])
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('blockValign has one required attribute: value')
 
             elif elt_id in ['blockLeftPadding', 'blockRightPadding', 
                             'blockTopPadding', 'blockBottomPadding']:
@@ -976,9 +1008,8 @@ def add_table_style(pdf_table_style, id, table_style):
                     style.add(elt_id[5:].upper(), attr['start'], attr['stop'], 
                               attr['length'])
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('block[Left,Right,Top,Bottom]Padding has one '\
-                    #            'required attribute: length')
             
             elif elt_id == 'lineStyle':
                 kind_ok = attr.has_key('kind')
@@ -989,8 +1020,6 @@ def add_table_style(pdf_table_style, id, table_style):
                                             'LINEABOVE', 'LINEBEFORE', 
                                             'LINEAFTER']:
                         pass
-                        #warning_msg('lineStyle value attribute must be one '\
-                        #            'of these values : TOP, MIDDLE, BOTTOM')
                     else:
                         attr['colorName'] = getattr(colors, attr['colorName'], 
                                                    colors.black)
@@ -1001,14 +1030,12 @@ def add_table_style(pdf_table_style, id, table_style):
                         style.add(attr['kind'], attr['start'], attr['stop'], 
                                   attr['thickness'], attr['colorName'])
                 else:
+                    # tag not well formed
                     pass
-                    #warning_msg('lineStyle has two required attributes: '\
-                    #            'kind and colorName')
 
         pdf_table_style[id] = style
     else:
         pass
-        #warning_msg('tableStyle width id "%s" already exist' % id)
 
 
 def is_str(str, check_is_unicode=True):
@@ -1056,9 +1083,9 @@ def to_bool(str, default=False):
          Return the boolean value of str.
     """
 
-    if str == 'false':
+    if str == 'false' or str == '0':
         return False
-    elif str == 'true':
+    elif str == 'true' or str == '1':
         return True
     else:
         if default in [False, True]:
@@ -1073,6 +1100,8 @@ def get_value_reportlab(value, default=None):
        only if value is a string
        '2cm' -> 2 * cm
        '2in' -> 2 * inch
+       '2in' -> 2 * mm
+       '2in' -> 2 * pica
        '2%' -> '2%'
     """
     coef = 1
@@ -1088,6 +1117,13 @@ def get_value_reportlab(value, default=None):
     elif value[-2:] == 'cm':
         coef = cm
         value = value[:-2]
+    elif value[-2:] == 'mm':
+        coef = mm
+        value = value[:-2]
+    elif value[-4:] == 'pica':
+        coef = pica
+        value = value[:-4]
+
     elif value[-1:] == '%':
         return value
     

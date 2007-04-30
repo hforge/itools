@@ -21,10 +21,11 @@ import sys
 import unittest
 
 # Import from itools
-from itools.pdf.rml import rmltopdf_test, strip
+from itools.pdf.rml import rmltopdf_test, rmltopdf, strip
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm
+from reportlab.platypus.doctemplate import LayoutError
 
 class FunctionTestCase(unittest.TestCase):
 
@@ -85,9 +86,12 @@ class StylesheetTestCase(unittest.TestCase):
 
     def test_style_sheet_table_style(self):
         story, stylesheet = rmltopdf_test('pdf/23.xml')
-        story, stylesheet = rmltopdf_test('pdf/24.xml')
+        self.assertRaises(LayoutError, rmltopdf_test, 'pdf/24.xml')
 
-
+    
+    def test_template(self):
+        story, stylesheet = rmltopdf_test('pdf/25.xml')
+        
 
 class StoryTestCase(unittest.TestCase):
     
@@ -122,6 +126,7 @@ class ImageTestCase(unittest.TestCase):
     def test_image(self):
         story, stylesheet = rmltopdf_test('pdf/05.xml')
         self.assertEqual(len(story), 9)
+
 
 class TableTestCase(unittest.TestCase):
 

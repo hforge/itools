@@ -38,6 +38,7 @@ from .html import XHTMLFile as Document
 from . import ical
 from . import text
 from .forum import Forum
+from .tracker import Tracker
 try:
     from . import wiki
 except ImportError:
@@ -54,6 +55,7 @@ Folder.register_document_type(text.Text)
 Folder.register_document_type(html.XHTMLFile)
 Folder.register_document_type(ical.Calendar)
 Folder.register_document_type(Forum)
+Folder.register_document_type(Tracker)
 if wiki is not None:
     Folder.register_document_type(wiki.WikiFolder)
 

@@ -20,8 +20,8 @@ import base64
 import urllib
 
 # Import from itools
-from itools.datatypes import (DataType, String, Boolean, Email, Tokens,
-                              Unicode, QName, XML)
+from itools.datatypes import (DataType, Boolean, Email, Integer, String,
+    Tokens, Unicode, QName, XML)
 from itools import schemas
 
 
@@ -97,6 +97,11 @@ class Schema(schemas.base.Schema):
         'reviewers': Tokens(default=()),
         # Settings
         'contacts': Tokens(default=()),
+        # Modules / Issue Tracker
+        'issue_topic': Integer,
+        'issue_version': Integer,
+        'issue_priority': Integer,
+        'issue_state': Integer,
         }
 
 

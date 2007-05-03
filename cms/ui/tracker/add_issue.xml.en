@@ -10,7 +10,7 @@
     <dl>
       <dt>Title</dt>
       <dd>
-        <input type="text" name="dc:title" />
+        <input type="text" name="dc:title" size="40" />
       </dd>
       <dt>Topic</dt>
       <dd>
@@ -33,9 +33,17 @@
             >${item/title}</option>
         </select>
       </dd>
+      <dt>Assign To</dt>
+      <dd>
+        <select name="ikaaro:issue_assigned_to">
+          <option value=""></option>
+          <option stl:repeat="item users" value="${item/id}"
+            >${item/title}</option>
+        </select>
+      </dd>
       <dt>Description</dt>
       <dd>
-        <textarea name="comment" cols="60" rows="5"></textarea>
+        <textarea name="comment" cols="60" rows="7"></textarea>
       </dd>
     </dl>
     <input type="submit" value="Add" />

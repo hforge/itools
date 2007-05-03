@@ -17,12 +17,14 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from string import Template
 
 # Import from itools
 from itools.datatypes import DateTime, String, Unicode
 from itools.i18n.locale_ import format_datetime
 from itools.csv.csv import IntegerKey, CSV as BaseCSV
 from itools.stl import stl
+from itools import vfs
 from itools.web import get_context
 from csv import CSV
 from File import File
@@ -124,10 +126,13 @@ class Tracker(Folder):
                 line[name] = row and row.get_value('title') or None
             lines.append(line)
         # Sort
-        sortby = 'title'
-        sortorder = 'up'
+        sortby = context.get_form_value('sortby', default='id')
+        sortorder = context.get_form_value('sortorder', default='up')
+        lines.sort(key=lambda x: x[sortby])
+        if sortorder == 'down':
+            lines.reverse()
         # Table
-        namespace['table'] = widgets.table(columns, lines, sortby, sortorder)
+        namespace['table'] = widgets.table(columns, lines, [sortby], sortorder)
 
         handler = self.get_handler('/ui/tracker/view_tracker.xml')
         return stl(handler, namespace)
@@ -141,6 +146,11 @@ class Tracker(Folder):
         namespace = {}
         for name in 'topics', 'versions', 'priorities':
             namespace[name] = self.get_handler('%s.csv' % name).get_namespace()
+
+        users = self.get_handler('/users')
+        namespace['users'] = [
+            {'id': x, 'title': users.get_handler(x).get_title()}
+            for x in self.get_site_root().get_members() ]
 
         handler = self.get_handler('/ui/tracker/add_issue.xml')
         return stl(handler, namespace)
@@ -166,16 +176,42 @@ class Tracker(Folder):
 
         # Add
         issue = self.set_handler(id, Issue())
+        user = context.user
+        if user is not None:
+            issue.set_property('ikaaro:issue_reported_by', user.name)
 
         # Metadata properties
         fields = ['dc:title', 'ikaaro:issue_topic', 'ikaaro:issue_version',
-            'ikaaro:issue_priority']
+            'ikaaro:issue_priority', 'ikaaro:issue_assigned_to']
         for name in fields:
             value = context.get_form_value(name)
             issue.set_property(name, value)
         # Comment
         comment = context.get_form_value('comment', type=Unicode)
         issue.add_comment(comment)
+
+        # Notify / From
+        if user is None:
+            from_addr = ''
+        else:
+            from_addr = user.get_property('ikaaro:email')
+        # Notify / To
+        assigned_to = context.get_form_value('ikaaro:issue_assigned_to')
+        assigned_to = self.get_handler('/users/%s' % assigned_to)
+        to_addr = assigned_to.get_property('ikaaro:email')
+        # Notify / Subject
+        title = context.get_form_value('dc:title')
+        subject = '[Tracker Issue #%s] %s' % (issue.name, title)
+        # Notify / Body
+        body = Template(u'${description}\n'
+                        u'\n'
+                        u'    ${uri}\n')
+
+        uri = context.uri.resolve2('../%s/;edit_form' % issue.name)
+        body = body.substitute({'description': comment, 'uri': uri})
+        # Notify / Send
+        root = context.root
+        root.send_email(from_addr, to_addr, subject, body)
 
         return context.come_back('New issue addded.')
 
@@ -192,7 +228,7 @@ class Issue(Folder):
     class_views = [
         ['edit_form'],
         ['browse_content?mode=list'],
-        ['new_resource_form']]
+        ['new_resource_form?type=file']]
 
 
     def new(self, **kw):
@@ -232,12 +268,25 @@ class Issue(Folder):
     edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     def edit_form(self, context):
+        # Set Style
         css = self.get_handler('/ui/tracker/tracker.css')
         context.styles.append(str(self.get_pathto(css)))
 
+        # Local variables
+        users = self.get_handler('/users')
+
+        # Build the namespace
         namespace = {}
+        namespace['number'] = self.name
         namespace['title'] = self.get_property('dc:title')
-        # Topic
+        # Reported by
+        reported_by = self.get_property('ikaaro:issue_reported_by')
+        if reported_by is None:
+            reported_by = None
+        else:
+            reported_by = users.get_handler(reported_by).get_title()
+        namespace['reported_by'] = reported_by
+        # Topic, Priority, etc.
         parent = self.parent
         tables = [('topic', 'topics'), ('version', 'versions'),
             ('priority', 'priorities'), ('state', 'states')]
@@ -245,6 +294,17 @@ class Issue(Folder):
             table = parent.get_handler('%s.csv' % table_name)
             value = self.get_property('ikaaro:issue_%s' % name)
             namespace[table_name] = table.get_namespace(value)
+        # Assign To
+        selected = self.get_property('ikaaro:issue_assigned_to')
+        namespace['users'] = [
+            {'id': x, 'title': users.get_handler(x).get_title(),
+             'is_selected': x == selected}
+            for x in self.get_site_root().get_members() ]
+        # Attachements
+        namespace['files'] = [
+            {'name': x.name, 'type': x.get_property('format'),
+             'datetime': format_datetime(vfs.get_mtime(x.uri))}
+            for x in self.search_handlers() ]
         # Comments
         users = self.get_handler('/users')
         comments = []
@@ -256,7 +316,8 @@ class Issue(Folder):
                 'user': user.get_title(),
                 'datetime': format_datetime(datetime),
                 'comment': comment.get_value('comment')})
-            
+        comments.reverse()
+ 
         namespace['comments'] = comments
 
         handler = self.get_handler('/ui/tracker/edit_issue.xml')
@@ -266,11 +327,15 @@ class Issue(Folder):
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         for name in ('dc:title', 'ikaaro:issue_topic', 'ikaaro:issue_version',
-            'ikaaro:issue_priority', 'ikaaro:issue_state'):
+            'ikaaro:issue_priority', 'ikaaro:issue_state',
+            'ikaaro:issue_assigned_to'):
             value = context.get_form_value(name)
             self.set_property(name, value)
+        # Add Comment
+        comment = context.get_form_value('comment')
+        self.add_comment(comment)
 
-        return context.come_back('Changes Saved.')
+        return context.come_back('Changes saved.')
 
 
 register_object_class(Issue)

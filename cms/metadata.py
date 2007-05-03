@@ -102,6 +102,8 @@ class Schema(schemas.base.Schema):
         'issue_version': Integer,
         'issue_priority': Integer,
         'issue_state': Integer,
+        'issue_assigned_to': String,
+        'issue_reported_by': String,
         }
 
 

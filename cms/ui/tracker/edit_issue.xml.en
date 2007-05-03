@@ -4,7 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Edit Issue</h2>
+  <h2>Issue #${number}</h2>
+
+  <p if="reported_by">
+    Reported by <em>${reported_by}</em>
+  </p>
 
   <form action=";edit" method="post">
     <dl>
@@ -33,6 +37,14 @@
             selected="${item/is_selected}">${item/title}</option>
         </select>
       </dd>
+      <dt>Assign To</dt>
+      <dd>
+        <select name="ikaaro:issue_assigned_to">
+          <option value=""></option>
+          <option stl:repeat="item users" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option>
+        </select>
+      </dd>
       <dt>State</dt>
       <dd>
         <select name="ikaaro:issue_state">
@@ -40,12 +52,39 @@
             selected="${item/is_selected}">${item/title}</option>
         </select>
       </dd>
+      <dt>New Comment</dt>
+      <dd>
+        <textarea name="comment" cols="65" rows="7"></textarea>
+      </dd>
     </dl>
     <input type="submit" value="Edit" />
   </form>
 
   <br/>
-  <!-- Comments -->
+  <h3>Attachements</h3>
+  <table class="tracker_issue_attachements" border="0" cellpadding="0"
+    cellspacing="0">
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Date</th>
+    </tr>
+    <tr stl:repeat="file files">
+      <td><a href="${file/name}">${file/name}</a></td>
+      <td>${file/type}</td>
+      <td>${file/datetime}</td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <a href=";new_resource_form?type=file">Add new attachement</a>
+      </td>
+    </tr>
+  </table>
+
+
+  <br/>
+  <h3>Comments</h3>
+
   <stl:block repeat="comment comments">
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr class="tracker_issue_comment_title">

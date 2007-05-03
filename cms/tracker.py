@@ -20,8 +20,9 @@ from datetime import datetime
 from string import Template
 
 # Import from itools
-from itools.datatypes import DateTime, String, Unicode
+from itools.datatypes import DateTime, Integer, String, Unicode
 from itools.i18n.locale_ import format_datetime
+from itools.handlers.config import Config
 from itools.csv.csv import IntegerKey, CSV as BaseCSV
 from itools.stl import stl
 from itools import vfs
@@ -29,8 +30,10 @@ from itools.web import get_context
 from csv import CSV
 from File import File
 from Folder import Folder
+from text import Text
 from registry import register_object_class
 import widgets
+
 
 
 class SelectTable(CSV):
@@ -99,6 +102,50 @@ class Tracker(Folder):
     def get_document_types(self):
         return []
 
+    #######################################################################
+    # API
+    #######################################################################
+    def get_new_id(self, prefix=''):
+        ids = []
+        for name in self.get_handler_names():
+            if name.endswith('.metadata'):
+                continue
+            if prefix:
+                if not name.startswith(prefix):
+                    continue
+                name = name[len(prefix):]
+            try:
+                id = int(name)
+            except ValueError:
+                continue
+            ids.append(id)
+
+        if ids:
+            ids.sort()
+            return prefix + str(ids[-1] + 1)
+        
+        return prefix + '0'
+
+
+    #######################################################################
+    # User Interface
+    #######################################################################
+    def get_subviews(self, name):
+        if name == 'search_form':
+            return [
+                'view?search_name=%s' % x.name
+                for x in self.search_handlers(handler_class=StoredSearch) ]
+        return Folder.get_subviews(self, name)
+
+
+    def view__sublabel__(self , **kw):
+        search_name = kw.get('search_name')
+        if search_name is None:
+            return u'View'
+
+        search = self.get_handler(search_name)
+        return search.get_title()
+
 
     #######################################################################
     # User Interface / View
@@ -106,32 +153,109 @@ class Tracker(Folder):
     search_form__label__ = u'Search'
     def search_form(self, context):
         namespace = {}
-        namespace['text'] = None
 
-        for name in 'topics', 'versions', 'priorities', 'states':
-            namespace[name] = self.get_handler('%s.csv' % name).get_namespace()
+        # Stored Searches
+        namespace['stored_searches'] = [
+            {'name': x.name, 'title': x.get_title()}
+            for x in self.search_handlers(handler_class=StoredSearch) ]
+        
+        # Search Form
+        search_name = context.get_form_value('search_name')
+        if search_name:
+            search = self.get_handler(search_name)
+            namespace['search_name'] = search_name
+            namespace['search_title'] = search.get_property('dc:title')
+            namespace['text'] = search.get_value('text', type=Unicode)
+            topic = search.get_value('topic', type=Integer)
+            version = search.get_value('version', type=Integer)
+            priority = search.get_value('priority', type=Integer)
+            assign = search.get_value('assigned_to')
+            state = search.get_value('state', type=Integer)
+        else:
+            namespace['search_name'] = None
+            namespace['search_title'] = None
+            namespace['text'] = None
+            topic = None
+            version = None
+            priority = None
+            assign = None
+            state = None
+
+        for name, value in [('topics', topic), ('versions', version),
+                            ('priorities', priority), ('states', state)]:
+            table = self.get_handler('%s.csv' % name)
+            namespace[name] = table.get_namespace(value)
+
         users = self.get_handler('/users')
         namespace['users'] = [
             {'id': x, 'title': users.get_handler(x).get_title(),
-             'is_selected': False}
+             'is_selected': x == assign}
             for x in self.get_site_root().get_members() ]
 
         handler = self.get_handler('/ui/tracker/search.xml')
         return stl(handler, namespace)
 
 
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u'View'
-    def view(self, context):
-        users = self.get_handler('/users')
-        namespace = {}
-        # Search
+    search__access__ = 'is_allowed_to_edit'
+    def search(self, context):
+        search_name = context.get_form_value('search_name')
+        search_title = context.get_form_value('search_title').strip()
+        if search_name:
+            # Edit an Stored Search
+            try:
+                stored_search = self.get_handler(search_name)
+            except LookupError:
+                pass
+        elif search_title:
+            # New Stored Search
+            search_name = self.get_new_id('s')
+            stored_search = self.set_handler(search_name, StoredSearch())
+        else:
+            # Just Search
+            return context.uri.resolve(';view').replace(**context.uri.query)
+
+        # Edit / Title
+        context.commit = True
+        stored_search.set_property('dc:title', search_title, 'en')
+        # Edit / Search Values
         text = context.get_form_value('text').strip().lower()
         topic = context.get_form_value('ikaaro:issue_topic')
         version = context.get_form_value('ikaaro:issue_version')
         priority = context.get_form_value('ikaaro:issue_priority')
         assign = context.get_form_value('ikaaro:issue_assigned_to')
         state = context.get_form_value('ikaaro:issue_state')
+
+        criterias = [('text', text), ('topic', topic), ('version', version),
+            ('priority', priority), ('assigned_to', assign), ('state', state)]
+        for name, value in criterias:
+            stored_search.set_value(name, value)
+ 
+        return context.uri.resolve(';view?search_name=%s' % search_name)
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    def view(self, context):
+        # Stored Search
+        search_name = context.get_form_value('search_name')
+        if search_name:
+            search = self.get_handler(search_name)
+            text = search.get_value('text', type=Unicode)
+            topic = search.get_value('topic', type=Integer)
+            version = search.get_value('version', type=Integer)
+            priority = search.get_value('priority', type=Integer)
+            assign = search.get_value('assigned_to')
+            state = search.get_value('state', type=Integer)
+        else:
+            text = context.get_form_value('text').strip().lower()
+            topic = context.get_form_value('ikaaro:issue_topic')
+            version = context.get_form_value('ikaaro:issue_version')
+            priority = context.get_form_value('ikaaro:issue_priority')
+            assign = context.get_form_value('ikaaro:issue_assigned_to')
+            state = context.get_form_value('ikaaro:issue_state')
+        # Build the namespace
+        users = self.get_handler('/users')
+        namespace = {}
         # Columns
         columns = [('id', u'Id'), ('title', u'Title'), ('topic', u'Topic'),
             ('version', u'Version'), ('priority', u'Priority'),
@@ -210,21 +334,7 @@ class Tracker(Folder):
     add_issue__access__ = 'is_allowed_to_edit'
     def add_issue(self, context):
         # The id
-        ids = []
-        for name in self.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
-            try:
-                id = int(name)
-            except ValueError:
-                continue
-            ids.append(id)
-        if ids:
-            ids.sort()
-            id = str(ids[-1] + 1)
-        else:
-            id = '0'
-
+        id = self.get_new_id()
         # Add
         issue = self.set_handler(id, Issue())
         user = context.user
@@ -262,15 +372,31 @@ class Tracker(Folder):
         body = body.substitute({'description': comment, 'uri': uri})
         # Notify / Send
         root = context.root
-        root.send_email(from_addr, to_addr, subject, body)
+        ##root.send_email(from_addr, to_addr, subject, body)
 
-        return context.come_back('New issue addded.')
+        goto = context.uri.resolve2('../%s/;edit_form' % issue.name)
+        return context.come_back(u'New issue addded.', goto=goto)
 
 
 register_object_class(Tracker)
 
 
+###########################################################################
+# Stored Searches
+###########################################################################
+class StoredSearch(Text, Config):
 
+    class_id = 'stored_search'
+    class_title = u'Stored Search'
+ 
+
+register_object_class(StoredSearch)
+
+
+
+###########################################################################
+# Issues
+###########################################################################
 class Issue(Folder):
     
     class_id = 'issue'

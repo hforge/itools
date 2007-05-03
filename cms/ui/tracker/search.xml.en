@@ -4,9 +4,40 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Search</h2>
-  <form action=";view" method="get">
+  <h2>Stored Searches</h2>
+  <form action=";remove" method="post" stl:if="stored_searches">
+    <table>
+      <tr stl:repeat="search stored_searches">
+        <td><input type="checkbox" name="ids" value="${search/name}" /></td>
+        <td>
+          <a href=";view?search_name=${search/name}">${search/title}</a>
+        </td>
+        <td>
+          (<a href=";search_form?search_name=${search/name}">Edit</a>)
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td colspan="2">
+          <input type="submit" value="Remove" />
+        </td>
+      </tr>
+    </table>
+  </form>
+  <p stl:if="not stored_searches">
+    There are not stored searches.
+  </p>
+
+  <h2>New Search</h2>
+  <form action=";search" method="get">
+    <input type="hidden" name="search_name" value="${search_name}" />
     <dl>
+      <dt>Name</dt>
+      <dd>
+        <input type="text" name="search_title" size="40"
+          value="${search_title}" />
+        (remember this search)
+      </dd>
       <dt>Text</dt>
       <dd>
         <input type="text" name="text" size="40" value="${text}" />

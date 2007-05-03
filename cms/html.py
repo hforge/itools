@@ -41,7 +41,6 @@ class XMLFile(Text, XML.Document):
 class XHTMLFile(Text, XHTML.Document):
 
     class_id = 'application/xhtml+xml'
-    class_version = '20040625'
     class_title = u'Web Document'
     class_description = u'Create and publish a Web Document.'
     class_icon16 = 'images/HTML16.png'

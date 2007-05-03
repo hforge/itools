@@ -41,7 +41,6 @@ def crypt_password(password):
 class User(AccessControl, Folder):
 
     class_id = 'user'
-    class_version = '20040625'
     class_title = 'User'
     class_icon16 = 'images/User16.png'
     class_icon48 = 'images/User48.png'
@@ -404,7 +403,6 @@ register_object_class(User)
 class UserFolder(Folder):
 
     class_id = 'users'
-    class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
     class_views = [['view'],

@@ -196,7 +196,6 @@ class CSV(Text):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
     class_extension = 'csv'
-    class_version = '20040625'
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'lines', 'n_lines', 'catalog']

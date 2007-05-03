@@ -43,7 +43,6 @@ class Image(File, iImage):
 
     class_id = 'image'
     class_title = u'Image'
-    class_version = '20040625'
     class_icon16 = 'images/Image16.png'
     class_icon48 = 'images/Image48.png'
     class_views = [['view'],

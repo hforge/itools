@@ -35,7 +35,6 @@ from registry import register_object_class
 class Text(File, BaseText):
 
     class_id = 'text'
-    class_version = '20040625'
     class_title = u'Plain Text'
     class_description = u'Keep your notes with plain text files.'
     class_icon16 = 'images/Text16.png'
@@ -144,7 +143,6 @@ register_object_class(Text)
 class PO(Text, gettext.PO.PO):
 
     class_id = 'text/x-po'
-    class_version = '20040625'
     class_title = u'Message Catalog'
 
 
@@ -222,7 +220,6 @@ class CSS(Text):
     class_mimetypes = ['text/css']
     class_extension = 'css'
     class_id = 'text/css'
-    class_version = '20040625'
     class_title = 'CSS'
     class_icon48 = 'images/CSS48.png'
 

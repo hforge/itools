@@ -34,9 +34,9 @@ from workflow import WorkflowAware
 class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
     class_id = 'file'
+    class_version = '20040625'
     class_title = u'File'
     class_description = u'Upload office documents, images, media files, etc.'
-    class_version = '20040625'
     class_icon16 = 'images/File16.png'
     class_icon48 = 'images/File48.png'
     class_views = [['download_form', 'view'],

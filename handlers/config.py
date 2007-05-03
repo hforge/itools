@@ -159,10 +159,14 @@ class Config(Text):
         if name in self.values:
             n = self.values[name]
             line = self.lines[n]
-            if comment is None:
-                comment = line[0]
-            self.lines[n] = comment, (name, value)
-        else:
+            if value is None:
+                del self.values[name]
+                self.lines[n] = None
+            else:
+                if comment is None:
+                    comment = line[0]
+                self.lines[n] = comment, (name, value)
+        elif value is not None:
             # A new variable
             if comment is None:
                 comment = []
@@ -186,14 +190,17 @@ class Config(Text):
         self.lines.append(None)
 
 
-    def get_value(self, name):
+    def get_value(self, name, type=None):
         if name not in self.values:
             return None
         # Get the line
         n = self.values[name]
         line = self.lines[n]
         # Return the variable value
-        return line[1][1]
+        value = line[1][1]
+        if type is None:
+            return value
+        return type.decode(value)
 
 
     def get_comment(self, name):

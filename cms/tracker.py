@@ -69,7 +69,7 @@ class Tracker(Folder):
     class_icon16 = 'images/tracker16.png'
     class_icon48 = 'images/tracker48.png'
     class_views = [
-        ['view'],
+        ['search_form'],
         ['add_form'],
         ['browse_content?mode=list'],
         ['edit_metadata_form']]
@@ -102,14 +102,40 @@ class Tracker(Folder):
 
     #######################################################################
     # User Interface / View
+    search_form__access__ = 'is_allowed_to_view'
+    search_form__label__ = u'Search'
+    def search_form(self, context):
+        namespace = {}
+        namespace['text'] = None
+
+        for name in 'topics', 'versions', 'priorities', 'states':
+            namespace[name] = self.get_handler('%s.csv' % name).get_namespace()
+        users = self.get_handler('/users')
+        namespace['users'] = [
+            {'id': x, 'title': users.get_handler(x).get_title(),
+             'is_selected': False}
+            for x in self.get_site_root().get_members() ]
+
+        handler = self.get_handler('/ui/tracker/search.xml')
+        return stl(handler, namespace)
+
+
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
+        users = self.get_handler('/users')
         namespace = {}
+        # Search
+        text = context.get_form_value('text').strip().lower()
+        topic = context.get_form_value('ikaaro:issue_topic')
+        version = context.get_form_value('ikaaro:issue_version')
+        priority = context.get_form_value('ikaaro:issue_priority')
+        assign = context.get_form_value('ikaaro:issue_assigned_to')
+        state = context.get_form_value('ikaaro:issue_state')
         # Columns
         columns = [('id', u'Id'), ('title', u'Title'), ('topic', u'Topic'),
             ('version', u'Version'), ('priority', u'Priority'),
-            ('state', u'State')]
+            ('assigned_to', u'Assigned To'), ('state', u'State')]
         # Lines
         lines = []
         tables = {'topic': self.get_handler('topics.csv'),
@@ -117,6 +143,25 @@ class Tracker(Folder):
                   'priority': self.get_handler('priorities.csv'),
                   'state': self.get_handler('states.csv')}
         for handler in self.search_handlers(handler_class=Issue):
+            if text:
+                if not handler.has_text(text):
+                    continue
+            if topic is not None:
+                if topic != handler.get_property('ikaaro:issue_topic'):
+                    continue
+            if version is not None:
+                if version != handler.get_property('ikaaro:issue_version'):
+                    continue
+            if priority is not None:
+                if priority != handler.get_property('ikaaro:issue_priority'):
+                    continue
+            if assign:
+                if assign != handler.get_property('ikaaro:issue_assigned_to'):
+                    continue
+            if state is not None:
+                if state != handler.get_property('ikaaro:issue_state'):
+                    continue
+            # Append
             link = '%s/;edit_form' % handler.name
             line = {'id': (handler.name, link),
                     'title': (handler.get_property('dc:title'), link)}
@@ -124,6 +169,12 @@ class Tracker(Folder):
                 value = handler.get_property('ikaaro:issue_%s' % name)
                 row = tables[name].get_row_by_id(value)
                 line[name] = row and row.get_value('title') or None
+            assigned_to = handler.get_property('ikaaro:issue_assigned_to')
+            if assigned_to is None:
+                line['assigned_to'] = ''
+            else:
+                user = users.get_handler(assigned_to)
+                line['assigned_to'] = user.get_title()
             lines.append(line)
         # Sort
         sortby = context.get_form_value('sortby', default='id')
@@ -260,6 +311,17 @@ class Issue(Folder):
 
         comments = self.get_handler('.comments')
         comments.add_row([date, user, comment])
+
+
+    def has_text(self, text):
+        if text in self.get_property('dc:title').lower():
+            return True
+        comments = self.get_handler('.comments')
+        for comment in comments.get_rows():
+            comment = comment.get_value('comment').lower()
+            if text in comment:
+                return True
+        return False
 
 
     #######################################################################

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2>Search</h2>
+  <form action=";view" method="get">
+    <dl>
+      <dt>Text</dt>
+      <dd>
+        <input type="text" name="text" size="40" value="${text}" />
+      </dd>
+      <dt>Topic</dt>
+      <dd>
+        <select name="ikaaro:issue_topic">
+          <option value=""></option>
+          <option stl:repeat="item topics" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option>
+        </select>
+      </dd>
+      <dt>Version</dt>
+      <dd>
+        <select name="ikaaro:issue_version">
+          <option value=""></option>
+          <option stl:repeat="item versions" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option>
+        </select>
+      </dd>
+      <dt>Priority</dt>
+      <dd>
+        <select name="ikaaro:issue_priority">
+          <option value=""></option>
+          <option stl:repeat="item priorities" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option>
+        </select>
+      </dd>
+      <dt>Assign To</dt>
+      <dd>
+        <select name="ikaaro:issue_assigned_to">
+          <option value=""></option>
+          <option stl:repeat="item users" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option>
+        </select>
+      </dd>
+      <dt>State</dt>
+      <dd>
+        <select name="ikaaro:issue_state">
+          <option value=""></option>
+          <option stl:repeat="item states" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option>
+        </select>
+      </dd>
+    </dl>
+    <input type="submit" value="Search" />
+  </form>
+
+</stl:block>

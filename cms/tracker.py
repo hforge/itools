@@ -39,19 +39,27 @@ import widgets
 
 class SelectTable(CSV):
 
-    class_id = 'topics'
+    class_id = 'enumerate'
 
     columns = ['id', 'title']
     schema = {'id': IntegerKey, 'title': Unicode}
 
 
     def get_namespace(self, value=None):
-        namespace = []
-        for id, title in self.get_rows():
-            namespace.append(
-                {'id': id, 'title': title, 'is_selected': id == value})
-        namespace.sort(key=lambda x: x['title'])
-        return namespace
+        options = [ {'id': x[0], 'title': x[1]} for x in self.get_rows() ]
+        options.sort(key=lambda x: x['title'])
+        # Set 'is_selected'
+        if value is None:
+            for option in options:
+                option['is_selected'] = False
+        elif isinstance(value, tuple):
+            for option in options:
+                option['is_selected'] = (str(option['id']) in value)
+        else:
+            for option in options:
+                option['is_selected'] = (option['id'] == value)
+
+        return options
 
 
     def get_row_by_id(self, id):
@@ -87,7 +95,8 @@ class Tracker(Folder):
         cache = self.cache
         # Tables
         tables = [
-            ('topics.csv', [u'User Interface', u'Programming Interface']),
+            ('topics.csv', [u'Functional Scope', u'User Interface',
+                u'Programming Interface']),
             ('priorities.csv', [u'High', u'Medium', u'Low']),
             ('versions.csv', [u'Stable', u'Development']),
             ('states.csv', [u'Open', u'Closed'])]
@@ -255,13 +264,12 @@ class Tracker(Folder):
         users = self.get_handler('/users')
         namespace = {}
         # Columns
-        columns = [('id', u'Id'), ('title', u'Title'), ('topic', u'Topic'),
+        columns = [('id', u'Id'), ('title', u'Title'),
             ('version', u'Version'), ('priority', u'Priority'),
             ('assigned_to', u'Assigned To'), ('state', u'State')]
         # Lines
         lines = []
-        tables = {'topic': self.get_handler('topics.csv'),
-                  'version': self.get_handler('versions.csv'),
+        tables = {'version': self.get_handler('versions.csv'),
                   'priority': self.get_handler('priorities.csv'),
                   'state': self.get_handler('states.csv')}
         for handler in self.search_handlers(handler_class=Issue):
@@ -269,7 +277,7 @@ class Tracker(Folder):
                 if not handler.has_text(text):
                     continue
             if topic is not None:
-                if topic != handler.get_value('topic'):
+                if str(topic) not in handler.get_value('topics'):
                     continue
             if version is not None:
                 if version != handler.get_value('version'):
@@ -287,7 +295,7 @@ class Tracker(Folder):
             link = '%s/;edit_form' % handler.name
             line = {'id': (handler.name, link),
                     'title': (handler.get_value('title'), link)}
-            for name in 'topic', 'version', 'priority', 'state':
+            for name in 'version', 'priority', 'state':
                 value = handler.get_value(name)
                 row = tables[name].get_row_by_id(value)
                 line[name] = row and row.get_value('title') or None
@@ -316,8 +324,14 @@ class Tracker(Folder):
     add_form__access__ = 'is_allowed_to_edit'
     add_form__label__ = u'Add'
     def add_form(self, context):
+        # Set Style
+        css = self.get_handler('/ui/tracker/tracker.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        # Build the namespace
         namespace = {}
-        for name in 'topics', 'versions', 'priorities':
+        # Others
+        for name in 'topics', 'versions', 'priorities', 'states':
             namespace[name] = self.get_handler('%s.csv' % name).get_namespace()
 
         users = self.get_handler('/users')
@@ -409,9 +423,15 @@ class Issue(Folder):
             row.append('')
         else:
             row.append(user.name)
-        # Other values
-        for name in ('title', 'topic', 'version', 'priority', 'assigned_to',
-                     'state', 'comment'):
+        # Title
+        title = context.get_form_value('title', type=Unicode).strip()
+        row.append(title)
+        # Topics
+        topics = context.get_form_values('topics')
+        topics = tuple(topics)
+        row.append(topics)
+        # Version, Priority, etc.
+        for name in 'version', 'priority', 'assigned_to', 'state', 'comment':
             type = History.schema[name]
             value = context.get_form_value(name, type=type)
             if type == Unicode:
@@ -464,7 +484,7 @@ class Issue(Folder):
         for to_addr in to_addrs:
             to_addr = self.get_handler('/users/%s' % to_addr)
             to_addr = to_addr.get_property('ikaaro:email')
-            root.send_email(from_addr, to_addr, subject, body)
+            ##root.send_email(from_addr, to_addr, subject, body)
 
 
     def get_reported_by(self):
@@ -518,9 +538,9 @@ class Issue(Folder):
         reported_by = self.get_reported_by()
         reported_by = self.get_handler('/users/%s' % reported_by)
         namespace['reported_by'] = reported_by.get_title()
-        # Topic, Priority, etc.
+        # Topics, Version, Priority, etc.
         parent = self.parent
-        tables = [('topic', 'topics'), ('version', 'versions'),
+        tables = [('topics', 'topics'), ('version', 'versions'),
             ('priority', 'priorities'), ('state', 'states')]
         for name, table_name in tables:
             table = parent.get_handler('%s.csv' % table_name)
@@ -592,12 +612,12 @@ register_object_class(Issue)
 
 class History(BaseCSV):
     
-    columns = ['datetime', 'username', 'title', 'topic', 'version', 'priority',
-               'assigned_to', 'state', 'comment', 'files']
+    columns = ['datetime', 'username', 'title', 'topics', 'version',
+               'priority', 'assigned_to', 'state', 'comment', 'files']
     schema = {'datetime': DateTime,
               'username': String,
               'title': Unicode,
-              'topic': Integer,
+              'topics': Tokens,
               'version': Integer,
               'priority': Integer,
               'assigned_to': String,

@@ -11,55 +11,80 @@
   </p>
 
   <form action=";edit" method="post" enctype="multipart/form-data">
-    <dl>
-      <dt>Title</dt>
-      <dd>
-        <input type="text" name="title" size="40" value="${title}" />
-      </dd>
-      <dt>Topic</dt>
-      <dd>
-        <select name="topic">
-          <option stl:repeat="item topics" value="${item/id}"
-            selected="${item/is_selected}">${item/title}</option>
-        </select>
-      </dd>
-      <dt>Version</dt>
-      <dd>
-        <select name="version">
-          <option stl:repeat="item versions" value="${item/id}"
-            selected="${item/is_selected}">${item/title}</option>
-        </select>
-      </dd>
-      <dt>Priority</dt>
-      <dd>
-        <select name="priority">
-          <option stl:repeat="item priorities" value="${item/id}"
-            selected="${item/is_selected}">${item/title}</option>
-        </select>
-      </dd>
-      <dt>Assign To</dt>
-      <dd>
-        <select name="assigned_to">
-          <option value=""></option>
-          <option stl:repeat="item users" value="${item/id}"
-            selected="${item/is_selected}">${item/title}</option>
-        </select>
-      </dd>
-      <dt>State</dt>
-      <dd>
-        <select name="state">
-          <option stl:repeat="item states" value="${item/id}"
-            selected="${item/is_selected}">${item/title}</option>
-        </select>
-      </dd>
-      <dt>New Comment</dt>
-      <dd>
-        <textarea name="comment" cols="65" rows="7"></textarea>
-      </dd>
-      <dt>Attachement</dt>
-      <dd><input type="file" name="file" /></dd>
-    </dl>
-    <input type="submit" value="Edit" />
+    <table>
+      <tr>
+        <td colspan="2">
+          <label for="title">Title (mandatory)</label><br/>
+          <input type="text" name="title" id="title" value="${title}"
+            size="48" />
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <label for="version">Version (mandatory)</label><br/>
+          <select name="version" id="version" class="tracker_select">
+            <option value=""></option>
+            <option stl:repeat="item versions" value="${item/id}"
+              selected="${item/is_selected}">${item/title}</option>
+          </select>
+        </td>
+        <td valign="top" rowspan="4">
+          Topics
+          <p stl:repeat="item topics">
+            <input type="checkbox" name="topics" value="${item/id}" 
+              checked="${item/is_selected}" />
+            ${item/title}
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <label for="priority">Priority</label><br/>
+          <select name="priority" id="priority" class="tracker_select">
+            <option value=""></option>
+            <option stl:repeat="item priorities" value="${item/id}"
+              selected="${item/is_selected}">${item/title}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <label for="state">Status (mandatory)</label><br/>
+          <select name="state" id="state" class="tracker_select">
+            <option stl:repeat="item states" value="${item/id}"
+              selected="${item/is_selected}">${item/title}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <label for="assigned_to">Assign To</label><br/>
+          <select name="assigned_to" id="assigned_to" class="tracker_select">
+            <option value=""></option>
+            <option stl:repeat="item users" value="${item/id}"
+              selected="${item/is_selected}">${item/title}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" colspan="2">
+          <label for="description">New Comment</label><br/>
+          <textarea name="comment" id="description" cols="68" rows="10"
+            ></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" colspan="2">
+          <label for="attachement">New Attachement</label><br/>
+          <input type="file" name="file" id="attachement" size="36" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="submit" value="Edit" />
+        </td>
+      </tr>
+    </table>
   </form>
 
   <br/>

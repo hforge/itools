@@ -88,35 +88,25 @@
   </form>
 
   <br/>
-  <h3>Attachements</h3>
-  <table class="tracker_issue_attachements" border="0" cellpadding="0"
-    cellspacing="0">
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Date</th>
-    </tr>
-    <tr stl:repeat="file files">
-      <td><a href="${file/name}">${file/name}</a></td>
-      <td>${file/type}</td>
-      <td>${file/datetime}</td>
-    </tr>
-  </table>
-
-
-  <br/>
-  <h3>Comments</h3>
-
   <stl:block repeat="comment comments">
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr class="tracker_issue_comment_title">
+        <td>Comment #${comment/number}</td>
         <td>${comment/user}</td>
         <td align="right">${comment/datetime}</td>
       </tr>
+      <tr stl:if="comment/file">
+        <td colspan="3">
+          Attachement: <a href="${comment/file}">${comment/file}</a>
+        </td>
+      </tr>
       <tr>
-        <td colspan="2">${comment/comment}</td>
+        <td colspan="3" class="tracker_issue_comment_comment">
+          ${comment/comment}
+        </td>
       </tr>
     </table>
+    <br/>
   </stl:block>
 
 </stl:block>

@@ -443,7 +443,7 @@ class Issue(Folder):
             row.append(())
         else:
             filename, mimetype, body = file
-            row.append((filename,))
+            row.append(filename)
             # Upload
             # The mimetype sent by the browser can be minimalistic
             guessed = mimetypes.guess_type(filename)[0]
@@ -552,27 +552,26 @@ class Issue(Folder):
             {'id': x, 'title': users.get_handler(x).get_title(),
              'is_selected': x == selected}
             for x in self.get_site_root().get_members() ]
-        # Attachements
-        namespace['files'] = [
-            {'name': x.name, 'type': x.get_property('format'),
-             'datetime': vfs.get_mtime(x.uri)}
-            for x in self.search_handlers() ]
         # Comments
         users = self.get_handler('/users')
         comments = []
+        i = 0
         for row in self.get_rows():
             comment = row.get_value('comment')
-            if not comment:
+            file = row.get_value('file')
+            if not comment and not file:
                 continue
             username = row.get_value('username')
             datetime = row.get_value('datetime')
             user = users.get_handler(username)
+            i += 1
             comments.append({
+                'number': i,
                 'user': user.get_title(),
                 'datetime': format_datetime(datetime),
-                'comment': comment})
+                'comment': comment,
+                'file': file})
         comments.reverse()
- 
         namespace['comments'] = comments
 
         handler = self.get_handler('/ui/tracker/edit_issue.xml')
@@ -613,7 +612,7 @@ register_object_class(Issue)
 class History(BaseCSV):
     
     columns = ['datetime', 'username', 'title', 'topics', 'version',
-               'priority', 'assigned_to', 'state', 'comment', 'files']
+               'priority', 'assigned_to', 'state', 'comment', 'file']
     schema = {'datetime': DateTime,
               'username': String,
               'title': Unicode,
@@ -623,5 +622,5 @@ class History(BaseCSV):
               'assigned_to': String,
               'state': Integer,
               'comment': Unicode,
-              'files': Tokens}
+              'file': String}
 

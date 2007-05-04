@@ -1,11 +1,11 @@
 
-.tracker_issue_attachements td {
-  border-top: 1px solid black;
+.tracker_issue_comment_title {
+  background-color: #ddddff;
+  font-weight: bold;
 }
 
-
-.tracker_issue_comment_title {
-  background-color: #ccccff;
+.tracker_issue_comment_comment {
+  
 }
 
 .tracker_select {

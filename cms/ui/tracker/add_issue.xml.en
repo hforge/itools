@@ -6,36 +6,36 @@
 
   <h2>Add Issue</h2>
 
-  <form action=";add_issue" method="post">
+  <form action=";add_issue" method="post" enctype="multipart/form-data">
     <dl>
       <dt>Title</dt>
       <dd>
-        <input type="text" name="dc:title" size="40" />
+        <input type="text" name="title" size="40" />
       </dd>
       <dt>Topic</dt>
       <dd>
-        <select name="ikaaro:issue_topic">
+        <select name="topic">
           <option stl:repeat="item topics" value="${item/id}"
             >${item/title}</option>
         </select>
       </dd>
       <dt>Version</dt>
       <dd>
-        <select name="ikaaro:issue_version">
+        <select name="version">
           <option stl:repeat="item versions" value="${item/id}"
             >${item/title}</option>
         </select>
       </dd>
       <dt>Priority</dt>
       <dd>
-        <select name="ikaaro:issue_priority">
+        <select name="priority">
           <option stl:repeat="item priorities" value="${item/id}"
             >${item/title}</option>
         </select>
       </dd>
       <dt>Assign To</dt>
       <dd>
-        <select name="ikaaro:issue_assigned_to">
+        <select name="assigned_to">
           <option value=""></option>
           <option stl:repeat="item users" value="${item/id}"
             >${item/title}</option>
@@ -45,6 +45,8 @@
       <dd>
         <textarea name="comment" cols="60" rows="7"></textarea>
       </dd>
+      <dt>Attachement</dt>
+      <dd><input type="file" name="file" /></dd>
     </dl>
     <input type="submit" value="Add" />
   </form>

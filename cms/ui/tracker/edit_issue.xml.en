@@ -14,32 +14,32 @@
     <dl>
       <dt>Title</dt>
       <dd>
-        <input type="text" name="dc:title" size="40" value="${title}" />
+        <input type="text" name="title" size="40" value="${title}" />
       </dd>
       <dt>Topic</dt>
       <dd>
-        <select name="ikaaro:issue_topic">
+        <select name="topic">
           <option stl:repeat="item topics" value="${item/id}"
             selected="${item/is_selected}">${item/title}</option>
         </select>
       </dd>
       <dt>Version</dt>
       <dd>
-        <select name="ikaaro:issue_version">
+        <select name="version">
           <option stl:repeat="item versions" value="${item/id}"
             selected="${item/is_selected}">${item/title}</option>
         </select>
       </dd>
       <dt>Priority</dt>
       <dd>
-        <select name="ikaaro:issue_priority">
+        <select name="priority">
           <option stl:repeat="item priorities" value="${item/id}"
             selected="${item/is_selected}">${item/title}</option>
         </select>
       </dd>
       <dt>Assign To</dt>
       <dd>
-        <select name="ikaaro:issue_assigned_to">
+        <select name="assigned_to">
           <option value=""></option>
           <option stl:repeat="item users" value="${item/id}"
             selected="${item/is_selected}">${item/title}</option>
@@ -47,7 +47,7 @@
       </dd>
       <dt>State</dt>
       <dd>
-        <select name="ikaaro:issue_state">
+        <select name="state">
           <option stl:repeat="item states" value="${item/id}"
             selected="${item/is_selected}">${item/title}</option>
         </select>

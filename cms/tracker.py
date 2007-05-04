@@ -17,10 +17,11 @@
 
 # Import from the Standard Library
 from datetime import datetime
+import mimetypes
 from string import Template
 
 # Import from itools
-from itools.datatypes import DateTime, Integer, String, Unicode
+from itools.datatypes import DateTime, Integer, String, Tokens, Unicode
 from itools.i18n.locale_ import format_datetime
 from itools.handlers.config import Config
 from itools.csv.csv import IntegerKey, CSV as BaseCSV
@@ -31,7 +32,7 @@ from csv import CSV
 from File import File
 from Folder import Folder
 from text import Text
-from registry import register_object_class
+from registry import register_object_class, get_object_class
 import widgets
 
 
@@ -90,7 +91,7 @@ class Tracker(Folder):
             ('priorities.csv', [u'High', u'Medium', u'Low']),
             ('versions.csv', [u'Stable', u'Development']),
             ('states.csv', [u'Open', u'Closed'])]
-            
+ 
         for name, values in tables:
             csv = SelectTable()
             cache[name] = csv
@@ -101,6 +102,7 @@ class Tracker(Folder):
 
     def get_document_types(self):
         return []
+
 
     #######################################################################
     # API
@@ -219,11 +221,11 @@ class Tracker(Folder):
         stored_search.set_property('dc:title', search_title, 'en')
         # Edit / Search Values
         text = context.get_form_value('text').strip().lower()
-        topic = context.get_form_value('ikaaro:issue_topic')
-        version = context.get_form_value('ikaaro:issue_version')
-        priority = context.get_form_value('ikaaro:issue_priority')
-        assign = context.get_form_value('ikaaro:issue_assigned_to')
-        state = context.get_form_value('ikaaro:issue_state')
+        topic = context.get_form_value('topic', type=Integer)
+        version = context.get_form_value('version', type=Integer)
+        priority = context.get_form_value('priority', type=Integer)
+        assign = context.get_form_value('assigned_to')
+        state = context.get_form_value('state', type=Integer)
 
         criterias = [('text', text), ('topic', topic), ('version', version),
             ('priority', priority), ('assigned_to', assign), ('state', state)]
@@ -240,19 +242,15 @@ class Tracker(Folder):
         search_name = context.get_form_value('search_name')
         if search_name:
             search = self.get_handler(search_name)
-            text = search.get_value('text', type=Unicode)
-            topic = search.get_value('topic', type=Integer)
-            version = search.get_value('version', type=Integer)
-            priority = search.get_value('priority', type=Integer)
-            assign = search.get_value('assigned_to')
-            state = search.get_value('state', type=Integer)
+            getter = search.get_value
         else:
-            text = context.get_form_value('text').strip().lower()
-            topic = context.get_form_value('ikaaro:issue_topic')
-            version = context.get_form_value('ikaaro:issue_version')
-            priority = context.get_form_value('ikaaro:issue_priority')
-            assign = context.get_form_value('ikaaro:issue_assigned_to')
-            state = context.get_form_value('ikaaro:issue_state')
+            getter = context.get_form_value
+        text = getter('text', type=Unicode).strip().lower()
+        topic = getter('topic', type=Integer)
+        version = getter('version', type=Integer)
+        priority = getter('priority', type=Integer)
+        assign = getter('assigned_to', type=String)
+        state = getter('state', type=Integer)
         # Build the namespace
         users = self.get_handler('/users')
         namespace = {}
@@ -271,29 +269,29 @@ class Tracker(Folder):
                 if not handler.has_text(text):
                     continue
             if topic is not None:
-                if topic != handler.get_property('ikaaro:issue_topic'):
+                if topic != handler.get_value('topic'):
                     continue
             if version is not None:
-                if version != handler.get_property('ikaaro:issue_version'):
+                if version != handler.get_value('version'):
                     continue
             if priority is not None:
-                if priority != handler.get_property('ikaaro:issue_priority'):
+                if priority != handler.get_value('priority'):
                     continue
             if assign:
-                if assign != handler.get_property('ikaaro:issue_assigned_to'):
+                if assign != handler.get_value('assigned_to'):
                     continue
             if state is not None:
-                if state != handler.get_property('ikaaro:issue_state'):
+                if state != handler.get_value('state'):
                     continue
             # Append
             link = '%s/;edit_form' % handler.name
             line = {'id': (handler.name, link),
-                    'title': (handler.get_property('dc:title'), link)}
+                    'title': (handler.get_value('title'), link)}
             for name in 'topic', 'version', 'priority', 'state':
-                value = handler.get_property('ikaaro:issue_%s' % name)
+                value = handler.get_value(name)
                 row = tables[name].get_row_by_id(value)
                 line[name] = row and row.get_value('title') or None
-            assigned_to = handler.get_property('ikaaro:issue_assigned_to')
+            assigned_to = handler.get_value('assigned_to')
             if assigned_to is None:
                 line['assigned_to'] = ''
             else:
@@ -333,23 +331,46 @@ class Tracker(Folder):
 
     add_issue__access__ = 'is_allowed_to_edit'
     def add_issue(self, context):
-        # The id
-        id = self.get_new_id()
         # Add
+        id = self.get_new_id()
         issue = self.set_handler(id, Issue())
+        # Datetime
+        row = [datetime.now()]
+        # Reported By
         user = context.user
-        if user is not None:
-            issue.set_property('ikaaro:issue_reported_by', user.name)
-
-        # Metadata properties
-        fields = ['dc:title', 'ikaaro:issue_topic', 'ikaaro:issue_version',
-            'ikaaro:issue_priority', 'ikaaro:issue_assigned_to']
-        for name in fields:
-            value = context.get_form_value(name)
-            issue.set_property(name, value)
+        if user is None:
+            row.append(None)
+        else:
+            row.append(user.name)
+        # Title
+        for name in 'title', 'topic', 'version', 'priority', 'assigned_to':
+            type = History.schema[name]
+            value = context.get_form_value(name, type=type)
+            row.append(value)
+        # State
+        row.append('')
         # Comment
         comment = context.get_form_value('comment', type=Unicode)
-        issue.add_comment(comment)
+        row.append(comment)
+        # Files
+        file = context.get_form_value('file')
+        if file is None:
+            row.append(())
+        else:
+            filename, mimetype, body = file
+            row.append((filename,))
+            # Upload
+            # The mimetype sent by the browser can be minimalistic
+            guessed = mimetypes.guess_type(filename)[0]
+            if guessed is not None:
+                mimetype = guessed
+            # Set the handler
+            handler_class = get_object_class(mimetype)
+            handler = handler_class()
+            handler.load_state_from_string(body)
+            issue.set_handler(filename, handler, format=mimetype)
+        # First row
+        issue.add_row(row)
 
         # Notify / From
         if user is None:
@@ -357,11 +378,11 @@ class Tracker(Folder):
         else:
             from_addr = user.get_property('ikaaro:email')
         # Notify / To
-        assigned_to = context.get_form_value('ikaaro:issue_assigned_to')
+        assigned_to = context.get_form_value('assigned_to')
         assigned_to = self.get_handler('/users/%s' % assigned_to)
         to_addr = assigned_to.get_property('ikaaro:email')
         # Notify / Subject
-        title = context.get_form_value('dc:title')
+        title = context.get_form_value('title', type=Unicode)
         subject = '[Tracker Issue #%s] %s' % (issue.name, title)
         # Notify / Body
         body = Template(u'${description}\n'
@@ -398,12 +419,13 @@ register_object_class(StoredSearch)
 # Issues
 ###########################################################################
 class Issue(Folder):
-    
+
     class_id = 'issue'
     class_title = u'Issue'
     class_description = u'Issue'
     class_views = [
         ['edit_form'],
+        ['history'],
         ['browse_content?mode=list'],
         ['new_resource_form?type=file']]
 
@@ -411,13 +433,13 @@ class Issue(Folder):
     def new(self, **kw):
         Folder.new(self, **kw)
         cache = self.cache
-        cache['.comments'] = Comments()
+        cache['.history'] = History()
 
 
     def _get_handler(self, segment, uri):
         name = segment.name
-        if name == '.comments':
-            return Comments(uri)
+        if name == '.history':
+            return History(uri)
         return Folder._get_handler(self, segment, uri)
 
 
@@ -428,26 +450,40 @@ class Issue(Folder):
     #######################################################################
     # API
     #######################################################################
-    def add_comment(self, comment):
-        context = get_context()
-        user = context.user
-        date = datetime.now()
+    def get_rows(self):
+        return self.get_handler('.history').get_rows()
 
-        user = (user is not None and user.name) or ''
 
-        comments = self.get_handler('.comments')
-        comments.add_row([date, user, comment])
+    def add_row(self, row):
+        self.get_handler('.history').add_row(row)
+
+
+    def get_reported_by(self):
+        history = self.get_handler('.history')
+        username = history.get_row(0).get_value('username')
+        return self.get_handler('/users/%s' % username).get_title()
+
+
+    def get_value(self, name):
+        return self.get_handler('.history').lines[-1].get_value(name)
+
+
+    def get_comment(self):
+        rows = self.get_handler('.history').lines
+        i = len(rows) - 1
+        while i >= 0:
+            row = rows[i]
+            comment = row.get_value('comment')
+            if comment:
+                return comment
+            i -= 1
+        return ''
 
 
     def has_text(self, text):
-        if text in self.get_property('dc:title').lower():
+        if text in self.get_value('title').lower():
             return True
-        comments = self.get_handler('.comments')
-        for comment in comments.get_rows():
-            comment = comment.get_value('comment').lower()
-            if text in comment:
-                return True
-        return False
+        return text in self.get_comment().lower()
 
 
     #######################################################################
@@ -466,44 +502,45 @@ class Issue(Folder):
         # Build the namespace
         namespace = {}
         namespace['number'] = self.name
-        namespace['title'] = self.get_property('dc:title')
+        namespace['title'] = self.get_value('title')
         # Reported by
-        reported_by = self.get_property('ikaaro:issue_reported_by')
-        if reported_by is None:
-            reported_by = None
-        else:
-            reported_by = users.get_handler(reported_by).get_title()
-        namespace['reported_by'] = reported_by
+        namespace['reported_by'] = self.get_reported_by()
         # Topic, Priority, etc.
         parent = self.parent
         tables = [('topic', 'topics'), ('version', 'versions'),
             ('priority', 'priorities'), ('state', 'states')]
         for name, table_name in tables:
             table = parent.get_handler('%s.csv' % table_name)
-            value = self.get_property('ikaaro:issue_%s' % name)
+            value = self.get_value(name)
             namespace[table_name] = table.get_namespace(value)
         # Assign To
-        selected = self.get_property('ikaaro:issue_assigned_to')
+        selected = self.get_value('assigned_to')
         namespace['users'] = [
             {'id': x, 'title': users.get_handler(x).get_title(),
              'is_selected': x == selected}
             for x in self.get_site_root().get_members() ]
         # Attachements
-        namespace['files'] = [
-            {'name': x.name, 'type': x.get_property('format'),
-             'datetime': format_datetime(vfs.get_mtime(x.uri))}
-            for x in self.search_handlers() ]
+        files = []
+        for filename in self.get_value('files'):
+            file = self.get_handler(filename)
+            files.append({'name': filename,
+                'type': file.get_property('format'),
+                'datetime': format_datetime(vfs.get_mtime(file.uri))})
+        namespace['files'] = files
         # Comments
         users = self.get_handler('/users')
         comments = []
-        for comment in self.get_handler('.comments').get_rows():
-            username = comment.get_value('username')
-            datetime = comment.get_value('datetime')
+        for row in self.get_rows():
+            comment = row.get_value('comment')
+            if not comment:
+                continue
+            username = row.get_value('username')
+            datetime = row.get_value('datetime')
             user = users.get_handler(username)
             comments.append({
                 'user': user.get_title(),
                 'datetime': format_datetime(datetime),
-                'comment': comment.get_value('comment')})
+                'comment': comment})
         comments.reverse()
  
         namespace['comments'] = comments
@@ -514,28 +551,63 @@ class Issue(Folder):
 
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
-        for name in ('dc:title', 'ikaaro:issue_topic', 'ikaaro:issue_version',
-            'ikaaro:issue_priority', 'ikaaro:issue_state',
-            'ikaaro:issue_assigned_to'):
-            value = context.get_form_value(name)
-            self.set_property(name, value)
-        # Add Comment
-        comment = context.get_form_value('comment')
-        self.add_comment(comment)
+        user = context.user
+        # Date and Username
+        username = (user is not None and user.name) or ''
+        row = [datetime.now(), username]
+        # Other values
+        for name in ('title', 'topic', 'version', 'priority', 'assigned_to',
+            'state', 'comment'):
+            type = History.schema[name]
+            value = context.get_form_value(name, type=type)
+            if type == Unicode:
+                value = value.strip()
+            row.append(value)
+        # Attachements
+        files = self.get_value('files')
+        row.append(files)
+        # Append
+        self.add_row(row)
 
         return context.come_back('Changes saved.')
+
+
+    #######################################################################
+    # User Interface / History
+    history__access__ = 'is_allowed_to_view'
+    history__label__ = u'History'
+    def history(self, context):
+        namespace = {}
+        namespace['number'] = self.name
+
+        users = self.get_handler('/users')
+        rows = []
+        for row in self.get_rows():
+            username = row.get_value('username')
+            user = users.get_handler(username)
+            rows.append({'datetime': row.get_value('datetime'),
+                         'user': user.get_title()})
+        namespace['rows'] = rows
+
+        handler = self.get_handler('/ui/tracker/issue_history.xml')
+        return stl(handler, namespace)
 
 
 register_object_class(Issue)
 
 
-
-class Comments(BaseCSV):
-
-    columns = ['datetime', 'username', 'comment']
+class History(BaseCSV):
+    
+    columns = ['datetime', 'username', 'title', 'topic', 'version', 'priority',
+               'assigned_to', 'state', 'comment', 'files']
     schema = {'datetime': DateTime,
               'username': String,
-              'comment': Unicode}
-
-    
+              'title': Unicode,
+              'topic': Integer,
+              'version': Integer,
+              'priority': Integer,
+              'assigned_to': String,
+              'state': Integer,
+              'comment': Unicode,
+              'files': Tokens}
 

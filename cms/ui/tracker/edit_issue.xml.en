@@ -10,7 +10,7 @@
     Reported by <em>${reported_by}</em>
   </p>
 
-  <form action=";edit" method="post">
+  <form action=";edit" method="post" enctype="multipart/form-data">
     <dl>
       <dt>Title</dt>
       <dd>
@@ -56,6 +56,8 @@
       <dd>
         <textarea name="comment" cols="65" rows="7"></textarea>
       </dd>
+      <dt>Attachement</dt>
+      <dd><input type="file" name="file" /></dd>
     </dl>
     <input type="submit" value="Edit" />
   </form>
@@ -73,11 +75,6 @@
       <td><a href="${file/name}">${file/name}</a></td>
       <td>${file/type}</td>
       <td>${file/datetime}</td>
-    </tr>
-    <tr>
-      <td colspan="3">
-        <a href=";new_resource_form?type=file">Add new attachement</a>
-      </td>
     </tr>
   </table>
 

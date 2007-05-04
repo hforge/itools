@@ -334,66 +334,7 @@ class Tracker(Folder):
         # Add
         id = self.get_new_id()
         issue = self.set_handler(id, Issue())
-        # Datetime
-        row = [datetime.now()]
-        # Reported By
-        user = context.user
-        if user is None:
-            row.append(None)
-        else:
-            row.append(user.name)
-        # Title
-        for name in 'title', 'topic', 'version', 'priority', 'assigned_to':
-            type = History.schema[name]
-            value = context.get_form_value(name, type=type)
-            row.append(value)
-        # State
-        row.append('')
-        # Comment
-        comment = context.get_form_value('comment', type=Unicode)
-        row.append(comment)
-        # Files
-        file = context.get_form_value('file')
-        if file is None:
-            row.append(())
-        else:
-            filename, mimetype, body = file
-            row.append((filename,))
-            # Upload
-            # The mimetype sent by the browser can be minimalistic
-            guessed = mimetypes.guess_type(filename)[0]
-            if guessed is not None:
-                mimetype = guessed
-            # Set the handler
-            handler_class = get_object_class(mimetype)
-            handler = handler_class()
-            handler.load_state_from_string(body)
-            issue.set_handler(filename, handler, format=mimetype)
-        # First row
-        issue.add_row(row)
-
-        # Notify / From
-        if user is None:
-            from_addr = ''
-        else:
-            from_addr = user.get_property('ikaaro:email')
-        # Notify / To
-        assigned_to = context.get_form_value('assigned_to')
-        assigned_to = self.get_handler('/users/%s' % assigned_to)
-        to_addr = assigned_to.get_property('ikaaro:email')
-        # Notify / Subject
-        title = context.get_form_value('title', type=Unicode)
-        subject = '[Tracker Issue #%s] %s' % (issue.name, title)
-        # Notify / Body
-        body = Template(u'${description}\n'
-                        u'\n'
-                        u'    ${uri}\n')
-
-        uri = context.uri.resolve2('../%s/;edit_form' % issue.name)
-        body = body.substitute({'description': comment, 'uri': uri})
-        # Notify / Send
-        root = context.root
-        ##root.send_email(from_addr, to_addr, subject, body)
+        issue._add_row(context)
 
         goto = context.uri.resolve2('../%s/;edit_form' % issue.name)
         return context.come_back(u'New issue addded.', goto=goto)
@@ -426,8 +367,7 @@ class Issue(Folder):
     class_views = [
         ['edit_form'],
         ['history'],
-        ['browse_content?mode=list'],
-        ['new_resource_form?type=file']]
+        ['browse_content?mode=list']]
 
 
     def new(self, **kw):
@@ -450,22 +390,93 @@ class Issue(Folder):
     #######################################################################
     # API
     #######################################################################
+    def get_title(self):
+        return self.get_value('title')
+
+
     def get_rows(self):
         return self.get_handler('.history').get_rows()
 
 
-    def add_row(self, row):
+    def _add_row(self, context):
+        user = context.user
+        root = context.root
+
+        # Datetime
+        row = [datetime.now()]
+        # User
+        if user is None:
+            row.append('')
+        else:
+            row.append(user.name)
+        # Other values
+        for name in ('title', 'topic', 'version', 'priority', 'assigned_to',
+                     'state', 'comment'):
+            type = History.schema[name]
+            value = context.get_form_value(name, type=type)
+            if type == Unicode:
+                value = value.strip()
+            row.append(value)
+        # Files
+        file = context.get_form_value('file')
+        if file is None:
+            row.append(())
+        else:
+            filename, mimetype, body = file
+            row.append((filename,))
+            # Upload
+            # The mimetype sent by the browser can be minimalistic
+            guessed = mimetypes.guess_type(filename)[0]
+            if guessed is not None:
+                mimetype = guessed
+            # Set the handler
+            handler_class = get_object_class(mimetype)
+            handler = handler_class()
+            handler.load_state_from_string(body)
+            self.set_handler(filename, handler, format=mimetype)
+        # Update
         self.get_handler('.history').add_row(row)
+
+        # Send a Notification Email
+        # Notify / From
+        if user is None:
+            from_addr = ''
+        else:
+            from_addr = user.get_property('ikaaro:email')
+        # Notify / To
+        reported_by = self.get_reported_by()
+        assigned_to = self.get_value('assigned_to')
+        to_addrs = set([reported_by, assigned_to])
+        if user.name in to_addrs:
+            to_addrs.remove(user.name)
+        # Notify / Subject
+        title = self.get_value('title')
+        subject = '[Tracker Issue #%s] %s' % (self.name, title)
+        # Notify / Body
+        body = Template(u'${description}\n'
+                        u'\n'
+                        u'    ${uri}\n')
+
+        comment = self.get_value('comment')
+        uri = context.uri.resolve2('../%s/;edit_form' % self.name)
+        body = body.substitute({'description': comment, 'uri': uri})
+        # Notify / Send
+        for to_addr in to_addrs:
+            to_addr = self.get_handler('/users/%s' % to_addr)
+            to_addr = to_addr.get_property('ikaaro:email')
+            root.send_email(from_addr, to_addr, subject, body)
 
 
     def get_reported_by(self):
         history = self.get_handler('.history')
-        username = history.get_row(0).get_value('username')
-        return self.get_handler('/users/%s' % username).get_title()
+        return history.get_row(0).get_value('username')
 
 
     def get_value(self, name):
-        return self.get_handler('.history').lines[-1].get_value(name)
+        rows = self.get_handler('.history').lines
+        if rows:
+            return rows[-1].get_value(name)
+        return None
 
 
     def get_comment(self):
@@ -504,7 +515,9 @@ class Issue(Folder):
         namespace['number'] = self.name
         namespace['title'] = self.get_value('title')
         # Reported by
-        namespace['reported_by'] = self.get_reported_by()
+        reported_by = self.get_reported_by()
+        reported_by = self.get_handler('/users/%s' % reported_by)
+        namespace['reported_by'] = reported_by.get_title()
         # Topic, Priority, etc.
         parent = self.parent
         tables = [('topic', 'topics'), ('version', 'versions'),
@@ -520,13 +533,10 @@ class Issue(Folder):
              'is_selected': x == selected}
             for x in self.get_site_root().get_members() ]
         # Attachements
-        files = []
-        for filename in self.get_value('files'):
-            file = self.get_handler(filename)
-            files.append({'name': filename,
-                'type': file.get_property('format'),
-                'datetime': format_datetime(vfs.get_mtime(file.uri))})
-        namespace['files'] = files
+        namespace['files'] = [
+            {'name': x.name, 'type': x.get_property('format'),
+             'datetime': vfs.get_mtime(x.uri)}
+            for x in self.search_handlers() ]
         # Comments
         users = self.get_handler('/users')
         comments = []
@@ -551,23 +561,7 @@ class Issue(Folder):
 
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
-        user = context.user
-        # Date and Username
-        username = (user is not None and user.name) or ''
-        row = [datetime.now(), username]
-        # Other values
-        for name in ('title', 'topic', 'version', 'priority', 'assigned_to',
-            'state', 'comment'):
-            type = History.schema[name]
-            value = context.get_form_value(name, type=type)
-            if type == Unicode:
-                value = value.strip()
-            row.append(value)
-        # Attachements
-        files = self.get_value('files')
-        row.append(files)
-        # Append
-        self.add_row(row)
+        self._add_row(context)
 
         return context.come_back('Changes saved.')
 

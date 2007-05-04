@@ -55,7 +55,7 @@ class WebSite(RoleAware, Folder):
 
     __roles__ = RoleAware.__roles__ + [
         # Local Administrator
-        {'name': 'ikaaro:admins', 'title': u'Admins', 'unit': u'Admin'}]
+        {'name': 'ikaaro:admins', 'title': u'Admin'}]
 
 
     def _get_virtual_handler(self, name):

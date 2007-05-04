@@ -92,10 +92,9 @@ class RoleAware(AccessControl):
     # To override
     #########################################################################
     __roles__ = [
-        {'name': 'ikaaro:guests', 'title': u"Guests", 'unit': u"Guest"},
-        {'name': 'ikaaro:members', 'title': u"Members", 'unit': u"Member"},
-        {'name': 'ikaaro:reviewers', 'title': u"Reviewers",
-         'unit': u"Reviewer"},
+        {'name': 'ikaaro:guests', 'title': u"Guest"},
+        {'name': 'ikaaro:members', 'title': u"Member"},
+        {'name': 'ikaaro:reviewers', 'title': u"Reviewer"},
     ]
 
 
@@ -197,10 +196,10 @@ class RoleAware(AccessControl):
     #########################################################################
     # API / Public
     #########################################################################
-    def get_role_unit(self, name):
+    def get_role_title(self, name):
         for role in self.__roles__:
             if role['name'] == name:
-                return self.gettext(role['unit'])
+                return self.gettext(role['title'])
         return None
 
 
@@ -290,8 +289,8 @@ class RoleAware(AccessControl):
     # User Interface
     #########################################################################
     def get_roles_namespace(self, username=None):
-        # Build a list with the role name and unit
-        namespace = [ {'name': x['name'], 'title': self.gettext(x['unit'])}
+        # Build a list with the role name and title
+        namespace = [ {'name': x['name'], 'title': self.gettext(x['title'])}
                       for x in self.__roles__ ]
 
         # If a username was not given, we are done
@@ -368,7 +367,7 @@ class RoleAware(AccessControl):
             ns['firstname'] = user.firstname
             ns['lastname'] = user.lastname
             # Role
-            role = self.get_role_unit(role)
+            role = self.get_role_title(role)
             href = ';edit_membership_form?id=%s' % user_id
             ns['role'] = role, href
             # Append

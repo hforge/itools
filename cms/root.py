@@ -66,7 +66,7 @@ class Root(WebSite):
 
 
     __roles__ = [
-        {'name': 'ikaaro:admins', 'title': u'Admins', 'unit': u'Admin'}]
+        {'name': 'ikaaro:admins', 'title': u'Admin'}]
 
 
     ########################################################################

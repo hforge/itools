@@ -28,7 +28,7 @@
     There are not stored searches.
   </p>
 
-  <h2>New Search</h2>
+  <h2>Search</h2>
   <form action=";search" method="get">
     <input type="hidden" name="search_name" value="${search_name}" />
     <dl>

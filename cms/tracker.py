@@ -45,9 +45,10 @@ class SelectTable(CSV):
     schema = {'id': IntegerKey, 'title': Unicode}
 
 
-    def get_namespace(self, value=None):
+    def get_options(self, value=None, sort=True):
         options = [ {'id': x[0], 'title': x[1]} for x in self.get_rows() ]
-        options.sort(key=lambda x: x['title'])
+        if sort is True:
+            options.sort(key=lambda x: x['title'])
         # Set 'is_selected'
         if value is None:
             for option in options:
@@ -95,11 +96,11 @@ class Tracker(Folder):
         cache = self.cache
         # Tables
         tables = [
-            ('topics.csv', [u'Functional Scope', u'User Interface',
-                u'Programming Interface']),
+            ('topics.csv', [u'Security Issue', u'Bug', u'New Feature',
+                u'Performance', u'User Interface', u'Programming Interface']),
             ('priorities.csv', [u'High', u'Medium', u'Low']),
             ('versions.csv', [u'Stable', u'Development']),
-            ('states.csv', [u'Open', u'Closed'])]
+            ('states.csv', [u'Open', u'Fixed', u'Closed'])]
  
         for name, values in tables:
             csv = SelectTable()
@@ -107,6 +108,15 @@ class Tracker(Folder):
             for row in enumerate(values):
                 csv.add_row(row)
             cache['%s.metadata' % name] = self.build_metadata(csv)
+        # Pre-defined stored searches
+        all = StoredSearch()
+        open = StoredSearch(state=0)
+        for name, search, title in [('all', all, u'All Issues'),
+                                    ('open', open, 'Open Issues')]:
+            cache[name] = search
+            kw = {}
+            kw['dc:title'] = {'en': title}
+            cache['%s.metadata' % name] = self.build_metadata(search, **kw)
 
 
     def get_document_types(self):
@@ -192,10 +202,12 @@ class Tracker(Folder):
             assign = None
             state = None
 
-        for name, value in [('topics', topic), ('versions', version),
-                            ('priorities', priority), ('states', state)]:
-            table = self.get_handler('%s.csv' % name)
-            namespace[name] = table.get_namespace(value)
+        get = self.get_handler
+        namespace['topics'] = get('topics.csv').get_options(topic)
+        namespace['versions'] = get('versions.csv').get_options(version)
+        namespace['priorities'] = get('priorities.csv').get_options(priority,
+            sort=False)
+        namespace['states'] = get('states.csv').get_options(state, sort=False)
 
         users = self.get_handler('/users')
         namespace['users'] = [
@@ -254,7 +266,9 @@ class Tracker(Folder):
             getter = search.get_value
         else:
             getter = context.get_form_value
-        text = getter('text', type=Unicode).strip().lower()
+        text = getter('text', type=Unicode)
+        if text is not None:
+            text = text.strip().lower()
         topic = getter('topic', type=Integer)
         version = getter('version', type=Integer)
         priority = getter('priority', type=Integer)
@@ -331,8 +345,11 @@ class Tracker(Folder):
         # Build the namespace
         namespace = {}
         # Others
-        for name in 'topics', 'versions', 'priorities', 'states':
-            namespace[name] = self.get_handler('%s.csv' % name).get_namespace()
+        get = self.get_handler
+        namespace['topics'] = get('topics.csv').get_options()
+        namespace['versions'] = get('versions.csv').get_options()
+        namespace['priorities'] = get('priorities.csv').get_options(sort=False)
+        namespace['states'] = get('states.csv').get_options(sort=False)
 
         users = self.get_handler('/users')
         namespace['users'] = [
@@ -545,7 +562,7 @@ class Issue(Folder):
         for name, table_name in tables:
             table = parent.get_handler('%s.csv' % table_name)
             value = self.get_value(name)
-            namespace[table_name] = table.get_namespace(value)
+            namespace[table_name] = table.get_options(value)
         # Assign To
         selected = self.get_value('assigned_to')
         namespace['users'] = [

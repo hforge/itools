@@ -20,7 +20,7 @@
         </td>
       </tr>
       <tr>
-        <td valign="top">
+        <td>
           <label for="version">Version (mandatory)</label><br/>
           <select name="version" id="version" class="tracker_select">
             <option value=""></option>
@@ -28,16 +28,24 @@
               selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
-        <td valign="top" rowspan="4">
-          Topics
-          <p stl:repeat="item topics">
-            <input type="checkbox" name="topics" value="${item/id}" 
-              checked="${item/is_selected}" />
-            ${item/title}
-          </p>
+        <td valign="top">
+          <label for="module">Module</label><br/>
+          <select name="module" id="module" class="tracker_select">
+            <option value=""></option>
+            <option stl:repeat="item modules" value="${item/id}"
+              selected="${item/is_selected}">${item/title}</option>
+          </select>
         </td>
       </tr>
       <tr>
+        <td valign="top">
+          <label for="type">Type (mandatory)</label><br/>
+          <select name="type" id="type" class="tracker_select">
+            <option value=""></option>
+            <option stl:repeat="item types" value="${item/id}"
+              selected="${item/is_selected}">${item/title}</option>
+          </select>
+        </td>
         <td valign="top">
           <label for="priority">Priority</label><br/>
           <select name="priority" id="priority" class="tracker_select">
@@ -55,8 +63,6 @@
               selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
-      </tr>
-      <tr>
         <td valign="top">
           <label for="assigned_to">Assign To</label><br/>
           <select name="assigned_to" id="assigned_to" class="tracker_select">

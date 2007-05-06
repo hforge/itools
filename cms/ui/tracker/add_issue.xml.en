@@ -11,7 +11,8 @@
       <tr>
         <td colspan="2">
           <label for="title">Title (mandatory)</label><br/>
-          <input type="text" name="title" id="title" size="48" />
+          <input type="text" name="title" id="title" value="${title}"
+            size="48" />
         </td>
       </tr>
       <tr>
@@ -20,7 +21,7 @@
           <select name="version" id="version" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item versions" value="${item/id}"
-              >${item/title}</option>
+              selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
         <td valign="top">
@@ -28,7 +29,7 @@
           <select name="module" id="module" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item modules" value="${item/id}"
-              >${item/title}</option>
+              selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
       </tr>
@@ -38,7 +39,7 @@
           <select name="type" id="type" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item types" value="${item/id}"
-              >${item/title}</option>
+              selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
         <td>
@@ -46,7 +47,7 @@
           <select name="priority" id="priority" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item priorities" value="${item/id}"
-              >${item/title}</option>
+              selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
       </tr>
@@ -55,7 +56,7 @@
           <label for="state">Status (mandatory)</label><br/>
           <select name="state" id="state" class="tracker_select">
             <option stl:repeat="item states" value="${item/id}"
-              >${item/title}</option>
+              selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
         <td valign="top">
@@ -63,7 +64,7 @@
           <select name="assigned_to" id="assigned_to" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item users" value="${item/id}"
-              >${item/title}</option>
+              selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
       </tr>
@@ -71,7 +72,7 @@
         <td valign="top" colspan="2">
           <label for="description">Description</label><br/>
           <textarea name="comment" id="description" cols="68" rows="10"
-            ></textarea>
+            >${comment}</textarea>
         </td>
       </tr>
       <tr>

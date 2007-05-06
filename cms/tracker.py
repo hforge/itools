@@ -37,52 +37,10 @@ import widgets
 
 
 
-class SelectTable(CSV):
-
-    class_id = 'tracker_select_table'
-
-    columns = ['id', 'title']
-    schema = {'id': IntegerKey, 'title': Unicode}
-
-
-    def get_options(self, value=None, sort=True):
-        options = [ {'id': x[0], 'title': x[1]} for x in self.get_rows() ]
-        if sort is True:
-            options.sort(key=lambda x: x['title'])
-        # Set 'is_selected'
-        if value is None:
-            for option in options:
-                option['is_selected'] = False
-        else:
-            for option in options:
-                option['is_selected'] = (option['id'] == value)
-
-        return options
-
-
-    def get_row_by_id(self, id):
-        for x in self.search(id=id):
-            return self.get_row(id)
-        return None
-
-
-
-register_object_class(SelectTable)
-
-
-
-class Versions(SelectTable):
-    
-    class_id = 'tracker_versions'
-
-    columns = ['id', 'title', 'released']
-    schema = {
-        'id': IntegerKey,
-        'title': Unicode(title=u'Title'),
-        'released': Boolean(title=u'Released')}
-
-
-register_object_class(Versions)
+# Definition of the fields of the forms to add and edit an issue
+issue_fields = [('title', True), ('version', True), ('type', True),
+    ('state', True), ('module', False), ('priority', False),
+    ('assigned_to', False), ('comment', False), ('file', False)]
 
 
 
@@ -114,9 +72,12 @@ class Tracker(Folder):
         cache['versions.csv.metadata'] = self.build_metadata(csv)
         # Other Tables
         tables = [
-            ('modules.csv', [u'Module 1', u'Module 2', u'Module 3']),
-            ('types.csv', [u'Security Issue', u'Bug', u'New Feature',
-                u'Performance', u'User Interface', u'Programming Interface']),
+            ('modules.csv', [u'Documentation', u'Unit Tests',
+                u'Programming Interface', u'Command Line Interface',
+                u'Visual Interface']),
+            ('types.csv', [u'Bug', u'New Feature', u'Security Issue',
+                u'Stability Issue', u'Data Corruption Issue',
+                u'Performance Improvement']),
             ('priorities.csv', [u'High', u'Medium', u'Low']),
             ('states.csv', [u'Open', u'Fixed', u'Closed'])]
         for name, values in tables:
@@ -377,17 +338,27 @@ class Tracker(Folder):
 
         # Build the namespace
         namespace = {}
+        namespace['title'] = context.get_form_value('title', type=Unicode)
+        namespace['comment'] = context.get_form_value('comment', type=Unicode)
         # Others
         get = self.get_handler
-        namespace['modules'] = get('modules.csv').get_options()
-        namespace['versions'] = get('versions.csv').get_options()
-        namespace['types'] = get('types.csv').get_options()
-        namespace['priorities'] = get('priorities.csv').get_options(sort=False)
-        namespace['states'] = get('states.csv').get_options(sort=False)
+        module = context.get_form_value('module', type=Integer)
+        namespace['modules'] = get('modules.csv').get_options(module)
+        version = context.get_form_value('version', type=Integer)
+        namespace['versions'] = get('versions.csv').get_options(version)
+        type = context.get_form_value('type', type=Integer)
+        namespace['types'] = get('types.csv').get_options(type)
+        priority = context.get_form_value('priority', type=Integer)
+        namespace['priorities'] = get('priorities.csv').get_options(priority,
+            sort=False)
+        state = context.get_form_value('state', type=Integer)
+        namespace['states'] = get('states.csv').get_options(state, sort=False)
 
         users = self.get_handler('/users')
+        assigned_to = context.get_form_value('assigned_to', type=String)
         namespace['users'] = [
-            {'id': x, 'title': users.get_handler(x).get_title()}
+            {'id': x, 'title': users.get_handler(x).get_title(),
+             'is_selected': x == assigned_to}
             for x in self.get_site_root().get_members() ]
 
         handler = self.get_handler('/ui/tracker/add_issue.xml')
@@ -396,6 +367,13 @@ class Tracker(Folder):
 
     add_issue__access__ = 'is_allowed_to_edit'
     def add_issue(self, context):
+        keep = ['title', 'version', 'type', 'state', 'module', 'priority',
+            'assigned_to', 'comment']
+        # Check input data
+        error = context.check_form_input(issue_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
+
         # Add
         id = self.get_new_id()
         issue = self.set_handler(id, Issue())
@@ -406,6 +384,56 @@ class Tracker(Folder):
 
 
 register_object_class(Tracker)
+
+
+###########################################################################
+# Tables
+###########################################################################
+class SelectTable(CSV):
+
+    class_id = 'tracker_select_table'
+
+    columns = ['id', 'title']
+    schema = {'id': IntegerKey, 'title': Unicode}
+
+
+    def get_options(self, value=None, sort=True):
+        options = [ {'id': x[0], 'title': x[1]} for x in self.get_rows() ]
+        if sort is True:
+            options.sort(key=lambda x: x['title'])
+        # Set 'is_selected'
+        if value is None:
+            for option in options:
+                option['is_selected'] = False
+        else:
+            for option in options:
+                option['is_selected'] = (option['id'] == value)
+
+        return options
+
+
+    def get_row_by_id(self, id):
+        for x in self.search(id=id):
+            return self.get_row(id)
+        return None
+
+
+
+register_object_class(SelectTable)
+
+
+
+class Versions(SelectTable):
+    
+    class_id = 'tracker_versions'
+
+    columns = ['id', 'title', 'released']
+    schema = {'id': IntegerKey,
+              'title': Unicode(title=u'Title'),
+              'released': Boolean(title=u'Released')}
+
+
+register_object_class(Versions)
 
 
 ###########################################################################
@@ -630,6 +658,11 @@ class Issue(Folder):
 
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
+        # Check input data
+        error = context.check_form_input(issue_fields)
+        if error is not None:
+            return context.come_back(error)
+        # Edit
         self._add_row(context)
 
         return context.come_back('Changes saved.')

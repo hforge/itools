@@ -21,7 +21,7 @@ import mimetypes
 from string import Template
 
 # Import from itools
-from itools.datatypes import DateTime, Integer, String, Unicode
+from itools.datatypes import Boolean, DateTime, Integer, String, Unicode
 from itools.i18n.locale_ import format_datetime
 from itools.handlers.config import Config
 from itools.csv.csv import IntegerKey, CSV as BaseCSV
@@ -39,7 +39,7 @@ import widgets
 
 class SelectTable(CSV):
 
-    class_id = 'enumerate'
+    class_id = 'tracker_select_table'
 
     columns = ['id', 'title']
     schema = {'id': IntegerKey, 'title': Unicode}
@@ -71,6 +71,21 @@ register_object_class(SelectTable)
 
 
 
+class Versions(SelectTable):
+    
+    class_id = 'tracker_versions'
+
+    columns = ['id', 'title', 'released']
+    schema = {
+        'id': IntegerKey,
+        'title': Unicode(title=u'Title'),
+        'released': Boolean(title=u'Released')}
+
+
+register_object_class(Versions)
+
+
+
 class Tracker(Folder):
     
     class_id = 'tracker'
@@ -91,15 +106,19 @@ class Tracker(Folder):
     def new(self, **kw):
         Folder.new(self, **kw)
         cache = self.cache
-        # Tables
+        # Versions
+        csv = Versions()
+        csv.add_row([0, u'1.0', False])
+        csv.add_row([1, u'2.0', False])
+        cache['versions.csv'] = csv
+        cache['versions.csv.metadata'] = self.build_metadata(csv)
+        # Other Tables
         tables = [
             ('modules.csv', [u'Module 1', u'Module 2', u'Module 3']),
-            ('versions.csv', [u'Stable', u'Development']),
             ('types.csv', [u'Security Issue', u'Bug', u'New Feature',
                 u'Performance', u'User Interface', u'Programming Interface']),
             ('priorities.csv', [u'High', u'Medium', u'Low']),
             ('states.csv', [u'Open', u'Fixed', u'Closed'])]
- 
         for name, values in tables:
             csv = SelectTable()
             cache[name] = csv

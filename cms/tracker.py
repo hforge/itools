@@ -77,7 +77,7 @@ class Tracker(Folder):
                 u'Visual Interface']),
             ('types.csv', [u'Bug', u'New Feature', u'Security Issue',
                 u'Stability Issue', u'Data Corruption Issue',
-                u'Performance Improvement']),
+                u'Performance Improvement', u'Technology Upgrade']),
             ('priorities.csv', [u'High', u'Medium', u'Low']),
             ('states.csv', [u'Open', u'Fixed', u'Closed'])]
         for name, values in tables:
@@ -89,8 +89,11 @@ class Tracker(Folder):
         # Pre-defined stored searches
         all = StoredSearch()
         open = StoredSearch(state=0)
+        not_assigned = StoredSearch(assigned_to='nobody')
         for name, search, title in [('all', all, u'All Issues'),
-                                    ('open', open, 'Open Issues')]:
+                                    ('open', open, u'Open Issues'),
+                                    ('not_assigned', not_assigned,
+                                     u'Not Assigned')]:
             cache[name] = search
             kw = {}
             kw['dc:title'] = {'en': title}
@@ -124,6 +127,26 @@ class Tracker(Folder):
             return prefix + str(ids[-1] + 1)
         
         return prefix + '0'
+
+
+    def get_members_namespace(self, value, not_assigned=False):
+        """
+        Returns a namespace (list of dictionaries) to be used for the
+        selection box of users (the 'assigned to' field).
+        """
+        users = self.get_handler('/users')
+        members = []
+        if not_assigned is True:
+            members.append({'id': 'nobody', 'title': 'NOT ASSIGNED'})
+        for username in self.get_site_root().get_members():
+            user = users.get_handler(username)
+            members.append({'id': username, 'title': user.get_title()})
+        # Select
+        for member in members:
+            member['is_selected'] = (member['id'] == value)
+
+        return members
+        
 
 
     #######################################################################
@@ -161,7 +184,7 @@ class Tracker(Folder):
         namespace['stored_searches'] = [
             {'name': x.name, 'title': x.get_title()}
             for x in self.search_handlers(handler_class=StoredSearch) ]
-        
+
         # Search Form
         search_name = context.get_form_value('search_name')
         if search_name:
@@ -195,12 +218,7 @@ class Tracker(Folder):
         namespace['priorities'] = get('priorities.csv').get_options(priority,
             sort=False)
         namespace['states'] = get('states.csv').get_options(state, sort=False)
-
-        users = self.get_handler('/users')
-        namespace['users'] = [
-            {'id': x, 'title': users.get_handler(x).get_title(),
-             'is_selected': x == assign}
-            for x in self.get_site_root().get_members() ]
+        namespace['users'] = self.get_members_namespace(assign, True)
 
         handler = self.get_handler('/ui/tracker/search.xml')
         return stl(handler, namespace)
@@ -368,10 +386,7 @@ class Tracker(Folder):
 
         users = self.get_handler('/users')
         assigned_to = context.get_form_value('assigned_to', type=String)
-        namespace['users'] = [
-            {'id': x, 'title': users.get_handler(x).get_title(),
-             'is_selected': x == assigned_to}
-            for x in self.get_site_root().get_members() ]
+        namespace['users'] = self.get_members_namespace(assigned_to)
 
         handler = self.get_handler('/ui/tracker/add_issue.xml')
         return stl(handler, namespace)
@@ -638,10 +653,7 @@ class Issue(Folder):
         namespace['states'] = get('states.csv').get_options(state, sort=False)
 
         # Assign To
-        namespace['users'] = [
-            {'id': x, 'title': users.get_handler(x).get_title(),
-             'is_selected': x == assigned_to}
-            for x in self.get_site_root().get_members() ]
+        namespace['users'] = self.parent.get_members_namespace(assigned_to)
         # Comments
         users = self.get_handler('/users')
         comments = []

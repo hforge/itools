@@ -4,41 +4,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Stored Searches</h2>
-  <form action=";remove" method="post" stl:if="stored_searches">
-    <table>
-      <tr stl:repeat="search stored_searches">
-        <td><input type="checkbox" name="ids" value="${search/name}" /></td>
-        <td>
-          <a href=";view?search_name=${search/name}">${search/title}</a>
-        </td>
-        <td>
-          (<a href=";search_form?search_name=${search/name}">Edit</a>)
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td colspan="2">
-          <input type="submit" value="Remove" />
-        </td>
-      </tr>
-    </table>
-  </form>
-  <p stl:if="not stored_searches">
-    There are not stored searches.
-  </p>
-
   <h2>Search</h2>
   <form action=";search" method="get">
     <input type="hidden" name="search_name" value="${search_name}" />
     <table>
-      <tr>
-        <td colspan="2">
-          <label for="search_title">Name (remember this search)</label><br/>
-          <input type="text" name="search_title" id="search_title" size="40"
-            value="${search_title}" />
-        </td>
-      </tr>
       <tr>
         <td colspan="2">
           <label for="text">Text</label><br/>
@@ -103,18 +72,46 @@
           <label for="assigned_to">Assign To</label><br/>
           <select name="assigned_to" id="assigned_to" class="tracker_select">
             <option value=""></option>
-            <option value="nobody">NOT ASSIGNED</option>
             <option stl:repeat="item users" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>
           </select>
         </td>
       </tr>
       <tr>
-        <td>
+        <td xcolspan="2">
           <input type="submit" value="Search" />
+        </td>
+        <td align="right">
+          <label for="search_title">Remember as</label>
+          <input type="text" name="search_title" id="search_title" size="12"
+            value="${search_title}" />
         </td>
       </tr>
     </table>
   </form>
+
+  <h2>Stored Searches</h2>
+  <form action=";remove" method="post" stl:if="stored_searches">
+    <table>
+      <tr stl:repeat="search stored_searches">
+        <td><input type="checkbox" name="ids" value="${search/name}" /></td>
+        <td>
+          <a href=";view?search_name=${search/name}">${search/title}</a>
+        </td>
+        <td>
+          (<a href=";search_form?search_name=${search/name}">Edit</a>)
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td colspan="2">
+          <input type="submit" value="Remove" />
+        </td>
+      </tr>
+    </table>
+  </form>
+  <p stl:if="not stored_searches">
+    There are not stored searches.
+  </p>
 
 </stl:block>

@@ -19,7 +19,7 @@
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import Integer, Enumerate
+from itools.datatypes import Boolean, Enumerate, Integer, is_datatype
 from itools.csv.csv import CSV as iCSV, Row as iRow, IntegerKey
 from itools.stl import stl
 from Handler import Node
@@ -187,10 +187,16 @@ class CSV(Text, iCSV):
             column['value'] = None
             # Enumerates, use a selection box
             datatype = self.get_datatype(name)
-            is_enumerate = getattr(datatype, 'is_enumerate', False)
-            column['is_enumerate'] = is_enumerate
-            if is_enumerate:
+            column['is_input'] = False
+            column['is_enumerate'] = False
+            column['is_boolean'] = False
+            if is_datatype(datatype, Enumerate):
+                column['is_enumerate'] = True
                 column['options'] = datatype.get_namespace(None)
+            elif is_datatype(datatype, Boolean):
+                column['is_boolean'] = True
+            else:
+                column['is_input'] = True
             # Append
             columns.append(column)
         namespace['columns'] = columns
@@ -241,11 +247,17 @@ class CSV(Text, iCSV):
             value = row.get_value(name)
             # Enumerates, use a selection box
             datatype = self.get_datatype(name)
-            is_enumerate = getattr(datatype, 'is_enumerate', False)
-            column['is_enumerate'] = is_enumerate
-            if is_enumerate:
+            column['is_input'] = False
+            column['is_enumerate'] = False
+            column['is_boolean'] = False
+            if is_datatype(datatype, Enumerate):
+                column['is_enumerate'] = True
                 column['options'] = datatype.get_namespace(value)
+            elif is_datatype(datatype, Boolean):
+                column['is_boolean'] = True
+                column['is_selected'] = value
             else:
+                column['is_input'] = True
                 column['value'] = value
             # Append
             columns.append(column)
@@ -262,9 +274,8 @@ class CSV(Text, iCSV):
         row = self.get_row(index)
 
         for name, title in self.get_columns():
-            value = context.get_form_value(name)
             datatype = self.get_datatype(name)
-            value = datatype.decode(value)
+            value = context.get_form_value(name, type=datatype)
             row.set_value(name, value)
 
         self.set_changed()

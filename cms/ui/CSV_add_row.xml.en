@@ -10,7 +10,10 @@
       <dt>${column/title}</dt>
       <dd>
         <input type="text" name="${column/name}" value="${column/value}"
-          stl:if="not column/is_enumerate"/>
+          stl:if="column/is_input" />
+
+        <input type="checkbox" name="${column/name}" value="1"
+          stl:if="column/is_boolean" />
 
         <select name="${column/name}" style="width: 200px"
           stl:if="column/is_enumerate">

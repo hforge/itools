@@ -167,6 +167,7 @@ td, th { padding: 3px; }
 #tabs a#tab_last_changes span { background-image: url(../images/icalendar16.png); }
 #tabs a#tab_to_pdf span { background-image: url(../images/Pdf16.png); }
 #tabs a#tab_help span { background-image: url(../images/help16.png); }
+#tabs a#tab_search span { background-image: url(../images/button_search.png); }
 
 
 /**************************************************************************

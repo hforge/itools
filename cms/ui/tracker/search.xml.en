@@ -4,13 +4,15 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Search</h2>
+  <h2 stl:if="search_name">Search: ${search_title}</h2>
+  <h2 stl:if="not search_name">Search</h2>
   <form action=";search" method="get">
     <input type="hidden" name="search_name" value="${search_name}" />
     <table>
       <tr>
         <td colspan="2">
-          <label for="text">Text</label><br/>
+          <label for="text">Text (search within the title and all
+          comments)</label><br/>
           <input type="text" name="text" id="text" size="40" value="${text}" />
         </td>
       </tr>

@@ -87,17 +87,18 @@ class Tracker(Folder):
                 csv.add_row(row)
             cache['%s.metadata' % name] = self.build_metadata(csv)
         # Pre-defined stored searches
-        all = StoredSearch()
         open = StoredSearch(state=0)
         not_assigned = StoredSearch(assigned_to='nobody')
-        for name, search, title in [('all', all, u'All Issues'),
-                                    ('open', open, u'Open Issues'),
-                                    ('not_assigned', not_assigned,
-                                     u'Not Assigned')]:
-            cache[name] = search
+        high_priority = StoredSearch(state=0, priority=0)
+        i = 0
+        for search, title in [(open, u'Open Issues'),
+                              (not_assigned, u'Not Assigned'),
+                              (high_priority, u'High Priority')]:
+            cache['s%s' % i] = search
             kw = {}
             kw['dc:title'] = {'en': title}
-            cache['%s.metadata' % name] = self.build_metadata(search, **kw)
+            cache['s%s.metadata' % i] = self.build_metadata(search, **kw)
+            i += 1
 
 
     def get_document_types(self):
@@ -288,8 +289,8 @@ class Tracker(Folder):
         users = self.get_handler('/users')
         namespace = {}
         # Columns
-        columns = [('id', u'Id'), ('title', u'Title'), ('module', u'Module'),
-            ('version', u'Version'), ('type', u'Type'),
+        columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),
+            ('module', u'Module'), ('type', u'Type'),
             ('priority', u'Priority'), ('state', u'State'),
             ('assigned_to', u'Assigned To')]
         # Lines
@@ -697,16 +698,99 @@ class Issue(Folder):
     history__access__ = 'is_allowed_to_view'
     history__label__ = u'History'
     def history(self, context):
+        # Set Style
+        css = self.get_handler('/ui/tracker/tracker.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        # Local variables
+        users = self.get_handler('/users')
+        versions = self.get_handler('../versions.csv')
+        types = self.get_handler('../types.csv')
+        states = self.get_handler('../states.csv')
+        modules = self.get_handler('../modules.csv')
+        priorities = self.get_handler('../priorities.csv')
+        # Initial values
+        previous_title = None
+        previous_version = None
+        previous_type = None
+        previous_state = None
+        previous_module = None
+        previous_priority = None
+        previous_assigned_to = None
+
+        # Build the namespace
         namespace = {}
         namespace['number'] = self.name
-
-        users = self.get_handler('/users')
         rows = []
+        i = 0
         for row in self.get_rows():
-            username = row.get_value('username')
+            (datetime, username, title, module, version, type, priority,
+                assigned_to, state, comment, file) = row
             user = users.get_handler(username)
-            rows.append({'datetime': row.get_value('datetime'),
-                         'user': user.get_title()})
+            i += 1
+            row_ns = {'number': i,
+                      'user': user.get_title(),
+                      'datetime': format_datetime(datetime),
+                      'title': None,
+                      'version': None,
+                      'type': None,
+                      'state': None,
+                      'module': None,
+                      'priority': None,
+                      'assigned_to': None,
+                      'comment': XML.encode(comment).replace('\n', '<br>'),
+                      'file': file}
+
+            if title != previous_title:
+                previous_title = title
+                row_ns['title'] = title
+            if version != previous_version:
+                previous_version = version
+                if module is None:
+                    row_ns['version'] = ' '
+                else:
+                    version = versions.get_row_by_id(version).get_value('title')
+                    row_ns['version'] = version
+            if type != previous_type:
+                previous_type = type
+                if type is None:
+                    row_ns['type'] = ' '
+                else:
+                    type = types.get_row_by_id(type).get_value('title')
+                    row_ns['type'] = type
+            if state != previous_state:
+                previous_state = state
+                if state is None:
+                    row_ns['state'] = ' '
+                else:
+                    state = states.get_row_by_id(state).get_value('title')
+                    row_ns['state'] = state
+            if module != previous_module:
+                previous_module = module
+                if module is None:
+                    row_ns['module'] = ' '
+                else:
+                    module = modules.get_row_by_id(module).get_value('title')
+                    row_ns['module'] = module
+            if priority != previous_priority:
+                previous_priority = priority
+                if priority is None:
+                    row_ns['priority'] = ' '
+                else:
+                    priority = priorities.get_row_by_id(priority).get_value(
+                        'title')
+                    row_ns['priority'] = priority
+            if assigned_to != previous_assigned_to:
+                previous_assigned_to = assigned_to
+                if assigned_to:
+                    assigned_to = users.get_handler(assigned_to).get_title()
+                    row_ns['assigned_to'] = assigned_to
+                else:
+                    row_ns['assigned_to'] = ' '
+
+            rows.append(row_ns)
+
+        rows.reverse()
         namespace['rows'] = rows
 
         handler = self.get_handler('/ui/tracker/issue_history.xml')

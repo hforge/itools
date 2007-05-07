@@ -107,9 +107,7 @@
         </td>
       </tr>
       <tr>
-        <td colspan="3" class="tracker_issue_comment_comment">
-          ${comment/comment}
-        </td>
+        <td colspan="3">${comment/comment}</td>
       </tr>
     </table>
     <br/>

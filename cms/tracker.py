@@ -21,7 +21,7 @@ import mimetypes
 from string import Template
 
 # Import from itools
-from itools.datatypes import Boolean, DateTime, Integer, String, Unicode
+from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
 from itools.i18n.locale_ import format_datetime
 from itools.handlers.config import Config
 from itools.csv.csv import IntegerKey, CSV as BaseCSV
@@ -169,6 +169,7 @@ class Tracker(Folder):
             namespace['search_name'] = search_name
             namespace['search_title'] = search.get_property('dc:title')
             namespace['text'] = search.get_value('text', type=Unicode)
+            namespace['mtime'] = search.get_value('mtime', type=Integer)
             module = search.get_value('module', type=Integer)
             type = search.get_value('type', type=Integer)
             version = search.get_value('version', type=Integer)
@@ -179,6 +180,7 @@ class Tracker(Folder):
             namespace['search_name'] = None
             namespace['search_title'] = None
             namespace['text'] = None
+            namespace['mtime'] = None
             module = None
             type = None
             version = None
@@ -227,6 +229,7 @@ class Tracker(Folder):
         stored_search.set_property('dc:title', search_title, 'en')
         # Edit / Search Values
         text = context.get_form_value('text').strip().lower()
+        mtime = context.get_form_value('mtime', type=Integer)
         module = context.get_form_value('module', type=Integer)
         version = context.get_form_value('version', type=Integer)
         type = context.get_form_value('type', type=Integer)
@@ -234,9 +237,9 @@ class Tracker(Folder):
         assign = context.get_form_value('assigned_to')
         state = context.get_form_value('state', type=Integer)
 
-        criterias = [('text', text), ('module', module), ('version', version),
-            ('type', type), ('priority', priority), ('assigned_to', assign),
-            ('state', state)]
+        criterias = [('text', text), ('mtime', mtime), ('module', module),
+            ('version', version), ('type', type), ('priority', priority),
+            ('assigned_to', assign), ('state', state)]
         for name, value in criterias:
             stored_search.set_value(name, value)
  
@@ -256,6 +259,7 @@ class Tracker(Folder):
         text = getter('text', type=Unicode)
         if text is not None:
             text = text.strip().lower()
+        mtime = getter('mtime', type=Integer)
         module = getter('module', type=Integer)
         version = getter('version', type=Integer)
         type = getter('type', type=Integer)
@@ -277,9 +281,13 @@ class Tracker(Folder):
                   'type': self.get_handler('types.csv'),
                   'priority': self.get_handler('priorities.csv'),
                   'state': self.get_handler('states.csv')}
+        now = datetime.now()
         for handler in self.search_handlers(handler_class=Issue):
             if text:
                 if not handler.has_text(text):
+                    continue
+            if mtime is not None:
+                if (now - vfs.get_mtime(handler.uri)).days >= mtime:
                     continue
             if module is not None:
                 if module != handler.get_value('module'):
@@ -294,7 +302,11 @@ class Tracker(Folder):
                 if priority != handler.get_value('priority'):
                     continue
             if assign:
-                if assign != handler.get_value('assigned_to'):
+                value = handler.get_value('assigned_to')
+                if assign == 'nobody':
+                    if value != '':
+                        continue
+                elif assign != value:
                     continue
             if state is not None:
                 if state != handler.get_value('state'):
@@ -308,11 +320,11 @@ class Tracker(Folder):
                 row = tables[name].get_row_by_id(value)
                 line[name] = row and row.get_value('title') or None
             assigned_to = handler.get_value('assigned_to')
-            if assigned_to is None:
-                line['assigned_to'] = ''
-            else:
+            if assigned_to:
                 user = users.get_handler(assigned_to)
                 line['assigned_to'] = user.get_title()
+            else:
+                line['assigned_to'] = ''
             lines.append(line)
         # Sort
         sortby = context.get_form_value('sortby', default='id')
@@ -647,7 +659,7 @@ class Issue(Folder):
                 'number': i,
                 'user': user.get_title(),
                 'datetime': format_datetime(datetime),
-                'comment': comment,
+                'comment': XML.encode(comment).replace('\n', '<br>'),
                 'file': file})
         comments.reverse()
         namespace['comments'] = comments

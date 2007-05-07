@@ -46,6 +46,14 @@
         </td>
       </tr>
       <tr>
+        <td colspan="2">
+          <label for="mtime">Show Issues modified sometime the last</label>
+          <input type="text" name="mtime" id="mtime" size="3"
+            value="${mtime}" />
+          days.
+        </td>
+      </tr>
+      <tr>
         <td valign="top">
           <label for="version">Version</label><br/>
           <select name="version" id="version" class="tracker_select">
@@ -95,6 +103,7 @@
           <label for="assigned_to">Assign To</label><br/>
           <select name="assigned_to" id="assigned_to" class="tracker_select">
             <option value=""></option>
+            <option value="nobody">NOT ASSIGNED</option>
             <option stl:repeat="item users" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>
           </select>

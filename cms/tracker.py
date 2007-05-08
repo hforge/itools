@@ -522,6 +522,8 @@ class Issue(Folder):
     def _add_row(self, context):
         user = context.user
         root = context.root
+        parent = self.parent
+        users = root.get_handler('users')
 
         # Datetime
         row = [datetime.now()]
@@ -559,14 +561,17 @@ class Issue(Folder):
             handler.load_state_from_string(body)
             self.set_handler(filename, handler, format=mimetype)
         # Update
-        self.get_handler('.history').add_row(row)
+        history = self.get_handler('.history')
+        history.add_row(row)
 
         # Send a Notification Email
         # Notify / From
         if user is None:
             from_addr = ''
+            user_title = self.gettext(u'ANONYMOUS')
         else:
             from_addr = user.get_property('ikaaro:email')
+            user_title = user.get_title()
         # Notify / To
         reported_by = self.get_reported_by()
         assigned_to = self.get_value('assigned_to')
@@ -574,21 +579,76 @@ class Issue(Folder):
         if user.name in to_addrs:
             to_addrs.remove(user.name)
         # Notify / Subject
-        title = self.get_value('title')
         subject = '[Tracker Issue #%s] %s' % (self.name, title)
         # Notify / Body
-        body = Template(u'${description}\n'
-                        u'\n'
-                        u'    ${uri}\n')
-
-        comment = self.get_value('comment')
         uri = context.uri.resolve2('../%s/;edit_form' % self.name)
-        body = body.substitute({'description': comment, 'uri': uri})
+        body = str(uri) + '\n\n'
+        body += self.gettext(u'The user %s did some changes.') % user_title
+        body += '\n\n'
+        (kk, kk, title, module, version, type, priority, assigned_to, state,
+            comment, file) = row
+        if len(history.lines) == 1:
+            old_title = old_module = old_version = old_type = old_priority \
+                = old_assigned_to = old_state = None
+        else:
+            (kk, kk, old_title, old_module, old_version, old_type,
+                old_priority, old_assigned_to, old_state, kk, kk
+                ) = history.lines[-2] 
+        if title != old_title:
+            body += self.gettext(u'  Title: %s') % title + '\n'
+        if version != old_version:
+            if version is None:
+                version = ''
+            else:
+                versions = parent.get_handler('versions.csv')
+                version = versions.get_row_by_id(version).get_value('title')
+            body += self.gettext(u'  Version: %s') % version + '\n'
+        if module != old_module:
+            if module is None:
+                module = ''
+            else:
+                modules = parent.get_handler('modules.csv')
+                module = modules.get_row_by_id(module).get_value('title')
+            body += self.gettext(u'  Module: %s') % module + '\n'
+        if type != old_type:
+            if type is None:
+                type = ''
+            else:
+                types = parent.get_handler('types.csv')
+                type = types.get_row_by_id(type).get_value('title')
+            body += self.gettext(u'  Type: %s') % type
+        if priority != old_priority:
+            if priority is None:
+                priority = ''
+            else:
+                priorities = parent.get_handler('priorities.csv')
+                priority = priorities.get_row_by_id(priority).get_value('title')
+            body += self.gettext(u'  Priority: %s') % priority + '\n'
+        if state != old_state:
+            if state is None:
+                state = ''
+            else:
+                states = parent.get_handler('states.csv')
+                state = states.get_row_by_id(state).get_value('title')
+            body += self.gettext(u'  State: %s') % state + '\n'
+        if assigned_to != old_assigned_to:
+            if assigned_to:
+                assigned_to = users.get_handler(assigned_to).get_title()
+            else:
+                assigned_to = ''
+            body += self.gettext(u'  Assigned To: %s') % assigned_to + '\n'
+        if file:
+            body += self.gettext(u'  New Attachement: %s') % file + '\n'
+        if comment:
+            body += self.gettext(u'Comment') + '\n'
+            body += self.gettext(u'-------') + '\n\n'
+            body += comment
+        print body
         # Notify / Send
         for to_addr in to_addrs:
-            to_addr = self.get_handler('/users/%s' % to_addr)
+            to_addr = users.get_handler(to_addr)
             to_addr = to_addr.get_property('ikaaro:email')
-            ##root.send_email(from_addr, to_addr, subject, body)
+            root.send_email(from_addr, to_addr, subject, body)
 
 
     def get_reported_by(self):

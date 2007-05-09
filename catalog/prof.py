@@ -29,17 +29,7 @@ from itools import vfs
 from itools.handlers import Text
 from itools.html import Document as HTMLDocument
 from itools.catalog import Catalog, make_catalog, TextField
-
-
-
-def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
-                  'KB': 1024.0, 'MB': 1024.0*1024.0}):
-    with open('/proc/%d/status' % getpid()) as file:
-        v = file.read()
-    i = v.index('VmSize:')
-    v = v[i:].split(None, 3)  # whitespace
-    # convert Vm value to bytes
-    return float(v[1]) * scale[v[2]]
+from itools.utils import vmsize
 
 
 

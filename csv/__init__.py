@@ -22,15 +22,16 @@ from __future__ import absolute_import
 import mimetypes
 
 # Import from itools
-from .csv import parse, CSV, Row, Catalog, IntegerKey
+from .csv import parse, CSV, Row, IntegerKey
+from .parser import parse
+
 
 __all__ = [
     # Functions
     'parse',
     # Classes
     'CSV',
-    'Row',
-    'Catalog']
+    'Row']
 
 
 

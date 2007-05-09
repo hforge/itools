@@ -16,145 +16,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the future
-from __future__ import absolute_import
-
-# Import from the Standard Library
-import csv as python_csv
-
 # Import from itools
 from itools.datatypes import Unicode, Integer
 from itools.handlers import Text, register_handler_class
-from itools.catalog import EqQuery, AndQuery, get_field
-
-
-###########################################################################
-# Parsing
-###########################################################################
-sniffer = python_csv.Sniffer()
-
-def parse(data, n_columns=None):
-    """
-    This method is a generator that returns one CSV row at a time.
-    To do the job it wraps the standard Python's csv parser.
-    """
-    # Find out the dialect
-    if data:
-        lines = data.splitlines(True)
-        dialect = sniffer.sniff('\n'.join(lines[:10]))
-        # Fix the fucking sniffer
-        dialect.doublequote = True
-        if dialect.delimiter == '':
-            dialect.delimiter = ','
-        # Get the reader
-        reader = python_csv.reader(lines, dialect)
-        # Find out the number of columns, if not specified
-        if n_columns is None:
-            line = reader.next()
-            n_columns = len(line)
-            yield line
-        # Go
-        for line in reader:
-            if len(line) != n_columns:
-                msg = u'CSV syntax error: wrong number of columns at line %d'
-                raise ValueError, msg % reader.line_num
-            yield line
-
-
-###########################################################################
-# Index & Search
-###########################################################################
-
-class Index(dict):
-
-    def _normalise_word(self, word):
-        # XXX temporary until we analyse as the catalog does
-        if word is None:
-            return None
-        elif isinstance(word, bool):
-            word = unicode(int(word))
-        elif not isinstance(word, basestring):
-            word = unicode(word)
-        elif isinstance(word, unicode):
-            word = word.lower()
-
-        return word
-
-
-    def search_word(self, word):
-        word = self._normalise_word(word)
-
-        if word in self:
-            return self[word].copy()
-
-        return {}
-
-
-    def search_range(self, left, right):
-        left = self._normalise_word(left)
-        right = self._normalise_word(right)
-
-        rows = {}
-
-        if not left:
-            for key in self.keys():
-                if  key < right:
-                    for number in self[key]:
-                        rows[number] = rows.get(number, 0) + 1
-        elif not right:
-            for key in self.keys():
-                if left <= key:
-                    for number in self[key]:
-                        rows[number] = rows.get(number, 0) + 1
-        else:
-            for key in self.keys():
-                if left <= key < right:
-                    for number in self[key]:
-                        rows[number] = rows.get(number, 0) + 1
-
-        return rows
+from itools.catalog import EqQuery, AndQuery, get_field, MemoryCatalog
+from parser import parse
 
 
 
-class Catalog(object):
-
-    __slots__ = ['indexes', 'analysers']
-
-    def __init__(self):
-        self.indexes = {}
-        self.analysers = {}
-
-
-    def add_index(self, name, analyser_name):
-        self.indexes[name] = Index()
-        self.analysers[name] = get_field(analyser_name)
-
-
-    def index_document(self, document, number):
-        for name in self.indexes:
-            index = self.indexes[name]
-            analyser = self.analysers[name]
-
-            value = document.get_value(name)
-            for word, position in analyser(value):
-                index.setdefault(word, {})
-                index[word].setdefault(number, [])
-                index[word][number].append(position)
-
-
-    def unindex_document(self, document, number):
-        for name in self.indexes:
-            index = self.indexes[name]
-            analyser = self.analysers[name]
-
-            value = document.get_value(name)
-            for word, position in analyser(value):
-                del index[word][number]
-
-
-###########################################################################
-# Handler
-###########################################################################
 class Row(list):
 
     def get_value(self, name):
@@ -224,7 +93,7 @@ class CSV(Text):
         if self.schema is None:
             self.catalog = None
         else:
-            self.catalog = Catalog()
+            self.catalog = MemoryCatalog()
             for column in self.columns:
                 datatype = self.schema[column]
                 index = getattr(datatype, 'index', None)

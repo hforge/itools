@@ -15,6 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from distutils import core
 from distutils.command.build_py import build_py
@@ -196,3 +199,18 @@ def start_local_import():
 
 def end_local_import():
     __builtins__['__import__'] = pythons_import
+
+
+###########################################################################
+# Benchmarking
+###########################################################################
+def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
+                  'KB': 1024.0, 'MB': 1024.0*1024.0}):
+    with open('/proc/%d/status' % getpid()) as file:
+        v = file.read()
+    i = v.index('VmSize:')
+    v = v[i:].split(None, 3)  # whitespace
+    # convert Vm value to bytes
+    return float(v[1]) * scale[v[2]]
+
+

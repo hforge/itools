@@ -25,14 +25,14 @@ from catalog import Catalog, make_catalog
 from fields import (BaseField, TextField, KeywordField, IntegerField,
                     BoolField, register_field, get_field)
 from queries import EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery
-from prof import vmsize
+from memory import MemoryCatalog
 
 
 __all__ = [
     'make_catalog',
     'Catalog',
     'CatalogAware',
-    'vmsize',
+    'MemoryCatalog',
     # Fields
     'BaseField',
     'TextField',

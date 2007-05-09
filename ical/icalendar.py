@@ -24,9 +24,9 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import Unicode, String
-from itools.catalog import EqQuery, RangeQuery, OrQuery, AndQuery
+from itools.catalog import (EqQuery, RangeQuery, OrQuery, AndQuery,
+    MemoryCatalog)
 from itools.handlers import Text
-from itools.csv import Catalog
 from parser import parse
 from types import data_properties, fold_line
 
@@ -226,7 +226,7 @@ class icalendar(Text):
     def _init_ical(self):
         self.properties = {}
         self.components = {}
-        self.catalog = Catalog()
+        self.catalog = MemoryCatalog()
         self.catalog.add_index('type', 'keyword')
         self.catalog.add_index('dtstart', 'keyword')
         self.catalog.add_index('dtend', 'keyword')

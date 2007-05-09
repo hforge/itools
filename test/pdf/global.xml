@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+<!DOCTYPE document SYSTEM "../rml_1_0.dtd">
+<document filename="pdf/global.pdf">
+  <template leftMargin="1cm" rightMargin="1cm" topMargin="1cm" bottomMargin="1cm" showBoundary="1">
+    <pageTemplate id="main">
+      <pageGraphics>
+      </pageGraphics>
+      <frame id="main_frame_1" x1="1cm" y1="1cm" width="19cm" height="27.7cm"/>
+    </pageTemplate>
+    <pageTemplate id="two_col">
+      <frame id="tc_header" x1="1cm" y1="26cm" width="19cm" height="3cm" />
+      <frame id="tc_1" x1="1cm" y1="1cm" width="9cm" height="24.7cm" />
+      <frame id="tc_2" x1="11cm" y1="1cm" width="9cm" height="24.7cm" />
+    </pageTemplate>
+    <pageTemplate id="landscape" orientation="90">
+      <frame id="landscape_frame_1" x1="1cm" y1="1cm" width="19cm" height="27.7cm"/>
+    </pageTemplate>
+  </template>
+  
+  <stylesheet>
+    <blockTableStyle id="table_center">
+      <!-- <lineStyle kind="GRID" colorName="silver"/> -->
+      <blockAlignment value="CENTER" />
+      <blockFont name="Courrier-Bold" size='20' padding='12' />
+      <blockFont name="Helvetica-BoldOblique" size="20" />
+    </blockTableStyle>
+
+    <blockTableStyle id="two_col_header_table">
+      <lineStyle kind="GRID" colorName="silver" thickness="3" />
+      <blockAlignment value="LEFT" start="O,0" stop="0,-1" />
+      <blockAlignment value="RIGHT" start="1,0" stop="1,-1" />
+  </blockTableStyle>
+</stylesheet>
+
+  <story>
+    <blockTable style="table_center"
+    >
+      <tr>
+        <td>Example
+of
+the
+iRML</td>
+      </tr>
+    </blockTable>
+    <spacer length="1cm" />
+    <para aligment="justify"><font color="red"><b>A first paragraph</b></font>. Post haec Gallus Hierapolim profecturus ut expeditioni specie tenus adesset, Antiochensi plebi suppliciter obsecranti ut inediae dispelleret metum, quae per multas difficilisque causas adfore iam sperabatur, non ut mos est principibus, quorum diffusa potestas localibus subinde medetur aerumnis, disponi quicquam statuit vel ex provinciis alimenta transferri conterminis, sed consularem Syriae Theophilum prope adstantem ultima metuenti multitudini dedit id adsidue replicando quod invito rectore nullus egere poterit victu.</para>
+    <pouet/>
+    <para aligment="justify"><font color="red"><b>A second paragraph</b></font>. Quaestione igitur per multiplices dilatata fortunas cum ambigerentur quaedam, non nulla levius actitata constaret, post multorum clades Apollinares ambo pater et filius in exilium acti cum ad locum Crateras nomine pervenissent, villam scilicet suam quae ab Antiochia vicensimo et quarto disiungitur lapide, ut mandatum est, fractis cruribus occiduntur.</para>
+
+    <spacer length="0.5cm" />
+    <para alignment="center" backColor="teal"><font color="red"><b>2 paragraph in one tag <i>para</i></b></font><br/><font color="red"><b>A first paragraph</b></font>. Mensarum enim voragines et varias voluptatum inlecebras, ne longius progrediar, praetermitto illuc transiturus quod quidam per ampla spatia urbis subversasque silices sine periculi metu properantes equos velut publicos signatis quod dicitur calceis agitant, familiarium agmina tamquam praedatorios globos post terga trahentes ne Sannione quidem, ut ait comicus, domi relicto. quos imitatae matronae complures opertis capitibus et basternis per latera civitatis cuncta discurrunt.<br/><font color="red"><b>A second paragraph</b></font>.Batnae municipium in Anthemusia conditum Macedonum manu priscorum ab Euphrate flumine brevi spatio disparatur, refertum mercatoribus opulentis, ubi annua sollemnitate prope Septembris initium mensis ad nundinas magna promiscuae fortunae convenit multitudo ad commercanda quae Indi mittunt et Seres aliaque plurima vehi terra marique consueta.</para>
+
+    <setNextTemplate name="two_col" />
+    <nextFrame/>
+    <para alignment="center"><font color="blue" size="20"><b><i>A template width 2 columns</i></b></font></para>
+    <spacer length="0.8cm" />
+    <blockTable rowWidths="25%, 75%" style="two_col_header_table">
+      <tr>
+        <td>Table cell 0.0</td>
+        <td>Table cell 1.0</td>
+        <td>Table cell 2.0</td>
+      </tr>
+        <tr>
+        <td>Table cell 0.1</td>
+        <td>Table cell 1.1</td>
+        <td>Table cell 2.1</td>
+      </tr>
+    </blockTable>
+    <nextFrame/>
+    <para aligment="justify"><font color="red"><b>A first paragraph</b></font>. Post haec Gallus Hierapolim profecturus ut expeditioni specie tenus adesset, Antiochensi plebi suppliciter obsecranti ut inediae dispelleret metum, quae per multas difficilisque causas adfore iam sperabatur, non ut mos est principibus, quorum diffusa potestas localibus subinde medetur aerumnis, disponi quicquam statuit vel ex provinciis alimenta transferri conterminis, sed consularem Syriae Theophilum prope adstantem ultima metuenti multitudini dedit id adsidue replicando quod invito rectore nullus egere poterit victu.</para>
+    <pouet/>
+    <para aligment="justify"><font color="red"><b>A second paragraph</b></font>. Quaestione igitur per multiplices dilatata fortunas cum ambigerentur quaedam, non nulla levius actitata constaret, post multorum clades Apollinares ambo pater et filius in exilium acti cum ad locum Crateras nomine pervenissent, villam scilicet suam quae ab Antiochia vicensimo et quarto disiungitur lapide, ut mandatum est, fractis cruribus occiduntur.</para>
+    <spacer length="1cm" />
+    <xpre>This is a preformatted widget.
+<u>his code</u>
+&lt;xpre&gt;This is a preformatted widget.
+&lt;u&gt;his code&lt;/u&gt;&lt;/xpre&gt;</xpre>
+
+  <spacer length="2cm" />
+  <keepInFrame maxHeight="1cm"><para aligment="justify"><font color="red"><b>A first paragraph</b></font>. Post haec Gallus Hierapolim profecturus ut expeditioni specie tenus adesset, Antiochensi plebi suppliciter obsecranti ut inediae dispelleret metum, quae per multas difficilisque causas adfore iam sperabatur, non ut mos est principibus, quorum diffusa potestas localibus subinde medetur aerumnis, disponi quicquam statuit vel ex provinciis alimenta transferri conterminis, sed consularem Syriae Theophilum prope adstantem ultima metuenti multitudini dedit id adsidue replicando quod invito rectore nullus egere poterit victu.</para>
+</keepInFrame>
+  <nextFrame/>
+  <para alignment="center" backColor="teal"><font color="red"><b>2 paragraph in one tag <i>para</i></b></font><br/><font color="red"><b>A first paragraph</b></font>. Mensarum enim voragines et varias voluptatum inlecebras, ne longius progrediar, praetermitto illuc transiturus quod quidam per ampla spatia urbis subversasque silices sine periculi metu properantes equos velut publicos signatis quod dicitur calceis agitant, familiarium agmina tamquam praedatorios globos post terga trahentes ne Sannione quidem, ut ait comicus, domi relicto. quos imitatae matronae complures opertis capitibus et basternis per latera civitatis cuncta discurrunt.<br/><font color="red"><b>A second paragraph</b></font>.Batnae municipium in Anthemusia conditum Macedonum manu priscorum ab Euphrate flumine brevi spatio disparatur, refertum mercatoribus opulentis, ubi annua sollemnitate prope Septembris initium mensis ad nundinas magna promiscuae fortunae convenit multitudo ad commercanda quae Indi mittunt et Seres aliaque plurima vehi terra marique consueta.</para>
+
+  <setNextTemplate name="landscape" />
+  <nextFrame/>
+    <keepInFrame maxHeight="1cm" maxWidth="3cm"><para aligment="justify"><font color="red"><b>A first paragraph</b></font>. Post haec Gallus Hierapolim profecturus ut expeditioni specie tenus adesset, Antiochensi plebi suppliciter obsecranti ut inediae dispelleret metum, quae per multas difficilisque causas adfore iam sperabatur, non ut mos est principibus, quorum diffusa potestas localibus subinde medetur aerumnis, disponi quicquam statuit vel ex provinciis alimenta transferri conterminis, sed consularem Syriae Theophilum prope adstantem ultima metuenti multitudini dedit id adsidue replicando quod invito rectore nullus egere poterit victu.</para>
+</keepInFrame>
+
+    <blockTable style="table_center"
+    >
+      <tr>
+        <td>Example
+of
+the
+iRML</td>
+      </tr>
+    </blockTable>
+    <spacer length="1cm" />
+    <para aligment="justify"><font color="red"><b>A first paragraph</b></font>. Post haec Gallus Hierapolim profecturus ut expeditioni specie tenus adesset, Antiochensi plebi suppliciter obsecranti ut inediae dispelleret metum, quae per multas difficilisque causas adfore iam sperabatur, non ut mos est principibus, quorum diffusa potestas localibus subinde medetur aerumnis, disponi quicquam statuit vel ex provinciis alimenta transferri conterminis, sed consularem Syriae Theophilum prope adstantem ultima metuenti multitudini dedit id adsidue replicando quod invito rectore nullus egere poterit victu.</para>
+    <pouet/>
+    <para aligment="justify"><font color="red"><b>A second paragraph</b></font>. Quaestione igitur per multiplices dilatata fortunas cum ambigerentur quaedam, non nulla levius actitata constaret, post multorum clades Apollinares ambo pater et filius in exilium acti cum ad locum Crateras nomine pervenissent, villam scilicet suam quae ab Antiochia vicensimo et quarto disiungitur lapide, ut mandatum est, fractis cruribus occiduntur.</para>
+
+    <spacer length="0.5cm" />
+    <para alignment="center" backColor="teal"><font color="red"><b>2 paragraph in one tag <i>para</i></b></font><br/><font color="red"><b>A first paragraph</b></font>. Mensarum enim voragines et varias voluptatum inlecebras, ne longius progrediar, praetermitto illuc transiturus quod quidam per ampla spatia urbis subversasque silices sine periculi metu properantes equos velut publicos signatis quod dicitur calceis agitant, familiarium agmina tamquam praedatorios globos post terga trahentes ne Sannione quidem, ut ait comicus, domi relicto. quos imitatae matronae complures opertis capitibus et basternis per latera civitatis cuncta discurrunt.<br/><font color="red"><b>A second paragraph</b></font>.Batnae municipium in Anthemusia conditum Macedonum manu priscorum ab Euphrate flumine brevi spatio disparatur, refertum mercatoribus opulentis, ubi annua sollemnitate prope Septembris initium mensis ad nundinas magna promiscuae fortunae convenit multitudo ad commercanda quae Indi mittunt et Seres aliaque plurima vehi terra marique consueta.</para>
+
+  </story>
+
+</document>
+

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?>
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document filename="27.pdf" debug="0" invariant="0" compression="1">
+
+
+<template pageSize="(595, 842)" leftMargin="72" showBoundary="1">
+	<pageTemplate id="main">
+	<pageGraphics>
+		<setFont name="Helvetica-BoldOblique" size="18"/>
+		<drawRightString x="523" y="800">RML2PDF Test Suite - Test #029 keepInFrame</drawRightString>
+	</pageGraphics>
+	<frame id="F1" x1="2.5cm" y1="15.5cm" width="170" height="284"/>
+	<frame id="F2" x1="11.5cm" y1="15.5cm" width="170" height="284"/>
+	<frame id="F3" x1="2.5cm" y1="2.5cm" width="170" height="284"/>
+	<frame id="F4" x1="11.5cm" y1="2.5cm" width="170" height="284"/>
+	</pageTemplate>
+
+	<pageTemplate id="newsletter">
+	<pageGraphics>
+		<setFont name="Helvetica-BoldOblique" size="18"/>
+		<drawRightString x="523" y="800">RML2PDF Test Suite - Test #029 keepInFrame</drawRightString>
+	</pageGraphics>
+	<frame id="top" x1="10%" y1="80%" width="80%" height="10%"/>
+	<frame id="upper" x1="10%" y1="60%" width="55%" height="15%"/>
+	<frame id="middle" x1="10%" y1="35%" width="55%" height="20%"/>
+	<frame id="lowerleft" x1="10%" y1="10%" width="25%" height="20%"/>
+	<frame id="lowerright" x1="40%" y1="10%" width="25%" height="20%"/>
+	<frame id="sidebar" x1="70%" y1="10%" width="20%" height="65%"/>
+	</pageTemplate>
+
+
+</template>
+
+<stylesheet>
+	<initialize>
+    <alias id="bt" value="style.BodyText"/>
+    <alias id="n" value="Normal" />
+    <alias id="h1" value="Heading1" />
+    <alias id="my_heading_one" value="h1" />
+    <alias id="normal_bis" value="n" />
+    <alias id="foo_alias" value="my_heading_one" />
+	</initialize>
+</stylesheet>
+<story>
+
+  <para style="bt">foo</para>
+  <para style="n">foo</para>
+  <para style="h1">foo</para>
+  <para style="my_heading_one">foo</para>
+  <para style="normal_bis">foo</para>
+  <para style="foo_alias">foo</para>
+</story>
+</document>
+

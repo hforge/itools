@@ -4,6 +4,8 @@
   <stylesheet>
     <initialize></initialize>
     <blockTableStyle id="myBlockTableStyle">
+      <lineStyle kind="grid" colorName="silver"/>
+
       <!-- This sets a font for every cell from the start of the -->
       <!-- second row down to the bottom right hand corner       -->
       <blockFont name="Courier-Bold" start="0,1" stop="-1,-1"/>

@@ -21,7 +21,8 @@ import sys
 import unittest
 
 # Import from itools
-from itools.pdf.rml import rmltopdf_test, rmltopdf, strip
+from itools.pdf.rml import rmltopdf_test, rmltopdf, normalize, stream_next
+from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm
@@ -29,18 +30,136 @@ from reportlab.platypus.doctemplate import LayoutError
 
 class FunctionTestCase(unittest.TestCase):
 
-    def test_strip(self):
-        s = ""
-        _s = strip(s)
-        self.assertEqual(_s, "")
+    def test_normalize(self):
+        s = u''
+        _s = normalize(s)
+        self.assertEqual(_s, u'')
         
-        s = ""
-        _s = strip(s, True)
-        self.assertEqual(_s, "")
+        s = u''
+        _s = normalize(s, True)
+        self.assertEqual(_s, u'')
         
-        s = " "
-        _s = strip(s, True)
-        self.assertEqual(_s, " ")
+        s = u' '
+        _s = normalize(s, True)
+        self.assertEqual(_s, u' ')
+
+        s = u'\t \t   foo \t \t is \t \t \t not \t      \t bar \t \t \t'
+        _s = normalize(s, False)
+        self.assertEqual(_s, u'foo is not bar')
+        _s = normalize(s, True)
+        self.assertEqual(_s, u' foo is not bar ')
+
+
+    def test_stream_next(self):
+        from pprint import pprint
+        xml = '<document><foo at="bar">foo content</foo><table><tr bg="red">'
+        xml += '<td>cell1</td></tr></table>'
+        xml += '<para aligment="left">para content</para></document>'
+
+        stream = Parser(xml)
+        # <document>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name, attributes, ns_decls = value
+        self.assertEqual(event, START_ELEMENT)
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'document')
+        self.assertEqual(attributes, {})
+        self.assertEqual(ns_decls, {})
+
+        # <foo at="bar">
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name, attributes, ns_decls = value
+        self.assertEqual(event, START_ELEMENT)
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'foo')
+        self.assertEqual(attributes, {(None, 'at'): 'bar'})
+        self.assertEqual(ns_decls, {})
+
+        # content
+        event, value, line_number = stream_next(stream)
+        self.assertEqual(value, 'foo content')
+
+        # </foo>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'foo')
+
+        # <table>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name, attributes, ns_decls = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(event, START_ELEMENT)
+        self.assertEqual(tag_name, 'table')
+        self.assertEqual(attributes, {})
+        self.assertEqual(ns_decls, {})
+
+        # <tr>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name, attributes, ns_decls = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(event, START_ELEMENT)
+        self.assertEqual(tag_name, 'tr')
+        self.assertEqual(attributes, {(None, 'bg'): 'red'})
+        self.assertEqual(ns_decls, {})
+
+        # <td>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name, attributes, ns_decls = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(event, START_ELEMENT)
+        self.assertEqual(tag_name, 'td')
+        self.assertEqual(attributes, {})
+        self.assertEqual(ns_decls, {})
+
+        # cell1
+        event, value, line_number = stream_next(stream)
+        self.assertEqual(event, TEXT)
+        self.assertEqual(value, 'cell1')
+
+        # </td>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'td')
+
+        # </tr>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'tr')
+
+        # </table>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'table')
+
+        # <para>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name, attributes, ns_decls = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(event, START_ELEMENT)
+        self.assertEqual(tag_name, 'para')
+        self.assertEqual(attributes, {(None, 'aligment'): 'left'})
+        self.assertEqual(ns_decls, {})
+
+        # para content
+        event, value, line_number = stream_next(stream)
+        self.assertEqual(event, TEXT)
+        self.assertEqual(value, 'para content')
+
+        # </para>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'para')
+
+        # </document>
+        event, value, line_number = stream_next(stream)
+        tag_uri, tag_name = value
+        self.assertEqual(tag_uri, None)
+        self.assertEqual(tag_name, 'document')
 
 
 class DocumentTestCase(unittest.TestCase):
@@ -91,6 +210,21 @@ class StylesheetTestCase(unittest.TestCase):
     
     def test_template(self):
         story, stylesheet = rmltopdf_test('pdf/25.xml')
+        content = rmltopdf('pdf/25.xml')
+        f = open('pdf/25.pdf', 'w')
+        f.write(content)
+        f.close()
+
+
+    def test_alias(self):
+        story, stylesheet = rmltopdf_test('pdf/27.xml')
+        self.assertEqual(len(story), 6)
+        self.assertEqual(story[0].style.parent.name, 'BodyText')
+        self.assertEqual(story[1].style.parent.name, 'Normal')
+        self.assertEqual(story[2].style.parent.name, 'Heading1')
+        self.assertEqual(story[3].style.parent.name, 'Heading1')
+        self.assertEqual(story[4].style.parent.name, 'Normal')
+        self.assertEqual(story[5].style.parent.name, 'Heading1')
         
 
 class StoryTestCase(unittest.TestCase):
@@ -120,9 +254,15 @@ class StoryTestCase(unittest.TestCase):
         story, stylesheet = rmltopdf_test('pdf/08.xml')
         self.assertEqual(len(story), 0)
 
-
+    def test_keepinframe(self):
+        content = rmltopdf('pdf/26.xml')
+        f = open('pdf/26.pdf', 'w')
+        f.write(content)
+        f.close()
+              
+              
 class ImageTestCase(unittest.TestCase):
-
+             
     def test_image(self):
         story, stylesheet = rmltopdf_test('pdf/05.xml')
         self.assertEqual(len(story), 9)
@@ -150,6 +290,14 @@ class TableTestCase(unittest.TestCase):
         story, stylesheet = rmltopdf_test('pdf/14.xml')
         self.assertEqual(len(story), 1)
 
+
+class GlobalTestCase(unittest.TestCase):
+
+    def test_global(self):
+        content = rmltopdf('pdf/global.xml')
+        f = open('pdf/global.pdf', 'w')
+        f.write(content)
+        f.close()
 
 
 if __name__ == '__main__':

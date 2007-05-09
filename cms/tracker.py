@@ -573,9 +573,13 @@ class Issue(Folder):
             from_addr = user.get_property('ikaaro:email')
             user_title = user.get_title()
         # Notify / To
+        to_addrs = set()
         reported_by = self.get_reported_by()
+        if reported_by:
+            to_addrs.add(reported_by)
         assigned_to = self.get_value('assigned_to')
-        to_addrs = set([reported_by, assigned_to])
+        if assigned_to:
+            to_addrs.add(assigned_to)
         if user.name in to_addrs:
             to_addrs.remove(user.name)
         # Notify / Subject
@@ -643,7 +647,6 @@ class Issue(Folder):
             body += self.gettext(u'Comment') + '\n'
             body += self.gettext(u'-------') + '\n\n'
             body += comment
-        print body
         # Notify / Send
         for to_addr in to_addrs:
             to_addr = users.get_handler(to_addr)

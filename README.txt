@@ -4,13 +4,14 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.catalog        itools.http             itools.uri
-  itools.cms            itools.i18n             itools.vfs
-  itools.csv            itools.ical             itools.web
-  itools.datatypes      itools.rss              itools.workflow
-  itools.gettext        itools.schemas          itools.xhtml
-  itools.handlers       itools.stl              itools.xliff
-  itools.html           itools.tmx              itools.xml
+  itools.catalog        itools.i18n             itools.vfs
+  itools.cms            itools.ical             itools.web
+  itools.csv            itools.pdf              itools.workflow
+  itools.datatypes      itools.rss              itools.xhtml
+  itools.gettext        itools.schemas          itools.xliff
+  itools.handlers       itools.stl              itools.xml
+  itools.html           itools.tmx
+  itools.http           itools.uri
 
 The scripts included are:
 

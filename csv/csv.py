@@ -112,8 +112,7 @@ class CSV(Text):
         schema = self.schema
         if schema is None:
             for line in parse(data):
-                row = [ unicode(x, self.encoding) for x in line ]
-                self._add_row(row)
+                self._add_row(line)
         else:
             columns = self.columns
             for line in parse(data, len(columns)):

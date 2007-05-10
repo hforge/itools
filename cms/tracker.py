@@ -26,6 +26,7 @@ from itools.i18n.locale_ import format_datetime
 from itools.handlers.config import Config
 from itools.csv.csv import IntegerKey, CSV as BaseCSV
 from itools.stl import stl
+from itools.uri import Query
 from itools import vfs
 from itools.web import get_context
 from csv import CSV
@@ -487,10 +488,11 @@ class Issue(Folder):
     class_title = u'Issue'
     class_description = u'Issue'
     class_views = [
-        ['edit_form'],
-        ['history'],
+        ['search_form'],
         ['add_form'],
-        ['browse_content?mode=list']]
+        ['browse_content?mode=list'],
+        ['edit_form'],
+        ['history']]
 
 
     def new(self, **kw):
@@ -874,9 +876,41 @@ class Issue(Folder):
     add_form__access__ = 'is_allowed_to_edit'
     add_form__label__ = u'Add'
     def add_form(self, context):
-        type = context.get_form_value('type')
         reference = '../;add_form'
         return context.uri.resolve(reference)
+
+
+    search_form__access__ = 'is_allowed_to_edit'
+    search_form__label__ = u'search'
+    def search_form(self, context):
+        reference = '../;search_form'
+        return context.uri.resolve(reference)
+
+
+    def get_subviews(self, name):
+        if name == 'search_form':
+            tracker = self.parent
+            stored_search = tracker.search_handlers(handler_class=StoredSearch)
+            return ['view?search_name=%s' % x.name for x in stored_search]
+        return Folder.get_subviews(self, name)
+
+
+    view__access__ = Tracker.view__access__
+    view__label__ = Tracker.view__label__
+    def view(self, context):
+        query = Query.encode(context.uri.query)
+        reference = '../;view?%s' % query
+        return context.uri.resolve(reference)
+
+
+    def view__sublabel__(self, **kw):
+        search_name = kw.get('search_name')
+        if search_name is None:
+            return u'View'
+
+        search = self.parent.get_handler(search_name)
+        return search.get_title()
+
 
 register_object_class(Issue)
 

@@ -339,6 +339,7 @@ class Tracker(Folder):
                 row = tables[name].get_row_by_id(value)
                 line[name] = row and row.get_value('title') or None
             assigned_to = handler.get_value('assigned_to')
+            # solid in case the user has been removed
             if assigned_to and users.has_handler(assigned_to):
                     user = users.get_handler(assigned_to)
                     line['assigned_to'] = user.get_title()
@@ -796,10 +797,13 @@ class Issue(Folder):
         for row in self.get_rows():
             (datetime, username, title, module, version, type, priority,
                 assigned_to, state, comment, file) = row
-            user = users.get_handler(username)
+            # solid in case the user has been removed
+            user_exist = users.has_handler(username) 
+            usertitle = (user_exist and 
+                         users.get_handler(username).get_title() or username)
             i += 1
             row_ns = {'number': i,
-                      'user': user.get_title(),
+                      'user': usertitle,
                       'datetime': format_datetime(datetime),
                       'title': None,
                       'version': None,
@@ -852,9 +856,9 @@ class Issue(Folder):
                     row_ns['priority'] = priority
             if assigned_to != previous_assigned_to:
                 previous_assigned_to = assigned_to
-                if assigned_to:
-                    assigned_to = users.get_handler(assigned_to).get_title()
-                    row_ns['assigned_to'] = assigned_to
+                if assigned_to and users.has_handler(assigned_to):
+                    assigned_to_user = users.get_handler(assigned_to)
+                    row_ns['assigned_to'] = assigned_to_user.get_title()
                 else:
                     row_ns['assigned_to'] = ' '
 

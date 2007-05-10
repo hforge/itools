@@ -545,8 +545,8 @@ class Index(object):
             docs_file = None
         else:
             base = vfs.open(self.uri)
-            tree_file = base.open('tree')
-            docs_file = base.open('docs')
+            tree_file = base.open('%s_tree' % self.n)
+            docs_file = base.open('%s_docs' % self.n)
         # Search in the data structure
         try:
             # XXX Recursive implementation. Maybe we should try an iterative

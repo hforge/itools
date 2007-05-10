@@ -23,25 +23,12 @@ import time
 from itools.handlers import File, Text, register_handler_class
 
 
-# Line types
-BLANK = 'blank'
-FUZZY = 'fuzzy'
-COMMENT = 'comment'
-MSGID = 'msgid'
-MSGSTR = 'msgstr'
-STRING = 'string'
-EOF = None
-
-# The regular expressions for the line types
-re_comment = re.compile('^#.*')
-re_msgid = re.compile(r'^msgid *"(.*[^\\]*)"$')
-re_msgstr = re.compile(r'^msgstr *"(.*[^\\]*)"$')
-re_str = re.compile(r'^"(.*[^\\])"$')
-
-# Module exceptions
+###########################################################################
+# Exceptions
 # To improve exceptions see:
 # - http://python.org/doc/2.3.3/lib/module-exceptions.html,
 # - http://python.org/doc/2.3.3/tut/node10.html
+###########################################################################
 class POError(Exception):
     pass
 
@@ -58,6 +45,77 @@ class POSyntaxError(Exception):
             return 'syntax error at line %d' % self.line_number
         return 'unexpected %s at line %d' % (self.line_type, self.line_number)
 
+
+
+###########################################################################
+# Parser
+###########################################################################
+# Line types
+BLANK = 'blank'
+FUZZY = 'fuzzy'
+COMMENT = 'comment'
+MSGID = 'msgid'
+MSGSTR = 'msgstr'
+STRING = 'string'
+EOF = None
+
+# The regular expressions for the line types
+re_comment = re.compile('^#.*')
+re_msgid = re.compile(r'^msgid *"(.*[^\\]*)"$')
+re_msgstr = re.compile(r'^msgstr *"(.*[^\\]*)"$')
+re_str = re.compile(r'^"(.*[^\\])"$')
+
+
+def get_lines(data):
+    lines = data.split('\n') + ['']
+    line_number = 0
+    while line_number <= len(lines):
+        # Check for end of file
+        if line_number == len(lines):
+            yield EOF, None, line_number
+            break
+
+        # Load line
+        line = lines[line_number].strip()
+        line_number += 1
+
+        # Empty
+        if not line:
+            yield BLANK, None, line_number
+        # Fuzzy flag
+        elif line == '#, fuzzy':
+            yield FUZZY, None, line_number
+        # Comment
+        elif line.startswith('#'):
+            yield COMMENT, line[1:], line_number
+        # msgid
+        elif line.startswith('msgid'):
+            match = re_msgid.match(line)
+            if match is not None:
+                value = match.group(1)
+                yield MSGID, unescape(value), line_number
+        # msgstr
+        elif line.startswith('msgstr'):
+            match = re_msgstr.match(line)
+            if match is not None:
+                value = match.group(1)
+                yield MSGSTR, unescape(value), line_number
+        # string
+        elif line.startswith('"'):
+            match = re_str.match(line)
+            if match is not None:
+                value = match.group(1)
+                yield STRING, unescape(value), line_number
+
+        # Unknown
+        else:
+            raise POSyntaxError(line_number)
+
+
+
+###########################################################################
+# Handler
+###########################################################################
 
 # Escape and unescape strings
 def escape(s):
@@ -130,6 +188,25 @@ class Message(object):
         return ''.join(s)
 
 
+skeleton = """# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\\n"
+"POT-Creation-Date: %(pot_creation_date)s\\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n"
+"Language-Team: LANGUAGE <LL@li.org>\\n"
+"MIME-Version: 1.0\\n"
+"Content-Type: text/plain; charset=UTF-8\\n"
+"Content-Transfer-Encoding: 8bit\\n"
+"""
+
+
 
 class PO(Text):
 
@@ -138,92 +215,23 @@ class PO(Text):
 
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'messages', 'lines', 'encoding']
+                 'messages', 'encoding']
 
     def new(self):
         # XXX Old style (like in the "get_skeleton" times)
-        skeleton = self.get_skeleton()
-        self.load_state_from_string(skeleton)
-
-
-    @classmethod
-    def get_skeleton(cls):
         now = time.strftime('%Y-%m-%d %H:%m+%Z', time.gmtime(time.time()))
-        lines = ["# SOME DESCRIPTIVE TITLE.",
-                 "# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER",
-                 "# This file is distributed under the same license as the PACKAGE package.",
-                 "# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.",
-                 "#",
-                 "#, fuzzy",
-                 'msgid ""',
-                 'msgstr ""',
-                 '"Project-Id-Version: PACKAGE VERSION\\n"',
-                 '"POT-Creation-Date: %s\\n"' % now,
-                 '"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"',
-                 '"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n"',
-                 '"Language-Team: LANGUAGE <LL@li.org>\\n"',
-                 '"MIME-Version: 1.0\\n"',
-                 '"Content-Type: text/plain; charset=UTF-8\\n"',
-                 '"Content-Transfer-Encoding: 8bit\\n"']
-        return '\n'.join(lines)
+        self.load_state_from_string(skeleton % {'pot_creation_date': now})
 
 
     #######################################################################
     # Parsing
     #######################################################################
-    def next_line(self):
-        lines = self.lines
-        line_number = 0
-        while line_number <= len(lines):
-            # Check for end of file
-            if line_number == len(lines):
-                yield EOF, None, line_number
-                break
-
-            # Load line
-            line = lines[line_number].strip()
-            line_number += 1
-
-            # Empty
-            if not line:
-                yield BLANK, None, line_number
-            # Fuzzy flag
-            elif line == '#, fuzzy':
-                yield FUZZY, None, line_number
-            # Comment
-            elif line.startswith('#'):
-                yield COMMENT, line[1:], line_number
-            # msgid
-            elif line.startswith('msgid'):
-                match = re_msgid.match(line)
-                if match is not None:
-                    value = match.group(1)
-                    yield MSGID, unescape(value), line_number
-            # msgstr
-            elif line.startswith('msgstr'):
-                match = re_msgstr.match(line)
-                if match is not None:
-                    value = match.group(1)
-                    yield MSGSTR, unescape(value), line_number
-            # string
-            elif line.startswith('"'):
-                match = re_str.match(line)
-                if match is not None:
-                    value = match.group(1)
-                    yield STRING, unescape(value), line_number
-
-            # Unknown
-            else:
-                raise POSyntaxError(line_number)
-
-
-    def next_entry(self):
+    def next_entry(self, data):
         # Initialize entry information
         id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
         # Parse entry
         state = 0
-        for m in self.next_line():
-            line_type, value, line_number = m
+        for line_type, value, line_number in get_lines(data):
             # Syntactic and semantic analysis
             if state == 0:
                 # Wait for an entry
@@ -332,10 +340,9 @@ class PO(Text):
 
         # Split the data by lines and intialize the line index
         data = file.read()
-        self.lines = data.split('\n') + ['']
 
         # Add entries
-        for entry in self.next_entry():
+        for entry in self.next_entry(data):
             entry_id, comments, msgid, msgstr, fuzzy, line_number = entry
             # Check for duplicated messages
             if entry_id in self.messages:

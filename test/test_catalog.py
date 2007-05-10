@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,313 +16,190 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from datetime import date
+import random
 import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.handlers import get_handler, Text
-from itools.catalog import Catalog, Range, TextField
+from itools import vfs
+from itools.catalog import (make_catalog, Catalog, CatalogAware, BoolField,
+    KeywordField, TextField, IntegerField, RangeQuery)
 from itools.catalog import io
-from itools.catalog.index import Index
-from itools.catalog.catalog import Document
 
 
 
 class IOTestCase(TestCase):
 
     def test_byte(self):
-        value = 27
-        encoded_value = io.encode_byte(value)
-        self.assertEqual(io.decode_byte(encoded_value), value)
+        for value in range(255):
+            aux = io.encode_byte(value)
+            aux = io.decode_byte(aux)
+            self.assertEqual(aux, value)
 
 
     def test_unit32(self):
-        value = 1234
-        encoded_value = io.encode_uint32(value)
-        self.assertEqual(io.decode_uint32(encoded_value), value)
+        for value in random.sample(xrange(2**30), 255):
+            aux = io.encode_uint32(value)
+            aux = io.decode_uint32(aux)
+            self.assertEqual(aux, value)
 
 
     def test_vint(self):
-        value = 1234567890
-        encoded_value = io.encode_vint(value)
-        self.assertEqual(io.decode_vint(encoded_value)[0], value)
+        for value in random.sample(xrange(2**30), 255):
+            aux = io.encode_vint(value)
+            aux = io.decode_vint(aux)
+            self.assertEqual(aux[0], value)
 
 
     def test_character(self):
-        value = u'X'
-        encoded_value = io.encode_character(value)
-        self.assertEqual(io.decode_character(encoded_value), value)
+        for value in u"L'inégalité parmi les hommes":
+            aux = io.encode_character(value)
+            aux = io.decode_character(aux)
+            self.assertEqual(aux, value)
 
 
     def test_string(self):
-        value = u'aquilas non captis muscas'
-        encoded_value = io.encode_string(value)
-        self.assertEqual(io.decode_string(encoded_value)[0], value)
+        for value in [u"L'inégalité parmi les hommes",
+                      u'Aquilas non captis muscas']:
+            aux = io.encode_string(value)
+            aux = io.decode_string(aux)
+            self.assertEqual(aux[0], value)
 
 
     def test_link(self):
-        for value in [0, 513]:
-            encoded_value = io.encode_link(value)
-            self.assertEqual(io.decode_link(encoded_value), value)
+        for value in random.sample(xrange(2**30), 255):
+            aux = io.encode_link(value)
+            aux = io.decode_link(aux)
+            self.assertEqual(aux, value)
+        # NULL
+        aux = io.encode_link(None)
+        aux = io.decode_link(aux)
+        self.assertEqual(aux, None)
 
 
     def test_version(self):
-        value = '20050217'
-        encoded_value = io.encode_version(value)
-        self.assertEqual(io.decode_version(encoded_value), value)
+        today = date.today()
+        today = today.strftime('%Y%m%d')
+        for value in [Catalog.class_version, today]:
+            aux = io.encode_version(value)
+            aux = io.decode_version(aux)
+            self.assertEqual(aux, value)
 
 
 
-class AnalysersTestCase(TestCase):
+class FieldsTestCase(TestCase):
 
-    def test_hello(self):
-        words = list(TextField.split(u'Hello world'))
-        self.assertEqual(words, [(u'hello', 0), (u'world', 1)])
-
-
-    def test_accents(self):
-        words = list(TextField.split(u'Te doy una canción'))
-        self.assertEqual(words, [(u'te', 0), (u'doy', 1), (u'una', 2),
-                                 (u'canción', 3)])
+    def test_boolean_true(self):
+        words = list(BoolField.split(True))
+        self.assertEqual(words, [(u'1', 0)])
 
 
-    def test_russian(self):
+    def test_boolean_false(self):
+        words = list(BoolField.split(False))
+        self.assertEqual(words, [(u'0', 0)])
+
+
+    def test_keyword(self):
+        value = 'Hello World'
+        words = list(KeywordField.split(value))
+
+        self.assertEqual(words, [(u'Hello World', 0)])
+
+
+    def test_integer(self):
+        for value in random.sample(xrange(1000000000), 255):
+            words = list(IntegerField.split(value))
+            self.assertEqual(len(words), 1)
+            word, position = words[0]
+            self.assertEqual(position, 0)
+            self.assertEqual(type(word), unicode)
+            self.assertEqual(int(word), value)
+
+
+    def test_text(self):
+        value = (u'Celle-ci consiste dans les differents Privileges, dont'
+                 u' quelques-uns jouissent, au préjudice des autres,')
+        expected = [u'celle', u'ci', u'consiste', u'dans', u'les',
+            u'differents', u'privileges', u'dont', u'quelques', u'uns',
+            u'jouissent', u'au', u'préjudice', u'des', u'autres']
+
+        words = list(TextField.split(value))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+ 
+
+    def test_text_russian(self):
         text = u'Это наш дом'
         words = list(TextField.split(text))
         self.assertEqual(words, [(u'это', 0), (u'наш', 1),  (u'дом', 2)])
 
 
 
-class IndexTestCase(TestCase):
-
-    def test00_new(self):
-        index = Index()
-        # Index "hello world"
-        index.index_term(u'hello', 0, 0)
-        index.index_term(u'world', 0, 1)
-        # Save
-        index.save_state_to('tests/index')
-
-
-    def test01_load_and_search(self):
-        index = Index('tests/index')
-        self.assertEqual(index.search_word(u'heelo'), {})
-        self.assertEqual(index.search_word(u'hello'), {0: [0]})
-        self.assertEqual(index.search_word(u'world'), {0: [1]})
-
-
-    def test02_unindex(self):
-        index = Index('tests/index')
-        index.unindex_term(u'hello', 0)
-        index.save_state()
-
-
-    def test03_load_and_search(self):
-        index = Index('tests/index')
-        self.assertEqual(index.search_word(u'hello'), {})
-        self.assertEqual(index.search_word(u'world'), {0: [1]})
-
-
-    def test04_search_range(self):
-        index = Index('tests/index')
-        # Index data
-        index.index_term(u'1975-05-28', 1, 0)
-        index.index_term(u'2003-03-03', 2, 0)
-        index.index_term(u'2006-07-08', 3, 0)
-        index.index_term(u'2006-07-09', 4, 0)
-        index.save_state()
-        # Test search
-        self.assertEqual(index.search_range(u'2003-03-03', u'2006-07-09'),
-                         {2: 1, 3: 1})
-        self.assertEqual(index.search_range(u'', u'2006-07-09'),
-                         {1: 1, 2: 1, 3: 1})
-        self.assertEqual(index.search_range(u'2003-03-03', u'6666-12-31'),
-                         {2: 1, 3: 1, 4: 1})
-
-
-
-class DocumentsTestCase(TestCase):
-
-    def xtest00_new(self):
-        documents = Documents()
-        # Index document
-        document = Document(u'hello world')
-        doc_n = documents.index_document(document)
-        self.assertEqual(doc_n, 0)
-        # Another document
-        document = Document(u'bye world')
-        doc_n = documents.index_document(document)
-        self.assertEqual(doc_n, 1)
-        # Save
-        documents.save_state_to('tests/documents')
-
-
-    def xtest01_load_and_search(self):
-        documents = Documents('tests/documents')
-        # Document 0
-        document = documents.get_document(0)
-        self.assertEqual(document.fields[0], u'hello world')
-        # Document 1
-        document = documents.get_document(1)
-        self.assertEqual(document.fields[0], u'bye world')
-
-
-    def xtest02_unindex(self):
-        documents = Documents('tests/documents')
-        documents.unindex_document(0)
-        documents.save_state()
-
-
-    def xtest03_load_and_search(self):
-        documents = Documents('tests/documents')
-        # Document 0
-        self.assertRaises(LookupError, documents.get_document, 0)
-        # Document 1
-        document = documents.get_document(1)
-        self.assertEqual(document.fields[0], u'bye world')
-
-
-
 class CatalogTestCase(TestCase):
-    
-    def test00_new(self):
-        catalog = Catalog(fields=[('body', 'text', True, True)])
-        # Index "hello world"
-        catalog.index_document({'body': u'hello world'})
-        catalog.index_document({'body': u'bye world'})
+ 
+    def setUp(self):
+        # Make the catalog
+        catalog = make_catalog('tests/catalog',
+            KeywordField('name', is_stored=True),
+            TextField('title', is_indexed=False, is_stored=True),
+            TextField('data'),
+            IntegerField('size'))
+        # Index
+        fables = vfs.open('fables')
+        for name in fables.get_names():
+            uri = fables.uri.resolve2(name)
+            document = Document(uri)
+            catalog.index_document(document)
         # Save
-        catalog.save_state_to('tests/catalog')
+        catalog.commit()
 
 
-    def test01_load_and_search(self):
+    def tearDown(self):
+        vfs.remove('tests/catalog')
+
+
+    def test_everything(self):
         catalog = Catalog('tests/catalog')
-        # Search "hello"
-        results = catalog.search(body=u'hello')
-        results = results.get_documents()
-        self.assertEqual(len(results), 1)
-        # Search "world"
-        results = catalog.search(body=u'world')
-        results = results.get_documents()
-        self.assertEqual(len(results), 2)
-        # Search "moon"
-        results = catalog.search(body=u'moon')
-        results = results.get_documents()
-        self.assertEqual(len(results), 0)
-
-
-    def test02_unindex(self):
-        catalog = Catalog('tests/catalog')
-        catalog.unindex_document(0)
-        catalog.save_state()
-
-
-    def test03_load_and_search(self):
-        catalog = Catalog('tests/catalog')
-        # Search "hello"
-        results = catalog.search(body=u'hello')
-        results = results.get_documents()
-        self.assertEqual(len(results), 0)
-        # Search "world"
-        results = catalog.search(body=u'world')
-        results = results.get_documents()
-        self.assertEqual(len(results), 1)
-
-
-
-#class Document(Text):
-
-#    def _load_state_from_file(self, file):
-#        # Pre-process (load as unicode)
-#        Text._load_state_from_file(self, file)
-#        data = self.data
-#        del self.data
-#        # Extract the title and body
-#        lines = data.split('\n')
-#        self.title = lines[0]
-#        self.body = '\n'.join(lines[3:])
-
-
-#    def title(self):
-#        return self.title
-
-
-#    def body(self):
-#        return self.body
+        # Simple Search, hit
+        results = catalog.search(data=u'lion')
+        self.assertEqual(results.get_n_documents(), 4)
+        documents = [ x.name for x in results.get_documents(sort_by='name') ]
+        self.assertEqual(documents, ['03.txt', '08.txt', '10.txt', '23.txt'])
+        # Simple Search, miss
+        self.assertEqual(catalog.search(data=u'tiger').get_n_documents(), 0)
+        # Unindex, Search, Abort, Search
+        catalog.unindex_document('03.txt')
+        results = catalog.search(data=u'lion')
+        self.assertEqual(catalog.search(data=u'lion').get_n_documents(), 3)
+        catalog.abort()
+        self.assertEqual(catalog.search(data=u'lion').get_n_documents(), 4)
+        # Phrase Query
+        results = catalog.search(data=u'this is a double death')
+        self.assertEqual(results.get_n_documents(), 1)
+        # Range Query
+        query = RangeQuery('data', 'home', 'horse')
+        results = catalog.search(query)
+        self.assertEqual(results.get_n_documents(), 12)
 
 
 
 
-# Build a catalog on memory
-#tests = get_handler('fables')
-#if tests.has_handler('catalog'):
-#    tests.del_handler('catalog')
-#catalog = Catalog(fields=[('title', 'text', True, True),
-#                          ('body', 'text', True, False)])
-#tests.set_handler('catalog', catalog)
-#tests.save_state()
-#catalog_resource = tests.resource.get_resource('catalog')
-#catalog = Catalog(catalog_resource)
-#
-#resource_names = [ x for x in tests.get_handler_names() if x.endswith('.txt') ]
-#resource_names.sort()
-#for resource_name in resource_names:
-#    resource = tests.resource.get_resource(resource_name)
-#    document = Document(resource)
-#    document = {'title': document.title, 'body': document.body}
-#    catalog.index_document(document)
-#catalog.save_state()
+class Document(CatalogAware):
+
+    def __init__(self, uri):
+        self.uri = uri
 
 
+    def get_catalog_indexes(self):
+        data = vfs.open(self.uri).read()
 
-#class CatalogTestCase(TestCase):
-
-#    def test_hit(self):
-#        documents = catalog.search(body='forget')
-#        doc_numbers = [ x.__number__ for x in documents ]
-#        self.assertEqual(doc_numbers, [5, 10])
-
-
-#    def test_phrase(self):
-#        documents = catalog.search(body='your son')
-#        doc_numbers = [ x.__number__ for x in documents ]
-#        self.assertEqual(doc_numbers, [5])
-
-
-#    def test_miss(self):
-#        documents = catalog.search(body='plano')
-#        doc_numbers = [ x.__number__ for x in documents ]
-#        self.assertEqual(doc_numbers, [])
-
-
-#    def test_range(self):
-#        query = Range('body', 'home', 'horse')
-#        documents = catalog.search(query)
-#        doc_numbers = [ x.__number__ for x in documents ]
-#        self.assertEqual(doc_numbers,
-#                         [22, 17, 2, 30, 25, 19, 16, 13, 12, 11, 8, 5])
-
-
-#    def test_unindex(self):
-#        catalog.unindex_document(5)
-#        documents = catalog.search(body='forget')
-#        doc_numbers = [ x.__number__ for x in documents ]
-#        self.assertEqual(doc_numbers, [10])
-
-
-##    def test_save(self):
-##        if tests.has_resource('catalog'):
-##            tests.del_resource('catalog')
-##        tests.set_handler('catalog', catalog)
-##        catalog_resource = tests.get_resource('catalog')
-##        fs_catalog = Catalog.Catalog(catalog_resource)
-
-##        documents = catalog.search(body='forget')
-##        doc_numbers = [ x.__number__ for x in documents ]
-##        self.assertEqual(doc_numbers, [5, 10])
-
-##        documents = catalog.search(body='plano')
-##        doc_numbers = [ x.__number__ for x in documents ]
-##        self.assertEqual(doc_numbers, [])
+        indexes = {}
+        indexes['name'] = self.uri.path[-1]
+        indexes['title'] = data.splitlines()[0]
+        indexes['data'] = data
+        indexes['size'] = len(data)
+        return indexes
 
 
 

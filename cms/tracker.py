@@ -731,13 +731,16 @@ class Issue(Folder):
             file = row.get_value('file')
             if not comment and not file:
                 continue
-            username = row.get_value('username')
             datetime = row.get_value('datetime')
-            user = users.get_handler(username)
+            # solid in case the user has been removed
+            username = row.get_value('username')
+            user_title = username
+            if users.has_handler(username):
+                user_title = users.get_handler(username).get_title()
             i += 1
             comments.append({
                 'number': i,
-                'user': user.get_title(),
+                'user': user_title,
                 'datetime': format_datetime(datetime),
                 'comment': XML.encode(comment).replace('\n', '<br>'),
                 'file': file})

@@ -66,8 +66,8 @@ class Tracker(Folder):
         cache = self.cache
         # Versions
         csv = Versions()
-        csv.add_row([0, u'1.0', False])
-        csv.add_row([1, u'2.0', False])
+        csv.add_row([u'1.0', False])
+        csv.add_row([u'2.0', False])
         cache['versions.csv'] = csv
         cache['versions.csv.metadata'] = self.build_metadata(csv)
         # Other Tables
@@ -83,8 +83,8 @@ class Tracker(Folder):
         for name, values in tables:
             csv = SelectTable()
             cache[name] = csv
-            for row in enumerate(values):
-                csv.add_row(row)
+            for title in values:
+                csv.add_row([title])
             cache['%s.metadata' % name] = self.build_metadata(csv)
         # Pre-defined stored searches
         open = StoredSearch(state=0)

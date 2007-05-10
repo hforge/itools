@@ -339,9 +339,9 @@ class Tracker(Folder):
                 row = tables[name].get_row_by_id(value)
                 line[name] = row and row.get_value('title') or None
             assigned_to = handler.get_value('assigned_to')
-            if assigned_to:
-                user = users.get_handler(assigned_to)
-                line['assigned_to'] = user.get_title()
+            if assigned_to and users.has_handler(assigned_to):
+                    user = users.get_handler(assigned_to)
+                    line['assigned_to'] = user.get_title()
             else:
                 line['assigned_to'] = ''
             lines.append(line)

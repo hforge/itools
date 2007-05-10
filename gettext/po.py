@@ -357,36 +357,6 @@ class PO(Text):
             self._set_message(msgid, msgstr, comments, {}, fuzzy)
 
 
-    #######################################################################
-    # API
-    #######################################################################
-    def get_msgids(self):
-        return self.messages.keys()
-
-    msgids = property(get_msgids, None, None, "")
-
-
-    def get_messages(self):
-        return self.messages.values()
-
-
-    def get_msgstr(self, msgid):
-        message = self.messages.get(msgid)
-        if message:
-            return ''.join(message.msgstr)
-        return None
-
-
-    # Same as precedent but do not translate fuzzy messages
-    def get_translation(self, msgid):
-        message = self.messages.get(msgid)
-        if message and not message.fuzzy:
-            msgstr = ''.join(message.msgstr)
-            if msgstr:
-                return msgstr
-        return msgid
-
-
     def to_str(self, encoding='UTF-8'):
         messages = self.messages
         message_ids = messages.keys()
@@ -395,13 +365,9 @@ class PO(Text):
         return '\n'.join(messages)
 
 
-    def set_message(self, msgid, msgstr=[u''], comments=[], references={},
-                    fuzzy=False):
-        if msgid:
-            self.set_changed()
-            self._set_message(msgid, msgstr, comments, references, fuzzy)
-
-
+    #######################################################################
+    # API / Private
+    #######################################################################
     def _set_message(self, msgid, msgstr=[u''], comments=[], references={},
                      fuzzy=False):
         if isinstance(msgid, (str, unicode)):
@@ -411,6 +377,56 @@ class PO(Text):
 
         id = ''.join(msgid)
         self.messages[id] = Message(comments, msgid, msgstr, references, fuzzy)
+
+
+    #######################################################################
+    # API / Public
+    #######################################################################
+    def get_msgids(self):
+        """Rerturns all the message ids."""
+        return self.messages.keys()
+
+
+    def get_messages(self):
+        """Rerturns all the message (objects of the class <Message>)."""
+        return self.messages.values()
+
+
+    def get_msgstr(self, msgid):
+        """Returns the 'msgstr' for the given message id."""
+        message = self.messages.get(msgid)
+        if message:
+            return ''.join(message.msgstr)
+        return None
+
+
+    def get_translation(self, msgid):
+        """
+        Returns the translation of the given message id.
+
+        If the message id is not present in the message catalog, or if it
+        is marked as "fuzzy", then the message id is returned.
+        """
+        message = self.messages.get(msgid)
+        if message and not message.fuzzy:
+            msgstr = ''.join(message.msgstr)
+            if msgstr:
+                return msgstr
+        return msgid
+
+
+    def set_message(self, msgid, msgstr=[u''], comments=[], references={},
+                    fuzzy=False):
+        """
+        Adds the given message id to the catalog.
+
+        Initialize it with the given, and optional, information: message
+        string, comments, references and fuzzy.
+        """
+        if msgid:
+            self.set_changed()
+            self._set_message(msgid, msgstr, comments, references, fuzzy)
+
 
 
 register_handler_class(PO)

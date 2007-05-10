@@ -36,6 +36,9 @@ class MO(File):
 
 
     def gettext(self, message):
+        """
+        Returns the translation for the given message.
+        """
         return self.translations.ugettext(message)
 
 

@@ -488,6 +488,7 @@ class Issue(Folder):
     class_views = [
         ['edit_form'],
         ['history'],
+        ['add_form'],
         ['browse_content?mode=list']]
 
 
@@ -862,6 +863,13 @@ class Issue(Folder):
         handler = self.get_handler('/ui/tracker/issue_history.xml')
         return stl(handler, namespace)
 
+
+    add_form__access__ = 'is_allowed_to_edit'
+    add_form__label__ = u'Add'
+    def add_form(self, context):
+        type = context.get_form_value('type')
+        reference = '../;add_form'
+        return context.uri.resolve(reference)
 
 register_object_class(Issue)
 

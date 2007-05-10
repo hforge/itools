@@ -393,6 +393,13 @@ class CSV(Text):
 
     def add_row(self, row):
         """Append new row as an instance of row class."""
+        if self.columns is not None:
+            # Insert the generated values of the IntegerKey columns
+            for index, column in enumerate(self.columns):
+                datatype = self.schema[column]
+                if datatype == IntegerKey:
+                    row.insert(index, self.get_key(column))
+
         self.set_changed()
         self._add_row(row)
 

@@ -213,13 +213,6 @@ class CSV(Text, iCSV):
             datatype = self.get_datatype(name)
             value = datatype.decode(value)
             row.append(value)
-        
-        if self.columns is not None:
-            # Insert the generated values of the IntegerKey columns
-            for index, column in enumerate(self.columns):
-                datatype = self.schema[column]
-                if datatype == IntegerKey:
-                    row.insert(index, self.get_key(column))
 
         self.add_row(row)
 

@@ -112,6 +112,11 @@ class Message(object):
 
 class TMX(Text):
 
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'document_type', 'version', 'header', 'header_notes',
+                 'messages']
+
+
     def new(self):
         self.document_type = (
             'tmx', 'http://www.lisa.org/tmx/tmx14.dtd', None, False)

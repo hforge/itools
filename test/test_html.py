@@ -24,7 +24,7 @@ from itools.html import Document
 from itools.gettext import PO
 
 
-class HMLTestCase(TestCase):
+class HTMLTestCase(TestCase):
 
     def test_case1(self):
         """Test element content."""

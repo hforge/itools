@@ -18,7 +18,7 @@
 # Import from itools
 from itools.schemas import DublinCore
 from namespaces import AbstractNamespace, set_namespace
-from xml import XMLError
+from parser import XMLError
 
 
 

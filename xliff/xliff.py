@@ -131,6 +131,10 @@ class File(object):
 
 class XLIFF(Text):
 
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'document_type', 'version', 'lang', 'files']
+
+
     def new(self):
         self.document_type = (
             'xliff',

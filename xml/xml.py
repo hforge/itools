@@ -24,7 +24,6 @@ import warnings
 from itools.datatypes import Unicode, XMLAttribute
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
-from exceptions import XMLError
 from namespaces import get_namespace, is_empty, XMLNSNamespace
 from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT)

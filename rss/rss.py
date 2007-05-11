@@ -17,8 +17,9 @@
 
 # Import from itools
 from itools.handlers import Text, register_handler_class
-from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT
-from itools.datatypes import Unicode, URI, Integer, String, InternetDateTime
+from itools.xml import Parser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
+from itools.datatypes import (is_datatype, Unicode, URI, Integer, String,
+    InternetDateTime)
 
 
 # Rss channel elements definition
@@ -65,8 +66,11 @@ schema = {'title': Unicode,
           }
 
 # Encode rss element according to its type (by schema)
-def decode_element(name, value):
-    return schema[name].decode(value)
+def decode_element(name, value, encoding='utf-8'):
+    type = schema[name]
+    if is_datatype(type, Unicode):
+        return type.decode(value, encoding)
+    return type.decode(value)
 
 
 # Decode rss element according to its type (by schema)
@@ -159,6 +163,7 @@ class RSS(Text):
 
 
     def _load_state_from_file(self, file):
+        encoding = 'utf-8'
         # Temp fields data
         fields = {}
         channel_fields = {}
@@ -175,8 +180,10 @@ class RSS(Text):
         items = []
         # Parse the rss file
         for event, value, line_number in Parser(file.read()):
-            if event == START_ELEMENT:
-                namespace, local_name, attributes, namespaces = value
+            if event == XML_DECL:
+                version, encoding, standalone = value
+            elif event == START_ELEMENT:
+                namespace, local_name, attributes = value
                 if local_name == 'image':
                     inside_image = 1
                 elif local_name == 'item':
@@ -208,7 +215,7 @@ class RSS(Text):
                     inside_image = 0
                     fields = {}
             elif event == TEXT and save_data == 1:
-                value = decode_element(element_name, value)
+                value = decode_element(element_name, value, encoding)
                 if inside_image == 1 or inside_item == 1:
                     fields[element_name] = value
                 else:

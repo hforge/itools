@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2003  J. David Ibáñez <jdavid@itaapy.com>
+# Copyright (C) 2002-2003, 2007  J. David Ibáñez <jdavid@itaapy.com>
 #               2002  Thilo Ernst <Thilo.Ernst@dlr.de>
 #
 # This program is free software; you can redistribute it and/or
@@ -25,20 +25,19 @@ from itools.workflow import Workflow, WorkflowAware
 
 
 # Definition of the workflow
-
 # Create the workflow object
 workflow = Workflow()
 
 # Specify the workflow states
-workflow.add_state('private',
-                   description='A private document only can be reached by'
-                               ' authorized users.')
-workflow.add_state('pending',
-                   description='A pending document awaits review from'
-                               ' authorized users to be published.')
-workflow.add_state('public',
-                   description='A public document can be reached by even'
-                               ' anonymous users.')
+workflow.add_state(
+    'private', description='A private document only can be reached by'
+                           ' authorized users.')
+workflow.add_state(
+    'pending', description='A pending document awaits review from'
+                           ' authorized users to be published.')
+workflow.add_state(
+    'public', description='A public document can be reached by even'
+                          ' anonymous users.')
 
 # Specify the workflow transitions
 workflow.add_trans('request', 'private', 'pending',
@@ -53,7 +52,24 @@ workflow.set_initstate('private')
 
 
 
+class WorkflowTestCase(TestCase):
+
+    def test(self):
+        doc = Document()
+        self.assertEqual(doc.get_statename(), 'private')
+        doc.do_trans('request', 'First Request')
+        self.assertEqual(doc.get_statename(), 'pending')
+        doc.do_trans('reject', 'First Reject')
+        self.assertEqual(doc.get_statename(), 'private')
+        doc.do_trans('request', 'Second Request')
+        self.assertEqual(doc.get_statename(), 'pending')
+        doc.do_trans('accept', 'Final Accept')
+        self.assertEqual(doc.get_statename(), 'public')
+
+
+
 class Document(WorkflowAware):
+
     def __init__(self):
         # Associate this object with the workflow defined above
         self.enter_workflow(workflow, None, "Just Created")
@@ -65,52 +81,31 @@ class Document(WorkflowAware):
 
     # state handlers
     def onenter_private(self, msg='Oops, no message'):
-        print 'onenter_private:', msg
+        pass
 
     def onleave_private(self, msg):
-        print 'onleave_private:', msg
+        pass
         
     def onenter_pending(self, msg):
-        print 'onenter_pending:', msg
+        pass
         
     def onleave_pending(self, msg):
-        print 'onleave_pending:', msg
+        pass
 
     def onenter_public(self, msg):
-        print 'Yippie! onenter_public:', msg
+        pass
 
     # transition handlers        
     def ontrans_reject(self, msg):
-        print 'ontrans_reject: ', msg
+        pass
         
     def ontrans_request(self, msg):
-        print 'ontrans_request: ', msg
+        pass
         
     def ontrans_accept(self, msg):
-        print 'ontrans_accept: ', msg
+        pass
         
 
 
-
-def test():
-    print "create workflow-aware Document object..."
-    doc = Document(); # use default init state
-    print "State now: %s (%s)" % (doc.get_statename(),
-                                  doc.get_state()['description'])
-    print "do first request transition..."
-    doc.do_trans('request', 'First Request')
-    print "State now:", doc.get_statename()
-    print "do first reject transition..."
-    doc.do_trans('reject', 'First Reject')
-    print "State now:", doc.get_statename()
-    print "do second request transition..."
-    # doc.dotrans('accept')
-    doc.do_trans('request', 'Second Request')
-    print "State now:", doc.get_statename()
-    print "do final accept transition..."
-    doc.do_trans('accept', 'Final Accept')
-    print "State now:", doc.get_statename()
-
 if __name__ == '__main__':
-##    unittest.main()
-    test()
+    unittest.main()

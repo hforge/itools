@@ -23,16 +23,16 @@ from re import sub
 
 # Import from itools
 from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
-from itools.i18n.locale_ import format_datetime
-from itools.handlers.config import Config
-from itools.csv.csv import IntegerKey, CSV as BaseCSV
+from itools.i18n import format_datetime
+from itools.handlers import Config
+from itools.csv import IntegerKey, CSV as BaseCSV
 from itools.stl import stl
-from itools.uri import Query
+from itools.uri import encode_query
 from itools import vfs
 from itools.web import get_context
 from csv import CSV
-from File import File
-from Folder import Folder
+from file import File
+from folder import Folder
 from text import Text
 from registry import register_object_class, get_object_class
 import widgets
@@ -932,7 +932,7 @@ class Issue(Folder):
     view__access__ = Tracker.view__access__
     view__label__ = Tracker.view__label__
     def view(self, context):
-        query = Query.encode(context.uri.query)
+        query = encode_query(context.uri.query)
         reference = '../;view?%s' % query
         return context.uri.resolve(reference)
 

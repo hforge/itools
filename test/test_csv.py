@@ -35,6 +35,8 @@ TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
 
+# TODO Add unit test to search boolean values
+
 
 class CSVTestCase(TestCase):
 

@@ -73,8 +73,6 @@ class Index(dict):
         # XXX temporary until we analyse as the catalog does
         if word is None:
             return None
-        elif isinstance(word, bool):
-            word = unicode(int(word))
         elif not isinstance(word, basestring):
             word = unicode(word)
         elif isinstance(word, unicode):

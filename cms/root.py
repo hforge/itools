@@ -249,9 +249,9 @@ class Root(WebSite):
         self.index_handler(handler)
 
 
-    def search(self, **kw):
+    def search(self, query=None, **kw):
         catalog = self.get_handler('.catalog')
-        return catalog.search(**kw)
+        return catalog.search(query, **kw)
 
 
     ########################################################################

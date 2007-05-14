@@ -354,21 +354,29 @@ class User(AccessControl, Folder):
         password = context.get_form_value('password')
         user = context.user
 
+        # Check input
         if self.name == user.name:
             if not self.authenticate(password):
                 return context.come_back(u"You mistyped your actual password, "
                                          u"your account is not changed.")
 
         newpass = newpass.strip()
-        if newpass:
-            if newpass != newpass2:
-                return context.come_back(
-                    u"Passwords mismatch, please try again.")
+        if not newpass:
+            return context.come_back(u'Password empty, please type one.')
 
-            self.set_password(newpass)
-            # Update the cookie if we updated our own password
-            if self.name == user.name:
-                self.set_auth_cookie(context, newpass)
+        if newpass != newpass2:
+            return context.come_back(u"Passwords mismatch, please try again.")
+
+        # Clear confirmation key
+        if self.has_property('ikaaro:user_must_confirm'):
+            self.del_property('ikaaro:user_must_confirm')
+
+        # Set password
+        self.set_password(newpass)
+
+        # Update the cookie if we updated our own password
+        if self.name == user.name:
+            self.set_auth_cookie(context, newpass)
 
         return context.come_back(u'Password changed.')
 

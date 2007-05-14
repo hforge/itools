@@ -134,7 +134,15 @@ class SocketWrapper(object):
             return line
         # Read as much as possible
         recv = self.socket.recv
-        data = recv(512)
+        # FIXME Here we assume that if the call to "recv" fails is because
+        # there is no data available, and we should try again later. But
+        # the failure maybe for something else. So we must do proper error
+        # handling here. Check http://docs.python.org/lib/module-errno.html
+        # for a list of the possible errors.
+        try:
+            data = recv(512)
+        except:
+            return None
         if not data:
             raise EOFError
         while data:
@@ -147,10 +155,7 @@ class SocketWrapper(object):
             if len(data) < 512:
                 self.buffer = buffer
                 return None 
-            # If there is not any more data to read, the system may raise
-            # an exception. We prefer to send None, to say the caller to
-            # call back later.
-            # FIXME Catch only the relevant exception.
+            # FIXME Catch only the relevant exceptions (see note above)
             try:
                 data = recv(512)
             except:

@@ -120,7 +120,7 @@ class SearchResults(object):
             else:
                 sort_by = field_numbers[sort_by]
                 def key(doc, sort_by=sort_by):
-                    return doc.fields[sort_by]
+                    return doc.fields.get(sort_by)
 
             documents.sort(key=key, reverse=reverse)
 

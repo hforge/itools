@@ -269,6 +269,10 @@ class Path(list):
         return not self.startswith_slash
 
 
+    def get_name(self):
+        return self.path[-1].name
+
+
     def resolve(self, path):
         """
         Resolve the path following the standard (RFC2396). This is to say,

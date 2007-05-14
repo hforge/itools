@@ -24,6 +24,7 @@ from string import Template
 from itools import uri
 from itools import i18n
 from itools import handlers
+from itools.catalog.queries import Equal, And, Or
 from itools.stl import stl
 from itools.datatypes import Email
 
@@ -380,10 +381,19 @@ class User(AccessControl, Folder):
         root = context.root
         user = context.user
 
+        site_root = self.get_site_root()
+
         namespace = {}
         documents = []
-        for brain in root.search(workflow_state='pending').get_documents():
+
+        q1 = Equal('workflow_state', 'pending')
+        q2 = Or(Equal('paths', site_root.get_abspath()),
+                Equal('paths', self.get_physical_path()))
+        query = And(q1, q2)
+
+        for brain in root.search(query).get_documents():
             document = root.get_handler(brain.abspath)
+            # Check security
             ac = document.get_access_control()
             if not ac.is_allowed_to_view(user, document):
                 continue

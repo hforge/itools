@@ -259,13 +259,16 @@ class Context(object):
             if is_mandatory:
                 if value is None:
                     return message
-                value = value.strip()
-                if not value:
+                if isinstance(value, (str, unicode)):
+                    value = value.strip()
+                    if not value:
+                        return message
+                if not datatype.is_valid(value):
                     return message
-            # Check if the value is valid
-            if not datatype.is_valid(value):
-                return message
-
+            else:
+              if value:
+                  if not datatype.is_valid(value):
+                      return message
         return None
 
 

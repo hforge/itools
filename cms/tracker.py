@@ -19,6 +19,7 @@
 from datetime import datetime
 import mimetypes
 from string import Template
+from re import sub
 
 # Import from itools
 from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
@@ -691,6 +692,20 @@ class Issue(Folder):
         return text in self.get_comment().lower()
 
 
+    def indent(self, text):
+        """ Replace spaces at the begining of a line by &nbsp;
+            Replace '\n' by <br>\n and URL by HTML links"""
+        res = []
+        for line in text.splitlines():
+            sline = line.lstrip()
+            indent = len(line) - len(sline)
+            if indent:
+                line = '&nbsp;' * indent + sline
+            line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
+            res.append(line)
+        return '<br>\n'.join(res)
+
+
     #######################################################################
     # User Interface
     #######################################################################
@@ -745,7 +760,7 @@ class Issue(Folder):
                 'number': i,
                 'user': user_title,
                 'datetime': format_datetime(datetime),
-                'comment': XML.encode(comment).replace('\n', '<br>'),
+                'comment': self.indent(XML.encode(comment)),
                 'file': file})
         comments.reverse()
         namespace['comments'] = comments

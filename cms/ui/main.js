@@ -128,8 +128,14 @@ function setHeight(obj, height) {
 function select_checkboxes(form_id, checked) {
   var form = document.getElementById(form_id);
   var checkboxes = form.ids;
-  for (i = 0; i < checkboxes.length; i++) {
-    checkboxes[i].checked = checked;
+  if ( checkboxes.nodeName ) {
+  // it's an element
+    checkboxes.checked = checked;
+  }else{
+  // it's a nodelist
+    for (i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = checked;
+    }
   }
   return false;
 }

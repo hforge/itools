@@ -222,6 +222,11 @@ class Tracker(Folder):
             sort=False)
         namespace['states'] = get('states.csv').get_options(state, sort=False)
         namespace['users'] = self.get_members_namespace(assign, True)
+        # is_admin 
+        ac = self.get_access_control()
+        namespace['is_admin'] = ac.is_admin(context.user, self)
+        pathto_website = self.get_pathto(self.get_site_root())
+        namespace['manage_assigned'] = '%s/;permissions_form' % pathto_website 
 
         handler = self.get_handler('/ui/tracker/search.xml')
         return stl(handler, namespace)

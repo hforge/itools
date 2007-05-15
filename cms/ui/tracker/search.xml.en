@@ -26,7 +26,8 @@
       </tr>
       <tr>
         <td valign="top">
-          <label for="version">Version</label><br/>
+          <label for="version">Version <a stl:if="is_admin" 
+                 href="./versions.csv/;view">edit</a></label><br/>
           <select name="version" id="version" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item versions" value="${item/id}"
@@ -34,7 +35,8 @@
           </select>
         </td>
         <td valign="top">
-          <label for="module">Module</label><br/>
+          <label for="module">Module <a stl:if="is_admin" 
+                 href="./modules.csv/;view">edit</a></label><br/>
           <select name="module" id="module" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item modules" value="${item/id}"
@@ -44,7 +46,8 @@
       </tr>
       <tr>
         <td valign="top">
-          <label for="type">Type</label><br/>
+          <label for="type">Type <a stl:if="is_admin" 
+                 href="./types.csv/;view">edit</a></label><br/>
           <select name="type" id="type" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item types" value="${item/id}"
@@ -52,7 +55,8 @@
           </select>
         </td>
         <td>
-          <label for="priority">Priority</label><br/>
+          <label for="priority">Priority <a stl:if="is_admin" 
+                 href="./priorities.csv/;view">edit</a></label><br/>
           <select name="priority" id="priority" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item priorities" value="${item/id}"
@@ -63,7 +67,8 @@
 
       <tr>
         <td valign="top">
-          <label for="state">Status</label><br/>
+          <label for="state">Status <a stl:if="is_admin" 
+                 href="./states.csv/;view">edit</a></label><br/>
           <select name="state" id="state" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item states" value="${item/id}"
@@ -71,7 +76,8 @@
           </select>
         </td>
         <td valign="top">
-          <label for="assigned_to">Assign To</label><br/>
+          <label for="assigned_to"> Assign To <a stl:if="is_admin" 
+                 href="${manage_assigned}">edit</a></label><br/>
           <select name="assigned_to" id="assigned_to" class="tracker_select">
             <option value=""></option>
             <option stl:repeat="item users" value="${item/id}"

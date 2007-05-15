@@ -129,7 +129,7 @@ class PathPrefixTestCase(unittest.TestCase):
     def test1(self):
         a = Path('/a/b/c')
         b = Path('/a/b/d/e')
-        self.assertEqual(a.get_prefix(b), 'a/b')
+        self.assertEqual(a.get_prefix(b), '/a/b')
 
 
 

@@ -525,7 +525,7 @@ class Reference(object):
             return Reference(self.scheme,
                              copy(self.authority),
                              copy(self.path),
-                             copy(self.query),
+                             self.query.copy(),
                              None)
 
         if reference.fragment and not reference.path and not reference.query:

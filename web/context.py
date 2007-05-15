@@ -266,9 +266,9 @@ class Context(object):
                 if not datatype.is_valid(value):
                     return message
             else:
-              if value:
-                  if not datatype.is_valid(value):
-                      return message
+                if value:
+                    if not datatype.is_valid(value):
+                        return message
         return None
 
 

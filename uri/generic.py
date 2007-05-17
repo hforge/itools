@@ -409,7 +409,12 @@ def encode_query(query):
     for key, value in query.items():
         key = urllib.quote_plus(key)
         if value is None:
-            pass
+            # XXX As of the application/x-www-form-urlencoded content type,
+            # it has not sense to have a parameter without a value, so
+            # "?a&b=1" should be the same as "?b=1" (check the spec).
+            # But for the tests defined by RFC2396 to pass, we must preserve
+            # these empty parameters.
+            line.append(key)
         elif isinstance(value, list):
             for x in value:
                 if isinstance(x, unicode):

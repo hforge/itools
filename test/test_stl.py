@@ -21,8 +21,7 @@ import unittest
 # Import from itools
 from itools.handlers import get_handler
 from itools.stl import stl
-from itools.stl.stl import (TID, TSLASH, TEOF, TNONE, Expression,
-                            NamespaceStack, substitute)
+from itools.stl.stl import Expression, NamespaceStack, substitute
 
 
 class SubstituteTestCase(unittest.TestCase):
@@ -37,7 +36,7 @@ class SubstituteTestCase(unittest.TestCase):
 
     def test_simple(self):
         data = 'Hello ${name}'
-        expected = 'Hello Toto'
+        expected = 'Hello Toto', 1
 
         output = substitute(data, self.stack, self.repeat)
         self.assertEqual(output, expected)
@@ -48,17 +47,11 @@ class STLTestCase(unittest.TestCase):
 
     def test_tokens(self):
         expression = Expression('a/b/c')
-
-        expected_tokens = [(TID, 'a'), (TSLASH, None), (TID, 'b'),
-                           (TSLASH, None), (TID, 'c')]
-
         self.assertEqual(expression.path, ('a', 'b', 'c'))
 
 
     def test_none(self):
         expression = Expression('none')
-        expected_tokens = [(TNONE, 'none')]
-
         self.assertEqual(expression.path, ())
         self.assertEqual(expression.evaluate(None, None), None)
 

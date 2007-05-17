@@ -250,6 +250,13 @@ def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
 
 
 def substitute(data, stack, repeat_stack, encoding='utf-8'):
+    """
+    Interprets the given data as a substitution string with the "${expr}"
+    format, where the expression within the brackets is an STL expression.
+
+    Returns a tuple with the interpreted string and the number of
+    substitutions done.
+    """
     if isinstance(data, str):
         pass
     elif isinstance(data, unicode):

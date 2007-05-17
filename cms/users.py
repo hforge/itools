@@ -22,7 +22,7 @@ from string import Template
 
 # Import from itools
 from itools.uri import Path
-from itools.catalog import Equal, And, Or
+from itools.catalog import EqQuery, AndQuery, OrQuery
 from itools.i18n import get_language_name
 from itools.handlers import Folder as BaseFolder
 from itools.stl import stl
@@ -394,10 +394,10 @@ class User(AccessControl, Folder):
         namespace = {}
         documents = []
 
-        q1 = Equal('workflow_state', 'pending')
-        q2 = Or(Equal('paths', site_root.get_abspath()),
-                Equal('paths', self.get_physical_path()))
-        query = And(q1, q2)
+        q1 = EqQuery('workflow_state', 'pending')
+        q2 = OrQuery(EqQuery('paths', site_root.get_abspath()),
+                EqQuery('paths', self.get_physical_path()))
+        query = AndQuery(q1, q2)
 
         for brain in root.search(query).get_documents():
             document = root.get_handler(brain.abspath)

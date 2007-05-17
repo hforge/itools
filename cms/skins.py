@@ -454,12 +454,9 @@ class Skin(Folder):
 
         # Build the output
         s = []
-        # Keep the header, but strip the XML declaration (because it makes
-        # IE6 fall into quirks mode, see http://hsivonen.iki.fi/doctype/).
-        # XXX There may be a better way to do this, from the API's point
-        # of view.
-        header = handler.header_to_str()
-        header = header.split('\n', 1)[1]
+        # We now send real HTML.
+        header = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'\
+                 '  "http://www.w3.org/TR/html4/strict.dtd">'
         s.append(header)
         # STL
         prefix = Path(handler.get_abspath())

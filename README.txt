@@ -16,9 +16,10 @@ The packages included are:
 The scripts included are:
 
   icms-init             icms-update             isetup-build
-  icms-restore          igettext-build          isetup-test
-  icms-start            igettext-extract        isetup-update-locale
-  icms-stop             igettext-merge          
+  icms-restore          igettext-build          isetup-update-locale
+  icms-start            igettext-extract
+  icms-stop             igettext-merge
+
 
 
 Requirements
@@ -39,11 +40,51 @@ unrtf are needed to index some types of documents.
 [3] http://docutils.sourceforge.net/
 
 
+
 Install
 -------
 
-Unpack the package and run "python setup.py install", be sure to have
-the right permissions, maybe you will need to run the command as root.
+If you are reading this instructions you probably have already unpacked
+the itools tarball with the command line:
+    
+  $ tar xzf itools-X.Y.Z.tar.gz
+
+And changed the working directory this way:
+    
+  $ cd itools-X.Y.Z
+
+So now to install itools you just need to type this:
+
+  $ python setup.py install
+
+
+
+Unit Tests
+----------
+
+To run the unit tests just type:
+    
+  $ cd test
+  $ python test.py
+
+If there are errors, please report either to the issue tracker or to
+the mailing list:
+
+  - http://bugs.ikaaro.org
+  - http://mail.ikaaro.org/mailman/listinfo/itools
+
+
+
+Documentation
+-------------
+
+The documentation is distributed as a separate package, itools-docs.
+The PDF file can be downloaded from http://www.ikaaro.org/itools
+
+
+
+Deploy itools.cms: Virtual Hosting
+----------------------------------
 
 To deploy an instance of itools.cms check the documentation about itools
 (see http://www.ikaaro.org/itools). To install an itools.cms instance
@@ -56,12 +97,6 @@ behind Apache, with virtual hosting the rewrite rule to use will look like:
     RequestHeader set X-Base-Path example
   </VirtualHost>
 
-
-Documentation
--------------
-
-The documentation is distributed as a separate package, itools-docs.
-The PDF file can be downloaded from http://www.ikaaro.org/itools
 
 
 Resources
@@ -80,7 +115,7 @@ http://bugs.ikaaro.org
 Copyright
 ----------
 
-Copyright 2002-2005  J. David Ibáñez <jdavid@itaapy.com>
+Copyright 2002-2007  J. David Ibáñez <jdavid@itaapy.com>
 
 And:
 

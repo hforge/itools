@@ -36,7 +36,7 @@ def translate_stack(stack, catalog, keep_spaces):
     # Build the message and find out if there is something to translate
     message = Message()
     there_is_something_to_translate = False
-    for event, value in stack:
+    for event, value, line in stack:
         if event == TEXT:
             if value.strip():
                 there_is_something_to_translate = True
@@ -57,15 +57,15 @@ def translate_stack(stack, catalog, keep_spaces):
     left = message.lstrip()
     right = message.rstrip()
     if left:
-        stack.append((TEXT, left))
+        stack.append((TEXT, left, None))
     for segment in message.get_segments(keep_spaces):
         segment = catalog.get_translation(segment).encode('utf-8')
         for event, value, line in Parser(segment):
             if event == TEXT:
                 value = unicode(value, 'utf-8')
-            stack.append((event, value))
+            stack.append((event, value, None))
     if right:
-        stack.append((TEXT, right))
+        stack.append((TEXT, right, None))
     return stack
 
 
@@ -86,7 +86,7 @@ def filter_tags(events, tags):
                 skip = 1
                 continue
 
-        yield event, value
+        yield event, value, None
 
 
 
@@ -96,7 +96,7 @@ def get_translatable_blocks(events):
     message = Message()
     keep_spaces = False
 
-    for event, value in filter_tags(events, ['script', 'style']):
+    for event, value, line in filter_tags(events, ['script', 'style']):
         if event == TEXT:
             message.append_text(value)
         elif event == START_ELEMENT:
@@ -185,13 +185,13 @@ class Translatable(object):
         keep_spaces = False
         for event, value, line in self.events:
             if event == TEXT:
-                stack.append((event, value))
+                stack.append((event, value, None))
             elif event == START_ELEMENT:
                 # Inline or block
                 tag_uri, tag_name, attributes = value
                 schema = get_element_schema(tag_uri, tag_name)
                 if schema['is_inline']:
-                    stack.append((event, value))
+                    stack.append((event, value, None))
                 else:
                     for x in translate_stack(stack, catalog, keep_spaces):
                         yield x
@@ -206,7 +206,7 @@ class Translatable(object):
                             if value:
                                 value = catalog.get_translation(value)
                         aux[(attr_uri, attr_name)] = value
-                    yield START_ELEMENT, (tag_uri, tag_name, aux)
+                    yield START_ELEMENT, (tag_uri, tag_name, aux), None
                     # Presarve spaces if <pre>
                     if tag_name == 'pre':
                         keep_spaces = True
@@ -214,18 +214,18 @@ class Translatable(object):
                 tag_uri, tag_name = value
                 schema = get_element_schema(tag_uri, tag_name)
                 if schema['is_inline']:
-                    stack.append((event, value))
+                    stack.append((event, value, None))
                 else:
                     for x in translate_stack(stack, catalog, keep_spaces):
                         yield x
                     stack = []
                     # The close tag
-                    yield event, value
+                    yield event, value, None
                     # </pre> don't preserve spaces any more
                     if tag_name == 'pre':
                         keep_spaces = False
             else:
-                yield event, value
+                yield event, value, None
 
         # Process trailing message
         if stack:

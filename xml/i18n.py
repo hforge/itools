@@ -15,12 +15,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the future
+from __future__ import absolute_import
+
 # Import from itools
 from itools.datatypes import XML as XMLContent
 from itools.i18n import Message
-from itools.xml import (Parser, START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
-                        get_namespace, get_element_schema, get_start_tag,
-                        get_end_tag, stream_to_str)
+from .namespaces import get_namespace, get_element_schema
+from .parser import Parser, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 
 
 
@@ -29,6 +31,8 @@ def translate_stack(stack, catalog, keep_spaces):
     This method receives as input a stack of XML events and returns 
     another stack, the translation of the source one.
     """
+    from .xml import get_start_tag, get_end_tag
+
     # Build the message and find out if there is something to translate
     message = Message()
     there_is_something_to_translate = False
@@ -99,6 +103,8 @@ class Translatable(object):
 
 
     def get_translatable_blocks(self):
+        from .xml import get_start_tag, get_end_tag
+
         message = Message()
         keep_spaces = False
 
@@ -224,5 +230,7 @@ class Translatable(object):
 
 
     def translate(self, catalog):
+        from .xml import stream_to_str
+
         stream = self._translate(catalog)
         return stream_to_str(stream)

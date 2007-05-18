@@ -22,10 +22,10 @@ import sys
 
 # Import from itools
 import itools
+from itools.handlers import get_handler
 from itools.gettext import PO
-from itools.xhtml import Document
+import itools.html
 import itools.stl
-from itools.handlers import Python
 
 
 
@@ -42,6 +42,8 @@ if __name__ == '__main__':
                            " instead of printed to the standard output.")
 
     options, args = parser.parse_args()
+    if len(args) == 0:
+        parser.error('Needs at least one source file.')
 
     if options.output is None:
         output = sys.stdout
@@ -50,16 +52,16 @@ if __name__ == '__main__':
 
     try:
         po = PO()
-        for source_file in args:
-            # Load the source handler
-            if source_file.endswith('.py'):
-                handler = Python(source_file)
-            else:
-                # XXX Suppose it is XHTML
-                handler = Document(source_file)
+        for filename in args:
+            handler = get_handler(filename)
+            try:
+                get_messages = handler.get_messages
+            except AttributeError:
+                sys.stderr.write('ERROR: The file "%s" could not be processed\n' % filename)
+                continue
             # Extract the messages
-            for msgid, line_number in handler.get_messages():
-                po.set_message(msgid, references={source_file: [line_number]})
+            for msgid, line_number in get_messages():
+                po.set_message(msgid, references={filename: [line_number]})
 
         # XXX Should omit the header?
         output.write(po.to_str())

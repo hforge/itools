@@ -21,14 +21,13 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
-                              XML as XMLDataType, XMLAttribute)
+    XML as XMLDataType, XMLAttribute)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
-                            register_schema)
+    register_schema)
 from itools.handlers import register_handler_class
-from itools.xml import (Document as XMLDocument, Translatable,
-                        START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
-                        AbstractNamespace, set_namespace, stream_to_str,
-                        get_qname, get_attribute_qname, is_empty, get_end_tag)
+from itools.xml import (Document as XMLDocument, START_ELEMENT, END_ELEMENT,
+    TEXT, COMMENT, AbstractNamespace, set_namespace, stream_to_str, get_qname,
+    get_attribute_qname, is_empty, get_end_tag)
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'
@@ -354,7 +353,7 @@ register_schema(Schema)
 #############################################################################
 # Document
 #############################################################################
-class Document(Translatable, XMLDocument):
+class Document(XMLDocument):
     """
     This class adds one thing to the XML class, the semantics of translatable
     text.

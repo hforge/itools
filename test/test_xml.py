@@ -24,20 +24,6 @@ from itools.xml import (Document, Parser, XMLError, XML_DECL, DOCUMENT_TYPE,
                         START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA)
 
 
-#class CParserTestCase(TestCase):
-
-#   def test_xml_decl(self):
-#       data = '<?xml version="1.0" encoding="UTF-8"?>'
-#       x = Parser(data).get_token()
-#       self.assertEqual(x, (XML_DECL, ('1.0', 'UTF-8'), 1))
-
-
-#   def test_element(self):
-#       data = '<a>'
-#       x = Parser(data).get_token()
-#       self.assertEqual(x, (START_ELEMENT, (None, 'a', {}), 1))
-
-
 
 class ParserTestCase(TestCase):
 

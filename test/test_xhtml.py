@@ -29,11 +29,12 @@ class SegmentationTestCase(TestCase):
 
     def test_paragraph(self):
         """Test formatted paragraph"""
-        data = '<p xmlns="http://www.w3.org/1999/xhtml">\n' \
-               'The Mozilla project maintains <em>choice</em> and\n' \
-               '<em>innovation</em> on the Internet. Developing the\n' \
-               'acclaimed, <em>open source</em>, <b>Mozilla 1.6</b>.\n' \
-               '</p>'
+        data = (
+            '<p xmlns="http://www.w3.org/1999/xhtml">\n'
+            'The Mozilla project maintains <em>choice</em> and\n'
+            '<em>innovation</em> on the Internet. Developing the\n'
+            'acclaimed, <em>open source</em>, <b>Mozilla 1.6</b>.\n'
+            '</p>')
         doc = Document()
         doc.load_state_from_string(data)
 
@@ -46,20 +47,21 @@ class SegmentationTestCase(TestCase):
 
 
     def test_table(self):
-        data = '<table xmlns="http://www.w3.org/1999/xhtml">\n' \
-               '  <tr>\n' \
-               '    <th>Title</th>\n' \
-               '    <th>Size</th>\n' \
-               '  </tr>\n' \
-               '  <tr>\n' \
-               '    <td>The good, the bad and the ugly</td>\n' \
-               '    <td>looong</td>\n' \
-               '  </tr>\n' \
-               '  <tr>\n' \
-               '    <td>Love story</td>\n' \
-               '    <td>even longer</td>\n' \
-               '  </tr>\n' \
-               '</table>'
+        data = (
+            '<table xmlns="http://www.w3.org/1999/xhtml">\n'
+            '  <tr>\n'
+            '    <th>Title</th>\n'
+            '    <th>Size</th>\n'
+            '  </tr>\n'
+            '  <tr>\n'
+            '    <td>The good, the bad and the ugly</td>\n'
+            '    <td>looong</td>\n'
+            '  </tr>\n'
+            '  <tr>\n'
+            '    <td>Love story</td>\n'
+            '    <td>even longer</td>\n'
+            '  </tr>\n'
+            '</table>')
         doc = Document()
         doc.load_state_from_string(data)
 
@@ -76,12 +78,13 @@ class SegmentationTestCase(TestCase):
     def test_random(self):
         """Test element content."""
         # The document
-        data = '<body xmlns="http://www.w3.org/1999/xhtml">\n' \
-               '  <p>this <em>word</em> is nice</p>\n' \
-               '  <a href="/"><img src="logo.png" /></a>\n' \
-               '  <p><em>hello world</em></p><br/>' \
-               '  bye <em>J. David Ibanez Palomar</em>\n' \
-               '</body>'
+        data = (
+            '<body xmlns="http://www.w3.org/1999/xhtml">\n'
+            '  <p>this <em>word</em> is nice</p>\n'
+            '  <a href="/"><img src="logo.png" /></a>\n'
+            '  <p><em>hello world</em></p><br/>'
+            '  bye <em>J. David Ibanez Palomar</em>\n'
+            '</body>')
         doc = Document()
         doc.load_state_from_string(data)
 
@@ -95,10 +98,11 @@ class SegmentationTestCase(TestCase):
     def test_form(self):
         """Test complex attribute."""
         # The document
-        data = '<form xmlns="http://www.w3.org/1999/xhtml">\n' \
-               '  <input type="text" name="id" />\n' \
-               '  <input type="submit" value="Change" />\n' \
-               '</form>'
+        data = (
+            '<form xmlns="http://www.w3.org/1999/xhtml">\n'
+            '  <input type="text" name="id" />\n'
+            '  <input type="submit" value="Change" />\n'
+            '</form>')
         doc = Document()
         doc.load_state_from_string(data)
 
@@ -110,19 +114,17 @@ class SegmentationTestCase(TestCase):
 class TranslationTestCase(TestCase):
 
     def setUp(self):
-        template ="""<?xml version="1.0" encoding="UTF-8"?>
-                     <!DOCTYPE html
-                      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-                      <html xmlns="http://www.w3.org/1999/xhtml"
-                      xmlns:stl="http://xml.itools.org/namespaces/stl">
-                     <head></head>
-                      <body>%s</body>
-                     </html>
-                  """
-        self.template = template
-  
-              
+        self.template = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"\n'
+            '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+            '<html xmlns="http://www.w3.org/1999/xhtml"\n'
+            '  xmlns:stl="http://xml.itools.org/namespaces/stl">\n'
+            '  <head></head>\n'
+            '  <body>%s</body>\n'
+            '</html>\n')
+ 
+
     def test_case1(self):
         """Test element content."""
         data = self.template % '<p>hello litle world</p>'
@@ -177,8 +179,8 @@ class TranslationTestCase(TestCase):
     def test_case5(self):
         """Test translation of an element content"""
         html =  self.template  % '<img alt="The beach" src="beach.jpg" />'
-        po = 'msgid "The beach"\n' \
-             'msgstr "La playa"'
+        po = ('msgid "The beach"\n'
+              'msgstr "La playa"')
 
         p = PO()
         p.load_state_from_string(po)

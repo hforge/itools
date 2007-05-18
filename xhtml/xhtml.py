@@ -52,7 +52,7 @@ class Boolean(Boolean):
 
 def stream_to_html(stream, encoding='UTF-8'):
     data = []
-    for event, value in stream:
+    for event, value, line in stream:
         if event == TEXT:
             value = value.encode(encoding)
             data.append(value)
@@ -83,7 +83,7 @@ def stream_to_html(stream, encoding='UTF-8'):
 def set_content_type(stream, content_type):
     key1 = (xhtml_uri, 'http-equiv')
     key2 = (xhtml_uri, 'content')
-    for event, value in stream:
+    for event, value, line in stream:
         if event == START_ELEMENT:
             ns_uri, name, attributes = value
             if ns_uri == xhtml_uri:

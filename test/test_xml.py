@@ -21,7 +21,8 @@ from unittest import TestCase
 
 # Import from itools
 from itools.xml import (Document, Parser, XMLError, XML_DECL, DOCUMENT_TYPE,
-                        START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA)
+    START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA)
+from itools.xml.i18n import get_messages
 
 
 
@@ -104,6 +105,7 @@ class ParserTestCase(TestCase):
         self.assertEqual(Parser(data).next(), (token, value, 1))
 
 
+
 class XMLTestCase(TestCase):
 
     def test_identity(self):
@@ -120,6 +122,19 @@ class XMLTestCase(TestCase):
         h2 = Document(string=data)
 
         self.assertEqual(h1, h2)
+
+
+
+class TranslatableTestCase(TestCase):
+
+    def test_element(self):
+        text = '<em>Hello World</em>'
+        parser = Parser(text)
+        messages = get_messages(parser)
+        messages = list(messages)
+
+        self.assertEqual(messages, [(u'Hello World', 0)])
+
 
 
 

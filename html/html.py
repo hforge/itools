@@ -84,7 +84,7 @@ class Document(XHTMLDocument):
                 self.document_type = value
             elif event == TEXT:
                 value = unicode(value, parser.encoding)
-                events.append((event, value))
+                events.append((event, value, None))
             elif event == START_ELEMENT:
                 name, attributes = value
                 schema = elements_schema.get(name, {'is_inline': False})
@@ -93,9 +93,9 @@ class Document(XHTMLDocument):
                     attr_value = attributes[attr_name]
                     type = get_datatype_by_uri(xhtml_uri, attr_name)
                     aux[(xhtml_uri, attr_name)] = type.decode(attr_value)
-                events.append((event, (xhtml_uri, name, aux)))
+                events.append((event, (xhtml_uri, name, aux), None))
             else:
-                events.append((event, value))
+                events.append((event, value, None))
 
         self.events = events
 

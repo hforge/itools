@@ -88,7 +88,7 @@ def get_end_tag(ns_uri, name):
 
 def stream_to_str(stream, encoding='UTF-8'):
     data = []
-    for event, value in stream:
+    for event, value, line in stream:
         if event == TEXT:
             value = value.encode(encoding)
             data.append(value)
@@ -181,11 +181,11 @@ class Document(Translatable, Text):
             elif event == TEXT or event == COMMENT:
                 # XXX The encoding is hard-coded, should it be?
                 value = unicode(value, 'UTF-8')
-                events.append((event, value))
+                events.append((event, value, None))
             elif event == XML_DECL:
                 pass
             else:
-                events.append((event, value))
+                events.append((event, value, None))
 
         self.events = events
 
@@ -224,7 +224,7 @@ class Document(Translatable, Text):
         c = 1
         i = start + 1
         while c:
-            event, value = self.events[i]
+            event, value, line = self.events[i]
             if event == START_ELEMENT:
                 c += 1
             elif event == END_ELEMENT:
@@ -235,7 +235,7 @@ class Document(Translatable, Text):
 
     def get_element(self, name):
         i = 0
-        for event, value in self.events:
+        for event, value, line in self.events:
             if event == START_ELEMENT:
                 if name == value[1]:
                     return Element(self, i)
@@ -247,7 +247,8 @@ class Document(Translatable, Text):
         """
         Removes the markup and returns a plain text string.
         """
-        text = [ value for event, value in self.events if event == TEXT ]
+        text = [ value for event, value, line in self.events
+                 if event == TEXT ]
         return u' '.join(text)
 
 

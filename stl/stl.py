@@ -367,7 +367,7 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
 
     i = start
     while i < end:
-        event, value = events[i]
+        event, value, line = events[i]
         if event == TEXT:
             value = value.encode(encoding)
             value = XMLContent.encode(value)

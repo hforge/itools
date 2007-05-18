@@ -70,6 +70,97 @@ def translate_stack(stack, catalog, keep_spaces):
 
 
 
+def filter_tags(events, tags):
+    skip = 0
+    for event, value, line in events:
+        if skip:
+            if event == START_ELEMENT:
+                skip += 1
+            elif event == END_ELEMENT:
+                skip -= 1
+            continue
+
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in tags:
+                skip = 1
+                continue
+
+        yield event, value
+
+
+
+def get_translatable_blocks(events):
+    from .xml import get_start_tag, get_end_tag
+
+    message = Message()
+    keep_spaces = False
+
+    for event, value in filter_tags(events, ['script', 'style']):
+        if event == TEXT:
+            message.append_text(value)
+        elif event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            # Attributes
+            for attr_uri, attr_name in attributes:
+                value = attributes[(attr_uri, attr_name)]
+                is_translatable = get_namespace(attr_uri).is_translatable
+                if is_translatable(tag_uri, tag_name, attributes, attr_name):
+                    if value.strip():
+                        aux = Message()
+                        aux.append_text(value)
+                        yield aux, True
+            # Inline or Block
+            schema = get_element_schema(tag_uri, tag_name)
+            if schema.get('is_inline', False):
+                value = get_start_tag(tag_uri, tag_name, attributes)
+                message.append_format(value)
+            else:
+                yield message, keep_spaces
+                message = Message()
+                # Presarve spaces if <pre>
+                if tag_name == 'pre':
+                    keep_spaces = True
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            schema = get_element_schema(tag_uri, tag_name)
+            if schema.get('is_inline', False):
+                value = get_end_tag(tag_uri, tag_name)
+                message.append_format(value)
+            else:
+                yield message, keep_spaces
+                message = Message()
+                # </pre> don't preserve spaces any more
+                if tag_name == 'pre':
+                    keep_spaces = False
+
+
+
+def get_messages(events):
+    for message, keep_spaces in get_translatable_blocks(events):
+        message.lstrip()
+        message.rstrip()
+        # If no message, do nothing
+        if message.has_text_to_translate() is False:
+            continue
+
+        # Check wether the message is only one element
+        # FIXME This does not really work
+#        if message[0][0] == START_ELEMENT:
+#            if message[-1][0] == END_ELEMENT:
+#                start_uri, start_name, attributes = message[0]
+#                end_uri, end_name = message[-1]
+#                if start_uri == end_uri and start_name == end_name:
+#                    message = message[0:-1]
+#                    for x in process_message(message, keep_spaces):
+#                        yield x
+#                    continue
+        # Something to translate: segmentation
+        for segment in message.get_segments(keep_spaces):
+            yield segment, 0
+
+
+
 class Translatable(object):
     """
     This mixin class provides the user interface that allows to extract
@@ -80,95 +171,8 @@ class Translatable(object):
     difference between block and inline elements (for example, XHTML).
     """
 
-    #######################################################################
-    # Extract messages
-    #######################################################################
-    def filter_tags(self, tags):
-        skip = 0
-        for event, value in self.events:
-            if skip:
-                if event == START_ELEMENT:
-                    skip += 1
-                elif event == END_ELEMENT:
-                    skip -= 1
-                continue
-
-            if event == START_ELEMENT:
-                tag_uri, tag_name, attributes = value
-                if tag_name in tags:
-                    skip = 1
-                    continue
-
-            yield event, value
-
-
-    def get_translatable_blocks(self):
-        from .xml import get_start_tag, get_end_tag
-
-        message = Message()
-        keep_spaces = False
-
-        for event, value in self.filter_tags(['script', 'style']):
-            if event == TEXT:
-                message.append_text(value)
-            elif event == START_ELEMENT:
-                tag_uri, tag_name, attributes = value
-                # Attributes
-                for attr_uri, attr_name in attributes:
-                    value = attributes[(attr_uri, attr_name)]
-                    is_translatable = get_namespace(attr_uri).is_translatable
-                    if is_translatable(tag_uri, tag_name, attributes, attr_name):
-                        if value.strip():
-                            aux = Message()
-                            aux.append_text(value)
-                            yield aux, True
-                # Inline or Block
-                schema = get_element_schema(tag_uri, tag_name)
-                if schema['is_inline']:
-                    value = get_start_tag(tag_uri, tag_name, attributes)
-                    message.append_format(value)
-                else:
-                    yield message, keep_spaces
-                    message = Message()
-                    # Presarve spaces if <pre>
-                    if tag_name == 'pre':
-                        keep_spaces = True
-            elif event == END_ELEMENT:
-                tag_uri, tag_name = value
-                schema = get_element_schema(tag_uri, tag_name)
-                if schema['is_inline']:
-                    value = get_end_tag(tag_uri, tag_name)
-                    message.append_format(value)
-                else:
-                    yield message, keep_spaces
-                    message = Message()
-                    # </pre> don't preserve spaces any more
-                    if tag_name == 'pre':
-                        keep_spaces = False
-
-
     def get_messages(self):
-        for message, keep_spaces in self.get_translatable_blocks():
-            message.lstrip()
-            message.rstrip()
-            # If no message, do nothing
-            if message.has_text_to_translate() is False:
-                continue
-
-            # Check wether the message is only one element
-            # FIXME This does not really work
-    #        if message[0][0] == START_ELEMENT:
-    #            if message[-1][0] == END_ELEMENT:
-    #                start_uri, start_name, attributes = message[0]
-    #                end_uri, end_name = message[-1]
-    #                if start_uri == end_uri and start_name == end_name:
-    #                    message = message[0:-1]
-    #                    for x in process_message(message, keep_spaces):
-    #                        yield x
-    #                    continue
-            # Something to translate: segmentation
-            for segment in message.get_segments(keep_spaces):
-                yield segment, 0
+        return get_messages(self.events)
 
 
     #######################################################################
@@ -179,7 +183,7 @@ class Translatable(object):
 
         stack = []
         keep_spaces = False
-        for event, value in self.events:
+        for event, value, line in self.events:
             if event == TEXT:
                 stack.append((event, value))
             elif event == START_ELEMENT:

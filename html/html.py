@@ -19,10 +19,11 @@
 from itools.datatypes import Unicode
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import File, register_handler_class
+from itools.xml import translate
 from itools.xhtml import (Document as XHTMLDocument, xhtml_uri,
-                          stream_to_str_as_html, elements_schema)
+    stream_to_str_as_html, elements_schema)
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
-                    COMMENT, TEXT)
+    COMMENT, TEXT)
 
 
 
@@ -50,16 +51,17 @@ class Document(XHTMLDocument):
 
     @classmethod
     def get_skeleton(cls, title=''):
-        s = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"\n' \
-            '  "http://www.w3.org/TR/html4/loose.dtd">\n' \
-            '<html>\n' \
-            '  <head>\n' \
-            '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\n' \
-            '    <title>%(title)s</title>\n' \
-            '  </head>\n' \
-            '  <body></body>\n' \
-            '</html>'
-        return s % {'title': title}
+        skeleton = (
+            '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"\n'
+            '  "http://www.w3.org/TR/html4/loose.dtd">\n'
+            '<html>\n'
+            '  <head>\n'
+            '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\n'
+            '    <title>%(title)s</title>\n'
+            '  </head>\n'
+            '  <body></body>\n'
+            '</html>')
+        return skeleton % {'title': title}
 
 
     def to_str(self, encoding='UTF-8'):
@@ -94,6 +96,8 @@ class Document(XHTMLDocument):
                     type = get_datatype_by_uri(xhtml_uri, attr_name)
                     aux[(xhtml_uri, attr_name)] = type.decode(attr_value)
                 events.append((event, (xhtml_uri, name, aux), None))
+            elif event == END_ELEMENT:
+                events.append((event, (xhtml_uri, value), None))
             else:
                 events.append((event, value, None))
 
@@ -104,6 +108,11 @@ class Document(XHTMLDocument):
         if self.document_type is None:
             return ''
         return '<!%s>' % self.document_type
+
+
+    def translate(self, catalog):
+        stream = translate(self.events, catalog)
+        return stream_to_str_as_html(stream)
 
 
 register_handler_class(Document)

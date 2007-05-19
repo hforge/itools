@@ -24,7 +24,7 @@ import warnings
 from itools.datatypes import Unicode, XMLAttribute
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
-from i18n import Translatable
+from i18n import get_messages, translate
 from namespaces import get_namespace, is_empty, XMLNSNamespace
 from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT)
@@ -140,7 +140,7 @@ class Element(object):
 #############################################################################
 # Documents
 #############################################################################
-class Document(Translatable, Text):
+class Document(Text):
     """
     An XML file is represented in memory as a tree where the nodes are
     instances of the classes 'Element' and 'Raw'. The 'Element' class
@@ -250,6 +250,18 @@ class Document(Translatable, Text):
         text = [ value for event, value, line in self.events
                  if event == TEXT ]
         return u' '.join(text)
+
+
+    #######################################################################
+    # API / Internationalization - Localization
+    #######################################################################
+    def get_messages(self):
+        return get_messages(self.events)
+
+
+    def translate(self, catalog):
+        stream = translate(self.events, catalog)
+        return stream_to_str(stream)
 
 
 register_handler_class(Document)

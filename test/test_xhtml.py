@@ -29,14 +29,12 @@ class SegmentationTestCase(TestCase):
 
     def test_paragraph(self):
         """Test formatted paragraph"""
-        data = (
+        doc = Document(string=
             '<p xmlns="http://www.w3.org/1999/xhtml">\n'
             'The Mozilla project maintains <em>choice</em> and\n'
             '<em>innovation</em> on the Internet. Developing the\n'
             'acclaimed, <em>open source</em>, <b>Mozilla 1.6</b>.\n'
             '</p>')
-        doc = Document()
-        doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
         expected = [(u'The Mozilla project maintains <em>choice</em> and'
@@ -47,7 +45,7 @@ class SegmentationTestCase(TestCase):
 
 
     def test_table(self):
-        data = (
+        doc = Document(string=
             '<table xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <tr>\n'
             '    <th>Title</th>\n'
@@ -62,8 +60,6 @@ class SegmentationTestCase(TestCase):
             '    <td>even longer</td>\n'
             '  </tr>\n'
             '</table>')
-        doc = Document()
-        doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
         expected = [(u'Title', 0),
@@ -78,15 +74,13 @@ class SegmentationTestCase(TestCase):
     def test_random(self):
         """Test element content."""
         # The document
-        data = (
+        doc = Document(string=
             '<body xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <p>this <em>word</em> is nice</p>\n'
             '  <a href="/"><img src="logo.png" /></a>\n'
             '  <p><em>hello world</em></p><br/>'
             '  bye <em>J. David Ibanez Palomar</em>\n'
             '</body>')
-        doc = Document()
-        doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
         expected = [(u'this <em>word</em> is nice', 0),
@@ -98,13 +92,11 @@ class SegmentationTestCase(TestCase):
     def test_form(self):
         """Test complex attribute."""
         # The document
-        data = (
+        doc = Document(string=
             '<form xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <input type="text" name="id" />\n'
             '  <input type="submit" value="Change" />\n'
             '</form>')
-        doc = Document()
-        doc.load_state_from_string(data)
 
         messages = list(doc.get_messages())
         self.assertEqual(messages, [(u'Change', 0)])
@@ -128,8 +120,7 @@ class TranslationTestCase(TestCase):
     def test_case1(self):
         """Test element content."""
         data = self.template % '<p>hello litle world</p>'
-        doc = Document()
-        doc.load_state_from_string(data)
+        doc = Document(string=data)
         messages = list(doc.get_messages())
 
         self.assertEqual(messages, [(u'hello litle world', 0)])
@@ -138,8 +129,7 @@ class TranslationTestCase(TestCase):
     def test_case2(self):
         """Test simple attribute."""
         data = self.template % '<img alt="The beach" src="beach.jpg" />' 
-        doc = Document()
-        doc.load_state_from_string(data)
+        doc = Document(string=data)
         messages = list(doc.get_messages())
 
         self.assertEqual(messages, [(u'The beach', 0)])
@@ -147,10 +137,9 @@ class TranslationTestCase(TestCase):
 
     def test_case3(self):
         """Test complex attribute."""
-        data = self.template % """<input type="text" name="id" />
-                                  <input type="submit" value="Change" />""" 
-        doc = Document()
-        doc.load_state_from_string(data)
+        data = self.template % ('<input type="text" name="id" />\n'
+                                '<input type="submit" value="Change" />')
+        doc = Document(string=data)
         messages = list(doc.get_messages())
 
         self.assertEqual(messages, [(u'Change', 0)])
@@ -158,20 +147,17 @@ class TranslationTestCase(TestCase):
 
     def test_case4(self):
         """Test translation of an element content"""
-        html = self.template % '<p>hello world</p>'
+        string = (
+            'msgid "hello world"\n'
+            'msgstr "hola mundo"\n')
+        p = PO(string=string)
 
-        po = 'msgid "hello world"\n' \
-             'msgstr "hola mundo"\n'
+        string = self.template % '<p>hello world</p>'
+        source = Document(string=string)
 
-        p = PO()
-        p.load_state_from_string(po)
-        xhtml = Document()
-        xhtml.load_state_from_string(html)
+        string = source.translate(p)
+        xhtml = Document(string=string)
 
-        html = xhtml.translate(p)
-        xhtml = Document()
-        xhtml.load_state_from_string(html)
-        
         messages = list(xhtml.get_messages())
         self.assertEqual(messages, [(u'hola mundo', 0)])
 
@@ -182,14 +168,11 @@ class TranslationTestCase(TestCase):
         po = ('msgid "The beach"\n'
               'msgstr "La playa"')
 
-        p = PO()
-        p.load_state_from_string(po)
-        xhtml = Document()
-        xhtml.load_state_from_string(html)
+        p = PO(string=po)
+        xhtml = Document(string=html)
 
         html = xhtml.translate(p)
-        xhtml = Document()
-        xhtml.load_state_from_string(html)
+        xhtml = Document(string=html)
 
         messages = list(xhtml.get_messages())
         self.assertEqual(messages, [(u'La playa', 0)])

@@ -359,7 +359,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding,
                         value = resolve_pointer(value, prefix)
         aux[(attr_uri, attr_name)] = value
 
-    return START_ELEMENT, (tag_uri, tag_name, aux)
+    return START_ELEMENT, (tag_uri, tag_name, aux), None
 
 
 def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
@@ -372,9 +372,9 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
             value = value.encode(encoding)
             value = XMLContent.encode(value)
             value, kk = substitute(value, stack, repeat_stack, encoding)
-            yield event, value
+            yield event, value, line
         elif event == COMMENT:
-            yield event, value
+            yield event, value, line
         elif event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             # stl:repeat
@@ -433,7 +433,7 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_uri != stl_uri:
-                yield event, value
+                yield event, value, line
         else:
             raise NotImplementedError
         # Next

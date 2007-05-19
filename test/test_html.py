@@ -28,81 +28,78 @@ class HTMLTestCase(TestCase):
 
     def test_case1(self):
         """Test element content."""
-        data = '<p>hello world</p>'
-        doc = Document()
-        doc.load_state_from_string(data)
-        messages = list(doc.get_messages())
+        doc = Document(string=
+            '<p>hello world</p>')
 
+        messages = list(doc.get_messages())
         self.assertEqual(messages, [(u'hello world', 0)])
 
 
     def test_case2(self):
         """Test simple attribute."""
-        data = '<img alt="The beach" src="beach.jpg">'
-        doc = Document()
-        doc.load_state_from_string(data)
-        messages = list(doc.get_messages())
+        doc = Document(string=
+            '<img alt="The beach" src="beach.jpg">')
 
+        messages = list(doc.get_messages())
         self.assertEqual(messages, [(u'The beach', 0)])
 
 
     def test_case3(self):
         """Test complex attribute."""
-        data = '<html>\n' \
-               '<input type="text" name="id">\n' \
-               '<input type="submit" value="Change">\n' \
-               '</html>'
-        doc = Document()
-        doc.load_state_from_string(data)
-        messages = list(doc.get_messages())
+        doc = Document(string=
+            '<html>\n'
+            '<input type="text" name="id">\n'
+            '<input type="submit" value="Change">\n'
+            '</html>')
 
+        messages = list(doc.get_messages())
         self.assertEqual(messages, [(u'Change', 0)])
 
 
     def test_case4(self):
         """Test translation of an element content"""
-        data = '<p>hello world</p>'
-        doc = Document()
-        doc.load_state_from_string(data)
+        doc = Document(string=
+            '<p>hello world</p>')
 
-        po = 'msgid "hello world"\n' \
-             'msgstr "hola mundo"'
-        p = PO()
-        p.load_state_from_string(po)
+        p = PO(string=
+            'msgid "hello world"\n'
+            'msgstr "hola mundo"')
 
         self.assertEqual(doc.translate(p), '<p>hola mundo</p>')
 
 
     def test_case5(self):
         """Test translation of an element content"""
-        data = '<img alt="The beach" src="beach.jpg">'
-        doc = Document()
-        doc.load_state_from_string(data)
+        doc = Document(string=
+            '<img alt="The beach" src="beach.jpg">')
 
-        po = 'msgid "The beach"\n' \
-             'msgstr "La playa"'
-        p = PO()
-        p.load_state_from_string(po)
+        p = PO(string=
+            'msgid "The beach"\n'
+             'msgstr "La playa"')
 
-        self.assertEqual(doc.translate(p),
-                         '<img src="beach.jpg" alt="La playa">')
+        output = Document(string=doc.translate(p))
+
+        expected = Document(string=
+            '<img alt="La playa" src="beach.jpg">')
+        self.assertEqual(output, expected)
 
 
     def test_case6(self):
         """Test translation of an element content"""
-        data = '<input type="text" name="id">\n' \
-               '<input type="submit" value="Change">'
-        doc = Document()
-        doc.load_state_from_string(data)
+        doc = Document(string=
+            '<input type="text" name="id">\n'
+            '<input type="submit" value="Change">')
 
-        po = 'msgid "Change"\n' \
-             'msgstr "Cambiar"'
-        p = PO()
-        p.load_state_from_string(po)
+        p = PO(string=
+            'msgid "Change"\n'
+            'msgstr "Cambiar"')
 
-        self.assertEqual(doc.translate(p),
-                         '<input type="text" name="id">\n' \
-                         '<input type="submit" value="Cambiar">')
+        output = Document(string=doc.translate(p))
+
+        expected = Document(string=
+            '<input type="text" name="id">\n'
+            '<input type="submit" value="Cambiar">')
+        self.assertEqual(output, expected)
 
 
 

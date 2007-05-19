@@ -93,13 +93,13 @@ def set_content_type(stream, content_type):
                         if attributes[key1] == 'Content-Type':
                             continue
                 elif name == 'head':
-                    yield event, value
+                    yield event, value, line
                     # Add <meta http-equiv="Content-Type">
                     attributes = {}
                     attributes[key1] = 'Content-Type'
                     attributes[key2] = content_type
-                    yield START_ELEMENT, (xhtml_uri, 'meta', attributes)
-                    yield END_ELEMENT, (xhtml_uri, 'meta')
+                    yield START_ELEMENT, (xhtml_uri, 'meta', attributes), line
+                    yield END_ELEMENT, (xhtml_uri, 'meta'), line
                     continue
         elif event == END_ELEMENT:
             ns_uri, name = value
@@ -112,7 +112,7 @@ def set_content_type(stream, content_type):
                     if key1 in attributes:
                         if attributes[key1] == 'Content-Type':
                             continue
-        yield event, value
+        yield event, value, line
 
 
 def stream_to_str_as_xhtml(stream, encoding='UTF-8'):
@@ -381,16 +381,17 @@ class Document(XMLDocument):
 
     @classmethod
     def get_skeleton(cls, title=''):
-        data = ('<?xml version="1.0" encoding="UTF-8"?>\n'
-                '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
-                '       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
-                '<html xmlns="http://www.w3.org/1999/xhtml">\n'
-                '  <head>\n'
-                '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
-                '    <title>%(title)s</title>\n'
-                '  </head>\n'
-                '  <body></body>\n'
-                '</html>')
+        data = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
+            '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
+            '<html xmlns="http://www.w3.org/1999/xhtml">\n'
+            '  <head>\n'
+            '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
+            '    <title>%(title)s</title>\n'
+            '  </head>\n'
+            '  <body></body>\n'
+            '</html>')
         return data % {'title': title}
 
 

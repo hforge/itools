@@ -236,6 +236,7 @@ class Tracker(Folder):
     def search(self, context):
         search_name = context.get_form_value('search_name')
         search_title = context.get_form_value('search_title').strip()
+        search_title = unicode(search_title, 'utf8')
         if search_name:
             # Edit an Stored Search
             try:

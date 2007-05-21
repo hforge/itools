@@ -304,7 +304,7 @@ class SentenceTestCase(unittest.TestCase):
 
     def test_between_number(self):
         text = u"Price: -12.25 Euro."
-        result = [u'Price: -12.25 Euro.']
+        result = [u'Price:', '-12.25 Euro.']
 
         message = Message()
         message.append_text(text)
@@ -369,13 +369,16 @@ class SentenceTestCase(unittest.TestCase):
 
 
     def test_HTML(self):
-        text = u""" <a ref="; t. ffff">hello </a>      GOGO """
-        result = [u'<a ref="; t. ffff">hello </a> GOGO']
-
         message = Message()
-        message.append_text(text)
+        message.append_text(' ')
+        message.append_format('<a ref="; t. ffff">')
+        message.append_text('hello ')
+        message.append_format('</a>')
+        message.append_text('      GOGO ')
+
         segments = message.get_segments()
 
+        result = [u'<a ref="; t. ffff">hello </a> GOGO']
         self.assertEqual(list(segments), result)
 
 
@@ -477,8 +480,8 @@ class SentenceTestCase(unittest.TestCase):
     def test_newline(self):
         text = 'And you must show them these terms so they know their\n' \
                'rights.\n'
-        result = ['And you must show them these terms so they know their'
-                  'rights.']
+        result = [
+            'And you must show them these terms so they know their rights.']
 
         message = Message()
         message.append_text(text)

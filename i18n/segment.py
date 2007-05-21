@@ -17,8 +17,8 @@
 
 
 WORD, SPACE, STOP_WORD, STOP_SENTENCE = range(4)
-stop_sentences =[u'.', u';', u':', u'!', u'?']
-abbreviations = [u'Inc', u'Md', u'Mr', u'Dr']
+stop_sentences = set([u'.', u';', u':', u'!', u'?'])
+abbreviations = set([u'Inc', u'Md', u'Mr', u'Dr'])
 
 
 TEXT, FORMAT = range(2)
@@ -54,34 +54,6 @@ class Message(list):
         list.append(self, (FORMAT, x))
 
 
-    def lstrip(self):
-        """Left strip"""
-        if len(self) == 0:
-            return ''
-        type, value = self[0]
-        if type == TEXT and value.strip() == u'':
-            del self[0]
-        return value
-
-
-    def rstrip(self):
-        """Right strip"""
-        if len(self) == 0:
-            return ''
-        type, value = self[-1]
-        if type == TEXT and value.strip() == u'':
-            del self[-1]
-        return value
-
-
-    def has_text_to_translate(self):
-        for type, value in self:
-            if type == TEXT:
-                if value.strip():
-                    return True
-        return False
-
-
     def get_atoms(self):
         """
         This is a generator that iters over the message and returns each
@@ -95,159 +67,53 @@ class Message(list):
                 yield type, value
 
 
-    def get_words(self):
+    def get_segments(self, keep_spaces=None):
         """
-        This is a lexical analyzer that explits the message in words, spaces,
-        stop words and stop sentences. It is a generator.
+        We consider a sentence ends by an special puntuation character
+        (dot, semicolon, colon, exclamation or question mark) followed
+        by an space.
 
-        It is a four state automaton:
-
-        trans. atom            yield
-        ====== ====            ============
-        0 -> 0 [stop word]     stop word
-        0 -> 1 [space]
-        0 -> 2 [alpha-numeric]
-        0 -> 3 [stop sentence]
-        1 -> 0 [stop word]     space, stop word
-        1 -> 1 [space]
-        1 -> 2 [alpha-numeric] space
-        1 -> 3 [stop sentence] space
-        2 -> 0 [stop word]     word, stop word
-        2 -> 1 [space]         word
-        2 -> 2 [alpha-numeric]
-        2 -> 3 [stop-sentence] word
-        3 -> 0 [stop word]     stop sentence, stop word
-        3 -> 1 [space]         stop sentence
-        3 -> 2 [alpha-numeric] stop sentence
-        3 -> 3 [stop-sentence]
-
-        By an 'stop word' we understand anything that is not an space, nor
-        an alpha-numeric character, nor an 'stop-sentence'.
-
-        An 'stop-sentence' is a sequence of the characters '.', ';', ':',
-        '?' and '!', followed by an space. Except when it is just a '.' and
-        it is preceeded by an abbreviation (a word like Mr or Inc).
-
-        The local variables used are:
-
-         - token: keeps the previous token (to check for abbreviattions, we
-           need to remember the last token)
-
-         - state: the automaton state
-
-         - lexeme: the token's lexeme
+        Exceptions to this rule: abbreviations and accronyms.
         """
-        token = None
-        state, lexeme = 0, u''
+        # FIXME keep_spaces is not used, so remove it
+        sentence = []
+        word = None
+        word_stop = True
+        last = None
         for type, atom in self.get_atoms():
-            if state == 0:
-                if type == TEXT:
-                    if atom.isspace():
-                        state, lexeme = 1, atom
-                    elif atom.isalnum():
-                        state, lexeme = 2, atom
-                    elif atom in stop_sentences:
-                        state, lexeme = 3, atom
+            sentence.append(atom)
+            if type == TEXT:
+                if atom.isspace():
+                    word_stop = True
+                    # Stop Sentence
+                    if last in stop_sentences:
+                        # Consider exceptions (accronyms and abbreviations)
+                        if last == u'.':
+                            if len(word) == 1 and word.isupper():
+                                continue
+                            if word in abbreviations:
+                                continue
+                        # Send sentence
+                        sentence = u''.join(sentence)
+                        sentence = u' '.join(sentence.split()) # Strip
+                        yield sentence
+                        sentence = []
+                elif atom.isalnum():
+                    if word_stop is True:
+                        word = atom
+                        word_stop = False
                     else:
-                        token = STOP_WORD, atom
-                        yield token
+                        word += atom
                 else:
-                    state, lexeme = 2, atom
-            elif state == 1:
-                if type == TEXT:
-                    if atom.isspace():
-                        lexeme += atom
-                    elif atom.isalnum():
-                        token = SPACE, lexeme
-                        yield token
-                        state, lexeme = 2, atom
-                    elif atom in stop_sentences:
-                        token = SPACE, lexeme
-                        yield token
-                        state, lexeme = 3, atom
-                    else:
-                        yield SPACE, lexeme
-                        token = STOP_WORD, atom
-                        yield token
-                        state, lexeme = 0, ''
-                else:
-                    token = SPACE, lexeme
-                    yield token
-                    state, lexeme = 2, atom
-            elif state == 2:
-                if type == TEXT:
-                    if atom.isspace():
-                        token = WORD, lexeme
-                        yield token
-                        state, lexeme = 1, atom
-                    elif atom.isalnum():
-                        lexeme += atom
-                    elif atom in stop_sentences:
-                        token = WORD, lexeme
-                        yield token
-                        state, lexeme = 3, atom
-                    else:
-                        yield WORD, lexeme
-                        token = STOP_WORD, atom
-                        yield token
-                        state, lexeme = 0, ''
-                else:
-                    lexeme += atom
-            elif state == 3:
-                if type == TEXT:
-                    if atom.isspace():
-                        if lexeme == '.':
-                            if token is None \
-                               or len(token[1]) == 1 \
-                               or token[1] in abbreviations:
-                                token = WORD, lexeme
-                                yield token
-                            else:
-                                token = STOP_SENTENCE, lexeme
-                                yield token
-                        else:
-                            token = STOP_SENTENCE, lexeme
-                            yield token
-                        state, lexeme = 1, atom
-                    elif atom.isalnum():
-                        lexeme += atom
-                        state = 2
-                    elif atom in stop_sentences:
-                        lexeme += atom
-                    else:
-                        yield WORD, lexeme
-                        token = STOP_WORD, atom
-                        yield token
-                        state, lexeme = 0, u''
-                else:
-                    lexeme += atom
-                    state = 2
+                    word_stop = True
+                # Next
+                last = atom
+            elif type == FORMAT:
+                pass
 
-        if state == 1:
-            yield SPACE, lexeme
-        elif state == 2:
-            yield WORD, lexeme
-        elif state == 3:
-            yield STOP_SENTENCE, lexeme
-
-
-    def get_segments(self, keep_spaces=False):
-        """
-        This is the syntactical analyser that splits the message in segments
-        (sentences). It is a generator.
-        """
-        state = 0
-        sentence = u''
-        for token_id, lexeme in self.get_words():
-            if keep_spaces is False and token_id == SPACE:
-                lexeme = ' '
-            sentence += lexeme
-            if token_id == STOP_SENTENCE:
-                if keep_spaces is False:
-                    sentence = sentence.strip()
-                yield sentence
-                sentence = u''
-        if keep_spaces is False:
-            sentence = sentence.strip()
+        # Send laste sentence
+        sentence = u''.join(sentence)
+        sentence = u' '.join(sentence.split()) # Strip
         if sentence:
             yield sentence
+

@@ -86,6 +86,7 @@ def process_buffer(buffer, hit):
     message = Message()
     for type, value, line in buffer:
         if type == TEXT:
+            value = XMLContent.encode(value)
             message.append_text(value)
         elif type == START_ELEMENT:
             message.append_format(get_start_tag(*value))

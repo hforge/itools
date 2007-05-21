@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2004 Thierry Fromon <from.t@free.fr>
-#               2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#               2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,19 +16,32 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-
 """
-if you want to add a new langage, it's very easy:
-
- - create a litle dictionnary like Deutch_base = [...], don't forget the u for
-   unicode
- - create a specific char dictionnary like Deutch_char = [u'ß', u'ü', u'ö']
-
- - add the new langage in global variable language.
+TODO
 """
 
-
-special_chars = {
+###########################################################################
+# To add a new language, edit the dictionaries below:
+# 
+#   - positive_chars
+# 
+#     Defines special characters (like accentuated characters) that belong
+#     to the language.
+# 
+#   - negative_chars
+# 
+#     Defines special characters (like accentuated characters) that do not
+#     belong to the language.
+# 
+#   - positive_words
+# 
+#     Defines common words that belong to the language.
+# 
+#   - negative_words
+# 
+#     Defines some words that do not belong to the language.
+###########################################################################
+positive_chars = {
     u'¡': ['es'],
     u'¿': ['es'],
     u'ä': ['de'],
@@ -43,7 +56,10 @@ special_chars = {
     u'ú': ['es'],
 }
 
-special_words = {
+negative_chars = {}
+
+
+positive_words = {
     u'à': ['fr'],
     u'al': ['es'],
     u'an': ['en'],
@@ -115,12 +131,18 @@ special_words = {
 }
 
 
+negative_words = {
+    u'du': ['es'],
+}
+
 
 # One thousand words should be enough
 MAX_WORDS = 1000
 
 
-
+###########################################################################
+# The Code
+###########################################################################
 def guess_language(text):
     chars = {}
     words = {}
@@ -135,22 +157,22 @@ def guess_language(text):
         n_chars += 1
         c = c.lower()
         # Characters
-        if c in special_chars:
-            for language in special_chars[c]:
-                if language in chars:
-                    chars[language] += 1
-                else:
-                    chars[language] = 1
+        for language in positive_chars.get(c, []):
+            chars.setdefault(language, 0)
+            chars[language] += 1
+        for language in negative_chars.get(c, []):
+            chars.setdefault(language, 0)
+            chars[language] -= 2
         # Words
         if c.isalpha():
             word += c
         elif word:
-            if word in special_words:
-                for language in special_words[word]:
-                    if language in words:
-                        words[language] += 1
-                    else:
-                        words[language] = 1
+            for language in positive_words.get(word, []):
+                words.setdefault(language, 0)
+                words[language] += 1
+            for language in negative_words.get(word, []):
+                words.setdefault(language, 0)
+                words[language] -= 2
             word = u''
             # Check limit
             n_words += 1

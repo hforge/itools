@@ -202,7 +202,7 @@ class OracleTestCase(unittest.TestCase):
 
     def test_spain_very_sort(self):
         text = """Nueva coordinadora de Humanidades."""
-        print self.assertEqual(guess_language(text), 'es')
+        self.assertEqual(guess_language(text), 'es')
 
 
     def test_french_long(self):

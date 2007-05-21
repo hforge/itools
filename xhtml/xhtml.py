@@ -159,7 +159,10 @@ elements_schema = {
     'param': {'is_empty': True, 'is_inline': False},
     'q': {'is_empty': False, 'is_inline': True},
     'samp': {'is_empty': False, 'is_inline': True},
-    'select': {'is_empty': False, 'is_inline': True},
+    # FIXME This is a lie, <select> elements *are* inline
+    # TODO Do not use the inline/block for i18n, define instead another
+    # variable for this purpose.
+    'select': {'is_empty': False, 'is_inline': False},
     'small': {'is_empty': False, 'is_inline': True},
     'span': {'is_empty': False, 'is_inline': True},
     'strong': {'is_empty': False, 'is_inline': True},

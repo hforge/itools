@@ -120,10 +120,6 @@ def get_translatable_blocks(events):
     in "<em>Hello baby</em>" the translatable block is just the text
     node "Hello baby". But in "Hello <em>baby</em>" the translatable
     block is the whole sequence: "Hello <em>baby</em>".
-
-    0 - Ready
-    1 - Skip
-    2 - Hit
     """
     # Local variables
     buffer = []

@@ -77,7 +77,16 @@ if __name__ == '__main__':
             sys.stdout.write('.')
             sys.stdout.flush()
             handler = Document(path)
-            for msgid, line_number in handler.get_messages():
+            messages = handler.get_messages()
+            try:
+                messages = list(messages)
+            except:
+                print
+                print
+                print 'ERROR:', path
+                print
+                raise
+            for msgid, line_number in messages:
                 if len(msgid) > 1:
                     po.set_message(msgid, references={path: [line_number]})
     print ' OK'

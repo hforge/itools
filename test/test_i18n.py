@@ -304,7 +304,7 @@ class SentenceTestCase(unittest.TestCase):
 
     def test_between_number(self):
         text = u"Price: -12.25 Euro."
-        result = [u'Price:', '-12.25 Euro.']
+        result = [u'Price: -12.25 Euro.']
 
         message = Message()
         message.append_text(text)

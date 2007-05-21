@@ -17,7 +17,7 @@
 
 
 WORD, SPACE, STOP_WORD, STOP_SENTENCE = range(4)
-stop_sentences = set([u'.', u';', u':', u'!', u'?'])
+stop_sentences = set([u'.', u';', u'!', u'?'])
 abbreviations = set([u'Inc', u'Md', u'Mr', u'Dr'])
 
 
@@ -70,8 +70,8 @@ class Message(list):
     def get_segments(self, keep_spaces=None):
         """
         We consider a sentence ends by an special puntuation character
-        (dot, semicolon, colon, exclamation or question mark) followed
-        by an space.
+        (dot, semicolon, exclamation or question mark) followed by an
+        space.
 
         Exceptions to this rule: abbreviations and accronyms.
         """

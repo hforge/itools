@@ -8,9 +8,9 @@
 <form action="." method="post">
 
   <div id="attributes">
-    <span>
-      Date : <input type="text" name="date" id="date" size="11" value="${date}" />
-      <input type="button" id="trigger_date" value="..." /> </span>
+    Date :
+    <input type="text" name="date" id="date" size="11" value="${date}" />
+    <input type="button" id="trigger_date" value="..." />
 
     <input type="submit" id="update" name=";browse_calendar" value="OK" 
            class="button_ok" />

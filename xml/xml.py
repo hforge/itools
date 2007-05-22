@@ -107,18 +107,46 @@ def stream_to_str(stream, encoding='UTF-8'):
 
 
 
+def find_end(events, start):
+    """Receives a list of events and a position in the list of an start
+    element.
+
+    Returns the position in the list where the element ends.
+    """
+    c = 1
+    i = start + 1
+    while c:
+        event, value, line = events[i]
+        if event == START_ELEMENT:
+            c += 1
+        elif event == END_ELEMENT:
+            c -= 1
+        i = i + 1
+    return i
+
+
+def get_element(events, name):
+    i = 0
+    for event, value, line in events:
+        if event == START_ELEMENT:
+            if name == value[1]:
+                return Element(events, i)
+        i += 1
+    return None
+
+
 class Element(object):
 
-    __slots__ = ['document', 'start', 'end']
+    __slots__ = ['events', 'start', 'end']
 
-    def __init__(self, document, start):
-        self.document = document
+    def __init__(self, events, start):
+        self.events = events
         self.start = start
-        self.end = document.find_end(start)
+        self.end = find_end(events, start)
 
 
     def get_content_elements(self):
-        events = self.document.events
+        events = self.events
 
         i = self.start + 1
         while i < self.end:
@@ -218,29 +246,6 @@ class Document(Text):
         if not isinstance(other, self.__class__):
             return 1
         return cmp(self.__dict__, other.__dict__)
-
-
-    def find_end(self, start):
-        c = 1
-        i = start + 1
-        while c:
-            event, value, line = self.events[i]
-            if event == START_ELEMENT:
-                c += 1
-            elif event == END_ELEMENT:
-                c -= 1
-            i = i + 1
-        return i
-
-
-    def get_element(self, name):
-        i = 0
-        for event, value, line in self.events:
-            if event == START_ELEMENT:
-                if name == value[1]:
-                    return Element(self, i)
-            i += 1
-        return None
 
 
     def to_text(self):

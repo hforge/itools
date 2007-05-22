@@ -27,7 +27,7 @@ from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
 from itools.handlers import register_handler_class
 from itools.xml import (Document as XMLDocument, START_ELEMENT, END_ELEMENT,
     TEXT, COMMENT, AbstractNamespace, set_namespace, stream_to_str, get_qname,
-    get_attribute_qname, is_empty, get_end_tag)
+    get_attribute_qname, is_empty, get_end_tag, get_element)
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'
@@ -409,12 +409,12 @@ class Document(XMLDocument):
     ########################################################################
     def get_head(self):
         """Returns the head element."""
-        return self.get_element('head')
+        return get_element(self.events, 'head')
 
 
     def get_body(self):
         """Returns the body element."""
-        return self.get_element('body')
+        return get_element(self.events, 'body')
 
 
 register_handler_class(Document)

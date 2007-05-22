@@ -75,17 +75,15 @@ class XHTMLFile(Text, XHTMLDocument):
         body = self.get_body()
         if body is None:
             return True
-        is_empty = False
-        for event, node in body.events:
-            if event == TEXT:
-                if node.replace('&nbsp;', '').strip():
-                    break
-            elif event == START_ELEMENT:
-                if node.name == 'img':
-                    break
-        else:
-            is_empty = True
-        return is_empty
+        for type, value, line in body.events:
+            if type == TEXT:
+                if value.replace('&nbsp;', '').strip():
+                    return False
+            elif type == START_ELEMENT:
+                tag_uri, tag_name, attributes = value
+                if tag_name == 'img':
+                    return False
+        return True
 
 
     #######################################################################

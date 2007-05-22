@@ -27,6 +27,7 @@ from time import time
 # Import from itools
 from itools import vfs
 from itools.handlers import Text
+from itools.xml import get_element
 from itools.html import Document as HTMLDocument
 from itools.catalog import Catalog, make_catalog, TextField
 from itools.utils import vmsize
@@ -40,7 +41,7 @@ class Document(HTMLDocument):
 
     def title(self):
         # FIXME
-        title = self.get_element('title')
+        title = get_element(self.events, 'title')
         head = self.get_head()
         title = head.get_elements('title')[0]
         return title.get_content()

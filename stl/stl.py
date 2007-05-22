@@ -28,10 +28,10 @@ import re
 from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
-                            register_schema)
+    register_schema)
 from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
-                        AbstractNamespace, get_start_tag, get_end_tag,
-                        START_ELEMENT, END_ELEMENT, TEXT, COMMENT)
+    AbstractNamespace, get_start_tag, get_end_tag, START_ELEMENT, END_ELEMENT,
+    TEXT, COMMENT, find_end)
 from itools.xhtml import (xhtml_uri, stream_to_str_as_html,
                           stream_to_str_as_xhtml)
 
@@ -400,7 +400,7 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
                     evaluate = attributes.pop(stl_if).evaluate
                     loops = [ x for x, y in loops if evaluate(x, y) ]
                 # Process the loops
-                loop_end = document.find_end(i)
+                loop_end = find_end(document.events, i)
                 i += 1
                 for loop_stack, loop_repeat in loops:
                     x = process_start_tag(tag_uri, tag_name, attributes,
@@ -422,7 +422,7 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
                     if x is not None:
                         yield x
                 else:
-                    i = document.find_end(i)
+                    i = find_end(document.events, i)
             # nothing
             else:
                 if tag_uri != stl_uri:

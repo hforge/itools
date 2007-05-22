@@ -100,6 +100,7 @@ positive_words = {
     u'mais': ['fr'],
     u'no': ['en', 'es'],
     u'nous': ['fr'],
+    u'nueva': ['es'],
     u'o': ['es'],
     u'of': ['en'],
     u'on': ['en'],
@@ -201,10 +202,13 @@ def guess_language(text):
 
     # Pick the most probable language, unless the distance to the second is
     # too small.
-    minimum = languages[-1][0] - distance
-    languages = [ lang for p, lang in languages if p >= minimum ]
-    if len(languages) == 1:
-        return languages[0]
-
+    n = len(languages)
+    if n == 0:
+        return None
+    if n == 1:
+        return languages[0][1]
+    if languages[-1][0] - languages[-2][0] >= distance:
+        return languages[-1][1]
+     
     return None
 

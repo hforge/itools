@@ -183,10 +183,10 @@ class OracleTestCase(unittest.TestCase):
         estudios está preparada para enfrentar los nuevos retos que deberá
         enfrentar la institución en la perspectiva de la reforma. La comunidad
         académica tiene plena confianza en que la nueva coordinadora será punto
-        de equilibrio y unión para que se produzcan una serie de cambios en este
-        subsistema universitario. Por lo pronto y para que no digan que no se
-        reconoce hay que decir que las autoridades ya anunciaron que el Centro
-        de Estudios sobre la Universidad (CESU) y el Instituto de
+        de equilibrio y unión para que se produzcan una serie de cambios en
+        este subsistema universitario. Por lo pronto y para que no digan que
+        no se reconoce hay que decir que las autoridades ya anunciaron que el
+        Centro de Estudios sobre la Universidad (CESU) y el Instituto de
         Investigaciones Económicas tendrán nuevas instalaciones, decisión que
         está más que justificada y, repito, se agradece."""
         self.assertEqual(guess_language(text), 'es')
@@ -443,8 +443,8 @@ class SentenceTestCase(unittest.TestCase):
                ' in the term "modification".)  Each licensee is addressed' \
                ' as "you".'
         result = ['(Hereinafter, translation is included without limitation'
-                  ' in the term "modification".)',
-                  'Each licensee is addressed as "you".']
+                  ' in the term "modification".) Each licensee is addressed'
+                  ' as "you".']
 
         message = Message()
         message.append_text(text)

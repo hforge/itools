@@ -29,8 +29,8 @@ from itools.web import get_context
 # Misc
 #############################################################################
 
-src = ur""" ¹,;:!¡?ª$£¤+&/\"*#()[]{}'ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝ~ýÿ~^°"""
-dst = ur"""--------------------------AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuY-yy---"""
+src = ur"""ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"""
+dst = ur"""AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"""
 
 transmap = {}
 for i in range(len(src)):
@@ -40,24 +40,30 @@ for i in range(len(src)):
 
 def checkid(id):
     """
-    Checks wether the id is or not a valid Zope id. If it is the id is
-    returned, but stripped. If it is a bad id None is returned to signal
-    the error.
+    Turn a bytestring or unicode into an identifier only composed of
+    alphanumerical characters and a limited list of signs.
+
+    It only supports Latin-based alphabets.
     """
     if isinstance(id, str):
         id = unicode(id, 'utf8')
-    id = id.strip().translate(transmap).strip('-')
+
+    # Strip diacritics
+    id = id.strip().translate(transmap)
+
+    # Check for unallowed characters
+    id = [(c.isalnum() or c in (u'.', u'-', u'_', u'@')) and c or u'-' for c in id]
+
+    # Merge hyphens
+    id = u''.join(id)
+    id = id.split(u'-')
+    id = u'-'.join([x for x in id if x])
 
     # Check wether the id is empty
     if len(id) == 0:
         return None
 
-    # Check for unallowed characters
-    for c in id:
-        if not c.isalnum() and c not in ('.', '-', '_', '@'):
-            return None
-
-    # The id is good
+    # Return a safe ASCII bytestring
     return str(id)
 
 

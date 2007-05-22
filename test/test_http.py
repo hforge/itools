@@ -53,13 +53,13 @@ class DateTestCase(TestCase):
 
 
 
-class VFSTestCase(TestCase):
-
-    def test_open(self):
-        file = vfs.open('http://www.google.com')
-        data = file.read()
-        file.close()
-        self.assertEqual('<html>' in data, True)
+##class VFSTestCase(TestCase):
+##
+##    def test_open(self):
+##        file = vfs.open('http://www.google.com')
+##        data = file.read()
+##        file.close()
+##        self.assertEqual('<html>' in data, True)
 
 
 

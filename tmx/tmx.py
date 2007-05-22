@@ -112,6 +112,9 @@ class Message(object):
 
 class TMX(Text):
 
+    class_mimetypes = ['application/x-tmx']
+    class_extension = 'tmx'
+
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'document_type', 'version', 'header', 'header_notes',
                  'messages']

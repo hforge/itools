@@ -44,7 +44,6 @@ from folder import Folder
 from image import Image
 from python import Python
 from registry import get_handler_class, register_handler_class
-from rest import RestructuredText
 from text import Text
 from transactions import get_transaction
 from utils import get_handler
@@ -64,7 +63,6 @@ __all__ = [
     'Folder',
     'Image',
     'Python',
-    'RestructuredText',
     'Text',
     # Registry
     'get_handler_class',
@@ -76,5 +74,4 @@ __all__ = [
 
 
 mimetypes.add_type('text/comma-separated-values', '.csv')
-mimetypes.add_type('text/x-restructured-text', '.rst')
 mimetypes.encodings_map['.bz2'] = 'bzip2'

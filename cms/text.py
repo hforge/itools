@@ -20,15 +20,14 @@ import cgi
 
 # Import from itools
 from itools.i18n import get_language_name
-from itools.handlers import (Text as BaseText, Python as BasePython,
-                             RestructuredText as iRestructuredText)
+from itools.handlers import Text as BaseText, Python as BasePython
 from itools.gettext import PO as BasePO
 from itools.stl import stl
 from itools.web import get_context
-from itools.xhtml import Document
 from utils import get_parameters
 from file import File
 from registry import register_object_class
+from itools.rest import Document as RestDocument
 
 
 class Text(File, BaseText):
@@ -38,7 +37,7 @@ class Text(File, BaseText):
     class_description = u'Keep your notes with plain text files.'
     class_icon16 = 'images/Text16.png'
     class_icon48 = 'images/Text48.png'
-    class_views = [['view'],
+    class_views = [['view', 'view_rest'],
                    ['edit_form', 'externaledit', 'upload_form'],
                    ['edit_metadata_form'],
                    ['state_form'],
@@ -82,9 +81,31 @@ class Text(File, BaseText):
     # View
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
+    view__sublabel__ = u'Plain Text'
     def view(self, context):
         namespace = {}
         namespace['text'] = cgi.escape(self.to_str())
+
+        handler = self.get_handler('/ui/Text_view.xml')
+        return stl(handler, namespace)
+
+
+    view_rest__access__ = 'is_allowed_to_view'
+    view_rest__sublabel__ = u"As reStructuredText"
+    def view_rest(self, context):
+        namespace = {}
+
+        document = RestDocument(self.uri)
+        return document.get_content_as_html()
+
+
+    view_xml__access__ = 'is_allowed_to_view'
+    view_xml__sublabel__ = u"As reStructuredText"
+    def view_xml(self, context):
+        namespace = {}
+
+        document = RestDocument(self.uri)
+        namespace['text'] = document.get_content_as_xml()
 
         handler = self.get_handler('/ui/Text_view.xml')
         return stl(handler, namespace)
@@ -227,27 +248,3 @@ class Python(BasePython):
 
 
 register_object_class(Python)
-
-
-
-class RestructuredText(Text, iRestructuredText):
-
-    class_id = 'text/x-restructured-text'
-    class_version = '20060522'
-    class_title = u"Restructured Text"
-    class_description = u"Text files with Restructured Text syntax support."
-    class_extension = 'rst'
-
-
-    #######################################################################
-    # View
-    def view(self):
-        html = self.to_html()
-        document = Document()
-        document.load_state_from_string(html)
-        body = document.get_body()
-
-        return body.to_str()
-
-
-register_object_class(RestructuredText)

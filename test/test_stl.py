@@ -67,45 +67,6 @@ class STLTestCase(unittest.TestCase):
         self.assertEqual(value, 'hello world')
 
 
-##    def test_template(self):
-##        namespace = {'title': 'hello world',
-##                     'objects': [{'id': 'itools', 'title': 'Itaapy Tools'},
-##                                 {'id': 'ikaaro', 'title': 'The ikaaro CMS'}]}
-
-##        template = get_handler('test-in.xml')
-##        output = stl(template, namespace)
-
-##        self.assertEqual(output, get_handler('test-out.xml').to_str())
-
-
-##    def test_template2(self):
-##        namespace = {'title': 'hello world'}
-##        template = get_handler('test21-in.xml')
-##        template = stl(template, namespace)
-
-##        namespace = {'body': template}
-##        template = get_handler('test20-in.xml')
-##        output = stl(template, namespace)
-
-##        self.assertEqual(output, get_handler('test2-out.xml').to_str())
-
-
-##    def test_nested(self):
-##        """Tests a nested repeat."""
-##        namespace = {'labels': [{'name': 'sex', 'values': ['woman', 'man']},
-##                                {'name': 'age', 'values': ['-18', '+18']}]}
-
-##        stl = '<stl:block repeat="label labels">' \
-##              '  <stl:block content="label/name" />:' \
-##              '  <stl:block repeat="value label/values"' \
-##              '             content="value" />' \
-##              '</stl:block>'
-##        resource = memory.File(stl)
-##        template = XML.Document(resource)
-
-##        print stl(template, namespace)
-
-
 
 if __name__ == '__main__':
     unittest.main()

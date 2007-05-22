@@ -15,10 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-
 """
 This module aims to implement the URI standard as specified by RFC2396,
 see http://www.ietf.org/rfc/rfc2396.txt
+
 
 Other related RFCs include:
 
@@ -28,6 +28,10 @@ Other related RFCs include:
 
  - Registration of new schemes, http://www.ietf.org/rfc/rfc2717.txt
 """
+
+# FIXME Latest URI RFC is 3986: http://www.faqs.org/rfcs/rfc3986.html
+# Check agains it.
+# Consider a C library, for instance: http://uriparser.sourceforge.net/
 
 # XXX A resource should be an inmutable object, at least its components
 # (scheme, authority, path, query and fragment). Then we could get rid
@@ -111,7 +115,7 @@ def normalize_path(path):
       '/../a/b/c ' -> '/a/b/c'
       '.'          -> ''
     """
-    if not isinstance(path, str) and not isinstance(path, unicode):
+    if not isinstance(path, (str, unicode)):
         raise TypeError, 'path must be an string, not a %s' % type(path)
 
     # Does the path start by an slash? i.e.: is it absolute?

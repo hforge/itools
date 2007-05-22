@@ -1,0 +1,78 @@
+
+itools 0.16.0 (2007/06/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.uri
+  itools.cms            itools.ical             itools.vfs
+  itools.csv            itools.pdf              itools.web
+  itools.datatypes      itools.rest             itools.workflow
+  itools.gettext        itools.rss              itools.xhtml
+  itools.handlers       itools.schemas          itools.xliff
+  itools.html           itools.stl              itools.xml
+  itools.http           itools.tmx
+
+The main focus of this release has been quality:
+
+ - For the first time all unit tests are up-to-date. Check the README file
+   to learn how to run them.
+
+ - The same stands for the documentation. Now we have a 200 pages PDF, and
+   the code behaves as it is written in the documentation.
+
+ - We have made a little round through the coding style, all modules are
+   lowercase now.
+
+ - And the API has been flatten. This means that all functions, constants,
+   classes and exceptions of a package are available at the package's root
+   level (no need to go search a function in some module). Only exception
+   is "itools.cms", which is too big to have a flat API.
+
+But this release brings also some big new features.
+
+The new top-level package "itools.rest" provides a partial implementation
+of ReStructured Text [1].
+
+The index & search engine (package "itools.catalog") has been re-worked.
+With some new features (like the possibility to define custom fields),
+and a much friendlier programming interface. Check the documentation.
+
+The implmenentation of the XML file handler has been radically changed.
+It does not use anymore an element-tree to represent the handler's state,
+but a list of events: start tag, end tag, text node, etc. (this change
+has been inspired by Genshi [2]).
+
+Other packages have seen minor changes either to the programming interface
+or to the user interface. These are: itools.uri, itools.vfs, itools.handlers,
+itools.csv and itools.cms.
+
+Check the UPGRADE file for the details an how to update your code.
+
+
+[1] http://docutils.sourceforge.net/rst.html
+[2] http://genshi.edgewall.org/
+
+
+Credits:
+
+ - Hervé Cauwelier implemented itools.rest;
+ - J. David Ibáñez did the rest;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.0.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+

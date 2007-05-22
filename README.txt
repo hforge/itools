@@ -4,20 +4,20 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.catalog        itools.i18n             itools.vfs
-  itools.cms            itools.ical             itools.web
-  itools.csv            itools.pdf              itools.workflow
-  itools.datatypes      itools.rss              itools.xhtml
-  itools.gettext        itools.schemas          itools.xliff
-  itools.handlers       itools.stl              itools.xml
-  itools.html           itools.tmx
-  itools.http           itools.uri
+  itools.catalog        itools.i18n             itools.uri
+  itools.cms            itools.ical             itools.vfs
+  itools.csv            itools.pdf              itools.web
+  itools.datatypes      itools.rest             itools.workflow
+  itools.gettext        itools.rss              itools.xhtml
+  itools.handlers       itools.schemas          itools.xliff
+  itools.html           itools.stl              itools.xml
+  itools.http           itools.tmx
 
 The scripts included are:
 
   icms-init             icms-update             isetup-build
-  icms-restore          igettext-build          isetup-update-locale
-  icms-start            igettext-extract
+  icms-restore          igettext-build          isetup-doc
+  icms-start            igettext-extract        isetup-update-locale
   icms-stop             igettext-merge
 
 

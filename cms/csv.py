@@ -251,7 +251,7 @@ class CSV(Text, iCSV):
                 column['is_selected'] = value
             else:
                 column['is_input'] = True
-                column['value'] = value
+                column['value'] = datatype.encode(value)
             # Append
             columns.append(column)
         namespace['columns'] = columns

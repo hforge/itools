@@ -31,9 +31,9 @@ For itools.cms to work the package "tidy" [1] must be installed. While not
 strictly necessary it is also recommended to have PIL [2] and docutils [3]
 installed.
 
-Apart from the Python packages listed above, itoools.cms requires the
-command rsync. And the commands xlhtml, ppthtml, pdftohtml, wvHtml and
-unrtf are needed to index some types of documents.
+Apart from the Python packages listed above, itoools.catalog requires the
+command rsync. And for itools.cms you also need the commands xlhtml, ppthtml,
+pdftohtml, wvHtml and unrtf are needed to index some types of documents.
 
 [1] http://utidylib.berlios.de/
 [2] http://www.pythonware.com/products/pil/
@@ -119,15 +119,13 @@ Copyright 2002-2007  J. David Ibáñez <jdavid@itaapy.com>
 
 And:
 
- - Luis Belmar Letelier <luis@itaapy.com>
+ - Luis Belmar-Letelier <luis@itaapy.com>
  - Hervé Cauwelier <herve@oursours.net>
  - Nicolas Deram <nderam@gmail.com>
  - Thilo Ernst <Thilo.Ernst@dlr.de>
- - Alexandre Fernandez <>
  - Thierry Fromon <from.t@free.fr>
  - J. David Ibáñez <jdavid@itaapy.com>
  - Piotr Macuk <piotr@macuk.pl>
- - Cedric Moliard <>
  - Nicolas Oyez <noyez@gmail.com>
 
 Includes parts of Epoz 2.0.2. Epoz is copyrighted by Maik Jablonski and

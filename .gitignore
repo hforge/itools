@@ -15,3 +15,4 @@ locale/*.mo
 *.xhtml.it
 *.xhtml.zh
 test/fables/catalog
+test/pdf/*.pdf

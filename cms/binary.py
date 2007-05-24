@@ -25,7 +25,8 @@ from itools.xml import (MSWord as BaseMSWord,
                         OOWriter as BaseOOWriter,
                         OOCalc as BaseOOCalc,
                         OOImpress as BaseOOImpress,
-                        PDF as BasePDF)
+                        PDF as BasePDF,
+                        RTF as BaseRTF)
 from itools.stl import stl
 from file import File
 from registry import register_object_class
@@ -195,24 +196,14 @@ class PDF(File, BasePDF):
 
 
 
-class RTF(OfficeDocument):
+class RTF(File, BaseRTF):
 
     class_id = 'text/rtf'
     class_title = u"RTF"
     class_description = u'RTF Document'
     class_icon16 = 'images/Text16.png'
     class_icon48 = 'images/Text48.png'
-    class_extension = 'rtf'
 
-    source_encoding = 'ISO-8859-1'
-    source_converter = 'unrtf --text --nopict %s'
-
-    def to_text(self):
-        text = OfficeDocument.to_text(self)
-        words = text.split()
-        # Filter noise by unrtf
-        words = [word for word in words if len(word) < 100]
-        return u' '.join(words)
 
 
 ###########################################################################

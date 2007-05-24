@@ -25,7 +25,7 @@ from xml import (Document, Element, stream_to_str, get_qname,
     get_attribute_qname, get_start_tag, get_end_tag, find_end, get_element)
 from indexer import xml_to_text
 from office import (MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc,
-    OOImpress, PDF)
+    OOImpress, PDF, RTF)
 from i18n import translate
 
 
@@ -70,6 +70,7 @@ __all__ = [
     'OOCalc',
     'OOImpress',
     'PDF',
+    'RTF',
     # Functions
     'xml_to_text',
     'translate',

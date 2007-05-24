@@ -174,12 +174,30 @@ class PDF(OfficeDocument):
     source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
 
 
+
+class RTF(OfficeDocument):
+
+    class_mimetypes = ['text/rtf']
+    class_extenstion = 'rtf'
+    source_encoding = 'ISO-8859-1'
+    source_converter = 'unrtf --text --nopict %s'
+
+
+    def to_text(self):
+        text = OfficeDocument.to_text(self)
+        words = text.split()
+        # Filter noise by unrtf
+        words = [word for word in words if len(word) < 100]
+        return u' '.join(words)
+
+
 # Register
 mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
 mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
 mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
 
 
-handlers = [MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc, OOImpress, PDF]
+handlers = [MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc, OOImpress, PDF,
+    RTF]
 for handler in handlers:
     register_handler_class(handler)

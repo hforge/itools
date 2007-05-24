@@ -167,14 +167,6 @@ class OOImpress(OOffice):
 
 
 
-class PDF(OfficeDocument):
-
-    class_mimetypes = ['application/pdf']
-    class_extension = 'pdf'
-    source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
-
-
-
 class RTF(OfficeDocument):
 
     class_mimetypes = ['text/rtf']
@@ -197,7 +189,6 @@ mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
 mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
 
 
-handlers = [MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc, OOImpress, PDF,
-    RTF]
+handlers = [MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc, OOImpress, RTF]
 for handler in handlers:
     register_handler_class(handler)

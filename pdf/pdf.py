@@ -16,8 +16,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from pdf import PDF
-from rml import rmltopdf, stl_rmltopdf
+from itools.handlers import register_handler_class
+from itools.xml import OfficeDocument
 
 
-__all__ = ['PDF', 'rmltopdf', 'stl_rmltopdf']
+
+class PDF(OfficeDocument):
+
+    class_mimetypes = ['application/pdf']
+    class_extension = 'pdf'
+    source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
+
+
+register_handler_class(PDF)

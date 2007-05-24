@@ -25,8 +25,8 @@ from itools.xml import (MSWord as BaseMSWord,
                         OOWriter as BaseOOWriter,
                         OOCalc as BaseOOCalc,
                         OOImpress as BaseOOImpress,
-                        PDF as BasePDF,
                         RTF as BaseRTF)
+from itools.pdf import PDF as BasePDF
 from itools.stl import stl
 from file import File
 from registry import register_object_class

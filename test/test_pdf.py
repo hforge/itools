@@ -21,9 +21,10 @@ import sys
 import unittest
 
 # Import from itools
-from itools.pdf.rml import rmltopdf_test, rmltopdf, normalize, stream_next, \
+from itools.pdf import rmltopdf
+from itools.pdf.rml import rmltopdf_test, normalize, stream_next, \
                            get_color, get_page_size_orientation
-from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm
@@ -32,6 +33,7 @@ from reportlab.lib.colors import Color, CMYKColor
 from reportlab.lib.pagesizes import landscape, portrait
 
 from reportlab.platypus.doctemplate import LayoutError
+
 
 class FunctionTestCase(unittest.TestCase):
 

@@ -15,15 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-###############################################################################
-# Parastyle bulletsize bug fixed
-# better implementation of pageSize attribute
-# blockTableStyle tag inside blockTable implemented 
-# paraStyle alignment bug fixed
-# blockTable td bug fixed
-# docinit tag implemented
-# registerTTFont tag implemeted
-
 # Import from the Standard Library
 import re
 from cStringIO import StringIO
@@ -107,18 +98,17 @@ def document_stream(stream, pdf_stream, is_test=False):
         Childs : template, stylesheet, story
     """
 
-    document_attrs = {'showBoundary': 0,
-            'leftMargin': inch,
-            'rightMargin': inch,
-            'topMargin': inch,
-            'bottomMargin': inch,
-            'pageSize': pagesizes.A4,
-            'title': None,
-            'author': None,
-            'rotation': 0,
-            'showBoundary': 0,
-            'allowSplitting': 1
-            }
+    document_attrs = { 'leftMargin': inch,
+                       'rightMargin': inch,
+                       'topMargin': inch,
+                       'bottomMargin': inch,
+                       'pageSize': pagesizes.A4,
+                       'title': None,
+                       'author': None,
+                       'rotation': 0,
+                       'showBoundary': 0,
+                       'allowSplitting': 1
+                     }
 
     pdf_stylesheet = getSampleStyleSheet()
     pdf_table_style = {}
@@ -165,6 +155,8 @@ def document_stream(stream, pdf_stream, is_test=False):
                 stack.pop()
 
     #### BUILD PDF ####
+    # rml attribute != reportlab attribute --> pageSize
+    document_attrs['pagesize'] = document_attrs['pageSize']
     doc = SimpleDocTemplate(pdf_stream, **document_attrs)
     doc.addPageTemplates(page_templates)
 
@@ -176,7 +168,10 @@ def document_stream(stream, pdf_stream, is_test=False):
 
 
 def docinit_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
-    """ """
+    """ 
+        stream : parser stream
+        Register external font
+    """
 
     stack = []
     stack.append((_tag_name, _attributes, None))
@@ -279,8 +274,8 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         pass
                     else:
                         template_attrs = {'id': id, 
-                                      'frames': page_template_data['frame'], 
-                                      'pagesize': page_size}
+                                          'frames': page_template_data['frame'],
+                                          'pagesize': page_size}
 
                         page_template = PageTemplate(**template_attrs)
                         page_templates.append(page_template)
@@ -715,7 +710,8 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             if tag_name == _tag_name:
                 content = ''.join(content)
                 element = stack.pop()
-                widget = create_paragraph(pdf_stylesheet, alias_style, element, content)
+                widget = create_paragraph(pdf_stylesheet, alias_style, element,
+                                          content)
                 return widget 
             else:
                 element = stack.pop()
@@ -727,13 +723,13 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 value = normalize(Unicode.decode(value, encoding), True)
                 if len(value) > 0:
                     # alow to write : 
-                    # <para><u><i>Choix de l'appareillage</i> </u></para>
+                    # <para><u><i>foo</i> </u></para>
                     value = XML.encode(value) # entities
                     content.append(value)
 
 
 def preformatted_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                     pdf_stylesheet, alias_style):
+                        pdf_stylesheet, alias_style):
     """
         Create a preformatted widget (pre or xpre)
     """
@@ -758,8 +754,8 @@ def preformatted_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             if tag_name == _tag_name:
                 content = ''.join(content)
                 element = stack.pop()
-                widget = create_preformatted(pdf_stylesheet, alias_style, element, 
-                                             content)
+                widget = create_preformatted(pdf_stylesheet, alias_style, 
+                                             element, content)
                 return widget 
             else:
                 element = stack.pop()
@@ -858,6 +854,9 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
     splitByRow_table = 1
     repeatRows_table = to_int(_attributes.get((None, 'repeatRows'), 1), 1)
 
+    tr_number = -1
+    td_number = -1
+
     if rowHeights_table is not None:
         rowHeights_table_tab = rowHeights_table.split(',')
         rowHeights_table = []
@@ -889,10 +888,17 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             elif tag_name == 'tr':
                 table_tr = []
                 end_tag_tr = False
+
+                tr_number += 1
+                td_number = -1
             elif tag_name == 'td':
                 table_td = []
                 td_only_text = True
                 end_tag_td = False
+                td_number += 1
+                if len(attributes) > 0:
+                    build_td_attributes(style_table, attributes, tr_number, 
+                                        td_number)
             elif tag_name == 'image':
                 if stack[-1][0] == 'td':
                     push = False
@@ -1119,6 +1125,8 @@ def create_preformatted(pdf_stylesheet, alias_style, element, content):
 def create_image(element, check_dimension):
     """ 
         Create a reportlab image widget.
+        If check_dimension is true and the width and the height attributes
+        are not set we return None
     """
 
     width, height = None, None
@@ -1368,6 +1376,50 @@ def add_table_style(pdf_table_style, id, table_style):
     pdf_table_style[id] = style
 
 
+def build_td_attributes(style, attributes, line, column):
+    """ """
+    
+    for key, value in attributes.iteritems():
+        key = key[1]
+        start = (column, line)
+        stop = start
+       
+        if key == 'fontColor':
+            color = getattr(colors, value, colors.black)
+            style.add('TEXTCOLOR', start, stop, color)
+        elif key == 'fontName':
+            style.add('FONTNAME', start, stop, value)
+        elif key == 'fontSize':
+            size = to_int(value, 5)
+            style.add('FONTSIZE', start, stop, size)
+        elif key == 'leading':
+            style.add('LEADING', start, stop, to_float(value))
+        elif key in ['leftPadding', 'rightPadding', 'topPadding', 
+                     'bottomPadding']:
+            value = get_value_reportlab(value)
+            style.add(key.upper(), start, stop, value)
+        elif key == 'background':
+            color = getattr(colors, value, colors.black)
+            style.add('BACKGROUND', start, stop, color)
+        elif key == 'align':
+            value = value.upper()
+            if value in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
+                style.add('ALIGNMENT', start, stop, value)
+        elif key == 'vAlign':
+            value = value.upper()
+            if value in ['TOP', 'MIDDLE', 'BOTTOM']:
+                style.add('VALIGN', start, stop, value)
+        elif key in ['lineBelowColor', 'lineAboveColor', 'lineLeftColor', 
+                     'lineRightColor']:
+            key = key.replace('Color', '')
+            if key[4:8] == 'left':
+                key = 'linebefore'
+            elif key[4:9] == 'right':
+                key = 'lineafter'
+            color = getattr(colors, value, colors.black)
+            style.add(key.upper(), start, stop, color)
+
+
 def get_style(stylesheet, alias, name):
     """
        Return the style corresponding to name or the style normal if it does
@@ -1545,10 +1597,10 @@ def get_value_page_size(data):
         Return a tuple (width, height)
     """
     if is_str(data):
-        orientation, data = get_page_size_orientation(data)
+        orienter, data = get_page_size_orientation(data)
         ps = __tab_page_size.get(data)
         if ps is not None:
-            return orientation(ps)
+            return orienter(ps)
         
         data = normalize(data)
 
@@ -1565,14 +1617,14 @@ def get_value_page_size(data):
         else:
             data = pagesizes.A4
         
-        return orientation(data)
+        return orienter(data)
     
     return pagesizes.A4
     
 
 def get_page_size_orientation(data):
     """ 
-        Return the pagesize orientation
+        Return the orienter and the pagesize
         example: 
         data = 'letter landscape'
         return (landscape, 'letter')
@@ -1581,10 +1633,10 @@ def get_page_size_orientation(data):
         return (portrait, '(21cm,29.7cm)')
     """
     
-    orientation = portrait
+    orienter = portrait
     sp = data.split(' ')
     if len(sp) == 1:
-        return (orientation, data)
+        return (orienter, data)
 
     if sp[0] == 'landscape':
         return (landscape, sp[1])

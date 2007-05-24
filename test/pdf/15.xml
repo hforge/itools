@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no" ?> 
+<!DOCTYPE document SYSTEM "rml_1_0.dtd"> 
+<document filename="pdf/15.pdf"> 
+  <stylesheet>
+    <blockTableStyle id="myBlockTableStyle1">
+      <lineStyle kind="GRID" colorName="black"/>
+    </blockTableStyle>
+  </stylesheet>
+  <story>
+    <blockTable colWidths="5cm,5cm" style="myBlockTableStyle1">
+      <tr><td>fontName</td><td fontName="Courier">Courier</td></tr>
+      <tr><td>fontName</td><td fontName="Helvetica">Helvetica</td></tr>
+      <tr><td>fontSize</td><td fontSize="8">8</td></tr>
+      <tr><td>fontSize</td><td fontSize="14">14</td></tr>
+      <tr><td>fontColor</td><td fontColor="red">red</td></tr>
+      <tr><td>fontColor</td><td fontColor="blue">blue</td></tr>
+      <tr><td>leading</td><td leading="16">leading
+      is
+      16</td></tr>
+      <tr><td>leading</td><td leading="12">leading
+      is
+      12</td></tr>
+      <tr><td>leftPadding</td><td leftPadding="10">10</td></tr>
+      <tr><td>leftPadding</td><td leftPadding="16">16</td></tr>
+      <tr><td>rightPadding</td><td rightPadding="10" align="right">10</td></tr>
+      <tr><td>rightPadding</td><td rightPadding="24" align="right">24</td></tr>
+      <tr><td>topPadding</td><td topPadding="10">10</td></tr>
+      <tr><td>topPadding</td><td topPadding="24">24</td></tr>
+      <tr><td>bottomPadding</td><td bottomPadding="10">10</td></tr>
+      <tr><td>bottomPadding</td><td bottomPadding="24">24</td></tr>
+      <tr><td>background</td><td background="pink">pink</td></tr>
+      <tr><td>background</td><td background="lightblue">lightblue</td></tr>
+      <tr><td>align</td><td align="left">left</td></tr>
+      <tr><td>align</td><td align="center">center</td></tr>
+      <tr><td>align</td><td align="right">right</td></tr>
+      <tr><td>-
+      vAlign
+      -</td><td vAlign="top">top</td></tr>
+      <tr><td>-
+      vAlign
+      -</td><td vAlign="middle">middle</td></tr>
+      <tr><td>-
+      vAlign
+      -</td><td vAlign="bottom">bottom</td></tr>
+
+      <tr>
+        <td>Mix</td>
+        <td fontName="Courier" fontSize="16" fontColor="red" 
+            background="lightblue" topPadding="24" bottomPadding="10"
+            align="center"
+            >Test 
+courrier 16 
+red 
+lightblue 
+tp 24 
+bp 10 
+center</td>
+      </tr>
+    </blockTable>
+  </story>
+</document>

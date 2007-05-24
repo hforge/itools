@@ -199,8 +199,8 @@ class StylesheetTestCase(unittest.TestCase):
         self.assertEqual(style.rightIndent, 1 * inch)
 
     
-    #def test_style_sheet_report_lab_exemple(self):
-    #    story, stylesheet = rmltopdf_test('pdf/22.xml')
+    def test_style_sheet_report_lab_exemple(self):
+        story, stylesheet = rmltopdf_test('pdf/22.xml')
 
 
     def test_style_sheet_table_style(self):
@@ -225,6 +225,17 @@ class StylesheetTestCase(unittest.TestCase):
         self.assertEqual(story[3].style.parent.name, 'Heading1')
         self.assertEqual(story[4].style.parent.name, 'Normal')
         self.assertEqual(story[5].style.parent.name, 'Heading1')
+
+
+    def test_pagesizes(self):
+        filename = 'pdf/28_'
+        for type in ['A', 'B']:
+            for size in range(0, 7):
+                temp = 'pdf/28_%s%s.xml' % (type, size)
+                content = rmltopdf(temp)
+                f = open('%s.pdf' % temp, 'w')
+                f.write(content)
+                f.close()
         
 
 class StoryTestCase(unittest.TestCase):
@@ -238,21 +249,26 @@ class StoryTestCase(unittest.TestCase):
         story, stylesheet = rmltopdf_test('pdf/03.xml')
         self.assertEqual(len(story), 3)
 
+
     def test_pre(self):
         story, stylesheet = rmltopdf_test('pdf/04.xml')
         self.assertEqual(len(story), 5)
     
+
     def test_para(self):
         story, stylesheet = rmltopdf_test('pdf/06.xml')
         self.assertEqual(len(story), 6)
     
+
     def test_spacer(self):
         story, stylesheet = rmltopdf_test('pdf/07.xml')
         self.assertEqual(len(story), 2)
 
+
     def test_spacer_not_valid(self):
         story, stylesheet = rmltopdf_test('pdf/08.xml')
         self.assertEqual(len(story), 0)
+
 
     def test_keepinframe(self):
         content = rmltopdf('pdf/26.xml')
@@ -274,8 +290,10 @@ class TableTestCase(unittest.TestCase):
         story, stylesheet = rmltopdf_test('pdf/10.xml')
         self.assertEqual(len(story), 1)
 
+
     def test_error(self):
         self.assertRaises(ValueError, rmltopdf_test, 'pdf/11.xml')
+
 
     def test_big(self):
         story, stylesheet = rmltopdf_test('pdf/12.xml')
@@ -286,9 +304,17 @@ class TableTestCase(unittest.TestCase):
         story, stylesheet = rmltopdf_test('pdf/13.xml')
         self.assertEqual(len(story), 1)
     
+
     def test_inner_table(self):
         story, stylesheet = rmltopdf_test('pdf/14.xml')
         self.assertEqual(len(story), 1)
+
+
+    def test_td_attributes(self):
+        content = rmltopdf('pdf/15.xml')
+        f = open('pdf/15.xml.pdf', 'w')
+        f.write(content)
+        f.close()
 
 
 class GlobalTestCase(unittest.TestCase):

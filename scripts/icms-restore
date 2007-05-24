@@ -41,7 +41,7 @@ def restore(parser, options, target):
             print 'DONE'
     elif state == TRANSACTION_PHASE2:
         msg = 'The latest transaction was not saved. Finish now (y/N)?'
-        if ask_confirmation(message) is True:
+        if ask_confirmation(msg) is True:
             print '  * Saving transaction...'
             database.save_changes_forever()
             print 'DONE'

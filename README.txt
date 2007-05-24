@@ -31,8 +31,8 @@ strictly necessary it is also recommended to have PIL [2] and docutils [3]
 installed.
 
 Apart from the Python packages listed above, itoools.cms requires the
-command rsync. And the commands xlhtml, ppthtml, pdftohtml and wvHtml are
-needed to index some types of documents.
+command rsync. And the commands xlhtml, ppthtml, pdftohtml, wvHtml and
+unrtf are needed to index some types of documents.
 
 [1] http://utidylib.berlios.de/
 [2] http://www.pythonware.com/products/pil/

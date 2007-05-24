@@ -617,18 +617,18 @@ PyObject* parse_document_type(Parser* self) {
             return NULL;
         }
         xml_space(self);
-        /* PUBLIC ID */
-        public_id = xml_attr_value(self);
-        if (public_id == NULL) {
-            Py_DECREF(name);
-            return NULL;
-        }
-        xml_space(self);
         /* SYSTEM ID */
         system_id = xml_attr_value(self);
         if (system_id == NULL) {
             Py_DECREF(name);
             Py_DECREF(public_id);
+            return NULL;
+        }
+        xml_space(self);
+        /* PUBLIC ID */
+        public_id = xml_attr_value(self);
+        if (public_id == NULL) {
+            Py_DECREF(name);
             return NULL;
         }
     } else {

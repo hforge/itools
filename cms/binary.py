@@ -326,13 +326,33 @@ class PDF(OfficeDocument):
 
     class_id = 'application/pdf'
     class_title = u'PDF'
-    class_description = u'Document PDF'
+    class_description = u'PDF Document'
     class_icon16 = 'images/Pdf16.png'
     class_icon48 = 'images/Pdf48.png'
     class_extension = '.pdf'
 
     source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
 
+
+
+class RTF(OfficeDocument):
+
+    class_id = 'text/rtf'
+    class_title = u"RTF"
+    class_description = u'RTF Document'
+    class_icon16 = 'images/Text16.png'
+    class_icon48 = 'images/Text48.png'
+    class_extension = '.rtf'
+
+    source_encoding = 'ISO-8859-1'
+    source_converter = 'unrtf --text --nopict %s'
+
+    def to_text(self):
+        text = OfficeDocument.to_text(self)
+        words = text.split()
+        # Filter noise by unrtf
+        words = [word for word in words if len(word) < 100]
+        return u' '.join(words)
 
 
 ###########################################################################
@@ -385,6 +405,7 @@ register_object_class(MSWord)
 register_object_class(MSExcel)
 register_object_class(MSPowerPoint)
 register_object_class(PDF)
+register_object_class(RTF)
 # Open Document Format
 register_object_class(OOWriter, 'application/vnd.oasis.opendocument.text')
 register_object_class(OOCalc, 'application/vnd.oasis.opendocument.spreadsheet')

@@ -278,9 +278,6 @@ class Handler(Node):
             get_transaction().add(self)
 
 
-    ########################################################################
-    # XXX Obsolete.
-    # To be removed by 0.5, use instead "self.resource.get_mimetype".
     def get_mimetype(self):
         return vfs.get_mimetype(self.uri)
 

@@ -92,10 +92,10 @@ def stl_rmltopdf(handler, namespace):
 
 class iIllustration(Flowable):
 
-    def __init__(self, stream, _tag_uri, _tag_name, _attributes, _ns_decls):
+    def __init__(self, stream, _tag_uri, _tag_name, _attributes):
         self.width = rml_value(_attributes.get((None, 'width')))
         self.height = rml_value(_attributes.get((None, 'height')))
-        self.pageGraphics = iPageGraphics(stream, _tag_name, {}, _ns_decls)
+        self.pageGraphics = iPageGraphics(stream, _tag_name, {})
 
     
     def wrap(self, *args):
@@ -161,7 +161,7 @@ class iPageGraphics(object):
     __tab_join = {'round': 1, 'mitered': 0, 'bevelled': 2}
     __tab_cap = {'default': 0, 'round': 1, 'square': 2}
 
-    def __init__(self, stream, _tag_name, _attributes, _ns_decls):
+    def __init__(self, stream, _tag_name, _attributes):
         self.story = []
 
         stack = []
@@ -174,7 +174,7 @@ class iPageGraphics(object):
                 break
             #### START ELEMENT ####
             if event == START_ELEMENT:
-                tag_uri, tag_name, attrs, ns_decls = value
+                tag_uri, tag_name, attrs = value
                 if tag_name in ['drawString', 'drawRightString', 
                                 'drawCentredString', 'drawCenteredString']:
                     if exist_attribute(attrs, ['x', 'y']) == True:
@@ -426,24 +426,22 @@ def document_stream(stream, pdf_stream, is_test=False):
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             if tag_name == 'document':
                 pdf_filename = attributes.get((None, 'filename'), 'noname.pdf')
                 stack.append((tag_name, attributes, None))
             elif tag_name == 'docinit':
-                docinit_stream(stream, tag_uri, tag_name, attributes, ns_decls)
+                docinit_stream(stream, tag_uri, tag_name, attributes)
             elif tag_name == 'template':
                 page_templates = template_stream(stream, tag_uri, tag_name, 
-                                                 attributes, ns_decls, 
-                                                 document_attrs)
+                                attributes, document_attrs)
             elif tag_name == 'stylesheet':
                 alias_style = stylesheet_stream(stream, tag_uri, tag_name, 
-                                                attributes, ns_decls, 
-                                                pdf_stylesheet, 
+                                                attributes, pdf_stylesheet, 
                                                 pdf_table_style, alias_style)
             elif tag_name == 'story':
               story = story_stream(stream, tag_uri,tag_name, attributes,
-                                   ns_decls, pdf_stylesheet, pdf_table_style,
+                                   pdf_stylesheet, pdf_table_style,
                                    alias_style)
             else: 
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
@@ -476,7 +474,7 @@ def document_stream(stream, pdf_stream, is_test=False):
         return (_story, pdf_stylesheet)
 
 
-def docinit_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
+def docinit_stream(stream, _tag_uri, _tag_name, _attributes):
     """ 
         stream : parser stream
         Register external font
@@ -498,7 +496,7 @@ def docinit_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
             return
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
@@ -550,8 +548,7 @@ def docinit_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
             stack.pop()
 
 
-def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                    document_attrs):
+def template_stream(stream, _tag_uri, _tag_name, _attributes, document_attrs):
     """
         Get the document attributes and create the document templates.
         Child : pageTemplate
@@ -591,7 +588,7 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             if tag_name == 'pageTemplate':
                 on_page_function = None
                 page_template_data = {'frame':[]}
@@ -646,7 +643,7 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             stack.pop()
 
 
-def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
+def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes,
                       pdf_stylesheet, pdf_table_style, alias_style):
     """ 
         Stylesheet define the different style of the document
@@ -663,16 +660,16 @@ def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             if tag_name == 'initialize':
                 alias_style = {}
                 initialize_stream(stream, tag_uri, tag_name, attributes, 
-                                  ns_decls, pdf_stylesheet, alias_style)
+                                  pdf_stylesheet, alias_style)
             elif tag_name == 'paraStyle':
                 stylesheet_xml.append(attributes)
             elif tag_name == 'blockTableStyle':
                 tableStyle_stream(stream, tag_uri, tag_name, attributes, 
-                                  ns_decls, pdf_stylesheet, pdf_table_style)
+                                  pdf_stylesheet, pdf_table_style)
             else:
                 print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 # unknown tag
@@ -688,7 +685,7 @@ def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
 
 
 def initialize_stream(stream, _tag_uri, _tag_name, _attributes, 
-                      _ns_decls, pdf_stylesheet, alias_style):
+                      pdf_stylesheet, alias_style):
     """ 
         Generate the document alias for the paragraph style
         Childs : alias
@@ -702,7 +699,7 @@ def initialize_stream(stream, _tag_uri, _tag_name, _attributes,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             if tag_name == 'alias':
                 id = attributes.get((None, 'id'))
                 value = attributes.get((None, 'value'))
@@ -727,7 +724,7 @@ def initialize_stream(stream, _tag_uri, _tag_name, _attributes,
             pass
 
 
-def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
+def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes,
                       pdf_stylesheet, pdf_table_style):
     """  
        Childs : blockFont, blockTextColor, blockLeading, blockAlignment, 
@@ -745,7 +742,7 @@ def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
@@ -770,8 +767,8 @@ def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 stack.pop()
 
 
-def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                 pdf_stylesheet, pdf_table_style, alias_style):
+def story_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
+                 pdf_table_style, alias_style):
     """
         Create the document 'story'.
         Childs : setNextTemplate, nextPage, nextFrame, keepInFrame, h1, h2, h3, 
@@ -793,7 +790,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             return story
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             if tag_name == 'setNextTemplate':
                 name = attributes.get((None, 'name'))
                 #current_template_name = name
@@ -812,38 +809,37 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 stack.append((tag_name, attributes, None))
             elif tag_name == 'keepInFrame':
                 widget = keepinframe_stream(stream, tag_uri, tag_name,
-                                             attributes, ns_decls, 
-                                             pdf_stylesheet, pdf_table_style,
-                                             alias_style)
+                                             attributes, pdf_stylesheet,
+                                             pdf_table_style, alias_style)
                 if widget is not None:
                     story.append(widget)
             elif tag_name in ['h1', 'h2', 'h3']:
                 story.append(heading_stream(stream, tag_uri, tag_name, 
-                             attributes, ns_decls, pdf_stylesheet, alias_style))
+                             attributes, pdf_stylesheet, alias_style))
             elif tag_name == 'hr':
                 story.append(hr_stream(stream, tag_uri, tag_name, 
-                                       attributes, ns_decls))
+                                       attributes))
             elif tag_name == 'para':
                 story.append(paragraph_stream(stream, tag_uri, tag_name, 
-                                              attributes, ns_decls, 
-                                              pdf_stylesheet, alias_style))
+                                              attributes, pdf_stylesheet,
+                                              alias_style))
             elif tag_name in ['pre', 'xpre']:
                 story.append(preformatted_stream(stream, tag_uri, tag_name,
-                                                 attributes, ns_decls, 
-                                                 pdf_stylesheet, alias_style))
+                                                 attributes, pdf_stylesheet,
+                                                 alias_style))
             elif tag_name == 'image':
                 widget = image_stream(stream, tag_uri, tag_name,
-                                      attributes, ns_decls, pdf_stylesheet)
+                                      attributes, pdf_stylesheet)
                 if widget is not None:
                     story.append(widget)
             elif tag_name == 'spacer':
                 widget = spacer_stream(stream, tag_uri, tag_name,
-                                       attributes, ns_decls, pdf_stylesheet)
+                                       attributes, pdf_stylesheet)
                 if widget is not None:
                     story.append(widget)
             elif tag_name == 'blockTable':
                 widget = table_stream(stream, tag_uri, tag_name,
-                                      attributes, ns_decls, pdf_stylesheet,
+                                      attributes, pdf_stylesheet,
                                       pdf_table_style, alias_style)
                 if widget is not None:
                     story.append(widget)
@@ -857,7 +853,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             elif tag_name == 'illustration':
                 if exist_attribute(attributes, ['width', 'height']):
                     story.append(iIllustration(stream, tag_uri, tag_name, 
-                                               attributes, ns_decls))
+                                               attributes))
             else:
                 print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 # unknown tag
@@ -888,7 +884,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         story.append(value)
 
 
-def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
+def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes,
                        pdf_stylesheet, pdf_table_style, alias_style):
     """
         Create a KeepInFrame widget.
@@ -918,42 +914,41 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             if tag_name == 'keepInFrame':
                 widget = keepinframe_stream(stream, tag_uri, tag_name,
-                                            attributes, ns_decls, 
-                                            pdf_stylesheet, pdf_table_style,
-                                            alias_style)
+                                            attributes, pdf_stylesheet,
+                                            pdf_table_style, alias_style)
                 if widget is not None:
                     story.append(widget)
             elif tag_name in ['h1', 'h2', 'h3']:
                 story.append(heading_stream(stream, tag_uri, tag_name, 
-                             attributes, ns_decls, pdf_stylesheet))
+                             attributes, pdf_stylesheet))
             elif tag_name == 'hr':
                 story.append(hr_stream(stream, tag_uri, tag_name, 
-                                       attributes, ns_decls))
+                                       attributes))
             elif tag_name == 'para':
                 story.append(paragraph_stream(stream, tag_uri, tag_name, 
-                                              attributes, ns_decls, 
-                                              pdf_stylesheet, alias_style))
+                                              attributes, pdf_stylesheet,
+                                              alias_style))
             elif tag_name in ['pre', 'xpre']:
                 story.append(preformatted_stream(stream, tag_uri, tag_name,
-                                                 attributes, ns_decls, 
-                                                 pdf_stylesheet, alias_style))
+                                                 attributes, pdf_stylesheet,
+                                                 alias_style))
             elif tag_name == 'image':
                 widget = image_stream(stream, tag_uri, tag_name,
-                                      attributes, ns_decls, pdf_stylesheet)
+                                      attributes, pdf_stylesheet)
                 if widget is not None:
                     story.append(widget)
             elif tag_name == 'spacer':
                 widget = spacer_stream(stream, tag_uri, tag_name,
-                                      attributes, ns_decls, pdf_stylesheet)
+                                      attributes, pdf_stylesheet)
                 if widget is not None:
                     story.append(widget)
             elif tag_name == 'blockTable':
-                widget = table_stream(stream, tag_uri, tag_name,
-                                      attributes, ns_decls, pdf_stylesheet,
-                                      pdf_table_style, alias_style)
+                widget = table_stream(stream, tag_uri, tag_name, attributes,
+                                      pdf_stylesheet, pdf_table_style,
+                                      alias_style)
                 if widget is not None:
                     story.append(widget)
             else:
@@ -979,8 +974,9 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         story.append(value)
 
 
-def heading_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                   pdf_stylesheet, alias_style):
+
+def heading_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
+                   alias_style):
     """
         Create a heading widget.
     """
@@ -996,7 +992,7 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             content.append(build_start_tag(tag_name, attributes))
             stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
@@ -1019,7 +1015,7 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     content.append(value)
 
 
-def hr_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
+def hr_stream(stream, _tag_uri, _tag_name, _attributes):
     """
         Create a hr widget.
     """
@@ -1032,7 +1028,7 @@ def hr_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
         elif event == END_ELEMENT:
@@ -1047,8 +1043,8 @@ def hr_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
             pass
 
 
-def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                     pdf_stylesheet, alias_style):
+def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
+                     alias_style):
     """
         Create a paragraph widget.
     """
@@ -1064,7 +1060,7 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             if tag_name == 'br': 
                 # check if the tag is a br tag
                 # we trim at le right the previous text
@@ -1098,7 +1094,7 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     has_content = True
 
 
-def preformatted_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
+def preformatted_stream(stream, _tag_uri, _tag_name, _attributes,
                         pdf_stylesheet, alias_style):
     """
         Create a preformatted widget (pre or xpre)
@@ -1115,7 +1111,7 @@ def preformatted_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             content.append(build_start_tag(tag_name, attributes))
             stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
@@ -1139,7 +1135,7 @@ def preformatted_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 content.append(value)
 
 
-def image_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
+def image_stream(stream, _tag_uri, _tag_name, _attributes,
                  pdf_stylesheet, check_dimension=False):
     """
         Create an image widget.
@@ -1154,7 +1150,7 @@ def image_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
         elif event == END_ELEMENT:
@@ -1171,8 +1167,7 @@ def image_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             pass
 
 
-def spacer_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                  pdf_stylesheet):
+def spacer_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet):
     """
         Create a spacer widget.
     """
@@ -1186,7 +1181,7 @@ def spacer_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
         elif event == END_ELEMENT:
@@ -1202,8 +1197,8 @@ def spacer_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             pass
 
 
-def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                 pdf_stylesheet, pdf_table_style, alias_style):
+def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
+                 pdf_table_style, alias_style):
     """
         Create a table widget.
         Childs: blockTableStyle, tr, td
@@ -1253,15 +1248,14 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             break
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            tag_uri, tag_name, attributes, ns_decls = value
+            tag_uri, tag_name, attributes = value
             push = True
             if tag_name == 'blockTableStyle':
                 # call tableStyle_stream et get the id of the table style
                 # get the tablestyle from the id
                 push = False
                 id = tableStyle_stream(stream, tag_uri, tag_name, attributes, 
-                                       ns_decls, pdf_stylesheet, 
-                                       pdf_table_style)
+                                       pdf_stylesheet, pdf_table_style)
                 style_table = pdf_table_style.get(id, TableStyle())
             elif tag_name == 'tr':
                 table_tr = []
@@ -1281,8 +1275,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if stack[-1][0] == 'td':
                     push = False
                     widget = image_stream(stream, tag_uri, tag_name,
-                                          attributes, ns_decls, pdf_stylesheet,
-                                          True)
+                                          attributes, pdf_stylesheet, True)
                     if widget is not None:
                         if td_only_text == True:
                             table_td = [x for x in  table_td if not is_str(x)]
@@ -1294,8 +1287,8 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if stack[-1][0] == 'td':
                     push = False
                     widget = paragraph_stream(stream, tag_uri, tag_name,
-                                              attributes, ns_decls, 
-                                              pdf_stylesheet, alias_style)
+                                              attributes, pdf_stylesheet,
+                                              alias_style)
                     if td_only_text == True:
                         table_td = [x for x in  table_td if not is_str(x)]
                     table_td.append(widget)
@@ -1307,8 +1300,8 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if stack[-1][0] == 'td':
                     push = False
                     widget = preformatted_stream(stream, tag_uri, tag_name,
-                                                 attributes, ns_decls, 
-                                                pdf_stylesheet, alias_style)
+                                                 attributes, pdf_stylesheet,
+                                                 alias_style)
                     if td_only_text == True:
                         table_td = [x for x in  table_td if not is_str(x)]
                     table_td.append(widget)
@@ -1319,8 +1312,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             elif tag_name == 'hr':
                 if stack[-1][0] == 'td':
                     push = False
-                    widget = hr_stream(stream, tag_uri, tag_name, attributes, 
-                                       ns_decls)
+                    widget = hr_stream(stream, tag_uri, tag_name, attributes)
                     if td_only_text == True:
                         table_td = [x for x in  table_td if not is_str(x)]
                     table_td.append(widget)
@@ -1329,8 +1321,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if stack[-1][0] == 'td':
                     push = False
                     widget = spacer_stream(stream, tag_uri, tag_name,
-                                              attributes, ns_decls, 
-                                              pdf_stylesheet)
+                                           attributes, pdf_stylesheet)
                     if widget is not None:
                         if td_only_text == True:
                             table_td = [x for x in  table_td if not is_str(x)]
@@ -1343,8 +1334,8 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if stack[-1][0] == 'td':
                     push = False
                     widget = table_stream(stream, tag_uri, tag_name,
-                                              attributes, ns_decls, 
-                                              pdf_stylesheet, pdf_table_style,
+                                          attributes, pdf_stylesheet,
+                                          pdf_table_style,
                                               alias_style)
                     if widget is not None:
                         if td_only_text == True:
@@ -1359,7 +1350,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     if td_only_text == True:
                         table_td = [x for x in  table_td if not is_str(x)]
                     widget = iIllustration(stream, tag_uri, tag_name, 
-                                           attributes, ns_decls)
+                                           attributes)
                     table_td.append(widget)
                     td_only_text = False
             elif tag_name == 'bulkData':

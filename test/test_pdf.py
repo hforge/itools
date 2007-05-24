@@ -63,21 +63,19 @@ class FunctionTestCase(unittest.TestCase):
         stream = Parser(xml)
         # <document>
         event, value, line_number = stream_next(stream)
-        tag_uri, tag_name, attributes, ns_decls = value
+        tag_uri, tag_name, attributes = value
         self.assertEqual(event, START_ELEMENT)
         self.assertEqual(tag_uri, None)
         self.assertEqual(tag_name, 'document')
         self.assertEqual(attributes, {})
-        self.assertEqual(ns_decls, {})
 
         # <foo at="bar">
         event, value, line_number = stream_next(stream)
-        tag_uri, tag_name, attributes, ns_decls = value
+        tag_uri, tag_name, attributes = value
         self.assertEqual(event, START_ELEMENT)
         self.assertEqual(tag_uri, None)
         self.assertEqual(tag_name, 'foo')
         self.assertEqual(attributes, {(None, 'at'): 'bar'})
-        self.assertEqual(ns_decls, {})
 
         # content
         event, value, line_number = stream_next(stream)
@@ -91,30 +89,27 @@ class FunctionTestCase(unittest.TestCase):
 
         # <table>
         event, value, line_number = stream_next(stream)
-        tag_uri, tag_name, attributes, ns_decls = value
+        tag_uri, tag_name, attributes = value
         self.assertEqual(tag_uri, None)
         self.assertEqual(event, START_ELEMENT)
         self.assertEqual(tag_name, 'table')
         self.assertEqual(attributes, {})
-        self.assertEqual(ns_decls, {})
 
         # <tr>
         event, value, line_number = stream_next(stream)
-        tag_uri, tag_name, attributes, ns_decls = value
+        tag_uri, tag_name, attributes = value
         self.assertEqual(tag_uri, None)
         self.assertEqual(event, START_ELEMENT)
         self.assertEqual(tag_name, 'tr')
         self.assertEqual(attributes, {(None, 'bg'): 'red'})
-        self.assertEqual(ns_decls, {})
 
         # <td>
         event, value, line_number = stream_next(stream)
-        tag_uri, tag_name, attributes, ns_decls = value
+        tag_uri, tag_name, attributes = value
         self.assertEqual(tag_uri, None)
         self.assertEqual(event, START_ELEMENT)
         self.assertEqual(tag_name, 'td')
         self.assertEqual(attributes, {})
-        self.assertEqual(ns_decls, {})
 
         # cell1
         event, value, line_number = stream_next(stream)
@@ -141,12 +136,11 @@ class FunctionTestCase(unittest.TestCase):
 
         # <para>
         event, value, line_number = stream_next(stream)
-        tag_uri, tag_name, attributes, ns_decls = value
+        tag_uri, tag_name, attributes = value
         self.assertEqual(tag_uri, None)
         self.assertEqual(event, START_ELEMENT)
         self.assertEqual(tag_name, 'para')
         self.assertEqual(attributes, {(None, 'aligment'): 'left'})
-        self.assertEqual(ns_decls, {})
 
         # para content
         event, value, line_number = stream_next(stream)

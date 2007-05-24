@@ -220,7 +220,7 @@ class MSExcel(OfficeDocument):
     class_description = u'Document Excel'
     class_icon16 = 'images/Excel16.png'
     class_icon48 = 'images/Excel48.png'
-    class_extension = '.xls'
+    class_extension = 'xls'
     
     source_converter = 'xlhtml -a -fw -nc -nh -te %s'
 
@@ -249,7 +249,7 @@ class MSPowerPoint(OfficeDocument):
     class_description = u'Document PowerPoint'
     class_icon16 = 'images/PowerPoint16.png'
     class_icon48 = 'images/PowerPoint48.png'
-    class_extension = '.ppt'
+    class_extension = 'ppt'
 
     source_converter = 'ppthtml %s'
 
@@ -296,7 +296,7 @@ class OOWriter(OOffice):
     class_description = u'OpenOffice.org Document'
     class_icon16 = 'images/OOWriter16.png'
     class_icon48 = 'images/OOWriter48.png'
-    class_extension = '.sxw'
+    class_extension = 'sxw'
 
 
 
@@ -307,7 +307,7 @@ class OOCalc(OOffice):
     class_description = u'OpenOffice.org Spreadsheet'
     class_icon16 = 'images/OOCalc16.png'
     class_icon48 = 'images/OOCalc48.png'
-    class_extension = '.sxc'
+    class_extension = 'sxc'
 
 
 
@@ -318,7 +318,7 @@ class OOImpress(OOffice):
     class_description = u'OpenOffice.org Presentation'
     class_icon16 = 'images/OOImpress16.png'
     class_icon48 = 'images/OOImpress48.png'
-    class_extension = '.sxi'
+    class_extension = 'sxi'
 
 
 
@@ -329,7 +329,7 @@ class PDF(OfficeDocument):
     class_description = u'PDF Document'
     class_icon16 = 'images/Pdf16.png'
     class_icon48 = 'images/Pdf48.png'
-    class_extension = '.pdf'
+    class_extension = 'pdf'
 
     source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
 
@@ -342,7 +342,7 @@ class RTF(OfficeDocument):
     class_description = u'RTF Document'
     class_icon16 = 'images/Text16.png'
     class_icon48 = 'images/Text48.png'
-    class_extension = '.rtf'
+    class_extension = 'rtf'
 
     source_encoding = 'ISO-8859-1'
     source_converter = 'unrtf --text --nopict %s'

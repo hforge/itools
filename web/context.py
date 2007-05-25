@@ -24,7 +24,7 @@ from time import strptime
 
 # Import from itools
 from itools.uri import Path, get_reference
-from itools.datatypes import Enumerate
+from itools.datatypes import Enumerate, is_datatype
 from itools.schemas import get_datatype
 from itools.http.response import Response
 
@@ -211,7 +211,7 @@ class Context(object):
             datatype = get_datatype(field)
             # The value
             value = self.get_form_value(field)
-            if issubclass(datatype, Enumerate):
+            if is_datatype(datatype, Enumerate):
                 value = datatype.get_namespace(value)
             # The style
             # Is the field required

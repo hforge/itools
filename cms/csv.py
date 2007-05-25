@@ -209,9 +209,8 @@ class CSV(Text, iCSV):
     def add_row_action(self, context):
         row = []
         for name, title in self.get_columns():
-            value = context.get_form_value(name)
             datatype = self.get_datatype(name)
-            value = datatype.decode(value)
+            value = context.get_form_value(name, type=datatype)
             row.append(value)
 
         self.add_row(row)

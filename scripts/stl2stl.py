@@ -15,11 +15,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
+# Import from the Standard Library
+import sys
+
 # Import from itools
+from itools.datatypes import String
+from itools.schemas import get_schema_by_uri
 from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
+import itools.stl
 
 
+# Monkey patch STL
 stl_uri = 'http://xml.itools.org/namespaces/stl'
+schema = get_schema_by_uri(stl_uri)
+schema.datatypes['content'] = String
+schema.datatypes['attributes'] = String
+
+
 
 def _stl2stl(stream):
     skip = 0
@@ -58,6 +70,13 @@ def _stl2stl(stream):
             if stl_content is not None:
                 yield TEXT, stl_content, line
                 skip = 1
+        elif type == TEXT:
+            # Escape entity references
+            value = value.replace('\xc2\xa0', '&nbsp;')
+            value = value.replace('\xc2\xbb', '&raquo;')
+            value = value.replace('\xe2\x80\xba', '&rsaquo;')
+            value = value.replace('\xc2\xa9', '&#169;')
+            yield type, value, line
         else:
             yield event
 
@@ -70,7 +89,7 @@ def stl2stl(filename):
  
 
 if __name__ == '__main__':
-    filename = 'template.xhtml.en'
+    filename = sys.argv[-1]
     new_stl = stl2stl(filename)
-    import itools.stl
-    print stream_to_str(new_stl)
+    new_stl = stream_to_str(new_stl)
+    open(filename, 'w').write(new_stl)

@@ -16,9 +16,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from optparse import OptionParser
 import sys
 
 # Import from itools
+import itools
 from itools.datatypes import String
 from itools.schemas import get_schema_by_uri
 from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
@@ -72,24 +74,37 @@ def _stl2stl(stream):
                 skip = 1
         elif type == TEXT:
             # Escape entity references
+            value = value.replace('\xa3', '&#163;')
             value = value.replace('\xc2\xa0', '&nbsp;')
-            value = value.replace('\xc2\xbb', '&raquo;')
-            value = value.replace('\xe2\x80\xba', '&rsaquo;')
+            value = value.replace('\xc2\xa3', "&#163;")
             value = value.replace('\xc2\xa9', '&#169;')
+            value = value.replace('\xc2\xbb', '&raquo;')
+            value = value.replace('\xe2\x80\x93', '-') # XXX
+            value = value.replace('\xe2\x80\x98', "'") # XXX
+            value = value.replace('\xe2\x80\x99', "'") # XXX
+            value = value.replace('\xe2\x80\x99', "'") # XXX
+            value = value.replace('\xe2\x80\xa2', "&#8226;")
+            value = value.replace('\xe2\x80\xba', '&rsaquo;')
+            print repr(value)
             yield type, value, line
         else:
             yield event
 
-
-def stl2stl(filename):
-    data = open(filename).read()
-    parser = Parser(data)
-    new_stl = _stl2stl(parser)
-    return list(new_stl)
  
 
 if __name__ == '__main__':
-    filename = sys.argv[-1]
-    new_stl = stl2stl(filename)
-    new_stl = stream_to_str(new_stl)
-    open(filename, 'w').write(new_stl)
+    usage = '%prog FILENAME [FILENAME...]'
+    version = 'itools %s' % itools.__version__
+    parser = OptionParser(usage, version=version)
+
+    options, args = parser.parse_args()
+    if len(args) < 1:
+        parser.error('incorrect number of arguments')
+
+    for filename in args:
+        print '>>>', filename
+        data = open(filename).read()
+        parser = Parser(data)
+        new_stl = _stl2stl(parser)
+        new_stl = stream_to_str(new_stl)
+        open(filename, 'w').write(new_stl)

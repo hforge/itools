@@ -22,12 +22,13 @@ from types import FunctionType, ClassType
 
 # Import from itools
 import itools
+from itools import rest
 from itools.xml import Document
 from itools.stl import stl
 
 
 
-def wrap(text, width=72, indent='  '):
+def format_text(text, width=72, indent='  '):
     # Clean text
     text = text.strip()
     lines = [ x.strip() + '\n' for x in text.splitlines() ]
@@ -51,6 +52,17 @@ def wrap(text, width=72, indent='  '):
         paragraphs.append(paragraph)
 
     return ''.join(paragraphs)
+
+
+def escape_latex(text):
+    return text.replace('_', '\\_').replace('#', '\#').replace('&', '\&')
+
+
+def format_latex(text):
+    #text = escape_latex(text)
+    text = unicode(text, 'utf-8')
+    return rest.to_latex(text)
+
 
 
 text_template = Document(string=
@@ -127,25 +139,18 @@ ${item/doc}</block></block>
 
 
 
-def latex_escape(x):
-    return x.replace('_', '\\_').replace('#', '\#').replace('&', '\&')
-
-
-def text(namespace, template, escape=lambda x: x):
-    out = stl(template, namespace)
-    return escape(out)
 
 
 
-def build_namespace(pkg):
+def build_namespace(pkg, format, escape=lambda x: x):
     namespace = {}
     # Package name
-    namespace['name'] = pkg.__name__
+    namespace['name'] = escape(pkg.__name__)
     # Documentation String
     doc = pkg.__doc__
     if doc is None:
         doc = 'THIS PACKAGE HAS NOT A DOCUMENTATION STRING.'
-    namespace['doc'] = wrap(doc)
+    namespace['doc'] = format(doc)
     # Public API
     all = pkg.__all__
     if all is None:
@@ -166,9 +171,10 @@ def build_namespace(pkg):
             doc = 'THIS OBJECT HAS NOT A DOCUMENTATION STRING.'
         else:
             doc = doc.strip()
-        doc = wrap(doc)
+        doc = format(doc)
         # Build the item namespace
-        ns = {'name': name, 'doc': doc}
+        title = escape(name)
+        ns = {'name': title, 'doc': doc}
         # Do whatever 
         if isinstance(object, FunctionType):
             # Find out the function prototype
@@ -188,7 +194,7 @@ def build_namespace(pkg):
                 parameters.append('*args')
             if func_code.co_flags & 0x08:
                 parameters.append('**kw')
-            ns['name'] = '%s(%s)' % (name, ', '.join(parameters))
+            ns['name'] = '%s(%s)' % (title, ', '.join(parameters))
             functions.append(ns)
         elif isinstance(object, type):
             if issubclass(object, Exception):
@@ -225,10 +231,11 @@ if __name__ == '__main__':
 
     # Action
     exec('import %s as pkg' % args[0])
-    namespace = build_namespace(pkg)
     if format == 'text':
-        print text(namespace, text_template)
+        namespace = build_namespace(pkg, format_text)
+        print stl(text_template, namespace)
     elif format == 'latex':
-        print text(namespace, latex_template, latex_escape)
+        namespace = build_namespace(pkg, format_latex, escape_latex)
+        print stl(latex_template, namespace)
     else:
         raise ValueError

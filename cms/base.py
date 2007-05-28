@@ -619,7 +619,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace['iframe'] = ';epoz_iframe'
 
         here = Path(self.get_abspath())
-        handler = self.get_handler('/ui/epoz.xml')
+        handler = self.get_handler('/ui/epoz/rte.xml')
         there = Path(handler.get_abspath())
         prefix = here.get_pathto(there)
         return stl(handler, namespace, prefix=prefix)
@@ -632,7 +632,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
         response = context.response
         response.set_header('Content-Type', 'text/html; charset=UTF-8')
-        handler = self.get_handler('/ui/epoz_iframe.xml')
+        handler = self.get_handler('/ui/epoz/iframe.xml')
         here = Path(self.get_abspath())
         there = Path(handler.get_abspath())
         prefix = here.get_pathto(there)
@@ -649,7 +649,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=Image, start=self.parent)
 
-        handler = self.get_handler('/ui/HTML_addimage.xml')
+        handler = self.get_handler('/ui/html/addimage.xml')
         return stl(handler, namespace)
 
 
@@ -663,7 +663,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=File, start=self.parent)
 
-        handler = self.get_handler('/ui/HTML_addlink.xml')
+        handler = self.get_handler('/ui/html/addlink.xml')
         return stl(handler, namespace)
 
 
@@ -671,7 +671,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def epoz_color_form(self, context):
         context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
-        handler = self.get_handler('/ui/epoz_script_color.xml')
+        handler = self.get_handler('/ui/epoz/script_color.xml')
         return handler.to_str()
 
 
@@ -679,7 +679,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def epoz_table_form(self, context):
         context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
-        handler = self.get_handler('/ui/epoz_script_table.xml')
+        handler = self.get_handler('/ui/epoz/script_table.xml')
         return handler.to_str()
 
 

@@ -73,7 +73,7 @@ class Image(File, BaseImage):
     view__label__ = u'View'
     view__sublabel__ = u'View'
     def view(self, context):
-        handler = self.get_handler('/ui/Image_view.xml')
+        handler = self.get_handler('/ui/binary/Image_view.xml')
         return handler.to_str()
 
 
@@ -94,7 +94,7 @@ class Video(File):
         namespace = {}
         namespace['format'] = self.get_mimetype()
 
-        handler = self.get_handler('/ui/Video_view.xml')
+        handler = self.get_handler('/ui/binary/Video_view.xml')
         return stl(handler, namespace)
 
 
@@ -119,7 +119,7 @@ class Flash(File):
     view__sublabel__ = u'View'
     view__access__ = 'is_allowed_to_view'
     def view(self, context):
-        handler = self.get_handler('/ui/Flash_view.xml')
+        handler = self.get_handler('/ui/binary/Flash_view.xml')
         return stl(handler)
 
 
@@ -223,7 +223,7 @@ class Archive(File):
         contents = self.get_contents()
         namespace['contents'] = '\n'.join(contents)
 
-        handler = self.get_handler('/ui/Archive_view.xml')
+        handler = self.get_handler('/ui/binary/Archive_view.xml')
         return stl(handler, namespace)
 
 

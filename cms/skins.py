@@ -338,7 +338,7 @@ class Skin(Folder):
     def get_styles(self, context):
         styles = []
         # Epoz
-        styles.append('/ui/epoz.css')
+        styles.append('/ui/epoz/style.css')
         # Calendar JavaScript Widget (http://dynarch.com/mishoo/calendar.epl)
         styles.append('/ui/calendar/calendar-aruni.css')
         # Aruni (default skin)
@@ -358,7 +358,7 @@ class Skin(Folder):
     def get_scripts(self, context):
         scripts = []
         # Epoz
-        scripts.append('/ui/epoz.js')
+        scripts.append('/ui/epoz/javascript.js')
         # Calendar (http://dynarch.com/mishoo/calendar.epl)
         scripts.append('/ui/calendar/calendar.js')
         languages = [

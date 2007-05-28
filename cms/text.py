@@ -64,7 +64,7 @@ class Text(File, BaseText):
                               'isdefault': code == default_language})
         namespace['languages'] = languages
 
-        handler = root.get_handler('ui/Text_new_instance.xml')
+        handler = root.get_handler('ui/text/new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -86,7 +86,7 @@ class Text(File, BaseText):
         namespace = {}
         namespace['text'] = cgi.escape(self.to_str())
 
-        handler = self.get_handler('/ui/Text_view.xml')
+        handler = self.get_handler('/ui/text/view.xml')
         return stl(handler, namespace)
 
 
@@ -107,7 +107,7 @@ class Text(File, BaseText):
         document = RestDocument(self.uri)
         namespace['text'] = document.get_content_as_xml()
 
-        handler = self.get_handler('/ui/Text_view.xml')
+        handler = self.get_handler('/ui/text/view.xml')
         return stl(handler, namespace)
 
 
@@ -120,7 +120,7 @@ class Text(File, BaseText):
         namespace = {}
         namespace['data'] = self.to_str()
 
-        handler = self.get_handler('/ui/Text_edit.xml')
+        handler = self.get_handler('/ui/text/edit.xml')
         return stl(handler, namespace)
 
 
@@ -145,7 +145,7 @@ class Text(File, BaseText):
                                    'title': 'ISO-8859-1',
                                    'is_selected': False}]
 
-        handler = self.get_handler('/ui/Text_externaledit.xml')
+        handler = self.get_handler('/ui/text/externaledit.xml')
         return stl(handler, namespace)
 
 

@@ -113,7 +113,7 @@ class Calendar(Text, icalendar):
                               'isdefault': code == default_language})
         namespace['languages'] = languages
 
-        handler = root.get_handler('ui/Text_new_instance.xml')
+        handler = root.get_handler('ui/text/new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -1353,6 +1353,6 @@ class CalendarAware(object):
             ns_calendars.append(ns_calendar)
         namespace['calendars'] = ns_calendars
 
-        handler = self.get_handler('/ui/ical/Folder_browse_calendar.xml')
+        handler = self.get_handler('/ui/ical/browse_calendar.xml')
         return stl(handler, namespace)
 

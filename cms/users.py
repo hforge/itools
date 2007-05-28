@@ -180,7 +180,7 @@ class User(AccessControl, Folder):
 
         namespace = {'key': must_confirm}
 
-        handler = self.get_handler('/ui/User_confirm_registration.xml')
+        handler = self.get_handler('/ui/user/confirm_registration.xml')
         return stl(handler, namespace)
 
 
@@ -235,7 +235,7 @@ class User(AccessControl, Folder):
         # Owner or Admin
         namespace['is_owner_or_admin'] = is_owner or root.is_admin(user, self)
 
-        handler = self.get_handler('/ui/User_profile.xml')
+        handler = self.get_handler('/ui/user/profile.xml')
         return stl(handler, namespace)
 
 
@@ -260,7 +260,7 @@ class User(AccessControl, Folder):
                               'is_selected': language_code == user_language})
         namespace['languages'] = languages
 
-        handler = self.get_handler('/ui/User_edit.xml')
+        handler = self.get_handler('/ui/user/edit.xml')
         return stl(handler, namespace)
 
 
@@ -290,7 +290,7 @@ class User(AccessControl, Folder):
         else:
             namespace['must_confirm'] = True
 
-        handler = self.get_handler('/ui/User_edit_account.xml')
+        handler = self.get_handler('/ui/user/edit_account.xml')
         return stl(handler, namespace)
 
 
@@ -343,7 +343,7 @@ class User(AccessControl, Folder):
         else:
             namespace['must_confirm'] = True
 
-        handler = self.get_handler('/ui/User_edit_password.xml')
+        handler = self.get_handler('/ui/user/edit_password.xml')
         return stl(handler, namespace)
 
 
@@ -410,7 +410,7 @@ class User(AccessControl, Folder):
                              'title': document.title_or_name})
         namespace['documents'] = documents
 
-        handler = self.get_handler('/ui/User_tasks.xml')
+        handler = self.get_handler('/ui/user/tasks.xml')
         return stl(handler, namespace)
 
 

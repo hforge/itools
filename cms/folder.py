@@ -97,7 +97,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                      'class_title': cls.gettext(cls.class_title)}
 
         root = get_context().root
-        handler = root.get_handler('ui/Folder_new_instance.xml')
+        handler = root.get_handler('ui/folder/new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -428,7 +428,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         query = EqQuery('parent_path', self.get_abspath())
         namespace = self.browse_namespace(48, query=query)
 
-        handler = self.get_handler('/ui/Folder_browse_thumbnails.xml')
+        handler = self.get_handler('/ui/folder/browse_thumbnails.xml')
         return stl(handler, namespace)
 
 
@@ -504,7 +504,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             columns, namespace['objects'], sortby, sortorder, actions,
             self.gettext)
 
-        handler = self.get_handler('/ui/Folder_browse_list.xml')
+        handler = self.get_handler('/ui/folder/browse_list.xml')
         return stl(handler, namespace)
 
 
@@ -576,10 +576,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
             namespace['selected'] = selected
 
         # Append gallery style
-        css = self.get_handler('/ui/gallery/gallery.css')
+        css = self.get_handler('/ui/gallery.css')
         context.styles.append(str(self.get_pathto(css)))
 
-        handler = self.get_handler('/ui/Folder_browse_image.xml')
+        handler = self.get_handler('/ui/folder/browse_image.xml')
         return stl(handler, namespace)
 
 
@@ -636,7 +636,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             namespace['objects'].append({'real_name': real_name, 'name': name})
 
         # Process the template
-        handler = self.get_handler('/ui/Folder_rename.xml')
+        handler = self.get_handler('/ui/folder/rename.xml')
         return stl(handler, namespace)
 
 
@@ -814,7 +814,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 type_ns['url'] = ';new_resource_form?type=' + format
                 namespace['types'].append(type_ns)
 
-            handler = self.get_handler('/ui/Folder_new_resource.xml')
+            handler = self.get_handler('/ui/folder/new_resource.xml')
             return stl(handler, namespace)
         else:
             handler_class = get_object_class(type)
@@ -888,7 +888,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         response = context.response
         response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
-        handler = self.get_handler('/ui/Folder_browsedir.xml')
+        handler = self.get_handler('/ui/folder/browsedir.xml')
         return stl(handler, namespace)
 
 
@@ -1016,7 +1016,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace['table'] = widgets.table(columns, lines, sortby, sortorder,
                                            gettext=self.gettext)
 
-        handler = self.get_handler('/ui/Folder_browse_list.xml')
+        handler = self.get_handler('/ui/folder/browse_list.xml')
         return stl(handler, namespace)
 
 

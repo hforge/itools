@@ -174,7 +174,7 @@ class Root(WebSite):
     def internal_server_error(self, context):
         namespace = {'traceback': traceback.format_exc()}
 
-        handler = self.get_handler('/ui/Root_internal_server_error.xml')
+        handler = self.get_handler('/ui/root/internal_server_error.xml')
         return stl(handler, namespace)
 
 
@@ -190,7 +190,7 @@ class Root(WebSite):
                 response = context.response
                 response.set_header('content-type', 'text/html; charset=UTF-8')
 
-        handler = self.get_handler('/ui/Root_not_found.xml')
+        handler = self.get_handler('/ui/root/not_found.xml')
         return stl(handler, namespace)
 
 
@@ -312,7 +312,7 @@ class Root(WebSite):
         namespace = {}
         namespace['version'] = itools.__version__
 
-        handler = self.get_handler('/ui/Root_about.xml')
+        handler = self.get_handler('/ui/root/about.xml')
         return stl(handler, namespace)
 
 
@@ -324,7 +324,7 @@ class Root(WebSite):
     def credits(self, context):
         context.styles.append('/ui/credits.css')
 
-        handler = self.get_handler('/ui/Root_credits.xml')
+        handler = self.get_handler('/ui/root/credits.xml')
         return stl(handler)
 
 
@@ -334,7 +334,7 @@ class Root(WebSite):
     license__label__ = u'About'
     license__sublabel__ = u'License'
     def license(self, context):
-        handler = self.get_handler('/ui/Root_license.xml')
+        handler = self.get_handler('/ui/root/license.xml')
         return stl(handler)
 
 
@@ -348,7 +348,7 @@ class Root(WebSite):
     catalog_form__label__ = u'Maintenance'
     catalog_form__sublabel__ = u'Update Catalog'
     def catalog_form(self, context):
-        handler = self.get_handler('/ui/Root_catalog.xml')
+        handler = self.get_handler('/ui/root/catalog.xml')
         return stl(handler)
 
 
@@ -424,7 +424,7 @@ class Root(WebSite):
                 groups.append({'path': path, 'users': missing})
         namespace['groups'] = groups
 
-        handler = self.get_handler('/ui/Root_check_groups.xml')
+        handler = self.get_handler('/ui/root/check_groups.xml')
         return stl(handler, namespace)
 
 

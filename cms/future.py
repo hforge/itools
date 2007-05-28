@@ -65,7 +65,7 @@ class OrderAware(object):
             }
             namespace['folders'].append(ns)
 
-        handler = self.get_handler('/ui/Folder_order_items.xml')
+        handler = self.get_handler('/ui/folder/order_items.xml')
         return stl(handler, namespace)
 
 

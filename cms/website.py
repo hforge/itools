@@ -99,7 +99,7 @@ class WebSite(RoleAware, Folder):
         languages.sort(lambda x, y: cmp(x['name'], y['name']))
         namespace['non_active_languages'] = languages
 
-        handler = self.get_handler('/ui/WebSite_languages.xml')
+        handler = self.get_handler('/ui/website/languages.xml')
         return stl(handler, namespace)
 
 
@@ -162,7 +162,7 @@ class WebSite(RoleAware, Folder):
         namespace['is_open'] = is_open
         namespace['is_closed'] = not is_open
 
-        handler = self.get_handler('/ui/WebSite_anonymous.xml')
+        handler = self.get_handler('/ui/website/anonymous.xml')
         return stl(handler, namespace)
 
 
@@ -202,7 +202,7 @@ class WebSite(RoleAware, Folder):
         # Sort
         namespace['contacts'].sort(key=lambda x: x['email'])
 
-        handler = self.get_handler('/ui/WebSite_contact_options.xml')
+        handler = self.get_handler('/ui/website/contact_options.xml')
         return stl(handler, namespace)
 
 
@@ -231,7 +231,7 @@ class WebSite(RoleAware, Folder):
     def register_form(self, context):
         namespace = context.build_form_namespace(self.register_fields)
 
-        handler = self.get_handler('/ui/WebSite_register.xml')
+        handler = self.get_handler('/ui/website/register.xml')
         return stl(handler, namespace)
 
 
@@ -298,7 +298,7 @@ class WebSite(RoleAware, Folder):
         namespace['action'] = '%s/;login' % here.get_pathto(site_root)
         namespace['username'] = context.get_form_value('username')
 
-        handler = self.get_handler('/ui/WebSite_login.xml')
+        handler = self.get_handler('/ui/website/login.xml')
         return stl(handler, namespace)
 
 
@@ -362,7 +362,7 @@ class WebSite(RoleAware, Folder):
     # Forgotten password
     forgotten_password_form__access__ = True
     def forgotten_password_form(self, context):
-        handler = self.get_handler('/ui/WebSite_forgotten_password_form.xml')
+        handler = self.get_handler('/ui/website/forgotten_password_form.xml')
         return stl(handler)
 
 
@@ -399,7 +399,7 @@ class WebSite(RoleAware, Folder):
         # Change the password
         user.set_password(password)
 
-        handler = self.get_handler('/ui/WebSite_forgotten_password.xml')
+        handler = self.get_handler('/ui/website/forgotten_password.xml')
         return stl(handler)
 
 
@@ -413,7 +413,7 @@ class WebSite(RoleAware, Folder):
         # Remove the user from the context
         context.user = None
         # Say goodbye
-        handler = self.get_handler('/ui/WebSite_logout.xml')
+        handler = self.get_handler('/ui/website/logout.xml')
         return stl(handler)
 
 
@@ -498,7 +498,7 @@ class WebSite(RoleAware, Folder):
             namespace['batch_next'] = context.uri.replace(start=next)
         namespace['text'] = text
 
-        hander = self.get_handler('/ui/WebSite_search.xml')
+        hander = self.get_handler('/ui/website/search.xml')
         return stl(hander, namespace)
 
 
@@ -517,7 +517,7 @@ class WebSite(RoleAware, Folder):
         icon = self.get_handler('/ui/images/button_calendar.png')
         namespace['button_calendar'] = self.get_pathto(icon)
 
-        handler = self.get_handler('/ui/WebSite_search_form.xml')
+        handler = self.get_handler('/ui/website/search_form.xml')
         return stl(handler, namespace)
 
 
@@ -544,7 +544,7 @@ class WebSite(RoleAware, Folder):
         else:
             namespace['from'] = user.get_property('ikaaro:email')
 
-        handler = self.get_handler('/ui/WebSite_contact_form.xml')
+        handler = self.get_handler('/ui/website/contact_form.xml')
         return stl(handler, namespace)
 
 

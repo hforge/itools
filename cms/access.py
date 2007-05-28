@@ -402,7 +402,7 @@ class RoleAware(AccessControl):
         namespace['table'] = widgets.table(columns, members, sortby, sortorder,
                                            actions, self.gettext)
 
-        handler = self.get_handler('/ui/RoleAware_permissions.xml')
+        handler = self.get_handler('/ui/access/permissions.xml')
         return stl(handler, namespace)
 
 
@@ -429,7 +429,7 @@ class RoleAware(AccessControl):
         namespace['email'] = user.get_property('ikaaro:email')
         namespace['roles'] = self.get_roles_namespace(user_id)
 
-        handler = self.get_handler('/ui/RoleAware_edit_membership_form.xml')
+        handler = self.get_handler('/ui/access/edit_membership_form.xml')
         return stl(handler, namespace)
 
 
@@ -459,7 +459,7 @@ class RoleAware(AccessControl):
         # Roles
         namespace['roles'] = self.get_roles_namespace()
 
-        handler = self.get_handler('/ui/RoleAware_new_user.xml')
+        handler = self.get_handler('/ui/access/new_user.xml')
         return stl(handler, namespace)
 
 

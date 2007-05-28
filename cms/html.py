@@ -102,7 +102,7 @@ class XHTMLFile(Text, XHTMLDocument):
         else:
             namespace['text'] = body.get_content()
 
-        handler = self.get_handler('/ui/HTML_view.xml')
+        handler = self.get_handler('/ui/html/view.xml')
         return stl(handler, namespace)
 
 
@@ -129,7 +129,7 @@ class XHTMLFile(Text, XHTMLDocument):
         data = body.get_content_as_html()
         namespace['rte'] = self.get_rte('data', data)
 
-        handler = self.get_handler('/ui/HTML_edit.xml')
+        handler = self.get_handler('/ui/html/edit.xml')
         return stl(handler, namespace)
 
 

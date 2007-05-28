@@ -33,10 +33,6 @@ MESSAGE = 999
 
 # FIXME This information is specific to XHTML, it should be defined at
 # a higher level, not hardcoded here.
-elements_to_skip = set(['script', 'style'])
-
-# FIXME This information is specific to XHTML, it should be defined at
-# a higher level, not hardcoded here.
 elements_to_keep_spaces = set(['pre'])
 
 
@@ -164,7 +160,7 @@ def get_translatable_blocks(events):
                 id += 1
                 continue
             # Enter skip mode
-            if tag_name in elements_to_skip:
+            if not schema.get('translate_content', True):
                 skip = 1
 
         # Inline end element

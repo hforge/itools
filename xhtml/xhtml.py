@@ -183,6 +183,10 @@ elements_schema = {
     # Vendor specific, not approved by W3C
     'embed': {'is_empty': True, 'is_inline': False},
     # Unclassified
+    'script': {'is_empty': False, 'is_inline': False,
+        'translate_content': False},
+    'style': {'is_empty': False, 'is_inline': False,
+        'translate_content': False},
     }
 
 

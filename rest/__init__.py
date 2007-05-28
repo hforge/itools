@@ -18,4 +18,7 @@
 from rest import Document
 
 
-__all__ = ['Document']
+__all__ = ['to_html',
+           'to_xml',
+           'to_latex',
+           'Document']

@@ -30,6 +30,7 @@ from itools.catalog import CatalogAware, EqQuery, AndQuery, PhraseQuery
 from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
 from itools.handlers import Folder as BaseFolder, Text, get_handler_class
+from itools.rest import checkid
 from itools.stl import stl
 from itools.web import get_context
 
@@ -41,7 +42,7 @@ from handlers import Lock, Metadata, ListOfUsers
 from ical import CalendarAware
 from versioning import VersioningAware
 from workflow import WorkflowAware
-from utils import checkid, reduce_string
+from utils import reduce_string
 import widgets
 from registry import register_object_class, get_object_class
 

@@ -25,12 +25,12 @@ from cStringIO import StringIO
 from itools.datatypes import FileName, Unicode
 from itools.stl import stl
 from itools.web import get_context
+from itools.rest import checkid
 
 # Import from itools.cms
 from registry import register_object_class
 from folder import Folder
 from text import Text
-from utils import checkid
 
 
 def add_forum_style(context):

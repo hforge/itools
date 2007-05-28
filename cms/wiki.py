@@ -30,13 +30,13 @@ from .. import vfs
 from ..web import get_context
 from ..stl import stl
 from ..datatypes import Unicode, FileName
+from ..rest import checkid
 
 # Import from itools.cms
 from .file import File
 from .folder import Folder
 from .text import Text
 from .registry import register_object_class
-from .utils import checkid
 
 # Import from docutils
 try:

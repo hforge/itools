@@ -15,10 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-from rest import Document
+from rest import Document, to_html, to_xml, to_latex, checkid
 
 
-__all__ = ['to_html',
+__all__ = ['checkid',
+           'to_html',
            'to_xml',
            'to_latex',
            'Document']

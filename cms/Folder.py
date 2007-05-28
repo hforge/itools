@@ -575,7 +575,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
             selected['url'] = '%s/;%s' % (image.name, image.get_firstview())
             selected['preview'] = '%s/;icon48?height=320&width=320' \
                                   % image.name
-            width, height = image.get_size()
+            size = image.get_size()
+            if size is None:
+                # PIL not installed
+                width, height = 0, 0
+            else:
+                width, height = size
             selected['width'] = width
             selected['height'] = height
             selected['format'] = image.get_format()
@@ -592,6 +597,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 selected['next'] = ';%s?selected_image=%s' % (context.method,
                         next)
             namespace['selected'] = selected
+
+        # Append gallery style
+        css = self.get_handler('/ui/gallery/gallery.css')
+        context.styles.append(str(self.get_pathto(css)))
 
         handler = self.get_handler('/ui/Folder_browse_image.xml')
         return stl(handler, namespace)

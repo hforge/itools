@@ -346,7 +346,6 @@ class Skin(Folder):
         # Calendar JavaScript Widget (http://dynarch.com/mishoo/calendar.epl)
         styles.append('/ui/calendar/calendar-aruni.css')
         # Aruni (default skin)
-        styles.append('/ui/onetruelayout.css')
         styles.append('/ui/aruni/aruni.css')
         # Calendar
         styles.append('/ui/ical/calendar.css')

@@ -33,60 +33,62 @@
       <a href="/;site_search" id="top_menu_search">Search</a>
       <a href="/;contact_form" id="top_menu_contact">Contact</a>
     </div>
-    <div id="wrapper">
-      <div id="center" class="column">
-        <div id="maintitle">
-          <img alt="" height="48" width="48" src="${metadata/icon}"
-            style="float: left; margin-right: 9px" stl:if="metadata/icon" />
-          <h1>${metadata/title}</h1>
-          <div id="breadcrumbs">
-            <label>Location:</label>
-            <span stl:repeat="item breadcrumb">
-              <a stl:if="item/url" href="${item/url}"
-                title="${item/name}">${item/short_name}</a>
-              <span stl:if="not item/url"
-                title="${item/name}">${item/short_name}</span>
-              <stl:inline if="not repeat/item/end">/</stl:inline> 
-            </span>
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td id="left" class="column" valign="top">
+          <div class="navigation" stl:repeat="menu left_menus">
+            <label>${menu/title}</label>
+            ${menu/content}
           </div>
-          <div class="clear"></div>
-        </div>
-        <!-- Object Menu (aka Tabs) -->
-        <div id="tabs">
-          <table border="0" cellpadding="0" cellspacing="0">
-            <tr>
-              <td class="${menu/class}" stl:repeat="menu tabs"
-                onmouseover="show('menu_${menu/id}')"
-                onmouseout="hide('menu_${menu/id}')">
-                <div class="menu">
-                  <a href="${menu/name}" id="${menu/id}">
-                    <span>${menu/label}</span></a>
-                </div>
-                <div class="submenu" stl:if="menu/options"
-                  id="menu_${menu/id}">
-                  <ul>
-                    <li stl:repeat="option menu/options">
-                      <a href="${option/name}">${option/label}</a>
-                    </li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <!-- The Body -->
-        <div id="body">
-          <div id="message" stl:if="message">${message}</div>
-          <div id="content">${body}</div>
-        </div>
-      </div>
-      <div id="left" class="column">
-        <div class="navigation" stl:repeat="menu left_menus">
-          <label>${menu/title}</label>
-          ${menu/content}
-        </div>
-      </div>
-    </div>
+        </td>
+        <td id="center" class="column" valign="top">
+          <div id="maintitle">
+            <img alt="" height="48" width="48" src="${metadata/icon}"
+              style="float: left; margin-right: 9px" stl:if="metadata/icon" />
+            <h1>${metadata/title}</h1>
+            <div id="breadcrumbs">
+              <label>Location:</label>
+              <span stl:repeat="item breadcrumb">
+                <a stl:if="item/url" href="${item/url}"
+                  title="${item/name}">${item/short_name}</a>
+                <span stl:if="not item/url"
+                  title="${item/name}">${item/short_name}</span>
+                <stl:inline if="not repeat/item/end">/</stl:inline> 
+              </span>
+            </div>
+            <div class="clear"></div>
+          </div>
+          <!-- Object Menu (aka Tabs) -->
+          <div id="tabs">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td class="${menu/class}" stl:repeat="menu tabs"
+                  onmouseover="show('menu_${menu/id}')"
+                  onmouseout="hide('menu_${menu/id}')">
+                  <div class="menu">
+                    <a href="${menu/name}" id="${menu/id}">
+                      <span>${menu/label}</span></a>
+                  </div>
+                  <div class="submenu" stl:if="menu/options"
+                    id="menu_${menu/id}">
+                    <ul>
+                      <li stl:repeat="option menu/options">
+                        <a href="${option/name}">${option/label}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- The Body -->
+          <div id="body">
+            <div id="message" stl:if="message">${message}</div>
+            <div id="content">${body}</div>
+          </div>
+        </td>
+      </tr>
+    </table>
     <div id="footer">
       <a href="/;about">About</a>
       <a href="/;credits">Credits</a>

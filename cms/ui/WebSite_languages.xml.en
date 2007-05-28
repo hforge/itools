@@ -6,7 +6,7 @@
 
   <h2>Language Settings</h2>
 
-  <form action="." method="post">
+  <form action="." method="post" id="browse_list">
     <table summary="Language settings">
       <thead>
         <tr>

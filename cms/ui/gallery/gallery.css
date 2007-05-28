@@ -1,0 +1,40 @@
+#gallery_vpane {
+  float: left;
+  width: 320px;
+  height: 460px;
+  overflow: auto;
+}
+
+#gallery_vpane img {
+  margin: 5px 3px;
+  border: 1px solid;
+  border-color: #aaa #444 #444 #aaa;
+  padding: 5px;
+  background: #fff;
+}
+
+#gallery_main {
+  padding: 20px;
+}
+
+#gallery_center {
+  margin: auto;
+  text-align: center;
+}
+
+#gallery_previous { margin-right: 150px; }
+#gallery_next { margin-left: 150px; }
+
+#gallery_properties {
+  margin: auto;
+  text-align: center;
+}
+
+#gallery_properties th { text-align: right; }
+#gallery_properties td { text-align: left; }
+
+#gallery_description {
+  padding-left: 10px;
+  text-align: left;
+  overflow: auto;
+}

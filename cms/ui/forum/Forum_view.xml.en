@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h1>${title}</h1>
+  <h2>${title}</h2>
   <p><em>${description}</em></p>
 
   <a href=";new_thread_form">New Thread</a>

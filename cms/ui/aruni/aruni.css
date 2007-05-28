@@ -1,3 +1,9 @@
+/* get rid of default margins/paddings */
+* {
+    padding: 0;
+    margin:  0;
+}
+
 body {
   color: #000;
   background: #fff;
@@ -25,8 +31,6 @@ input {
 
 a { color: #3465a4; }
 a img { border: 0; }
-
-td, th { padding: 3px; }
 
 #header {
   margin-bottom: 1em;
@@ -204,14 +208,6 @@ td, th { padding: 3px; }
   margin: 0 0 0.5em 1em;
   font-size: 0.9em;
 }
-#body form dl { padding-bottom: 0.5em; }
-#body form dt {
-  clear: both;
-  float: left;
-  width: 8em;
-  padding-right: 0.5em;
-  text-align: right;
-}
 #body form dd { padding-bottom: 0.5em; }
 #body form p { clear: both; }
 #body form .form_mandatory {
@@ -228,6 +224,7 @@ td, th { padding: 3px; }
 }
 
 #left {
+  width: 200px;
   font-size: 1.1em;
 }
 #left a, #left a:link, #left a:visited, #left a:hover, #left a:active {
@@ -299,8 +296,7 @@ td, th { padding: 3px; }
   clear: both;
 }
 
-dl.thumb
-{
+dl.thumb {
   float: left;
   width: 10em;
   height: 10em;
@@ -334,56 +330,19 @@ dl.new_resource_thumb { width: 16em; }
 
 .number { text-align: right; }
 
-#gallery_vpane {
-  float: left;
-  width: 320px;
-  height: 460px;
-  overflow: auto;
-}
-
-#gallery_vpane img {
-  margin: 5px 3px;
-  border: 1px solid;
-  border-color: #aaa #444 #444 #aaa;
-  padding: 5px;
-  background: #fff;
-}
-
-#gallery_main {
-  padding: 20px;
-}
-
-#gallery_center {
-  margin: auto;
-  text-align: center;
-}
-
-#gallery_previous { margin-right: 150px; }
-#gallery_next { margin-left: 150px; }
-
-#gallery_properties {
-  margin: auto;
-  text-align: center;
-}
-
-#gallery_properties th { text-align: right; }
-#gallery_properties td { text-align: left; }
-
-#gallery_description {
-  padding-left: 10px;
-  text-align: left;
-  overflow: auto;
-}
-
 /* Left navigation menu */
 .nav_active {
   font-weight: bold;
 }
 
 /* Browse list */
-thead td, thead th {
+#browse_list thead td, #browse_list thead th {
   padding: 6px;
   background: #d3d7cf;
+}
+
+#browse_list tbody td, #browse_list tbody th {
+  padding: 3px;
 }
 
 tr.odd th, tr.odd td {
@@ -407,18 +366,6 @@ th a.sort_none {
   padding-right: 20px;
   text-decoration: none;
 }
-
-/* Contact Form */
-ul#contact_to {
-  float: left;
-  margin: 0;
-}
-
-ul#contact_to li {
-  margin: 0;
-  list-style-type: none;
-}
-
 
 /* Workflow */
 .wf_private { color: #c00; }

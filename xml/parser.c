@@ -621,7 +621,6 @@ PyObject* parse_document_type(Parser* self) {
         system_id = xml_attr_value(self);
         if (system_id == NULL) {
             Py_DECREF(name);
-            Py_DECREF(public_id);
             return NULL;
         }
         xml_space(self);
@@ -629,6 +628,7 @@ PyObject* parse_document_type(Parser* self) {
         public_id = xml_attr_value(self);
         if (public_id == NULL) {
             Py_DECREF(name);
+            Py_DECREF(system_id);
             return NULL;
         }
     } else {

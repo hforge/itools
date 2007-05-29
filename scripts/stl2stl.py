@@ -37,6 +37,7 @@ schema.datatypes['attributes'] = String
 
 def _stl2stl(stream):
     skip = 0
+    omit = []
     for event in stream:
         type, value, line = event
         # Skip (stl:content)
@@ -67,11 +68,25 @@ def _stl2stl(stream):
                 stl_content = "${%s}" % attributes.pop(key)
             else:
                 stl_content = None
-            # Yield 
-            yield type, (tag_uri, tag_name, attributes), line
+            # stl:block, stl:inline
+            if tag_uri == stl_uri:
+                if bool(attributes):
+                    omit.append(False)
+                    yield type, (tag_uri, tag_name, attributes), line
+                else:
+                    omit.append(True)
+            else:
+                yield type, (tag_uri, tag_name, attributes), line
             if stl_content is not None:
                 yield TEXT, stl_content, line
                 skip = 1
+        elif type == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_uri == stl_uri:
+                if omit.pop() is False:
+                    yield event
+            else:
+                yield event
         elif type == TEXT:
             # Escape entity references
             value = value.replace('\xa3', '&#163;')
@@ -85,7 +100,6 @@ def _stl2stl(stream):
             value = value.replace('\xe2\x80\x99', "'") # XXX
             value = value.replace('\xe2\x80\xa2', "&#8226;")
             value = value.replace('\xe2\x80\xba', '&rsaquo;')
-            print repr(value)
             yield type, value, line
         else:
             yield event

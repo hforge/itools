@@ -68,8 +68,11 @@ def get_start_tag(tag_uri, tag_name, attributes):
     # Output the attributes
     for attr_uri, attr_name in attributes:
         value = attributes[(attr_uri, attr_name)]
-        qname = get_attribute_qname(attr_uri, attr_name)
         datatype = get_datatype_by_uri(attr_uri, attr_name)
+        if tag_uri == attr_uri:
+            qname = get_attribute_qname(None, attr_name)
+        else:
+            qname = get_attribute_qname(attr_uri, attr_name)
         value = datatype.encode(value)
         value = XMLAttribute.encode(value)
         s += ' %s="%s"' % (qname, value)

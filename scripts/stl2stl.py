@@ -38,6 +38,7 @@ schema.datatypes['attributes'] = String
 def _stl2stl(stream):
     skip = 0
     omit = []
+    changed = False
     for event in stream:
         type, value, line = event
         # Skip (stl:content)
@@ -54,6 +55,7 @@ def _stl2stl(stream):
             # stl:attributes
             key = (stl_uri, 'attributes')
             if key in attributes:
+                changed = True
                 stl_attributes = attributes.pop(key)
                 for stl_attribute in stl_attributes.split(';'):
                     name, expr = stl_attribute.strip().split(' ', 1)
@@ -65,6 +67,7 @@ def _stl2stl(stream):
             # stl:content (TODO)
             key = (stl_uri, 'content')
             if key in attributes:
+                changed = True
                 stl_content = "${%s}" % attributes.pop(key)
             else:
                 stl_content = None
@@ -104,6 +107,9 @@ def _stl2stl(stream):
         else:
             yield event
 
+    if changed is False:
+        raise AssertionError, 'nothing to do'
+
  
 
 if __name__ == '__main__':
@@ -120,5 +126,10 @@ if __name__ == '__main__':
         data = open(filename).read()
         parser = Parser(data)
         new_stl = _stl2stl(parser)
-        new_stl = stream_to_str(new_stl)
-        open(filename, 'w').write(new_stl)
+        try:
+            new_stl = list(new_stl)
+        except AssertionError:
+            pass
+        else:
+            new_stl = stream_to_str(new_stl)
+            open(filename, 'w').write(new_stl)

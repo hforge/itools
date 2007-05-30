@@ -61,7 +61,7 @@ class User(AccessControl, Folder):
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         indexes['email'] = self.get_property('ikaaro:email')
-        indexes['username'] = self.get_property('ikaaro:username')
+        indexes['username'] = self.get_login_name()
         return indexes
 
 
@@ -81,6 +81,7 @@ class User(AccessControl, Folder):
 
 
     def get_login_name(self):
+        # FIXME Check first the username (for compatibility with 0.14)
         username = self.get_property('ikaaro:username')
         if username:
             return username

@@ -323,15 +323,11 @@ class WebSite(RoleAware, Folder):
         root = context.root
         catalog = root.get_handler('.catalog')
 
-        # Search first by the username, then by the email (for backwards
-        # compatibility with 0.14)
+        # Search the user by username (login name)
         results = catalog.search(username=email)
         if results.get_n_documents() == 0:
-            results = catalog.search(email=email)
-            # No user found
-            if results.get_n_documents() == 0:
-                message = u'The user "$username" does not exist.'
-                return context.come_back(message, username=email, keep=keep)
+            message = u'The user "$username" does not exist.'
+            return context.come_back(message, username=email, keep=keep)
 
         # Get the user
         brain = results.get_documents()[0]

@@ -122,7 +122,7 @@ class Root(WebSite):
                        ('email', 'keyword', True, True),
                        ('lastname', 'text', True, True),
                        ('firstname', 'text', True, True),
-                       ('username', 'keyword', True, False),
+                       ('username', 'keyword', True, False), # Login Name
                        # Folder's view
                        ('parent_path', 'keyword', True, False),
                        ('paths', 'keyword', True, False),

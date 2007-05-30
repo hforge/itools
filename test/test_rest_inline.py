@@ -20,7 +20,7 @@
 import unittest
 
 # Import from itools.rest
-from parser import parse_inline
+from itools.rest.parser import parse_inline
 
 
 class TestInlineParser(unittest.TestCase):

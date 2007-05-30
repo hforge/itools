@@ -20,7 +20,7 @@
 import unittest
 
 # Import from itools.rest
-from parser import strip_block, normalize_whitespace
+from itools.rest.parser import strip_block, normalize_whitespace
 
 
 class TestParserUtils(unittest.TestCase):

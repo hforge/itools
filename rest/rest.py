@@ -243,7 +243,7 @@ def stream_to_str_as_latex(stream, encoding='UTF-8'):
         if event == TEXT:
             data = value.encode(encoding)
             if verbatim_open is False:
-                data = data.replace('_', '\\_')
+                data = data.replace('_', '\\_').replace('$', '\\$')
             buffer.append(data)
             if title_open is True:
                 buffer.append('}\n')

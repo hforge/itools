@@ -20,7 +20,7 @@
 import unittest
 
 # Import from itools.rest
-from parser import Document
+from itools.rest.parser import Document
 
 
 class TestDocumentParser(unittest.TestCase):

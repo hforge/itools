@@ -77,6 +77,29 @@ class WorkflowAware(iWorkflowAware):
     workflow_state = property(get_workflow_state, set_workflow_state, None, '')
 
 
+    def get_publication_date(self):
+        # FIXME This method only has sense if the workflow has a 'public'
+        # state with the intended meaning.
+        state = self.get_property('state')
+        if state != 'public':
+            return None
+
+        dates = []
+        for transition in self.get_property('ikaaro:wf_transition'):
+            date = transition.get(('dc', 'date'))
+            # Be robust
+            if date is None:
+                continue
+            dates.append(date)
+
+        # Be robust
+        if not dates:
+            return None
+
+        dates.sort()
+        return dates[-1]
+
+
     ########################################################################
     # User Interface
     ########################################################################

@@ -350,7 +350,15 @@ class Catalog(Folder):
 
                 query = queries.And(*atoms)
             else:
-                raise ValueError, "expected a query"
+                documents = self.documents
+                results = {}
+                for doc_n in range(documents.n_documents):
+                    try:
+                        document = documents.get_document(doc_n)
+                    except LookupError:
+                        continue
+                    results[doc_n] = 1
+                return SearchResults(results, documents, self.field_numbers)
         # Search
         results = query.search(self)
         return SearchResults(results, self.documents, self.field_numbers)

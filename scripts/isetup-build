@@ -161,6 +161,8 @@ if __name__ == '__main__':
         for language in target_languages:
             po, po_mtime = message_catalogs[language]
             dst = '%s.%s' % (path[:n], language)
+            # Add to the manifest
+            manifest.append(dst[2:])
             # Skip the file if it is already up-to-date
             if vfs.exists(dst):
                 dst_mtime = vfs.get_mtime(dst)
@@ -172,8 +174,6 @@ if __name__ == '__main__':
                 print 'Error with file "%s"' % path
                 raise
             open(dst, 'w').write(data)
-            # Add to the manifest
-            manifest.append(dst[2:])
             done = True
         # Done
         if done is True:

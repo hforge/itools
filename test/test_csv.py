@@ -22,7 +22,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.datatypes import Date, Integer, Unicode, URI
+from itools.datatypes import Boolean, Date, Integer, Unicode, URI
 from itools.catalog import queries
 from itools.csv import CSV
 
@@ -34,8 +34,6 @@ TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 
 TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
-
-# TODO Add unit test to search boolean values
 
 
 class CSVTestCase(TestCase):
@@ -260,6 +258,18 @@ class CSVTestCase(TestCase):
         q = queries.And(q1, q2)
         result5 = handler.search(q)
         self.assertEqual(result5, [1, 4])
+
+
+    def test_search_boolean(self):
+        handler = CSV()
+        handler.columns = ['name', 'is_good']
+        handler.schema = {'name': Unicode, 'is_good': Boolean(index='bool')}
+        handler.load_state_from_string(
+            '"Chavez","1"\n'
+            '"Bush","0"\n')
+
+        self.assertEqual(handler.search(is_good=True), [0])
+        self.assertEqual(handler.search(is_good=False), [1])
 
 
     def test_access_by_name(self):

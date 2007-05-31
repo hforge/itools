@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -55,11 +55,14 @@ def format_text(text, width=72, indent='  '):
 
 
 def escape_latex(text):
-    return text.replace('_', '\\_').replace('#', '\#').replace('&', '\&')
+    text = text.replace('_', '\_')
+    text = text.replace('$', '\$')
+    text = text.replace('#', '\#')
+    text = text.replace('&', '\&')
+    return text
 
 
 def format_latex(text):
-    #text = escape_latex(text)
     text = unicode(text, 'utf-8')
     return rest.to_latex(text)
 

@@ -25,19 +25,23 @@ The scripts included are:
 Requirements
 ------------
 
-itools requires Python 2.5 or later.
+Python 2.5 or later is required.
 
-For itools.cms to work the package "tidy" [1] must be installed. While not
-strictly necessary it is also recommended to have PIL [2] and docutils [3]
+For the implementation of RML (itools.pdf) to work the package reportlab [1]
+must be installed.
+
+For itools.cms to work the package "tidy" [2] must be installed. While not
+strictly necessary it is also recommended to have PIL [3] and docutils [4]
 installed.
 
 Apart from the Python packages listed above, itoools.catalog requires the
 command rsync. And for itools.cms you also need the commands xlhtml, ppthtml,
 pdftohtml, wvHtml and unrtf are needed to index some types of documents.
 
-[1] http://utidylib.berlios.de/
-[2] http://www.pythonware.com/products/pil/
-[3] http://docutils.sourceforge.net/
+[1] http://www.reportlab.org/
+[2] http://utidylib.berlios.de/
+[3] http://www.pythonware.com/products/pil/
+[4] http://docutils.sourceforge.net/
 
 
 

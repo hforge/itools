@@ -17,7 +17,13 @@
 
 # Import from itools
 from pdf import PDF
-from rml import rmltopdf, stl_rmltopdf
+try:
+    from rml import rmltopdf, stl_rmltopdf
+except ImportError:
+    print 'You need to install the package "reportlab" to get RML working.'
+    def rmltopdf(*args, **kw):
+        raise NotImplementedError, 'the package "reportlab" must be installed'
+    stl_rmltopdf = rmltopdf
 
 
 __all__ = ['PDF', 'rmltopdf', 'stl_rmltopdf']

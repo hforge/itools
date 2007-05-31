@@ -311,10 +311,6 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
         if object_version is None:
             object_version = '00000000'
 
-        # Default version to the current class version
-        if version is None:
-            version = self.class_version
-
         # Get all the version numbers
         versions = [ x.split('_')[-1]
                      for x in self.__class__.__dict__.keys()
@@ -334,8 +330,8 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
     def update(self, version):
         # We don't check the version is good
         getattr(self, 'update_%s' % version)()
-        logger.info('%s upgraded from %s to %s', self, object_version, version)
         self.set_property('version', version)
+        logger.info('%s upgraded from %s', self, version)
 
 
     ########################################################################

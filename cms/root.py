@@ -48,7 +48,7 @@ class Root(WebSite):
 
     class_id = 'iKaaro'
     class_title = u'iKaaro'
-    class_version = '20061216'
+    class_version = '20070531'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
     class_views = [
@@ -492,6 +492,10 @@ class Root(WebSite):
             i += 1
 
         # Update 'members' index
+        self._update_catalog()
+
+
+    def update_20070531(self):
         self._update_catalog()
 
 

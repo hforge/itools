@@ -80,20 +80,28 @@ def update(parser, options, target):
     class_version = root.class_version
     if instance_version == class_version:
         print 'The instance is up-to-date (version: %s).' % instance_version
-    elif instance_version > class_version:
+        return
+    if instance_version > class_version:
         print 'WARNING: the instance (%s) is newer! than the class (%s)' \
               % (instance_version, class_version)
-    else:
-        message = 'Update instance from version %s to version %s (y/N)? ' \
-                  % (instance_version, class_version)
-        if ask_confirmation(message) is True:
-            print 'Updating...'
-            root.update()
+        return
 
-            # Update backup
-            print 'Commit...'
-            database = server.database
-            database.commit()
+    # Update
+    next_version = root.get_next_version()
+    while next_version is not None:
+        # Ask
+        message = 'Update instance from version %s to version %s (y/N)? ' \
+                  % (instance_version, next_version)
+        if ask_confirmation(message) is False:
+            break
+        # Update
+        print 'Updating...'
+        root.update(next_version)
+        print 'Commit...'
+        database = server.database
+        database.commit()
+        # Next
+        next_version = root.get_next_version()
 
 
 

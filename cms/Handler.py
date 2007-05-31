@@ -305,16 +305,7 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
     ########################################################################
     # Upgrade
     ########################################################################
-    def is_uptodate(self):
-        object_version = self.metadata.get_property('version')
-        class_version = self.class_version
-        if object_version is None:
-            object_version = class_version
-
-        return class_version == object_version
-
-
-    def update(self, version=None, *args, **kw):
+    def get_next_version(self):
         # Set zero version if the object does not have a version
         object_version = self.metadata.get_property('version')
         if object_version is None:
@@ -334,18 +325,17 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
 
         # Filter the versions previous to the current object version
         versions = [ x for x in versions if x > object_version ]
+        if not versions:
+            return None
 
-        # Filter the versions next to the given version
-        versions = [ x for x in versions if x <= version ]
+        return versions[0]
 
-        # Upgrade
-        if versions:
-            for version in versions:
-                getattr(self, 'update_%s' % version)(*args, **kw)
-                logger.info('%s upgraded from %s to %s', self,
-                            object_version, version)
-                self.set_property('version', version)
-                object_version = version
+
+    def update(self, version):
+        # We don't check the version is good
+        getattr(self, 'update_%s' % version)()
+        logger.info('%s upgraded from %s to %s', self, object_version, version)
+        self.set_property('version', version)
 
 
     ########################################################################

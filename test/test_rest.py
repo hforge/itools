@@ -404,7 +404,7 @@ I am a paragraph."""
         self.assertEqual(events[0], ('list_begin', u'*'))
         self.assertEqual(events[1], ('list_item_begin', 2))
         self.assertEqual(events[2], ('paragraph', u'I am a block.'))
-        self.assertEqual(events[3], ('paragraph', u'  I am the same block.'))
+        self.assertEqual(events[3], ('paragraph', u'I am the same block.'))
         self.assertEqual(events[4], ('list_item_end', 2))
         self.assertEqual(events[5], ('list_end', u'*'))
         self.assertEqual(events[6], ('paragraph', u'I am a paragraph.'))

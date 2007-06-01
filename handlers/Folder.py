@@ -176,7 +176,7 @@ class Folder(Handler):
         if path.is_absolute():
             root = self.get_root()
             path = str(path)[1:]
-            return root.get_handler(path)
+            return root.get_handler(path, caching=caching)
 
         if len(path) == 0:
             return self
@@ -184,7 +184,7 @@ class Folder(Handler):
         if path[0].name == '..':
             if self.parent is None:
                 raise ValueError, 'this handler is the root handler'
-            return self.parent.get_handler(path[1:])
+            return self.parent.get_handler(path[1:], caching=caching)
 
         here = self
         for segment in path:

@@ -25,6 +25,7 @@ from time import time
 import traceback
 
 # Import from itools
+import itools
 from itools.datatypes import FileName
 from itools import vfs
 from itools.handlers.Folder import Folder as FolderHandler
@@ -321,8 +322,11 @@ class Root(WebSite):
     about__label__ = u'About'
     about__sublabel__ = u'About'
     def about(self, context):
+        namespace = {}
+        namespace['version'] = itools.__version__
+
         handler = self.get_handler('/ui/Root_about.xml')
-        return stl(handler)
+        return stl(handler, namespace)
 
 
     ########################################################################

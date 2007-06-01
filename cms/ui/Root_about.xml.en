@@ -5,6 +5,9 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <h2>About</h2>
+  <p>
+  Version: <strong>${version}</strong>
+  </p>
 
   <p>
     iKaaro is a Content Management System, written in the
@@ -14,17 +17,16 @@
   </p>
 
   <p>
-   Its functional scope, what it is able to do <em>out of the box</em>,
-   is quite narrow so far, but evolving quickly.
+  Some things you can do with ikaaro:
   </p>
+  <ul>
+    <li>Manage Web Content and Electronic Documents;</li>
+    <li>Work together with the Wiki;</li>
+    <li>Manage a project with the issue tracker.</li>
+  </ul>
 
   <p>
-   Its real power is what you don't see, when it is
-   used as a web framework.
-  </p>
-
-  <p>
-    Resources:
+    To learn more, check out these resources:
   </p>
 
   <ul>

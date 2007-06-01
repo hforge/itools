@@ -305,26 +305,29 @@ class Handler(CatalogAware, Node, domains.DomainAware, BaseHandler):
     ########################################################################
     # Upgrade
     ########################################################################
-    def get_next_version(self):
+    def get_next_versions(self):
         # Set zero version if the object does not have a version
         object_version = self.metadata.get_property('version')
         if object_version is None:
             object_version = '00000000'
 
         # Get all the version numbers
-        versions = [ x.split('_')[-1]
-                     for x in self.__class__.__dict__.keys()
-                     if x.startswith('update_') ]
+        versions = []
+        for name in self.__class__.__dict__.keys():
+            if not name.startswith('update_'):
+                continue
+            kk, version = name.split('_', 1)
+            if len(version) != 8:
+                continue
+            try:
+                int(version)
+            except ValueError:
+                continue
+            if version > object_version:
+                versions.append(version)
 
-        # Sort the version numbers
         versions.sort()
-
-        # Filter the versions previous to the current object version
-        versions = [ x for x in versions if x > object_version ]
-        if not versions:
-            return None
-
-        return versions[0]
+        return versions
 
 
     def update(self, version):

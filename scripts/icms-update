@@ -87,8 +87,7 @@ def update(parser, options, target):
         return
 
     # Update
-    next_version = root.get_next_version()
-    while next_version is not None:
+    for next_version in root.get_next_versions():
         # Ask
         message = 'Update instance from version %s to version %s (y/N)? ' \
                   % (instance_version, next_version)
@@ -100,8 +99,6 @@ def update(parser, options, target):
         print 'Commit...'
         database = server.database
         database.commit()
-        # Next
-        next_version = root.get_next_version()
 
 
 

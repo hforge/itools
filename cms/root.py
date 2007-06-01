@@ -48,8 +48,10 @@ from catalog import CatalogAware
 class Root(WebSite):
 
     class_id = 'iKaaro'
-    class_title = u'iKaaro'
     class_version = '20070531'
+    class_layout = {
+        '.catalog': Catalog}
+    class_title = u'iKaaro'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
     class_views = [
@@ -198,16 +200,6 @@ class Root(WebSite):
     ########################################################################
     def _get_handler_names(self):
         return WebSite._get_handler_names(self) + ['ui']
-
-
-    def _get_handler(self, segment, uri):
-        name = segment.name
-
-        if name == '.catalog':
-            return Catalog(uri)
-        elif name == '.archive':
-            return FolderHandler(uri)
-        return WebSite._get_handler(self, segment, uri)
 
 
     ########################################################################

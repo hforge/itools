@@ -47,7 +47,7 @@ issue_fields = [('title', True), ('version', True), ('type', True),
 
 
 class Tracker(Folder):
-    
+
     class_id = 'tracker'
     class_title = u'Issue Tracker'
     class_description = u'To manage bugs and tasks'
@@ -489,9 +489,29 @@ register_object_class(StoredSearch)
 ###########################################################################
 # Issues
 ###########################################################################
+class History(BaseCSV):
+
+    columns = ['datetime', 'username', 'title', 'module', 'version', 'type',
+               'priority', 'assigned_to', 'state', 'comment', 'file']
+    schema = {'datetime': DateTime,
+              'username': String,
+              'title': Unicode,
+              'module': Integer,
+              'version': Integer,
+              'type': Integer,
+              'priority': Integer,
+              'assigned_to': String,
+              'state': Integer,
+              'comment': Unicode,
+              'file': String}
+
+
+
 class Issue(Folder):
 
     class_id = 'issue'
+    class_layout = {
+        '.history': History}
     class_title = u'Issue'
     class_description = u'Issue'
     class_views = [
@@ -506,13 +526,6 @@ class Issue(Folder):
         Folder.new(self, **kw)
         cache = self.cache
         cache['.history'] = History()
-
-
-    def _get_handler(self, segment, uri):
-        name = segment.name
-        if name == '.history':
-            return History(uri)
-        return Folder._get_handler(self, segment, uri)
 
 
     def get_document_types(self):
@@ -934,21 +947,3 @@ class Issue(Folder):
 
 
 register_object_class(Issue)
-
-
-class History(BaseCSV):
-    
-    columns = ['datetime', 'username', 'title', 'module', 'version', 'type',
-               'priority', 'assigned_to', 'state', 'comment', 'file']
-    schema = {'datetime': DateTime,
-              'username': String,
-              'title': Unicode,
-              'module': Integer,
-              'version': Integer,
-              'type': Integer,
-              'priority': Integer,
-              'assigned_to': String,
-              'state': Integer,
-              'comment': Unicode,
-              'file': String}
-

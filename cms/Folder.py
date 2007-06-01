@@ -58,6 +58,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     #########################################################################
     class_id = 'folder'
     class_version = '20040625'
+    class_layout = {}
     class_title = u'Folder'
     class_description = u'Organize your files and documents with folders.'
     class_icon16 = 'images/Folder16.png'
@@ -122,6 +123,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def _get_handler(self, segment, uri):
         name = segment.name
+        # Check the layout first
+        cls = self.class_layout.get(name)
+        if cls is not None:
+            return cls(uri)
+
         # Metadata
         if name.endswith('.metadata'):
             return Metadata(uri)

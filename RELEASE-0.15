@@ -1,5 +1,5 @@
 
-itools 0.15.5 (2007/0X/XX)
+itools 0.15.5 (2007/06/01)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -26,15 +26,16 @@ field).
 Still in "itools.cms", there have been a number of user interface tweaks
 here and there, but most notably in the tracker.
 
-There is a change in the "itools.catalog" API worth to comment. Now when
-the method search is called without any arguments, all indexed documents
-are returned.
+There is a change in the "itools.catalog" API worth to comment. Now
+when the method search is called without any arguments, all indexed
+documents are returned.
 
-Also, the method "get_physical_path" has been added to all handlers. And
-path objects have gained the method "get_name".
+Also, the method "get_physical_path" has been added to all handlers.
+And path objects have gained the method "get_name".
 
-Packages and scripts that have seen minor bugs fixed are: itools.catalog,
-itools.pdf, itools.web, itools.xml, isetup-build and icms-restore.
+Packages and scripts that have seen minor fixes and improvements are:
+itools.catalog, itools.pdf, itools.web, itools.xml, isetup-build,
+icms-update and icms-restore.
 
 
 Credits:

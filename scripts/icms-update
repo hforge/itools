@@ -28,13 +28,14 @@ from itools.catalog import make_catalog, Catalog
 from itools.handlers import Config
 from itools.cms.database import DatabaseFS
 from itools.cms.server import ask_confirmation
-from itools.cms.server import get_root
+from itools.cms.server import Server
 
 
 def update(parser, options, target):
     # Get the root
     folder = vfs.open(target)
-    root = get_root(get_reference(target))
+    server = Server(target)
+    root = server.root
 
     # Update the catalog (XXX remove for 0.17)
     if folder.exists('database/.catalog'):

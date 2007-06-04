@@ -16,12 +16,34 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 
-WORD, SPACE, STOP_WORD, STOP_SENTENCE = range(4)
-stop_sentences = set([u'.', u';', u'!', u'?'])
+stop_sentences = set([u'.', u';', u'!', u'?', u':'])
 abbreviations = set([u'Inc', u'Md', u'Mr', u'Dr'])
 
 
-TEXT, FORMAT = range(2)
+TEXT, START_FORMAT, END_FORMAT = range(3)
+
+
+def is_sentence_done(last_char, last_word):
+    if last_char not in stop_sentences:
+        return False
+
+    # Consider exceptions
+    if last_char == u'.':
+        # Acronyms
+        if len(last_word) == 1 and last_word.isupper():
+            return False
+        # Abbreviations
+        if last_word in abbreviations:
+            return False
+
+    return True
+
+
+
+def make_sentence(sentence):
+    sentence = u''.join(sentence)
+    sentence = u' '.join(sentence.split()) # Strip
+    return sentence
 
 
 
@@ -50,8 +72,12 @@ class Message(list):
             list.append(self, (TEXT, x))
 
 
-    def append_format(self, x):
-        list.append(self, (FORMAT, x))
+    def append_start_format(self, x):
+        list.append(self, (START_FORMAT, x))
+
+
+    def append_end_format(self, x):
+        list.append(self, (END_FORMAT, x))
 
 
     def get_atoms(self):
@@ -70,50 +96,52 @@ class Message(list):
     def get_segments(self, keep_spaces=None):
         """
         We consider a sentence ends by an special puntuation character
-        (dot, semicolon, exclamation or question mark) followed by an
-        space.
+        (dot, colon, semicolon, exclamation or question mark) followed by
+        an space.
 
         Exceptions to this rule: abbreviations and accronyms.
         """
         # FIXME keep_spaces is not used, so remove it
+        format = 0
         sentence = []
-        word = None
+        sentence_done = False
+        last_word = None
         word_stop = True
-        last = None
+        last_char = None
         for type, atom in self.get_atoms():
             sentence.append(atom)
             if type == TEXT:
                 if atom.isspace():
                     word_stop = True
-                    # Stop Sentence
-                    if last in stop_sentences:
-                        # Consider exceptions (accronyms and abbreviations)
-                        if last == u'.':
-                            if len(word) == 1 and word.isupper():
-                                continue
-                            if word in abbreviations:
-                                continue
-                        # Send sentence
-                        sentence = u''.join(sentence)
-                        sentence = u' '.join(sentence.split()) # Strip
-                        yield sentence
-                        sentence = []
+                    # Sentence End
+                    if is_sentence_done(last_char, last_word):
+                        if format == 0:
+                            yield make_sentence(sentence)
+                            sentence = []
+                            sentence_done = False
+                        else:
+                            sentence_done = True
                 elif atom.isalnum():
                     if word_stop is True:
-                        word = atom
+                        last_word = atom
                         word_stop = False
                     else:
-                        word += atom
+                        last_word += atom
                 else:
                     word_stop = True
                 # Next
-                last = atom
-            elif type == FORMAT:
-                pass
+                last_char = atom
+            elif type == START_FORMAT:
+                format = +1
+            elif type == END_FORMAT:
+                format -= 1
+                if format == 0 and sentence_done is True:
+                    yield make_sentence(sentence)
+                    sentence = []
+                    sentence_done = False
 
-        # Send laste sentence
-        sentence = u''.join(sentence)
-        sentence = u' '.join(sentence.split()) # Strip
+        # Send last sentence
+        sentence = make_sentence(sentence)
         if sentence:
             yield sentence
 

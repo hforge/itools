@@ -81,9 +81,9 @@ def process_buffer(buffer, hit):
             value = XMLContent.encode(value)
             message.append_text(value)
         elif type == START_ELEMENT:
-            message.append_format(get_start_tag(*value))
+            message.append_start_format(get_start_tag(*value))
         elif type == END_ELEMENT:
-            message.append_format(get_end_tag(*value))
+            message.append_end_format(get_end_tag(*value))
 
     # Return message
     yield MESSAGE, message, None

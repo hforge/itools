@@ -304,7 +304,7 @@ class SentenceTestCase(unittest.TestCase):
 
     def test_between_number(self):
         text = u"Price: -12.25 Euro."
-        result = [u'Price: -12.25 Euro.']
+        result = [u'Price:', u'-12.25 Euro.']
 
         message = Message()
         message.append_text(text)
@@ -371,9 +371,9 @@ class SentenceTestCase(unittest.TestCase):
     def test_HTML(self):
         message = Message()
         message.append_text(' ')
-        message.append_format('<a ref="; t. ffff">')
+        message.append_start_format('<a ref="; t. ffff">')
         message.append_text('hello ')
-        message.append_format('</a>')
+        message.append_end_format('</a>')
         message.append_text('      GOGO ')
 
         segments = message.get_segments()
@@ -424,12 +424,14 @@ class SentenceTestCase(unittest.TestCase):
 
 
     def test_parentheses1(self):
-        text = '(Exception: if the Program itself is interactive but does' \
-               ' not normally print such an announcement, your work based' \
-               ' on the Program is not required to print an announcement.)  '
-        result = ['(Exception: if the Program itself is interactive but does'
-                  ' not normally print such an announcement, your work based'
-                  ' on the Program is not required to print an announcement.)']
+        text = (
+            '(Exception: if the Program itself is interactive but does not'
+            ' normally print such an announcement, your work based on the'
+            ' Program is not required to print an announcement.)  ')
+        result = [u'(Exception:',
+            u'if the Program itself is interactive but does not normally'
+            u' print such an announcement, your work based on the Program'
+            u' is not required to print an announcement.)']
 
         message = Message()
         message.append_text(text)

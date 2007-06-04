@@ -265,9 +265,16 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if tag_name == 'pageTemplate':
                     attrs = prev_elt[1]
                     id = attrs.get((None, 'id'))
-                    rotation = attrs.get((None, 'rotation'), 0)
+                    rotation = attrs.get((None, 'rotation'))
                     page_size = attrs.get((None, 'pageSize'))
-                    page_size = get_value_page_size(page_size)
+                    if rotation is None:
+                        rotation = document_attrs['rotation']
+                    else:
+                        rotation = to_int(rotation)
+                    if page_size is None:
+                        page_size = document_attrs['pageSize']
+                    else:
+                        page_size = get_value_page_size(page_size)
 
                     if id is None:
                         # tag not well formed
@@ -1632,19 +1639,15 @@ def get_page_size_orientation(data):
         data = '(21cm,29.7cm)'
         return (portrait, '(21cm,29.7cm)')
     """
-    
-    orienter = portrait
-    sp = data.split(' ')
-    if len(sp) == 1:
-        return (orienter, data)
-
-    if sp[0] == 'landscape':
-        return (landscape, sp[1])
-    elif sp[0] == 'portrait':
-        return (portrait, sp[1])
-    elif sp[1] == 'landscape':
-        return (landscape, sp[0])
-    elif sp[1] == 'portrait':
-        return (portrait, sp[0])
-    else:
+    index = data.find('portrait')
+    if index != -1:
+        data = data.replace('portrait', '')
         return (portrait, data)
+
+    index = data.find('landscape')
+    if index != -1:
+        data = data.replace('landscape', '')
+        return (landscape, data)
+    
+    return (portrait, data)
+

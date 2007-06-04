@@ -28,7 +28,6 @@ import itools
 from itools.catalog import make_catalog
 from itools.handlers import Config
 from itools.cms.root import Root
-from itools.cms.catalog import CatalogAware
 
 
 def init(parser, options, target):

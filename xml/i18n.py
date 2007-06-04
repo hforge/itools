@@ -49,10 +49,6 @@ def process_buffer(buffer, hit):
                 yield type, value[:-1], line
             else:
                 yield type, value, line
-        # Reset
-        buffer = []
-        stack = []
-        id = 0
         return
 
     # Process the buffer
@@ -137,7 +133,7 @@ def get_translatable_blocks(events):
                 skip -= 1
             yield event
             continue
- 
+
         # Text node
         if type == TEXT:
             # Don't consider left whitespace

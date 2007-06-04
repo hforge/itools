@@ -102,6 +102,19 @@ class SegmentationTestCase(TestCase):
         self.assertEqual(messages, [(u'Change', 0)])
 
 
+    def test_inline(self):
+        doc = Document(string=
+            '<p xmlns="http://www.w3.org/1999/xhtml">'
+            'Hi <b>everybody, </b><i>how are you ? </i>'
+            '</p>')
+
+        messages = doc.get_messages()
+        messages = list(messages)
+
+        expected = [(u'Hi <b>everybody, </b><i>how are you ? </i>', 0)]
+        self.assertEqual(messages, expected)
+
+
 
 class TranslationTestCase(TestCase):
 

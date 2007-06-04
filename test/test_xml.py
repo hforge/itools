@@ -112,12 +112,12 @@ class XMLTestCase(TestCase):
         """
         Tests wether the input and the output match.
         """
-        data = '<html>\n' \
-               '<head></head>\n' \
-               '<body>\n' \
-               ' this is a <span style="color: red">test</span>\n' \
-               '</body>\n' \
-               '</html>'
+        data = ('<html>\n'
+                '<head></head>\n'
+                '<body>\n'
+                ' this is a <span style="color: red">test</span>\n'
+                '</body>\n'
+                '</html>')
         h1 = Document(string=data)
         h2 = Document(string=data)
 
@@ -127,14 +127,13 @@ class XMLTestCase(TestCase):
 
 class TranslatableTestCase(TestCase):
 
-    def test_element(self):
+    def test_surrounding(self):
         text = '<em>Hello World</em>'
         parser = Parser(text)
         messages = get_messages(parser)
         messages = list(messages)
 
         self.assertEqual(messages, [(u'Hello World', 0)])
-
 
 
 

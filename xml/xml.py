@@ -235,8 +235,11 @@ class Document(Text):
     
     
     def _load_state_from_file(self, file):
-        stream = file.read()
+        # Default values
+        self.document_type = None
         self.events = []
+        # Load state
+        stream = file.read()
         for events in stream_text_and_comment_to_unicode(stream):
             event, value, line_number = events
             if event == DOCUMENT_TYPE:

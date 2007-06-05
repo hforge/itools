@@ -73,6 +73,6 @@ class VersioningAware(object):
 
         namespace['revisions'] = self.get_revisions(context)
 
-        handler = self.get_handler('/ui/File_history.xml')
+        handler = self.get_handler('/ui/file/history.xml')
         return stl(handler, namespace)
 

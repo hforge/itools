@@ -436,9 +436,8 @@ class WebSite(RoleAware, Folder):
 
         namespace = {}
         # Get and check input data
-        text = context.get_form_value('site_search_text', default='').strip()
-        text = Unicode.decode(text)
-        namespace['site_search_text'] = text
+        text = context.get_form_value('site_search_text', type=Unicode).strip()
+        namespace['text'] = text
         # Batch
         start = context.get_form_value('start', type=Integer, default=0)
         size = 10
@@ -496,7 +495,6 @@ class WebSite(RoleAware, Folder):
         if end < total:
             next = str(end)
             namespace['batch_next'] = context.uri.replace(start=next)
-        namespace['text'] = text
 
         hander = self.get_handler('/ui/website/search.xml')
         return stl(hander, namespace)

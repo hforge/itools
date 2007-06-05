@@ -8,7 +8,7 @@
 
   <form action=";site_search" method="get">
     <p>
-      <input name="site_search_text" type="text" value="${site_search_text}"/>
+      <input name="site_search_text" type="text" value="${text}"/>
       <input class="button_search" type="submit" value="Search"/>
     </p>
   </form>

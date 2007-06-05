@@ -21,7 +21,7 @@ from __future__ import absolute_import
 # Import from itools
 from itools.datatypes import XML as XMLContent
 from itools.i18n import Message
-from .namespaces import get_namespace, get_element_schema
+from .namespaces import get_namespace, get_element_schema, XMLNSNamespace
 from .parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
 
 
@@ -220,6 +220,7 @@ def get_messages(events):
 ###########################################################################
 def translate(events, catalog):
     keep_spaces = False
+    namespaces = {}
     for event in get_translatable_blocks(events):
         type, value, line = event
         if type == START_ELEMENT:
@@ -234,6 +235,11 @@ def translate(events, catalog):
                     if value:
                         value = catalog.get_translation(value)
                 aux[(attr_uri, attr_name)] = value
+                # Namespaces
+                # FIXME We must support xmlns="...." too.
+                # FIXME We must consider the end of the declaration
+                if attr_uri == XMLNSNamespace.class_uri:
+                    namespaces[attr_name] = value
             yield START_ELEMENT, (tag_uri, tag_name, aux), None
             # Keep spaces
             if tag_name in elements_to_keep_spaces:
@@ -247,7 +253,7 @@ def translate(events, catalog):
         elif type == MESSAGE:
             for segment in value.get_segments(keep_spaces):
                 segment = catalog.get_translation(segment).encode('utf-8')
-                for type, value, line in Parser(segment):
+                for type, value, line in Parser(segment, namespaces):
                     if type == TEXT:
                         value = unicode(value, 'utf-8')
                     yield type, value, None

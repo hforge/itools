@@ -17,12 +17,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-from cStringIO import StringIO
 import mimetypes
 from os.path import join as path_join
 from subprocess import call
 import tempfile
-from zipfile import ZipFile, BadZipfile
 
 # Import from itools
 from itools import vfs
@@ -131,42 +129,6 @@ class MSPowerPoint(OfficeDocument):
 
 
 
-class OOffice(OfficeDocument):
-
-    def to_text(self):
-        file = StringIO(self.to_str())
-        zip = ZipFile(file)
-        content = zip.read('content.xml')
-        zip.close()
-
-        return xml_to_text(content)
-
-
-
-class OOWriter(OOffice):
-
-    class_mimetypes = ['application/vnd.sun.xml.writer',
-                       'application/vnd.oasis.opendocument.text']
-    class_extension = 'sxw'
-
-
-
-class OOCalc(OOffice):
-
-    class_mimetypes = ['application/vnd.sun.xml.calc',
-                       'application/vnd.oasis.opendocument.spreadsheet']
-    class_extension = 'sxc'
-
-
-
-class OOImpress(OOffice):
-
-    class_mimetypes = ['application/vnd.sun.xml.impress',
-                       'application/vnd.oasis.opendocument.presentation']
-    class_extension = 'sxi'
-
-
-
 class RTF(OfficeDocument):
 
     class_mimetypes = ['text/rtf']
@@ -183,12 +145,6 @@ class RTF(OfficeDocument):
         return u' '.join(words)
 
 
-# Register
-mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
-mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
-mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
-
-
-handlers = [MSWord, MSExcel, MSPowerPoint, OOWriter, OOCalc, OOImpress, RTF]
+handlers = [MSWord, MSExcel, MSPowerPoint, RTF]
 for handler in handlers:
     register_handler_class(handler)

@@ -22,11 +22,14 @@ from itools.handlers import (Image as BaseImage, ZipArchive as BaseZipArchive,
 from itools.xml import (MSWord as BaseMSWord,
                         MSExcel as BaseMSExcel,
                         MSPowerPoint as BaseMSPowerPoint,
-                        OOWriter as BaseOOWriter,
-                        OOCalc as BaseOOCalc,
-                        OOImpress as BaseOOImpress,
                         RTF as BaseRTF)
 from itools.pdf import PDF as BasePDF
+from itools.odf import (ODT as BaseODT,
+                        ODS as BaseODS,
+                        ODP as BaseODP,
+                        OOWriter as BaseOOWriter,
+                        OOCalc as BaseOOCalc,
+                        OOImpress as BaseOOImpress)
 from itools.stl import stl
 from file import File
 from registry import register_object_class
@@ -206,6 +209,36 @@ class RTF(File, BaseRTF):
 
 
 
+class ODT(File, BaseODT):
+  
+    class_id ='application/vnd.oasis.opendocument.text'
+    class_title = u'ODT'
+    class_description = u'ODF Document'
+    class_icon16 = 'images/Odt16.png'
+    class_icon48 = 'images/Odt48.png'
+
+
+
+class ODS(File, BaseODS):
+  
+    class_id ='application/vnd.oasis.opendocument.spreadsheet'
+    class_title = u'ODS'
+    class_description = u'ODS Document'
+    class_icon16 = 'images/Ods16.png'
+    class_icon48 = 'images/Ods48.png'
+
+
+
+class ODP(File, BaseODP):
+  
+    class_id ='application/vnd.oasis.opendocument.presentation'
+    class_title = u'ODP'
+    class_description = u'ODP Document'
+    class_icon16 = 'images/Odp16.png'
+    class_icon48 = 'images/Odp48.png'
+
+
+
 ###########################################################################
 # Archives
 ###########################################################################
@@ -253,10 +286,14 @@ register_object_class(MSExcel)
 register_object_class(MSPowerPoint)
 register_object_class(PDF)
 register_object_class(RTF)
-# Open Document Format
-register_object_class(OOWriter, 'application/vnd.oasis.opendocument.text')
-register_object_class(OOCalc, 'application/vnd.oasis.opendocument.spreadsheet')
-register_object_class(OOImpress, 'application/vnd.oasis.opendocument.presentation')
+# OpenOffice.org1.0 Format
+register_object_class(OOWriter, 'application/vnd.sun.xml.writer')
+register_object_class(OOCalc, 'application/vnd.sun.xml.calc')
+register_object_class(OOImpress, 'application/vnd.sun.xml.impress')
+# OpenOffice.org2.0 Format (ODF)
+register_object_class(ODT, 'application/vnd.oasis.opendocument.text')
+register_object_class(ODS, 'application/vnd.oasis.opendocument.spreadsheet')
+register_object_class(ODP, 'application/vnd.oasis.opendocument.presentation')
 # Archives
 register_object_class(ZipArchive)
 register_object_class(TarArchive)

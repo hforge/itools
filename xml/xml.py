@@ -41,6 +41,19 @@ from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
 # The modules affected include the parser, and probably the namespace API.
 
 
+def stream_text_and_comment_to_unicode(stream):
+    for events in Parser(stream):
+        event, value, line_number = events
+        if event == TEXT or event == COMMENT:
+            # XXX The encoding is hard-coded, should it be?
+            value = unicode(value, 'UTF-8')
+            yield event, value, None
+        elif event == XML_DECL:
+            pass
+        else:
+            yield events
+
+
 #############################################################################
 # Data types
 #############################################################################
@@ -219,30 +232,17 @@ class Document(Text):
         # XML is a meta-language, it does not make change to create a bare
         # XML handler without a resource.
         raise NotImplementedError
-
-
+    
+    
     def _load_state_from_file(self, file):
-        """
-        Builds a tree made of elements and raw data.
-        """
-        xmlns_uri = XMLNSNamespace.class_uri
-        # Default values
-        self.document_type = None
-        # Parse
-        events = []
-        for event, value, line_number in Parser(file.read()):
+        stream = file.read()
+        self.events = []
+        for events in stream_text_and_comment_to_unicode(stream):
+            event, value, line_number = events
             if event == DOCUMENT_TYPE:
                 self.document_type = value
-            elif event == TEXT or event == COMMENT:
-                # XXX The encoding is hard-coded, should it be?
-                value = unicode(value, 'UTF-8')
-                events.append((event, value, None))
-            elif event == XML_DECL:
-                pass
             else:
-                events.append((event, value, None))
-
-        self.events = events
+                self.events.append(events)
 
 
     #######################################################################

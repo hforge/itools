@@ -372,9 +372,10 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
             value = value.encode(encoding)
             value = XMLContent.encode(value)
             value, kk = substitute(value, stack, repeat_stack, encoding)
-            value = XMLContent.decode(value)
-            value = unicode(value, encoding)
-            yield event, value, line
+            if value is not None:
+                value = XMLContent.decode(value)
+                value = unicode(value, encoding)
+                yield event, value, line
         elif event == COMMENT:
             yield event, value, line
         elif event == START_ELEMENT:

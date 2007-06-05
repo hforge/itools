@@ -59,26 +59,18 @@
       </stl:block>
     </tr>
 
-  <!-- FULL DAYS SPECIAL BEHAVIOUR
-    <div stl:condition="timetable_data/full_day_events" stl:omit-tag="">
+  <!-- FULL DAYS SPECIAL BEHAVIOUR -->
+    <div stl:if="timetable_data/full_day_events">
       <tr>
         <th class="time">&nbsp;</th>
-        <td stl:repeat="events timetable_data/full_day_events"
-            stl:attributes="colspan events/width"
-            class="fullday">
-          <div stl:repeat="event events/events"
-               stl:omit-tag="">
-            <div mestl:define-slot="fullday"
-                 stl:replace="structure event/title">
-              Full day event
-            </div>
-            <br>
-          </div>
-          &nbsp;
+        <td class="new" valign="top" colspan="${item/width}"
+            stl:repeat="item timetable_data/full_day_events">
+          <a href="${event/url}" stl:repeat="event item/events">
+            ${event/SUMMARY}<br/></a>
         </td>
       </tr>
     </div>
-  -->
+
   </table>
 
 </div>

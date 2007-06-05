@@ -517,11 +517,21 @@ class Calendar(Text, icalendar):
         ns['ORGANIZER'] = properties('ORGANIZER').value
 
         ###############################################################
-        # Set dtstart and dtend values as time
-        ns['start'] = Time.encode(properties('DTSTART').value.time())
-        ns['end'] = Time.encode(properties('DTEND').value.time())
-        # Add both of these dates into one item
-        ns['TIME'] = '%s - %s' % (ns['start'], ns['end']) 
+        start = properties('DTSTART')
+        end = properties('DTEND')
+        # Check if full day event
+        params = start.parameters
+        if 'VALUE' in params and 'DATE' in params['VALUE']:
+            ns['start'] = ns['end'] = ns['TIME'] = None
+        # Check if multiple days event (considered as full day event)
+        elif start.value.date() != end.value.date():
+            ns['start'] = ns['end'] = ns['TIME'] = None
+        else:
+            # Set dtstart and dtend values as time
+            ns['start'] = Time.encode(start.value.time())
+            ns['end'] = Time.encode(end.value.time())
+            # Add both of these dates into one item
+            ns['TIME'] = '%s - %s' % (ns['start'], ns['end']) 
 
         ###############################################################
         # Set class for conflicting events or just from status value

@@ -71,7 +71,7 @@ class Tracker(Folder):
         csv.add_row([u'1.0', False])
         csv.add_row([u'2.0', False])
         cache['versions.csv'] = csv
-        cache['versions.csv.metadata'] = self.build_metadata(csv)
+        cache['versions.csv.metadata'] = csv.build_metadata()
         # Other Tables
         tables = [
             ('modules.csv', [u'Documentation', u'Unit Tests',
@@ -87,7 +87,7 @@ class Tracker(Folder):
             cache[name] = csv
             for title in values:
                 csv.add_row([title])
-            cache['%s.metadata' % name] = self.build_metadata(csv)
+            cache['%s.metadata' % name] = csv.build_metadata()
         # Pre-defined stored searches
         open = StoredSearch(state=0)
         not_assigned = StoredSearch(assigned_to='nobody')
@@ -99,7 +99,7 @@ class Tracker(Folder):
             cache['s%s' % i] = search
             kw = {}
             kw['dc:title'] = {'en': title}
-            cache['s%s.metadata' % i] = self.build_metadata(search, **kw)
+            cache['s%s.metadata' % i] = search.build_metadata(**kw)
             i += 1
 
 

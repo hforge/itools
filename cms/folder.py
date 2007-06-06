@@ -772,8 +772,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def browse_content__sublabel__(self, **kw):
         mode = kw.get('mode', 'thumbnails')
         return {'thumbnails': u'As Icons',
-                'list': 'As List',
-                'image': 'As Image Gallery'}[mode]
+                'list': u'As List',
+                'image': u'As Image Gallery'}[mode]
 
     def browse_content(self, context):
         mode = context.get_form_value('mode')

@@ -25,7 +25,7 @@ from decimal import Decimal
 import re
 
 # Import from itools
-from itools.datatypes import (Boolean, DataType, URI, XMLAttribute,
+from itools.datatypes import (Boolean, String, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
     register_schema)
@@ -421,6 +421,8 @@ class Schema(BaseSchema):
 
     class_uri = 'http://xml.itools.org/namespaces/stl'
     class_prefix = 'stl'
+
+    datatypes = {'repeat': String, 'if': String}
 
 
 register_schema(Schema)

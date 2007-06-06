@@ -36,9 +36,6 @@
  *************************************************************************/
 
 /* Import from Python */
-PyObject* p_schemas;
-PyObject* p_get_datatype_by_uri;
-
 PyObject* p_htmlentitydefs;
 PyObject* p_name2codepoint;
 
@@ -678,16 +675,12 @@ static PyObject* Parser_iternext(Parser* self) {
     PyObject* tag_name;
     int end_tag;
     PyObject* result;
-    /* To call Python from C */
-    PyObject* p_datatype;
-    PyObject* p_datatype_decode;
     /* Attributes */
     PyObject* attr;
     PyObject* attr_name;
     PyObject* attr_prefix;
     PyObject* attr_uri;
     PyObject* attr_value;
-    PyObject* attr_value2;
     PyObject* attributes_list;
     PyObject* namespace_decls;
     PyObject* namespaces;
@@ -1097,38 +1090,9 @@ static PyObject* Parser_iternext(Parser* self) {
                     Py_XDECREF(namespaces);
                     return ERROR(DUP_ATTR, line, column);
                 }
-                /* Deserialize the value */
-                p_datatype = PyObject_CallObject(p_get_datatype_by_uri, attr_name);
-                if (p_datatype == NULL) {
-                    Py_DECREF(attr_name);
-                    Py_DECREF(tag);
-                    Py_DECREF(attributes_list);
-                    Py_DECREF(namespace_decls);
-                    Py_DECREF(attributes);
-                    Py_XDECREF(namespaces);
-                    return NULL;
-                }
-                p_datatype_decode = PyObject_GetAttrString(p_datatype, "decode");
-                attr_value = Py_BuildValue("(O)", attr_value);
-                attr_value2 = PyObject_CallObject(p_datatype_decode, attr_value);
-                Py_DECREF(attr_value);
-                if (attr_value2 == NULL) {
-                    Py_DECREF(attr_name);
-                    Py_DECREF(p_datatype);
-                    Py_DECREF(p_datatype_decode);
-                    Py_DECREF(tag);
-                    Py_DECREF(attributes_list);
-                    Py_DECREF(namespace_decls);
-                    Py_DECREF(attributes);
-                    Py_XDECREF(namespaces);
-                    return NULL;
-                }
                 /* Update the dict */
-                PyDict_SetItem(attributes, attr_name, attr_value2);
+                PyDict_SetItem(attributes, attr_name, attr_value);
                 Py_DECREF(attr_name);
-                Py_DECREF(p_datatype);
-                Py_DECREF(p_datatype_decode);
-                Py_DECREF(attr_value2);
             }
 
             result = Py_BuildValue("(i(OON)i)", START_ELEMENT, tag_uri,
@@ -1253,9 +1217,6 @@ initparser(void) {
         return;
 
     /* Import from Python */
-    /* from itools.schemas import get_datatype_by_uri */
-    p_schemas = PyImport_ImportModule("itools.schemas");
-    p_get_datatype_by_uri = PyObject_GetAttrString(p_schemas, "get_datatype_by_uri");
     /* from htmlentitydefs import name2codepoint */
     p_htmlentitydefs = PyImport_ImportModule("htmlentitydefs");
     p_name2codepoint = PyObject_GetAttrString(p_htmlentitydefs, "name2codepoint");

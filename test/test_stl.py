@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2003 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -73,6 +73,15 @@ class STLTestCase(unittest.TestCase):
         namespace = {'border': 5}
         output = stl(handler, namespace)
         self.assert_('border="5"' in output)
+
+
+    def test_attribute_accent(self):
+        handler = Document(string=
+            '<input xmlns="http://www.w3.org/1999/xhtml" value="${name}" />')
+
+        namespace = {'name': u'étoile'}
+        output = stl(handler, namespace)
+        self.assert_('value="étoile"' in output)
 
 
     def test_if(self):

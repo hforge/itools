@@ -129,7 +129,7 @@ class XHTMLFile(Text, XHTML.Document):
         # If the document has not a body (e.g. a frameset), edit as plain text
         body = self.get_body()
         if body is None:
-            return Text.edit_form(self)
+            return Text.edit_form(self, context)
 
         # Edit with a rich text editor
         namespace = {}

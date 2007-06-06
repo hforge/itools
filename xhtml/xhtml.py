@@ -25,9 +25,10 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
     register_schema)
 from itools.handlers import register_handler_class
-from itools.xml import (Document as XMLDocument, START_ELEMENT, END_ELEMENT,
-    TEXT, COMMENT, AbstractNamespace, set_namespace, stream_to_str, get_qname,
-    get_attribute_qname, is_empty, get_end_tag, get_element)
+from itools.xml import (Document as XMLDocument, XML_DECL, DOCUMENT_TYPE,
+    START_ELEMENT, END_ELEMENT, TEXT, COMMENT, AbstractNamespace,
+    set_namespace, stream_to_str, get_qname, get_attribute_qname, is_empty,
+    get_end_tag, get_element)
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'
@@ -52,10 +53,11 @@ class Boolean(Boolean):
 
 def stream_to_html(stream, encoding='UTF-8'):
     data = []
-    for event, value, line in stream:
-        if event == TEXT:
+    for event in stream:
+        type, value, line = event
+        if type == TEXT:
             data.append(value)
-        elif event == START_ELEMENT:
+        elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             qname = get_qname(tag_uri, tag_name)
             s = '<%s' % qname
@@ -64,25 +66,28 @@ def stream_to_html(stream, encoding='UTF-8'):
                 value = attributes[(attr_uri, attr_name)]
                 qname = get_attribute_qname(attr_uri, attr_name)
                 type = get_datatype_by_uri(attr_uri, attr_name)
-                value = type.encode(value)
                 value = XMLAttribute.encode(value)
                 s += ' %s="%s"' % (qname, value)
             data.append(s + '>')
-        elif event == END_ELEMENT:
+        elif type == END_ELEMENT:
             tag_uri, tag_name = value
             data.append(get_end_tag(tag_uri, tag_name))
-        elif event == COMMENT:
+        elif type == COMMENT:
             data.append('<!--%s-->' % value)
-        else:
-            raise NotImplementedError, 'unknown event "%s"' % event
+        elif type == XML_DECL:
+            pass
+        elif type == DOCUMENT_TYPE:
+            # FIXME
+            pass
     return ''.join(data)
 
 
 def set_content_type(stream, content_type):
     key1 = (xhtml_uri, 'http-equiv')
     key2 = (xhtml_uri, 'content')
-    for event, value, line in stream:
-        if event == START_ELEMENT:
+    for event in stream:
+        type, value, line = event
+        if type == START_ELEMENT:
             ns_uri, name, attributes = value
             if ns_uri == xhtml_uri:
                 # Skip <meta http-equiv="Content-Type">
@@ -91,7 +96,7 @@ def set_content_type(stream, content_type):
                         if attributes[key1] == 'Content-Type':
                             continue
                 elif name == 'head':
-                    yield event, value, line
+                    yield event
                     # Add <meta http-equiv="Content-Type">
                     attributes = {}
                     attributes[key1] = 'Content-Type'
@@ -99,7 +104,7 @@ def set_content_type(stream, content_type):
                     yield START_ELEMENT, (xhtml_uri, 'meta', attributes), line
                     yield END_ELEMENT, (xhtml_uri, 'meta'), line
                     continue
-        elif event == END_ELEMENT:
+        elif type == END_ELEMENT:
             ns_uri, name = value
             if ns_uri == xhtml_uri:
                 # Skip <meta http-equiv="Content-Type">
@@ -110,7 +115,7 @@ def set_content_type(stream, content_type):
                     if key1 in attributes:
                         if attributes[key1] == 'Content-Type':
                             continue
-        yield event, value, line
+        yield event
 
 
 def stream_to_str_as_xhtml(stream, encoding='UTF-8'):
@@ -370,7 +375,7 @@ class Document(XMLDocument):
     namespace = xhtml_uri
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'encoding', 'document_type', 'events']
+                 'events']
 
 
     #########################################################################
@@ -401,9 +406,7 @@ class Document(XMLDocument):
 
 
     def to_str(self, encoding='UTF-8'):
-        data = [self.header_to_str(encoding),
-                stream_to_str_as_xhtml(self.events, encoding)]
-        return ''.join(data)
+        return stream_to_str_as_xhtml(self.events, encoding)
 
 
     ########################################################################

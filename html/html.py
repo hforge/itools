@@ -91,9 +91,7 @@ class Document(XHTMLDocument):
                 schema = elements_schema.get(name, {'is_inline': False})
                 aux = {}
                 for attr_name in attributes:
-                    attr_value = attributes[attr_name]
-                    type = get_datatype_by_uri(xhtml_uri, attr_name)
-                    aux[(xhtml_uri, attr_name)] = type.decode(attr_value)
+                    aux[(xhtml_uri, attr_name)] = attributes[attr_name]
                 events.append((event, (xhtml_uri, name, aux), None))
             elif event == END_ELEMENT:
                 events.append((event, (xhtml_uri, value), None))

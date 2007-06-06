@@ -123,8 +123,7 @@ class TranslationTestCase(TestCase):
             '<?xml version="1.0" encoding="UTF-8"?>\n'
             '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"\n'
             '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
-            '<html xmlns="http://www.w3.org/1999/xhtml"\n'
-            '  xmlns:stl="http://xml.itools.org/namespaces/stl">\n'
+            '<html xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <head></head>\n'
             '  <body>%s</body>\n'
             '</html>\n')
@@ -177,14 +176,13 @@ class TranslationTestCase(TestCase):
 
     def test_case5(self):
         """Test translation of an element content"""
-        html =  self.template  % '<img alt="The beach" src="beach.jpg" />'
-        po = ('msgid "The beach"\n'
-              'msgstr "La playa"')
+        po = PO(string=
+            'msgid "The beach"\n'
+            'msgstr "La playa"')
+        xhtml = Document(string=
+            self.template  % '<img alt="The beach" src="beach.jpg" />')
 
-        p = PO(string=po)
-        xhtml = Document(string=html)
-
-        html = xhtml.translate(p)
+        html = xhtml.translate(po)
         xhtml = Document(string=html)
 
         messages = list(xhtml.get_messages())

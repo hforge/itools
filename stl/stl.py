@@ -367,7 +367,7 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
             if tag_uri != stl_uri:
                 yield event, value, line
         else:
-            raise NotImplementedError
+            yield events[i]
         # Next
         i += 1
 

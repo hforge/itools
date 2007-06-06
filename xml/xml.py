@@ -81,7 +81,6 @@ def get_start_tag(tag_uri, tag_name, attributes):
         value = attributes[(attr_uri, attr_name)]
         datatype = get_datatype_by_uri(attr_uri, attr_name)
         qname = get_attribute_qname(attr_uri, attr_name)
-        value = datatype.encode(value)
         value = XMLAttribute.encode(value)
         s += ' %s="%s"' % (qname, value)
     # Close the start tag
@@ -210,7 +209,7 @@ class Document(Text):
 
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'encoding', 'document_type', 'events']
+                 'events']
 
 
     def new(self):
@@ -220,45 +219,16 @@ class Document(Text):
     
     
     def _load_state_from_file(self, file):
-        # Default values
-        self.encoding = 'utf-8'
-        self.document_type = None
-        self.events = []
-        # Load state
-        stream = file.read()
-        for event in Parser(stream):
-            type, value, line_number = event
-            if type == XML_DECL:
-                version, encoding, standalone = value
-                self.encoding = encoding
-            elif type == DOCUMENT_TYPE:
-                self.document_type = value
-            else:
-                self.events.append(event)
+        data = file.read()
+        stream = Parser(data)
+        self.events = list(stream)
 
 
     #######################################################################
     # API
     #######################################################################
-    def header_to_str(self, encoding='UTF-8'):
-        s = []
-        # The XML declaration
-        s.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
-        # The document type
-        if self.document_type is not None:
-            pattern = '<!DOCTYPE %s\n' \
-                      '     PUBLIC "%s"\n' \
-                      '    "%s">\n'
-            s.append(pattern % self.document_type[:3])
-
-        return ''.join(s)
-
-
     def to_str(self, encoding='UTF-8'):
-        data = [self.header_to_str(encoding)]
-        data.append(stream_to_str(self.events, encoding))
-
-        return ''.join(data)
+        return stream_to_str(self.events, encoding)
 
 
     def __cmp__(self, other):

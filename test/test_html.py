@@ -73,11 +73,12 @@ class HTMLTestCase(TestCase):
         doc = Document(string=
             '<img alt="The beach" src="beach.jpg">')
 
-        p = PO(string=
+        po = PO(string=
             'msgid "The beach"\n'
              'msgstr "La playa"')
 
-        output = Document(string=doc.translate(p))
+        string = doc.translate(po)
+        output = Document(string=string)
 
         expected = Document(string=
             '<img alt="La playa" src="beach.jpg">')

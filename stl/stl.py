@@ -61,8 +61,7 @@ class STLTypeError(TypeError):
 ########################################################################
 # Expressions
 ########################################################################
-
-class Expression(object):
+def evaluate(expression, stack, repeat_stack):
     """
     Parses and evaluates stl expressions.
     
@@ -75,84 +74,53 @@ class Expression(object):
       ...
     """
 
-    def __init__(self, expression):
-        self.repeat = False
-        # none
-        if expression == 'none':
-            self.path = ()
-        else:
-            path = expression.split('/')
-            for x in path:
-                if x == '':
-                    raise STLSyntaxError, 'malformed STL expression'
-            # repeat
-            if path[0] == 'repeat':
-                self.repeat = True
-                path = path[1:]
-                if len(path) != 2:
-                    raise STLSyntaxError, 'malformed STL expression'
-            self.path = tuple(path)
+    # none
+    if expression == 'none':
+        return None
+
+    # Repeat
+    path = expression.split('/')
+    if path[0] == 'repeat':
+        stack = repeat_stack
+        path = path[1:]
+
+    # Traverse
+    value = stack.lookup(path[0])
+    for name in path[1:]:
+        value = lookup(value, name)
+
+    # Call
+    if callable(value):
+        try:
+            value = value()
+        except AttributeError, error_value:
+            # XXX "callable" could return true even if the object is not
+            # callable (see Python's documentation).
+            #
+            # This happens, for example, in the context of Zope, maybe
+            # because of extension classes and acquisition. So we catch
+            # the AttributeError exception, we should test also for the
+            # exception value to be "__call__". This is dangereous
+            # because we could hide real errors. Further exploration
+            # needed..
+            pass
+
+    return value
 
 
-    ###################################################################
-    # API
-    ###################################################################
-    def evaluate(self, stack, repeat):
-        if not self.path:
-            return None
 
-        if self.repeat:
-            stack = repeat
-
-        # Traverse
-        x = stack.lookup(self.path[0])
-        for name in self.path[1:]:
-            x = lookup(x, name)
-
-        # Call
-        if callable(x):
-            try:
-                x = x()
-            except AttributeError, error_value:
-                # XXX "callable" could return true even if the object is not
-                # callable (see Python's documentation).
-                #
-                # This happens, for example, in the context of Zope, maybe
-                # because of extension classes and acquisition. So we catch
-                # the AttributeError exception, we should test also for the
-                # exception value to be "__call__". This is dangereous
-                # because we could hide real errors. Further exploration
-                # needed..
-                pass
-
-        return x
+def evaluate_if(expression, stack, repeat_stack):
+    if expression[:3] == 'not' and expression[3].isspace():
+        expression = expression[3:].lstrip()
+        return not evaluate(expression, stack, repeat_stack)
+    return evaluate(expression, stack, repeat_stack)
 
 
-    def __str__(self):
-        if not self.path:
-            return 'none'
-        s = '/'.join(self.path)
-        if self.repeat is True:
-            return 'repeat/%s' % s
-        return s
 
-
-############################################################################
-# Boolean expressions
-class NotExpression(Expression):
-
-    def __init__(self, expression):
-        expression = expression[3:].strip()
-        Expression.__init__(self, expression)
-
-
-    def evaluate(self, stack, repeat):
-        value = Expression.evaluate(self, stack, repeat)
-        return not value
-
-
-    def __str__(self):
-        return 'not %s' % Expression.__str__(self)
+def evaluate_repeat(expression, stack, repeat_stack):
+    name, expression = expression.split(' ', 1)
+    values = evaluate(expression, stack, repeat_stack)
+    return name, values
 
 
 ###########################################################################
@@ -197,39 +165,6 @@ class NamespaceStack(list):
 
 
 
-###########################################################################
-# The tree
-###########################################################################
-
-class IfAttr(DataType):
-
-    @staticmethod
-    def decode(data):
-        if data.startswith('not') and data[3].isspace():
-            return NotExpression(data)
-        return Expression(data)
-
-
-    @staticmethod
-    def encode(value):
-        return str(value)
-
-
-
-class RepeatAttr(DataType):
-
-    @staticmethod
-    def decode(data):
-        name, expression = data.split(' ', 1)
-        return name, Expression(expression)
-
-
-    @staticmethod
-    def encode(value):
-        return '%s %s' % value
-
-
-
 ########################################################################
 # The run-time engine
 ########################################################################
@@ -244,8 +179,8 @@ def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
     match = subs_expr_solo.match(data)
     if match is None:
         return True
-    expr = Expression(match.group(1))
-    value = expr.evaluate(stack, repeat_stack)
+    expression = match.group(1)
+    value = evaluate(expression, stack, repeat_stack)
     return bool(value)
 
 
@@ -266,8 +201,8 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     # Solo, preserve the value None
     match = subs_expr_solo.match(data)
     if match is not None:
-        expr = Expression(match.group(1))
-        value = expr.evaluate(stack, repeat_stack)
+        expression = match.group(1)
+        value = evaluate(expression, stack, repeat_stack)
         # Preserve the value None
         if value is None:
             return None, 1
@@ -277,8 +212,8 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
         return str(value), 1
     # A little more complex
     def repl(match):
-        expr = Expression(match.group(1))
-        value = expr.evaluate(stack, repeat_stack)
+        expression = match.group(1)
+        value = evaluate(expression, stack, repeat_stack)
         # Remove if None
         if value is None:
             return ''
@@ -383,10 +318,10 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
             # stl:repeat
             if stl_repeat in attributes:
                 attributes = attributes.copy()
-                name, expression = attributes.pop(stl_repeat)
+                expr = attributes.pop(stl_repeat)
+                name, values = evaluate_repeat(expr, stack, repeat_stack)
                 # Build new namespace stacks
                 loops = []
-                values = expression.evaluate(stack, repeat_stack)
                 n_values = len(values)
                 for value in values:
                     loop_stack = stack[:]
@@ -419,7 +354,7 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
             elif stl_if in attributes:
                 attributes = attributes.copy()
                 expression = attributes.pop(stl_if)
-                if expression.evaluate(stack, repeat_stack):
+                if evaluate_if(expression, stack, repeat_stack):
                     x = process_start_tag(tag_uri, tag_name, attributes, stack,
                                           repeat_stack, encoding, prefix)
                     if x is not None:
@@ -487,8 +422,5 @@ class Schema(BaseSchema):
     class_uri = 'http://xml.itools.org/namespaces/stl'
     class_prefix = 'stl'
 
-
-    datatypes = {'repeat': RepeatAttr,
-                 'if': IfAttr}
 
 register_schema(Schema)

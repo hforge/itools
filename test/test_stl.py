@@ -21,7 +21,7 @@ import unittest
 # Import from itools
 from itools.handlers import get_handler
 from itools.stl import stl
-from itools.stl.stl import Expression, NamespaceStack, substitute
+from itools.stl.stl import NamespaceStack, substitute, evaluate
 from itools.xml import Document
 import itools.xhtml
 
@@ -47,15 +47,13 @@ class SubstituteTestCase(unittest.TestCase):
 
 class STLTestCase(unittest.TestCase):
 
-    def test_tokens(self):
-        expression = Expression('a/b/c')
-        self.assertEqual(expression.path, ('a', 'b', 'c'))
-
-
     def test_none(self):
-        expression = Expression('none')
-        self.assertEqual(expression.path, ())
-        self.assertEqual(expression.evaluate(None, None), None)
+        stack = NamespaceStack()
+        stack.append({})
+        repeat = NamespaceStack()
+
+        expression = evaluate('none', stack, repeat)
+        self.assertEqual(expression, None)
 
 
     def test_traversal(self):
@@ -63,9 +61,8 @@ class STLTestCase(unittest.TestCase):
         stack = NamespaceStack()
         stack.append(namespace)
         repeat = NamespaceStack()
-        expression = Expression('a/b/c')
-        value = expression.evaluate(stack, repeat)
 
+        value = evaluate('a/b/c', stack, repeat)
         self.assertEqual(value, 'hello world')
 
 
@@ -75,8 +72,37 @@ class STLTestCase(unittest.TestCase):
 
         namespace = {'border': 5}
         output = stl(handler, namespace)
-        expected = '<img xmlns="http://www.w3.org/1999/xhtml" border="5" />'
-        self.assertEqual(output, expected)
+        self.assert_('border="5"' in output)
+
+
+    def test_if(self):
+        handler = Document(string=
+            '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
+            '  stl:if="img" />')
+
+        namespace = {'img': False}
+        output = stl(handler, namespace)
+        self.assertEqual(output, '')
+        
+
+    def test_if_not(self):
+        handler = Document(string=
+            '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
+            '  stl:if="not img" />')
+
+        namespace = {'img': True}
+        output = stl(handler, namespace)
+        self.assertEqual(output, '')
+
+
+    def test_repeat(self):
+        handler = Document(string=
+            '<option xmlns:stl="http://xml.itools.org/namespaces/stl"'
+            '  stl:repeat="option options" />')
+
+        namespace = {'options': []}
+        output = stl(handler, namespace)
+        self.assertEqual(output, '')
 
 
 

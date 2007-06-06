@@ -48,8 +48,6 @@ class Root(WebSite):
 
     class_id = 'iKaaro'
     class_version = '20070531'
-    class_layout = {
-        '.catalog': Catalog}
     class_title = u'iKaaro'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'

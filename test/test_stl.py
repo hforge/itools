@@ -22,12 +22,14 @@ import unittest
 from itools.handlers import get_handler
 from itools.stl import stl
 from itools.stl.stl import Expression, NamespaceStack, substitute
+from itools.xml import Document
+import itools.xhtml
 
 
 class SubstituteTestCase(unittest.TestCase):
 
     def setUp(self):
-        namespace = {'name': 'Toto'}
+        namespace = {'name': u'Toto'}
 
         self.stack = NamespaceStack()
         self.stack.append(namespace)
@@ -65,6 +67,16 @@ class STLTestCase(unittest.TestCase):
         value = expression.evaluate(stack, repeat)
 
         self.assertEqual(value, 'hello world')
+
+
+    def test_attribute(self):
+        handler = Document(string=
+            '<img xmlns="http://www.w3.org/1999/xhtml" border="${border}" />')
+
+        namespace = {'border': 5}
+        output = stl(handler, namespace)
+        expected = '<img xmlns="http://www.w3.org/1999/xhtml" border="5" />'
+        self.assertEqual(output, expected)
 
 
 

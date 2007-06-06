@@ -192,12 +192,8 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     Returns a tuple with the interpreted string and the number of
     substitutions done.
     """
-    if isinstance(data, str):
-        pass
-    elif isinstance(data, unicode):
-        data = data.encode('utf-8')
-    else:
-        data = str(data)
+    if not isinstance(data, str):
+        raise ValueError, 'byte string expected, not %s' % type(data)
     # Solo, preserve the value None
     match = subs_expr_solo.match(data)
     if match is not None:
@@ -304,12 +300,10 @@ def process(document, start, end, stack, repeat_stack, encoding, prefix=None):
     while i < end:
         event, value, line = events[i]
         if event == TEXT:
-            value = value.encode(encoding)
             value = XMLContent.encode(value)
             value, kk = substitute(value, stack, repeat_stack, encoding)
             if value is not None:
                 value = XMLContent.decode(value)
-                value = unicode(value, encoding)
                 yield event, value, line
         elif event == COMMENT:
             yield event, value, line

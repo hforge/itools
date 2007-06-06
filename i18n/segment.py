@@ -61,15 +61,15 @@ class Message(list):
         list.__init__(self)
 
 
-    def append_text(self, x):
-        # Coerce str to unicode
-        if isinstance(x, str):
-            x = unicode(x)
+    def append_text(self, text):
+        """
+        The parameter "text" must be a unicode string.
+        """
         # Append
         if self and (self[-1][0] == TEXT):
-            self[-1] = TEXT, self[-1][1] + x
+            self[-1] = TEXT, self[-1][1] + text
         else:
-            list.append(self, (TEXT, x))
+            list.append(self, (TEXT, text))
 
 
     def append_start_format(self, x):

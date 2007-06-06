@@ -54,7 +54,6 @@ def stream_to_html(stream, encoding='UTF-8'):
     data = []
     for event, value, line in stream:
         if event == TEXT:
-            value = value.encode(encoding)
             data.append(value)
         elif event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -73,7 +72,6 @@ def stream_to_html(stream, encoding='UTF-8'):
             tag_uri, tag_name = value
             data.append(get_end_tag(tag_uri, tag_name))
         elif event == COMMENT:
-            value = value.encode(encoding)
             data.append('<!--%s-->' % value)
         else:
             raise NotImplementedError, 'unknown event "%s"' % event
@@ -372,7 +370,7 @@ class Document(XMLDocument):
     namespace = xhtml_uri
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'document_type', 'events']
+                 'encoding', 'document_type', 'events']
 
 
     #########################################################################

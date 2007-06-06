@@ -41,19 +41,6 @@ from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
 # The modules affected include the parser, and probably the namespace API.
 
 
-def stream_text_and_comment_to_unicode(stream):
-    for events in Parser(stream):
-        event, value, line_number = events
-        if event == TEXT or event == COMMENT:
-            # XXX The encoding is hard-coded, should it be?
-            value = unicode(value, 'UTF-8')
-            yield event, value, None
-        elif event == XML_DECL:
-            pass
-        else:
-            yield events
-
-
 #############################################################################
 # Data types
 #############################################################################
@@ -114,7 +101,6 @@ def stream_to_str(stream, encoding='UTF-8'):
     data = []
     for event, value, line in stream:
         if event == TEXT:
-            value = value.encode(encoding)
             data.append(value)
         elif event == START_ELEMENT:
             ns_uri, name, attributes = value
@@ -123,7 +109,6 @@ def stream_to_str(stream, encoding='UTF-8'):
             ns_uri, name = value
             data.append(get_end_tag(ns_uri, name))
         elif event == COMMENT:
-            value = value.encode(encoding)
             data.append('<!--%s-->' % value)
         elif event == XML_DECL:
             version, encoding, standalone = value
@@ -225,7 +210,7 @@ class Document(Text):
 
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'document_type', 'events']
+                 'encoding', 'document_type', 'events']
 
 
     def new(self):
@@ -236,16 +221,20 @@ class Document(Text):
     
     def _load_state_from_file(self, file):
         # Default values
+        self.encoding = 'utf-8'
         self.document_type = None
         self.events = []
         # Load state
         stream = file.read()
-        for events in stream_text_and_comment_to_unicode(stream):
-            event, value, line_number = events
-            if event == DOCUMENT_TYPE:
+        for event in Parser(stream):
+            type, value, line_number = event
+            if type == XML_DECL:
+                version, encoding, standalone = value
+                self.encoding = encoding
+            elif type == DOCUMENT_TYPE:
                 self.document_type = value
             else:
-                self.events.append(events)
+                self.events.append(event)
 
 
     #######################################################################

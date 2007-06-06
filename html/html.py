@@ -85,7 +85,6 @@ class Document(XHTMLDocument):
             if event == DOCUMENT_TYPE:
                 self.document_type = value
             elif event == TEXT:
-                value = unicode(value, parser.encoding)
                 events.append((event, value, None))
             elif event == START_ELEMENT:
                 name, attributes = value

@@ -200,16 +200,15 @@ class Test_ODT_Parser(TestCase):
 
     def test_translation_paragraph(self):
         """Test translation of an element content"""
-        string = (
+        po = PO(string=
             'msgid "hello world"\n'
             'msgstr "hola mundo"\n')
-        po = PO(string=string)
         content = ('<office:text>'
                    '<text:p text:style-name="Standard">'
                    'hello world'
                    '</text:p>'
                    '</office:text>')
-       
+
         content = self.template % content
         events = Parser(content)
         string = translate(events, po)

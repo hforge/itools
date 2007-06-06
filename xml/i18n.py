@@ -39,7 +39,7 @@ elements_to_keep_spaces = set(['pre'])
 ###########################################################################
 # Code common to "get_messages" and "translate"
 ###########################################################################
-def process_buffer(buffer, hit):
+def process_buffer(buffer, hit, encoding):
     from .xml import get_start_tag, get_end_tag
 
     # Miss: the buffer is really empty
@@ -79,6 +79,7 @@ def process_buffer(buffer, hit):
     for type, value, line in buffer:
         if type == TEXT:
             value = XMLContent.encode(value)
+            value = unicode(value, encoding)
             message.append_text(value)
         elif type == START_ELEMENT:
             message.append_start_format(get_start_tag(*value))
@@ -115,6 +116,7 @@ def get_translatable_blocks(events):
     block is the whole sequence: "Hello <em>baby</em>".
     """
     # Local variables
+    encoding = 'utf-8' # FIXME hardcoded
     buffer = []
     skip = 0
     hit = False
@@ -170,7 +172,7 @@ def get_translatable_blocks(events):
 
         # Anything else: comments, block elements (start or end), etc.
         # are considered delimiters
-        for x in process_buffer(buffer, hit):
+        for x in process_buffer(buffer, hit, encoding):
             yield x
 
         yield event
@@ -181,7 +183,7 @@ def get_translatable_blocks(events):
         stack = []
         id = 0
 
-    for x in process_buffer(buffer, hit):
+    for x in process_buffer(buffer, hit, encoding):
         yield x
 
 
@@ -253,10 +255,8 @@ def translate(events, catalog):
         elif type == MESSAGE:
             for segment in value.get_segments(keep_spaces):
                 segment = catalog.get_translation(segment).encode('utf-8')
-                for type, value, line in Parser(segment, namespaces):
-                    if type == TEXT:
-                        value = unicode(value, 'utf-8')
-                    yield type, value, None
+                for event in Parser(segment, namespaces):
+                    yield event
         else:
             yield event 
 

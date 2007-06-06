@@ -24,7 +24,7 @@ from cStringIO import StringIO
 from itools.handlers import register_handler_class
 from itools.xml.i18n import get_messages
 from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
-                        START_ELEMENT, TEXT, stream_text_and_comment_to_unicode)
+                        Parser, XML_DECL, START_ELEMENT, TEXT)
 
 # Import
 import definition
@@ -100,8 +100,12 @@ class OdfDocument(OpenOfficeDocument):
     def get_events(self, file_name):
         zip = ZipFile(StringIO(self.data))
         content = zip.read(file_name)
-        return stream_text_and_comment_to_unicode(content) 
-        
+        for event in Parser(content):
+            if event == XML_DECL:
+                pass
+            else:
+                yield event
+
 
     def get_messages(self):
         return get_messages(self.get_events('content.xml'))

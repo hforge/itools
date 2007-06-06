@@ -295,38 +295,6 @@ class Calendar(Text, icalendar):
         return None
 
 
-    # XXX DEPRECATED, not completely replaced yet
-    def get_ns_events(self, selected_date, shown_fields, timetables):
-        # Get list of all events
-        events_list = self.search_events_in_date(selected_date)
-        # Get dict from events_list and sort events by start date
-        ns_events = []
-        for event in events_list:
-            ns_event = {}
-            for field in shown_fields:
-                ns_event[field] = event.get_property_values(field).value
-            event_start = event.get_property_values('DTSTART').value
-            event_end = event.get_property_values('DTEND').value
-            # Add timetables info
-            tt_start = 0
-            tt_end = len(timetables)-1
-            for tt_index, tt in enumerate(timetables):
-                start = datetime.combine(selected_date, tt['start'])
-                end = datetime.combine(selected_date, tt['end'])
-                if start <= event_start:
-                    tt_start = tt_index
-                if end >= event_end:
-                    tt_end = tt_index
-                    break
-            ns_event['tt_start'] = tt_start
-            ns_event['tt_end'] = tt_end
-            ns_event['UID'] = event.get_property_values('UID').value
-            ns_event['colspan'] = tt_end - tt_start + 1
-            ns_events.append(ns_event)
-        ns_events.sort(lambda x, y: cmp(x['tt_start'], y['tt_start']))
-        return ns_events
-
-
     # Get days of week based on get_first_day's result 
     @classmethod
     def days_of_week_ns(cls, start, num=None, ndays=7, selected=None):
@@ -1204,7 +1172,35 @@ class CalendarAware(object):
         ###############################################################
         # Get a dict for each event with shown_fields, tt_start, tt_end, 
         # uid and colspan ; the result is a list sorted by tt_start
-        ns_events = calendar.get_ns_events(c_date, shown_fields, timetables)
+        # Previously method :
+        #   get_ns_events(self, selected_date, shown_fields, timetables):
+        events_list = calendar.search_events_in_date(c_date)
+        # Get dict from events_list and sort events by start date
+        ns_events = []
+        for event in events_list:
+            ns_event = {}
+            for field in shown_fields:
+                ns_event[field] = event.get_property_values(field).value
+            event_start = event.get_property_values('DTSTART').value
+            event_end = event.get_property_values('DTEND').value
+            # Add timetables info
+            tt_start = 0
+            tt_end = len(timetables)-1
+            for tt_index, tt in enumerate(timetables):
+                start = datetime.combine(c_date, tt['start'])
+                end = datetime.combine(c_date, tt['end'])
+                if start <= event_start:
+                    tt_start = tt_index
+                if end >= event_end:
+                    tt_end = tt_index
+                    break
+            ns_event['tt_start'] = tt_start
+            ns_event['tt_end'] = tt_end
+            ns_event['UID'] = event.uid
+            ns_event['colspan'] = tt_end - tt_start + 1
+            ns_events.append(ns_event)
+        ns_events.sort(lambda x, y: cmp(x['tt_start'], y['tt_start']))
+        ###############################################################
 
         # Get conflicts in events if activated
         if show_conflicts:

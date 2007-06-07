@@ -615,7 +615,7 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, document_attrs):
                                       'pagesize': page_size}
                 stack.append((tag_name, attributes, None))
             elif tag_name == 'pageGraphics':
-                o = iPageGraphics(stream, tag_name, attributes, None)
+                o = iPageGraphics(stream, tag_name, attributes)
                 on_page_function = o.render
             else:
                 stack.append((tag_name, attributes, None))

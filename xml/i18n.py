@@ -221,6 +221,7 @@ def get_messages(events):
 # Translate
 ###########################################################################
 def translate(events, catalog):
+    encoding = 'utf-8' # FIXME hardcoded
     keep_spaces = False
     namespaces = {}
     for event in get_translatable_blocks(events):
@@ -236,6 +237,7 @@ def translate(events, catalog):
                     value = value.strip()
                     if value:
                         value = catalog.get_translation(value)
+                        value = value.encode(encoding)
                 aux[(attr_uri, attr_name)] = value
                 # Namespaces
                 # FIXME We must support xmlns="...." too.

@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+# Import from the Standard Library
+from optparse import OptionParser
+import sys
+from time import time
+
+# Import from itools
+import itools
+from itools import vfs
+from itools.catalog.catalog import Catalog
+from itools.catalog.prof import vmsize
+from itools.cms.server import ask_confirmation
+from itools.cms.server import Server
+
+
+def update_catalog(parser, options, target):
+    # Check for database consistency
+    if vfs.exists('%s/database.commit' % target):
+        print 'The database is not in a consistent state, to fix it up type:'
+        print
+        print '    $ icms-restore <instance>'
+        print
+        return
+
+    # Check the server is not running
+    server = Server(target)
+    pid = server.get_pid()
+    if pid is not None:
+        print 'The server is running. To update the catalog first stop the'
+        print 'server.'
+        return
+
+    # Ask
+    message = 'Update the catalog (y/N)? '
+    if ask_confirmation(message) is True:
+        root = server.root
+        # Update
+        t0, v0 = time(), vmsize()
+        root.del_handler('.catalog')
+        root.set_handler('.catalog', Catalog(fields=root._catalog_fields))
+        catalog = root.get_handler('.catalog')
+        doc_n = 0
+        for object in root._traverse_catalog_aware_objects():
+            print doc_n, object['abspath']
+            doc_n += 1
+            catalog.index_document(object)
+        t1, v1 = time(), vmsize()
+        v = (v1 - v0)/1024
+        print '[Update] Time: %.02f seconds. Memory: %s Kb' % (t1 - t0, v)
+        # Commit
+        print '[Commit]',
+        sys.stdout.flush()
+        database = server.database
+        database.commit()
+        t2, v2 = time(), vmsize()
+        v = (v2 - v1)/1024
+        print 'Time: %.02f seconds. Memory: %s Kb' % (t2 - t1, v)
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog TARGET'
+    version = 'itools %s' % itools.__version__
+    description = (
+        'Rebuilds the catalog: first removes and creates a new empty one;'
+        ' then traverses and indexes all objects in the database.')
+    parser = OptionParser(usage, version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error('incorrect number of arguments')
+
+    target = args[0]
+
+    # Action!
+    update_catalog(parser, options, target)

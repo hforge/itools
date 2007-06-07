@@ -132,7 +132,7 @@ class Message(list):
                 # Next
                 last_char = atom
             elif type == START_FORMAT:
-                format = +1
+                format += 1
             elif type == END_FORMAT:
                 format -= 1
                 if format == 0 and sentence_done is True:

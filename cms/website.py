@@ -22,7 +22,7 @@ from string import Template
 from itools.uri import Path, get_reference
 from itools.datatypes import Email, Integer, Unicode
 from itools.i18n import get_language_name, get_languages
-from itools.catalog import EqQuery, OrQuery
+from itools.catalog import EqQuery, OrQuery, AndQuery, TextField
 from itools.stl import stl
 from folder import Folder
 from skins import Skin
@@ -434,23 +434,17 @@ class WebSite(RoleAware, Folder):
     def site_search(self, context):
         root = context.root
 
-        namespace = {}
         # Get and check input data
-        text = context.get_form_value('site_search_text', type=Unicode).strip()
-        namespace['text'] = text
-        # Batch
+        text = context.get_form_value('site_search_text', type=Unicode)
         start = context.get_form_value('start', type=Integer, default=0)
         size = 10
 
         # Search
-        on_title = EqQuery('title', text)
-        on_text = EqQuery('text', text)
-        query = OrQuery(on_title, on_text)
+        query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
+                  for word, kk in TextField.split(text) ]
+        query = AndQuery(*query)
         results = root.search(query=query)
         documents = results.get_documents(start=start, size=size)
-
-        # put the metadatas in a dictionary list to be managed with Table
-        root = context.root
 
         # Get the handler for the visibles documents and extracts values
         user = context.user
@@ -482,6 +476,9 @@ class WebSite(RoleAware, Folder):
         total = results.get_n_documents()
         end = start + len(documents)
 
+        # Build the namespace
+        namespace = {}
+        namespace['text'] = text
         namespace['total'] = total
         namespace['objects'] = objects
         namespace['batchstart'] = start + 1

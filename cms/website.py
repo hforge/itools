@@ -440,11 +440,16 @@ class WebSite(RoleAware, Folder):
         size = 10
 
         # Search
-        query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
-                  for word, kk in TextField.split(text) ]
-        query = AndQuery(*query)
-        results = root.search(query=query)
-        documents = results.get_documents(start=start, size=size)
+        if text.split():
+            query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
+                      for word, kk in TextField.split(text) ]
+            query = AndQuery(*query)
+            results = root.search(query=query)
+            total = results.get_n_documents()
+            documents = results.get_documents(start=start, size=size)
+        else:
+            documents = []
+            total = 0
 
         # Get the handler for the visibles documents and extracts values
         user = context.user
@@ -473,7 +478,6 @@ class WebSite(RoleAware, Folder):
             info['icon'] = icon
             objects.append(info)
 
-        total = results.get_n_documents()
         end = start + len(documents)
 
         # Build the namespace

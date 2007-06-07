@@ -31,7 +31,8 @@ from itools.cms import registry
 
 
 def ask_confirmation(message):
-    print message,
+    sys.stdout.write(message)
+    sys.stdout.flush()
     line = sys.stdin.readline()
     line = line.strip().lower()
     return line == 'y'

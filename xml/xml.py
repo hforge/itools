@@ -21,7 +21,7 @@ import sys
 import warnings
 
 # Import from itools
-from itools.datatypes import Unicode, XMLAttribute
+from itools.datatypes import Unicode, XMLAttribute, XML as XMLContent
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
 from i18n import get_messages, translate
@@ -100,6 +100,7 @@ def stream_to_str(stream, encoding='UTF-8'):
     data = []
     for event, value, line in stream:
         if event == TEXT:
+            value = XMLContent.encode(value)
             data.append(value)
         elif event == START_ELEMENT:
             ns_uri, name, attributes = value

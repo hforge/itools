@@ -267,7 +267,7 @@
         <td>cell 29,3</td>
       </tr>
     </blockTable>
-    <spacer length="15"/>
+    <spacer length="150cm"/>
     <para>a=value for <i>blockAlignment</i></para>
     <para>VA=value for <i>blockValign</i></para>
     <para><i>MDLE=MIDDLE for VA in cells 3,2 and 3,3</i></para>

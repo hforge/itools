@@ -19,33 +19,40 @@
 import re
 from cStringIO import StringIO
 import logging
+import os
 
 # Import from itools
 from itools.datatypes import Unicode, XML
-from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT, CDATA
 from itools.stl.stl import stl
 
 # Import from the reportlab Library
+import reportlab
 from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import Paragraph, SimpleDocTemplate, PageTemplate
-from reportlab.platypus import XPreformatted, Preformatted, Frame, FrameBreak
-from reportlab.platypus import NextPageTemplate, KeepInFrame, PageBreak
-from reportlab.platypus import Image, Table, TableStyle, Spacer
+from reportlab.platypus import Paragraph, BaseDocTemplate, \
+                               SimpleDocTemplate, PageTemplate, \
+                               XPreformatted, Preformatted, \
+                               Frame, FrameBreak, NextPageTemplate, \
+                               KeepInFrame, PageBreak, Image, Table, \
+                               TableStyle, Spacer, Indenter
+from reportlab.platypus.tableofcontents import TableOfContents
+from reportlab.platypus.flowables import Flowable, HRFlowable
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.rl_config import defaultPageSize
-from reportlab.lib.pagesizes import letter, legal, elevenSeventeen
-from reportlab.lib.pagesizes import A0, A1, A2, A3, A4, A5, A6
-from reportlab.lib.pagesizes import B0, B1, B2, B3, B4, B5, B6
-from reportlab.lib.pagesizes import landscape, portrait
+from reportlab.lib.pagesizes import letter, legal, elevenSeventeen, \
+                                    A0, A1, A2, A3, A4, A5, A6, \
+                                    B0, B1, B2, B3, B4, B5, B6, \
+                                    landscape, portrait
 from reportlab.lib import pagesizes, colors
+from reportlab.lib.colors import Color, CMYKColor, HexColor
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 
-__tab_para_alignment = {'left': TA_LEFT, 'right': TA_RIGHT, 
-                        'center': TA_CENTER, 'justify': TA_JUSTIFY}
-__tab_page_size = {'letter': letter, 'legal': legal, 
+__tab_para_alignment = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT, 
+                        'CENTER': TA_CENTER, 'JUSTIFY': TA_JUSTIFY}
+__tab_page_size = {'LETTER': letter, 'LEGAL': legal, 
                    #'elevenSeventeen': elevenSeventeen,
                    'A0': A0, 'A1': A1, 'A2': A2, 'A3': A3, 
                    'A4': A4, 'A5': A5, 'A6': A6,
@@ -53,6 +60,7 @@ __tab_page_size = {'letter': letter, 'legal': legal,
                    'B4': B4, 'B5': B5, 'B6': B6}
 
 encoding = 'UTF-8'
+TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 
 def rmltopdf_test(filename):
     file = open(filename, 'r')
@@ -82,6 +90,305 @@ def stl_rmltopdf(handler, namespace):
     return iostream.getvalue()
 
 
+class iIllustration(Flowable):
+
+    def __init__(self, stream, _tag_uri, _tag_name, _attributes, _ns_decls):
+        self.width = rml_value(_attributes.get((None, 'width')))
+        self.height = rml_value(_attributes.get((None, 'height')))
+        self.pageGraphics = iPageGraphics(stream, _tag_name, {}, _ns_decls)
+
+    
+    def wrap(self, *args):
+        return (self.width, self.height)
+
+
+    def draw(self):
+        self.pageGraphics.render(self.canv, None)
+
+
+class iCanvas(object):
+
+    def __init__(self, story):
+        self.story = story
+
+    def render(self, cnv, doc):
+        fn_draw_string = {'drawString': cnv.drawString, 
+                          'drawRightString': cnv.drawRightString, 
+                          'drawCentredString': cnv.drawCentredString, 
+                          'drawCenteredString': cnv.drawCentredString}
+        fn_no_change = {'setFont': cnv.setFont, 'fill': cnv.setFillColorRGB, 
+                        'stroke': cnv.setStrokeColorRGB, 'ellipse': cnv.ellipse,
+                        'lineWidth': cnv.setLineWidth, 'lineDash': cnv.setDash, 
+                        'lineJoin': cnv.setLineJoin, 'lineCap': cnv.setLineCap,
+                        'circle': cnv.circle, 'lines': cnv.lines, 
+                        'curves': cnv.bezier, 'grid': cnv.grid,
+                        'translate': cnv.translate, 'scale': cnv.scale,
+                        'rotate': cnv.rotate, 'skew': cnv.skew,
+                        'transform': cnv.transform, 'image': cnv.drawImage}
+
+        cnv.saveState()
+        for obj in self.story:
+            fn, attrs = obj
+            if fn in ['drawString', 'drawRightString', 'drawCentredString', 
+                      'drawCenteredString']:
+                if doc is not None:
+                    attrs2 = attrs.copy()
+                    text = attrs2['text']
+                    page_nb = str(doc.page)
+                    text = text.replace('<pageNumber></pageNumber>', page_nb)
+                    attrs2['text'] = text.strip()
+                    fn_draw_string[fn](**attrs2)
+                else:
+                    fn_draw_string[fn](**attrs)
+            elif fn_no_change.has_key(fn):
+                try:
+                    fn_no_change[fn](**attrs)
+                except IOError, msg:
+                    print msg
+            elif fn == 'saveState':
+                cnv.saveState()
+            elif fn == 'restoreState':
+                cnv.restoreState()
+            elif fn == 'rect':
+                if attrs.has_key('radius') == True:
+                    cnv.roundRect(**attrs)
+                else:
+                    cnv.rect(**attrs)
+        cnv.restoreState()
+
+
+class iPageGraphics(object):
+    __tab_join = {'round': 1, 'mitered': 0, 'bevelled': 2}
+    __tab_cap = {'default': 0, 'round': 1, 'square': 2}
+
+    def __init__(self, stream, _tag_name, _attributes, _ns_decls):
+        self.story = []
+
+        stack = []
+        stack.append((_tag_name, _attributes, None))
+        fn_attrs = None
+        content = None
+        while True:
+            event, value, line_number = stream_next(stream)
+            if event == None:
+                break
+            #### START ELEMENT ####
+            if event == START_ELEMENT:
+                tag_uri, tag_name, attrs, ns_decls = value
+                if tag_name in ['drawString', 'drawRightString', 
+                                'drawCentredString', 'drawCenteredString']:
+                    if exist_attribute(attrs, ['x', 'y']) == True:
+                        content = []
+                        fn_attrs = {}
+                        fn_attrs['x'] = rml_value(attrs.get((None,  'x')), 0)
+                        fn_attrs['y'] = rml_value(attrs.get((None,  'y')), 0)
+                elif tag_name == 'setFont':
+                    if exist_attribute(attrs, ['name', 'size']) == True:
+                        fn_attrs = {}
+                        size = attrs.get((None, 'size'))
+                        fn_attrs['psfontname'] = attrs.get((None, 'name'))
+                        fn_attrs['size'] = to_int(attrs.get((None, 'size'), 5))
+                elif tag_name in ['saveState', 'restoreState']:
+                    fn_attrs = {}
+                elif tag_name == 'image':
+                    if exist_attribute(attrs, ['file', 'x', 'y']):
+                        fn_attrs = {}
+                        image = attrs.get((None, 'file'))
+                        fn_attrs['x'] = rml_value(attrs.get((None, 'x')))
+                        fn_attrs['y'] = rml_value(attrs.get((None, 'y')))
+                        fn_attrs['image'] = image
+
+                        for k in ['width', 'height']:
+                            if exist_attribute(attrs, [k]):
+                                fn_attrs[k] = rml_value(attrs.get((None, k)))
+                        if exist_attribute(attrs, ['preserveAspectRatio']):
+                            preserve = attrs.get((None, 'preserveAspectRatio'))
+                            fn_attrs['preserveAspectRatio'] = to_bool(preserve)
+                        if exist_attribute(attrs, ['anchor']):
+                            anchor = attrs.get((None, 'anchor')).lower()
+                            if anchor in ['nw', 'n', 'ne', 'w', 'c', 'e', 
+                                          'sw', 's', 'se']:
+                                fn_attrs['anchor'] = anchor
+
+                elif tag_name == 'rect':
+                    if exist_attribute(attrs, ['x', 'y', 'width', 
+                                               'height']) == True:
+                        fn_attrs = {}
+                        fn_attrs['x'] = rml_value(attrs.get((None, 'x')))
+                        fn_attrs['y'] = rml_value(attrs.get((None, 'y')))
+                        fn_attrs['width'] = rml_value(attrs.get((None, 
+                                                                 'width')))
+                        fn_attrs['height'] = rml_value(attrs.get((None, 
+                                                                  'height')))
+                        if exist_attribute(attrs, ['fill']) == True:
+                            fill = to_bool(attrs.get((None, 'fill')))
+                            fn_attrs['fill'] = fill
+                        if exist_attribute(attrs, ['round']) == True:
+                            round = rml_value(attrs.get((None, 'round')))
+                            fn_attrs['radius'] = round
+                        if exist_attribute(attrs, ['stroke']) == True:
+                            stroke = to_bool(attrs.get((None, 'stroke')))
+                            fn_attrs['stroke'] = stroke
+                elif tag_name in ['fill', 'stroke']:
+                    if exist_attribute(attrs, ['color']) == True:
+                        fn_attrs = {}
+                        r, g, b = get_color(attrs.get((None, 'color'))).rgb()
+                        fn_attrs['r'] = r
+                        fn_attrs['g'] = g
+                        fn_attrs['b'] = b
+                elif tag_name == 'lineMode':
+                    if exist_attribute(attrs, ['width']) == True:
+                        width = rml_value(attrs.get((None, 'width')))
+                        self.story.append(('lineWidth', {'width': width}))
+                    if exist_attribute(attrs, ['dash']) == True:
+                        dash = []
+                        for elt in attrs.get((None, 'dash')).split(','):
+                            dash.append(rml_value(elt))
+                        self.story.append(('lineDash', {'array': dash}))
+                    if exist_attribute(attrs, ['join']) == True:
+                        join = attrs.get((None, 'join'))
+                        if join in ['round', 'mitered', 'bevelled']:
+                            mode = iPageGraphics.__tab_join[join]
+                            self.story.append(('lineJoin', {'mode': mode}))
+                    if exist_attribute(attrs, ['cap']) == True:
+                        cap = attrs.get((None, 'cap'))
+                        if cap in ['default', 'round', 'square']:
+                            mode = iPageGraphics.__tab_cap[cap]
+                            self.story.append(('lineCap', {'mode': mode}))
+                elif tag_name == 'circle':
+                    if exist_attribute(attrs, ['x', 'y', 'radius']):
+                        fn_attrs = {}
+                        fn_attrs['x_cen'] = rml_value(attrs.get((None, 'x')))
+                        fn_attrs['y_cen'] = rml_value(attrs.get((None, 'y')))
+                        fn_attrs['r'] = rml_value(attrs.get((None, 'radius')))
+                        if exist_attribute(attrs, ['fill']):
+                            fn_attrs['fill'] = to_bool(attrs.get((None, 
+                                                                  'fill')))
+                        if exist_attribute(attrs, ['stroke']):
+                            fn_attrs['stroke'] = to_bool(attrs.get((None, 
+                                                                    'stroke')))
+                elif tag_name == 'ellipse':
+                    if exist_attribute(attrs, ['x', 'y', 'width', 
+                                               'height']) == True:
+                        fn_attrs = {}
+                        fn_attrs['x1'] = rml_value(attrs.get((None, 'x')))
+                        fn_attrs['y1'] = rml_value(attrs.get((None, 'y')))
+                        fn_attrs['x2'] = rml_value(attrs.get((None, 'width')))
+                        fn_attrs['y2'] = rml_value(attrs.get((None, 'height')))
+                        if exist_attribute(attrs, ['fill']) == True:
+                            fill = attrs.get((None, 'fill'))
+                            fn_attrs['fill'] = to_bool(fill)
+                        if exist_attribute(attrs, ['stroke']) == True:
+                            stroke = attrs.get((None, 'stroke'))
+                            fn_attrs['stroke'] = to_bool(stroke)
+                elif tag_name == 'lines':
+                    fn_attrs = {}
+                    content = ''
+                elif tag_name == 'curves':
+                    fn_attrs = {}
+                    content = ''
+                elif tag_name == 'grid':
+                    fn_attrs = {}
+                    if exist_attribute(attrs, ['xs', 'ys']):
+                        xs = attrs.get((None, 'xs')).split(',')
+                        ys = attrs.get((None, 'ys')).split(',')
+                        xlist = [rml_value(elt) for elt in xs]
+                        ylist = [rml_value(elt) for elt in ys]
+                        fn_attrs['xlist'] = xlist
+                        fn_attrs['ylist'] = ylist
+                elif tag_name == 'translate':
+                    fn_attrs = {}
+                    for key in ['dx', 'dy']:
+                        if exist_attribute(attrs, [key]):
+                            fn_attrs[key] = rml_value(attrs.get((None, key)))
+                        else:
+                            fn_attrs[key] = 0
+                elif tag_name == 'scale':
+                    fn_attrs = {}
+                    for key in ['sx', 'sy']:
+                        if exist_attribute(attrs, [key]):
+                            fn_attrs[key[1]] = rml_value(attrs.get((None, key)))
+                        else:
+                            fn_attrs[key[1]] = 1
+                elif tag_name == 'rotate':
+                    if exist_attribute(attrs, ['degrees']):
+                        theta = to_float(attrs.get((None, 'degrees')))
+                        fn_attrs = {'theta': theta}
+                elif tag_name == 'skew':
+                    if exist_attribute(attrs, ['alpha', 'beta']):
+                        fn_attrs = {}
+                        for key in ['alpha', 'beta']:
+                            fn_attrs[key] = to_float(attrs.get((None, key)))
+                elif tag_name == 'transform':
+                    fn_attrs = {}
+                    content = ''
+                elif tag_name == 'pageNumber' and content is not None:
+                    content.append(build_start_tag(tag_name, attrs))
+                else:
+                    print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
+                stack.append((tag_name, attrs, None))
+            #### END ELEMENT ####   
+            elif event == END_ELEMENT:
+                tag_uri, tag_name = value
+                if tag_name == _tag_name:
+                    break
+                else:
+                    if tag_name == 'pageNumber' and content is not None:
+                        content.append(build_end_tag(tag_name))
+                    elif fn_attrs is not None:
+                        push = True
+                        if tag_name in ['drawString', 'drawRightString', 
+                                       'drawCentredString', 
+                                       'drawCenteredString']:
+                            if content is not None:
+                                fn_attrs['text'] = ''.join(content) 
+                                content = None
+                        elif tag_name == 'lines':
+                            content = content.split()
+                            lines = []
+                            while len(content) > 3:
+                                lines.append([rml_value(v) 
+                                              for v in content[0:4]])
+                                content = content[4:]
+                            fn_attrs['linelist'] = lines
+                        elif tag_name == 'curves':
+                            push = False
+                            content = content.split()
+                            while len(content) > 7:
+                                d = {}
+                                for i, elt in enumerate(['x1', 'y1', 'x2', 
+                                                         'y2', 'x3', 'y3', 
+                                                         'x4', 'y4']):
+                                    d[elt] = rml_value(content[i])
+                                    self.story.append((tag_name, d))
+                                content = content[8:]
+                        elif tag_name == 'transform':
+                            content = content.split()
+                            if len(content) == 6:
+                                for index, key in enumerate(['a','b','c','d',
+                                                             'e','f']):
+                                    fn_attrs[key] = to_float(content[index])
+                            else:
+                                push = False
+                        if push == True:
+                            self.story.append((tag_name, fn_attrs))
+                        fn_attrs = None
+                    # unknown tag
+                    stack.pop()
+            elif event == TEXT:
+                prev_elt = stack[-1]
+                if fn_attrs is not None:
+                    if prev_elt[0] in ['drawString', 'drawRightString', 
+                                       'drawCentredString', 
+                                       'drawCenteredString']:
+                        content.append(XML.encode(value))
+                    elif prev_elt[0] in ['lines', 'curves', 'transform']:
+                        content = value
+       
+        o = iCanvas(self.story)
+        self.render = o.render
+
+
 def rmlFirstPage(canvas, doc):
     pass
 
@@ -98,16 +405,11 @@ def document_stream(stream, pdf_stream, is_test=False):
         Childs : template, stylesheet, story
     """
 
-    document_attrs = { 'leftMargin': inch,
-                       'rightMargin': inch,
-                       'topMargin': inch,
-                       'bottomMargin': inch,
-                       'pageSize': pagesizes.A4,
-                       'title': None,
-                       'author': None,
-                       'rotation': 0,
-                       'showBoundary': 0,
-                       'allowSplitting': 1
+    document_attrs = { 'leftMargin': inch, 'rightMargin': inch,
+                       'topMargin': inch, 'bottomMargin': inch,
+                       'pageSize': pagesizes.A4, 'title': None,
+                       'author': None, 'rotation': 0,
+                       'showBoundary': 0, 'allowSplitting': 1,
                      }
 
     pdf_stylesheet = getSampleStyleSheet()
@@ -132,7 +434,8 @@ def document_stream(stream, pdf_stream, is_test=False):
                 docinit_stream(stream, tag_uri, tag_name, attributes, ns_decls)
             elif tag_name == 'template':
                 page_templates = template_stream(stream, tag_uri, tag_name, 
-                                attributes, ns_decls, document_attrs)
+                                                 attributes, ns_decls, 
+                                                 document_attrs)
             elif tag_name == 'stylesheet':
                 alias_style = stylesheet_stream(stream, tag_uri, tag_name, 
                                                 attributes, ns_decls, 
@@ -143,6 +446,7 @@ def document_stream(stream, pdf_stream, is_test=False):
                                    ns_decls, pdf_stylesheet, pdf_table_style,
                                    alias_style)
             else: 
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
@@ -157,12 +461,17 @@ def document_stream(stream, pdf_stream, is_test=False):
     #### BUILD PDF ####
     # rml attribute != reportlab attribute --> pageSize
     document_attrs['pagesize'] = document_attrs['pageSize']
-    doc = SimpleDocTemplate(pdf_stream, **document_attrs)
-    doc.addPageTemplates(page_templates)
+    if len(page_templates) > 0:
+        doc = BaseDocTemplate(pdf_stream, **document_attrs)
+        doc.addPageTemplates(page_templates)
+    else:
+        doc = SimpleDocTemplate(pdf_stream, **document_attrs)
 
     if is_test == True:
         _story = list(story)
-    doc.build(story, onFirstPage=rmlFirstPage, onLaterPages=rmlLaterPages)
+
+    doc.build(story)
+
     if is_test == True:
         return (_story, pdf_stylesheet)
 
@@ -175,6 +484,13 @@ def docinit_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
 
     stack = []
     stack.append((_tag_name, _attributes, None))
+
+    # register font
+    register_font_folder = os.path.dirname(reportlab.__file__)
+    register_font_folder += os.sep + 'fonts'
+    afmFile = None
+    pfbFile = None
+    tag_registerType1Face = False
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -192,18 +508,45 @@ def docinit_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
                     return
 
             elif prev_elt[0] == 'registerTTFont':
+                tag_registerType1Face = False
                 attrs = prev_elt[1]
                 # <registerTTFont faceName="rina" fileName="rina.ttf"/>
-                face_name = attrs.get((None, 'faceName'))
-                file_name = attrs.get((None, 'fileName'))
 
-                if face_name is None or file_name is None:
+                if exist_attribute(attrs, ['faceName', 'fileName']) == True:
+                    face_name = attrs.get((None, 'faceName'))
+                    file_name = attrs.get((None, 'fileName'))
+                    ttfont = TTFont(face_name, file_name)
+                    pdfmetrics.registerFont(ttfont)
+                else:
                     # not well formed
                     pass
 
-                ttfont = TTFont(face_name, file_name)
-                pdfmetrics.registerFont(ttfont)
+            elif prev_elt[1] == 'registerType1Face':
+                tag_registerType1Face = False
+                attrs = prev_elt[1]
+                if exist_attribute(attrs, ['afmFile', 'pfbFile']) == True:
+                    tag_registerType1Face = True
+                    afmFile = os.path.join(register_font_folder, 
+                                           attrs.get((None, 'afmFile')))
+                    pfbFile = os.path.join(register_font_folder, 
+                                           attrs.get((None, 'pfbFile')))
 
+            elif prev_elt[1] == 'registerFont':
+                if tag_registerType1Face == True:
+                    if exist_attribute(attrs, ['name', 'faceName', 
+                                               'encName']) == True: 
+                        name = attrs.get((None, 'name'))
+                        faceName = attrs.get((None, 'faceName'))
+                        encName = attrs.get((None, 'encName'))
+
+                        justFace = pdfmetrics.EmbeddedType1Face(afmFile, 
+                                                                pfbFile)
+                        pdfmetrics.registerTypeFace(justFace)
+                        justFont = pdfmetrics.Font(name, faceName, encName)
+                        pdfmetrics.registerFont(justFont)
+                tag_registerType1Face = False
+            else:
+                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
             stack.pop()
 
 
@@ -228,20 +571,20 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
     document_attrs['rotation'] = \
         to_int(document_attrs['rotation'])
     document_attrs['leftMargin'] = \
-        get_value_reportlab(document_attrs['leftMargin'])
+        rml_value(document_attrs['leftMargin'])
     document_attrs['rightMargin'] = \
-        get_value_reportlab(document_attrs['rightMargin'])
+        rml_value(document_attrs['rightMargin'])
     document_attrs['topMargin'] = \
-        get_value_reportlab(document_attrs['topMargin'])
+        rml_value(document_attrs['topMargin'])
     document_attrs['bottomMargin'] = \
-        get_value_reportlab(document_attrs['bottomMargin'])
+        rml_value(document_attrs['bottomMargin'])
     document_attrs['showBoundary'] = \
         to_int(document_attrs['showBoundary'], 0)
     document_attrs['allowSplitting'] = \
         to_bool(document_attrs['allowSplitting'])
 
     show_boundary = document_attrs['showBoundary']
-
+    on_page_function = None
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -249,89 +592,55 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes, ns_decls = value
-
             if tag_name == 'pageTemplate':
-                 page_template_data = {'frame':[]}
+                on_page_function = None
+                page_template_data = {'frame':[]}
+                attrs = attributes 
+                id = attrs.get((None, 'id'))
+                rotation = attrs.get((None, 'rotation'))
+                page_size = attrs.get((None, 'pageSize'))
+                if rotation is None:
+                    rotation = document_attrs['rotation']
+                else:
+                    rotation = to_int(rotation)
+                if page_size is None:
+                    page_size = document_attrs['pageSize']
+                else:
+                    page_size = get_value_page_size(page_size)
 
-            stack.append((tag_name, attributes, None))
+                if id is None:
+                    pass # tag not well formed
+                    template_attrs = None
+                    page_template_data =None
+                else:
+                    template_attrs = {'id': id, 
+                                      'frames': page_template_data['frame'],
+                                      'pagesize': page_size}
+                stack.append((tag_name, attributes, None))
+            elif tag_name == 'pageGraphics':
+                o = iPageGraphics(stream, tag_name, attributes, None)
+                on_page_function = o.render
+            else:
+                stack.append((tag_name, attributes, None))
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             prev_elt = stack[-1]
             if prev_elt[0] == _tag_name:
                 if tag_name == _tag_name:
                     return page_templates
-
             elif prev_elt[0] == 'pageTemplate':
                 if tag_name == 'pageTemplate':
-                    attrs = prev_elt[1]
-                    id = attrs.get((None, 'id'))
-                    rotation = attrs.get((None, 'rotation'))
-                    page_size = attrs.get((None, 'pageSize'))
-                    if rotation is None:
-                        rotation = document_attrs['rotation']
-                    else:
-                        rotation = to_int(rotation)
-                    if page_size is None:
-                        page_size = document_attrs['pageSize']
-                    else:
-                        page_size = get_value_page_size(page_size)
-
-                    if id is None:
-                        # tag not well formed
-                        pass
-                    else:
-                        template_attrs = {'id': id, 
-                                          'frames': page_template_data['frame'],
-                                          'pagesize': page_size}
-
+                    if template_attrs is not None:
+                        if on_page_function is not None:
+                            template_attrs['onPage'] = on_page_function
                         page_template = PageTemplate(**template_attrs)
                         page_templates.append(page_template)
-                    page_template_data = None
+                        page_template_data = None
             elif prev_elt[0] == 'frame':
                 if tag_name == 'frame' and page_template_data is not None:
-                    attrs = prev_elt[1]
-                    id = attrs.get((None, 'id'))
-                    x1 = get_value_reportlab(attrs.get((None, 'x1')), None)
-                    y1 = get_value_reportlab(attrs.get((None, 'y1')), None)
-                    if is_str(x1) and x1.find('%') != -1:
-                        x1 = get_value_from_percentage(x1, 
-                                document_attrs['pageSize'][0])
-                    else:
-                        x1 = to_float(x1)
-
-                    if is_str(y1) and y1.find('%') != -1:
-                        y1 = get_value_from_percentage(y1, 
-                                document_attrs['pageSize'][1])
-                    else:
-                        y1 = to_float(y1)
-
-                    width = get_value_reportlab(attrs.get((None, 'width')))
-                    if is_str(width) and width.find('%') != 1:
-                        width = get_value_from_percentage(width,
-                                  document_attrs['pageSize'][0])
-                    else:
-                        width = to_float(width)
-
-                    height = get_value_reportlab(attrs.get((None, 'height')))
-                    if is_str(height) and height.find('%') != 1:
-                        height = get_value_from_percentage(height,
-                                  document_attrs['pageSize'][1])
-                    else:
-                        height = to_float(height)
-                
-                    not_ok = x1 is None or y1 is None or width is None \
-                            or height is None or id is None
-                    if not_ok:
-                        # frame tag not well formed
-                        pass
-                    else:
-                        frame_attrs = {'id': id, 'showBoundary': show_boundary,
-                                       'leftPadding': 0, 'bottomPadding': 0,
-                                       'rightPadding': 0, 'topPadding': 0, 
-                                       'id': id, 'showBoundary': show_boundary}
-
-
-                        frame = Frame(x1, y1, width, height, **frame_attrs)
+                    frame = create_frame(prev_elt[1], template_attrs, 
+                                         document_attrs)
+                    if frame is not None:
                         page_template_data['frame'].append(frame)
             
             stack.pop()
@@ -365,6 +674,7 @@ def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 tableStyle_stream(stream, tag_uri, tag_name, attributes, 
                                   ns_decls, pdf_stylesheet, pdf_table_style)
             else:
+                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes, None))
 
@@ -412,7 +722,6 @@ def initialize_stream(stream, _tag_uri, _tag_name, _attributes,
                 return
             else:
                 stack.pop()
-
         #### TEXT ELEMENT ####   
         elif event == TEXT:
             pass
@@ -453,10 +762,11 @@ def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                               'blockAlignment', 'blockValign', 
                               'blockLeftPadding', 'blockRightPadding', 
                               'blockBottomPadding', 'blockTopPadding', 
-                              'blockBackground', 'lineStyle']:
+                              'blockBackground', 'lineStyle', 'blockSpan']:
                 element = stack.pop()
                 current_table_style.append(element)
             else:
+                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 stack.pop()
 
 
@@ -475,6 +785,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
     stack.append((_tag_name, _attributes, None))
     # FIXME firstPageTemplate is not yet implemeted
     # first_page_template = _attributes.get((None, 'firstPageTemplate'), None)
+    indent_stack = []
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -509,18 +820,17 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             elif tag_name in ['h1', 'h2', 'h3']:
                 story.append(heading_stream(stream, tag_uri, tag_name, 
                              attributes, ns_decls, pdf_stylesheet, alias_style))
+            elif tag_name == 'hr':
+                story.append(hr_stream(stream, tag_uri, tag_name, 
+                                       attributes, ns_decls))
             elif tag_name == 'para':
-                widget = paragraph_stream(stream, tag_uri, tag_name, 
-                                          attributes, ns_decls, pdf_stylesheet,
-                                          alias_style)
-                if widget is not None:
-                    story.append(widget)
+                story.append(paragraph_stream(stream, tag_uri, tag_name, 
+                                              attributes, ns_decls, 
+                                              pdf_stylesheet, alias_style))
             elif tag_name in ['pre', 'xpre']:
-                widget = preformatted_stream(stream, tag_uri, tag_name,
-                                             attributes, ns_decls, 
-                                             pdf_stylesheet, alias_style)
-                if widget is not None:
-                    story.append(widget)
+                story.append(preformatted_stream(stream, tag_uri, tag_name,
+                                                 attributes, ns_decls, 
+                                                 pdf_stylesheet, alias_style))
             elif tag_name == 'image':
                 widget = image_stream(stream, tag_uri, tag_name,
                                       attributes, ns_decls, pdf_stylesheet)
@@ -528,7 +838,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     story.append(widget)
             elif tag_name == 'spacer':
                 widget = spacer_stream(stream, tag_uri, tag_name,
-                                      attributes, ns_decls, pdf_stylesheet)
+                                       attributes, ns_decls, pdf_stylesheet)
                 if widget is not None:
                     story.append(widget)
             elif tag_name == 'blockTable':
@@ -537,7 +847,19 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                                       pdf_table_style, alias_style)
                 if widget is not None:
                     story.append(widget)
+            elif tag_name == 'indent':
+                attrs = {}
+                attrs['left'] = rml_value(attributes.get((None, 'left')), 0)
+                attrs['right'] = rml_value(attributes.get((None, 'right')), 0)
+                story.append(Indenter(**attrs))
+                indent_stack.append(attrs)
+                stack.append((tag_name, attributes, None))
+            elif tag_name == 'illustration':
+                if exist_attribute(attributes, ['width', 'height']):
+                    story.append(iIllustration(stream, tag_uri, tag_name, 
+                                               attributes, ns_decls))
             else:
+                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
@@ -546,9 +868,15 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             prev_elt = stack[-1]
             if prev_elt[0] == _tag_name:
                 return story
+            elif prev_elt[0] == 'indent':
+                attrs = indent_stack[-1]
+                for key in attrs.keys():
+                    attrs[key] = -attrs[key]
+                story.append(Indenter(**attrs))
+                indent_stack.pop()
+                stack.pop()
             else:
                 stack.pop()
-
         #### TEXT ELEMENT ####   
         elif event == TEXT:
             if stack:
@@ -561,7 +889,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
 
 
 def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
-                   pdf_stylesheet, pdf_table_style, alias_style):
+                       pdf_stylesheet, pdf_table_style, alias_style):
     """
         Create a KeepInFrame widget.
         Childs : keepInFrame, h1, h2, h3, para, pre, xpre, image, spacer,
@@ -572,15 +900,17 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
     stack = []
     stack.append((_tag_name, _attributes, None))
 
-    mode = _attributes.get((None, 'onOverflow'), 'shrink')
     max_width = to_int(_attributes.get((None, 'maxWidth'), 0), 0)
     max_height = to_int(_attributes.get((None, 'maxHeight'), 0), 0)
     name = _attributes.get((None, 'id'), '')
-    frame = _attributes.get((None, 'frame')) # not yet used
-    merge_space = to_bool(_attributes.get((None, 'mergeSpace'), 1))
+    mode = _attributes.get((None, 'onOverflow'))
+    merge_space = _attributes.get((None, 'mergeSpace'))
 
-    attrs = {'maxWidth': max_width, 'maxHeight': max_height, 
-             'mergeSpace': merge_space, 'mode': mode}
+    attrs = {'maxWidth': max_width, 'maxHeight': max_height}
+    if mode is not None:
+        attrs['mode'] = mode
+    if merge_space is not None:
+        attrs['mergeSpace'] = to_bool(merge_space)
     
     while True:
         event, value, line_number = stream_next(stream)
@@ -591,27 +921,25 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             tag_uri, tag_name, attributes, ns_decls = value
             if tag_name == 'keepInFrame':
                 widget = keepinframe_stream(stream, tag_uri, tag_name,
-                                             attributes, ns_decls, 
-                                             pdf_stylesheet, pdf_table_style,
-                                             alias_style)
+                                            attributes, ns_decls, 
+                                            pdf_stylesheet, pdf_table_style,
+                                            alias_style)
                 if widget is not None:
                     story.append(widget)
-
             elif tag_name in ['h1', 'h2', 'h3']:
                 story.append(heading_stream(stream, tag_uri, tag_name, 
                              attributes, ns_decls, pdf_stylesheet))
+            elif tag_name == 'hr':
+                story.append(hr_stream(stream, tag_uri, tag_name, 
+                                       attributes, ns_decls))
             elif tag_name == 'para':
-                widget = paragraph_stream(stream, tag_uri, tag_name, 
-                                          attributes, ns_decls, pdf_stylesheet,
-                                          alias_style)
-                if widget is not None:
-                    story.append(widget)
+                story.append(paragraph_stream(stream, tag_uri, tag_name, 
+                                              attributes, ns_decls, 
+                                              pdf_stylesheet, alias_style))
             elif tag_name in ['pre', 'xpre']:
-                widget = preformatted_stream(stream, tag_uri, tag_name,
-                                             attributes, ns_decls, 
-                                             pdf_stylesheet, alias_style)
-                if widget is not None:
-                    story.append(widget)
+                story.append(preformatted_stream(stream, tag_uri, tag_name,
+                                                 attributes, ns_decls, 
+                                                 pdf_stylesheet, alias_style))
             elif tag_name == 'image':
                 widget = image_stream(stream, tag_uri, tag_name,
                                       attributes, ns_decls, pdf_stylesheet)
@@ -629,6 +957,7 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 if widget is not None:
                     story.append(widget)
             else:
+                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
         elif event == END_ELEMENT:
@@ -639,7 +968,6 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 return KeepInFrame(**attrs)
             else:
                 stack.pop()
-
         #### TEXT ELEMENT ####   
         elif event == TEXT:
             if stack:
@@ -649,7 +977,6 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     if len(value) > 0 and value != ' ':
                         value = XML.encode(value) # entities
                         story.append(value)
-
 
 
 def heading_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
@@ -692,6 +1019,34 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     content.append(value)
 
 
+def hr_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls):
+    """
+        Create a hr widget.
+    """
+   
+    stack = []
+    stack.append((_tag_name, _attributes, None))
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes, ns_decls = value
+            stack.append((tag_name, attributes, None))
+        #### END ELEMENT ####   
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                widget = create_hr(_attributes)
+                return widget 
+            else:
+                element = stack.pop()
+        #### TEXT ELEMENT ####   
+        elif event == TEXT:
+            pass
+
+
 def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
                      pdf_stylesheet, alias_style):
     """
@@ -701,6 +1056,7 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
     content = []
     stack = []
     stack.append((_tag_name, _attributes, None))
+    has_content = False
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -709,6 +1065,11 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes, ns_decls = value
+            if tag_name == 'br': 
+                # check if the tag is a br tag
+                # we trim at le right the previous text
+                # in order to not include a default : 	a superfluous space 
+                content[-1] = content[-1].rstrip()
             content.append(build_start_tag(tag_name, attributes))
             stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
@@ -717,9 +1078,8 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             if tag_name == _tag_name:
                 content = ''.join(content)
                 element = stack.pop()
-                widget = create_paragraph(pdf_stylesheet, alias_style, element,
-                                          content)
-                return widget 
+                return create_paragraph(pdf_stylesheet, alias_style, element,
+                                        content)
             else:
                 element = stack.pop()
                 content.append(build_end_tag(element[0]))
@@ -732,7 +1092,10 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     # alow to write : 
                     # <para><u><i>foo</i> </u></para>
                     value = XML.encode(value) # entities
+                    if has_content and content[-1] == '</br>':
+                        value = value.lstrip()
                     content.append(value)
+                    has_content = True
 
 
 def preformatted_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls, 
@@ -834,7 +1197,6 @@ def spacer_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 return widget 
             else:
                 element = stack.pop()
-
         #### TEXT ELEMENT ####   
         elif event == TEXT:
             pass
@@ -852,29 +1214,38 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
     stack = []
     stack.append((_tag_name, _attributes, None))
 
+    table_attrs = {}
+    if exist_attribute(_attributes, ['align']):
+        align = _attributes.get((None, 'align')).upper()
+        if align in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
+            table_attrs['hAlign'] = align
+    if exist_attribute(_attributes, ['vAlign']):
+        vAlign = _attributes.get((None, 'vAlign')).upper()
+        if vAlign in ['TOP', 'MIDDLE', 'BOTTOM']:
+            table_attrs['vAlign'] = vAlign
+        
     data_table = []
     style_id = _attributes.get((None, 'style'))
     style_table = pdf_table_style.get(style_id, TableStyle())
     rowHeights_table = _attributes.get((None, 'rowHeights'))
     colWidths_table = _attributes.get((None, 'colWidths'))
     # reportlab default value
-    splitByRow_table = 1
-    repeatRows_table = to_int(_attributes.get((None, 'repeatRows'), 1), 1)
-
+    table_attrs['repeatRows'] = to_int(_attributes.get((None, 'repeatRows')), 0)
     tr_number = -1
     td_number = -1
+    tag_not_supported = False
 
     if rowHeights_table is not None:
         rowHeights_table_tab = rowHeights_table.split(',')
         rowHeights_table = []
         for rh in rowHeights_table_tab:
-            rowHeights_table.append(get_value_reportlab(rh))
+            rowHeights_table.append(rml_value(rh))
 
     if colWidths_table is not None:
         colWidths_table_tab = colWidths_table.split(',')
         colWidths_table = []
         for cw in colWidths_table_tab:
-            colWidths_table.append(get_value_reportlab(cw))
+            colWidths_table.append(rml_value(cw))
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -925,11 +1296,10 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     widget = paragraph_stream(stream, tag_uri, tag_name,
                                               attributes, ns_decls, 
                                               pdf_stylesheet, alias_style)
-                    if widget is not None:
-                        if td_only_text == True:
-                            table_td = [x for x in  table_td if not is_str(x)]
-                        table_td.append(widget)
-                        td_only_text = False
+                    if td_only_text == True:
+                        table_td = [x for x in  table_td if not is_str(x)]
+                    table_td.append(widget)
+                    td_only_text = False
                 else:
                     pass
             
@@ -939,14 +1309,22 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                     widget = preformatted_stream(stream, tag_uri, tag_name,
                                                  attributes, ns_decls, 
                                                 pdf_stylesheet, alias_style)
-                    if widget is not None:
-                        if td_only_text == True:
-                            table_td = [x for x in  table_td if not is_str(x)]
-                        table_td.append(widget)
-                        td_only_text = False
+                    if td_only_text == True:
+                        table_td = [x for x in  table_td if not is_str(x)]
+                    table_td.append(widget)
+                    td_only_text = False
                 else:
                     pass
             
+            elif tag_name == 'hr':
+                if stack[-1][0] == 'td':
+                    push = False
+                    widget = hr_stream(stream, tag_uri, tag_name, attributes, 
+                                       ns_decls)
+                    if td_only_text == True:
+                        table_td = [x for x in  table_td if not is_str(x)]
+                    table_td.append(widget)
+                    td_only_text = False
             elif tag_name == 'spacer':
                 if stack[-1][0] == 'td':
                     push = False
@@ -975,12 +1353,27 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         td_only_text = False
                 else:
                     pass
+            elif tag_name == 'illustration':
+                if exist_attribute(attributes, ['width', 'height']):
+                    push = False
+                    if td_only_text == True:
+                        table_td = [x for x in  table_td if not is_str(x)]
+                    widget = iIllustration(stream, tag_uri, tag_name, 
+                                           attributes, ns_decls)
+                    table_td.append(widget)
+                    td_only_text = False
+            elif tag_name == 'bulkData':
+                push = True
+            elif tag_name in ['excelData']:
+                tag_not_supported = True
+                push = True
+                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
             else:
+                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 # not implemeted tag or unknown tag
                 if stack[-1][0] == 'td':
                     if td_only_text == True:
                         table_td.append(' ')
-
             if push:
                 stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   
@@ -988,12 +1381,19 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
             tag_uri, tag_name = value
             if stack[-1][0] == _tag_name:
                 element = stack.pop()
-                widget = Table(data_table, colWidths_table, 
-                               rowHeights_table, style_table,
-                               splitByRow=splitByRow_table, 
-                               repeatRows=repeatRows_table)
-
-                return widget
+                try:
+                    table_attrs['style'] = style_table
+                    table_attrs['data'] = data_table
+                    table_attrs['colWidths'] = colWidths_table
+                    table_attrs['rowHeights'] = rowHeights_table
+                    widget = Table(**table_attrs)
+                    return widget
+                except ValueError, msg:
+                    if tag_not_supported == False:
+                        raise ValueError, 'Error line %s, %s' % (line_number, 
+                                                                 msg)
+                    else:
+                        return None
             elif stack[-1][0] == 'tr':
                 data_table.append(table_tr)
                 stack.pop()
@@ -1008,7 +1408,6 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                 stack.pop()
             else:
                 stack.pop()
-
         #### TEXT ELEMENT ####   
         elif event == TEXT:
             if stack[-1][0] == 'blockTable':
@@ -1024,6 +1423,10 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, _ns_decls,
                         table_td.append(value)
             else:
                 pass
+        elif event == CDATA:
+            lines = value.strip().split('\n')
+            for line in lines:
+                data_table.append(line.split(','))
 
 
 ###############################################################################
@@ -1048,6 +1451,7 @@ def normalize(data, least=False):
     """ 
         Normalize data
     """
+
     if least == True:
         data = u'X%sX' % data
     # we normalize the string
@@ -1075,6 +1479,33 @@ def build_end_tag(tag_name):
     return '</%s>' % tag_name
 
 
+def create_hr(attributes):
+    """ 
+        Create a reportlab hr widget
+    """
+    
+    attrs = {}
+    for key in ['width', 'thickness', 'spaceBefore', 'spaceAfter']:
+        if exist_attribute(attributes, [key]):
+            attrs[key] = rml_value(attributes.get((None, key)))
+    if exist_attribute(attributes, ['lineCap']):
+        line_cap = attributes.get((None,'lineCap'))
+        if line_cap not in ['butt', 'round', 'square']:
+            line_cap = 'butt'
+        attrs['lineCap'] = line_cap
+    if exist_attribute(attributes, ['color']):
+        attrs['color'] = get_color(attributes.get((None, 'color')))
+    if exist_attribute(attributes, ['align']):
+        hAlign = attributes.get((None, 'align'), '').upper()
+        if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
+            attrs['hAlign'] = hAlign
+    if exist_attribute(attributes, ['vAlign']):
+        vAlign = attributes.get((None, 'vAlign'), '').upper()
+        if vAlign in ['TOP', 'MIDDLE', 'BOTTOM']:
+            attrs['vAlign'] = vAlign
+    return HRFlowable(**attrs)
+
+
 def create_paragraph(pdf_stylesheet, alias_style, element, content):
     """ 
         Create a reportlab paragraph widget.
@@ -1093,13 +1524,14 @@ def create_paragraph(pdf_stylesheet, alias_style, element, content):
             bulletText = attr_value
         else:
             if key == 'alignment':
-                attr_value = __tab_para_alignment.get(attr_value) 
+                attr_value = __tab_para_alignment.get(attr_value.upper()) 
             elif key in ['leftIndent', 'rightIndent']:
-                attr_value = get_value_reportlab(attr_value)
+                attr_value = rml_value(attr_value)
             style_attr[key] = attr_value
-
+   
+    style_name = parent_style
     parent_style = get_style(pdf_stylesheet, alias_style, parent_style)
-    style = ParagraphStyle('', parent=parent_style, **style_attr)
+    style = ParagraphStyle(style_name, parent=parent_style, **style_attr)
     return Paragraph(content, style, bulletText)
 
 
@@ -1122,11 +1554,8 @@ def create_preformatted(pdf_stylesheet, alias_style, element, content):
 
     style = get_style(pdf_stylesheet, alias_style, style_name)
   
-    if content == '':
-        return None
-    else:
-        widget = fn(content, style)
-        return widget
+    widget = fn(content, style)
+    return widget
 
 
 def create_image(element, check_dimension):
@@ -1144,9 +1573,9 @@ def create_image(element, check_dimension):
         if key == 'file':
             filename = attr_value
         elif key == 'width':
-            width = get_value_reportlab(attr_value)
+            width = rml_value(attr_value)
         elif key == 'height':
-            height = get_value_reportlab(attr_value)
+            height = rml_value(attr_value)
     
     if filename is None:
         return None
@@ -1176,7 +1605,7 @@ def create_image(element, check_dimension):
 
 def create_spacer(element):
     """ 
-        Create a reportlan spacer widget.
+        Create a reportlab spacer widget.
     """
 
     width, length = 0, None
@@ -1184,13 +1613,44 @@ def create_spacer(element):
     for key, attr_value in element[1].iteritems():
         key = key[1]
         if key == 'width':
-            width = get_value_reportlab(attr_value)
+            width = rml_value(attr_value)
         elif key == 'length':
-            length = get_value_reportlab(attr_value)
+            length = rml_value(attr_value)
 
     if length != None:
         return Spacer(width, length)
     else:
+        return None
+
+
+def create_frame(attributes, template_attrs, document_attrs):
+    """
+        Return a Reportlab Frame is attributes is well formed, None otherwise
+    """
+    attrs = {'id': attributes.get((None, 'id'))}
+    vfp = {'x1': template_attrs['pagesize'][0],
+           'y1': template_attrs['pagesize'][1],
+           'width': template_attrs['pagesize'][0],
+           'height':template_attrs['pagesize'][1]}
+    show_boundary = document_attrs['showBoundary']
+
+    for key in ['x1', 'y1', 'width', 'height']:
+        temp = attributes.get((None, key))
+        if temp is not None:
+            if is_str(temp) and temp.find('%') != -1:
+                attrs[key] = get_value_from_percentage(temp, vfp[key])
+            else:
+                attrs[key] = rml_value(temp)
+
+    if len(attrs) == 5:
+        attrs['showBoundary'] = show_boundary
+        attrs['leftPadding'] = 0
+        attrs['bottomPadding'] = 0
+        attrs['rightPadding'] = 0
+        attrs['topPadding'] = 0
+        return Frame(**attrs)
+    else:
+        # frame tag not well formed
         return None
 
 
@@ -1214,14 +1674,20 @@ def build_stylesheet(pdf_stylesheet, styles):
             else:
                 if key in ['fontSize', 'leading', 'leftIndent', 'rightIndent', 
                            'firstLineIndent', 'spaceBefore', 'spaceAfter',
-                           'bulletFontSize', 'bulletIndent']:
-                    attr_value = get_value_reportlab(attr_value)
+                           'bulletFontSize', 'bulletIndent', 
+                           'borderWidth', 'borderPadding', 'borderRadius']:
+                    attr_value = rml_value(attr_value)
+                elif key in ['textColor', 'backColor', 'borderColor']:
+                    attr_value = get_color(attr_value)
+                elif key == 'keepWithNext':
+                    attr_value = to_bool(attr_value)
                 elif key == 'alignment':
-                    attr_value = __tab_para_alignment.get(attr_value, None)
+                    attr_value = __tab_para_alignment.get(attr_value.upper(), 
+                                                          None)
                     if attr_value is None:
                         # tag not well formed
-                        attr_value = __tab_para_alignment.get('left')
-
+                        attr_value = __tab_para_alignment.get('LEFT')
+                
                 style_attr[key] = attr_value
 
         if not pdf_stylesheet.has_key(parent_style):
@@ -1276,8 +1742,7 @@ def add_table_style(pdf_table_style, id, table_style):
         attr['stop'] = stop
         if elt_id == 'blockTextColor':
             if attr.has_key('colorName'):
-                attr['colorName'] = getattr(colors, attr['colorName'], 
-                                            colors.black)
+                attr['colorName'] = get_color(attr['colorName'])
                 style.add('TEXTCOLOR', attr['start'], attr['stop'], 
                           attr['colorName'])
             else:
@@ -1306,8 +1771,7 @@ def add_table_style(pdf_table_style, id, table_style):
         
         elif elt_id == 'blockBackground':
             if attr.has_key('colorName') == True:
-                attr['colorName'] = getattr(colors, attr['colorName'], 
-                                            colors.black)
+                attr['colorName'] = get_color(attr['colorName'])
                 style.add('BACKGROUND', attr['start'], attr['stop'], 
                           attr['colorName'])
             else:
@@ -1325,8 +1789,9 @@ def add_table_style(pdf_table_style, id, table_style):
                   
         elif elt_id == 'blockAlignment':
             if attr.has_key('value') == True:
+                attr['value'] = attr['value'].upper()
                 if attr['value'] not in ['LEFT', 'RIGHT', 'CENTER', 
-                                         'CENTRE']:
+                                         'CENTRE', 'DECIMAL']:
                     # tag not well formed
                     attr['value'] = 'LEFT'
                 
@@ -1338,6 +1803,7 @@ def add_table_style(pdf_table_style, id, table_style):
 
         elif elt_id == 'blockValign':
             if attr.has_key('value') == True:
+                attr['value'] = attr['value'].upper()
                 if attr['value'] not in ['TOP', 'MIDDLE', 'BOTTOM']:
                     attr['value'] = 'BOTTOM'
 
@@ -1350,7 +1816,7 @@ def add_table_style(pdf_table_style, id, table_style):
         elif elt_id in ['blockLeftPadding', 'blockRightPadding', 
                         'blockTopPadding', 'blockBottomPadding']:
             if attr.has_key('length') == True:
-                attr['length'] = get_value_reportlab(attr['length'])
+                attr['length'] = rml_value(attr['length'])
                 style.add(elt_id[5:].upper(), attr['start'], attr['stop'], 
                           attr['length'])
             else:
@@ -1364,35 +1830,44 @@ def add_table_style(pdf_table_style, id, table_style):
                 kind_list = ['GRID', 'BOX', 'OUTLINE', 'INNERGRID', 
                              'LINEBELOW', 'LINEABOVE', 'LINEBEFORE', 
                              'LINEAFTER']
+                attr['kind'] = attr['kind'].upper()
                 if attr['kind'] not in kind_list: 
                     # tag not well formed
                     pass
                 else:
-                    attr['colorName'] = getattr(colors, attr['colorName'], 
-                                               colors.black)
+                    attr['colorName'] = get_color(attr['colorName'])
                     if attr.has_key('thickness') == False:
                         attr['thickness'] = 1
+                    if attr.has_key('count') == False:
+                        attr['count'] = 1
+                    else:
+                        attr['count'] = to_int(attr['count'], 1)
                     attr['thickness'] = to_float(attr['thickness'], 1)
-
                     style.add(attr['kind'], attr['start'], attr['stop'], 
-                              attr['thickness'], attr['colorName'])
+                              attr['thickness'], attr['colorName'], 
+                              attr['count'])
             else:
                 # tag not well formed
                 pass
+        
+        elif elt_id == 'blockSpan':
+            style.add('SPAN', attr['start'], attr['stop'])
 
     pdf_table_style[id] = style
 
 
 def build_td_attributes(style, attributes, line, column):
     """ """
-    
+    start = (column, line)
+    stop = start
+    line_attributes = {}
+    thickness_tab = {}
+
     for key, value in attributes.iteritems():
         key = key[1]
-        start = (column, line)
-        stop = start
        
         if key == 'fontColor':
-            color = getattr(colors, value, colors.black)
+            color = get_color(value)
             style.add('TEXTCOLOR', start, stop, color)
         elif key == 'fontName':
             style.add('FONTNAME', start, stop, value)
@@ -1403,10 +1878,10 @@ def build_td_attributes(style, attributes, line, column):
             style.add('LEADING', start, stop, to_float(value))
         elif key in ['leftPadding', 'rightPadding', 'topPadding', 
                      'bottomPadding']:
-            value = get_value_reportlab(value)
+            value = rml_value(value)
             style.add(key.upper(), start, stop, value)
         elif key == 'background':
-            color = getattr(colors, value, colors.black)
+            color = get_color(value)
             style.add('BACKGROUND', start, stop, color)
         elif key == 'align':
             value = value.upper()
@@ -1418,13 +1893,35 @@ def build_td_attributes(style, attributes, line, column):
                 style.add('VALIGN', start, stop, value)
         elif key in ['lineBelowColor', 'lineAboveColor', 'lineLeftColor', 
                      'lineRightColor']:
-            key = key.replace('Color', '')
-            if key[4:8] == 'left':
-                key = 'linebefore'
-            elif key[4:9] == 'right':
-                key = 'lineafter'
-            color = getattr(colors, value, colors.black)
-            style.add(key.upper(), start, stop, color)
+            key_tab = key.replace('Color', '')
+            color = get_color(value)
+            if thickness_tab.has_key(key_tab) == False:
+                d = {}
+                d['color'] = color
+                d['thickness'] = 1
+                thickness_tab[key_tab] = d
+            else:
+                thickness_tab[key_tab]['color'] = color
+
+        elif key in ['lineBelowThickness', 'lineAboveThickness',
+                     'lineLeftThickness', 'lineRightThickness']:
+            thickness = rml_value(value)
+            key_tab = key.replace('Thickness', '')
+            if thickness_tab.has_key(key_tab) == False:
+                d = {}
+                d['color'] = colors.black
+                d['thickness'] = thickness
+                thickness_tab[key_tab] = d
+            else:
+                thickness_tab[key_tab]['thickness'] = thickness
+
+    for key, d in thickness_tab.iteritems():
+        if key in ['lineAbove', 'lineBelow']:
+            style.add(key.upper(), start, stop, d['thickness'], d['color'])
+        elif key == 'lineLeft':
+            style.add('LINEBEFORE', start, stop, d['thickness'], d['color'])
+        elif key == 'lineRight':
+            style.add('LINEAFTER', start, stop, d['thickness'], d['color'])
 
 
 def get_style(stylesheet, alias, name):
@@ -1530,9 +2027,11 @@ def to_bool(str, default=False):
     """
          Return the boolean value of str.
     """
-    if str == u'false' or str == u'0':
+    true = [u'true', u'1', u'yes', 1]
+    false = [u'false', u'0', u'no', 0]
+    if str in false:
         return False
-    elif str == u'true' or str == u'1':
+    elif str in true:
         return True
     else:
         if default in [False, True]:
@@ -1541,7 +2040,7 @@ def to_bool(str, default=False):
             return False
 
 
-def get_value_reportlab(value, default=None):
+def rml_value(value, default=None):
     """ 
        Return the reportlab value of value
        only if value is a string
@@ -1551,6 +2050,8 @@ def get_value_reportlab(value, default=None):
        '2in' -> 2 * pica
        '2%' -> '2%'
     """
+    if value is None:
+        return default
 
     coef = 1
     if not is_str(value):
@@ -1573,7 +2074,7 @@ def get_value_reportlab(value, default=None):
         value = value[:-4]
 
     elif value[-1:] == '%':
-            return value
+        return value
     
     try:
         value = float(value) * coef
@@ -1605,11 +2106,10 @@ def get_value_page_size(data):
     """
     if is_str(data):
         orienter, data = get_page_size_orientation(data)
-        ps = __tab_page_size.get(data)
+        data = normalize(data)
+        ps = __tab_page_size.get(data.upper())
         if ps is not None:
             return orienter(ps)
-        
-        data = normalize(data)
 
         if data[0] == '(':
             data = data[1:]
@@ -1618,14 +2118,13 @@ def get_value_page_size(data):
 
         tab_size = data.split(',')
         if len(tab_size) >= 2:
-            w = get_value_reportlab(tab_size[0])
-            h = get_value_reportlab(tab_size[1])
+            w = rml_value(tab_size[0])
+            h = rml_value(tab_size[1])
             data = (w, h)
         else:
             data = pagesizes.A4
-        
+      
         return orienter(data)
-    
     return pagesizes.A4
     
 
@@ -1639,6 +2138,7 @@ def get_page_size_orientation(data):
         data = '(21cm,29.7cm)'
         return (portrait, '(21cm,29.7cm)')
     """
+
     index = data.find('portrait')
     if index != -1:
         data = data.replace('portrait', '')
@@ -1651,3 +2151,55 @@ def get_page_size_orientation(data):
     
     return (portrait, data)
 
+
+def exist_attribute(attrs, keys):
+    """ 
+        Return True if all key in keys
+        are contained in the dictionnary attrs
+    """
+
+    for key in keys:
+        if attrs.has_key((None, key)) == False:
+            return False
+    return True
+
+
+def get_color(col_str):
+    """ 
+        col_str can be one of this value type
+
+        red, blue, ... : color name
+        1,0,1 : color components
+        1,0,0,1 : color cyan/magenta/yellow/black
+    """
+
+    color = getattr(colors, col_str, None)
+    if color is not None:
+        return color
+
+    color = col_str.replace('(', '').replace(')', '')
+    color = color.replace('[', '').replace(']', '')
+    color = color.strip()
+
+    if len(color) > 2 and color[:2] == '0x':
+        try:
+            return HexColor(color)
+        except ValueError:
+            return colors.black
+
+    components = color.split(',')
+    if len(components) == 3:
+        # RGB
+        r = to_float(components[0])
+        g = to_float(components[1])
+        b = to_float(components[2])
+        return Color(r, g, b)
+    elif len(components) == 4:
+        # CYAN/MAGENTA/YELLOW/BLACK
+        cyan = to_float(components[0])
+        magenta = to_float(components[1])
+        yellow = to_float(components[2])
+        black = to_float(components[3])
+        return CMYKColor(cyan , magenta, yellow, black)
+        
+    return colors.black

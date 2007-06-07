@@ -21,11 +21,16 @@ import sys
 import unittest
 
 # Import from itools
-from itools.pdf.rml import rmltopdf_test, rmltopdf, normalize, stream_next
+from itools.pdf.rml import rmltopdf_test, rmltopdf, normalize, stream_next, \
+                           get_color, get_page_size_orientation
 from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm
+from reportlab.lib import colors
+from reportlab.lib.colors import Color, CMYKColor
+from reportlab.lib.pagesizes import landscape, portrait
+
 from reportlab.platypus.doctemplate import LayoutError
 
 class FunctionTestCase(unittest.TestCase):
@@ -51,7 +56,6 @@ class FunctionTestCase(unittest.TestCase):
 
 
     def test_stream_next(self):
-        from pprint import pprint
         xml = '<document><foo at="bar">foo content</foo><table><tr bg="red">'
         xml += '<td>cell1</td></tr></table>'
         xml += '<para aligment="left">para content</para></document>'
@@ -161,6 +165,72 @@ class FunctionTestCase(unittest.TestCase):
         self.assertEqual(tag_uri, None)
         self.assertEqual(tag_name, 'document')
 
+    
+    def test_get_color(self):
+        black = Color(0, 0, 0)
+        color = get_color('teal')
+        rgb1 = color.rgb()
+        rgb2 = getattr(colors, 'teal').rgb()
+        self.assertEqual(rgb1, rgb2)
+
+        color = get_color('teal55')
+        self.assertEqual(color.rgb(), black.rgb())
+
+        color = get_color('(1, 0, 1)')
+        self.assertEqual(color.rgb(), (1.0, 0.0, 1.0))
+        
+        color = get_color('[1,0,0,0]')
+        cmyk_color = CMYKColor(1, 0, 0, 0)
+        self.assertEqual(color.rgb(), cmyk_color.rgb())
+        
+        color = get_color('[1,0]')
+        self.assertEqual(color.rgb(), black.rgb())
+
+        color = get_color("PCMYKColor(0,50,85,20,spotName='PANTONE 288 CV')")
+        self.assertEqual(color.rgb(), black.rgb())
+
+
+    def test_get_page_size_orientation(self):
+        content = '(176mm,297mm)'
+        orienter, data = get_page_size_orientation(content)
+        self.assertEqual(type(orienter), type(portrait))
+        self.assertEqual(data, content)
+
+        content = '(176 mm, 297 mm)'
+        orienter, data = get_page_size_orientation(content)
+        self.assertEqual(type(orienter), type(portrait))
+        self.assertEqual(data, content)
+
+        content = '(176 mm, 297 mm)'
+        orienter, data = get_page_size_orientation('landscape %s' % content)
+        self.assertEqual(type(orienter), type(landscape))
+        self.assertEqual(data.strip(), content)
+        
+        content = '(176 mm, 297 mm)'
+        orienter, data = get_page_size_orientation('%s landscape' % content)
+        self.assertEqual(type(orienter), type(landscape))
+        self.assertEqual(data.strip(), content)
+    
+        content = 'A4'
+        orienter, data = get_page_size_orientation('%s landscape' % content)
+        self.assertEqual(type(orienter), type(landscape))
+        self.assertEqual(data.strip(), content)
+        
+        content = 'A3'
+        orienter, data = get_page_size_orientation('%s' % content)
+        self.assertEqual(type(orienter), type(portrait))
+        self.assertEqual(data.strip(), content)
+        
+        content = '176 mm, 297 mm'
+        orienter, data = get_page_size_orientation('%s landscape' % content)
+        self.assertEqual(type(orienter), type(landscape))
+        self.assertEqual(data.strip(), content)
+
+        content = 'letter'
+        orienter, data = get_page_size_orientation('%s' % content)
+        self.assertEqual(type(orienter), type(portrait))
+        self.assertEqual(data.strip(), content)
+
 
 class DocumentTestCase(unittest.TestCase):
     
@@ -236,7 +306,7 @@ class StylesheetTestCase(unittest.TestCase):
                 f = open('%s.pdf' % temp, 'w')
                 f.write(content)
                 f.close()
-        
+       
 
 class StoryTestCase(unittest.TestCase):
     

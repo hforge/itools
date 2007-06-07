@@ -104,7 +104,8 @@ class Skin(Folder):
         if not menu:
             return None
 
-        return {'title': u'Main Menu', 'content': build_menu(menu)}
+        return {'title': self.gettext(u'Main Menu'),
+                'content': build_menu(menu)}
 
 
     def get_navigation_menu(self, context):
@@ -112,7 +113,7 @@ class Skin(Folder):
         root = self._get_site_root(context)
         menu = tree(root, active_node=context.handler, filter=Folder,
                     user=context.user)
-        return {'title': u'Navigation', 'content': menu}
+        return {'title': self.gettext(u'Navigation'), 'content': menu}
 
 
     def get_content_menu(self, context):

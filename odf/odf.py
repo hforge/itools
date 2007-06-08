@@ -21,7 +21,8 @@ from zipfile import ZipFile
 from cStringIO import StringIO
 
 # Import from itools
-from itools.handlers import register_handler_class
+from itools.stl import stl
+from itools.handlers import register_handler_class, ZipArchive
 from itools.xml.i18n import get_messages
 from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
                         Parser, XML_DECL, START_ELEMENT, TEXT)
@@ -31,16 +32,34 @@ import definition
 import w3
 
 
-class OpenOfficeDocument(OfficeDocument):
+def stl_to_odt(model_odt, namespace):
+    # Get the content of content.xml
+    events = list(model_odt.get_events('content.xml'))
+    # Apply the stl
+    xml_content = stl(namespace=namespace, events=events, html=False)
+    print xml_content
+    # Reconstruct an Odt
+    file = StringIO()
+    outzip = ZipFile(file, 'w')
+    zip = ZipFile(StringIO(model_odt.data))
+    for f in zip.infolist():
+        if f.filename == 'content.xml':
+            outzip.writestr('content.xml', xml_content)
+        else:
+            outzip.writestr(f, zip.read(f.filename))
+    outzip.close()
+    content = file.getvalue()
+    file.close()
+    return content
+
+
+
+class OpenOfficeDocument(OfficeDocument, ZipArchive):
     """
     SuperClass of OpenDocumentFormat 1.0 & 2.0
     """
     def to_text(self):
-        file = StringIO(self.data)
-        zip = ZipFile(file)
-        content = zip.read('content.xml')
-        zip.close()
-        return xml_to_text(content)
+        return xml_to_text(self.get_file('content.xml'))
 
 
 
@@ -50,28 +69,7 @@ class OdfDocument(OpenOfficeDocument):
     """
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'data']
-
-
-    def new(self, title=''):
-        self.data = None 
-   
-
-    def _load_state_from_file(self, file):
-        self.data = file.read()
-
-
-    def to_text(self):
-        file = StringIO(self.data)
-        zip = ZipFile(file)
-        content = zip.read('content.xml')
-        zip.close()
-        return xml_to_text(content)
-
-
-    def to_str(self, encoding='UTF-8'):
-        return self.data
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler', 'data']
 
 
     def get_meta(self):
@@ -81,6 +79,7 @@ class OdfDocument(OpenOfficeDocument):
         meta = {}
         meta_tags = ['title', 'description', 'subject', 'initial-creator',
                      'creation-date', 'creator', 'date', 'keyword', 'language']
+        
         meta_events = self.get_events('meta.xml')
         previous_tag_name = None
         for type, value, line in meta_events:
@@ -97,9 +96,8 @@ class OdfDocument(OpenOfficeDocument):
         return meta
 
 
-    def get_events(self, file_name):
-        zip = ZipFile(StringIO(self.data))
-        content = zip.read(file_name)
+    def get_events(self, filename):
+        content = self.get_file(filename)
         for event in Parser(content):
             if event == XML_DECL:
                 pass
@@ -141,8 +139,7 @@ class ODT(OdfDocument):
     class_extension = 'odt'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'data']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler', 'data']
 
 
 class ODS(OdfDocument):
@@ -151,8 +148,7 @@ class ODS(OdfDocument):
     class_extension = 'ods'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:spreadsheet:1.0'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'data']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler', 'data']
 
 
 class ODP(OdfDocument):
@@ -161,8 +157,7 @@ class ODP(OdfDocument):
     class_extension = 'odp'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:presentation:1.0'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'data']
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler', 'data']
 
 
 # Register handler and mimetypes

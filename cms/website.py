@@ -440,9 +440,9 @@ class WebSite(RoleAware, Folder):
         size = 10
 
         # Search
-        if text.split():
-            query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
-                      for word, kk in TextField.split(text) ]
+        query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
+                  for word, kk in TextField.split(text) ]
+        if query:
             query = AndQuery(*query)
             results = root.search(query=query)
             total = results.get_n_documents()

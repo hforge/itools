@@ -219,8 +219,10 @@ class Root(WebSite):
     ########################################################################
     # Index & Search
     def index_handler(self, handler):
-        catalog = get_context().server.catalog
-        catalog.index_document(handler)
+        context = get_context()
+        if context is not None:
+            catalog = context.server.catalog
+            catalog.index_document(handler)
 
 
     def unindex_handler(self, handler):

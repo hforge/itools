@@ -18,14 +18,13 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from subprocess import call
 import sys
-from tempfile import mkdtemp
 from time import time
 
 # Import from itools
 import itools
 from itools import vfs
+from itools.handlers.transactions import get_transaction
 from itools.catalog.catalog import Catalog
 from itools.catalog.prof import vmsize
 from itools.cms.server import ask_confirmation
@@ -49,16 +48,24 @@ def update_catalog(parser, options, target):
         print 'server.'
         return
 
+    # Get what we need from the server instance
+    root = server.root
+    target = server.target
+    del server
+
     # Ask
     message = 'Update the catalog (y/N)? '
     if ask_confirmation(message) is True:
-        root = server.root
-        # Boot-Strap
-        tmp = mkdtemp()
-        catalog = Catalog(fields=root._catalog_fields)
-        catalog.save_state_to(tmp + '/catalog')
+        src = str(target.resolve2('database/.catalog').path)
+        dst = str(target.resolve2('database/.catalog.bak').path)
+        if vfs.exists(src):
+            vfs.remove(src)
+
+        # Stage 1: Update
         try:
-            catalog = Catalog(tmp + '/catalog')
+            catalog = Catalog(fields=root._catalog_fields)
+            catalog.save_state_to(src)
+            catalog = Catalog(src)
             # Update
             t0, v0 = time(), vmsize()
             doc_n = 0
@@ -67,8 +74,7 @@ def update_catalog(parser, options, target):
                 doc_n += 1
                 catalog.index_document(object)
             # Update / Free Memory
-            del root
-            server.root = None
+            del object, root
             # Update / Report
             t1, v1 = time(), vmsize()
             v = (v1 - v0)/1024
@@ -77,26 +83,28 @@ def update_catalog(parser, options, target):
             print '[Commit]',
             sys.stdout.flush()
             catalog.save_state()
-            # Save State / Free Memory
-            del catalog
-            # Save State / Report
-            t2, v2 = time(), vmsize()
-            v = (v2 - v1)/1024
-            print 'Time: %.02f seconds. Memory: %s Kb' % (t2 - t1, v)
-            # Move to instance
-            print '[Deploy]',
-            sys.stdout.flush()
-            target = server.target
-            src = str(target.resolve2('database/.catalog/').path)
-            dst = str(target.resolve2('database/.catalog.bak').path)
-            vfs.remove(src)
-            vfs.move(tmp + '/catalog', src)
-            call(['rsync', '-a', '--delete', src, dst])
-            t3, v3 = time(), vmsize()
-            v = (v3 - v2)/1024
-            print 'Time: %.02f seconds. Memory: %s Kb' % (t3 - t2, v)
-        finally:
-            vfs.remove(tmp)
+        except:
+            if vfs.exists(src):
+                vfs.remove(src)
+            vfs.copy(dst, src)
+            raise
+
+        # Stage 2: Backup
+        get_transaction().clear()
+        del catalog
+        # Save State / Report
+        t2, v2 = time(), vmsize()
+        v = (v2 - v1)/1024
+        print 'Time: %.02f seconds. Memory: %s Kb' % (t2 - t1, v)
+        # Move to instance
+        print '[Deploy]',
+        sys.stdout.flush()
+        if vfs.exists(dst):
+            vfs.remove(dst)
+        vfs.copy(src, dst)
+        t3, v3 = time(), vmsize()
+        v = (v3 - v2)/1024
+        print 'Time: %.02f seconds. Memory: %s Kb' % (t3 - t2, v)
 
 
 

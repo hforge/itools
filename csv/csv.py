@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.datatypes import Unicode, Integer
+from itools.datatypes import String, Integer
 from itools.handlers import Text, register_handler_class
 from itools.catalog import EqQuery, AndQuery, get_field, MemoryCatalog
 from parser import parse
@@ -140,8 +140,7 @@ class CSV(Text):
                 lines.append(separator.join(line))
         else:
             for row in self.get_rows():
-                line = [ '"%s"' % x.encode(encoding).replace('"', '""')
-                         for x in row ]
+                line = [ '"%s"' % x.replace('"', '""') for x in row ]
                 lines.append(separator.join(line))
         return '\n'.join(lines)
 
@@ -210,7 +209,7 @@ class CSV(Text):
     def get_datatype(self, name):
         if self.schema is None:
             # Default
-            return Unicode
+            return String
         return self.schema[name]
 
 

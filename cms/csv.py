@@ -81,8 +81,10 @@ class CSV(Text, iCSV):
         Returns a list of tuples with the name and title of every column.
         """
         if self.columns is None:
-            row = self.lines[0]
-            return [ (str(x), str(x)) for x in range(len(row)) ]
+            if self.lines:
+                row = self.lines[0]
+                return [ (str(x), str(x)) for x in range(len(row)) ]
+            return []
 
         columns = []
         for name in self.columns:

@@ -23,10 +23,10 @@ from time import time
 
 # Import from itools
 import itools
+from itools.utils import vmsize
 from itools import vfs
-from itools.handlers.transactions import get_transaction
-from itools.catalog.catalog import Catalog
-from itools.catalog.prof import vmsize
+from itools.handlers import get_transaction
+from itools.catalog import make_catalog
 from itools.cms.server import ask_confirmation
 from itools.cms.server import Server
 
@@ -56,55 +56,33 @@ def update_catalog(parser, options, target):
     # Ask
     message = 'Update the catalog (y/N)? '
     if ask_confirmation(message) is True:
-        src = str(target.resolve2('database/.catalog').path)
-        dst = str(target.resolve2('database/.catalog.bak').path)
-        if vfs.exists(src):
-            vfs.remove(src)
+        catalog_path = '%s/catalog' % target
+        if vfs.exists(catalog_path):
+            vfs.remove(catalog_path)
+        catalog = make_catalog(catalog_path, *root._catalog_fields)
 
-        # Stage 1: Update
-        try:
-            catalog = Catalog(fields=root._catalog_fields)
-            catalog.save_state_to(src)
-            catalog = Catalog(src)
-            # Update
-            t0, v0 = time(), vmsize()
-            doc_n = 0
-            for object in root._traverse_catalog_aware_objects():
-                print doc_n, object['abspath']
-                doc_n += 1
-                catalog.index_document(object)
-            # Update / Free Memory
-            del object, root
-            # Update / Report
-            t1, v1 = time(), vmsize()
-            v = (v1 - v0)/1024
-            print '[Update] Time: %.02f seconds. Memory: %s Kb' % (t1 - t0, v)
-            # Save State
-            print '[Commit]',
-            sys.stdout.flush()
-            catalog.save_state()
-        except:
-            if vfs.exists(src):
-                vfs.remove(src)
-            vfs.copy(dst, src)
-            raise
+        # Update
+        t0, v0 = time(), vmsize()
+        doc_n = 0
+        for object in root._traverse_catalog_aware_objects():
+            print doc_n, object.get_abspath()
+            doc_n += 1
+            catalog.index_document(object)
+        # Update / Free Memory
+        del object, root
+        # Update / Report
+        t1, v1 = time(), vmsize()
+        v = (v1 - v0)/1024
+        print '[Update] Time: %.02f seconds. Memory: %s Kb' % (t1 - t0, v)
 
-        # Stage 2: Backup
-        get_transaction().clear()
-        del catalog
-        # Save State / Report
+        # Commit
+        print '[Commit]',
+        sys.stdout.flush()
+        catalog.commit()
+        # Commit / Report
         t2, v2 = time(), vmsize()
         v = (v2 - v1)/1024
         print 'Time: %.02f seconds. Memory: %s Kb' % (t2 - t1, v)
-        # Move to instance
-        print '[Deploy]',
-        sys.stdout.flush()
-        if vfs.exists(dst):
-            vfs.remove(dst)
-        vfs.copy(src, dst)
-        t3, v3 = time(), vmsize()
-        v = (v3 - v2)/1024
-        print 'Time: %.02f seconds. Memory: %s Kb' % (t3 - t2, v)
 
 
 

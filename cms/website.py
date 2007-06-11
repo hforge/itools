@@ -27,6 +27,7 @@ from itools.stl import stl
 from folder import Folder
 from skins import Skin
 from access import RoleAware
+import widgets
 from workflow import WorkflowAware
 from skins import ui
 from registry import register_object_class
@@ -436,7 +437,7 @@ class WebSite(RoleAware, Folder):
 
         # Get and check input data
         text = context.get_form_value('site_search_text', type=Unicode)
-        start = context.get_form_value('start', type=Integer, default=0)
+        start = context.get_form_value('batchstart', type=Integer, default=0)
         size = 10
 
         # Search
@@ -445,57 +446,45 @@ class WebSite(RoleAware, Folder):
         if query:
             query = AndQuery(*query)
             results = root.search(query=query)
-            total = results.get_n_documents()
-            documents = results.get_documents(start=start, size=size)
+            documents = results.get_documents()
         else:
             documents = []
-            total = 0
 
-        # Get the handler for the visibles documents and extracts values
+        # Check access rights
         user = context.user
-        objects = []
+        handlers = []
         for object in documents:
             abspath = object.abspath
-            document = root.get_handler(abspath)
+            handler = root.get_handler(abspath)
+            ac = handler.get_access_control()
+            if ac.is_allowed_to_view(user, handler):
+                handlers.append(handler)
 
-            # XXX The access control check should be done for the entire
-            # set, but it would be too slow.
-            ac = document.get_access_control()
-            if not ac.is_allowed_to_view(user, document):
-                continue
+        total = len(handlers)
 
+        # Build the namespace
+        objects = []
+        for handler in handlers[start:start+size]:
+            abspath = handler.get_abspath()
             info = {}
             info['abspath'] = abspath
-            info['title'] = document.title_or_name
-            info['type'] = self.gettext(document.class_title)
-            info['size'] = document.get_human_size()
-            info['url'] = '%s/;%s' % (self.get_pathto(document),
-                    document.get_firstview())
+            info['title'] = handler.title_or_name
+            info['type'] = self.gettext(handler.class_title)
+            info['size'] = handler.get_human_size()
+            info['url'] = '%s/;%s' % (self.get_pathto(handler),
+                                      handler.get_firstview())
 
-            icon = document.get_path_to_icon(16, from_handler=self)
+            icon = handler.get_path_to_icon(16, from_handler=self)
             if icon.startswith(';'):
-                icon = Path('%s/' % document.name).resolve(icon)
+                icon = Path('%s/' % handler.name).resolve(icon)
             info['icon'] = icon
             objects.append(info)
-
-        end = start + len(documents)
 
         # Build the namespace
         namespace = {}
         namespace['text'] = text
-        namespace['total'] = total
         namespace['objects'] = objects
-        namespace['batchstart'] = start + 1
-        namespace['batchend'] = end
-        namespace['batch_previous'] = None
-        if start > 0:
-            prev = max(start - size, 0)
-            prev = str(prev)
-            namespace['batch_previous'] = context.uri.replace(start=prev)
-        namespace['batch_next'] = None
-        if end < total:
-            next = str(end)
-            namespace['batch_next'] = context.uri.replace(start=next)
+        namespace['batch'] = widgets.batch(context.uri, start, size, total)
 
         hander = self.get_handler('/ui/website/search.xml')
         return stl(hander, namespace)

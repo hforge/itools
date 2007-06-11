@@ -444,8 +444,5 @@ class Root(WebSite):
     #######################################################################
 
 
-    def update_20070531(self):
-        self._update_catalog()
-
 
 register_object_class(Root)

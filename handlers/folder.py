@@ -259,7 +259,7 @@ class Folder(Handler):
             return False
 
         # Check wether the container has the handler or not
-        return name in container.cache
+        return name in container._get_handler_names()
 
 
     def get_handler_names(self, path='.'):

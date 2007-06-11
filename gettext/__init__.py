@@ -19,12 +19,13 @@
 import mimetypes
 
 # Import from itools
-from domains import DomainAware, register_domain, get_domain
+from domains import Domain, DomainAware, register_domain, get_domain
 from mo import MO
 from po import PO
 
 
 __all__ = [
+    'Domain',
     'DomainAware',
     'register_domain',
     'get_domain',

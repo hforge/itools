@@ -19,7 +19,6 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
-from os import getpid
 import profile
 import sys
 from time import time

@@ -18,7 +18,6 @@
 # Import from itools
 from itools import uri
 from itools.datatypes import Email, Integer, Unicode
-from itools.web import get_context
 from itools.web.access import AccessControl as AccessControlBase
 from itools.stl import stl
 from itools.cms import widgets
@@ -35,7 +34,7 @@ class AccessControl(AccessControlBase):
         if root.has_user_role(user.name, 'ikaaro:admins'):
             return True
         # Global admin?
-        root = get_context().root
+        root = object.get_root()
         return root.has_user_role(user.name, 'ikaaro:admins')
 
 

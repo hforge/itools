@@ -83,7 +83,7 @@ class POTestCase(TestCase):
         po = PO()
         po.load_state_from_string(content)
 
-        translation = po.get_translation('Hello')
+        translation = po.gettext('Hello')
         self.assertEqual(translation, 'Hello')
 
 
@@ -95,7 +95,7 @@ class POTestCase(TestCase):
         po = PO()
         po.load_state_from_string(content)
 
-        translation = po.get_translation('Hello')
+        translation = po.gettext('Hello')
         self.assertEqual(translation,'Hello')
 
 

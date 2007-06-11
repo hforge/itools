@@ -236,7 +236,7 @@ def translate(events, catalog):
                 if is_trans(tag_uri, tag_name, attributes, attr_name):
                     value = value.strip()
                     if value:
-                        value = catalog.get_translation(value)
+                        value = catalog.gettext(value)
                         value = value.encode(encoding)
                 aux[(attr_uri, attr_name)] = value
                 # Namespaces
@@ -256,7 +256,7 @@ def translate(events, catalog):
                 keep_spaces = False
         elif type == MESSAGE:
             for segment in value.get_segments(keep_spaces):
-                segment = catalog.get_translation(segment).encode('utf-8')
+                segment = catalog.gettext(segment).encode('utf-8')
                 for event in Parser(segment, namespaces):
                     yield event
         else:

@@ -400,7 +400,7 @@ class PO(Text):
         return None
 
 
-    def get_translation(self, msgid):
+    def gettext(self, msgid):
         """
         Returns the translation of the given message id.
 
@@ -413,6 +413,10 @@ class PO(Text):
             if msgstr:
                 return msgstr
         return msgid
+
+
+    # FIXME For backwards compatibility with 0.15 (o be removed by 0.17)
+    get_translation = gettext
 
 
     def set_message(self, msgid, msgstr=[u''], comments=[], references={},

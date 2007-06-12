@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 import mimetypes
+import os
 
 # Import from itools
 from domains import Domain, DomainAware, register_domain, get_domain
@@ -35,3 +36,7 @@ __all__ = [
 
 mimetypes.add_type('text/x-po', '.po')
 mimetypes.add_type('application/x-mo', '.mo')
+
+# Register the itools domain
+path = os.path.join(os.path.split(globals()['__path__'][0])[0], 'locale')
+register_domain('itools', path)

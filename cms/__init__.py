@@ -59,10 +59,6 @@ Folder.register_document_type(Tracker)
 if wiki is not None:
     Folder.register_document_type(wiki.WikiFolder)
 
-# Register domain (i18n)
-path = os.path.join(os.path.split(globals()['__path__'][0])[0], 'locale')
-register_domain('itools', path)
-
 
 ###########################################################################
 # Check for required software

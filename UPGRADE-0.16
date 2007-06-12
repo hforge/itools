@@ -1,0 +1,145 @@
+**************************************************************************
+itools 0.16.0
+**************************************************************************
+
+1. General changes
+==================
+
+Now Class names are written in capitalized words.
+So, some imports changes
+For example :
+  > from itools.cms.Folder import Folder
+  > from itools.cms.WebSite import WebSite
+is replaced by :
+  > from itools.cms.folder import Folder
+  > from itools.cms.website import WebSite
+
+2. itools.catalog
+=================
+2.1 Query
+.........
+
+The system of queries in catalog has changed.
+
+So replace :
+
+  > from itools.catalog import queries
+  
+  > query = []
+  > query.append(queries.Equal('format', 'Vo'))
+  > query.append(queries.Range('cp', dpt, dpt_suiv))
+  > query.append(queries.Phrase('field', value))
+  > query = queries.And(*query)
+ 
+by :
+  
+  > from itools.catalog import EqQuery, AndQuery, RangeQuery, PhraseQuery 
+  
+  > query = []
+  > query.append(EqQuery('format', 'Vo'))
+  > query.append(RangeQuery('cp_vendeur', dpt, dpt_suiv))
+  > query.append(PhraseQuery('field', value))
+  > query = AndQuery(*query)
+
+3. itools.xml
+=============
+3.1 Parser
+..........
+
+To import and use the parser we advice you to replace :
+
+    > from itools.xml import parser
+    
+    > for event, value, line_number in parser.Parser(page):
+
+By :
+
+    > from itools.xml import Parser, START_ELEMENT, TEXT
+    
+    > for events in Parser(page):
+    >     event, value, line_number = events 
+    >     if event == START_ELEMENT:
+
+
+4. itools.cms
+=============
+4.1 Handler
+...........
+4.1.1 Import Hander
+~~~~~~~~~~~~~~~~~~~
+
+The handler has been move, so replace the import :
+    > from itools.cms.Handler import Handler
+by :
+    > from itools.cms.base import Handler
+
+4.1.2 Metadata 
+~~~~~~~~~~~~~~
+
+The handler's metadata are not accesible any more
+So replace :
+    > self.metadata.get_property('dc:description')
+by :
+    > self.get_property('dc:description')
+
+
+4.1.3 Build metadata
+~~~~~~~~~~~~~~~~~~~~
+
+Now a Handler build his own metadata :
+Before :
+    > self.build_metadata(companies, **kw)
+now :
+    > companies.build_metadata(**kw)
+
+4.2 Catalog
+...........
+4.2.1 Get the catalog
+~~~~~~~~~~~~~~~~~~~~~
+
+To import the catalog replace :
+
+    > catalog = root.get_handler('.catalog')
+
+by :
+    
+    > catalog = context.server.catalog
+
+
+4.2.2 Catalog Fields
+~~~~~~~~~~~~~~~~~~~~
+
+The declaration of the list of field to index in catalog has changed:
+Before :
+
+   >  _catalog_fields = BaseRoot._catalog_fields + [
+        ('level1', 'keyword', True, True),
+        ('level2', 'keyword', True, True),
+        ('level3', 'keyword', True, True),
+        ('level4', 'keyword', True, False)]
+
+now :
+
+    > from itools.catalog import  KeywordField
+    > _catalog_fields = BaseRoot._catalog_fields + [
+            KeywordField('level1', is_stored=True),
+            KeywordField('level2', is_stored=True),
+            KeywordField('level3', is_stored=True),
+            KeywordField('level4')]
+
+Note that you can Use other kind of field :
+
+    > from itools.catalog import (TextField, KeywordField, IntegerField,
+                                   BoolField)
+
+5. Other changes
+================
+
+The checkid method has been moved, 
+so you have to update the import
+
+Before :
+    > from itools.cms.utils import checkid
+Now :
+    > from itools.rest import checkid
+

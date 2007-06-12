@@ -24,7 +24,6 @@ from cStringIO import StringIO
 # Import from itools
 from itools.datatypes import FileName, Unicode
 from itools.stl import stl
-from itools.web import get_context
 
 # Import from itools.cms
 from itools.cms.registry import register_object_class

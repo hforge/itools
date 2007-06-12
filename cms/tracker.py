@@ -29,7 +29,6 @@ from itools.csv.csv import IntegerKey, CSV as BaseCSV
 from itools.stl import stl
 from itools.uri import Query
 from itools import vfs
-from itools.web import get_context
 from csv import CSV
 from File import File
 from Folder import Folder

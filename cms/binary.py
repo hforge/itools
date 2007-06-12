@@ -190,7 +190,8 @@ class OfficeDocument(File):
                 text = unicode(stdout, self.source_encoding, 'replace')
             except UnicodeDecodeError:
                 context = get_context()
-                context.server.log_error(context)
+                if context is not None:
+                    context.server.log_error(context)
                 text = u''
 
         return text
@@ -230,7 +231,8 @@ class MSExcel(OfficeDocument):
             stdout, stderr = convert(self, self.source_converter)
         except (OSError, IOError):
             context = get_context()
-            context.server.log_error(context)
+            if context is not None:
+                context.server.log_error(context)
             return u''
 
         if stderr != "":
@@ -259,7 +261,8 @@ class MSPowerPoint(OfficeDocument):
             stdout, stderr = convert(self, self.source_converter)
         except (OSError, IOError):
             context = get_context()
-            context.server.log_error(context)
+            if context is not None:
+                context.server.log_error(context)
             return u''
 
         if stderr != "":
@@ -282,7 +285,8 @@ class OOffice(OfficeDocument):
             text = xml_to_text(content)
         except BadZipfile:
             context = get_context()
-            context.server.log_error(context)
+            if context is not None:
+                context.server.log_error(context)
             text = u''
 
         return text

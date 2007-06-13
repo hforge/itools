@@ -183,13 +183,13 @@ class KeywordField(BaseField):
 
     @staticmethod
     def decode(string):
-        # XXX
         return string
 
 
     @staticmethod
     def encode(value):
-        # XXX
+        if isinstance(value, list):
+            return u' '.join(value)
         return value
 
 

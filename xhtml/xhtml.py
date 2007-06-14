@@ -184,6 +184,7 @@ elements_schema = {
     # XHTML 1.0 frameset
     'frame': {'is_empty': True, 'is_inline': False},
     # Vendor specific, not approved by W3C
+    # See http://alistapart.com/articles/byebyeembed for a talk about <embed>
     'embed': {'is_empty': True, 'is_inline': False},
     # Unclassified
     'script': {'is_empty': False, 'is_inline': False,

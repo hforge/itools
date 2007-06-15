@@ -5,6 +5,15 @@
 <form id="edit_event" action=";edit_event" method="post">
   <p>(To add an event lasting all day long, leave time fields empty.)</p>
   <table class="form">
+    <tr stl:if="resources">
+      <td>Resource</td>
+      <td>
+        <select name="resource">
+          <option stl:repeat="item resources" selected="{item/selected}"
+                  value="${item/name}" size="15">${item/value}&nbsp;&nbsp;
+          </option></select>
+      </td>
+    </tr>
     <tr>
       <td>Summary</td>
       <td>

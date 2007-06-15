@@ -50,17 +50,15 @@
         <a class="add_event" href="${day/url}"><img width="16"
           height="16" src="${add_icon}" /></a>
 
-        <div class="event" stl:repeat="event day/events">
-          <dl>
-            <dt>
-              <a href="${event/url}" class="${event/STATUS}">
-                ${event/SUMMARY}
+        <table class="event" width="100%">
+          <tr stl:repeat="event day/events" class="color${event/cal}">
+            <td class="${event/STATUS}">
+              <a href="${event/url}">
+                ${event/SUMMARY}</a>
                 <span stl:if="event/TIME" class="time">${event/TIME}</span>
-              </a>
-            </dt>
-            <dd />
-          </dl>  
-        </div>
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
   </table>

@@ -18,6 +18,7 @@
 # Import from the Standard Library
 import base64
 import urllib
+from datetime import time
 
 # Import from itools
 from itools.datatypes import (DataType, Boolean, Email, String,
@@ -59,6 +60,45 @@ class Record(object):
 
 
 
+class Timetables(DataType):
+    """
+    Timetables are tuples of time objects (start, end) used by cms.ical.
+
+    Example with 3 timetables as saved into metadata:
+        (8,0),(10,0);(10,0),(12,0);(15,30),(17,30)
+
+    Decoded value are:
+        [(time(8,0), time(10,0)), (time(10,0), time(12, 0)),
+         (time(15,30), time(17, 30))]
+    """
+    @staticmethod
+    def decode(value):
+        if not value:
+            return ()
+        timetables = []
+        for timetable in value.strip().split(';'):
+            start, end = timetable[1:-1].split('),(')
+            hours, minutes = start.split(',')
+            hours, minutes = int(hours), int(minutes)
+            start = time(hours, minutes)
+            hours, minutes = end.split(',')
+            hours, minutes = int(hours), int(minutes)
+            end = time(hours, minutes)
+            timetables.append((start, end))
+        return tuple(timetables)
+
+
+    @staticmethod
+    def encode(value):
+        timetables = []
+        for start, end in value:
+            start = '(' + str(start.hour) + ',' + str(start.minute) + ')'
+            end = '(' + str(end.hour) + ',' + str(end.minute) + ')'
+            timetables.append(start + ',' + end)
+        return ';'.join(timetables)
+
+
+
 class Schema(BaseSchema):
 
     class_uri = 'http://xml.ikaaro.org/namespaces/metadata'
@@ -97,6 +137,8 @@ class Schema(BaseSchema):
         'reviewers': Tokens(default=()),
         # Settings
         'contacts': Tokens(default=()),
+        # ical
+        'timetables': Timetables,
         }
 
 

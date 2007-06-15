@@ -194,7 +194,7 @@ class HTMLFile(HTMLDocument, XHTMLFile):
         self.set_changed()
         body.children = children
 
-        return context.come_back(u'Version edited.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
 # Register the objects

@@ -251,7 +251,7 @@ class PO(Text, BasePO):
 ##        self.set_message(msgid, msgstr)
         self._messages[msgid].msgstr = msgstr
 
-        return context.come_back(u'Message edited.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
 register_object_class(PO)

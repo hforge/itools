@@ -32,6 +32,7 @@ from itools.datatypes import Email
 from access import AccessControl
 from folder import Folder
 from metadata import Password
+from messages import *
 from registry import register_object_class, get_object_class
 
 
@@ -204,8 +205,7 @@ class User(AccessControl, Folder):
         password = context.get_form_value('newpass')
         password2 = context.get_form_value('newpass2')
         if password != password2:
-            message = u'The passwords do not match.'
-            return context.come_back(message, keep=keep)
+            return context.come_back(MSG_PASSWORD_MISMATCH, keep=keep)
 
         # Set user
         self.set_password(password)
@@ -308,8 +308,7 @@ class User(AccessControl, Folder):
         # Check the email is good
         email = context.get_form_value('ikaaro:email')
         if not Email.is_valid(email):
-            message = u'A valid email address must be provided.'
-            return context.come_back(message)
+            return context.come_back(MSG_INVALID_EMAIL)
 
         root = context.root
         results = root.search(email=email)

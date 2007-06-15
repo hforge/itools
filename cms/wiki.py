@@ -389,8 +389,7 @@ class WikiPage(Text):
         vfs.remove(dirname)
 
         if data is None:
-            message = u"PDF generation failed."
-            return context.come_back(message)
+            return context.come_back(u"PDF generation failed.")
 
         response = context.response
         response.set_header('Content-Type', 'application/pdf')

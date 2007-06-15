@@ -20,8 +20,9 @@ from itools.uri import get_reference
 from itools.datatypes import Email, Integer, Unicode
 from itools.web import get_context, AccessControl as AccessControlBase
 from itools.stl import stl
-from itools.cms import widgets
+from messages import *
 from utils import generate_password
+import widgets
 
 
 class AccessControl(AccessControlBase):
@@ -469,8 +470,7 @@ class RoleAware(AccessControl):
             message = u'The email address is missing, please type it.'
             return context.come_back(message)
         if not Email.is_valid(email):
-            message = u'A valid email address must be provided.'
-            return context.come_back(message)
+            return context.come_back(MSG_INVALID_EMAIL)
 
         # Check whether the user already exists
         results = root.search(email=email)
@@ -488,8 +488,7 @@ class RoleAware(AccessControl):
                 password2 = context.get_form_value('newpass2')
                 # Check the password is right
                 if password != password2:
-                    message = u'The password is wrong, please try again.'
-                    return context.come_back(message)
+                    return context.come_back(MSG_PASSWORD_MISMATCH)
                 if not password:
                     # Admin can set no password
                     # so the user must activate its account

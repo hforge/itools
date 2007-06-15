@@ -252,16 +252,10 @@ class WebSite(RoleAware, Folder):
         if error is not None:
             return context.come_back(error, keep=keep)
 
-        # Check the real name
+        # Get input data
         firstname = context.get_form_value('ikaaro:firstname').strip()
         lastname = context.get_form_value('ikaaro:lastname').strip()
-
-        # Check the email
-        email = context.get_form_value('ikaaro:email')
-        email = email.strip()
-        if not Email.is_valid(email):
-            message = u'A valid email address must be provided.'
-            return context.come_back(message, keep=keep)
+        email = context.get_form_value('ikaaro:email').strip()
 
         # Do we already have a user with that email?
         root = context.root
@@ -555,7 +549,7 @@ class WebSite(RoleAware, Folder):
 
         # Check the from address
         if not Email.is_valid(from_addr):
-            return context.come_back(u'A valid email address must be provided.')
+            return context.come_back(MSG_INVALID_EMAIL)
 
         # Find out the "to" address
         contact = self.get_handler('/users/%s' % contact)

@@ -19,7 +19,9 @@
 MSG_BAD_NAME = (
     u'The document name contains illegal characters, choose another one.')
 MSG_CHANGES_SAVED = u'The changes have been saved.'
+MSG_INVALID_EMAIL = u'The email address provided is invalid.'
 MSG_NAME_CLASH = u'There is already another object with this name.'
 MSG_NAME_MISSING = u'The name is missing.'
 MSG_NEW_RESOURCE = u'A new resource has been added.'
+MSG_PASSWORD_MISMATCH = u'The provided passwords do not match.'
 

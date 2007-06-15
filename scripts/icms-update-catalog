@@ -55,7 +55,8 @@ def update_catalog(parser, options, target):
 
     # Ask
     message = 'Update the catalog (y/N)? '
-    if ask_confirmation(message) is True:
+    confirmed = options.confirm or ask_confirmation(message)
+    if confirmed is True:
         src = str(target.resolve2('database/.catalog').path)
         dst = str(target.resolve2('database/.catalog.bak').path)
         if vfs.exists(src):
@@ -116,6 +117,9 @@ if __name__ == '__main__':
         'Rebuilds the catalog: first removes and creates a new empty one;'
         ' then traverses and indexes all objects in the database.')
     parser = OptionParser(usage, version=version, description=description)
+    parser.add_option(
+        '-y', '--yes', action='store_true', dest='confirm',
+        help="start the update without asking confirmation")
 
     options, args = parser.parse_args()
     if len(args) != 1:

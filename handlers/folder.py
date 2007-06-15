@@ -293,8 +293,6 @@ class Folder(Handler):
         # Clean the 'removed_handlers' data structure if needed
         if name in container.removed_handlers:
             container.removed_handlers.remove(name)
-        # Event: before set handler
-        container.before_set_handler(name, handler, **kw)
         # Make a copy of the handler
         handler = handler.copy_handler()
         handler.parent = container
@@ -302,8 +300,6 @@ class Folder(Handler):
         # Add the handler
         container.added_handlers.add(name)
         container.cache[name] = handler
-        # Event: after set handler
-        container.after_set_handler(name, handler, **kw)
         return handler
 
 
@@ -320,9 +316,6 @@ class Folder(Handler):
 
         # Store the container in the transaction
         container.set_changed()
-        # Event, on del handler
-        if hasattr(container, 'on_del_handler'):
-            container.on_del_handler(name)
         # Clean the 'added_handlers' data structure if needed
         if name in container.added_handlers:
             container.added_handlers.remove(name)
@@ -333,10 +326,6 @@ class Folder(Handler):
 
     ########################################################################
     # Other methods
-    def before_set_handler(self, name, handler, **kw):
-        pass
-
-
     def after_set_handler(self, name, handler, **kw):
         pass
 

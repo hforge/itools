@@ -25,7 +25,7 @@ import mimetypes
 
 # Import from itools
 from itools.i18n import format_datetime, guess_language, has_language
-from itools.uri import Path, get_reference
+from itools.uri import Path, get_reference, Reference
 from itools.catalog import CatalogAware, EqQuery, AndQuery, PhraseQuery
 from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
@@ -45,6 +45,7 @@ from workflow import WorkflowAware
 from utils import reduce_string
 import widgets
 from registry import register_object_class, get_object_class
+from catalog import schedule_to_index, schedule_to_unindex
 
 
 
@@ -92,13 +93,47 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
 
     @classmethod
-    def new_instance_form(cls):
+    def new_instance_form(cls, context):
         namespace = {'class_id': cls.class_id,
                      'class_title': cls.gettext(cls.class_title)}
 
-        root = get_context().root
-        handler = root.get_handler('ui/folder/new_instance.xml')
+        handler = context.root.get_handler('ui/folder/new_instance.xml')
         return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            message = u'The name must be entered'
+            return context.come_back(message)
+
+        name = checkid(name)
+        if name is None:
+            message = (u'The document name contains illegal characters,'
+                       u' choose another one.')
+            return context.come_back(message)
+
+        # Check the name is free
+        if container.has_handler(name):
+            message = u'There is already another object with this name.'
+            return context.come_back(message)
+
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        language = container.get_site_root().get_default_language()
+        metadata.set_property('dc:title', title, language=language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        message = u'New resource added.'
+        return context.come_back(message, goto=goto)
 
 
     #######################################################################
@@ -192,84 +227,54 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return BaseFolder._get_virtual_handler(self, name)
 
 
-    def before_set_handler(self, name, handler, format=None, id=None,
-                           move=False, **kw):
-        if not isinstance(handler, Handler):
-            return
-        if name.startswith('.'):
-            return
-
-        # Set metadata
-        metadata = handler.get_metadata()
-        if metadata is None:
-            metadata = handler.build_metadata(format=format, **kw)
-        self.set_handler('%s.metadata' % name, metadata)
-
-
-    def after_set_handler(self, name, handler, format=None, id=None,
-                          move=False, **kw):
-        from root import Root
-
-        if not isinstance(handler, Handler):
-            return
-        if name.startswith('.'):
-            return
-
-        root = self.get_root()
-        if isinstance(root, Root):
-            # Index
-            handler = self.get_handler(name)
-            if isinstance(handler, Folder):
-                for x, context in handler.traverse2():
-                    if x.real_handler is not None:
-                        context.skip = True
-                    else:
-                        if isinstance(x, CatalogAware):
-                            root.index_handler(x)
-            else:
-                root.index_handler(handler)
-            # Store history
-            if move is False:
-                if isinstance(handler, Folder):
-                    for x, context in handler.traverse2():
-                        if x.real_handler is not None:
-                            context.skip = True
-                        else:
-                            if isinstance(x, VersioningAware):
-                                x.commit_revision()
-                    else:
-                        if isinstance(handler, VersioningAware):
-                            handler.commit_revision()
-
-
-    def on_del_handler(self, name):
-        from root import Root
-
-        if (name.startswith('.')
-            or name.endswith('.metadata')
-            or name.endswith('.lock')):
-            return
-
-        handler = self.get_handler(name)
-        # Unindex
-        root = self.get_root()
-        if isinstance(root, Root):
-            if isinstance(handler, Folder):
-                for x, context in handler.traverse2():
-                    if x.real_handler is None:
-                        root.unindex_handler(x)
-                    else:
-                        context.skip = True
-            else:
-                root.unindex_handler(handler)
-
-        # Remove metadata
-        self.del_handler('%s.metadata' % name)
+    def _traverse_catalog_aware_objects(self):
+        for handler, ctx in self.traverse2(caching=False):
+            # Skip virtual handlers
+            if handler.real_handler is not None:
+                ctx.skip = True
+                continue
+            # Skip non catalog aware handlers
+            if not isinstance(handler, CatalogAware):
+                ctx.skip = True
+                continue
+            yield handler
 
 
     #######################################################################
     # API
     #######################################################################
+    def set_object(self, name, handler, metadata=None):
+        if metadata is None:
+            metadata = handler.build_metadata()
+
+        # Add
+        handler = self.set_handler(name, handler)
+        metadata = self.set_handler('%s.metadata' % name, metadata)
+
+        # Schedule to index
+        if isinstance(handler, Folder):
+            for x in handler._traverse_catalog_aware_objects():
+                schedule_to_index(handler)
+        else:
+            schedule_to_index(handler)
+
+        return handler, metadata
+
+
+    def del_object(self, name):
+        # Schedule to unindex
+        handler = self.get_handler(name)
+        if isinstance(handler, Folder):
+            for x in handler._traverse_catalog_aware_objects():
+                schedule_to_unindex(handler)
+        else:
+            schedule_to_unindex(handler)
+
+        # Remove
+        self.del_handler(name)
+        self.del_handler('%s.metadata' % name)
+
+
     def search_handlers(self, path='.', format=None, state=None,
                         handler_class=None):
         container = self.get_handler(path)
@@ -598,7 +603,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             ac = handler.get_access_control()
             if ac.is_allowed_to_remove(user, handler):
                 # Remove handler
-                self.del_handler(name)
+                self.del_object(name)
                 removed.append(name)
             else:
                 not_allowed.append(name)
@@ -656,14 +661,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
                     u' choose another one.')
             # Rename
             if new_name != old_name:
+                # XXX itools should provide an API to copy and move handlers
                 handler = self.get_handler(old_name)
                 handler_metadata = handler.get_metadata()
+                self.set_object(new_name, handler, handler_metadata)
+                self.del_object(old_name)
 
-                # XXX itools should provide an API to copy and move handlers
-                self.set_handler(new_name, handler, move=True)
-                self.del_handler('%s.metadata' % new_name)
-                self.set_handler('%s.metadata' % new_name, handler_metadata)
-                self.del_handler(old_name)
 
         message = u'Objects renamed.'
         return context.come_back(message, goto=';browse_content')
@@ -712,56 +715,63 @@ class Folder(Handler, BaseFolder, CalendarAware):
     paste__access__ = 'is_allowed_to_add'
     def paste(self, context):
         cp = context.get_cookie('ikaaro_cp')
-        if cp is not None:
-            root = context.root
-            allowed_types = tuple(self.get_document_types())
-            cut, paths = marshal.loads(zlib.decompress(urllib.unquote(cp)))
-            for path in paths:
-                handler = root.get_handler(path)
-                if isinstance(handler, allowed_types):
-                    name = handler.name
-                    # Find a non used name
-                    # XXX ROBLES To be tested carefully and optimized
-                    while self.has_handler(name):
-                        name = name.split('.')
-                        id = name[0].split('_')
-                        index = id[-1]
-                        try:   # tests if id ends with a number
-                            index = int(index)
-                        except ValueError:
-                            id.append('copy_1')
-                        else:
-                            try:  # tests if the pattern is '_copy_x'
-                               if id[-2] == 'copy':
-                                  index = str(index + 1) # increment index
-                                  id[-1] = index
-                               else:
-                                  id.append('copy_1')
-                            except IndexError:
-                               id.append('copy_1')
-                            else:
-                               pass
-                        id = '_'.join(id)
-                        name[0] = id
-                        name = '.'.join(name)
-                    # Unicode is not a valid Zope id
-                    name = str(name)
-                    # Add it here
-                    if cut is True:
-                        self.set_handler(name, handler, move=True)
-                        # Remove original
-                        container = handler.parent
-                        container.del_handler(name)
+        if cp is None:
+            return context.come_back(u'Nothing to paste.')
+
+        root = context.root
+        allowed_types = tuple(self.get_document_types())
+        cut, paths = marshal.loads(zlib.decompress(urllib.unquote(cp)))
+        for path in paths:
+            handler = root.get_handler(path)
+            if not isinstance(handler, allowed_types):
+                continue
+
+            name = handler.name
+            # Find a non used name
+            # XXX ROBLES To be tested carefully and optimized
+            while self.has_handler(name):
+                name = name.split('.')
+                id = name[0].split('_')
+                index = id[-1]
+                try:   # tests if id ends with a number
+                    index = int(index)
+                except ValueError:
+                    id.append('copy_1')
+                else:
+                    try:  # tests if the pattern is '_copy_x'
+                       if id[-2] == 'copy':
+                          index = str(index + 1) # increment index
+                          id[-1] = index
+                       else:
+                          id.append('copy_1')
+                    except IndexError:
+                       id.append('copy_1')
                     else:
-                        self.set_handler(name, handler)
-                        # Fix metadata properties
-                        handler = self.get_handler(name)
-                        metadata = handler.metadata
-                        # Fix state
-                        if isinstance(handler, WorkflowAware):
-                            metadata.set_property('state', handler.workflow.initstate)
-                        # Fix owner
-                        metadata.set_property('owner', context.user.name)
+                       pass
+                id = '_'.join(id)
+                name[0] = id
+                name = '.'.join(name)
+            # Unicode is not a valid Zope id
+            name = str(name)
+            # Add it here
+            metadata = handler.metadata
+            self.set_object(name, handler, metadata)
+            if cut is True:
+                # Cut&Paste (remove original)
+                container = handler.parent
+                container.del_object(name)
+            else:
+                # Copy&Paste (fix metadata properties)
+                handler = self.get_handler(name)
+                metadata = handler.metadata
+                # Fix state
+                if isinstance(handler, WorkflowAware):
+                    metadata.set_property('state', handler.workflow.initstate)
+                # Fix owner
+                metadata.set_property('owner', context.user.name)
+                # Versioning
+                if isinstance(handler, VersioningAware):
+                    handler.commit_revision()
 
         return context.come_back(u'Objects pasted.')
 
@@ -795,88 +805,38 @@ class Folder(Handler, BaseFolder, CalendarAware):
     new_resource_form__label__ = u'Add'
     def new_resource_form(self, context):
         type = context.get_form_value('type')
-        if type is None:
-            # Build the namespace
-            namespace = {}
-            namespace['types'] = []
+        # Type choosen
+        if type is not None:
+            cls = get_object_class(type)
+            return cls.new_instance_form(context)
 
-            for handler_class in self.get_document_types():
-                type_ns = {}
-                gettext = handler_class.gettext
-                format = urllib.quote(handler_class.class_id)
-                type_ns['format'] = format
-                icon = handler_class.class_icon48
-                type_ns['icon'] = self.get_pathtoroot() + 'ui/' + icon
-                title = handler_class.class_title
-                type_ns['title'] = gettext(title)
-                description = handler_class.class_description
-                type_ns['description'] = gettext(description)
-                type_ns['url'] = ';new_resource_form?type=' + format
-                namespace['types'].append(type_ns)
+        # Choose a type
+        namespace = {}
+        namespace['types'] = []
 
-            handler = self.get_handler('/ui/folder/new_resource.xml')
-            return stl(handler, namespace)
-        else:
-            handler_class = get_object_class(type)
-            return handler_class.new_instance_form()
+        for handler_class in self.get_document_types():
+            type_ns = {}
+            gettext = handler_class.gettext
+            format = urllib.quote(handler_class.class_id)
+            type_ns['format'] = format
+            icon = handler_class.class_icon48
+            type_ns['icon'] = self.get_pathtoroot() + 'ui/' + icon
+            title = handler_class.class_title
+            type_ns['title'] = gettext(title)
+            description = handler_class.class_description
+            type_ns['description'] = gettext(description)
+            type_ns['url'] = ';new_resource_form?type=' + format
+            namespace['types'].append(type_ns)
+
+        handler = self.get_handler('/ui/folder/new_resource.xml')
+        return stl(handler, namespace)
 
 
     new_resource__access__ = 'is_allowed_to_add'
     def new_resource(self, context):
         class_id = context.get_form_value('class_id')
-        name = context.get_form_value('name')
-        title = context.get_form_value('dc:title')
-
-        # Empty name?
-        name = name.strip() or title.strip()
-        if not name:
-            message = u'The name must be entered'
-            return context.come_back(message)
-
-        # Invalid name?
-        name = checkid(name)
-        if name is None:
-            message = (u'The document name contains illegal characters,'
-                       u' choose another one.')
-            return context.come_back(message)
-
-        # Find out the handler class
-        handler_class = get_object_class(class_id)
-
-        # Find out the name
-        name = FileName.encode((name, handler_class.class_extension,
-                                context.get_form_value('dc:language')))
-        # Name already used?
-        if self.has_handler(name):
-            message = u'There is already another object with this name.'
-            return context.come_back(message)
-
-        # Build the handler
-        handler = handler_class.new_instance()
-
-        # Add the handler
-        self.set_handler(name, handler)
-        handler = self.get_handler(name)
-        # Set the language
-        language = context.get_form_value('dc:language')
-        if language is None:
-            root = self.get_site_root()
-            languages = root.get_property('ikaaro:website_languages')
-            language = languages[0]
-        else:
-            handler.set_property('dc:language', language)
-        # Set the title
-        handler.set_property('dc:title', title, language)
-
-        # Come back
-        if context.has_form_value('add_and_return'):
-            goto = ';browse_content'
-        else:
-            handler = self.get_handler(name)
-            goto = './%s/;%s' % (name, handler.get_firstview())
-
-        message = u'New resource added.'
-        return context.come_back(message, goto=goto)
+        cls = get_object_class(class_id)
+        return cls.new_instance(self, context)
 
 
     browse_dir__access__ = 'is_authenticated'
@@ -890,61 +850,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         handler = self.get_handler('/ui/folder/browsedir.xml')
         return stl(handler, namespace)
-
-
-    #######################################################################
-    # Add / Upload File
-    upload_file__access__ = 'is_allowed_to_add'
-    def upload_file(self, context):
-        file = context.get_form_value('file')
-        if file is None:
-            return context.come_back(u'The file must be entered')
-
-        # Build a memory resource
-        name, mimetype, body = file
-        # The mimetype sent by the browser can be minimalistic
-        guessed = mimetypes.guess_type(name)[0]
-        if guessed is not None:
-            mimetype = guessed
-
-        # Guess the language if it is not included in the filename
-        if mimetype.startswith('text/'):
-            short_name, type, language = FileName.decode(name)
-            if language is None:
-                # Guess the language
-                encoding = Text.guess_encoding(body)
-                data = unicode(body, encoding)
-                language = guess_language(data)
-                # Rebuild the name
-                name = FileName.encode((short_name, type, language))
-
-        # Invalid name?
-        name = checkid(name)
-        if name is None:
-            return context.come_back(
-                u'The document name contains illegal characters,'
-                u' choose another one.')
-
-        # Name already used?
-        if self.has_handler(name):
-            message = u'There is already another resource with this name.'
-            return context.come_back(message)
-
-        # Set the handler
-        handler_class = get_object_class(mimetype)
-        handler = handler_class()
-        handler.load_state_from_string(body)
-        self.set_handler(name, handler, format=mimetype)
-        handler = self.get_handler(name)
-
-        # Come back
-        if context.has_form_value('add_and_return'):
-            goto = ';browse_content'
-        else:
-            goto='./%s/;%s' % (name, handler.get_firstview())
-
-        message = u'File uploaded.'
-        return context.come_back(message, goto=goto)
 
 
     #######################################################################

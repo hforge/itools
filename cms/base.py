@@ -36,6 +36,7 @@ from handlers import Lock, Metadata
 import webdav
 from versioning import VersioningAware
 from workflow import WorkflowAware
+from catalog import schedule_to_reindex
 
 
 # Initialize logger
@@ -215,16 +216,14 @@ class Node(BaseNode):
 
 class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
-    def before_commit(self):
-        from root import Root
-
-        root = self.get_root()
-        if isinstance(root, Root):
-            root.reindex_handler(self)
+    def set_changed(self):
+        BaseHandler.set_changed(self)
+        if self.uri is not None:
+            schedule_to_reindex(self)
 
 
     @classmethod
-    def new_instance(cls):
+    def new_instance(cls, context):
         return cls()
 
 
@@ -329,10 +328,12 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
 
     def set_property(self, name, value, language=None):
+        schedule_to_reindex(self)
         self.metadata.set_property(name, value, language=language)
 
 
     def del_property(self, name, language=None):
+        schedule_to_reindex(self)
         self.metadata.del_property(name, language=language)
 
 
@@ -356,15 +357,15 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
 
     def get_format(self):
-        return self.metadata.get_property('format')
+        return self.get_property('format')
 
 
     def get_owner(self):
-        return self.metadata.get_property('owner')
+        return self.get_property('owner')
 
 
     def get_language(self):
-        return self.metadata.get_property('dc:language')
+        return self.get_property('dc:language')
 
 
     def get_parent_path(self):
@@ -383,7 +384,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     ########################################################################
     def get_next_versions(self):
         # Set zero version if the object does not have a version
-        object_version = self.metadata.get_property('version')
+        object_version = self.get_property('version')
         if object_version is None:
             object_version = '00000000'
 
@@ -594,10 +595,6 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         else:
             self.set_property('dc:title', title)
             self.set_property('dc:description', description)
-
-        # Reindex
-        root = context.root
-        root.reindex_handler(self)
 
         return context.come_back(u'Metadata changed.')
 

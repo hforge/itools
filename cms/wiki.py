@@ -27,7 +27,6 @@ import urllib
 # Import from itools
 from ..uri import get_reference
 from .. import vfs
-from ..web import get_context
 from ..stl import stl
 from ..datatypes import Unicode, FileName
 from ..rest import checkid
@@ -79,16 +78,6 @@ class WikiFolder(Folder):
 
     def get_document_types(self):
         return [WikiPage, File]
-
-
-    def before_set_handler(self, name, handler, format=None, id=None,
-                           move=False, **kw):
-        Folder.before_set_handler(self, name, handler, format, id, move, **kw)
-        if isinstance(handler, WikiPage):
-            context = get_context()
-            if context is not None:
-                data = context.get_form_value('data', default='')
-                handler.load_state_from_string(data)
 
 
     #######################################################################
@@ -157,8 +146,7 @@ class WikiPage(Text):
 
 
     @classmethod
-    def new_instance_form(cls, name=''):
-        context = get_context()
+    def new_instance_form(cls, context, name=''):
         root = context.root
         namespace = {}
 
@@ -171,6 +159,39 @@ class WikiPage(Text):
 
         handler = root.get_handler('ui/wiki/WikiPage_new_instance.xml')
         return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        name = context.get_form_value('name')
+        data = context.get_form_value('data', default='')
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            message = u'The name must be entered'
+            return context.come_back(message)
+
+        name = checkid(name)
+        if name is None:
+            message = (u'The document name contains illegal characters,'
+                       u' choose another one.')
+            return context.come_back(message)
+
+        # Check the name is free
+        if container.has_handler(name):
+            message = u'There is already another object with this name.'
+            return context.come_back(message)
+
+        # Build the object
+        handler = cls(string=data)
+        metadata = handler.build_metadata()
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        message = u'New resource added.'
+        return context.come_back(message, goto=goto)
 
 
     def GET(self, context):

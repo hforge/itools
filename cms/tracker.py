@@ -246,7 +246,7 @@ class Tracker(Folder):
         elif search_title:
             # New Stored Search
             search_name = self.get_new_id('s')
-            stored_search = self.set_handler(search_name, StoredSearch())
+            stored_search = self.set_object(search_name, StoredSearch())
         else:
             # Just Search
             return context.uri.resolve(';view').replace(**context.uri.query)
@@ -413,7 +413,7 @@ class Tracker(Folder):
 
         # Add
         id = self.get_new_id()
-        issue = self.set_handler(id, Issue())
+        issue, metadata = self.set_object(id, Issue())
         issue._add_row(context)
 
         goto = context.uri.resolve2('../%s/;edit_form' % issue.name)
@@ -583,7 +583,9 @@ class Issue(Folder):
             handler_class = get_object_class(mimetype)
             handler = handler_class()
             handler.load_state_from_string(body)
-            self.set_handler(filename, handler, format=mimetype)
+
+            handler, metadata = self.set_object(filename, handler)
+            metadata.set_property('format', mimetype)
         # Update
         history = self.get_handler('.history')
         history.add_row(row)

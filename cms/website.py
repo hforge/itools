@@ -68,6 +68,13 @@ class WebSite(RoleAware, Folder):
 
 
     ########################################################################
+    # API
+    ########################################################################
+    def get_default_language(self):
+        return self.get_property('ikaaro:website_languages')[0]
+
+
+    ########################################################################
     # User interface
     ########################################################################
 
@@ -273,8 +280,6 @@ class WebSite(RoleAware, Folder):
             # Set the role
             default_role = self.__roles__[0]['name']
             self.set_user_role(user.name, default_role)
-            # Reindex
-            root.reindex_handler(user)
 
         # Send confirmation email
         key = generate_password(30)

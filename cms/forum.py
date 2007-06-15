@@ -173,7 +173,7 @@ class Thread(Folder):
         body = escape(body.strip())
         reply = self.message_class()
         reply.load_state_from_string(body)
-        self.set_handler(name, reply)
+        self.set_object(name, reply)
 
         return context.come_back(u"Reply Posted.", goto='#new_reply')
 
@@ -266,8 +266,10 @@ class Forum(Folder):
 
         body = context.get_form_value('body', type=Unicode)
         body = escape(body.strip())
-        self.set_handler(name, self.thread_class(body=body),
-                **{'dc:title': {default_language: title}})
+
+        thread = self.thread_class(body=body)
+        thread, metadata = self.set_object(name, thread)
+        thread.set_property('dc:title', title, language=default_language)
 
         return context.come_back(u"Thread Created.", goto=name)
 

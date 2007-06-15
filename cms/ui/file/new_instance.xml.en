@@ -6,7 +6,7 @@
 
   <h2>Upload File</h2>
 
-  <form name="upload_file" action=";upload_file" method="post"
+  <form name="new_resource" action=";new_resource" method="post"
     enctype="multipart/form-data">
     <dl>
       <dt><label for="file">File</label></dt>
@@ -15,7 +15,8 @@
       </dd>
     </dl>
     <p>
-      <input type="submit" value="Upload" class="button_upload"/>
+      <input type="hidden" name="class_id" value="${class_id}"/>
+      <input type="submit" value="Add" class="button_ok"/>
     </p>
   </form>
 

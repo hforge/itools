@@ -216,26 +216,7 @@ class Root(WebSite):
 
 
     ########################################################################
-    # Index & Search
-    def index_handler(self, handler):
-        context = get_context()
-        if context is not None:
-            catalog = context.server.catalog
-            catalog.index_document(handler)
-
-
-    def unindex_handler(self, handler):
-        catalog = get_context().server.catalog
-        catalog.unindex_document(handler.abspath)
-
-
-    def reindex_handler(self, handler):
-        if handler.real_handler is not None:
-            handler = handler.real_handler
-        self.unindex_handler(handler)
-        self.index_handler(handler)
-
-
+    # Search
     def search(self, query=None, **kw):
         catalog = get_context().server.catalog
         return catalog.search(query, **kw)
@@ -349,19 +330,6 @@ class Root(WebSite):
     def catalog_form(self, context):
         handler = self.get_handler('/ui/root/catalog.xml')
         return stl(handler)
-
-
-    def _traverse_catalog_aware_objects(self):
-        for handler, ctx in self.traverse2(caching=False):
-            # Skip virtual handlers
-            if handler.real_handler is not None:
-                ctx.skip = True
-                continue
-            # Skip non catalog aware handlers
-            if not isinstance(handler, CatalogAware):
-                ctx.skip = True
-                continue
-            yield handler
 
 
     update_catalog__access__ = 'is_admin'

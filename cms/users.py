@@ -322,9 +322,6 @@ class User(AccessControl, Folder):
             value = context.get_form_value(key)
             self.set_property(key, value)
 
-        # Reindex
-        root.reindex_handler(self)
-
         return context.come_back(u'Account changed.')
 
 
@@ -478,9 +475,7 @@ class UserFolder(Folder):
             user_id = '0'
 
         # Add the user
-        self.set_handler(user_id, user)
-        user = self.get_handler(user_id)
-
+        user, metadata = self.set_object(user_id, user)
         # Set the email and paswword
         if email is not None:
             user.set_property('ikaaro:email', email)
@@ -499,14 +494,17 @@ class UserFolder(Folder):
         return frozenset(usernames)
 
 
-    def on_del_handler(self, name):
+
+    def del_object(self, name):
         handler = self.get_handler(name)
         if isinstance(handler, User):
             root = self.get_root()
             for group_path in handler.get_groups():
                 group = root.get_handler(group_path)
                 group.set_user_role(name, None)
-        Folder.on_del_handler(self, name)
+
+        Folder.del_object(self, name)
+
 
     #######################################################################
     # Back-Office

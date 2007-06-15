@@ -28,6 +28,7 @@ from itools.web import Server as BaseServer
 from itools.cms.database import DatabaseFS
 from itools.cms.handlers import Metadata
 from itools.cms import registry
+from catalog import get_to_index, get_to_unindex
 
 
 def ask_confirmation(message):
@@ -130,6 +131,20 @@ class Server(BaseServer):
 
 
     def before_commit(self):
+        catalog = self.catalog
+        # Unindex Handlers
+        to_unindex = get_to_unindex()
+        for handler in to_unindex:
+            catalog.unindex_document(handler)
+        to_unindex.clear()
+
+        # Index Handlers
+        to_index = get_to_index()
+        for handler in to_index:
+            catalog.index_document(handler)
+        to_index.clear()
+
+        # XXX Versioning
         transaction = get_transaction()
         for handler in list(transaction):
             if hasattr(handler, 'before_commit'):

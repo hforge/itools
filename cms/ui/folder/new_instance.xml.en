@@ -19,13 +19,11 @@
     </dl>
     <p>
       <input type="hidden" name="class_id" value="${class_id}" />
-      <input type="submit" name="add_and_view" value="Add and view" class="button_ok"/>
-      <input type="submit" name="add_and_return" value="Add and return"/>
+      <input type="submit" value="Add" class="button_ok"/>
     </p>
   </form>
 
   <script type="text/javascript">
     focus("dc:title")
   </script>
-
 </stl:block>

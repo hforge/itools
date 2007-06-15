@@ -23,11 +23,10 @@ from itools.i18n import get_language_name
 from itools.handlers import Text as BaseText, Python as BasePython
 from itools.gettext import PO as BasePO
 from itools.stl import stl
-from itools.web import get_context
 from utils import get_parameters
 from file import File
 from registry import register_object_class
-from itools.rest import Document as RestDocument
+from itools.rest import Document as RestDocument, checkid
 
 
 class Text(File, BaseText):
@@ -45,8 +44,7 @@ class Text(File, BaseText):
 
 
     @classmethod
-    def new_instance_form(cls, name=''):
-        context = get_context()
+    def new_instance_form(cls, context, name=''):
         root = context.root
 
         namespace = {}
@@ -66,6 +64,42 @@ class Text(File, BaseText):
 
         handler = root.get_handler('ui/text/new_instance.xml')
         return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
+        language = context.get_form_value('dc:language')
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            message = u'The name must be entered'
+            return context.come_back(message)
+
+        name = checkid(name)
+        if name is None:
+            message = (u'The document name contains illegal characters,'
+                       u' choose another one.')
+            return context.come_back(message)
+
+        # Check the name is free
+        if container.has_handler(name):
+            message = u'There is already another object with this name.'
+            return context.come_back(message)
+
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        metadata.set_property('dc:title', title, language=language)
+        metadata.set_property('dc:language', language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        message = u'New resource added.'
+        return context.come_back(message, goto=goto)
 
 
     #######################################################################

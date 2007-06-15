@@ -24,7 +24,6 @@ from itools.i18n import get_language_name
 from itools.datatypes import Enumerate, Unicode, ISOTime, Date, DataType
 from itools.ical import get_grid_data, icalendar, PropertyValue, DateTime
 from itools.stl import stl
-from itools.web import get_context
 from registry import register_object_class
 
 # Import from itools.cms
@@ -1014,29 +1013,6 @@ class Calendar(Text, icalendar, CalendarAware):
                   ((13,0),(14,0)), ((14,0),(15,0)), ((15,0),(16,0)), 
                   ((16,0),(17,0)), ((17,0),(18,0)), ((18,0),(19,0)), 
                   ((19,0),(20,0)), ((20,0),(21,0))]
-
-
-    @classmethod
-    def new_instance_form(cls, name=''):
-        context = get_context()
-        root = context.root
-
-        namespace = {}
-        namespace['name'] = name
-        namespace['class_id'] = cls.class_id
-        # Languages
-        languages = []
-        website_languages = root.get_property('ikaaro:website_languages')
-        default_language = website_languages[0]
-        for code in website_languages:
-            language_name = get_language_name(code)
-            languages.append({'code': code,
-                              'name': cls.gettext(language_name),
-                              'isdefault': code == default_language})
-        namespace['languages'] = languages
-
-        handler = root.get_handler('ui/text/new_instance.xml')
-        return stl(handler, namespace)
 
 
     @classmethod

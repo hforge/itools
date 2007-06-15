@@ -122,7 +122,7 @@ class WorkflowAware(iWorkflowAware):
         namespace['transitions'] = transitions
         # Workflow history
         transitions = []
-        for transition in self.metadata.get_property('ikaaro:wf_transition'):
+        for transition in self.get_property('ikaaro:wf_transition'):
             date = transition[('dc', 'date')].strftime('%Y-%m-%d %H:%M')
             comments = transition[(None, 'comments')]
             # XXX The property comments should be a unicode string
@@ -152,11 +152,8 @@ class WorkflowAware(iWorkflowAware):
                     (None, 'name'): transition,
                     (None, 'comments'): comments}
 
-        self.metadata.set_property('ikaaro:wf_transition', property)
+        self.set_property('ikaaro:wf_transition', property)
         # Change the state, through the itools.workflow way
         self.do_trans(transition)
-        # Re-index
-        root = context.root
-        root.reindex_handler(self)
         # Comeback
         return context.come_back(u'Transition done.')

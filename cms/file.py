@@ -17,15 +17,18 @@
 
 # Import from the Standard Library
 from datetime import datetime
+import mimetypes
 
 # Import from itools
 from itools.uri import get_reference
+from itools.datatypes import FileName
 from itools import vfs
-from itools.handlers import File as BaseFile
+from itools.rest import checkid
+from itools.i18n import guess_language
+from itools.handlers import File as BaseFile, Text
 from itools.stl import stl
-from itools.web import get_context
 from base import Handler
-from registry import register_object_class
+from registry import register_object_class, get_object_class
 from versioning import VersioningAware
 from workflow import WorkflowAware
 
@@ -47,12 +50,61 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
 
     @classmethod
-    def new_instance_form(cls):
-        handler = get_context().root.get_handler('ui/file/new_instance.xml')
-        return stl(handler)
+    def new_instance_form(cls, context):
+        namespace = {}
+        namespace['class_id'] = cls.class_id
+        handler = context.root.get_handler('ui/file/new_instance.xml')
+        return stl(handler, namespace)
 
 
-    GET__mtime__ = Handler.get_mtime
+    @classmethod
+    def new_instance(cls, container, context):
+        # Check input data
+        file = context.get_form_value('file')
+        if file is None:
+            return context.come_back(u'The file must be entered')
+
+        # Interpret input data (the mimetype sent by the browser can be
+        # minimalistic)
+        name, mimetype, body = file
+        guessed = mimetypes.guess_type(name)[0]
+        if guessed is not None:
+            mimetype = guessed
+
+        # Check the name
+        name = checkid(name)
+        if name is None:
+            return context.come_back(
+               u'The document name contains illegal characters,'
+               u' choose another one.')
+
+        # Add the language externsion to the name
+        if mimetype.startswith('text/'):
+            short_name, type, language = FileName.decode(name)
+            if language is None:
+                encoding = Text.guess_encoding(body)
+                data = unicode(body, encoding)
+                language = guess_language(data)
+                # Rebuild the name
+                name = FileName.encode((short_name, type, language))
+
+        # Check the name is free
+        if container.has_handler(name):
+            message = u'There is already another object with this name.'
+            return context.come_back(message)
+
+        # Build the object
+        cls = get_object_class(mimetype)
+        handler = cls(string=body)
+        metadata = handler.build_metadata()
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        message = u'New resource added.'
+        return context.come_back(message, goto=goto)
+
+
     def GET(self, context):
         return self.download(context)
 
@@ -60,14 +112,12 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     #######################################################################
     # Versioning
     def before_commit(self):
-        Handler.before_commit(self)
         self.commit_revision()
 
 
     #######################################################################
-    # User interface
+    # User Interface
     #######################################################################
-
     def get_human_size(self):
         bytes = vfs.get_size(self.uri)
         size = bytes / 1024.0

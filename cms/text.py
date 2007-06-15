@@ -23,10 +23,11 @@ from itools.i18n import get_language_name
 from itools.handlers import Text as BaseText, Python as BasePython
 from itools.gettext import PO as BasePO
 from itools.stl import stl
+from itools.rest import Document as RestDocument, checkid
 from utils import get_parameters
 from file import File
+from messages import *
 from registry import register_object_class
-from itools.rest import Document as RestDocument, checkid
 
 
 class Text(File, BaseText):
@@ -75,19 +76,15 @@ class Text(File, BaseText):
         # Check the name
         name = name.strip() or title.strip()
         if not name:
-            message = u'The name must be entered'
-            return context.come_back(message)
+            return context.come_back(MSG_NAME_MISSING)
 
         name = checkid(name)
         if name is None:
-            message = (u'The document name contains illegal characters,'
-                       u' choose another one.')
-            return context.come_back(message)
+            return context.come_back(MSG_BAD_NAME)
 
         # Check the name is free
         if container.has_handler(name):
-            message = u'There is already another object with this name.'
-            return context.come_back(message)
+            return context.come_back(MSG_NAME_CLASH)
 
         # Build the object
         handler = cls()
@@ -98,8 +95,7 @@ class Text(File, BaseText):
         handler, metadata = container.set_object(name, handler, metadata)
 
         goto = './%s/;%s' % (name, handler.get_firstview())
-        message = u'New resource added.'
-        return context.come_back(message, goto=goto)
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
     #######################################################################
@@ -163,7 +159,7 @@ class Text(File, BaseText):
         data = context.get_form_value('data')
         self.load_state_from_string(data)
 
-        return context.come_back(u'Document edited.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
     #######################################################################

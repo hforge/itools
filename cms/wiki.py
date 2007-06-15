@@ -34,6 +34,7 @@ from ..rest import checkid
 # Import from itools.cms
 from .file import File
 from .folder import Folder
+from itools.cms.messages import *
 from .text import Text
 from .registry import register_object_class
 
@@ -169,19 +170,15 @@ class WikiPage(Text):
         # Check the name
         name = name.strip() or title.strip()
         if not name:
-            message = u'The name must be entered'
-            return context.come_back(message)
+            return context.come_back(MSG_NAME_MISSING)
 
         name = checkid(name)
         if name is None:
-            message = (u'The document name contains illegal characters,'
-                       u' choose another one.')
-            return context.come_back(message)
+            return context.come_back(MSG_BAD_NAME)
 
         # Check the name is free
         if container.has_handler(name):
-            message = u'There is already another object with this name.'
-            return context.come_back(message)
+            return context.come_back(MSG_NAME_CLASH)
 
         # Build the object
         handler = cls(string=data)
@@ -190,8 +187,7 @@ class WikiPage(Text):
         handler, metadata = container.set_object(name, handler, metadata)
 
         goto = './%s/;%s' % (name, handler.get_firstview())
-        message = u'New resource added.'
-        return context.come_back(message, goto=goto)
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
     def GET(self, context):
@@ -431,7 +427,7 @@ class WikiPage(Text):
         if 'class="system-message"' in self.to_html():
             message = u"Syntax error, please check the view for details."
         else:
-            message = u"Document edited."
+            message = MSG_CHANGES_SAVED
 
         goto = context.come_back(message)
         if context.has_form_value('view'):

@@ -27,6 +27,7 @@ from itools.stl import stl
 from folder import Folder
 from skins import Skin
 from access import RoleAware
+from messages import *
 import widgets
 from workflow import WorkflowAware
 from skins import ui
@@ -180,7 +181,7 @@ class WebSite(RoleAware, Folder):
         for name in ['ikaaro:website_is_open']:
             self.set_property(name, context.get_form_value(name, False))
 
-        return context.come_back(u'Changes saved.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
     ######################################################################
@@ -220,7 +221,7 @@ class WebSite(RoleAware, Folder):
         contacts = tuple(contacts)
         self.set_property('ikaaro:contacts', contacts)
 
-        return context.come_back(u'Changes saved.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
     ########################################################################

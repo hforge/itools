@@ -28,6 +28,7 @@ from itools.xhtml import Document as XHTMLDocument
 from itools.html import Document as HTMLDocument
 
 # Import from ikaaro
+from messages import *
 from text import Text
 from registry import register_object_class
 
@@ -162,7 +163,7 @@ class XHTMLFile(Text, XHTMLDocument):
                        + new_body
                        + self.events[old_body.end+1:])
 
-        return context.come_back(u'Document changed.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
 

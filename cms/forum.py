@@ -26,10 +26,9 @@ from itools.datatypes import FileName, Unicode
 from itools.stl import stl
 from itools.web import get_context
 from itools.rest import checkid
-
-# Import from itools.cms
-from registry import register_object_class
 from folder import Folder
+from messages import *
+from registry import register_object_class
 from text import Text
 
 
@@ -62,7 +61,7 @@ class Message(Text):
         data = escape(data.strip())
         self.load_state_from_string(data)
 
-        return context.come_back(u'Document edited.', goto='../;view')
+        return context.come_back(MSG_CHANGES_SAVED, goto='../;view')
 
 
 

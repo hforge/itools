@@ -28,6 +28,7 @@ from itools.i18n import guess_language
 from itools.handlers import File as BaseFile, Text
 from itools.stl import stl
 from base import Handler
+from messages import *
 from registry import register_object_class, get_object_class
 from versioning import VersioningAware
 from workflow import WorkflowAware
@@ -74,9 +75,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         # Check the name
         name = checkid(name)
         if name is None:
-            return context.come_back(
-               u'The document name contains illegal characters,'
-               u' choose another one.')
+            return context.come_back(MSG_BAD_NAME)
 
         # Add the language externsion to the name
         if mimetype.startswith('text/'):
@@ -90,8 +89,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
         # Check the name is free
         if container.has_handler(name):
-            message = u'There is already another object with this name.'
-            return context.come_back(message)
+            return context.come_back(MSG_NAME_CLASH)
 
         # Build the object
         cls = get_object_class(mimetype)
@@ -101,8 +99,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         handler, metadata = container.set_object(name, handler, metadata)
 
         goto = './%s/;%s' % (name, handler.get_firstview())
-        message = u'New resource added.'
-        return context.come_back(message, goto=goto)
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
     def GET(self, context):

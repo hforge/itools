@@ -23,6 +23,7 @@ from itools.datatypes import Boolean, Enumerate, Integer, is_datatype
 from itools.csv import CSV as iCSV, Row as iRow, IntegerKey
 from itools.stl import stl
 from base import Node
+from messages import *
 from text import Text
 from registry import register_object_class
 import widgets
@@ -273,8 +274,7 @@ class CSV(Text, iCSV):
             row.set_value(name, value)
 
         self.set_changed()
-        message = u'Changes saved.'
-        return context.come_back(message)
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
 register_object_class(CSV)

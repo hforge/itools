@@ -33,6 +33,7 @@ from itools.web import get_context
 from csv import CSV
 from file import File
 from folder import Folder
+from messages import *
 from text import Text
 from registry import register_object_class, get_object_class
 import widgets
@@ -799,7 +800,7 @@ class Issue(Folder):
         # Edit
         self._add_row(context)
 
-        return context.come_back('Changes saved.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
     #######################################################################

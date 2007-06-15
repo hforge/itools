@@ -33,6 +33,7 @@ from itools.gettext import DomainAware, get_domain
 from itools.http import Forbidden
 from itools.web import get_context, Node as BaseNode
 from handlers import Lock, Metadata
+from messages import *
 import webdav
 from versioning import VersioningAware
 from workflow import WorkflowAware
@@ -596,7 +597,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             self.set_property('dc:title', title)
             self.set_property('dc:description', description)
 
-        return context.come_back(u'Metadata changed.')
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
     ########################################################################

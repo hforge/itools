@@ -40,6 +40,7 @@ from base import Handler
 from binary import Image
 from handlers import Lock, Metadata, ListOfUsers
 from ical import CalendarAware, Calendar
+from messages import *
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import reduce_string
@@ -109,19 +110,15 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Check the name
         name = name.strip() or title.strip()
         if not name:
-            message = u'The name must be entered'
-            return context.come_back(message)
+            return context.come_back(MSG_NAME_MISSING)
 
         name = checkid(name)
         if name is None:
-            message = (u'The document name contains illegal characters,'
-                       u' choose another one.')
-            return context.come_back(message)
+            return context.come_back(MSG_BAD_NAME)
 
         # Check the name is free
         if container.has_handler(name):
-            message = u'There is already another object with this name.'
-            return context.come_back(message)
+            return context.come_back(MSG_NAME_CLASH)
 
         # Build the object
         handler = cls()
@@ -132,8 +129,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         handler, metadata = container.set_object(name, handler, metadata)
 
         goto = './%s/;%s' % (name, handler.get_firstview())
-        message = u'New resource added.'
-        return context.come_back(message, goto=goto)
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
     #######################################################################
@@ -656,9 +652,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             new_name = checkid(new_name)
             if new_name is None:
                 # Invalid name
-                return context.come_back(
-                    u'The document name contains illegal characters,'
-                    u' choose another one.')
+                return context.come_back(MSG_BAD_NAME)
             # Rename
             if new_name != old_name:
                 # XXX itools should provide an API to copy and move handlers

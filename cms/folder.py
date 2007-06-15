@@ -247,6 +247,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
         handler = self.set_handler(name, handler)
         metadata = self.set_handler('%s.metadata' % name, metadata)
 
+        # Versioning
+        if isinstance(handler, VersioningAware):
+            handler.commit_revision()
+
         # Schedule to index
         if isinstance(handler, Folder):
             for x in handler._traverse_catalog_aware_objects():
@@ -763,9 +767,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
                     metadata.set_property('state', handler.workflow.initstate)
                 # Fix owner
                 metadata.set_property('owner', context.user.name)
-                # Versioning
-                if isinstance(handler, VersioningAware):
-                    handler.commit_revision()
 
         return context.come_back(u'Objects pasted.')
 

@@ -855,7 +855,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                     story.append(iIllustration(stream, tag_uri, tag_name, 
                                                attributes))
             else:
-                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
+##                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes, None))
         #### END ELEMENT ####   

@@ -18,8 +18,6 @@
 
 # Import from the Standard Library
 import compiler
-from compiler.ast import Name, Getattr, Node 
-from pprint import pprint
 
 # Import from itools
 from text import Text
@@ -38,155 +36,23 @@ class VisitorUnicode(object):
 
 
 
-class Visitor(object):
-
-    def __init__(self):
-        self.imports = []
-        self.from_imports = []
-        self.classes = []
-
-
-    def visitImport(self, node):
-        res = []
-        for i in node.getChildren():
-            name, as_name = i[0]
-            res.append((name, as_name))
-        self.imports.append(node.getChildren())
-
-
-    def visitFrom(self, node):
-        res = []
-        for i in node.getChildren(): 
-            res.append(i)
-        self.from_imports.append(res)
-
-
-    def flatten(self, getattr):
-        """ from Getattr(Getattr(Name('D'), 'E'), 'T') 
-            we make ['T', 'E', 'D'] """
-        res = []
-        exp, name = getattr.getChildren()
-        res.append(name)
-        while isinstance(exp, Getattr):
-            exp, name = exp.getChildren()
-            res.append(name)
-        res.append(exp.name)
-        return res
-
-
-    def visitClass(self, node):
-        res = []
-        class_name = list(node)[0]
-        bases = node.bases
-
-        for n in bases:
-            is_getattr = isinstance(n, Getattr)
-            is_name = isinstance(n, Name)
-            if is_getattr:
-                res.append(self.flatten(n))
-            elif is_name:
-                res.append([n.name])
-        self.classes.append((class_name, res))
-
-
-
 class Python(Text):
 
     class_mimetypes = ['text/x-python']
     class_extension = 'py'
 
 
-    __slots__ = Text.__slots__ + ['visitor']
-
-
     def new(self, **kw):
         Text.new(self, **kw)
-        self.visitor = None
 
 
     def _load_state_from_file(self, file):
         Text._load_state_from_file(self, file)
-        self.visitor = None 
 
 
     #########################################################################
     # API
     #########################################################################
-    def get_module_name(self):
-        return self.resource.name
-
-
-    def get_visitor(self):
-        visitor = self.visitor 
-        if visitor is None:
-            ast = compiler.parse(self.to_str())
-            visitor = Visitor()
-            compiler.walk(ast, visitor)
-            self.visitor = visitor
-        return visitor
-
-
-    def get_classes(self, pkg_name=None):
-        visitor = self.get_visitor()
-        
-        module_name = self.get_module_name()
-        classes = visitor.classes
-
-        new_classes = []
-        for name, bases in classes:
-            new_cls = name, bases
-            if module_name:
-                new_cls = '%s.%s' % (module_name, name), bases
-            if pkg_name:
-                name, bases = new_cls
-                new_cls = '%s.%s' % (pkg_name, name), bases
-            new_classes.append(new_cls)
-        return new_classes    
-
-
-    def get_from_imports(self):
-        visitor = self.get_visitor()
-        return visitor.from_imports
-
-
-    def get_imports(self):
-        visitor = self.get_visitor()
-        return visitor.imports
-
-
-    def get_from_imports_dic(self):
-        """
-        from [['C', [('D', None)]], ['G.E', [('EE', 'EEasE')]], 
-              ['F', [('F1', None), ('F2', 'FF2')]]]
-        return {'F1': 'F.F1', 'EEasE': 'G.E.EE', 'D': 'C.D', 'FF2': 'F.F2'}
-        """
-        dic = {}
-        from_imports = self.get_from_imports()
-        for mod, imports in from_imports:
-            for impor in imports:
-                name, alias = impor
-                if alias:
-                    dic[alias] = '%s.%s' % (mod, name)
-                else:
-                    dic[name] = '%s.%s' % (mod, name)
-        return dic
-
-
-    def get_imports_dic(self):
-        """
-        from [([('A', None), ('B', 'BB'), ('C', None)],), ([('H', 'HH')],)]
-        return {'BB': 'B', 'HH': 'H'}
-        """
-        dic = {}
-        lines = self.get_imports()
-        for line in lines:
-            line = line[0] 
-            for name, alias in line:
-                if alias:
-                    dic[alias] = name
-        return dic
-
-
     def get_messages(self):
         ast = compiler.parse(self.to_str())
         visitor = VisitorUnicode()

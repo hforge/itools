@@ -66,9 +66,6 @@ __all__ = [
     'MSWord',
     'MSExcel',
     'MSPowerPoint',
-    'OOWriter',
-    'OOCalc',
-    'OOImpress',
     'RTF',
     # Functions
     'xml_to_text',

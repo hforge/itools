@@ -35,7 +35,7 @@ def parse(data, n_columns=None):
         dialect = sniffer.sniff('\n'.join(lines[:10]))
         # Fix the fucking sniffer
         dialect.doublequote = True
-        if dialect.delimiter == '':
+        if dialect.delimiter == '' or dialect.delimiter == ' ':
             dialect.delimiter = ','
         # Get the reader
         reader = python_csv.reader(lines, dialect)

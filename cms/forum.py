@@ -24,7 +24,6 @@ from cStringIO import StringIO
 # Import from itools
 from itools.datatypes import FileName, Unicode
 from itools.stl import stl
-from itools.web import get_context
 from itools.rest import checkid
 from folder import Folder
 from messages import *

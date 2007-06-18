@@ -21,8 +21,6 @@ import datetime
 # Import from itools
 from itools.workflow import Workflow, WorkflowAware as iWorkflowAware
 from itools.stl import stl
-from itools.web import get_context
-
 
 
 # Workflow definition

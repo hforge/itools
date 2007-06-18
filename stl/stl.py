@@ -340,9 +340,11 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                                           prefix)
                     if x is not None:
                         yield x
-                    for x in process(events, i, loop_end, loop_stack,
+                    for y in process(events, i, loop_end, loop_stack,
                                      loop_repeat, encoding, prefix):
-                        yield x
+                        yield y
+                    if x is not None:
+                        yield events[loop_end]
                 i = loop_end
             # stl:if
             elif stl_if in attributes:

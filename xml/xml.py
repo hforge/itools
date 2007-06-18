@@ -139,15 +139,18 @@ def find_end(events, start):
     Returns the position in the list where the element ends.
     """
     c = 1
+    n = len(events)
     i = start + 1
-    while c:
+    while i < n:
         event, value, line = events[i]
         if event == START_ELEMENT:
             c += 1
         elif event == END_ELEMENT:
             c -= 1
+            if c == 0:
+                return i
         i = i + 1
-    return i
+    return None
 
 
 def get_element(events, name):

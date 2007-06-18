@@ -274,10 +274,7 @@ class Schema(BaseSchema):
                  'frameborder': Unicode,
                  'headers': Unicode,
                  'height': Unicode,
-                 # XXX This should be of type URI, but it produces an error
-                 # with the STL substitution syntax, because the query
-                 # escapes the characters "$", "{" and "}".
-                 'href': String,
+                 'href': URI,
                  'hreflang': Unicode,
                  'hspace': Unicode,
                  'http-equiv': Unicode,

@@ -22,20 +22,17 @@ from optparse import OptionParser
 
 # Import from itools
 import itools
-from itools.uri import get_reference
+from itools.uri import get_reference, get_absolute_reference2
 from itools import vfs
 from itools.catalog import make_catalog, Catalog
 from itools.handlers import Config
 from itools.cms.database import DatabaseFS
 from itools.cms.server import ask_confirmation
-from itools.cms.server import Server
+from itools.cms.server import Server, get_root_class
 
 
 def update(parser, options, target):
-    # Get the root
     folder = vfs.open(target)
-    server = Server(target)
-    root = server.root
 
     # Update the catalog (XXX remove for 0.17)
     if folder.exists('database/.catalog'):
@@ -47,9 +44,15 @@ def update(parser, options, target):
         folder.remove('database/.catalog')
         folder.remove('database/.catalog.bak')
         print '  * Create "catalog" ...'
-        catalog = make_catalog('%s/catalog' % target, root._catalog_fields)
+        cls = get_root_class(
+            get_absolute_reference2(target).resolve2('database'))
+        catalog = make_catalog('%s/catalog' % target, *cls._catalog_fields)
 
     # Build the server object
+    server = Server(target)
+    root = server.root
+
+    # Check the version
     instance_version = root.get_property('version')
     class_version = root.class_version
     if instance_version == class_version:

@@ -173,42 +173,37 @@ def render_namespace(items, times):
         # add the busy cells
         for rowspan in state:
             if rowspan > 0:
-                cells.append(Cell(Cell.busy))
+                cells.append(Cell(Cell.busy, colspan=1))
             else:
-                cells.append(Cell(Cell.free,
-                                   content={'start': Time.encode(time)}))
-
+                cells.append(Cell(Cell.free, start=time))
+                                   
         # add new cells
         icell = 0
         while iitems < nitems:
             start, end, item, cal = items[iitems]
             if start != time:
                 break
-
             # look for a free cell
             while icell < len(cells):
                 if cells[icell].type == Cell.free:
                     break
                 icell = icell + 1
-
             # add cell
             rowspan = times.index(end) - times.index(start)
-            cell = Cell(Cell.new, item, start, end, rowspan, None, cal)
+            cell = Cell(Cell.new, item, start, end, rowspan, 1, cal)
             if icell >= len(cells):
                 state.append(rowspan)
                 cells.append(cell)
             else:
                 state[icell] = rowspan
                 cells[icell] = cell
-
             # next item
             iitems = iitems + 1
 
         ncols = len(cells)
         # empty row?
         if ncols == 0:
-            cells.append(Cell(Cell.free,
-                               content={'start': Time.encode(time)}))
+            cells.append(Cell(Cell.free, start=time))
 
         # next row, reduce the current rowspans
         nrows = nrows + 1
@@ -218,13 +213,14 @@ def render_namespace(items, times):
                 state[i] = rowspan - 1
 
         # a new block?
-        if state.count(0) == ncols:
+        state_0_count = state.count(0)
+        if state_0_count == ncols:
             state = []
             blocks.append((nrows, ncols))
             nrows = 0
 
         # Add current row cells to table
-        table.append((0, cells))
+        table.append(cells)
 
     # calculate the number of columns
     total_ncols = mcm(map(lambda x: x[1], blocks))
@@ -232,90 +228,89 @@ def render_namespace(items, times):
     # add colspan to each row and fill the incomplete rows with free cells
     base = 0
     for nrows, ncols in blocks:
-        if ncols == 0:
-            colspan = total_ncols
-        else:
-            colspan = total_ncols/ncols
-
-        irow = 0
-        while irow < nrows:
-            cells = table[base + irow][1]
-            icol = len(cells)
-            while icol < ncols:
-                start = Time.encode(times[base+irow])
-                cells.append(Cell(Cell.free, content={'start': start}))
-                icol = icol + 1
-            table[base + irow] = (colspan, cells)
-            irow = irow + 1
+        b_colspan = total_ncols/ncols if ncols != 0 else total_ncols
+        for irow in range(nrows):
+            cells = table[base + irow]
+            for cell in cells:
+                cell.colspan = b_colspan
+            for icol in range(len(cells), ncols):
+                cells.append(Cell(Cell.free, start=times[base+irow], 
+                                  colspan=b_colspan))
+            table[base + irow] = cells
         base = base + nrows
 
     ####################################################################
     # FOR EACH ROW
-    for index, row in enumerate(table):
-        i = 0
+    for index, row_cells in enumerate(table):
+        new_cells, free_cells = [], []
+        for cell in row_cells:
+            if cell.type == Cell.new:
+                new_cells.append(cell)
+            elif cell.type == Cell.free:
+                free_cells.append(cell)
 
-        # FOR EACH CELL
-        while i<len(row[1]):
-            cell = row[1][i]
+        if free_cells == row_cells:
+            continue
 
-            ########################################################
-            #   EXTEND FREE CELL
-            if cell.type == Cell.free:
-                j = i + 1
-                while j<len(row[1]) and row[1][j].type==Cell.free:
-                    row[1][j].type = Cell.busy
-                    j = j + 1
-                if j-i > 1:
-                    cell.colspan = j - i
-                i = j
+        # Try to extend colspan of new cells
+        #   (checking the cells below in rowspan)
+        for cell in new_cells:
+            colspan = cell.colspan
+            if colspan <= 1:
+                continue
 
-            ########################################################
-            #   EXTEND NEW CELL
-            elif cell.type == Cell.new:
-                new_extended = []
-                colspan = len(row[1]) - i
-
-                # MAX COLSPAN REACHED ( = 1)
+            # FOR EACH LINE BELOW, USED FOR CELL TO EXTEND
+            new_extended = []
+            for n in range(cell.rowspan):
                 if colspan <= 1:
                     break
-
-                # FOR EACH LINE BELOW, USED FOR CELL TO EXTEND
-                for n in range(cell.rowspan):
-                    if colspan <= 1:
+                # GET CURRENT TESTED ROW
+                row_index = index + n
+                icells = table[row_index]
+                # REDUCE max colspan if necessary
+                ilen = len(icells)
+                if ilen < colspan:
+                    colspan = ilen
+                # TRY TO EXTEND
+                i = row_cells.index(cell)
+                k = 0
+                while k < colspan and (i+k) < ilen:
+                    if icells[i+k].type != Cell.free:
+                        colspan = k
                         break
+                    k = k + 1
+                new_extended.append((row_index, i))
 
-                    # GET CURRENT TESTED ROW
-                    row_index = index+n
-                    irow = table[row_index] 
+            # Update cells below
+            if colspan > 1:
+                for row_index, i in new_extended:
+                    c_colspan = colspan
+                    c_row = table[row_index]
+                    l_c_row = len(c_row)
+                    for col in range(i+1, i+colspan):
+                        if col < l_c_row:
+                            current_cell = c_row[col]
+                            free_cells.remove(current_cell)
+                            current_cell.type = Cell.busy
+                            c_colspan = c_colspan + current_cell.colspan
+                    current_cell[i].colspan = c_colspan
 
-                    # REDUCE max colspan if necessary
-                    ilen = len(irow[1])
-                    if ilen < colspan:
-                        colspan = ilen
-
-                    # TRY TO EXTEND
-                    k = 1
-                    while k < colspan:
-                        if irow[1][i+k].type != Cell.free:
-                            colspan = k
+        # Collapse free cells
+        l_row_cells = len(row_cells)
+        for icell, cell in enumerate(row_cells):
+            if cell.type == Cell.free:
+                jcelltest = icell + 1
+                start = cell.start
+                while jcelltest < l_row_cells:
+                    if jcelltest != icell:
+                        celltest = row_cells[jcelltest]
+                        if celltest.type != Cell.free:
                             break
-                        k = k + 1
-                    new_extended.append((row_index, i))
-
-                if colspan > 1:
-                    for row_index, k in new_extended:
-                        table[row_index][1][k].colspan = colspan
-                         
-                        for col in range(1, colspan):
-                            table[row_index][1][k+col].type = Cell.busy
-                    i = i + colspan
-                else:
-                    i = i + 1
-
-            # end
-            else:
-                i = i + 1
-                
+                        if celltest.start == start:
+                            celltest.type = Cell.busy
+                            cell.colspan = cell.colspan + celltest.colspan
+                    jcelltest = jcelltest + 1
+ 
 
     ######################################################################
     # render_namespace
@@ -323,25 +318,21 @@ def render_namespace(items, times):
 
     url = ';edit_event_form?method=grid_weekly_view&'
     ns_rows = []
-    for (colspan, cells) in table:
+    for cells in table:
         ns_cells = []
         for cell in cells:
             # Don't add busy cells as they don't appear in template
             if cell.type == Cell.busy:
                 continue
-            if not cell.colspan:
-                cell.colspan = colspan
             ns_cell = cell.to_dict()
-
             # Add start time to url used to add events
             new_url = None
-            if cell.content and 'start' in cell.content:
-                new_url = '%sstart=%s' % (url, cell.content['start'])
+            if cell.start:
+                new_url = '%sstart=%s' % (url, Time.encode(cell.start))
             ns_cell['newurl'] = new_url 
-
             ns_cells.append(ns_cell)
 
-        ns_rows.append({'cells': ns_cells, 'colspan': colspan})
+        ns_rows.append({'cells': ns_cells})
 
     return ns_rows, total_ncols
 

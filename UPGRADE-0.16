@@ -2,44 +2,167 @@
 itools 0.16.0
 **************************************************************************
 
-1. General changes
-==================
+1. Import changes
+=================
 
-Now Class names are written in capitalized words.
-So, some imports changes
-For example :
-  > from itools.cms.Folder import Folder
-  > from itools.cms.WebSite import WebSite
-is replaced by :
-  > from itools.cms.folder import Folder
-  > from itools.cms.website import WebSite
+The API has been flatten. All functions, constants, classes and exceptions
+of a package are available at the package's root level (no need to go search
+a function in some module). Only exception is "itools.cms", which is too big
+to have a flat API.
+
+Also, all modules are now in lowercase.
+
+These and other minor changes in the organization of the code, made it
+necessary to modify some import statements. Some examples:
+
+  from itools.catalog.queries import Equal, Phrase         (Before)
+  from itools.catalog import EqQuery, PhraseQuery          (Now)
+
+  from itools.cms.utils import checkid
+  from itools.rest import checkid
+
+  from itools.cms.Folder import Folder
+  from itools.cms.folder import Folder
+
+  from itools.cms.WebSite import WebSite
+  from itools.cms.website import WebSite
+
+
 
 2. itools.catalog
 =================
-2.1 Query
-.........
 
-The system of queries in catalog has changed.
+The programming interface has changed notably. Check the documentation for
+the complete details on how the new API works:
 
-So replace :
+  http://download.ikaaro.org/doc/itools/index.html
 
-  > from itools.catalog import queries
-  
-  > query = []
-  > query.append(queries.Equal('format', 'Vo'))
-  > query.append(queries.Range('cp', dpt, dpt_suiv))
-  > query.append(queries.Phrase('field', value))
-  > query = queries.And(*query)
+
+2.1 The format has changed
+--------------------------
+
+The format of the catalog has changed again. This just means that existing
+catalog instances must be rebuilt.
+
+
+2.2 Creating a new catalog
+--------------------------
+
+The most important change is that the catalog is not anymore built around
+the itools.handlers package, so its programming interface to create, load
+and save the catalog has changed:
+
+To Create a new catalog. Before:
+
+  from itools.catalog import Catalog
+
+  catalog = Catalog(fields=[
+      ('name', 'keyword', True, True),
+      ('text', 'text', True, False),
+  ])
+  catalog.save_state_to('catalog')
+  catalog = Catalog('catalog')
+
+Now:
+
+  from itools.catalog import make_catalog, KeywordField, TextField
+
+  catalog = make_catalog('catalog',
+      KeywordField('name', is_stored=True)
+      TextField('text'),
+  )
+
+As you can appreciate the definition of the fields to index has changed
+too. This is meanly to allow the possibility to define custom fields.
+
+
+2.3 Save the changes
+--------------------
+
+To save the changes made to the catalog, it is a bit different.
+
+Before:
+
+  catalog.save_state()
+
+Now:
+
+  catalog.commit()
+
+
+2.4 Indexing and Unindexing
+---------------------------
+
+There are a couple of high level features that have been added to the
+catalog, and that affect the way we index and unindex documents.
+
+2.4.1 Indexing
+..............
+
+Now like before we can index a dictonary that contains a key/value pair
+for every field.
+
+But now indexing an object where the fields to be indexed are the object's
+attributes does not work anymore.
+
+If we want to index objects other than dictionaries we can use the higher
+level CatalogAware class. Just inherit from CatalogAware and define a
+method "get_catalog_indexes" that returns the dictionary that will finally
+be indexed.
+
+
+2.4.2 UnIndexing
+................
+
+The catalog has now the concept of "external id". When creating a new
+catalog, the first field we define is the "external id". For example:
+
+  catalog = make_catalog('catalog',
+      KeywordField('name', is_stored=True)
+      TextField('text'),
+  )
  
-by :
-  
-  > from itools.catalog import EqQuery, AndQuery, RangeQuery, PhraseQuery 
-  
-  > query = []
-  > query.append(EqQuery('format', 'Vo'))
-  > query.append(RangeQuery('cp_vendeur', dpt, dpt_suiv))
-  > query.append(PhraseQuery('field', value))
-  > query = AndQuery(*query)
+Here the external id is the field "name". It is required that this field
+to be indexed and stored, and that it uniquely identfies the document.
+
+Now the method "unidex_catalog" expects the external id instead of the
+internal id.
+
+Before:
+
+  for brain in catalog.search(name='toto').get_documents():
+      catalog.unindex_document(brain.__number__)
+
+Now:
+
+  catalog.unindex_document('toto')
+
+
+2.5 Queries
+-----------
+
+The queries are much the same, but they have been renamed to append the
+prefix "Query". This is part of the work to flat the API.
+
+Before:
+
+  from itools.catalog.queries import Equal, Phrase, Range, And, Or
+
+Now:
+
+  from itools.catalog import (EqQuery, PhraseQuery, RangeQuery, AndQuery,
+      OrQuery)
+
+
+
+
+
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+
 
 3. itools.xml
 =============
@@ -132,14 +255,4 @@ Note that you can Use other kind of field :
     > from itools.catalog import (TextField, KeywordField, IntegerField,
                                    BoolField)
 
-5. Other changes
-================
-
-The checkid method has been moved, 
-so you have to update the import
-
-Before :
-    > from itools.cms.utils import checkid
-Now :
-    > from itools.rest import checkid
 

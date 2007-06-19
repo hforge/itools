@@ -1118,6 +1118,10 @@ class Calendar(Text, icalendar, CalendarAware):
     download_form__sublabel__ = u'Export in ical format'
 
 
+    def GET(self, context):
+        return Handler.GET(self, context)
+
+
     # View
     text_view__access__ = 'is_allowed_to_edit'
     text_view__label__ = u'Text view'

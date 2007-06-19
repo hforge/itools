@@ -438,12 +438,11 @@ class icalendar(Text):
 
     def to_text(self):
         text = []
-        for component in self.search_components():
-            version = component.get_version()
+        for uid in self.components:
+            version = self.components[uid].get_version()
             for key in ['SUMMARY', 'DESCRIPTION']:
                 if key in version:
-                    value = version[key]
-                    text.append(value)
+                    text.append(version[key].value)
         return ' '.join(text)
 
 

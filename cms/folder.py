@@ -254,7 +254,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Schedule to index
         if isinstance(handler, Folder):
             for x in handler._traverse_catalog_aware_objects():
-                schedule_to_index(handler)
+                schedule_to_index(x)
         else:
             schedule_to_index(handler)
 

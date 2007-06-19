@@ -24,6 +24,10 @@ select, input, textarea, button {
   background: #fff;
 }
 
+option {
+  padding: 0 5px 0 3px;
+}
+
 input {
   background-position: left center;
   background-repeat: no-repeat;

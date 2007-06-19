@@ -293,7 +293,7 @@ class Server(object):
                         if fileno in requests:
                             del requests[fileno]
             except SelectError, exception:
-                # Don't log an error every time the server is stopped with
+                # Don't log an error every time the server is stopped
                 # (check "perror 4" from the shell)
                 errno, kk = exception
                 if errno != 4:

@@ -311,8 +311,13 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             history = self.get_property('ikaaro:history')
             if history:
                 user_id = history[-1][(None, 'user')]
-                user = self.get_handler('/users/%s' % user_id)
-                document['last_author'] = user.get_title()
+                users = self.get_handler('/users')
+                try:
+                    user = users.get_handler(user_id)
+                except LookupError:
+                    document['last_author'] = u'Unavailable'
+                else:
+                    document['last_author'] = user.get_title()
 
         return document
 

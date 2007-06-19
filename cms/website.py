@@ -350,7 +350,10 @@ class WebSite(RoleAware, Folder):
         if referrer:
             if not referrer.path:
                 return referrer
-            elif referrer.path[-1].params[0] != 'login_form':
+            params = referrer.path[-1].params
+            if not params:
+                return referrer
+            if params[0] != 'login_form':
                 return referrer
 
         if goto is not None:

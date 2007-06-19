@@ -172,7 +172,7 @@ class Segment(str):
     def get_params(self):
         if ';' in self:
             return self.split(';')[1:]
-        return ''
+        return []
 
     params = property(get_params, None, None, '')
 

@@ -246,7 +246,7 @@ class Tracker(Folder):
         elif search_title:
             # New Stored Search
             search_name = self.get_new_id('s')
-            stored_search = self.set_object(search_name, StoredSearch())
+            stored_search, kk = self.set_object(search_name, StoredSearch())
         else:
             # Just Search
             return context.uri.resolve(';view').replace(**context.uri.query)

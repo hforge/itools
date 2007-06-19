@@ -198,7 +198,7 @@ class SearchResults(object):
             if isinstance(sort_by, list):
                 sort_by = [ field_numbers[x] for x in sort_by ]
                 def key(doc, sort_by=sort_by):
-                    return tuple([ doc.fields[x] for x in sort_by ])
+                    return tuple([ doc.fields.get(x) for x in sort_by ])
             else:
                 sort_by = field_numbers[sort_by]
                 def key(doc, sort_by=sort_by):

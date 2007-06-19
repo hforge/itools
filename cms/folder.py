@@ -398,7 +398,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         reverse = (sortorder == 'down')
         documents = results.get_documents(sort_by=sortby, reverse=reverse,
-                                              start=start, size=batchsize)
+                                          start=start, size=batchsize)
 
         # Get the handlers, check security
         user = context.user

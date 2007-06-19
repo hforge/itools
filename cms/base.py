@@ -614,7 +614,8 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     ########################################################################
     # Rich Text Editor
     ########################################################################
-    def get_rte(self, name, data):
+    @classmethod
+    def get_rte(cls, context, name, data):
         js_data = data
         data = cgi.escape(data)
         # Quote newlines and single quotes, so the Epoz-JavaScript won't break.
@@ -627,8 +628,9 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace['js_data'] = js_data
         namespace['iframe'] = ';epoz_iframe'
 
-        here = Path(self.get_abspath())
-        handler = self.get_handler('/ui/epoz/rte.xml')
+        handler = context.handler
+        here = Path(handler.get_abspath())
+        handler = handler.get_handler('/ui/epoz/rte.xml')
         there = Path(handler.get_abspath())
         prefix = here.get_pathto(there)
         return stl(handler, namespace, prefix=prefix)

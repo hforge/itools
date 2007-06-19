@@ -128,7 +128,7 @@ class XHTMLFile(Text, XHTMLDocument):
         namespace = {}
         # Epoz expects HTML
         data = body.get_content_as_html()
-        namespace['rte'] = self.get_rte('data', data)
+        namespace['rte'] = self.get_rte(context, 'data', data)
 
         handler = self.get_handler('/ui/html/edit.xml')
         return stl(handler, namespace)

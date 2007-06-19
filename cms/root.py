@@ -114,7 +114,6 @@ class Root(WebSite):
         TextField('title', is_stored=True),
         KeywordField('owner', is_stored=True),
         BoolField('is_role_aware'),
-        BoolField('is_version_aware'),
         KeywordField('format', is_stored=True),
         KeywordField('workflow_state', is_stored=True),
         KeywordField('members'),
@@ -130,6 +129,9 @@ class Root(WebSite):
         KeywordField('title_or_name', is_stored=True),
         KeywordField('mtime', is_indexed=False, is_stored=True),
         IntegerField('size', is_indexed=False, is_stored=True),
+        # Versioning Aware
+        BoolField('is_version_aware'),
+        KeywordField('last_author', is_indexed=False, is_stored=True),
         ]
 
 

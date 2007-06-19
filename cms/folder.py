@@ -891,8 +891,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 try:
                     user = users.get_handler(username)
                     user_title = user.get_title()
-                    if not user_title.strip():
-                        user_title = user.get_property('ikaaro:email')
                 except LookupError:
                     user_title = username
             else:

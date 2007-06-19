@@ -307,6 +307,12 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         # Versioning
         if isinstance(self, VersioningAware):
             document['is_version_aware'] = True
+            # Last Author (used in the Last Changes view)
+            history = self.get_property('ikaaro:history')
+            if history:
+                user_id = history[-1][(None, 'user')]
+                user = self.get_handler('/users/%s' % user_id)
+                document['last_author'] = user.get_title()
 
         return document
 

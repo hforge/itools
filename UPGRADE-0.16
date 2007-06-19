@@ -15,11 +15,17 @@ Also, all modules are now in lowercase.
 These and other minor changes in the organization of the code, made it
 necessary to modify some import statements. Some examples:
 
-  from itools.catalog.queries import Equal, Phrase         (Before)
-  from itools.catalog import EqQuery, PhraseQuery          (Now)
+  from itools.catalog.queries import Equal, Phrase         # Before
+  from itools.catalog import EqQuery, PhraseQuery          # Now
+
+  from itools.xml.parser import Parser, START_ELEMENT
+  from itools.xml import Parser, START_ELEMENT, END
 
   from itools.cms.utils import checkid
   from itools.rest import checkid
+
+  from itools.cms.Handler import Handler
+  from itools.cms.base import Handler
 
   from itools.cms.Folder import Folder
   from itools.cms.folder import Folder
@@ -27,6 +33,8 @@ necessary to modify some import statements. Some examples:
   from itools.cms.WebSite import WebSite
   from itools.cms.website import WebSite
 
+The list is not exhaustive, as it would be too large; you will have to
+check the source code when an import fails.
 
 
 2. itools.catalog
@@ -155,104 +163,123 @@ Now:
 
 
 
-
-
-
-
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-
-
-
 3. itools.xml
 =============
+
 3.1 Parser
-..........
+----------
 
-To import and use the parser we advice you to replace :
+There have been some small changes to the parser programming interface.
 
-    > from itools.xml import parser
-    
-    > for event, value, line_number in parser.Parser(page):
+The START_ELEMENT value is a three-items tuple, instead of four. The
+namespaces are returned as simple attributes:
 
-By :
+  # Before
+  if event == START_ELEMENT:
+      tag_uri, tag_name, attributes, ns_decls = value
 
-    > from itools.xml import Parser, START_ELEMENT, TEXT
-    
-    > for events in Parser(page):
-    >     event, value, line_number = events 
-    >     if event == START_ELEMENT:
+  # NOW
+  if event == START_ELEMENT:
+      tag_uri, tag_name, attributes = value
+
+Neither the text nodes nor the element attributes are deserialized now.
+The parser always returns the values as byte strings in the source
+encoding.
+
+
+3.2 Documents
+-------------
+
+The state for XML document handlers is not anymore an element-tree, but
+a sequence of events as they are returned by the XML parser.
+
+This means existing code that manipulates the element-tree will need to
+be updated to work with a list of events instead.
 
 
 4. itools.cms
 =============
-4.1 Handler
-...........
-4.1.1 Import Hander
-~~~~~~~~~~~~~~~~~~~
 
-The handler has been move, so replace the import :
-    > from itools.cms.Handler import Handler
-by :
-    > from itools.cms.base import Handler
+4.1 Build Metadata
+------------------
 
-4.1.2 Metadata 
-~~~~~~~~~~~~~~
+The method "build_metadata" has been moved from the container to the
+sub-object. This is to say, a handler builds its own metadata.
 
-The handler's metadata are not accesible any more
-So replace :
-    > self.metadata.get_property('dc:description')
-by :
-    > self.get_property('dc:description')
+Before:
+
+  metadata = self.build_metadata(handler)
+
+Now:
+
+  metadata = handler.build_metadata()
 
 
-4.1.3 Build metadata
-~~~~~~~~~~~~~~~~~~~~
+4.2 Add and remove CMS objects
+------------------------------
 
-Now a Handler build his own metadata :
-Before :
-    > self.build_metadata(companies, **kw)
-now :
-    > companies.build_metadata(**kw)
+Two new methods, "set_object" and "del_object", are to be used when adding
+and removing CMS objects; instead of the lower level handler methods
+"set_handler" and "del_handler":
 
-4.2 Catalog
-...........
-4.2.1 Get the catalog
-~~~~~~~~~~~~~~~~~~~~~
+  handler = self.set_handler('name', handler)            # Before
+  handler, metadata = self.set_object(handler)           # Now
 
-To import the catalog replace :
-
-    > catalog = root.get_handler('.catalog')
-
-by :
-    
-    > catalog = context.server.catalog
+  del_handler('name')
+  del_object('name')
 
 
-4.2.2 Catalog Fields
-~~~~~~~~~~~~~~~~~~~~
+4.3 Definition of the catalog fields
+------------------------------------
 
-The declaration of the list of field to index in catalog has changed:
-Before :
+As we have seen earlier, the way to define the catalog fields has changed.
 
-   >  _catalog_fields = BaseRoot._catalog_fields + [
-        ('level1', 'keyword', True, True),
-        ('level2', 'keyword', True, True),
-        ('level3', 'keyword', True, True),
-        ('level4', 'keyword', True, False)]
+Before:
 
-now :
+  class Root(...):
+      _catalog_fields = [
+          ('abspath', 'keyword', True, True),
+          ('text', 'text, True, False),
+          ...
 
-    > from itools.catalog import  KeywordField
-    > _catalog_fields = BaseRoot._catalog_fields + [
-            KeywordField('level1', is_stored=True),
-            KeywordField('level2', is_stored=True),
-            KeywordField('level3', is_stored=True),
-            KeywordField('level4')]
+Now:
 
-Note that you can Use other kind of field :
+  from itools.catalog import KeywordField, TextField
 
-    > from itools.catalog import (TextField, KeywordField, IntegerField,
-                                   BoolField)
+  class Root(...):
+      _catalog_fields = [
+          KeywordField('abspath', is_stored=True),
+          TextField('text'),
+          ...
 
+
+4.4 Usage of the catalog
+------------------------
+
+The catalog is not anymore a handler, so the way to get it is different.
+We do not need to get it anyway, better to use the Root's API.
+
+Before:
+
+  catalog = root.get_handler('.catalog')
+  catalog.search(query)
+
+Now:
+
+  root.search(query)
+
+Also, we will rarely need to reindex a handler by ourselves, since now the
+methods "set_property" and "del_property" will automatically do it.
+
+However, if we need to do it, the API has changed too:
+
+Before:
+
+  root.reindex_handler(handler)
+
+Now:
+
+  from itools.cms.catalog import schedule_to_reindex
+
+  schedule_to_reindex(handler)
 

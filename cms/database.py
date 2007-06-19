@@ -29,6 +29,7 @@ from itools.uri import get_reference, Path
 from itools import vfs
 from itools.vfs import FileFS, register_file_system
 from itools.handlers import get_handler_class, get_transaction
+from catalog import get_to_index, get_to_unindex
 
 
 
@@ -214,6 +215,12 @@ class DatabaseFS(FileFS):
         This method is to be used by the programmer whe he changes his
         mind and decides not to commit.
         """
+        # Clean the index/unindex queues (XXX This may not should be here
+        # as of 0.17)
+        get_to_index().clear()
+        get_to_unindex().clear()
+
+        # Clean the transaction
         transaction = get_transaction()
         for handler in transaction:
             # TODO Give the handler a chance to recover: call the method

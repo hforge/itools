@@ -20,6 +20,7 @@ from base64 import decodestring
 from copy import copy
 from datetime import datetime
 import os
+from select import error as SelectError
 from signal import signal, SIGINT
 import socket
 import sys
@@ -291,6 +292,12 @@ class Server(object):
                         poll.unregister(fileno)
                         if fileno in requests:
                             del requests[fileno]
+            except SelectError, exception:
+                # Don't log an error every time the server is stopped with
+                # (check "perror 4" from the shell)
+                errno, kk = exception
+                if errno != 4:
+                    self.log_error()
             except:
                 self.log_error()
 

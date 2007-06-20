@@ -115,7 +115,6 @@ class Node(object):
 
 
     def get_handler(self, path):
-##        from folder import build_virtual_handler
         # Be sure path is a Path
         if not isinstance(path, Path):
             path = Path(path)
@@ -136,7 +135,6 @@ class Node(object):
         name, path = path[0], path[1:]
 
         handler = self._get_virtual_handler(name)
-##        handler = build_virtual_handler(handler)
         # Set parent and name
         handler.parent = self
         handler.name = name

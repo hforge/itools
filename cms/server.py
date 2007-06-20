@@ -134,8 +134,8 @@ class Server(BaseServer):
         catalog = self.catalog
         # Unindex Handlers
         to_unindex = get_to_unindex()
-        for handler in to_unindex:
-            catalog.unindex_document(handler)
+        for path in to_unindex:
+            catalog.unindex_document(path)
         to_unindex.clear()
 
         # Index Handlers

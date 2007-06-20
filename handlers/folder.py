@@ -204,7 +204,7 @@ class Folder(Handler):
                 # Virtual handler
                 handler = here._get_virtual_handler(name)
                 handler = build_virtual_handler(handler)
-                # Set parent and name
+                # Attach
                 handler.parent = here
                 handler.name = name
 
@@ -222,21 +222,22 @@ class Folder(Handler):
                 # Miss
                 uri = here.uri.resolve2(name)
                 handler = here._get_handler(name, uri)
+                # Update the cache
                 if caching is True:
-                    # Update the cache
                     here.cache[name] = handler
             else:
                 # Hit, reload the handler if needed
                 if handler.is_outdated():
                     handler.load_state()
 
-            # Set parent and name
-            handler.parent = here
+            # Attach
+            handler.parent = here.get_real_handler()
             handler.name = name
 
             # Virtual handlers propagate
             if here.real_handler is not None:
                 handler = build_virtual_handler(handler)
+                # Attach
                 handler.parent = here
                 handler.name = name
 
@@ -277,7 +278,13 @@ class Folder(Handler):
             yield handler.get_handler(name)
 
 
-    def set_handler(self, path, handler, **kw):
+    def _set_handler(self, name, handler):
+        handler.parent = self
+        handler.name = name
+        self.cache[name] = handler
+
+
+    def set_handler(self, path, handler):
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -288,18 +295,18 @@ class Folder(Handler):
         if name in container.get_handler_names():
             raise LookupError, 'there is already a handler named "%s"' % name
 
+        # Make a copy of the handler
+        handler = handler.copy_handler()
         # Store the container in the transaction
         container.set_changed()
         # Clean the 'removed_handlers' data structure if needed
         if name in container.removed_handlers:
             container.removed_handlers.remove(name)
-        # Make a copy of the handler
-        handler = handler.copy_handler()
-        handler.parent = container
-        handler.name = name
+
         # Add the handler
         container.added_handlers.add(name)
-        container.cache[name] = handler
+        container._set_handler(name, handler)
+
         return handler
 
 
@@ -364,6 +371,10 @@ class Folder(Handler):
 
 
 def build_virtual_handler(handler):
+    """
+    Makes a clone of the given handler.
+    """
+    handler = handler.get_real_handler()
     virtual_handler = Handler.__new__(handler.__class__)
 
     for name in handler.__slots__:
@@ -373,7 +384,7 @@ def build_virtual_handler(handler):
         setattr(virtual_handler, name, value)
 
     # Keep a reference to the real handler
-    virtual_handler.real_handler = handler.get_real_handler()
+    virtual_handler.real_handler = handler
 
     return virtual_handler
     

@@ -611,7 +611,13 @@ class Reference(object):
         with the given keyword parameters set in the query.
         """
         query = copy(self.query)
-        query.update(kw)
+        for key in kw:
+            value = kw[key]
+            if value is None:
+                if key in query:
+                    del query[key]
+            else:
+                query[key] = value
         return Reference(self.scheme, self.authority, self.path, query,
                          self.fragment)
 

@@ -50,19 +50,14 @@ class Node(object):
     abspath = property(get_abspath, None, None, '')
 
 
+    def get_real_handler(self):
+        return self.real_handler or self
+
+
     def get_physical_path(self):
         # TODO Should return a Path instance
-        if self.parent is None:
-            return '/'
-
-        if self.real_handler is not None:
-            return self.real_handler.get_physical_path()
-
-        parent_path = self.parent.get_physical_path()
-        if not parent_path.endswith('/'):
-            parent_path += '/'
-
-        return parent_path + self.name
+        real = self.get_real_handler()
+        return real.get_abspath()
 
 
     def get_root(self):

@@ -429,13 +429,6 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     ########################################################################
     # Locking
     ########################################################################
-    def get_real_handler(self):
-        if self.real_handler is None:
-            return self
-
-        return self.real_handler
-
-
     def lock(self):
         lock = Lock(username=get_context().user.name)
 
@@ -559,13 +552,12 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
 
     def get_metadata(self):
-        if self.real_handler is not None:
-            return self.real_handler.get_metadata()
+        real = self.get_real_handler()
 
-        parent = self.parent
+        parent = real.parent
         if parent is None:
             return None
-        metadata_name = '%s.metadata' % self.name
+        metadata_name = '%s.metadata' % real.name
         if parent.has_handler(metadata_name):
             return parent.get_handler(metadata_name)
         return None

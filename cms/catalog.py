@@ -29,19 +29,16 @@ def get_to_index():
 
 
 def schedule_to_index(handler):
-    while handler.real_handler is not None:
-        handler = handler.real_handler
+    handler = handler.get_real_handler()
     to_index.add(handler)
 
 
 def schedule_to_unindex(handler):
-    while handler.real_handler is not None:
-        handler = handler.real_handler
+    handler = handler.get_real_handler()
     to_unindex.add(handler.abspath)
 
 
 def schedule_to_reindex(handler):
-    while handler.real_handler is not None:
-        handler = handler.real_handler
+    handler = handler.get_real_handler()
     to_unindex.add(handler.abspath)
     to_index.add(handler)

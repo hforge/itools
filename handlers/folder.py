@@ -373,7 +373,7 @@ def build_virtual_handler(handler):
         setattr(virtual_handler, name, value)
 
     # Keep a reference to the real handler
-    virtual_handler.real_handler = handler
+    virtual_handler.real_handler = handler.get_real_handler()
 
     return virtual_handler
     

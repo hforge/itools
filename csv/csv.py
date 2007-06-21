@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from itools.datatypes import String, Integer
+from itools.datatypes import String, Integer, is_datatype
 from itools.handlers import Text, register_handler_class
 from itools.catalog import EqQuery, AndQuery, get_field, MemoryCatalog
 from parser import parse
@@ -262,7 +262,7 @@ class CSV(Text):
             # Insert the generated values of the IntegerKey columns
             for index, column in enumerate(self.columns):
                 datatype = self.schema[column]
-                if datatype == IntegerKey:
+                if is_datatype(datatype, IntegerKey):
                     row.insert(index, self.get_key(column))
 
         self.set_changed()

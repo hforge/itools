@@ -21,8 +21,7 @@ import urllib
 from datetime import time
 
 # Import from itools
-from itools.datatypes import (DataType, Boolean, Email, String,
-    Tokens, Unicode, QName, XML)
+from itools.datatypes import DataType, Boolean, Email, String, Tokens, Unicode
 from itools.schemas import Schema as BaseSchema, get_datatype, register_schema
 
 
@@ -45,18 +44,6 @@ class Password(DataType):
 class Record(object):
 
     default = []
-
-    @classmethod
-    def encode(cls, value):
-        lines = []
-        for key, value in value.items():
-            prefix, local_name = key
-            datatype = get_datatype(key)
-            value = datatype.encode(value)
-            value = XML.encode(value)
-            qname = QName.encode(key)
-            lines.append('\n    <%s>%s</%s>' % (qname, value, qname))
-        return ''.join(lines) + '\n'
 
 
 

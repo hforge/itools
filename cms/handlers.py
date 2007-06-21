@@ -218,11 +218,27 @@ class Metadata(File):
                     lines.append('  <%s xml:lang="%s">%s</%s>'
                                  % (qname, language, value, qname))
             elif isinstance(value, list):
-                for value in value:
-                    value = datatype.encode(value)
-                    if datatype is not Record:
+                if datatype is Record:
+                    # Record
+                    for value in value:
+                        lines.append('  <%s>' % qname)
+                        for key, value in value.items():
+                            prefix, local_name = key
+                            if prefix is not None:
+                                prefixes.add(prefix)
+                            datatype = get_datatype(key)
+                            value = datatype.encode(value)
+                            value = XMLDataType.encode(value)
+                            qname2 = QName.encode(key)
+                            lines.append('    <%s>%s</%s>' % (qname2, value,
+                                qname2))
+                        lines.append('  </%s>' % qname)
+                else:
+                    # Regular field
+                    for value in value:
+                        value = datatype.encode(value)
                         value = XMLDataType.encode(value)
-                    lines.append('  <%s>%s</%s>' % (qname, value, qname))
+                        lines.append('  <%s>%s</%s>' % (qname, value, qname))
             else:
                 value = datatype.encode(value)
                 value = XMLDataType.encode(value)

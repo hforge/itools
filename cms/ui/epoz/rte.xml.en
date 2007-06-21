@@ -127,10 +127,11 @@
 
     <textarea class="epoz_textarea" style="display: none" disabled="1"
       id="${form_name}" name="${form_name}">${js_data}</textarea>
-
-    <input type="checkbox" class="epoz_switch" id="CB_${form_name}" 
-      onclick="redirectAndSwitchViewMode(this);" />
-    <label for="CB_${form_name}" style="font-size: 0.7em;">HTML</label>
+    <div>
+      <input type="checkbox" class="epoz_switch" id="CB_${form_name}" 
+        onclick="redirectAndSwitchViewMode(this);" />
+      <label for="CB_${form_name}" style="font-size: 0.7em;">HTML</label>
+    </div>
   </div>
 
   <script type="text/javascript">

@@ -79,9 +79,8 @@ class Document(XHTMLDocument):
         self.document_type = None
 
         data = file.read()
-        parser = Parser()
         events = []
-        for event, value, line_number in parser.parse(data):
+        for event, value, line_number in Parser(data):
             if event == DOCUMENT_TYPE:
                 self.document_type = value
             elif event == TEXT:

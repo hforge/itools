@@ -23,7 +23,7 @@ from __future__ import absolute_import
 import csv as python_csv
 
 # Import from itools
-from itools.datatypes import Unicode, Integer
+from itools.datatypes import Unicode, Integer, is_datatype
 from itools.handlers.Text import Text
 from itools.handlers.registry import register_handler_class
 from itools.catalog import queries
@@ -397,7 +397,7 @@ class CSV(Text):
             # Insert the generated values of the IntegerKey columns
             for index, column in enumerate(self.columns):
                 datatype = self.schema[column]
-                if datatype == IntegerKey:
+                if is_datatype(datatype, IntegerKey):
                     row.insert(index, self.get_key(column))
 
         self.set_changed()

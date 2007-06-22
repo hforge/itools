@@ -223,7 +223,7 @@ and removing CMS objects; instead of the lower level handler methods
 "set_handler" and "del_handler":
 
   handler = self.set_handler('name', handler)            # Before
-  handler, metadata = self.set_object(handler)           # Now
+  handler, metadata = self.set_object('name', handler)   # Now
 
   del_handler('name')
   del_object('name')

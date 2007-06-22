@@ -91,9 +91,9 @@ def check_timetable_entry(context, key_start, key_end):
 
 class Status(Enumerate):
 
-    options = [{'name': 'TENTATIVE', 'value': u'TENTATIVE'},
-               {'name': 'CONFIRMED', 'value': u'CONFIRMED'}, 
-               {'name': 'CANCELLED', 'value': u'CANCELLED'}]
+    options = [{'name': 'TENTATIVE', 'value': u'Tentative'},
+               {'name': 'CONFIRMED', 'value': u'Confirmed'}, 
+               {'name': 'CANCELLED', 'value': u'Cancelled'}]
 
 
 

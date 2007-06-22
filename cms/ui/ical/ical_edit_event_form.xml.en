@@ -75,7 +75,7 @@
       <td>
         <select name="STATUS">
           <option stl:repeat="s STATUS" selected="${s/selected}"
-            >${s/value}</option>
+                  value="${s/name}">${s/value}</option>
         </select>
       </td>
     </tr>

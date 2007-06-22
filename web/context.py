@@ -56,7 +56,7 @@ class Context(object):
             host = None
 
         # The requested uri
-        request_uri = request.uri
+        request_uri = request.request_uri
         path = request_uri.path
         if request.has_header('X-Base-Path'):
             base_path = Path(request.get_header('X-Base-Path'))
@@ -70,7 +70,7 @@ class Context(object):
         self.uri = get_reference(reference)
 
         # Split the path into path and method ("a/b/c/;view")
-        path = request.uri.path
+        path = request.request_uri.path
         if path and path[-1].name == '':
             self.path = path[:-1]
             self.method = path[-1].params[0]

@@ -25,9 +25,6 @@ class Message(File):
     Base class, for HTTP request and responses.
     """
 
-    #########################################################################
-    # API
-    #########################################################################
     def set_header(self, name, value):
         name = name.lower()
         if isinstance(value, str):

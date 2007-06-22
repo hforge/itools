@@ -32,23 +32,24 @@ from message import Message
 
 class Request(Message):
 
-    request_line = None
-    headers = None
-    body = None
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'request_line', 'method', 'request_uri', 'http_version',
+                 'headers', 'body']
 
 
     def new(self, method='GET', uri='/'):
         version = 'HTTP/1.1'
         self.request_line = '%s %s %s\r\n' % (method, uri, version)
         self.method = method
-        self.uri = get_reference(uri)
+        self.request_uri = get_reference(uri)
         self.http_version = version
         self.headers = {}
         self.body = {}
 
 
     def request_line_to_str(self):
-        return '%s %s %s\r\n' % (self.method, self.uri, self.http_version)
+        return '%s %s %s\r\n' % (self.method, self.request_uri,
+                                 self.http_version)
 
 
     def headers_to_str(self):
@@ -93,7 +94,7 @@ class Request(Message):
         self.request_line = line
         method, request_uri, http_version = line.split()
         self.method = method
-        self.uri = get_reference(request_uri)
+        self.request_uri = get_reference(request_uri)
         self.http_version = http_version
         # Check we support the method
         if method not in ['GET', 'HEAD', 'POST', 'PUT', 'LOCK', 'UNLOCK']:
@@ -210,7 +211,7 @@ class Request(Message):
     # XXX Remove? Use "get_parameter" instead?
     def get_form(self):
         if self.method in ('GET', 'HEAD'):
-                return self.uri.query
+                return self.request_uri.query
         # XXX What parameters with the fields defined in the query?
         return self.body
 

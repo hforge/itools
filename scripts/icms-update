@@ -28,7 +28,7 @@ from itools.catalog import make_catalog, Catalog
 from itools.handlers import Config
 from itools.cms.database import DatabaseFS
 from itools.cms.server import ask_confirmation
-from itools.cms.server import Server, get_root_class
+from itools.cms.server import Server, get_root_class, get_config
 
 
 def update(parser, options, target):
@@ -44,8 +44,16 @@ def update(parser, options, target):
         folder.remove('database/.catalog')
         folder.remove('database/.catalog.bak')
         print '  * Create "catalog" ...'
-        cls = get_root_class(
-            get_absolute_reference2(target).resolve2('database'))
+        # Load Python packages and modules
+        aux = get_absolute_reference2(target)
+        config = get_config(aux)
+        modules = config.get_value('modules')
+        if modules is not None:
+            for name in modules.split():
+                name = name.strip()
+                exec('import %s' % name)
+
+        cls = get_root_class(aux.resolve2('database'))
         catalog = make_catalog('%s/catalog' % target, *cls._catalog_fields)
 
     # Build the server object

@@ -669,6 +669,8 @@ class icalendar(Text):
         dates range and sorted  if requested.
         If kw is filled, it calls search_events on the found subset to return
         only components matching filters.
+
+        RangeSearch is [left, right[
         """
         # Check type of dates, we need datetime for method in_range
         if not isinstance(dtstart, datetime):
@@ -683,7 +685,7 @@ class icalendar(Text):
             EqQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('dtstart', dtstart + resolution, dtend),
                     RangeQuery('dtend', dtstart + resolution, dtend),
-                    AndQuery(RangeQuery('dtstart', None, dtstart + resolution),
+                    AndQuery(RangeQuery('dtstart', None, dtstart),
                              RangeQuery('dtend', dtend, None))))
         results = [self.components[uid] for uid in self.search(query)]
 

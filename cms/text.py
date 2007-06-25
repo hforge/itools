@@ -19,6 +19,7 @@
 import cgi
 
 # Import from itools
+from itools.datatypes import FileName
 from itools.i18n import get_language_name
 from itools.handlers import Text as BaseText, Python as BasePython
 from itools.gettext import PO as BasePO
@@ -81,6 +82,9 @@ class Text(File, BaseText):
         name = checkid(name)
         if name is None:
             return context.come_back(MSG_BAD_NAME)
+
+        # Add the language extension to the name
+        name = FileName.encode((name, cls.class_extension, language))
 
         # Check the name is free
         if container.has_handler(name):

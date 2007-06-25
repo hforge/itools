@@ -77,7 +77,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         if name is None:
             return context.come_back(MSG_BAD_NAME)
 
-        # Add the language externsion to the name
+        # Add the language extension to the name
         if mimetype.startswith('text/'):
             short_name, type, language = FileName.decode(name)
             if language is None:

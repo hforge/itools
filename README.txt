@@ -36,7 +36,7 @@ installed.
 
 Apart from the Python packages listed above, itoools.catalog requires the
 command rsync. And for itools.cms you also need the commands xlhtml, ppthtml,
-pdftohtml, wvHtml and unrtf are needed to index some types of documents.
+pdftotext, wvText and unrtf are needed to index some types of documents.
 
 [1] http://www.reportlab.org/
 [2] http://utidylib.berlios.de/

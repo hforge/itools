@@ -63,7 +63,7 @@ if wiki is not None:
 ###########################################################################
 # Check for required software
 ###########################################################################
-cmds = ['wvHtml', 'xlhtml', 'ppthtml', 'pdftohtml', 'unrtf']
+cmds = ['wvText', 'xlhtml', 'ppthtml', 'pdftotext', 'unrtf']
 
 paths = os.getenv('PATH').split(':')
 all_names = set()

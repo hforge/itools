@@ -1,4 +1,58 @@
 
+itools 0.15.6 (2007/06/25)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.vfs
+  itools.cms            itools.ical             itools.web
+  itools.csv            itools.pdf              itools.workflow
+  itools.datatypes      itools.rss              itools.xhtml
+  itools.gettext        itools.schemas          itools.xliff
+  itools.handlers       itools.stl              itools.xml
+  itools.html           itools.tmx
+  itools.http           itools.uri
+
+A new maintenance script for itools.cms instances has been added, now
+with icms-update-catalog it is possible to update the catalog from the
+command line.
+
+There is also an small addition to the itools.cms API, the new class
+variable "class_layout" will allow in most cases to avoid the definition
+of the method "_get_handler".
+
+There have been bug fixes and other small improvements to other packages:
+itools.handlers, itools.csv, itools.pdf (RML) and itools.cms
+
+The French translation has been updated.
+
+Credits:
+
+ - Hervé Cauwelier fixed bugs here and there;
+ - Nicolas Deram fixed bugs and worked on the itools.cms calendar;
+ - J. David Ibáñez added icms-update-catalog;
+ - Henry Obein worked on RML;
+ - Sylvain Taverne updated the French translation;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.15.6.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.15.5 (2007/06/01)
 ==========================
 

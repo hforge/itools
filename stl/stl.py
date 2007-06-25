@@ -317,7 +317,7 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                 # Build new namespace stacks
                 loops = []
                 n_values = len(values)
-                for value in values:
+                for j, value in enumerate(values):
                     loop_stack = stack[:]
                     loop_stack.append({name: value})
                     loop_repeat = repeat_stack[:]
@@ -325,7 +325,7 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                         {name: {'index': i,
                                 'start': i == 0,
                                 'end': i == n_values - 1,
-                                'even': 'odd' if i % 2 else 'even'}})
+                                'even': 'odd' if j % 2 else 'even'}})
                     loops.append((loop_stack, loop_repeat))
                 # Filter the branches when "stl:if" is present
                 if stl_if in attributes:

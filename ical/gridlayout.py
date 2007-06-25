@@ -337,8 +337,11 @@ def render_namespace(items, times):
     return ns_rows, total_ncols
 
 
-def get_data(data, grid, start_date=None):
-    """ Build final namespace to be used in template. """
+def get_grid_data(data, grid, start_date=None):
+    """
+    Build final namespace from data and grid to be used in gridlayout 
+    templates.
+    """
     # Build grid with Time objects
     grid = [ Time.decode(x) for x in grid ]
 

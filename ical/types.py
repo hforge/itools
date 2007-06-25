@@ -24,26 +24,24 @@ from itools.datatypes import DataType, Integer, URI, Unicode, String
 
 
 class DateTime(DataType):
+    """ 
+    iCalendar Date format:
+
+    DTSTART:19970714T133000.000000 (Local time)
+
+    DTSTART:19970714T173000Z (UTC time)
+
+    DTSTART;TZID=US-Eastern:19970714T133000 (Local time and time zone reference)
+    """
 
     @staticmethod
     def decode(value):
         if value is None:
             return None
 
-        year, month, day, hour, min, sec= 0, 0, 0, 0, 0, 0
+        year, month, day, hour, min, sec, micro = 0, 0, 0, 0, 0, 0, 0
         date = value[:8]
         year, month, day = int(date[:4]), int(date[4:6]), int(date[6:8])
-
-        """
-        Different formats for date-time :
-
-            DTSTART:19970714T133000            ;Local time
-            DTSTART:19970714T173000Z           ;UTC time
-            DTSTART;TZID=US-Eastern:19970714T133000  ;Local time and time
-                                                     ; zone reference
-
-        Time can contain a micro-second value but it is facultative.
-        """
 
         # Time can be omitted 
         if 'T' in value:
@@ -58,10 +56,14 @@ class DateTime(DataType):
                 # ...
 
             hour, min = int(time[:2]), int(time[2:4])
-            if len(time) == 6:
+            if '.' in time:
+                sec, micro = time.split('.')
+                sec = int(sec[-2:])
+                micro = int(micro)
+            elif len(time) >= 6:
                 sec = int(time[4:6])
 
-        return datetime(year, month, day, hour, min, sec)
+        return datetime(year, month, day, hour, min, sec, micro)
 
 
     @staticmethod

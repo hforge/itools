@@ -45,8 +45,10 @@ def get_current_date(value=None):
     Get date as a date object from string value.
     By default, get today's date as a date object.
     """
+    if value is None:
+        return date.today()
     try:
-        return Date.decode(value or date.today())
+        return Date.decode(value)
     except:
         return date.today()
 

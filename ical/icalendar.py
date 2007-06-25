@@ -47,14 +47,14 @@ resolution = timedelta.resolution
 
 
 class PropertyValue(object):
+    """
+    PropertyValue handles a property value and parameters.
+
+    Parameters are a dict containing list of values:
+        {param1_name: [param_values], ...}
+    """
 
     def __init__(self, value, **kw):
-        """
-        Initialize the property value.
-
-        value -- value as a string
-        kw    -- {param1_name: [param_values], ...}
-        """
         self.value = value
         self.parameters = kw
 

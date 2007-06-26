@@ -4,6 +4,8 @@
 
 <form id="edit_event" action=";edit_event" method="post">
   <p>(To add an event lasting all day long, leave time fields empty.)</p>
+  <input stl:if="resource" type="hidden" name="resource"
+         value="${resource}" />
   <table class="form">
     <tr stl:if="resources">
       <td>Resource</td>

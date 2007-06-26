@@ -237,7 +237,7 @@ class CalendarAware(object):
 
 
     # Get one line with header and empty cases with only '+' for daily_view
-    def get_header_columns(self, calendar_url, args, timetables, cal_fields, 
+    def get_header_columns(self, calendar_name, args, timetables, cal_fields, 
                            new_class='add_event', new_value='+'):
         ns_columns = []
         for start, end in timetables:
@@ -246,7 +246,7 @@ class CalendarAware(object):
 
             tmp_args = args + '&start_time=%s' % start
             tmp_args = tmp_args + '&end_time=%s' % end
-            new_url = '%s/;edit_event_form?%s' % (calendar_url, tmp_args)
+            new_url = ';edit_event_form?%s' % (tmp_args)
 
             column =  {'class': None,
                       'colspan': 1,
@@ -266,11 +266,11 @@ class CalendarAware(object):
 
     # Get namespace for a resource's lines into daily_view
     def get_ns_calendar(self, calendar, c_date, cal_fields, shown_fields, 
-                        timetables, method='daily_view', 
-                        show_conflicts=False):
-        calendar_url = self.get_pathto(calendar)
+                        timetables, method='daily_view', show_conflicts=False):
+        calendar_name = calendar.name
         args = 'date=%s&method=%s' % (Date.encode(c_date), method)
-        new_url = '%s/;edit_event_form?%s' % (calendar_url, args)
+        args = '%s&resource=%s' % (args, calendar_name)
+        new_url = ';edit_event_form?%s' % args
 
         ns_calendar = {}
         ns_calendar['name'] = calendar.get_title_or_name()
@@ -353,7 +353,7 @@ class CalendarAware(object):
                 end = Time.encode(end)
                 tmp_args = args + '&start_time=' + start
                 tmp_args = tmp_args + '&end_time=' + end
-                new_url = '%s/;edit_event_form?%s' % (calendar_url, tmp_args)
+                new_url = ';edit_event_form?%s' % (tmp_args)
                 # Init column
                 column =  {'class': None,
                           'colspan': 1,
@@ -367,8 +367,7 @@ class CalendarAware(object):
                 if event and tt_index == event['tt_start']:
                     uid = event['UID']
                     event_params = '%s&uid=%s' % (args, uid)
-                    go_url = '%s/;edit_event_form?%s' % (calendar_url,
-                                                         event_params) 
+                    go_url = ';edit_event_form?%s' % event_params
                     if show_conflicts and uid in conflicts_list:
                         css_class = 'cal_conflict'
                     else:
@@ -408,12 +407,12 @@ class CalendarAware(object):
         ns_calendar['rows'] = ns_rows
 
         # Add one line with header and empty cases with only '+'
-        header_columns = self.get_header_columns(calendar_url, args, 
+        header_columns = self.get_header_columns(calendar_name, args, 
                                                  timetables, cal_fields)
         ns_calendar['header_columns'] = header_columns 
 
         # Add url to calendar keeping args
-        ns_calendar['url'] = '%s/;monthly_view?%s' % (calendar_url, args)
+        ns_calendar['url'] = ';monthly_view?%s' % args
         ns_calendar['rowspan'] = len(rows) + 1
 
         return ns_calendar
@@ -754,7 +753,9 @@ class CalendarAware(object):
         # Initialization
         namespace = {}
         namespace['remove'] = None
-        namespace['resources'] = None
+        namespace['resources'] = namespace['resource'] = None
+        if resource:
+            namespace['resource'] = resource.name
         properties = []
         status = Status()
 
@@ -864,6 +865,7 @@ class CalendarAware(object):
             resource_name = context.get_form_value('resource') or None
             if resource_name and self.has_handler(resource_name):
                 resource = self.get_handler(resource_name)
+                goto = '%s?%s' % (goto, resource_name)
             else:
                 return context.come_back(u'Please select a resource.', goto,
                                          keys=keys)
@@ -915,13 +917,14 @@ class CalendarAware(object):
                     # Get time
                     hours = context.get_form_value('%s_hours' % real_key)
                     minutes = context.get_form_value('%s_minutes' % real_key)
-                    v_time = '%s:%s' % (hours, minutes)
-                    # Append time to date into value
                     params = {}
-                    if v_time == ':':
+                    if hours is '':
                         value = v_date
                         params['VALUE'] = ['DATE']
                     else:
+                        if minutes is '':
+                            minutes = 0
+                        v_time = '%s:%s' % (hours, minutes)
                         value = ' '.join([v_date, v_time])
                     # Get value as a datetime object
                     try:
@@ -1201,7 +1204,7 @@ class Calendar(Text, icalendar, CalendarAware):
         if timetable:
             url = '%s&timetable=%s' % (url, timetable)
         if resource_name:
-            url = '%s/%s' % (resource_name, url)
+            url = '%s&resource=%s' % (url, resource_name)
         ns['url'] = url
 
         return ns

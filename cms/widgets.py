@@ -36,7 +36,8 @@ from base import Handler
 # Table
 ###########################################################################
 
-def batch(uri, start, size, total, gettext=Handler.gettext):
+def batch(uri, start, size, total, gettext=Handler.gettext,
+          msgs=(u"There is 1 object.", u"There are ${n} objects.")):
     """
     Outputs an HTML snippet with navigation links to move through a set
     of objects.
@@ -53,9 +54,9 @@ def batch(uri, start, size, total, gettext=Handler.gettext):
     """
     # Plural forms (XXX do it the gettext way)
     if total == 1:
-        msg1 = gettext(u"There is 1 object.")
+        msg1 = gettext(msgs[0])
     else:
-        msg1 = gettext(u"There are ${n} objects.")
+        msg1 = gettext(msgs[1])
         msg1 = Template(msg1).substitute(n=total)
 
     # Calculate end

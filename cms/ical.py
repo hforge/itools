@@ -755,7 +755,6 @@ class CalendarAware(object):
         namespace = {}
         namespace['remove'] = None
         namespace['resources'] = None
-        event = None
         properties = []
         status = Status()
 
@@ -796,6 +795,7 @@ class CalendarAware(object):
                 else:
                     namespace[key] = value.value
         else:
+            event = None
             # Selected calendar
             if resource is None:
                 ns_calendars = []
@@ -927,10 +927,6 @@ class CalendarAware(object):
                     try:
                         value = DateTime.from_str(value)
                     except:
-                        # Remove event if new one
-                        if not uid:
-                            uid = event.uid
-                            icalendar.remove(resource, uid)
                         goto = ';edit_event_form?date=%s' % selected_date
                         message = u'One or more field is invalid.'
                         return context.come_back(goto=goto, message=message)
@@ -945,10 +941,6 @@ class CalendarAware(object):
                     elif context.has_form_value('timetable'):
                         timetable = context.get_form_value('timetable', 0)
                         goto = goto + '&timetable=%s' % timetable
-                    # Remove event if new one
-                    if not uid:
-                        uid = event.uid
-                        icalendar.remove(resource, uid)
                     return context.come_back(goto=goto, message=message)
                 # Save values
                 for key in ('DTSTART', 'DTEND'):

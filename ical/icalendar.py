@@ -18,8 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from Python Standard Library
-from datetime import datetime, date, time, timedelta
-from copy import deepcopy
+from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
@@ -108,15 +107,13 @@ class Component(object):
         if name not in version:
             return None
 
-        property = version[name]
-        value = property.value
-
         # According to the RFC, when DTEND is of format DATE, it is
         # interpreted as the event happens the whole day.
-        if name == 'DTEND':
-            format = property.parameters.get('VALUE')
-            if format is not None and 'DATE' in format:
-                value = value + timedelta(days=1) - resolution
+        if name == 'DTEND' and 'DTEND' not in version:
+            value = version['DTSTART'].value + timedelta(days=1) - resolution
+        else:
+            property = version[name]
+            value = property.value
 
         return value
 
@@ -520,11 +517,10 @@ class icalendar(Text):
         for key in keys:
             del version[key]
 
-        # Add the new version
         self.set_changed()
+        # Unindex the component, add new version, index again
+        self.catalog.unindex_document(component, uid)
         component.add_version(version)
-
-        # Index the component
         self.catalog.index_document(component, uid)
 
 
@@ -683,8 +679,9 @@ class icalendar(Text):
         # Get only the events which matches
         query = AndQuery(
             EqQuery('type', 'VEVENT'),
-            OrQuery(RangeQuery('dtstart', dtstart + resolution, dtend),
-                    RangeQuery('dtend', dtstart + resolution, dtend),
+            OrQuery(RangeQuery('dtstart', dtstart, dtend),
+                    RangeQuery('dtend', dtstart + resolution, 
+                                        dtend + resolution),
                     AndQuery(RangeQuery('dtstart', None, dtstart),
                              RangeQuery('dtend', dtend, None))))
         results = [self.components[uid] for uid in self.search(query)]

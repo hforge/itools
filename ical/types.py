@@ -95,17 +95,23 @@ class DateTime(DataType):
         # Time
         if time.count(':') == 1:
             hours, minutes = time.split(':')
-            hours, minutes, seconds = int(hours), int(minutes), 0
+            hours, minutes, seconds, micro = int(hours), int(minutes), 0, 0
         else:
             hours, minutes, seconds = time.split(':')
+            if '.' in seconds:
+                seconds, micro = seconds.split('.')
+                micro = int(micro)
             hours, minutes, seconds = int(hours), int(minutes), int(seconds)
-        return datetime(year, month, day, hours, minutes, seconds)
+        return datetime(year, month, day, hours, minutes, seconds, micro)
 
 
     @staticmethod
     def to_str(value):
         if value is None:
             return ''
+        micro = value.microsecond
+        if micro:
+            return value.strftime('%Y-%m-%d %H:%M:%S.%d' % micro)
         return value.strftime('%Y-%m-%d %H:%M:%S')
 
 

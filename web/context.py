@@ -220,7 +220,7 @@ class Context(object):
             if self.has_form_value(field):
                 if is_mandatory and not value:
                     cls.append('missing')
-                elif not datatype.is_valid(value):
+                elif value and not datatype.is_valid(value):
                     cls.append('missing')
             # Enumerate
             if is_datatype(datatype, Enumerate):

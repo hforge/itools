@@ -37,6 +37,7 @@ from .folder import Folder
 from itools.cms.messages import *
 from .text import Text
 from .registry import register_object_class
+from .binary import Image
 
 # Import from docutils
 try:
@@ -316,6 +317,10 @@ class WikiPage(Text):
                 continue
             title = reference.astext()
             page = parent.get_handler(name)
+            # Link to image?
+            if isinstance(page, Image):
+                images.append(('../%s' % name, name))
+                continue
             source = page.to_str()
             subdoc = core.publish_doctree(source,
                     settings_overrides=self.overrides)

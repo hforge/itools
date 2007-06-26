@@ -211,8 +211,6 @@ class Context(object):
             datatype = get_datatype(field)
             # The value
             value = self.get_form_value(field)
-            if is_datatype(datatype, Enumerate):
-                value = datatype.get_namespace(value)
             # The style
             # Is the field required
             cls = []
@@ -224,6 +222,9 @@ class Context(object):
                     cls.append('missing')
                 elif not datatype.is_valid(value):
                     cls.append('missing')
+            # Enumerate
+            if is_datatype(datatype, Enumerate):
+                value = datatype.get_namespace(value)
             if cls:
                 cls = ' '.join(cls)
             else:

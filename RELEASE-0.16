@@ -1,5 +1,5 @@
 
-itools 0.16.0 (2007/06/2X)
+itools 0.16.0 (2007/06/28)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -16,16 +16,16 @@ meta-package for easier development and deployment:
 
 The main focus of this release has been quality:
 
+ - The whole documentation has been updated and reviewed. Now we have a
+   +200 pages PDF, and the code behaves as it is documented.
+
  - For the first time all unit tests are up-to-date. Check the README file
    to learn how to run them.
-
- - The same stands for the documentation. Now we have a 200 pages PDF, and
-   the code behaves as it is written in the documentation.
 
  - We have made a little round through the coding style, all modules are
    lowercase now.
 
- - And the API has been flatten. This means that all functions, constants,
+ - The API has been flatten. This means that all functions, constants,
    classes and exceptions of a package are available at the package's root
    level (no need to go search a function in some module). Only exception
    is "itools.cms", which is too big to have a flat API.
@@ -44,14 +44,14 @@ The index & search engine (package "itools.catalog") has been re-worked.
 With some new features (like the possibility to define custom fields),
 and a much friendlier programming interface. Check the documentation.
 
-The implmenentation of the XML file handler has been radically changed.
+The implementation of the XML file handler has been radically changed.
 It does not use anymore an element-tree to represent the handler's state,
 but a list of events: start tag, end tag, text node, etc. (this change
 has been inspired by Genshi [3]).
 
-Other packages have seen minor changes either to the programming interface
-or to the user interface. These are: itools.uri, itools.vfs, itools.handlers,
-itools.csv, itools.ical and itools.cms.
+Other packages have seen minor changes either to the programming interface or
+to the user interface. Most notably: itools.uri, itools.vfs, itools.handlers,
+itools.gettext, itools.csv, itools.ical and itools.cms.
 
 Check the UPGRADE file for the details an how to update your code.
 
@@ -64,8 +64,10 @@ Check the UPGRADE file for the details an how to update your code.
 Credits:
 
  - Hervé Cauwelier implemented itools.rest and worked on itools.cms;
+ - Nicolas Deram refactored itools.ical and itools.cms.ical;
  - J. David Ibáñez did about everything else;
- - Sylvain Taverne implemented the itools.odf, fixed many bugs, updated
+ - Henry Obein fixed a few bugs;
+ - Sylvain Taverne implemented itools.odf, fixed many bugs, updated
    the French translation, and reviewed the documentation;
 
 

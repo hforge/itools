@@ -15,11 +15,11 @@ The packages included are:
 
 The scripts included are:
 
-  icms-init             icms-update             isetup-build
-  icms-restore          igettext-build          isetup-doc
-  icms-start            igettext-extract        isetup-update-locale
+  icatalog-inspect      icms-update             isetup-build
+  icms-init             icms-update-catalog     isetup-doc
+  icms-restore          igettext-build          isetup-update-locale
+  icms-start            igettext-extract
   icms-stop             igettext-merge
-
 
 
 Requirements

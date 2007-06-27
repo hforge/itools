@@ -5,91 +5,36 @@
 
 <h2>Credits</h2>
 
-<h4>Hackers</h4>
-
-  <table>
-    <tr>
-      <th>Luis Belmar-Letelier</th>
-      <td align="left">
-        Hacks a little everywhere
-      </td>
-    </tr>
-    <tr>
-      <th>Hervé Cauwelier</th>
-      <td align="left">
-        Hacks everywhere, responsable of the design, usability and HTML/CSS
-        coding
-      </td>
-    </tr>
-    <tr>
-      <th>Nicolas Deram</th>
-      <td align="left">
-        Main developer of the iCalendar module, hacks a little everywhere
-      </td>
-    </tr>
-    <tr>
-      <th>Thilo Ernst</th>
-      <td align="left">
-        Worked on the Workflow engine
-      </td>
-    </tr>
-    <tr>
-      <th>Thierry Fromon</th>
-      <td align="left">
-        Worked on the Internationalization framework
-      </td>
-    </tr>
-    <tr>
-      <th>Juan David Ibáñez Palomar</th>
-      <td align="left">
-        Lead Developer
-      </td>
-    </tr>
-    <tr>
-      <th>Piotr Macuk</th>
-      <td align="left">
-        Worked on the support for the CSV and RSS file formats
-      </td>
-    </tr>
-    <tr>
-      <th>Nicolas Oyez</th>
-      <td align="left">
-        Worked on the support for the TMX, XLIFF and iCalendar file formats
-      </td>
-    </tr>
-  </table>
-
-
-<h4>Translations</h4>
-
-  <table>
-    <tr>
-      <th>Spanish (es)</th>
-      <td align="left">
-        Juan David Ibáñez Palomar
-      </td>
-    </tr>
-    <tr>
-      <th>French (fr)</th>
-      <td align="left">
-        Hervé Cauwelier<br/>
-        Nicolas Deram
-      </td>
-    </tr>
-    <tr>
-      <th>Italian (it)</th>
-      <td align="left">
-        Paolo Dina
-      </td>
-    </tr>
-    <tr>
-      <th>Chinese (zh)</th>
-      <td align="left">
-        Zhou Li
-      </td>
-    </tr>
-  </table>
-
+<table cellspacing="10">
+  <tr>
+    <td>
+      <h4>Hacking</h4>
+      <ul>
+        <li>Luis Belmar-Letelier</li>
+        <li>Hervé Cauwelier</li>
+        <li>Nicolas Deram</li>
+        <li>Thilo Ernst</li>
+        <li>Thierry Fromon</li>
+        <li>Juan David Ibáñez Palomar</li>
+        <li>Piotr Macuk</li>
+        <li>Henry Obein</li>
+        <li>Nicolas Oyez</li>
+        <li>Sylvain Taverne</li>
+      </ul>
+    </td>
+    <td>
+      <h4>Translators</h4>
+      <ul>
+        <li>Hervé Cauwelier (French)</li>
+        <li>Nicolas Deram (French)</li>
+        <li>Paolo Dina (Italian)</li>
+        <li>Juan David Ibáñez Palomar (Spanish)</li>
+        <li>Zhou Li (Chinese)</li>
+        <li>Sylvain Taverne (French)</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 
 </div>

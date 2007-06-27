@@ -124,13 +124,14 @@ Copyright 2002-2007  J. David Ibáñez <jdavid@itaapy.com>
 And:
 
  - Luis Belmar-Letelier <luis@itaapy.com>
- - Hervé Cauwelier <herve@oursours.net>
- - Nicolas Deram <nderam@gmail.com>
+ - Hervé Cauwelier <herve@itaapy.com>
+ - Nicolas Deram <nderam@itaapy.com>
  - Thilo Ernst <Thilo.Ernst@dlr.de>
  - Thierry Fromon <from.t@free.fr>
- - J. David Ibáñez <jdavid@itaapy.com>
  - Piotr Macuk <piotr@macuk.pl>
+ - Henry Obein <henry@itaapy.com>
  - Nicolas Oyez <noyez@gmail.com>
+ - Sylvain Taverne <sylvain@itaapy.com>
 
 Includes parts of Epoz 2.0.2. Epoz is copyrighted by Maik Jablonski and
 licensed under the Zope Public License (ZPL) version 2.1.

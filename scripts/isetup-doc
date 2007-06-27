@@ -151,9 +151,9 @@ def build_namespace(pkg, format, escape=lambda x: x):
     namespace['name'] = escape(pkg.__name__)
     # Documentation String
     doc = pkg.__doc__
-    if doc is None:
-        doc = 'THIS PACKAGE HAS NOT A DOCUMENTATION STRING.'
-    namespace['doc'] = format(doc)
+    if doc is not None:
+        doc = format(doc)
+    namespace['doc'] = doc
     # Public API
     all = pkg.__all__
     if all is None:
@@ -170,11 +170,9 @@ def build_namespace(pkg, format, escape=lambda x: x):
         object = getattr(pkg, name)
         # Get the documentation string
         doc = object.__doc__
-        if doc is None:
-            doc = 'THIS OBJECT HAS NOT A DOCUMENTATION STRING.'
-        else:
+        if doc is not None:
             doc = doc.strip()
-        doc = format(doc)
+            doc = format(doc)
         # Build the item namespace
         title = escape(name)
         ns = {'name': title, 'doc': doc}
@@ -209,6 +207,7 @@ def build_namespace(pkg, format, escape=lambda x: x):
                 'old style classes, they are obsolete') % name
         else:
             constants.append(ns)
+            ns['doc'] = None
 
     return namespace
 

@@ -24,7 +24,8 @@ from datetime import datetime
 # Import from itools
 from itools.handlers import Text
 from itools.datatypes import URI
-from itools.ical import icalendar, PropertyValue, unfold_lines
+from itools.ical import icalendar, PropertyValue
+from itools.ical.parser import unfold_lines
 
 
 # Example with 1 event

@@ -84,6 +84,7 @@ def update(parser, options, target):
         print 'Commit...'
         database = server.database
         database.commit()
+        root.load_state()
 
     # Update catalog (XXX remove for 0.17)
     catalog = Catalog('%s/catalog' % target)

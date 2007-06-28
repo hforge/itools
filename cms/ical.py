@@ -467,6 +467,7 @@ class CalendarAware(object):
     monthly_view__sublabel__ = u'Monthly'
     def monthly_view(self, context):
         ndays = 7
+        today_date = date.today()
 
         # Add ical css
         css = self.get_handler('/ui/ical/calendar.css')
@@ -525,7 +526,7 @@ class CalendarAware(object):
                 if d < ndays:
                     ns_day = {}
                     ns_day['nday'] = day.day
-                    ns_day['selected'] = (day == c_date)
+                    ns_day['selected'] = (day == today_date)
                     ns_day['url'] = ';edit_event_form?date=%s' % Date.encode(day)
                     #######################################################
                     # For each day, we add events occuring on this day

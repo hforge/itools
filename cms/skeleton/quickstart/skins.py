@@ -66,11 +66,10 @@ class FrontOffice1(Skin):
         # Load the template
         handler = self.get_handler('/ui/frontoffice1/template.xhtml')
 
-        # Process the header (XXX strips XML declaration, because it makes
-        # IE6 fall into quirks mode, see "http://hsivonen.iki.fi/doctype/")
-        header = handler.header_to_str()
-        header = header.split('\n', 1)[1]
-        # STL and rewrite URLs (for images and CSS)
+        # Build the header
+        header = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'\
+                 '  "http://www.w3.org/TR/html4/strict.dtd">\n'
+        # Build the body
         prefix = Path(handler.get_abspath())
         body = stl(handler, namespace, prefix=prefix)
 

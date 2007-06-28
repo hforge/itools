@@ -20,12 +20,14 @@ from itools import get_abspath, get_version
 from itools.gettext import register_domain
 from itools.cms.skins import register_skin
 
-# Import from our package
-from base import Handler
-import metadata
+# Expose the root class for the icms scripts
 from root import Root
-from skins import FrontOffice1
 
+# Import from our package so it registers new handlers, schemas, datatypes...
+import metadata
+
+from skins import FrontOffice1
+from base import Handler
 
 # Make the product version available to Python code
 __version__ = get_version(globals())

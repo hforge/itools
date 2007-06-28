@@ -30,11 +30,11 @@ class Root(Handler, iRoot):
 
     class_id = 'ExamplePortal'
     class_title = u'Example Portal'
-    class_version = '20061021'
+    class_version = '20070628'
     class_views = [['view']] + iRoot.class_views + [['switch_skin']]
 
     #_catalog_fields = ikaaroRoot._catalog_fields + [
-    #        ('<field>', '<analyser>', False, True)]
+    #        FieldObject('<name>', is_indexed=True, is_stored=False)]
 
 
     view__access__ = True

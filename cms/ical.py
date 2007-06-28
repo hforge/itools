@@ -734,20 +734,12 @@ class CalendarAware(object):
                 selected_date = Date.encode(c_date)
 
         # Timetables
-        timetable = context.get_form_value('timetable', None)
-        tt_start = context.get_form_value('start', None)
-        tt_end = None
-        if timetable:
-            timetables = self.get_timetables()
-            if timetables != []:
-                tt_start, tt_end = timetables[int(timetable)]
-        else:
-            tt_start = context.get_form_value('start_time', tt_start)
-            tt_end = context.get_form_value('end_time', None)
-            if tt_start:
-                tt_start = Time.decode(tt_start)
-            if tt_end:
-                tt_end = Time.decode(tt_end)
+        tt_start = context.get_form_value('start_time', None)
+        tt_end = context.get_form_value('end_time', None)
+        if tt_start:
+            tt_start = Time.decode(tt_start)
+        if tt_end:
+            tt_end = Time.decode(tt_end)
 
         # Initialization
         namespace = {}

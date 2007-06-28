@@ -167,15 +167,16 @@ def render_namespace(items, times):
     # blocks = [(nrows, ncols), ..]
     blocks, table, state = [], [], []
     nrows = 0
-    for time in times[:-1]:
+    for itime, time in enumerate(times[:-1]):
         cells = []
 
+        tt_end = times[itime + 1]
         # add the busy cells
         for rowspan in state:
             if rowspan > 0:
                 cells.append(Cell(Cell.busy, colspan=1))
             else:
-                cells.append(Cell(Cell.free, start=time))
+                cells.append(Cell(Cell.free, start=time, end=tt_end))
                                    
         # add new cells
         icell = 0
@@ -203,7 +204,7 @@ def render_namespace(items, times):
         ncols = len(cells)
         # empty row?
         if ncols == 0:
-            cells.append(Cell(Cell.free, start=time))
+            cells.append(Cell(Cell.free, start=time, end=tt_end))
 
         # next row, reduce the current rowspans
         nrows = nrows + 1
@@ -316,7 +317,7 @@ def render_namespace(items, times):
     # render_namespace
     ######################################################################
 
-    url = ';edit_event_form?method=grid_weekly_view&'
+    url = ';edit_event_form?method=weekly_view&'
     ns_rows = []
     for cells in table:
         ns_cells = []
@@ -328,7 +329,9 @@ def render_namespace(items, times):
             # Add start time to url used to add events
             new_url = None
             if cell.start:
-                new_url = '%sstart=%s' % (url, Time.encode(cell.start))
+                new_url = '%sstart_time=%s' % (url, Time.encode(cell.start))
+            if cell.end:
+                new_url = '%s&end_time=%s' % (new_url, Time.encode(cell.end))
             ns_cell['newurl'] = new_url 
             ns_cells.append(ns_cell)
 

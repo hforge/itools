@@ -432,9 +432,8 @@ class CalendarAware(object):
 
         # Current date
         selected_date = context.get_form_value('date', None)
-        c_date = get_current_date(date)
-        if not selected_date:
-            selected_date = Date.encode(c_date)
+        c_date = get_current_date(selected_date)
+        selected_date = Date.encode(c_date)
 
         # Get fields and fields to show
         cal_fields = self.get_cal_fields()
@@ -1060,8 +1059,8 @@ class Calendar(Text, icalendar, CalendarAware):
         Example of metadata:
           <timetables>(8,0),(10,0);(10,30),(12,0);(13,30),(17,30)</timetables>
         """
-        if self.has_property('timetables'):
-            return self.get_property('timetables')
+        if self.has_property('ikaaro:timetables'):
+            return self.get_property('ikaaro:timetables')
 
         # From class value
         timetables = []

@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<div id="browse_calendar"> 
+<div id="daily_view"> 
 <form action="." method="post">
 
   <div id="attributes">
@@ -12,7 +12,7 @@
     <input type="text" name="date" id="date" size="11" value="${date}" />
     <input type="button" id="trigger_date" value="..." />
 
-    <input type="submit" id="update" name=";browse_calendar" value="OK" 
+    <input type="submit" id="update" name=";daily_view" value="OK" 
            class="button_ok" />
   </div>
 

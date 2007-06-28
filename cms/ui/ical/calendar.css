@@ -184,49 +184,49 @@ table.timetable {
   background: #ef2929;
 }
 
-#browse_calendar #attributes {
+#daily_view #attributes {
   margin: 5px 0 8px 0;
 }
 
-#browse_calendar #attributes span {
+#daily_view #attributes span {
   margin: 0 8px 0 0;
 }
 
-#browse_calendar .evt_value, 
-#browse_calendar .add_event {
+#daily_view .evt_value, 
+#daily_view .add_event {
   font-size: 12px;
   text-decoration: none;
   color: #003180;
 }
 
-#browse_calendar table {
+#daily_view table {
   border-collapse: collapse;
 }
-#browse_calendar td {
+#daily_view td {
   border: 1px solid black;
 }
 
-#browse_calendar .header_columns {
+#daily_view .header_columns {
   font-size: 9px;
   font-weight: bold;
 }
 
-#browse_calendar #header_columns {
+#daily_view #header_columns {
   border-top: 1.5px solid black;
 }
 
-#browse_calendar #header_columns td {
+#daily_view #header_columns td {
   padding: 6px;
 }
 
-#browse_calendar #header_timetables,
-#browse_calendar #header_timetables table, 
-#browse_calendar #header_timetables tr, 
-#browse_calendar #header_timetables td {
+#daily_view #header_timetables,
+#daily_view #header_timetables table, 
+#daily_view #header_timetables tr, 
+#daily_view #header_timetables td {
   border: none;
 }
 
-#browse_calendar #header_timetables span {
+#daily_view #header_timetables span {
   margin-left: -15px; /* See below */
   font-size: 9px;
   font-weight: bold;
@@ -234,9 +234,7 @@ table.timetable {
 }
 
 /* Prevent IE from eating the time outside the box */
-* html #browse_calendar #header_timetables span {
+* html #daily_view #header_timetables span {
   margin-left: 0;
 }
-
-
 

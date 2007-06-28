@@ -21,6 +21,7 @@ from __future__ import with_statement
 
 # Import from the Standard Library
 import datetime
+import os
 from tempfile import mkstemp
 import thread
 
@@ -146,15 +147,16 @@ class DatabaseFS(FileFS):
             tmp_map = get_tmp_map()
             if reference.path in tmp_map:
                 tmp_path = tmp_map[reference.path]
-            else:
-                commit, log = get_commit_and_log(reference)
-                tmp_file, tmp_path = mkstemp(dir=commit)
-                tmp_path = get_reference(tmp_path)
-                tmp_map[reference.path] = tmp_path
-                with open(log, 'a+') as log:
-                    log.write('~%s#%s\n' % (reference.path, tmp_path))
+                return FileFS.open(tmp_path, mode)
 
-            return FileFS.open(tmp_path, mode)
+            commit, log = get_commit_and_log(reference)
+            tmp_file, tmp_path = mkstemp(dir=commit)
+            tmp_path = get_reference(tmp_path)
+            tmp_map[reference.path] = tmp_path
+            with open(log, 'a+') as log:
+                log.write('~%s#%s\n' % (reference.path, tmp_path))
+            return os.fdopen(tmp_file, 'w')
+
 
         return FileFS.open(reference, mode)
 

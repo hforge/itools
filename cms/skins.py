@@ -454,11 +454,8 @@ class Skin(Folder):
         handler = self.get_template()
 
         # Build the output
-        s = []
-        # We now send real HTML.
-        header = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'\
-                 '  "http://www.w3.org/TR/html4/strict.dtd">'
-        s.append(header)
+        s = ['<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
+             '  "http://www.w3.org/TR/html4/strict.dtd">']
         # STL
         prefix = Path(handler.get_abspath())
         data = stl(handler, namespace, prefix=prefix)

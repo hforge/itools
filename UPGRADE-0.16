@@ -283,3 +283,25 @@ Now:
 
   schedule_to_reindex(handler)
 
+
+4.5 Send HTML
+-------------
+
+Now we send HTML to the client, this means the skins must be modified to
+look like this:
+
+    # Load the template
+    handler = self.get_template()
+
+    # Build the output
+    s = ['<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
+         '  "http://www.w3.org/TR/html4/strict.dtd">']
+    # STL
+    prefix = Path(handler.get_abspath())
+    data = stl(handler, namespace, prefix=prefix)
+    s.append(data)
+
+    return ''.join(s)
+
+We add first the HTML header, then we call STL, which by default produces
+HTML output.

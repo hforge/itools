@@ -128,12 +128,6 @@ def update(parser, options, target):
         database.commit()
         root.load_state()
 
-    # Update catalog (XXX remove for 0.17)
-    catalog = Catalog('%s/catalog' % target)
-    for object in root._traverse_catalog_aware_objects():
-        catalog.index_document(object)
-    catalog.commit()
-
 
 
 if __name__ == '__main__':

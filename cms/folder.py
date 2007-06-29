@@ -275,6 +275,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
         self.del_handler('%s.metadata' % name)
 
 
+    def get_object(self, name):
+        handler = self.get_handler(name)
+        metadata = handler.get_metadata()
+        return handler, metadata
+
+
     def search_handlers(self, path='.', format=None, state=None,
                         handler_class=None):
         container = self.get_handler(path)

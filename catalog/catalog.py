@@ -78,7 +78,8 @@ from __future__ import with_statement
 
 # Import from the Standard Library
 from operator import itemgetter
-from subprocess import call
+from os import listdir
+from os.path import getmtime
 
 # Import from itools
 from itools.uri import get_absolute_reference
@@ -90,6 +91,16 @@ from queries import EqQuery, AndQuery, PhraseQuery
 from io import (decode_byte, encode_byte, decode_link, encode_link,
                 decode_string, encode_string, decode_uint32, encode_uint32,
                 decode_vint, encode_vint, NULL)
+
+
+
+def rsync(src, dst):
+    for name in listdir(src):
+        src_file = src + '/' + name
+        dst_file = dst + '/' + name
+        if getmtime(src_file) > getmtime(dst_file):
+            data = open(src_file).read()
+            open(dst_file, 'w').write(data)
 
 
 
@@ -328,7 +339,8 @@ class Catalog(object):
 
     def commit(self):
         # Start
-        state = str(self.uri.path.resolve2('state'))
+        path = self.uri.path
+        state = str(path.resolve2('state'))
         open(state, 'w').write('START\n')
 
         # Save
@@ -339,9 +351,9 @@ class Catalog(object):
             self.save_documents()
         except:
             # Restore from backup
-            src = str(self.uri.path.resolve2('data.bak'))
-            dst = str(self.uri.path.resolve2('data/'))
-            call(['rsync', '-a', '--delete', src, dst])
+            src = str(path.resolve2('data.bak'))
+            dst = str(path.resolve2('data'))
+            rsync(src, dst)
             # Reload the catalog
             self.__init__(self.uri)
             # We are done
@@ -353,9 +365,9 @@ class Catalog(object):
         open(state, 'w').write('END\n')
 
         # Backup
-        src = str(self.uri.path.resolve2('data/'))
-        dst = str(self.uri.path.resolve2('data.bak'))
-        call(['rsync', '-a', '--delete', src, dst])
+        src = str(path.resolve2('data'))
+        dst = str(path.resolve2('data.bak'))
+        rsync(src, dst)
 
         # We are done
         open(state, 'w').write('OK\n')

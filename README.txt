@@ -34,9 +34,8 @@ For itools.cms to work the package "tidy" [2] must be installed. While not
 strictly necessary it is also recommended to have PIL [3] and docutils [4]
 installed.
 
-Apart from the Python packages listed above, itoools.catalog requires the
-command rsync. And for itools.cms you also need the commands xlhtml, ppthtml,
-pdftotext, wvText and unrtf are needed to index some types of documents.
+Apart from the Python packages listed above, itools.cms requires the commands
+xlhtml, ppthtml, pdftotext, wvText and unrtf to index some types of documents.
 
 [1] http://www.reportlab.org/
 [2] http://utidylib.berlios.de/

@@ -15,10 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-# Import from the Standard Library
-import os
-from os.path import isfile, join
-
 # Import from itools
 from base import CatalogAware
 from catalog import Catalog, make_catalog
@@ -47,15 +43,4 @@ __all__ = [
     'PhraseQuery',
     'AndQuery',
     'OrQuery']
-
-
-
-# Check rsync is installed
-paths = os.getenv('PATH').split(':')
-for path in paths:
-    path = join(path, 'rsync')
-    if isfile(path):
-        break
-else:
-    print 'You need to install the command "rsync".'
 

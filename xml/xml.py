@@ -27,7 +27,7 @@ from itools.handlers import Text, register_handler_class
 from i18n import get_messages, translate
 from namespaces import get_namespace, is_empty, XMLNSNamespace
 from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
-                    END_ELEMENT, TEXT, COMMENT)
+                    END_ELEMENT, TEXT, COMMENT, CDATA)
 
 
 # FIXME Current implementation regarding XML namespaces for attributes
@@ -126,6 +126,8 @@ def stream_to_str(stream, encoding='UTF-8'):
             else:
                 data.append('<!DOCTYPE %s PUBLIC "%s"\n  "%s">'
                     % (name, system_id, public_id))
+        elif event == CDATA:
+            data.append('<![CDATA[%s]]>' % value)
         else:
             raise NotImplementedError, 'unknown event "%s"' % event
     return ''.join(data)

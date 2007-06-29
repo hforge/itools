@@ -266,7 +266,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         handler = self.get_handler(name)
         if isinstance(handler, Folder):
             for x in handler._traverse_catalog_aware_objects():
-                schedule_to_unindex(handler)
+                schedule_to_unindex(x)
         else:
             schedule_to_unindex(handler)
 

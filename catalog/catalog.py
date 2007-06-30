@@ -94,16 +94,6 @@ from io import (decode_byte, encode_byte, decode_link, encode_link,
 
 
 
-def rsync(src, dst):
-    for name in listdir(src):
-        src_file = src + '/' + name
-        dst_file = dst + '/' + name
-        if getmtime(src_file) > getmtime(dst_file):
-            data = open(src_file).read()
-            open(dst_file, 'w').write(data)
-
-
-
 class Field(object):
 
     __slots__ = ['number', 'name', 'type', 'is_indexed', 'is_stored']
@@ -353,7 +343,12 @@ class Catalog(object):
             # Restore from backup
             src = str(path.resolve2('data.bak'))
             dst = str(path.resolve2('data'))
-            rsync(src, dst)
+            for name in listdir(src):
+                src_file = src + '/' + name
+                dst_file = dst + '/' + name
+                if getmtime(src_file) < getmtime(dst_file):
+                    data = open(src_file).read()
+                    open(dst_file, 'w').write(data)
             # Reload the catalog
             self.__init__(self.uri)
             # We are done
@@ -367,7 +362,12 @@ class Catalog(object):
         # Backup
         src = str(path.resolve2('data'))
         dst = str(path.resolve2('data.bak'))
-        rsync(src, dst)
+        for name in listdir(src):
+            src_file = src + '/' + name
+            dst_file = dst + '/' + name
+            if getmtime(src_file) > getmtime(dst_file):
+                data = open(src_file).read()
+                open(dst_file, 'w').write(data)
 
         # We are done
         open(state, 'w').write('OK\n')

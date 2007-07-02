@@ -66,6 +66,10 @@ class Root(WebSite):
         {'name': 'ikaaro:admins', 'title': u'Admin'}]
 
 
+    # Default email address to use in the Form fields when sending emails
+    contact_email = None
+
+
     ########################################################################
     # Override itools.web.root.Root
     ########################################################################

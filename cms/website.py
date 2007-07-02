@@ -400,7 +400,7 @@ class WebSite(RoleAware, Folder):
             u"  $password")
         body = Template(body).substitute({'password': password})
         # Send the email
-        root.send_email(None, email, subject, body)
+        root.send_email(root.contact_email, email, subject, body)
 
         # Change the password
         user.set_password(password)

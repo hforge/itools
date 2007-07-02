@@ -168,7 +168,7 @@ class User(AccessControl, Folder):
         confirm_url.query = {'key': key}
         body = Template(body).substitute({'confirm_url': str(confirm_url)})
         root = context.root
-        root.send_email(None, email, subject, body)
+        root.send_email(root.contact_email, email, subject, body)
 
 
     confirm_registration_form__access__ = True

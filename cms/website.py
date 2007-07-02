@@ -16,8 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
-from socket import gaierror
-from smtplib import SMTPRecipientsRefused
 from string import Template
 
 # Import from itools
@@ -402,13 +400,7 @@ class WebSite(RoleAware, Folder):
             u"  $password")
         body = Template(body).substitute({'password': password})
         # Send the email
-        try:
-            root.send_email(None, email, subject, body)
-        except (gaierror, SMTPRecipientsRefused, UnicodeDecodeError):
-            message = (u"The email with the new password could not be sent."
-                       u" Please try again later or contact the support"
-                       u" service through the contact form.")
-            return context.come_back(message)
+        root.send_email(None, email, subject, body)
 
         # Change the password
         user.set_password(password)

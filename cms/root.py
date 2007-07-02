@@ -276,6 +276,8 @@ class Root(WebSite):
                    ' check the "config.conf" file')
             raise RuntimeError, msg
 
+        # TODO Instead of sending the email straight away we should keep it
+        # in an stack to send it later
         smtp = smtplib.SMTP(smtp_host)
         smtp.sendmail(from_addr, to_addr, message)
         smtp.quit()

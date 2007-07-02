@@ -120,6 +120,11 @@ a img { border: 0; }
   white-space: nowrap;
 }
 
+#tabs ul {
+  margin: 0;
+  padding: 0;
+}
+
 #tabs ul li {
   list-style: none;
 }

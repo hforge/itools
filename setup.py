@@ -40,6 +40,9 @@ included are:
  - itools.http
  - itools.i18n
  - itools.ical
+ - itools.odf
+ - itools.pdf
+ - itools.rest
  - itools.rss
  - itools.schemas
  - itools.stl

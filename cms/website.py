@@ -16,6 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from socket import gaierror
+from smtplib import SMTPRecipientsRefused
 from string import Template
 
 # Import from itools
@@ -377,28 +379,36 @@ class WebSite(RoleAware, Folder):
         root = context.root
 
         # Get the email address
-        email = context.get_form_value('ikaaro:email')
+        username = context.get_form_value('username').strip()
 
-        # Get the user with the given email address
-        results = root.search(email=email)
+        # Get the user with the given login name
+        results = root.search(username=username)
         if results.get_n_documents() == 0:
-            message = u'There is not a user with the email address "$email"'
-            return context.come_back(message, email=email)
+            message = u'There is not a user identified as "$username"'
+            return context.come_back(message, username=username)
 
         user = results.get_documents()[0]
         user = self.get_handler('/users/%s' % user.name)
+        email = user.get_property('ikaaro:email')
 
         # Generate the password
         password = generate_password()
 
-        # Send the email
+        # Build the email
         subject = u"Forgotten password"
         body = self.gettext(
             u"Your new password:\n"
             u"\n"
             u"  $password")
         body = Template(body).substitute({'password': password})
-        root.send_email(None, email, subject, body)
+        # Send the email
+        try:
+            root.send_email(None, email, subject, body)
+        except (gaierror, SMTPRecipientsRefused, UnicodeDecodeError):
+            message = (u"The email with the new password could not be sent."
+                       u" Please try again later or contact the support"
+                       u" service through the contact form.")
+            return context.come_back(message)
 
         # Change the password
         user.set_password(password)

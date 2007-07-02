@@ -322,9 +322,9 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                     loop_stack.append({name: value})
                     loop_repeat = repeat_stack[:]
                     loop_repeat.append(
-                        {name: {'index': i,
-                                'start': i == 0,
-                                'end': i == n_values - 1,
+                        {name: {'index': j,
+                                'start': j == 0,
+                                'end': j == n_values - 1,
                                 'even': 'odd' if j % 2 else 'even'}})
                     loops.append((loop_stack, loop_repeat))
                 # Filter the branches when "stl:if" is present

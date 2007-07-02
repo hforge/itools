@@ -291,6 +291,7 @@ class Folder(Handler):
         path, name = path[:-1], path[-1]
 
         container = self.get_handler(path)
+        container = container.get_real_handler()
         # Check if there is already a handler with that name
         if name in container.get_handler_names():
             raise LookupError, 'there is already a handler named "%s"' % name

@@ -247,7 +247,7 @@ class Document(Text):
         """
         Removes the markup and returns a plain text string.
         """
-        text = [ value for event, value, line in self.events
+        text = [ unicode(value, 'utf-8') for event, value, line in self.events
                  if event == TEXT ]
         return u' '.join(text)
 

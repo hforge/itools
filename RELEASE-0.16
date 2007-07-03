@@ -50,9 +50,6 @@ But most fixes (and small improvements) are in the itools.cms package:
    itools.cms, specifically in the "forgotten password" form, and for
    sending emails in some cases.
 
- - In the user interface look, we have given a more sensible default
-   value for the indentation of "<ul>" elements.
-
 
 Credits:
 

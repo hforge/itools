@@ -1,4 +1,85 @@
 
+itools 0.16.1 (2007/07/05)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+This is a bug fix release:
+
+ - We have removed a dependency, itools.catalog does not require anymore
+   the command line tool "rsync".
+
+ - The method "set_handler" (from itools.handlers) does the right thing
+   now when the container is a virtual handler.
+
+ - Now the method "stream_to_str" (from itools.xml) is able to handle
+   CDATA sections.
+
+ - In STL we have fixed the repeat stack: (repeat/x/index, repeat/x/start
+   and repeat/x/end).
+
+But most fixes (and small improvements) are in the itools.cms package:
+
+ - An important bug has been fixed in the database, where the incorrect
+   usage of "mkstemp" made sometimes a transaction to fail because all
+   files descriptors were used.
+
+ - Now we correctly unindex the content of a folder when it is removed.
+
+ - A new method has been added to the API: "get_object".
+
+ - Fixes and improvements for the Calendar object.
+
+ - The script "icms-update" has been improved in different ways. One
+   of the improvements is to help upgrading applications directly from
+   0.14 to 0.16 (without going through 0.15).
+
+ - The "icms-make-package -t quickstart" call has been fixed.
+
+ - There are some little fixes and improvements for projects based on
+   itools.cms, specifically in the "forgotten password" form, and for
+   sending emails in some cases.
+
+ - In the user interface look, we have given a more sensible default
+   value for the indentation of "<ul>" elements.
+
+
+Credits:
+
+ - Hervé Cauwelier updated the Quick Start;
+ - Nicolas Deram worked on the calendar object;
+ - J. David Ibáñez fixed bugs;
+ - Henry Obein helped fixing bugs;
+ - Sylvain Taverne helped fixing bugs;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.1.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+
+
+
 itools 0.16.0 (2007/06/28)
 ==========================
 

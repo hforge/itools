@@ -205,6 +205,9 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
                     # XXX The operation should fail
                     pass
 
+        if request.has_header('Authorization'):
+            r.append('auth:%s' % request.get_header('Authorization'))
+
         r.append('')
 
         # TODO known bug from ExternalEditor requires rfc1123_date()

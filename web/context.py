@@ -55,6 +55,12 @@ class Context(object):
             # XXX What to do with 1.0?
             host = None
 
+        if request.has_header('X_FORWARDED_PROTO'):
+            scheme = request.get_header('X_FORWARDED_PROTO')
+        else:
+            # By default http
+            scheme = 'http'
+
         # The requested uri
         request_uri = request.request_uri
         path = request_uri.path
@@ -66,7 +72,7 @@ class Context(object):
                 request_uri.path = Path('/%s/' % diff_path)
             else:
                 request_uri.path = Path('/%s' % diff_path)
-        reference = 'http://%s%s' % (host, request_uri)
+        reference = '%s://%s%s' % (scheme, host, request_uri)
         self.uri = get_reference(reference)
 
         # Split the path into path and method ("a/b/c/;view")

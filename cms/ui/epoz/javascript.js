@@ -193,9 +193,7 @@ function CreateTable(rows, cols, border, head) {
 
 
 // Sets selected formats
-
-function SelectFormat(selectname)
-{
+function SelectFormat(selectname) {
     // First one is only a label
     if (selectname.selectedIndex != 0) {
         EpozElement.contentWindow.document.execCommand(selectname.id, false, selectname.options[selectname.selectedIndex].value);
@@ -206,24 +204,17 @@ function SelectFormat(selectname)
 
 
 // Sets foreground-color
-
 function SetTextColor(template) {
     EpozColorCommand='forecolor';
-    window.open(template,'EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
+    popup(template, 220, 220);
 }
 
 // Sets background-color
-
 function SetBackColor(template) {
     EpozColorCommand='backcolor';
-    window.open(template,'EpozColor','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220');
+    popup(template, 220, 220);
 }
 
-// Sets new table
-
-function SetTable(template) {
-    window.open(template,'EpozTable','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=520');
-}
 
 // Submit color-command to Rich-Text-Controls
 

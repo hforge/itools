@@ -358,6 +358,9 @@ class Skin(Folder):
 
     def get_scripts(self, context):
         scripts = []
+        # Aruni (default skin)
+        scripts.append('/ui/browser.js')
+        scripts.append('/ui/main.js')
         # Epoz
         scripts.append('/ui/epoz/javascript.js')
         # Calendar (http://dynarch.com/mishoo/calendar.epl)
@@ -370,9 +373,6 @@ class Skin(Folder):
         language = accept.select_language(languages)
         scripts.append('/ui/calendar/lang/calendar-%s.js' % language)
         scripts.append('/ui/calendar/calendar-setup.js')
-        # Aruni (default skin)
-        scripts.append('/ui/browser.js')
-        scripts.append('/ui/main.js')
         # This skin's JavaScript
         if self.has_handler('javascript.js'):
             scripts.append('%s/javascript.js' % self.abspath)

@@ -91,8 +91,7 @@
       <img class="button epoz_button_hyperlink"
         src="../images/epoz/epoz_button_hyperlink.png" width="23" height="22"
         alt="Insert Link" title="Insert Link"
-        onclick="window.open(';addlink_form', 'EpozToolbox',
-          'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
+        onclick="popup(';addlink_form', 620, 300);"
         name="epoz_button_hyperlink" /><img
         class="button epoz_button_anchor"
         src="../images/epoz/epoz_button_anchor.png" width="23" height="22"
@@ -101,16 +100,17 @@
         class="button epoz_button_image"
         src="../images/epoz/epoz_button_image.png" width="23" height="22"
         alt="Insert Image" title="Insert Image"
-        onclick="window.open(';addimage_form', 'EpozToolbox', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=500,height=300');"
-        name="epoz_button_image" /><img
-        class="button epoz_button_hr" src="../images/epoz/epoz_button_hr.gif"
-        width="23" height="22" alt="Insert Rule" title="Insert Rule"
+        onclick="popup(';addimage_form', 500, 300);" name="epoz_button_image"
+        /><img class="button epoz_button_hr"
+        src="../images/epoz/epoz_button_hr.gif" width="23" height="22"
+        alt="Insert Rule" title="Insert Rule"
         onclick="FormatText('inserthorizontalrule', '');"
         name="epoz_button_hr" /><img
         class="button epoz_button_table"
         src="../images/epoz/epoz_button_table.gif" width="23" height="22"
         alt="Insert Table" title="Insert Table"
-        onclick="SetTable(';epoz_table_form')" name="epoz_button_table" />
+        onclick="popup(';epoz_table_form', 220, 320)"
+        name="epoz_button_table" />
       <img class="button epoz_button_undo"
         src="../images/epoz/epoz_button_undo.png"
         width="23" height="22" alt="Undo" title="Undo"

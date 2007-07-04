@@ -17,9 +17,16 @@
 
 # Import from itools
 from access import AccessControl
-from context import get_context
+from context import get_context, set_context, Context
 from server import Server
 from base import Root, Node
 
 
-__all__ = ['get_context', 'AccessControl', 'Server', 'Root', 'Node']
+__all__ = [
+    'Context',
+    'set_context',
+    'get_context',
+    'AccessControl',
+    'Server',
+    'Root',
+    'Node']

@@ -133,6 +133,12 @@ def update(parser, options, target):
         database = server.database
         database.commit()
         root.load_state()
+    else:
+        print '*'
+        print '* To finish the upgrade process update the catalog:'
+        print '*'
+        print '*   $ icms-update-catalog %s' % target
+        print '*'
 
 
 

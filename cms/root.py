@@ -35,6 +35,7 @@ from itools.stl import stl
 from itools.web import get_context
 
 # Import from itools.cms
+from access import RoleAware
 from text import PO
 from users import UserFolder
 from website import WebSite
@@ -437,8 +438,10 @@ class Root(WebSite):
             i += 1
 
         # Update roles
-        for path in self.get_groups():
-            handler, metadata = self.get_object(path)
+        for handler in self._traverse_catalog_aware_objects():
+            if not isinstance(handler, RoleAware):
+                continue
+            metadata = handler.get_metadata()
             for role in handler.get_role_names():
                 # Get the users
                 filename = '.%s.users' % role.split(':')[1]

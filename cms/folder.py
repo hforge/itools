@@ -223,6 +223,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return BaseFolder._get_virtual_handler(self, name)
 
 
+    # FIXME Rename this method to "traverse_objects"
     def _traverse_catalog_aware_objects(self):
         for handler, ctx in self.traverse2(caching=False):
             # Skip virtual handlers

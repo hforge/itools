@@ -19,6 +19,7 @@
 # Import from the Standard Library
 from ConfigParser import RawConfigParser
 from optparse import OptionParser
+import sys
 
 # Import from itools
 import itools
@@ -121,18 +122,22 @@ def update(parser, options, target):
 
     # Update
     for next_version in root.get_next_versions():
+        instance_version = root.get_property('version')
         # Ask
         message = 'Update instance from version %s to version %s (y/N)? ' \
                   % (instance_version, next_version)
         if ask_confirmation(message) is False:
             break
         # Update
-        print 'Updating...'
+        sys.stdout.write('.')
+        sys.stdout.flush()
         root.update(next_version)
-        print 'Commit...'
+        sys.stdout.write('.')
+        sys.stdout.flush()
         database = server.database
         database.commit()
         root.load_state()
+        print '.'
     else:
         print '*'
         print '* To finish the upgrade process update the catalog:'

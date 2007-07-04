@@ -18,7 +18,6 @@
 # Import from the Standard Library
 import cgi
 from datetime import datetime
-import logging
 
 # Import from itools
 from itools import get_abspath
@@ -38,13 +37,6 @@ import webdav
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from catalog import schedule_to_reindex
-
-
-# Initialize logger
-logger = logging.getLogger('update')
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-logger.addHandler(handler)
 
 
 
@@ -423,7 +415,6 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         # We don't check the version is good
         getattr(self, 'update_%s' % version)()
         self.set_property('version', version)
-        logger.info('%s upgraded from %s', self, version)
 
 
     ########################################################################

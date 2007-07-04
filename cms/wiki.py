@@ -317,9 +317,12 @@ class WikiPage(Text):
                 continue
             title = reference.astext()
             page = parent.get_handler(name)
-            # Link to image?
             if isinstance(page, Image):
+                # Link to image?
                 images.append(('../%s' % name, name))
+                continue
+            elif not isinstance(page, WikiPage):
+                # Link to file
                 continue
             source = page.to_str()
             subdoc = core.publish_doctree(source,

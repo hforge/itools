@@ -166,7 +166,7 @@ table_template_string = """
         <tr stl:repeat="row rows" class="${repeat/row/even} ${row/class}">
           <td stl:if="column_checkbox">
             <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
-              value="${row/id}" />
+              value="${row/id}" checked="${row/checked}" />
           </td>
           <td stl:if="column_image">
             <img border="0" src="${row/img}" stl:if="row/img" />
@@ -224,10 +224,14 @@ def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x):
     for row in rows:
         x = {}
         # The checkbox column
+        # TODO Instead of the parameter 'checked', use only 'checkbox', but
+        # with three possible values: None, False, True
         x['id'] = None
         if actions and row['checkbox'] is True:
             x['id'] = row['id']
             namespace['column_checkbox'] = True
+            # Checked by default?
+            x['checked'] = row.get('checked', False)
         # The image column
         x['img'] = row.get('img')
         if x['img'] is not None:

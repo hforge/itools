@@ -418,6 +418,24 @@ class Root(WebSite):
     # Update
     #######################################################################
     def update_20061216(self):
+        # Update users
+        map = {}
+        users = self.get_handler('users')
+        i = 0
+        for name in users.get_handler_names():
+            if name.endswith('.metadata'):
+                continue
+            user, metadata = users.get_object(name) 
+            user_id = str(i)
+            # Rename user
+            user, metadata = users.set_object(user_id, user, metadata)
+            users.del_object(name)
+            # Keep the username
+            metadata.set_property('ikaaro:username', name)
+            # Next
+            map[name] = user_id
+            i += 1
+
         # Update roles
         for path in self.get_groups():
             handler, metadata = self.get_object(path)
@@ -429,32 +447,12 @@ class Root(WebSite):
                 except LookupError:
                     pass
                 else:
-                    users = tuple(users.usernames)
+                    usernames = [ map[x] for x in users.usernames ]
+                    usernames = tuple(usernames)
                     # Add to the metadata
-                    metadata.set_property(role, users)
+                    metadata.set_property(role, usernames)
                     # Remove the old ".users" file
                     handler.del_handler(filename)
-
-        # Update users
-        users = self.get_handler('users')
-        i = 0
-        for name in users.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
-            user, metadata = users.get_object(name) 
-            # Update roles
-            user_id = str(i)
-            for path in user.get_groups():
-                group = self.get_handler(path)
-                user_role = group.get_user_role(name)
-                if user_role is not None:
-                    group.set_user_role(user_id, user_role)
-            # Rename user
-            user, metadata = users.set_object(user_id, user, metadata)
-            users.del_object(name)
-            # Keep the username
-            metadata.set_property('ikaaro:username', name)
-            i += 1
 
 
     def update_20070531(self):

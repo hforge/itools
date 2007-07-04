@@ -26,6 +26,7 @@ from itools.uri import get_reference, get_absolute_reference2
 from itools import vfs
 from itools.catalog import make_catalog, Catalog
 from itools.handlers import Config
+from itools.web import set_context, Context
 from itools.cms.database import DatabaseFS
 from itools.cms.server import ask_confirmation
 from itools.cms.server import Server, get_root_class, get_config
@@ -112,6 +113,11 @@ def update(parser, options, target):
         print 'WARNING: the instance (%s) is newer! than the class (%s)' \
               % (instance_version, class_version)
         return
+
+    # Build a fake context
+    context = Context(None)
+    context.server = server
+    set_context(context)
 
     # Update
     for next_version in root.get_next_versions():

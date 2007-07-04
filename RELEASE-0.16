@@ -14,50 +14,52 @@ meta-package for easier development and deployment:
   itools.html           itools.schemas          itools.xliff
   itools.http           itools.stl              itools.xml
 
-This is a bug fix release:
+This is (mostly) a bug fix release:
 
- - We have removed a dependency, itools.catalog does not require anymore
-   the command line tool "rsync".
+ - The command line tool "rsync" is not required anymore.
 
- - The method "set_handler" (from itools.handlers) does the right thing
-   now when the container is a virtual handler.
+ - Indexing of XML documents (like web pages) works again.
 
- - Now the method "stream_to_str" (from itools.xml) is able to handle
-   CDATA sections.
+ - Now itools.web supports X_FORWARDED_PROTO, what makes possible to
+   deploy web applications behind Apache (or another web server) using
+   the HTTPS protocol.
 
- - In STL we have fixed the repeat stack: (repeat/x/index, repeat/x/start
-   and repeat/x/end).
+ - Now itools.xml is able to serialize documents with CDATA sections.
 
-But most fixes (and small improvements) are in the itools.cms package:
+ - In itools.stl the repeat variables "repeat/x/index", "repeat/x/start"
+   and "repeat/x/end" work again.
 
- - An important bug has been fixed in the database, where the incorrect
-   usage of "mkstemp" made sometimes a transaction to fail because all
-   files descriptors were used.
+ - The method "set_handler" works now when the container is a virtual
+   handler.
+
+But most changes are in the itools.cms package:
+
+ - The Quick Start is updated now, the "icms-make-package -t quickstart"
+   command works again.
+
+ - The new method "get_object" has been added to the itools.cms API.
+
+ - An important bug has been fixed in the itools.cms database, where
+   the incorrect usage of "mkstemp" made sometimes a transaction to
+   fail because all files descriptors were used.
 
  - Now we correctly unindex the content of a folder when it is removed.
 
- - A new method has been added to the API: "get_object".
+ - There are various fixes and improvements to the Calendar and Wiki
+   objects.
 
- - Fixes and improvements for the Calendar object.
-
- - The script "icms-update" has been improved in different ways. One
-   of the improvements is to help upgrading applications directly from
-   0.14 to 0.16 (without going through 0.15).
-
- - The "icms-make-package -t quickstart" call has been fixed.
-
- - There are some little fixes and improvements for projects based on
-   itools.cms, specifically in the "forgotten password" form, and for
-   sending emails in some cases.
+ - The script "icms-update" has been improved in different ways.  Most
+   important, now it is possible to upgrade an itools.cms instance
+   directly from 0.14 to 0.16 (no need to go through 0.15).
 
 
 Credits:
 
- - Hervé Cauwelier updated the Quick Start;
- - Nicolas Deram worked on the calendar object;
+ - Hervé Cauwelier updated the Quick Start and fixed bugs;
+ - Nicolas Deram worked on the Calendar object;
  - J. David Ibáñez fixed bugs;
- - Henry Obein helped fixing bugs;
- - Sylvain Taverne helped fixing bugs;
+ - Henry Obein fixed bugs;
+ - Sylvain Taverne fixed bugs;
 
 
 Resources

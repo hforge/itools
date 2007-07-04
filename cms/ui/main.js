@@ -139,3 +139,19 @@ function select_checkboxes(form_id, checked) {
   }
   return false;
 }
+
+/* Popup */
+var popup_window;
+function popup(url, width, height) 
+{
+  // try catch for IE
+  try {
+    if (popup_window != undefined && popup_window.closed == false)
+      popup_window.close();
+  } catch (ex) {
+    // do nothing
+  }
+  options = "menubar=no, status=no, scrollbars=yes, resizable=yes, width=" + width;
+  options += ", height=" + height;
+  popup_window = window.open(url, 'itools_popup', options);
+}

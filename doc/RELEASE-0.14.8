@@ -1,0 +1,47 @@
+
+itools 0.14.8 (2007/03/19)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This is a security release:
+
+ - A serious bug has been fixed in "itools.cms". Before 0.14.8, an
+   authenticated user was able to succesfully perform any POST request,
+   if specially constructed.
+
+Other bugs fixed:
+
+ - A couple of fixes for the calendar object in "itools.cms".
+ - Now the AcceptLanguage header is interpreted as case-insensitive.
+
+
+Credits:
+
+ - Hervé Cauwelier fixed the calendar bugs;
+ - J. David Ibáñez fixed the other bugs;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.8.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

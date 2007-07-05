@@ -1,0 +1,58 @@
+
+itools 0.14.0 (alias Bolívar)
+==============================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+We have choosen to name this release Bolívar, it is our little homage
+to Simón Bolívar "El Libertador" [1] in the 223th anniversary of his
+birthday (July 24, 1783).
+
+This release, itools 0.14.0, brings important API and performance
+improvements accross several sub-packages.
+
+The most notably change is the new "itools.vfs" package (where "vfs"
+stands for Virtual File System). It replaces the "itools.resources"
+package. While functionally equivalent, "itools.vfs" offers a much
+more intuitive and rich API.
+
+Our index and search engine, the "itools.catalog" package, sports
+a more compact file format. And performance for indexing, unindexing
+and searching has been improved by about a 2x factor.
+
+The API and performance of other packages has been greatly improved,
+specially for "itools.handlers" and "itools.web". Also, the user
+interface of "itools.cms" has been simplified, most important the
+access control screens.
+
+Last, we have raised the bar a little, since itools 0.14.0 the minimum
+required version of Python is 2.5.
+
+See the UPGRADE.txt file for more details.
+
+[1] http://en.wikipedia.org/wiki/Sim%C3%B3n_Bol%C3%ADvar
+
+
+Resources
+---------
+
+Download
+http://www.ikaaro.org/download/itools/itools-0.14.0.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

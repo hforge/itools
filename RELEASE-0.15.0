@@ -1,0 +1,88 @@
+
+itools 0.15.0 (2006/12/20)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+The template language STL has seen the most important change since its
+inception. A new method for variable substitution has been implemented,
+it replaces "stl:attributes" and "stl:content". To illustrate this change,
+while before we wrote:
+
+  <a stl:attributes="href object_uri" stl:content="object_title" />
+
+Now we will write:
+
+  <a href="${object_uri}">${object_title}</a>
+  
+This new approach produces more compact and readable templates. It will
+also make easier to build some user interfaces. And will help translators
+since the messages extracted from the templates will be more easy to read.
+
+
+This release is also the first to include some C code. We have rewritten
+the XML parser ("itools.xml.parser") in C for performance. The programming
+interface is mostly the same (see the UGRADE.txt file for the incompatible
+changes).
+
+For those who wonder... Why yet-another-xml-parser? Because its programming
+interface is much much simpler (that means better) than the parsers based
+in back-calls. See the itools documentation to know more [1].
+
+
+The other big changes in this release are in "itools.cms", one is for
+disk usage, the other is functional.
+
+The code that implements transactions has been rewritten. From a brute
+force technique we have moved to a refined one that takes advantage of
+the extensibility of the "itools.vfs" layer. The visibile change is that
+we don't need anymore a backup database, so the size of an instance has
+been reduced to (almost) the half.
+
+The functional change has to do with user management. Now we use the
+email address to identify users, instead of a username. The user must
+confirm the registration sending an email, this way the application
+can be certain the email address is valid.
+
+
+There have been also some smaller improvements to the programming
+interface of other packages, most notably "itools.vfs", "itools.catalog",
+"itools.web" and "itools.cms". See the file UPGRADE.txt file for the
+incompatible changes.
+
+
+[1] http://download.ikaaro.org/doc/itools/itools.html
+
+
+Credits:
+
+ - Hervé Cauwelier wrote the new database code and made other important
+   changes in "itools.cms" (metadata stored roles);
+ - J. David Ibáñez did almost everything else;
+ - Norman Khine helped testing.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.15.0.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+

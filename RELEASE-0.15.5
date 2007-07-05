@@ -1,0 +1,64 @@
+
+itools 0.15.5 (2007/06/01)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.vfs
+  itools.cms            itools.ical             itools.web
+  itools.csv            itools.pdf              itools.workflow
+  itools.datatypes      itools.rss              itools.xhtml
+  itools.gettext        itools.schemas          itools.xliff
+  itools.handlers       itools.stl              itools.xml
+  itools.html           itools.tmx
+  itools.http           itools.uri
+
+This release has a single feature enhancement worth to comment: now
+"itools.cms" indexes the content of RTF files (for this to work the
+command "unrtf" must be installed).
+
+Also important is the requiriment to run the "icms-update" script on
+existing instances of "itools.cms". This will just re-index the catalog
+(it is needed because of a little internal change on the "username"
+field).
+
+Still in "itools.cms", there have been a number of user interface tweaks
+here and there, but most notably in the tracker.
+
+There is a change in the "itools.catalog" API worth to comment. Now
+when the method search is called without any arguments, all indexed
+documents are returned.
+
+Also, the method "get_physical_path" has been added to all handlers.
+And path objects have gained the method "get_name".
+
+Packages and scripts that have seen minor fixes and improvements are:
+itools.catalog, itools.pdf, itools.web, itools.xml, isetup-build,
+icms-update and icms-restore.
+
+
+Credits:
+
+ - Luis Belmar-Letelier worked on the tracker;
+ - Hervé Cauwelier implemented the RTF indexer and worked on the user
+   interface of itools.cms;
+ - J. David Ibáñez fixed bugs here and there;
+ - Henry Obein fixed bugs on RML (itools.pdf);
+ - Sylvain Taverne fixed some bugs;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.15.5.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

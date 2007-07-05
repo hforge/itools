@@ -1,0 +1,60 @@
+
+itools 0.15.3 (2007/04/06)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This release brings some fixes and a few programing and user interface
+improvements. The list of the most important changes, classified by
+package, follows.
+
+[itools.vfs] The new method "traverse" is a generator that traverses a
+  folder and returns the path of every file and folder within it.
+
+[itools.csv] Now it is possible to define a column as an internal key that
+  uniquely identifies a row within the CSV file. See the type "IntegerKey"
+  and the method "get_key".
+
+[itools.ical] The search API has been reduced to methods "search_events",
+  "search_events_in_date" and "search_events_in_range" (besides the more
+  low-level method "search").
+
+[itools.cms] The registration process and the user management interfaces
+  have been improved. WebSite objects have gained the role "admins" (now
+  we have four access levels: guest, member, reviewer and admin).
+
+  The method "has_property" has been added to all CMS objects (it is a
+  short way to call the metadata's "has_property").
+
+
+Credits:
+
+ - Hervé Cauwelier worked on "itools.cms".
+ - Nicolas Deram worked on "itools.ical";
+ - J. David Ibáñez worked on "itools.vfs" and "itools.cms";
+ - Henry Obein worked on "itools.csv";
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.15.3.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

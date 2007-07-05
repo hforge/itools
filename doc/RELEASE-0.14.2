@@ -1,0 +1,68 @@
+
+itools 0.14.2
+=============
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.http             itools.uri
+  itools.cms            itools.i18n             itools.vfs
+  itools.csv            itools.ical             itools.web
+  itools.datatypes      itools.rss              itools.workflow
+  itools.gettext        itools.schemas          itools.xhtml
+  itools.handlers       itools.stl              itools.xliff
+  itools.html           itools.tmx              itools.xml
+
+This release brings user interface improvements and many bug fixes. These
+are the most important changes:
+
+  itools.catalog -- Fix keyword fields that are indexed but not stored,
+    when there is at least one value that contains spaces. The format of
+    the catalog changes a little so it must be rebuilt.
+
+  itools.cms -- The HTML/CSS code for the tabs has been updated to work
+    better in different browsers, now it even looks nice in text mode
+    (#382). The web interface for calendar objects has seen various
+    improvements (#82, #496).
+
+    The configuration file and the "icms-init" script accept a new option,
+    "smtp-host", which defines the host to use to send emails.
+
+    A bunch of minor bugs have been fixed in itools.cms, including #306,
+    #308, #458, #459, #460, #497, #498, #500 and #501.
+
+  itools.csv -- The CSV parser has been separated from the CSV handler, so
+    it can be used independently ("from itools.csv import parser"). Fixed
+    a serious bug which prevented to create CSV handlers from scratch.
+
+  itools.gettext -- Now the PO handler properly detects the charset defined
+    in the PO files header. The family of igettext scripts has been updated
+    to use the new API of itools 0.14.
+
+  itools.xhtml -- Now the "title" attribute of (X)HTML documents is always
+    extracted to be translated, not only in "img" elements. Fix corner case
+    in the automatic translation code. Declare some elements as inline to
+    improve the behaviour of the translation machinery.
+
+Credits:
+
+ - Hervé Cauwelier improved the web interface of itools.cms;
+ - Nicolas Deram updated the calendar code;
+ - J. David Ibáñez fixed many bugs;
+ - Josef Meile found the problem in the PO handler.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.14.2.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

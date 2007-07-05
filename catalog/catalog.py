@@ -556,15 +556,14 @@ class Catalog(object):
 
                 query = AndQuery(*atoms)
             else:
-                documents = self.documents
                 results = {}
-                for doc_n in range(documents.n_documents):
+                for doc_n in range(self.n_documents):
                     try:
-                        document = documents.get_document(doc_n)
+                        document = self.get_document(doc_n)
                     except LookupError:
                         continue
                     results[doc_n] = 1
-                return SearchResults(results, documents, self.field_numbers)
+                return SearchResults(results, self)
         # Search
         results = query.search(self)
         return SearchResults(results, self)

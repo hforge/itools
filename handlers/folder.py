@@ -248,19 +248,12 @@ class Folder(Handler):
 
 
     def has_handler(self, path):
-        # Be sure path is a Path
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        # Get the container
-        path, name = path[:-1], path[-1]
         try:
-            container = self.get_handler(path)
+            self.get_handler(path)
         except LookupError:
             return False
 
-        # Check wether the container has the handler or not
-        return name in container._get_handler_names()
+        return True
 
 
     def get_handler_names(self, path='.'):

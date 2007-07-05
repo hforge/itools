@@ -417,9 +417,20 @@ class WikiPage(Text):
     def edit_form(self, context):
         css = self.get_handler('/ui/wiki/wiki.css')
         context.styles.append(str(self.get_pathto(css)))
+        text_size = context.get_form_value('text_size');
+        text_size_cookie = context.get_cookie('wiki_text_size')
+
+        if text_size_cookie is None:
+            text_size = text_size if text_size else 'small'
+            context.set_cookie('wiki_text_size', text_size)
+        elif text_size is None:
+            text_size = context.get_cookie('wiki_text_size')
+        elif text_size != text_size_cookie:
+            context.set_cookie('wiki_text_size', text_size)
 
         namespace = {}
         namespace['data'] = self.to_str()
+        namespace['text_size'] = text_size
 
         handler = self.get_handler('/ui/wiki/WikiPage_edit.xml')
         return stl(handler, namespace)
@@ -427,6 +438,7 @@ class WikiPage(Text):
 
     def edit(self, context):
         data = context.get_form_value('data', type=Unicode)
+        text_size = context.get_form_value('text_size');
         # Ensure source is encoded to UTF-8
         data = data.encode('utf_8')
         self.load_state_from_string(data)
@@ -436,7 +448,7 @@ class WikiPage(Text):
         else:
             message = MSG_CHANGES_SAVED
 
-        goto = context.come_back(message)
+        goto = context.come_back(message, keep=['text_size'])
         if context.has_form_value('view'):
             query = goto.query
             goto = goto.resolve(';view')

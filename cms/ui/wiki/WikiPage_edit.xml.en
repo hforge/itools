@@ -22,6 +22,8 @@
       <input type="submit" name="save" value="Save" class="button_ok" />
       <input type="submit" name="view" value="View" class="button_ok" />
     </p>
+    <input type="hidden" id="text_size" name="text_size"
+           value="${text_size}" />
   </form>
 
   <div class="clear" />
@@ -45,14 +47,21 @@
 
     function text_small() {
       tarea.style.fontSize = '1.2em';
+      updateTextSizeType('small');
     }
 
     function text_medium() {
       tarea.style.fontSize = '1.4em';
+      updateTextSizeType('medium');
     }
 
     function text_large() {
       tarea.style.fontSize = '1.6em';
+      updateTextSizeType('large');
+    }
+
+    function updateTextSizeType(value) {
+      document.getElementById('text_size').value = value;
     }
 
     fixHeight();
@@ -60,6 +69,8 @@
     addEvent(window, 'overflow', fixHeight);
     addEvent(window, 'underflow', fixHeight);
     -->
+
+    text_${text_size}();
   </script>
 
 </stl:block>

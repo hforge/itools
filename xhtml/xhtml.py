@@ -21,7 +21,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
-    XML as XMLDataType, XMLAttribute)
+    XML as XMLContent, XMLAttribute)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
     register_schema)
 from itools.handlers import register_handler_class
@@ -51,12 +51,13 @@ class Boolean(Boolean):
 
 
 
-def stream_to_html(stream, encoding='UTF-8'):
+def stream_to_html(stream, encoding='UTF-8', escape=True):
     data = []
     for event in stream:
         type, value, line = event
         if type == TEXT:
-            # XXX value should be escape
+            if escape:
+                value = XMLContent.encode(value)
             data.append(value)
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -129,7 +130,7 @@ def stream_to_str_as_xhtml(stream, encoding='UTF-8', escape=True):
 def stream_to_str_as_html(stream, encoding='UTF-8', escape=True):
     content_type = 'text/html; charset=%s' % encoding
     stream = set_content_type(stream, content_type)
-    return stream_to_html(stream, encoding)
+    return stream_to_html(stream, encoding, escape)
 
 
 #############################################################################

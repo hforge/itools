@@ -20,8 +20,33 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
+from itools.xml import Parser, TEXT
 from itools.xhtml import Document
+from itools.xhtml.xhtml import stream_to_html
 from itools.gettext import PO
+
+
+
+class SerializationTestCase(TestCase):
+
+    def test_stream_to_html_escape(self):
+        parser = Parser('<p xmlns="http://www.w3.org/1999/xhtml"></p>')
+        events = list(parser)
+        events.insert(1, (TEXT, '<br/>', 0))
+
+        self.assertEqual(
+            stream_to_html(events),
+            '<p xmlns="http://www.w3.org/1999/xhtml">&lt;br/></p>')
+
+
+    def test_stream_to_html_not_escape(self):
+        parser = Parser('<p xmlns="http://www.w3.org/1999/xhtml"></p>')
+        events = list(parser)
+        events.insert(1, (TEXT, '<br/>', 0))
+
+        self.assertEqual(
+            stream_to_html(events, escape=False),
+            '<p xmlns="http://www.w3.org/1999/xhtml"><br/></p>')
 
 
 

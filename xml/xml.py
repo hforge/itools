@@ -96,11 +96,12 @@ def get_end_tag(ns_uri, name):
     return '</%s>' % get_qname(ns_uri, name)
 
 
-def stream_to_str(stream, encoding='UTF-8'):
+def stream_to_str(stream, encoding='UTF-8', escape=True):
     data = []
     for event, value, line in stream:
         if event == TEXT:
-            value = XMLContent.encode(value)
+            if escape:
+                value = XMLContent.encode(value)
             data.append(value)
         elif event == START_ELEMENT:
             ns_uri, name, attributes = value

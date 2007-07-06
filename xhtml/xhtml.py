@@ -56,6 +56,7 @@ def stream_to_html(stream, encoding='UTF-8'):
     for event in stream:
         type, value, line = event
         if type == TEXT:
+            # XXX value should be escape
             data.append(value)
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -118,14 +119,14 @@ def set_content_type(stream, content_type):
         yield event
 
 
-def stream_to_str_as_xhtml(stream, encoding='UTF-8'):
+def stream_to_str_as_xhtml(stream, encoding='UTF-8', escape=True):
     content_type = 'application/xhtml+xml; charset=%s' % encoding
     stream = set_content_type(stream, content_type)
-    return stream_to_str(stream, encoding)
+    return stream_to_str(stream, encoding, escape)
 
 
 
-def stream_to_str_as_html(stream, encoding='UTF-8'):
+def stream_to_str_as_html(stream, encoding='UTF-8', escape=True):
     content_type = 'text/html; charset=%s' % encoding
     stream = set_content_type(stream, content_type)
     return stream_to_html(stream, encoding)

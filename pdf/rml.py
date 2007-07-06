@@ -23,8 +23,8 @@ import os
 
 # Import from itools
 from itools.datatypes import Unicode, XML
-from itools.xml.parser import Parser, START_ELEMENT, END_ELEMENT, TEXT, CDATA
-from itools.stl.stl import stl
+from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT, CDATA
+from itools.stl import stl
 
 # Import from the reportlab Library
 import reportlab

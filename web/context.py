@@ -103,6 +103,9 @@ class Context(object):
         if 'accept-language' not in headers:
             return AcceptLanguageType.decode('')
 
+        # FIXME Done this way the programmer may modify the request object
+        # TODO We should instead offer an API that keeps the changes in the
+        # context object
         return headers['accept-language']
 
 

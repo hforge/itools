@@ -21,7 +21,7 @@ import time
 
 # Import from itools
 from itools.datatypes import DataType, Integer, String, URI
-from itools.i18n import AcceptCharsetType, AcceptLanguageType
+from itools.i18n import AcceptLanguageType
 
 
 #############################################################################
@@ -218,7 +218,7 @@ headers = {
     'user-agent': String,
     # Request headers (HTTP 1.1)
     'accept': String,
-    'accept-charset': AcceptCharsetType,
+    'accept-charset': String,
     'accept-encoding': String,
     'accept-language': AcceptLanguageType,
     'expect': String,

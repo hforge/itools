@@ -25,7 +25,7 @@ from time import strptime
 # Import from itools
 from itools.uri import Path, get_reference
 from itools.datatypes import Enumerate, is_datatype
-from itools.i18n import AcceptLanguage
+from itools.i18n import AcceptLanguageType
 from itools.schemas import get_datatype
 from itools.http import Response
 
@@ -97,11 +97,11 @@ class Context(object):
     def get_accept_language(self):
         request = self.request
         if request is None:
-            return AcceptLanguage('')
+            return AcceptLanguageType.decode('')
 
         headers = request.headers
         if 'accept-language' not in headers:
-            return AcceptLanguage('')
+            return AcceptLanguageType.decode('')
 
         return headers['accept-language']
 

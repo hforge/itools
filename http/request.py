@@ -23,7 +23,6 @@ from itools.uri import get_reference, decode_query
 from itools.datatypes import QName
 from itools.schemas import get_datatype
 from itools.handlers import Handler
-from itools.i18n import AcceptLanguage
 from exceptions import BadRequest, NotImplemented
 import headers
 import entities
@@ -177,16 +176,6 @@ class Request(Message):
         return self.headers.get('referer', None)
 
     referrer = property(get_referrer, None, None, '')
-
-
-    # XXX Obsolete, remove by 0.17
-    def get_accept_language(self):
-        headers = self.headers
-        if 'accept-language' in headers:
-            return headers['accept-language']
-        return AcceptLanguage('')
-
-    accept_language = property(get_accept_language, None, None, '')
 
 
     ########################################################################

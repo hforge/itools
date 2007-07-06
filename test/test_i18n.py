@@ -17,67 +17,50 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from the Standard Library
+from decimal import Decimal
 import unittest
 
 # Import from itools
 from itools.i18n import (is_similar, get_most_similar, guess_language,
-                         AcceptCharset, AcceptLanguage, Message)
+                         AcceptLanguageType, Message)
 
 
 
 ############################################################################
 # Language negotiation
 ############################################################################
-class AcceptCharsetTestCase(unittest.TestCase):
-
-    def test_case1(self):
-        accept = AcceptCharset("ISO-8859-1, utf-8;q=0.66, *;q=0.66")
-        self.assertEqual(accept.get_quality('utf-8'), 0.66)
-
-
-    def test_case2(self):
-        accept = AcceptCharset("ISO-8859-1, utf-8;q=0.66, *;q=0.66")
-        self.assertEqual(accept.get_quality('ISO-8859-1'), 1.0)
-
-
-    def test_case3(self):
-        accept = AcceptCharset("utf-8, *;q=0.66")
-        self.assertEqual(accept.get_quality('ISO-8859-1'), 0.66)
-
-
-    def test_case4(self):
-        accept = AcceptCharset("utf-8")
-        self.assertEqual(accept.get_quality('ISO-8859-1'), 1.0)
-
-
-
 class QualityAcceptLanguageTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.al = AcceptLanguage("da, en-gb;q=0.8")
+        self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
 
 
     def test_da(self):
-        self.assertEqual(self.al.get_quality('da'), 1.0)
+        self.assertEqual(self.al.get_quality('da'), Decimal('1.0'))
 
 
     def test_en_gb(self):
-        self.assertEqual(self.al.get_quality('en-gb'), 0.8)
+        self.assertEqual(self.al.get_quality('en-gb'), Decimal('0.8'))
 
 
     def test_en(self):
-        self.assertEqual(self.al.get_quality('en'), 0.8)
+        self.assertEqual(self.al.get_quality('en'), Decimal('0.0'))
 
 
     def test_en_us(self):
-        self.assertEqual(self.al.get_quality('en-us'), 0.0)
+        self.assertEqual(self.al.get_quality('en-us'), Decimal('0.0'))
+
+
+    def test_encode(self):
+        out = AcceptLanguageType.encode(self.al)
+        self.assertEqual(out, "da, en-gb;q=0.8")
 
 
 
 class SelectLanguageAcceptLanguageTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.al = AcceptLanguage("da, en-gb;q=0.8")
+        self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
 
 
     def testNone(self):
@@ -87,7 +70,7 @@ class SelectLanguageAcceptLanguageTestCase(unittest.TestCase):
 
     def testImplicit(self):
         """When the prefered language is not explictly set."""
-        self.assertEqual(self.al.select_language(['en-us', 'en']), 'en')
+        self.assertEqual(self.al.select_language(['en-us', 'en']), None)
 
 
     def testSeveral(self):
@@ -99,14 +82,14 @@ class SelectLanguageAcceptLanguageTestCase(unittest.TestCase):
 class ChangeAcceptLanguageTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.al = AcceptLanguage("da, en-gb;q=0.8")
+        self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
 
 
     def testChange(self):
-        al = AcceptLanguage("da, en-gb;q=0.8")
-        al['es'] = 5.0
+        al = AcceptLanguageType.decode("da, en-gb;q=0.8")
+        al.set('es', 5.0)
 
-        self.assertEqual(al.get_quality('es'), 5.0)
+        self.assertEqual(al.get_quality('es'), Decimal('5.0'))
 
 
 

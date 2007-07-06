@@ -16,9 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 # Import from itools
-from accept import (AcceptLanguage, AcceptCharset,
-                    AcceptCharsetType, AcceptLanguageType,
-                    get_accept)
+from accept import AcceptLanguageType, get_accept
 from base import has_language, get_languages, get_language_name, Multilingual
 from fuzzy import get_distance, get_similarity, is_similar, get_most_similar
 from locale_ import format_date, format_time, format_datetime
@@ -29,9 +27,6 @@ from segment import Message
 
 __all__ = [
     # accept
-    'AcceptLanguage',
-    'AcceptCharset',
-    'AcceptCharsetType',
     'AcceptLanguageType',
     'get_accept',
     # fuzzy

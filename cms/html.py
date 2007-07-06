@@ -101,7 +101,7 @@ class XHTMLFile(Text, XHTMLDocument):
         if body is None:
             namespace['text'] = None
         else:
-            namespace['text'] = body.get_content()
+            namespace['text'] = body.get_content_as_html()
 
         handler = self.get_handler('/ui/html/view.xml')
         return stl(handler, namespace)

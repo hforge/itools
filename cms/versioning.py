@@ -46,7 +46,7 @@ class VersioningAware(object):
 
 
     def get_revisions(self, context):
-        accept = context.request.accept_language
+        accept = context.get_accept_language()
         revisions = []
 
         for revision in self.get_property('ikaaro:history'):

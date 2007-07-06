@@ -99,7 +99,7 @@ class Root(WebSite):
         user = context.user
         if user is not None:
             language = user.get_property('ikaaro:user_language')
-            context.request.accept_language.set(language, 2.0)
+            context.get_accept_language().set(language, 2.0)
 
 
     def after_traverse(self, context, body):

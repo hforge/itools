@@ -150,7 +150,7 @@ class Node(BaseNode):
 
     @classmethod
     def select_language(cls, languages):
-        accept = get_context().request.accept_language
+        accept = get_context().get_accept_language()
         return accept.select_language(languages)
 
 

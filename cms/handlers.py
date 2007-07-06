@@ -279,7 +279,7 @@ class Metadata(File):
                     language = None
                 else:
                     languages = [ k for k, v in value.items() if v.strip() ]
-                    accept = context.request.accept_language
+                    accept = context.get_accept_language()
                     language = accept.select_language(languages)
                 # Default (XXX pick one at random)
                 if language is None:

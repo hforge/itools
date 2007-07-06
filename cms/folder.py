@@ -207,12 +207,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         if languages:
             # Get the best variant
             context = get_context()
-
             if context is None:
                 language = None
             else:
-                request = context.request
-                language = request.accept_language.select_language(languages)
+                accept = context.get_accept_language()
+                language = accept.select_language(languages)
 
             # By default use whatever variant
             # (XXX we need a way to define the default)
@@ -373,7 +372,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             path_to_icon = Path('%s/' % object.name).resolve(path_to_icon)
         line['img'] = path_to_icon
         # The modification time
-        accept = get_context().request.accept_language
+        accept = get_context().get_accept_language()
         line['mtime'] = format_datetime(object.mtime, accept=accept)
         # The workflow state
         line['workflow_state'] = ''

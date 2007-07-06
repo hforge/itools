@@ -369,7 +369,7 @@ class Skin(Folder):
             'af', 'al', 'bg', 'br', 'ca', 'da', 'de', 'du', 'el', 'en', 'es',
             'fi', 'fr', 'hr', 'hu', 'it', 'jp', 'ko', 'lt', 'lv', 'nl', 'no',
             'pl', 'pt', 'ro', 'ru', 'si', 'sk', 'sp', 'sv', 'tr', 'zh']
-        accept = context.request.accept_language
+        accept = context.get_accept_language()
         language = accept.select_language(languages)
         scripts.append('/ui/calendar/lang/calendar-%s.js' % language)
         scripts.append('/ui/calendar/calendar-setup.js')

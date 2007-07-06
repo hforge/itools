@@ -179,6 +179,7 @@ class Request(Message):
     referrer = property(get_referrer, None, None, '')
 
 
+    # XXX Obsolete, remove by 0.17
     def get_accept_language(self):
         headers = self.headers
         if 'accept-language' in headers:

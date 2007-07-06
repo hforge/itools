@@ -25,6 +25,7 @@ from time import strptime
 # Import from itools
 from itools.uri import Path, get_reference
 from itools.datatypes import Enumerate, is_datatype
+from itools.i18n import AcceptLanguage
 from itools.schemas import get_datatype
 from itools.http import Response
 
@@ -91,6 +92,18 @@ class Context(object):
     def redirect(self, reference, status=302):
         reference = self.uri.resolve(reference)
         self.response.redirect(reference, status)
+
+
+    def get_accept_language(self):
+        request = self.request
+        if request is None:
+            return AcceptLanguage('')
+
+        headers = request.headers
+        if 'accept-language' not in headers:
+            return AcceptLanguage('')
+
+        return headers['accept-language']
 
 
     ########################################################################

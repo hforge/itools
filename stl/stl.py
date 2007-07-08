@@ -183,7 +183,7 @@ def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
     return bool(value)
 
 
-def substitute(data, stack, repeat_stack, encoding='utf-8'):
+def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
     """
     Interprets the given data as a substitution string with the "${expr}"
     format, where the expression within the brackets is an STL expression.
@@ -220,7 +220,33 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
 
 
 
-def stl(document=None, namespace={}, prefix=None, html=True, events=None, escape=True):
+def substitute(data, stack, repeat_stack, encoding='utf-8'):
+    """
+    Interprets the given data as a substitution string with the "${expr}"
+    format, where the expression within the brackets is an STL expression.
+
+    Returns a tuple with the interpreted string and the number of
+    substitutions done.
+    """
+    if not isinstance(data, str):
+        raise ValueError, 'byte string expected, not %s' % type(data)
+    # A little more complex
+    def repl(match):
+        expression = match.group(1)
+        value = evaluate(expression, stack, repeat_stack)
+        # Remove if None
+        if value is None:
+            return ''
+        # Send the string
+        if isinstance(value, unicode):
+            return value.encode(encoding)
+        return str(value)
+    return subs_expr.subn(repl, data)
+
+
+
+def stl(document=None, namespace={}, prefix=None, html=True, events=None,
+        escape=True):
     # Initialize the namespace stack
     stack = NamespaceStack()
     stack.append(namespace)
@@ -267,7 +293,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding,
                 aux[(attr_uri, attr_name)] = attr_name
             continue
         # Non Boolean attributes
-        value, n = substitute(value, stack, repeat, encoding)
+        value, n = substitute_attribute(value, stack, repeat, encoding)
         # Output only values different than None
         if value is None:
             continue

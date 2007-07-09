@@ -457,9 +457,7 @@ class Skin(Folder):
              '  "http://www.w3.org/TR/html4/strict.dtd">']
         # STL
         prefix = Path(handler.get_abspath())
-        # FIXME This is not yet good, we should not escape all or nothing,
-        # but to have a finer granularity
-        data = stl(handler, namespace, prefix=prefix, escape=False)
+        data = stl(handler, namespace, prefix=prefix)
         s.append(data)
 
         return ''.join(s)

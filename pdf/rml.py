@@ -68,7 +68,7 @@ def rmltopdf_test(filename):
 
 
 def stl_rmltopdf_test(handler, namespace):
-    temp = stl(handler, namespace, html=False, escape=False)
+    temp = stl(handler, namespace, html=False)
     stream = Parser(temp)
     return document_stream(stream, StringIO(), True)
 
@@ -82,7 +82,7 @@ def rmltopdf(filename):
 
 
 def stl_rmltopdf(handler, namespace):
-    temp = stl(handler, namespace, html=False, escape=False)
+    temp = stl(handler, namespace, html=False)
     stream = Parser(temp)
     iostream = StringIO()
     document_stream(stream, iostream)

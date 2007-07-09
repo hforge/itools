@@ -245,8 +245,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
 
 
 
-def stl(document=None, namespace={}, prefix=None, html=True, events=None,
-        escape=True):
+def stl(document=None, namespace={}, prefix=None, html=True, events=None):
     # Initialize the namespace stack
     stack = NamespaceStack()
     stack.append(namespace)
@@ -258,9 +257,9 @@ def stl(document=None, namespace={}, prefix=None, html=True, events=None,
     encoding = 'utf-8'
     stream = process(events, 0, len(events), stack, repeat, encoding, prefix)
     if html is True:
-        return stream_to_str_as_html(stream, encoding, escape)
+        return stream_to_str_as_html(stream, encoding)
     else:
-        return stream_to_str_as_xhtml(stream, encoding, escape)
+        return stream_to_str_as_xhtml(stream, encoding)
 
 
 

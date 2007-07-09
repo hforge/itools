@@ -38,14 +38,13 @@ class SerializationTestCase(TestCase):
             '<p xmlns="http://www.w3.org/1999/xhtml">&lt;br/></p>')
 
 
-    def test_stream_to_html_not_escape(self):
-        parser = Parser('<p xmlns="http://www.w3.org/1999/xhtml"></p>')
-        events = list(parser)
-        events.insert(1, (TEXT, '<br/>', 0))
-
-        self.assertEqual(
-            stream_to_html(events, escape=False),
-            '<p xmlns="http://www.w3.org/1999/xhtml"><br/></p>')
+    def test_html(self):
+        parser = Parser(
+            '<p xmlns="http://www.w3.org/1999/xhtml">Bed&amp;Breakfast</p>')
+        out = stream_to_html(parser)
+        # Assert
+        self.assertEqual(out,
+            '<p xmlns="http://www.w3.org/1999/xhtml">Bed&amp;Breakfast</p>')
 
 
 

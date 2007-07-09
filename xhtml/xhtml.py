@@ -50,13 +50,12 @@ class Boolean(Boolean):
 
 
 
-def stream_to_html(stream, encoding='UTF-8', escape=True):
+def stream_to_html(stream, encoding='UTF-8'):
     data = []
     for event in stream:
         type, value, line = event
         if type == TEXT:
-            if escape:
-                value = XMLContent.encode(value)
+            value = XMLContent.encode(value)
             data.append(value)
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -119,17 +118,17 @@ def set_content_type(stream, content_type):
         yield event
 
 
-def stream_to_str_as_xhtml(stream, encoding='UTF-8', escape=True):
+def stream_to_str_as_xhtml(stream, encoding='UTF-8'):
     content_type = 'application/xhtml+xml; charset=%s' % encoding
     stream = set_content_type(stream, content_type)
-    return stream_to_str(stream, encoding, escape)
+    return stream_to_str(stream, encoding)
 
 
 
-def stream_to_str_as_html(stream, encoding='UTF-8', escape=True):
+def stream_to_str_as_html(stream, encoding='UTF-8'):
     content_type = 'text/html; charset=%s' % encoding
     stream = set_content_type(stream, content_type)
-    return stream_to_html(stream, encoding, escape)
+    return stream_to_html(stream, encoding)
 
 
 #############################################################################

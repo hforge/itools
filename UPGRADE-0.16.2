@@ -1,0 +1,65 @@
+**************************************************************************
+itools 0.16.2
+**************************************************************************
+
+itools.i18n
+===========
+
+The "accept" module has been rewritten.  As consequence there are several
+API changes.
+
+First: the "AcceptCharset" and "AcceptCharsetType" objects have been
+removed.  The functionality they provided is not supported anymore. 
+
+Second: the "AcceptLanguage" object is not exported through the public API.
+Use instead "AcceptLanguageType" to build accept objects:
+
+  AcceptLanguage(...)                       # Before
+  AcceptLanguageType.decode(...)            # Now
+
+Third (and last): accept objects do not provide the mapping interface
+anymore, the public API is reduced to the methods: "set", "get_quality"
+and "select_language".
+
+
+itools.http / itools.web
+========================
+
+The request attributes "get_accept_language" and "accept_language" have
+been removed.
+
+Since request objects are most often used with the "itools.web" package,
+the new context method "get_accept_language" can be used instead:
+
+  context.request.accept_language           # Before
+  context.get_accept_language()             # Now
+
+
+itools.stl
+==========
+
+Now the method "stl" returns by default a stream of events (a generator).
+The boolean parameter "html" has been replaced by "mode":
+
+  stl(handler, namespace)                   # Before
+  stl(handler, namespace, mode='html')      # Now
+
+  stl(handler, namespace, html=False)       # Before
+  stl(handler, namespace, mode='xhtml')     # Now
+
+However, very often what you will actually want is the new default
+behaviour.
+
+
+itools.cms
+==========
+
+As a side effect of the changes in "itools.stl", skins that override the
+"template" method will need an small change:
+
+  stl(handler, namespace, prefix=prefix)                # Before
+  stl(handler, namespace, prefix=prefix, mode='html')   # Now
+
+Other than this, code will rarely need any other change.  Except maybe
+in the skins logic.
+

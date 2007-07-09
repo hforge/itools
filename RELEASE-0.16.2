@@ -1,0 +1,79 @@
+
+itools 0.16.2 (2007/07/12)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+The big news in this release is the License upgrade; now itools is
+available under the terms and conditions of GPL version 3.  Check the
+LICENSE.txt file.
+
+Also, a bunch of bugs have been fixed.  Some of them have triggered small
+backwards incompatible changes; check the UPGRADE-0.16.2 file for the
+details.
+
+These are the changes:
+
+ - Reorganize the RELEASE and UPDATE files.  The old ones are kept on
+   the "doc" folder.
+
+ - [itools.catalog] Fix "catalog.search()", without parameters it returns
+   all indexed documents.
+
+ - [itools.handlers] Fix "has_handler(path)" for special paths, like
+   "has_handler('.')".
+
+ - [itools.i18n] Rewrite the accept module.  Much simpler, now language
+   negotiation behaves as defined by RFC2616.  And accept objects are
+   correctly serialized.
+
+ - [itools.pdf] Various RML fixes.
+
+ - [itools.stl] Now STL returns by default the stream of events, not the
+   serialized byte string. The new parameter "mode" replaces the boolean
+   parameter "html", it has four modes: 'events' (default), 'xml', 'xhtml'
+   and 'html'.
+
+ - [itools.stl] Now it is possible to insert a sequence of XML events into
+   "${...}" expressions.
+
+ - [itools.web] The new method "context.get_accept_language" replaces
+   "context.request.accept_language"
+
+ - [itools.xhtml] Escape the text nodes when serializing to HTML.
+
+ - [itools.cms] Fix web pages preview (we are in HTML mode now, not XHTML).
+
+ - [itools.cms] Use a cookie to save the wiki text size.
+
+
+Credits:
+
+ - J. David Ibáñez fixed bugs;
+ - Henry Obein fixed RML;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.2.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

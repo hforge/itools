@@ -20,6 +20,7 @@ from string import Template
 
 # Import from itools
 from itools.uri import Path
+from itools.datatypes import XMLAttribute
 from itools.handlers import Folder
 from itools.xml import Parser
 from itools.stl import stl
@@ -68,6 +69,8 @@ def batch(uri, start, size, total, gettext=Handler.gettext,
         previous = max(start - size, 0)
         previous = str(previous)
         previous = uri.replace(batchstart=previous)
+        previous = str(previous)
+        previous = XMLAttribute.encode(previous)
         previous = '<a href="%s" title="%s">&lt;&lt;</a>' \
                    % (previous, gettext(u'Previous'))
     # Next
@@ -75,6 +78,8 @@ def batch(uri, start, size, total, gettext=Handler.gettext,
     if end < total:
         next = str(end)
         next = uri.replace(batchstart=next)
+        next = str(next)
+        next = XMLAttribute.encode(next)
         next = '<a href="%s" title="%s">&gt;&gt;</a>' \
                % (next, gettext(u'Next'))
 

@@ -598,16 +598,17 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     ########################################################################
     @classmethod
     def get_rte(cls, context, name, data):
-        js_data = data
-        data = cgi.escape(data)
-        # Quote newlines and single quotes, so the Epoz-JavaScript won't break.
-        # Needs to be a list and no dictionary, cause we need order!!!
-        for item in (("\\","\\\\"), ("\n","\\n"), ("\r","\\r"), ("'","\\'")):
-            js_data = js_data.replace(item[0], item[1])
+        # XXX Not needed anymore I believe
+##        js_data = data
+##        data = cgi.escape(data)
+##        # Quote newlines and single quotes, so the Epoz-JavaScript won't
+##        # break. Needs to be a list and no dictionary, cause we need order!!
+##        for item in (("\\","\\\\"), ("\n","\\n"), ("\r","\\r"), ("'","\\'")):
+##            js_data = js_data.replace(item[0], item[1])
 
         namespace = {}
         namespace['form_name'] = name
-        namespace['js_data'] = js_data
+        namespace['js_data'] = data
         namespace['iframe'] = ';epoz_iframe'
 
         handler = context.handler

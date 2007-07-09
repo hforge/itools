@@ -21,7 +21,7 @@ from string import Template
 # Import from itools
 from itools.uri import Path
 from itools.handlers import Folder
-from itools.xhtml import Document as XHTMLDocument
+from itools.xml import Parser
 from itools.stl import stl
 from itools.web import get_context
 
@@ -57,6 +57,7 @@ def batch(uri, start, size, total, gettext=Handler.gettext,
     else:
         msg1 = gettext(msgs[1])
         msg1 = Template(msg1).substitute(n=total)
+    msg1 = msg1.encode('utf-8')
 
     # Calculate end
     end = min(start + size, total)
@@ -92,11 +93,12 @@ def batch(uri, start, size, total, gettext=Handler.gettext,
         msg2 = gettext(u"View from ${start} to ${end} (${link}):")
         msg2 = Template(msg2)
         msg2 = msg2.substitute(start=(start+1), end=end, link=link)
+        msg2 = msg2.encode('utf-8')
 
         msg = '%s %s' % (msg1, msg2)
 
     # Wrap around a paragraph
-    return '<p class="batchcontrol">%s</p>' % msg
+    return Parser('<p class="batchcontrol">%s</p>' % msg)
 
 
 
@@ -143,7 +145,7 @@ def table_head(columns, sortby, sortorder, gettext=lambda x: x):
     return columns_
 
 
-table_template_string = """
+table_template = list(Parser("""
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
@@ -185,10 +187,7 @@ table_template_string = """
     </p>
   </form>
 </stl:block>
-"""
-
-table_template = XHTMLDocument()
-table_template.load_state_from_string(table_template_string)
+"""))
 
 
 def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x):
@@ -254,7 +253,7 @@ def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x):
         {'name': name, 'value': value, 'class': cls, 'onclick': onclick}
         for name, value, cls, onclick in actions ]
 
-    return stl(table_template, namespace)
+    return stl(events=table_template, namespace=namespace)
 
 
 
@@ -352,6 +351,22 @@ class Breadcrumb(object):
 ###########################################################################
 # Menu
 ###########################################################################
+menu_template = list(Parser("""
+<dl xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <stl:block repeat="item items">
+    <dt class="${item/class}">
+      <img stl:if="item/src" src="${item/src}" alt="" width="16" height="16" />
+      <stl:block if="not item/href">${item/title}</stl:block>
+      <a stl:if="item/href" href="${item/href}">${item/title}</a>
+    </dt>
+    <dd>${item/items}</dd>
+  </stl:block>
+</dl>
+"""))
+
+
+
 def build_menu(options):
     """
     The input (options) is a tree:
@@ -365,34 +380,14 @@ def build_menu(options):
        ]
        
     """
-    output = '<dl>\n'
-
     for option in options:
-        cls = option['class']
-        href = option['href']
-        src = option['src']
-        # The option
-        output += '<dt class="%s">' % cls
-        # The image
-        if option['src'] is not None:
-            output += '<img src="%s" alt="" width="16" height="16" /> ' % src
-        # The link
-        if option['href'] is None:
-            output += option['title']
-        else:
-            output += '<a href="%s">' % href
-            output += option['title']
-            output += '</a>'
-        output += '</dt>\n'
-
-        # Sub-options
-        output += '<dd>'
         if option['items']:
-            output += build_menu(option['items'])
-        output += '</dd>'
+            option['items'] = build_menu(option['items'])
+        else:
+            option['items'] = None
 
-    output += '</dl>\n'
-    return output
+    namespace = {'items': options}
+    return stl(events=menu_template, namespace=namespace)
 
 
 

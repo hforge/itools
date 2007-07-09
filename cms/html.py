@@ -100,7 +100,7 @@ class XHTMLFile(Text, XHTMLDocument):
         if body is None:
             namespace['text'] = None
         else:
-            namespace['text'] = body.get_content_as_html()
+            namespace['text'] = body.get_content_elements()
 
         handler = self.get_handler('/ui/html/view.xml')
         return stl(handler, namespace)
@@ -110,7 +110,7 @@ class XHTMLFile(Text, XHTMLDocument):
     # Edit / Inline
     def get_epoz_data(self):
         body = self.get_body()
-        return body.get_content_as_html(body)
+        return body.get_content_elements()
 
 
     edit_form__access__ = 'is_allowed_to_edit'
@@ -126,7 +126,7 @@ class XHTMLFile(Text, XHTMLDocument):
         # Edit with a rich text editor
         namespace = {}
         # Epoz expects HTML
-        data = body.get_content_as_html()
+        data = body.get_content_elements()
         namespace['rte'] = self.get_rte(context, 'data', data)
 
         handler = self.get_handler('/ui/html/edit.xml')

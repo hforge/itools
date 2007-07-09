@@ -22,6 +22,7 @@ from email.Utils import formatdate
 import smtplib
 from time import time
 import traceback
+from types import GeneratorType
 
 # Import from itools
 import itools
@@ -32,6 +33,8 @@ from itools.catalog import (make_catalog, CatalogAware, TextField,
 from itools.handlers import Folder as FolderHandler, get_transaction
 from itools.stl import stl
 from itools.web import get_context
+from itools.xml import Parser
+from itools.xhtml import stream_to_str_as_html
 
 # Import from itools.cms
 from access import RoleAware
@@ -105,7 +108,12 @@ class Root(WebSite):
         # If there is not content type and the body is not None,
         # wrap it in the skin template
         if context.response.has_header('Content-Type'):
+            if isinstance(body, (list, GeneratorType, Parser)):
+                body = stream_to_str_as_html(body)
             return body
+
+        if isinstance(body, str):
+            body = Parser(body)
         return self.get_skin().template(body)
 
 

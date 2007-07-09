@@ -25,6 +25,7 @@ import re
 from types import GeneratorType
 
 # Import from itools
+from itools.uri import Path
 from itools.datatypes import (Boolean, String, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
@@ -273,8 +274,12 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
 def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
     # Input
     encoding = 'utf-8'
-    if not events:
+    if events is None:
         events = document.events
+    elif isinstance(events, (GeneratorType, Parser)):
+        events = list(events)
+    if isinstance(prefix, str):
+        prefix = Path(prefix)
 
     # Initialize the namespace stacks
     stack = NamespaceStack()

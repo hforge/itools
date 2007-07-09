@@ -37,10 +37,10 @@ class SubstituteTestCase(unittest.TestCase):
 
     def test_simple(self):
         data = 'Hello ${name}'
-        expected = 'Hello Toto', 1
-
-        output = substitute(data, self.stack, self.repeat)
-        self.assertEqual(output, expected)
+        stream = substitute(data, self.stack, self.repeat)
+        # Assert
+        out = stream_to_str(stream)
+        self.assertEqual(out, 'Hello Toto')
 
 
 

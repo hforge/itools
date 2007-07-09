@@ -22,6 +22,7 @@ language I could imagine.
 # Import from the Standard Library
 from decimal import Decimal
 import re
+from types import GeneratorType
 
 # Import from itools
 from itools.datatypes import (Boolean, String, URI, XMLAttribute,
@@ -29,8 +30,8 @@ from itools.datatypes import (Boolean, String, URI, XMLAttribute,
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
     register_schema)
 from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
-    AbstractNamespace, get_start_tag, get_end_tag, START_ELEMENT, END_ELEMENT,
-    TEXT, COMMENT, find_end)
+    AbstractNamespace, get_start_tag, get_end_tag, Parser, START_ELEMENT,
+    END_ELEMENT, TEXT, COMMENT, find_end, stream_to_str)
 from itools.xhtml import (xhtml_uri, stream_to_str_as_html,
                           stream_to_str_as_xhtml)
 
@@ -230,18 +231,42 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     """
     if not isinstance(data, str):
         raise ValueError, 'byte string expected, not %s' % type(data)
-    # A little more complex
-    def repl(match):
-        expression = match.group(1)
-        value = evaluate(expression, stack, repeat_stack)
-        # Remove if None
-        if value is None:
-            return ''
-        # Send the string
-        if isinstance(value, unicode):
-            return value.encode(encoding)
-        return str(value)
-    return subs_expr.subn(repl, data)
+
+    start = 0
+    state = 0
+    for i, c in enumerate(data):
+        if state == 0:
+            if c == '$':
+                state = 1
+        elif state == 1:
+            if c == '{':
+                end = (i - 1)
+                state = 2
+            else:
+                state = 0
+        elif state == 2:
+            if c == '}':
+                # Evaluate expression
+                expression = data[end+2:i]
+                value = evaluate(expression, stack, repeat_stack)
+                # Next
+                if end > start:
+                    yield TEXT, data[start:end], 0
+                start = (i + 1)
+                state = 0
+                # Send back
+                if value is None:
+                    continue
+                if isinstance(value, (list, GeneratorType, Parser)):
+                    for x in value:
+                        yield x
+                elif isinstance(value, unicode):
+                    yield TEXT, value.encode(encoding), 0
+                else:
+                    yield TEXT, str(value), 0
+
+    if start <= i:
+        yield TEXT, data[start:], 0
 
 
 
@@ -334,10 +359,8 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
     while i < end:
         event, value, line = events[i]
         if event == TEXT:
-            value = XMLContent.encode(value)
-            value, kk = substitute(value, stack, repeat_stack, encoding)
-            if value is not None:
-                value = XMLContent.decode(value)
+            stream = substitute(value, stack, repeat_stack, encoding)
+            for event, value, kk in stream:
                 yield event, value, line
         elif event == COMMENT:
             yield event, value, line

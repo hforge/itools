@@ -457,7 +457,7 @@ class Skin(Folder):
              '  "http://www.w3.org/TR/html4/strict.dtd">']
         # STL
         prefix = Path(handler.get_abspath())
-        data = stl(handler, namespace, prefix=prefix)
+        data = stl(handler, namespace, prefix=prefix, mode='html')
         s.append(data)
 
         return ''.join(s)

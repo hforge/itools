@@ -346,16 +346,16 @@ class Server(object):
                 status = 403
                 body = context.root.forbidden(context)
 
-        if isinstance(body, str):
-            # Post-process (used to wrap the body in a skin)
-            body = context.root.after_traverse(context, body)
-        elif isinstance(body, Reference):
-            # Redirection
-            status = 302
-        elif body is not None:
-            # What?
-            raise TypeError, 'unexpected value of type "%s"' % type(body)
 
+        # Redirection
+        if isinstance(body, Reference):
+            return 302, body
+        # XXX
+        if body is None:
+            return status, body
+
+        # Post-process (used to wrap the body in a skin)
+        body = context.root.after_traverse(context, body)
         return status, body
 
 

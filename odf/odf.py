@@ -35,7 +35,7 @@ def stl_to_odt(model_odt, namespace):
     # Get the content of content.xml
     events = list(model_odt.get_events('content.xml'))
     # Apply the stl
-    xml_content = stl(namespace=namespace, events=events, html=False)
+    xml_content = stl(namespace=namespace, events=events, mode='xml')
     print xml_content
     # Reconstruct an Odt
     file = StringIO()

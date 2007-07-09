@@ -21,7 +21,7 @@ import unittest
 from itools.handlers import get_handler
 from itools.stl import stl
 from itools.stl.stl import NamespaceStack, substitute, evaluate
-from itools.xml import Document
+from itools.xml import Document, stream_to_str
 import itools.xhtml
 
 
@@ -68,49 +68,56 @@ class STLTestCase(unittest.TestCase):
     def test_attribute(self):
         handler = Document(string=
             '<img xmlns="http://www.w3.org/1999/xhtml" border="${border}" />')
-
         namespace = {'border': 5}
-        output = stl(handler, namespace)
-        self.assert_('border="5"' in output)
+        stream = stl(handler, namespace)
+        # Assert
+        events = list(stream)
+        value = events[0][1][2][('http://www.w3.org/1999/xhtml', 'border')]
+        self.assertEqual(value, '5')
 
 
     def test_attribute_accent(self):
         handler = Document(string=
             '<input xmlns="http://www.w3.org/1999/xhtml" value="${name}" />')
-
         namespace = {'name': u'étoile'}
-        output = stl(handler, namespace)
-        self.assert_('value="étoile"' in output)
+        stream = stl(handler, namespace)
+        # Assert
+        events = list(stream)
+        value = events[0][1][2][('http://www.w3.org/1999/xhtml', 'value')]
+        self.assertEqual(value, 'étoile')
 
 
     def test_if(self):
         handler = Document(string=
             '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
             '  stl:if="img" />')
-
         namespace = {'img': False}
-        output = stl(handler, namespace)
-        self.assertEqual(output, '')
+        stream = stl(handler, namespace)
+        # Assert
+        events = list(stream)
+        self.assertEqual(events, [])
         
 
     def test_if_not(self):
         handler = Document(string=
             '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
             '  stl:if="not img" />')
-
         namespace = {'img': True}
-        output = stl(handler, namespace)
-        self.assertEqual(output, '')
+        stream = stl(handler, namespace)
+        # Assert
+        events = list(stream)
+        self.assertEqual(events, [])
 
 
     def test_repeat(self):
         handler = Document(string=
             '<option xmlns:stl="http://xml.itools.org/namespaces/stl"'
             '  stl:repeat="option options" />')
-
         namespace = {'options': []}
-        output = stl(handler, namespace)
-        self.assertEqual(output, '')
+        stream = stl(handler, namespace)
+        # Assert
+        events = list(stream)
+        self.assertEqual(events, [])
 
 
 

@@ -245,21 +245,31 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
 
 
 
-def stl(document=None, namespace={}, prefix=None, html=True, events=None):
-    # Initialize the namespace stack
-    stack = NamespaceStack()
-    stack.append(namespace)
-    # Initialize the repeat stack (keeps repeat/index, repeat/odd, etc...)
-    repeat = NamespaceStack()
-    # Get the events
+def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
+    # Input
+    encoding = 'utf-8'
     if not events:
         events = document.events
-    encoding = 'utf-8'
+
+    # Initialize the namespace stacks
+    stack = NamespaceStack()
+    stack.append(namespace)
+    repeat = NamespaceStack()
+
+    # Process
     stream = process(events, 0, len(events), stack, repeat, encoding, prefix)
-    if html is True:
-        return stream_to_str_as_html(stream, encoding)
-    else:
+
+    # Return
+    if mode == 'events':
+        return stream
+    elif mode == 'xml':
+        return stream_to_str(stream, encoding)
+    elif mode == 'xhtml':
         return stream_to_str_as_xhtml(stream, encoding)
+    elif mode == 'html':
+        return stream_to_str_as_html(stream, encoding)
+
+    raise ValueError, 'unexpected mode "%s"' % mode
 
 
 

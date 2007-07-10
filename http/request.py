@@ -112,7 +112,10 @@ class Request(Message):
             if not line:
                 break
             # Parse the line
-            name, value = entities.parse_header(line)
+            try:
+                name, value = entities.parse_header(line)
+            except:
+                raise BadRequest, 'unexpected header "%s"' % line
             headers[name] = value
 
         # Cookies

@@ -168,7 +168,7 @@ class WikiPage(Text):
         data = context.get_form_value('data', default='')
 
         # Check the name
-        name = name.strip() or title.strip()
+        name = name.strip()
         if not name:
             return context.come_back(MSG_NAME_MISSING)
 

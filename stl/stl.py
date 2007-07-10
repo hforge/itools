@@ -276,10 +276,13 @@ def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
     encoding = 'utf-8'
     if events is None:
         events = document.events
+
+    # Prefix
+    if prefix is not None:
+        stream = set_prefix(events, prefix)
+        events = list(stream)
     elif isinstance(events, (GeneratorType, Parser)):
         events = list(events)
-    if isinstance(prefix, str):
-        prefix = Path(prefix)
 
     # Initialize the namespace stacks
     stack = NamespaceStack()
@@ -287,7 +290,7 @@ def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
     repeat = NamespaceStack()
 
     # Process
-    stream = process(events, 0, len(events), stack, repeat, encoding, prefix)
+    stream = process(events, 0, len(events), stack, repeat, encoding)
 
     # Return
     if mode == 'events':
@@ -307,8 +310,7 @@ stl_repeat = stl_uri, 'repeat'
 stl_if = stl_uri, 'if'
 
 
-def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding,
-                      prefix):
+def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
     # Skip "stl:block" and "stl:inline"
     if tag_uri == stl_uri:
         return
@@ -336,30 +338,12 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding,
         # Output only values different than None
         if value is None:
             continue
-        # Rewrite URLs (XXX specific to HTML)
-        if prefix is None or n > 0:
-            aux[(attr_uri, attr_name)] = value
-            continue
-        if tag_uri == xhtml_uri and attr_uri == xhtml_uri:
-            # <... src="X" />
-            if attr_name == 'src':
-                value = resolve_pointer(value, prefix)
-            # <link href="X" />
-            elif tag_name == 'link':
-                if attr_name == 'href':
-                    value = resolve_pointer(value, prefix)
-            # <param name="movie" value="X" />
-            elif tag_name == 'param':
-                if attr_name == 'value':
-                    param_name = attributes.get((attr_uri, 'name'))
-                    if param_name == 'movie':
-                        value = resolve_pointer(value, prefix)
         aux[(attr_uri, attr_name)] = value
 
     return START_ELEMENT, (tag_uri, tag_name, aux), None
 
 
-def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
+def process(events, start, end, stack, repeat_stack, encoding):
     i = start
     while i < end:
         event, value, line = events[i]
@@ -399,12 +383,11 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                 i += 1
                 for loop_stack, loop_repeat in loops:
                     x = process_start_tag(tag_uri, tag_name, attributes,
-                                          loop_stack, loop_repeat, encoding,
-                                          prefix)
+                                          loop_stack, loop_repeat, encoding)
                     if x is not None:
                         yield x
                     for y in process(events, i, loop_end, loop_stack,
-                                     loop_repeat, encoding, prefix):
+                                     loop_repeat, encoding):
                         yield y
                     if x is not None:
                         yield events[loop_end]
@@ -415,7 +398,7 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                 expression = attributes.pop(stl_if)
                 if evaluate_if(expression, stack, repeat_stack):
                     x = process_start_tag(tag_uri, tag_name, attributes, stack,
-                                          repeat_stack, encoding, prefix)
+                                          repeat_stack, encoding)
                     if x is not None:
                         yield x
                 else:
@@ -424,7 +407,7 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
             else:
                 if tag_uri != stl_uri:
                     x = process_start_tag(tag_uri, tag_name, attributes, stack,
-                                          repeat_stack, encoding, prefix)
+                                          repeat_stack, encoding)
                     if x is not None:
                         yield x
         elif event == END_ELEMENT:
@@ -438,7 +421,46 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
 
 
 
+########################################################################
+# Set prefix
+########################################################################
+def set_prefix(stream, prefix):
+    if isinstance(prefix, str):
+        prefix = Path(prefix)
+
+    for event in stream:
+        type, value, line = event
+        # Rewrite URLs (XXX specific to HTML)
+        if type == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            aux = {}
+            for attr_uri, attr_name in attributes:
+                value = attributes[(attr_uri, attr_name)]
+                if tag_uri == xhtml_uri and attr_uri == xhtml_uri:
+                    # <... src="X" />
+                    if attr_name == 'src':
+                        value = resolve_pointer(value, prefix)
+                    # <link href="X" />
+                    elif tag_name == 'link':
+                        if attr_name == 'href':
+                            value = resolve_pointer(value, prefix)
+                    # <param name="movie" value="X" />
+                    elif tag_name == 'param':
+                        if attr_name == 'value':
+                            param_name = attributes.get((attr_uri, 'name'))
+                            if param_name == 'movie':
+                                value = resolve_pointer(value, prefix)
+                aux[(attr_uri, attr_name)] = value
+            yield START_ELEMENT, (tag_uri, tag_name, aux), line
+        else:
+            yield event
+
+
+
 def resolve_pointer(uri, offset):
+    # XXX Exception for STL
+    if uri.startswith('${'):
+        return uri
     uri = URI.decode(uri)
     if not uri.scheme and not uri.authority:
         if uri.path.is_relative():

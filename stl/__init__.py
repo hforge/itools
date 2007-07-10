@@ -15,7 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from stl import stl, STLSyntaxError, STLNameError, STLTypeError
+from stl import STLSyntaxError, STLNameError, STLTypeError
+from stl import stl, set_prefix
 
 
-__all__ = ['stl', 'STLSyntaxError', 'STLNameError', 'STLTypeError']
+__all__ = [
+    'stl', 'set_prefix',
+    'STLSyntaxError', 'STLNameError', 'STLTypeError']

@@ -391,8 +391,9 @@ def process(events, start, end, stack, repeat_stack, encoding, prefix=None):
                     loops.append((loop_stack, loop_repeat))
                 # Filter the branches when "stl:if" is present
                 if stl_if in attributes:
-                    evaluate = attributes.pop(stl_if).evaluate
-                    loops = [ x for x, y in loops if evaluate(x, y) ]
+                    expr = attributes.pop(stl_if)
+                    loops = [ (x, y) for x, y in loops
+                              if evaluate_if(expr, x, y) ]
                 # Process the loops
                 loop_end = find_end(events, i)
                 i += 1

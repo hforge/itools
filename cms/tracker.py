@@ -25,6 +25,7 @@ from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
 from itools.i18n import format_datetime
 from itools.handlers import Config
 from itools.csv import IntegerKey, CSV as BaseCSV
+from itools.xml import Parser
 from itools.stl import stl
 from itools.uri import encode_query
 from itools import vfs
@@ -716,6 +717,7 @@ class Issue(Folder):
         """ Replace spaces at the begining of a line by &nbsp;
             Replace '\n' by <br>\n and URL by HTML links"""
         res = []
+        text = text.encode('utf-8')
         for line in text.splitlines():
             sline = line.lstrip()
             indent = len(line) - len(sline)
@@ -723,7 +725,7 @@ class Issue(Folder):
                 line = '&nbsp;' * indent + sline
             line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
             res.append(line)
-        return '<br>\n'.join(res)
+        return Parser('<br/>\n'.join(res))
 
 
     #######################################################################
@@ -780,7 +782,7 @@ class Issue(Folder):
                 'number': i,
                 'user': user_title,
                 'datetime': format_datetime(datetime),
-                'comment': self.indent(XML.encode(comment)),
+                'comment': self.indent(comment),
                 'file': file})
         comments.reverse()
         namespace['comments'] = comments

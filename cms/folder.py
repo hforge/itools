@@ -32,6 +32,7 @@ from itools.handlers import Folder as BaseFolder, Text, get_handler_class
 from itools.rest import checkid
 from itools.stl import stl
 from itools.web import get_context
+from itools.xml import Parser
 
 # Import from itools.cms
 from file import File
@@ -378,8 +379,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         if isinstance(object, WorkflowAware):
             statename = object.get_statename()
             state = object.get_state()
-            line['workflow_state'] = u'<strong class="wf_%s">%s</strong>' %\
-                    (statename, self.gettext(state['title']))
+            workflow_state = '<strong class="wf_%s">%s</strong>' % (statename,
+                                                  self.gettext(state['title']))
+            line['workflow_state'] = Parser(workflow_state.encode('utf-8'))
         # Objects that should not be removed/renamed/etc
         line['checkbox'] = object.name not in self.__fixed_handlers__
 

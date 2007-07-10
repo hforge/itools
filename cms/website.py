@@ -442,53 +442,55 @@ class WebSite(RoleAware, Folder):
         # Get and check input data
         text = context.get_form_value('site_search_text', type=Unicode)
         start = context.get_form_value('batchstart', type=Integer, default=0)
-        size = 10
 
-        # Search
-        query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
-                  for word, kk in TextField.split(text) ]
-        if query:
-            query = AndQuery(*query)
-            results = root.search(query=query)
-            documents = results.get_documents()
-        else:
-            documents = []
-
-        # Check access rights
-        user = context.user
-        handlers = []
-        for object in documents:
-            abspath = object.abspath
-            handler = root.get_handler(abspath)
-            ac = handler.get_access_control()
-            if ac.is_allowed_to_view(user, handler):
-                handlers.append(handler)
-
-        total = len(handlers)
-
-        # Build the namespace
-        objects = []
-        for handler in handlers[start:start+size]:
-            abspath = handler.get_abspath()
-            info = {}
-            info['abspath'] = abspath
-            info['title'] = handler.title_or_name
-            info['type'] = self.gettext(handler.class_title)
-            info['size'] = handler.get_human_size()
-            info['url'] = '%s/;%s' % (self.get_pathto(handler),
-                                      handler.get_firstview())
-
-            icon = handler.get_path_to_icon(16, from_handler=self)
-            if icon.startswith(';'):
-                icon = Path('%s/' % handler.name).resolve(icon)
-            info['icon'] = icon
-            objects.append(info)
-
-        # Build the namespace
         namespace = {}
-        namespace['text'] = text
-        namespace['objects'] = objects
-        namespace['batch'] = widgets.batch(context.uri, start, size, total)
+        if text.strip():
+            namespace['text'] = text
+            # Search
+            query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
+                      for word, kk in TextField.split(text) ]
+            if query:
+                query = AndQuery(*query)
+                results = root.search(query=query)
+                documents = results.get_documents()
+            else:
+                documents = []
+
+            # Check access rights
+            user = context.user
+            handlers = []
+            for object in documents:
+                abspath = object.abspath
+                handler = root.get_handler(abspath)
+                ac = handler.get_access_control()
+                if ac.is_allowed_to_view(user, handler):
+                    handlers.append(handler)
+
+            # Batch
+            size = 10
+            total = len(handlers)
+            namespace['batch'] = widgets.batch(context.uri, start, size, total)
+
+            # Build the namespace
+            objects = []
+            for handler in handlers[start:start+size]:
+                abspath = handler.get_abspath()
+                info = {}
+                info['abspath'] = abspath
+                info['title'] = handler.title_or_name
+                info['type'] = self.gettext(handler.class_title)
+                info['size'] = handler.get_human_size()
+                info['url'] = '%s/;%s' % (self.get_pathto(handler),
+                                          handler.get_firstview())
+
+                icon = handler.get_path_to_icon(16, from_handler=self)
+                if icon.startswith(';'):
+                    icon = Path('%s/' % handler.name).resolve(icon)
+                info['icon'] = icon
+                objects.append(info)
+            namespace['objects'] = objects
+        else:
+            namespace['text'] = ''
 
         hander = self.get_handler('/ui/website/search.xml')
         return stl(hander, namespace)

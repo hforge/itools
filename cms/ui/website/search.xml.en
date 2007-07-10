@@ -13,24 +13,19 @@
     </p>
   </form>
 
-
-  <h4>Results</h4>
-
-  ${batch}
-
-  <ol class="results" stl:if="objects">
-    <li stl:repeat="object objects">
-      <img src="${object/icon}" width="16" height="16" />
-      <a class="result_title" href="${object/url}">${object/title}</a>
-      <br />
-      <span class="result_url">${object/abspath}</span>&nbsp;-
-      <span class="result_type">${object/type}</span>&nbsp;-
-      <span class="result_size">${object/size}</span>
-    </li>
-  </ol>
-
-  <p stl:if="not objects">
-    We did not find results for "${text}".
-  </p>
+  <stl:block if="text">
+    <h4>Results</h4>
+    ${batch}
+    <ol class="results" stl:if="objects">
+      <li stl:repeat="object objects">
+        <img src="${object/icon}" width="16" height="16" />
+        <a class="result_title" href="${object/url}">${object/title}</a>
+        <br />
+        <span class="result_url">${object/abspath}</span>&nbsp;-
+        <span class="result_type">${object/type}</span>&nbsp;-
+        <span class="result_size">${object/size}</span>
+      </li>
+    </ol>
+  </stl:block>
 
 </stl:block>

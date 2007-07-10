@@ -14,13 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-import logging
-import sys
-import warnings
-
 # Import from itools
-from itools.datatypes import Unicode, XMLAttribute, XML as XMLContent
+from itools.datatypes import XMLAttribute, XML as XMLContent
 from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
 from i18n import get_messages, translate

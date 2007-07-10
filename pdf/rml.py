@@ -15,9 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import re
 from cStringIO import StringIO
-import logging
 import os
 
 # Import from itools

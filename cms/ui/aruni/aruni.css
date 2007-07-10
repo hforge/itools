@@ -1,10 +1,6 @@
-/* get rid of default margins/paddings */
-* {
-    padding: 0;
-    margin:  0;
-}
-
 body {
+  margin: 0;
+  padding: 0;
   color: #000;
   background: #fff;
   /* 1em = 10px */
@@ -19,18 +15,9 @@ h4 { font-size: 1.1em; }
 h5 { font-size: 1.1em; }
 h6 { font-size: 1em; }
 
-ul {
-  margin: 1em 0;
-}
-
-
 select, input, textarea, button {
   color: #000;
   background: #fff;
-}
-
-option {
-  padding: 0 5px 0 3px;
 }
 
 input {
@@ -203,23 +190,13 @@ a img { border: 0; }
   font-size: 1.4em;
 }
 #body h1, #body h2, #body h3, #body h4, #body h5, #body h6 { border-bottom: 1px solid #d3d7cf; }
-#body h1 { margin: 0.5em; }
-#body h2 { margin: 0.4em; }
-#body h3 { margin: 0.3em; }
-#body h4 { margin: 0.2em; }
-#body h5 { margin: 0.1em; }
-#body h6 { margin: 0.1em; }
-#body p { margin: .5em; }
-#body li { margin: .5em .5em .5em 1.5em; }
 #body ol li { list-style-type: decimal; }
 #body ul li { list-style-type: square; }
 
 #body form fieldset {
   border-bottom: 1px solid #d3d7cf;
-  padding: 0.5em 0.5em 0.5em 0.5em;
 }
 #body form legend {
-  margin: 0 0 0.5em 1em;
   font-size: 0.9em;
 }
 #body form dd { padding-bottom: 0.5em; }
@@ -314,10 +291,19 @@ dl.thumb {
   float: left;
   width: 10em;
   height: 10em;
-  margin: 0 0.5em 1em 0;
+  margin: 0;
+  padding: 0.5em;
   text-align: center;
 }
-dl.thumb dt { font-weight: bold; }
+dl.thumb dt {
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
+dl.thumb dd {
+  margin: 0;
+  padding: 0;
+}
 
 dl.new_resource_thumb { width: 16em; }
 

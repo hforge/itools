@@ -186,7 +186,7 @@ class Root(WebSite):
         namespace = {'traceback': traceback.format_exc()}
 
         handler = self.get_handler('/ui/root/internal_server_error.xml')
-        return stl(handler, namespace)
+        return stl(handler, namespace, mode='html')
 
 
     def not_found(self, context):

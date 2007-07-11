@@ -718,6 +718,7 @@ class Issue(Folder):
             Replace '\n' by <br>\n and URL by HTML links"""
         res = []
         text = text.encode('utf-8')
+        text = XML.encode(text)
         for line in text.splitlines():
             sline = line.lstrip()
             indent = len(line) - len(sline)

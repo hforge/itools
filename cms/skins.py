@@ -25,6 +25,7 @@ from itools.datatypes import URI
 from itools.handlers import File
 from itools.stl import stl
 from itools.web import get_context, AccessControl
+from itools.xml import Parser
 
 # Import from itools.cms
 from base import Node
@@ -328,7 +329,7 @@ class Skin(Folder):
         """Return a message string from de request."""
         if context.has_form_value('message'):
             message = context.get_form_value('message')
-            return unicode(message, 'utf8')
+            return Parser(message)
         return None
 
 

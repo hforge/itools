@@ -380,7 +380,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
             statename = object.get_statename()
             state = object.get_state()
             msg = self.gettext(state['title']).encode('utf-8')
-            state = '<strong class="wf_%s">%s</strong>' % (statename, msg)
+            state = ('<a href="%s/;state_form" class="workflow">'
+                     '<strong class="wf_%s">%s</strong>'
+                     '</a>') % (object.name, statename, msg)
             line['workflow_state'] = Parser(state)
         # Objects that should not be removed/renamed/etc
         line['checkbox'] = object.name not in self.__fixed_handlers__

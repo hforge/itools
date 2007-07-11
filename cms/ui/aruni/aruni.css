@@ -368,6 +368,7 @@ th a.sort_none {
 }
 
 /* Workflow */
+.workflow { text-decoration: none; }
 .wf_private { color: #c00; }
 .wf_pending { color: #f57900; }
 .wf_public { color: #4e9a06; }

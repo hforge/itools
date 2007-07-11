@@ -37,7 +37,7 @@
   </form>
 
   <script type="text/javascript">
-    focus("dc:title");
+    focus("ikaaro:firstname");
   </script>
 
 </stl:block>

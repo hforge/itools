@@ -304,7 +304,7 @@ class WebSite(RoleAware, Folder):
 
     login__access__ = True
     def login(self, context, goto=None):
-        email = context.get_form_value('username')
+        email = context.get_form_value('username', type=Unicode)
         password = context.get_form_value('password')
 
         # Don't send back the password

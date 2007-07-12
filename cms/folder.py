@@ -903,7 +903,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 except LookupError:
                     user_title = username
             else:
-                user_title = u"<em>Unavailable</em>"
+                user_title = Parser('<em>Unavailable</em>')
             line['last_author'] = user_title
             lines.append(line)
 

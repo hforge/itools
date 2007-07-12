@@ -22,8 +22,7 @@
             &raquo; Type the url to add:
           </p>
           <blockquote>
-            <form action=";addlink_form" method="get"
-                  enctype="multipart/form-data">
+            <form action=";addlink_form" method="get">
               <input type="text" name="object" size="50" value="http://" />
               <br />
               <input type="submit" value="Add" />

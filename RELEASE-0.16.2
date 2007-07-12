@@ -24,22 +24,23 @@ details.
 
 The package that has changed the most is "itools.stl":
 
- - Now STL returns by default the stream of events, not the serialized byte
-   string. The new parameter "mode" replaces the boolean parameter "html",
-   it has four modes: 'events' (default), 'xml', 'xhtml' and 'html'.
+ - Now STL returns by default the stream of events, not the serialized
+   byte string. The new parameter "mode" replaces the boolean parameter
+   "html", it has four modes: 'events' (default), 'xml', 'xhtml' and
+   'html'.
 
  - Now it is possible to insert a sequence of XML events into "${...}"
    expressions.
 
- - New public function "set_prefix" that rewrites the relative URLs of the
-   given XML events.  Its prototype is "stl(events, prefix)".
+ - New public function "set_prefix" that rewrites the relative URLs of
+   the given XML events.  Its prototype is "stl(events, prefix)".
 
- - The main function "stl" accepts a generator or a "Parser" instance for
-   the "events" parameter (not only a list).  It also accepts a byte string
-   for the "prefix" parameter (not only a "Path" instance).
+ - The main function "stl" accepts a generator or a "Parser" instance
+   for the "events" parameter (not only a list).  It also accepts a byte
+   string for the "prefix" parameter (not only a "Path" instance).
 
- - Fix when "stl:repeat" and "stl:if" expressions are together in the same
-   element.
+ - Fix when "stl:repeat" and "stl:if" expressions are together in the
+   same element.
 
 Other changes worth to mention are:
 
@@ -49,8 +50,9 @@ Other changes worth to mention are:
  - [itools.catalog] Fix "catalog.search()", without parameters it returns
    all indexed documents.
 
- - [itools.cms] Various minor fixes for the user interface (Wiki, web pages
-   preview, search form and CSS).
+ - [itools.cms] Various minor fixes for the user interface (Wiki, web
+   pages view, search form, folder's browse view, login form, user's edit
+   account form and CSS).
 
  - [itools.handlers] Fix "has_handler(path)" for special paths, like
    "has_handler('.')".
@@ -69,9 +71,9 @@ Other changes worth to mention are:
 
 Credits:
 
- - Hervé Cauwelier fixed the CSS;
+ - Hervé Cauwelier worked on itools.cms;
  - J. David Ibáñez fixed bugs;
- - Henry Obein fixed RML;
+ - Henry Obein fixed bugs;
  - Sylvain Taverne helped fixing bugs;
 
 

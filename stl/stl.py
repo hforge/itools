@@ -440,8 +440,8 @@ def set_prefix(stream, prefix):
                     # <... src="X" />
                     if attr_name == 'src':
                         value = resolve_pointer(value, prefix)
-                    # <link href="X" />
-                    elif tag_name == 'link':
+                    # <a href="X"> or <link href="X">
+                    elif tag_name in ('a', 'link'):
                         if attr_name == 'href':
                             value = resolve_pointer(value, prefix)
                     # <param name="movie" value="X" />

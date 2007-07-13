@@ -504,6 +504,7 @@ PyObject* xml_char_reference(Parser* self) {
  *
  * Returns a new reference. */
 PyObject* xml_attr_value(Parser* self) {
+    PyObject* aux = NULL;
     PyObject* result = NULL;
     PyObject* ref;
 
@@ -544,12 +545,20 @@ PyObject* xml_attr_value(Parser* self) {
                 if (ref == NULL)
                     return NULL;
             }
-            /* Concat */
+            /* result = result + buffer */
             if (size > 0) {
-                result = Py_BuildValue("s#", base, size);
-                PyString_ConcatAndDel(&result, ref);
-            } else {
+                aux = Py_BuildValue("s#", base, size);
+                if (result == NULL) {
+                    result = aux;
+                } else {
+                    PyString_ConcatAndDel(&result, aux);
+                }
+            }
+            /* result = result + reference */
+            if (result == NULL) {
                 result = ref;
+            } else {
+                PyString_ConcatAndDel(&result, ref);
             }
             /* Reset */
             base = self->cursor;
@@ -568,8 +577,8 @@ PyObject* xml_attr_value(Parser* self) {
     if (result == NULL)
         return Py_BuildValue("s#", base, size);
 
-    ref = Py_BuildValue("s#", base, size);
-    PyString_ConcatAndDel(&result, ref);
+    aux = Py_BuildValue("s#", base, size);
+    PyString_ConcatAndDel(&result, aux);
 
     return result;
 }

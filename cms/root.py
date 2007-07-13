@@ -44,6 +44,7 @@ from website import WebSite
 from handlers import Metadata
 from registry import register_object_class
 from folder import Folder
+from skins import ui
 
 
 
@@ -210,6 +211,12 @@ class Root(WebSite):
     ########################################################################
     def _get_handler_names(self):
         return WebSite._get_handler_names(self) + ['ui']
+
+
+    def _get_virtual_handler(self, name):
+        if name == 'ui':
+            return ui
+        return Folder._get_virtual_handler(self, name)
 
 
     ########################################################################

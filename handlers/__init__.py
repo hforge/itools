@@ -45,6 +45,7 @@ from registry import get_handler_class, register_handler_class
 from text import Text
 from transactions import get_transaction
 from utils import get_handler
+from table import Table, parse_table
 
 
 __all__ = [
@@ -62,6 +63,9 @@ __all__ = [
     'Image',
     'Python',
     'Text',
+    'Table',
+    # Parsing functions
+    'parse_table',
     # Registry
     'get_handler_class',
     'register_handler_class',

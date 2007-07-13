@@ -24,8 +24,7 @@ from operator import itemgetter
 from itools.datatypes import Unicode, String
 from itools.catalog import (EqQuery, RangeQuery, OrQuery, AndQuery,
     MemoryCatalog)
-from itools.handlers import Text
-from parser import parse
+from itools.handlers import Text, parse_table
 from types import data_properties, fold_line
 
 
@@ -256,7 +255,7 @@ class icalendar(Text):
 
         # Parse
         lines = []
-        for name, value, parameters in parse(data):
+        for name, value, parameters in parse_table(data):
             # Deserialize
             datatype = self.get_datatype(name)
             if isinstance(datatype, Unicode):

@@ -24,7 +24,6 @@ from datetime import datetime
 from itools.handlers import Text
 from itools.datatypes import URI
 from itools.ical import icalendar, PropertyValue
-from itools.ical.parser import unfold_lines
 
 
 # Example with 1 event
@@ -87,45 +86,6 @@ END:VCALENDAR
 
 
 class icalTestCase(unittest.TestCase):
-
-    def test_unfolding(self):
-        """Test unfolding lines."""
-        input = (
-            'BEGIN:VCALENDAR\n'
-            'VERSION:2.0\n'
-            'PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN\n'
-            'BEGIN:VEVENT\n'
-            'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a\n'
-            'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0\n'
-            'DTSTART;VALUE=DATE:20050530\n'
-            'DTEND;VALUE=DATE:20050531\n'
-            'DTSTAMP:20050601T074604Z\n'
-            'DESCRIPTION:opps !!! this is a really big information, ..., '
-            'but does it change anything \n'
-            ' in reality ?? We should see a radical change in the next \n'
-            ' 3 months, shouldn\'t we ???\\nAaah !!!\n' )
-                  
-        expected = [
-            'BEGIN:VCALENDAR',
-            'VERSION:2.0',
-            'PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN',
-            'BEGIN:VEVENT',
-            'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a',
-            'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-            'DTSTART;VALUE=DATE:20050530',
-            'DTEND;VALUE=DATE:20050531',
-            'DTSTAMP:20050601T074604Z',
-            ('DESCRIPTION:opps !!! this is a really big information, ..., but does'
-             ' it change anything in reality ?? We should see a radical change in'
-             ' the next 3 months, shouldn\'t we ???\\nAaah !!!') ]
-
-        output = unfold_lines(input)
-
-        i = 0
-        for line in output:
-            self.assertEqual(line, expected[i])
-            i = i + 1
-
 
     def test_new(self):
         """Test new"""

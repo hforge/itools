@@ -15,7 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.datatypes import DateTime
+from itools.catalog import MemoryCatalog
+from file import File
 
+
+###########################################################################
+# Parser
+###########################################################################
 def unfold_lines(data):
     """
     Unfold the folded lines.
@@ -69,7 +77,6 @@ def read_name(line):
 #   *(;param-name=param-value1[, param-value2, ...]) : value CRLF
   
 
-###################################################################
 # Lexical & syntaxic analysis
 #   status :
 #     1 --> parameter begun (just after ';')
@@ -80,7 +87,7 @@ def read_name(line):
 #     6 --> param-value ended (just after '"' for quoted ones)
 #     7 --> value to begin (just after ':')
 #     8 --> value begun 
-###################################################################
+
 # Tokens
 TPARAM, TVALUE = range(2)
 token_name = ['name', 'parameter', 'value']
@@ -181,7 +188,7 @@ def get_tokens(property):
 
 
 
-def parse(data):
+def parse_table(data):
     """
     This is the public interface of the module "itools.ical.parser", a
     low-level parser of iCalendar files.
@@ -211,5 +218,143 @@ def parse(data):
             else:
                 raise SyntaxError, 'unexpected %s' % token_name[token]
         yield name, value, parameters
+
+
+
+
+###########################################################################
+# File Handler
+###########################################################################
+class Table(File):
+    
+    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
+                 'records', 'catalog']
+
+
+    schema = {}
+
+
+    def new(self):
+        self.records = []
+        self.catalog = MemoryCatalog()
+
+
+    def _load_state_from_file(self, file):
+        self.new()
+
+        records = self.records
+        n = 0
+        version = None
+
+        data = file.read()
+        for name, value, parameters in parse_table(data):
+            # Identifier and Sequence (id)
+            if name == 'id':
+                uid, seq = value.split('/')
+                # Record
+                uid = int(uid)
+                if uid >= n:
+                    # New record
+                    records.extend([None] * (uid - n))
+                    record = []
+                    records.append(record)
+                    n = uid + 1
+                else:
+                    # Get the record
+                    record = records[uid]
+                # Version
+                if seq == 'DELETED':
+                    # Deleted
+                    records[uid] = None
+                    record = None
+                else:
+                    seq = int(seq)
+                    if seq > len(record):
+                        msg = 'unexpected sequence "%s" for record "%s"'
+                        raise ValueError, msg % (seq, uid)
+                    version = {}
+                    record.append(version)
+            # Timestamp (ts)
+            elif name == 'ts':
+                version['ts'] = DateTime.decode(value)
+            # Something else
+            elif name in self.schema:
+                datatype = self.schema[name]
+                version[name] = datatype.decode(value)
+            # Error
+            else:
+                msg = 'unexepect field "%s" for record "%s/%s"'
+                raise ValueError, msg % (name, uid, seq)
+
+
+    def to_str(self):
+        lines = []
+
+        uid = 0
+        for record in self.records:
+            if record is not None:
+                seq = 0
+                for version in record:
+                    lines.append('id:%d/%d' % (uid, seq))
+                    for name, value in version.items():
+                        if name == 'ts':
+                            datatype = DateTime
+                        elif name in self.schema:
+                            datatype = self.schema[name]
+                        value = datatype.encode(value)
+                        lines.append('%s:%s' % (name, value))
+                lines.append('')
+            # Next
+            uid += 1
+
+        return '\n'.join(lines)
+
+
+    #######################################################################
+    # API
+    #######################################################################
+    def get_record(self, id, sequence=-1):
+        if id >= len(self.records):
+            return None
+        record = self.records[id]
+        if record is None:
+            return None
+        return record[sequence].copy()
+
+
+    def add_record(self, **kw):
+        self.set_changed()
+        version = kw.copy()
+        self.records = [version]
+
+
+    def update_record(self, id, **kw):
+        self.set_changed()
+        version = kw.copy()
+        self.records[id].append(version)
+
+
+    def del_record(self, id):
+        self.set_changed()
+        self.records[id] = None
+
+
+    def get_record_ids(self):
+        i = 0
+        for record in self.records:
+            if record is not None:
+                yield i
+            i += 1
+
+
+    def get_n_records(self):
+        ids = self.get_record_ids()
+        ids = list(ids)
+        return len(ids)
+
+
+    def get_records(self):
+        for id in self.get_record_ids():
+            yield self.get_record(id)
 
 

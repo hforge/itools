@@ -39,35 +39,5 @@ class TextTestCase(TestCase):
 
 
 
-#    def test_save_file(self):
-#        handler = get_handler('tests/hello.txt')
-#        handler.data = u'bye world'
-#        self.assertEqual(handler.data, u'hello world\n')
-
-
-
-#class BasicTestCase(TestCase):
-
-#    def test_get(self):
-#        handler = get_handler('hello.txt')
-#        self.assertEqual(handler.to_str(), 'hello world\n')
-
-
-#    def test_copy_file(self):
-#        handler = get_handler('hello.txt')
-#        copy = handler.copy_handler()
-#        self.assertEqual(copy.to_str(), handler.to_str())
-
-
-#    def test_copy_folder(self):
-#        here = get_handler('.')
-#        copy = here.copy_handler()
-#        self.assertEqual(copy.get_handler('hello.txt').to_str(),
-#                         here.get_handler('hello.txt').to_str())
-
-
-
-
-
 if __name__ == '__main__':
     unittest.main()

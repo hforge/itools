@@ -27,7 +27,7 @@ import thread
 # Import from itools
 from itools.uri import get_reference, Path
 from itools import vfs
-from itools.vfs import FileFS, register_file_system
+from itools.vfs import FileFS, register_file_system, READ, WRITE, APPEND
 from itools.handlers import get_handler_class, get_transaction
 from catalog import get_to_index, get_to_unindex
 
@@ -142,7 +142,7 @@ class DatabaseFS(FileFS):
 
     @staticmethod
     def open(reference, mode=None):
-        if mode == 'w':
+        if mode == WRITE:
             tmp_map = get_tmp_map()
             if reference.path in tmp_map:
                 tmp_path = tmp_map[reference.path]
@@ -155,7 +155,19 @@ class DatabaseFS(FileFS):
             with open(log, 'a+') as log:
                 log.write('~%s#%s\n' % (reference.path, tmp_path))
             return os.fdopen(tmp_file, 'w')
+        elif mode == APPEND:
+            tmp_map = get_tmp_map()
+            if reference.path in tmp_map:
+                tmp_path = tmp_map[reference.path]
+                return FileFS.open(tmp_path, mode)
 
+            commit, log = get_commit_and_log(reference)
+            tmp_file, tmp_path = mkstemp(dir=commit)
+            tmp_path = get_reference(tmp_path)
+            tmp_map[reference.path] = tmp_path
+            with open(log, 'a+') as log:
+                log.write('>%s#%s\n' % (reference.path, tmp_path))
+            return os.fdopen(tmp_file, 'w')
 
         return FileFS.open(reference, mode)
 
@@ -255,6 +267,8 @@ class DatabaseFS(FileFS):
                         vfs.remove(line)
                 elif action == '~':
                     pass
+                elif action == '>':
+                    pass
                 else:
                     raise RuntimeError, 'log file corrupted'
 
@@ -287,6 +301,11 @@ class DatabaseFS(FileFS):
                     dst, src = line.rsplit('#', 1)
                     if vfs.exists(src):
                         vfs.move(src, dst)
+                elif action == '>':
+                    dst, src = line.rsplit('#', 1)
+                    data = vfs.open(src, READ).read()
+                    with vfs.open(dst, APPEND) as file:
+                        file.write(data)
                 else:
                     raise RuntimeError, 'log file corrupted'
 

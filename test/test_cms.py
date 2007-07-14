@@ -20,8 +20,9 @@ from unittest import TestCase
 
 # Import from itools
 from itools.uri import get_absolute_reference2
+from itools.datatypes import Unicode
 from itools import vfs
-from itools.handlers import get_handler, Text
+from itools.handlers import get_handler, Text, Table
 from itools.cms.database import DatabaseFS
 
 
@@ -31,6 +32,11 @@ class BrokenHandler(Text):
     def to_str(self):
         iamsobroken
 
+
+
+class Agenda(Table):
+    schema = {'firstname': Unicode(index='text'),
+              'lastname': Unicode}
 
 
 
@@ -43,8 +49,9 @@ class DatabaseTestCase(TestCase):
 
 
     def tearDown(self):
-        if vfs.exists('fables/31.txt'):
-            vfs.remove('fables/31.txt')
+        for name in ['31.txt', 'agenda']:
+            if vfs.exists('fables/%s' % name):
+                vfs.remove('fables/%s' % name)
 
 
     def test_abort(self):
@@ -89,6 +96,31 @@ class DatabaseTestCase(TestCase):
         self.assertEqual(fables.has_handler('31.txt'), False)
         self.assertEqual(fables.has_handler('broken.txt'), False)
 
+
+    def test_append(self):
+        # Initalize
+        root = self.root
+        agenda = Agenda()
+        agenda.add_record({'firstname': u'Karl', 'lastname': u'Marx'})
+        agenda.add_record({'firstname': u'Jean-Jacques',
+                           'lastname': u'Rousseau'})
+        root.set_handler('agenda', agenda)
+        self.database.commit()
+        # Work
+        agenda = Agenda(root.get_handler('agenda').uri)
+        fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
+        agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
+        self.database.commit()
+        agenda.del_record(fake.id)
+        self.database.commit()
+        # Test
+        agenda = Agenda(root.get_handler('agenda').uri)
+        ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
+        self.assertEqual(len(ids), 0)
+        ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
+        self.assertEqual(len(ids), 1)
+        ids = [ x.id for x in agenda.search(firstname=u'Jean') ]
+        self.assertEqual(len(ids), 1)
 
 
  

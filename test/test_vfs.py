@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from datetime import datetime
 import unittest
@@ -21,6 +24,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools import vfs
+from itools.vfs import APPEND
 
 
 
@@ -134,6 +138,18 @@ class FileTestCase(TestCase):
     def test19_traverse(self):
         for x in vfs.traverse('.'):
             self.assertEqual(vfs.exists(x), True)
+
+
+    def test20_append(self):
+        # Initialize
+        with vfs.make_file('tests/toto.txt') as file:
+            file.write('hello\n')
+        # Test
+        with vfs.open('tests/toto.txt', APPEND) as file:
+            file.write('bye\n')
+        self.assertEqual(open('tests/toto.txt').read(), 'hello\nbye\n')
+        # Remove temporary file
+        vfs.remove('tests/toto.txt')
 
 
 

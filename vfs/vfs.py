@@ -22,6 +22,7 @@ from folders import Folder
 # Constants
 READ = 'r'
 WRITE = 'w'
+APPEND = 'a'
 
 
 cwd = Folder()

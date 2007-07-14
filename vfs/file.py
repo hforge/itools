@@ -23,7 +23,7 @@ from subprocess import call
 
 # Import from itools
 from itools.uri import Path, Reference
-from vfs import READ, WRITE
+from vfs import READ, WRITE, APPEND
 from base import BaseFS
 from registry import register_file_system
 
@@ -153,6 +153,9 @@ class FileFS(BaseFS):
         # Open for read
         if mode == READ:
             return file(path, 'rb')
+        # Open for append
+        if mode == APPEND:
+            return file(path, 'ab')
         # Open for write
         return file(path, 'r+b')
 

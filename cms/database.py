@@ -19,7 +19,7 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
-import datetime
+from datetime import datetime
 import os
 from tempfile import mkstemp
 import thread
@@ -200,7 +200,8 @@ class DatabaseFS(FileFS):
         except:
             # Rollback the changes in memory
             for handler in transaction:
-                handler.timestamp = datetime.datetime(1900, 1, 1)
+                # XXX Should we call to "handler.abort_changes()" instead?
+                handler.timestamp = datetime(1900, 1, 1)
             # Rollback the changes in disk
             self.rollback()
             raise
@@ -236,10 +237,7 @@ class DatabaseFS(FileFS):
         # Clean the transaction
         transaction = get_transaction()
         for handler in transaction:
-            # TODO Give the handler a chance to recover: call the method
-            # "handler.abort_changes" (or something similar), whose default
-            # behaviour will be to set an old timestamp.
-            handler.timestamp = datetime.datetime(1900, 1, 1)
+            handler.abort_changes()
         transaction.clear()
 
 

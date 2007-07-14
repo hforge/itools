@@ -268,6 +268,11 @@ class Handler(Node):
             get_transaction().add(self)
 
 
+    def abort_changes(self):
+        # FIXME It may be better to clean the handler's state
+        self.timestamp = datetime(1900, 1, 1)
+
+
     ########################################################################
     # Indexing
     def to_text(self):

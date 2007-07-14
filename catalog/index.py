@@ -18,7 +18,7 @@
 from __future__ import with_statement
 
 # Import from itools
-from itools import vfs
+from itools.vfs import vfs
 from io import (decode_character, encode_character, decode_link, encode_link,
                 decode_uint32, encode_uint32, encode_uint32_2, encode_version,
                 NULL)

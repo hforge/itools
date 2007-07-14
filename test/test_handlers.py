@@ -19,6 +19,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
+from itools import vfs
 from itools.datatypes import Unicode
 from itools.handlers import get_handler, Python, Table
 from itools.handlers.table import unfold_lines
@@ -110,13 +111,32 @@ class TableTestCase(TestCase):
 
     def test_de_serialize(self):
         table = Table(string=simple_table)
-        self.assertEqual(table.to_str(), simple_table)
+        self.assertEqual(table.to_str().strip(), simple_table.strip())
 
 
     def test_search(self):
         agenda = Agenda(string=agenda_file)
         ids = [ x.id for x in agenda.search(firstname=u'Jean') ]
         self.assertEqual(ids, [1])
+
+
+    def test_save(self):
+        agenda = Agenda(string=agenda_file)
+        agenda.save_state_to('tests/agenda')
+        # Change
+        agenda = Agenda('tests/agenda')
+        fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
+        agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
+        agenda.del_record(fake.id)
+        agenda.save_state()
+        # Test
+        agenda = Agenda('tests/agenda')
+        ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
+        self.assertEqual(len(ids), 0)
+        ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
+        self.assertEqual(len(ids), 1)
+        # Clean
+        vfs.remove('tests/agenda')
 
 
 

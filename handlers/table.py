@@ -15,10 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from datetime import datetime
 
 # Import from itools
+from itools.vfs import vfs
 from itools.datatypes import DateTime
 from itools.catalog import MemoryCatalog, PhraseQuery, AndQuery, get_field
 from file import File
@@ -254,7 +258,7 @@ class Record(list):
 class Table(File):
     
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'records', 'catalog']
+                 'records', 'catalog', 'added_records', 'removed_records']
 
 
     # Hash with field names and its types
@@ -269,6 +273,9 @@ class Table(File):
 
     def new(self):
         self.records = []
+        self.added_records = []
+        self.removed_records = []
+        # The catalog (for index and search)
         self.catalog = MemoryCatalog()
         for name, datatype in self.schema.items():
             index = getattr(datatype, 'index', None)
@@ -334,19 +341,48 @@ class Table(File):
             if record is not None:
                 seq = 0
                 for version in record:
-                    lines.append('id:%d/%d' % (uid, seq))
+                    lines.append('id:%d/%d\n' % (uid, seq))
                     for name, value in version.items():
                         if name == 'ts':
                             datatype = DateTime
                         elif name in self.schema:
                             datatype = self.schema[name]
                         value = datatype.encode(value)
-                        lines.append('%s:%s' % (name, value))
-                lines.append('')
+                        lines.append('%s:%s\n' % (name, value))
+                lines.append('\n')
             # Next
             uid += 1
 
-        return '\n'.join(lines)
+        return ''.join(lines)
+
+
+    #######################################################################
+    # Save (use append for scalability)
+    #######################################################################
+    def save_state(self):
+        with vfs.open(self.uri, 'a') as file:
+            # Added records
+            for id, seq in self.added_records:
+                file.write('id:%s/%s\n' % (id, seq))
+                version = self.records[id][seq]
+                for name, value in version.items():
+                    if name == 'ts':
+                        datatype = DateTime
+                    elif name in self.schema:
+                        datatype = self.schema[name]
+                    value = datatype.encode(value)
+                    file.write('%s:%s\n' % (name, value))
+                file.write('\n')
+            self.added_records = []
+            # Removed records
+            for id, ts in self.removed_records:
+                file.write('id:%s/DELETED\n' % id)
+                file.write('ts:%s\n' % DateTime.encode(ts))
+                file.write('\n')
+            self.removed_records = []
+
+        # Update the timestamp
+        self.timestamp = vfs.get_mtime(self.uri)
 
 
     #######################################################################
@@ -379,26 +415,32 @@ class Table(File):
         return record[sequence].copy()
 
 
-    def add_record(self, **kw):
+    def add_record(self, version):
         id = len(self.records)
         record = Record(id)
-        version = kw.copy()
+        version = version.copy()
         version['ts'] = datetime.now()
         record.append(version)
         # Change
         self.set_changed()
+        self.added_records.append((id, 0))
         self.records.append(record)
         self.catalog.index_document(record, id)
+        # Back
+        return record
 
 
     def update_record(self, id, **kw):
         record = self.records[id]
-        version = kw.copy()
+        version = record[-1].copy()
+        version.update(kw)
         version['ts'] = datetime.now()
         # Change
         self.set_changed()
         self.catalog.unindex_document(record, id)
+        self.added_records.append((id, len(record)))
         record.append(version)
+        # Index
         self.catalog.index_document(record, id)
 
 
@@ -406,6 +448,10 @@ class Table(File):
         record = self.records[id]
         # Change
         self.set_changed()
+        if (id, 0) not in self.added_records:
+            self.removed_records.append((id, datetime.now()))
+        self.added_records = [
+            (x, y) for x, y in self.added_records if x != id ]
         self.catalog.unindex_document(record, id)
         self.records[id] = None
 

@@ -19,6 +19,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
+from itools.datatypes import Unicode
 from itools.handlers import get_handler, Python, Table
 from itools.handlers.table import unfold_lines
 
@@ -46,7 +47,27 @@ class TextTestCase(TestCase):
 
 simple_table = """id:0/0
 ts:2007-07-13T17:19:21
+
+id:1/0
+ts:2007-07-14T16:43:49
 """
+
+agenda_file = """id:0/0
+ts:2007-07-13T17:19:21
+firstname:Karl
+lastname:Marx
+
+id:1/0
+ts:2007-07-14T16:43:49
+firstname:Jean-Jacques
+lastname:Rousseau
+"""
+
+
+class Agenda(Table):
+    schema = {'firstname': Unicode(index='text'),
+              'lastname': Unicode}
+
 
 class TableTestCase(TestCase):
 
@@ -55,7 +76,6 @@ class TableTestCase(TestCase):
         input = (
             'BEGIN:VCALENDAR\n'
             'VERSION:2.0\n'
-            'PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN\n'
             'BEGIN:VEVENT\n'
             'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a\n'
             'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0\n'
@@ -70,16 +90,15 @@ class TableTestCase(TestCase):
         expected = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
-            'PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN',
             'BEGIN:VEVENT',
             'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a',
             'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
             'DTSTART;VALUE=DATE:20050530',
             'DTEND;VALUE=DATE:20050531',
             'DTSTAMP:20050601T074604Z',
-            'DESCRIPTION:opps !!! this is a really big information, ..., but does'
-            ' it change anything in reality ?? We should see a radical change in'
-            ' the next 3 months, shouldn\'t we ???\\nAaah !!!']
+            'DESCRIPTION:opps !!! this is a really big information, ..., but'
+            ' does it change anything in reality ?? We should see a radical'
+            ' change in the next 3 months, shouldn\'t we ???\\nAaah !!!']
 
         output = unfold_lines(input)
 
@@ -93,6 +112,11 @@ class TableTestCase(TestCase):
         table = Table(string=simple_table)
         self.assertEqual(table.to_str(), simple_table)
 
+
+    def test_search(self):
+        agenda = Agenda(string=agenda_file)
+        ids = [ x.id for x in agenda.search(firstname=u'Jean') ]
+        self.assertEqual(ids, [1])
 
 
 

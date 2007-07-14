@@ -15,9 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
 from itools.datatypes import DateTime
-from itools.catalog import MemoryCatalog
+from itools.catalog import MemoryCatalog, PhraseQuery, AndQuery, get_field
 from file import File
 
 
@@ -225,29 +228,61 @@ def parse_table(data):
 ###########################################################################
 # File Handler
 ###########################################################################
+class Record(list):
+
+    __slots__ = ['id']
+
+
+    def __init__(self, id):
+        self.id = id
+
+
+    def __getattr__(self, name):
+        version = self[-1]        
+        if name in version:
+            return version[name]
+
+        raise AttributeError, "'%s' object has no attribute '%s'" % (
+            self.__class__.__name__, name)
+
+
+    # For indexing purposes
+    get_value = __getattr__
+
+
+
 class Table(File):
     
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'records', 'catalog']
 
 
+    # Hash with field names and its types
+    # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
+    # To index some fields the schema should be declared as:
+    # schema = {'firstname': Unicode, 'lastname': Unicode, 
+    #           'age': Integer(index='<analyser>')}
+    # where <analyser> is an itools.catalog analyser or derivate: keyword,
+    # book, text, path.
     schema = {}
 
 
     def new(self):
         self.records = []
         self.catalog = MemoryCatalog()
+        for name, datatype in self.schema.items():
+            index = getattr(datatype, 'index', None)
+            if index is not None:
+                self.catalog.add_index(name, index)
 
 
     def _load_state_from_file(self, file):
         self.new()
-
+        # Load the records
         records = self.records
         n = 0
         version = None
-
-        data = file.read()
-        for name, value, parameters in parse_table(data):
+        for name, value, parameters in parse_table(file.read()):
             # Identifier and Sequence (id)
             if name == 'id':
                 uid, seq = value.split('/')
@@ -256,7 +291,7 @@ class Table(File):
                 if uid >= n:
                     # New record
                     records.extend([None] * (uid - n))
-                    record = []
+                    record = Record(uid)
                     records.append(record)
                     n = uid + 1
                 else:
@@ -285,6 +320,10 @@ class Table(File):
             else:
                 msg = 'unexepect field "%s" for record "%s/%s"'
                 raise ValueError, msg % (name, uid, seq)
+        # Index the records
+        for record in records:
+            if record is not None:
+                self.catalog.index_document(record, record.id)
 
 
     def to_str(self):
@@ -311,7 +350,25 @@ class Table(File):
 
 
     #######################################################################
-    # API
+    # API / Private
+    #######################################################################
+    def get_analyser(self, name):
+        datatype = self.schema[name]
+        return get_field(datatype.index)
+
+
+    def get_index(self, name):
+        if name not in self.schema:
+            raise ValueError, 'the field "%s" is not defined' % name
+
+        if name not in self.catalog.indexes:
+            raise ValueError, 'the field "%s" is not indexed' % name
+
+        return self.catalog.indexes[name]
+
+
+    #######################################################################
+    # API / Public
     #######################################################################
     def get_record(self, id, sequence=-1):
         if id >= len(self.records):
@@ -323,19 +380,33 @@ class Table(File):
 
 
     def add_record(self, **kw):
-        self.set_changed()
+        id = len(self.records)
+        record = Record(id)
         version = kw.copy()
-        self.records = [version]
+        version['ts'] = datetime.now()
+        record.append(version)
+        # Change
+        self.set_changed()
+        self.records.append(record)
+        self.catalog.index_document(record, id)
 
 
     def update_record(self, id, **kw):
-        self.set_changed()
+        record = self.records[id]
         version = kw.copy()
-        self.records[id].append(version)
+        version['ts'] = datetime.now()
+        # Change
+        self.set_changed()
+        self.catalog.unindex_document(record, id)
+        record.append(version)
+        self.catalog.index_document(record, id)
 
 
     def del_record(self, id):
+        record = self.records[id]
+        # Change
         self.set_changed()
+        self.catalog.unindex_document(record, id)
         self.records[id] = None
 
 
@@ -357,4 +428,25 @@ class Table(File):
         for id in self.get_record_ids():
             yield self.get_record(id)
 
+
+    def search(self, query=None, **kw):
+        """
+        Return list of row numbers returned by executing the query.
+        """
+        if query is None:
+            if kw:
+                atoms = []
+                for key, value in kw.items():
+                    atoms.append(PhraseQuery(key, value))
+
+                query = AndQuery(*atoms)
+            else:
+                raise ValueError, "expected a query"
+
+        documents = query.search(self)
+        # Sort by weight
+        ids = documents.keys()
+        ids.sort()
+
+        return [ self.records[x] for x in ids ]
 

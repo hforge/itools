@@ -46,7 +46,7 @@ class Folder(Handler):
     class_resource_type = 'folder'
     class_mimetypes = ['application/x-not-regular-file']
 
-    
+
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'cache', 'added_handlers', 'removed_handlers']
 
@@ -94,9 +94,6 @@ class Folder(Handler):
         # Add
         base = self.uri
         for name in self.added_handlers:
-            # Remove the handler if it exists
-            if folder.exists(name):
-                folder.remove(name)
             # Add the handler
             target = base.resolve2(name)
             handler = cache[name]
@@ -290,13 +287,8 @@ class Folder(Handler):
 
         # Make a copy of the handler
         handler = handler.copy_handler()
-        # Store the container in the transaction
+        # Action
         container.set_changed()
-        # Clean the 'removed_handlers' data structure if needed
-        if name in container.removed_handlers:
-            container.removed_handlers.remove(name)
-
-        # Add the handler
         container.added_handlers.add(name)
         container._set_handler(name, handler)
 
@@ -314,13 +306,12 @@ class Folder(Handler):
         if name not in container.get_handler_names():
             raise LookupError, 'there is not any handler named "%s"' % name
 
-        # Store the container in the transaction
+        # Action
         container.set_changed()
-        # Clean the 'added_handlers' data structure if needed
         if name in container.added_handlers:
             container.added_handlers.remove(name)
-        # Mark the handler as deleted
-        container.removed_handlers.add(name)
+        else:
+            container.removed_handlers.add(name)
         del container.cache[name]
 
 

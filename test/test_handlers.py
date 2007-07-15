@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 import unittest
 from unittest import TestCase
@@ -21,7 +24,7 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 from itools.datatypes import Unicode
-from itools.handlers import get_handler, Python, Table
+from itools.handlers import get_handler, Text, Table
 from itools.handlers.table import unfold_lines
 
 
@@ -39,10 +42,64 @@ class StateTestCase(TestCase):
 
 class FolderTestCase(TestCase):
 
-    def test_has_handler(self):
-        handler = get_handler('tests')
-        self.assertEqual(handler.has_handler('hello.txt'), True)
-       
+    def setUp(self):
+        with vfs.make_file('tests/toto.txt') as file:
+            file.write('I am Toto\n')
+
+
+    def tearDown(self):
+        if vfs.exists('tests/toto.txt'):
+            vfs.remove('tests/toto.txt')
+
+
+    def test_remove(self):
+        folder = get_handler('tests')
+        folder.del_handler('toto.txt')
+        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(folder.has_handler('toto.txt'), False)
+        # Save
+        folder.save_state()
+        self.assertEqual(vfs.exists('tests/toto.txt'), False)
+        self.assertEqual(folder.has_handler('toto.txt'), False)
+
+
+    def test_remove_add(self):
+        folder = get_handler('tests')
+        folder.del_handler('toto.txt')
+        folder.set_handler('toto.txt', Text())
+        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(folder.has_handler('toto.txt'), True)
+        # Save
+        folder.save_state()
+        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(folder.has_handler('toto.txt'), True)
+
+
+    def test_remove_add_remove(self):
+        folder = get_handler('tests')
+        folder.del_handler('toto.txt')
+        folder.set_handler('toto.txt', Text())
+        folder.del_handler('toto.txt')
+        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(folder.has_handler('toto.txt'), False)
+        # Save
+        folder.save_state()
+        self.assertEqual(vfs.exists('tests/toto.txt'), False)
+        self.assertEqual(folder.has_handler('toto.txt'), False)
+
+
+    def test_remove_remove(self):
+        folder = get_handler('tests')
+        folder.del_handler('toto.txt')
+        self.assertRaises(Exception, folder.del_handler, 'toto.txt')
+
+
+    def test_remove_add_add(self):
+        folder = get_handler('tests')
+        folder.del_handler('toto.txt')
+        folder.set_handler('toto.txt', Text())
+        self.assertRaises(Exception, folder.set_handler, 'toto.txt', Text())
+
 
 
 class TextTestCase(TestCase):

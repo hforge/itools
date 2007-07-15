@@ -269,8 +269,12 @@ class Handler(Node):
 
 
     def abort_changes(self):
-        # FIXME It may be better to clean the handler's state
-        self.timestamp = datetime(1900, 1, 1)
+        if self.uri is None:
+            # XXX Should do something else than just return?
+            return
+        for name in self.__slots__:
+            if name not in ('uri', 'parent', 'name', 'real_handler'):
+                delattr(self, name)
 
 
     ########################################################################

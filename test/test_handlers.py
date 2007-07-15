@@ -25,6 +25,17 @@ from itools.handlers import get_handler, Python, Table
 from itools.handlers.table import unfold_lines
 
 
+class StateTestCase(TestCase):
+
+    def test_abort(self):
+        handler = get_handler('tests/hello.txt')
+        self.assertEqual(handler.data, u'hello world\n')
+        handler.set_data(u'bye world\n')
+        self.assertEqual(handler.data, u'bye world\n')
+        handler.abort_changes()
+        self.assertEqual(handler.data, u'hello world\n')
+
+
 
 class FolderTestCase(TestCase):
 

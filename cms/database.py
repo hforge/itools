@@ -200,8 +200,7 @@ class DatabaseFS(FileFS):
         except:
             # Rollback the changes in memory
             for handler in transaction:
-                # XXX Should we call to "handler.abort_changes()" instead?
-                handler.timestamp = datetime(1900, 1, 1)
+                handler.abort_changes()
             # Rollback the changes in disk
             self.rollback()
             raise

@@ -21,7 +21,7 @@ import cgi
 from itools.handlers import register_handler_class, Text
 from itools.xml import (TEXT, COMMENT, START_ELEMENT, END_ELEMENT, get_element,
         stream_to_str as stream_to_str_as_xml)
-
+from itools.xhtml import xhtml_uri
 # Import from rest
 from parser import Document as RestDocument, parse_inline
 
@@ -151,8 +151,7 @@ def stream_to_str(stream, encoding='UTF-8'):
 
 
 
-def stream_to_str_as_html(stream, encoding='UTF-8'):
-    buffer = []
+def to_xhtml_stream(stream, encoding='UTF-8'):
     title_levels = []
     last_title_level = None
     list_items = []
@@ -163,13 +162,15 @@ def stream_to_str_as_html(stream, encoding='UTF-8'):
                   'emphasis': 'em',
                   'literal': 'tt'}
 
+    events = []
     for event, value, line in stream:
         if event == TEXT:
             data = value.encode(encoding)
             data = cgi.escape(data)
-            buffer.append(data)
+            events.append((event, data, line))
         elif event == START_ELEMENT:
             _, name, attributes = value
+            attr = {}
             if name == 'title':
                 overline = attributes[(rest_uri, 'overline')]
                 underline = attributes[(rest_uri, 'underline')]
@@ -178,51 +179,62 @@ def stream_to_str_as_html(stream, encoding='UTF-8'):
                 else:
                     level = len(title_levels)
                     title_levels.append((overline, underline))
-                # Anchor to this section
-                target = attributes[(rest_uri, 'target')]
-                buffer.append('<a name="%s"></a>' % target)
                 # index 0 -> <h1>
                 level += 1
-                buffer.append('<h%d>' % level)
+                tag = 'h%d' % level
                 last_title_level = level
-            elif name == 'footnote':
-                target = str(attributes['target'])
-                buffer.append('<a href="#id%s">[' % target)
-            elif name == 'reference':
+                # Add an Anchor to this section
+                attr[(xhtml_uri, 'name')] = attributes[(rest_uri, 'target')]
+                events.append((event, (xhtml_uri, 'a', attr), line))
+                events.append((END_ELEMENT, (xhtml_uri, 'a'), line))
+            elif name=='footnote':
+                target = '#id%s' % str(attributes['target'])
+                tag = 'a'
+                attr[(xhtml_uri, 'href')] = target
+                events.append((event, (xhtml_uri, tag), None))
+                tag = None
+                # Add the character [
+                events.append((TEXT, '[', line))
+            elif name=='reference':
+                tag = 'a'
                 target = attributes['target']
-                buffer.append('<a href="#%s">' % target)
-            elif name == 'list':
+                attr[(xhtml_uri, 'href')] = target
+            elif name=='list':
                 item = attributes[(rest_uri, 'item')]
                 if item == u'#':
-                    buffer.append('<ol>')
+                    tag = 'ol'
                 else:
-                    buffer.append('<ul>')
+                    tag = 'ul'
                 list_items.append(item)
             elif name in ('document',):
-                pass
+                tag = None
             else:
                 tag = one_to_one[name]
-                buffer.append('<%s>' % tag)
+            if tag:
+                events.append((event, (xhtml_uri, tag, attr), line))
         elif event == END_ELEMENT:
             _, name = value
             if name == 'title':
-                buffer.append('</h%d>' % last_title_level)
+                tag = 'h%d' % last_title_level
             elif name == 'footnote':
-                buffer.append(']</a>')
+                events.append((TEXT, ']', line))
+                tag = 'a'
             elif name == 'reference':
-                buffer.append('</a>')
+                tag = 'a'
             elif name == 'list':
                 if list_items.pop() == u'#':
-                    buffer.append('</ol>')
+                    tag = 'ol'
                 else:
-                    buffer.append('</ul>')
+                    tag = 'ul'
             elif name in ('document',):
-                pass
+                tag = None
             else:
                 tag = one_to_one[name]
-                buffer.append('</%s>' % tag)
 
-    return ''.join(buffer)
+            if tag:
+                events.append((event, (xhtml_uri, tag), None))
+
+    return events
 
 
 
@@ -307,7 +319,7 @@ def stream_to_str_as_latex(stream, encoding='UTF-8'):
 
 def to_html(text, encoding='UTF-8'):
     events = block_stream(text)
-    return stream_to_str_as_html(events, encoding)
+    return to_xhtml_stream(events)
 
 
 
@@ -354,7 +366,7 @@ class Document(Text):
 
     def get_content_as_html(self, encoding='UTF-8'):
         """Translate the content as XHTML, not the whole document."""
-        return stream_to_str_as_html(self.events, encoding)
+        return to_xhtml_stream(self.events, encoding)
 
 
     def get_content_as_xml(self, encoding='UTF-8'):

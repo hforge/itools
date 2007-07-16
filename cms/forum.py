@@ -23,6 +23,7 @@ from cStringIO import StringIO
 # Import from itools
 from itools.datatypes import FileName, Unicode
 from itools.stl import stl
+from itools.xml import Parser
 from itools.rest import checkid
 from folder import Folder
 from messages import *
@@ -128,11 +129,12 @@ class Thread(Folder):
             message = self.get_handler(name)
             author_id = message.get_property('owner')
             metadata = users.get_handler('%s.metadata' % author_id)
+            body = message.to_str().replace('\n', '<br/>')
             namespace.append({
                 'author': (metadata.get_property('dc:title') or
                     metadata.get_property('ikaaro:email')),
                 'mtime': message.get_mtime().strftime('%F %X'),
-                'body': message.to_str().replace('\n', '<br />'),
+                'body': Parser(body),
                 'editable': ac.is_admin(user, message),
                 'edit_form': '%s/;edit_form' % message.name,
             })

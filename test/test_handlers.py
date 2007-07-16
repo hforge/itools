@@ -151,8 +151,8 @@ lastname:Rousseau
 
 
 class Agenda(Table):
-    schema = {'firstname': Unicode(index='text'),
-              'lastname': Unicode}
+    schema = {'firstname': Unicode(index='text', multiple=False),
+              'lastname': Unicode(multiple=False)}
 
 
 class TableTestCase(TestCase):
@@ -204,10 +204,20 @@ class TableTestCase(TestCase):
                 'ts:2007-07-13T17:19:21\n'
                 '\n'
                 'id:1/0\n'
-                'ts;p=0:2007-07-14T16:43:49\n'
+                'title;language=en:hello\n'
+                'title;language=es:hola\n'
+                'ts:2007-07-14T16:43:49\n'
                 '\n')
         table = Table(string=data)
         self.assertEqual(table.to_str(), data)
+
+
+    def test_multiple(self):
+        self.assertRaises(Exception, Agenda, string=
+            'id:0/0\n'
+            'ts:2007-07-13T17:19:21\n'
+            'firstname:Karl\n'
+            'firstname:Marx\n')
 
 
     def test_search(self):

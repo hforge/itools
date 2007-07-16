@@ -253,11 +253,14 @@ class Record(list):
 
     def __getattr__(self, name):
         version = self[-1]
-        if name in version:
-            return version[name].value
+        if name not in version:
+            raise AttributeError, "'%s' object has no attribute '%s'" % (
+                self.__class__.__name__, name)
 
-        raise AttributeError, "'%s' object has no attribute '%s'" % (
-            self.__class__.__name__, name)
+        property = version[name]
+        if isinstance(property, list):
+            return [ x.value for x in property ]
+        return property.value
 
 
     def get_property(self, name):
@@ -292,10 +295,10 @@ class Table(File):
 
     def get_datatype(self, name):
         if name == 'ts':
-            return DateTime
+            return DateTime(multiple=False)
         if name in self.schema:
             return self.schema[name]
-        return String
+        return String(multiple=True)
 
 
     #######################################################################
@@ -325,6 +328,7 @@ class Table(File):
                 parameters[pname] = pvalue[0]
 
             if name == 'id':
+                version = {}
                 # Identifier and Sequence (id)
                 uid, seq = value.split('/')
                 # Record
@@ -348,12 +352,18 @@ class Table(File):
                     if seq > len(record):
                         msg = 'unexpected sequence "%s" for record "%s"'
                         raise ValueError, msg % (seq, uid)
-                    version = {}
                     record.append(version)
                 continue
             # Timestamp (ts), Schema, or Something else
-            value = self.get_datatype(name).decode(value)
-            version[name] = Property(value, parameters)
+            datatype = self.get_datatype(name)
+            value = datatype.decode(value)
+            property = Property(value, parameters)
+            if datatype.multiple is True:
+                version.setdefault(name, []).append(property)
+            elif name in version:
+                raise ValueError, "property '%s' can occur only once" % name
+            else:
+                version[name] = property
         # Index the records
         for record in records:
             if record is not None:
@@ -362,12 +372,23 @@ class Table(File):
 
     def _version_to_str(self, id, seq, version):
         lines = ['id:%d/%d\n' % (id, seq)]
-        for name, property in version.items():
-            lines.append(name)
-            for parameter in property.parameters.items():
-                lines.append(';%s=%s' % parameter)
-            value = self.get_datatype(name).encode(property.value)
-            lines.append(':%s\n' % value)
+        names = version.keys()
+        names.sort()
+        for name in names:
+            datatype = self.get_datatype(name)
+            if datatype.multiple is True:
+                properties = version[name]
+            else:
+                properties = [version[name]]
+            for property in properties:
+                lines.append(name)
+                pnames = property.parameters.keys()
+                pnames.sort()
+                for pname in pnames:
+                    pvalue = property.parameters[pname]
+                    lines.append(';%s=%s' % (pname, pvalue))
+                value = datatype.encode(property.value)
+                lines.append(':%s\n' % value)
         lines.append('\n')
         return ''.join(lines)
 
@@ -440,14 +461,19 @@ class Table(File):
         return record[sequence].copy()
 
 
-    def add_record(self, version):
+    def add_record(self, kw):
         id = len(self.records)
         record = Record(id)
-        version = version.copy()
+        version = {}
         # Fix the type
-        for name, value in version.items():
-            if not isinstance(value, Property):
-                version[name] = Property(value)
+        for name, value in kw.items():
+            datatype = self.get_datatype(name)
+            if datatype.multiple is True:
+                value = [ x if isinstance(x, Property) else Property(x)
+                          for x in value ]
+            elif not isinstance(value, Property):
+                value = Property(value)
+            version[name] = value
         version['ts'] = Property(datetime.now())
         record.append(version)
         # Change
@@ -463,10 +489,13 @@ class Table(File):
         record = self.records[id]
         version = record[-1].copy()
         for name, value in kw.items():
-            if isinstance(value, Property):
-                version[name] = value
-            else:
-                version[name] = Property(value)
+            datatype = self.get_datatype(name)
+            if datatype.multiple is True:
+                value = [ x if isinstance(x, Property) else Property(x)
+                          for x in value ]
+            elif not isinstance(value, Property):
+                value = Property(value)
+            version[name] = value
         version['ts'] = Property(datetime.now())
         # Change
         self.set_changed()

@@ -35,8 +35,8 @@ class BrokenHandler(Text):
 
 
 class Agenda(Table):
-    schema = {'firstname': Unicode(index='text'),
-              'lastname': Unicode}
+    schema = {'firstname': Unicode(index='text', multiple=False),
+              'lastname': Unicode(multiple=False)}
 
 
 

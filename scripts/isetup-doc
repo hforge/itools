@@ -63,7 +63,7 @@ def escape_latex(text):
 
 def format_latex(text):
     text = unicode(text, 'utf-8')
-    return rest.to_latex(text)
+    return rest.to_str(text, format='latex')
 
 
 

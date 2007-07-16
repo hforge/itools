@@ -15,11 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from rest import Document, to_html, to_xml, to_latex, checkid
+from rest import checkid, to_html_events, to_str
 
 
-__all__ = ['checkid',
-           'to_html',
-           'to_xml',
-           'to_latex',
-           'Document']
+__all__ = ['checkid', 'to_html_events', 'to_str']

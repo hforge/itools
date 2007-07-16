@@ -18,56 +18,15 @@
 import cgi
 
 # Import from itools
-from itools.handlers import register_handler_class, Text
 from itools.xml import (TEXT, COMMENT, START_ELEMENT, END_ELEMENT, get_element,
-        stream_to_str as stream_to_str_as_xml)
-from itools.xhtml import xhtml_uri
-# Import from rest
+    stream_to_str as stream_to_str_as_xml)
+from itools.xhtml import (xhtml_uri, stream_to_str_as_xhtml,
+    stream_to_str_as_html)
 from parser import Document as RestDocument, parse_inline
 
 
 # XXX dummy
 rest_uri = 'http://docutils.sourceforge.net/docs/ref/docutils.dtd'
-
-
-
-src = ur"""ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"""
-dst = ur"""AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"""
-
-transmap = {}
-for i in range(len(src)):
-    a, b = src[i], dst[i]
-    transmap[ord(a)] = ord(b)
-
-
-def checkid(id):
-    """
-    Turn a bytestring or unicode into an identifier only composed of
-    alphanumerical characters and a limited list of signs.
-
-    It only supports Latin-based alphabets.
-    """
-    if isinstance(id, str):
-        id = unicode(id, 'utf8')
-
-    # Strip diacritics
-    id = id.strip().translate(transmap)
-
-    # Check for unallowed characters
-    allowed_characters = set([u'.', u'-', u'_', u'@'])
-    id = [ (c.isalnum() or c in allowed_characters) and c or u'-' for c in id ]
-
-    # Merge hyphens
-    id = u''.join(id)
-    id = id.split(u'-')
-    id = u'-'.join([x for x in id if x])
-
-    # Check wether the id is empty
-    if len(id) == 0:
-        return None
-
-    # Return a safe ASCII bytestring
-    return str(id)
 
 
 
@@ -96,7 +55,7 @@ def block_stream(text):
             events.append((END_ELEMENT, (rest_uri, event), None))
         elif event == 'literal_block':
             events.append((START_ELEMENT, (rest_uri, event, {}), None))
-            events.append((TEXT, value, None))
+            events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
         elif event == 'list_begin':
             events.append((START_ELEMENT, (rest_uri, 'list',
@@ -124,34 +83,29 @@ def inline_stream(text):
 
     for event, value in parse_inline(text):
         if event == 'text':
-            events.append((TEXT, value, None))
+            events.append((TEXT, value.encode('utf-8'), None))
         elif event == 'footnote':
             target = checkid(value).lower()
             attributes = {'target': target}
             events.append((START_ELEMENT, (rest_uri, event, attributes), None))
-            events.append((TEXT, value, None))
+            events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
         elif event == 'reference':
             target = checkid(value).lower()
             attributes = {'target': target}
             events.append((START_ELEMENT, (rest_uri, event, attributes), None))
-            events.append((TEXT, value, None))
+            events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
         else:
             events.append((START_ELEMENT, (rest_uri, event, {}), None))
-            events.append((TEXT, value, None))
+            events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
 
     return events
 
 
 
-def stream_to_str(stream, encoding='UTF-8'):
-    raise NotImplementedError
-
-
-
-def to_xhtml_stream(stream, encoding='UTF-8'):
+def to_xhtml_stream(stream):
     title_levels = []
     last_title_level = None
     list_items = []
@@ -165,8 +119,7 @@ def to_xhtml_stream(stream, encoding='UTF-8'):
     events = []
     for event, value, line in stream:
         if event == TEXT:
-            data = value.encode(encoding)
-            data = cgi.escape(data)
+            data = cgi.escape(value)
             events.append((event, data, line))
         elif event == START_ELEMENT:
             _, name, attributes = value
@@ -238,7 +191,7 @@ def to_xhtml_stream(stream, encoding='UTF-8'):
 
 
 
-def stream_to_str_as_latex(stream, encoding='UTF-8'):
+def stream_to_str_as_latex(stream):
     buffer = []
     title_levels = []
     list_items = []
@@ -252,7 +205,7 @@ def stream_to_str_as_latex(stream, encoding='UTF-8'):
 
     for event, value, line in stream:
         if event == TEXT:
-            data = value.encode(encoding)
+            data = value
             if verbatim_open is False:
                 data = data.replace('_', '\_')
                 data = data.replace('$', '\$')
@@ -317,105 +270,69 @@ def stream_to_str_as_latex(stream, encoding='UTF-8'):
 
 
 
-def to_html(text, encoding='UTF-8'):
+###########################################################################
+# API Public
+###########################################################################
+src = ur"""ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"""
+dst = ur"""AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"""
+
+transmap = {}
+for i in range(len(src)):
+    a, b = src[i], dst[i]
+    transmap[ord(a)] = ord(b)
+
+
+def checkid(id):
+    """
+    Turn a bytestring or unicode into an identifier only composed of
+    alphanumerical characters and a limited list of signs.
+
+    It only supports Latin-based alphabets.
+    """
+    if isinstance(id, str):
+        id = unicode(id, 'utf8')
+
+    # Strip diacritics
+    id = id.strip().translate(transmap)
+
+    # Check for unallowed characters
+    allowed_characters = set([u'.', u'-', u'_', u'@'])
+    id = [ (c.isalnum() or c in allowed_characters) and c or u'-' for c in id ]
+
+    # Merge hyphens
+    id = u''.join(id)
+    id = id.split(u'-')
+    id = u'-'.join([x for x in id if x])
+
+    # Check wether the id is empty
+    if len(id) == 0:
+        return None
+
+    # Return a safe ASCII bytestring
+    return str(id)
+
+
+
+def to_html_events(text):
     events = block_stream(text)
     return to_xhtml_stream(events)
 
 
+def to_str(text, format, encoding='utf-8'):
+##    if format == 'rest':
+##        raise NotImplementedError
+    if format == 'xml':
+        events = block_stream(text)
+        return stream_to_str_as_xml(events, encoding)
+    elif format == 'xhtml':
+        events = to_html_events(text)
+        return stream_to_str_as_xhtml(events, encoding)
+    elif format == 'html':
+        events = to_html_events(text)
+        return stream_to_str_as_html(events, encoding)
+    elif format == 'latex':
+        events = block_stream(text)
+        return stream_to_str_as_latex(events, encoding)
+    else:
+        raise ValueError, "unexpected format '%s'" % format
 
-def to_xml(text, encoding='UTF-8'):
-    events = block_stream(text)
-    return stream_to_str_as_xml(events, encoding)
-
-
-
-def to_latex(text, encoding='UTF-8'):
-    events = block_stream(text)
-    return stream_to_str_as_latex(events, encoding)
-
-
-
-class Document(Text):
-    """Handler of reStructuredText files.
-    See http://docutils.sourceforge.net/rst.html
-
-    The reST handler is technically a Text handler but offering an API similar
-    to XML.
-    """
-
-    __slots__ = Text.__slots__ + ['events']
-
-    class_mimetypes = ['text/x-rst', 'text/x-restructured-text']
-    class_extension = 'rst'
-
-    def _load_state_from_file(self, file):
-        Text._load_state_from_file(self, file)
-
-        events = []
-        events.append((START_ELEMENT, (rest_uri, 'document', {}), None))
-        events.extend(block_stream(self.data))
-        events.append((END_ELEMENT, (rest_uri, 'document'), None))
-        self.events = events
-
-
-    def to_str(self, encoding='UTF-8'):
-        # TODO Serializing to the reST format is disabled whilst stream_to_str
-        # is not implemented
-        return Text.to_str(self, encoding)
-
-
-    def get_content_as_html(self, encoding='UTF-8'):
-        """Translate the content as XHTML, not the whole document."""
-        return to_xhtml_stream(self.events, encoding)
-
-
-    def get_content_as_xml(self, encoding='UTF-8'):
-        """Translate the content as XML, not the whole document."""
-        return stream_to_str_as_xml(self.events, encoding)
-
-
-    def get_content_as_latex(self, encoding='UTF-8'):
-        """Translate the content as LaTeX, not the whole document."""
-        return stream_to_str_as_latex(self.events, encoding)
-
-
-    def to_html(self, encoding='UTF-8'):
-        """Translate the document to XHTML."""
-        title = get_element(self.events, 'title').get_content()
-        mapping = {'title': title,
-                   'encoding': encoding}
-        s = ['<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
-             '       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
-             '<html xmlns="http://www.w3.org/1999/xhtml">\n'
-             '  <head>\n'
-             '    <meta http-equiv="Content-Type" content="text/html; charset=%(encoding)s" />\n'
-             '    <title>%(title)s</title>\n'
-             '  </head>\n'
-             '  <body>' % mapping]
-        s.append(self.get_content_as_html(encoding))
-        s.append(    '</body>\n'
-                 '</html>')
-        return '\n'.join(s)
-
-
-    def to_xml(self, encoding='UTF-8'):
-        """Generate the XML representation of the document tree."""
-        s = ['<?xml version="1.0" encoding="%s"?>\n'
-             '<!DOCTYPE document PUBLIC\n'
-             '    +//IDN docutils.sourceforge.net//DTD Docutils Generic//EN//XML"\n'
-             '    http://docutils.sourceforge.net/docs/ref/docutils.dtd">' % encoding]
-        s.append(stream_to_str_as_xml(self.events, encoding))
-        return '\n'.join(s)
-
-
-    def to_latex(self, encoding='UTF-8'):
-        """Translate the document to LaTeX.
-        TODO Provide a document template.
-        """
-        s = ['\\begin{document}']
-        s.append(stream_to_str_as_latex(self.events, encoding))
-        s.append('\\end{document}')
-        return '\n'.join(s)
-
-
-register_handler_class(Document)

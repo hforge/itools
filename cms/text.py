@@ -23,7 +23,8 @@ from itools.i18n import get_language_name
 from itools.handlers import Text as BaseText, Python as BasePython
 from itools.gettext import PO as BasePO
 from itools.stl import stl
-from itools.rest import Document as RestDocument, checkid
+from itools import rest
+from itools.rest import checkid
 from utils import get_parameters
 from file import File
 from messages import *
@@ -126,19 +127,16 @@ class Text(File, BaseText):
     view_rest__access__ = 'is_allowed_to_view'
     view_rest__sublabel__ = u"As reStructuredText"
     def view_rest(self, context):
-        namespace = {}
-
-        document = RestDocument(self.uri)
-        return document.get_content_as_html()
+        data = self.data.encode('utf-8')
+        return rest.to_html_events(data)
 
 
     view_xml__access__ = 'is_allowed_to_view'
     view_xml__sublabel__ = u"As reStructuredText"
     def view_xml(self, context):
         namespace = {}
-
-        document = RestDocument(self.uri)
-        namespace['text'] = document.get_content_as_xml()
+        data = self.data.encode('utf-8')
+        namespace['text'] = rest.to_str(data, format='xml')
 
         handler = self.get_handler('/ui/text/view.xml')
         return stl(handler, namespace)

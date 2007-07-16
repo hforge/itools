@@ -101,6 +101,30 @@ class FolderTestCase(TestCase):
         self.assertRaises(Exception, folder.set_handler, 'toto.txt', Text())
 
 
+    def test_remove_abort(self):
+        folder = get_handler('tests')
+        self.assertEqual(folder.has_handler('toto.txt'), True)
+        folder.del_handler('toto.txt')
+        self.assertEqual(folder.has_handler('toto.txt'), False)
+        folder.abort_changes()
+        self.assertEqual(folder.has_handler('toto.txt'), True)
+        # Save
+        folder.save_state()
+        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+
+
+    def test_add_abort(self):
+        folder = get_handler('tests')
+        self.assertEqual(folder.has_handler('fofo.txt'), False)
+        folder.set_handler('fofo.txt', Text())
+        self.assertEqual(folder.has_handler('fofo.txt'), True)
+        folder.abort_changes()
+        self.assertEqual(folder.has_handler('fofo.txt'), False)
+        # Save
+        folder.save_state()
+        self.assertEqual(vfs.exists('tests/fofo.txt'), False)
+
+
 
 class TextTestCase(TestCase):
     

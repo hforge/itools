@@ -105,6 +105,18 @@ class Folder(Handler):
         self.timestamp = vfs.get_mtime(self.uri)
 
 
+    def abort_changes(self):
+        cache = self.cache
+        # Add
+        for name in self.added_handlers:
+            del cache[name]
+        self.added_handlers = set()
+        # Remove
+        for name in self.removed_handlers:
+            cache[name] = None
+        self.removed_handlers = set()
+
+
     def save_state_to(self, uri):
         # Create the target folder
         vfs.make_folder(uri)

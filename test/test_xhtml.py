@@ -21,7 +21,7 @@ from unittest import TestCase
 # Import from itools
 from itools.xml import Parser, TEXT
 from itools.xhtml import Document
-from itools.xhtml.xhtml import stream_to_html
+from itools.xhtml.xhtml import stream_to_html, sanitize_str
 from itools.gettext import PO
 
 
@@ -211,6 +211,47 @@ class TranslationTestCase(TestCase):
         messages = list(xhtml.get_messages())
         self.assertEqual(messages, [(u'La playa', 0)])
 
+
+class SanitizerTestCase(TestCase):
+
+    def test_javascript(self):
+        data = '<div><script>alert("Hello world")</script></div>'
+        stream = sanitize_str(data)
+        data_return = stream_to_html(stream)
+        expected = '<div>alert("Hello world")</div>'
+        self.assertEqual(data_return, expected)
+
+
+    def test_css(self):
+        data = '<div style="background: url(javascript:void);"></div>'
+        stream = sanitize_str(data)
+        data_return = stream_to_html(stream)
+        expected = '<div></div>'
+        self.assertEqual(data_return, expected)
+
+
+    def test_onmouseover(self):
+        data = '<b onMouseOver="self.location.href=\'www.free.fr\'">Hello</b>'
+        stream = sanitize_str(data)
+        data_return = stream_to_html(stream)
+        expected = '<b>Hello</b>'
+        self.assertEqual(data_return, expected)
+
+
+    def test_links(self):
+        data = '<a href="javascript:alert(\'Hello\')">Hello World</a>'
+        stream = sanitize_str(data)
+        data_return = stream_to_html(stream)
+        expected = '<a>Hello World</a>'
+        self.assertEqual(data_return, expected)
+
+
+    def test_comment(self):
+        data = '<!-- javascript:alert("Hello"); -->'
+        stream = sanitize_str(data)
+        data_return = stream_to_html(stream)
+        expected = ''
+        self.assertEqual(data_return, expected)
 
 
 if __name__ == '__main__':

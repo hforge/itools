@@ -19,6 +19,7 @@ import re
 from cStringIO import StringIO
 
 # Import from itools
+from itools.xml import Parser
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
     XML as XMLContent, XMLAttribute)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
@@ -130,6 +131,91 @@ def stream_to_str_as_html(stream, encoding='UTF-8'):
     stream = set_content_type(stream, content_type)
     return stream_to_html(stream, encoding)
 
+
+def sanitize_stream(stream):
+    """
+    Method that removes potentially dangerous HTML tags and attributes
+    from the events
+    """
+    safe_tags = frozenset(['a', 'abbr', 'acronym', 'address', 'area',
+        'b', 'big', 'blockquote', 'br', 'button', 'caption', 'center',
+        'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir',
+        'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form', 'h1', 'h2',
+        'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'ins', 'kbd',
+        'label', 'legend', 'li', 'map', 'menu', 'ol', 'optgroup',
+        'option', 'p', 'pre', 'q', 's', 'samp', 'select', 'small',
+        'span', 'strike', 'strong', 'sub', 'sup', 'table', 'tbody',
+        'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', 'u', 'ul',
+        'var'])
+
+    safe_attrs = frozenset(['abbr', 'accept', 'accept-charset',
+        'accesskey', 'action', 'align', 'alt', 'axis', 'border',
+        'cellpadding', 'cellspacing', 'char', 'charoff', 'charset',
+        'checked', 'cite', 'class', 'clear', 'cols', 'colspan', 'color',
+        'compact', 'coords', 'datetime', 'dir', 'disabled', 'enctype',
+        'for', 'frame', 'headers', 'height', 'href', 'hreflang',
+        'hspace', 'id', 'ismap', 'label', 'lang', 'longdesc',
+        'maxlength', 'media', 'method', 'multiple', 'name', 'nohref',
+        'noshade', 'nowrap', 'prompt', 'readonly', 'rel', 'rev', 'rows',
+        'rowspan', 'rules', 'scope', 'selected', 'shape', 'size',
+        'span', 'src', 'start', 'style', 'summary', 'tabindex',
+        'target', 'title', 'type', 'usemap', 'valign', 'value',
+        'vspace', 'width'])
+
+    safe_schemes = frozenset(['file', 'ftp', 'http', 'https', 'mailto', None])
+
+    uri_attrs = frozenset(['action', 'background', 'dynsrc', 'href', 'lowsrc',
+                           'src'])
+
+    events = list(stream)
+    for c_event in events:
+        event, value, line = c_event
+        if event == TEXT:
+            data = value
+        elif event == START_ELEMENT:
+            _, name, attributes = value
+            # Remove unsafe Tag
+            if name not in safe_tags:
+                events.remove(c_event)
+            # Remove unsafe attributes
+            attributes_to_remove = []
+            for c_attribute in attributes:
+                attr_uri, attr_name = c_attribute
+                # Remove unauthorized attributes
+                if attr_name not in safe_attrs:
+                    attributes_to_remove.append(c_attribute)
+                # Check attributes with Uri
+                if attr_name in uri_attrs:
+                    href = attributes[c_attribute]
+                    if ':' in href:
+                        scheme = href.split(':')[0]
+                    if scheme not in safe_schemes:
+                        attributes_to_remove.append(c_attribute)
+                # Check CSS
+                if attr_name in 'style':
+                    value = attributes[c_attribute]
+                    for m in re.finditer(r'url\s*\(([^)]+)', value):
+                        href = m.group(1)
+                        if ':' in href:
+                            scheme = href.split(':')[0]
+                            if scheme not in safe_schemes:
+                                attributes_to_remove.append(c_attribute)
+            for attr_to_remove in attributes_to_remove:
+                attributes.pop(attr_to_remove)
+        elif event == END_ELEMENT:
+            _, name = value
+            if name not in safe_tags:
+                events.remove(c_event)
+        elif event == COMMENT:
+            events.remove(c_event)
+
+    return events
+
+
+def sanitize_str(str):
+    stream = Parser(str)
+    events = sanitize_stream(stream)
+    return events
 
 #############################################################################
 # Namespace

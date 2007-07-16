@@ -132,14 +132,15 @@ def to_xhtml_stream(stream):
                 else:
                     level = len(title_levels)
                     title_levels.append((overline, underline))
-                # index 0 -> <h1>
-                level += 1
-                tag = 'h%d' % level
-                last_title_level = level
                 # Add an Anchor to this section
                 attr[(xhtml_uri, 'name')] = attributes[(rest_uri, 'target')]
                 events.append((event, (xhtml_uri, 'a', attr), line))
                 events.append((END_ELEMENT, (xhtml_uri, 'a'), line))
+                # index 0 -> <h1>
+                level += 1
+                tag = 'h%d' % level
+                attr = {}
+                last_title_level = level
             elif name=='footnote':
                 target = '#id%s' % str(attributes['target'])
                 tag = 'a'
@@ -151,7 +152,7 @@ def to_xhtml_stream(stream):
             elif name=='reference':
                 tag = 'a'
                 target = attributes['target']
-                attr[(xhtml_uri, 'href')] = target
+                attr[(xhtml_uri, 'href')] = '#%s' % target
             elif name=='list':
                 item = attributes[(rest_uri, 'item')]
                 if item == u'#':

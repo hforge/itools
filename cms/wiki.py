@@ -29,6 +29,7 @@ from .. import vfs
 from ..stl import stl
 from ..datatypes import Unicode, FileName
 from ..rest import checkid
+from itools.xml import Parser
 
 # Import from itools.cms
 from .file import File
@@ -510,8 +511,8 @@ class WikiPage(Text):
         html = core.publish_string(source, writer_name='html',
                 settings_overrides=self.overrides)
 
-        namespace['help_source'] = source.replace('&', '&amp;').replace('<', '&lt;')
-        namespace['help_html'] = html
+        namespace['help_source'] = source
+        namespace['help_html'] = Parser(html)
 
         handler = self.get_handler('/ui/wiki/WikiPage_help.xml')
         return stl(handler, namespace)

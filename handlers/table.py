@@ -23,7 +23,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.vfs import vfs
-from itools.datatypes import DateTime
+from itools.datatypes import DateTime, String
 from itools.catalog import MemoryCatalog, PhraseQuery, AndQuery, get_field
 from file import File
 
@@ -232,6 +232,16 @@ def parse_table(data):
 ###########################################################################
 # File Handler
 ###########################################################################
+class Property(object):
+
+    __slots__ = ['value', 'parameters']
+
+    def __init__(self, value, parameters={}):
+        self.value = value
+        self.parameters = parameters
+
+
+
 class Record(list):
 
     __slots__ = ['id']
@@ -242,12 +252,20 @@ class Record(list):
 
 
     def __getattr__(self, name):
-        version = self[-1]        
+        version = self[-1]
         if name in version:
-            return version[name]
+            return version[name].value
 
         raise AttributeError, "'%s' object has no attribute '%s'" % (
             self.__class__.__name__, name)
+
+
+    def get_property(self, name):
+        version = self[-1]
+        if name in version:
+            return version[name]
+
+        return None
 
 
     # For indexing purposes
@@ -261,6 +279,7 @@ class Table(File):
                  'records', 'catalog', 'added_records', 'removed_records']
 
 
+    #######################################################################
     # Hash with field names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some fields the schema should be declared as:
@@ -268,9 +287,20 @@ class Table(File):
     #           'age': Integer(index='<analyser>')}
     # where <analyser> is an itools.catalog analyser or derivate: keyword,
     # book, text, path.
+    #######################################################################
     schema = {}
 
+    def get_datatype(self, name):
+        if name == 'ts':
+            return DateTime
+        if name in self.schema:
+            return self.schema[name]
+        return String
 
+
+    #######################################################################
+    # Handlers
+    #######################################################################
     def new(self):
         self.records = []
         self.added_records = []
@@ -290,8 +320,12 @@ class Table(File):
         n = 0
         version = None
         for name, value, parameters in parse_table(file.read()):
-            # Identifier and Sequence (id)
+            # FIXME Why parameter values are lists?
+            for pname, pvalue in parameters.items():
+                parameters[pname] = pvalue[0]
+
             if name == 'id':
+                # Identifier and Sequence (id)
                 uid, seq = value.split('/')
                 # Record
                 uid = int(uid)
@@ -316,42 +350,40 @@ class Table(File):
                         raise ValueError, msg % (seq, uid)
                     version = {}
                     record.append(version)
-            # Timestamp (ts)
-            elif name == 'ts':
-                version['ts'] = DateTime.decode(value)
-            # Something else
-            elif name in self.schema:
-                datatype = self.schema[name]
-                version[name] = datatype.decode(value)
-            # Error
-            else:
-                msg = 'unexepect field "%s" for record "%s/%s"'
-                raise ValueError, msg % (name, uid, seq)
+                continue
+            # Timestamp (ts), Schema, or Something else
+            value = self.get_datatype(name).decode(value)
+            version[name] = Property(value, parameters)
         # Index the records
         for record in records:
             if record is not None:
                 self.catalog.index_document(record, record.id)
 
 
+    def _version_to_str(self, id, seq, version):
+        lines = ['id:%d/%d\n' % (id, seq)]
+        for name, property in version.items():
+            lines.append(name)
+            for parameter in property.parameters.items():
+                lines.append(';%s=%s' % parameter)
+            value = self.get_datatype(name).encode(property.value)
+            lines.append(':%s\n' % value)
+        lines.append('\n')
+        return ''.join(lines)
+
+
     def to_str(self):
         lines = []
-
-        uid = 0
+        id = 0
         for record in self.records:
             if record is not None:
                 seq = 0
                 for version in record:
-                    lines.append('id:%d/%d\n' % (uid, seq))
-                    for name, value in version.items():
-                        if name == 'ts':
-                            datatype = DateTime
-                        elif name in self.schema:
-                            datatype = self.schema[name]
-                        value = datatype.encode(value)
-                        lines.append('%s:%s\n' % (name, value))
-                lines.append('\n')
+                    version = self._version_to_str(id, seq, version)
+                    lines.append(version)
+                    seq += 1
             # Next
-            uid += 1
+            id += 1
 
         return ''.join(lines)
 
@@ -363,16 +395,9 @@ class Table(File):
         with vfs.open(self.uri, 'a') as file:
             # Added records
             for id, seq in self.added_records:
-                file.write('id:%s/%s\n' % (id, seq))
                 version = self.records[id][seq]
-                for name, value in version.items():
-                    if name == 'ts':
-                        datatype = DateTime
-                    elif name in self.schema:
-                        datatype = self.schema[name]
-                    value = datatype.encode(value)
-                    file.write('%s:%s\n' % (name, value))
-                file.write('\n')
+                version = self._version_to_str(id, seq, version)
+                file.write(version)
             self.added_records = []
             # Removed records
             for id, ts in self.removed_records:
@@ -389,7 +414,7 @@ class Table(File):
     # API / Private
     #######################################################################
     def get_analyser(self, name):
-        datatype = self.schema[name]
+        datatype = self.get_datatype(name)
         return get_field(datatype.index)
 
 
@@ -419,7 +444,11 @@ class Table(File):
         id = len(self.records)
         record = Record(id)
         version = version.copy()
-        version['ts'] = datetime.now()
+        # Fix the type
+        for name, value in version.items():
+            if not isinstance(value, Property):
+                version[name] = Property(value)
+        version['ts'] = Property(datetime.now())
         record.append(version)
         # Change
         self.set_changed()
@@ -433,8 +462,12 @@ class Table(File):
     def update_record(self, id, **kw):
         record = self.records[id]
         version = record[-1].copy()
-        version.update(kw)
-        version['ts'] = datetime.now()
+        for name, value in kw.items():
+            if isinstance(value, Property):
+                version[name] = value
+            else:
+                version[name] = Property(value)
+        version['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
         self.catalog.unindex_document(record, id)

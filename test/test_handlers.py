@@ -114,13 +114,6 @@ class TextTestCase(TestCase):
 # The Table handler
 ##########################################################################
 
-simple_table = """id:0/0
-ts:2007-07-13T17:19:21
-
-id:1/0
-ts:2007-07-14T16:43:49
-"""
-
 agenda_file = """id:0/0
 ts:2007-07-13T17:19:21
 firstname:Karl
@@ -139,6 +132,11 @@ class Agenda(Table):
 
 
 class TableTestCase(TestCase):
+
+    def tearDown(self):
+        if vfs.exists('tests/agenda'):
+            vfs.remove('tests/agenda')
+
 
     def test_unfolding(self):
         """Test unfolding lines."""
@@ -178,8 +176,14 @@ class TableTestCase(TestCase):
 
 
     def test_de_serialize(self):
-        table = Table(string=simple_table)
-        self.assertEqual(table.to_str().strip(), simple_table.strip())
+        data = ('id:0/0\n'
+                'ts:2007-07-13T17:19:21\n'
+                '\n'
+                'id:1/0\n'
+                'ts;p=0:2007-07-14T16:43:49\n'
+                '\n')
+        table = Table(string=data)
+        self.assertEqual(table.to_str(), data)
 
 
     def test_search(self):

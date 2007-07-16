@@ -4,10 +4,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Registration</h2>
+  <h2>Choose your password</h2>
 
   <p>
-    To confirm your registration, please type a password.
+    To activate your account, please type a password.
   </p>
 
   <form name="confirm_registration" action=";confirm_registration" method="post">
@@ -27,7 +27,7 @@
     </dl>
     <p>
       <input type="hidden" name="key" value="${key}" />
-      <input type="submit" value="Confirm Registration" class="button_ok"/>
+      <input type="submit" value="Next" class="button_ok"/>
     </p>
   </form>
 

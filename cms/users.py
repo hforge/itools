@@ -155,9 +155,9 @@ class User(AccessControl, Folder):
     # Registration
     def send_confirmation(self, context, email):
         hostname = context.uri.authority.host
-        subject = u"[%s] Register confirmation required" % hostname
+        subject = u"[%s] Confirmation required" % hostname
         subject = self.gettext(subject)
-        body = self.gettext(u"To confirm your registration click the link:\n"
+        body = self.gettext(u"To confirm your identity click the link:\n"
                             u"\n"
                             u"  $confirm_url")
         confirm_url = deepcopy(context.uri)
@@ -213,7 +213,7 @@ class User(AccessControl, Folder):
         # Set cookie
         self.set_auth_cookie(context, password)
 
-        message = u'Registration confirmed, welcome.'
+        message = u'Operation successful ! Welcome.'
         goto = "./;%s" % self.get_firstview()
         return context.come_back(message, goto=goto)
 

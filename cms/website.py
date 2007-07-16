@@ -386,23 +386,12 @@ class WebSite(RoleAware, Folder):
 
         user = results.get_documents()[0]
         user = self.get_handler('/users/%s' % user.name)
+
+        # Send email of confirmation
         email = user.get_property('ikaaro:email')
-
-        # Generate the password
-        password = generate_password()
-
-        # Build the email
-        subject = u"Forgotten password"
-        body = self.gettext(
-            u"Your new password:\n"
-            u"\n"
-            u"  $password")
-        body = Template(body).substitute({'password': password})
-        # Send the email
-        root.send_email(root.contact_email, email, subject, body)
-
-        # Change the password
-        user.set_password(password)
+        key = generate_password(30)
+        user.set_property('ikaaro:user_must_confirm', key)
+        user.send_confirmation(context, email)
 
         handler = self.get_handler('/ui/website/forgotten_password.xml')
         return stl(handler)

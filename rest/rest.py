@@ -337,3 +337,16 @@ def to_str(text, format, encoding='utf-8'):
     else:
         raise ValueError, "unexpected format '%s'" % format
 
+###########################################################################
+# API Public (XXX for backwards compatibility)
+###########################################################################
+def to_xml(text, encoding='UTF-8'):
+    return to_str(text, 'xml', encoding)
+
+
+def to_html(text, encoding='UTF-8'):
+    return to_str(text, 'xhtml', encoding)
+
+
+def to_latex(text, encoding='UTF-8'):
+    return to_str(text, 'latex', encoding)

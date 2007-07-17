@@ -218,7 +218,7 @@ class SanitizerTestCase(TestCase):
         data = '<div><script>alert("Hello world")</script></div>'
         stream = sanitize_str(data)
         data_return = stream_to_html(stream)
-        expected = '<div>alert("Hello world")</div>'
+        expected = '<div></div>'
         self.assertEqual(data_return, expected)
 
 

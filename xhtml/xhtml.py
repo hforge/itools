@@ -167,16 +167,19 @@ def sanitize_stream(stream):
     uri_attrs = frozenset(['action', 'background', 'dynsrc', 'href', 'lowsrc',
                            'src'])
 
+    events_to_remove = []
     events = list(stream)
+    remove_next = False
     for c_event in events:
         event, value, line = c_event
-        if event == TEXT:
-            data = value
-        elif event == START_ELEMENT:
+        if event == START_ELEMENT:
             _, name, attributes = value
             # Remove unsafe Tag
             if name not in safe_tags:
-                events.remove(c_event)
+                events_to_remove.append(c_event)
+                # Remove until end tad
+                remove_next = True
+                continue
             # Remove unsafe attributes
             attributes_to_remove = []
             for c_attribute in attributes:
@@ -205,10 +208,17 @@ def sanitize_stream(stream):
         elif event == END_ELEMENT:
             _, name = value
             if name not in safe_tags:
-                events.remove(c_event)
+                events_to_remove.append(c_event)
+                remove_next = False
+                continue
         elif event == COMMENT:
-            events.remove(c_event)
-
+            events_to_remove.append(c_event)
+            continue
+        if remove_next==True:
+            events_to_remove.append(c_event)
+    # Remove unsafe events
+    for event_to_remove in events_to_remove:
+        events.remove(event_to_remove)
     return events
 
 

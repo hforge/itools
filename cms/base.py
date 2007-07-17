@@ -123,14 +123,12 @@ class Node(BaseNode):
         return get_datatype(name).default
 
 
-    def get_title_or_name(self):
+    def get_title(self):
         return self.name
 
 
     def get_mtime(self):
         return self.timestamp
-
-    mtime = property(get_mtime, None, None, "")
 
 
     def get_path_to_icon(self, size=16, from_handler=None):
@@ -205,6 +203,13 @@ class Node(BaseNode):
         return []
 
 
+    #######################################################################
+    # XXX OBSOLETE TO REMOVE
+    #######################################################################
+    get_title_or_name = get_title
+    mtime = property(get_mtime, None, None, "")
+
+
 
 class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
@@ -242,8 +247,9 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             'format': get_property('format'),
             'title': title,
             'owner': get_property('owner'),
-            'title_or_name': title or name,
             'mtime': mtime.strftime('%Y%m%d%H%M%S'),
+            # XXX OBSOLETE TO REMOVE
+            'title_or_name': title or name,
             }
 
         # Full text
@@ -338,48 +344,6 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def del_property(self, name, language=None):
         schedule_to_reindex(self)
         self.metadata.del_property(name, language=language)
-
-
-    ########################################################################
-    # Shorthands (XXX remove as many as posible)
-    def get_title(self, language=None):
-        return self.get_property('dc:title', language=language)
-
-    title = property(get_title, None, None, '')
-
-
-    def get_title_or_name(self):
-        return self.get_title() or self.name
-
-    title_or_name = property(get_title_or_name, None, None, '')
-
-
-    def get_description(self, language=None):
-        desc = self.get_property('dc:description', language=language)
-        return desc or ''
-
-
-    def get_format(self):
-        return self.get_property('format')
-
-
-    def get_owner(self):
-        return self.get_property('owner')
-
-
-    def get_language(self):
-        return self.get_property('dc:language')
-
-
-    def get_parent_path(self):
-        parent = self.parent
-        if parent is None:
-            return ''
-        elif parent.parent is None:
-            return '/'
-        return parent.get_abspath()
-    
-    parent_path = property(get_parent_path, None, None, '')
 
 
     ########################################################################
@@ -510,6 +474,10 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     ########################################################################
     # User interface
     ########################################################################
+    def get_title(self, language=None):
+        return self.get_property('dc:title', language=language) or self.name
+
+
     change_content_language__access__ = 'is_allowed_to_view'
     def change_content_language(self, context):
         language = context.get_form_value('dc:language')
@@ -677,3 +645,38 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         return handler.to_str()
 
 
+    #######################################################################
+    # XXX OBSOLETE TO REMOVE
+    #######################################################################
+    title = property(get_title, None, None, '')
+    title_or_name = property(get_title, None, None, '')
+
+
+    def get_description(self, language=None):
+        return self.get_property('dc:description', language=language)
+
+
+    get_title_or_name = get_title
+
+
+    def get_format(self):
+        return self.get_property('format')
+
+
+    def get_owner(self):
+        return self.get_property('owner')
+
+
+    def get_language(self):
+        return self.get_property('dc:language')
+
+
+    def get_parent_path(self):
+        parent = self.parent
+        if parent is None:
+            return ''
+        elif parent.parent is None:
+            return '/'
+        return parent.get_abspath()
+
+    parent_path = property(get_parent_path, None, None, '')

@@ -199,13 +199,14 @@ class WebSite(RoleAware, Folder):
         namespace['contacts'] = []
         for username in users.get_usernames():
             user = users.get_handler(username)
-            title = user.get_title_or_name()
             email = user.get_property('ikaaro:email')
             if not email:
                 continue
             namespace['contacts'].append(
-                {'name': username, 'email': email,
-                 'title': title, 'is_selected': username in contacts})
+                {'name': username,
+                 'email': email,
+                 'title': user.get_title(),
+                 'is_selected': username in contacts})
 
         # Sort
         namespace['contacts'].sort(key=lambda x: x['email'])
@@ -466,7 +467,7 @@ class WebSite(RoleAware, Folder):
                 abspath = handler.get_abspath()
                 info = {}
                 info['abspath'] = abspath
-                info['title'] = handler.title_or_name
+                info['title'] = handler.get_title()
                 info['type'] = self.gettext(handler.class_title)
                 info['size'] = handler.get_human_size()
                 info['url'] = '%s/;%s' % (self.get_pathto(handler),
@@ -516,8 +517,7 @@ class WebSite(RoleAware, Folder):
         namespace['contacts'] = []
         for name in self.get_property('ikaaro:contacts'):
             user = users.get_handler(name)
-            email = user.get_property('ikaaro:email').replace('@', '&nbsp;@ ')
-            title = user.get_title() or email
+            title = user.get_title()
             namespace['contacts'].append({'name': name, 'title': title})
 
         # From

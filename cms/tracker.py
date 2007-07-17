@@ -28,7 +28,6 @@ from itools.csv import IntegerKey, CSV as BaseCSV
 from itools.xml import Parser
 from itools.stl import stl
 from itools.uri import encode_query
-from itools import vfs
 from csv import CSV
 from file import File
 from folder import Folder
@@ -314,7 +313,7 @@ class Tracker(Folder):
                 if not handler.has_text(text):
                     continue
             if mtime is not None:
-                if (now - vfs.get_mtime(handler.uri)).days >= mtime:
+                if (now - handler.get_mtime()).days >= mtime:
                     continue
             if module is not None:
                 if module != handler.get_value('module'):

@@ -272,7 +272,7 @@ class CalendarAware(object):
         new_url = ';edit_event_form?%s' % args
 
         ns_calendar = {}
-        ns_calendar['name'] = calendar.get_title_or_name()
+        ns_calendar['name'] = calendar.get_title()
 
         ###############################################################
         # Get a dict for each event with shown_fields, tt_start, tt_end, 
@@ -793,7 +793,7 @@ class CalendarAware(object):
                 ns_calendars = []
                 for calendar in self.search_handlers(handler_class=Calendar):
                     ns_calendars.append({'name': calendar.name,
-                                         'value': calendar.get_title_or_name(),
+                                         'value': calendar.get_title(),
                                          'selected': False})
                 namespace['resources'] = ns_calendars
 

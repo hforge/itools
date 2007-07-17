@@ -45,7 +45,7 @@ class FrontOffice1(Skin):
         current_path = here.get_abspath()
         folders = [{
             'url': '%s/;view' % here.get_pathto(handler), 
-            'name': handler.get_title_or_name(),
+            'name': handler.get_title(),
             'in_path': current_path.startswith(handler.get_abspath())}
                 for handler in root.search_handlers(format='ExampleFolder')]
         namespace['folders'] = folders    

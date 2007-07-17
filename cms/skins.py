@@ -142,7 +142,7 @@ class Skin(Folder):
                 src = handler.get_path_to_icon(size=16, from_handler=here)
                 options.append({'href': '%s/;%s' % (handler.name, firstview),
                                 'src': src,
-                                'title': handler.get_title_or_name(),
+                                'title': handler.get_title(),
                                 'class': '',
                                 'items': []})
                 size += 1
@@ -200,7 +200,7 @@ class Skin(Folder):
             else:
                 url = '%s/;%s' % (here.get_pathto(handler), view)
             # The title
-            title = handler.get_title_or_name()
+            title = handler.get_title()
             short_title = reduce_string(title, 15, 30) 
             # Name
             breadcrumb.append({'name': title, 'short_name': short_title,
@@ -297,7 +297,7 @@ class Skin(Folder):
                     'language': '',
                     'mtime': '',
                     'icon': ''}
-        return {'title': here.get_title_or_name(),
+        return {'title': here.get_title(),
                 'format': here.class_title,
                 'language': here.get_property('dc:language'),
                 'mtime': here.get_mtime().strftime('%Y-%m-%d %H:%M'),
@@ -395,10 +395,10 @@ class Skin(Folder):
         # In the Root
         root = context.root
         if root is here:
-            return root.get_title_or_name()
+            return root.get_title()
         # Somewhere else
-        mapping = {'root_title': root.get_title_or_name(),
-                   'here_title': here.get_title_or_name()}
+        mapping = {'root_title': root.get_title(),
+                   'here_title': here.get_title()}
         return here.gettext("%(root_title)s: %(here_title)s") % mapping
 
 

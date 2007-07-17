@@ -400,7 +400,7 @@ def _tree(node, root, depth, active_node, filter, user, width):
     # Build the namespace
     namespace = {}
     namespace['src'] = node.get_path_to_icon(size=16, from_handler=active_node)
-    namespace['title'] = node.get_title_or_name()
+    namespace['title'] = node.get_title()
 
     # The href
     firstview = node.get_firstview()

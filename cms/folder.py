@@ -348,7 +348,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
         line = {}
         id = str(self.get_pathto(object))
         line['id'] = id
-        line['title_or_name'] = object.title_or_name
+        title = object.get_title()
+        line['title_or_name'] = title
         firstview = object.get_firstview()
         if firstview is None:
             href = None
@@ -357,11 +358,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
         line['name'] = (id, href)
         line['format'] = self.gettext(object.class_title)
         line['title'] = object.get_property('dc:title')
-        # Filesystem information
-        uri = object.uri
-        line['mtime'] = vfs.get_mtime(uri)
         # Titles
-        line['short_title'] = reduce_string(object.title_or_name, 12, 40)
+        line['short_title'] = reduce_string(title, 12, 40)
         # The size
         line['size'] = object.get_human_size()
         # The url
@@ -373,7 +371,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         line['img'] = path_to_icon
         # The modification time
         accept = get_context().get_accept_language()
-        line['mtime'] = format_datetime(object.mtime, accept=accept)
+        line['mtime'] = format_datetime(object.get_mtime(), accept=accept)
         # The workflow state
         line['workflow_state'] = ''
         if isinstance(object, WorkflowAware):
@@ -561,7 +559,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         else:
             image = self.get_handler(selected_image)
             selected = {}
-            selected['title_or_name'] = image.title_or_name
+            selected['title_or_name'] = image.get_title()
             selected['description'] = image.get_property('dc:description')
             selected['url'] = '%s/;%s' % (image.name, image.get_firstview())
             selected['preview'] = '%s/;icon48?height=320&width=320' \
@@ -574,7 +572,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 width, height = size
             selected['width'] = width
             selected['height'] = height
-            selected['format'] = image.get_format()
+            selected['format'] = image.get_property('format')
             if selected_index == 0:
                 selected['previous'] = None
             else:

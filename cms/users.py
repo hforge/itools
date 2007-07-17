@@ -227,7 +227,7 @@ class User(AccessControl, Folder):
         user = context.user
 
         namespace = {}
-        namespace['title'] = self.get_title_or_name()
+        namespace['title'] = self.get_title()
         # Owner
         is_owner = user is not None and user.name == self.name
         namespace['is_owner'] = is_owner
@@ -402,7 +402,7 @@ class User(AccessControl, Folder):
                 continue
             documents.append({'url': '%s/;%s' % (self.get_pathto(document),
                                                  document.get_firstview()),
-                             'title': document.title_or_name})
+                             'title': document.get_title()})
         namespace['documents'] = documents
 
         handler = self.get_handler('/ui/user/tasks.xml')

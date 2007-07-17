@@ -147,8 +147,8 @@ class Thread(Folder):
     def view(self, context):
         namespace = {}
 
-        namespace['title'] = self.get_title_or_name()
-        namespace['description'] = self.get_description()
+        namespace['title'] = self.get_title()
+        namespace['description'] = self.get_property('dc:description')
         namespace['messages'] = self.get_message_namespace(context)
 
         add_forum_style(context)
@@ -207,8 +207,8 @@ class Forum(Folder):
             last_metadata = users.get_handler('%s.metadata' % last_author_id)
             namespace.append({
                 'name': thread.name,
-                'title': thread.get_title_or_name(),
-                'description': thread.get_description(),
+                'title': thread.get_title(),
+                'description': thread.get_property('dc:description'),
                 'author': (first_metadata.get_property('dc:title') or
                     first_metadata.get_property('ikaaro:email')),
                 'replies': len(thread.get_replies()),
@@ -227,8 +227,8 @@ class Forum(Folder):
     def view(self, context):
         namespace = {}
 
-        namespace['title'] = self.get_title_or_name()
-        namespace['description'] = self.get_description()
+        namespace['title'] = self.get_title()
+        namespace['description'] = self.get_property('dc:description')
         namespace['threads'] = self.get_thread_namespace()
 
         add_forum_style(context)

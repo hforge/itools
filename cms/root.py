@@ -139,12 +139,13 @@ class Root(WebSite):
         KeywordField('parent_path'),
         KeywordField('paths'),
         KeywordField('name', is_stored=True),
-        KeywordField('title_or_name', is_stored=True),
         KeywordField('mtime', is_indexed=False, is_stored=True),
         IntegerField('size', is_indexed=False, is_stored=True),
         # Versioning Aware
         BoolField('is_version_aware'),
         KeywordField('last_author', is_indexed=False, is_stored=True),
+        # XXX OBSOLETE TO REMOVE
+        KeywordField('title_or_name', is_stored=True),
         ]
 
 

@@ -134,7 +134,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     def download_form(self, context):
         namespace = {}
         namespace['url'] = '../' + self.name
-        namespace['title_or_name'] = self.get_title_or_name()
+        namespace['title_or_name'] = self.get_title()
         handler = self.get_handler('/ui/file/download_form.xml')
         return stl(handler, namespace)
 

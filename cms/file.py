@@ -67,7 +67,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         # Interpret input data (the mimetype sent by the browser can be
         # minimalistic)
         name, mimetype, body = file
-        guessed = mimetypes.guess_type(name)[0]
+        guessed, encoding = mimetypes.guess_type(name)
         if guessed is not None:
             mimetype = guessed
 

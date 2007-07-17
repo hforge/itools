@@ -314,7 +314,7 @@ class RoleAware(AccessControl):
         namespace = {}
 
         # Get values from the request
-        sortby = context.get_form_values('sortby', default=['email'])
+        sortby = context.get_form_values('sortby', default=['login_name'])
         sortorder = context.get_form_value('sortorder', 'up')
         start = context.get_form_value('batchstart', default=0, type=Integer)
         size = 20
@@ -324,7 +324,7 @@ class RoleAware(AccessControl):
         term = context.get_form_value('search_term', type=Unicode)
         term = term.strip()
 
-        search_fields = [('email', u'E-Mail'),
+        search_fields = [('username', u'Login'),
                          ('lastname', u'Last Name'),
                          ('firstname', u'First Name')]
 
@@ -363,7 +363,7 @@ class RoleAware(AccessControl):
             href = '/users/%s' % user_id
             ns['user_id'] = user_id, href
             # Title
-            ns['email'] = user.email
+            ns['login_name'] = user.username
             ns['firstname'] = user.firstname
             ns['lastname'] = user.lastname
             # Role
@@ -384,7 +384,7 @@ class RoleAware(AccessControl):
 
         # The columns
         columns = [('user_id', u'User ID'),
-                   ('email', u'E-Mail'),
+                   ('login_name', u'Login'),
                    ('firstname', u'First Name'),
                    ('lastname', u'Last Name'),
                    ('role', u'Role')]

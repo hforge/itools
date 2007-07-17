@@ -134,7 +134,7 @@ class Root(WebSite):
         KeywordField('email', is_stored=True),
         TextField('lastname', is_stored=True),
         TextField('firstname', is_stored=True),
-        KeywordField('username'), # Login Name
+        KeywordField('username', is_stored=True), # Login Name
         # Folder's view
         KeywordField('parent_path'),
         KeywordField('paths'),

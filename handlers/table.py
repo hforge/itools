@@ -323,10 +323,6 @@ class Table(File):
         n = 0
         version = None
         for name, value, parameters in parse_table(file.read()):
-            # FIXME Why parameter values are lists?
-            for pname, pvalue in parameters.items():
-                parameters[pname] = pvalue[0]
-
             if name == 'id':
                 version = {}
                 # Identifier and Sequence (id)
@@ -385,8 +381,9 @@ class Table(File):
                 pnames = property.parameters.keys()
                 pnames.sort()
                 for pname in pnames:
-                    pvalue = property.parameters[pname]
-                    lines.append(';%s=%s' % (pname, pvalue))
+                    pvalues = property.parameters[pname]
+                    pvalues = ','.join(pvalues)
+                    lines.append(';%s=%s' % (pname, pvalues))
                 value = datatype.encode(property.value)
                 lines.append(':%s\n' % value)
         lines.append('\n')

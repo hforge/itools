@@ -85,8 +85,7 @@ class Document(XHTMLDocument):
         self.events = events
 
 
-    def to_str(self, encoding='UTF-8'):
-        return stream_to_str_as_html(self.events, encoding)
+    to_str = XHTMLDocument.to_html
 
 
     #######################################################################

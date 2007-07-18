@@ -499,8 +499,15 @@ class Document(XMLDocument):
         return data % {'title': title}
 
 
-    def to_str(self, encoding='UTF-8'):
+    def to_xhtml(self, encoding='utf-8'):
         return stream_to_str_as_xhtml(self.events, encoding)
+
+
+    def to_html(self, encoding='utf-8'):
+        return stream_to_str_as_html(self.events, encoding)
+
+
+    to_str = to_xhtml
 
 
     ########################################################################

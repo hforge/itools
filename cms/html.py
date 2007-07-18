@@ -64,12 +64,6 @@ class XHTMLFile(Text, XHTMLDocument):
     #######################################################################
     # API
     #######################################################################
-    def to_html(self):
-        doc = tidy.parseString(self.to_str(), indent=1, char_encoding='utf8',
-                               output_html=1)
-        return unicode(str(doc), 'utf-8')
-
-
     def is_empty(self):
         """Test if XML doc is empty"""
         body = self.get_body()

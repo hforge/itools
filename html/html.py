@@ -15,14 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import Unicode
-from itools.schemas import get_datatype_by_uri
-from itools.handlers import File, register_handler_class
+from itools.handlers import register_handler_class
 from itools.xml import translate
-from itools.xhtml import (Document as XHTMLDocument, xhtml_uri,
-    stream_to_str_as_html, elements_schema)
-from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
-    COMMENT, TEXT)
+from itools.xhtml import Document as XHTMLDocument, stream_to_str_as_html
+from parser import Parser
 
 
 
@@ -65,25 +61,9 @@ class Document(XHTMLDocument):
 
     def _load_state_from_file(self, file):
         self.encoding = 'UTF-8'
-
         data = file.read()
-        events = []
-        for event in Parser(data):
-            type, value, line = event
-            if type == START_ELEMENT:
-                name, attributes = value
-                schema = elements_schema.get(name, {'is_inline': False})
-                aux = {}
-                for attr_name in attributes:
-                    aux[(xhtml_uri, attr_name)] = attributes[attr_name]
-                events.append((type, (xhtml_uri, name, aux), None))
-            elif type == END_ELEMENT:
-                events.append((type, (xhtml_uri, value), None))
-            else:
-                events.append(event)
-
-        self.events = events
-
+        stream = Parser(data)
+        self.events = list(stream)
 
     to_str = XHTMLDocument.to_html
 

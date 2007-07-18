@@ -22,6 +22,7 @@ import warnings
 # Import from itools
 from itools.xml import (XMLError, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
     COMMENT, TEXT)
+from itools.xhtml import xhtml_uri
 
 
 
@@ -109,13 +110,13 @@ class _Parser(HTMLParser, object):
 
 
     def handle_starttag(self, name, attrs):
-        line_number = self.getpos()[0]
+        line = self.getpos()[0]
 
         # Close missing optional end tags
         if self.stack and self.stack[-1] in close_before_block:
             if name in block_elements:
-                element_name = self.stack.pop()
-                self.events.append((END_ELEMENT, element_name, line_number))
+                tag_name = self.stack.pop()
+                self.events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
 
         # Check the encoding
         if name == 'meta':
@@ -138,20 +139,20 @@ class _Parser(HTMLParser, object):
                 else:
                     raise ValueError, \
                           'missing attribute value for "%s"' % attribute_name
-            attributes[attribute_name] = attribute_value
+            attributes[(xhtml_uri, attribute_name)] = attribute_value
 
         # Start element
-        self.events.append((START_ELEMENT, (name, attributes), line_number))
+        self.events.append((START_ELEMENT, (xhtml_uri, name, attributes), line))
 
         # End element
         if name in empty_elements:
-            self.events.append((END_ELEMENT, name, line_number))
+            self.events.append((END_ELEMENT, (xhtml_uri, name), line))
         else:
             self.stack.append(name)
 
 
     def handle_endtag(self, name):
-        line_number = self.getpos()[0]
+        line = self.getpos()[0]
 
         # Discard lonely end tags
         index = len(self.stack) - 1
@@ -161,19 +162,19 @@ class _Parser(HTMLParser, object):
         if index < 0:
             # XXX Better to log it
 ##            warnings.warn('discarding unexpected "</%s>" at line %s'
-##                          % (name, line_number))
+##                          % (name, line))
             return
 
-        element_name = self.stack.pop()
+        tag_name = self.stack.pop()
         # Close missing optional end tags
-        while name != element_name:
-            if element_name in optional_end_tag_elements:
-                element_name = self.stack.pop()
-                self.events.append((END_ELEMENT, element_name, line_number))
+        while name != tag_name:
+            if tag_name in optional_end_tag_elements:
+                tag_name = self.stack.pop()
+                self.events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
             else:
-                raise ValueError, 'missing end tag </%s>' % element_name
+                raise ValueError, 'missing end tag </%s>' % tag_name
 
-        self.events.append((END_ELEMENT, name, line_number))
+        self.events.append((END_ELEMENT, (xhtml_uri, name), line))
 
 
     def handle_comment(self, data):

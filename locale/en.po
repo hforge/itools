@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2007-07-16 15:07+CET\n"
+"POT-Creation-Date: 2007-07-18 18:07+CET\n"
 "PO-Revision-Date: 2001-07-08 17:07+CET\n"
 "Last-Translator: jdavid\n"
 "Language-Team: ??\n"
@@ -9,35 +9,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: cms/tracker.py:672
+#: cms/tracker.py:671
 msgid "  Assigned To: %s"
 msgstr ""
 
-#: cms/tracker.py:645
+#: cms/tracker.py:644
 msgid "  Module: %s"
 msgstr ""
 
-#: cms/tracker.py:674
+#: cms/tracker.py:673
 msgid "  New Attachement: %s"
 msgstr ""
 
-#: cms/tracker.py:659
+#: cms/tracker.py:658
 msgid "  Priority: %s"
 msgstr ""
 
-#: cms/tracker.py:666
+#: cms/tracker.py:665
 msgid "  State: %s"
 msgstr ""
 
-#: cms/tracker.py:631
+#: cms/tracker.py:630
 msgid "  Title: %s"
 msgstr ""
 
-#: cms/tracker.py:652
+#: cms/tracker.py:651
 msgid "  Type: %s"
 msgstr ""
 
-#: cms/tracker.py:638
+#: cms/tracker.py:637
 msgid "  Version: %s"
 msgstr ""
 
@@ -87,7 +87,7 @@ msgstr ""
 msgid "\"This License\" refers to version 3 of the GNU General Public License."
 msgstr ""
 
-#: cms/root.py:383
+#: cms/root.py:384
 msgid "$n handlers have been indexed in $time seconds."
 msgstr ""
 
@@ -552,7 +552,7 @@ msgstr ""
 msgid "(optional)"
 msgstr ""
 
-#: cms/tracker.py:677
+#: cms/tracker.py:676
 msgid "-------"
 msgstr ""
 
@@ -568,7 +568,7 @@ msgstr ""
 msgid "1."
 msgstr ""
 
-#: cms/tracker.py:71
+#: cms/tracker.py:70
 msgid "1.0"
 msgstr ""
 
@@ -1005,7 +1005,7 @@ msgid ""
 "conveying the object code work."
 msgstr ""
 
-#: cms/forum.py:70
+#: cms/forum.py:71
 msgid "A thread to discuss"
 msgstr ""
 
@@ -1013,11 +1013,11 @@ msgstr ""
 msgid "A transition must be selected."
 msgstr ""
 
-#: rest/rest.py:278
+#: rest/rest.py:280
 msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
 msgstr ""
 
-#: cms/tracker.py:597
+#: cms/tracker.py:596
 msgid "ANONYMOUS"
 msgstr ""
 
@@ -1037,7 +1037,7 @@ msgstr ""
 msgid "Access Control"
 msgstr ""
 
-#: cms/root.py:181
+#: cms/root.py:182
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
@@ -1166,13 +1166,13 @@ msgid ""
 "An email has been sent to you with the procedure to change your password."
 msgstr ""
 
-#: cms/website.py:285
+#: cms/website.py:286
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
 msgstr ""
 
-#: cms/forum.py:183
+#: cms/forum.py:185
 msgid "An iKaaro forum"
 msgstr ""
 
@@ -1224,15 +1224,15 @@ msgstr ""
 msgid "April"
 msgstr ""
 
-#: cms/wiki.py:465
+#: cms/wiki.py:466
 msgid "As Icons"
 msgstr ""
 
-#: cms/wiki.py:467
+#: cms/wiki.py:468
 msgid "As Image Gallery"
 msgstr ""
 
-#: cms/wiki.py:466
+#: cms/wiki.py:467
 msgid "As List"
 msgstr ""
 
@@ -1248,7 +1248,7 @@ msgstr ""
 msgid "Assign To"
 msgstr ""
 
-#: cms/tracker.py:303
+#: cms/tracker.py:302
 msgid "Assigned To"
 msgstr ""
 
@@ -1316,7 +1316,7 @@ msgstr ""
 msgid "Browse-Directories"
 msgstr ""
 
-#: cms/tracker.py:80
+#: cms/tracker.py:79
 msgid "Bug"
 msgstr ""
 
@@ -1400,7 +1400,7 @@ msgstr ""
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:400
+#: cms/root.py:401
 msgid "Check Groups"
 msgstr ""
 
@@ -1432,7 +1432,7 @@ msgstr ""
 msgid "Choose your password"
 msgstr ""
 
-#: cms/tracker.py:84
+#: cms/tracker.py:83
 msgid "Closed"
 msgstr ""
 
@@ -1448,7 +1448,7 @@ msgstr ""
 msgid "Comma Separated Values"
 msgstr ""
 
-#: cms/tracker.py:78
+#: cms/tracker.py:77
 msgid "Command Line Interface"
 msgstr ""
 
@@ -1492,7 +1492,7 @@ msgstr ""
 msgid "Contacts"
 msgstr ""
 
-#: cms/wiki.py:57
+#: cms/wiki.py:58
 msgid "Container for a wiki"
 msgstr ""
 
@@ -1522,7 +1522,7 @@ msgid ""
 "conditions stated below."
 msgstr ""
 
-#: cms/folder.py:507
+#: cms/folder.py:505
 msgid "Copy"
 msgstr ""
 
@@ -1546,7 +1546,7 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:45
+#: cms/html.py:39
 msgid "Create and publish a Web Document."
 msgstr ""
 
@@ -1558,11 +1558,11 @@ msgstr ""
 msgid "Current state:"
 msgstr ""
 
-#: cms/folder.py:508
+#: cms/folder.py:506
 msgid "Cut"
 msgstr ""
 
-#: cms/tracker.py:81
+#: cms/tracker.py:80
 msgid "Data Corruption Issue"
 msgstr ""
 
@@ -1598,7 +1598,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: cms/folder.py:497
+#: cms/folder.py:495
 msgid "Delete this objet, are you sure?"
 msgstr ""
 
@@ -1630,16 +1630,12 @@ msgstr ""
 msgid "Document Word"
 msgstr ""
 
-#: cms/tracker.py:77
+#: cms/tracker.py:76
 msgid "Documentation"
 msgstr ""
 
 #: cms/ui/file/download_form.xml.en:0
 msgid "Download"
-msgstr ""
-
-#: cms/access.py:387
-msgid "E-Mail"
 msgstr ""
 
 #: cms/ui/user/edit_account.xml.en:0
@@ -1648,12 +1644,6 @@ msgstr ""
 
 #: cms/ui/root/license.xml.en:0
 msgid "END OF TERMS AND CONDITIONS"
-msgstr ""
-
-#: cms/html.py:150
-msgid ""
-"ERROR: the document could not be changed, the input data was not proper HTML "
-"code."
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
@@ -1803,7 +1793,7 @@ msgstr ""
 msgid "Fix"
 msgstr ""
 
-#: cms/tracker.py:84
+#: cms/tracker.py:83
 msgid "Fixed"
 msgstr ""
 
@@ -1926,7 +1916,7 @@ msgstr ""
 msgid "Formatted"
 msgstr ""
 
-#: cms/forum.py:182
+#: cms/forum.py:184
 msgid "Forum"
 msgstr ""
 
@@ -1938,7 +1928,7 @@ msgstr ""
 msgid "From"
 msgstr ""
 
-#: cms/wiki.py:77
+#: cms/wiki.py:78
 msgid "Front Page"
 msgstr ""
 
@@ -1950,7 +1940,7 @@ msgstr ""
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr ""
 
-#: cms/root.py:429
+#: cms/root.py:430
 msgid "Groups fixed."
 msgstr ""
 
@@ -1990,7 +1980,7 @@ msgstr ""
 msgid "Heading 6"
 msgstr ""
 
-#: cms/wiki.py:502
+#: cms/wiki.py:503
 msgid "Help"
 msgstr ""
 
@@ -2006,11 +1996,11 @@ msgstr ""
 msgid "Hervé Cauwelier (French)"
 msgstr ""
 
-#: cms/tracker.py:83
+#: cms/tracker.py:82
 msgid "High"
 msgstr ""
 
-#: cms/tracker.py:98
+#: cms/tracker.py:97
 msgid "High Priority"
 msgstr ""
 
@@ -2326,11 +2316,11 @@ msgstr ""
 msgid "Intranet"
 msgstr ""
 
-#: cms/forum.py:255
+#: cms/forum.py:257
 msgid "Invalid title."
 msgstr ""
 
-#: cms/tracker.py:516
+#: cms/tracker.py:515
 msgid "Issue"
 msgstr ""
 
@@ -2338,7 +2328,7 @@ msgstr ""
 msgid "Issue #${number}"
 msgstr ""
 
-#: cms/tracker.py:52
+#: cms/tracker.py:51
 msgid "Issue Tracker"
 msgstr ""
 
@@ -2396,15 +2386,15 @@ msgstr ""
 msgid "Languages removed."
 msgstr ""
 
-#: cms/folder.py:921
+#: cms/folder.py:919
 msgid "Last Author"
 msgstr ""
 
-#: cms/folder.py:871
+#: cms/folder.py:869
 msgid "Last Changes"
 msgstr ""
 
-#: cms/folder.py:920
+#: cms/folder.py:918
 msgid "Last Modified"
 msgstr ""
 
@@ -2425,7 +2415,7 @@ msgid ""
 "Later license versions may give you additional or different permissions."
 msgstr ""
 
-#: cms/root.py:338
+#: cms/root.py:339
 msgid "License"
 msgstr ""
 
@@ -2453,7 +2443,7 @@ msgstr ""
 msgid "Login"
 msgstr ""
 
-#: cms/tracker.py:83
+#: cms/tracker.py:82
 msgid "Low"
 msgstr ""
 
@@ -2465,7 +2455,7 @@ msgstr ""
 msgid "Main Menu"
 msgstr ""
 
-#: cms/root.py:399
+#: cms/root.py:400
 msgid "Maintenance"
 msgstr ""
 
@@ -2489,7 +2479,7 @@ msgstr ""
 msgid "May"
 msgstr ""
 
-#: cms/tracker.py:83
+#: cms/tracker.py:82
 msgid "Medium"
 msgstr ""
 
@@ -2519,7 +2509,7 @@ msgstr ""
 msgid "Message Catalog"
 msgstr ""
 
-#: cms/forum.py:43
+#: cms/forum.py:44
 msgid "Message in a thread"
 msgstr ""
 
@@ -2600,7 +2590,7 @@ msgstr ""
 msgid "New Comment"
 msgstr ""
 
-#: cms/tracker.py:80
+#: cms/tracker.py:79
 msgid "New Feature"
 msgstr ""
 
@@ -2616,7 +2606,7 @@ msgstr ""
 msgid "New Password"
 msgstr ""
 
-#: cms/wiki.py:484
+#: cms/wiki.py:485
 msgid "New Resource"
 msgstr ""
 
@@ -2632,7 +2622,7 @@ msgstr ""
 msgid "New Wiki Page"
 msgstr ""
 
-#: cms/tracker.py:420
+#: cms/tracker.py:419
 msgid "New issue addded."
 msgstr ""
 
@@ -2680,11 +2670,11 @@ msgstr ""
 msgid "No history."
 msgstr ""
 
-#: cms/folder.py:712
+#: cms/folder.py:710
 msgid "No objects selected."
 msgstr ""
 
-#: cms/forum.py:251
+#: cms/forum.py:253
 msgid "No title given."
 msgstr ""
 
@@ -2692,7 +2682,7 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: cms/tracker.py:97
+#: cms/tracker.py:96
 msgid "Not Assigned"
 msgstr ""
 
@@ -2719,7 +2709,7 @@ msgstr ""
 msgid "Nothing to change."
 msgstr ""
 
-#: cms/folder.py:726
+#: cms/folder.py:724
 msgid "Nothing to paste."
 msgstr ""
 
@@ -2790,23 +2780,23 @@ msgstr ""
 msgid "OPTIONNAL"
 msgstr ""
 
-#: cms/folder.py:699
+#: cms/folder.py:697
 msgid "Objects copied."
 msgstr ""
 
-#: cms/folder.py:719
+#: cms/folder.py:717
 msgid "Objects cut."
 msgstr ""
 
-#: cms/folder.py:780
+#: cms/folder.py:778
 msgid "Objects pasted."
 msgstr ""
 
-#: cms/folder.py:621
+#: cms/folder.py:619
 msgid "Objects removed: $objects."
 msgstr ""
 
-#: cms/folder.py:678
+#: cms/folder.py:676
 msgid "Objects renamed."
 msgstr ""
 
@@ -2826,11 +2816,11 @@ msgstr ""
 msgid "Only administrators will be able to register new users."
 msgstr ""
 
-#: cms/tracker.py:84
+#: cms/tracker.py:83
 msgid "Open"
 msgstr ""
 
-#: cms/tracker.py:96
+#: cms/tracker.py:95
 msgid "Open Issues"
 msgstr ""
 
@@ -2899,7 +2889,7 @@ msgstr ""
 msgid "PDF Document"
 msgstr ""
 
-#: cms/wiki.py:399
+#: cms/wiki.py:400
 msgid "PDF generation failed."
 msgstr ""
 
@@ -2931,7 +2921,7 @@ msgstr ""
 msgid "Passwords mismatch, please try again."
 msgstr ""
 
-#: cms/folder.py:513
+#: cms/folder.py:511
 msgid "Paste"
 msgstr ""
 
@@ -2947,7 +2937,7 @@ msgstr ""
 msgid "Pending tasks."
 msgstr ""
 
-#: cms/tracker.py:82
+#: cms/tracker.py:81
 msgid "Performance Improvement"
 msgstr ""
 
@@ -3023,7 +3013,7 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: cms/tracker.py:78
+#: cms/tracker.py:77
 msgid "Programming Interface"
 msgstr ""
 
@@ -3089,7 +3079,7 @@ msgstr ""
 msgid "Reject the document."
 msgstr ""
 
-#: cms/tracker.py:470
+#: cms/tracker.py:469
 msgid "Released"
 msgstr ""
 
@@ -3125,7 +3115,7 @@ msgstr ""
 msgid "Reply"
 msgstr ""
 
-#: cms/forum.py:175
+#: cms/forum.py:177
 msgid "Reply Posted."
 msgstr ""
 
@@ -3203,7 +3193,7 @@ msgstr ""
 msgid "Search:"
 msgstr ""
 
-#: cms/tracker.py:80
+#: cms/tracker.py:79
 msgid "Security Issue"
 msgstr ""
 
@@ -3215,11 +3205,11 @@ msgstr ""
 msgid "See the GNU General Public License for more details."
 msgstr ""
 
-#: cms/folder.py:500
+#: cms/folder.py:498
 msgid "Select All"
 msgstr ""
 
-#: cms/folder.py:502
+#: cms/folder.py:500
 msgid "Select None"
 msgstr ""
 
@@ -3243,7 +3233,7 @@ msgstr ""
 msgid "Show Issues modified sometime the last"
 msgstr ""
 
-#: cms/folder.py:490
+#: cms/folder.py:488
 msgid "Size"
 msgstr ""
 
@@ -3279,7 +3269,7 @@ msgstr ""
 msgid "Source Code."
 msgstr ""
 
-#: cms/tracker.py:81
+#: cms/tracker.py:80
 msgid "Stability Issue"
 msgstr ""
 
@@ -3319,7 +3309,7 @@ msgstr ""
 msgid "Status (mandatory)"
 msgstr ""
 
-#: cms/tracker.py:482
+#: cms/tracker.py:481
 msgid "Stored Search"
 msgstr ""
 
@@ -3373,7 +3363,7 @@ msgstr ""
 msgid "Sylvain Taverne (French)"
 msgstr ""
 
-#: cms/wiki.py:446
+#: cms/wiki.py:447
 msgid "Syntax error, please check the view for details."
 msgstr ""
 
@@ -3408,7 +3398,7 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: cms/tracker.py:82
+#: cms/tracker.py:81
 msgid "Technology Upgrade"
 msgstr ""
 
@@ -3570,7 +3560,7 @@ msgid ""
 "the output, given its content, constitutes a covered work."
 msgstr ""
 
-#: cms/website.py:339
+#: cms/website.py:340
 msgid "The password is wrong."
 msgstr ""
 
@@ -3616,15 +3606,15 @@ msgid ""
 "the combination as such."
 msgstr ""
 
-#: cms/website.py:325
+#: cms/website.py:326
 msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: cms/website.py:334
+#: cms/website.py:335
 msgid "The user \"$username\" is not active."
 msgstr ""
 
-#: cms/tracker.py:619
+#: cms/tracker.py:618
 msgid "The user %s did some changes."
 msgstr ""
 
@@ -3657,7 +3647,7 @@ msgstr ""
 msgid "There is 1 object."
 msgstr ""
 
-#: cms/website.py:267
+#: cms/website.py:268
 msgid "There is already an active user with that email."
 msgstr ""
 
@@ -3669,7 +3659,7 @@ msgstr ""
 msgid "There is another user with the email \"%s\", please try again"
 msgstr ""
 
-#: cms/website.py:384
+#: cms/website.py:385
 msgid "There is not a user identified as \"$username\""
 msgstr ""
 
@@ -3765,7 +3755,7 @@ msgid ""
 "notices\"."
 msgstr ""
 
-#: cms/forum.py:258
+#: cms/forum.py:260
 msgid "This thread already exists."
 msgstr ""
 
@@ -3777,11 +3767,11 @@ msgid ""
 "their relationship with you."
 msgstr ""
 
-#: cms/forum.py:69
+#: cms/forum.py:70
 msgid "Thread"
 msgstr ""
 
-#: cms/forum.py:271
+#: cms/forum.py:273
 msgid "Thread Created."
 msgstr ""
 
@@ -3844,7 +3834,7 @@ msgid ""
 "modifying a private copy."
 msgstr ""
 
-#: cms/wiki.py:274
+#: cms/wiki.py:275
 msgid "To PDF"
 msgstr ""
 
@@ -3879,7 +3869,7 @@ msgstr ""
 msgid "To learn more, check out these resources:"
 msgstr ""
 
-#: cms/tracker.py:53
+#: cms/tracker.py:52
 msgid "To manage bugs and tasks"
 msgstr ""
 
@@ -3909,7 +3899,7 @@ msgstr ""
 msgid "To reindex the whole site click the button below:"
 msgstr ""
 
-#: cms/root.py:275
+#: cms/root.py:276
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -3941,7 +3931,7 @@ msgstr ""
 msgid "Type (mandatory)"
 msgstr ""
 
-#: cms/website.py:316
+#: cms/website.py:317
 msgid "Type your email please."
 msgstr ""
 
@@ -3949,7 +3939,7 @@ msgstr ""
 msgid "Type your text here..."
 msgstr ""
 
-#: cms/base.py:309
+#: cms/base.py:315
 msgid "Unavailable"
 msgstr ""
 
@@ -3961,7 +3951,7 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
-#: cms/tracker.py:77
+#: cms/tracker.py:76
 msgid "Unit Tests"
 msgstr ""
 
@@ -3973,7 +3963,7 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: cms/root.py:352
+#: cms/root.py:353
 msgid "Update Catalog"
 msgstr ""
 
@@ -4011,7 +4001,7 @@ msgstr ""
 msgid "User added."
 msgstr ""
 
-#: cms/root.py:162
+#: cms/root.py:163
 msgid "Users"
 msgstr ""
 
@@ -4059,7 +4049,7 @@ msgstr ""
 msgid "Visit the project's <a href=\"http://www.ikaaro.org/\">Web Site</a>;"
 msgstr ""
 
-#: cms/tracker.py:79
+#: cms/tracker.py:78
 msgid "Visual Interface"
 msgstr ""
 
@@ -4073,7 +4063,7 @@ msgid ""
 "most of our software;"
 msgstr ""
 
-#: cms/html.py:44
+#: cms/html.py:38
 msgid "Web Document"
 msgstr ""
 
@@ -4117,15 +4107,15 @@ msgid ""
 "parties' legal rights to forbid circumvention of technological measures."
 msgstr ""
 
-#: cms/wiki.py:56
+#: cms/wiki.py:57
 msgid "Wiki Folder"
 msgstr ""
 
-#: cms/wiki.py:110
+#: cms/wiki.py:111
 msgid "Wiki Page"
 msgstr ""
 
-#: cms/wiki.py:111
+#: cms/wiki.py:112
 msgid "Wiki contents"
 msgstr ""
 
@@ -4632,7 +4622,7 @@ msgstr ""
 msgid "responsibilities to respect the freedom of others."
 msgstr ""
 
-#: cms/tracker.py:922
+#: cms/tracker.py:921
 msgid "search"
 msgstr ""
 
@@ -4743,6 +4733,6 @@ msgstr ""
 msgid "» Type the url to add:"
 msgstr ""
 
-#: rest/rest.py:277
+#: rest/rest.py:279
 msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"
 msgstr ""

@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2007-07-16 15:07+CET\n"
+"POT-Creation-Date: 2007-07-18 18:07+CET\n"
 "PO-Revision-Date: 2004-11-25 22:33+0100\n"
 "Last-Translator: Luis Belmar Letelier <luis@itaapy.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -11,37 +11,37 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cms/tracker.py:672
+#: cms/tracker.py:671
 msgid "  Assigned To: %s"
 msgstr ""
 
-#: cms/tracker.py:645
+#: cms/tracker.py:644
 msgid "  Module: %s"
 msgstr ""
 
-#: cms/tracker.py:674
+#: cms/tracker.py:673
 msgid "  New Attachement: %s"
 msgstr ""
 
-#: cms/tracker.py:659
+#: cms/tracker.py:658
 msgid "  Priority: %s"
 msgstr ""
 
-#: cms/tracker.py:666
+#: cms/tracker.py:665
 #, fuzzy
 msgid "  State: %s"
 msgstr "状态"
 
-#: cms/tracker.py:631
+#: cms/tracker.py:630
 #, fuzzy
 msgid "  Title: %s"
 msgstr "名称"
 
-#: cms/tracker.py:652
+#: cms/tracker.py:651
 msgid "  Type: %s"
 msgstr ""
 
-#: cms/tracker.py:638
+#: cms/tracker.py:637
 msgid "  Version: %s"
 msgstr ""
 
@@ -91,7 +91,7 @@ msgstr ""
 msgid "\"This License\" refers to version 3 of the GNU General Public License."
 msgstr ""
 
-#: cms/root.py:383
+#: cms/root.py:384
 #, fuzzy
 msgid "$n handlers have been indexed in $time seconds."
 msgstr "没有文件被写入."
@@ -588,7 +588,7 @@ msgstr ""
 msgid "(optional)"
 msgstr ""
 
-#: cms/tracker.py:677
+#: cms/tracker.py:676
 msgid "-------"
 msgstr ""
 
@@ -604,7 +604,7 @@ msgstr ""
 msgid "1."
 msgstr ""
 
-#: cms/tracker.py:71
+#: cms/tracker.py:70
 msgid "1.0"
 msgstr ""
 
@@ -1043,7 +1043,7 @@ msgid ""
 "conveying the object code work."
 msgstr ""
 
-#: cms/forum.py:70
+#: cms/forum.py:71
 msgid "A thread to discuss"
 msgstr ""
 
@@ -1051,11 +1051,11 @@ msgstr ""
 msgid "A transition must be selected."
 msgstr ""
 
-#: rest/rest.py:278
+#: rest/rest.py:280
 msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
 msgstr ""
 
-#: cms/tracker.py:597
+#: cms/tracker.py:596
 msgid "ANONYMOUS"
 msgstr ""
 
@@ -1075,7 +1075,7 @@ msgstr ""
 msgid "Access Control"
 msgstr ""
 
-#: cms/root.py:181
+#: cms/root.py:182
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
@@ -1213,13 +1213,13 @@ msgid ""
 "An email has been sent to you with the procedure to change your password."
 msgstr ""
 
-#: cms/website.py:285
+#: cms/website.py:286
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
 msgstr ""
 
-#: cms/forum.py:183
+#: cms/forum.py:185
 msgid "An iKaaro forum"
 msgstr ""
 
@@ -1272,15 +1272,15 @@ msgstr ""
 msgid "April"
 msgstr ""
 
-#: cms/wiki.py:465
+#: cms/wiki.py:466
 msgid "As Icons"
 msgstr "图标"
 
-#: cms/wiki.py:467
+#: cms/wiki.py:468
 msgid "As Image Gallery"
 msgstr ""
 
-#: cms/wiki.py:466
+#: cms/wiki.py:467
 msgid "As List"
 msgstr "目录"
 
@@ -1296,7 +1296,7 @@ msgstr ""
 msgid "Assign To"
 msgstr ""
 
-#: cms/tracker.py:303
+#: cms/tracker.py:302
 msgid "Assigned To"
 msgstr ""
 
@@ -1369,7 +1369,7 @@ msgstr "浏览"
 msgid "Browse-Directories"
 msgstr "浏览"
 
-#: cms/tracker.py:80
+#: cms/tracker.py:79
 msgid "Bug"
 msgstr ""
 
@@ -1460,7 +1460,7 @@ msgstr "优先"
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:400
+#: cms/root.py:401
 msgid "Check Groups"
 msgstr ""
 
@@ -1494,7 +1494,7 @@ msgstr ""
 msgid "Choose your password"
 msgstr "改变内设"
 
-#: cms/tracker.py:84
+#: cms/tracker.py:83
 #, fuzzy
 msgid "Closed"
 msgstr "编码"
@@ -1511,7 +1511,7 @@ msgstr ""
 msgid "Comma Separated Values"
 msgstr ""
 
-#: cms/tracker.py:78
+#: cms/tracker.py:77
 #, fuzzy
 msgid "Command Line Interface"
 msgstr "选择你的界面"
@@ -1558,7 +1558,7 @@ msgstr ""
 msgid "Contacts"
 msgstr ""
 
-#: cms/wiki.py:57
+#: cms/wiki.py:58
 msgid "Container for a wiki"
 msgstr ""
 
@@ -1588,7 +1588,7 @@ msgid ""
 "conditions stated below."
 msgstr ""
 
-#: cms/folder.py:507
+#: cms/folder.py:505
 msgid "Copy"
 msgstr "复制"
 
@@ -1612,7 +1612,7 @@ msgstr ""
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:45
+#: cms/html.py:39
 #, fuzzy
 msgid "Create and publish a Web Document."
 msgstr "列出文档"
@@ -1625,11 +1625,11 @@ msgstr ""
 msgid "Current state:"
 msgstr ""
 
-#: cms/folder.py:508
+#: cms/folder.py:506
 msgid "Cut"
 msgstr "剪切"
 
-#: cms/tracker.py:81
+#: cms/tracker.py:80
 msgid "Data Corruption Issue"
 msgstr ""
 
@@ -1668,7 +1668,7 @@ msgstr ""
 msgid "Delete"
 msgstr "设置"
 
-#: cms/folder.py:497
+#: cms/folder.py:495
 msgid "Delete this objet, are you sure?"
 msgstr ""
 
@@ -1704,7 +1704,7 @@ msgstr "编辑文档"
 msgid "Document Word"
 msgstr "编辑文档"
 
-#: cms/tracker.py:77
+#: cms/tracker.py:76
 #, fuzzy
 msgid "Documentation"
 msgstr "新文件"
@@ -1713,22 +1713,12 @@ msgstr "新文件"
 msgid "Download"
 msgstr ""
 
-#: cms/access.py:387
-msgid "E-Mail"
-msgstr ""
-
 #: cms/ui/user/edit_account.xml.en:0
 msgid "E-mail"
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
 msgid "END OF TERMS AND CONDITIONS"
-msgstr ""
-
-#: cms/html.py:150
-msgid ""
-"ERROR: the document could not be changed, the input data was not proper HTML "
-"code."
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
@@ -1887,7 +1877,7 @@ msgstr "你的全名"
 msgid "Fix"
 msgstr ""
 
-#: cms/tracker.py:84
+#: cms/tracker.py:83
 msgid "Fixed"
 msgstr ""
 
@@ -2018,7 +2008,7 @@ msgstr "格式"
 msgid "Formatted"
 msgstr "格式"
 
-#: cms/forum.py:182
+#: cms/forum.py:184
 #, fuzzy
 msgid "Forum"
 msgstr "格式"
@@ -2031,7 +2021,7 @@ msgstr ""
 msgid "From"
 msgstr "格式"
 
-#: cms/wiki.py:77
+#: cms/wiki.py:78
 msgid "Front Page"
 msgstr ""
 
@@ -2043,7 +2033,7 @@ msgstr ""
 msgid "GNU GENERAL PUBLIC LICENSE"
 msgstr "GNU通用公共许可证(GPL)\t"
 
-#: cms/root.py:429
+#: cms/root.py:430
 #, fuzzy
 msgid "Groups fixed."
 msgstr "组件加入"
@@ -2084,7 +2074,7 @@ msgstr ""
 msgid "Heading 6"
 msgstr ""
 
-#: cms/wiki.py:502
+#: cms/wiki.py:503
 msgid "Help"
 msgstr "帮助"
 
@@ -2100,11 +2090,11 @@ msgstr ""
 msgid "Hervé Cauwelier (French)"
 msgstr ""
 
-#: cms/tracker.py:83
+#: cms/tracker.py:82
 msgid "High"
 msgstr ""
 
-#: cms/tracker.py:98
+#: cms/tracker.py:97
 msgid "High Priority"
 msgstr ""
 
@@ -2421,11 +2411,11 @@ msgstr ""
 msgid "Intranet"
 msgstr ""
 
-#: cms/forum.py:255
+#: cms/forum.py:257
 msgid "Invalid title."
 msgstr ""
 
-#: cms/tracker.py:516
+#: cms/tracker.py:515
 msgid "Issue"
 msgstr ""
 
@@ -2433,7 +2423,7 @@ msgstr ""
 msgid "Issue #${number}"
 msgstr ""
 
-#: cms/tracker.py:52
+#: cms/tracker.py:51
 msgid "Issue Tracker"
 msgstr ""
 
@@ -2493,16 +2483,16 @@ msgstr "语言"
 msgid "Languages removed."
 msgstr "语言被改变."
 
-#: cms/folder.py:921
+#: cms/folder.py:919
 msgid "Last Author"
 msgstr ""
 
-#: cms/folder.py:871
+#: cms/folder.py:869
 #, fuzzy
 msgid "Last Changes"
 msgstr "改换"
 
-#: cms/folder.py:920
+#: cms/folder.py:918
 msgid "Last Modified"
 msgstr ""
 
@@ -2525,7 +2515,7 @@ msgid ""
 "Later license versions may give you additional or different permissions."
 msgstr ""
 
-#: cms/root.py:338
+#: cms/root.py:339
 msgid "License"
 msgstr "许可证"
 
@@ -2554,7 +2544,7 @@ msgstr "登录"
 msgid "Login"
 msgstr "登录"
 
-#: cms/tracker.py:83
+#: cms/tracker.py:82
 msgid "Low"
 msgstr ""
 
@@ -2566,7 +2556,7 @@ msgstr ""
 msgid "Main Menu"
 msgstr ""
 
-#: cms/root.py:399
+#: cms/root.py:400
 msgid "Maintenance"
 msgstr ""
 
@@ -2591,7 +2581,7 @@ msgstr "搜索"
 msgid "May"
 msgstr ""
 
-#: cms/tracker.py:83
+#: cms/tracker.py:82
 msgid "Medium"
 msgstr ""
 
@@ -2623,7 +2613,7 @@ msgstr "信息"
 msgid "Message Catalog"
 msgstr "信息"
 
-#: cms/forum.py:43
+#: cms/forum.py:44
 #, fuzzy
 msgid "Message in a thread"
 msgstr "信息被修正."
@@ -2711,7 +2701,7 @@ msgstr ""
 msgid "New Comment"
 msgstr "新文件"
 
-#: cms/tracker.py:80
+#: cms/tracker.py:79
 #, fuzzy
 msgid "New Feature"
 msgstr "新文件夹"
@@ -2731,7 +2721,7 @@ msgstr "新文件夹"
 msgid "New Password"
 msgstr "密码"
 
-#: cms/wiki.py:484
+#: cms/wiki.py:485
 msgid "New Resource"
 msgstr "新文件夹"
 
@@ -2748,7 +2738,7 @@ msgstr ""
 msgid "New Wiki Page"
 msgstr "新工作界面"
 
-#: cms/tracker.py:420
+#: cms/tracker.py:419
 #, fuzzy
 msgid "New issue addded."
 msgstr "新资料被加入."
@@ -2799,11 +2789,11 @@ msgstr "没有文件被写入."
 msgid "No history."
 msgstr "记录"
 
-#: cms/folder.py:712
+#: cms/folder.py:710
 msgid "No objects selected."
 msgstr "没有物件被选中"
 
-#: cms/forum.py:251
+#: cms/forum.py:253
 msgid "No title given."
 msgstr ""
 
@@ -2812,7 +2802,7 @@ msgstr ""
 msgid "Normal"
 msgstr "格式"
 
-#: cms/tracker.py:97
+#: cms/tracker.py:96
 msgid "Not Assigned"
 msgstr ""
 
@@ -2841,7 +2831,7 @@ msgstr ""
 msgid "Nothing to change."
 msgstr "用户资料被变更."
 
-#: cms/folder.py:726
+#: cms/folder.py:724
 #, fuzzy
 msgid "Nothing to paste."
 msgstr "用户资料被变更."
@@ -2918,24 +2908,24 @@ msgstr "写入"
 msgid "OPTIONNAL"
 msgstr ""
 
-#: cms/folder.py:699
+#: cms/folder.py:697
 msgid "Objects copied."
 msgstr "物件被复制"
 
-#: cms/folder.py:719
+#: cms/folder.py:717
 msgid "Objects cut."
 msgstr "物件被剪切"
 
-#: cms/folder.py:780
+#: cms/folder.py:778
 msgid "Objects pasted."
 msgstr "物件被粘贴"
 
-#: cms/folder.py:621
+#: cms/folder.py:619
 #, fuzzy
 msgid "Objects removed: $objects."
 msgstr "Objects removed: %s."
 
-#: cms/folder.py:678
+#: cms/folder.py:676
 msgid "Objects renamed."
 msgstr "物件被更名"
 
@@ -2955,11 +2945,11 @@ msgstr ""
 msgid "Only administrators will be able to register new users."
 msgstr ""
 
-#: cms/tracker.py:84
+#: cms/tracker.py:83
 msgid "Open"
 msgstr ""
 
-#: cms/tracker.py:96
+#: cms/tracker.py:95
 msgid "Open Issues"
 msgstr ""
 
@@ -3032,7 +3022,7 @@ msgstr ""
 msgid "PDF Document"
 msgstr "新文件"
 
-#: cms/wiki.py:399
+#: cms/wiki.py:400
 msgid "PDF generation failed."
 msgstr ""
 
@@ -3067,7 +3057,7 @@ msgstr "密码错误,请再输入."
 msgid "Passwords mismatch, please try again."
 msgstr "密码错误,请再输入."
 
-#: cms/folder.py:513
+#: cms/folder.py:511
 msgid "Paste"
 msgstr "粘贴"
 
@@ -3084,7 +3074,7 @@ msgstr ""
 msgid "Pending tasks."
 msgstr ""
 
-#: cms/tracker.py:82
+#: cms/tracker.py:81
 msgid "Performance Improvement"
 msgstr ""
 
@@ -3169,7 +3159,7 @@ msgstr "隐私"
 msgid "Profile"
 msgstr ""
 
-#: cms/tracker.py:78
+#: cms/tracker.py:77
 msgid "Programming Interface"
 msgstr ""
 
@@ -3241,7 +3231,7 @@ msgstr ""
 msgid "Reject the document."
 msgstr "删除文档"
 
-#: cms/tracker.py:470
+#: cms/tracker.py:469
 #, fuzzy
 msgid "Released"
 msgstr "查阅"
@@ -3283,7 +3273,7 @@ msgstr "查阅"
 msgid "Reply"
 msgstr ""
 
-#: cms/forum.py:175
+#: cms/forum.py:177
 msgid "Reply Posted."
 msgstr ""
 
@@ -3369,7 +3359,7 @@ msgstr "搜索替代文件夹"
 msgid "Search:"
 msgstr "搜索"
 
-#: cms/tracker.py:80
+#: cms/tracker.py:79
 #, fuzzy
 msgid "Security Issue"
 msgstr "安全"
@@ -3383,11 +3373,11 @@ msgstr "安全"
 msgid "See the GNU General Public License for more details."
 msgstr ""
 
-#: cms/folder.py:500
+#: cms/folder.py:498
 msgid "Select All"
 msgstr ""
 
-#: cms/folder.py:502
+#: cms/folder.py:500
 msgid "Select None"
 msgstr ""
 
@@ -3412,7 +3402,7 @@ msgstr "设置"
 msgid "Show Issues modified sometime the last"
 msgstr ""
 
-#: cms/folder.py:490
+#: cms/folder.py:488
 msgid "Size"
 msgstr "尺寸"
 
@@ -3449,7 +3439,7 @@ msgstr ""
 msgid "Source Code."
 msgstr ""
 
-#: cms/tracker.py:81
+#: cms/tracker.py:80
 msgid "Stability Issue"
 msgstr ""
 
@@ -3492,7 +3482,7 @@ msgstr "状态"
 msgid "Status (mandatory)"
 msgstr ""
 
-#: cms/tracker.py:482
+#: cms/tracker.py:481
 #, fuzzy
 msgid "Stored Search"
 msgstr "搜索"
@@ -3548,7 +3538,7 @@ msgstr ""
 msgid "Sylvain Taverne (French)"
 msgstr ""
 
-#: cms/wiki.py:446
+#: cms/wiki.py:447
 msgid "Syntax error, please check the view for details."
 msgstr ""
 
@@ -3583,7 +3573,7 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: cms/tracker.py:82
+#: cms/tracker.py:81
 msgid "Technology Upgrade"
 msgstr ""
 
@@ -3751,7 +3741,7 @@ msgid ""
 "the output, given its content, constitutes a covered work."
 msgstr ""
 
-#: cms/website.py:339
+#: cms/website.py:340
 #, fuzzy
 msgid "The password is wrong."
 msgstr "密码错误,请再输入."
@@ -3799,15 +3789,15 @@ msgid ""
 "the combination as such."
 msgstr ""
 
-#: cms/website.py:325
+#: cms/website.py:326
 msgid "The user \"$username\" does not exist."
 msgstr ""
 
-#: cms/website.py:334
+#: cms/website.py:335
 msgid "The user \"$username\" is not active."
 msgstr ""
 
-#: cms/tracker.py:619
+#: cms/tracker.py:618
 #, fuzzy
 msgid "The user %s did some changes."
 msgstr "名称"
@@ -3845,7 +3835,7 @@ msgstr "用户名错误,请再输入."
 msgid "There is 1 object."
 msgstr ""
 
-#: cms/website.py:267
+#: cms/website.py:268
 #, fuzzy
 msgid "There is already an active user with that email."
 msgstr "此文件名已被另外资源占有."
@@ -3860,7 +3850,7 @@ msgstr "此名称已被另外物件名有."
 msgid "There is another user with the email \"%s\", please try again"
 msgstr "此用户名已登记\"%s\", 请输入另一用户名."
 
-#: cms/website.py:384
+#: cms/website.py:385
 #, fuzzy
 msgid "There is not a user identified as \"$username\""
 msgstr "此用户名已登记\"%s\", 请输入另一用户名."
@@ -3957,7 +3947,7 @@ msgid ""
 "notices\"."
 msgstr ""
 
-#: cms/forum.py:258
+#: cms/forum.py:260
 msgid "This thread already exists."
 msgstr ""
 
@@ -3969,12 +3959,12 @@ msgid ""
 "their relationship with you."
 msgstr ""
 
-#: cms/forum.py:69
+#: cms/forum.py:70
 #, fuzzy
 msgid "Thread"
 msgstr "读入"
 
-#: cms/forum.py:271
+#: cms/forum.py:273
 msgid "Thread Created."
 msgstr ""
 
@@ -4040,7 +4030,7 @@ msgid ""
 "modifying a private copy."
 msgstr ""
 
-#: cms/wiki.py:274
+#: cms/wiki.py:275
 msgid "To PDF"
 msgstr ""
 
@@ -4075,7 +4065,7 @@ msgstr ""
 msgid "To learn more, check out these resources:"
 msgstr ""
 
-#: cms/tracker.py:53
+#: cms/tracker.py:52
 msgid "To manage bugs and tasks"
 msgstr ""
 
@@ -4105,7 +4095,7 @@ msgstr ""
 msgid "To reindex the whole site click the button below:"
 msgstr "你可以通过击打如下键浏览全网站"
 
-#: cms/root.py:275
+#: cms/root.py:276
 msgid ""
 "To: %(to_addr)s\n"
 "From: %(from_addr)s\n"
@@ -4139,7 +4129,7 @@ msgstr "种类"
 msgid "Type (mandatory)"
 msgstr ""
 
-#: cms/website.py:316
+#: cms/website.py:317
 msgid "Type your email please."
 msgstr ""
 
@@ -4147,7 +4137,7 @@ msgstr ""
 msgid "Type your text here..."
 msgstr ""
 
-#: cms/base.py:309
+#: cms/base.py:315
 msgid "Unavailable"
 msgstr ""
 
@@ -4160,7 +4150,7 @@ msgstr "直接从内部写入."
 msgid "Undo"
 msgstr ""
 
-#: cms/tracker.py:77
+#: cms/tracker.py:76
 #, fuzzy
 msgid "Unit Tests"
 msgstr "简易文件"
@@ -4175,7 +4165,7 @@ msgstr "目录"
 msgid "Update"
 msgstr "更新目录"
 
-#: cms/root.py:352
+#: cms/root.py:353
 #, fuzzy
 msgid "Update Catalog"
 msgstr "更新目录"
@@ -4216,7 +4206,7 @@ msgstr "用户"
 msgid "User added."
 msgstr "加入用户"
 
-#: cms/root.py:162
+#: cms/root.py:163
 msgid "Users"
 msgstr "用户"
 
@@ -4268,7 +4258,7 @@ msgstr ""
 msgid "Visit the project's <a href=\"http://www.ikaaro.org/\">Web Site</a>;"
 msgstr ""
 
-#: cms/tracker.py:79
+#: cms/tracker.py:78
 #, fuzzy
 msgid "Visual Interface"
 msgstr "选择你的界面"
@@ -4283,7 +4273,7 @@ msgid ""
 "most of our software;"
 msgstr ""
 
-#: cms/html.py:44
+#: cms/html.py:38
 #, fuzzy
 msgid "Web Document"
 msgstr "新文件"
@@ -4328,16 +4318,16 @@ msgid ""
 "parties' legal rights to forbid circumvention of technological measures."
 msgstr ""
 
-#: cms/wiki.py:56
+#: cms/wiki.py:57
 #, fuzzy
 msgid "Wiki Folder"
 msgstr "文件夹"
 
-#: cms/wiki.py:110
+#: cms/wiki.py:111
 msgid "Wiki Page"
 msgstr ""
 
-#: cms/wiki.py:111
+#: cms/wiki.py:112
 msgid "Wiki contents"
 msgstr ""
 
@@ -4853,7 +4843,7 @@ msgstr ""
 msgid "responsibilities to respect the freedom of others."
 msgstr ""
 
-#: cms/tracker.py:922
+#: cms/tracker.py:921
 #, fuzzy
 msgid "search"
 msgstr "搜索"
@@ -4966,7 +4956,7 @@ msgstr "禄 Browse and link an object from the workspace:"
 msgid "» Type the url to add:"
 msgstr "禄 Type the url to add:"
 
-#: rest/rest.py:277
+#: rest/rest.py:279
 msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"
 msgstr ""
 

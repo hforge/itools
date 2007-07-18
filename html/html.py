@@ -45,7 +45,7 @@ class Document(XHTMLDocument):
 
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'document_type', 'events', 'encoding']
+                 'events', 'encoding']
 
 
     @classmethod
@@ -63,48 +63,35 @@ class Document(XHTMLDocument):
         return skeleton % {'title': title}
 
 
-    def to_str(self, encoding='UTF-8'):
-        data = [self.header_to_str(encoding),
-                stream_to_str_as_html(self.events, encoding)]
-
-        return ''.join(data)
-
-
-    #######################################################################
-    # Load/Save
-    #######################################################################
     def _load_state_from_file(self, file):
         self.encoding = 'UTF-8'
-        self.document_type = None
 
         data = file.read()
         events = []
-        for event, value, line_number in Parser(data):
-            if event == DOCUMENT_TYPE:
-                self.document_type = value
-            elif event == TEXT:
-                events.append((event, value, None))
-            elif event == START_ELEMENT:
+        for event in Parser(data):
+            type, value, line = event
+            if type == START_ELEMENT:
                 name, attributes = value
                 schema = elements_schema.get(name, {'is_inline': False})
                 aux = {}
                 for attr_name in attributes:
                     aux[(xhtml_uri, attr_name)] = attributes[attr_name]
-                events.append((event, (xhtml_uri, name, aux), None))
-            elif event == END_ELEMENT:
-                events.append((event, (xhtml_uri, value), None))
+                events.append((type, (xhtml_uri, name, aux), None))
+            elif type == END_ELEMENT:
+                events.append((type, (xhtml_uri, value), None))
             else:
-                events.append((event, value, None))
+                events.append(event)
 
         self.events = events
 
 
-    def header_to_str(self, encoding='UTF-8'):
-        if self.document_type is None:
-            return ''
-        return '<!%s>' % self.document_type
+    def to_str(self, encoding='UTF-8'):
+        return stream_to_str_as_html(self.events, encoding)
 
 
+    #######################################################################
+    # API
+    #######################################################################
     def translate(self, catalog):
         stream = translate(self.events, catalog)
         return stream_to_str_as_html(stream)

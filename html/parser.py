@@ -20,7 +20,8 @@ from HTMLParser import HTMLParser
 import warnings
 
 # Import from itools
-from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
+from itools.xml import (XMLError, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
+    COMMENT, TEXT)
 
 
 
@@ -75,10 +76,36 @@ class _Parser(HTMLParser, object):
         return self.events
 
 
-    def handle_decl(self, declaration):
-        # XXX This is related with the XML doctype, it should have a similar
-        # structure.
-        self.events.append((DOCUMENT_TYPE, declaration, self.getpos()[0]))
+    def handle_decl(self, value):
+        # DOCTYPE
+        if not value.startswith('DOCTYPE'):
+            raise XMLError
+        value = value[7:]
+        # Name
+        name, value = value.split(None, 1)
+        # Ids
+        def read_id(value):
+            value = value.lstrip()
+            sep = value[0]
+            if sep != '"' and sep != "'":
+                raise XMLError
+            return value[1:].split(sep, 1)
+
+        if value.startswith('SYSTEM'):
+            value = value[6:]
+            system_id, value = read_id(value)
+            public_id = None
+        elif value.startswith('PUBLIC'):
+            value = value[6:]
+            system_id, value = read_id(value)
+            public_id, value = read_id(value)
+        else:
+            raise XMLError
+        # Internal subset (FIXME TODO)
+        has_internal_subset = None
+
+        value = (name, system_id, public_id, has_internal_subset)
+        self.events.append((DOCUMENT_TYPE, value, self.getpos()[0]))
 
 
     def handle_starttag(self, name, attrs):

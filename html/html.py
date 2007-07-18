@@ -36,12 +36,8 @@ class Document(XHTMLDocument):
     class_mimetypes = ['text/html']
     class_extension = 'html'
 
-    # HTML does not support XML namespace declarations
-    ns_declarations = {}
-
-
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'events', 'encoding']
+                 'events']
 
 
     @classmethod
@@ -60,17 +56,14 @@ class Document(XHTMLDocument):
 
 
     def _load_state_from_file(self, file):
-        self.encoding = 'UTF-8'
         data = file.read()
         stream = Parser(data)
         self.events = list(stream)
 
+
     to_str = XHTMLDocument.to_html
 
 
-    #######################################################################
-    # API
-    #######################################################################
     def translate(self, catalog):
         stream = translate(self.events, catalog)
         return stream_to_str_as_html(stream)

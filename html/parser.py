@@ -25,6 +25,8 @@ from itools.xml import (XMLError, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
 from itools.xhtml import xhtml_uri
 
 
+# TODO Test the parser with different encodings. The behavior must be
+# compatible with the XML parser.
 
 # List of empty elements, which don't have a close tag
 # XXX Sentenced to dead, to use namespace schema instead.

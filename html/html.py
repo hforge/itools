@@ -43,7 +43,7 @@ class Document(XHTMLDocument):
     # HTML does not support XML namespace declarations
     ns_declarations = {}
 
-    
+
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'document_type', 'events', 'encoding']
 

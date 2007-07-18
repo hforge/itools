@@ -187,11 +187,14 @@ class HTMLFile(HTMLDocument, XHTMLFile):
         # Parse the new data
         doc = HTMLDocument()
         doc.load_state_from_string(new_body)
-        children = doc.get_root_element().children
+        new_body = doc.get_body()
+        new_body = doc.events[new_body.start:new_body.end+1]
         # Save the changes
-        body = self.get_body()
+        old_body = self.get_body()
         self.set_changed()
-        body.children = children
+        self.events = (self.events[:old_body.start]
+                       + new_body
+                       + self.events[old_body.end+1:])
 
         return context.come_back(MSG_CHANGES_SAVED)
 

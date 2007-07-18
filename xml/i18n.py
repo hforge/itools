@@ -151,7 +151,7 @@ def get_translatable_blocks(events):
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             schema = get_element_schema(tag_uri, tag_name)
-            if schema.get('is_inline', False):
+            if schema.get('is_inline', False) or stack:
                 buffer.append((type, value + (id,), line))
                 stack.append(id)
                 id += 1
@@ -164,7 +164,7 @@ def get_translatable_blocks(events):
         if type == END_ELEMENT:
             tag_uri, tag_name = value
             schema = get_element_schema(tag_uri, tag_name)
-            if schema.get('is_inline', False):
+            if schema.get('is_inline', False) or stack:
                 x = stack.pop()
                 buffer.append((type, value + (x,), line))
                 continue

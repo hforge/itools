@@ -1,0 +1,68 @@
+
+**************************************************************************
+itools 0.16.3
+**************************************************************************
+
+itools.html
+===========
+
+The HTML parser has been modified to be compatible with the XML parser.
+This means changes to the values of the DOCUMENT_TYPE, START_ELEMENT and
+END_ELEMENT events.
+
+  DOCUMENT_TYPE
+     declaration             =>  (name, syste_id, public_id, internal_subset)
+
+  START_ELEMENT
+     (tag_name, attributes)  =>  (tag_uri, tag_name, attributes)
+
+  END_ELEMENT
+     tag_name                =>  (tag_uri, tag_name)
+
+Also, the key in the "attributes" value (START_ELEMENT) has changed:
+
+  {attr_name: attr_value}  =>  {(attr_uri, attr_name): attr_value}
+
+The namespace URIs ("tag_uri" and "attr_uri") are always the URI of the
+XHTML namespace uri: "http://www.w3.org/1999/xhtml".
+
+
+itools.rest
+===========
+
+The class "Document" has been removed, use instead the functions "to_str"
+and "to_html_events".
+
+The functions "to_xml", "to_html" and "to_lates" are deprecated, while
+still available, are deprecated. Use instead "to_str":
+
+  # Before            # Now
+  to_xml(text)    =>  to_str(text, 'xml')
+  to_html(text)   =>  to_str(text, 'html')
+  to_latex(text)  =>  to_str(text, 'latex')
+
+
+itools.cms
+==========
+
+Some methods and properties of all handlers have been deprecated:
+
+  # Before                   # Now
+  .mtime                =>  .get_mtime()
+  .title                =>  .get_title()
+  .title_or_name        =>  .get_title()
+  .get_title_or_name()  =>  .get_title()
+  .get_description()    =>  .get_property('dc:description')
+  .get_format()         =>  .get_property('format')
+  .get_owner()          =>  .get_property('owner')
+  .get_language()       =>  .get_property('dc:language')
+  .parent_path          =>  .parent.get_abspath()
+  .get_parent_path()    =>  .parent.get_abspath()
+
+The catalog field "title_or_name" is deprecated too, use instead "title".
+
+Also, existing instances of itools.cms must be re-indexed as there has
+been an small change in the fields definition.  Use "icms-update-catalog":
+
+  $ icms-update-catalog my-instance
+

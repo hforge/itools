@@ -14,9 +14,13 @@ meta-package for easier development and deployment:
   itools.html           itools.schemas          itools.xliff
   itools.http           itools.stl              itools.xml
 
-This Thursday the big news is the new file handler (called "Table") to
-manage structured data.  This feature is still in an experimental state,
-the API will probably change in the next releases.
+Version 0.16.3 of itools does not use anymore the package uTidylib [1]
+(it was required by itools.cms), now the itools API for (X)HTML is used
+instead.
+
+But the big news this Thursday is the new file handler (named "Table")
+to manage structured data.  This feature is still in an experimental
+state, the API will probably change in the next releases.
 
 Another important change, the Virtual File System (itools.vfs) now can
 open files in "append" mode.  This is supported by the local file system
@@ -29,8 +33,18 @@ implementation that improves memory usage when a transaction is aborted,
 or fails.
 
 The itools.xhtml package has two new functions, "sanitize_stream" and
-"sanitize_str".  They will clean an (X)HTML fragment of potentially
+"sanitize_str"; they will clean an (X)HTML fragment of potentially
 dangerous elements and attributes, like JavaScript code.
+
+The (X)HTML document handlers have two new methods: "to_xhtml" and
+"to_html".  They return a byte string that represents the state of the
+handler, as XHTML and HTML respectively.
+
+The HTML parser is now compatible with the XML parser, the events it
+returns have the same structure.  And the state of the HTML document
+handler is now identical to the state of the XHTML document handler.
+(This way the itools.xhtml and itools.html packages are getting closer,
+in preparation for a future merge.)
 
 There is a fix in the XML parser (itools.xml), it did not correctly
 parse attribute values when there was more than one entity reference.
@@ -45,11 +59,11 @@ recommended over "to_xml", "to_html" and "to_latex", which become
 deprecated.  Last, the "Document" class has been removed, as it was
 redundant (use the functions instead).
 
-And the usual bunch of fixes for itools.cms, most notably the new
+And the usual bunch of fixes for itools.cms; most notably the new
 procedure for when the user forgets her password: now instead of
 sending a new password by email we send a link to a form that allows
-the user to choose her new password.  Other fixes affect the Wiki, the
-Forum, the HTML editor and the "last changes" view.
+the user to choose her new password.  Also, a number of methods
+have been deprecated, check the UPDATE-0.16.3 file for the details.
 
 
 Credits:

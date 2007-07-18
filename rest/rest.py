@@ -37,8 +37,10 @@ def block_stream(text):
     Block elements (lists, literal blocks, paragraphs, titles...) are
     concerned. Inline elements are loaded as well where applicable.
     """
-    events = []
+    if isinstance(text, str):
+        text = unicode(text, 'utf-8')
 
+    events = []
     for event, value in RestDocument(text):
         if event == 'title':
             overline, title, underline = value
@@ -320,8 +322,6 @@ def to_html_events(text):
 
 
 def to_str(text, format, encoding='utf-8'):
-##    if format == 'rest':
-##        raise NotImplementedError
     if format == 'xml':
         events = block_stream(text)
         return stream_to_str_as_xml(events, encoding)
@@ -336,6 +336,7 @@ def to_str(text, format, encoding='utf-8'):
         return stream_to_str_as_latex(events, encoding)
     else:
         raise ValueError, "unexpected format '%s'" % format
+
 
 ###########################################################################
 # API Public (XXX for backwards compatibility)

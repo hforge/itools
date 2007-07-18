@@ -30,17 +30,15 @@ Python 2.5 or later is required.
 For the implementation of RML (itools.pdf) to work the package reportlab [1]
 must be installed.
 
-For itools.cms to work the package "tidy" [2] must be installed. While not
-strictly necessary it is also recommended to have PIL [3] and docutils [4]
-installed.
+For itools.cms, it is recommended to install PIL [2]. For the Wiki to work,
+docutils [3] is required.
 
 Apart from the Python packages listed above, itools.cms requires the commands
 xlhtml, ppthtml, pdftotext, wvText and unrtf to index some types of documents.
 
 [1] http://www.reportlab.org/
-[2] http://utidylib.berlios.de/
-[3] http://www.pythonware.com/products/pil/
-[4] http://docutils.sourceforge.net/
+[2] http://www.pythonware.com/products/pil/
+[3] http://docutils.sourceforge.net/
 
 
 

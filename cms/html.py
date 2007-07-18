@@ -14,17 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import other libraries
-try:
-    import tidy
-except ImportError:
-    print 'uTidylib is not installed, download from http://utidylib.berlios.de/'
-
 # Import from itools
 from itools.xml import Document as XMLDocument, TEXT, START_ELEMENT
 from itools.stl import stl
 from itools.xhtml import Document as XHTMLDocument
-from itools.html import Document as HTMLDocument
+from itools.html import Document as HTMLDocument, Parser as HTMLParser
 
 # Import from ikaaro
 from messages import *
@@ -129,32 +123,14 @@ class XHTMLFile(Text, XHTMLDocument):
 
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
-        # XXX This code is ugly. We must: (1) write our own XML parser, with
-        # support for fragments, and (2) use the commented code.
-##        body = self.get_body()
-##        body.set_content(data)
-
         new_body = context.get_form_value('data')
-        # Epoz returns HTML, coerce to XHTML (by tidy)
-        new_body = tidy.parseString(new_body, indent=1, char_encoding='utf8',
-                                    output_xhtml=1)
-        new_body = str(new_body)
-        if not new_body:
-            return context.come_back(
-                u'ERROR: the document could not be changed, the input'
-                u' data was not proper HTML code.')
-
-        # Parse the new data
-        doc = XHTMLDocument()
-        doc.load_state_from_string(new_body)
-        new_body = doc.get_body()
-        new_body = doc.events[new_body.start:new_body.end+1]
+        new_body = HTMLParser(new_body)
         # Save the changes
         old_body = self.get_body()
         self.set_changed()
-        self.events = (self.events[:old_body.start]
+        self.events = (self.events[:old_body.start+1]
                        + new_body
-                       + self.events[old_body.end+1:])
+                       + self.events[old_body.end:])
 
         return context.come_back(MSG_CHANGES_SAVED)
 
@@ -168,28 +144,6 @@ class HTMLFile(HTMLDocument, XHTMLFile):
     def GET(self, context):
         return Text.GET(self, context)
 
-
-    def to_html(self):
-        return self.to_str()
-
-
-    edit__access__ = 'is_allowed_to_edit'
-    def edit(self, context):
-        # XXX This is copy and paste from XHTMLFile.edit (except for the
-        # tidy part)
-        new_body = context.get_form_value('data')
-        # Parse the new data
-        doc = HTMLDocument()
-        doc.load_state_from_string(new_body)
-        new_body = doc.events
-        # Save the changes
-        old_body = self.get_body()
-        self.set_changed()
-        self.events = (self.events[:old_body.start+1]
-                       + new_body
-                       + self.events[old_body.end:])
-
-        return context.come_back(MSG_CHANGES_SAVED)
 
 
 # Register the objects

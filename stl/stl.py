@@ -457,11 +457,12 @@ def set_prefix(stream, prefix):
 
 
 
-def resolve_pointer(uri, offset):
+def resolve_pointer(value, offset):
     # XXX Exception for STL
-    if uri.startswith('${'):
-        return uri
-    uri = URI.decode(uri)
+    if value.startswith('${'):
+        return value
+
+    uri = URI.decode(value)
     if not uri.scheme and not uri.authority:
         if uri.path.is_relative():
             if uri.path or str(uri) == '.':
@@ -469,7 +470,7 @@ def resolve_pointer(uri, offset):
                 value = offset.resolve(uri.path)
                 return str(value)
 
-    return URI.encode(uri)
+    return value
 
 
 ########################################################################

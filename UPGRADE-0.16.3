@@ -11,7 +11,7 @@ This means changes to the values of the DOCUMENT_TYPE, START_ELEMENT and
 END_ELEMENT events.
 
   DOCUMENT_TYPE
-     declaration             =>  (name, syste_id, public_id, internal_subset)
+     declaration             =>  (name, system_id, public_id, internal_subset)
 
   START_ELEMENT
      (tag_name, attributes)  =>  (tag_uri, tag_name, attributes)
@@ -33,7 +33,7 @@ itools.rest
 The class "Document" has been removed, use instead the functions "to_str"
 and "to_html_events".
 
-The functions "to_xml", "to_html" and "to_lates" are deprecated, while
+The functions "to_xml", "to_html" and "to_latex" are deprecated, while
 still available, are deprecated. Use instead "to_str":
 
   # Before            # Now

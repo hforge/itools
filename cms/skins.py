@@ -84,7 +84,7 @@ class Skin(Folder):
 
     def get_main_menu(self, context):
         user = context.user
-        root = context.root
+        root = self._get_site_root(context)
         here = context.handler or root
 
         menu = []

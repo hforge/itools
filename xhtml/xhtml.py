@@ -192,8 +192,8 @@ def sanitize_stream(stream):
                     href = attributes[c_attribute]
                     if ':' in href:
                         scheme = href.split(':')[0]
-                    if scheme not in safe_schemes:
-                        attributes_to_remove.append(c_attribute)
+                        if scheme not in safe_schemes:
+                            attributes_to_remove.append(c_attribute)
                 # Check CSS
                 if attr_name in 'style':
                     value = attributes[c_attribute]

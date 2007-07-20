@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Import from the Standard Library
+from datetime import datetime
+from optparse import OptionParser
+from subprocess import PIPE, Popen
+import sys
+
+# Import from itools
+import itools
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    usage = '%prog FILES'
+    version = 'itools %s' % itools.__version__
+    description = (
+        "Modifies the copyright notice in the given FILES. Uses 'git blame'"
+        " to figure out the authors.")
+    parser = OptionParser(usage, version=version, description=description)
+
+    options, args = parser.parse_args()
+    if len(args) == 0:
+        parser.error('incorrect number of arguments')
+
+    # Go!
+    for filename in args:
+        popen = Popen(['git', 'blame', '-p', filename], stdout=PIPE)
+        out, err = popen.communicate()
+
+        header = True
+        authors = {}
+        for line in out.splitlines():
+            if line.startswith('author '):
+                name = line[7:]
+            elif line.startswith('author-mail '):
+                email = line[12:]
+            elif line.startswith('author-time '):
+                year = datetime.fromtimestamp(int(line[12:])).year
+            elif line.startswith('\t'):
+                # Don't consider the file header (copyright, license) as code
+                data = line.lstrip()
+                if not data.startswith('#'):
+                    header = False
+                if header is False:
+                    authors.setdefault(email, (name, set()))
+                    authors[email][1].add(year)
+
+        # Format the lines
+        lines = []
+        for email in authors:
+            name, years = authors[email]
+            years = list(years)
+            years.sort()
+            # Format the years ranges
+            # [(year, year), year]
+            aux = [years[0]]
+            for year in years[1:]:
+                if isinstance(aux[-1], int):
+                    if aux[-1] == (year - 1):
+                        aux[-1] = (aux[-1], year)
+                    else:
+                        aux.append(year)
+                else:
+                    if aux[-1][1] == (year - 1):
+                        aux[-1] = (aux[-1][0], year)
+                    else:
+                        aux.append(year)
+            # ['year-year', 'year']
+            years = []
+            for x in aux:
+                if isinstance(x, int):
+                    years.append(str(x))
+                else:
+                    years.append('%s-%s' % x)
+            years = ', '.join(years)
+            lines.append('%s %s %s' % (years, name, email))
+        # Copyright
+        copyright = []
+        lines.sort()
+        first, lines = lines[0], lines[1:]
+        copyright.append('# Copyright (C) %s\n' % first)
+        for line in lines:
+            copyright.append('#               %s\n' % line)
+        # Rebuild
+        state = 0
+        lines = []
+        for line in open(filename).readlines():
+            if state == 0:
+                if line.startswith('# Copyright (C) '):
+                    lines.extend(copyright)
+                    state = 1
+                else:
+                    lines.append(line)
+            elif state == 1:
+                if '200' not in line:
+                    lines.append(line)
+                    state = 2
+            elif state == 2:
+                lines.append(line)
+        # Write
+        open(filename, 'w').write(''.join(lines))
+

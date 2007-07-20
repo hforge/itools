@@ -16,9 +16,9 @@ The packages included are:
 The scripts included are:
 
   icatalog-inspect      icms-update             isetup-build
-  icms-init             icms-update-catalog     isetup-doc
-  icms-restore          igettext-build          isetup-update-locale
-  icms-start            igettext-extract
+  icms-init             icms-update-catalog     isetup-copyright
+  icms-restore          igettext-build          isetup-doc
+  icms-start            igettext-extract        isetup-update-locale
   icms-stop             igettext-merge
 
 

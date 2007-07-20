@@ -19,7 +19,6 @@ from __future__ import with_statement
 
 # Import from the Standard Library
 from email.Utils import formatdate
-import smtplib
 from time import time
 import traceback
 from types import GeneratorType
@@ -289,18 +288,8 @@ class Root(WebSite):
                                      'encoding': encoding}
         message = message.encode(encoding)
         # Send email
-        context = get_context()
-        smtp_host = context.server.smtp_host
-        if smtp_host is None:
-            msg = ('the configuration variable "smtp-host" is not defined,'
-                   ' check the "config.conf" file')
-            raise RuntimeError, msg
-
-        # TODO Instead of sending the email straight away we should keep it
-        # in an stack to send it later
-        smtp = smtplib.SMTP(smtp_host)
-        smtp.sendmail(from_addr, to_addr, message)
-        smtp.quit()
+        server = get_context().server
+        server.send_email(from_addr, to_addr, message)
 
 
     ########################################################################

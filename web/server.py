@@ -580,6 +580,7 @@ class Server(object):
 
 
     def log_error(self, context=None):
+        # TODO This method may be called from different threads, lock
         log = self.error_log
         if log is not None:
             # The separator

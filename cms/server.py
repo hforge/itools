@@ -16,7 +16,12 @@
 
 # Import from the Standard Library
 import os
+from Queue import Queue
+from smtplib import SMTP
+from socket import gaierror
 import sys
+from thread import start_new_thread
+from time import sleep, time
 
 # Import from itools
 from itools.uri import get_absolute_reference2
@@ -123,6 +128,45 @@ class Server(BaseServer):
 
 
     #######################################################################
+    # EMail Out Queue
+    #######################################################################
+    def send_email_yes(self, from_addr, to_addr, message):
+        self.email_queue.put((from_addr, to_addr, message, time()))
+
+
+    def send_email_no(self, from_addr, to_addr, message):
+        raise RuntimeError, 'Sending emails is not enabled.'
+
+
+    def email_thread(self):
+        queue = self.email_queue
+        smtp_host = self.smtp_host
+        while True:
+            # Next message
+            from_addr, to_addr, message, wait = queue.get()
+            # Wait
+            wait = wait - time()
+            if wait > 0:
+                sleep(wait)
+            # Open connection
+            try:
+                smtp = SMTP(smtp_host)
+            except gaierror:
+                queue.put((from_addr, to_addr, message, time() + 10))
+                continue
+            except:
+                self.log_error()
+                continue
+            # Send email
+            try:
+                smtp.sendmail(from_addr, to_addr, message)
+            except:
+                self.log_error()
+            finally:
+                smtp.quit()
+
+
+    #######################################################################
     # Override
     #######################################################################
     def get_databases(self):
@@ -148,4 +192,17 @@ class Server(BaseServer):
         for handler in list(transaction):
             if hasattr(handler, 'before_commit'):
                 handler.before_commit()
+
+
+    def start(self):
+        # Email
+        if self.smtp_host is None:
+            self.send_email = self.send_email_no
+            print "Warning: the configuration variable 'smtp-host' is missing."
+        else:
+            self.send_email = self.send_email_yes
+            self.email_queue = Queue(0)
+            start_new_thread(self.email_thread, ())
+        # Web
+        BaseServer.start(self)
 

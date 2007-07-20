@@ -18,6 +18,7 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
+from email.MIMEText import MIMEText
 from email.Utils import formatdate
 from time import time
 import traceback
@@ -268,25 +269,15 @@ class Root(WebSite):
         if not isinstance(body, unicode):
             raise TypeError, 'the body must be a Unicode string'
 
-        # Hard coded encoding, to UTF-8
-        encoding = 'UTF-8'
         # Build the message
-        message_pattern = (
-            u'To: %(to_addr)s\n'
-            u'From: %(from_addr)s\n'
-            u'Date: %(date)s\n'
-            u'Subject: %(subject)s\n'
-            u'Content-Transfer-Encoding: 8bit\n'
-            u'Content-Type: text/plain; charset="%(encoding)s"\n'
-            u'\n'
-            u'%(body)s\n')
-        message = message_pattern % {'to_addr': to_addr,
-                                     'from_addr': from_addr,
-                                     'date': formatdate(localtime=True),
-                                     'subject': subject,
-                                     'body': body,
-                                     'encoding': encoding}
-        message = message.encode(encoding)
+        encoding = 'utf-8'
+        body = body.encode(encoding)
+        message = MIMEText(body, _charset=encoding)
+        message['Subject'] = subject.encode(encoding)
+        message['Date'] = formatdate(localtime=True)
+        message['From'] = from_addr
+        message['To'] = to_addr
+        message = message.as_string()
         # Send email
         server = get_context().server
         server.send_email(from_addr, to_addr, message)

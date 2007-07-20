@@ -60,10 +60,14 @@ class TarArchive(File):
         return contents
 
 
+class Gzip(File):
+
+    class_mimetypes = ['application/x-gzip']
+
 
 # Register
-register_handler_class(ZipArchive)
-register_handler_class(TarArchive)
+for handler_class in [ZipArchive, TarArchive, Gzip]:
+    register_handler_class(handler_class)
 
 # Mimetypes BZip2 support
 mimetypes.suffix_map['.tbz2'] = '.tar.bz2'

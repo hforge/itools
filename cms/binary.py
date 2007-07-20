@@ -17,7 +17,8 @@
 
 # Import from itools
 from itools.handlers import (Image as BaseImage, ZipArchive as BaseZipArchive,
-                             TarArchive as BaseTarArchive)
+                             TarArchive as BaseTarArchive,
+                             Gzip as BaseGzip)
 from itools.xml import (MSWord as BaseMSWord,
                         MSExcel as BaseMSExcel,
                         MSPowerPoint as BaseMSPowerPoint,
@@ -273,6 +274,17 @@ class TarArchive(Archive, BaseTarArchive):
     class_title = u"Tar Archive"
 
 
+###########################################################################
+# Compression
+###########################################################################
+
+class Gzip(File, BaseGzip):
+
+    class_id = 'application/x-gzip'
+    class_title = u"Gzip"
+    class_icon16 = 'images/Archive16.png'
+    class_icon48 = 'images/Archive48.png'
+
 
 ###########################################################################
 # Register
@@ -296,3 +308,5 @@ register_object_class(ODP, 'application/vnd.oasis.opendocument.presentation')
 # Archives
 register_object_class(ZipArchive)
 register_object_class(TarArchive)
+# Compression
+register_object_class(Gzip)

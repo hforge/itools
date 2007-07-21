@@ -77,9 +77,9 @@ typedef struct {
 
 
 static void Parser_dealloc(Parser* self) {
-    Py_XDECREF(self->data);
-
     int idx;
+
+    Py_XDECREF(self->data);
     for (idx=0; idx<self->tag_stack_top; idx++) {
         Py_DECREF(self->tag_stack[idx]);
         Py_XDECREF(self->tag_ns_stack[idx]);
@@ -116,6 +116,7 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
 static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     PyObject* data;
     PyObject* namespaces;
+    int idx;
 
     /* Load the input data */
     namespaces = NULL;
@@ -132,7 +133,6 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     self->column = 1;
 
     /* The stacks are empty */
-    int idx;
     for (idx=0; idx<self->tag_stack_top; idx++) {
         Py_DECREF(self->tag_stack[idx]);
         Py_XDECREF(self->tag_ns_stack[idx]);
@@ -189,10 +189,11 @@ PyObject* merge_dicts(PyObject* a, PyObject* b) {
  *
  * We take ownership of "value". */
 int push_tag(Parser* self, PyObject* value, PyObject* namespaces) {
+    PyObject* new_namespaces;
+
     if (self->tag_stack_top >= TAG_STACK_SIZE)
         return -1;
 
-    PyObject* new_namespaces;
     if (PyDict_Size(namespaces)) {
         if (self->tag_ns_index_top >= NS_INDEX_SIZE)
             return -1;
@@ -222,6 +223,13 @@ int push_tag(Parser* self, PyObject* value, PyObject* namespaces) {
  * 
  * Steals the reference to "value". Returns a new reference. */
 PyObject* pop_tag(Parser* self, PyObject* value) {
+    PyObject* last_open_tag;
+    PyObject* namespaces;
+    PyObject* prefix;
+    PyObject* uri;
+    PyObject* name;
+    PyObject* result;
+
     /* Check the stack is not empty */
     if (self->tag_stack_top == 0) {
         Py_DECREF(value);
@@ -230,8 +238,8 @@ PyObject* pop_tag(Parser* self, PyObject* value) {
 
     /* Pop the top value from the stack */
     self->tag_stack_top--;
-    PyObject* last_open_tag = self->tag_stack[self->tag_stack_top];
-    PyObject* namespaces = self->tag_ns_stack[self->tag_stack_top];
+    last_open_tag = self->tag_stack[self->tag_stack_top];
+    namespaces = self->tag_ns_stack[self->tag_stack_top];
 
     /* Check the values match */
     if (PyObject_Compare(value, last_open_tag)) {
@@ -245,8 +253,7 @@ PyObject* pop_tag(Parser* self, PyObject* value) {
     Py_DECREF(last_open_tag);
 
     /* Find out the URI from the prefix */
-    PyObject* prefix = PyTuple_GetItem(value, 0);
-    PyObject* uri;
+    prefix = PyTuple_GetItem(value, 0);
     if (self->namespaces == NULL)
         uri = Py_None;
     else if (PyDict_Contains(self->namespaces, prefix)) {
@@ -260,8 +267,8 @@ PyObject* pop_tag(Parser* self, PyObject* value) {
         uri = Py_None;
 
     /* Build the return value */
-    PyObject* name = PyTuple_GetItem(value, 1);
-    PyObject* result = Py_BuildValue("(OO)", uri, name);
+    name = PyTuple_GetItem(value, 1);
+    result = Py_BuildValue("(OO)", uri, name);
 
     /* Update the namespaces data structure if needed */
     if (namespaces) {
@@ -345,16 +352,20 @@ PyObject* xml_name(Parser* self) {
  *
  * Returns a new reference. */
 PyObject* xml_prefix_name(Parser* self) {
+    char c;
+    char* base;
+    int size;
+    PyObject* name;
+
     /* First character must be a letter */
-    char c = *(self->cursor);
+    c = *(self->cursor);
     if (!isalpha(c))
         return NULL;
 
     /* Get the value */
-    char* base = self->cursor;
+    base = self->cursor;
     self->cursor++;
     self->column++;
-    int size;
     for (size=1; 1; size++, move_cursor(self)) {
         c = *(self->cursor);
         if (isalnum(c))
@@ -368,7 +379,7 @@ PyObject* xml_prefix_name(Parser* self) {
         /* With prefix */
         self->cursor++;
         self->column++;
-        PyObject* name = xml_name(self);
+        name = xml_name(self);
         if (name == NULL)
             return NULL;
         return Py_BuildValue("(s#N)", base, size, name);
@@ -403,8 +414,12 @@ int xml_equal(Parser* self) {
  *
  * Returns a new reference. */
 PyObject* xml_entity_reference(Parser* self) {
+    PyObject* value;
+    PyObject* cp;
+    PyObject* u_char;
+
     /* Read the name */
-    PyObject* value = xml_name(self);
+    value = xml_name(self);
     if (value == NULL)
         return NULL;
 
@@ -419,13 +434,13 @@ PyObject* xml_entity_reference(Parser* self) {
     /* To codepoint */
     /* XXX Specific to HTML */
     /* htmlentitydefs.name2unicodepoint[value] */
-    PyObject* cp = PyDict_GetItem(p_name2codepoint, value);
+    cp = PyDict_GetItem(p_name2codepoint, value);
     Py_DECREF(value);
     if (cp == NULL)
         return NULL;
 
     /* unichr(codepoint) */
-    PyObject* u_char = PyUnicode_FromOrdinal(PyInt_AS_LONG(cp));
+    u_char = PyUnicode_FromOrdinal(PyInt_AS_LONG(cp));
 
     /* value.encode('utf-8') */
     value = PyUnicode_AsUTF8String(u_char);
@@ -439,8 +454,11 @@ PyObject* xml_entity_reference(Parser* self) {
  * Returns a new reference. */
 PyObject* xml_char_reference(Parser* self) {
     int cp = 0;
+    char c;
+    PyObject* u_char;
+    PyObject* value;
 
-    char c = *(self->cursor);
+    c = *(self->cursor);
     if (c == 'x') {
         /* Read "x" */
         self->cursor++;
@@ -489,9 +507,9 @@ PyObject* xml_char_reference(Parser* self) {
     self->column++;
 
     /* unichr(codepoint) */
-    PyObject* u_char = PyUnicode_FromOrdinal(cp);
+    u_char = PyUnicode_FromOrdinal(cp);
     /* value.encode('utf-8') */
-    PyObject* value = PyUnicode_AsUTF8String(u_char);
+    value = PyUnicode_AsUTF8String(u_char);
     Py_DECREF(u_char);
 
     return value;
@@ -506,9 +524,12 @@ PyObject* xml_attr_value(Parser* self) {
     PyObject* aux = NULL;
     PyObject* result = NULL;
     PyObject* ref;
+    char delimiter;
+    char* base;
+    int size;
 
     /* The heading quote */
-    char delimiter = *(self->cursor);
+    delimiter = *(self->cursor);
     if ((delimiter != '"') && (delimiter != '\''))
         return NULL;
 
@@ -516,8 +537,7 @@ PyObject* xml_attr_value(Parser* self) {
     self->column++;
 
     /* The value */
-    char* base = self->cursor;
-    int size;
+    base = self->cursor;
     for (size=0; 1;) {
         char c = *(self->cursor);
 
@@ -592,13 +612,14 @@ PyObject* parse_document_type(Parser* self) {
     PyObject* public_id;
     PyObject* has_internal_subset;
     char c;
+    PyObject* name;
 
     if (read_string(self, "DOCTYPE"))
         return NULL;
     xml_space(self);
 
     /* Name */
-    PyObject* name = xml_name(self);
+    name = xml_name(self);
     if (name == NULL)
         return NULL;
     xml_space(self);
@@ -697,6 +718,12 @@ static PyObject* Parser_iternext(Parser* self) {
     PyObject* version;
     PyObject* encoding;
     PyObject* standalone;
+    char c;
+    int line;
+    int column;
+    PyObject* attributes;
+    int attributes_n;
+    int idx;
 
     /* There are tokens waiting */
     if (self->left_token) {
@@ -707,12 +734,12 @@ static PyObject* Parser_iternext(Parser* self) {
 
     /* Check for EOF */
     /* FIXME, there are many places else we must check for EOF */
-    char c = *(self->cursor);
+    c = *(self->cursor);
     if (c == '\0')
         return NULL;
 
-    int line = self->line_no;
-    int column = self->column;
+    line = self->line_no;
+    column = self->column;
 
     if (c == '<') {
         self->cursor++;
@@ -1065,9 +1092,8 @@ static PyObject* Parser_iternext(Parser* self) {
                                                  tag_uri, tag_name, line);
 
             /* Attributes */
-            PyObject* attributes = PyDict_New();
-            int attributes_n = PyList_Size(attributes_list);
-            int idx;
+            attributes = PyDict_New();
+            attributes_n = PyList_Size(attributes_list);
             for (idx=0; idx < attributes_n; idx++) {
                 attr = PyList_GetItem(attributes_list, idx);
                 /* Find out the attribute URI */

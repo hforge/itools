@@ -727,11 +727,20 @@ class Folder(Handler, BaseFolder, CalendarAware):
         allowed_types = tuple(self.get_document_types())
         cut, paths = marshal.loads(zlib.decompress(urllib.unquote(cp)))
         for path in paths:
-            handler = root.get_handler(path)
+            handler, metadata = root.get_object(path)
             if not isinstance(handler, allowed_types):
                 continue
 
+            container = handler.parent.get_real_handler()
+            # Cut&Paste in the same place (do nothing)
+            if cut and self.get_real_handler() is container:
+                continue
+
             name = handler.name
+            # Cut&Paste (remove original)
+            if cut is True:
+                container.del_object(name)
+
             # Find a non used name
             # XXX ROBLES To be tested carefully and optimized
             while self.has_handler(name):
@@ -759,16 +768,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
             # Unicode is not a valid Zope id
             name = str(name)
             # Add it here
-            metadata = handler.metadata
             self.set_object(name, handler, metadata)
-            if cut is True:
-                # Cut&Paste (remove original)
-                container = handler.parent
-                container.del_object(name)
-            else:
-                # Copy&Paste (fix metadata properties)
-                handler = self.get_handler(name)
-                metadata = handler.metadata
+            # Copy&Paste (fix metadata properties)
+            if cut is False:
+                handler, metadata = self.get_object(name)
                 # Fix state
                 if isinstance(handler, WorkflowAware):
                     metadata.set_property('state', handler.workflow.initstate)

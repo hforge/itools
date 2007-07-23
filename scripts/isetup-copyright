@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
 from datetime import datetime
 from optparse import OptionParser
@@ -23,6 +26,7 @@ import sys
 
 # Import from itools
 import itools
+from itools import vfs
 
 
 
@@ -39,6 +43,28 @@ if __name__ == '__main__':
     if len(args) == 0:
         parser.error('incorrect number of arguments')
 
+    # Load CREDITS
+    credits_names = {}  # Mapping from canonical email to real full name
+    credits_mails = {}  # Mapping from secondary email to canonical email
+    emails = []
+    if vfs.exists('CREDITS'):
+        with vfs.open('CREDITS') as file:
+            for line in file.readlines():
+                line = line.strip()
+                if line:
+                    key, value = line.split(':', 1)
+                    value = value.lstrip()
+                    if key == 'N':
+                        name = value
+                    elif key == 'E':
+                        emails.append(value)
+                        if len(emails) == 1:
+                            credits_names[value] = name
+                        else:
+                            credits_mails[value] = emails[0]
+                else:
+                    emails = []
+
     # Go!
     for filename in args:
         popen = Popen(['git', 'blame', '-p', filename], stdout=PIPE)
@@ -50,7 +76,11 @@ if __name__ == '__main__':
             if line.startswith('author '):
                 name = line[7:]
             elif line.startswith('author-mail '):
-                email = line[12:]
+                email = line[13:-1]
+                if email in credits_mails:
+                    email = credits_mails[email]
+                if email in credits_names:
+                    name = credits_names[email]
             elif line.startswith('author-time '):
                 year = datetime.fromtimestamp(int(line[12:])).year
             elif line.startswith('\t'):
@@ -90,14 +120,14 @@ if __name__ == '__main__':
                 else:
                     years.append('%s-%s' % x)
             years = ', '.join(years)
-            lines.append('%s %s %s' % (years, name, email))
+            lines.append('%s %s <%s>' % (years, name, email))
         # Copyright
         copyright = []
         lines.sort()
         first, lines = lines[0], lines[1:]
         copyright.append('# Copyright (C) %s\n' % first)
         for line in lines:
-            copyright.append('#               %s\n' % line)
+            copyright.append('# Copyright (C) %s\n' % line)
         # Rebuild
         state = 0
         lines = []
@@ -109,7 +139,9 @@ if __name__ == '__main__':
                 else:
                     lines.append(line)
             elif state == 1:
-                if '200' not in line:
+                if line.startswith('# Copyright (C) '):
+                    pass
+                elif '200' not in line:
                     lines.append(line)
                     state = 2
             elif state == 2:

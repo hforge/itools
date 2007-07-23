@@ -608,8 +608,8 @@ PyObject* xml_attr_value(Parser* self) {
  *
  * Return a new reference. */
 PyObject* parse_document_type(Parser* self) {
-    PyObject* system_id;
     PyObject* public_id;
+    PyObject* system_id;
     PyObject* has_internal_subset;
     char c;
     PyObject* name;
@@ -646,18 +646,18 @@ PyObject* parse_document_type(Parser* self) {
             return NULL;
         }
         xml_space(self);
-        /* SYSTEM ID */
-        system_id = xml_attr_value(self);
-        if (system_id == NULL) {
-            Py_DECREF(name);
-            return NULL;
-        }
-        xml_space(self);
         /* PUBLIC ID */
         public_id = xml_attr_value(self);
         if (public_id == NULL) {
             Py_DECREF(name);
-            Py_DECREF(system_id);
+            return NULL;
+        }
+        xml_space(self);
+        /* SYSTEM ID */
+        system_id = xml_attr_value(self);
+        if (system_id == NULL) {
+            Py_DECREF(name);
+            Py_DECREF(public_id);
             return NULL;
         }
     } else {

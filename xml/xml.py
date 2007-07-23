@@ -119,7 +119,7 @@ def stream_to_str(stream, encoding='UTF-8'):
                 data.append('<!DOCTYPE %s SYSTEM "%s">' % (name, system_id))
             else:
                 data.append('<!DOCTYPE %s PUBLIC "%s"\n  "%s">'
-                    % (name, system_id, public_id))
+                    % (name, public_id, system_id))
         elif event == CDATA:
             data.append('<![CDATA[%s]]>' % value)
         else:

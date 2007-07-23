@@ -4,16 +4,15 @@
 
 <form id="edit_event" action=";edit_event" method="post">
   <p>(To add an event lasting all day long, leave time fields empty.)</p>
-  <input stl:if="resource" type="hidden" name="resource"
-         value="${resource}" />
+  <input stl:if="resource" type="hidden" name="resource" value="${resource}" />
   <table class="form">
     <tr stl:if="resources">
       <td>Resource</td>
       <td>
         <select name="resource">
           <option stl:repeat="item resources" selected="{item/selected}"
-                  value="${item/name}" size="15">${item/value}&nbsp;&nbsp;
-          </option></select>
+            value="${item/name}" size="15">${item/value}&nbsp;</option>
+        </select>
       </td>
     </tr>
     <tr>
@@ -32,40 +31,38 @@
       <td>Start</td>
       <td>
         <input type="text" name="DTSTART_day" id="DTSTART_day" size="2"
-               value="${DTSTART_day}" /> /
+          maxlength="2" value="${DTSTART_day}" /> /
         <input type="text" name="DTSTART_month" id="DTSTART_month" size="2"
-               value="${DTSTART_month}" /> /
+          maxlength="2" value="${DTSTART_month}" /> /
         <input type="text" name="DTSTART_year" id="DTSTART_year" size="4"
-               value="${DTSTART_year}" />
+          maxlength="4" value="${DTSTART_year}" />
         <input type="button" id="trigger_dtstart" value="..." />
-      <span style="padding-left: 10px">
+        &nbsp;
         <input type="text" name="DTSTART_hours" id="DTSTART_hours" size="2"
-               value="${DTSTART_hours}" /> :
+          maxlength="2" value="${DTSTART_hours}" /> :
         <input type="text" name="DTSTART_minutes" id="DTSTART_minutes" size="2"
-               value="${DTSTART_minutes}" />
-      </span>
+          maxlength="2" value="${DTSTART_minutes}" />
       </td>
     </tr>
     <tr>
       <td>End</td>
       <td>
         <input type="text" name="DTEND_day" id="DTEND_day" size="2"
-               value="${DTEND_day}" /> /
+          value="${DTEND_day}" /> /
         <input type="text" name="DTEND_month" id="DTEND_month" size="2"
-               value="${DTEND_month}" /> /
+          value="${DTEND_month}" /> /
         <input type="text" name="DTEND_year" id="DTEND_year" size="4"
-               value="${DTEND_year}" />
+          value="${DTEND_year}" />
         <input type="button" id="trigger_dtend" value="..." />
-      <span style="padding-left: 10px">
-        <input type="text" name="DTEND_hours" id="DTSTART_hours" size="2"
-               value="${DTEND_hours}" /> :
-        <input type="text" name="DTEND_minutes" id="DTSTART_minutes" size="2"
-               value="${DTEND_minutes}" />
-      </span>
+        &nbsp;
+        <input type="text" name="DTEND_hours" id="DTEND_hours" size="2"
+          value="${DTEND_hours}" /> :
+        <input type="text" name="DTEND_minutes" id="DTEND_minutes" size="2"
+          value="${DTEND_minutes}" />
       </td>
     </tr>
     <tr>
-      <td>Description</td>
+      <td valign="top">Description</td>
       <td>
         <textarea name="DESCRIPTION" cols="65">${DESCRIPTION}</textarea>
       </td>
@@ -77,7 +74,7 @@
       <td>
         <select name="STATUS">
           <option stl:repeat="s STATUS" selected="${s/selected}"
-                  value="${s/name}">${s/value}</option>
+            value="${s/name}">${s/value}</option>
         </select>
       </td>
     </tr>
@@ -90,31 +87,33 @@
           <tr>
             <td>Email address</td>
             <td colspan="3">
-              <input type="text" size="30" name="${att/uri}" value="${att/v_uri}" />
+              <input type="text" size="30" name="${att/uri}"
+                value="${att/v_uri}" />
             </td>
           </tr>
           <tr>
             <td>Common name</td>
             <td>
-              <input type="text" size="20" name="${att/common}" value="${att/v_common}" />
+              <input type="text" size="20" name="${att/common}"
+                value="${att/v_common}" />
             </td>
             <td>Presence</td>
             <td>
               <select name="${att/role}">
                 <stl:block stl:if="att/v_role/required">
-                    <option selected="yes">REQUIRED</option> 
-                    <option>OPTIONNAL</option>
-                    <option>NONE</option>
+                  <option selected="yes">REQUIRED</option>
+                  <option>OPTIONNAL</option>
+                  <option>NONE</option>
                 </stl:block>
                 <stl:block stl:if="att/v_role/optionnal">
-                    <option>REQUIRED</option>
-                    <option selected="yes">OPTIONNAL</option> 
-                    <option>NONE</option>
+                  <option>REQUIRED</option>
+                  <option selected="yes">OPTIONNAL</option>
+                  <option>NONE</option>
                 </stl:block>
                 <stl:block stl:if="att/v_role/no">
-                    <option>REQUIRED</option>
-                    <option>OPTIONNAL</option>
-                    <option selected="yes">NONE</option> 
+                  <option>REQUIRED</option>
+                  <option>OPTIONNAL</option>
+                  <option selected="yes">NONE</option>
                 </stl:block>
               </select>
             </td>
@@ -138,38 +137,23 @@
   <p stl:if="allowed">
      <input type="submit" name="update" value="OK" class="button_ok"/>
      <input stl:if="remove" type="submit" name="remove" 
-            value="Definitely remove" class="button_delete" />
+       value="Definitely remove" class="button_delete" />
      <input stl:if="not remove" type="submit" name="cancel" 
-            value="Cancel" class="button_cancel" />
+       value="Cancel" class="button_cancel" />
   </p>
 </form>
 
 <script language="javascript">
-  focus("SUMMARY");
+focus("SUMMARY");
 
-    function update_dtstart(cal) {
-        var date = cal.date;
-        var field = document.getElementById("DTSTART_year");
-        field.value = date.print("%Y");
-        var field = document.getElementById("DTSTART_month");
-        field.value = date.print("%m");
-    }
-    function update_dtend(cal) {
-        var date = cal.date;
-        var field = document.getElementById("DTEND_year");
-        field.value = date.print("%Y");
-        var field = document.getElementById("DTEND_month");
-        field.value = date.print("%m");
-    }
-
-  Calendar.setup({
+Calendar.setup({
     inputField: "DTSTART_day",
     ifFormat: "%d",
     firstDay: ${firstday},
     button: "trigger_dtstart",
     onUpdate: update_dtstart});
 
-  Calendar.setup({
+Calendar.setup({
     inputField: "DTEND_day",
     ifFormat: "%d",
     firstDay: ${firstday},

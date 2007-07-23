@@ -715,6 +715,8 @@ class CalendarAware(object):
         # Add ical css
         css = self.get_handler('/ui/ical/calendar.css')
         context.styles.append(str(self.get_pathto(css)))
+        js = self.get_handler('/ui/ical/calendar.js')
+        context.scripts.append(str(self.get_pathto(js)))
 
         uid = context.get_form_value('uid', None)
         # Method

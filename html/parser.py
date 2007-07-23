@@ -80,6 +80,19 @@ class _Parser(HTMLParser, object):
 
 
     def handle_decl(self, value):
+        # The document type declaration of HTML documents is like defined
+        # by SGML, what is a little more flexible than XML. Right now we
+        # support:
+        #
+        #   <!DOCTYPE name SYSTEM "system id">
+        #   <!DOCTYPE name PUBLIC "public id" "system id">
+        #   <!DOCTYPE name PUBLIC "public id">  (*)
+        #
+        # (*) This case is not allowed by XML.
+        #
+        # TODO Check online resources to find out other cases that should
+        # be supported (the SGML spec is not available online).
+
         # DOCTYPE
         if not value.startswith('DOCTYPE'):
             raise XMLError
@@ -88,20 +101,22 @@ class _Parser(HTMLParser, object):
         name, value = value.split(None, 1)
         # Ids
         def read_id(value):
-            value = value.lstrip()
             sep = value[0]
             if sep != '"' and sep != "'":
                 raise XMLError
             return value[1:].split(sep, 1)
 
+        public_id = None
+        system_id = None
         if value.startswith('SYSTEM'):
-            value = value[6:]
+            value = value[6:].lstrip()
             system_id, value = read_id(value)
-            public_id = None
         elif value.startswith('PUBLIC'):
-            value = value[6:]
-            system_id, value = read_id(value)
+            value = value[6:].lstrip()
             public_id, value = read_id(value)
+            value = value.lstrip()
+            if value:
+                system_id, value = read_id(value)
         else:
             raise XMLError
         # Internal subset (FIXME TODO)

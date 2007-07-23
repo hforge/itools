@@ -19,8 +19,18 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.html import Document
+from itools.xml import stream_to_str
+from itools.html import Document, Parser
 from itools.gettext import PO
+
+
+class ParserTestCase(TestCase):
+
+    def test_doctype(self):
+        data = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">'
+        stream = Parser(data)
+        self.assertEqual(stream_to_str(stream), data)
+
 
 
 class HTMLTestCase(TestCase):

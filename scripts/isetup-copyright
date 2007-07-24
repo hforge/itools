@@ -29,15 +29,50 @@ import itools
 from itools import vfs
 
 
+def parse_copyright(line):
+    """
+    From a copyright line:
+
+        Copyright (C) 2005 Toto <toto@example.com>
+
+    Extract the email address and the years.
+    """
+    line = line[line.find('200'):]
+
+    # Split
+    for i in range(len(line)):
+        c = line[i]
+        if not c.isdigit() and c not in (' ', ',', '-'):
+            break
+    name, email = line[i:].split('<')
+    line = line[:i]
+    # The email
+    email = email[:-1]
+    # The years
+    years = set()
+    for year in line.split(','):
+        year = year.strip()
+        if '-' in year:
+            start, end = year.split('-')
+            years.update(range(int(start), int(end) + 1))
+        else:
+            years.add(int(year))
+
+    return email, name, years
+
+
+
 
 if __name__ == '__main__':
     # The command line parser
-    usage = '%prog FILES'
+    usage = '%prog [OPTIONS] FILES'
     version = 'itools %s' % itools.__version__
     description = (
         "Modifies the copyright notice in the given FILES. Uses 'git blame'"
         " to figure out the authors.")
     parser = OptionParser(usage, version=version, description=description)
+    parser.add_option('-k', '--keep', action='store_true', default=False,
+        help='keep old copyright (a more conservative approach)')
 
     options, args = parser.parse_args()
     if len(args) == 0:
@@ -67,6 +102,7 @@ if __name__ == '__main__':
 
     # Go!
     for filename in args:
+        # Call "git blame"
         popen = Popen(['git', 'blame', '-p', filename], stdout=PIPE)
         out, err = popen.communicate()
 
@@ -91,6 +127,33 @@ if __name__ == '__main__':
                 if header is False:
                     authors.setdefault(email, (name, set()))
                     authors[email][1].add(year)
+
+        # Keep old copyright
+        if options.keep:
+            state = 0
+            for line in open(filename).readlines():
+                line = line.strip()
+                if state == 0:
+                    if line.startswith('# Copyright (C) '):
+                        email, name, years = parse_copyright(line)
+                        if email in credits_names:
+                            name = credits_names[email]
+                        if email in credits_mails:
+                            emails = credits_mails[email]
+                        authors.setdefault(email, (name, set()))
+                        authors[email][1].update(years)
+                        state = 1
+                elif state == 1:
+                    if '200' in line:
+                        email, name, years = parse_copyright(line)
+                        if email in credits_names:
+                            name = credits_names[email]
+                        if email in credits_mails:
+                            emails = credits_mails[email]
+                        authors.setdefault(email, (name, set()))
+                        authors[email][1].update(years)
+                    else:
+                        break
 
         # Format the lines
         lines = []
@@ -121,6 +184,7 @@ if __name__ == '__main__':
                     years.append('%s-%s' % x)
             years = ', '.join(years)
             lines.append('%s %s <%s>' % (years, name, email))
+
         # Copyright
         copyright = []
         lines.sort()
@@ -128,6 +192,7 @@ if __name__ == '__main__':
         copyright.append('# Copyright (C) %s\n' % first)
         for line in lines:
             copyright.append('# Copyright (C) %s\n' % line)
+
         # Rebuild
         state = 0
         lines = []

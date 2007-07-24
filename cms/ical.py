@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2006-2OO7 Nicolas Deram <nderam@itaapy.com>
+# Copyright (C) 2006-2007 Nicolas Deram <nderam@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -32,7 +32,7 @@
   <h3>Post a Reply</h3>
   <form action=";new_reply" method="post">
     <p>
-      <textarea name="body" cols="72" rows="10" />
+      ${rte}
       <input type="submit" value="Reply" />
     </p>
   </form>

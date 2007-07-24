@@ -17,18 +17,19 @@
 
 # Import from the Standard Library
 from operator import itemgetter
-from cgi import escape
-from cStringIO import StringIO
 
 # Import from itools
 from itools.datatypes import FileName, Unicode
+from itools.i18n import format_datetime
 from itools.stl import stl
 from itools.xml import Parser
+from itools.xhtml import sanitize_stream, xhtml_uri
+from itools.html import Parser as HTMLParser
 from itools.rest import checkid
 from folder import Folder
 from messages import *
 from registry import register_object_class
-from text import Text
+from html import XHTMLFile
 
 
 def add_forum_style(context):
@@ -37,31 +38,53 @@ def add_forum_style(context):
 
 
 
-class Message(Text):
+class Message(XHTMLFile):
 
     class_id = 'ForumMessage'
     class_title = u"Message"
     class_description = u"Message in a thread"
     class_views = [['edit_form'], ['history_form']]
-    
+
+
+    def new(self, data):
+        data = HTMLParser(data)
+        self.events = sanitize_stream(data)
+
+
+    def _load_state_from_file(self, file): 
+        data = file.read()
+        stream = Parser(data, {None: xhtml_uri})
+        self.events = list(stream)
+
 
     # Remove from searches
     def to_text(self):
         return u''
 
 
-    # ACLs
-    edit_form__access__ = 'is_admin'
+    def edit_form(self, context):
+        """WYSIWYG editor for HTML documents."""
+        # Edit with a rich text editor
+        namespace = {}
+        # Epoz expects HTML
+        namespace['rte'] = self.get_rte(context, 'data', self.events)
+
+        handler = self.get_handler('/ui/html/edit.xml')
+        return stl(handler, namespace)
 
 
     edit__access__ = 'is_admin'
     def edit(self, context):
         data = context.get_form_value('data')
-        data = escape(data.strip())
-        self.load_state_from_string(data)
+        data = HTMLParser(data)
+        self.events = sanitize_stream(data)
+        self.set_changed()
 
         return context.come_back(MSG_CHANGES_SAVED, goto='../;view')
 
+
+    def get_epoz_data(self):
+        return self.events
 
 
 class Thread(Folder):
@@ -74,12 +97,12 @@ class Thread(Folder):
     message_class = Message
 
 
-    def new(self, body=u''):
+    def new(self, data=u''):
         Folder.new(self)
         cache = self.cache
-        message = self.message_class(data=body)
-        cache['0.txt'] = message
-        cache['0.txt.metadata'] = message.build_metadata()
+        message = self.message_class(data=data)
+        cache['0.xhtml'] = message
+        cache['0.xhtml.metadata'] = message.build_metadata()
 
 
     def to_text(self):
@@ -87,7 +110,7 @@ class Thread(Folder):
 
         # index messages in order (XXX necessary?)
         for id in ([0] + self.get_replies()):
-            name = '%s.txt' % id
+            name = '%s.xhtml' % id
             message = self.get_handler(name)
             text.append(message.to_text())
 
@@ -114,7 +137,7 @@ class Thread(Folder):
         else:
             last = 0
 
-        return self.get_handler('%s.txt' % last)
+        return self.get_handler('%s.xhtml' % last)
 
 
     def get_message_namespace(self, context):
@@ -123,18 +146,17 @@ class Thread(Folder):
         namespace = []
         users = self.get_handler('/users')
         ac = self.get_access_control()
-
+        accept_language = context.get_accept_language()
         for i, id in enumerate([0] + self.get_replies()):
-            name = '%s.txt' % id
+            name = '%s.xhtml' % id
             message = self.get_handler(name)
             author_id = message.get_property('owner')
             metadata = users.get_handler('%s.metadata' % author_id)
-            body = message.to_str().replace('\n', '<br/>')
             namespace.append({
                 'author': (metadata.get_property('dc:title') or
                     metadata.get_property('ikaaro:email')),
-                'mtime': message.get_mtime().strftime('%F %X'),
-                'body': Parser(body),
+                'mtime': format_datetime(message.get_mtime(), accept_language),
+                'body': message.events,
                 'editable': ac.is_admin(user, message),
                 'edit_form': '%s/;edit_form' % message.name,
             })
@@ -150,7 +172,7 @@ class Thread(Folder):
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
         namespace['messages'] = self.get_message_namespace(context)
-
+        namespace['rte'] = self.get_rte(context, 'data', None)
         add_forum_style(context)
 
         handler = self.get_handler('/ui/forum/Thread_view.xml')
@@ -166,16 +188,17 @@ class Thread(Folder):
             last_reply = 0
 
         next_reply = str(last_reply + 1)
-        name = FileName.encode((next_reply, 'txt', None))
+        name = FileName.encode((next_reply, 'xhtml', None))
 
-        body = context.get_form_value('body')
-        body = escape(body.strip())
-        reply = self.message_class()
-        reply.load_state_from_string(body)
+        data = context.get_form_value('data')
+        reply = self.message_class(data=data)
         self.set_object(name, reply)
 
         return context.come_back(u"Reply Posted.", goto='#new_reply')
 
+
+    def get_epoz_data(self):
+        return None
 
 
 class Forum(Folder):
@@ -194,12 +217,13 @@ class Forum(Folder):
         return [self.thread_class]
 
 
-    def get_thread_namespace(self):
+    def get_thread_namespace(self, context):
+        accept_language = context.get_accept_language()
         namespace = []
         users = self.get_handler('/users')
 
         for thread in self.search_handlers(handler_class=self.thread_class):
-            first = thread.get_handler('0.txt')
+            first = thread.get_handler('0.xhtml')
             first_author_id = first.get_property('owner')
             first_metadata = users.get_handler('%s.metadata' % first_author_id)
             last = thread.get_last_post()
@@ -212,7 +236,7 @@ class Forum(Folder):
                 'author': (first_metadata.get_property('dc:title') or
                     first_metadata.get_property('ikaaro:email')),
                 'replies': len(thread.get_replies()),
-                'last_date': last.get_mtime().strftime('%F %X'),
+                'last_date': format_datetime(last.get_mtime(), accept_language),
                 'last_author': (last_metadata.get_property('dc:title') or
                     last_metadata.get_property('ikaaro:email')),
             })
@@ -229,7 +253,7 @@ class Forum(Folder):
 
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
-        namespace['threads'] = self.get_thread_namespace()
+        namespace['threads'] = self.get_thread_namespace(context)
 
         add_forum_style(context)
 
@@ -240,10 +264,11 @@ class Forum(Folder):
     new_thread_form__access__ = 'is_allowed_to_edit'
     new_thread_form__label__ = u"New Thread"
     def new_thread_form(self, context):
+        namespace = {}
+        namespace['rte'] =  self.get_rte(context, 'data', None)
         add_forum_style(context)
-
         handler = self.get_handler('/ui/forum/Forum_new_thread.xml')
-        return stl(handler)
+        return stl(handler, namespace)
 
 
     new_thread__access__ = 'is_allowed_to_edit'
@@ -263,15 +288,16 @@ class Forum(Folder):
         website_languages = root.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
 
-        body = context.get_form_value('body', type=Unicode)
-        body = escape(body.strip())
-
-        thread = self.thread_class(body=body)
+        data = context.get_form_value('data')
+        thread = self.thread_class(data=data)
         thread, metadata = self.set_object(name, thread)
         thread.set_property('dc:title', title, language=default_language)
 
         return context.come_back(u"Thread Created.", goto=name)
 
+
+    def get_epoz_data(self):
+        return None
 
 
 register_object_class(Forum)

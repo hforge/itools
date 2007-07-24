@@ -14,7 +14,7 @@
       </dd>
       <dt>Message:</dt>
       <dd>
-        <textarea name="body" cols="50" rows="10" />
+        ${rte}
       </dd>
     </dl>
     <p>

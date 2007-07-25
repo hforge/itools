@@ -236,17 +236,22 @@ class Tracker(Folder):
         search_name = context.get_form_value('search_name')
         search_title = context.get_form_value('search_title').strip()
         search_title = unicode(search_title, 'utf8')
+
+        stored_search = stored_search_title = None
         if search_name:
             # Edit an Stored Search
             try:
                 stored_search = self.get_handler(search_name)
+                stored_search_title = stored_search.get_property('dc:title')
             except LookupError:
                 pass
-        elif search_title:
+
+        if search_title and search_title != stored_search_title:
             # New Stored Search
             search_name = self.get_new_id('s')
             stored_search, kk = self.set_object(search_name, StoredSearch())
-        else:
+
+        if stored_search is None: 
             # Just Search
             return context.uri.resolve(';view').replace(**context.uri.query)
 

@@ -16,14 +16,14 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import listdir, makedirs, mkdir, remove, rmdir, walk
+from os import listdir, makedirs, mkdir, remove, rename, rmdir, walk
 from os.path import (exists, getatime, getctime, getmtime, getsize, isfile,
     isdir, join)
 from subprocess import call
 
 # Import from itools
 from itools.uri import Path, Reference
-from vfs import READ, WRITE, APPEND
+from vfs import READ, WRITE, APPEND, copy
 from base import BaseFS
 from registry import register_file_system
 
@@ -115,14 +115,14 @@ class FileFS(BaseFS):
 
 
     @staticmethod
-    def remove(reference):
-        if isinstance(reference, Reference):
-            path = str(reference.path)
-        elif isinstance(reference, Path):
+    def remove(path):
+        if isinstance(path, Reference):
+            path = str(path.path)
+        elif isinstance(path, Path):
             path = str(path)
 
         if not exists(path):
-            raise OSError, "File does not exist '%s'" % reference
+            raise OSError, "File does not exist '%s'" % path
 
         if isdir(path):
             # Remove folder contents
@@ -162,13 +162,22 @@ class FileFS(BaseFS):
 
     @staticmethod
     def move(source, target):
-        # XXX Windows (and maybe other platforms) is not supported, yet
+        # Fail if target exists and is a file
+        dst = str(target.path)
+        if isfile(dst):
+            raise OSError, '[Errno 20] Not a directory'
+
+        # If target is a folder, move inside it
+        if isdir(dst):
+            dst = target.path.resolve2(source.path[-1])
+            dst = str(dst)
+
+        src = str(source.path)
         try:
-            status = call(['mv', str(source.path), str(target.path)])
+            rename(src, dst)
         except OSError:
-            raise NotImplementedError
-        if status != 0:
-            raise IOError
+            copy(src, dst)
+            FileFS.remove(src)
 
 
     ######################################################################

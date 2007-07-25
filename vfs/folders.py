@@ -144,9 +144,9 @@ class Folder(object):
             return
 
         # Folder
-        source_root = source_ref
-        target_root = target_ref
         if source_fs.is_folder(source_ref):
+            source_root = source_ref
+            target_root = target_ref
             for source_ref in source_fs.traverse(source_root):
                 offset = source_root.path.get_pathto(source_ref.path)
                 target_ref = target_root.resolve2(offset)

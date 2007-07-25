@@ -114,7 +114,7 @@ class DatabaseFS(FileFS):
     def make_file(reference):
         # Update the log
         log = get_log(reference)
-        with open(log, 'a+') as log:
+        with open(log, 'a+b') as log:
             log.write('+%s\n' % reference.path)
 
         # Create the file
@@ -125,7 +125,7 @@ class DatabaseFS(FileFS):
     def make_folder(reference):
         # Update the log
         log = get_log(reference)
-        with open(log, 'a+') as log:
+        with open(log, 'a+b') as log:
             log.write('+%s\n' % reference.path)
 
         # Create the folder
@@ -136,7 +136,7 @@ class DatabaseFS(FileFS):
     def remove(reference):
         # Update the log
         log = get_log(reference)
-        with open(log, 'a+') as log:
+        with open(log, 'a+b') as log:
             log.write('-%s\n' % reference.path)
 
 
@@ -152,7 +152,7 @@ class DatabaseFS(FileFS):
             tmp_file, tmp_path = mkstemp(dir=commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference.path] = tmp_path
-            with open(log, 'a+') as log:
+            with open(log, 'a+b') as log:
                 log.write('~%s#%s\n' % (reference.path, tmp_path))
             return os.fdopen(tmp_file, 'w')
         elif mode == APPEND:
@@ -165,7 +165,7 @@ class DatabaseFS(FileFS):
             tmp_file, tmp_path = mkstemp(dir=commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference.path] = tmp_path
-            with open(log, 'a+') as log:
+            with open(log, 'a+b') as log:
                 log.write('>%s#%s\n' % (reference.path, tmp_path))
             return os.fdopen(tmp_file, 'w')
 
@@ -300,7 +300,7 @@ class DatabaseFS(FileFS):
                         vfs.move(src, dst)
                 elif action == '>':
                     dst, src = line.rsplit('#', 1)
-                    data = vfs.open(src, READ).read()
+                    data = open(src, READ).read()
                     with vfs.open(dst, APPEND) as file:
                         file.write(data)
                 else:

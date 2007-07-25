@@ -1,0 +1,62 @@
+
+itools 0.16.3 (2007/07/26)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+For the first time in a looong time we have tested itools on Windows.
+Now itools installs and the unit tests pass.
+
+As a side effect the "vfs.move" method (from "itools.vfs") now is
+cross-platform, and faster.
+
+There is a new and simple handler for Gzip files (in "itools.handlers").
+
+The document type declaration (DOCTYPE) is correctly parsed now, by
+both "itools.xml" and "itools.html".  And an small bug has been fixed
+in the (X)HTML sanitizer.
+
+The CMS ("itools.cms") has a couple of enhancements.  Now emails are
+sent asynchronously; if sending an email fails, it will be tried again
+later.
+
+The forum posts are now HTML instead of plain text.  The HTML editor
+is used to edit the posts, and the HTML is sanitized to avoid security
+problems.
+
+There are also several fixes: when cut&paste a document in the same folder,
+in the tracker and the calendar.
+
+
+Credits:
+
+ - Nicolas Deram worked on the tracker;
+ - David Hughes helped testing itools on Windows;
+ - J. David Ibáñez worked on itools.cms, itools.xml and the unit tests;
+ - Sylvain Taverne worked on the forum and fixed several bugs;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.4.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

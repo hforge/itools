@@ -50,8 +50,8 @@ class DatabaseTestCase(TestCase):
 
     def tearDown(self):
         for name in ['31.txt', 'agenda']:
-            if vfs.exists('fables/%s' % name):
-                vfs.remove('fables/%s' % name)
+            if vfs.exists('database/%s' % name):
+                vfs.remove('database/%s' % name)
 
 
     def test_abort(self):
@@ -63,7 +63,7 @@ class DatabaseTestCase(TestCase):
         # Abort
         self.database.abort()
         # Test
-        fables = get_handler('fables')
+        fables = get_handler('database')
         self.assertEqual(fables.has_handler('31.txt'), False)
 
 
@@ -76,7 +76,7 @@ class DatabaseTestCase(TestCase):
         # Commit
         self.database.commit()
         # Test
-        fables = get_handler('fables')
+        fables = get_handler('database')
         self.assertEqual(fables.has_handler('31.txt'), True)
 
 
@@ -92,7 +92,7 @@ class DatabaseTestCase(TestCase):
         # Commit
         self.assertRaises(NameError, self.database.commit)
         # Test
-        fables = get_handler('fables')
+        fables = get_handler('database')
         self.assertEqual(fables.has_handler('31.txt'), False)
         self.assertEqual(fables.has_handler('broken.txt'), False)
 

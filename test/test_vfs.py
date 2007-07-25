@@ -172,7 +172,8 @@ class CopyTestCase(TestCase):
 
 
     def tearDown(self):
-        vfs.remove('tmp')
+        if vfs.exists('tmp'):
+            vfs.remove('tmp')
 
 
     def test_copy_file(self):

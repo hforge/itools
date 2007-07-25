@@ -145,7 +145,7 @@ class CatalogTestCase(TestCase):
             TextField('data'),
             IntegerField('size'))
         # Index
-        fables = vfs.open('fables')
+        fables = vfs.open('database')
         for name in fables.get_names():
             uri = fables.uri.resolve2(name)
             document = Document(uri)

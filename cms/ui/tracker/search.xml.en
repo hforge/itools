@@ -4,6 +4,13 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+  <!-- Go to Issue # -->
+  <form action=";go_to_issue" method="get">
+    Go to issue #<input type="text" name="issue_name" size="6" />
+    <input type="submit" class="button_ok" value="OK" />
+  </form>
+
+  <!-- Advanced Search -->
   <h2 stl:if="search_name">Search: ${search_title}</h2>
   <h2 stl:if="not search_name">Search</h2>
   <form action=";search" method="get">
@@ -93,7 +100,7 @@
       </tr>
       <tr>
         <td xcolspan="2">
-          <input type="submit" value="Search" />
+          <input type="submit" class="button_search" value="Search" />
         </td>
         <td align="right">
           <label for="search_title">Remember as</label>
@@ -119,7 +126,7 @@
       <tr>
         <td></td>
         <td colspan="2">
-          <input type="submit" value="Remove" />
+          <input type="submit" class="button_delete" value="Remove" />
         </td>
       </tr>
     </table>

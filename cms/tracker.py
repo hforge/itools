@@ -424,6 +424,16 @@ class Tracker(Folder):
         return context.come_back(u'New issue addded.', goto=goto)
 
 
+    go_to_issue__access__ = 'is_allowed_to_view'
+    def go_to_issue(self, context):
+        issue_name = context.get_form_value('issue_name')
+        if not issue_name in self.get_handler_names():
+            return context.come_back(u'Issue not found.')
+        issue = self.get_handler(issue_name)
+        if not isinstance(issue, Issue):
+            return context.come_back(u'Issue not found.')
+        return context.uri.resolve2('../%s/;edit_form' % issue_name)
+
 register_object_class(Tracker)
 
 

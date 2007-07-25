@@ -484,6 +484,68 @@ class Versions(SelectTable):
               'released': Boolean(title=u'Released')}
 
 
+    def view(self, context):
+        namespace = {}
+
+        # The input parameters
+        start = context.get_form_value('batchstart', type=Integer, default=0)
+        size = 30
+
+        # The batch
+        total = len(self.lines)
+        namespace['batch'] = widgets.batch(context.uri, start, size, total,
+                                           self.gettext)
+
+        # The table
+        actions = []
+        if total:
+            ac = self.get_access_control()
+            if ac.is_allowed_to_edit(context.user, self):
+                actions = [('del_row_action', u'Remove', 'button_delete',None)]
+
+        columns = self.get_columns()
+        columns.insert(0, ('index', u''))
+        columns.append(('issues', u'Issues'))
+        rows = []
+        index = start
+        getter = lambda x, y: x.get_value(y)
+
+        for row in self.lines[start:start+size]:
+            rows.append({})
+            rows[-1]['id'] = str(index)
+            rows[-1]['checkbox'] = True
+            # Columns
+            rows[-1]['index'] = index, ';edit_row_form?index=%s' % index
+            for column, column_title in columns[1:-1]:
+                value = getter(row, column)
+                datatype = self.get_datatype(column)
+                is_enumerate = getattr(datatype, 'is_enumerate', False)
+                rows[-1][column] = value
+            count = 0
+            for handler in self.parent.search_handlers(handler_class=Issue):
+                if handler.get_value('version') == index:
+                    count += 1
+            value = '0'
+            if count != 0:
+                value = '<a href="../;view?version=%s">%s issues</a>'
+                if count == 1:
+                    value = '<a href="../;view?version=%s">%s issue</a>'
+                value = Parser(value % (index, count))
+            rows[-1]['issues'] = value
+            index += 1
+
+        # Sorting
+        sortby = context.get_form_value('sortby')
+        sortorder = context.get_form_value('sortorder', 'up')
+        if sortby:
+            rows.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
+
+        namespace['table'] = widgets.table(columns, rows, [sortby], sortorder,
+                                           actions)
+
+        handler = self.get_handler('/ui/csv/view.xml')
+        return stl(handler, namespace)
+
 register_object_class(Versions)
 
 

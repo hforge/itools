@@ -514,10 +514,10 @@ class Issue(Folder):
     class_title = u'Issue'
     class_description = u'Issue'
     class_views = [
+        ['edit_form'],
         ['search_form'],
         ['add_form'],
         ['browse_content?mode=list'],
-        ['edit_form'],
         ['history']]
 
 
@@ -611,9 +611,9 @@ class Issue(Folder):
         subject = '[Tracker Issue #%s] %s' % (self.name, title)
         # Notify / Body
         if context.handler.class_id == Tracker.class_id:
-            uri = context.uri.resolve('%s/;edit_form' % self.name)
+            uri = context.uri.resolve('%s/;history' % self.name)
         else:
-            uri = context.uri.resolve(';edit_form')
+            uri = context.uri.resolve(';history')
         body = str(uri) + '\n\n'
         body += self.gettext(u'The user %s did some changes.') % user_title
         body += '\n\n'
@@ -840,6 +840,8 @@ class Issue(Folder):
             user_exist = users.has_handler(username) 
             usertitle = (user_exist and 
                          users.get_handler(username).get_title() or username)
+            comment = XML.encode(Unicode.encode(comment))
+            comment = Parser(comment.replace('\n', '<br />'))
             i += 1
             row_ns = {'number': i,
                       'user': usertitle,
@@ -851,7 +853,7 @@ class Issue(Folder):
                       'module': None,
                       'priority': None,
                       'assigned_to': None,
-                      'comment': XML.encode(comment).replace('\n', '<br>'),
+                      'comment': comment,
                       'file': file}
 
             if title != previous_title:

@@ -178,26 +178,26 @@ class CopyTestCase(TestCase):
 
     def test_copy_file(self):
         vfs.copy('tests/hello.txt', 'tmp/hello.txt.bak')
-        file = vfs.open('tmp/hello.txt.bak')
-        self.assertEqual(file.read(), 'hello world\n')
+        with vfs.open('tmp/hello.txt.bak') as file:
+            self.assertEqual(file.read(), 'hello world\n')
 
 
     def test_copy_file_to_folder(self):
         vfs.copy('tests/hello.txt', 'tmp')
-        file = vfs.open('tmp/hello.txt')
-        self.assertEqual(file.read(), 'hello world\n')
+        with vfs.open('tmp/hello.txt') as file:
+            self.assertEqual(file.read(), 'hello world\n')
 
 
     def test_copy_folder(self):
         vfs.copy('tests', 'tmp/xxx')
-        file = vfs.open('tmp/xxx/hello.txt')
-        self.assertEqual(file.read(), 'hello world\n')
+        with vfs.open('tmp/xxx/hello.txt') as file:
+            self.assertEqual(file.read(), 'hello world\n')
 
 
     def test_copy_folder_to_folder(self):
         vfs.copy('tests', 'tmp')
-        file = vfs.open('tmp/tests/hello.txt')
-        self.assertEqual(file.read(), 'hello world\n')
+        with vfs.open('tmp/tests/hello.txt') as file:
+            self.assertEqual(file.read(), 'hello world\n')
 
 
 

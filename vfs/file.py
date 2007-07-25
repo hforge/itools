@@ -105,7 +105,7 @@ class FileFS(BaseFS):
                 raise OSError, "File exists: '%s'" % reference
         else:
             makedirs(folder_path)
-        return file(file_path, 'w')
+        return file(file_path, 'wb')
 
 
     @staticmethod

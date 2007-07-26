@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import compiler
+from compiler import parse, walk
 
 # Import from itools
 from text import Text
@@ -41,21 +41,16 @@ class Python(Text):
     class_extension = 'py'
 
 
-    def new(self, **kw):
-        Text.new(self, **kw)
-
-
-    def _load_state_from_file(self, file):
-        Text._load_state_from_file(self, file)
-
-
-    #########################################################################
-    # API
-    #########################################################################
     def get_messages(self):
-        ast = compiler.parse(self.to_str())
+        data = self.to_str()
+        # Make it work with Windows files (the parser expects '\n' ending
+        # lines)
+        data = ''.join([ x + '\n' for x in data.splitlines() ])
+        # Parse and Walk
+        ast = parse(data)
         visitor = VisitorUnicode()
-        compiler.walk(ast, visitor)
+        walk(ast, visitor)
+
         return visitor.messages
 
 

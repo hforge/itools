@@ -592,8 +592,11 @@ Calendar.cellClick = function(el, ev) {
 		cal.date.setDateOnly(el.caldate);
 		date = cal.date;
 		var other_month = !(cal.dateClicked = !el.otherMonth);
-		if (!other_month && !cal.currentDateEl)
+		if (!other_month && !cal.currentDateEl) {
 			cal._toggleMultipleDate(new Date(date));
+			if (cal.params.flat)
+				newdate = !el.disabled;
+		}
 		else
 			newdate = !el.disabled;
 		// a date was clicked
@@ -1184,7 +1187,7 @@ Calendar.prototype._init = function (firstDayOfWeek, date) {
 		if (!(hasdays || this.showsOtherMonths))
 			row.className = "emptyrow";
 	}
-	this.title.innerHTML = Calendar._MN[month] + " " + year;
+	this.title.innerHTML = Calendar._MN[month] + ", " + year;
 	this.onSetTime();
 	this.table.style.visibility = "visible";
 	this._initMultipleDates();
@@ -1569,6 +1572,37 @@ Calendar.prototype._dragStart = function (ev) {
 	}
 };
 
+Calendar.prototype.clear = function() {
+    if (this.multiple) {
+        for (var i in this.multiple) {
+            var d = this.multiple[i];
+            this._toggleMultipleDate(d);
+        }
+        this.multiple = {};
+    }
+};
+
+Calendar.prototype.update = function(data) {
+    if (this.params.multiple) {
+        this.params.multiple = data;
+        params = this.params;
+        this.multiple = {};
+        for (var i = params.multiple.length; --i >= 0;) {
+            var d = params.multiple[i];
+            var ds = d.print("%Y%m%d");
+            this.multiple[ds] = d;
+        }
+        var d = new Date();
+        if (data.length)
+            d = data[0];
+        var parent = this.params.flat;
+        parent.innerHTML = ''; // remove All childs
+        params.date = d;
+        this.create(this.params.flat);
+        this.show();
+    }
+};
+
 // BEGIN: DATE OBJECT PATCHES
 
 /** Adds the number of days array to the Date object. */
@@ -1798,6 +1832,8 @@ Date.prototype.setFullYear = function(y) {
 		this.setDate(28);
 	this.__msh_oldSetFullYear(y);
 };
+
+
 
 // END: DATE OBJECT PATCHES
 

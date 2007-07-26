@@ -66,8 +66,8 @@ Calendar.setup = function (params) {
 	param_default("displayArea",    null);
 	param_default("button",         null);
 	param_default("eventName",      "click");
-	param_default("ifFormat",       "%Y-%m-%d");
-	param_default("daFormat",       Calendar._TT["TT_DATE_FORMAT"]);
+	param_default("ifFormat",       "%Y/%m/%d");
+	param_default("daFormat",       "%Y/%m/%d");
 	param_default("singleClick",    true);
 	param_default("disableFunc",    null);
 	param_default("dateStatusFunc", params["disableFunc"]);	// takes precedence if both are defined
@@ -144,9 +144,17 @@ Calendar.setup = function (params) {
 		if (params.inputField && typeof params.inputField.value == "string") {
 			cal.parseDate(params.inputField.value);
 		}
+		if (params.multiple) {
+			cal.multiple = {};
+			for (var i = params.multiple.length; --i >= 0;) {
+				var d = params.multiple[i];
+				var ds = d.print("%Y%m%d");
+				cal.multiple[ds] = d;
+			}
+		}
 		cal.create(params.flat);
 		cal.show();
-		return false;
+		return cal;
 	}
 
 	var triggerEl = params.button || params.displayArea || params.inputField;
@@ -155,7 +163,7 @@ Calendar.setup = function (params) {
 		var dateFmt = params.inputField ? params.ifFormat : params.daFormat;
 		var mustCreate = false;
 		var cal = window.calendar;
-		if (dateEl)
+		if (dateEl && ! params.multiple)
 			params.date = Date.parseDate(dateEl.value || dateEl.innerHTML, dateFmt);
 		if (!(cal && params.cache)) {
 			window.calendar = cal = new Calendar(params.firstDay,

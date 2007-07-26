@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2005 Luis Belmar-Letelier <luis@itaapy.com>
-#               2006 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2004-2005 Luis Arturo Belmar-Letelier <luis@itaapy.com>
+# Copyright (C) 2006-2007 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

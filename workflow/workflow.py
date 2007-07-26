@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2004 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-#               2002 Thilo Ernst <Thilo.Ernst@dlr.de>
+# Copyright (C) 2002 Thilo Ernst  <Thilo.Ernst@dlr.de>
+# Copyright (C) 2002-2004, 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

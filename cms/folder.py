@@ -43,7 +43,7 @@ from ical import CalendarAware, Calendar
 from messages import *
 from versioning import VersioningAware
 from workflow import WorkflowAware
-from utils import reduce_string
+from utils import generate_name, reduce_string
 import widgets
 from registry import register_object_class, get_object_class
 from catalog import schedule_to_index, schedule_to_unindex
@@ -742,31 +742,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 container.del_object(name)
 
             # Find a non used name
-            # XXX ROBLES To be tested carefully and optimized
-            while self.has_handler(name):
-                name = name.split('.')
-                id = name[0].split('_')
-                index = id[-1]
-                try:   # tests if id ends with a number
-                    index = int(index)
-                except ValueError:
-                    id.append('copy_1')
-                else:
-                    try:  # tests if the pattern is '_copy_x'
-                       if id[-2] == 'copy':
-                          index = str(index + 1) # increment index
-                          id[-1] = index
-                       else:
-                          id.append('copy_1')
-                    except IndexError:
-                       id.append('copy_1')
-                    else:
-                       pass
-                id = '_'.join(id)
-                name[0] = id
-                name = '.'.join(name)
-            # Unicode is not a valid Zope id
-            name = str(name)
+            name = generate_name(name, self.get_handler_names(), '_copy_')
             # Add it here
             self.set_object(name, handler, metadata)
             # Copy&Paste (fix metadata properties)

@@ -33,6 +33,7 @@ from file import File
 from folder import Folder
 from messages import *
 from text import Text
+from utils import generate_name
 from registry import register_object_class, get_object_class
 import widgets
 
@@ -649,7 +650,6 @@ class Issue(Folder):
             row.append('')
         else:
             filename, mimetype, body = file
-            row.append(filename)
             # Upload
             # The mimetype sent by the browser can be minimalistic
             guessed = mimetypes.guess_type(filename)[0]
@@ -659,6 +659,10 @@ class Issue(Folder):
             handler_class = get_object_class(mimetype)
             handler = handler_class()
             handler.load_state_from_string(body)
+
+            # Find a non used name
+            filename = generate_name(filename, self.get_handler_names())
+            row.append(filename)
 
             handler, metadata = self.set_object(filename, handler)
             metadata.set_property('format', mimetype)
@@ -695,7 +699,7 @@ class Issue(Folder):
         body += self.gettext(u'The user %s did some changes.') % user_title
         body += '\n\n'
         (kk, kk, title, module, version, type, priority, assigned_to, state,
-            comment, file) = row
+            comment, filename) = row
         if len(history.lines) == 1:
             old_title = old_module = old_version = old_type = old_priority \
                 = old_assigned_to = old_state = None
@@ -747,7 +751,7 @@ class Issue(Folder):
                 assigned_to = ''
             body += self.gettext(u'  Assigned To: %s') % assigned_to + '\n'
         if file:
-            body += self.gettext(u'  New Attachement: %s') % file + '\n'
+            body += self.gettext(u'  New Attachment: %s') % filename + '\n'
         if comment:
             body += self.gettext(u'Comment') + '\n'
             body += self.gettext(u'-------') + '\n\n'

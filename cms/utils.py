@@ -122,3 +122,42 @@ def generate_password(length=6):
     return ''.join(password)
 
 
+###########################################################################
+# Generate next name
+###########################################################################
+def generate_name(name, used, suffix='_'):
+    """
+    Generate a name which is not in list "used" based on name and suffix.
+    Example:
+      With name='toto.txt', used=['toto.txt', 'toto_0.txt']
+      --> toto.txt and toto_0.txt are used so it returns toto_1.txt
+      With name='toto.txt', used=['toto.txt', 'toto_0.txt'], suffix='_copy_'
+      --> toto.txt is used so it returns toto_copy_0.txt
+    """
+    if name not in used:
+        return name
+
+    items = name.split('.', 1)
+    basename = items[0]
+    extent = ''
+    if len(items) > 1:
+        extent = '.%s' % items[1] 
+
+    # 1st time called
+    if suffix not in basename:
+        index = 0
+    else:
+        basename, index = basename.rsplit(suffix, 1)
+        try: 
+            index = int(index) + 1
+        except ValueError:
+            basename = '%s%s%s' % (basename, suffix, index)
+            index = 0
+
+    name = ''.join([basename, suffix, str(index), extent])
+    while name in used:
+        index += 1
+        name = ''.join([basename, suffix, str(index), extent])
+
+    return str(name)
+

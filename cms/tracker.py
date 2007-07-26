@@ -695,7 +695,8 @@ class Issue(Folder):
         if user.name in to_addrs:
             to_addrs.remove(user.name)
         # Notify / Subject
-        subject = '[Tracker Issue #%s] %s' % (self.name, title)
+        tracker_title = self.parent.get_property('dc:title') or 'Tracker Issue'
+        subject = '[%s #%s] %s' % (tracker_title, self.name, title)
         # Notify / Body
         if context.handler.class_id == Tracker.class_id:
             uri = context.uri.resolve('%s/;history' % self.name)

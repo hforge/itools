@@ -152,42 +152,53 @@ class Table(File, iTable):
 
         fields = self.get_fields()
         fields.insert(0, ('index', u'id'))
-        rows = []
+        records = []
        
         for record in self.get_records():
             id = record.id
-            rows.append({})
-            rows[-1]['id'] = str(id) # del_record_action
-            rows[-1]['checkbox'] = True
+            records.append({})
+            records[-1]['id'] = str(id)
+            records[-1]['checkbox'] = True
             # Fields 
-            rows[-1]['index'] = id, ';edit_record_form?id=%s' % id
+            records[-1]['index'] = id, ';edit_record_form?id=%s' % id
             for field, field_title in fields[1:]:
                 value = self.get_value(record, field)
                 datatype = self.get_datatype(field)
-                multiple = getattr(datatype, 'multiple', False)  
+
+                multiple = getattr(datatype, 'multiple', False)
                 if multiple is True:
+                    value.sort()
                     if len(value) > 0:
-                        multiple = len(value) > 1
-                        value.sort()
+                        rmultiple = len(value) > 1
                         value = value[0]
                     else:
-                        multiple = False
-                        value = ''
+                        rmultiple = False
+                        value = None
+
                 is_enumerate = getattr(datatype, 'is_enumerate', False)
                 if is_enumerate:
-                    rows[-1][field] = datatype.get_value(value)
+                    records[-1][field] = datatype.get_value(value)
                 else:
-                    rows[-1][field] = value
-                if multiple is True:
-                    rows[-1][field] = '%s [...]' % rows[-1][field]
+                    records[-1][field] = value
 
+                if multiple is True:
+                    records[-1][field] = (records[-1][field], rmultiple)
         # Sorting
         sortby = context.get_form_value('sortby')
         sortorder = context.get_form_value('sortorder', 'up')
         if sortby:
-            rows.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
+            records.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
         
-        namespace['table'] = widgets.table(fields, rows, [sortby], sortorder,
+        records = records[start:start+size]
+        for record in records:
+            for field, field_title in fields[1:]:
+                if isinstance(record[field], tuple):
+                    if record[field][1] is True:
+                        record[field] = '%s [...]' % record[field][0]
+                    else:
+                        record[field] = record[field][0]
+
+        namespace['table'] = widgets.table(fields, records, [sortby], sortorder,
                                            actions)
 
         handler = self.get_handler('/ui/table/view.xml')

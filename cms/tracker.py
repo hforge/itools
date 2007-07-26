@@ -19,6 +19,7 @@
 # Import from the Standard Library
 from datetime import datetime
 import mimetypes
+from operator import itemgetter
 from string import Template
 from re import sub
 
@@ -159,9 +160,10 @@ class Tracker(Folder):
     #######################################################################
     def get_subviews(self, name):
         if name == 'search_form':
-            return [
-                'view?search_name=%s' % x.name
-                for x in self.search_handlers(handler_class=StoredSearch) ]
+            items = list(self.search_handlers(handler_class=StoredSearch))
+            items.sort(lambda x, y: cmp(x.get_property('dc:title'),
+                                        y.get_property('dc:title')))
+            return ['view?search_name=%s' % x.name for x in items]
         return Folder.get_subviews(self, name)
 
 
@@ -186,9 +188,11 @@ class Tracker(Folder):
         # Build the namespace
         namespace = {}
         # Stored Searches
-        namespace['stored_searches'] = [
+        stored_searches = [
             {'name': x.name, 'title': x.get_title()}
             for x in self.search_handlers(handler_class=StoredSearch) ]
+        stored_searches.sort(key=itemgetter('title'))
+        namespace['stored_searches'] = stored_searches
 
         # Search Form
         search_name = context.get_form_value('search_name')
@@ -1011,9 +1015,7 @@ class Issue(Folder):
 
     def get_subviews(self, name):
         if name == 'search_form':
-            tracker = self.parent
-            stored_search = tracker.search_handlers(handler_class=StoredSearch)
-            return ['view?search_name=%s' % x.name for x in stored_search]
+            return self.parent.get_subviews(name)
         return Folder.get_subviews(self, name)
 
 

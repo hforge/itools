@@ -136,10 +136,10 @@ if __name__ == '__main__':
                 if state == 0:
                     if line.startswith('# Copyright (C) '):
                         email, name, years = parse_copyright(line)
+                        if email in credits_mails:
+                            email = credits_mails[email]
                         if email in credits_names:
                             name = credits_names[email]
-                        if email in credits_mails:
-                            emails = credits_mails[email]
                         authors.setdefault(email, (name, set()))
                         authors[email][1].update(years)
                         state = 1

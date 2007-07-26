@@ -104,7 +104,7 @@ class String(DataType):
 
 
 class Boolean(DataType):
-
+    
     default = False
 
     @staticmethod
@@ -262,8 +262,12 @@ class Enumerate(String):
     @classmethod
     def get_namespace(cls, name):
         options = cls.get_options()
-        for option in options:
-            option['selected'] = option['name'] == name
+        if type(name) is type([]):
+            for option in options:
+                option['selected'] = option['name'] in name
+        else:
+            for option in options:
+                option['selected'] = option['name'] == name
         return options
 
 

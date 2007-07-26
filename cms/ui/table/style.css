@@ -1,0 +1,20 @@
+.table_calendar div {
+    cursor: default !important;
+}
+
+.table_calendar .button {
+    background: none !important;
+}
+
+.table_calendar .nav {
+  background: #888a85 url(menuarrow.gif) no-repeat 100% 100% !important;
+}
+
+.table_calendar thead .headrow { /* Row <TR> containing navigation buttons */
+  background: #888a85 !important;
+  color: #fff !important;
+}
+
+.table_calendar td {
+    vertical-align: top;
+}

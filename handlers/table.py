@@ -70,7 +70,7 @@ def read_name(line):
     # Cut name
     while not c in (';', ':'):
         line = line[1:]
-        if c.isalnum() or c == '-':
+        if c.isalnum() or c in ['-', '_']:
             lexeme += c
         else:
             raise SyntaxError, "unexpected character '%s' (%s)" % (c, ord(c))
@@ -354,7 +354,7 @@ class Table(File):
             datatype = self.get_datatype(name)
             value = datatype.decode(value)
             property = Property(value, parameters)
-            if datatype.multiple is True:
+            if getattr(datatype, 'multiple', False) is True:
                 version.setdefault(name, []).append(property)
             elif name in version:
                 raise ValueError, "property '%s' can occur only once" % name
@@ -372,7 +372,7 @@ class Table(File):
         names.sort()
         for name in names:
             datatype = self.get_datatype(name)
-            if datatype.multiple is True:
+            if getattr(datatype, 'multiple', False) is True:
                 properties = version[name]
             else:
                 properties = [version[name]]
@@ -452,10 +452,7 @@ class Table(File):
     def get_record(self, id, sequence=-1):
         if id >= len(self.records):
             return None
-        record = self.records[id]
-        if record is None:
-            return None
-        return record[sequence].copy()
+        return self.records[id]
 
 
     def add_record(self, kw):
@@ -465,7 +462,7 @@ class Table(File):
         # Fix the type
         for name, value in kw.items():
             datatype = self.get_datatype(name)
-            if datatype.multiple is True:
+            if getattr(datatype, 'multiple', False) is True:
                 value = [ x if isinstance(x, Property) else Property(x)
                           for x in value ]
             elif not isinstance(value, Property):
@@ -487,7 +484,7 @@ class Table(File):
         version = record[-1].copy()
         for name, value in kw.items():
             datatype = self.get_datatype(name)
-            if datatype.multiple is True:
+            if getattr(datatype, 'multiple', False) is True:
                 value = [ x if isinstance(x, Property) else Property(x)
                           for x in value ]
             elif not isinstance(value, Property):

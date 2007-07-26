@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h4>Add a new record</h4>
+
+<form action=";add_record_action" method="post">
+  <dl>
+    <stl:block repeat="field fields">
+      <dt>${field/title}
+        <span stl:if="field/multiple">(multiple)</span>
+        <span stl:if="field/is_date">Format: 'yyyy-mm-dd'</span>
+      </dt>
+      <dd>
+        <stl:block stl:if="field/multiple">
+          <stl:block stl:if="not field/is_enumerate">
+            <stl:block stl:if="not field/is_date">
+              <textarea rows="5" cols="25" name="${field/name}" 
+                        id="${field/name}"></textarea>
+            </stl:block>
+            <stl:block stl:if="field/is_date">
+              <table class="table_calendar">
+                <tr>
+                  <td>
+                    <textarea rows="5" cols="25" name="${field/name}"
+                              id="${field/name}"></textarea>
+                    <input type="button" value="update" id="btn_blur_${field/name}" 
+                           onclick="tableFlatOuputOnBlur(elt_${field/name}, cal_${field/name});" />
+                  </td>
+                  <td>
+                    <div id="calendar-flat-${field/name}" style="float: left;">
+                    </div>
+                    <script type="text/javascript">
+                      var MA_${field/name} = [];
+                      var cal_${field/name} = Calendar.setup({
+                              displayArea  : '${field/name}',
+                              flat         : 'calendar-flat-${field/name}',
+                              flatCallback : tableFlatCallback,
+                              multiple     : MA_${field/name},
+                              ifFormat     : '%Y-%m-%d'
+                              });
+                      MA_${field/name} = [new Date()];
+                      var elt_${field/name} = document.getElementById('${field/name}');
+                      if (!browser.isIE) {
+                          document.getElementById('btn_blur_${field/name}').style.display = 'none';
+                          elt_${field/name}.setAttribute('onblur',
+                               'tableFlatOuputOnBlur(elt_${field/name}, cal_${field/name})');
+                      }
+                    </script>
+                  </td>
+                </tr>
+              </table>
+            </stl:block>
+          </stl:block>
+        </stl:block>
+        
+        <stl:block stl:if="not field/multiple">
+          <stl:block stl:if="field/is_input">
+            <input type="text" name="${field/name}" value="${field/value}" 
+                   id="${field/name}" />
+            <stl:block stl:if="field/is_date">
+              <input id="trigger_date" 
+                     type="button" value="..." name="trigger_date"/>
+              <script language="javascript">
+                Calendar.setup({inputField: "${field/name}", ifFormat: "%Y-%m-%d", 
+                                button: "trigger_date"});
+              </script>
+            </stl:block>
+          </stl:block>
+          <input type="checkbox" name="${field/name}" value="1"
+            stl:if="field/is_boolean" />
+        </stl:block>
+
+        <select name="${field/name}" style="width: 200px"
+          stl:if="field/is_enumerate" multiple="${field/multiple}">
+          <option value=""></option>
+          <option stl:repeat="option field/options" value="${option/name}"
+            selected="${option/selected}">${option/value}</option>
+        </select>
+      </dd>
+    </stl:block>
+  </dl>
+  <input type="submit" value="Add" class="button_ok" />
+</form>
+
+
+</stl:block>

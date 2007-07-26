@@ -229,12 +229,15 @@ def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x):
         # The checkbox column
         # TODO Instead of the parameter 'checked', use only 'checkbox', but
         # with three possible values: None, False, True
-        x['id'] = None
+        id = None
         if actions and row['checkbox'] is True:
-            x['id'] = row['id']
+            id = row['id']
+            if isinstance(id, int):
+                id = str(id)
             namespace['column_checkbox'] = True
             # Checked by default?
             x['checked'] = row.get('checked', False)
+        x['id'] = id
         # The image column
         x['img'] = row.get('img')
         if x['img'] is not None:

@@ -302,10 +302,9 @@ class Root(WebSite):
         message['Date'] = formatdate(localtime=True)
         message['From'] = from_addr
         message['To'] = to_addr
-        message = message.as_string()
         # Send email
         server = get_context().server
-        server.send_email(from_addr, to_addr, message)
+        server.send_email(message)
 
 
     ########################################################################

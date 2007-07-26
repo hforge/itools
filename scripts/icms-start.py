@@ -25,6 +25,7 @@ import sys
 import itools
 from itools import vfs
 from itools.cms.server import Server
+from itools.cms.spool import Spool
 
 
 
@@ -46,8 +47,9 @@ def start(parser, options, target):
         print
         return
 
-    # Set-up the server object
+    # Set-up the servers
     server = Server(target, address=options.address, port=options.port)
+    spool = Spool(target)
 
     # Check the instance is up-to-date
     root = server.root
@@ -95,8 +97,13 @@ def start(parser, options, target):
         sys.stderr.flush()
         os.dup2(devnull, 2)
 
-    # Start the server
-    server.start()
+    pid = os.fork()
+    if pid > 0:
+        # Start the Web Server
+        server.start()
+    else:
+        # Start the Mail Spool
+        spool.start()
 
 
 

@@ -15,14 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the future
+from __future__ import with_statement
+
 # Import from the Standard Library
-import os
-from Queue import Queue
-from smtplib import SMTP
-from socket import gaierror
+from os import fdopen, getpgid
 import sys
-from thread import start_new_thread
-from time import sleep, time
+from tempfile import mkstemp
 
 # Import from itools
 from itools.uri import get_absolute_reference2
@@ -108,9 +107,6 @@ class Server(BaseServer):
                             error_log='%s/error_log' % path,
                             pid_file='%s/pid' % path)
 
-        # The SMTP host
-        self.smtp_host = config.get_value('smtp-host')
-
 
     def get_pid(self):
         try:
@@ -121,50 +117,19 @@ class Server(BaseServer):
         pid = int(pid)
         try:
             # XXX This only works on Unix
-            os.getpgid(pid)
+            getpgid(pid)
         except OSError:
             return None
 
         return pid
 
 
-    #######################################################################
-    # EMail Out Queue
-    #######################################################################
-    def send_email_yes(self, from_addr, to_addr, message):
-        self.email_queue.put((from_addr, to_addr, message, time()))
-
-
-    def send_email_no(self, from_addr, to_addr, message):
-        raise RuntimeError, 'Sending emails is not enabled.'
-
-
-    def email_thread(self):
-        queue = self.email_queue
-        smtp_host = self.smtp_host
-        while True:
-            # Next message
-            from_addr, to_addr, message, wait = queue.get()
-            # Wait
-            wait = wait - time()
-            if wait > 0:
-                sleep(wait)
-            # Open connection
-            try:
-                smtp = SMTP(smtp_host)
-            except gaierror:
-                queue.put((from_addr, to_addr, message, time() + 10))
-                continue
-            except:
-                self.log_error()
-                continue
-            # Send email
-            try:
-                smtp.sendmail(from_addr, to_addr, message)
-            except:
-                self.log_error()
-            finally:
-                smtp.quit()
+    def send_email(self, message):
+        spool = self.target.resolve2('spool')
+        spool = str(spool.path)
+        tmp_file, tmp_path = mkstemp(dir=spool)
+        with fdopen(tmp_file, 'w') as file:
+            file.write(message.as_string())
 
 
     #######################################################################
@@ -193,17 +158,4 @@ class Server(BaseServer):
         for handler in list(transaction):
             if hasattr(handler, 'before_commit'):
                 handler.before_commit()
-
-
-    def start(self):
-        # Email
-        if self.smtp_host is None:
-            self.send_email = self.send_email_no
-            print "Warning: the configuration variable 'smtp-host' is missing."
-        else:
-            self.send_email = self.send_email_yes
-            self.email_queue = Queue(0)
-            start_new_thread(self.email_thread, ())
-        # Web
-        BaseServer.start(self)
 

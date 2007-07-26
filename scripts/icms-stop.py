@@ -18,21 +18,32 @@
 # Import from the Standard Library
 from optparse import OptionParser
 import os
-import signal
+from signal import SIGINT
 
 # Import from itools
 import itools
 from itools.cms.server import Server
+from itools.cms.spool import Spool
 
 
 def stop(parser, options, target):
+    # Stop the Web Server
     server = Server(target)
     pid = server.get_pid()
     if pid is None:
-        print 'The server "%s" is not running.' % target
+        print '[%s] Web Server not running.' % target
     else:
-        os.kill(pid, signal.SIGINT)
-        print 'Shutting down "%s" (gracefully)...' % target
+        os.kill(pid, SIGINT)
+        print '[%s] Web Server shutting down (gracefully)...' % target
+    # Stop the Mail Spool
+    spool = Spool(target)
+    pid = spool.get_pid()
+    if pid is None:
+        print '[%s] Mail Spool not running.' % target
+    else:
+        os.kill(pid, SIGINT)
+        print '[%s] Mail Spool shutting down (gracefully)...' % target
+
 
 
 if __name__ == '__main__':

@@ -297,6 +297,7 @@ class DatabaseFS(FileFS):
                 elif action == '~':
                     dst, src = line.rsplit('#', 1)
                     if vfs.exists(src):
+                        vfs.remove(dst)
                         vfs.move(src, dst)
                 elif action == '>':
                     dst, src = line.rsplit('#', 1)

@@ -37,8 +37,7 @@ def parse_copyright(line):
 
     Extract the email address and the years.
     """
-    line = line[line.find('200'):]
-
+    line = line[16:].strip()
     # Split
     for i in range(len(line)):
         c = line[i]
@@ -58,7 +57,7 @@ def parse_copyright(line):
         else:
             years.add(int(year))
 
-    return email, name, years
+    return email, name.strip(), years
 
 
 
@@ -130,33 +129,25 @@ if __name__ == '__main__':
 
         # Keep old copyright
         if options.keep:
-            state = 0
-            for line in open(filename).readlines():
-                line = line.strip()
-                if state == 0:
-                    if line.startswith('# Copyright (C) '):
-                        email, name, years = parse_copyright(line)
-                        if email in credits_mails:
-                            email = credits_mails[email]
-                        if email in credits_names:
-                            name = credits_names[email]
-                        authors.setdefault(email, (name, set()))
-                        authors[email][1].update(years)
-                        state = 1
-                elif state == 1:
-                    if '200' in line:
-                        email, name, years = parse_copyright(line)
-                        if email in credits_names:
-                            name = credits_names[email]
-                        if email in credits_mails:
-                            emails = credits_mails[email]
-                        authors.setdefault(email, (name, set()))
-                        authors[email][1].update(years)
-                    else:
-                        break
+            lines = open(filename).readlines()
+            # Skip shebang and encoding
+            i = 0
+            while not lines[i].startswith('# Copyright (C) '):
+                i += 1
+            # Process
+            while lines[i].startswith('# Copyright (C) '):
+                line = lines[i]
+                email, name, years = parse_copyright(line)
+                if email in credits_mails:
+                    email = credits_mails[email]
+                if email in credits_names:
+                    name = credits_names[email]
+                authors.setdefault(email, (name, set()))
+                authors[email][1].update(years)
+                i += 1
 
         # Format the lines
-        lines = []
+        copyright = []
         for email in authors:
             name, years = authors[email]
             years = list(years)
@@ -183,34 +174,18 @@ if __name__ == '__main__':
                 else:
                     years.append('%s-%s' % x)
             years = ', '.join(years)
-            lines.append('%s %s <%s>' % (years, name, email))
+            copyright.append('# Copyright (C) %s %s <%s>\n' % (years, name,
+                email))
+        copyright.sort()
 
-        # Copyright
-        copyright = []
-        lines.sort()
-        first, lines = lines[0], lines[1:]
-        copyright.append('# Copyright (C) %s\n' % first)
-        for line in lines:
-            copyright.append('# Copyright (C) %s\n' % line)
+        # Replace the old copyright by the new one
+        lines = open(filename).readlines()
+        i = 0
+        while not lines[i].startswith('# Copyright (C) '):
+            i += 1
+        while lines[i].startswith('# Copyright (C) '):
+            del lines[i]
+        lines = lines[:i] + copyright + lines[i:]
 
-        # Rebuild
-        state = 0
-        lines = []
-        for line in open(filename).readlines():
-            if state == 0:
-                if line.startswith('# Copyright (C) '):
-                    lines.extend(copyright)
-                    state = 1
-                else:
-                    lines.append(line)
-            elif state == 1:
-                if line.startswith('# Copyright (C) '):
-                    pass
-                elif '200' not in line:
-                    lines.append(line)
-                    state = 2
-            elif state == 2:
-                lines.append(line)
         # Write
         open(filename, 'w').write(''.join(lines))
-

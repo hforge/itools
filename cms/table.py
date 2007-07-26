@@ -153,7 +153,6 @@ class Table(File, iTable):
         fields = self.get_fields()
         fields.insert(0, ('index', u'id'))
         rows = []
-        getter = lambda x, y: x.get_value(y)
        
         for record in self.get_records():
             id = record.id
@@ -163,13 +162,17 @@ class Table(File, iTable):
             # Fields 
             rows[-1]['index'] = id, ';edit_record_form?id=%s' % id
             for field, field_title in fields[1:]:
-                value = getter(record, field)
+                value = self.get_value(record, field)
                 datatype = self.get_datatype(field)
                 multiple = getattr(datatype, 'multiple', False)  
                 if multiple is True:
-                    multiple = len(value) > 1
-                    value.sort()
-                    value = value[0]
+                    if len(value) > 0:
+                        multiple = len(value) > 1
+                        value.sort()
+                        value = value[0]
+                    else:
+                        multiple = False
+                        value = ''
                 is_enumerate = getattr(datatype, 'is_enumerate', False)
                 if is_enumerate:
                     rows[-1][field] = datatype.get_value(value)
@@ -250,8 +253,8 @@ class Table(File, iTable):
             datatype = self.get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
                 if is_datatype(datatype, Enumerate):
-                    value = context.get_form_values(name)
-                else: # textarea
+                    value = context.get_form_values(name, type=datatype)
+                else: # textarea -> string
                     values = context.get_form_value(name)
                     values = values.replace('\r\n', '\n').split('\n')
                     value = []
@@ -284,7 +287,7 @@ class Table(File, iTable):
         fields = []
         for name, title in self.get_fields():
             datatype = self.get_datatype(name)
-            value = getattr(record, name)
+            value = self.get_value(record, name)
             if is_datatype(datatype, Enumerate) is False \
                     and getattr(datatype, 'multiple', False) is True:
                 for index in (range(len(value))):
@@ -310,7 +313,7 @@ class Table(File, iTable):
                 field['is_date'] = False
                 if is_datatype(datatype, Date):
                     field['is_date'] = True
-                    field['dates'] = getattr(record, name)
+                    field['dates'] = self.get_value(record, name)
 
             field['multiple'] = getattr(datatype, 'multiple', False)
             # Append
@@ -325,13 +328,12 @@ class Table(File, iTable):
         # Get the record
         id = context.get_form_value('id', type=Integer)
         record = {}
-
         for name, title in self.get_fields():
             datatype = self.get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
                 if is_datatype(datatype, Enumerate):
                     value = context.get_form_values(name)
-                else: # textarea
+                else: # textarea -> string
                     values = context.get_form_value(name)
                     values = values.replace('\r\n', '\n').split('\n')
                     value = []
@@ -340,7 +342,7 @@ class Table(File, iTable):
                         if tmp:
                             value.append(datatype.decode(tmp))
             else:
-                value = datatype.decode(context.get_form_value(name))
+                value = context.get_form_value(name, type=datatype)
             record[name] = value
             
         self.update_record(id, **record)

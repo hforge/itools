@@ -272,7 +272,15 @@ class Record(list):
 
 
     # For indexing purposes
-    get_value = __getattr__
+    def get_value(self, name):
+        version = self[-1]
+        if name not in version:
+            return None
+
+        property = version[name]
+        if isinstance(property, list):
+            return [ x.value for x in property ]
+        return property.value
 
 
 
@@ -377,6 +385,8 @@ class Table(File):
             else:
                 properties = [version[name]]
             for property in properties:
+                if property.value is None:
+                    continue
                 lines.append(name)
                 pnames = property.parameters.keys()
                 pnames.sort()
@@ -529,6 +539,23 @@ class Table(File):
     def get_records(self):
         for id in self.get_record_ids():
             yield self.get_record(id)
+
+
+    def get_value(self, record, name):
+        """
+        Return the value if name is in record
+        else if name is define in the schema
+        return [] is name is a multiple, the default value otherwise.
+        """
+        try:
+            return getattr(record, name)
+        except AttributeError:
+            if self.schema.has_key(name):
+                datatype = self.get_datatype(name)
+                if getattr(datatype, 'multiple', False):
+                    return []
+                else:
+                    return getattr(datatype, 'default')
 
 
     def search(self, query=None, **kw):

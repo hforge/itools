@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005 Nicolas OYEZ  <noyez@itaapy.com>
+# Copyright (C) 2005 Nicolas Oyez <nicoyez@gmail.com>
 # Copyright (C) 2005-2006 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify

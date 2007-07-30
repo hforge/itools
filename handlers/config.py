@@ -189,9 +189,9 @@ class Config(Text):
         self.lines.append(None)
 
 
-    def get_value(self, name, type=None):
+    def get_value(self, name, type=None, default=None):
         if name not in self.values:
-            return None
+            return default
         # Get the line
         n = self.values[name]
         line = self.lines[n]

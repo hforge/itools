@@ -70,7 +70,12 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         # minimalistic)
         name, mimetype, body = file
         guessed, encoding = mimetypes.guess_type(name)
-        if guessed is not None:
+        if encoding is not None:
+            encoding_map = {'gzip': 'application/x-gzip',
+                            'bzip2': 'application/x-bzip2'}
+            if encoding_map.has_key(encoding):
+                mimetype = encoding_map[encoding]
+        elif guessed is not None:
             mimetype = guessed
 
         # Check the name

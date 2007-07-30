@@ -248,8 +248,13 @@ class Enumerate(String):
 
 
     @classmethod
+    def _get_options(cls):
+        return cls.options
+
+
+    @classmethod
     def is_valid(cls, value):
-        for option in cls.options:
+        for option in cls._get_options():
             if value == option['name']:
                 return True
         return False
@@ -258,7 +263,7 @@ class Enumerate(String):
     @classmethod
     def get_options(cls):
         """Returns a copy of options list of dictionaries."""
-        return [dict(option) for option in cls.options]
+        return [dict(option) for option in cls._get_options()]
 
 
     @classmethod
@@ -275,7 +280,7 @@ class Enumerate(String):
 
     @classmethod
     def get_value(cls, name, default=None):
-        for option in cls.options:
+        for option in cls._get_options():
             if option['name'] == name:
                 return option['value']
 

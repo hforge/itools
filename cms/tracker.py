@@ -476,21 +476,6 @@ class SelectTable(CSV):
         return None
 
 
-
-register_object_class(SelectTable)
-
-
-
-class Versions(SelectTable):
-    
-    class_id = 'tracker_versions'
-
-    columns = ['id', 'title', 'released']
-    schema = {'id': IntegerKey,
-              'title': Unicode(title=u'Title'),
-              'released': Boolean(title=u'Released')}
-
-
     def view(self, context):
         namespace = {}
 
@@ -552,6 +537,20 @@ class Versions(SelectTable):
 
         handler = self.get_handler('/ui/csv/view.xml')
         return stl(handler, namespace)
+
+
+register_object_class(SelectTable)
+
+
+
+class Versions(SelectTable):
+    
+    class_id = 'tracker_versions'
+
+    columns = ['id', 'title', 'released']
+    schema = {'id': IntegerKey,
+              'title': Unicode(title=u'Title'),
+              'released': Boolean(title=u'Released')}
 
 register_object_class(Versions)
 

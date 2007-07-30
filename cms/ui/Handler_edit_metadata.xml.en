@@ -18,6 +18,11 @@
         <textarea cols="50" rows="8" id="dc:description"
           name="dc:description">${description}</textarea>
       </dd>
+      <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
+      <dd>
+        <input type="text" size="40" id="dc:subject" name="dc:subject"
+          value="${subject}" />
+      </dd>
     </dl>
     <p>
       <input type="hidden" name="dc:language" value="${language}" />

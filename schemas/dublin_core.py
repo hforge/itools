@@ -62,7 +62,7 @@ class DublinCore(Schema):
                  'relation': None,
                  'rights': None,
                  'source': None,
-                 'subject': None,
+                 'subject': Unicode,
                  'title': Unicode,
                  'type': None,
                  }

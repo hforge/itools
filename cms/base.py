@@ -542,6 +542,9 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         # Description
         namespace['description'] = self.get_property('dc:description',
                                                      language=language)
+        # Subject
+        namespace['subject'] = self.get_property('dc:subject',
+                                                  language=language)
 
         handler = self.get_handler('/ui/Handler_edit_metadata.xml')
         return stl(handler, namespace)
@@ -551,14 +554,17 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
+        subject = context.get_form_value('dc:subject')
         language = context.get_form_value('dc:language')
 
         if language is None:
             self.set_property('dc:title', title, language=language)
             self.set_property('dc:description', description, language=language)
+            self.set_property('dc:subject', subject, language=language)
         else:
             self.set_property('dc:title', title)
             self.set_property('dc:description', description)
+            self.set_property('dc:subject', subject)
 
         return context.come_back(MSG_CHANGES_SAVED)
 

@@ -410,6 +410,18 @@ class Skin(Folder):
         return here.gettext("%(root_title)s: %(here_title)s") % mapping
 
 
+    def get_meta_tags(self, context):
+        """
+        Return a list of dict with meta tags to give to the template document.
+        """
+        here = context.handler
+        meta = [{'name': 'description',
+                 'content': here.get_property('dc:description')},
+                {'name': 'keywords',
+                 'content': here.get_property('dc:subject')}]
+        return meta
+
+
     def build_namespace(self, context):
         namespace = {}
 
@@ -437,6 +449,9 @@ class Skin(Folder):
 
         # Title
         namespace['title'] = self.get_template_title(context)
+
+        # Meta
+        namespace['meta_tags']= self.get_meta_tags(context)
 
         return namespace
 

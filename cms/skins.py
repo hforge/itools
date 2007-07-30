@@ -401,7 +401,7 @@ class Skin(Folder):
         if here is None:
             return u'404 Not Found'
         # In the Root
-        root = context.root
+        root = here.get_site_root()
         if root is here:
             return root.get_title()
         # Somewhere else

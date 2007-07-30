@@ -32,11 +32,12 @@ from itools.datatypes import FileName
 from itools import vfs
 from itools.catalog import (make_catalog, CatalogAware, TextField,
     KeywordField, IntegerField, BoolField)
-from itools.handlers import Folder as FolderHandler, get_transaction
+from itools.handlers import Folder as FolderHandler, get_transaction, Config
 from itools.stl import stl
 from itools.web import get_context
 from itools.xml import Parser
 from itools.xhtml import stream_to_str_as_html
+from itools.uri import Path
 
 # Import from itools.cms
 from access import RoleAware
@@ -252,14 +253,19 @@ class Root(WebSite):
         return self.get_handler('ui/aruni')
 
 
-    ########################################################################
-    # Settings
     def get_available_languages(self):
-        return ['en', 'es', 'fr', 'zh', 'it']
-
-
-    def get_default_language(self):
-        return 'en'
+        """
+        Returns the language codes for the user interface.
+        """
+        pkg = self.__class__.__module__.split('.', 1)[0]
+        exec('import %s as pkg' % pkg)
+        path = Path(pkg.__path__[0]).resolve2('setup.conf')
+        config_uri = str(path)
+        config = Config(config_uri)
+        source_language = config.get_value('source_language', default='en')
+        languages = config.get_value('target_languages', default='').split()
+        languages.insert(0, source_language)
+        return languages
 
 
     ########################################################################

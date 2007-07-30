@@ -25,7 +25,7 @@ import sys
 # Import from itools
 import itools
 from itools import vfs
-from itools.handlers import Python
+from itools.handlers import Python, Config
 from itools.gettext import PO
 from itools.xhtml import Document
 import itools.stl
@@ -44,6 +44,10 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     if len(args) != 0:
         parser.error('incorrect number of arguments')
+
+    # Read configuration for languages
+    config = Config('setup.conf')
+    source_language = config.get_value('source_language')
 
     # Initialize message catalog
     po = PO()
@@ -71,7 +75,8 @@ if __name__ == '__main__':
     with open('MANIFEST') as manifest:
         for line in manifest.readlines():
             path = line.strip()
-            if (not (path.endswith('.xhtml.en') or path.endswith('.xml.en')) or
+            if (not (path.endswith('.xhtml.' + source_language) or
+                    path.endswith('.xml.' + source_language)) or
                     path.startswith('cms/skeleton')):
                 continue
             sys.stdout.write('.')

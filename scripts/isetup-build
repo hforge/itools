@@ -26,7 +26,7 @@ import sys
 import itools
 from itools.uri import Path
 from itools import vfs
-from itools.handlers import get_handler
+from itools.handlers import Config, get_handler
 import itools.gettext
 from itools.xhtml import Document
 import itools.stl
@@ -102,34 +102,27 @@ if __name__ == '__main__':
     if not git_available:
         print "Warning: not using git."
 
+    # Read configuration for languages
+    config = Config('setup.conf')
+    source_language = config.get_value('source_language')
+    target_languages = config.get_value('target_languages').split()
+
     # Initialize the list of files to install (the MANIFEST)
     manifest = ['MANIFEST']
     if git_available:
         cmd = 'git-ls-files'
     else:
-        cmd = 'find -type f|grep -Ev "^./(build|dist)"|grep -Ev "*.(~|pyc|fr|es|it|zh)$"'
+        cmd = ('find -type f|grep -Ev "^./(build|dist)"'
+               '|grep -Ev "*.(~|pyc|%s)"' % '|'.join(target_languages))
     for path in os.popen(cmd).readlines():
         path = path.strip()
         if not os.path.islink(path):
             manifest.append(path)
 
-    # Get languages to translate
-    languages = []
-    cmd = 'find locale -name "*.po"'
-    for path in os.popen(cmd).readlines():
-        path = path.strip()
-        languages.append(path[7:-3])
-
-    # Source language (XXX hardcoded)
-    source_language = 'en'
-
-    # Target languages
-    target_languages = [ x for x in languages if x != source_language ]
-
     # Build MO files
     print '(1) Compiling message catalogs:',
     sys.stdout.flush()
-    for language in languages:
+    for language in target_languages:
         print language,
         sys.stdout.flush()
         os.system('msgfmt locale/%s.po -o locale/%s.mo' % (language, language))
@@ -139,7 +132,7 @@ if __name__ == '__main__':
 
     # Load message catalogs
     message_catalogs = {}
-    for language in languages:
+    for language in target_languages:
         path = 'locale/%s.po' % language
         message_catalogs[language] = (get_handler(path), vfs.get_mtime(path))
 
@@ -148,8 +141,8 @@ if __name__ == '__main__':
     sys.stdout.flush()
     # XXX The directory "cms/skeleton" is specific to itools, should not be
     # hardcoded.
-    cmd = 'find -name "*.x*ml.en"| grep -Ev "^./(build|dist|cms/skeleton)"'
-    for path in os.popen(cmd).readlines():
+    cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|cms/skeleton)"'
+    for path in os.popen(cmd % source_language).readlines():
         # Load the handler
         path = path.strip()
         src_mtime = vfs.get_mtime(path)

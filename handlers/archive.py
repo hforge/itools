@@ -67,8 +67,13 @@ class Gzip(File):
     class_mimetypes = ['application/x-gzip']
 
 
+class Bzip2(File):
+
+    class_mimetypes = ['application/x-bzip2']
+
+
 # Register
-for handler_class in [ZipArchive, TarArchive, Gzip]:
+for handler_class in [ZipArchive, TarArchive, Gzip, Bzip2]:
     register_handler_class(handler_class)
 
 # Mimetypes BZip2 support

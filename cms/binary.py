@@ -19,7 +19,8 @@
 # Import from itools
 from itools.handlers import (Image as BaseImage, ZipArchive as BaseZipArchive,
                              TarArchive as BaseTarArchive,
-                             Gzip as BaseGzip)
+                             Gzip as BaseGzip,
+                             Bzip2 as BaseBzip2)
 from itools.xml import (MSWord as BaseMSWord,
                         MSExcel as BaseMSExcel,
                         MSPowerPoint as BaseMSPowerPoint,
@@ -279,13 +280,22 @@ class TarArchive(Archive, BaseTarArchive):
 # Compression
 ###########################################################################
 
-class Gzip(File, BaseGzip):
+class Compression(File):
 
-    class_id = 'application/x-gzip'
-    class_title = u"Gzip"
     class_icon16 = 'images/Archive16.png'
     class_icon48 = 'images/Archive48.png'
 
+
+class Gzip(Compression, BaseGzip):
+
+    class_id = 'application/x-gzip'
+    class_title = u"Gzip"
+
+
+class Bzip2(Compression, BaseBzip2):
+
+    class_id = 'application/x-bzip2'
+    class_title = u"Bzip2"
 
 ###########################################################################
 # Register
@@ -311,3 +321,4 @@ register_object_class(ZipArchive)
 register_object_class(TarArchive)
 # Compression
 register_object_class(Gzip)
+register_object_class(Bzip2)

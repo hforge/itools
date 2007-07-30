@@ -35,7 +35,7 @@ files, etc...
 import mimetypes
 
 # Import from itools
-from archive import ZipArchive, TarArchive, Gzip
+from archive import ZipArchive, TarArchive, Gzip, Bzip2
 from base import Node, Handler
 from config import Config
 from exceptions import AcquisitionError
@@ -60,6 +60,7 @@ __all__ = [
     'ZipArchive',
     'TarArchive',
     'Gzip',
+    'Bzip2',
     'Config',
     'File',
     'Folder',

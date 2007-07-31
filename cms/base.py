@@ -615,9 +615,16 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def addimage_form(self, context):
         from binary import Image
         from widgets import Breadcrumb
-
+        # Build the bc
+        bc = Breadcrumb(filter_type=Image, start=self.parent)
+        # Fix the bc style
+        style = context.root.get_handler('ui/aruni/aruni.css')
+        bc.style = context.handler.get_pathto(style)
+        # Construct namespace
         namespace = {}
-        namespace['bc'] = Breadcrumb(filter_type=Image, start=self.parent)
+        namespace['bc'] = bc
+        namespace['class_id'] = Image.class_id
+        namespace['message'] = context.get_form_value('message')
 
         handler = self.get_handler('/ui/html/addimage.xml')
         return stl(handler, namespace)
@@ -629,12 +636,34 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def addlink_form(self, context):
         from file import File
         from widgets import Breadcrumb
-
+        bc = Breadcrumb(filter_type=File, start=self.parent)
+        # Fix the bc style
+        style = context.root.get_handler('ui/aruni/aruni.css')
+        bc.style = context.handler.get_pathto(style)
+        # Construct namespace
         namespace = {}
-        namespace['bc'] = Breadcrumb(filter_type=File, start=self.parent)
+        namespace['bc'] = bc
+        namespace['class_id'] = File.class_id
+        namespace['message'] = context.get_form_value('message')
 
         handler = self.get_handler('/ui/html/addlink.xml')
         return stl(handler, namespace)
+
+
+    add_element__access__ = 'is_allowed_to_edit'
+    def add_element(self, context):
+        """
+        Allow to add a file in addlink_form or addimage_form
+        """
+        root = context.root
+        # Get the container
+        target_path = context.get_form_value('target_path')
+        container = root.get_handler(target_path)
+        # Add the image to the handler
+        uri = container.new_resource(context)
+        message = uri.query['message']
+
+        return context.come_back(message=message, keep=['bc_target'])
 
 
     epoz_color_form__access__ = 'is_allowed_to_edit'

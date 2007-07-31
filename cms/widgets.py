@@ -303,7 +303,7 @@ class Breadcrumb(object):
                 target = start.parent
         else:
             target = root.get_handler(target_path)
-
+        self.target_path = target.abspath
         # XXX Obsolete code
         self.style = 'style'
 ##        self.style = '../' * len(start.get_abspath().split('/')) + 'style'

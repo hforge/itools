@@ -14,44 +14,63 @@
       window.close();
     </script>
 
-    <table width="100%">
-      <tr>
-        <td width="20"></td>
-        <td bgcolor="#ffffff">
-          <p>
-            &raquo; Browse and link an image from the workspace:
-          </p>
-          <blockquote>
-            <stl:inline repeat="x bc/path">
-              / <a href="${x/url}">${x/name}</a>
-            </stl:inline>
-            <br />
-            <form action=";addimage_form" method="get">
-              <table>
-                <tr stl:repeat="object bc/objects">
-                  <td>
-                    <input type="radio" name="object" stl:if="not object/is_folder" value="${object/path}" />
-                  </td>
-                  <td>
-                    <img border="0" alt="${object/object_type}"
-                      src="${object/icon}" />
-                  </td>
-                  <td>
-                    <a stl:if="object/is_folder" href="${object/url}">${object/name}</a>
-                    <stl:inline if="not object/is_folder">${object/name}</stl:inline>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td colspan="2">
-                    <input stl:if="bc/is_submit" type="submit" value="Link" />
-                  </td>
-                </tr>
-              </table>
-            </form>
-          </blockquote>
-        </td>
-      </tr>
-    </table>
+    <div id="header">
+    <br/>
+    </div>
+
+    <div id="body">
+    <div id="message" stl:if="message">${message}</div>
+    <dl>
+    <dt>
+      &raquo; Browse and insert an Image from the workspace:
+    </dt>
+    <form action=";addimage_form" method="get">
+    <dd>
+      <stl:inline repeat="x bc/path">
+        / <a href="${x/url}">${x/name}</a>
+      </stl:inline>
+      <br/>
+        <table>
+          <tr stl:repeat="object bc/objects">
+            <td>
+              <input type="radio" name="object" stl:if="not object/is_folder"
+                     value="${object/path}" />
+            </td>
+            <td>
+              <img border="0" alt="${object/object_type}"
+                src="${object/icon}" />
+            </td>
+            <td>
+              <a stl:if="object/is_folder" href="${object/url}">
+                ${object/name}
+              </a>
+              <stl:inline if="not object/is_folder">${object/name}</stl:inline>
+            </td>
+            </tr>
+        </table>
+
+    </dd>
+    <dd>
+      <input stl:if="bc/is_submit" type="submit" value="Insert Image"
+             class="button_ok" />
+    </dd>
+    </form>
+    <!-- Add an image -->
+    <form name="add_element" method="post" enctype="multipart/form-data"
+          action=";add_element">
+    <dt>
+      &raquo; Add an image in this folder
+    </dt>
+    <dd>
+      <input type="hidden" name="target_path" value="${bc/target_path}"/>
+      <input type="hidden" name="class_id" value="${class_id}"/>
+      <input id="file" name="file" size="35" type="file"/>
+    </dd>
+    <dd>
+      <input class="button_add" type="submit" value="Add"/>
+    </dd>
+    </form>
+    </dl>
+    </div>
   </body>
 </html>

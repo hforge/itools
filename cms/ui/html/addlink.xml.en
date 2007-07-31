@@ -14,54 +14,78 @@
       window.close();
     </script>
 
-    <table width="100%">
-      <tr>
-        <td width="20"></td>
-        <td bgcolor="#ffffff">
-          <p> 
-            &raquo; Type the url to add:
-          </p>
-          <blockquote>
-            <form action=";addlink_form" method="get">
-              <input type="text" name="object" size="50" value="http://" />
-              <br />
-              <input type="submit" value="Add" />
+    <div id="header">
+    <br/>
+    </div>
+
+    <div id="body">
+    <div id="message" stl:if="message">Message :${message}</div>
+    <dl>
+      <!-- LINK -->
+      <dt>
+        &raquo; Type the url to add:
+      </dt>
+      <dd>
+        <br/>
+        <form name="add_external_url" action=";addlink_form" method="get">
+          <input type="text" name="object" size="50" value="http://" />
+          <input type="submit" value="Add" class="button_ok"/>
+        </form>
+      </dd>
+
+      <!-- Internal Document -->
+      <dt>
+        &raquo; Browse and link a file from the workspace:
+      </dt>
+      <dd>
+        <br/>
+        <stl:inline repeat="x bc/path">
+          / <a href="${x/url}">${x/name}</a>
+        </stl:inline>
+        <br />
+        <table>
+          <form name="add_internal_url" action=";addlink_form" method="get">
+          <tr stl:repeat="object bc/objects">
+            <td>
+              <input type="radio" name="object" value="${object/path}" />
+            </td>
+            <td>
+              <img border="0" alt="${object/object_type}"
+                src="${object/icon}" />
+            </td>
+            <td>
+              <a stl:if="object/is_folder" href="${object/url}">${object/name}</a>
+              <stl:inline if="not object/is_folder">${object/name}</stl:inline>
+            </td>
+          </tr>
+            <tr>
+              <td></td>
+              <td colspan="2">
+                <input stl:if="bc/is_submit" type="submit" value="Link"
+                       class="button_ok"/>
+              </td>
+            </tr>
+
             </form>
-          </blockquote>
-          <p>
-            &raquo; Browse and link an image from the workspace:
-          </p>
-          <blockquote>
-            <stl:inline repeat="x bc/path">
-              / <a href="${x/url}">${x/name}</a>
-            </stl:inline>
-            <br />
-            <form action=";addlink_form" method="get">
-              <table>
-                <tr stl:repeat="object bc/objects">
-                  <td>
-                    <input type="radio" name="object" value="${object/path}" />
-                  </td>
-                  <td>
-                    <img border="0" alt="${object/object_type}"
-                      src="${object/icon}" />
-                  </td>
-                  <td>
-                    <a stl:if="object/is_folder" href="${object/url}">${object/name}</a>
-                    <stl:inline if="not object/is_folder">${object/name}</stl:inline>
-                  </td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td colspan="2">
-                    <input stl:if="bc/is_submit" type="submit" value="Link" />
-                  </td>
-                </tr>
-              </table>
-            </form>
-          </blockquote>
-        </td>
-      </tr>
-    </table>
+            </table>
+            <br/>
+          </dd>
+          <dt>
+            &raquo; Add a file in this folder:
+          </dt>
+          <dd>
+          <br/>
+          <form name="add_element" method="post" enctype="multipart/form-data"
+                action=";add_element">
+            <input type="hidden" name="target_path" value="${bc/target_path}"/>
+            <input type="hidden" name="class_id" value="${class_id}"/>
+            <input id="file" name="file" size="35" type="file"/>
+            <p>
+              <input class="button_add" type="submit" value="Add"/>
+            </p>
+          </form>
+          </dd>
+        </dl>
+        </div>
   </body>
 </html>

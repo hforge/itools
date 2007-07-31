@@ -39,6 +39,16 @@ def add_forum_style(context):
     context.styles.append(context.handler.get_pathto(style))
 
 
+def get_forum_handler(container, handler_name):
+    """Used for retro-compatibility with Itools 0.16.3 and anterior versions"""
+    #XXX To remove in 0.17
+    xhtml_document = '%s.xhtml' % handler_name
+    if container.has_handler(xhtml_document):
+        return container.get_handler(xhtml_document)
+    else:
+        return container.get_handler('%s.txt' % handler_name)
+
+
 
 class Message(XHTMLFile):
 
@@ -112,8 +122,7 @@ class Thread(Folder):
 
         # index messages in order (XXX necessary?)
         for id in ([0] + self.get_replies()):
-            name = '%s.xhtml' % id
-            message = self.get_handler(name)
+            message = get_forum_handler(self, id)
             text.append(message.to_text())
 
         return u'\n'.join(text)
@@ -139,7 +148,7 @@ class Thread(Folder):
         else:
             last = 0
 
-        return self.get_handler('%s.xhtml' % last)
+        return get_forum_handler(self, last)
 
 
     def get_message_namespace(self, context):
@@ -150,8 +159,7 @@ class Thread(Folder):
         ac = self.get_access_control()
         accept_language = context.get_accept_language()
         for i, id in enumerate([0] + self.get_replies()):
-            name = '%s.xhtml' % id
-            message = self.get_handler(name)
+            message = get_forum_handler(self, id)
             author_id = message.get_property('owner')
             metadata = users.get_handler('%s.metadata' % author_id)
             namespace.append({
@@ -223,9 +231,14 @@ class Forum(Folder):
         accept_language = context.get_accept_language()
         namespace = []
         users = self.get_handler('/users')
+        # XXX Retrocompatibility (For 0.17 -> only search xhtml Documents)
+        from text import Text
+        thread_txt = list(self.search_handlers(handler_class=Text))
+        threads = list(self.search_handlers(handler_class=self.thread_class))
+        threads += thread_txt
 
-        for thread in self.search_handlers(handler_class=self.thread_class):
-            first = thread.get_handler('0.xhtml')
+        for thread in threads:
+            first = get_forum_handler(thread, '0')
             first_author_id = first.get_property('owner')
             first_metadata = users.get_handler('%s.metadata' % first_author_id)
             last = thread.get_last_post()

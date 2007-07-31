@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime
+from datetime import datetime, timedelta
 import mimetypes
 
 # Import from itools
@@ -197,19 +197,19 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
         if self.is_locked():
             lock = self.get_lock()
-            now = datetime.now()
-            expiry = now.replace(hour=now.hour-1)
-            # locks expire after one hour
-            if lock.timestamp < expiry:
+            # locks expire after 1 hour
+            if lock.timestamp + timedelta(hours=1) < datetime.now():
                 self.unlock()
+                context.commit = True
             else:
                 # always borrow lock from same user
                 if lock.username == context.user.name:
                     r.append('lock-token:%s' % lock.key)
                     r.append('borrow_lock:1')
                 else:
-                    # XXX The operation should fail
-                    pass
+                    goto = ';%s' % self.get_firstview()
+                    msg = u'This page is lock by another user'
+                    return context.come_back(message=msg, goto=goto)
 
         if request.has_header('Authorization'):
             r.append('auth:%s' % request.get_header('Authorization'))

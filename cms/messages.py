@@ -26,4 +26,5 @@ MSG_NAME_CLASH = u'There is already another object with this name.'
 MSG_NAME_MISSING = u'The name is missing.'
 MSG_NEW_RESOURCE = u'A new resource has been added.'
 MSG_PASSWORD_MISMATCH = u'The provided passwords do not match.'
+MSG_PAGE_LOCK = u'This page is locked by $user'
 

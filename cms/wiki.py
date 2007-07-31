@@ -22,6 +22,7 @@ from __future__ import absolute_import
 from __future__ import with_statement
 
 # Import from the Standard Library
+from datetime import datetime, timedelta
 from tempfile import mkdtemp
 from subprocess import call
 import urllib
@@ -419,6 +420,25 @@ class WikiPage(Text):
 
 
     def edit_form(self, context):
+        root = context.root
+        if self.is_locked():
+            lock = self.get_lock()
+            # locks expire after 15 minutes
+            if lock.timestamp + timedelta(minutes=15) < datetime.now():
+                self.unlock()
+                context.commit = True
+            else:
+                if lock.username != context.user.name:
+                    user = root.get_user(lock.username)
+                    if user is not None:
+                        user = user.get_title()
+                    else:
+                        user = lock.username
+                    return context.come_back(MSG_PAGE_LOCK, user=user)
+        else:
+            self.lock()
+            context.commit = True
+
         css = self.get_handler('/ui/wiki/wiki.css')
         context.styles.append(str(self.get_pathto(css)))
         text_size = context.get_form_value('text_size');

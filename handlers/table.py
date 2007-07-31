@@ -253,6 +253,8 @@ class Record(list):
 
 
     def __getattr__(self, name):
+        if name == '__number__':
+            return self.id
         version = self[-1]
         if name not in version:
             raise AttributeError, "'%s' object has no attribute '%s'" % (
@@ -571,7 +573,7 @@ class Table(File):
 
                 query = AndQuery(*atoms)
             else:
-                raise ValueError, "expected a query"
+                return self.get_records()
 
         documents = query.search(self)
         # Sort by weight

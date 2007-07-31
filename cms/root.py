@@ -28,6 +28,7 @@ from types import GeneratorType
 
 # Import from itools
 import itools
+from itools import get_abspath
 from itools.datatypes import FileName
 from itools import vfs
 from itools.catalog import (make_catalog, CatalogAware, TextField,
@@ -48,6 +49,13 @@ from handlers import Metadata
 from registry import register_object_class
 from folder import Folder
 from skins import ui
+
+
+# itools source and target languages
+config = get_abspath(globals(), '../setup.conf')
+config = Config(config)
+itools_source_language = config.get_value('source_language')
+itools_target_languages = config.get_value('target_languages')
 
 
 
@@ -257,15 +265,23 @@ class Root(WebSite):
         """
         Returns the language codes for the user interface.
         """
-        pkg = self.__class__.__module__.split('.', 1)[0]
-        exec('import %s as pkg' % pkg)
-        path = Path(pkg.__path__[0]).resolve2('setup.conf')
-        config_uri = str(path)
-        config = Config(config_uri)
-        source_language = config.get_value('source_language', default='en')
-        languages = config.get_value('target_languages', default='').split()
-        languages.insert(0, source_language)
-        return languages
+        source = itools_source_language
+        target = itools_target_languages
+        # A package based on itools
+        cls = self.__class__
+        if cls is not Root:
+            exec('import %s as pkg' % cls.__module__.split('.', 1)[0])
+            config = Path(pkg.__path__[0]).resolve2('setup.conf')
+            config = Config(str(config))
+            source = config.get_value('source_language', default=source)
+            target = config.get_value('target_languages', default=target)
+
+        target = target.split()
+        if source in target:
+            target.remove(source)
+
+        target.insert(0, source)
+        return target
 
 
     ########################################################################

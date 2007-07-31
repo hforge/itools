@@ -104,8 +104,8 @@ if __name__ == '__main__':
 
     # Read configuration for languages
     config = Config('setup.conf')
-    source_language = config.get_value('source_language')
-    target_languages = config.get_value('target_languages').split()
+    source_language = config.get_value('source_language', default='en')
+    target_languages = config.get_value('target_languages', default='').split()
 
     # Initialize the list of files to install (the MANIFEST)
     manifest = ['MANIFEST']

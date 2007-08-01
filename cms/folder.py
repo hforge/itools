@@ -823,19 +823,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return cls.new_instance(self, context)
 
 
-    browse_dir__access__ = 'is_authenticated'
-    def browse_dir(self, context):
-        namespace = {}
-        namespace['bc'] = widgets.Breadcrumb(filter_type=File, start=self)
-
-        # Avoid general template
-        response = context.response
-        response.set_header('Content-Type', 'text/html; charset=UTF-8')
-
-        handler = self.get_handler('/ui/folder/browsedir.xml')
-        return stl(handler, namespace)
-
-
     #######################################################################
     # Search
     def get_search_criteria(self):

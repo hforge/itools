@@ -1,0 +1,84 @@
+
+itools 0.16.5 (2007/08/02)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+This release brings a user interface for the "Table" handler, along with
+fixes to the API.  Though the feature is still considered experimental.
+
+We have a new script called "isetup-copyright", which has been created
+to help us to keep track of who did what and when in the code (to do so
+it uses the "git blame" command).  This is the first step in a long
+process to audit the code for ownership.
+
+The "setup.conf" file supports two new variables: "source_language" and
+"target_languages".  The first one allows to define a different source
+language than English.  The second one allows to release only a subset
+of the languages available in the "locale" folder.  (Thanks to this
+little enhancement we have been able to drop the Spanish, Chinese and
+Italian translations from this release, they will be back when in a
+good shape.)
+
+Support has been added for the metadata field "dc:subject" to every CMS
+object.  Now the fields "dc:description" and "dc:subject" are used to
+build the <meta> tags "description" and "keywords", to improve the
+behaviour with search engines.  Also, the <title> tag has been fixed
+for web-site objects.
+
+There are also user interface improvements to the tracker and the HTML
+editor.  Better support for compressed files.  Locking files with the
+external editor works.  And backwards compatibility fixes for the forum.
+
+Now the "igettext-extract" script works better on Windows.
+
+Regarding the programming interface we have a number of enhancements:
+
+ - [itools.datatypes] Add the base class method "_get_options" to the
+   Enumerate data-type, so it will be easier to define enumerate fields
+   whose options are not hard-coded.
+ 
+ - [itools.handlers] Now the "Config.get_value" method accepts the
+   optional parameter "default".
+
+ - [itools.cms] New utility function "generate_name", useful to find
+   out a name that does not clashes with other names.
+
+ - [itools.cms] Now the "OrderAware" class makes the difference beween
+   ordered and not-ordered objects.  The "get_ordered_folder_names"
+   method gains the optional parameter "mode" to control the information
+   returned.
+
+
+Credits:
+
+ - Nicolas Deram worked on itools.cms;
+ - J. David Ibáñez implemented isetup-copyright and fixed bugs;
+ - Henry Obein worked on itools.cms and the "Table" handler;
+ - Sylvain Taverne worked on itools.cms and the "setup.conf" file;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.5.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

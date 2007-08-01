@@ -9,10 +9,19 @@
   </head>
 
   <body>
-    <script type="text/javascript" stl:if="bc/object">
-      window.opener.CreateLink("${bc/object}");
-      window.close();
+    <script type="text/javascript">
+      function select_link(element){
+        window.opener.CreateLink(element.value);
+        window.close();
+      }
     </script>
+    <style>
+      .title{
+        width:400px;
+        border-bottom: 1px solid gray;
+        margin-bottom: 10px;
+      }
+    </style>
 
     <div id="header">
     <br/>
@@ -21,48 +30,57 @@
     <div id="body">
     <div id="message" stl:if="message">Message :${message}</div>
     <dl>
-      <!-- LINK -->
+      <!-- Breadcrumbs -->
       <dt>
+        <div id="maintitle">
+          <div id="breadcrumbs">
+            <label>Location:</label>
+            <span stl:repeat="x bc/path">
+              <a href="${x/url}">${x/name}</a> /
+            </span>
+          </div>
+        </div>
+      </dt>
+      <!-- Link -->
+      <dd class="title">
         &raquo; Type the url to add:
-      </dt>
-      <dd>
-        <br/>
-        <form name="add_external_url" action=";addlink_form" method="get">
-          <input type="text" name="object" size="50" value="http://" />
-          <input type="submit" value="Add" class="button_ok"/>
-        </form>
       </dd>
-
-      <!-- Internal Document -->
-      <dt>
-        &raquo; Browse and link a file from the workspace:
-      </dt>
       <dd>
-        <br/>
-        <stl:inline repeat="x bc/path">
-          / <a href="${x/url}">${x/name}</a>
-        </stl:inline>
-        <br />
+          <input type="text" id="uri" name="object" size="50" value="http://"/>
+          <input type="button" value="Add" class="button_ok"
+            onclick="javascript:select_link(document.getElementById('uri'))"/>
+          <br/>
+          <br/>
+      </dd>
+      <!-- Internal Document -->
+      <dd class="title">
+        &raquo; Browse and link a file from the workspace:
+      </dd>
+      <dd>
         <table>
           <form name="add_internal_url" action=";addlink_form" method="get">
           <tr stl:repeat="object bc/objects">
             <td>
-              <input type="radio" name="object" value="${object/path}" />
+              <input type="radio" id="object" name="object"
+                value="${object/path}" />
             </td>
             <td>
               <img border="0" alt="${object/object_type}"
                 src="${object/icon}" />
             </td>
             <td>
-              <a stl:if="object/is_folder" href="${object/url}">${object/name}</a>
+              <a stl:if="object/is_folder" href="${object/url}">
+                ${object/name}
+              </a>
               <stl:inline if="not object/is_folder">${object/name}</stl:inline>
             </td>
           </tr>
             <tr>
               <td></td>
               <td colspan="2">
-                <input stl:if="bc/is_submit" type="submit" value="Link"
-                       class="button_ok"/>
+                <input stl:if="bc/is_submit" type="button" value="Link"
+                  class="button_ok"
+                  onclick="select_link(document.getElementById('object'))"/>
               </td>
             </tr>
 
@@ -70,15 +88,13 @@
             </table>
             <br/>
           </dd>
-          <dt>
+          <dd class="title">
             &raquo; Add a file in this folder:
-          </dt>
+          </dd>
           <dd>
-          <br/>
-          <form name="add_element" method="post" enctype="multipart/form-data"
-                action=";add_element">
+          <form name="addlink" method="post" enctype="multipart/form-data"
+            action=";addlink">
             <input type="hidden" name="target_path" value="${bc/target_path}"/>
-            <input type="hidden" name="class_id" value="${class_id}"/>
             <input id="file" name="file" size="35" type="file"/>
             <p>
               <input class="button_add" type="submit" value="Add"/>

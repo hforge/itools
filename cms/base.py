@@ -623,11 +623,33 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         # Construct namespace
         namespace = {}
         namespace['bc'] = bc
-        namespace['class_id'] = Image.class_id
         namespace['message'] = context.get_form_value('message')
 
         handler = self.get_handler('/ui/html/addimage.xml')
         return stl(handler, namespace)
+
+
+    addimage__access__ = 'is_allowed_to_edit'
+    def addimage(self, context):
+        """
+        Allow to upload and add an image to epoz
+        """
+        from binary import Image
+        root = context.root
+        # Get the container
+        container = root.get_handler(context.get_form_value('target_path'))
+        # Add the image to the handler
+        uri = Image.new_instance(container, context)
+        if ';addimage_form' not in uri.path:
+            handler = container.get_handler(uri.path[0])
+            return """
+            <script type="text/javascript">
+                window.opener.CreateImage('%s');
+                window.close();
+            </script>
+                    """ % handler.abspath
+
+        return context.come_back(message=uri.query['message'])
 
 
     #######################################################################
@@ -643,27 +665,33 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         # Construct namespace
         namespace = {}
         namespace['bc'] = bc
-        namespace['class_id'] = File.class_id
         namespace['message'] = context.get_form_value('message')
 
         handler = self.get_handler('/ui/html/addlink.xml')
         return stl(handler, namespace)
 
 
-    add_element__access__ = 'is_allowed_to_edit'
-    def add_element(self, context):
+    addlink__access__ = 'is_allowed_to_edit'
+    def addlink(self, context):
         """
-        Allow to add a file in addlink_form or addimage_form
+        Allow to upload a file and link it to epoz
         """
+        from file import File
         root = context.root
         # Get the container
-        target_path = context.get_form_value('target_path')
-        container = root.get_handler(target_path)
+        container = root.get_handler(context.get_form_value('target_path'))
         # Add the image to the handler
-        uri = container.new_resource(context)
-        message = uri.query['message']
+        uri = File.new_instance(container, context)
+        if ';addlink_form' not in uri.path:
+            handler = container.get_handler(uri.path[0])
+            return """
+            <script type="text/javascript">
+                window.opener.CreateLink('%s');
+                window.close();
+            </script>
+                    """ % handler.abspath
 
-        return context.come_back(message=message, keep=['bc_target'])
+        return context.come_back(message=uri.query['message'])
 
 
     epoz_color_form__access__ = 'is_allowed_to_edit'

@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from operator import attrgetter
+from operator import attrgetter, itemgetter
 from string import Template
 
 # Import from itools
@@ -351,6 +351,7 @@ class Breadcrumb(object):
                             'icon': path_to_icon,
                             'object_type': handler.get_mimetype()})
 
+        objects.sort(key=itemgetter('is_folder'), reverse=True)
         self.objects = objects
 
         # Avoid general template

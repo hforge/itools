@@ -11,8 +11,19 @@
   <body>
     <script type="text/javascript">
       function select_img(){
-        var element = document.getElementById('object');
-        window.opener.CreateImage(element.value);
+        value = ''
+        elements = document.all['object']
+        if (elements.nodeName ) {
+          value = elements.value
+        }else{
+          for(var i=elements.length-1; i>0;i--){
+              if(elements[i].checked){
+                value = elements[i].value
+                break;
+              }
+          }
+        }
+        window.opener.CreateImage(value);
         window.close();
       }
     </script>
@@ -22,11 +33,23 @@
         border-bottom: 1px solid gray;
         margin-bottom: 10px;
       }
+      #insert_image td, #insert_image td a {
+        font: 14px Verdana;
+        color: #7986A8; 
+      }
+      #browse_zone{
+        width: 400px;
+        height: 350px;
+        overflow: auto;
+      }
+      #header_blue{
+        height: 20px;
+        background-color: #30569D;
+        border-bottom: 4px solid #729FCF;
+      }
     </style>
 
-    <div id="header">
-    <br/>
-    </div>
+    <div id="header_blue"></div>
 
     <div id="body">
     <div id="message" stl:if="message">${message}</div>
@@ -42,38 +65,7 @@
           </div>
         </div>
       </dt>
-      <!-- List of files -->
-      <dd class="title">
-        &raquo; Browse and insert an Image from the workspace:
-      </dd>
-      <dd>
-        <form action=";addimage_form" method="get">
-        <table>
-          <tr stl:repeat="object bc/objects">
-            <td>
-              <input type="radio" name="object" stl:if="not object/is_folder"
-                id="object" value="${object/path}" />
-            </td>
-            <td>
-              <img border="0" alt="${object/object_type}"
-                src="${object/icon}" />
-              <a stl:if="object/is_folder" href="${object/url}">
-                ${object/name}
-              </a>
-              <stl:inline if="not object/is_folder">${object/name}</stl:inline>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <input stl:if="bc/is_submit" type="button" value="Insert Image"
-                class="button_ok" onclick="javascript:select_img()"/>
-            </td>
-          </tr>
-          </table>
-        </form>
-      </dd>
-    <!-- Add an image -->
+      <!-- Add an image -->
       <dd class="title">
         &raquo; Add an image in this folder
       </dd>
@@ -85,6 +77,40 @@
         <input class="button_add" type="submit" value="Add"/>
         </form>
       </dd>
+      <!-- List of files -->
+      <dd class="title">
+        &raquo; Browse and insert an Image from the workspace:
+      </dd>
+      <dd>
+        <input stl:if="bc/is_submit" type="button" value="Insert Image"
+          class="button_ok" onclick="javascript:select_img()"/><br/>
+        <div id="browse_zone">
+        <form action=";addimage_form" method="get">
+        <table id="insert_image">
+          <tr stl:repeat="object bc/objects">
+            <td>
+              <input type="radio" name="object" stl:if="not object/is_folder"
+                value="${object/path}" />
+            </td>
+            <td>
+              <img src="${object/path}/;icon48" stl:if="not object/is_folder"/>
+              <a stl:if="object/is_folder" href="${object/url}">
+                <img border="0" stl:if="object/is_folder"
+                alt="${object/object_type}" src="${object/icon}"/>
+              </a>
+            </td>
+            <td>
+              <a stl:if="object/is_folder" href="${object/url}">
+                ${object/name}
+              </a>
+              <stl:inline if="not object/is_folder">${object/name}</stl:inline>
+            </td>
+          </tr>
+          </table>
+        </form>
+        </div>
+      </dd>
+      <dd class="title"><br/></dd>
     </dl>
     </div>
   </body>

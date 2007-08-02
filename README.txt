@@ -4,22 +4,22 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.catalog        itools.i18n             itools.tmx
-  itools.cms            itools.ical             itools.uri
-  itools.csv            itools.odf              itools.vfs
-  itools.datatypes      itools.pdf              itools.web
-  itools.gettext        itools.rest             itools.workflow
-  itools.handlers       itools.rss              itools.xhtml
-  itools.html           itools.schemas          itools.xliff
-  itools.http           itools.stl              itools.xml
+  itools.catalog          itools.i18n             itools.tmx
+  itools.cms              itools.ical             itools.uri
+  itools.csv              itools.odf              itools.vfs
+  itools.datatypes        itools.pdf              itools.web
+  itools.gettext          itools.rest             itools.workflow
+  itools.handlers         itools.rss              itools.xhtml
+  itools.html             itools.schemas          itools.xliff
+  itools.http             itools.stl              itools.xml
 
 The scripts included are:
 
-  icatalog-inspect      icms-update             isetup-build
-  icms-init             icms-update-catalog     isetup-copyright
-  icms-restore          igettext-build          isetup-doc
-  icms-start            igettext-extract        isetup-update-locale
-  icms-stop             igettext-merge
+  icatalog-inspect.py     icms-update.py          isetup-build.py
+  icms-init.py            icms-update-catalog.py  isetup-copyright.py
+  icms-restore.py         igettext-build.py       isetup-doc.py
+  icms-start.py           igettext-extract.py     isetup-update-locale.py
+  icms-stop.py            igettext-merge.py
 
 
 Requirements

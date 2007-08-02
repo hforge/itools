@@ -133,3 +133,29 @@ class OrQuery(object):
                     documents[id] = sub_results[id]
 
         return documents
+
+
+
+class NotQuery(object):
+
+    def __init__(self, query):
+        self.query = query
+
+
+    def search(self, catalog):
+        from itools.catalog import Catalog
+
+        all_documents = catalog.search()
+        not_documents = self.query.search(catalog)
+        sub_results = {}
+
+        if isinstance(catalog, Catalog):
+            for d in all_documents.get_documents():
+                if not_documents.has_key(d.__number__) is False:
+                    sub_results[d.__number__] = d
+        else:
+            for d in all_documents:
+                if d.__number__ in not_documents:
+                    sub_results[d.__number__] = d
+
+        return sub_results

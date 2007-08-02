@@ -23,7 +23,7 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 from itools.catalog import (make_catalog, Catalog, CatalogAware, BoolField,
-    KeywordField, TextField, IntegerField, RangeQuery)
+    KeywordField, TextField, IntegerField, RangeQuery, EqQuery, NotQuery)
 from itools.catalog import io
 
 
@@ -180,6 +180,10 @@ class CatalogTestCase(TestCase):
         query = RangeQuery('data', 'home', 'horse')
         results = catalog.search(query)
         self.assertEqual(results.get_n_documents(), 12)
+        # Not Query
+        query = NotQuery(EqQuery('data', 'lion'))
+        results = catalog.search(query)
+        self.assertEqual(results.get_n_documents(), 27)
 
 
 

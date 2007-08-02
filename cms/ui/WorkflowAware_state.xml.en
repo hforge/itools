@@ -14,14 +14,12 @@
     <dl>
       <dt>You can do the following actions:</dt>
       <dd>
-        <ul style="float: left">
-          <li style="margin-left: 0.2em; list-style-type: none"
-            stl:repeat="transition transitions">
-            <input type="radio" name="transition"
-              id="${transition/name}" value="${transition/name}" />
-            <label for="${transition/name}">${transition/description}</label>
-          </li>
-        </ul>
+        <stl:block repeat="transition transitions">
+          <br/>
+          <input type="radio" name="transition" id="${transition/name}"
+            value="${transition/name}" />
+          <label for="${transition/name}">${transition/description}</label>
+        </stl:block>
       </dd>
     </dl>
     <dl class="clear">

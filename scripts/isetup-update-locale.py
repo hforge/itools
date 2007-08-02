@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     # Read configuration for languages
     config = Config('setup.conf')
-    source_language = config.get_value('source_language')
+    source_language = config.get_value('source_language', default='en')
 
     # Initialize message catalog
     po = PO()

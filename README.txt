@@ -116,12 +116,12 @@ http://bugs.ikaaro.org
 Copyright
 ----------
 
-Copyright 2002-2007  J. David Ib·Òez <jdavid@itaapy.com>
+Copyright 2002-2007  J. David Ib√°√±ez <jdavid@itaapy.com>
 
 And:
 
  - Luis Belmar-Letelier <luis@itaapy.com>
- - HervÈ Cauwelier <herve@itaapy.com>
+ - Herv√© Cauwelier <herve@itaapy.com>
  - Nicolas Deram <nderam@itaapy.com>
  - Thilo Ernst <Thilo.Ernst@dlr.de>
  - Thierry Fromon <from.t@free.fr>

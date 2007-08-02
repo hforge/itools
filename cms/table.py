@@ -18,7 +18,8 @@
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import Integer, FileName, is_datatype, Enumerate, Boolean, Date
+from itools.datatypes import (DataType, Integer, FileName, is_datatype,
+                              Enumerate, Boolean, Date)
 from itools.handlers.table import Table as iTable, Record
 from itools.i18n import get_language_name
 from itools.stl import stl
@@ -30,6 +31,15 @@ import widgets
 
 
 
+class Multiple(DataType):
+
+    def decode(self, data):
+        lines = data.splitlines()
+        return [self.type.decode(x)
+                for x in lines]
+
+
+        
 class Table(File, iTable):
 
     class_id = 'table'
@@ -226,26 +236,35 @@ class Table(File, iTable):
 
         fields = []
         for name, title in self.get_fields():
+            # Enumerates, use a selection box
+            datatype = self.get_datatype(name)
+            value = context.get_form_value(name) \
+                    or getattr(datatype, 'default', None)
             field = {}
             field['name'] = name
             field['title'] = title
-            field['value'] = None
-            # Enumerates, use a selection box
-            datatype = self.get_datatype(name)
+            field['mandatory'] = getattr(datatype, 'mandatory', False)
+            field['value'] = value
             field['is_input'] = False
             field['is_enumerate'] = False
             field['is_boolean'] = False
             field['is_date'] = False
             if is_datatype(datatype, Enumerate):
                 field['is_enumerate'] = True
-                field['options'] = datatype.get_namespace(None)
+                field['options'] = datatype.get_namespace(value)
             elif is_datatype(datatype, Boolean):
                 field['is_boolean'] = True
+                field['is_selected'] = value
             else:
                 field['is_input'] = True
                 field['is_date'] = False
                 if is_datatype(datatype, Date):
                     field['is_date'] = True
+                    if value:
+                        dates = value.splitlines()
+                    else:
+                        dates = []
+                    field['dates'] = dates
             
             field['multiple'] = getattr(datatype, 'multiple', False)
             # Append
@@ -259,6 +278,19 @@ class Table(File, iTable):
     
     add_record_action__access__ = 'is_allowed_to_edit'
     def add_record_action(self, context):
+        # check form
+        check_fields = []
+        for name, kk in self.get_fields():
+            datatype = self.get_datatype(name)
+            if getattr(datatype, 'multiple', False) is True:
+                datatype = Multiple(type=datatype)
+            check_fields.append((name, getattr(datatype, 'mandatory', False),
+                                 datatype))
+
+        error = context.check_form_input(check_fields)
+        if error is not None:
+            return context.come_back(error, keep=context.get_form_keys())
+
         record = {}
         for name, title in self.get_fields():
             datatype = self.get_datatype(name)
@@ -267,7 +299,7 @@ class Table(File, iTable):
                     value = context.get_form_values(name, type=datatype)
                 else: # textarea -> string
                     values = context.get_form_value(name)
-                    values = values.replace('\r\n', '\n').split('\n')
+                    values = values.splitlines()
                     value = []
                     for index in range(len(values)):
                         tmp = values[index].strip()
@@ -279,7 +311,8 @@ class Table(File, iTable):
         self.add_record(record)
         
         message = u'New record added.'
-        return context.come_back(message)
+        goto = context.uri.resolve2('../;add_record_form')
+        return context.come_back(message, goto=goto)
 
 
 
@@ -298,15 +331,19 @@ class Table(File, iTable):
         fields = []
         for name, title in self.get_fields():
             datatype = self.get_datatype(name)
-            value = self.get_value(record, name)
+            value = context.get_form_value(name) \
+                    or self.get_value(record, name)
             if is_datatype(datatype, Enumerate) is False \
                     and getattr(datatype, 'multiple', False) is True:
-                for index in (range(len(value))):
-                    value[index] = datatype.encode(value[index])
-                value = '\n'.join(value)
+                if is_datatype(value, list) is True:
+                    # get the value from the record
+                    for index in (range(len(value))):
+                        value[index] = datatype.encode(value[index])
+                    value = '\n'.join(value)
             field = {}
             field['name'] = name
             field['title'] = title
+            field['mandatory'] = getattr(datatype, 'mandatory', False)
             field['value'] = value
             # Enumerates, use a selection box
             field['is_input'] = False
@@ -324,7 +361,7 @@ class Table(File, iTable):
                 field['is_date'] = False
                 if is_datatype(datatype, Date):
                     field['is_date'] = True
-                    field['dates'] = self.get_value(record, name)
+                    field['dates'] = value.splitlines()
 
             field['multiple'] = getattr(datatype, 'multiple', False)
             # Append
@@ -336,6 +373,19 @@ class Table(File, iTable):
 
     edit_record__access__ = 'is_allowed_to_edit'
     def edit_record(self, context):
+        # check form
+        check_fields = []
+        for name, kk in self.get_fields():
+            datatype = self.get_datatype(name)
+            if getattr(datatype, 'multiple', False) is True:
+                datatype = Multiple(type=datatype)
+            check_fields.append((name, getattr(datatype, 'mandatory', False), 
+                                 datatype))
+
+        error = context.check_form_input(check_fields)
+        if error is not None:
+            return context.come_back(error, keep=context.get_form_keys())
+
         # Get the record
         id = context.get_form_value('id', type=Integer)
         record = {}
@@ -346,7 +396,7 @@ class Table(File, iTable):
                     value = context.get_form_values(name)
                 else: # textarea -> string
                     values = context.get_form_value(name)
-                    values = values.replace('\r\n', '\n').split('\n')
+                    values = values.splitlines()
                     value = []
                     for index in range(len(values)):
                         tmp = values[index].strip()

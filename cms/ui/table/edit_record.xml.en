@@ -9,6 +9,7 @@
   <dl>
     <stl:block repeat="field fields">
       <dt>${field/title}
+        <span stl:if="field/mandatory">(mandatory)</span>
         <span stl:if="field/multiple">(multiple)</span>
         <span stl:if="field/is_date">Format: 'yyyy-mm-dd'</span>
       </dt>

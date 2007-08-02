@@ -555,7 +555,7 @@ class Table(File):
         except AttributeError:
             if self.schema.has_key(name):
                 datatype = self.get_datatype(name)
-                if getattr(datatype, 'multiple', False):
+                if getattr(datatype, 'multiple', False) is True:
                     return []
                 else:
                     return getattr(datatype, 'default')

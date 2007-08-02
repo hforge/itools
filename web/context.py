@@ -215,7 +215,7 @@ class Context(object):
         This utility method builds a namespace suitable to use to produce
         an HTML form. Its input data is a list (fields) that defines the
         form variables to consider:
-            
+
             [(<field name>, <is field required>),
              ...]
 
@@ -266,7 +266,7 @@ class Context(object):
         Its input data is a list (fields) that defines the form variables
         to consider:
             
-            [(<field name>, <is field required>),
+            [(<field name>, <is field required>[ , <datatype>]),
              ...]
 
         Every element of the list is a tuple with the name of the field
@@ -277,9 +277,18 @@ class Context(object):
             u'Some required fields are missing, or some values are not valid.'
             u' Please correct them and continue.')
         # Check mandatory fields
-        for field, is_mandatory in fields:
-            datatype = get_datatype(field)
-            value = self.get_form_value(field)
+        for field in fields:
+            if len(field) == 2:
+                field, is_mandatory = field
+                datatype = get_datatype(field)
+            else:
+                field, is_mandatory, datatype = field
+
+            try:
+                value = self.get_form_value(field, type=datatype)
+            except:
+                return message
+
             if is_mandatory:
                 if value is None:
                     return message

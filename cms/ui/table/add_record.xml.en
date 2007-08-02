@@ -8,6 +8,7 @@
   <dl>
     <stl:block repeat="field fields">
       <dt>${field/title}
+        <span stl:if="field/mandatory">(mandatory)</span>
         <span stl:if="field/multiple">(multiple)</span>
         <span stl:if="field/is_date">Format: 'yyyy-mm-dd'</span>
       </dt>
@@ -16,14 +17,14 @@
           <stl:block stl:if="not field/is_enumerate">
             <stl:block stl:if="not field/is_date">
               <textarea rows="5" cols="25" name="${field/name}" 
-                        id="${field/name}"></textarea>
+                        id="${field/name}">${field/value}</textarea>
             </stl:block>
             <stl:block stl:if="field/is_date">
               <table class="table_calendar">
                 <tr>
                   <td>
                     <textarea rows="5" cols="25" name="${field/name}"
-                              id="${field/name}"></textarea>
+                              id="${field/name}">${field/value}</textarea>
                     <input type="button" value="update" id="btn_blur_${field/name}" 
                            onclick="tableFlatOuputOnBlur(elt_${field/name}, cal_${field/name});" />
                   </td>
@@ -32,6 +33,9 @@
                     </div>
                     <script type="text/javascript">
                       var MA_${field/name} = [];
+                      <stl:block stl:repeat="date field/dates">
+                        MA_${field/name}.push(str_to_date('${date}'));
+                      </stl:block>
                       var cal_${field/name} = Calendar.setup({
                               displayArea  : '${field/name}',
                               flat         : 'calendar-flat-${field/name}',
@@ -68,7 +72,7 @@
             </stl:block>
           </stl:block>
           <input type="checkbox" name="${field/name}" value="1"
-            stl:if="field/is_boolean" />
+                 checked="${field/is_selected}" stl:if="field/is_boolean" />
         </stl:block>
 
         <select name="${field/name}" style="width: 200px"

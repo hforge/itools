@@ -14,10 +14,11 @@ meta-package for easier development and deployment:
   itools.html           itools.schemas          itools.xliff
   itools.http           itools.stl              itools.xml
 
-This release brings a user interface for the "Table" handler, along with
-fixes to the API.  Though the feature is still considered experimental.
+For compatibility with Windows, all scripts have been renamed to have
+the extension ".py" (remember to clean the old ones from your install).
+Also, "igettext-extract.py" works now with Windows Python files.
 
-We have a new script called "isetup-copyright", which has been created
+We have a new script called "isetup-copyright.py", it has been created
 to help us to keep track of who did what and when in the code (to do so
 it uses the "git blame" command).  This is the first step in a long
 process to audit the code for ownership.
@@ -36,11 +37,12 @@ build the <meta> tags "description" and "keywords", to improve the
 behaviour with search engines.  Also, the <title> tag has been fixed
 for web-site objects.
 
+The still experimental "Table" handler has earned a user interface (in
+"itools.cms").
+
 There are also user interface improvements to the tracker and the HTML
 editor.  Better support for compressed files.  Locking files with the
 external editor works.  And backwards compatibility fixes for the forum.
-
-Now the "igettext-extract" script works better on Windows.
 
 Regarding the programming interface we have a number of enhancements:
 

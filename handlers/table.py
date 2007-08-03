@@ -32,10 +32,33 @@ from file import File
 ###########################################################################
 # Parser
 ###########################################################################
+def unescape_data(data):
+    """
+    Unescape the data
+    """
+
+    data = [ x.replace("\\r", "\r").replace("\\n", "\n")
+              for x in data.split('\\\\') ]
+    return '\\'.join(data)
+
+
+
+def escape_data(data):
+    """
+    Escape the data
+    """
+
+    data = data.replace("\\", "\\\\")
+    data = data.replace("\r", "\\r").replace("\n", "\\n")
+    return data
+
+
+
 def unfold_lines(data):
     """
     Unfold the folded lines.
     """
+
     i = 0
     lines = data.splitlines()
 
@@ -51,6 +74,34 @@ def unfold_lines(data):
         i += 1
     if line:
         yield line
+
+
+
+def fold_line(data):
+    """
+    Fold the unfolded line over 75 characters.
+    """
+
+    if len(data) <= 75:
+        return data
+
+    i = 1
+    lines = data.split(' ')
+    res = lines[0]
+    size = len(res)
+    while i < len(lines):
+        # Still less than 75c
+        if size+len(lines[i]) <= 75:
+            res = res + ' ' + lines[i]
+            size = size + 1 + len(lines[i])
+            i = i + 1
+        # More than 75c, insert new line
+        else:
+            res = res + '\n  ' + lines[i]
+            size = len(lines[i])
+            i = i + 1
+    return res
+
 
 
 def read_name(line):
@@ -220,9 +271,7 @@ def parse_table(data):
             elif token == TVALUE:
                 # Unescape special characters
                 # TODO Check the spec
-                value = [ x.replace("\\r", "\r").replace("\\n", "\n")
-                          for x in lexeme.split('\\\\') ]
-                value = '\\'.join(value)
+                value = unescape_data(lexeme)
             else:
                 raise SyntaxError, 'unexpected %s' % token_name[token]
         yield name, value, parameters
@@ -398,7 +447,9 @@ class Table(File):
                     pvalues = ','.join(pvalues)
                     lines.append(';%s=%s' % (pname, pvalues))
                 value = datatype.encode(property.value)
-                lines.append(':%s\n' % value)
+                # Escape the value
+                value = escape_data(value)
+                lines.append(':%s\n' % fold_line(value))
         lines.append('\n')
         return ''.join(lines)
 

@@ -199,26 +199,3 @@ data_properties = {
 # 
 ###################################################################
 
-def fold_line(line):
-    """
-    Fold the unfolded line over 75 characters.
-    """
-    i = 1
-    lines = line.split(' ')
-    res = lines[0] 
-    size = len(res)
-    while i < len(lines):
-        # Still less than 75c
-        if size+len(lines[i]) <= 75:
-            res = res + ' ' + lines[i] 
-            size = size + 1 + len(lines[i]) 
-            i = i + 1
-        # More than 75c, insert new line
-        else:
-            res = res + '\n ' + lines[i]
-            size = len(lines[i]) 
-            i = i + 1
-    return res
-
-
-

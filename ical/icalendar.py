@@ -25,8 +25,8 @@ from operator import itemgetter
 from itools.datatypes import Unicode, String
 from itools.catalog import (EqQuery, RangeQuery, OrQuery, AndQuery,
     MemoryCatalog)
-from itools.handlers import Text, parse_table
-from types import data_properties, fold_line
+from itools.handlers import Text, parse_table, fold_line, escape_data
+from types import data_properties
 
 
 # The smallest possible difference between non-equal timedelta objects.
@@ -380,16 +380,13 @@ class icalendar(Text):
             else:
                 value = datatype.encode(value)
             # The value (escape)
-            value = value.replace("\\", "\\\\")
-            value = value.replace("\r", "\\r").replace("\n", "\\n")
+            value = escape_data(value)
 
             # Build the line
             line = '%s%s:%s\n' % (name, parameters, value)
-            if len(line) > 75:
-                line = fold_line(line)
 
             # Append
-            lines.append(line)
+            lines.append(fold_line(line))
 
         return lines
 

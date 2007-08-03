@@ -1213,7 +1213,7 @@ static PyTypeObject ParserType = {
     0,                              /* tp_clear */
     0,                              /* tp_richcompare */
     0,                              /* tp_weaklistoffset */
-    PyObject_SelfIter,              /* tp_iter */
+    0, /* XXX set later: PyObject_SelfIter, */     /*tp_iter*/
     (iternextfunc)Parser_iternext,  /* tp_iternext */
     Parser_methods,                 /* tp_methods */
     Parser_members,                 /* tp_members */
@@ -1247,6 +1247,9 @@ static PyMethodDef module_methods[] = {
 PyMODINIT_FUNC
 initparser(void) {
     PyObject* module;
+
+    /* XXX Fix tp_Iter for cygwin */
+    ParserType.tp_iter = PyObject_SelfIter;
 
     if (PyType_Ready(&ParserType) < 0)
         return;

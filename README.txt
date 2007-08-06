@@ -114,24 +114,21 @@ http://bugs.ikaaro.org
 
 
 Copyright
-----------
+---------
 
-Copyright 2002-2007  J. David Ibáñez <jdavid@itaapy.com>
+Copyright (C) 2002-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+Copyright (C) 2005-2007 Luis Arturo Belmar-Letelier <luis@itaapy.com>
+Copyright (C) 2005-2007 Hervé Cauwelier <herve@itaapy.com>
+Copyright (C) 2005-2007 Nicolas Deram <nicolas@itaapy.com>
 
-And:
+And others. Check the CREDITS file for complete list.
 
- - Luis Belmar-Letelier <luis@itaapy.com>
- - Hervé Cauwelier <herve@itaapy.com>
- - Nicolas Deram <nderam@itaapy.com>
- - Thilo Ernst <Thilo.Ernst@dlr.de>
- - Thierry Fromon <from.t@free.fr>
- - Piotr Macuk <piotr@macuk.pl>
- - Henry Obein <henry@itaapy.com>
- - Nicolas Oyez <noyez@gmail.com>
- - Sylvain Taverne <sylvain@itaapy.com>
+Includes the DHTML Calendar, authored by Mihai Bazon and published under
+the terms of the GNU Lesser General Public License.
 
-Includes parts of Epoz 2.0.2. Epoz is copyrighted by Maik Jablonski and
-licensed under the Zope Public License (ZPL) version 2.1.
+The HTML editor is derived from Epoz (XXX), which is authored by Maik
+Jablonski and Benoit Pin, and published under the terms of the Zope
+Public License (ZPL) version 2.1.
 
 Most icons used are copyrighted by the Tango Desktop Project, and licensed
 under the Creative Commons Attribution Share-Alike license, including the
@@ -153,3 +150,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+

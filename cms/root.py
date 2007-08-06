@@ -332,8 +332,18 @@ class Root(WebSite):
     def credits(self, context):
         context.styles.append('/ui/credits.css')
 
+        # Build the namespace
+        credits = get_abspath(globals(), '../CREDITS')
+        names = []
+        with vfs.open(credits, 'r') as file:
+            for line in file.readlines():
+                if line.startswith('N: '):
+                    names.append(line[3:].strip())
+
+        namespace = {'hackers': names}
+
         handler = self.get_handler('/ui/root/credits.xml')
-        return stl(handler)
+        return stl(handler, namespace)
 
 
     ########################################################################

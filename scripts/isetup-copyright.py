@@ -85,6 +85,8 @@ if __name__ == '__main__':
         with vfs.open('CREDITS') as file:
             for line in file.readlines():
                 line = line.strip()
+                if line.startswith('#'):
+                    continue
                 if line:
                     key, value = line.split(':', 1)
                     value = value.lstrip()

@@ -21,7 +21,7 @@ from __future__ import with_statement
 
 # Import from the Standard Library
 from datetime import datetime
-import os
+from os import fdopen
 from tempfile import mkstemp
 import thread
 
@@ -155,7 +155,7 @@ class DatabaseFS(FileFS):
             tmp_map[reference.path] = tmp_path
             with open(log, 'a+b') as log:
                 log.write('~%s#%s\n' % (reference.path, tmp_path))
-            return os.fdopen(tmp_file, 'w')
+            return fdopen(tmp_file, 'w')
         elif mode == APPEND:
             tmp_map = get_tmp_map()
             if reference.path in tmp_map:
@@ -168,7 +168,7 @@ class DatabaseFS(FileFS):
             tmp_map[reference.path] = tmp_path
             with open(log, 'a+b') as log:
                 log.write('>%s#%s\n' % (reference.path, tmp_path))
-            return os.fdopen(tmp_file, 'w')
+            return fdopen(tmp_file, 'w')
 
         return FileFS.open(reference, mode)
 

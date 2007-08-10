@@ -285,7 +285,7 @@ class Breadcrumb(object):
         request, response = context.request, context.response
 
         if root is None:
-            root = context.root
+            root = context.handler.get_site_root()
         if start is None:
             start = root
 

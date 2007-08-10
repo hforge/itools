@@ -155,7 +155,7 @@ class NotQuery(object):
                     sub_results[d.__number__] = d
         else:
             for d in all_documents:
-                if d.__number__ in not_documents:
+                if (d.__number__ in not_documents) is False:
                     sub_results[d.__number__] = d
 
         return sub_results

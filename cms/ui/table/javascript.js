@@ -18,7 +18,7 @@ function str_to_date(str) {
 function tableFlatCallback(cal) {
     var MA = cal.params.multiple;
     // update only for flat click on date event or popup calendar onClose
-    if (cal.dateClicked || cal.params.flat == null ) {
+    if (cal.dateClicked || cal.params.flat == null || cal.params.electric) {
         if (cal.multiple) {
             // Reset the "MA", in case one triggers the calendar again (popup only)
             if ( cal.params.flat == null )

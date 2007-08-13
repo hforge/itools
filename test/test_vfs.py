@@ -24,7 +24,8 @@ from unittest import TestCase
 
 # Import from itools
 from itools import vfs
-from itools.vfs import APPEND
+from itools.vfs import APPEND, FileFS
+from itools.vfs.registry import get_file_system
 
 
 
@@ -150,6 +151,21 @@ class FileTestCase(TestCase):
         self.assertEqual(open('tests/toto.txt').read(), 'hello\nbye\n')
         # Remove temporary file
         vfs.remove('tests/toto.txt')
+
+
+
+class FSTestCase(TestCase):
+
+    def test_linux(self):
+        # file://home/toto.txt
+        fs = get_file_system('file')
+        self.assertEqual(fs, FileFS)
+
+
+    def test_windows(self):
+        # c:\toto.txt
+        fs = get_file_system('c')
+        self.assertEqual(fs, FileFS)
 
 
 

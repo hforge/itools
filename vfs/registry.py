@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+import file
 
 _file_systems = {}
 
@@ -23,4 +25,7 @@ def register_file_system(name, fs_handler):
 
 
 def get_file_system(name):
+    # 'c' means Windows' "c:\" and is a filesystem
+    if len(name) == 1:
+        return file.FileFS
     return _file_systems[name]

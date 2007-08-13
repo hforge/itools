@@ -48,6 +48,15 @@ issue_fields = [('title', True), ('version', True), ('type', True),
     ('assigned_to', False), ('comment', False), ('file', False)]
 
 
+search_fields = [('search_name', False, Unicode),
+                 ('mtime', False, Integer),
+                 ('module', False, Integer),
+                 ('version', False, Integer),
+                 ('type', False, Integer),
+                 ('priority', False, Integer),
+                 ('assign', False, Unicode),
+                 ('state', False, Integer)]
+
 
 class Tracker(Folder):
 
@@ -284,9 +293,13 @@ class Tracker(Folder):
         return context.uri.resolve(';view?search_name=%s' % search_name)
 
 
+
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
+        error = context.check_form_input(search_fields)
+        if error is not None:
+            return context.come_back(error, keep=[])
         # Stored Search
         search_name = context.get_form_value('search_name')
         if search_name:

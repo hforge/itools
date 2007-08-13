@@ -364,7 +364,7 @@ class Tracker(Folder):
                     continue
             # Append
             link = '%s/;edit_form' % handler.name
-            line = {'id': (handler.name, link),
+            line = {'id': (int(handler.name), link),
                     'title': (handler.get_value('title'), link)}
             for name in 'module', 'version', 'type', 'priority', 'state':
                 value = handler.get_value(name)
@@ -381,7 +381,7 @@ class Tracker(Folder):
         # Sort
         sortby = context.get_form_value('sortby', default='id')
         sortorder = context.get_form_value('sortorder', default='up')
-        lines.sort(key=lambda x: x[sortby])
+        lines.sort(key=itemgetter(sortby))
         if sortorder == 'down':
             lines.reverse()
         # Table

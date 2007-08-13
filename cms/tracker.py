@@ -324,7 +324,7 @@ class Tracker(Folder):
         columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),
             ('module', u'Module'), ('type', u'Type'),
             ('priority', u'Priority'), ('state', u'State'),
-            ('assigned_to', u'Assigned To')]
+            ('assigned_to', u'Assigned To'), ('mtime', u'Last Modification')]
         # Lines
         lines = []
         tables = {'module': self.get_handler('modules.csv'),
@@ -377,6 +377,7 @@ class Tracker(Folder):
                     line['assigned_to'] = user.get_title()
             else:
                 line['assigned_to'] = ''
+            line['mtime'] = format_datetime(handler.get_mtime())
             lines.append(line)
         # Sort
         sortby = context.get_form_value('sortby', default='id')

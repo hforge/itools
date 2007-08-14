@@ -230,8 +230,12 @@ class Context(object):
              ...}
         """
         namespace = {}
-        for field, is_mandatory in fields:
-            datatype = get_datatype(field)
+        for field in fields:
+            if len(field) == 2:
+                field, is_mandatory = field
+                datatype = get_datatype(field)
+            else:
+                field, is_mandatory, datatype = field
             # The value
             value = self.get_form_value(field)
             # The style

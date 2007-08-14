@@ -25,6 +25,7 @@ from re import sub
 
 # Import from itools
 from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
+from versioning import VersioningAware
 from itools.i18n import format_datetime
 from itools.rest import checkid
 from itools.handlers import Config
@@ -618,7 +619,7 @@ class History(BaseCSV):
 
 
 
-class Issue(Folder):
+class Issue(Folder, VersioningAware):
 
     class_id = 'issue'
     class_layout = {
@@ -1026,6 +1027,11 @@ class Issue(Folder):
 
         handler = self.get_handler('/ui/tracker/issue_history.xml')
         return stl(handler, namespace)
+
+
+    def to_str(self):
+        # XXX Used by VersioningAware to define the size of the document
+        return ''
 
 
     add_form__access__ = 'is_allowed_to_edit'

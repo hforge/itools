@@ -28,13 +28,18 @@ from messages import *
 from file import File
 from registry import register_object_class
 import widgets
+from widgets import get_default_widget
 
 
 
 class Multiple(DataType):
 
     def decode(self, data):
-        lines = data.splitlines()
+        if isinstance(data, list) is True:
+            lines = data
+        else:
+            lines = data.splitlines()
+
         return [self.type.decode(x)
                 for x in lines]
 
@@ -238,35 +243,22 @@ class Table(File, iTable):
         for name, title in self.get_fields():
             # Enumerates, use a selection box
             datatype = self.get_datatype(name)
-            value = context.get_form_value(name) \
-                    or getattr(datatype, 'default', None)
+            if getattr(datatype, 'multiple', False) is False:
+                value = context.get_form_value(name) \
+                        or getattr(datatype, 'default', None)
+            else:
+                value = context.get_form_values(name) \
+                        or getattr(datatype, 'default', None)
+
             field = {}
             field['name'] = name
             field['title'] = title
             field['mandatory'] = getattr(datatype, 'mandatory', False)
-            field['value'] = value
-            field['is_input'] = False
-            field['is_enumerate'] = False
-            field['is_boolean'] = False
-            field['is_date'] = False
-            if is_datatype(datatype, Enumerate):
-                field['is_enumerate'] = True
-                field['options'] = datatype.get_namespace(value)
-            elif is_datatype(datatype, Boolean):
-                field['is_boolean'] = True
-                field['is_selected'] = value
-            else:
-                field['is_input'] = True
-                field['is_date'] = False
-                if is_datatype(datatype, Date):
-                    field['is_date'] = True
-                    if value:
-                        dates = value.splitlines()
-                    else:
-                        dates = []
-                    field['dates'] = dates
-            
             field['multiple'] = getattr(datatype, 'multiple', False)
+            field['is_date'] = is_datatype(datatype, Date)
+            widget = getattr(datatype, 'widget', get_default_widget(datatype))
+            field['widget'] = widget.to_html(datatype, name, value)
+
             # Append
             fields.append(field)
         namespace['fields'] = fields
@@ -331,39 +323,31 @@ class Table(File, iTable):
         fields = []
         for name, title in self.get_fields():
             datatype = self.get_datatype(name)
-            value = context.get_form_value(name) \
-                    or self.get_value(record, name)
+            if getattr(datatype, 'multiple', False) is False:
+                value = context.get_form_value(name) \
+                        or self.get_value(record, name)
+            else:
+                value = context.get_form_values(name) \
+                        or self.get_value(record, name)
+
             if is_datatype(datatype, Enumerate) is False \
                     and getattr(datatype, 'multiple', False) is True:
-                if is_datatype(value, list) is True:
-                    # get the value from the record
-                    for index in (range(len(value))):
-                        value[index] = datatype.encode(value[index])
+                if isinstance(value, list) is True:
+                    if value and isinstance(value[0], str) is False:
+                        # get value from the record
+                        for index in (range(len(value))):
+                            value[index] = datatype.encode(value[index])
                     value = '\n'.join(value)
+                else:
+                    value = datatype.encode(value)
+
             field = {}
-            field['name'] = name
             field['title'] = title
             field['mandatory'] = getattr(datatype, 'mandatory', False)
-            field['value'] = value
-            # Enumerates, use a selection box
-            field['is_input'] = False
-            field['is_enumerate'] = False
-            field['is_boolean'] = False
-            field['is_date'] = False
-            if is_datatype(datatype, Enumerate):
-                field['is_enumerate'] = True
-                field['options'] = datatype.get_namespace(value)
-            elif is_datatype(datatype, Boolean):
-                field['is_boolean'] = True
-                field['is_selected'] = value
-            else:
-                field['is_input'] = True
-                field['is_date'] = False
-                if is_datatype(datatype, Date):
-                    field['is_date'] = True
-                    field['dates'] = value.splitlines()
-
             field['multiple'] = getattr(datatype, 'multiple', False)
+            field['is_date'] = is_datatype(datatype, Date)
+            widget = getattr(datatype, 'widget', get_default_widget(datatype))
+            field['widget'] = widget.to_html(datatype, name, value)
             # Append
             fields.append(field)
         namespace['fields'] = fields
@@ -408,7 +392,8 @@ class Table(File, iTable):
             
         self.update_record(id, **record)
         self.set_changed()
-        return context.come_back(MSG_CHANGES_SAVED)
+        goto = context.uri.resolve2('../;edit_record_form')
+        return context.come_back(MSG_CHANGES_SAVED, goto=goto, keep=['id'])
 
 
 

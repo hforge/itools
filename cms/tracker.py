@@ -690,9 +690,8 @@ class Issue(Folder):
             if guessed is not None:
                 mimetype = guessed
             # Set the handler
-            handler_class = get_object_class(mimetype)
-            handler = handler_class()
-            handler.load_state_from_string(body)
+            cls = get_object_class(mimetype)
+            handler = cls(string=body)
 
             # Find a non used name
             filename = checkid(filename)

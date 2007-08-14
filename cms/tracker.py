@@ -26,6 +26,7 @@ from re import sub
 # Import from itools
 from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
 from itools.i18n import format_datetime
+from itools.rest import checkid
 from itools.handlers import Config
 from itools.csv import IntegerKey, CSV as BaseCSV
 from itools.xml import Parser
@@ -694,6 +695,7 @@ class Issue(Folder):
             handler.load_state_from_string(body)
 
             # Find a non used name
+            filename = checkid(filename)
             filename = generate_name(filename, self.get_handler_names())
             row.append(filename)
 

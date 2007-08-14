@@ -72,7 +72,8 @@ class Root(WebSite):
         ['new_resource_form'],
         ['edit_metadata_form'],
         ['languages_form', 'anonymous_form', 'contact_options_form'],
-        ['permissions_form', 'new_user_form']]
+        ['permissions_form', 'new_user_form'],
+        ['last_changes']]
 
     __fixed_handlers__ = ['users', 'ui']
 

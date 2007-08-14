@@ -218,16 +218,17 @@ class Tracker(Folder):
             assign = search.get_value('assigned_to')
             state = search.get_value('state', type=Integer)
         else:
-            namespace['search_name'] = None
-            namespace['search_title'] = None
-            namespace['text'] = None
-            namespace['mtime'] = None
-            module = None
-            type = None
-            version = None
-            priority = None
-            assign = None
-            state = None
+            getter = context.get_form_value
+            namespace['search_name'] = getter('search_name')
+            namespace['search_title'] = getter('search_title')
+            namespace['text'] = getter('text')
+            namespace['mtime'] = getter('mtime')
+            module = getter('module', type=Integer)
+            type = getter('type', type=Integer)
+            version = getter('version', type=Integer)
+            priority = getter('priority', type=Integer)
+            assign = getter('assigned_to')
+            state = getter('state', type=Integer)
 
         get = self.get_handler
         namespace['modules'] = get('modules.csv').get_options(module)
@@ -237,6 +238,7 @@ class Tracker(Folder):
             sort=False)
         namespace['states'] = get('states.csv').get_options(state, sort=False)
         namespace['users'] = self.get_members_namespace(assign, True)
+
         # is_admin 
         ac = self.get_access_control()
         namespace['is_admin'] = ac.is_admin(context.user, self)
@@ -300,13 +302,23 @@ class Tracker(Folder):
         error = context.check_form_input(search_fields)
         if error is not None:
             return context.come_back(error, keep=[])
+        # Build the namespace
+        namespace = {}
+        users = self.get_handler('/users')
         # Stored Search
         search_name = context.get_form_value('search_name')
         if search_name:
             search = self.get_handler(search_name)
             getter = search.get_value
+            title = search.get_title()
+            edit_search_link = ';search_form?search_name=%s' % search.name
         else:
             getter = context.get_form_value
+            title = self.gettext(u'View Tracker')
+            edit_search_link = context.uri.resolve(';search_form').replace(
+                **context.uri.query)
+        namespace['title'] = title
+        namespace['edit_search_link'] = edit_search_link
         text = getter('text', type=Unicode)
         if text is not None:
             text = text.strip().lower()
@@ -317,9 +329,6 @@ class Tracker(Folder):
         priority = getter('priority', type=Integer)
         assign = getter('assigned_to', type=String)
         state = getter('state', type=Integer)
-        # Build the namespace
-        users = self.get_handler('/users')
-        namespace = {}
         # Columns
         columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),
             ('module', u'Module'), ('type', u'Type'),
@@ -385,7 +394,12 @@ class Tracker(Folder):
         lines.sort(key=itemgetter(sortby))
         if sortorder == 'down':
             lines.reverse()
+        nb_results = len(lines)
         # Table
+        msgs = (u'<span>There is 1 result.</span>',
+                u'<span>There are ${n} results.</span>')
+        namespace['batch'] = widgets.batch(context.uri, 0, nb_results,
+                                nb_results, msgs=msgs)
         namespace['table'] = widgets.table(columns, lines, [sortby], sortorder)
 
         handler = self.get_handler('/ui/tracker/view_tracker.xml')

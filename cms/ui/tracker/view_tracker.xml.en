@@ -4,7 +4,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>View Tracker</h2>
-  ${table}
+  <h2>${title} <a href="${edit_search_link}">(Edit search)</a></h2>
+    ${batch}
+    ${table}
 
 </stl:block>

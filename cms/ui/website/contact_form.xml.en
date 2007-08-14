@@ -8,24 +8,27 @@
 
   <form action=";contact" method="post" id="contact_form">
     <dl>
-      <dt><label for="to">Recipient</label></dt>
+      <dt><label for="to" class="${to/class}">Recipient</label></dt>
       <dd>
         <select id="to" name="to" style="width: 25em">
-          <option stl:repeat="contact contacts"
-            value="${contact/name}">${contact/title}</option>
+          <option stl:repeat="contact contacts" value="${contact/name}"
+            selected="${contact/selected}">${contact/title}</option>
         </select>
       </dd>
-      <dt><label for="from">Sender</label></dt>
+      <dt><label for="from" class="${from/class}">Sender</label></dt>
       <dd>
-        <input type="text" id="from" name="from" size="40" value="${from}" />
+        <input type="text" id="from" name="from" size="40"
+          value="${from/value}" />
       </dd>
-      <dt><label for="subject">Subject</label></dt>
+      <dt><label for="subject" class="${subject/class}">Subject</label></dt>
       <dd>
-        <input type="text" id="subject" name="subject" size="40" />
+        <input type="text" id="subject" name="subject" size="40"
+          value="${subject/value}" />
       </dd>
-      <dt><label for="body">Body</label></dt>
+      <dt><label for="body" class="${body/class}">Body</label></dt>
       <dd>
-        <textarea name="body" id="body" cols="50" rows="8"></textarea>
+        <textarea name="body" id="body" cols="50" rows="8"
+          >${body/value}</textarea>
       </dd>
     </dl>
     <input type="submit" value="Send" />

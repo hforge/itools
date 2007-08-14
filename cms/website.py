@@ -509,10 +509,14 @@ class WebSite(RoleAware, Folder):
 
     ########################################################################
     # Contact
+    contact_fields = [('to', True), ('from', True, Email), ('subject', True),
+                      ('body', True)]
+
+
     contact_form__access__ = True
     def contact_form(self, context):
         # Build the namespace
-        namespace = {}
+        namespace = context.build_form_namespace(self.contact_fields)
 
         # To
         users = self.get_handler('/users')
@@ -520,14 +524,14 @@ class WebSite(RoleAware, Folder):
         for name in self.get_property('ikaaro:contacts'):
             user = users.get_handler(name)
             title = user.get_title()
-            namespace['contacts'].append({'name': name, 'title': title})
+            namespace['contacts'].append({'name': name, 'title': title,
+                'selected': name == namespace['to']['value']})
 
         # From
-        user = context.user
-        if user is None:
-            namespace['from'] = None
-        else:
-            namespace['from'] = user.get_property('ikaaro:email')
+        if namespace['from']['value'] is None:
+            user = context.user
+            if user is not None:
+                namespace['from']['value'] = user.get_property('ikaaro:email')
 
         handler = self.get_handler('/ui/website/contact_form.xml')
         return stl(handler, namespace)
@@ -535,18 +539,16 @@ class WebSite(RoleAware, Folder):
 
     contact__access__ = True
     def contact(self, context):
+        # Check input data
+        error = context.check_form_input(self.contact_fields)
+        if error is not None:
+            keep = [ x[0] for x in self.contact_fields ]
+            return context.come_back(error, keep=keep)
+
         contact = context.get_form_value('to')
         from_addr = context.get_form_value('from').strip()
         subject = context.get_form_value('subject', type=Unicode).strip()
         body = context.get_form_value('body', type=Unicode).strip()
-
-        # Check the input data
-        if not contact or not from_addr or not subject or not body:
-            return context.come_back(u'Please fill the missing fields.')
-
-        # Check the from address
-        if not Email.is_valid(from_addr):
-            return context.come_back(MSG_INVALID_EMAIL)
 
         # Find out the "to" address
         contact = self.get_handler('/users/%s' % contact)

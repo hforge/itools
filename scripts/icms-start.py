@@ -66,8 +66,12 @@ def start(parser, options, target):
 
     print '%s: Listen port %s' % (target, server.port)
 
-    # Debuggin mode (XXX does not works on Windows)
+    # Debugging mode
     if options.debug is False:
+        if sys.platform.startswith('win'):
+            # TODO Implement it for Windows
+            msg = u'Unable to daemonize on Windows... Please use the option -d'
+            raise NotImplementedError, msg
         # Detach from the console (this code derives from the Python
         # Cookbook, see section "Forking a Daemon on Unix").
         pid = os.fork()

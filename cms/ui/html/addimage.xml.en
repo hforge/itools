@@ -16,7 +16,7 @@
         if (elements.nodeName ) {
           value = elements.value
         }else{
-          for(var i=elements.length-1; i>0;i--){
+          for(var i=elements.length-1; i>=0;i--){
               if(elements[i].checked){
                 value = elements[i].value
                 break;

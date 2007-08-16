@@ -1004,7 +1004,6 @@ msgid ""
 msgstr ""
 
 #: cms/messages.py:24
-#, fuzzy
 msgid "A new resource has been added."
 msgstr "Nouvelle ressource ajoutée."
 
@@ -1202,10 +1201,9 @@ msgid ""
 msgstr ""
 
 #: cms/ui/website/forgotten_password.xml.en:0
-#, fuzzy
 msgid ""
 "An email has been sent to you with the procedure to change your password."
-msgstr "Un courriel contenant votre nouveau mot de passe vous a été envoyé."
+msgstr "Un courriel vous a été envoyé, contenant les instructions pour changer votre mot de passe."
 
 #: cms/website.py:286
 msgid ""
@@ -1404,9 +1402,8 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: cms/ical.py:97
-#, fuzzy
 msgid "Cancelled"
-msgstr "Annuler"
+msgstr "Annulé"
 
 #: cms/ui/root/catalog.xml.en:0
 msgid "Cataloguing of Content"
@@ -1473,9 +1470,8 @@ msgid "Choose the role for the new member"
 msgstr "Choisir le rôle de l'utilisateur"
 
 #: cms/ui/user/confirm_registration.xml.en:0
-#, fuzzy
 msgid "Choose your password"
-msgstr "Modifier le mot de passe"
+msgstr "Saisissez un mot de passe"
 
 #: cms/tracker.py:83
 msgid "Closed"
@@ -1522,9 +1518,8 @@ msgid "Confirm"
 msgstr "Confirmation"
 
 #: cms/ical.py:96
-#, fuzzy
 msgid "Confirmed"
-msgstr "Confirmation"
+msgstr "Confirmé"
 
 #: cms/ui/website/contact_form.xml.en:0
 msgid "Contact"
@@ -1738,11 +1733,11 @@ msgstr "Modifier le texte"
 
 #: cms/ui/user/profile.xml.en:0
 msgid "Edit account details;"
-msgstr "Modifier le compte&nbsp;:"
+msgstr "Modifier le nom et le courriel&nbsp;:"
 
 #: cms/ui/user/profile.xml.en:0
 msgid "Edit preferences;"
-msgstr "Modifier les préférences&nbsp;:"
+msgstr "Modifier les préférences de l'application&nbsp;:"
 
 #: cms/ui/csv/edit_row.xml.en:0
 msgid "Edit row ${index}"
@@ -2000,9 +1995,8 @@ msgid "HTML"
 msgstr ""
 
 #: cms/ui/root/credits.xml.en:0
-#, fuzzy
 msgid "Hacking"
-msgstr "Titre 1"
+msgstr "Codeurs"
 
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Heading 1"
@@ -2519,7 +2513,7 @@ msgstr "Gérer un projet avec l'outil de suivi de fiches"
 
 #: cms/ui/user/profile.xml.en:0
 msgid "Manage personal content;"
-msgstr "Gérer vos données personnelles&nbsp;;"
+msgstr "Gérer les documents personnels&nbsp;;"
 
 #: cms/ical.py:34
 msgid "March"
@@ -2760,9 +2754,8 @@ msgid "Nothing to change."
 msgstr "Aucune modification."
 
 #: cms/folder.py:724
-#, fuzzy
 msgid "Nothing to paste."
-msgstr "Aucune modification."
+msgstr "Rien à coller."
 
 #: cms/ical.py:1259
 msgid "Nothing to remove."
@@ -2989,7 +2982,7 @@ msgstr "En attente de publication"
 
 #: cms/ui/user/profile.xml.en:0
 msgid "Pending tasks."
-msgstr "Voir vos tâches en cours."
+msgstr "Voir les tâches en cours."
 
 #: cms/tracker.py:81
 msgid "Performance Improvement"
@@ -3008,9 +3001,8 @@ msgid "Please fill the missing fields."
 msgstr "Veuillez remplir les champs nécessaires."
 
 #: cms/ical.py:861
-#, fuzzy
 msgid "Please select a resource."
-msgstr "Veuillez sélectionner les dossiers à monter."
+msgstr "Veuillez sélectionner une ressource."
 
 #: cms/future.py:98
 msgid "Please select the folders to order down."
@@ -3183,9 +3175,8 @@ msgid "Request the document publication."
 msgstr "Demander la publication du document."
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid "Resource"
-msgstr "Nouvelle ressource"
+msgstr "Ressource"
 
 #: cms/ui/website/search.xml.en:0
 msgid "Results"
@@ -3560,9 +3551,8 @@ msgid ""
 msgstr ""
 
 #: cms/messages.py:20
-#, fuzzy
 msgid "The changes have been saved."
-msgstr "La langue par défaut a été changée."
+msgstr "Changements sauvegardés."
 
 #: cms/website.py:127
 msgid "The default language has been changed."
@@ -3583,7 +3573,6 @@ msgid "The email address is missing, please type it."
 msgstr "Le courriel est incorrect, veuillez réessayer."
 
 #: cms/messages.py:21
-#, fuzzy
 msgid "The email address provided is invalid."
 msgstr "Le courriel est incorrect, veuillez réessayer."
 
@@ -3635,7 +3624,6 @@ msgid ""
 msgstr ""
 
 #: cms/messages.py:25
-#, fuzzy
 msgid "The provided passwords do not match."
 msgstr "Les mots de passe ne correspondent pas."
 
@@ -3727,11 +3715,9 @@ msgstr ""
 "veuillez en changer."
 
 #: cms/website.py:385
-#, fuzzy
 msgid "There is not a user identified as \"$username\""
 msgstr ""
-"Il n'existe pas d'utilisateur avec l'adresse &laquo;&nbsp;$email&nbsp;"
-"&raquo;."
+"Il n'existe pas d'utilisateur &laquo;&nbsp;$username&nbsp;&raquo;."
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -3911,9 +3897,8 @@ msgid "To PDF"
 msgstr "En PDF"
 
 #: cms/ui/user/confirm_registration.xml.en:0
-#, fuzzy
 msgid "To activate your account, please type a password."
-msgstr "Pour confirmez votre inscription,  vous devez saisir un mot de passe"
+msgstr "Pour activer votre compte, vous devez saisir un mot de passe"
 
 #: cms/ical.py:728
 msgid "To add an event, click on + symbol from the views."
@@ -3925,7 +3910,6 @@ msgstr ""
 "Pour confirmez vos changements, vous devez saisir votre mot de passe actuel."
 
 #: cms/users.py:160
-#, fuzzy
 msgid ""
 "To confirm your identity click the link:\n"
 "\n"
@@ -4000,9 +3984,8 @@ msgid "Transition done."
 msgstr "Action effectuée."
 
 #: cms/ui/root/credits.xml.en:0
-#, fuzzy
 msgid "Translators"
-msgstr "Traductions"
+msgstr "Traducteurs"
 
 #: cms/ical.py:38
 msgid "Tuesday"
@@ -4025,9 +4008,8 @@ msgid "Type your text here..."
 msgstr "Tapez votre texte ici..."
 
 #: cms/base.py:315
-#, fuzzy
 msgid "Unavailable"
-msgstr "<em>Indisponible</em>"
+msgstr "Indisponible"
 
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Underline"
@@ -4055,11 +4037,11 @@ msgstr "Mettre à jour le catalogue"
 
 #: cms/ui/file/upload.xml.en:0
 msgid "Upload"
-msgstr "Importer"
+msgstr "Remplacer"
 
 #: cms/ui/file/upload.xml.en:0
 msgid "Upload File"
-msgstr "Importer un fichier"
+msgstr "Remplacer par un fichier"
 
 #: cms/file.py:254
 msgid ""
@@ -4107,13 +4089,12 @@ msgid "Version (mandatory)"
 msgstr "Version (obligatoire)"
 
 #: cms/ui/root/license.xml.en:0
-#, fuzzy
 msgid "Version 3, 29 June 2007"
-msgstr "Version 2, juin 1991"
+msgstr ""
 
 #: cms/file.py:258
 msgid "Version uploaded."
-msgstr "Version importée."
+msgstr "Version chargée."
 
 #: cms/ui/root/about.xml.en:0
 msgid "Version:"
@@ -4427,9 +4408,8 @@ msgid "Zip Archive"
 msgstr "Archive Zip"
 
 #: cms/users.py:158
-#, fuzzy
 msgid "[%s] Confirmation required"
-msgstr "[%s] Confirmation d'enregistrement requis."
+msgstr "[%s] Confirmation requise."
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -4811,9 +4791,8 @@ msgid ""
 msgstr ""
 
 #: pdf/rml.py:2018
-#, fuzzy
 msgid "yes"
-msgstr "Oui"
+msgstr "oui"
 
 #: i18n/oracle.py:125
 msgid "you"
@@ -4845,130 +4824,3 @@ msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
 #: rest/rest.py:279
 msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"
 msgstr ""
-
-#~ msgid ""
-#~ "${batchstart}-${batchend} of ${total} <a stl:if=\"batch_previous\" href="
-#~ "\"${batch_previous}\">&lt;&lt;</a>"
-#~ msgstr ""
-#~ "${batchstart}-${batchend} de ${total} <a stl:if=\"batch_previous\" href="
-#~ "\"${batch_previous}\">&lt;&lt;</a>"
-
-#~ msgid "A valid email address must be provided."
-#~ msgstr "Une adresse de courriel valide est nécessaire."
-
-#~ msgid "CANCELLED"
-#~ msgstr "Annulé"
-
-#~ msgid "CONFIRMED"
-#~ msgstr "Confirmé"
-
-#~ msgid "Changes saved."
-#~ msgstr "Modifications sauvegardées"
-
-#~ msgid "Chinese (zh)"
-#~ msgstr "Chinois (zh)"
-
-#~ msgid "Confirm Registration"
-#~ msgstr "Confirmer l'inscription"
-
-#~ msgid "Document changed."
-#~ msgstr "Document modifié."
-
-#~ msgid "Document edited."
-#~ msgstr "Document modifié."
-
-#~ msgid "E-Mail"
-#~ msgstr "Courriel"
-
-#~ msgid ""
-#~ "ERROR: the document could not be changed, the input data was not proper "
-#~ "HTML code."
-#~ msgstr ""
-#~ "Erreur&nbsp;: le document ne peut être changé, la source n'est pas du "
-#~ "code HTML correct."
-
-#~ msgid "File uploaded."
-#~ msgstr "Fichier téléchargé."
-
-#~ msgid "French (fr)"
-#~ msgstr "Français (fr)"
-
-#~ msgid "Hacks a little everywhere"
-#~ msgstr "Hacké un peu partout"
-
-#~ msgid ""
-#~ "Hacks everywhere, responsable of the design, usability and HTML/CSS coding"
-#~ msgstr ""
-#~ "Hacké partout, responsable du design, de l'ergonomie et du code HTML/CSS"
-
-#~ msgid "Italian (it)"
-#~ msgstr "Italien (it)"
-
-#~ msgid "Lead Developer"
-#~ msgstr "Développeur principal"
-
-#~ msgid "Main developer of the iCalendar module, hacks a little everywhere"
-#~ msgstr "Développeur principal du module iCalendar, hacke un peu partout"
-
-#~ msgid ""
-#~ "Many people have made generous contributions to the wide range of "
-#~ "software distributed through that system in reliance on consistent "
-#~ "application of that system;"
-#~ msgstr ""
-#~ "Beaucoup de personnes ont généreusement contribué à ce logiciel pour en "
-#~ "faire ce qu'il est aujourd'hui&nbsp;;"
-
-#~ msgid "Message edited."
-#~ msgstr "Message modifié."
-
-#~ msgid "Metadata changed."
-#~ msgstr "Métadonnées modifiées."
-
-#~ msgid "NO WARRANTY"
-#~ msgstr "PAS DE GARENTIE"
-
-#~ msgid "Registration confirmed, welcome."
-#~ msgstr "Inscription acceptée, bienvenue"
-
-#~ msgid "Spanish (es)"
-#~ msgstr "Espagnol (es)"
-
-#~ msgid "TENTATIVE"
-#~ msgstr "Tentative"
-
-#~ msgid "The name must be entered"
-#~ msgstr "Le nom doit être saisi."
-
-#~ msgid "The password is wrong, please try again."
-#~ msgstr "Le mot de passe est incorrect, veuillez réessayer."
-
-#~ msgid "There is already another resource with this name."
-#~ msgstr "Il existe déjà un autre objet avec ce nom."
-
-#~ msgid "Version edited."
-#~ msgstr "Version modifiée."
-
-#~ msgid "We did not find results for \"${text}\"."
-#~ msgstr "Aucun résultat pour &laquo;&nbsp;${text}&nbsp;&raquo;."
-
-#~ msgid "Worked on the Internationalization framework"
-#~ msgstr "A travaillé sur le support de l'internationalisation"
-
-#~ msgid "Worked on the Workflow engine"
-#~ msgstr "A travaillé sur le moteur de workflow"
-
-#~ msgid "Worked on the support for the CSV and RSS file formats"
-#~ msgstr "A travaillé sur la prise en charge des formats CSV et RSS"
-
-#~ msgid "Worked on the support for the TMX, XLIFF and iCalendar file formats"
-#~ msgstr ""
-#~ "A travaillé sur la prise en charge des formats TMX, XLIFF et iCalendar"
-
-#~ msgid ""
-#~ "Your new password:\n"
-#~ "\n"
-#~ "  $password"
-#~ msgstr ""
-#~ "Votre nouveau mot de passe :\n"
-#~ "\n"
-#~ "  $password"

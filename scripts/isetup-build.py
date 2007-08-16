@@ -122,7 +122,7 @@ if __name__ == '__main__':
     # Build MO files
     print '(1) Compiling message catalogs:',
     sys.stdout.flush()
-    for language in target_languages:
+    for language in [source_language] + target_languages:
         print language,
         sys.stdout.flush()
         os.system('msgfmt locale/%s.po -o locale/%s.mo' % (language, language))

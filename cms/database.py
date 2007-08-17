@@ -93,13 +93,13 @@ class DatabaseFS(FileFS):
         if not isinstance(path, Path):
             path = Path(path)
 
-        self._database = path.resolve2('database')
         self._commit = path.resolve2('database.commit')
         log = path.resolve2('database.commit/log')
         self._log = str(log)
 
         # Build the root handler
-        root_path = str(self._database)
+        root_path = path.resolve2('database')
+        root_path = str(root_path)
         if cls is None:
             cls = get_handler_class(root_path)
 

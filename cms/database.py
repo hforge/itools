@@ -44,6 +44,10 @@ TRANSACTION_PHASE2 = 2
 # Methods to find out the database path from a URI reference
 ###########################################################################
 def get_log(reference):
+    """
+    Guess out the commit log for the given reference.
+    """
+    # FIXME This code is fragile.  Maybe we can do it right in 0.17
     path = reference.path
     for i, name in enumerate(path):
         if name == 'database':

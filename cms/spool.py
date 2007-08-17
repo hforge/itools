@@ -110,7 +110,7 @@ class Spool(object):
                     # Send message
                     message = spool.open(name, 'r').read()
                     headers = HeaderParser().parsestr(message)
-                    subject = = headers['subject']
+                    subject = headers['subject']
                     from_addr = headers['from']
                     to_addr = headers['to']
                     # Send message

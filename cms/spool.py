@@ -110,13 +110,16 @@ class Spool(object):
                     # Send message
                     message = spool.open(name, 'r').read()
                     headers = HeaderParser().parsestr(message)
+                    subject = = headers['subject']
                     from_addr = headers['from']
                     to_addr = headers['to']
+                    # Send message
                     smtp.sendmail(from_addr, to_addr, message)
                     # Remove
                     spool.remove(name)
                     # Log
-                    log('SENT from "%s" to "%s"' % (from_addr, to_addr))
+                    log('SENT "%s" from "%s" to "%s"' % (subject, from_addr,
+                        to_addr))
             except:
                 self.log_error()
             finally:

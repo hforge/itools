@@ -17,14 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import cgi
 from datetime import datetime
 
 # Import from itools
-from itools import get_abspath
 from itools.uri import Path
-from itools.datatypes import QName
-from itools import vfs
 from itools.catalog import CatalogAware
 from itools.handlers import Handler as BaseHandler
 from itools.schemas import get_datatype
@@ -613,10 +609,15 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     # Edit / Inline / toolbox: add images
     addimage_form__access__ = 'is_allowed_to_edit'
     def addimage_form(self, context):
+        from file import File
         from binary import Image
         from widgets import Breadcrumb
         # Build the bc
-        bc = Breadcrumb(filter_type=Image, start=self.parent)
+        if isinstance(self, File):
+            start = self.parent
+        else:
+            start = self
+        bc = Breadcrumb(filter_type=Image, start=start)
         # Fix the bc style
         style = context.root.get_handler('ui/aruni/aruni.css')
         bc.style = context.handler.get_pathto(style)
@@ -658,7 +659,12 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def addlink_form(self, context):
         from file import File
         from widgets import Breadcrumb
-        bc = Breadcrumb(filter_type=File, start=self.parent)
+        # Build the bc
+        if isinstance(self, File):
+            start = self.parent
+        else:
+            start = self
+        bc = Breadcrumb(filter_type=File, start=start)
         # Fix the bc style
         style = context.root.get_handler('ui/aruni/aruni.css')
         bc.style = context.handler.get_pathto(style)

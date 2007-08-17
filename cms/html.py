@@ -17,9 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.uri import Path
 from itools.xml import Document as XMLDocument, TEXT, START_ELEMENT
 from itools.stl import stl
-from itools.xhtml import Document as XHTMLDocument
+from itools.xhtml import Document as XHTMLDocument, sanitize_stream
 from itools.html import Document as HTMLDocument, Parser as HTMLParser
 
 # Import from ikaaro
@@ -34,7 +35,67 @@ class XMLFile(Text, XMLDocument):
 
 
 
-class XHTMLFile(Text, XHTMLDocument):
+class EpozEditable(object):
+    """A mixin class for handlers implementing HTML editing.
+    """
+    #######################################################################
+    # Edit / Inline / source
+    def get_epoz_document(self):
+        # Implement it in your editable handler
+        raise NotImplementedError
+
+
+    def get_epoz_data(self):
+        document = self.get_epoz_document()
+        body = document.get_body()
+        if body is None:
+            return None
+        return body.get_content_elements()
+
+
+    #######################################################################
+    # Edit / Inline / edit form
+    edit_form__access__ = 'is_allowed_to_edit'
+    edit_form__label__ = u'Edit'
+    edit_form__sublabel__ = u'Inline'
+    def edit_form(self, context):
+        """WYSIWYG editor for HTML documents."""
+        from text import Text
+        data = self.get_epoz_data()
+        # If the document has not a body (e.g. a frameset), edit as plain text
+        if data is None:
+            return Text.edit_form(self, context)
+
+        # Edit with a rich text editor
+        namespace = {}
+        namespace['rte'] = self.get_rte(context, 'data', data)
+
+        handler = self.get_handler('/ui/html/edit.xml')
+        return stl(handler, namespace)
+
+
+    #######################################################################
+    # Edit / Inline / edit
+    edit__access__ = 'is_allowed_to_edit'
+    def edit(self, context, sanitize=False):
+        new_body = context.get_form_value('data')
+        new_body = HTMLParser(new_body)
+        if sanitize:
+            new_body = sanitize_stream(new_body)
+        # Save the changes
+        # "get_epoz_document" is to set in your editable handler
+        document = self.get_epoz_document()
+        old_body = document.get_body()
+        document.set_changed()
+        document.events = (document.events[:old_body.start+1]
+                       + new_body
+                       + document.events[old_body.end:])
+
+        return context.come_back(MSG_CHANGES_SAVED)
+
+
+
+class XHTMLFile(EpozEditable, Text, XHTMLDocument):
 
     class_id = 'application/xhtml+xml'
     class_title = u'Web Document'
@@ -98,43 +159,8 @@ class XHTMLFile(Text, XHTMLDocument):
 
     #######################################################################
     # Edit / Inline
-    def get_epoz_data(self):
-        body = self.get_body()
-        return body.get_content_elements()
-
-
-    edit_form__access__ = 'is_allowed_to_edit'
-    edit_form__label__ = u'Edit'
-    edit_form__sublabel__ = u'Inline'
-    def edit_form(self, context):
-        """WYSIWYG editor for HTML documents."""
-        # If the document has not a body (e.g. a frameset), edit as plain text
-        body = self.get_body()
-        if body is None:
-            return Text.edit_form(self, context)
-
-        # Edit with a rich text editor
-        namespace = {}
-        # Epoz expects HTML
-        data = body.get_content_elements()
-        namespace['rte'] = self.get_rte(context, 'data', data)
-
-        handler = self.get_handler('/ui/html/edit.xml')
-        return stl(handler, namespace)
-
-
-    edit__access__ = 'is_allowed_to_edit'
-    def edit(self, context):
-        new_body = context.get_form_value('data')
-        new_body = HTMLParser(new_body)
-        # Save the changes
-        old_body = self.get_body()
-        self.set_changed()
-        self.events = (self.events[:old_body.start+1]
-                       + new_body
-                       + self.events[old_body.end:])
-
-        return context.come_back(MSG_CHANGES_SAVED)
+    def get_epoz_document(self):
+        return self
 
 
 

@@ -21,7 +21,7 @@
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import FileName, Unicode
+from itools.datatypes import FileName
 from itools.uri import Path
 from itools.i18n import format_datetime
 from itools.stl import stl
@@ -52,8 +52,13 @@ class Message(XHTMLFile):
 
 
     def new(self, data):
-        data = HTMLParser(data)
-        self.events = sanitize_stream(data)
+        XHTMLFile.new(self)
+        new_body = HTMLParser(data)
+        new_body = sanitize_stream(new_body)
+        old_body = self.get_body()
+        self.events = (self.events[:old_body.start+1]
+                       + new_body
+                       + self.events[old_body.end:])
 
 
     def _load_state_from_file(self, file): 
@@ -62,33 +67,17 @@ class Message(XHTMLFile):
         self.events = list(stream)
 
 
-    # Remove from searches
+    # Was already indexed at the thread level
     def to_text(self):
         return u''
 
 
-    def edit_form(self, context):
-        """WYSIWYG editor for HTML documents."""
-        # Edit with a rich text editor
-        namespace = {}
-        namespace['rte'] = self.get_rte(context, 'data', self.events)
-
-        handler = self.get_object('/ui/html/edit.xml')
-        return stl(handler, namespace)
-
-
     edit__access__ = 'is_admin'
     def edit(self, context):
-        data = context.get_form_value('data')
-        data = HTMLParser(data)
-        self.events = sanitize_stream(data)
-        self.set_changed()
+        XHTMLFile.edit(self, context, sanitize=True)
 
         return context.come_back(MSG_CHANGES_SAVED, goto='../;view')
 
-
-    def get_epoz_data(self):
-        return self.events
 
 
 class Thread(Folder):
@@ -178,7 +167,9 @@ class Thread(Folder):
 
 
     def get_epoz_data(self):
+        # Default document for new message form
         return None
+
 
 
 class Forum(Folder):
@@ -265,6 +256,7 @@ class Forum(Folder):
 
 
     def get_epoz_data(self):
+        # Default document for new thread form
         return None
 
 

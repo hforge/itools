@@ -448,4 +448,19 @@ class Root(WebSite):
         pass
 
 
+    def update_20070816(self):
+        # Forum messages are formal XHTML documents
+        from forum import Message
+
+        for handler, ctx in self.traverse2(caching=False):
+            if isinstance(handler, Message):
+                body = handler.get_body()
+                if body is None:
+                    # Re-generage message with document fragment
+                    data = handler.to_str()
+                    new_message = Message(data=data)
+                    handler.events = new_message.events
+                    handler.set_changed()
+
+
 register_object_class(Root)

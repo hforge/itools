@@ -37,32 +37,23 @@ def convert(handler, cmdline, outfile=None):
     file_path = path_join(path, 'stdin')
     open(file_path, 'w').write(handler.to_str())
 
-    # stdout & stderr
+    # stdout
     stdout_path = path_join(path, 'stdout')
     stdout = open(stdout_path, 'w')
-    stderr_path =path_join(path, 'stderr')
+    if outfile is not None:
+        stdout_path = path_join(path, outfile)
+    # stderr
+    stderr_path = path_join(path, 'stderr')
     stderr = open(stderr_path, 'w')
 
     # Call convert method
     try:
         # XXX do not use pipes, not enough buffer to hold stdout
         call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
-    except OSError:
-        vfs.remove(path)
-        raise
-
-    # Read output
-    if outfile is not None:
-        stdout_path = path_join(path, outfile)
-    try:
         stdout = open(stdout_path).read()
-    except IOError:
+        stderr = open(stderr_path).read()
+    finally:
         vfs.remove(path)
-        raise
-    stderr = open(stderr_path).read()
-
-    # Remove the temporary files
-    vfs.remove(path)
 
     return stdout, stderr
 

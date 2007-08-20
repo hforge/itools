@@ -142,7 +142,7 @@ def update(parser, options, target):
         print '*'
         print '* To finish the upgrade process update the catalog:'
         print '*'
-        print '*   $ icms-update-catalog %s' % target
+        print '*   $ icms-update-catalog.py %s' % target
         print '*'
 
 

@@ -35,7 +35,7 @@ def start(parser, options, target):
     if folder.exists('database/.catalog'):
         print ('The database must be updated, type:')
         print
-        print '    $ icms-update <instance>'
+        print '    $ icms-update.py <instance>'
         print
         return
 
@@ -43,7 +43,7 @@ def start(parser, options, target):
     if vfs.exists('%s/database.commit' % target):
         print 'The database is not in a consistent state, to fix it up type:'
         print
-        print '    $ icms-restore <instance>'
+        print '    $ icms-restore.py <instance>'
         print
         return
 
@@ -56,7 +56,7 @@ def start(parser, options, target):
     if root.get_property('version') < root.class_version:
         print 'The instance is not up-to-date, please type:'
         print
-        print '    $ icms-update <instance>'
+        print '    $ icms-update.py <instance>'
         print
         return
 

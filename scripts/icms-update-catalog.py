@@ -36,7 +36,7 @@ def update_catalog(parser, options, target):
     if vfs.exists('%s/database.commit' % target):
         print 'The database is not in a consistent state, to fix it up type:'
         print
-        print '    $ icms-restore <instance>'
+        print '    $ icms-restore.py <instance>'
         print
         return
 

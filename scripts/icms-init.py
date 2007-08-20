@@ -122,7 +122,7 @@ def init(parser, options, target):
     print '*   password: %s' % password
     print '*'
     print '* To start the new instance type:'
-    print '*   icms-start %s' % target
+    print '*   icms-start.py %s' % target
     print '*'
 
 

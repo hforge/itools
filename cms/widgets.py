@@ -152,53 +152,54 @@ def table_head(columns, sortby, sortorder, gettext=lambda x: x):
     # Go
     return columns_
 
+table_with_form_template = list(Parser("""
+<form xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl"
+  action="." method="post" id="browse_list" name="browse_list">
+  ${table}
+</form>
+"""))
 
 table_template = list(Parser("""
-<stl:block xmlns="http://www.w3.org/1999/xhtml"
+<table xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-  <!-- Content -->
-  <form action="." method="post" id="browse_list" name="browse_list">
-    <table xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:stl="http://xml.itools.org/namespaces/stl">
-      <thead stl:if="columns">
-        <tr>
-          <th stl:if="column_checkbox"></th>
-          <th stl:if="column_image"></th>
-          <th stl:repeat="column columns" valign="bottom">
-            <a stl:if="column" href="${column/href}"
-              class="sort_${column/order}">${column/title}</a>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr stl:repeat="row rows" class="${repeat/row/even} ${row/class}">
-          <td stl:if="column_checkbox">
-            <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
-              value="${row/id}" checked="${row/checked}" />
-          </td>
-          <td stl:if="column_image">
-            <img border="0" src="${row/img}" stl:if="row/img" />
-          </td>
-          <td stl:repeat="column row/columns">
-            <a stl:if="column/href" href="${column/href}">${column/value}</a>
-            <stl:block if="not column/href">${column/value}</stl:block>
-          </td>
-        </tr>
-      </tbody>
-    </table> 
-    <p stl:if="actions">
-      <stl:block repeat="action actions">
-        <input type="submit" name=";${action/name}" value="${action/value}"
-          class="${action/class}" onclick="${action/onclick}" />
-      </stl:block>
-    </p>
-  </form>
-</stl:block>
+  <thead stl:if="columns">
+    <tr>
+      <th stl:if="column_checkbox"></th>
+      <th stl:if="column_image"></th>
+      <th stl:repeat="column columns" valign="bottom">
+        <a stl:if="column" href="${column/href}"
+          class="sort_${column/order}">${column/title}</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr stl:repeat="row rows" class="${repeat/row/even} ${row/class}">
+      <td stl:if="column_checkbox">
+        <input class="checkbox" type="checkbox" name="ids" stl:if="row/id"
+          value="${row/id}" checked="${row/checked}" />
+      </td>
+      <td stl:if="column_image">
+        <img border="0" src="${row/img}" stl:if="row/img" />
+      </td>
+      <td stl:repeat="column row/columns">
+        <a stl:if="column/href" href="${column/href}">${column/value}</a>
+        <stl:block if="not column/href">${column/value}</stl:block>
+      </td>
+    </tr>
+  </tbody>
+</table> 
+<p stl:if="actions">
+  <stl:block repeat="action actions">
+    <input type="submit" name=";${action/name}" value="${action/value}"
+      class="${action/class}" onclick="${action/onclick}" />
+  </stl:block>
+</p>
 """))
 
 
-def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x):
+def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x,
+          table_with_form=True):
     """
     The parameters are:
 
@@ -263,8 +264,13 @@ def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x):
     namespace['actions'] = [
         {'name': name, 'value': value, 'class': cls, 'onclick': onclick}
         for name, value, cls, onclick in actions ]
+    if table_with_form:
+        table = {'table': table_template}
+        events = stl(events=table_with_form_template, namespace=table)
+    else:
+        events = table_template
 
-    return stl(events=table_template, namespace=namespace)
+    return stl(events=events, namespace=namespace)
 
 
 

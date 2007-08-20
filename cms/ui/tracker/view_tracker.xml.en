@@ -4,8 +4,62 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>${title} <a href="${edit_search_link}">(Edit search)</a></h2>
-    ${batch}
-    ${table}
+<h2>${title} <a href=";search_form?${search_parameters}">(Edit search)</a></h2>
+${batch}
+${table}
+
+<hr/>
+<!-- Links -->
+<p>Export:
+  <a href=";view?${search_parameters}&amp;export_to_text=1">
+    to text
+  </a>&nbsp;|
+  <a href=";view?${search_parameters}&amp;export_to_csv=1">
+    to CSV
+  </a>
+</p>
+<!-- Export to text -->
+<stl:block stl:if="export_to_text">
+  <h2>Export to text</h2>
+  <dl>
+    <form method="GET" action=";view">
+    <p>
+    Please select the columns to export:
+    </p>
+    <stl:block stl:repeat="column columns">
+      <input id="${column/name}" type="checkbox" name="column_selection"
+        value="${column/name}" checked="${column/checked}" />
+        <label for="${column/name}">${column/title}</label>
+      &nbsp;
+    </stl:block>
+    <br/>
+    
+    <input type="hidden" stl:repeat="c criteria" name="${c/name}"
+      value="${c/value}"/>
+    <input type="hidden" name="export_to_text" value="1"/>
+    <input type="submit" class="button_ok" value="Update text export"
+        name="button_export_to_text"/>
+    </form>
+  </dl>
+    <div style="height:300px;border:1px solid #9FB7D4;overflow:auto">
+      <pre>${text}</pre>
+    </div>
+</stl:block>
+
+<!-- Export to CSV -->
+<stl:block stl:if="export_to_csv">
+<h2>Export to CSV</h2>
+  Please select encoding:<br/><br/>
+  <form method="GET" action=";export_to_csv">
+  <input type="hidden" stl:repeat="c criteria" name="${c/name}"
+      value="${c/value}"/>
+  <input type="radio" name="editor" value="oo" checked="on"/>
+  For OpenOffice (Encoding: UTF-8, Separator: ",")<br/>
+  <input type="radio" name="editor" value="excel"/>
+  For Excel (Encoding: CP1252, Separator: ";") <br/><br/>
+  <input type="submit" class="button_ok" name="export_to_csv" value="Exporter"/>
+  </form>
+</stl:block>
+
 
 </stl:block>

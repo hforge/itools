@@ -32,7 +32,7 @@ from itools.handlers import Config
 from itools.csv import IntegerKey, CSV as BaseCSV
 from itools.xml import Parser
 from itools.stl import stl
-from itools.uri import encode_query
+from itools.uri import encode_query, Reference
 from csv import CSV
 from file import File
 from folder import Folder
@@ -58,6 +58,12 @@ search_fields = [('search_name', False, Unicode),
                  ('priority', False, Integer),
                  ('assign', False, Unicode),
                  ('state', False, Integer)]
+
+table_columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),
+                 ('module', u'Module'), ('type', u'Type'),
+                 ('priority', u'Priority'), ('state', u'State'),
+                 ('assigned_to', u'Assigned To'),
+                 ('mtime', u'Last Modification')]
 
 
 class Tracker(Folder):
@@ -258,6 +264,8 @@ class Tracker(Folder):
         search_title = unicode(search_title, 'utf8')
 
         stored_search = stored_search_title = None
+        if not search_title:
+            context.uri.query['search_name'] = search_name = None
         if search_name:
             # Edit an Stored Search
             try:
@@ -297,30 +305,174 @@ class Tracker(Folder):
         return context.uri.resolve(';view?search_name=%s' % search_name)
 
 
-
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
+        namespace = {}
+        # Get search results
+        results = self.get_search_results(context)
+        # Analyse the result
+        if isinstance(results, Reference):
+            return results
+        # Construct lines
+        lines = []
+        for issue in results:
+            infos = issue.get_informations()
+            # Add link to title
+            link = '%s/;edit_form' % issue.name
+            infos['title'] = (infos['title'], link)
+            lines.append(infos)
+        # Sort
+        sortby = context.get_form_value('sortby', default='id')
+        sortorder = context.get_form_value('sortorder', default='up')
+        lines.sort(key=itemgetter(sortby))
+        if sortorder == 'down':
+            lines.reverse()
+        # Set title of search
+        search_name = context.get_form_value('search_name')
+        if search_name:
+            search = self.get_handler(search_name)
+            title = search.get_title()
+        else:
+            title = self.gettext(u'View Tracker')
+        nb_results = len(lines)
+        namespace['title'] = title
+        # Keep the search_parameters
+        criteria = []
+        search_parameters = {}
+        for field in search_fields:
+            key, _, _ = field
+            search_parameters[key] = context.get_form_value(key) or ''
+            criteria.append({'name': key, 'value': context.get_form_value(key)})
+        namespace['search_parameters'] = encode_query(search_parameters)
+        namespace['criteria'] = criteria
+        # Table
+        sortby = context.get_form_value('sortby', default='id')
+        sortorder = context.get_form_value('sortorder', default='up')
+        msgs = (u'<span>There is 1 result.</span>',
+                u'<span>There are ${n} results.</span>')
+        namespace['batch'] = widgets.batch(context.uri, 0, nb_results,
+                                nb_results, msgs=msgs)
+        namespace['table'] = widgets.table(table_columns, lines, [sortby],
+                                sortorder)
+        # Export_to_text
+        namespace['export_to_text'] = False
+        if context.get_form_value('export_to_text'):
+            namespace['export_to_text'] = True
+            namespace['columns'] = []
+            # List columns
+            columns = context.get_form_values('column_selection')
+            for column in table_columns:
+                name, title = column
+                if name is not 'id':
+                    checked = True
+                    if context.get_form_value('button_export_to_text'):
+                        checked = name in columns
+                    namespace['columns'].append({'name': name,
+                                                 'title': title,
+                                                 'checked': checked})
+            namespace['text'] = self.get_export_to_text(context)
+        # Export_to_csv
+        namespace['export_to_csv'] = False
+        if context.get_form_value('export_to_csv'):
+            namespace['export_to_csv'] = True
+
+        handler = self.get_handler('/ui/tracker/view_tracker.xml')
+        return stl(handler, namespace)
+
+
+    export_to_csv__access__ = 'is_allowed_to_view'
+    export_to_csv__label__ = u'Export as CSV'
+    def export_to_csv(self, context):
+        # Get search results
+        results = self.get_search_results(context)
+        # Analyse the results
+        if isinstance(results, Reference):
+            return results
+        # Get CSV encoding and separator
+        editor = context.get_form_value('editor')
+        if editor=='oo':
+            # OpenOffice
+            separator = ','
+            encoding = 'utf-8'
+        else:
+            # Excel
+            separator = ';'
+            encoding = 'cp1252'
+        # Create the CSV
+        lines = []
+        for issue in results:
+            line = ''
+            infos = issue.get_informations() 
+            for column in table_columns:
+                name, value = column
+                val = infos[name]
+                if line:
+                    line = '%s%s%s' % (line, separator, val)
+                else:
+                    line = '%s' % val
+            lines.append(line)
+        data = '\n'.join(lines)
+        if not len(data):
+            return context.come_back(u"No data to export.")
+        # Set response type
+        response = context.response
+        response.set_header('Content-Type', 'text/csv')
+        response.set_header('Content-Disposition',
+                            'attachment; filename=export.csv')
+        return data.encode(encoding)
+
+
+    def get_export_to_text(self, context):
+        """
+        Generate a text with selected rows of selected issues
+        """
+        # Get selected columns
+        selected_columns = context.get_form_values('column_selection')
+        if not selected_columns:
+            selected_columns = [x[0] for x in table_columns if x[0] is not 'id']
+        # Get search results
+        results = self.get_search_results(context)
+        # Analyse the result
+        if isinstance(results, Reference):
+            return results
+        # Get lines
+        lines = []
+        for issue in results:
+            lines.append(issue.get_informations())
+        # Sort lines
+        sortby = context.get_form_value('sortby', default='id')
+        sortorder = context.get_form_value('sortorder', default='up')
+        lines.sort(key=itemgetter(sortby))
+        if sortorder == 'down':
+            lines.reverse()
+        # Create the text
+        tab_text = []
+        for line in lines:
+            filtered_line = [unicode(line[col]) for col in selected_columns]
+            id = u'#%s' % line['name']
+            filtered_line.insert(0, id)
+            filtered_line = u'\t'.join(filtered_line)
+            tab_text.append(filtered_line)
+        return u'\n'.join(tab_text)
+
+
+    def get_search_results(self, context):
+        """
+        Method that return a list of issues that correspond to the search 
+        """
         error = context.check_form_input(search_fields)
         if error is not None:
             return context.come_back(error, keep=[])
-        # Build the namespace
-        namespace = {}
         users = self.get_handler('/users')
-        # Stored Search
+        # Choose stored Search or personalized search
         search_name = context.get_form_value('search_name')
         if search_name:
             search = self.get_handler(search_name)
             getter = search.get_value
-            title = search.get_title()
-            edit_search_link = ';search_form?search_name=%s' % search.name
         else:
             getter = context.get_form_value
-            title = self.gettext(u'View Tracker')
-            edit_search_link = context.uri.resolve(';search_form').replace(
-                **context.uri.query)
-        namespace['title'] = title
-        namespace['edit_search_link'] = edit_search_link
+        # Get search criteria
         text = getter('text', type=Unicode)
         if text is not None:
             text = text.strip().lower()
@@ -331,18 +483,8 @@ class Tracker(Folder):
         priority = getter('priority', type=Integer)
         assign = getter('assigned_to', type=String)
         state = getter('state', type=Integer)
-        # Columns
-        columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),
-            ('module', u'Module'), ('type', u'Type'),
-            ('priority', u'Priority'), ('state', u'State'),
-            ('assigned_to', u'Assigned To'), ('mtime', u'Last Modification')]
-        # Lines
-        lines = []
-        tables = {'module': self.get_handler('modules.csv'),
-                  'version': self.get_handler('versions.csv'),
-                  'type': self.get_handler('types.csv'),
-                  'priority': self.get_handler('priorities.csv'),
-                  'state': self.get_handler('states.csv')}
+        # Execute the search
+        issues = []
         now = datetime.now()
         for handler in self.search_handlers(handler_class=Issue):
             if text:
@@ -374,38 +516,8 @@ class Tracker(Folder):
                 if state != handler.get_value('state'):
                     continue
             # Append
-            link = '%s/;edit_form' % handler.name
-            line = {'id': (int(handler.name), link),
-                    'title': (handler.get_value('title'), link)}
-            for name in 'module', 'version', 'type', 'priority', 'state':
-                value = handler.get_value(name)
-                row = tables[name].get_row_by_id(value)
-                line[name] = row and row.get_value('title') or None
-            assigned_to = handler.get_value('assigned_to')
-            # solid in case the user has been removed
-            if assigned_to and users.has_handler(assigned_to):
-                    user = users.get_handler(assigned_to)
-                    line['assigned_to'] = user.get_title()
-            else:
-                line['assigned_to'] = ''
-            line['mtime'] = format_datetime(handler.get_mtime())
-            lines.append(line)
-        # Sort
-        sortby = context.get_form_value('sortby', default='id')
-        sortorder = context.get_form_value('sortorder', default='up')
-        lines.sort(key=itemgetter(sortby))
-        if sortorder == 'down':
-            lines.reverse()
-        nb_results = len(lines)
-        # Table
-        msgs = (u'<span>There is 1 result.</span>',
-                u'<span>There are ${n} results.</span>')
-        namespace['batch'] = widgets.batch(context.uri, 0, nb_results,
-                                nb_results, msgs=msgs)
-        namespace['table'] = widgets.table(columns, lines, [sortby], sortorder)
-
-        handler = self.get_handler('/ui/tracker/view_tracker.xml')
-        return stl(handler, namespace)
+            issues.append(handler)
+        return issues
 
 
     #######################################################################
@@ -809,6 +921,35 @@ class Issue(Folder, VersioningAware):
         if rows:
             return rows[-1].get_value(name)
         return None
+
+
+    def get_informations(self):
+        """
+        Return a tab with issue informations
+        """
+        parent = self.parent
+        tables = {'module': parent.get_handler('modules.csv'),
+                  'version': parent.get_handler('versions.csv'),
+                  'type': parent.get_handler('types.csv'),
+                  'priority': parent.get_handler('priorities.csv'),
+                  'state': parent.get_handler('states.csv')}
+        infos = {'name': self.name,
+                 'id': int(self.name),
+                 'title': self.get_value('title')}
+        for name in 'module', 'version', 'type', 'priority', 'state':
+            value = self.get_value(name)
+            row = tables[name].get_row_by_id(value)
+            infos[name] = row and row.get_value('title') or None
+        assigned_to = self.get_value('assigned_to')
+        # solid in case the user has been removed
+        users = self.get_handler('/users')
+        if assigned_to and users.has_handler(assigned_to):
+                user = users.get_handler(assigned_to)
+                infos['assigned_to'] = user.get_title()
+        else:
+            infos['assigned_to'] = ''
+        infos['mtime'] = format_datetime(self.get_mtime())
+        return infos
 
 
     def get_comment(self):

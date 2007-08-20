@@ -4,7 +4,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <!-- Go to Issue # -->
+  <!-- Navigation -->
+  <h2>Navigation</h2>
   <form action=";go_to_issue" method="get">
     Go to issue #<input type="text" name="issue_name" size="6" />
     <input type="submit" class="button_ok" value="OK" />

@@ -97,17 +97,18 @@
   <stl:block repeat="comment comments">
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr class="tracker_issue_comment_title">
-        <td>Comment #${comment/number}</td>
+        <td><a name="c${comment/number}"/></td>
+        <td>Comment <a href="#c${comment/number}">${comment/number}</a></td>
         <td>${comment/user}</td>
         <td align="right">${comment/datetime}</td>
       </tr>
       <tr stl:if="comment/file">
-        <td colspan="3">
+        <td colspan="4">
           Attachement: <a href="${comment/file}">${comment/file}</a>
         </td>
       </tr>
       <tr>
-        <td colspan="3">${comment/comment}</td>
+        <td colspan="4">${comment/comment}</td>
       </tr>
     </table>
     <br/>

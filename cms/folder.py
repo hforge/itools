@@ -495,7 +495,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         user = context.user
         ac = self.get_access_control()
         actions = []
-        message = self.gettext(u"Delete this objet, are you sure?")
+        message = self.gettext(MSG_DELETE_SELECTION)
         if namespace['total']:
             actions = [
                 ('select', u'Select All', 'button_select_all',

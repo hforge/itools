@@ -6,12 +6,13 @@
 # Hervé Cauwelier <herve@oursours.net>, 2005.
 # Hervé Cauwelier <herve@itaapy.com>, 2007.
 # Taverne Sylvain <sylvain@itaapy.com>, 2007.
+# Obein Henry <henry@itaapy.com>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-07-18 18:07+CET\n"
-"PO-Revision-Date: 2007-07-16 12:10+0100\n"
+"PO-Revision-Date: 2007-08-17 18:02+0100\n"
 "Last-Translator: Henry Obein <henry@itaapy.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -1641,7 +1642,7 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #: cms/folder.py:495
-msgid "Delete this objet, are you sure?"
+msgid "Are you sure you want to delete the selection?"
 msgstr "Êtes-vous sûr de vouloir supprimer la sélection ?"
 
 #: cms/ui/tracker/add_issue.xml.en:0

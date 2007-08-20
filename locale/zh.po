@@ -1669,7 +1669,7 @@ msgid "Delete"
 msgstr "设置"
 
 #: cms/folder.py:495
-msgid "Delete this objet, are you sure?"
+msgid "Are you sure you want to delete the selection?"
 msgstr ""
 
 #: cms/ui/tracker/add_issue.xml.en:0

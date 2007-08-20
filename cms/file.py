@@ -64,7 +64,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         # Check input data
         file = context.get_form_value('file')
         if file is None:
-            return context.come_back(u'The file must be entered')
+            return context.come_back(MSG_EMPTY_FILENAME)
 
         # Interpret input data (the mimetype sent by the browser can be
         # minimalistic)

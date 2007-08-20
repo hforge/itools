@@ -18,6 +18,9 @@
 MSG_BAD_NAME = (
     u'The document name contains illegal characters, choose another one.')
 MSG_CHANGES_SAVED = u'The changes have been saved.'
+MSG_DELETE_OBJECT = u'Are you sure you want to delete this object?'
+MSG_DELETE_SELECTION = u'Are you sure you want to delete the selection?'
+MSG_EMPTY_FILENAME = u'The file must be entered.'
 MSG_INVALID_EMAIL = u'The email address provided is invalid.'
 MSG_NAME_CLASH = u'There is already another object with this name.'
 MSG_NAME_MISSING = u'The name is missing.'

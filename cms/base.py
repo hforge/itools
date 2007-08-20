@@ -582,6 +582,12 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace['form_name'] = name
         namespace['js_data'] = data
         namespace['iframe'] = ';epoz_iframe'
+        dress_name = context.get_form_value('dress_name')
+        if dress_name:
+            namespace['iframe'] = ';epoz_iframe?dress_name=%s' % dress_name
+        else:
+            namespace['iframe'] = ';epoz_iframe'
+        namespace['dress_name'] = dress_name
 
         handler = context.handler
         here = Path(handler.get_abspath())

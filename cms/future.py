@@ -17,8 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+import mimetypes
+
 # Import from itools
-from itools.stl import stl
+from itools.datatypes import is_datatype
+from itools.uri import Path
+from itools.stl import stl, set_prefix
+from itools.xhtml import Document
+from itools.xml import Parser
+from itools.handlers import Image
+from itools.rest import checkid
+from itools.web import get_context
+
+# Import from itools.cms
+from itools.cms.registry import get_object_class
+from itools.cms.folder import Folder
+from itools.cms.html import XHTMLFile
+from itools.cms.messages import *
 
 
 
@@ -226,3 +242,215 @@ class OrderAware(object):
         message = u"Objects moved to ordered category."
         return context.come_back(message)
 
+
+
+class Dressable(Folder):
+
+    class_views = [['edit_document']]
+    template = None
+    schema = {}
+
+
+    def new(self, **kw):
+        Folder.new(self, **kw)
+        cache = self.cache
+
+        for key, data in self.schema.iteritems():
+            if isinstance(data, tuple):
+                name, cls = data
+                if is_datatype(cls, Document):
+                    handler = cls()
+                    cache[name] = handler
+                    cache['%s.metadata' % name] = handler.build_metadata()
+
+
+    #######################################################################
+    # API / Private
+    #######################################################################
+    def _get_image(self, context, handler):
+        here = context.handler
+        path = here.get_pathto(handler)
+        content = '<img src="%s"/>' % path
+        return Parser(content)
+
+
+    def _get_document(self, context, handler):
+        here = context.handler
+        stream = handler.get_body().get_content_elements()
+        prefix = here.get_pathto(handler)
+        return set_prefix(stream, prefix)
+
+
+    view__label__ = u'View'
+    def view(self, context):
+        namespace = {}
+
+        for key, data in self.schema.iteritems():
+            content = ''
+            if isinstance(data, tuple):
+                name, kk = data
+                if self.has_handler(name):
+                    handler = self.get_handler(name)
+                    if is_datatype(handler, Image):
+                        content = self._get_image(context, handler)
+                    elif is_datatype(handler, Document):
+                        content = self._get_document(context, handler)
+                    else:
+                        raise NotImplementedError
+            else:
+                content = getattr(self, data)(context)
+            namespace[key] = content
+
+        handler = self.get_handler(self.template)
+        return stl(handler, namespace)
+
+
+    #######################################################################
+    # API
+    #######################################################################
+    edit_document__access__ = 'is_allowed_to_edit'
+    edit_document__label__ = 'edit'
+    def edit_document(self, context):
+        name = context.get_form_value('dress_name')
+        handler = self.get_handler(name)
+        return XHTMLFile.edit_form(handler, context)
+
+
+    edit_image__access__ = 'is_allowed_to_edit'
+    def edit_image(self, context):
+        name = context.get_form_value('name')
+        if self.has_handler(name) is False:
+            return context.uri.resolve2('../;add_image_form?name=%s' % name)
+
+        namespace = {}
+        name = context.get_form_value('name')
+        namespace['name'] = name
+        namespace['class_id'] = self.get_class_id_image(name)
+        message = self.gettext(u"Delete this objet.")
+        msg = 'return confirmation("%s");' % message.encode('utf_8')
+        namespace['remove_action'] = msg
+
+        # size
+        handler = self.get_handler(name)
+        width, height = handler.size
+        if width > 640:
+            coef = 640 / float(width)
+            width = 640
+            height = height * coef
+        elif height > 480:
+            coef = 480 / float(height)
+            height = 480
+            width = width * coef
+        namespace['width'] = width
+        namespace['height'] = height
+
+        handler = self.get_handler('/ui/dressable/upload_image.xml')
+        return stl(handler, namespace)
+
+
+    def get_class_id_image(self, handler_name):
+        """
+        Return the class id of a handler
+        """
+        for key, data in self.schema.iteritems():
+            if isinstance(data, tuple):
+                name, cls = data
+                if name == handler_name:
+                    return cls.class_id
+        raise AttributeError
+
+
+    add_image_form__access__ = 'is_allowed_to_edit'
+    def add_image_form(self, context):
+        namespace = {}
+        name = context.get_form_value('name')
+        namespace['name'] = name
+        namespace['class_id'] = self.get_class_id_image(name)
+
+        handler = self.get_handler('/ui/dressable/Image_new_instance.xml')
+        return stl(handler, namespace)
+
+
+    new_image_resource__access__ = 'is_allowed_to_edit'
+    def new_image_resource(self, context):
+        class_id = context.get_form_value('class_id')
+        image_name = context.get_form_value('name')
+
+        # Check input data
+        file = context.get_form_value('file')
+        if file is None:
+            return context.come_back(u'The file must be entered')
+
+        # Interpret input data (the mimetype sent by the browser can be
+        # minimalistic)
+        kk, mimetype, body = file
+        guessed, encoding = mimetypes.guess_type(image_name)
+
+        # Check the name
+        name = checkid(image_name)
+        if name is None:
+            return context.come_back(MSG_BAD_NAME)
+
+        # Add the language extension to the name
+        if mimetype.startswith('image/') is False:
+            return context.come_back(u'The file is not an image')
+
+        # Build the object
+        cls = get_object_class(class_id)
+        handler = cls(string=body)
+        metadata = handler.build_metadata()
+        # Add the object
+        if self.has_handler(image_name):
+            handler = self.get_handler(image_name)
+            handler.load_state_from_string(body)
+        else:
+            handler, metadata = self.set_object(name, handler, metadata)
+
+        goto = './;view'
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+
+
+    remove_image__access__ = 'is_allowed_to_edit'
+    def remove_image(self, context):
+        name = context.get_form_value('name')
+        self.del_object(name)
+        goto = './;view'
+        return context.come_back(u'Objects removed: %s' % name, goto=goto)
+
+
+    def get_epoz_document(self):
+        name = get_context().get_form_value('dress_name')
+        return self.get_handler(name)
+
+
+    #######################################################################
+    # User interface
+    #######################################################################
+    def get_subviews(self, name):
+        if name == 'edit_document':
+            subviews = []
+            for key, data in self.schema.iteritems():
+                if isinstance(data, tuple):
+                    name, cls = data
+                    if is_datatype(cls, Document):
+                        ref = 'edit_document?dress_name=%s' % name
+                        subviews.append(ref)
+                    elif is_datatype(cls, Image):
+                        ref = 'edit_image?name=%s' % name
+                        subviews.append(ref)
+            return subviews
+        return Folder.get_subviews(self, name)
+
+
+    def edit_document__sublabel__(self, **kw):
+        dress_name = kw.get('dress_name')
+        handler = self.get_handler(dress_name)
+        return handler.get_property('dc:title') or handler.name
+
+
+    def edit_image__sublabel__(self, **kw):
+        name = kw.get('name')
+        if self.has_handler(name):
+            handler = self.get_handler(name)
+            return handler.get_property('dc:title') or handler.name
+        return name

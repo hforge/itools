@@ -131,6 +131,7 @@
       <input type="checkbox" class="epoz_switch" id="CB_${form_name}" 
         onclick="redirectAndSwitchViewMode(this);" />
       <label for="CB_${form_name}" style="font-size: 0.7em;">HTML</label>
+      <input type="hidden" name="dress_name" value="${dress_name}" />
     </div>
   </div>
 

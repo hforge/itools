@@ -109,6 +109,7 @@ class XHTMLFile(EpozEditable, Text, XHTMLDocument):
                    ['history_form']]
 
 
+    GET__mtime__ = None
     def GET(self, context):
         method = self.get_firstview()
         # Check access
@@ -169,6 +170,7 @@ class HTMLFile(HTMLDocument, XHTMLFile):
     class_id = 'text/html'
 
 
+    GET__mtime__ = Text.get_mtime
     def GET(self, context):
         return Text.GET(self, context)
 

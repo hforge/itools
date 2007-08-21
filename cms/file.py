@@ -108,6 +108,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
+    GET__mtime__ = Handler.get_mtime
     def GET(self, context):
         return self.download(context)
 

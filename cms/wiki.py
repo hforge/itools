@@ -194,6 +194,7 @@ class WikiPage(Text):
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
+    GET__mtime__ = None
     def GET(self, context):
         return context.uri.resolve2(';view')
 

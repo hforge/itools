@@ -1110,6 +1110,7 @@ class Calendar(Text, icalendar, CalendarAware):
     download_form__sublabel__ = u'Export in ical format'
 
 
+    GET__mtime__ = None
     def GET(self, context):
         return Handler.GET(self, context)
 

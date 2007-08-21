@@ -309,19 +309,41 @@ class Tracker(Folder):
     view__label__ = u'View'
     def view(self, context):
         namespace = {}
+        namespace['method'] = 'GET'
+        namespace['action'] = '.'
         # Get search results
         results = self.get_search_results(context)
         # Analyse the result
         if isinstance(results, Reference):
             return results
+        # Selected issues
+        selected_issues = context.get_form_values('ids')
+        # Show checkbox or not
+        show_checkbox = False
+        actions = []
+        if (context.get_form_value('export_to_text') or
+            context.get_form_value('export_to_csv') or
+            context.get_form_value('change_several_bugs')):
+            show_checkbox = True
+            actions = [('select', u'Select All', 'button_select_all',
+                       "return select_checkboxes('browse_list', true);"),
+                       ('select', u'Select None', 'button_select_none',
+                       "return select_checkboxes('browse_list', false);")]
         # Construct lines
         lines = []
         for issue in results:
-            infos = issue.get_informations()
+            line = issue.get_informations()
             # Add link to title
             link = '%s/;edit_form' % issue.name
-            infos['title'] = (infos['title'], link)
-            lines.append(infos)
+            line['title'] = (line['title'], link)
+            if show_checkbox:
+                line['checkbox'] = True
+                if not selected_issues:
+                  line['checked'] = True
+                else:
+                    if issue.name in selected_issues:
+                        line['checked'] = issue.name
+            lines.append(line)
         # Sort
         sortby = context.get_form_value('sortby', default='id')
         sortorder = context.get_form_value('sortorder', default='up')
@@ -354,10 +376,12 @@ class Tracker(Folder):
         namespace['batch'] = widgets.batch(context.uri, 0, nb_results,
                                 nb_results, msgs=msgs)
         namespace['table'] = widgets.table(table_columns, lines, [sortby],
-                                sortorder)
+                            sortorder, actions=actions, table_with_form=False)
         # Export_to_text
         namespace['export_to_text'] = False
         if context.get_form_value('export_to_text'):
+            namespace['method'] = 'GET'
+            namespace['action'] = ';view'
             namespace['export_to_text'] = True
             namespace['columns'] = []
             # List columns
@@ -376,6 +400,23 @@ class Tracker(Folder):
         namespace['export_to_csv'] = False
         if context.get_form_value('export_to_csv'):
             namespace['export_to_csv'] = True
+            namespace['method'] = 'GET'
+            namespace['action'] = ';export_to_csv'
+        # Edit several bugs at once
+        namespace['change_several_bugs'] = False
+        if context.get_form_value('change_several_bugs'):
+            get = self.get_handler
+            namespace['method'] = 'POST'
+            namespace['action'] = ';change_several_bugs'
+            namespace['change_several_bugs'] = True
+            namespace['modules'] = get('modules.csv').get_options()
+            namespace['versions'] = get('versions.csv').get_options()
+            namespace['priorities'] = get('priorities.csv').get_options()
+            namespace['states'] = get('states.csv').get_options()
+            namespace['types'] = get('types.csv').get_options()
+            namespace['states'] = get('states.csv').get_options()
+            users = self.get_handler('/users')
+            namespace['users'] = self.get_members_namespace('')
 
         handler = self.get_handler('/ui/tracker/view_tracker.xml')
         return stl(handler, namespace)
@@ -399,20 +440,24 @@ class Tracker(Folder):
             # Excel
             separator = ';'
             encoding = 'cp1252'
+        # Selected issues
+        selected_issues = context.get_form_values('ids')
         # Create the CSV
-        lines = []
+        csv_lines = []
         for issue in results:
-            line = ''
-            infos = issue.get_informations() 
+            if selected_issues and (issue.name not in selected_issues):
+                continue
+            csv_line = ''
+            issue_line = issue.get_informations()
             for column in table_columns:
                 name, value = column
-                val = infos[name]
-                if line:
-                    line = '%s%s%s' % (line, separator, val)
+                val = issue_line[name]
+                if csv_line:
+                    csv_line = '%s%s%s' % (csv_line, separator, val)
                 else:
-                    line = '%s' % val
-            lines.append(line)
-        data = '\n'.join(lines)
+                    csv_line = '%s' % val
+            csv_lines.append(csv_line)
+        data = '\n'.join(csv_lines)
         if not len(data):
             return context.come_back(u"No data to export.")
         # Set response type
@@ -421,6 +466,107 @@ class Tracker(Folder):
         response.set_header('Content-Disposition',
                             'attachment; filename=export.csv')
         return data.encode(encoding)
+
+
+    change_several_bugs__access__ = 'is_allowed_to_view'
+    change_several_bugs__label__ = u'Change several bugs'
+    def change_several_bugs(self, context):
+        root = context.root
+        # Get search results
+        results = self.get_search_results(context)
+        # Analyse the result
+        if isinstance(results, Reference):
+            return results
+        users_issues = {}
+        # Selected_issues
+        selected_issues = context.get_form_values('ids')
+        # Modify all issues selected
+        for issue in results:
+            if issue.name not in selected_issues:
+                  continue
+            assigned_to = issue.get_value('assigned_to')
+            comment = context.get_form_value('comment')
+            # Create a new row
+            row = [datetime.now()]
+            # User
+            user = context.user
+            if user is None:
+                row.append('')
+            else:
+                row.append(user.name)
+            # Title (Is the same)
+            row.append(issue.get_value('title'))
+            # Other changes
+            for name in ['module', 'version', 'type', 'priority', 'assigned_to',
+                         'state']:
+                type = History.schema[name]
+                last_value = issue.get_value(name)
+                new_value = context.get_form_value('change_%s' % name,type=type)
+                if ((last_value==new_value) or (new_value is None) or
+                    (new_value=='do_not_change')):
+                    # If no modification set the last value
+                    value = last_value
+                else:
+                    value = new_value
+                if type == Unicode:
+                    value = value.strip()
+                row.append(value)
+            # Comment
+            row.append(comment)
+            # No attachment
+            row.append('')
+            # Add the list of modifications to comment
+            modifications = issue.get_diff_with(row, context)
+            if modifications:
+                title = self.gettext(u'Modifications:')
+                comment_index = History.columns.index('comment')
+                row[comment_index] += '\n\n%s\n\n%s' % (title, modifications)
+            # Save issue
+            history = issue.get_handler('.history')
+            history.add_row(row)
+            # Mail (create a dict with a list of issues for each user)
+            new_assigned_to = context.get_form_value('assigned_to')
+            info = {'href': context.uri.resolve(self.get_pathto(issue)),
+                    'name': issue.name,
+                    'title': issue.get_title()}
+            if assigned_to:
+                if not users_issues.has_key(assigned_to):
+                    users_issues[assigned_to] = []
+                users_issues[assigned_to].append(info)
+            if new_assigned_to and (assigned_to!=new_assigned_to):
+                if not users_issues.has_key(new_assigned_to):
+                    users_issues[new_assigned_to] = []
+                users_issues[new_assigned_to].append(info)
+        # Send mails
+        user = context.user
+        if user is None:
+            from_addr = ''
+            user_title = self.gettext(u'ANONYMOUS')
+        else:
+            from_addr = user.get_property('ikaaro:email')
+            user_title = user.get_title()
+        template = u'--- Comment from : %s ---\n\n%s\n\n%s'
+        template = self.gettext(template)
+        tracker_title = self.parent.get_property('dc:title') or 'Tracker Issue'
+        subject = u'[%s]' % tracker_title
+        for user_id in users_issues.keys():
+            user_issues = []
+            for user_issue in users_issues[user_id]:
+                href = user_issue['href']
+                name = user_issue['name']
+                title = user_issue['title']
+                user_issues.append('#%s - %s - %s' %(name, title, href))
+            body = template % (user_title, comment, '\n'.join(user_issues))
+            to = root.get_user(user_id)
+            to_addr = to.get_property('ikaaro:email')
+            root.send_email(from_addr, to_addr, subject, body)
+
+        # Redirect on the new search
+        query = encode_query(context.uri.query)
+        reference = ';view?%s&change_several_bugs=1#link' % query
+        goto = context.uri.resolve(reference)
+        return context.come_back(message=MSG_CHANGES_SAVED, goto=goto,
+                                    keep=['ids'])
 
 
     def get_export_to_text(self, context):
@@ -436,9 +582,14 @@ class Tracker(Folder):
         # Analyse the result
         if isinstance(results, Reference):
             return results
+        # Selected issues
+        selected_issues = context.get_form_values('ids')
         # Get lines
         lines = []
         for issue in results:
+            # If selected_issues=None, select all
+            if selected_issues and (issue.name not in selected_issues):
+                continue
             lines.append(issue.get_informations())
         # Sort lines
         sortby = context.get_form_value('sortby', default='id')
@@ -614,7 +765,7 @@ class SelectTable(CSV):
 
     def get_row_by_id(self, id):
         for x in self.search(id=id):
-            return self.get_row(id)
+            return self.get_row(x)
         return None
 
 
@@ -814,9 +965,9 @@ class Issue(Folder, VersioningAware):
             handler, metadata = self.set_object(filename, handler)
             metadata.set_property('format', mimetype)
         # Update
+        modifications = self.get_diff_with(row, context)
         history = self.get_handler('.history')
         history.add_row(row)
-
         # Send a Notification Email
         # Notify / From
         if user is None:
@@ -833,82 +984,92 @@ class Issue(Folder, VersioningAware):
         assigned_to = self.get_value('assigned_to')
         if assigned_to:
             to_addrs.add(assigned_to)
-        if user.name in to_addrs:
-            to_addrs.remove(user.name)
+        #if user.name in to_addrs:
+        #    to_addrs.remove(user.name)
         # Notify / Subject
         tracker_title = self.parent.get_property('dc:title') or 'Tracker Issue'
         subject = '[%s #%s] %s' % (tracker_title, self.name, title)
         # Notify / Body
         if context.handler.class_id == Tracker.class_id:
-            uri = context.uri.resolve('%s/;history' % self.name)
+            uri = context.uri.resolve('%s/;edit_form' % self.name)
         else:
-            uri = context.uri.resolve(';history')
-        body = str(uri) + '\n\n'
+            uri = context.uri.resolve(';edit_form')
+        body = '#%s %s %s\n\n' % (self.name, self.get_value('title'), str(uri))
         body += self.gettext(u'The user %s did some changes.') % user_title
         body += '\n\n'
-        (kk, kk, title, module, version, type, priority, assigned_to, state,
-            comment, filename) = row
-        if len(history.lines) == 1:
-            old_title = old_module = old_version = old_type = old_priority \
-                = old_assigned_to = old_state = None
-        else:
-            (kk, kk, old_title, old_module, old_version, old_type,
-                old_priority, old_assigned_to, old_state, kk, kk
-                ) = history.lines[-2] 
-        if title != old_title:
-            body += self.gettext(u'  Title: %s') % title + '\n'
-        if version != old_version:
-            if version is None:
-                version = ''
-            else:
-                versions = parent.get_handler('versions.csv')
-                version = versions.get_row_by_id(version).get_value('title')
-            body += self.gettext(u'  Version: %s') % version + '\n'
-        if module != old_module:
-            if module is None:
-                module = ''
-            else:
-                modules = parent.get_handler('modules.csv')
-                module = modules.get_row_by_id(module).get_value('title')
-            body += self.gettext(u'  Module: %s') % module + '\n'
-        if type != old_type:
-            if type is None:
-                type = ''
-            else:
-                types = parent.get_handler('types.csv')
-                type = types.get_row_by_id(type).get_value('title')
-            body += self.gettext(u'  Type: %s') % type
-        if priority != old_priority:
-            if priority is None:
-                priority = ''
-            else:
-                priorities = parent.get_handler('priorities.csv')
-                priority = priorities.get_row_by_id(priority).get_value('title')
-            body += self.gettext(u'  Priority: %s') % priority + '\n'
-        if state != old_state:
-            if state is None:
-                state = ''
-            else:
-                states = parent.get_handler('states.csv')
-                state = states.get_row_by_id(state).get_value('title')
-            body += self.gettext(u'  State: %s') % state + '\n'
-        if assigned_to != old_assigned_to:
-            if assigned_to:
-                assigned_to = users.get_handler(assigned_to).get_title()
-            else:
-                assigned_to = ''
-            body += self.gettext(u'  Assigned To: %s') % assigned_to + '\n'
         if file:
             body += self.gettext(u'  New Attachment: %s') % filename + '\n'
+        comment = context.get_form_value('comment')
         if comment:
             body += self.gettext(u'Comment') + '\n'
-            body += self.gettext(u'-------') + '\n\n'
-            body += comment
+            body += u'-------\n\n'
+            body += comment + '\n\n'
+            body += u'-------\n\n'
+        if modifications:
+            body += modifications
         # Notify / Send
         for to_addr in to_addrs:
             to_addr = users.get_handler(to_addr)
             to_addr = to_addr.get_property('ikaaro:email')
             root.send_email(from_addr, to_addr, subject, body)
+
+
+    def get_diff_with(self, row, context):
+        """Return a text with the diff between the last and new issue state"""
+        root = context.root
+        modifications = []
+        history = self.get_handler('.history')
+        if history.lines:
+            # Edit issue
+            template = self.gettext('%s: %s to %s')
+        else:
+            # New issue
+            template = self.gettext('%s: %s%s')
+        # Modification of title
+        last_title = self.get_value('title') or ''
+        new_title = row[History.columns.index('title')]
+        if last_title != new_title:
+            title = self.gettext(u'Title')
+            modifications.append(template %(title, last_title, new_title))
+        # List modifications
+        for key in [(u'Module', 'module', 'modules.csv'),
+                     (u'Version', 'version', 'versions.csv'),
+                     (u'Type', 'type', 'types.csv'),
+                     (u'Priority', 'priority', 'priorities.csv'),
+                     (u'State', 'state', 'states.csv')]:
+            title, name, csv_name = key
+            title = self.gettext(title)
+            key_index = History.columns.index(name)
+            new_value = row[key_index]
+            last_value = self.get_value(name)
+            # Detect if modifications
+            if last_value==new_value:
+                continue
+            csv = self.parent.get_handler(csv_name)
+            last_title = csv.get_row_by_id(last_value)
+            if last_title:
+                last_title = last_title.get_value('title')
+            else:
+                last_title = u''
+            new_title = csv.get_row_by_id(new_value)
+            if new_title:
+                new_title = new_title.get_value('title')
+            else:
+                new_title = u''
+            text = template % (title, last_title, new_title)
+            modifications.append(text)
+        # Modifications of assigned_to
+        last_user = self.get_value('assigned_to')
+        new_user = row[History.columns.index('assigned_to')]
+        if last_user and last_user!=new_user:
+            last_user = root.get_user(last_user)
+            if last_user:
+                last_user = last_user.get_property('ikaaro:email')
+            new_user = root.get_user(new_user).get_property('ikaaro:email')
+            title = self.gettext(u'Assigned to')
+            modifications.append(template  %(title, last_user, new_user))
+
+        return '\n'.join(modifications)
 
 
     def get_reported_by(self):
@@ -925,7 +1086,8 @@ class Issue(Folder, VersioningAware):
 
     def get_informations(self):
         """
-        Return a tab with issue informations
+        Construct a dict with issue informations.
+        This dict is used to construct a line for a table.
         """
         parent = self.parent
         tables = {'module': parent.get_handler('modules.csv'),
@@ -948,6 +1110,7 @@ class Issue(Folder, VersioningAware):
                 infos['assigned_to'] = user.get_title()
         else:
             infos['assigned_to'] = ''
+        infos['comment'] = self.get_value('comment')
         infos['mtime'] = format_datetime(self.get_mtime())
         return infos
 

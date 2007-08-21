@@ -386,6 +386,9 @@ class Tracker(Folder):
             namespace['columns'] = []
             # List columns
             columns = context.get_form_values('column_selection')
+            # Put the title at the end
+            table_columns.remove(('title', u'Title'))
+            table_columns.append(('title', u'Title'))
             for column in table_columns:
                 name, title = column
                 if name is not 'id':
@@ -478,6 +481,8 @@ class Tracker(Folder):
         if isinstance(results, Reference):
             return results
         users_issues = {}
+        # Comment
+        comment = context.get_form_value('comment', type=Unicode)
         # Selected_issues
         selected_issues = context.get_form_values('ids')
         # Modify all issues selected
@@ -485,7 +490,6 @@ class Tracker(Folder):
             if issue.name not in selected_issues:
                   continue
             assigned_to = issue.get_value('assigned_to')
-            comment = context.get_form_value('comment')
             # Create a new row
             row = [datetime.now()]
             # User
@@ -520,7 +524,7 @@ class Tracker(Folder):
             if modifications:
                 title = self.gettext(u'Modifications:')
                 comment_index = History.columns.index('comment')
-                row[comment_index] += '\n\n%s\n\n%s' % (title, modifications)
+                row[comment_index] += u'\n\n%s\n\n%s' % (title, modifications)
             # Save issue
             history = issue.get_handler('.history')
             history.add_row(row)
@@ -984,8 +988,8 @@ class Issue(Folder, VersioningAware):
         assigned_to = self.get_value('assigned_to')
         if assigned_to:
             to_addrs.add(assigned_to)
-        #if user.name in to_addrs:
-        #    to_addrs.remove(user.name)
+        if user.name in to_addrs:
+            to_addrs.remove(user.name)
         # Notify / Subject
         tracker_title = self.parent.get_property('dc:title') or 'Tracker Issue'
         subject = '[%s #%s] %s' % (tracker_title, self.name, title)
@@ -1021,10 +1025,10 @@ class Issue(Folder, VersioningAware):
         history = self.get_handler('.history')
         if history.lines:
             # Edit issue
-            template = self.gettext('%s: %s to %s')
+            template = self.gettext(u'%s: %s to %s')
         else:
             # New issue
-            template = self.gettext('%s: %s%s')
+            template = self.gettext(u'%s: %s%s')
         # Modification of title
         last_title = self.get_value('title') or ''
         new_title = row[History.columns.index('title')]
@@ -1069,7 +1073,7 @@ class Issue(Folder, VersioningAware):
             title = self.gettext(u'Assigned to')
             modifications.append(template  %(title, last_user, new_user))
 
-        return '\n'.join(modifications)
+        return u'\n'.join(modifications)
 
 
     def get_reported_by(self):

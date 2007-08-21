@@ -75,7 +75,7 @@
       <tr>
         <td valign="top" colspan="2">
           <label for="description">New Comment</label><br/>
-          <textarea name="comment" id="description" cols="68" rows="10"
+          <textarea name="comment" id="description" cols="72" rows="10"
             ></textarea>
         </td>
       </tr>
@@ -87,7 +87,7 @@
       </tr>
       <tr>
         <td>
-          <input type="submit" value="Edit" />
+          <input type="submit" class="button_ok" value="Edit" />
         </td>
       </tr>
     </table>

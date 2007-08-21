@@ -32,6 +32,7 @@ from folder import Folder
 from messages import *
 from registry import register_object_class
 from html import XHTMLFile
+from text import Text
 
 
 def add_forum_style(context):
@@ -133,8 +134,9 @@ class Thread(Folder):
 
 
     def get_replies(self):
-        posts = [int(FileName.decode(x)[0]) for x in self.get_handler_names()
-                if not x.startswith(u'.') and not x.endswith('.metadata')]
+        #XXX To remove in 0.17
+        replies = self.search_handlers(handler_class=(XHTMLFile, Text))
+        posts = [int(FileName.decode(x.name)[0]) for x in replies]
         posts.sort()
 
         # deduce original post

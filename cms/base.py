@@ -552,15 +552,9 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         description = context.get_form_value('dc:description')
         subject = context.get_form_value('dc:subject')
         language = context.get_form_value('dc:language')
-
-        if language is None:
-            self.set_property('dc:title', title, language=language)
-            self.set_property('dc:description', description, language=language)
-            self.set_property('dc:subject', subject, language=language)
-        else:
-            self.set_property('dc:title', title)
-            self.set_property('dc:description', description)
-            self.set_property('dc:subject', subject)
+        self.set_property('dc:title', title, language=language)
+        self.set_property('dc:description', description, language=language)
+        self.set_property('dc:subject', subject, language=language)
 
         return context.come_back(MSG_CHANGES_SAVED)
 

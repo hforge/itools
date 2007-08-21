@@ -999,11 +999,11 @@ class Issue(Folder, VersioningAware):
         body += '\n\n'
         if file:
             body += self.gettext(u'  New Attachment: %s') % filename + '\n'
-        comment = context.get_form_value('comment')
+        comment = context.get_form_value('comment', type=Unicode)
         if comment:
-            body += self.gettext(u'Comment') + '\n'
+            body += self.gettext(u'Comment') + u'\n'
             body += u'-------\n\n'
-            body += comment + '\n\n'
+            body += comment + u'\n\n'
             body += u'-------\n\n'
         if modifications:
             body += modifications

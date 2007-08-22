@@ -1,0 +1,47 @@
+
+itools 0.16.7 (2007/08/23)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+This release most important change is the new mechanism to send emails
+in the CMS.  Now the message spool is persistent, messages are written
+to disk before being sent, this way the system is robust to crash.
+There is also a simple log to know the emails that have been sent.
+
+There is also a bunch of user interface improvements and bug fixes in
+the CMS, including the Tracker and the Wiki.
+
+
+Credits:
+
+ - Hervé Cauwelier fixed bugs and refactored code;
+ - J. David Ibáñez implemented the new mail spool;
+ - Henry Obein worked on itools.cms;
+ - Sylvain Taverne worked on itools.cms;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.7.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

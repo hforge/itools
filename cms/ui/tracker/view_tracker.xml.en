@@ -15,17 +15,24 @@ ${table}
 <!-- Links -->
 <p>
   <a name="link"/>
+  <!--
   <a href=";view?${search_parameters}&amp;export_to_text=1#link">
     Export to text
-  </a>&nbsp;|
+  </a>
+  &nbsp;|
+  -->
   <a href=";view?${search_parameters}&amp;export_to_csv=1#link">
     Export to CSV
-  </a>&nbsp;|
+  </a>
+  <!--
+  &nbsp;|
   <a href=";view?${search_parameters}&amp;change_several_bugs=1#link">
     Change Several Issues at Once
   </a>
+  -->
 </p>
 <!-- Export to text -->
+<!--
 <stl:block stl:if="export_to_text">
   <h2>Export to text</h2>
   <dl>
@@ -50,6 +57,7 @@ ${table}
       <pre>${text}</pre>
     </div>
 </stl:block>
+-->
 
 <!-- Export to CSV -->
 <stl:block stl:if="export_to_csv">
@@ -65,6 +73,7 @@ ${table}
 </stl:block>
 
 <!-- Change Several Bugs at Once  -->
+<!--
 <stl:block stl:if="change_several_bugs">
 <h2>Change several Issues at once</h2>
 
@@ -142,6 +151,7 @@ ${table}
   </tr>
 </table>
 </stl:block>
+-->
 
 </form>
 </stl:block>

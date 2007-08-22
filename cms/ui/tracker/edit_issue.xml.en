@@ -74,8 +74,8 @@
       </tr>
       <tr>
         <td valign="top" colspan="2">
-          <label for="description">New Comment</label><br/>
-          <textarea name="comment" id="description" cols="72" rows="10"
+          <label for="comment">New Comment</label><br/>
+          <textarea name="comment" id="comment" cols="72" rows="10"
             ></textarea>
         </td>
       </tr>
@@ -101,14 +101,22 @@
         <td>Comment <a href="#c${comment/number}">${comment/number}</a></td>
         <td>${comment/user}</td>
         <td align="right">${comment/datetime}</td>
+        <td align="right">
+        &nbsp;[
+        <a href="#" onclick="javascript:reply('${comment/number}');">
+          Reply
+        </a>]&nbsp;
+        </td>
       </tr>
       <tr stl:if="comment/file">
-        <td colspan="4">
+        <td colspan="5">
           Attachement: <a href="${comment/file}">${comment/file}</a>
         </td>
       </tr>
       <tr>
-        <td colspan="4">${comment/comment}</td>
+        <td colspan="5">
+        <pre class="com" id="comment${comment/number}">${comment/comment}</pre>
+        </td>
       </tr>
     </table>
     <br/>

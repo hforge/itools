@@ -1,4 +1,3 @@
-
 .tracker_issue_comment_title {
   background-color: #ddddff;
   font-weight: bold;
@@ -6,4 +5,8 @@
 
 .tracker_select {
   width: 97%;
+}
+
+.com{
+  font-family: "Arial", "DejaVu Sans", sans-serif;
 }

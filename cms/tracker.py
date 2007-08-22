@@ -1150,7 +1150,7 @@ class Issue(Folder, VersioningAware):
                 line = '&nbsp;' * indent + sline
             line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
             res.append(line)
-        return Parser('<br/>\n'.join(res))
+        return '\n'.join(res)
 
 
     #######################################################################
@@ -1162,6 +1162,9 @@ class Issue(Folder, VersioningAware):
         # Set Style
         css = self.get_handler('/ui/tracker/tracker.css')
         context.styles.append(str(self.get_pathto(css)))
+        # Set JS
+        js = self.get_handler('/ui/tracker/tracker.js')
+        context.scripts.append(str(self.get_pathto(js)))
 
         # Local variables
         users = self.get_handler('/users')

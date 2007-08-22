@@ -284,6 +284,12 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return handler, metadata
 
 
+    def get_objects(self):
+        for name in self.get_handler_names():
+            if not name.endswith('.metadata'):
+                yield self.get_object(name)
+
+
     def search_handlers(self, path='.', format=None, state=None,
                         handler_class=None):
         container = self.get_handler(path)

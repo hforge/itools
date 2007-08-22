@@ -165,9 +165,12 @@ table_template = list(Parser("""
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <thead stl:if="columns">
     <tr>
-      <th stl:if="column_checkbox"></th>
+      <th stl:if="column_checkbox" class="checkbox">
+        <input type="checkbox" title="Click to select/unselect all rows"
+          onclick="select_checkboxes('browse_list', this.checked);" />
+      </th>
       <th stl:if="column_image"></th>
-      <th stl:repeat="column columns" valign="bottom">
+      <th stl:repeat="column columns">
         <a stl:if="column" href="${column/href}"
           class="sort_${column/order}">${column/title}</a>
       </th>
@@ -234,7 +237,7 @@ def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x,
         # TODO Instead of the parameter 'checked', use only 'checkbox', but
         # with three possible values: None, False, True
         id = None
-        if actions and row['checkbox'] is True:
+        if row['checkbox'] is True:
             id = row['id']
             if isinstance(id, int):
                 id = str(id)

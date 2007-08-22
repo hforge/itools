@@ -336,13 +336,19 @@ dl.new_resource_thumb { width: 16em; }
 }
 
 /* Browse list */
-#browse_list thead td, #browse_list thead th {
+#browse_list thead th {
   padding: 6px;
   background: #d3d7cf;
+  white-space: nowrap;
 }
 
-#browse_list tbody td, #browse_list tbody th {
+#browse_list thead th.checkbox {
+  padding: 6px 3px;
+}
+
+#browse_list tbody td {
   padding: 3px;
+  vertical-align: top;
 }
 
 tr.odd th, tr.odd td {

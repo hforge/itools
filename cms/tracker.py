@@ -63,7 +63,7 @@ table_columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),
                  ('module', u'Module'), ('type', u'Type'),
                  ('priority', u'Priority'), ('state', u'State'),
                  ('assigned_to', u'Assigned To'),
-                 ('mtime', u'Last Modification')]
+                 ('mtime', u'Modified')]
 
 
 class Tracker(Folder):
@@ -325,10 +325,6 @@ class Tracker(Folder):
             context.get_form_value('export_to_csv') or
             context.get_form_value('change_several_bugs')):
             show_checkbox = True
-            actions = [('select', u'Select All', 'button_select_all',
-                       "return select_checkboxes('browse_list', true);"),
-                       ('select', u'Select None', 'button_select_none',
-                       "return select_checkboxes('browse_list', false);")]
         # Construct lines
         lines = []
         for issue in results:

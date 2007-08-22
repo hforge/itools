@@ -285,8 +285,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
 
     def get_objects(self):
+        suffix = len('.metadata')
         for name in self.get_handler_names():
-            if not name.endswith('.metadata'):
+            if name.endswith('.metadata'):
+                name = name[:-suffix]
                 yield self.get_object(name)
 
 

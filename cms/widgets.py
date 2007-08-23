@@ -237,7 +237,7 @@ def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x,
         # TODO Instead of the parameter 'checked', use only 'checkbox', but
         # with three possible values: None, False, True
         id = None
-        if row['checkbox'] is True:
+        if row.get('checkbox') is True:
             id = row['id']
             if isinstance(id, int):
                 id = str(id)

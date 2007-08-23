@@ -28,7 +28,6 @@ from itools import vfs
 from itools.catalog import make_catalog, Catalog
 from itools.handlers import Config
 from itools.web import set_context, Context
-from itools.cms.database import DatabaseFS
 from itools.cms.server import ask_confirmation
 from itools.cms.server import Server, get_root_class, get_config
 
@@ -135,7 +134,7 @@ def update(parser, options, target):
         sys.stdout.write('.')
         sys.stdout.flush()
         database = server.database
-        database.commit()
+        database.save_changes()
         root.load_state()
         print '.'
     else:

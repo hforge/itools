@@ -27,9 +27,8 @@ from tempfile import mkstemp
 from itools.uri import get_absolute_reference2
 from itools import vfs
 from itools.catalog import Catalog
-from itools.handlers import Config, get_transaction
+from itools.handlers import Config, Database
 from itools.web import Server as BaseServer
-from itools.cms.database import DatabaseFS
 from itools.cms.handlers import Metadata
 from itools.cms import registry
 from catalog import get_to_index, get_to_unindex
@@ -89,15 +88,16 @@ class Server(BaseServer):
                 port = int(port)
 
         # The database
-        root = target.resolve2('database')
-        cls = get_root_class(root)
-        database = DatabaseFS(target.path, cls=cls)
+        database = Database('%s/database.commit' % target.path)
         self.database = database
         # The catalog
         self.catalog = Catalog('%s/catalog' % target)
 
-        # Fix the root's name
-        root = database.root
+        # Build the root handler
+        root = target.resolve2('database')
+        cls = get_root_class(root)
+        root = cls(root)
+        root.database = database
         root.name = root.class_title
 
         # Initialize
@@ -139,6 +139,14 @@ class Server(BaseServer):
         return [self.database, self.catalog]
 
 
+    def abort_transaction(self, context):
+        # Clean the index/unindex queues
+        get_to_index().clear()
+        get_to_unindex().clear()
+
+        BaseServer.abort_transaction(self, context)
+
+
     def before_commit(self):
         catalog = self.catalog
         # Unindex Handlers
@@ -154,7 +162,7 @@ class Server(BaseServer):
         to_index.clear()
 
         # XXX Versioning
-        transaction = get_transaction()
+        transaction = self.database.changed
         for handler in list(transaction):
             if hasattr(handler, 'before_commit'):
                 handler.before_commit()

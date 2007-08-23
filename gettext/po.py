@@ -213,8 +213,8 @@ class PO(Text):
     class_extension = 'po'
 
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'messages', 'encoding']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'messages', 'encoding']
 
     def new(self):
         # XXX Old style (like in the "get_skeleton" times)

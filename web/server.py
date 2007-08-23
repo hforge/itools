@@ -540,21 +540,20 @@ class Server(object):
         return 403, root.forbidden
 
 
+    def abort_transaction(self, context):
+        for db in self.get_databases():
+            db.abort()
+
+
     def commit_transaction(self, context):
-        databases = self.get_databases()
-
-        # Abort transaction if code says so
         if context.commit is False:
-            for db in databases:
-                db.abort()
-            return
-
-        # Before commit (hook)
-        self.before_commit()
-
-        # Commit
-        for db in databases:
-            db.commit()
+            # Don't commit
+            self.abort_transaction(context)
+        else:
+            # Commit
+            self.before_commit()
+            for db in self.get_databases():
+                db.save_changes()
 
 
     ########################################################################

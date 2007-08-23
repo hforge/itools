@@ -470,8 +470,8 @@ class Document(XMLDocument):
 
     namespace = xhtml_uri
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'events']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'events']
 
 
     #########################################################################

@@ -337,9 +337,10 @@ class Record(list):
 
 
 class Table(File):
-    
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'records', 'catalog', 'added_records', 'removed_records']
+
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'records', 'catalog', 'added_records',
+                 'removed_records']
 
 
     #######################################################################
@@ -474,7 +475,7 @@ class Table(File):
     # Save (use append for scalability)
     #######################################################################
     def save_state(self):
-        with vfs.open(self.uri, 'a') as file:
+        with self.safe_open(self.uri, 'a') as file:
             # Added records
             for id, seq in self.added_records:
                 version = self.records[id][seq]

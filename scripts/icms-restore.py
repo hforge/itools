@@ -22,13 +22,13 @@ from optparse import OptionParser
 # Import from itools
 import itools
 from itools import vfs
+from itools.handlers import (Database, READY, TRANSACTION_PHASE1,
+    TRANSACTION_PHASE2)
 from itools.cms.server import ask_confirmation
-from itools.cms.database import (DatabaseFS, READY, TRANSACTION_PHASE1,
-                                 TRANSACTION_PHASE2)
 
 
 def restore(parser, options, target):
-    database = DatabaseFS(target)
+    database = Database('%s/database.commit' % target)
 
     state = database.get_state()
     if state == READY:

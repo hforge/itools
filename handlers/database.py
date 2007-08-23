@@ -20,17 +20,15 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
-from datetime import datetime
 from os import fdopen
 from tempfile import mkstemp
 import thread
 
 # Import from itools
 from itools.uri import get_reference, Path
-from itools import vfs
-from itools.vfs import FileFS, register_file_system, READ, WRITE, APPEND
-from itools.handlers import get_handler_class, get_transaction
-from catalog import get_to_index, get_to_unindex
+from itools.vfs import vfs
+from itools.vfs import READ, WRITE, APPEND
+from registry import get_handler_class
 
 
 
@@ -38,35 +36,6 @@ from catalog import get_to_index, get_to_unindex
 READY = 0
 TRANSACTION_PHASE1 = 1
 TRANSACTION_PHASE2 = 2
-
-
-###########################################################################
-# Methods to find out the database path from a URI reference
-###########################################################################
-def get_log(reference):
-    """
-    Guess out the commit log for the given reference.
-    """
-    # FIXME This code is fragile.  Maybe we can do it right in 0.17
-    path = reference.path
-    for i, name in enumerate(path):
-        if name == 'database':
-            log = path[:i].resolve2('database.commit/log')
-            return str(log)
-
-    raise RuntimeError, 'path "%s" is not a database path' % reference
-
-
-def get_commit_and_log(reference):
-    path = reference.path
-    for i, name in enumerate(path):
-        if name == 'database':
-            path = path[:i]
-            commit = path.resolve2('database.commit')
-            log = commit.resolve2('log')
-            return str(commit), str(log)
-
-    raise RuntimeError, 'path "%s" is not a database path' % reference
 
 
 ###########################################################################
@@ -91,98 +60,97 @@ def get_tmp_map():
 ###########################################################################
 # The database instance and VFS layer
 ###########################################################################
-class DatabaseFS(FileFS):
+class Database(object):
 
-    def __init__(self, path, cls=None):
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        self._commit = path.resolve2('database.commit')
-        log = path.resolve2('database.commit/log')
-        self._log = str(log)
-
-        # Build the root handler
-        root_path = path.resolve2('database')
-        root_path = str(root_path)
-        if cls is None:
-            cls = get_handler_class(root_path)
-
-        root = cls(root_path)
-        root.uri.scheme = 'database'
-        self.root = root
+    def __init__(self, commit=None):
+        self.changed = set()
+        # The commit, for safe transactions
+        if commit is None:
+            self.commit = None
+            self.log = None
+        else:
+            if not isinstance(commit, Path):
+                commit = Path(commit)
+            self.commit = str(commit)
+            self.log = str(commit.resolve2('log'))
 
 
     #######################################################################
     # Override FileFS methods
     #######################################################################
-    @staticmethod
-    def make_file(reference):
-        # Update the log
-        log = get_log(reference)
-        with open(log, 'a+b') as log:
-            log.write('+%s\n' % reference.path)
+    def make_file(self, reference):
+        # Not safe
+        if self.log is None:
+            return vfs.make_file(reference)
 
-        # Create the file
-        return FileFS.make_file(reference)
+        # Safe
+        with open(self.log, 'a+b') as log:
+            log.write('+%s\n' % reference)
 
-
-    @staticmethod
-    def make_folder(reference):
-        # Update the log
-        log = get_log(reference)
-        with open(log, 'a+b') as log:
-            log.write('+%s\n' % reference.path)
-
-        # Create the folder
-        return FileFS.make_folder(reference)
+        return vfs.make_file(reference)
 
 
-    @staticmethod
-    def remove(reference):
-        # Update the log
-        log = get_log(reference)
-        with open(log, 'a+b') as log:
-            log.write('-%s\n' % reference.path)
+    def make_folder(self, reference):
+        # Not safe
+        if self.log is None:
+            return vfs.make_folder(reference)
+
+        # Safe
+        with open(self.log, 'a+b') as log:
+            log.write('+%s\n' % reference)
+
+        return vfs.make_folder(reference)
 
 
-    @staticmethod
-    def open(reference, mode=None):
+    def remove(self, reference):
+        # Not safe
+        if self.log is None:
+            return vfs.remove(reference)
+
+        # Safe
+        with open(self.log, 'a+b') as log:
+            log.write('-%s\n' % reference)
+
+
+    def open(self, reference, mode=None):
+        # Not safe
+        if self.log is None:
+            return vfs.open(reference, mode)
+
+        # Safe
         if mode == WRITE:
             tmp_map = get_tmp_map()
-            if reference.path in tmp_map:
-                tmp_path = tmp_map[reference.path]
-                return FileFS.open(tmp_path, mode)
+            if reference in tmp_map:
+                tmp_path = tmp_map[reference]
+                return vfs.open(tmp_path, mode)
 
-            commit, log = get_commit_and_log(reference)
-            tmp_file, tmp_path = mkstemp(dir=commit)
+            tmp_file, tmp_path = mkstemp(dir=self.commit)
             tmp_path = get_reference(tmp_path)
-            tmp_map[reference.path] = tmp_path
-            with open(log, 'a+b') as log:
-                log.write('~%s#%s\n' % (reference.path, tmp_path))
+            tmp_map[reference] = tmp_path
+            with open(self.log, 'a+b') as log:
+                log.write('~%s#%s\n' % (reference, tmp_path))
             return fdopen(tmp_file, 'w')
         elif mode == APPEND:
             tmp_map = get_tmp_map()
-            if reference.path in tmp_map:
-                tmp_path = tmp_map[reference.path]
-                return FileFS.open(tmp_path, mode)
+            if reference in tmp_map:
+                tmp_path = tmp_map[reference]
+                return vfs.open(tmp_path, mode)
 
-            commit, log = get_commit_and_log(reference)
-            tmp_file, tmp_path = mkstemp(dir=commit)
+            tmp_file, tmp_path = mkstemp(dir=self.commit)
             tmp_path = get_reference(tmp_path)
-            tmp_map[reference.path] = tmp_path
-            with open(log, 'a+b') as log:
-                log.write('>%s#%s\n' % (reference.path, tmp_path))
+            tmp_map[reference] = tmp_path
+            with open(self.log, 'a+b') as log:
+                log.write('>%s#%s\n' % (reference, tmp_path))
             return fdopen(tmp_file, 'w')
 
-        return FileFS.open(reference, mode)
+        return vfs.open(reference, mode)
 
 
     #######################################################################
     # API
     #######################################################################
     def get_state(self):
-        commit = self._commit
-        commit = str(commit)
+        commit = self.commit
         if vfs.exists(commit):
             if vfs.exists('%s/done' % commit):
                 return TRANSACTION_PHASE2
@@ -191,12 +159,12 @@ class DatabaseFS(FileFS):
         return READY
 
 
-    def commit(self):
+    def save_changes(self):
         # 1. Start
-        vfs.make_file(self._log)
+        vfs.make_file(self.log)
 
         # Write changes to disk
-        transaction = get_transaction()
+        transaction = self.changed
         try:
             for handler in transaction:
                 mtime = vfs.get_mtime(handler.uri)
@@ -218,28 +186,21 @@ class DatabaseFS(FileFS):
         # Once we pass this point, we will save the changes permanently,
         # whatever happens (e.g. if there is a current failover we will
         # continue this process to finish the work).
-        done = self._commit.resolve2('done')
-        done = str(done)
-        vfs.make_file(done)
+        vfs.make_file('%s/done' % self.commit)
 
         self.save_changes_forever()
 
 
     def abort(self):
         """
-        This method aborts the current transaction. It is assumed nothin
+        This method aborts the current transaction. It is assumed nothing
         has been written to disk yet.
 
         This method is to be used by the programmer whe he changes his
         mind and decides not to commit.
         """
-        # Clean the index/unindex queues (XXX This may not should be here
-        # as of 0.17)
-        get_to_index().clear()
-        get_to_unindex().clear()
-
         # Clean the transaction
-        transaction = get_transaction()
+        transaction = self.changed
         for handler in transaction:
             handler.abort_changes()
         transaction.clear()
@@ -255,7 +216,7 @@ class DatabaseFS(FileFS):
         database state before the transaction started.
         """
         # The data
-        with open(self._log) as log:
+        with open(self.log) as log:
             for line in log.readlines():
                 if line[-1] == '\n':
                     line = line[:-1]
@@ -275,8 +236,7 @@ class DatabaseFS(FileFS):
                     raise RuntimeError, 'log file corrupted'
 
         # We are done. Remove the commit.
-        commit = str(self._commit)
-        vfs.remove(commit)
+        vfs.remove(self.commit)
 
 
     def save_changes_forever(self):
@@ -287,7 +247,7 @@ class DatabaseFS(FileFS):
         safe call this method again so it finish the work.
         """
         # Save the transaction
-        with open(self._log) as log:
+        with open(self.log) as log:
             for line in log.readlines():
                 if line[-1] == '\n':
                     line = line[:-1]
@@ -313,9 +273,5 @@ class DatabaseFS(FileFS):
                     raise RuntimeError, 'log file corrupted'
 
         # We are done. Remove the commit.
-        commit = str(self._commit)
-        vfs.remove(commit)
+        vfs.remove(self.commit)
 
-
-
-register_file_system('database', DatabaseFS)

@@ -40,10 +40,12 @@ class File(Handler):
     class_resource_type = 'file'
 
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'real_handler', 'name', 'data']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'data']
 
 
     def __init__(self, ref=None, string=None, **kw):
+        self.database = None
         self.parent = None
         self.name = ''
         self.real_handler = None
@@ -101,14 +103,14 @@ class File(Handler):
 
 
     def save_state(self):
-        with vfs.open(self.uri, 'w') as file:
+        with self.safe_open(self.uri, 'w') as file:
             self.save_state_to_file(file)
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
 
 
     def save_state_to(self, uri):
-        with vfs.make_file(uri) as file:
+        with self.safe_make_file(uri) as file:
             self.save_state_to_file(file)
 
 

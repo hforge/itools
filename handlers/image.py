@@ -33,8 +33,8 @@ class Image(File):
     class_mimetypes = ['image']
 
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'data', 'size', 'thumbnails']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'data', 'size', 'thumbnails']
 
 
     def _load_state_from_file(self, file):

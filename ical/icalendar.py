@@ -190,8 +190,9 @@ class icalendar(Text):
         END:VCALENDAR
     """
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'properties', 'components', 'catalog', 'encoding']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'properties', 'components', 'catalog',
+                 'encoding']
     class_mimetypes = ['text/calendar']
     class_extension = 'ics'
 

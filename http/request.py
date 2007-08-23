@@ -31,9 +31,9 @@ from message import Message
 
 class Request(Message):
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'request_line', 'method', 'request_uri', 'http_version',
-                 'headers', 'body']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'request_line', 'method', 'request_uri',
+                 'http_version', 'headers', 'body']
 
 
     def new(self, method='GET', uri='/'):

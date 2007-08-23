@@ -23,7 +23,6 @@ from datetime import datetime
 from itools.uri import uri, Path
 from itools.vfs import vfs
 from exceptions import AcquisitionError
-from transactions import get_transaction
 
 """
 This module provides the abstract class which is the root in the
@@ -136,6 +135,7 @@ class Node(object):
 
         handler = self._get_virtual_handler(name)
         # Set parent and name
+        handler.database = self.database
         handler.parent = self
         handler.name = name
 
@@ -160,12 +160,13 @@ class Handler(Node):
     class_mimetypes = []
     class_extension = None
 
-    # All handlers have a uri, timestamp, parent and name, plus the state.
-    # The variable class "__slots__" is to be overriden.
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler']
+    # Instance variables. The variable class "__slots__" is to be overriden.
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler']
 
 
     def __init__(self, ref=None, **kw):
+        self.database = None
         self.parent = None
         self.name = ''
         self.real_handler = None
@@ -194,6 +195,37 @@ class Handler(Node):
 
 
     ########################################################################
+    # API / Safe VFS operations
+    ########################################################################
+    def safe_make_file(self, reference):
+        if self.database is None:
+            return vfs.make_file(reference)
+
+        return self.database.make_file(reference)
+
+
+    def safe_make_folder(self, reference):
+        if self.database is None:
+            return vfs.make_folder(reference)
+
+        return self.database.make_folder(reference)
+
+
+    def safe_remove(self, reference):
+        if self.database is None:
+            return vfs.remove(reference)
+
+        return self.database.remove(reference)
+
+
+    def safe_open(self, reference, mode=None):
+        if self.database is None:
+            return vfs.open(reference, mode=mode)
+
+        return self.database.open(reference, mode=mode)
+
+
+    ########################################################################
     # API
     ########################################################################
     def load_state(self):
@@ -211,16 +243,18 @@ class Handler(Node):
         # Create and initialize the instance
         cls = self.__class__
         copy = object.__new__(cls)
+        copy.database = None
         copy.uri = None
         copy.timestamp = datetime.now()
         copy.real_handler = None
         # Copy the state
+        exclude = set(['database', 'uri', 'timestamp', 'parent', 'name',
+                       'real_handler'])
         for name in cls.__slots__:
-            if name in ('uri', 'timestamp', 'parent', 'name', 'real_handler'):
-                continue
-            value = getattr(self, name)
-            value = deepcopy(value)
-            setattr(copy, name, value)
+            if name not in exclude:
+                value = getattr(self, name)
+                value = deepcopy(value)
+                setattr(copy, name, value)
         # Return the copy
         return copy
 
@@ -264,17 +298,18 @@ class Handler(Node):
 
 
     def set_changed(self):
-        if self.uri is not None:
-            self.timestamp = datetime.now()
-            get_transaction().add(self)
+        self.timestamp = datetime.now()
+        if self.uri is not None and self.database is not None:
+            self.database.changed.add(self)
 
 
     def abort_changes(self):
         if self.uri is None:
             # XXX Should do something else than just return?
             return
+        exclude = set(['database', 'uri', 'parent', 'name', 'real_handler'])
         for name in self.__slots__:
-            if name not in ('uri', 'parent', 'name', 'real_handler'):
+            if name not in exclude:
                 delattr(self, name)
 
 

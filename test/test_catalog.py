@@ -145,13 +145,13 @@ class CatalogTestCase(TestCase):
             TextField('data'),
             IntegerField('size'))
         # Index
-        fables = vfs.open('database')
+        fables = vfs.open('fables')
         for name in fables.get_names():
             uri = fables.uri.resolve2(name)
             document = Document(uri)
             catalog.index_document(document)
         # Save
-        catalog.commit()
+        catalog.save_changes()
 
 
     def tearDown(self):

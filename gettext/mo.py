@@ -26,8 +26,8 @@ class MO(File):
     class_mimetypes = ['application/x-mo']
     class_extension = 'mo'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'translations']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'translations']
 
 
     def _load_state_from_file(self, file):

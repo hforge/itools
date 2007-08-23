@@ -89,7 +89,7 @@ def load_documents():
 def index_documents():
     for document in documents:
         catalog.index_document(document)
-    catalog.commit()
+    catalog.save_changes()
 
 
 def search_documents():

@@ -81,9 +81,9 @@ def index(parser, options, target):
         catalog.index_document(indexes)
         # Save changes every 1000 documents
         if i % 1000 == 0:
-            catalog.commit()
+            catalog.save_changes()
 
-    catalog.commit()
+    catalog.save_changes()
     m1 = vmsize()
     t1 = time()
     print

@@ -45,7 +45,7 @@ from image import Image
 from python import Python
 from registry import get_handler_class, register_handler_class
 from text import Text
-from transactions import get_transaction
+from database import Database, READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
 from utils import get_handler
 from table import Table, parse_table, fold_line, escape_data
 
@@ -68,6 +68,11 @@ __all__ = [
     'Python',
     'Text',
     'Table',
+    # The database
+    'Database',
+    'READY',
+    'TRANSACTION_PHASE1',
+    'TRANSACTION_PHASE2',
     # Parsing functions
     'parse_table',
     'fold_line',
@@ -76,7 +81,6 @@ __all__ = [
     'get_handler_class',
     'register_handler_class',
     # Other functions
-    'get_transaction',
     'get_handler']
 
 

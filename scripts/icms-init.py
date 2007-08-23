@@ -112,7 +112,7 @@ def init(parser, options, target):
     catalog = make_catalog('%s/catalog' % target, *root._catalog_fields)
     for object in root._traverse_catalog_aware_objects():
         catalog.index_document(object)
-    catalog.commit()
+    catalog.save_changes()
 
     # Bravo!
     print '*'

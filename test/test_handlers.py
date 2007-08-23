@@ -25,7 +25,7 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 from itools.datatypes import Unicode
-from itools.handlers import get_handler, Text, Table
+from itools.handlers import get_handler, Database, Text, Table
 from itools.handlers.table import unfold_lines
 
 
@@ -132,6 +132,103 @@ class TextTestCase(TestCase):
     def test_load_file(self):
         handler = get_handler('tests/hello.txt')
         self.assertEqual(handler.data, u'hello world\n')
+
+
+###########################################################################
+# Safe transactions
+###########################################################################
+class BrokenHandler(Text):
+
+    def to_str(self):
+        iamsobroken
+
+
+
+class DatabaseTestCase(TestCase):
+
+    def setUp(self):
+        database = Database('database.commit')
+        self.database = database
+        root = get_handler('fables')
+        root.database = database
+        self.root = root
+
+
+    def tearDown(self):
+        for name in ['fables/31.txt', 'fables/agenda', 'database.commit']:
+            if vfs.exists(name):
+                vfs.remove(name)
+
+
+    def test_abort(self):
+        # Changes (copy&paste)
+        fables = self.root
+        fable = fables.get_handler('30.txt')
+        fable = fable.copy_handler()
+        fables.set_handler('31.txt', fable)
+        # Abort
+        self.database.abort()
+        # Test
+        fables = get_handler('fables')
+        self.assertEqual(fables.has_handler('31.txt'), False)
+
+
+    def test_commit(self):
+        # Changes (copy&paste)
+        fables = self.root
+        fable = fables.get_handler('30.txt')
+        fable = fable.copy_handler()
+        fables.set_handler('31.txt', fable)
+        # Commit
+        self.database.save_changes()
+        # Test
+        fables = get_handler('fables')
+        self.assertEqual(fables.has_handler('31.txt'), True)
+
+
+    def test_broken_commit(self):
+        # Changes (copy&paste)
+        fables = self.root
+        fable = fables.get_handler('30.txt')
+        fable = fable.copy_handler()
+        fables.set_handler('31.txt', fable)
+        # Add broken handler
+        broken = BrokenHandler()
+        fables.set_handler('broken.txt', broken)
+        # Commit
+        self.assertRaises(NameError, self.database.save_changes)
+        # Test
+        fables = get_handler('fables')
+        self.assertEqual(fables.has_handler('31.txt'), False)
+        self.assertEqual(fables.has_handler('broken.txt'), False)
+
+
+    def test_append(self):
+        # Initalize
+        root = self.root
+        agenda = Agenda()
+        agenda.add_record({'firstname': u'Karl', 'lastname': u'Marx'})
+        agenda.add_record({'firstname': u'Jean-Jacques',
+                           'lastname': u'Rousseau'})
+        root.set_handler('agenda', agenda)
+        self.database.save_changes()
+        # Work
+        agenda = Agenda(root.get_handler('agenda').uri)
+        agenda.database = self.database
+        fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
+        agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
+        self.database.save_changes()
+        agenda.del_record(fake.id)
+        self.database.save_changes()
+        # Test
+        agenda = Agenda(root.get_handler('agenda').uri)
+        agenda.database = self.database
+        ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
+        self.assertEqual(len(ids), 0)
+        ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
+        self.assertEqual(len(ids), 1)
+        ids = [ x.id for x in agenda.search(firstname=u'Jean') ]
+        self.assertEqual(len(ids), 1)
 
 
 

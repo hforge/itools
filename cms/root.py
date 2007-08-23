@@ -33,7 +33,7 @@ from itools.datatypes import FileName
 from itools import vfs
 from itools.catalog import (make_catalog, CatalogAware, TextField,
     KeywordField, IntegerField, BoolField)
-from itools.handlers import Folder as FolderHandler, get_transaction, Config
+from itools.handlers import Folder as FolderHandler, Config
 from itools.stl import stl
 from itools.web import get_context
 from itools.xml import Parser
@@ -388,8 +388,6 @@ class Root(WebSite):
             doc_n += 1
             print doc_n, object.abspath
             catalog.index_document(object)
-
-        ##catalog.commit()
 
         t = time() - t0
         print

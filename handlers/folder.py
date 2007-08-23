@@ -49,8 +49,8 @@ class Folder(Handler):
     class_mimetypes = ['application/x-not-regular-file']
 
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'cache', 'added_handlers', 'removed_handlers']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'cache', 'added_handlers', 'removed_handlers']
 
 
     def new(self, **kw):
@@ -88,9 +88,9 @@ class Folder(Handler):
     def save_state(self):
         cache = self.cache
         # Remove
-        folder = vfs.open(self.uri)
         for name in self.removed_handlers:
-            folder.remove(name)
+            ref = self.uri.resolve2(name)
+            self.safe_remove(ref)
         self.removed_handlers = set()
 
         # Add
@@ -121,7 +121,7 @@ class Folder(Handler):
 
     def save_state_to(self, uri):
         # Create the target folder
-        vfs.make_folder(uri)
+        self.safe_make_folder(uri)
         # Add all the handlers
         base = get_absolute_reference(uri)
         for name in self.cache:
@@ -137,6 +137,7 @@ class Folder(Handler):
         # Create and initialize the instance
         cls = self.__class__
         copy = object.__new__(cls)
+        copy.database = None
         copy.uri = None
         copy.timestamp = datetime.now()
         copy.real_handler = None
@@ -203,6 +204,7 @@ class Folder(Handler):
                 # Virtual handler
                 handler = here._get_virtual_handler(name)
                 # Set parent and name
+                handler.database = self.database
                 handler.parent = here
                 handler.name = name
 
@@ -215,6 +217,7 @@ class Folder(Handler):
                 handler = here._get_virtual_handler(name)
                 handler = build_virtual_handler(handler)
                 # Attach
+                handler.database = self.database
                 handler.parent = here
                 handler.name = name
 
@@ -232,6 +235,7 @@ class Folder(Handler):
                 # Miss
                 uri = here.uri.resolve2(name)
                 handler = here._get_handler(name, uri)
+                handler.database = self.database
                 # Update the cache
                 if caching is True:
                     here.cache[name] = handler
@@ -282,6 +286,7 @@ class Folder(Handler):
 
 
     def _set_handler(self, name, handler):
+        handler.database = self.database
         handler.parent = self
         handler.name = name
         self.cache[name] = handler
@@ -375,11 +380,11 @@ def build_virtual_handler(handler):
     handler = handler.get_real_handler()
     virtual_handler = Handler.__new__(handler.__class__)
 
+    exclude = set(['parent', 'name', 'real_handler'])
     for name in handler.__slots__:
-        if name in ('parent', 'name', 'real_handler'):
-            continue
-        value = getattr(handler, name)
-        setattr(virtual_handler, name, value)
+        if name not in exclude:
+            value = getattr(handler, name)
+            setattr(virtual_handler, name, value)
 
     # Keep a reference to the real handler
     virtual_handler.real_handler = handler

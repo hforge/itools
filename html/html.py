@@ -36,8 +36,8 @@ class Document(XHTMLDocument):
     class_mimetypes = ['text/html']
     class_extension = 'html'
 
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'events']
+    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+                 'real_handler', 'events']
 
 
     @classmethod

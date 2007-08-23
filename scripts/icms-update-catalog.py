@@ -25,7 +25,6 @@ from time import time
 import itools
 from itools.utils import vmsize
 from itools import vfs
-from itools.handlers import get_transaction
 from itools.catalog import make_catalog
 from itools.cms.server import ask_confirmation
 from itools.cms.server import Server
@@ -78,7 +77,7 @@ def update_catalog(parser, options, target):
         # Commit
         print '[Commit]',
         sys.stdout.flush()
-        catalog.commit()
+        catalog.save_changes()
         # Commit / Report
         t2, v2 = time(), vmsize()
         v = (v2 - v1)/1024

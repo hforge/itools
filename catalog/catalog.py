@@ -326,7 +326,7 @@ class Catalog(object):
             docs_file.close()
 
 
-    def commit(self):
+    def save_changes(self):
         # Start
         path = self.uri.path
         state = str(path.resolve2('state'))

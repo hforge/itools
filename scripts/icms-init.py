@@ -26,7 +26,7 @@ import sys
 # Import from itools
 import itools
 from itools.catalog import make_catalog
-from itools.handlers import Config
+from itools.handlers import Config, Database, get_handler
 from itools.cms.root import Root
 
 
@@ -103,15 +103,19 @@ def init(parser, options, target):
         password = options.password
 
     # Build the instance on memory
-    source = root_class(username=email, password=password)
+    database = Database()
+    instance = get_handler(target)
+    instance.database = database
     # Initialize the database
-    source.save_state_to('%s/database' % target)
+    root = root_class(username=email, password=password)
+    root = instance.set_handler('database', root)
+    database.save_changes()
 
     # Index everything
-    root = root_class('%s/database' % target)
+    root.parent = None
     catalog = make_catalog('%s/catalog' % target, *root._catalog_fields)
-    for object in root._traverse_catalog_aware_objects():
-        catalog.index_document(object)
+    for handler, metadata in root.traverse_objects():
+        catalog.index_document(handler)
     catalog.save_changes()
 
     # Bravo!

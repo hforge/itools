@@ -462,7 +462,7 @@ class UserFolder(Folder):
 
         # Calculate the user id
         ids = []
-        for key in self.cache:
+        for key in self.get_handler_names():
             try:
                 key = int(key)
             except ValueError:

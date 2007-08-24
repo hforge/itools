@@ -330,7 +330,7 @@ class WebSite(RoleAware, Folder):
 
         # Get the user
         brain = results.get_documents()[0]
-        user = root.get_handler('users/%s' % brain.name)
+        user, metadata = root.get_object('users/%s' % brain.name)
 
         # Check the user is active
         if user.get_property('ikaaro:user_must_confirm'):

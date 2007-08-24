@@ -44,6 +44,11 @@ class StateTestCase(TestCase):
 class FolderTestCase(TestCase):
 
     def setUp(self):
+        database = Database()
+        self.database = database
+        root = get_handler('.')
+        root.database = database
+        self.root = root
         with vfs.make_file('tests/toto.txt') as file:
             file.write('I am Toto\n')
 
@@ -54,75 +59,77 @@ class FolderTestCase(TestCase):
 
 
     def test_remove(self):
-        folder = get_handler('tests')
+        folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         self.assertEqual(vfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), False)
         # Save
-        folder.save_state()
+        self.database.save_changes()
         self.assertEqual(vfs.exists('tests/toto.txt'), False)
         self.assertEqual(folder.has_handler('toto.txt'), False)
 
 
     def test_remove_add(self):
-        folder = get_handler('tests')
+        folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         folder.set_handler('toto.txt', Text())
         self.assertEqual(vfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), True)
         # Save
-        folder.save_state()
+        self.database.save_changes()
         self.assertEqual(vfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), True)
 
 
     def test_remove_add_remove(self):
-        folder = get_handler('tests')
+        folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         folder.set_handler('toto.txt', Text())
         folder.del_handler('toto.txt')
         self.assertEqual(vfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), False)
         # Save
-        folder.save_state()
+        self.database.save_changes()
         self.assertEqual(vfs.exists('tests/toto.txt'), False)
         self.assertEqual(folder.has_handler('toto.txt'), False)
 
 
     def test_remove_remove(self):
-        folder = get_handler('tests')
+        folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         self.assertRaises(Exception, folder.del_handler, 'toto.txt')
 
 
     def test_remove_add_add(self):
-        folder = get_handler('tests')
+        folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         folder.set_handler('toto.txt', Text())
         self.assertRaises(Exception, folder.set_handler, 'toto.txt', Text())
 
 
     def test_remove_abort(self):
-        folder = get_handler('tests')
+        database = self.database
+        folder = self.root.get_handler('tests')
         self.assertEqual(folder.has_handler('toto.txt'), True)
         folder.del_handler('toto.txt')
         self.assertEqual(folder.has_handler('toto.txt'), False)
-        folder.abort_changes()
+        database.abort_changes()
         self.assertEqual(folder.has_handler('toto.txt'), True)
         # Save
-        folder.save_state()
+        database.save_changes()
         self.assertEqual(vfs.exists('tests/toto.txt'), True)
 
 
     def test_add_abort(self):
-        folder = get_handler('tests')
+        database = self.database
+        folder = self.root.get_handler('tests')
         self.assertEqual(folder.has_handler('fofo.txt'), False)
         folder.set_handler('fofo.txt', Text())
         self.assertEqual(folder.has_handler('fofo.txt'), True)
-        folder.abort_changes()
+        database.abort_changes()
         self.assertEqual(folder.has_handler('fofo.txt'), False)
         # Save
-        folder.save_state()
+        database.save_changes()
         self.assertEqual(vfs.exists('tests/fofo.txt'), False)
 
 
@@ -169,8 +176,7 @@ class DatabaseTestCase(TestCase):
         # Abort
         self.database.abort_changes()
         # Test
-        fables = get_handler('fables')
-        self.assertEqual(fables.has_handler('31.txt'), False)
+        self.assertEqual(vfs.exists('fables/31.txt'), False)
 
 
     def test_commit(self):
@@ -182,8 +188,7 @@ class DatabaseTestCase(TestCase):
         # Commit
         self.database.save_changes()
         # Test
-        fables = get_handler('fables')
-        self.assertEqual(fables.has_handler('31.txt'), True)
+        self.assertEqual(vfs.exists('fables/31.txt'), True)
 
 
     def test_broken_commit(self):
@@ -198,31 +203,29 @@ class DatabaseTestCase(TestCase):
         # Commit
         self.assertRaises(NameError, self.database.save_changes)
         # Test
-        fables = get_handler('fables')
-        self.assertEqual(fables.has_handler('31.txt'), False)
-        self.assertEqual(fables.has_handler('broken.txt'), False)
+        self.assertEqual(vfs.exists('fables/31.txt'), False)
+        self.assertEqual(vfs.exists('fables/broken.txt'), False)
 
 
     def test_append(self):
-        # Initalize
+        database = self.database
         root = self.root
+        # Initalize
         agenda = Agenda()
         agenda.add_record({'firstname': u'Karl', 'lastname': u'Marx'})
         agenda.add_record({'firstname': u'Jean-Jacques',
                            'lastname': u'Rousseau'})
         root.set_handler('agenda', agenda)
-        self.database.save_changes()
+        database.save_changes()
         # Work
-        agenda = Agenda(root.get_handler('agenda').uri)
-        agenda.database = self.database
+        agenda = root.get_handler('agenda')
         fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
         agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
-        self.database.save_changes()
+        database.save_changes()
         agenda.del_record(fake.id)
-        self.database.save_changes()
+        database.save_changes()
         # Test
-        agenda = Agenda(root.get_handler('agenda').uri)
-        agenda.database = self.database
+        agenda = root.get_handler('agenda')
         ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
         self.assertEqual(len(ids), 0)
         ids = [ x.id for x in agenda.search(firstname=u'Albert') ]

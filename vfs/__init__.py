@@ -18,13 +18,14 @@
 from base import BaseFS
 from file import FileFS
 from registry import register_file_system
-from vfs import (exists, is_file, is_folder, can_read, can_write, get_ctime,
-                 get_mtime, get_atime, get_mimetype, get_size, make_file,
-                 make_folder, remove, open, copy, move, get_names, traverse,
-                 READ, WRITE, APPEND)
+from vfs import (cwd, exists, is_file, is_folder, can_read, can_write,
+                 get_ctime, get_mtime, get_atime, get_mimetype, get_size,
+                 make_file, make_folder, remove, open, copy, move, get_names,
+                 traverse, READ, WRITE, APPEND)
     
 
 __all__ = [
+    'cwd',
     'BaseFS',
     'FileFS',
     # File modes

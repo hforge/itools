@@ -98,7 +98,7 @@ class Skin(Folder):
             title = option['title']
             src = option['icon']
 
-            handler = root.get_handler(path)
+            handler, metadata = root.get_object(path)
             ac = handler.get_access_control()
             if ac.is_access_allowed(user, handler, method):
                 href = '%s/;%s' % (here.get_pathto(handler), method)
@@ -187,7 +187,7 @@ class Skin(Folder):
             name = segment.name
             if name:
                 try:
-                    handler = handlers[-1].get_handler(name)
+                    handler, metadata = handlers[-1].get_object(name)
                 except LookupError:
                     continue
                 handlers.append(handler)

@@ -46,6 +46,8 @@ class File(Handler):
 
     def __init__(self, ref=None, string=None, **kw):
         self.database = None
+        self.timestamp = None
+        self.dirty = False
         self.parent = None
         self.name = ''
         self.real_handler = None
@@ -58,17 +60,23 @@ class File(Handler):
             else:
                 # A handler from some input data
                 self.new(**kw)
-            self.timestamp = None
-            self.dirty = True
         else:
             # Calculate the URI
             self.uri = uri.get_absolute_reference(ref)
-            self.timestamp = None
-            self.dirty = False
 
 
     def new(self, data=''):
         self.data = data
+
+
+    def __getattr__(self, name):
+        if name not in self.__slots__:
+            message = "'%s' object has no attribute '%s'"
+            raise AttributeError, message % (self.__class__.__name__, name)
+
+        # Lazy load
+        self.load_state()
+        return getattr(self, name)
 
 
     #########################################################################
@@ -125,6 +133,73 @@ class File(Handler):
         # pointer pointing to the beginning)
         file.write(data)
         file.truncate()
+
+
+    def clone(self):
+        # Deep load
+        if (self.uri is not None) and (self.timestamp is None):
+            self.load_state()
+        # Create and initialize the instance
+        cls = self.__class__
+        copy = object.__new__(cls)
+        copy.database = None
+        copy.uri = None
+        copy.timestamp = None
+        copy.dirty = False
+        copy.real_handler = None
+        # Copy the state
+        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
+                       'name', 'real_handler'])
+        for name in cls.__slots__:
+            if name not in exclude:
+                value = getattr(self, name)
+                value = deepcopy(value)
+                setattr(copy, name, value)
+        # Return the copy
+        return copy
+
+
+    def is_outdated(self):
+        if self.uri is None:
+            return False
+
+        timestamp = self.timestamp
+        # It cannot be out-of-date if it has not been loaded yet
+        if timestamp is None:
+            return False
+
+        mtime = vfs.get_mtime(self.uri)
+        # If the resource layer does not support mtime... we are...
+        if mtime is None:
+            return True
+
+        return mtime > timestamp
+
+
+    def set_changed(self):
+        if self.uri is not None:
+            self.dirty = True
+            database = self.database
+            if database is not None:
+                if self.uri not in database.added:
+                    database.changed.add(self.uri)
+
+
+    def abort_changes(self):
+        # Not attached to a URI
+        if self.uri is None:
+            return
+        # Not changed
+        if self.dirty is False:
+            return
+        # Abort
+        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
+                       'name', 'real_handler'])
+        for name in self.__slots__:
+            if name not in exclude:
+                delattr(self, name)
+        self.timestamp = None
+        self.dirty = False
 
 
     #########################################################################

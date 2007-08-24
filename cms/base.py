@@ -129,9 +129,28 @@ class Node(BaseNode):
     def get_mtime(self):
         if self.uri is None:
             return None
-        if self.timestamp is None:
-            return vfs.get_mtime(self.uri)
-        return self.timestamp
+
+        metadata = self.get_metadata()
+        if metadata is None:
+            metadata_mtime = None
+        elif metadata.timestamp is not None:
+            metadata_mtime = metadata.timestamp
+        elif vfs.exists(metadata.uri):
+            metadata_mtime = vfs.get_mtime(metadata.uri)
+        else:
+            metadata_mtime = None
+
+        if self.timestamp is not None:
+            handler_mtime = self.timestamp
+        elif vfs.exists(self.uri):
+            handler_mtime = vfs.get_mtime(self.uri)
+        else:
+            return metadata_mtime
+
+        if metadata_mtime is None:
+            return handler_mtime
+
+        return max(handler_mtime, metadata_mtime)
 
 
     def get_path_to_icon(self, size=16, from_handler=None):
@@ -217,7 +236,6 @@ class Node(BaseNode):
 class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
     def set_changed(self):
-        BaseHandler.set_changed(self)
         if self.uri is not None:
             schedule_to_reindex(self)
 

@@ -203,7 +203,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
 
     def _get_virtual_handler(self, name):
-        languages = [ x.split('.')[-1] for x in self.cache
+        languages = [ x.split('.')[-1] for x in self.get_handler_names()
                       if x.startswith(name) ]
         languages = [ x for x in languages if has_language(x) ]
 
@@ -225,23 +225,13 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return BaseFolder._get_virtual_handler(self, name)
 
 
-    # FIXME Rename this method to "traverse_objects"
-    def _traverse_catalog_aware_objects(self):
-        for handler, ctx in self.traverse2(caching=False):
-            # Skip virtual handlers
-            if handler.real_handler is not None:
-                ctx.skip = True
-                continue
-            # Skip non catalog aware handlers
-            if not isinstance(handler, CatalogAware):
-                ctx.skip = True
-                continue
-            yield handler
-
-
     #######################################################################
     # API
     #######################################################################
+    def has_object(self, path):
+        return self.has_handler('%s.metadata' % path)
+
+
     def set_object(self, name, handler, metadata=None):
         if metadata is None:
             metadata = handler.build_metadata()
@@ -256,7 +246,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         # Schedule to index
         if isinstance(handler, Folder):
-            for x in handler._traverse_catalog_aware_objects():
+            for x, metadata in handler.traverse_objects():
                 schedule_to_index(x)
         else:
             schedule_to_index(handler)
@@ -266,21 +256,36 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def del_object(self, name):
         # Schedule to unindex
-        handler = self.get_handler(name)
+        handler, metadata = self.get_object(name)
         if isinstance(handler, Folder):
-            for x in handler._traverse_catalog_aware_objects():
+            for x, metadata in handler.traverse_objects():
                 schedule_to_unindex(x)
         else:
             schedule_to_unindex(handler)
 
         # Remove
-        self.del_handler(name)
         self.del_handler('%s.metadata' % name)
+        if self.has_handler(name):
+            self.del_handler(name)
 
 
-    def get_object(self, name):
-        handler = self.get_handler(name)
-        metadata = handler.get_metadata()
+    def get_object(self, path):
+        if not isinstance(path, str):
+            path = str(path)
+        if path.endswith('/'):
+            path = path[:-1]
+
+        metadata = self.get_handler('%s.metadata' % path)
+        try:
+            handler = self.get_handler(path)
+        except LookupError:
+            name = path.split('/')[-1]
+            format = metadata.get_property('format')
+            uri = metadata.uri.resolve(name)
+            handler = get_object_class(format)(uri)
+            handler.database = metadata.database
+            handler.parent = metadata.parent
+            handler.name = name
         return handler, metadata
 
 
@@ -290,6 +295,20 @@ class Folder(Handler, BaseFolder, CalendarAware):
             if name.endswith('.metadata'):
                 name = name[:-suffix]
                 yield self.get_object(name)
+
+
+    def traverse_objects(self):
+        yield self, self.get_metadata()
+        for handler, ctx in self.traverse2():
+            # Skip virtual handlers
+            if handler.real_handler is not None:
+                ctx.skip = True
+                continue
+
+            name = handler.name
+            if name.endswith('.metadata'):
+                name = name[:-9]
+                yield handler.parent.get_object(name)
 
 
     def search_handlers(self, path='.', format=None, state=None,
@@ -422,7 +441,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         user = context.user
         handlers = []
         for document in documents:
-            handler = root.get_handler(document.abspath)
+            handler, metadata = root.get_object(document.abspath)
             ac = handler.get_access_control()
             if ac.is_allowed_to_view(user, handler):
                 handlers.append(handler)
@@ -610,7 +629,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         user = context.user
         for name in ids:
-            handler = self.get_handler(name)
+            handler, metadata = self.get_object(name)
             ac = handler.get_access_control()
             if ac.is_allowed_to_remove(user, handler):
                 # Remove handler

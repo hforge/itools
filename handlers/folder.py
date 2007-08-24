@@ -30,6 +30,9 @@ import registry
 
 
 
+MSG_NOT_ATTACHED = 'method only available when attached to a database'
+
+
 class Context(object):
     """Used by 'traverse2' to control the traversal."""
 
@@ -50,117 +53,35 @@ class Folder(Handler):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'cache', 'added_handlers', 'removed_handlers']
+                 'real_handler', 'cache']
+
+
+    def __init__(self, ref=None, **kw):
+        self.database = None
+        self.timestamp = None
+        self.dirty = False
+        self.parent = None
+        self.name = ''
+        self.real_handler = None
+
+        if ref is None:
+            # A handler from scratch
+            self.uri = None
+            self.cache = {}
+            self.new(**kw)
+        else:
+            # Calculate the URI
+            self.uri = get_absolute_reference(ref)
+            self.cache = None
 
 
     def new(self, **kw):
-        self.cache = {}
-        self.added_handlers = set()
-        self.removed_handlers = set()
-
-
-    def _load_state(self):
-        # XXX This code may be optimized just checking wether there is
-        # already an up-to-date handler in the cache, then it should
-        # not be touched.
-        cache = {}
-        for name in vfs.get_names(self.uri):
-            cache[name] = None
-        self.cache = cache
-
-        # Keep differential
-        self.added_handlers = set()
-        self.removed_handlers = set()
-
-
-    def load_state(self):
-        self._load_state()
-        self.timestamp = vfs.get_mtime(self.uri)
-        self.dirty = False
-
-
-    def _deep_load(self):
-        self.load_state()
-        for name in self.cache:
-            handler = self.get_handler(name)
-            handler._deep_load()
-
-
-    def save_state(self):
-        cache = self.cache
-        # Remove
-        for name in self.removed_handlers:
-            ref = self.uri.resolve2(name)
-            self.safe_remove(ref)
-        self.removed_handlers = set()
-
-        # Add
-        base = self.uri
-        for name in self.added_handlers:
-            # Add the handler
-            target = base.resolve2(name)
-            handler = cache[name]
-            handler.save_state_to(target)
-            # Clean the cache (the most simple and robust option)
-            cache[name] = None
-        self.added_handlers = set()
-        # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
-        self.dirty = False
-
-
-    def abort_changes(self):
-        cache = self.cache
-        # Add
-        for name in self.added_handlers:
-            del cache[name]
-        self.added_handlers = set()
-        # Remove
-        for name in self.removed_handlers:
-            cache[name] = None
-        self.removed_handlers = set()
-
-
-    def save_state_to(self, uri):
-        # Create the target folder
-        self.safe_make_folder(uri)
-        # Add all the handlers
-        base = get_absolute_reference(uri)
-        for name in self.cache:
-            handler = self.get_handler(name)
-            target = base.resolve2(name)
-            handler.save_state_to(target)
-
-
-    def clone(self):
-        # Deep load
-        if self.uri is not None:
-            self._deep_load()
-        # Create and initialize the instance
-        cls = self.__class__
-        copy = object.__new__(cls)
-        copy.database = None
-        copy.uri = None
-        copy.timestamp = None
-        self.dirty = True
-        copy.real_handler = None
-        # Copy the state
-        copy.cache = {}
-        copy.added_handlers = set()
-        copy.removed_handlers = set()
-        for name in self.cache:
-            copy.cache[name] = self.cache[name].clone()
-        # Return the copy
-        return copy
+        pass
 
 
     #########################################################################
     # API (private)
     #########################################################################
-    def _get_handler_names(self):
-        return self.cache.keys()
-
-
     def get_handler_class(self, uri):
         return registry.get_handler_class(uri)
 
@@ -182,7 +103,11 @@ class Folder(Handler):
     #########################################################################
     # API (public)
     #########################################################################
-    def get_handler(self, path, caching=True):
+    def get_handler(self, path):
+        database = self.database
+        if database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
         # Be sure path is a Path
         if not isinstance(path, Path):
             path = Path(path)
@@ -190,7 +115,7 @@ class Folder(Handler):
         if path.is_absolute():
             root = self.get_root()
             path = str(path)[1:]
-            return root.get_handler(path, caching=caching)
+            return root.get_handler(path)
 
         if len(path) == 0:
             return self
@@ -198,7 +123,7 @@ class Folder(Handler):
         if path[0] == '..':
             if self.parent is None:
                 raise ValueError, 'this handler is the root handler'
-            return self.parent.get_handler(path[1:], caching=caching)
+            return self.parent.get_handler(path[1:])
 
         here = self
         for name in path:
@@ -206,51 +131,41 @@ class Folder(Handler):
             if not isinstance(here, Folder):
                 raise LookupError, 'file handlers can not be traversed'
 
-            # Check wether the resource exists or not
-            if name not in here.cache:
-                # Virtual handler
+            reference = here.uri.resolve2(name)
+            if reference in database.added:
+                # Added
+                handler = database.cache[reference]
+            elif reference in database.removed:
+                # Removed
                 handler = here._get_virtual_handler(name)
                 handler = build_virtual_handler(handler)
-                # Attach
-                handler.database = self.database
-                handler.parent = here
-                handler.name = name
-
-                here = handler
-                continue
-
-            # Check if it is a new handler (avoid cache)
-            if name in here.added_handlers:
-                here = here.cache[name]
-                continue
-
-            # Get the handler from the cache
-            handler = here.cache[name]
-            if handler is None:
-                # Miss
-                uri = here.uri.resolve2(name)
-                handler = here._get_handler(name, uri)
-                handler.database = self.database
-                # Update the cache
-                if caching is True:
-                    here.cache[name] = handler
+                handler.database = database
             else:
-                # Hit, reload the handler if needed
-                if handler.is_outdated():
-                    handler.load_state()
+                if not vfs.exists(reference):
+                    # Does not exist
+                    handler = here._get_virtual_handler(name)
+                    handler = build_virtual_handler(handler)
+                    handler.database = database
+                elif reference in database.cache:
+                    # Cache hit
+                    handler = database.cache[reference]
+                else:
+                    # Cache miss
+                    handler = here._get_handler(name, reference)
+                    handler.database = database
+                    if not isinstance(handler, Folder):
+                        database.cache[reference] = handler
+                # Virtual handlers propagate
+                if here.real_handler is not None:
+                    handler = build_virtual_handler(handler)
+                    handler.parent = here
+                    handler.name = name
+                    here = handler
+                    continue
 
-            # Attach
+            # Attach and Continue
             handler.parent = here.get_real_handler()
             handler.name = name
-
-            # Virtual handlers propagate
-            if here.real_handler is not None:
-                handler = build_virtual_handler(handler)
-                # Attach
-                handler.parent = here
-                handler.name = name
-
-            # Next
             here = handler
 
         return here
@@ -271,7 +186,19 @@ class Folder(Handler):
 
 
     def _get_handler_names(self):
-        return self.cache.keys()
+        database = self.database
+        uri = self.uri
+
+        if not vfs.exists(uri):
+            return []
+
+        names = vfs.get_names(uri)
+        removed = [ str(x.path[-1]) for x in database.removed
+                    if uri.resolve2(str(x.path[-1])) == x ]
+        added = [ str(x.path[-1]) for x in database.added
+                  if uri.resolve2(str(x.path[-1])) == x ]
+
+        return list(set(names) - set(removed) | set(added))
 
 
     def get_handlers(self, path='.'):
@@ -280,36 +207,59 @@ class Folder(Handler):
             yield handler.get_handler(name)
 
 
-    def _set_handler(self, name, handler):
-        handler.database = self.database
-        handler.parent = self
-        handler.name = name
-        self.cache[name] = handler
-
-
     def set_handler(self, path, handler):
+        database = self.database
+        if database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
         if not isinstance(path, Path):
             path = Path(path)
 
         path, name = path[:-1], path[-1]
-
         container = self.get_handler(path)
         container = container.get_real_handler()
-        # Check if there is already a handler with that name
-        if name in container.get_handler_names():
-            raise LookupError, 'there is already a handler named "%s"' % name
 
-        # Make a copy of the handler
-        handler = handler.clone()
-        # Action
-        container.set_changed()
-        container.added_handlers.add(name)
-        container._set_handler(name, handler)
+        # Check it does not exists
+        if container.has_handler(name):
+            raise LookupError, 'there is already a handler in "%s"' % name
 
-        return handler
+        uri = container.uri.resolve2(name)
+        if isinstance(handler, Folder):
+            if handler.cache is None:
+                raise NotImplementedError
+            else:
+                clone = object.__new__(handler.__class__)
+                clone.database = database
+                clone.uri = uri
+                clone.timestamp = None
+                clone.dirty = False
+                clone.parent = container
+                clone.name = name
+                clone.real_handler = None
+                clone.cache = None
+                for subname, subhandler in handler.cache.items():
+                    clone.set_handler(subname, subhandler)
+        else:
+            # Make a copy of the handler
+            clone = handler.clone()
+            clone.database = database
+            clone.uri = uri
+            clone.timestamp = None
+            clone.dirty = False
+            clone.parent = container
+            clone.name = name
+            clone.real_handler = None
+            database.cache[uri] = clone
+            database.added.add(uri)
+
+        return clone
 
 
     def del_handler(self, path):
+        database = self.database
+        if database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -317,16 +267,19 @@ class Folder(Handler):
 
         container = self.get_handler(path)
         # Check wether the handler really exists
-        if name not in container.get_handler_names():
+        if not container.has_handler(name):
             raise LookupError, 'there is not any handler named "%s"' % name
 
-        # Action
-        container.set_changed()
-        if name in container.added_handlers:
-            container.added_handlers.remove(name)
-        else:
-            container.removed_handlers.add(name)
-        del container.cache[name]
+        uri = container.uri.resolve2(name)
+        if uri in database.added:
+            del database.cache[uri]
+            database.added.remove(uri)
+            return
+
+        if uri in database.cache:
+            del database.cache[uri]
+
+        database.removed.add(uri)
 
 
     ########################################################################
@@ -342,7 +295,7 @@ class Folder(Handler):
                 yield handler
 
 
-    def traverse2(self, context=None, caching=True):
+    def traverse2(self, context=None):
         if context is None:
             context = Context()
 
@@ -351,9 +304,9 @@ class Folder(Handler):
             context.skip = False
         else:
             for name in self.get_handler_names():
-                handler = self.get_handler(name, caching=caching)
+                handler = self.get_handler(name)
                 if isinstance(handler, Folder):
-                    for x, context in handler.traverse2(context, caching=caching):
+                    for x, context in handler.traverse2(context):
                         yield x, context
                 else:
                     yield handler, context

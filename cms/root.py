@@ -97,15 +97,13 @@ class Root(WebSite):
         # attribute lets the interface to add those resources.
         context.styles = []
         context.scripts = []
-        # Reload the root handler if needed
-        if self.is_outdated():
-            self.load_state()
 
 
     def get_user(self, name):
         users = self.get_handler('users')
-        if users.has_handler(name):
-            return users.get_handler(name)
+        if users.has_object(name):
+            user, metadata = users.get_object(name)
+            return user
         return None
 
 
@@ -167,16 +165,12 @@ class Root(WebSite):
 
         # Create sub-handlers
         cache = self.cache
-        cache['.metadata'] = self.build_metadata()
+        cache['.metadata'] = self.build_metadata(**{'ikaaro:admins': ('0',)})
         # Users
-        users = UserFolder()
+        users = UserFolder(users=[(username, password)])
         cache['users'] = users
         cache['users.metadata'] = users.build_metadata(owner=None,
-                                        **{'dc:title': {'en': u'Users'}})
-
-        # Add user
-        user = users.set_user(username, password)
-        self.set_user_role(user.name, 'ikaaro:admins')
+            **{'dc:title': {'en': u'Users'}})
 
 
     def get_catalog_metadata_fields(self):
@@ -384,10 +378,10 @@ class Root(WebSite):
 
         # Index the documents
         doc_n = 0
-        for object in self._traverse_catalog_aware_objects():
+        for handler, metadata in self.traverse_objects():
             doc_n += 1
             print doc_n, object.abspath
-            catalog.index_document(object)
+            catalog.index_document(handler)
 
         t = time() - t0
         print
@@ -465,7 +459,7 @@ class Root(WebSite):
             i += 1
 
         # Update roles
-        for handler in self._traverse_catalog_aware_objects():
+        for handler, metadata in self.traverse_objects():
             if not isinstance(handler, RoleAware):
                 continue
             metadata = handler.get_metadata()

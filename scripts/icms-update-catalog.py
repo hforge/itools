@@ -63,10 +63,10 @@ def update_catalog(parser, options, target):
         # Update
         t0, v0 = time(), vmsize()
         doc_n = 0
-        for object in root._traverse_catalog_aware_objects():
-            print doc_n, object.get_abspath()
+        for handler, metadata in root.traverse_objects():
+            print doc_n, handler.get_abspath()
             doc_n += 1
-            catalog.index_document(object)
+            catalog.index_document(handler)
         # Update / Free Memory
         del object, root
         # Update / Report

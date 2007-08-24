@@ -141,35 +141,6 @@ class Handler(Node):
                  'real_handler']
 
 
-    def __init__(self, ref=None, **kw):
-        self.database = None
-        self.parent = None
-        self.name = ''
-        self.real_handler = None
-
-        if ref is None:
-            # A handler from scratch
-            self.uri = None
-            self.new(**kw)
-            self.timestamp = None
-            self.dirty = True
-        else:
-            # Calculate the URI
-            self.uri = uri.get_absolute_reference(ref)
-            self.timestamp = None
-            self.dirty = False
-
-
-    def __getattr__(self, name):
-        if name not in self.__slots__:
-            message = "'%s' object has no attribute '%s'"
-            raise AttributeError, message % (self.__class__.__name__, name)
-        else:
-            self.load_state()
-
-        return getattr(self, name)
-
-
     ########################################################################
     # API / Safe VFS operations
     ########################################################################
@@ -204,87 +175,6 @@ class Handler(Node):
     ########################################################################
     # API
     ########################################################################
-    def load_state(self):
-        raise NotImplementedError
-
-
-    def load_state_from(self, uri):
-        raise NotImplementedError
-
-
-    def clone(self):
-        # Deep load
-        if self.uri is not None:
-            self._deep_load()
-        # Create and initialize the instance
-        cls = self.__class__
-        copy = object.__new__(cls)
-        copy.database = None
-        copy.uri = None
-        copy.timestamp = None
-        copy.dirty = True
-        copy.real_handler = None
-        # Copy the state
-        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
-                       'name', 'real_handler'])
-        for name in cls.__slots__:
-            if name not in exclude:
-                value = getattr(self, name)
-                value = deepcopy(value)
-                setattr(copy, name, value)
-        # Return the copy
-        return copy
-
-
-    def _deep_load(self):
-        self.load_state()
-
-
-    def is_outdated(self):
-        if self.uri is None:
-            return False
-
-        timestamp = self.timestamp
-        # It cannot be out-of-date if it has not been loaded yet
-        if timestamp is None:
-            return False
-
-        mtime = vfs.get_mtime(self.uri)
-        # If the resource layer does not support mtime... we are...
-        if mtime is None:
-            return True
-
-        return mtime > timestamp
-
-
-    def has_changed(self):
-        if self.uri is None:
-            return False
-
-        return self.dirty
-
-
-    def set_changed(self):
-        self.dirty = True
-        if self.uri is not None and self.database is not None:
-            self.database.changed.add(self)
-
-
-    def abort_changes(self):
-        if self.uri is None:
-            # XXX Should do something else than just return?
-            return
-        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
-                       'name', 'real_handler'])
-        for name in self.__slots__:
-            if name not in exclude:
-                delattr(self, name)
-        self.timestamp = None
-        self.dirty = False
-
-
-    ########################################################################
-    # Indexing
     def to_text(self):
         raise NotImplementedError
 

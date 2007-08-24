@@ -18,15 +18,18 @@
 import os
 
 # Import from itools
-from itools.handlers import Folder
+from itools.handlers import Folder, Database
 from itools.i18n import get_accept
 
 
 domains = {}
 
+database = Database()
 def register_domain(name, locale_path):
     if name not in domains:
-        domains[name] = Domain(locale_path)
+        domain = Domain(locale_path)
+        domain.database = database
+        domains[name] = domain
 
 
 def get_domain(name):

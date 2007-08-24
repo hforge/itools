@@ -510,10 +510,15 @@ class Server(object):
         root.init(context)
         user = context.user = self.get_user(context)
         root.before_traverse(context)
+        # XXX This is an horrible hack
         try:
-            handler = context.handler = root.get_handler(context.path)
+            handler = root.get_handler(context.path)
         except LookupError:
-            handler = None
+            try:
+                handler, metadata = root.get_object(context.path)
+            except LookupError:
+                handler = None
+        context.handler = handler
 
         if not isinstance(handler, Node):
             # Find an ancestor to render the page

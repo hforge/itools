@@ -27,7 +27,7 @@ from thread import allocate_lock, get_ident
 # Import from itools
 from itools.uri import get_reference, Path
 from itools.vfs import vfs
-from itools.vfs import READ, WRITE, APPEND
+from itools.vfs import cwd, READ, WRITE, APPEND
 from registry import get_handler_class
 
 
@@ -58,12 +58,17 @@ def get_tmp_map():
 
 
 ###########################################################################
-# The database instance and VFS layer
+# The database
 ###########################################################################
 class Database(object):
 
     def __init__(self, commit=None):
+        # The cache
+        self.cache = {}
+        # The state, for transactions
         self.changed = set()
+        self.added = set()
+        self.removed = set()
         # The commit, for safe transactions
         if commit is None:
             self.commit = None
@@ -76,7 +81,7 @@ class Database(object):
 
 
     #######################################################################
-    # Override FileFS methods
+    # API / Safe VFS operations
     #######################################################################
     def safe_make_file(self, reference):
         # Not safe
@@ -147,7 +152,7 @@ class Database(object):
 
 
     #######################################################################
-    # API
+    # API / Transactions
     #######################################################################
     def get_state(self):
         commit = self.commit
@@ -159,51 +164,70 @@ class Database(object):
         return READY
 
 
+    def abort_changes(self):
+        cache = self.cache
+        # Added handlers
+        for uri in self.added:
+            del cache[uri]
+        # Changed handlers
+        for uri in self.changed:
+            cache[uri].abort_changes()
+        # Reset state
+        self.changed.clear()
+        self.added.clear()
+        self.removed.clear()
+
+
     def save_changes(self):
         # 1. Start
-        vfs.make_file(self.log)
+        if self.log is not None:
+            vfs.make_file(self.log)
 
         # Write changes to disk
-        transaction = self.changed
+        cache = self.cache
         try:
-            for handler in transaction:
-                mtime = vfs.get_mtime(handler.uri)
-                if mtime is not None:
-                    handler.save_state()
+            # Save changed handlers
+            for uri in self.changed:
+                # Save the handler's state
+                handler = cache[uri]
+                handler.save_state()
+                # Update the handler's timestamp
+                handler.timestamp = vfs.get_mtime(uri)
+                handler.dirty = False
+            # Remove handlers
+            for uri in self.removed:
+                self.safe_remove(uri)
+            # Add new handlers
+            for uri in self.added:
+                handler = cache[uri]
+                handler.save_state_to(uri)
+                # Update the handler's timestamp
+                handler.timestamp = vfs.get_mtime(uri)
+                handler.dirty = False
         except:
             # Rollback the changes in memory
-            for handler in transaction:
-                handler.abort_changes()
+            self.abort_changes()
             # Rollback the changes in disk
-            self.rollback()
+            if self.log is not None:
+                self.rollback()
             raise
         finally:
-            # Clear
-            transaction.clear()
-            get_tmp_map().clear()
+            if self.log is not None:
+                get_tmp_map().clear()
+
+        # Reset the state
+        self.changed.clear()
+        self.added.clear()
+        self.removed.clear()
 
         # 2. Transaction commited successfully.
-        # Once we pass this point, we will save the changes permanently,
-        # whatever happens (e.g. if there is a current failover we will
-        # continue this process to finish the work).
-        vfs.make_file('%s/done' % self.commit)
+        if self.log is not None:
+            # Once we pass this point, we will save the changes permanently,
+            # whatever happens (e.g. if there is a current failover we will
+            # continue this process to finish the work).
+            vfs.make_file('%s/done' % self.commit)
 
-        self.save_changes_forever()
-
-
-    def abort_changes(self):
-        """
-        This method aborts the current transaction. It is assumed nothing
-        has been written to disk yet.
-
-        This method is to be used by the programmer whe he changes his
-        mind and decides not to commit.
-        """
-        # Clean the transaction
-        transaction = self.changed
-        for handler in transaction:
-            handler.abort_changes()
-        transaction.clear()
+            self.save_changes_forever()
 
 
     def rollback(self):
@@ -244,7 +268,7 @@ class Database(object):
         This method makes the transaction changes permanent.
 
         If it fails, for example if the computer crashes, it must be
-        safe call this method again so it finish the work.
+        safe call this method again so it finishes the work.
         """
         # Save the transaction
         with open(self.log) as log:

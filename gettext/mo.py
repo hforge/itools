@@ -26,7 +26,7 @@ class MO(File):
     class_mimetypes = ['application/x-mo']
     class_extension = 'mo'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'translations']
 
 

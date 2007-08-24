@@ -69,7 +69,7 @@ class OdfDocument(OpenOfficeDocument):
     """
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'data']
 
 
@@ -140,7 +140,7 @@ class ODT(OdfDocument):
     class_extension = 'odt'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'data']
 
 
@@ -150,7 +150,7 @@ class ODS(OdfDocument):
     class_extension = 'ods'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:spreadsheet:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'data']
 
 
@@ -160,7 +160,7 @@ class ODP(OdfDocument):
     class_extension = 'odp'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:presentation:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'data']
 
 

@@ -338,7 +338,7 @@ class Record(list):
 
 class Table(File):
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'records', 'catalog', 'added_records',
                  'removed_records']
 
@@ -491,6 +491,7 @@ class Table(File):
 
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
+        self.dirty = False
 
 
     #######################################################################

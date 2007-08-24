@@ -25,7 +25,7 @@ class Text(File):
     class_extension = 'txt'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'data', 'encoding']
 
 

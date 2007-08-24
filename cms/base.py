@@ -21,6 +21,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import Path
+from itools import vfs
 from itools.catalog import CatalogAware
 from itools.handlers import Handler as BaseHandler
 from itools.schemas import get_datatype
@@ -126,6 +127,10 @@ class Node(BaseNode):
 
 
     def get_mtime(self):
+        if self.uri is None:
+            return None
+        if self.timestamp is None:
+            return vfs.get_mtime(self.uri)
         return self.timestamp
 
 
@@ -235,7 +240,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         get_property = self.get_metadata().get_property
         title = self.get_title()
 
-        mtime = self.timestamp
+        mtime = self.get_mtime()
         if mtime is None:
             mtime = datetime.now()
 

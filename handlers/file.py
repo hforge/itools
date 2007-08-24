@@ -40,7 +40,7 @@ class File(Handler):
     class_resource_type = 'file'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'data']
 
 
@@ -59,10 +59,12 @@ class File(Handler):
                 # A handler from some input data
                 self.new(**kw)
             self.timestamp = None
+            self.dirty = True
         else:
             # Calculate the URI
             self.uri = uri.get_absolute_reference(ref)
-            ##self.timestamp = None
+            self.timestamp = None
+            self.dirty = False
 
 
     def new(self, data=''):
@@ -85,6 +87,7 @@ class File(Handler):
         finally:
             file.close()
         self.timestamp = vfs.get_mtime(self.uri)
+        self.dirty = False
 
 
     def load_state_from(self, uri):
@@ -107,6 +110,7 @@ class File(Handler):
             self.save_state_to_file(file)
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
+        self.dirty = False
 
 
     def save_state_to(self, uri):

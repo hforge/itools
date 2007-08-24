@@ -36,7 +36,7 @@ class Document(XHTMLDocument):
     class_mimetypes = ['text/html']
     class_extension = 'html'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'events']
 
 

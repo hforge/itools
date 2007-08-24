@@ -161,7 +161,7 @@ class Handler(Node):
     class_extension = None
 
     # Instance variables. The variable class "__slots__" is to be overriden.
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler']
 
 
@@ -176,18 +176,18 @@ class Handler(Node):
             self.uri = None
             self.new(**kw)
             self.timestamp = None
+            self.dirty = True
         else:
             # Calculate the URI
             self.uri = uri.get_absolute_reference(ref)
-            ##self.timestamp = None
+            self.timestamp = None
+            self.dirty = False
 
 
     def __getattr__(self, name):
         if name not in self.__slots__:
             message = "'%s' object has no attribute '%s'"
             raise AttributeError, message % (self.__class__.__name__, name)
-        elif name == 'timestamp':
-            self.timestamp = vfs.get_mtime(self.uri)
         else:
             self.load_state()
 
@@ -245,11 +245,12 @@ class Handler(Node):
         copy = object.__new__(cls)
         copy.database = None
         copy.uri = None
-        copy.timestamp = datetime.now()
+        copy.timestamp = None
+        copy.dirty = True
         copy.real_handler = None
         # Copy the state
-        exclude = set(['database', 'uri', 'timestamp', 'parent', 'name',
-                       'real_handler'])
+        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
+                       'name', 'real_handler'])
         for name in cls.__slots__:
             if name not in exclude:
                 value = getattr(self, name)
@@ -284,21 +285,11 @@ class Handler(Node):
         if self.uri is None:
             return False
 
-        timestamp = self.timestamp
-        # Not yet loaded, even
-        if timestamp is None:
-            return False
-
-        mtime = vfs.get_mtime(self.uri)
-        # If the resource layer does not support mtime... we are...
-        if mtime is None:
-            return False
-
-        return self.timestamp > mtime
+        return self.dirty
 
 
     def set_changed(self):
-        self.timestamp = datetime.now()
+        self.dirty = True
         if self.uri is not None and self.database is not None:
             self.database.changed.add(self)
 
@@ -307,10 +298,13 @@ class Handler(Node):
         if self.uri is None:
             # XXX Should do something else than just return?
             return
-        exclude = set(['database', 'uri', 'parent', 'name', 'real_handler'])
+        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
+                       'name', 'real_handler'])
         for name in self.__slots__:
             if name not in exclude:
                 delattr(self, name)
+        self.timestamp = None
+        self.dirty = False
 
 
     ########################################################################

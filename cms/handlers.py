@@ -37,7 +37,7 @@ class ListOfUsers(File):
     class_mimetypes = ['text/x-list-of-users']
     class_extension = 'users'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'usernames']
 
 
@@ -77,7 +77,7 @@ class Lock(Text):
     class_mimetypes = ['text/x-lock']
     class_extension = 'lock'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'username', 'lock_timestamp', 'key']
 
 
@@ -107,7 +107,7 @@ class Metadata(File):
     class_title = u'Metadata'
     class_icon48 = 'images/File48.png'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'properties']
 
 

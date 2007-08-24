@@ -49,7 +49,7 @@ class Folder(Handler):
     class_mimetypes = ['application/x-not-regular-file']
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'cache', 'added_handlers', 'removed_handlers']
 
 
@@ -76,6 +76,7 @@ class Folder(Handler):
     def load_state(self):
         self._load_state()
         self.timestamp = vfs.get_mtime(self.uri)
+        self.dirty = False
 
 
     def _deep_load(self):
@@ -105,6 +106,7 @@ class Folder(Handler):
         self.added_handlers = set()
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
+        self.dirty = False
 
 
     def abort_changes(self):
@@ -139,7 +141,8 @@ class Folder(Handler):
         copy = object.__new__(cls)
         copy.database = None
         copy.uri = None
-        copy.timestamp = datetime.now()
+        copy.timestamp = None
+        self.dirty = True
         copy.real_handler = None
         # Copy the state
         copy.cache = {}

@@ -199,7 +199,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         if self.is_locked():
             lock = self.get_lock()
             # locks expire after 1 hour
-            if lock.timestamp + timedelta(hours=1) < datetime.now():
+            if lock.lock_timestamp + timedelta(hours=1) < datetime.now():
                 self.unlock()
                 context.commit = True
             else:

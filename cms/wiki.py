@@ -424,7 +424,7 @@ class WikiPage(Text):
         if self.is_locked():
             lock = self.get_lock()
             # locks expire after 15 minutes
-            if lock.timestamp + timedelta(minutes=15) < datetime.now():
+            if lock.lock_timestamp + timedelta(minutes=15) < datetime.now():
                 self.unlock()
                 context.commit = True
             else:

@@ -134,7 +134,7 @@ class XLIFF(Text):
     class_mimetypes = ['application/x-xliff']
     class_extension = 'xlf'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'real_handler', 'document_type', 'version', 'lang', 'files']
 
 

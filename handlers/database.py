@@ -22,7 +22,7 @@ from __future__ import with_statement
 # Import from the Standard Library
 from os import fdopen
 from tempfile import mkstemp
-import thread
+from thread import allocate_lock, get_ident
 
 # Import from itools
 from itools.uri import get_reference, Path
@@ -41,12 +41,12 @@ TRANSACTION_PHASE2 = 2
 ###########################################################################
 # Map from handler path to temporal file
 ###########################################################################
-thread_lock = thread.allocate_lock()
+thread_lock = allocate_lock()
 _tmp_maps = {}
 
 
 def get_tmp_map():
-    ident = thread.get_ident()
+    ident = get_ident()
     thread_lock.acquire()
     try:
         tmp_map = _tmp_maps.setdefault(ident, {})
@@ -78,7 +78,7 @@ class Database(object):
     #######################################################################
     # Override FileFS methods
     #######################################################################
-    def make_file(self, reference):
+    def safe_make_file(self, reference):
         # Not safe
         if self.log is None:
             return vfs.make_file(reference)
@@ -90,7 +90,7 @@ class Database(object):
         return vfs.make_file(reference)
 
 
-    def make_folder(self, reference):
+    def safe_make_folder(self, reference):
         # Not safe
         if self.log is None:
             return vfs.make_folder(reference)
@@ -102,7 +102,7 @@ class Database(object):
         return vfs.make_folder(reference)
 
 
-    def remove(self, reference):
+    def safe_remove(self, reference):
         # Not safe
         if self.log is None:
             return vfs.remove(reference)
@@ -112,7 +112,7 @@ class Database(object):
             log.write('-%s\n' % reference)
 
 
-    def open(self, reference, mode=None):
+    def safe_open(self, reference, mode=None):
         # Not safe
         if self.log is None:
             return vfs.open(reference, mode)

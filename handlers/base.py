@@ -201,28 +201,28 @@ class Handler(Node):
         if self.database is None:
             return vfs.make_file(reference)
 
-        return self.database.make_file(reference)
+        return self.database.safe_make_file(reference)
 
 
     def safe_make_folder(self, reference):
         if self.database is None:
             return vfs.make_folder(reference)
 
-        return self.database.make_folder(reference)
+        return self.database.safe_make_folder(reference)
 
 
     def safe_remove(self, reference):
         if self.database is None:
             return vfs.remove(reference)
 
-        return self.database.remove(reference)
+        return self.database.safe_remove(reference)
 
 
     def safe_open(self, reference, mode=None):
         if self.database is None:
             return vfs.open(reference, mode=mode)
 
-        return self.database.open(reference, mode=mode)
+        return self.database.safe_open(reference, mode=mode)
 
 
     ########################################################################

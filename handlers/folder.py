@@ -132,7 +132,7 @@ class Folder(Handler):
             handler.save_state_to(target)
 
 
-    def copy_handler(self):
+    def clone(self):
         # Deep load
         if self.uri is not None:
             self._deep_load()
@@ -149,7 +149,7 @@ class Folder(Handler):
         copy.added_handlers = set()
         copy.removed_handlers = set()
         for name in self.cache:
-            copy.cache[name] = self.cache[name].copy_handler()
+            copy.cache[name] = self.cache[name].clone()
         # Return the copy
         return copy
 
@@ -308,7 +308,7 @@ class Folder(Handler):
             raise LookupError, 'there is already a handler named "%s"' % name
 
         # Make a copy of the handler
-        handler = handler.copy_handler()
+        handler = handler.clone()
         # Action
         container.set_changed()
         container.added_handlers.add(name)

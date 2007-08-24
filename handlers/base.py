@@ -227,7 +227,7 @@ class Handler(Node):
         raise NotImplementedError
 
 
-    def copy_handler(self):
+    def clone(self):
         # Deep load
         if self.uri is not None:
             self._deep_load()

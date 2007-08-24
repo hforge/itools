@@ -164,7 +164,7 @@ class DatabaseTestCase(TestCase):
         # Changes (copy&paste)
         fables = self.root
         fable = fables.get_handler('30.txt')
-        fable = fable.copy_handler()
+        fable = fable.clone()
         fables.set_handler('31.txt', fable)
         # Abort
         self.database.abort()
@@ -177,7 +177,7 @@ class DatabaseTestCase(TestCase):
         # Changes (copy&paste)
         fables = self.root
         fable = fables.get_handler('30.txt')
-        fable = fable.copy_handler()
+        fable = fable.clone()
         fables.set_handler('31.txt', fable)
         # Commit
         self.database.save_changes()
@@ -190,7 +190,7 @@ class DatabaseTestCase(TestCase):
         # Changes (copy&paste)
         fables = self.root
         fable = fables.get_handler('30.txt')
-        fable = fable.copy_handler()
+        fable = fable.clone()
         fables.set_handler('31.txt', fable)
         # Add broken handler
         broken = BrokenHandler()

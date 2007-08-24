@@ -15,6 +15,10 @@ ${table}
 <!-- Links -->
 <p>
   <a name="link"/>
+  <a href=";view?${search_parameters}&amp;change_several_bugs=1#link">
+    Change Several Issues at Once
+  </a>
+  &nbsp;|
   <!--
   <a href=";view?${search_parameters}&amp;export_to_text=1#link">
     Export to text
@@ -24,12 +28,6 @@ ${table}
   <a href=";view?${search_parameters}&amp;export_to_csv=1#link">
     Export to CSV
   </a>
-  <!--
-  &nbsp;|
-  <a href=";view?${search_parameters}&amp;change_several_bugs=1#link">
-    Change Several Issues at Once
-  </a>
-  -->
 </p>
 <!-- Export to text -->
 <!--
@@ -73,17 +71,15 @@ ${table}
 </stl:block>
 
 <!-- Change Several Bugs at Once  -->
-<!--
 <stl:block stl:if="change_several_bugs">
 <h2>Change several Issues at once</h2>
 
 <input type="hidden" stl:repeat="c criteria" name="${c/name}"
-      value="${c/value}"/>
+  value="${c/value}"/>
 <table>
   <tr>
     <td valign="top">
-      <label for="version">Version</label>
-      <br/>
+      <label for="version">Version</label><br/>
       <select name="change_version" id="version" class="tracker_select">
         <option value="">Do not change</option>
         <option stl:repeat="item versions" value="${item/id}"
@@ -91,17 +87,17 @@ ${table}
       </select>
     </td>
     <td valign="top">
-      <label for="module">Module</label>
-      <br/>
+      <label for="module">Module</label><br/>
       <select name="change_module" id="module" class="tracker_select">
         <option value="">Do not change</option>
         <option stl:repeat="item modules" value="${item/id}"
           selected="${item/is_selected}">${item/title}</option>
       </select>
     </td>
+  </tr>
+  <tr>
     <td valign="top">
-      <label for="type">Type</label>
-      <br/>
+      <label for="type">Type</label><br/>
       <select name="change_type" id="type" class="tracker_select">
         <option value="">Do not change</option>
         <option stl:repeat="item types" value="${item/id}"
@@ -109,17 +105,17 @@ ${table}
       </select>
     </td>
     <td valign="top">
-      <label for="priority">Priority</label>
-      <br/>
+      <label for="priority">Priority</label><br/>
       <select name="change_priority" id="priority" class="tracker_select">
         <option value="">Do not change</option>
         <option stl:repeat="item priorities" value="${item/id}"
           selected="${item/is_selected}">${item/title}</option>
       </select>
     </td>
+  </tr>
+  <tr>
     <td valign="top">
-      <label for="state">Status</label>
-      <br/>
+      <label for="state">Status</label><br/>
       <select name="change_state" id="state" class="tracker_select">
         <option value="">Do not change</option>
         <option stl:repeat="item states" value="${item/id}"
@@ -127,8 +123,7 @@ ${table}
       </select>
     </td>
     <td valign="top">
-      <label for="assigned_to">Assign To</label>
-      <br/>
+      <label for="assigned_to">Assign To</label><br/>
       <select name="change_assigned_to" id="assigned_to" class="tracker_select">
         <option value="do_not_change">Do not change</option>
         <option stl:repeat="item users" value="${item/id}"
@@ -151,7 +146,6 @@ ${table}
   </tr>
 </table>
 </stl:block>
--->
 
 </form>
 </stl:block>

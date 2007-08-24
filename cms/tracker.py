@@ -308,6 +308,10 @@ class Tracker(Folder):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
+        # Set Style
+        css = self.get_handler('/ui/tracker/tracker.css')
+        context.styles.append(str(self.get_pathto(css)))
+
         namespace = {}
         namespace['method'] = 'GET'
         namespace['action'] = '.'

@@ -35,6 +35,10 @@ from base import Handler
 
 
 
+namespaces = {
+    None: 'http://www.w3.org/1999/xhtml',
+    'stl': 'http://xml.itools.org/namespaces/stl'}
+
 ###########################################################################
 # Table
 ###########################################################################
@@ -106,7 +110,7 @@ def batch(uri, start, size, total, gettext=Handler.gettext,
         msg = '%s %s' % (msg1, msg2)
 
     # Wrap around a paragraph
-    return Parser('<p class="batchcontrol">%s</p>' % msg)
+    return Parser('<p class="batchcontrol">%s</p>' % msg, namespaces)
 
 
 
@@ -153,16 +157,13 @@ def table_head(columns, sortby, sortorder, gettext=lambda x: x):
     return columns_
 
 table_with_form_template = list(Parser("""
-<form xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:stl="http://xml.itools.org/namespaces/stl"
-  action="." method="post" id="browse_list" name="browse_list">
+<form action="." method="post" id="browse_list" name="browse_list">
   ${table}
 </form>
-"""))
+""", namespaces))
 
 table_template = list(Parser("""
-<table xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<table>
   <thead stl:if="columns">
     <tr>
       <th stl:if="column_checkbox" class="checkbox">
@@ -198,7 +199,7 @@ table_template = list(Parser("""
       class="${action/class}" onclick="${action/onclick}" />
   </stl:block>
 </p>
-"""))
+""", namespaces))
 
 
 def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x,
@@ -373,18 +374,17 @@ class Breadcrumb(object):
 # Menu
 ###########################################################################
 menu_template = list(Parser("""
-<dl xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <stl:block repeat="item items">
-    <dt class="${item/class}">
-      <img stl:if="item/src" src="${item/src}" alt="" width="16" height="16" />
-      <stl:block if="not item/href">${item/title}</stl:block>
-      <a stl:if="item/href" href="${item/href}">${item/title}</a>
-    </dt>
-    <dd>${item/items}</dd>
-  </stl:block>
+<dl>
+<stl:block repeat="item items">
+  <dt class="${item/class}">
+    <img stl:if="item/src" src="${item/src}" alt="" width="16" height="16" />
+    <stl:block if="not item/href">${item/title}</stl:block>
+    <a stl:if="item/href" href="${item/href}">${item/title}</a>
+  </dt>
+  <dd>${item/items}</dd>
+</stl:block>
 </dl>
-"""))
+""", namespaces))
 
 
 
@@ -511,12 +511,8 @@ def get_default_widget(datatype):
 class Widget(object):
 
     template = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <input type="text" name="${name}" value="${value}" />
-        </stl:block>
-        """))
+        """<input type="text" name="${name}" value="${value}" />""",
+        namespaces))
 
     @staticmethod
     def to_html(datatype, name, value):
@@ -537,12 +533,8 @@ class TextWidget(Widget):
 class MultilineWidget(Widget):
 
     template = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <textarea rows="5" cols="25" name="${name}">${value}</textarea>
-        </stl:block>
-        """))
+        """<textarea rows="5" cols="25" name="${name}">${value}</textarea>""",
+        namespaces))
 
     @staticmethod
     def to_html(datatype, name, value):
@@ -559,14 +551,10 @@ class MultilineWidget(Widget):
 
 class BooleanCheckBox(Widget):
 
-    template = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <input type="checkbox" name="${name}" value="1"
-                   checked="${is_selected}" />
-        </stl:block>
-        """))
+    template = list(Parser("""
+        <input type="checkbox" name="${name}" value="1"
+          checked="${is_selected}" />
+        """, namespaces))
 
     @staticmethod
     def to_html(datatype, name, value):
@@ -580,23 +568,19 @@ class BooleanCheckBox(Widget):
 
 class BooleanRadio(Widget):
 
-    template = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <label for="${name}_yes">Yes</label>
-            <input id="${name}_yes" name="${name}" type="radio" value="1"
-                   checked="checked" stl:if="is_yes"/>
-            <input id="${name}_yes" name="${name}" type="radio" value="1"
-                   stl:if="not is_yes"/>
+    template = list(Parser("""
+        <label for="${name}_yes">Yes</label>
+        <input id="${name}_yes" name="${name}" type="radio" value="1"
+          checked="checked" stl:if="is_yes"/>
+        <input id="${name}_yes" name="${name}" type="radio" value="1"
+          stl:if="not is_yes"/>
 
-            <label for="${name}_no">No</label>
-            <input id="${name}_no" name="${name}" type="radio" value="0"
-                   checked="checked" stl:if="not is_yes"/>
-            <input id="${name}_no" name="${name}" type="radio" value="0"
-                   stl:if="is_yes"/>
-        </stl:block>
-        """))
+        <label for="${name}_no">No</label>
+        <input id="${name}_no" name="${name}" type="radio" value="0"
+          checked="checked" stl:if="not is_yes"/>
+        <input id="${name}_no" name="${name}" type="radio" value="0"
+          stl:if="is_yes"/>
+        """, namespaces))
 
     @staticmethod
     def to_html(datatype, name, value):
@@ -610,18 +594,13 @@ class BooleanRadio(Widget):
 
 class Select(Widget):
 
-    template = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <select name="${name}" style="width: 200px"
-                    multiple="${multiple}">
-              <option value=""></option>
-              <option stl:repeat="option options" value="${option/name}"
-                selected="${option/selected}">${option/value}</option>
-            </select>
-        </stl:block>
-        """))
+    template = list(Parser("""
+        <select name="${name}" style="width: 200px" multiple="${multiple}">
+          <option value=""></option>
+          <option stl:repeat="option options" value="${option/name}"
+            selected="${option/selected}">${option/value}</option>
+        </select>
+        """, namespaces))
 
     @staticmethod
     def to_html(datatype, name, value):
@@ -635,41 +614,29 @@ class Select(Widget):
 
 class SelectRadio(Widget):
 
-    template_simple = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-            <input type="radio" name="${name}" value=""
-                   checked="checked" stl:if="none_selected"/>
-            <input type="radio" name="${name}" value=""
-                   stl:if="not none_selected"/>
-            <br/>
-            <stl:block stl:repeat="option options">
-                <input type="radio" id="${name}_${option/name}"
-                       name="${name}" value="${option/name}"
-                       checked="checked" stl:if="option/selected"/>
-                <input type="radio" id="${name}_${option/name}"
-                       name="${name}" value="${option/name}"
-                       stl:if="not option/selected"/>
-                <label for="${name}_${option/name}">${option/value}</label><br/>
-            </stl:block>
+    template_simple = list(Parser("""
+        <input type="radio" name="${name}" value="" checked="checked"
+          stl:if="none_selected"/>
+        <input type="radio" name="${name}" value=""
+          stl:if="not none_selected"/>
+        <br/>
+        <stl:block stl:repeat="option options">
+          <input type="radio" id="${name}_${option/name}" name="${name}"
+            value="${option/name}" checked="checked"
+            stl:if="option/selected"/>
+          <input type="radio" id="${name}_${option/name}" name="${name}"
+            value="${option/name}" stl:if="not option/selected"/>
+          <label for="${name}_${option/name}">${option/value}</label><br/>
         </stl:block>
-        """))
+        """, namespaces))
 
-    template_multiple = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-            <stl:block stl:repeat="option options">
-                <input type="checkbox" name="${name}"
-                       id="${name}_${option/name}" value="${option/name}"
-                       checked="${option/selected}" />
-                <label for="${name}_${option/name}">${option/value}</label><br/>
-            </stl:block>
+    template_multiple = list(Parser("""
+        <stl:block stl:repeat="option options">
+          <input type="checkbox" name="${name}" id="${name}_${option/name}"
+            value="${option/name}" checked="${option/selected}" />
+          <label for="${name}_${option/name}">${option/value}</label><br/>
         </stl:block>
-        """))
+        """, namespaces))
 
     @staticmethod
     def to_html(datatype, name, value):
@@ -692,60 +659,49 @@ class SelectRadio(Widget):
 
 class DateWidget(Widget):
 
-    template_simple = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <input type="text" name="${name}" value="${value}"
-                   id="${name}" />
-            <input id="trigger_date"
-                   type="button" value="..." name="trigger_date"/>
-            <script language="javascript">
-              Calendar.setup({inputField: "${name}", ifFormat: "%Y-%m-%d",
-                              button: "trigger_date"});
-            </script>
-        </stl:block>
-        """))
+    template_simple = list(Parser("""
+        <input type="text" name="${name}" value="${value}" id="${name}" />
+        <input id="trigger_date" type="button" value="..."
+          name="trigger_date"/>
+        <script language="javascript">
+          Calendar.setup({inputField: "${name}", ifFormat: "%Y-%m-%d",
+                          button: "trigger_date"});
+        </script>
+        """, namespaces))
 
-    template_multiple = list(Parser(
-        """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-                   xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <table class="table_calendar">
-                <tr>
-                  <td>
-                    <textarea rows="5" cols="25" name="${name}"
-                              id="${name}">${value}</textarea>
-                    <input type="button" value="update" id="btn_blur_${name}"
-                           onclick="tableFlatOuputOnBlur(elt_${name}, cal_${name});" />
-                  </td>
-                  <td>
-                    <div id="calendar-flat-${name}" style="float: left;">
-                    </div>
-                    <script type="text/javascript">
-                      var MA_${name} = [];
-                      <stl:block stl:repeat="date dates">
-                        MA_${name}.push(str_to_date('${date}'));
-                      </stl:block>
-                      var cal_${name} = Calendar.setup({
-                              displayArea  : '${name}',
-                              flat         : 'calendar-flat-${name}',
-                              flatCallback : tableFlatCallback,
-                              multiple     : MA_${name},
-                              ifFormat     : '%Y-%m-%d'
-                              });
-                      var elt_${name} = document.getElementById('${name}');
-                      if (!browser.isIE) {
-                          document.getElementById('btn_blur_${name}').style.display = 'none';
-                          elt_${name}.setAttribute('onblur',
-                               'tableFlatOuputOnBlur(elt_${name}, cal_${name})');
-                      }
-                    </script>
-                  </td>
-                </tr>
-            </table>
-        </stl:block>
-        """))
+    template_multiple = list(Parser("""
+        <table class="table_calendar">
+          <tr>
+            <td>
+              <textarea rows="5" cols="25" name="${name}" id="${name}"
+                >${value}</textarea>
+              <input type="button" value="update" id="btn_blur_${name}"
+                onclick="tableFlatOuputOnBlur(elt_${name}, cal_${name});" />
+            </td>
+            <td>
+              <div id="calendar-flat-${name}" style="float: left;"> </div>
+              <script type="text/javascript">
+                var MA_${name} = [];
+                <stl:block stl:repeat="date dates">
+                MA_${name}.push(str_to_date('${date}'));
+                </stl:block>
+                var cal_${name} = Calendar.setup({
+                    displayArea  : '${name}',
+                    flat         : 'calendar-flat-${name}',
+                    flatCallback : tableFlatCallback,
+                    multiple     : MA_${name},
+                    ifFormat     : '%Y-%m-%d'});
+                var elt_${name} = document.getElementById('${name}');
+                if (!browser.isIE) {
+                    document.getElementById('btn_blur_${name}').style.display = 'none';
+                    elt_${name}.setAttribute('onblur',
+                        'tableFlatOuputOnBlur(elt_${name}, cal_${name})');
+                }
+              </script>
+            </td>
+          </tr>
+        </table>
+        """, namespaces))
 
     @staticmethod
     def to_html(datatype, name, value):

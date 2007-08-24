@@ -22,7 +22,6 @@ from datetime import datetime
 # Import from itools
 from itools.uri import uri, Path
 from itools.vfs import vfs
-from exceptions import AcquisitionError
 
 """
 This module provides the abstract class which is the root in the
@@ -83,14 +82,6 @@ class Node(object):
     def get_pathto(self, handler):
         path = Path(self.get_abspath())
         return path.get_pathto(handler.get_abspath())
-
-
-    def acquire(self, name):
-        if self.has_handler(name):
-            return self.get_handler(name)
-        if self.parent is None:
-            raise AcquisitionError, name
-        return self.parent.acquire(name)
 
 
     def _get_handler_names(self):

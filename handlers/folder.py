@@ -330,12 +330,6 @@ class Folder(Handler):
 
 
     ########################################################################
-    # Other methods
-    def after_set_handler(self, name, handler, **kw):
-        pass
-
-
-    ########################################################################
     # Tree
     def traverse(self):
         yield self

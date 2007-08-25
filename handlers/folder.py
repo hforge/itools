@@ -204,15 +204,7 @@ class Folder(Handler):
         for name in path:
             # Check wether it is a folder or not
             if not isinstance(here, Folder):
-                # Virtual handler
-                handler = here._get_virtual_handler(name)
-                # Set parent and name
-                handler.database = self.database
-                handler.parent = here
-                handler.name = name
-
-                here = handler
-                continue
+                raise LookupError, 'file handlers can not be traversed'
 
             # Check wether the resource exists or not
             if name not in here.cache:

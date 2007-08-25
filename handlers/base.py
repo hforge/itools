@@ -122,21 +122,6 @@ class Node(object):
                 raise ValueError, 'this handler is the root handler'
             return self.parent.get_handler(path[1:])
 
-        name, path = path[0], path[1:]
-
-        handler = self._get_virtual_handler(name)
-        # Set parent and name
-        handler.database = self.database
-        handler.parent = self
-        handler.name = name
-
-        if path:
-            return handler.get_handler(path)
-
-        return handler
-
-
-    def _get_virtual_handler(self, name):
         raise LookupError, 'file handlers can not be traversed'
 
 

@@ -16,6 +16,7 @@
 
 # Import from itools
 from registry import get_handler_class
+from itools.vfs import vfs
 
 
 
@@ -23,5 +24,7 @@ def get_handler(uri):
     """
     Returns a resource handler from a uri reference.
     """
-    handler_class = get_handler_class(uri)
-    return handler_class(uri)
+    if vfs.exists(uri):
+        return get_handler_class(uri)(uri)
+
+    raise LookupError, 'the resource "%s" does not exist' % uri

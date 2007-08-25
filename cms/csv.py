@@ -22,43 +22,13 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import Boolean, Enumerate, Integer, is_datatype
-from itools.csv import CSV as iCSV, Row as iRow, IntegerKey
+from itools.csv import CSV as iCSV, IntegerKey
 from itools.stl import stl
 from base import Node
 from messages import *
 from text import Text
 from registry import register_object_class
 import widgets
-
-
-class Row(iRow, Node):
-
-    class_title = u'CSV Row'
-    class_icon48 = 'images/Text48.png'
-    class_views = [['view'],
-                   ['edit_form']]
-
-
-    def get_mtime(self):
-        return self.parent.get_mtime()
-
-
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u'View'
-    def view(self, context):
-        columns = self.columns
-        rows = []
-
-        for i, row in enumerate(self):
-            rows.append({
-                'column': columns[i] if columns else '',
-                'value': row})
-
-        namespace = {}
-        namespace['rows'] = rows
-
-        handler = self.get_handler('/ui/csv/row_view.xml')
-        return stl(handler, namespace)
 
 
 
@@ -71,9 +41,6 @@ class CSV(Text, iCSV):
                    ['externaledit', 'upload_form'],
                    ['edit_metadata_form'],
                    ['history_form']]
-
-
-    row_class = Row
 
 
     #########################################################################

@@ -265,18 +265,6 @@ class CSVTestCase(TestCase):
         self.assertEqual(row.get_value('name'), u'ruby')
 
 
-    def test_get_row_as_handler(self):
-        handler = CSV()
-        handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
-                          'date': Date}
-        handler.load_state_from_string(TEST_DATA_1)
-
-        row = handler.get_handler('0')
-        self.assertEqual(row.get_value('name'), u'python')
-
-
-
     def test_bad_syntax_csv_file(self):
         load_state = CSV().load_state_from_string
         self.assertRaises(ValueError, load_state, TEST_SYNTAX_ERROR)

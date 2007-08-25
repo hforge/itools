@@ -148,20 +148,6 @@ class CSV(Text):
 
 
     #########################################################################
-    # Traverse
-    #########################################################################
-    def _get_virtual_handler(self, name):
-        index = int(name)
-        try:
-            row = self.lines[index]
-        except IndexError:
-            raise LookupError
-        if row is None:
-            raise LookupError
-        return row
-
-
-    #########################################################################
     # API / Private
     #########################################################################
     def get_key(self, name):

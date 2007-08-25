@@ -167,7 +167,7 @@ class DatabaseTestCase(TestCase):
         fable = fable.clone()
         fables.set_handler('31.txt', fable)
         # Abort
-        self.database.abort()
+        self.database.abort_changes()
         # Test
         fables = get_handler('fables')
         self.assertEqual(fables.has_handler('31.txt'), False)

@@ -375,7 +375,7 @@ class Catalog(object):
         self.timestamp = vfs.get_mtime(self.uri)
 
 
-    def abort(self):
+    def abort_changes(self):
         # Indexes
         for index in self.indexes:
             if index is not None:

@@ -191,7 +191,7 @@ class Database(object):
         self.save_changes_forever()
 
 
-    def abort(self):
+    def abort_changes(self):
         """
         This method aborts the current transaction. It is assumed nothing
         has been written to disk yet.

@@ -171,7 +171,7 @@ class CatalogTestCase(TestCase):
         catalog.unindex_document('03.txt')
         results = catalog.search(data=u'lion')
         self.assertEqual(catalog.search(data=u'lion').get_n_documents(), 3)
-        catalog.abort()
+        catalog.abort_changes()
         self.assertEqual(catalog.search(data=u'lion').get_n_documents(), 4)
         # Phrase Query
         results = catalog.search(data=u'this is a double death')

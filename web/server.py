@@ -542,7 +542,7 @@ class Server(object):
 
     def abort_transaction(self, context):
         for db in self.get_databases():
-            db.abort()
+            db.abort_changes()
 
 
     def commit_transaction(self, context):

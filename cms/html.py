@@ -70,7 +70,7 @@ class EpozEditable(object):
         namespace = {}
         namespace['rte'] = self.get_rte(context, 'data', data)
 
-        handler = self.get_handler('/ui/html/edit.xml')
+        handler = self.get_object('/ui/html/edit.xml')
         return stl(handler, namespace)
 
 
@@ -78,18 +78,19 @@ class EpozEditable(object):
     # Edit / Inline / edit
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context, sanitize=False):
+        # Sanitize
         new_body = context.get_form_value('data')
         new_body = HTMLParser(new_body)
         if sanitize:
             new_body = sanitize_stream(new_body)
-        # Save the changes
         # "get_epoz_document" is to set in your editable handler
         document = self.get_epoz_document()
         old_body = document.get_body()
+        events = (document.events[:old_body.start+1] + new_body
+                  + document.events[old_body.end:])
+        # Save the changes
         document.set_changed()
-        document.events = (document.events[:old_body.start+1]
-                       + new_body
-                       + document.events[old_body.end:])
+        document.events = events
 
         return context.come_back(MSG_CHANGES_SAVED)
 
@@ -154,7 +155,7 @@ class XHTMLFile(EpozEditable, Text, XHTMLDocument):
         else:
             namespace['text'] = body.get_content_elements()
 
-        handler = self.get_handler('/ui/html/view.xml')
+        handler = self.get_object('/ui/html/view.xml')
         return stl(handler, namespace)
 
 

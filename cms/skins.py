@@ -24,23 +24,63 @@ from string import Template
 
 # Import from itools
 from itools import get_abspath
+from itools.i18n import has_language
 from itools.uri import Path, decode_query
 from itools.datatypes import URI
-from itools.handlers import File
+from itools.handlers import File, Folder, Database
 from itools.stl import stl
 from itools.web import get_context, AccessControl
 from itools.xml import Parser
 
 # Import from itools.cms
 from base import Node
-from folder import Folder
+from folder import Folder as DBFolder
 from utils import reduce_string
 from widgets import tree, build_menu
-from registry import register_object_class
+from registry import register_object_class, get_object_class
 
 
 
-class Skin(Folder):
+class UIFolder(Node, Folder):
+
+    def _get_object(self, name):
+        if self.has_handler(name):
+            handler = self.get_handler(name)
+        else:
+            n = len(name)
+            names = [ x for x in self.get_handler_names() if x[:n] == name ]
+            languages = [ x.split('.')[-1] for x in names ]
+            languages = [ x for x in languages if has_language(x) ]
+
+            if not languages:
+                raise LookupError, 'XXX'
+
+            # Get the best variant
+            context = get_context()
+            if context is None:
+                language = None
+            else:
+                accept = context.get_accept_language()
+                language = accept.select_language(languages)
+
+            # By default use whatever variant
+            # (XXX we need a way to define the default)
+            if language is None:
+                language = languages[0]
+            handler = self.get_handler('%s.%s' % (name, language))
+
+        if isinstance(handler, Folder):
+            handler = UIFolder(handler.uri)
+        else:
+            format = handler.get_mimetype()
+            handler = get_object_class(format)(handler.uri)
+        handler.database = self.database
+        handler.parent = self
+        handler.name = name
+        return handler
+
+
+class Skin(UIFolder):
 
     class_id = 'Skin'
     class_title = u'Skin'
@@ -98,7 +138,7 @@ class Skin(Folder):
             title = option['title']
             src = option['icon']
 
-            handler, metadata = root.get_object(path)
+            handler = root.get_object(path)
             ac = handler.get_access_control()
             if ac.is_access_allowed(user, handler, method):
                 href = '%s/;%s' % (here.get_pathto(handler), method)
@@ -115,7 +155,7 @@ class Skin(Folder):
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
         root = self._get_site_root(context)
-        menu = tree(root, active_node=context.handler, filter=Folder,
+        menu = tree(root, active_node=context.handler, filter=DBFolder,
                     user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
@@ -137,7 +177,7 @@ class Skin(Folder):
 
         # Content
         size = 0
-        if isinstance(here, Folder):
+        if isinstance(here, DBFolder):
             for handler in here.search_handlers():
                 ac = handler.get_access_control()
                 if not ac.is_allowed_to_view(user, handler):
@@ -187,7 +227,7 @@ class Skin(Folder):
             name = segment.name
             if name:
                 try:
-                    handler, metadata = handlers[-1].get_object(name)
+                    handler = handlers[-1].get_object(name)
                 except LookupError:
                     continue
                 handlers.append(handler)
@@ -458,10 +498,10 @@ class Skin(Folder):
 
     def get_template(self):
         try:
-            return self.get_handler('template.xhtml')
+            return self.get_object('template.xhtml')
         except LookupError:
             # Default, aruni
-            return self.get_handler('/ui/aruni/template.xhtml')
+            return self.get_object('/ui/aruni/template.xhtml')
 
 
     def template(self, content):
@@ -506,7 +546,7 @@ path = get_abspath(globals(), 'ui')
 register_skin('aruni', '%s/aruni' % path)
 
 
-class UI(AccessControl, Folder):
+class UI(AccessControl, UIFolder):
 
     def is_access_allowed(self, user, object, method_name):
         return isinstance(object, File) and method_name == 'GET'
@@ -516,17 +556,16 @@ class UI(AccessControl, Folder):
         return False
 
 
-    def _get_handler(self, name, uri):
+    def _get_object(self, name):
         if name in skin_registry:
-            return skin_registry[name]
-        return Folder._get_handler(self, name, uri)
-
-
-    def _get_virtual_handler(self, name):
-        if name in skin_registry:
-            return skin_registry[name]
-        return Folder._get_virtual_handler(self, name)
+            skin = skin_registry[name]
+            skin.database = self.database
+            skin.parent = self
+            skin.name = name
+            return skin
+        return UIFolder._get_object(self, name)
 
 
 path = get_abspath(globals(), 'ui')
 ui = UI(path)
+ui.database = Database()

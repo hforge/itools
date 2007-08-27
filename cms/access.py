@@ -405,7 +405,7 @@ class RoleAware(AccessControl):
         namespace['table'] = widgets.table(columns, members, sortby, sortorder,
                                            actions, self.gettext)
 
-        handler = self.get_handler('/ui/access/permissions.xml')
+        handler = self.get_object('/ui/access/permissions.xml')
         return stl(handler, namespace)
 
 
@@ -420,7 +420,7 @@ class RoleAware(AccessControl):
     edit_membership_form__access__ = 'is_admin'
     def edit_membership_form(self, context):
         user_id = context.get_form_value('id')
-        user = self.get_handler('/users/%s' % user_id)
+        user = self.get_object('/users/%s' % user_id)
 
         namespace = {}
         namespace['id'] = user_id
@@ -428,7 +428,7 @@ class RoleAware(AccessControl):
         namespace['email'] = user.get_property('ikaaro:email')
         namespace['roles'] = self.get_roles_namespace(user_id)
 
-        handler = self.get_handler('/ui/access/edit_membership_form.xml')
+        handler = self.get_object('/ui/access/edit_membership_form.xml')
         return stl(handler, namespace)
 
 
@@ -456,7 +456,7 @@ class RoleAware(AccessControl):
         # Roles
         namespace['roles'] = self.get_roles_namespace()
 
-        handler = self.get_handler('/ui/access/new_user.xml')
+        handler = self.get_object('/ui/access/new_user.xml')
         return stl(handler, namespace)
 
 

@@ -311,7 +311,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             history = self.get_property('ikaaro:history')
             if history:
                 user_id = history[-1][(None, 'user')]
-                users = self.get_handler('/users')
+                users = self.get_object('/users')
                 try:
                     user = users.get_handler(user_id)
                 except LookupError:
@@ -548,7 +548,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace['subject'] = self.get_property('dc:subject',
                                                   language=language)
 
-        handler = self.get_handler('/ui/Handler_edit_metadata.xml')
+        handler = self.get_object('/ui/Handler_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -589,11 +589,11 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             namespace['iframe'] = ';epoz_iframe'
         namespace['dress_name'] = dress_name
 
-        handler = context.handler
-        here = Path(handler.get_abspath())
-        handler = handler.get_handler('/ui/epoz/rte.xml')
-        there = Path(handler.get_abspath())
+        here = Path(context.handler.get_abspath())
+        there = '/ui/epoz/rte.xml'
         prefix = here.get_pathto(there)
+
+        handler = context.root.get_object(there)
         return stl(handler, namespace, prefix=prefix)
 
 
@@ -604,10 +604,12 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
         response = context.response
         response.set_header('Content-Type', 'text/html; charset=UTF-8')
-        handler = self.get_handler('/ui/epoz/iframe.xml')
+
         here = Path(self.get_abspath())
-        there = Path(handler.get_abspath())
+        there = '/ui/epoz/iframe.xml'
         prefix = here.get_pathto(there)
+
+        handler = self.get_object(there)
         return stl(handler, namespace, prefix=prefix)
 
 
@@ -625,14 +627,14 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             start = self
         bc = Breadcrumb(filter_type=Image, start=start)
         # Fix the bc style
-        style = context.root.get_handler('ui/aruni/aruni.css')
+        style = context.root.get_object('ui/aruni/aruni.css')
         bc.style = context.handler.get_pathto(style)
         # Construct namespace
         namespace = {}
         namespace['bc'] = bc
         namespace['message'] = context.get_form_value('message')
 
-        handler = self.get_handler('/ui/html/addimage.xml')
+        handler = self.get_object('/ui/html/addimage.xml')
         return stl(handler, namespace)
 
 
@@ -644,7 +646,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         from binary import Image
         root = context.root
         # Get the container
-        container = root.get_handler(context.get_form_value('target_path'))
+        container = root.get_object(context.get_form_value('target_path'))
         # Add the image to the handler
         uri = Image.new_instance(container, context)
         if ';addimage_form' not in uri.path:
@@ -672,14 +674,14 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             start = self
         bc = Breadcrumb(filter_type=File, start=start)
         # Fix the bc style
-        style = context.root.get_handler('ui/aruni/aruni.css')
+        style = context.root.get_object('ui/aruni/aruni.css')
         bc.style = context.handler.get_pathto(style)
         # Construct namespace
         namespace = {}
         namespace['bc'] = bc
         namespace['message'] = context.get_form_value('message')
 
-        handler = self.get_handler('/ui/html/addlink.xml')
+        handler = self.get_object('/ui/html/addlink.xml')
         return stl(handler, namespace)
 
 
@@ -710,7 +712,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def epoz_color_form(self, context):
         context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
-        handler = self.get_handler('/ui/epoz/script_color.xml')
+        handler = self.get_object('/ui/epoz/script_color.xml')
         return handler.to_str()
 
 
@@ -718,7 +720,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def epoz_table_form(self, context):
         context.response.set_header('Content-Type', 'text/html; charset=UTF-8')
 
-        handler = self.get_handler('/ui/epoz/script_table.xml')
+        handler = self.get_object('/ui/epoz/script_table.xml')
         return handler.to_str()
 
 

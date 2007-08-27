@@ -150,7 +150,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
         namespace = {}
         namespace['url'] = '../' + self.name
         namespace['title_or_name'] = self.get_title()
-        handler = self.get_handler('/ui/file/download_form.xml')
+        handler = self.get_object('/ui/file/download_form.xml')
         return stl(handler, namespace)
 
 
@@ -176,7 +176,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     externaledit__label__ = u'Edit'
     externaledit__sublabel__ = u'External'
     def externaledit(self, context):
-        handler = self.get_handler('/ui/file/externaledit.xml')
+        handler = self.get_object('/ui/file/externaledit.xml')
         return stl(handler)
 
 
@@ -249,7 +249,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     upload_form__label__ = u'Edit'
     upload_form__sublabel__ = u'Upload'
     def upload_form(self, context):
-        handler = self.get_handler('/ui/file/upload.xml')
+        handler = self.get_object('/ui/file/upload.xml')
         return stl(handler)
 
 

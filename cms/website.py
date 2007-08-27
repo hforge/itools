@@ -61,12 +61,12 @@ class WebSite(RoleAware, Folder):
         {'name': 'ikaaro:admins', 'title': u'Admin'}]
 
 
-    def _get_virtual_handler(self, name):
+    def _get_object(self, name):
         if name == 'ui':
             return ui
-        elif name in ('users', 'users.metadata'):
-            return self.get_handler('/%s' % name)
-        return Folder._get_virtual_handler(self, name)
+        if name in ('users', 'users.metadata'):
+            return self.parent._get_object(name)
+        return Folder._get_object(self, name)
 
 
     ########################################################################
@@ -109,7 +109,7 @@ class WebSite(RoleAware, Folder):
         languages.sort(lambda x, y: cmp(x['name'], y['name']))
         namespace['non_active_languages'] = languages
 
-        handler = self.get_handler('/ui/website/languages.xml')
+        handler = self.get_object('/ui/website/languages.xml')
         return stl(handler, namespace)
 
 
@@ -172,7 +172,7 @@ class WebSite(RoleAware, Folder):
         namespace['is_open'] = is_open
         namespace['is_closed'] = not is_open
 
-        handler = self.get_handler('/ui/website/anonymous.xml')
+        handler = self.get_object('/ui/website/anonymous.xml')
         return stl(handler, namespace)
 
 
@@ -213,7 +213,7 @@ class WebSite(RoleAware, Folder):
         # Sort
         namespace['contacts'].sort(key=lambda x: x['email'])
 
-        handler = self.get_handler('/ui/website/contact_options.xml')
+        handler = self.get_object('/ui/website/contact_options.xml')
         return stl(handler, namespace)
 
 
@@ -242,7 +242,7 @@ class WebSite(RoleAware, Folder):
     def register_form(self, context):
         namespace = context.build_form_namespace(self.register_fields)
 
-        handler = self.get_handler('/ui/website/register.xml')
+        handler = self.get_object('/ui/website/register.xml')
         return stl(handler, namespace)
 
 
@@ -301,7 +301,7 @@ class WebSite(RoleAware, Folder):
         namespace['action'] = '%s/;login' % here.get_pathto(site_root)
         namespace['username'] = context.get_form_value('username')
 
-        handler = self.get_handler('/ui/website/login.xml')
+        handler = self.get_object('/ui/website/login.xml')
         return stl(handler, namespace)
 
 
@@ -330,7 +330,7 @@ class WebSite(RoleAware, Folder):
 
         # Get the user
         brain = results.get_documents()[0]
-        user, metadata = root.get_object('users/%s' % brain.name)
+        user = root.get_object('users/%s' % brain.name)
 
         # Check the user is active
         if user.get_property('ikaaro:user_must_confirm'):
@@ -368,7 +368,7 @@ class WebSite(RoleAware, Folder):
     # Forgotten password
     forgotten_password_form__access__ = True
     def forgotten_password_form(self, context):
-        handler = self.get_handler('/ui/website/forgotten_password_form.xml')
+        handler = self.get_object('/ui/website/forgotten_password_form.xml')
         return stl(handler)
 
 
@@ -396,7 +396,7 @@ class WebSite(RoleAware, Folder):
         user.set_property('ikaaro:user_must_confirm', key)
         user.send_confirmation(context, email)
 
-        handler = self.get_handler('/ui/website/forgotten_password.xml')
+        handler = self.get_object('/ui/website/forgotten_password.xml')
         return stl(handler)
 
 
@@ -410,7 +410,7 @@ class WebSite(RoleAware, Folder):
         # Remove the user from the context
         context.user = None
         # Say goodbye
-        handler = self.get_handler('/ui/website/logout.xml')
+        handler = self.get_object('/ui/website/logout.xml')
         return stl(handler)
 
 
@@ -484,7 +484,7 @@ class WebSite(RoleAware, Folder):
         else:
             namespace['text'] = ''
 
-        hander = self.get_handler('/ui/website/search.xml')
+        hander = self.get_object('/ui/website/search.xml')
         return stl(hander, namespace)
 
 
@@ -500,10 +500,10 @@ class WebSite(RoleAware, Folder):
                 states.append({'key': name, 'value': title})
         namespace['states'] = states
 
-        icon = self.get_handler('/ui/images/button_calendar.png')
+        icon = self.get_object('/ui/images/button_calendar.png')
         namespace['button_calendar'] = self.get_pathto(icon)
 
-        handler = self.get_handler('/ui/website/search_form.xml')
+        handler = self.get_object('/ui/website/search_form.xml')
         return stl(handler, namespace)
 
 
@@ -533,7 +533,7 @@ class WebSite(RoleAware, Folder):
             if user is not None:
                 namespace['from']['value'] = user.get_property('ikaaro:email')
 
-        handler = self.get_handler('/ui/website/contact_form.xml')
+        handler = self.get_object('/ui/website/contact_form.xml')
         return stl(handler, namespace)
 
 

@@ -100,10 +100,9 @@ class Root(WebSite):
 
 
     def get_user(self, name):
-        users = self.get_handler('users')
+        users = self.get_object('users')
         if users.has_object(name):
-            user, metadata = users.get_object(name)
-            return user
+            return users.get_object(name)
         return None
 
 
@@ -193,7 +192,7 @@ class Root(WebSite):
     def internal_server_error(self, context):
         namespace = {'traceback': traceback.format_exc()}
 
-        handler = self.get_handler('/ui/root/internal_server_error.xml')
+        handler = self.get_object('/ui/root/internal_server_error.xml')
         return stl(handler, namespace, mode='html')
 
 
@@ -209,21 +208,23 @@ class Root(WebSite):
                 response = context.response
                 response.set_header('content-type', 'text/html; charset=UTF-8')
 
-        handler = self.get_handler('/ui/root/not_found.xml')
+        handler = self.get_object('/ui/root/not_found.xml')
         return stl(handler, namespace)
 
 
     ########################################################################
     # Traverse
     ########################################################################
-    def _get_handler_names(self):
-        return WebSite._get_handler_names(self) + ['ui']
-
-
-    def _get_virtual_handler(self, name):
+    def _get_object(self, name):
         if name == 'ui':
             return ui
-        return Folder._get_virtual_handler(self, name)
+        return Folder._get_object(self, name)
+
+
+    def _get_names(self):
+        names = Folder._get_names(self)
+        names.remove('')
+        return names + ['ui']
 
 
     ########################################################################
@@ -253,7 +254,7 @@ class Root(WebSite):
     ########################################################################
     # Skins
     def get_skin(self):
-        return self.get_handler('ui/aruni')
+        return self.get_object('ui/aruni')
 
 
     def get_available_languages(self):
@@ -314,7 +315,7 @@ class Root(WebSite):
         namespace = {}
         namespace['version'] = itools.__version__
 
-        handler = self.get_handler('/ui/root/about.xml')
+        handler = self.get_object('/ui/root/about.xml')
         return stl(handler, namespace)
 
 
@@ -336,7 +337,7 @@ class Root(WebSite):
 
         namespace = {'hackers': names}
 
-        handler = self.get_handler('/ui/root/credits.xml')
+        handler = self.get_object('/ui/root/credits.xml')
         return stl(handler, namespace)
 
 
@@ -346,7 +347,7 @@ class Root(WebSite):
     license__label__ = u'About'
     license__sublabel__ = u'License'
     def license(self, context):
-        handler = self.get_handler('/ui/root/license.xml')
+        handler = self.get_object('/ui/root/license.xml')
         return stl(handler)
 
 
@@ -360,7 +361,7 @@ class Root(WebSite):
     catalog_form__label__ = u'Maintenance'
     catalog_form__sublabel__ = u'Update Catalog'
     def catalog_form(self, context):
-        handler = self.get_handler('/ui/root/catalog.xml')
+        handler = self.get_object('/ui/root/catalog.xml')
         return stl(handler)
 
 
@@ -378,7 +379,7 @@ class Root(WebSite):
 
         # Index the documents
         doc_n = 0
-        for handler, metadata in self.traverse_objects():
+        for handler in self.traverse_objects():
             doc_n += 1
             print doc_n, object.abspath
             catalog.index_document(handler)
@@ -421,7 +422,7 @@ class Root(WebSite):
                 groups.append({'path': path, 'users': missing})
         namespace['groups'] = groups
 
-        handler = self.get_handler('/ui/root/check_groups.xml')
+        handler = self.get_object('/ui/root/check_groups.xml')
         return stl(handler, namespace)
 
 

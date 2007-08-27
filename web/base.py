@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.uri import Path
 from itools.handlers import Node as TreeNode
 from access import AccessControl
 
@@ -25,9 +26,44 @@ class Node(TreeNode):
     control API.
     """
 
+    def _get_object(self, name):
+        raise NotImplementedError, 'the method "_get_object" is missing'
+
+
+    def _get_names(self):
+        raise NotImplementedError, 'the method "_get_names" is missing'
+
+
     ########################################################################
     # Publishing
     ########################################################################
+    def get_object(self, path):
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        if path.is_absolute():
+            here = self.get_root()
+        else:
+            here = self
+
+        if len(path) == 0:
+            return here
+
+        while path[0] == '..':
+            here = here.parent
+            path = path[1:]
+
+        for name in path:
+            here = here._get_object(name)
+
+        return here
+
+
+    def get_names(self, path='.'):
+        object = self.get_object(path)
+        return object._get_names()
+
+
     def get_method(self, name):
         try:
             method = getattr(self, name)

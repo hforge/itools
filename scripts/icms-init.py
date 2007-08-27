@@ -25,7 +25,7 @@ import sys
 
 # Import from itools
 import itools
-from itools.catalog import make_catalog
+from itools.catalog import make_catalog, CatalogAware
 from itools.handlers import Config, Database, get_handler
 from itools.cms.root import Root
 
@@ -114,8 +114,9 @@ def init(parser, options, target):
     # Index everything
     root.parent = None
     catalog = make_catalog('%s/catalog' % target, *root._catalog_fields)
-    for handler, metadata in root.traverse_objects():
-        catalog.index_document(handler)
+    for handler in root.traverse_objects():
+        if isinstance(handler, CatalogAware):
+            catalog.index_document(handler)
     catalog.save_changes()
 
     # Bravo!

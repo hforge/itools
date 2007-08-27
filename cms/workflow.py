@@ -132,7 +132,7 @@ class WorkflowAware(iWorkflowAware):
         transitions.reverse()
         namespace['history'] = transitions
 
-        handler = self.get_handler('/ui/WorkflowAware_state.xml')
+        handler = self.get_object('/ui/WorkflowAware_state.xml')
         return stl(handler, namespace)
 
 

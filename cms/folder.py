@@ -26,7 +26,7 @@ import zlib
 import mimetypes
 
 # Import from itools
-from itools.i18n import format_datetime, guess_language, has_language
+from itools.i18n import format_datetime
 from itools.uri import Path, get_reference, Reference
 from itools.catalog import CatalogAware, EqQuery, AndQuery, PhraseQuery
 from itools.datatypes import Boolean, FileName, Integer, Unicode
@@ -101,7 +101,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace = {'class_id': cls.class_id,
                      'class_title': cls.gettext(cls.class_title)}
 
-        handler = context.root.get_handler('ui/folder/new_instance.xml')
+        handler = context.root.get_object('ui/folder/new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -165,61 +165,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         if name.endswith('.lock'):
             return Lock(uri)
 
-        # cms objects
-        if self.has_handler('%s.metadata' % name):
-            metadata = self.get_handler('%s.metadata' % name)
-            format = metadata.get_property('format')
-            cls = get_object_class(format)
-            return cls(uri)
-
-        # XXX For now UI objects are like cms objects
-        from skins import UI
-        x = self
-        while x:
-            if isinstance(x, UI):
-                format = vfs.get_mimetype(uri)
-                cls = get_object_class(format)
-                return cls(uri)
-            x = x.parent
-
         # Anything else is a bare handler
         cls = get_handler_class(uri)
         return cls(uri)
-
-
-    def _get_handler_names(self):
-        names = BaseFolder._get_handler_names(self)
-        for name in names:
-            if not name.startswith('.'):
-                name, type, language = FileName.decode(name)
-                if language is not None:
-                    name = FileName.encode((name, type, None))
-                    names.append(name)
-
-        return names
-
-
-    def _get_virtual_handler(self, name):
-        languages = [ x.split('.')[-1] for x in self.get_handler_names()
-                      if x.startswith(name) ]
-        languages = [ x for x in languages if has_language(x) ]
-
-        if languages:
-            # Get the best variant
-            context = get_context()
-            if context is None:
-                language = None
-            else:
-                accept = context.get_accept_language()
-                language = accept.select_language(languages)
-
-            # By default use whatever variant
-            # (XXX we need a way to define the default)
-            if language is None:
-                language = languages[0]
-            return self.get_handler('%s.%s' % (name, language))
-
-        return BaseFolder._get_virtual_handler(self, name)
 
 
     #######################################################################
@@ -243,7 +191,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         # Schedule to index
         if isinstance(handler, Folder):
-            for x, metadata in handler.traverse_objects():
+            for x in handler.traverse_objects():
                 schedule_to_index(x)
         else:
             schedule_to_index(handler)
@@ -253,9 +201,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def del_object(self, name):
         # Schedule to unindex
-        handler, metadata = self.get_object(name)
+        handler = self.get_object(name)
         if isinstance(handler, Folder):
-            for x, metadata in handler.traverse_objects():
+            for x in handler.traverse_objects():
                 schedule_to_unindex(x)
         else:
             schedule_to_unindex(handler)
@@ -266,46 +214,55 @@ class Folder(Handler, BaseFolder, CalendarAware):
             self.del_handler(name)
 
 
-    def get_object(self, path):
-        if not isinstance(path, str):
-            path = str(path)
-        if path.endswith('/'):
-            path = path[:-1]
+    def _get_names(self):
+        return [ x[:-9] for x in self.get_handler_names()
+                 if x[-9:] == '.metadata' ]
 
-        metadata = self.get_handler('%s.metadata' % path)
+
+    def _get_object(self, name):
+        database = self.database
+        uri = self.uri.resolve2(name)
+        # The metadata
+        metadata = self.get_handler('%s.metadata' % name)
+        format = metadata.get_property('format')
+        # The object
+        cls = get_object_class(format)
         try:
-            handler = self.get_handler(path)
+            handler = self.get_handler(name)
         except LookupError:
-            name = path.split('/')[-1]
-            format = metadata.get_property('format')
-            uri = metadata.uri.resolve(name)
-            handler = get_object_class(format)(uri)
-            handler.database = metadata.database
-            handler.parent = metadata.parent
-            handler.name = name
-        return handler, metadata
+            handler = cls()
+        else:
+            if isinstance(handler, cls):
+                return handler
+            handler = object.__new__(cls)
+            database.cache[uri] = handler
+
+        # Attach
+        handler.database = database
+        handler.uri = uri
+        handler.timestamp = None
+        handler.dirty = False
+        handler.parent = self
+        handler.name = name
+        handler.real_handler = None
+        return handler
 
 
     def get_objects(self):
         suffix = len('.metadata')
-        for name in self.get_handler_names():
-            if name.endswith('.metadata'):
-                name = name[:-suffix]
-                yield self.get_object(name)
+        for name in self.get_names():
+            yield self.get_object(name)
 
 
     def traverse_objects(self):
-        yield self, self.get_metadata()
-        for handler, ctx in self.traverse2():
-            # Skip virtual handlers
-            if handler.real_handler is not None:
-                ctx.skip = True
-                continue
-
-            name = handler.name
-            if name.endswith('.metadata'):
-                name = name[:-9]
-                yield handler.parent.get_object(name)
+        yield self
+        for name in self._get_names():
+            handler = self.get_object(name)
+            if isinstance(handler, Folder):
+                for x in handler.traverse_objects():
+                    yield x
+            else:
+                yield handler
 
 
     def search_handlers(self, path='.', format=None, state=None,
@@ -363,8 +320,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     #######################################################################
     # Browse
     def get_human_size(self):
-        names = self.get_handler_names()
-        names = [ x for x in names if (x[0] != '.' and x[-9:] != '.metadata') ]
+        names = self.get_names()
         size = len(names)
 
         str = self.gettext('$n obs')
@@ -438,7 +394,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         user = context.user
         handlers = []
         for document in documents:
-            handler, metadata = root.get_object(document.abspath)
+            handler = root.get_object(document.abspath)
             ac = handler.get_access_control()
             if ac.is_allowed_to_view(user, handler):
                 handlers.append(handler)
@@ -467,7 +423,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         query = EqQuery('parent_path', self.get_abspath())
         namespace = self.browse_namespace(48, query=query)
 
-        handler = self.get_handler('/ui/folder/browse_thumbnails.xml')
+        handler = self.get_object('/ui/folder/browse_thumbnails.xml')
         return stl(handler, namespace)
 
 
@@ -536,7 +492,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             columns, namespace['objects'], sortby, sortorder, actions,
             self.gettext)
 
-        handler = self.get_handler('/ui/folder/browse_list.xml')
+        handler = self.get_object('/ui/folder/browse_list.xml')
         return stl(handler, namespace)
 
 
@@ -608,10 +564,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
             namespace['selected'] = selected
 
         # Append gallery style
-        css = self.get_handler('/ui/gallery.css')
+        css = self.get_object('/ui/gallery.css')
         context.styles.append(str(self.get_pathto(css)))
 
-        handler = self.get_handler('/ui/folder/browse_image.xml')
+        handler = self.get_object('/ui/folder/browse_image.xml')
         return stl(handler, namespace)
 
 
@@ -626,7 +582,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         user = context.user
         for name in ids:
-            handler, metadata = self.get_object(name)
+            handler = self.get_object(name)
             ac = handler.get_access_control()
             if ac.is_allowed_to_remove(user, handler):
                 # Remove handler
@@ -668,7 +624,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             namespace['objects'].append({'real_name': real_name, 'name': name})
 
         # Process the template
-        handler = self.get_handler('/ui/folder/rename.xml')
+        handler = self.get_object('/ui/folder/rename.xml')
         return stl(handler, namespace)
 
 
@@ -687,7 +643,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             # Rename
             if new_name != old_name:
                 # XXX itools should provide an API to copy and move handlers
-                handler = self.get_handler(old_name)
+                handler = self.get_object(old_name)
                 handler_metadata = handler.get_metadata()
                 self.set_object(new_name, handler, handler_metadata)
                 self.del_object(old_name)
@@ -747,7 +703,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         allowed_types = tuple(self.get_document_types())
         cut, paths = marshal.loads(zlib.decompress(urllib.unquote(cp)))
         for path in paths:
-            handler, metadata = root.get_object(path)
+            handler = root.get_object(path)
             if not isinstance(handler, allowed_types):
                 continue
 
@@ -764,10 +720,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
             # Find a non used name
             name = generate_name(name, self.get_handler_names(), '_copy_')
             # Add it here
+            metadata = handler.get_metadata()
             self.set_object(name, handler, metadata)
             # Copy&Paste (fix metadata properties)
             if cut is False:
-                handler, metadata = self.get_object(name)
+                handler = self.get_object(name)
                 # Fix state
                 if isinstance(handler, WorkflowAware):
                     metadata.set_property('state', handler.workflow.initstate)
@@ -829,7 +786,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             type_ns['url'] = ';new_resource_form?type=' + format
             namespace['types'].append(type_ns)
 
-        handler = self.get_handler('/ui/folder/new_resource.xml')
+        handler = self.get_object('/ui/folder/new_resource.xml')
         return stl(handler, namespace)
 
 
@@ -907,7 +864,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace['table'] = widgets.table(columns, lines, sortby, sortorder,
                                            gettext=self.gettext)
 
-        handler = self.get_handler('/ui/folder/browse_list.xml')
+        handler = self.get_object('/ui/folder/browse_list.xml')
         return stl(handler, namespace)
 
 

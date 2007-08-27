@@ -66,7 +66,7 @@ class Text(File, BaseText):
                               'isdefault': code == default_language})
         namespace['languages'] = languages
 
-        handler = root.get_handler('ui/text/new_instance.xml')
+        handler = root.get_object('ui/text/new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -122,7 +122,7 @@ class Text(File, BaseText):
         namespace = {}
         namespace['text'] = self.to_str() 
 
-        handler = self.get_handler('/ui/text/view.xml')
+        handler = self.get_object('/ui/text/view.xml')
         return stl(handler, namespace)
 
 
@@ -140,7 +140,7 @@ class Text(File, BaseText):
         data = self.data.encode('utf-8')
         namespace['text'] = rest.to_str(data, format='xml')
 
-        handler = self.get_handler('/ui/text/view.xml')
+        handler = self.get_object('/ui/text/view.xml')
         return stl(handler, namespace)
 
 
@@ -153,7 +153,7 @@ class Text(File, BaseText):
         namespace = {}
         namespace['data'] = self.to_str()
 
-        handler = self.get_handler('/ui/text/edit.xml')
+        handler = self.get_object('/ui/text/edit.xml')
         return stl(handler, namespace)
 
 
@@ -178,7 +178,7 @@ class Text(File, BaseText):
                                    'title': 'ISO-8859-1',
                                    'is_selected': False}]
 
-        handler = self.get_handler('/ui/text/externaledit.xml')
+        handler = self.get_object('/ui/text/externaledit.xml')
         return stl(handler, namespace)
 
 
@@ -238,7 +238,7 @@ class PO(Text, BasePO):
         else:
             namespace['msgid'] = None
 
-        handler = self.get_handler('/ui/PO_edit.xml')
+        handler = self.get_object('/ui/PO_edit.xml')
         return stl(handler, namespace)
 
 

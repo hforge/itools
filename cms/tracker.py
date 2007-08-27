@@ -1150,7 +1150,7 @@ class Issue(Folder, VersioningAware):
                 line = '&nbsp;' * indent + sline
             line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
             res.append(line)
-        return '\n'.join(res)
+        return Parser('\n'.join(res))
 
 
     #######################################################################

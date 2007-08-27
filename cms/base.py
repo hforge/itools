@@ -371,8 +371,9 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     # Upgrade
     ########################################################################
     def get_next_versions(self):
-        # Set zero version if the object does not have a version
+        class_version = self.class_version
         object_version = self.get_property('version')
+        # Set zero version if the object does not have a version
         if object_version is None:
             object_version = '00000000'
 
@@ -388,7 +389,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
                 int(version)
             except ValueError:
                 continue
-            if version > object_version:
+            if version > object_version and version <= class_version:
                 versions.append(version)
 
         versions.sort()

@@ -31,47 +31,6 @@ from metadata import Record
 
 
 
-# XXX Keep for backwards compatibility (to be removed in 0.16)
-class ListOfUsers(File):
-
-    class_mimetypes = ['text/x-list-of-users']
-    class_extension = 'users'
-
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'usernames']
-
-
-    def new(self, users=[]):
-        self.usernames = set(users)
-
-
-    def _load_state_from_file(self, file):
-        self.usernames = set()
-        for username in file.readlines():
-            username = username.strip()
-            if username:
-                self.usernames.add(username)
-
-
-    def to_str(self):
-        return '\n'.join(self.usernames)
-
-
-    def get_usernames(self):
-        return self.usernames
-
-
-    def add(self, username):
-        self.set_changed()
-        self.usernames.add(username)
-
-
-    def remove(self, username):
-        self.set_changed()
-        self.usernames.remove(username)
-
-
-
 class Lock(Text):
 
     class_mimetypes = ['text/x-lock']
@@ -339,7 +298,7 @@ class Metadata(File):
 
 
 # Register handler classes, and mimetypes
-for handler_class in [ListOfUsers, Lock, Metadata]:
+for handler_class in [Lock, Metadata]:
     register_handler_class(handler_class)
     for mimetype in handler_class.class_mimetypes:
         mimetypes.add_type(mimetype, '.%s' % handler_class.class_extension)

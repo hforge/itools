@@ -41,7 +41,7 @@ from itools.xml import Parser
 from file import File
 from base import Handler
 from binary import Image
-from handlers import Lock, Metadata, ListOfUsers
+from handlers import Lock, Metadata
 from ical import CalendarAware, Calendar
 from messages import *
 from versioning import VersioningAware
@@ -164,9 +164,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Locks
         if name.endswith('.lock'):
             return Lock(uri)
-        # XXX ListOfUsers (to be removed in 0.16)
-        if name.startswith('.') and name.endswith('.users'):
-            return ListOfUsers(uri)
 
         # cms objects
         if self.has_handler('%s.metadata' % name):

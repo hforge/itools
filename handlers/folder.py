@@ -79,18 +79,6 @@ class Folder(Handler):
 
 
     #########################################################################
-    # API (private)
-    #########################################################################
-    def get_handler_class(self, uri):
-        return registry.get_handler_class(uri)
-
-
-    def _get_handler(self, name, uri):
-        handler_class = self.get_handler_class(uri)
-        return handler_class(uri)
-
-
-    #########################################################################
     # API (public)
     #########################################################################
     def has_handler(self, path):

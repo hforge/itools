@@ -152,24 +152,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return Handler.GET(self, context)
 
 
-    def _get_handler(self, name, uri):
-        # Check the layout first
-        cls = self.class_layout.get(name)
-        if cls is not None:
-            return cls(uri)
-
-        # Metadata
-        if name.endswith('.metadata'):
-            return Metadata(uri)
-        # Locks
-        if name.endswith('.lock'):
-            return Lock(uri)
-
-        # Anything else is a bare handler
-        cls = get_handler_class(uri)
-        return cls(uri)
-
-
     #######################################################################
     # API
     #######################################################################

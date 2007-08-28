@@ -30,7 +30,7 @@ msgstr "  Module: %s"
 
 #: cms/tracker.py:673
 msgid "  New Attachement: %s"
-msgstr " Nouvelle piéce jointe: %s"
+msgstr " Nouvelle pièce jointe: %s"
 
 #: cms/tracker.py:658
 msgid "  Priority: %s"
@@ -545,7 +545,7 @@ msgstr ""
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "(To add an event lasting all day long, leave time fields empty.)"
 msgstr ""
-"(Pour ajouter un évènement qui dure toute la journée, laisser les heures "
+"(Pour ajouter un événement qui dure toute la journée, laisser les heures "
 "vides.)"
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -568,7 +568,7 @@ msgstr ""
 
 #: cms/ui/text/new_instance.xml.en:0
 msgid "(optional)"
-msgstr "(optionnel)"
+msgstr "(facultatif)"
 
 #: cms/tracker.py:676
 msgid "-------"
@@ -714,7 +714,7 @@ msgid ""
 "\">Download External Editor for Unix and MacOSX</a>."
 msgstr ""
 "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.2-src.tgz"
-"\">Télécharger External Editor pour Unix et MacOSX</a>."
+"\">Télécharger External Editor pour Unix et MacOS&nbsp;X</a>."
 
 #: cms/ui/text/externaledit.xml.en:0
 msgid ""
@@ -779,8 +779,6 @@ msgid ""
 "<br/> <textarea name=\"comment\" id=\"description\" rows=\"10\" cols=\"68\">"
 "${comment}</textarea>"
 msgstr ""
-"<br/> <textarea name=\"comment\" id=\"description\" rows=\"10\" cols=\"68\">"
-"${comment}</textarea>"
 
 #: cms/ui/website/anonymous.xml.en:0
 msgid "<br/> Authentication will be required for any level of access."
@@ -792,8 +790,8 @@ msgid ""
 "<br/> Non authenticated users will be able to access published content, and "
 "to register by themselves."
 msgstr ""
-"<br/> Les utilisateurs non authentifiés seront capable d'accéder au contenu "
-"publié et d'enregistrer par eux même"
+"<br/> Les utilisateurs non authentifiés pourront accéder au contenu "
+"publié et créer leur compte."
 
 #: cms/ui/website/search.xml.en:0
 msgid ""
@@ -913,39 +911,39 @@ msgstr ""
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Assign To:</strong>"
-msgstr "<strong>Assigné à:</strong>"
+msgstr "<strong>Assigner à&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Attachement:</strong>"
-msgstr "<strong>Pièce jointe:</strong>"
+msgstr "<strong>Pièce jointe&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Comment:</strong>"
-msgstr "<strong>Commentaire:</strong>"
+msgstr "<strong>Commentaire&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Module:</strong>"
-msgstr "<strong>Module:</strong>"
+msgstr "<strong>Module&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Priority:</strong>"
-msgstr "<strong>Priorité:</strong>"
+msgstr "<strong>Priorité&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>State:</strong>"
-msgstr "<strong>État:</strong>"
+msgstr "<strong>État&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Title:</strong>"
-msgstr "<strong>Titre:</strong>"
+msgstr "<strong>Titre&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Type:</strong>"
-msgstr "<strong>Type:</strong>"
+msgstr "<strong>Type&nbsp;:</strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Version:</strong>"
-msgstr "<strong>Version:</strong>"
+msgstr "<strong>Version&nbsp;:</strong>"
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -1019,12 +1017,13 @@ msgstr ""
 #: cms/workflow.py:32
 msgid "A pending document awaits review from authorized users to be published."
 msgstr ""
-"Un document en attente a besoin de l'aval des responsables pour être publié."
+"Un document en attente a besoin de la validation des responsables pour "
+"être publié."
 
 #: cms/workflow.py:29
 msgid "A private document only can be reached by authorized users."
 msgstr ""
-"Un document privé ne peut être atteint que par les utilisateurs autorisés."
+"Un document privé n'est accessible qu'aux utilisateurs autorisés."
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -1036,7 +1035,7 @@ msgstr ""
 #: cms/workflow.py:35
 msgid "A public document can be reached by even anonymous users."
 msgstr ""
-"Un document public peut être atteint même par les utilisateurs anonymes."
+"Un document public est accessible même aux utilisateurs anonymes."
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -1051,7 +1050,7 @@ msgstr "Un fil de discussion"
 
 #: cms/workflow.py:144
 msgid "A transition must be selected."
-msgstr "Une action doit être sélectionnée."
+msgstr "Vous devez choisir une action."
 
 #: rest/rest.py:280
 msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
@@ -1126,7 +1125,7 @@ msgstr "Ajouter une ressource de type &laquo;&nbsp;${class_title}&nbsp;&raquo;"
 
 #: cms/ui/csv/add_row.xml.en:0
 msgid "Add a new row"
-msgstr "Ajouter une nouvelle colonne"
+msgstr "Ajouter un nouvel enregistrement"
 
 #: cms/ui/access/new_user.xml.en:0
 msgid "Add a new user"
@@ -1211,7 +1210,7 @@ msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
 msgstr ""
-"Un e-mail vient de vous être envoyé, avec les instructions pour valider "
+"Un courriel vient de vous être envoyé, avec les instructions pour valider "
 "votre inscription."
 
 #: cms/forum.py:185
@@ -1241,7 +1240,7 @@ msgstr ""
 
 #: cms/ui/website/search_form.xml.en:0
 msgid "Any"
-msgstr ""
+msgstr "Tous"
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -1272,7 +1271,7 @@ msgstr "Icônes"
 
 #: cms/wiki.py:468
 msgid "As Image Gallery"
-msgstr "Gallerie d'images"
+msgstr "Galerie d'images"
 
 #: cms/wiki.py:467
 msgid "As List"
@@ -1288,11 +1287,11 @@ msgstr "Texte au format Restructured Text"
 
 #: cms/ui/tracker/search.xml.en:0
 msgid "Assign To"
-msgstr "Assigné à"
+msgstr "Assigner à"
 
 #: cms/tracker.py:302
 msgid "Assigned To"
-msgstr "Assigner à"
+msgstr "Assigné à"
 
 #: cms/ui/tracker/add_issue.xml.en:0
 msgid "Attachement"
@@ -1300,7 +1299,7 @@ msgstr "Pièce jointe"
 
 #: cms/ui/tracker/edit_issue.xml.en:0
 msgid "Attachement:"
-msgstr "Pièce jointe:"
+msgstr "Pièce jointe&nbsp;:"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "Attendees"
@@ -1460,7 +1459,7 @@ msgstr "Consultez la <a href=\";license\">licence</a>&nbsp;;"
 
 #: cms/ui/website/languages.xml.en:0
 msgid "Choose a language"
-msgstr "Choisissez une langue."
+msgstr "Choisissez une langue"
 
 #: cms/ui/website/new_instance.xml.en:0
 msgid "Choose a template:"
@@ -1508,7 +1507,7 @@ msgstr "Commentaires&nbsp;:"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments (optional):"
-msgstr "Commentaires (optionnel)&nbsp;:"
+msgstr "Commentaires (facultatif)&nbsp;:"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "Common name"
@@ -1626,16 +1625,15 @@ msgstr "Décembre"
 
 #: cms/ui/website/languages.xml.en:0
 msgid "Default"
-msgstr "Défaut"
+msgstr "Par défaut"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "Definitely remove"
 msgstr "Supprimer définitivement"
 
 #: cms/ui/root/license.xml.en:0
-#, fuzzy
 msgid "Definitions."
-msgstr "Description"
+msgstr ""
 
 #: cms/access.py:393
 msgid "Delete"
@@ -1659,19 +1657,19 @@ msgstr ""
 
 #: cms/binary.py:145
 msgid "Document Excel"
-msgstr "Classeur Excel"
+msgstr "Classeur au format MS Excel"
 
 #: cms/binary.py:115
 msgid "Document Flash"
-msgstr "Document Flash"
+msgstr "Animation au format Flash"
 
 #: cms/binary.py:155
 msgid "Document PowerPoint"
-msgstr "Présentation PowerPoint"
+msgstr "Présentation au format MS PowerPoint"
 
 #: cms/binary.py:135
 msgid "Document Word"
-msgstr "Document Word"
+msgstr "Texte au format MS Word"
 
 #: cms/tracker.py:76
 msgid "Documentation"
@@ -1786,7 +1784,7 @@ msgstr "Tout est sous contrôle."
 
 #: cms/binary.py:144
 msgid "Excel"
-msgstr "MS Excel"
+msgstr "Classeur MS Excel"
 
 #: cms/ical.py:1106
 msgid "Export in ical format"
@@ -1842,7 +1840,7 @@ msgstr "Fixé"
 
 #: cms/binary.py:114
 msgid "Flash"
-msgstr "Flash"
+msgstr "Animation Flash"
 
 #: cms/folder.py:61
 msgid "Folder"
@@ -2609,7 +2607,7 @@ msgstr "Mon Profil"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "NONE"
-msgstr ""
+msgstr "Aucun"
 
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Name"
@@ -2782,28 +2780,28 @@ msgid "November"
 msgstr "Novembre"
 
 #: cms/binary.py:215
-msgid "ODF Document"
-msgstr "Document ODF"
+msgid "ODT Document"
+msgstr "Texte au format OpenDocument"
 
 #: cms/binary.py:234
 msgid "ODP"
-msgstr ""
+msgstr "Présentation OpenDocument"
 
 #: cms/binary.py:235
 msgid "ODP Document"
-msgstr "Document ODP"
+msgstr "Présentation au format OpenDocument"
 
 #: cms/binary.py:224
 msgid "ODS"
-msgstr ""
+msgstr "Classeur OpenDocument"
 
 #: cms/binary.py:225
 msgid "ODS Document"
-msgstr "Document ODS"
+msgstr "Classeur au format OpenDocument"
 
 #: cms/binary.py:214
 msgid "ODT"
-msgstr ""
+msgstr "Texte OpenDocument"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "OK"
@@ -2811,19 +2809,19 @@ msgstr "OK"
 
 #: cms/binary.py:174
 msgid "OOo Calc"
-msgstr "OpenOffice.org Calc"
+msgstr "Classeur OpenOffice.org"
 
 #: cms/binary.py:184
 msgid "OOo Impress"
-msgstr "OpenOffice.org Impress"
+msgstr "Présentation OpenOffice.org"
 
 #: cms/binary.py:164
 msgid "OOo Writer"
-msgstr "OpenOffice.org Writer"
+msgstr "Texte OpenOffice.org"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "OPTIONNAL"
-msgstr "OPTIONNEL"
+msgstr "Facultatif"
 
 #: cms/folder.py:697
 msgid "Objects copied."
@@ -2855,12 +2853,12 @@ msgstr ""
 
 #: cms/ical.py:925
 msgid "One or more field is invalid."
-msgstr "Au moins un champ est invalide."
+msgstr "un champ ou plus est invalide."
 
 #: cms/ui/website/anonymous.xml.en:0
 msgid "Only administrators will be able to register new users."
 msgstr ""
-"Seulement les administrateurs seront capable d'enregistrer de nouveaux "
+"Seuls les administrateurs pourront enregistrer de nouveaux "
 "utilisateurs"
 
 #: cms/tracker.py:83
@@ -2873,19 +2871,19 @@ msgstr "Fiches ouvertes"
 
 #: cms/binary.py:165
 msgid "OpenOffice.org Document"
-msgstr "Document OpenOffice.org"
+msgstr "Texte au format OpenOffice.org"
 
 #: cms/binary.py:185
 msgid "OpenOffice.org Presentation"
-msgstr "Présentation OpenOffice.org"
+msgstr "Présentation au format OpenOffice.org"
 
 #: cms/binary.py:175
 msgid "OpenOffice.org Spreadsheet"
-msgstr "Classeur OpenOffice.org"
+msgstr "Classeur au format OpenOffice.org"
 
 #: cms/users.py:216
 msgid "Operation successful ! Welcome."
-msgstr ""
+msgstr "Votre compte est activé. Bienvenue&nbsp;!"
 
 #: cms/future.py:54
 msgid "Order"
@@ -2930,15 +2928,15 @@ msgstr "Désindenter"
 
 #: cms/binary.py:194
 msgid "PDF"
-msgstr "PDF"
+msgstr "Document PDF"
 
 #: cms/binary.py:195
 msgid "PDF Document"
-msgstr "Document PDF"
+msgstr "Document au format PDF"
 
 #: cms/wiki.py:400
 msgid "PDF generation failed."
-msgstr "La Géneration de PDF a échoué"
+msgstr "La géneration de PDF a échoué"
 
 #: cms/ui/root/credits.xml.en:0
 msgid "Paolo Dina (Italian)"
@@ -2962,7 +2960,7 @@ msgstr "Mot de passe modifié."
 
 #: cms/users.py:360
 msgid "Password empty, please type one."
-msgstr "Champ mot de passe vide, veuillez en saisir un."
+msgstr "Vous devez saisir un mot de passe."
 
 #: cms/users.py:363
 msgid "Passwords mismatch, please try again."
@@ -2973,13 +2971,12 @@ msgid "Paste"
 msgstr "Coller"
 
 #: cms/ui/root/license.xml.en:0
-#, fuzzy
 msgid "Patents."
-msgstr "Contenu"
+msgstr ""
 
 #: cms/workflow.py:31
 msgid "Pending"
-msgstr "En attente de publication"
+msgstr "En attente de validation"
 
 #: cms/ui/user/profile.xml.en:0
 msgid "Pending tasks."
@@ -2987,7 +2984,7 @@ msgstr "Voir les tâches en cours."
 
 #: cms/tracker.py:81
 msgid "Performance Improvement"
-msgstr "Amélioration de performances"
+msgstr "Amélioration des performances"
 
 #: cms/ui/root/credits.xml.en:0
 msgid "Piotr Macuk"
@@ -2999,7 +2996,7 @@ msgstr "Texte intégral"
 
 #: cms/website.py:543
 msgid "Please fill the missing fields."
-msgstr "Veuillez remplir les champs nécessaires."
+msgstr "Veuillez remplir les champs obligatoires."
 
 #: cms/ical.py:861
 msgid "Please select a resource."
@@ -3031,11 +3028,11 @@ msgstr "Poster une réponse"
 
 #: cms/binary.py:154
 msgid "PowerPoint"
-msgstr "MS PowerPoint"
+msgstr "Présentation MS PowerPoint"
 
 #: cms/ui/root/license.xml.en:0
 msgid "Preamble"
-msgstr "Préambule"
+msgstr ""
 
 #: cms/users.py:245
 msgid "Preferences"
@@ -3086,15 +3083,15 @@ msgstr "Publier le document."
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "REQUIRED"
-msgstr "REQUIS"
+msgstr "Obligatoire"
 
 #: cms/binary.py:204
 msgid "RTF"
-msgstr ""
+msgstr "Document RTF"
 
 #: cms/binary.py:205
 msgid "RTF Document"
-msgstr "Document RTF"
+msgstr "Document au format RTF"
 
 #: cms/ui/website/contact_form.xml.en:0
 msgid "Recipient"
@@ -3129,11 +3126,11 @@ msgstr "Rejeter le document."
 
 #: cms/tracker.py:469
 msgid "Released"
-msgstr ""
+msgstr "Livrée"
 
 #: cms/ui/tracker/search.xml.en:0
 msgid "Remember as"
-msgstr "Mémorisé comme"
+msgstr "Mémoriser comme"
 
 #: cms/ui/website/languages.xml.en:0
 msgid "Remove"
@@ -3209,7 +3206,7 @@ msgstr "Rôle mis à jour."
 
 #: cms/csv.py:173
 msgid "Row deleted."
-msgstr "Colonne supprimée."
+msgstr "Enregistrement supprimé."
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -3239,11 +3236,11 @@ msgstr "Inclure les sous-dossiers"
 
 #: cms/ui/tracker/search.xml.en:0
 msgid "Search:"
-msgstr "Rechercher: "
+msgstr "Rechercher&nbsp;:"
 
 #: cms/tracker.py:79
 msgid "Security Issue"
-msgstr "Probléme de sécurité"
+msgstr "Problème de sécurité"
 
 #: cms/ui/website/anonymous.xml.en:0
 msgid "Security Policy"
@@ -3309,11 +3306,11 @@ msgid ""
 "correct them and continue."
 msgstr ""
 "Des champs requis ne sont pas renseignés ou des valeurs ne sont pas valides. "
-"Merci de les corriger et de continuer."
+"Merci de les corriger avant de continuer."
 
 #: cms/ui/root/about.xml.en:0
 msgid "Some things you can do with ikaaro:"
-msgstr "Voici quelques fonctionnalités d'ikaaro:"
+msgstr "Voici quelques fonctionnalités d'ikaaro&nbsp;:"
 
 #: cms/ui/root/license.xml.en:0
 msgid "Source Code."
@@ -3329,11 +3326,11 @@ msgstr "Début"
 
 #: cms/ical.py:930
 msgid "Start date MUST be earlier than end date."
-msgstr "La date de début DOIT être antérieure à la date de fin."
+msgstr "La date de début doit être antérieure à la date de fin."
 
 #: cms/ical.py:88
 msgid "Start time must be earlier than end time."
-msgstr "L'heure de début DOIT être antérieure à l'heure de fin."
+msgstr "L'heure de début doit être antérieure à l'heure de fin."
 
 #: cms/workflow.py:103
 msgid "State"
@@ -3353,11 +3350,11 @@ msgstr ""
 
 #: cms/ui/tracker/search.xml.en:0
 msgid "Status"
-msgstr "Statut"
+msgstr "État"
 
 #: cms/ui/tracker/edit_issue.xml.en:0
 msgid "Status (mandatory)"
-msgstr "Status (obligatoire)"
+msgstr "État (obligatoire)"
 
 #: cms/tracker.py:481
 msgid "Stored Search"
@@ -3415,7 +3412,7 @@ msgstr ""
 
 #: cms/wiki.py:447
 msgid "Syntax error, please check the view for details."
-msgstr "Erreur de syntaxe, merci de verifier la vue pour plus de détails"
+msgstr "Erreur de syntaxe, merci de vérifier la vue pour plus de détails"
 
 #: cms/ui/root/license.xml.en:0
 msgid "TERMS AND CONDITIONS"
@@ -3450,11 +3447,11 @@ msgstr "Tâches"
 
 #: cms/tracker.py:81
 msgid "Technology Upgrade"
-msgstr "Upgrade de technologie"
+msgstr "Mise à jour technique"
 
 #: cms/ical.py:95
 msgid "Tentative"
-msgstr ""
+msgstr "Provisoire"
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -3464,9 +3461,8 @@ msgid ""
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
-#, fuzzy
 msgid "Termination."
-msgstr "Traductions"
+msgstr ""
 
 #: cms/folder.py:75
 msgid "Text"
@@ -3571,7 +3567,7 @@ msgstr ""
 
 #: cms/access.py:469
 msgid "The email address is missing, please type it."
-msgstr "Le courriel est incorrect, veuillez réessayer."
+msgstr "Une adresse de courriel doit être saisie."
 
 #: cms/messages.py:21
 msgid "The email address provided is invalid."
@@ -3606,7 +3602,7 @@ msgstr ""
 
 #: cms/messages.py:23
 msgid "The name is missing."
-msgstr ""
+msgstr "Le nom doit être saisi."
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -3666,11 +3662,11 @@ msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
 #: cms/website.py:335
 msgid "The user \"$username\" is not active."
-msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
+msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'a pas activé son compte."
 
 #: cms/tracker.py:618
 msgid "The user %s did some changes."
-msgstr "L'utilisateur %s a fait quelques changements"
+msgstr "L'utilisateur %s a modifié cette fiche."
 
 #: cms/access.py:510
 msgid "The user is already here."
@@ -3703,7 +3699,7 @@ msgstr "Il y a 1 objet."
 
 #: cms/website.py:268
 msgid "There is already an active user with that email."
-msgstr "Il existe déjà un utilisateur avec cette adresse E-Mail"
+msgstr "Il existe déjà un utilisateur avec cette adresse de courriel."
 
 #: cms/messages.py:22
 msgid "There is already another object with this name."
@@ -3895,15 +3891,15 @@ msgstr ""
 
 #: cms/wiki.py:275
 msgid "To PDF"
-msgstr "En PDF"
+msgstr "Format PDF"
 
 #: cms/ui/user/confirm_registration.xml.en:0
 msgid "To activate your account, please type a password."
-msgstr "Pour activer votre compte, vous devez saisir un mot de passe"
+msgstr "Pour activer votre compte, vous devez saisir un mot de passe."
 
 #: cms/ical.py:728
 msgid "To add an event, click on + symbol from the views."
-msgstr "Pour ajouter un événement, cliquer sur le symbole + à partir des vues."
+msgstr "Pour ajouter un événement, cliquez sur le symbole + dans les vues."
 
 #: cms/ui/user/edit_password.xml.en:0
 msgid "To confirm these changes, you must type your actual password."
@@ -3916,7 +3912,7 @@ msgid ""
 "\n"
 "  $confirm_url"
 msgstr ""
-"Pour confirmer votre inscription, cliquez sur le lien:\n"
+"Pour confirmer votre inscription, cliquez sur le lien :\n"
 "\n"
 "  $confirm_url"
 
@@ -3932,7 +3928,7 @@ msgstr ""
 
 #: cms/ui/root/about.xml.en:0
 msgid "To learn more, check out these resources:"
-msgstr "Pour en savoir plus, consultez ces ressources:"
+msgstr "Pour en savoir plus, consultez ces ressources&nbsp;:"
 
 #: cms/tracker.py:52
 msgid "To manage bugs and tasks"
@@ -4022,7 +4018,7 @@ msgstr "Annuler"
 
 #: cms/tracker.py:76
 msgid "Unit Tests"
-msgstr "Tests Unitaires"
+msgstr "Tests unitaires"
 
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Unordered List"
@@ -4099,7 +4095,7 @@ msgstr "Version chargée."
 
 #: cms/ui/root/about.xml.en:0
 msgid "Version:"
-msgstr "Version:"
+msgstr "Version&nbsp;:"
 
 #: cms/binary.py:87
 msgid "Video"
@@ -4115,7 +4111,7 @@ msgstr "Voir le tracker"
 
 #: cms/widgets.py:98
 msgid "View from ${start} to ${end} (${link}):"
-msgstr "Vue de ${start} à ${end} (${link}):"
+msgstr "Vue de ${start} à ${end} (${link})&nbsp;:"
 
 #: cms/ui/root/about.xml.en:0
 msgid "Visit the project's <a href=\"http://www.ikaaro.org/\">Web Site</a>;"
@@ -4123,7 +4119,7 @@ msgstr "Visitez le <a href=\"http://www.ikaaro.org\">site Web</a> du projet."
 
 #: cms/tracker.py:78
 msgid "Visual Interface"
-msgstr "Interface visuelle"
+msgstr "Interface utilisateur"
 
 #: cms/ui/root/about.xml.en:0
 msgid "Want to know who is behind this software?"
@@ -4193,15 +4189,15 @@ msgstr "Contenu du wiki"
 
 #: cms/ui/epoz/script_table.xml.en:0
 msgid "With head"
-msgstr ""
+msgstr "Avec en-tête"
 
 #: cms/ui/epoz/script_table.xml.en:0
 msgid "Without head"
-msgstr ""
+msgstr "Sans en-tête"
 
 #: cms/binary.py:134
 msgid "Word"
-msgstr "MS Word"
+msgstr "Document MS Word"
 
 #: cms/ui/root/about.xml.en:0
 msgid "Work together with the Wiki;"
@@ -4410,7 +4406,7 @@ msgstr "Archive Zip"
 
 #: cms/users.py:158
 msgid "[%s] Confirmation required"
-msgstr "[%s] Confirmation requise."
+msgstr "[%s] Confirmation requise"
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -4442,7 +4438,7 @@ msgstr ""
 
 #: i18n/oracle.py:61
 msgid "and"
-msgstr "et"
+msgstr ""
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -4596,7 +4592,7 @@ msgstr ""
 
 #: pdf/rml.py:2019
 msgid "false"
-msgstr "faux"
+msgstr ""
 
 #: cms/ui/root/license.xml.en:0
 msgid "for a GUI interface, you would use an \"about box\"."
@@ -4677,9 +4673,8 @@ msgid "nueva"
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
-#, fuzzy
 msgid "or"
-msgstr "MS Word"
+msgstr ""
 
 #: i18n/oracle.py:104
 msgid "para"
@@ -4759,7 +4754,7 @@ msgstr ""
 
 #: pdf/rml.py:2018
 msgid "true"
-msgstr "vrai"
+msgstr ""
 
 #: cms/ui/root/license.xml.en:0
 msgid "type `show c' for details."
@@ -4793,7 +4788,7 @@ msgstr ""
 
 #: pdf/rml.py:2018
 msgid "yes"
-msgstr "oui"
+msgstr ""
 
 #: i18n/oracle.py:125
 msgid "you"

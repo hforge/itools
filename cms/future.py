@@ -252,10 +252,17 @@ def add_dressable_style(context):
 
 
 class Dressable(Folder, EpozEditable):
+    """
+    A Dressable object is a folder with a specific view which is defined
+    by the schema. In addition of the schema, it is necessary to redefine
+    the variable __fixed_handlers__.
+    """
+
     class_id = 'dressable'
     class_title = u'Dressable'
     class_description = u'A dressable folder'
     class_views = ([['view'], ['edit_document']] + Folder.class_views)
+    __fixed_handlers__ = ['index.xhtml']
     template = '/ui/dressable/view.xml'
     schema = {'content': ('index.xhtml', XHTMLFile),
               'browse_folder': 'browse_folder',
@@ -288,6 +295,14 @@ class Dressable(Folder, EpozEditable):
                     cache['%s.metadata' % name] = handler.build_metadata()
 
 
+    def get_document_types(self):
+        return Folder.get_document_types(self) + [Dressable]
+
+
+    def GET(self, context):
+        return context.uri.resolve2(';view')
+
+
     #######################################################################
     # API / Private
     #######################################################################
@@ -305,7 +320,7 @@ class Dressable(Folder, EpozEditable):
         return set_prefix(stream, prefix)
 
 
-    def _get_schema_handler(self):
+    def _get_schema_handler_names(self):
         handlers = []
         for key, data in self.schema.iteritems():
             if isinstance(data, tuple):
@@ -503,7 +518,7 @@ class Dressable(Folder, EpozEditable):
 
 
     def browse_file(self, context):
-        exclude = self._get_schema_handler()
+        exclude = self._get_schema_handler_names()
         namespace = {}
         namespace['id'] = 'browse_file'
         namespace['title'] = 'Files'

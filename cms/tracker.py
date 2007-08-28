@@ -56,7 +56,7 @@ search_fields = [('search_name', False, Unicode),
                  ('version', False, Integer),
                  ('type', False, Integer),
                  ('priority', False, Integer),
-                 ('assign', False, Unicode),
+                 ('assigned_to', False, Unicode),
                  ('state', False, Integer)]
 
 table_columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),

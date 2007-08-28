@@ -135,7 +135,7 @@ class XLIFF(Text):
     class_extension = 'xlf'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'document_type', 'version', 'lang', 'files']
+                 'document_type', 'version', 'lang', 'files']
 
 
     def new(self):

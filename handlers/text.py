@@ -26,7 +26,7 @@ class Text(File):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'data', 'encoding']
+                 'data', 'encoding']
 
 
     def new(self, data=u''):

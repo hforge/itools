@@ -339,8 +339,7 @@ class Record(list):
 class Table(File):
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'records', 'catalog', 'added_records',
-                 'removed_records']
+                 'records', 'catalog', 'added_records', 'removed_records']
 
 
     #######################################################################

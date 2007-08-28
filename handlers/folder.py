@@ -53,7 +53,7 @@ class Folder(Handler):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'cache']
+                 'cache']
 
 
     def __init__(self, ref=None, **kw):
@@ -62,7 +62,6 @@ class Folder(Handler):
         self.dirty = False
         self.parent = None
         self.name = ''
-        self.real_handler = None
 
         if ref is None:
             # A handler from scratch
@@ -84,15 +83,6 @@ class Folder(Handler):
     #########################################################################
     def get_handler_class(self, uri):
         return registry.get_handler_class(uri)
-
-
-    def _get_virtual_handler(self, name):
-        """
-        This method must return a handler for the given name, or raise
-        the exception LookupError. We know there is not a resource with
-        the given name, this method is used to return 'virtual' handlers.
-        """
-        raise LookupError, 'the resource "%s" does not exist' % name
 
 
     def _get_handler(self, name, uri):
@@ -137,34 +127,22 @@ class Folder(Handler):
                 handler = database.cache[reference]
             elif reference in database.removed:
                 # Removed
-                handler = here._get_virtual_handler(name)
-                handler = build_virtual_handler(handler)
-                handler.database = database
+                raise LookupError, 'file handlers can not be traversed'
+            elif not vfs.exists(reference):
+                # Does not exist
+                raise LookupError, 'file handlers can not be traversed'
+            elif reference in database.cache:
+                # Cache hit
+                handler = database.cache[reference]
             else:
-                if not vfs.exists(reference):
-                    # Does not exist
-                    handler = here._get_virtual_handler(name)
-                    handler = build_virtual_handler(handler)
-                    handler.database = database
-                elif reference in database.cache:
-                    # Cache hit
-                    handler = database.cache[reference]
-                else:
-                    # Cache miss
-                    handler = here._get_handler(name, reference)
-                    handler.database = database
-                    if not isinstance(handler, Folder):
-                        database.cache[reference] = handler
-                # Virtual handlers propagate
-                if here.real_handler is not None:
-                    handler = build_virtual_handler(handler)
-                    handler.parent = here
-                    handler.name = name
-                    here = handler
-                    continue
+                # Cache miss
+                handler = here._get_handler(name, reference)
+                handler.database = database
+                if not isinstance(handler, Folder):
+                    database.cache[reference] = handler
 
             # Attach and Continue
-            handler.parent = here.get_real_handler()
+            handler.parent = here
             handler.name = name
             here = handler
 
@@ -217,7 +195,6 @@ class Folder(Handler):
 
         path, name = path[:-1], path[-1]
         container = self.get_handler(path)
-        container = container.get_real_handler()
 
         # Check it does not exists
         if container.has_handler(name):
@@ -235,7 +212,6 @@ class Folder(Handler):
                 clone.dirty = False
                 clone.parent = container
                 clone.name = name
-                clone.real_handler = None
                 clone.cache = None
                 for subname, subhandler in handler.cache.items():
                     clone.set_handler(subname, subhandler)
@@ -248,7 +224,6 @@ class Folder(Handler):
             clone.dirty = False
             clone.parent = container
             clone.name = name
-            clone.real_handler = None
             database.cache[uri] = clone
             database.added.add(uri)
 
@@ -313,25 +288,5 @@ class Folder(Handler):
                     if context.skip is True:
                         context.skip = False
 
-
-
-def build_virtual_handler(handler):
-    """
-    Makes a clone of the given handler.
-    """
-    handler = handler.get_real_handler()
-    virtual_handler = Handler.__new__(handler.__class__)
-
-    exclude = set(['parent', 'name', 'real_handler'])
-    for name in handler.__slots__:
-        if name not in exclude:
-            value = getattr(handler, name)
-            setattr(virtual_handler, name, value)
-
-    # Keep a reference to the real handler
-    virtual_handler.real_handler = handler
-
-    return virtual_handler
-    
 
 registry.register_handler_class(Folder)

@@ -115,8 +115,8 @@ class TMX(Text):
     class_extension = 'tmx'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'document_type', 'version', 'header',
-                 'header_notes', 'messages']
+                 'document_type', 'version', 'header', 'header_notes',
+                 'messages']
 
 
     def new(self):

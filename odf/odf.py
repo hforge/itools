@@ -70,7 +70,7 @@ class OdfDocument(OpenOfficeDocument):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'data']
+                 'data']
 
 
     def get_meta(self):
@@ -141,7 +141,7 @@ class ODT(OdfDocument):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'data']
+                 'data']
 
 
 class ODS(OdfDocument):
@@ -151,7 +151,7 @@ class ODS(OdfDocument):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:spreadsheet:1.0'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'data']
+                 'data']
 
 
 class ODP(OdfDocument):
@@ -161,7 +161,7 @@ class ODP(OdfDocument):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:presentation:1.0'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'data']
+                 'data']
 
 
 # Register handler and mimetypes

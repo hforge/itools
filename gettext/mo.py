@@ -27,7 +27,7 @@ class MO(File):
     class_extension = 'mo'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'translations']
+                 'translations']
 
 
     def _load_state_from_file(self, file):

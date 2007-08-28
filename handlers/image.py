@@ -34,7 +34,7 @@ class Image(File):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'data', 'size', 'thumbnails']
+                 'data', 'size', 'thumbnails']
 
 
     def _load_state_from_file(self, file):

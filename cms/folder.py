@@ -244,7 +244,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         handler.dirty = False
         handler.parent = self
         handler.name = name
-        handler.real_handler = None
         return handler
 
 

@@ -52,7 +52,7 @@ class Config(Text):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'lines', 'values']
+                 'lines', 'values']
 
 
     def new(self, **kw):

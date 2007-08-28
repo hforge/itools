@@ -37,7 +37,7 @@ class Lock(Text):
     class_extension = 'lock'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'username', 'lock_timestamp', 'key']
+                 'username', 'lock_timestamp', 'key']
 
 
     def new(self, username=None, **kw):
@@ -67,7 +67,7 @@ class Metadata(File):
     class_icon48 = 'images/File48.png'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'properties']
+                 'properties']
 
 
     def new(self, handler_class=None, format=None, **kw):

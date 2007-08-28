@@ -41,7 +41,7 @@ class File(Handler):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'data']
+                 'data']
 
 
     def __init__(self, ref=None, string=None, **kw):
@@ -50,7 +50,6 @@ class File(Handler):
         self.dirty = False
         self.parent = None
         self.name = ''
-        self.real_handler = None
 
         if ref is None:
             self.uri = None
@@ -146,10 +145,9 @@ class File(Handler):
         copy.uri = None
         copy.timestamp = None
         copy.dirty = False
-        copy.real_handler = None
         # Copy the state
         exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
-                       'name', 'real_handler'])
+                       'name'])
         for name in cls.__slots__:
             if name not in exclude:
                 value = getattr(self, name)
@@ -194,7 +192,7 @@ class File(Handler):
             return
         # Abort
         exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
-                       'name', 'real_handler'])
+                       'name'])
         for name in self.__slots__:
             if name not in exclude:
                 delattr(self, name)

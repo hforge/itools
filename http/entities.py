@@ -63,7 +63,7 @@ def read_headers(file):
 class Entity(File):
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'headers', 'body']
+                 'headers', 'body']
 
 
     def _load_state_from_file(self, file):

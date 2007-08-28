@@ -214,7 +214,7 @@ class PO(Text):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'messages', 'encoding']
+                 'messages', 'encoding']
 
     def new(self):
         # XXX Old style (like in the "get_skeleton" times)

@@ -49,13 +49,12 @@ class Node(object):
 
 
     def get_real_handler(self):
-        return self.real_handler or self
+        return self
 
 
     def get_physical_path(self):
         # TODO Should return a Path instance
-        real = self.get_real_handler()
-        return real.get_abspath()
+        return self.get_abspath()
 
 
     def get_root(self):
@@ -137,8 +136,7 @@ class Handler(Node):
     class_extension = None
 
     # Instance variables. The variable class "__slots__" is to be overriden.
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler']
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name']
 
 
     ########################################################################

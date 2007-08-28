@@ -213,7 +213,7 @@ class Document(Text):
 
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'events']
+                 'events']
 
 
     def new(self):

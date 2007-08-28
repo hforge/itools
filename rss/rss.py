@@ -155,7 +155,7 @@ class RSS(Text):
     class_extension = 'rss'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'channel']
+                 'channel']
 
 
     def new(self):

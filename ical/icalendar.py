@@ -191,8 +191,7 @@ class icalendar(Text):
     """
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'real_handler', 'properties', 'components', 'catalog',
-                 'encoding']
+                 'properties', 'components', 'catalog', 'encoding']
     class_mimetypes = ['text/calendar']
     class_extension = 'ics'
 

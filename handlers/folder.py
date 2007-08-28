@@ -117,31 +117,13 @@ class Folder(Handler):
         self.database.set_handler(uri, handler)
 
 
-    def del_handler(self, path):
+    def del_handler(self, reference):
         database = self.database
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        path, name = path[:-1], path[-1]
-
-        container = self.get_handler(path)
-        # Check wether the handler really exists
-        if not container.has_handler(name):
-            raise LookupError, 'there is not any handler named "%s"' % name
-
-        uri = container.uri.resolve2(name)
-        if uri in database.added:
-            del database.cache[uri]
-            database.added.remove(uri)
-            return
-
-        if uri in database.cache:
-            del database.cache[uri]
-
-        database.removed.add(uri)
+        uri = self.uri.resolve2(reference)
+        self.database.del_handler(uri)
 
 
     ########################################################################

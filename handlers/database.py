@@ -173,6 +173,53 @@ class Database(object):
             self.added.add(reference)
 
 
+    def del_handler(self, reference):
+        fs, reference = cwd.get_fs_and_reference(reference)
+
+        if reference in self.added:
+            del self.cache[reference]
+            self.added.remove(reference)
+            return
+
+        # Check the handler actually exists
+        if reference in self.removed:
+            raise LookupError, 'resource already removed'
+        if not fs.exists(reference):
+            raise LookupError, 'resource does not exist'
+
+        # Clean the cache
+        if reference in self.cache:
+            del self.cache[reference]
+
+        # Mark for removal
+        self.removed.add(reference)
+
+
+    def copy_handler(self, source, target):
+        source = get_absolute_reference(source)
+        target = get_absolute_reference(target)
+
+        handler = self.get_handler(source)
+        if isinstance(handler, Folder):
+            # Folder
+            for name in handler.get_names():
+                self.copy(source.resolve2(name), target.resolve2(name))
+        else:
+            # File
+            handler = handler.clone()
+            handler.database = self
+            handler.uri = target
+            # Update the state 
+            self.cache[target] = handler
+            self.added.add(target)
+
+
+    def move_handler(self, source, target):
+        # XXX Not efficient implementation
+        self.copy(source, target)
+        self.remove(source)
+
+
     #######################################################################
     # API / Safe VFS operations
     #######################################################################

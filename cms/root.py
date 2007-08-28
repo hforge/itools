@@ -440,46 +440,6 @@ class Root(WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20061216(self):
-        # Update users
-        map = {}
-        users = self.get_handler('users')
-        i = 0
-        for name in users.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
-            user, metadata = users.get_object(name) 
-            user_id = str(i)
-            # Rename user
-            user, metadata = users.set_object(user_id, user, metadata)
-            users.del_object(name)
-            # Keep the username
-            metadata.set_property('ikaaro:username', name)
-            # Next
-            map[name] = user_id
-            i += 1
-
-        # Update roles
-        for handler, metadata in self.traverse_objects():
-            if not isinstance(handler, RoleAware):
-                continue
-            metadata = handler.get_metadata()
-            for role in handler.get_role_names():
-                # Get the users
-                filename = '.%s.users' % role.split(':')[1]
-                try:
-                    users = handler.get_handler(filename)
-                except LookupError:
-                    pass
-                else:
-                    usernames = [ map[x] for x in users.usernames ]
-                    usernames = tuple(usernames)
-                    # Add to the metadata
-                    metadata.set_property(role, usernames)
-                    # Remove the old ".users" file
-                    handler.del_handler(filename)
-
-
     def update_20070531(self):
         pass
 

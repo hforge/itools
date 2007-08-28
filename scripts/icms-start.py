@@ -30,15 +30,6 @@ from itools.cms.spool import Spool
 
 
 def start(parser, options, target):
-    # Check wether the instance uses a backup database (XXX remove for 0.17).
-    folder = vfs.open(target)
-    if folder.exists('database/.catalog'):
-        print ('The database must be updated, type:')
-        print
-        print '    $ icms-update.py <instance>'
-        print
-        return
-
     # Check for database consistency
     if vfs.exists('%s/database.commit' % target):
         print 'The database is not in a consistent state, to fix it up type:'

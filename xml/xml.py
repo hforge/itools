@@ -238,7 +238,7 @@ class Document(Text):
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
-        return cmp(self.__dict__, other.__dict__)
+        return cmp(self.events, other.events)
 
 
     def to_text(self):

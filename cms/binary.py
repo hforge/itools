@@ -215,7 +215,7 @@ class ODT(File, BaseODT):
   
     class_id ='application/vnd.oasis.opendocument.text'
     class_title = u'ODT'
-    class_description = u'ODF Document'
+    class_description = u'ODT Document'
     class_icon16 = 'images/Odt16.png'
     class_icon48 = 'images/Odt48.png'
 

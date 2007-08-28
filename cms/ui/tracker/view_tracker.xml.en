@@ -19,20 +19,17 @@ ${table}
     Change Several Issues at Once
   </a>
   &nbsp;|
-  <!--
   <a href=";view?${search_parameters}&amp;export_to_text=1#link">
-    Export to text
+    Export to Text
   </a>
   &nbsp;|
-  -->
   <a href=";view?${search_parameters}&amp;export_to_csv=1#link">
     Export to CSV
   </a>
 </p>
 <!-- Export to text -->
-<!--
 <stl:block stl:if="export_to_text">
-  <h2>Export to text</h2>
+  <h2>Export to Text</h2>
   <dl>
     <p>
     Please select the columns to export:
@@ -55,7 +52,6 @@ ${table}
       <pre>${text}</pre>
     </div>
 </stl:block>
--->
 
 <!-- Export to CSV -->
 <stl:block stl:if="export_to_csv">

@@ -94,6 +94,21 @@ class Database(object):
         return fs.exists(reference)
 
 
+    def get_handler_names(self, reference):
+        fs, uri = cwd.get_fs_and_reference(reference)
+
+        if not fs.exists(uri):
+            return []
+
+        names = fs.get_names(uri)
+        removed = [ str(x.path[-1]) for x in self.removed
+                    if uri.resolve2(str(x.path[-1])) == x ]
+        added = [ str(x.path[-1]) for x in self.added
+                  if uri.resolve2(str(x.path[-1])) == x ]
+
+        return list(set(names) - set(removed) | set(added))
+
+
     def get_handler(self, reference, cls=None):
         fs, reference = cwd.get_fs_and_reference(reference)
 
@@ -153,6 +168,13 @@ class Database(object):
         cache[reference] = handler
 
         return handler
+
+
+    def get_handlers(self, reference):
+        fs, reference = cwd.get_fs_and_reference(reference)
+        for name in self.get_names(reference):
+            ref = reference.resolve2(name)
+            yield self.get_handler(ref)
 
 
     def set_handler(self, reference, handler):

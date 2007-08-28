@@ -81,45 +81,40 @@ class Folder(Handler):
     #########################################################################
     # API (public)
     #########################################################################
-    def has_handler(self, path):
-        try:
-            self.get_handler(path)
-        except LookupError:
-            return False
+    def has_handler(self, reference):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
 
-        return True
-
-
-    def get_handler_names(self, path='.'):
-        database = self.database
-
-        uri = self.uri.resolve2(path)
-        if not vfs.exists(uri):
-            return []
-
-        names = vfs.get_names(uri)
-        removed = [ str(x.path[-1]) for x in database.removed
-                    if uri.resolve2(str(x.path[-1])) == x ]
-        added = [ str(x.path[-1]) for x in database.added
-                  if uri.resolve2(str(x.path[-1])) == x ]
-
-        return list(set(names) - set(removed) | set(added))
+        uri = self.uri.resolve2(reference)
+        return self.database.has_handler(uri)
 
 
-    def get_handlers(self, path='.'):
-        handler = self.get_handler(path)
-        for name in handler.get_handler_names(path):
-            yield handler.get_handler(name)
+    def get_handler_names(self, reference='.'):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        uri = self.uri.resolve2(reference)
+        return self.database.get_handler_names(uri)
+
+
+    def get_handlers(self, reference='.'):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        uri = self.uri.resolve2(reference)
+        return self.database.get_handlers(uri)
 
 
     def set_handler(self, reference, handler):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
         uri = self.uri.resolve2(reference)
         self.database.set_handler(uri, handler)
 
 
     def del_handler(self, reference):
-        database = self.database
-        if database is None:
+        if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         uri = self.uri.resolve2(reference)

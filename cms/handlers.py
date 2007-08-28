@@ -63,8 +63,8 @@ class Lock(Text):
 
 class Metadata(File):
 
-    class_title = u'Metadata'
-    class_icon48 = 'images/File48.png'
+    class_mimetypes = ['text/x-metadata']
+    class_extension = 'metadata'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'properties']

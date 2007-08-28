@@ -286,8 +286,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             # than that size.
             document['size'] = 2**30 + len(self.to_str())
         else:
-            names = [ x for x in self.get_handler_names()
-                      if (x[0] != '.' and x[-9:] != '.metadata') ]
+            names = self.get_names()
             document['size'] = len(names)
 
         # Users

@@ -93,62 +93,6 @@ class Folder(Handler):
     #########################################################################
     # API (public)
     #########################################################################
-    def get_handler(self, path):
-        database = self.database
-        if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        # Be sure path is a Path
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        if path.is_absolute():
-            root = self.get_root()
-            path = str(path)[1:]
-            return root.get_handler(path)
-
-        if len(path) == 0:
-            return self
-
-        if path[0] == '..':
-            if self.parent is None:
-                raise ValueError, 'this handler is the root handler'
-            return self.parent.get_handler(path[1:])
-
-        here = self
-        for name in path:
-            # Check wether it is a folder or not
-            if not isinstance(here, Folder):
-                raise LookupError, 'file handlers can not be traversed'
-
-            reference = here.uri.resolve2(name)
-            if reference in database.added:
-                # Added
-                handler = database.cache[reference]
-            elif reference in database.removed:
-                # Removed
-                raise LookupError, 'file handlers can not be traversed'
-            elif not vfs.exists(reference):
-                # Does not exist
-                raise LookupError, 'file handlers can not be traversed'
-            elif reference in database.cache:
-                # Cache hit
-                handler = database.cache[reference]
-            else:
-                # Cache miss
-                handler = here._get_handler(name, reference)
-                handler.database = database
-                if not isinstance(handler, Folder):
-                    database.cache[reference] = handler
-
-            # Attach and Continue
-            handler.parent = here
-            handler.name = name
-            here = handler
-
-        return here
-
-
     def has_handler(self, path):
         try:
             self.get_handler(path)
@@ -161,7 +105,7 @@ class Folder(Handler):
     def get_handler_names(self, path='.'):
         database = self.database
 
-        uri = self.get_handler(path).uri
+        uri = self.uri.resolve2(path)
         if not vfs.exists(uri):
             return []
 
@@ -180,49 +124,9 @@ class Folder(Handler):
             yield handler.get_handler(name)
 
 
-    def set_handler(self, path, handler):
-        database = self.database
-        if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        path, name = path[:-1], path[-1]
-        container = self.get_handler(path)
-
-        # Check it does not exists
-        if container.has_handler(name):
-            raise LookupError, 'there is already a handler in "%s"' % name
-
-        uri = container.uri.resolve2(name)
-        if isinstance(handler, Folder):
-            if handler.cache is None:
-                raise NotImplementedError
-            else:
-                clone = object.__new__(handler.__class__)
-                clone.database = database
-                clone.uri = uri
-                clone.timestamp = None
-                clone.dirty = False
-                clone.parent = container
-                clone.name = name
-                clone.cache = None
-                for subname, subhandler in handler.cache.items():
-                    clone.set_handler(subname, subhandler)
-        else:
-            # Make a copy of the handler
-            clone = handler.clone()
-            clone.database = database
-            clone.uri = uri
-            clone.timestamp = None
-            clone.dirty = False
-            clone.parent = container
-            clone.name = name
-            database.cache[uri] = clone
-            database.added.add(uri)
-
-        return clone
+    def set_handler(self, reference, handler):
+        uri = self.uri.resolve2(reference)
+        self.database.set_handler(uri, handler)
 
 
     def del_handler(self, path):

@@ -25,10 +25,11 @@ from tempfile import mkstemp
 from thread import allocate_lock, get_ident
 
 # Import from itools
-from itools.uri import get_reference, Path
+from itools.uri import get_reference, get_absolute_reference, Path
 from itools.vfs import vfs
 from itools.vfs import cwd, READ, WRITE, APPEND
 from registry import get_handler_class
+from folder import Folder
 
 
 
@@ -78,6 +79,98 @@ class Database(object):
                 commit = Path(commit)
             self.commit = str(commit)
             self.log = str(commit.resolve2('log'))
+
+
+    #######################################################################
+    # API
+    #######################################################################
+    def has_handler(self, reference):
+        fs, reference = cwd.get_fs_and_reference(reference)
+
+        if reference in self.added:
+            return True
+        if reference in self.removed:
+            return False
+        return fs.exists(reference)
+
+
+    def get_handler(self, reference, cls=None):
+        fs, reference = cwd.get_fs_and_reference(reference)
+
+        cache = self.cache
+        # Check state
+        if reference in self.added:
+            return cache[reference]
+
+        if reference in self.removed:
+            raise LookupError, 'the resource "%s" does not exist' % reference
+
+        # Verify the resource exists
+        if not fs.exists(reference):
+            # Check errors
+            if reference in self.changed:
+                raise RuntimeError, MSG_CONFLICT
+            # Clean the cache
+            if reference in cache:
+                del cache[reference]
+            raise LookupError, 'the resource "%s" does not exist' % reference
+
+        # Folders are not cached
+        if fs.is_folder(reference):
+            # Check errors
+            if reference in self.changed:
+                raise RuntimeError, MSG_CONFLICT
+            # Clean the cache
+            if reference in cache:
+                del cache[reference]
+            folder = object.__new__(Folder)
+            folder.database = self
+            folder.uri = reference
+            return folder
+
+        # Lookup the cache
+        if reference in cache:
+            # Cache hit
+            handler = cache[reference]
+            if handler.timestamp is None:
+                return handler
+            # Check the timestamp
+            mtime = fs.get_mtime(reference)
+            if mtime < handler.timestamp:
+                raise RuntimeError, 'XXX'
+            elif mtime == handler.timestamp:
+                return handler
+
+        # Cache miss
+        if cls is None:
+            cls = get_handler_class(reference)
+        # Build the handler
+        handler = object.__new__(cls)
+        handler.database = self
+        handler.uri = reference
+        handler.dirty = False
+        # Update the cache
+        cache[reference] = handler
+
+        return handler
+
+
+    def set_handler(self, reference, handler):
+        if self.has_handler(reference):
+            raise IOError, 'XXX'
+
+        reference = get_absolute_reference(reference)
+        handler.database = self
+        handler.uri = reference
+        if isinstance(handler, Folder):
+            if handler.cache is None:
+                raise NotImplementedError
+            else:
+                for name, subhandler in handler.cache.items():
+                    self.set_handler(reference.resolve2(name), subhandler)
+        else:
+            self.cache[reference] = handler
+            self.added.add(reference)
 
 
     #######################################################################

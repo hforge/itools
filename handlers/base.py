@@ -28,6 +28,8 @@ This module provides the abstract class which is the root in the
 handler class hierarchy.
 """
 
+MSG_NOT_ATTACHED = 'method only available when attached to a database'
+
 
 class Handler(object):
     """
@@ -93,25 +95,13 @@ class Handler(object):
         return name in container.get_handler_names()
 
 
-    def get_handler(self, path):
-        # Be sure path is a Path
-        if not isinstance(path, Path):
-            path = Path(path)
+    def get_handler(self, reference):
+        database = self.database
+        if database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
 
-        if path.is_absolute():
-            root = self.get_root()
-            path = str(path)[1:]
-            return root.get_handler(path)
-
-        if len(path) == 0:
-            return self
-
-        if path[0] == '..':
-            if self.parent is None:
-                raise ValueError, 'this handler is the root handler'
-            return self.parent.get_handler(path[1:])
-
-        raise LookupError, 'file handlers can not be traversed'
+        uri = self.uri.resolve2(reference)
+        return self.database.get_handler(uri)
 
 
     def to_text(self):

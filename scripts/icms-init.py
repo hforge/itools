@@ -108,7 +108,7 @@ def init(parser, options, target):
     instance.database = database
     # Initialize the database
     root = root_class(username=email, password=password)
-    root = instance.set_handler('database', root)
+    instance.set_handler('database', root)
     database.save_changes()
 
     # Index everything

@@ -129,7 +129,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         language = container.get_site_root().get_default_language()
         metadata.set_property('dc:title', title, language=language)
         # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
+        container.set_object(name, handler, metadata)
 
         goto = './%s/;%s' % (name, handler.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
@@ -182,8 +182,13 @@ class Folder(Handler, BaseFolder, CalendarAware):
             metadata = handler.build_metadata()
 
         # Add
-        handler = self.set_handler(name, handler)
-        metadata = self.set_handler('%s.metadata' % name, metadata)
+        self.set_handler(name, handler)
+        self.set_handler('%s.metadata' % name, metadata)
+        # Attach
+        handler.parent = self
+        handler.name = name
+        metadata.parent = self
+        metadata.name = '%s.metadata' % name
 
         # Versioning
         if isinstance(handler, VersioningAware):

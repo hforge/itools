@@ -73,23 +73,15 @@ class Node(object):
             return './'
         return '../' * i
 
-##        if self.parent is None:
-##            return './'
-##        return self.parent.get_pathtoroot() + '../'
-
 
     def get_pathto(self, handler):
         path = Path(self.get_abspath())
         return path.get_pathto(handler.get_abspath())
 
 
-    def _get_handler_names(self):
-        return []
-
-
     def get_handler_names(self, path='.'):
         container = self.get_handler(path)
-        return container._get_handler_names()
+        return container.get_handler_names()
 
 
     def has_handler(self, path):

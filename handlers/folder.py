@@ -159,14 +159,9 @@ class Folder(Handler):
 
 
     def get_handler_names(self, path='.'):
-        container = self.get_handler(path)
-        return container._get_handler_names()
-
-
-    def _get_handler_names(self):
         database = self.database
-        uri = self.uri
 
+        uri = self.get_handler(path).uri
         if not vfs.exists(uri):
             return []
 

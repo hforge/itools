@@ -17,14 +17,58 @@
 
 # Import from itools
 from itools.uri import Path
-from itools.handlers import Node as TreeNode
 from access import AccessControl
 
 
-class Node(TreeNode):
+class Node(object):
     """A Node is a base object supporting the HTTP protocol and the access
     control API.
     """
+
+    def get_abspath(self):
+        # TODO Should return a Path instance
+        if self.parent is None:
+            return '/'
+
+        parent_path = self.parent.get_abspath()
+        if not parent_path.endswith('/'):
+            parent_path += '/'
+
+        return parent_path + self.name
+
+    abspath = property(get_abspath, None, None, '')
+
+
+    def get_real_handler(self):
+        return self
+
+
+    def get_physical_path(self):
+        # TODO Should return a Path instance
+        return self.get_abspath()
+
+
+    def get_root(self):
+        if self.parent is None:
+            return self
+        return self.parent.get_root()
+
+
+    def get_pathtoroot(self):
+        i = 0
+        parent = self.parent
+        while parent is not None:
+            parent = parent.parent
+            i += 1
+        if i == 0:
+            return './'
+        return '../' * i
+
+
+    def get_pathto(self, handler):
+        path = Path(self.get_abspath())
+        return path.get_pathto(handler.get_abspath())
+
 
     def _get_object(self, name):
         raise NotImplementedError, 'the method "_get_object" is missing'

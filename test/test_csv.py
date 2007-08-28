@@ -35,6 +35,52 @@ TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
 
 
+class Languages(CSV):
+    __slots__ = CSV.__slots__
+    columns = ['name', 'url', 'number', 'date']
+    schema = {'name': Unicode,
+              'url': URI,
+              'number': Integer(index='keyword'),
+              'date': Date(index='keyword')}
+
+
+class Things(CSV):
+    __slots__ = CSV.__slots__
+    columns = ['name', 'date']
+    schema = {'name': Unicode(index='text'), 'date': Date(index='keyword')}
+
+
+class Numbers(CSV):
+    __slots__ = CSV.__slots__
+    columns = ['one', 'two', 'three']
+    schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
+
+
+class People(CSV):
+    __slots__ = CSV.__slots__
+    columns = ['name', 'surname', 'date']
+    schema = {'name': Unicode,
+              'surname': Unicode(index='text'),
+              'date': Date(index='keyword')}
+
+
+class Countries(CSV):
+    __slots__ = CSV.__slots__
+    columns = ['id', 'name', 'country', 'date']
+    schema = {'id': Integer,
+              'name': Unicode(index='text'),
+              'country': Unicode(index='text'),
+              'date': Date(index='keyword')}
+
+
+class Politicians(CSV):
+    __slots__ = CSV.__slots__
+    columns = ['name', 'is_good']
+    schema = {'name': Unicode, 'is_good': Boolean(index='bool')}
+
+
+
+
 class CSVTestCase(TestCase):
 
     def test_unicode(self):
@@ -59,10 +105,7 @@ class CSVTestCase(TestCase):
 
     
     def test_load_state_with_schema(self):
-        handler = CSV()
-        handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
-                          'date': Date}
+        handler = Languages()
         handler.load_state_from_string(TEST_DATA_1)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [
@@ -81,10 +124,7 @@ class CSVTestCase(TestCase):
 
 
     def test_to_str_with_schema(self):
-        handler = CSV()
-        handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
-                          'date': Date}
+        handler = Languages()
         handler.load_state_from_string(TEST_DATA_1)
         self.assertEqual(
             handler.to_str(),
@@ -154,11 +194,7 @@ class CSVTestCase(TestCase):
 
 
     def test_indexes_hit_in_one_row(self):
-        handler = CSV()
-        handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI,
-                          'number': Integer(index='keyword'),
-                          'date': Date(index='keyword')}
+        handler = Languages()
         handler.load_state_from_string(TEST_DATA_1)
         self.assertEqual(handler.search(number=52343), [0])
         self.assertEqual(handler.search(date=Date.decode('2001-03-28')), [1])
@@ -166,9 +202,7 @@ class CSVTestCase(TestCase):
 
     def test_indexes_hit_in_many_rows(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
-        handler = CSV(string=data)
-        handler.columns = ['name', 'date']
-        handler.schema = {'name': Unicode, 'date': Date(index='keyword')}
+        handler = Things(string=data)
         handler.load_state_from_string(data)
         self.assertEqual(handler.search(date=Date.decode('2005-01-01')), [])
         self.assertEqual(handler.search(date=Date.decode('2005-10-10')), [0,2])
@@ -176,9 +210,7 @@ class CSVTestCase(TestCase):
 
     def test_index_new_row(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
-        handler = CSV()
-        handler.columns = ['name', 'date']
-        handler.schema = {'name': Unicode, 'date': Date(index='keyword')}
+        handler = Things()
         handler.load_state_from_string(data)
         handler.add_row(['flower', Date.decode('2005-05-10')])
         self.assertEqual(handler.search(date=Date.decode('2005-05-10')), [1,3])
@@ -186,10 +218,7 @@ class CSVTestCase(TestCase):
 
     def test_index_del_row(self):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
-        handler = CSV()
-        handler.columns = ['name', 'date']
-        handler.schema = {'name': Unicode(index='text'),
-                          'date': Date(index='keyword')}
+        handler = Things()
         handler.load_state_from_string(data)
 
         self.assertEqual(handler.search(name='window'), [1])
@@ -201,10 +230,7 @@ class CSVTestCase(TestCase):
 
 
     def test_build_csv_data(self):
-        handler = CSV()
-        handler.columns = ['name', 'surname', 'date']
-        handler.schema = {'name': Unicode, 'surname': Unicode(index='text'),
-                          'date': Date(index='keyword')}
+        handler = People()
         handler.load_state_from_string('')
         handler.add_row(['Piotr', 'Macuk', '1975-12-08'])
         handler.add_row(['Basia', 'Macuk', '2002-02-14'])
@@ -218,11 +244,7 @@ class CSVTestCase(TestCase):
 
 
     def test_advanced_search(self):
-        handler = CSV()
-        handler.columns = ['id', 'name', 'country', 'date']
-        handler.schema = {'id': Integer, 'name': Unicode(index='text'),
-                          'country': Unicode(index='text'),
-                          'date': Date(index='keyword')}
+        handler = Countries()
         handler.load_state_from('test_adv.csv')
         result1 = handler.search(name='dde', country='sweden')
         self.assertEqual(result1, [5, 6])
@@ -243,9 +265,7 @@ class CSVTestCase(TestCase):
 
 
     def test_search_boolean(self):
-        handler = CSV()
-        handler.columns = ['name', 'is_good']
-        handler.schema = {'name': Unicode, 'is_good': Boolean(index='bool')}
+        handler = Politicians()
         handler.load_state_from_string(
             '"Chavez","1"\n'
             '"Bush","0"\n')
@@ -255,10 +275,7 @@ class CSVTestCase(TestCase):
 
 
     def test_access_by_name(self):
-        handler = CSV()
-        handler.columns = ['name', 'url', 'number', 'date']
-        handler.schema = {'name': Unicode, 'url': URI, 'number': Integer,
-                          'date': Date}
+        handler = Languages()
         handler.load_state_from_string(TEST_DATA_1)
 
         row = handler.get_row(1)
@@ -271,9 +288,7 @@ class CSVTestCase(TestCase):
 
 
     def test_bad_syntax_csv_file_with_schema(self):
-        handler = CSV()
-        handler.columns = ['one', 'two', 'three']
-        handler.schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
+        handler = Numbers()
         load_state = handler.load_state_from_string
         self.assertRaises(ValueError, load_state, TEST_SYNTAX_ERROR)
 

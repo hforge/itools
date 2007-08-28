@@ -29,95 +29,7 @@ handler class hierarchy.
 """
 
 
-
-class Node(object):
-
-    parent = None
-
-    def get_abspath(self):
-        # TODO Should return a Path instance
-        if self.parent is None:
-            return '/'
-
-        parent_path = self.parent.get_abspath()
-        if not parent_path.endswith('/'):
-            parent_path += '/'
-
-        return parent_path + self.name
-
-    abspath = property(get_abspath, None, None, '')
-
-
-    def get_real_handler(self):
-        return self
-
-
-    def get_physical_path(self):
-        # TODO Should return a Path instance
-        return self.get_abspath()
-
-
-    def get_root(self):
-        if self.parent is None:
-            return self
-        return self.parent.get_root()
-
-
-    def get_pathtoroot(self):
-        i = 0
-        parent = self.parent
-        while parent is not None:
-            parent = parent.parent
-            i += 1
-        if i == 0:
-            return './'
-        return '../' * i
-
-
-    def get_pathto(self, handler):
-        path = Path(self.get_abspath())
-        return path.get_pathto(handler.get_abspath())
-
-
-    def get_handler_names(self, path='.'):
-        container = self.get_handler(path)
-        return container.get_handler_names()
-
-
-    def has_handler(self, path):
-        # Normalize the path
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        path, name = path[:-1], path[-1]
-
-        container = self.get_handler(path)
-        return name in container.get_handler_names()
-
-
-    def get_handler(self, path):
-        # Be sure path is a Path
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        if path.is_absolute():
-            root = self.get_root()
-            path = str(path)[1:]
-            return root.get_handler(path)
-
-        if len(path) == 0:
-            return self
-
-        if path[0] == '..':
-            if self.parent is None:
-                raise ValueError, 'this handler is the root handler'
-            return self.parent.get_handler(path[1:])
-
-        raise LookupError, 'file handlers can not be traversed'
-
-
-
-class Handler(Node):
+class Handler(object):
     """
     This class represents a resource handler; where a resource can be
     a file or a directory, and is identified by a URI. It is used as a
@@ -165,6 +77,43 @@ class Handler(Node):
     ########################################################################
     # API
     ########################################################################
+    def get_handler_names(self, path='.'):
+        container = self.get_handler(path)
+        return container.get_handler_names()
+
+
+    def has_handler(self, path):
+        # Normalize the path
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        path, name = path[:-1], path[-1]
+
+        container = self.get_handler(path)
+        return name in container.get_handler_names()
+
+
+    def get_handler(self, path):
+        # Be sure path is a Path
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        if path.is_absolute():
+            root = self.get_root()
+            path = str(path)[1:]
+            return root.get_handler(path)
+
+        if len(path) == 0:
+            return self
+
+        if path[0] == '..':
+            if self.parent is None:
+                raise ValueError, 'this handler is the root handler'
+            return self.parent.get_handler(path[1:])
+
+        raise LookupError, 'file handlers can not be traversed'
+
+
     def to_text(self):
         raise NotImplementedError
 

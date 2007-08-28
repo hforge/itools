@@ -36,7 +36,7 @@ import mimetypes
 
 # Import from itools
 from archive import ZipArchive, TarArchive, Gzip, Bzip2
-from base import Node, Handler
+from base import Handler
 from config import Config
 from file import File
 from folder import Folder
@@ -51,7 +51,6 @@ from table import Table, parse_table, fold_line, escape_data
 
 __all__ = [
     # Abstract classes
-    'Node',
     'Handler',
     # Handlers
     'ZipArchive',

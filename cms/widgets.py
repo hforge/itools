@@ -530,6 +530,26 @@ class TextWidget(Widget):
 
 
 
+class ReadOnlyWidget(Widget):
+
+    template = list(Parser(
+        """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+                   xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <input type="hidden" name="${name}" value="${value}" />
+            ${value}
+        </stl:block>
+        """))
+
+    @staticmethod
+    def to_html(datatype, name, value):
+        namespace = {}
+        namespace['name'] = name
+        namespace['value'] = value
+        return stl(events=ReadOnlyWidget.template, namespace=namespace)
+
+
+
 class MultilineWidget(Widget):
 
     template = list(Parser(
@@ -546,6 +566,24 @@ class MultilineWidget(Widget):
             namespace['value'] = '\n'.join(value)
 
         return stl(events=MultilineWidget.template, namespace=namespace)
+
+
+
+class CheckBoxWidget(Widget):
+
+    template = list(Parser("""
+        <input type="checkbox" name="${name}" value="${value}"
+          checked="${is_selected}" />
+        """, namespaces))
+
+    @staticmethod
+    def to_html(datatype, name, value, is_selected):
+        namespace = {}
+        namespace['name'] = name
+        namespace['value'] = value
+        namespace['is_selected'] = is_selected
+
+        return stl(events=BooleanCheckBox.template, namespace=namespace)
 
 
 

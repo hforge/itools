@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2007-07-18 18:07+CET\n"
+"POT-Creation-Date: 2007-08-28 12:08+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -16,87 +16,36 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-#: cms/tracker.py:671
-msgid "  Assigned To: %s"
-msgstr ""
-
-#: cms/tracker.py:644
-msgid "  Module: %s"
-msgstr ""
-
-#: cms/tracker.py:673
-msgid "  New Attachement: %s"
-msgstr ""
-
-#: cms/tracker.py:658
-msgid "  Priority: %s"
-msgstr ""
-
-#: cms/tracker.py:665
-#, fuzzy
-msgid "  State: %s"
-msgstr "Stato:"
-
-#: cms/tracker.py:630
-#, fuzzy
-msgid "  Title: %s"
-msgstr "Titolo"
-
-#: cms/tracker.py:651
-msgid "  Type: %s"
-msgstr ""
-
-#: cms/tracker.py:637
-msgid "  Version: %s"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
+#: cms/tracker.py:527
 msgid ""
-"\"Additional permissions\" are terms that supplement the terms of this "
-"License by making exceptions from one or more of its conditions."
+"\n"
+"\n"
+"%s\n"
+"\n"
+"%s"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
+#: cms/tracker.py:1005
+msgid "  New Attachment: %s"
+msgstr ""
+
+#: cms/ui/tracker/view_tracker.xml.en:0
 msgid ""
-"\"Copyright\" also means copyright-like laws that apply to other kinds of "
-"works, such as semiconductor masks."
+"\",\")<br/> <input name=\"editor\" type=\"radio\" value=\"excel\"/> For "
+"Excel (Encoding:"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 msgid ""
-"\"Installation Information\" for a User Product means any methods, "
-"procedures, authorization keys, or other information required to install and "
-"execute modified versions of a covered work in that User Product from a "
-"modified version of its Corresponding Source."
+"\";\") <br/><br/> <input class=\"button_ok\" name=\"export_to_csv\" type="
+"\"submit\" value=\"Exporter\"/>"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"\"Knowingly relying\" means you have actual knowledge that, but for the "
-"patent license, your conveying the covered work in a country, or your "
-"recipient's use of the covered work in a country, would infringe one or more "
-"identifiable patents in that country that you have reason to believe are "
-"valid."
+#: cms/tracker.py:608
+msgid "#%s"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "\"Licensees\" and \"recipients\" may be individuals or organizations."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "\"Object code\" means any non-source form of a work."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"\"The Program\" refers to any copyrightable work licensed under this License."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "\"This License\" refers to version 3 of the GNU General Public License."
-msgstr ""
-
-#: cms/root.py:384
+#: cms/root.py:398
 #, fuzzy
 msgid "$n handlers have been indexed in $time seconds."
 msgstr "%s oggetti sono stati re-indicizzati."
@@ -110,14 +59,29 @@ msgstr ""
 msgid "${batch}"
 msgstr "Titolo"
 
-#: cms/ui/csv/view.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "${batch} ${table}"
 msgstr "Titolo"
 
+#: cms/ui/website/contact_form.xml.en:0
+#, fuzzy
+msgid "${body/value}"
+msgstr "Commenti:"
+
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "${body}"
 msgstr ""
+
+#: cms/ui/dressable/view.xml.en:0
+#, fuzzy
+msgid "${browse_file}"
+msgstr "traduzione"
+
+#: cms/ui/dressable/view.xml.en:0
+#, fuzzy
+msgid "${browse_folder}"
+msgstr "traduzione"
 
 #: cms/ui/ical/daily_view.xml.en:0
 msgid "${calendar/name}"
@@ -140,7 +104,7 @@ msgstr ""
 msgid "${col/new_value}"
 msgstr ""
 
-#: cms/ui/csv/edit_row.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "${column/title}"
 msgstr "Titolo"
@@ -179,6 +143,11 @@ msgstr "Elenco metadati"
 msgid "${contents}"
 msgstr "Contenuti"
 
+#: cms/ui/dressable/view.xml.en:0
+#, fuzzy
+msgid "${content}"
+msgstr "Contenuti"
+
 #: cms/ui/wiki/WikiPage_edit.xml.en:0
 msgid "${data}"
 msgstr ""
@@ -207,6 +176,18 @@ msgstr ""
 #: cms/ui/folder/browse_list.xml.en:0
 #, fuzzy
 msgid "${field/title}"
+msgstr "Titolo"
+
+#: cms/ui/table/edit_record.xml.en:0
+msgid ""
+"${field/title} <span stl:if=\"field/mandatory\">(mandatory)</span> <span stl:"
+"if=\"field/multiple\">(multiple)</span> <span stl:if=\"field/is_date"
+"\">Format: 'yyyy-mm-dd'</span>"
+msgstr ""
+
+#: cms/ui/table/edit_record.xml.en:0
+#, fuzzy
+msgid "${field/widget}"
 msgstr "Titolo"
 
 #: cms/ui/folder/order_items.xml.en:0
@@ -239,7 +220,7 @@ msgstr ""
 msgid "${help_source}"
 msgstr ""
 
-#: cms/ui/tracker/search.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "${item/title}"
 msgstr "Titolo"
@@ -298,7 +279,7 @@ msgid ""
 "</a>"
 msgstr ""
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/html/addimage.xml.en:0
 #, fuzzy
 msgid "${message}"
 msgstr "Messaggio"
@@ -307,6 +288,11 @@ msgstr "Messaggio"
 #, fuzzy
 msgid "${metadata/title}"
 msgstr "Elenco metadati"
+
+#: cms/ui/root/credits.xml.en:0
+#, fuzzy
+msgid "${name}"
+msgstr "Oggetti rinominati."
 
 #: cms/ui/folder/rename.xml.en:0
 #, fuzzy
@@ -414,6 +400,10 @@ msgstr "traduzione"
 msgid "${rte}"
 msgstr ""
 
+#: cms/ui/forum/Thread_view.xml.en:0
+msgid "${rte} <input type=\"submit\" value=\"Reply\"/>"
+msgstr ""
+
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "${s/value}"
 msgstr ""
@@ -449,12 +439,12 @@ msgstr ""
 msgid "${state/value}"
 msgstr "Titolo"
 
-#: cms/ui/tracker/view_tracker.xml.en:0
+#: cms/ui/folder/browse_list.xml.en:0
 #, fuzzy
 msgid "${table}"
 msgstr "Titolo"
 
-#: cms/ui/text/view.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 msgid "${text}"
 msgstr ""
 
@@ -479,6 +469,11 @@ msgstr ""
 #, fuzzy
 msgid "${title}"
 msgstr "Titolo"
+
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid ""
+"${title} <a href=\";search_form?${search_parameters}\">(Edit search)</a>"
+msgstr ""
 
 #: cms/ui/root/internal_server_error.xml.en:0
 msgid "${traceback}"
@@ -524,34 +519,21 @@ msgstr ""
 msgid "${week/month}"
 msgstr ""
 
-#: cms/file.py:124
+#: cms/file.py:132
 msgid "%.01f KB"
 msgstr ""
 
-#: cms/file.py:122
+#: cms/file.py:130
 msgid "%.01f MB"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"&lt;one line to give the program's name and a brief idea of what it does.> "
-"Copyright (C) &lt;year> &lt;name of author> This program is free software:"
+#: cms/tracker.py:1028
+msgid "%s: %s to %s"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"&lt;program> Copyright (C) &lt;year> &lt;name of author> This program comes "
-"with ABSOLUTELY NO WARRANTY;"
+#: cms/tracker.py:1031
+msgid "%s: %s%s"
 msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"(1) assert copyright on the software, and (2) offer you this License giving "
-"you legal permission to copy, distribute and/or modify it."
-msgstr ""
-"(1) copyright the software, and (2) offer you this license which gives you "
-"legal permission to copy, distribute and/or modify the software."
 
 #: cms/ui/tracker/search.xml.en:0
 msgid "(<a href=\"${manage_assigned}\">Edit</a>)"
@@ -581,12 +563,8 @@ msgstr ""
 msgid "(<a href=\";search_form?search_name=${search/name}\">Edit</a>)"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"(Additional permissions may be written to require their own removal in "
-"certain cases when you modify the work.) You may place additional "
-"permissions on material, added by you to a covered work, for which you have "
-"or can give appropriate copyright permission."
+#: cms/ui/Handler_edit_metadata.xml.en:0
+msgid "(Separated by comma)"
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
@@ -611,96 +589,35 @@ msgstr ""
 msgid "(optional)"
 msgstr "Commenti:"
 
-#: cms/tracker.py:676
-msgid "-------"
+#: cms/tracker.py:552
+msgid ""
+"--- Comment from : %s ---\n"
+"\n"
+"%s\n"
+"\n"
+"%s"
 msgstr ""
 
-#: ical/icalendar.py:235
+#: cms/tracker.py:1011
+msgid ""
+"-------\n"
+"\n"
+msgstr ""
+
+#: ical/icalendar.py:236
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "0."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "1."
-msgstr ""
-
-#: cms/tracker.py:70
+#: cms/tracker.py:91
 msgid "1.0"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "10."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "11."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "12."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "13."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "14."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "15."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "16."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "17."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "2."
-msgstr ""
-
-#: ical/icalendar.py:234
+#: ical/icalendar.py:235
 msgid "2.0"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "3."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "4."
-msgstr ""
-
-#: cms/skins.py:394
+#: cms/skins.py:402
 msgid "404 Not Found"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "5."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "6."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "7."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "8."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "9."
 msgstr ""
 
 #: cms/ui/forum/Forum_view.xml.en:0
@@ -739,6 +656,10 @@ msgstr ""
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<a href=\"${row/file}\">${row/file}</a> <br/>"
+msgstr ""
+
+#: cms/ui/html/addlink.xml.en:0
+msgid "<a href=\"${x/url}\">${x/name}</a> /"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -783,6 +704,15 @@ msgid ""
 "\"top_menu_contact\" href=\"/;contact_form\">Contact</a>"
 msgstr ""
 
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid ""
+"<a name=\"link\"></a> <a href=\";view?${search_parameters}&amp;"
+"change_several_bugs=1#link\"> Change Several Issues at Once </a> | <a href="
+"\";view?${search_parameters}&amp;export_to_text=1#link\"> Export to Text </"
+"a> | <a href=\";view?${search_parameters}&amp;export_to_csv=1#link\"> Export "
+"to CSV </a>"
+msgstr ""
+
 #: cms/ui/ical/daily_view.xml.en:0
 msgid ""
 "<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/"
@@ -798,7 +728,7 @@ msgstr ""
 
 #: cms/ui/html/addlink.xml.en:0
 msgid ""
-"<a stl:if=\"object/is_folder\" href=\"${object/url}\">${object/name}</a> "
+"<a stl:if=\"object/is_folder\" href=\"${object/url}\"> ${object/name} </a> "
 "<stl:inline stl:if=\"not object/is_folder\">${object/name}</stl:inline>"
 msgstr ""
 
@@ -856,30 +786,27 @@ msgid ""
 "forgotten_password_form\">I forgot my password</a>"
 msgstr ""
 
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid ""
+"<input name=\"${c/name}\" type=\"hidden\" stl:repeat=\"c criteria\" value="
+"\"${c/value}\"/> <input name=\"editor\" type=\"radio\" value=\"oo\" checked="
+"\"on\"/> For OpenOffice (Encoding:"
+msgstr ""
+
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid ""
 "<input name=\"DTEND_day\" id=\"DTEND_day\" size=\"2\" type=\"text\" value="
 "\"${DTEND_day}\"/> / <input name=\"DTEND_month\" id=\"DTEND_month\" size=\"2"
 "\" type=\"text\" value=\"${DTEND_month}\"/> / <input name=\"DTEND_year\" id="
 "\"DTEND_year\" size=\"4\" type=\"text\" value=\"${DTEND_year}\"/> <input id="
-"\"trigger_dtend\" type=\"button\" value=\"...\"/> <span style=\"padding-"
-"left: 10px\"> <input name=\"DTEND_hours\" id=\"DTSTART_hours\" size=\"2\" "
-"type=\"text\" value=\"${DTEND_hours}\"/> : <input name=\"DTEND_minutes\" id="
-"\"DTSTART_minutes\" size=\"2\" type=\"text\" value=\"${DTEND_minutes}\"/> </"
-"span>"
+"\"trigger_dtend\" type=\"button\" value=\"...\"/> <input name=\"DTEND_hours"
+"\" id=\"DTEND_hours\" size=\"2\" type=\"text\" value=\"${DTEND_hours}\"/> :"
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid ""
-"<input name=\"DTSTART_day\" id=\"DTSTART_day\" size=\"2\" type=\"text\" "
-"value=\"${DTSTART_day}\"/> / <input name=\"DTSTART_month\" id=\"DTSTART_month"
-"\" size=\"2\" type=\"text\" value=\"${DTSTART_month}\"/> / <input name="
-"\"DTSTART_year\" id=\"DTSTART_year\" size=\"4\" type=\"text\" value="
-"\"${DTSTART_year}\"/> <input id=\"trigger_dtstart\" type=\"button\" value="
-"\"...\"/> <span style=\"padding-left: 10px\"> <input name=\"DTSTART_hours\" "
-"id=\"DTSTART_hours\" size=\"2\" type=\"text\" value=\"${DTSTART_hours}\"/> : "
-"<input name=\"DTSTART_minutes\" id=\"DTSTART_minutes\" size=\"2\" type=\"text"
-"\" value=\"${DTSTART_minutes}\"/> </span>"
+"<input name=\"DTEND_minutes\" id=\"DTEND_minutes\" size=\"2\" type=\"text\" "
+"value=\"${DTEND_minutes}\"/>"
 msgstr ""
 
 #: cms/ui/ical/daily_view.xml.en:0
@@ -908,6 +835,24 @@ msgid ""
 "title}<br/> <img src=\"${skin/image_uri}\"/>"
 msgstr ""
 
+#: cms/ui/ical/ical_edit_event_form.xml.en:0
+msgid ""
+"<input value=\"${DTSTART_day}\" name=\"DTSTART_day\" size=\"2\" id="
+"\"DTSTART_day\" maxlength=\"2\" type=\"text\"/> / <input value="
+"\"${DTSTART_month}\" name=\"DTSTART_month\" size=\"2\" id=\"DTSTART_month\" "
+"maxlength=\"2\" type=\"text\"/> / <input value=\"${DTSTART_year}\" name="
+"\"DTSTART_year\" size=\"4\" id=\"DTSTART_year\" maxlength=\"4\" type=\"text"
+"\"/> <input id=\"trigger_dtstart\" type=\"button\" value=\"...\"/> <input "
+"value=\"${DTSTART_hours}\" name=\"DTSTART_hours\" size=\"2\" id="
+"\"DTSTART_hours\" maxlength=\"2\" type=\"text\"/> :"
+msgstr ""
+
+#: cms/ui/ical/ical_edit_event_form.xml.en:0
+msgid ""
+"<input value=\"${DTSTART_minutes}\" name=\"DTSTART_minutes\" size=\"2\" id="
+"\"DTSTART_minutes\" maxlength=\"2\" type=\"text\"/>"
+msgstr ""
+
 #: cms/ui/folder/browse_image.xml.en:0
 msgid ""
 "<span id=\"gallery_previous\" stl:if=\"not selected/previous\">&lt;</span>"
@@ -932,14 +877,14 @@ msgstr ""
 msgid "<span>${menu/label}</span>"
 msgstr "Titolo"
 
-#: cms/ui/html/addlink.xml.en:0
+#: cms/tracker.py:375
 #, fuzzy
-msgid ""
-"<stl:inline stl:repeat=\"x bc/path\"> / <a href=\"${x/url}\">${x/name}</a> </"
-"stl:inline> <br/>"
+msgid "<span>There are ${n} results.</span>"
+msgstr "Non sono presenti immagini."
+
+#: cms/tracker.py:374
+msgid "<span>There is 1 result.</span>"
 msgstr ""
-"/ <a stl:if=\"x/url\" stl:content=\"x/name\" stl:attributes=\"href x/url\"></"
-"a>"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 #, fuzzy
@@ -996,118 +941,44 @@ msgstr "<stl:inline content=\"state\"></stl:inline>"
 msgid "<strong>Version:</strong>"
 msgstr "<stl:inline content=\"state\"></stl:inline>"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A \"Major Component\", in this context, means a major essential component "
-"(kernel, window system, and so on) of the specific operating system (if any) "
-"on which the executable work runs, or a compiler used to produce the work, "
-"or an object code interpreter used to run it."
-msgstr ""
+#: cms/future.py:257
+#, fuzzy
+msgid "A dressable folder"
+msgstr "Cartella"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A \"Standard Interface\" means an interface that either is an official "
-"standard defined by a recognized standards body, or, in the case of "
-"interfaces specified for a particular programming language, one that is "
-"widely used among developers working in that language."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A \"User Product\" is either (1) a \"consumer product\", which means any "
-"tangible personal property which is normally used for personal, family, or "
-"household purposes, or (2) anything designed or sold for incorporation into "
-"a dwelling."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A \"contributor\" is a copyright holder who authorizes use under this "
-"License of the Program or a work on which the Program is based."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A \"covered work\" means either the unmodified Program or a work based on "
-"the Program."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A compilation of a covered work with other separate and independent works, "
-"which are not by their nature extensions of the covered work, and which are "
-"not combined with it such as to form a larger program, in or on a volume of "
-"a storage or distribution medium, is called an \"aggregate\" if the "
-"compilation and its resulting copyright are not used to limit the access or "
-"legal rights of the compilation's users beyond what the individual works "
-"permit."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A contributor's \"essential patent claims\" are all patent claims owned or "
-"controlled by the contributor, whether already acquired or hereafter "
-"acquired, that would be infringed by some manner, permitted by this License, "
-"of making, using, or selling its contributor version, but do not include "
-"claims that would be infringed only as a consequence of further modification "
-"of the contributor version."
-msgstr ""
-
-#: cms/messages.py:24
+#: cms/messages.py:27
 #, fuzzy
 msgid "A new resource has been added."
 msgstr "Aggiunta nuova risorsa"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A patent license is \"discriminatory\" if it does not include within the "
-"scope of its coverage, prohibits the exercise of, or is conditioned on the "
-"non-exercise of one or more of the rights that are specifically granted "
-"under this License."
-msgstr ""
-
-#: cms/workflow.py:32
+#: cms/workflow.py:33
 msgid "A pending document awaits review from authorized users to be published."
 msgstr "Un documento è in attesa di essere accettato per la pubblicazione."
 
-#: cms/workflow.py:29
+#: cms/workflow.py:30
 msgid "A private document only can be reached by authorized users."
 msgstr ""
 "Solamente gli utenti autorizzati possono accedere a un documento privato."
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A product is a consumer product regardless of whether the product has "
-"substantial commercial, industrial or non-consumer uses, unless such uses "
-"represent the only significant mode of use of the product."
-msgstr ""
-
-#: cms/workflow.py:35
+#: cms/workflow.py:36
 msgid "A public document can be reached by even anonymous users."
 msgstr ""
 "Qualsiasi utente è in grado di accedere ad un documento pubblicato, anche "
 "gli utenti anonimi."
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"A separable portion of the object code, whose source code is excluded from "
-"the Corresponding Source as a System Library, need not be included in "
-"conveying the object code work."
-msgstr ""
-
-#: cms/forum.py:71
+#: cms/forum.py:107
 msgid "A thread to discuss"
 msgstr ""
 
-#: cms/workflow.py:144
+#: cms/workflow.py:145
 msgid "A transition must be selected."
 msgstr "Deve essere selezionato un cambiamento di stato."
 
-#: rest/rest.py:280
+#: rest/rest.py:282
 msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
 msgstr ""
 
-#: cms/tracker.py:596
+#: cms/tracker.py:979
 msgid "ANONYMOUS"
 msgstr ""
 
@@ -1115,30 +986,19 @@ msgstr ""
 msgid "About"
 msgstr "A proposito di"
 
-#: cms/workflow.py:47
+#: cms/workflow.py:48
 msgid "Accept the document."
 msgstr "Accetta il documento."
-
-#: cms/ui/root/license.xml.en:0
-msgid "Acceptance Not Required for Having Copies."
-msgstr ""
 
 #: cms/ui/access/permissions.xml.en:0
 msgid "Access Control"
 msgstr ""
 
-#: cms/root.py:182
+#: cms/root.py:194
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Access to a network may be denied when the modification itself materially "
-"and adversely affects the operation of the network or violates the rules and "
-"protocols for communication across the network."
-msgstr ""
-
-#: cms/users.py:280
+#: cms/users.py:282
 #, fuzzy
 msgid "Account"
 msgstr "A proposito di"
@@ -1148,7 +1008,7 @@ msgstr "A proposito di"
 msgid "Account Change"
 msgstr "OK"
 
-#: cms/users.py:323
+#: cms/users.py:325
 #, fuzzy
 msgid "Account changed."
 msgstr "Metadati modificati"
@@ -1181,6 +1041,11 @@ msgstr "Nuovo utente"
 msgid "Add Resource of Type \"${class_title}\""
 msgstr "Modifica gruppi per <span stl:content=\"fullname\"></span>"
 
+#: cms/ui/table/add_record.xml.en:0
+#, fuzzy
+msgid "Add a new record"
+msgstr "Nuovo utente"
+
 #: cms/ui/csv/add_row.xml.en:0
 #, fuzzy
 msgid "Add a new row"
@@ -1203,24 +1068,7 @@ msgstr ""
 msgid "Add new content"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "Additional Terms."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Additional permissions that are applicable to the entire Program shall be "
-"treated as though they were included in this License, to the extent that "
-"they are valid under applicable law."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Additional terms, permissive or non-permissive, may be stated in the form of "
-"a separately written license, or stated as exceptions;"
-msgstr ""
-
-#: cms/website.py:59
+#: cms/website.py:61
 msgid "Admin"
 msgstr ""
 
@@ -1237,79 +1085,24 @@ msgstr "Testo integrale"
 msgid "Align Right"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"All other non-permissive additional terms are considered \"further "
-"restrictions\" within the meaning of section 10."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"All rights granted under this License are granted for the term of copyright "
-"on the Program, and are irrevocable provided the stated conditions are met."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Also add information on how to contact you by electronic and paper mail."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"An \"entity transaction\" is a transaction transferring control of an "
-"organization, or substantially all assets of one, or subdividing an "
-"organization, or merging organizations."
-msgstr ""
-
 #: cms/ui/website/forgotten_password.xml.en:0
 msgid ""
 "An email has been sent to you with the procedure to change your password."
 msgstr ""
 
-#: cms/website.py:286
+#: cms/website.py:288
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
 msgstr ""
 
-#: cms/forum.py:185
+#: cms/forum.py:220
 msgid "An iKaaro forum"
 msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"An interactive user interface displays \"Appropriate Legal Notices\" to the "
-"extent that it includes a convenient and prominently visible feature that "
-"(1) displays an appropriate copyright notice, and (2) tells the user that "
-"there is no warranty for the work (except to the extent that warranties are "
-"provided), that licensees may convey the work under this License, and how to "
-"view a copy of this License."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Ancillary propagation of a covered work occurring solely as a consequence of "
-"using peer-to-peer transmission to receive a copy likewise does not require "
-"acceptance."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "And you must show them these terms so they know their rights."
-msgstr "And you must show them these terms so they know their rights."
 
 #: cms/ui/website/search_form.xml.en:0
 msgid "Any"
 msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"Any attempt otherwise to propagate or modify it is void, and will "
-"automatically terminate your rights under this License (including any patent "
-"licenses granted under the third paragraph of section 11)."
-msgstr ""
-"Any attempt otherwise to copy, modify, sublicense or distribute the Program "
-"is void, and will automatically terminate your rights under this License."
 
 #: cms/ui/root/internal_server_error.xml.en:0
 msgid "Apologies for the inconvenience."
@@ -1320,40 +1113,52 @@ msgstr "Siamo spiacenti dell'inconveniente."
 msgid "Application Preferences"
 msgstr "Preferenze"
 
-#: cms/users.py:271
+#: cms/users.py:273
 msgid "Application preferences changed."
 msgstr ""
 
-#: cms/ical.py:34
+#: cms/ical.py:36
 msgid "April"
 msgstr ""
 
-#: cms/wiki.py:466
+#: cms/messages.py:22
+msgid "Are you sure you want to delete the selection?"
+msgstr ""
+
+#: cms/messages.py:21
+msgid "Are you sure you want to delete this object?"
+msgstr ""
+
+#: cms/wiki.py:490
 msgid "As Icons"
 msgstr "Come icone"
 
-#: cms/wiki.py:468
+#: cms/wiki.py:492
 msgid "As Image Gallery"
 msgstr "Come galleria di immagini"
 
-#: cms/wiki.py:467
+#: cms/wiki.py:491
 msgid "As List"
 msgstr "Come lista"
 
-#: cms/ical.py:422
+#: cms/ical.py:424
 msgid "As calendar"
 msgstr ""
 
-#: cms/text.py:135
+#: cms/text.py:137
 msgid "As reStructuredText"
 msgstr ""
 
-#: cms/ui/tracker/search.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 msgid "Assign To"
 msgstr ""
 
-#: cms/tracker.py:302
+#: cms/tracker.py:65
 msgid "Assigned To"
+msgstr ""
+
+#: cms/tracker.py:1073
+msgid "Assigned to"
 msgstr ""
 
 #: cms/ui/tracker/add_issue.xml.en:0
@@ -1368,7 +1173,7 @@ msgstr ""
 msgid "Attendees"
 msgstr ""
 
-#: cms/ical.py:35
+#: cms/ical.py:37
 msgid "August"
 msgstr ""
 
@@ -1376,20 +1181,12 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "Automatic Licensing of Downstream Recipients."
-msgstr ""
-
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Background Color"
 msgstr ""
 
-#: cms/users.py:196
+#: cms/users.py:198
 msgid "Bad key."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "Basic Permissions."
 msgstr ""
 
 #: cms/ui/text/externaledit.xml.en:0
@@ -1416,30 +1213,13 @@ msgstr "Cartella"
 msgid "Browse Content"
 msgstr "Contenuti"
 
-#: cms/access.py:312
+#: cms/access.py:315
 #, fuzzy
 msgid "Browse Members"
 msgstr "Naviga tra gli utenti"
 
-#: cms/ui/folder/browsedir.xml.en:0
-msgid "Browse-Directories"
-msgstr "Naviga tra le cartelle"
-
-#: cms/tracker.py:79
+#: cms/tracker.py:100
 msgid "Bug"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"But first, please read <a href=\"http://www.gnu.org/philosophy/why-not-lgpl."
-"html\">http://www.gnu.org/philosophy/why-not-lgpl.html</a>."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"But this requirement does not apply if neither you nor any third party "
-"retains the ability to install modified object code on the User Product (for "
-"example, the work has been installed in ROM)."
 msgstr ""
 
 #: cms/ui/forum/Forum_view.xml.en:0
@@ -1447,18 +1227,15 @@ msgstr ""
 msgid "By"
 msgstr "Corpo"
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"By contrast, the GNU General Public License is intended to guarantee your "
-"freedom to share and change all versions of a program--to make sure it "
-"remains free software for all its users."
+#: cms/binary.py:298
+msgid "Bzip2"
 msgstr ""
-"By contrast, the GNU General Public License is intended to guarantee your "
-"freedom to share and change free software--to make sure the software is free "
-"for all its users."
 
-#: cms/csv.py:33
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid "CP1252, Separator:"
+msgstr ""
+
+#: cms/csv.py:36
 msgid "CSV Row"
 msgstr ""
 
@@ -1466,7 +1243,7 @@ msgstr ""
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
-#: cms/ical.py:977
+#: cms/ical.py:981
 msgid "Calendar"
 msgstr ""
 
@@ -1475,7 +1252,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "OK"
 
-#: cms/ical.py:97
+#: cms/ical.py:99
 #, fuzzy
 msgid "Cancelled"
 msgstr "OK"
@@ -1517,11 +1294,20 @@ msgstr "Modifica l'impostazione predefinita"
 msgid "Change preferences"
 msgstr "Preferenze"
 
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid "Change several Issues at once"
+msgstr ""
+
+#: cms/tracker.py:475
+#, fuzzy
+msgid "Change several bugs"
+msgstr "Modifica l'impostazione predefinita"
+
 #: cms/ui/text/externaledit.xml.en:0
 msgid "Character encoding"
 msgstr ""
 
-#: cms/root.py:401
+#: cms/root.py:415
 #, fuzzy
 msgid "Check Groups"
 msgstr "Gruppi"
@@ -1556,7 +1342,7 @@ msgstr ""
 msgid "Choose your password"
 msgstr "Modifica l'impostazione predefinita"
 
-#: cms/tracker.py:83
+#: cms/tracker.py:104
 #, fuzzy
 msgid "Closed"
 msgstr "Codice"
@@ -1569,22 +1355,22 @@ msgstr "Codice"
 msgid "Come back to today"
 msgstr ""
 
-#: cms/csv.py:65
+#: cms/csv.py:68
 msgid "Comma Separated Values"
 msgstr ""
 
-#: cms/tracker.py:77
+#: cms/tracker.py:98
 #, fuzzy
 msgid "Command Line Interface"
 msgstr "Scegli un'interfaccia"
 
-#: cms/ui/ical/ical_edit_event_form.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "Comment"
 msgstr "Commenti:"
 
 #: cms/ui/tracker/edit_issue.xml.en:0
-msgid "Comment #${comment/number}"
+msgid "Comment <a href=\"#c${comment/number}\">${comment/number}</a>"
 msgstr ""
 
 #: cms/ui/WorkflowAware_state.xml.en:0
@@ -1606,7 +1392,7 @@ msgstr "Nome del catalogo"
 msgid "Confirm"
 msgstr ""
 
-#: cms/ical.py:96
+#: cms/ical.py:98
 msgid "Confirmed"
 msgstr ""
 
@@ -1624,11 +1410,11 @@ msgstr ""
 msgid "Contacts"
 msgstr "Contenuti"
 
-#: cms/wiki.py:58
+#: cms/wiki.py:62
 msgid "Container for a wiki"
 msgstr ""
 
-#: cms/skins.py:151
+#: cms/skins.py:155
 #, fuzzy
 msgid "Content ($size)"
 msgstr "Contenuti"
@@ -1637,56 +1423,15 @@ msgstr "Contenuti"
 msgid "Contents"
 msgstr "Contenuti"
 
-#: cms/ui/root/license.xml.en:0
-msgid "Conveying Modified Source Versions."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "Conveying Non-Source Forms."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "Conveying Verbatim Copies."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Conveying under any other circumstances is permitted solely under the "
-"conditions stated below."
-msgstr ""
-
-#: cms/folder.py:505
+#: cms/folder.py:509
 msgid "Copy"
 msgstr "Copia"
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"Copyright (C) 2007 Free Software Foundation, Inc. <a href=\"http://fsf.org/"
-"\">http://fsf.org/</a> Everyone is permitted to copy and distribute verbatim "
-"copies of this license document, but changing it is not allowed."
-msgstr ""
-"\n"
-"Copyright (C) 1989, 1991 Free Software Foundation, Inc.  \n"
-"59 Temple Place - Suite 330, Boston, MA  02111-1307, USA\n"
-"\n"
-"Everyone is permitted to copy and distribute verbatim copies\n"
-"of this license document, but changing it is not allowed."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Corresponding Source conveyed, and Installation Information provided, in "
-"accord with this section must be in a format that is publicly documented "
-"(and with an implementation available to the public in source code form), "
-"and must require no special password or key for unpacking, reading or "
-"copying."
-msgstr ""
-
-#: cms/website.py:42
+#: cms/website.py:44
 msgid "Create a new Web Site or Work Place."
 msgstr ""
 
-#: cms/html.py:39
+#: cms/html.py:102
 #, fuzzy
 msgid "Create and publish a Web Document."
 msgstr "Pubblica il documento."
@@ -1695,19 +1440,23 @@ msgstr "Pubblica il documento."
 msgid "Credits"
 msgstr ""
 
+#: cms/ui/dressable/upload_image.xml.en:0
+msgid "Current image"
+msgstr ""
+
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
 msgstr ""
 
-#: cms/folder.py:506
+#: cms/folder.py:510
 msgid "Cut"
 msgstr "Taglia"
 
-#: cms/tracker.py:80
+#: cms/tracker.py:101
 msgid "Data Corruption Issue"
 msgstr ""
 
-#: cms/ical.py:969
+#: cms/ical.py:973
 #, fuzzy
 msgid "Data updated"
 msgstr "File aggiornato."
@@ -1721,7 +1470,7 @@ msgstr "Data"
 msgid "Date :"
 msgstr "Data"
 
-#: cms/ical.py:36
+#: cms/ical.py:38
 msgid "December"
 msgstr ""
 
@@ -1733,54 +1482,41 @@ msgstr "Default"
 msgid "Definitely remove"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "Definitions."
-msgstr "Descrizione"
-
-#: cms/access.py:393
+#: cms/access.py:396
 #, fuzzy
 msgid "Delete"
 msgstr "Default"
-
-#: cms/folder.py:495
-msgid "Are you sure you want to delete the selection?"
-msgstr ""
 
 #: cms/ui/tracker/add_issue.xml.en:0
 msgid "Description"
 msgstr "Descrizione"
 
-#: cms/ui/root/license.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
-msgid "Developers that use the GNU GPL protect your rights with two steps:"
-msgstr "We protect your rights with two steps:"
+msgid "Do not change"
+msgstr "Documento modificato."
 
-#: cms/ui/root/license.xml.en:0
-msgid "Disclaimer of Warranty."
-msgstr ""
-
-#: cms/binary.py:145
+#: cms/binary.py:148
 #, fuzzy
 msgid "Document Excel"
 msgstr "Documento modificato."
 
-#: cms/binary.py:115
+#: cms/binary.py:118
 #, fuzzy
 msgid "Document Flash"
 msgstr "Nuovo documento"
 
-#: cms/binary.py:155
+#: cms/binary.py:158
 #, fuzzy
 msgid "Document PowerPoint"
 msgstr "Documento modificato."
 
-#: cms/binary.py:135
+#: cms/binary.py:138
 #, fuzzy
 msgid "Document Word"
 msgstr "Documento modificato."
 
-#: cms/tracker.py:76
+#: cms/tracker.py:97
 #, fuzzy
 msgid "Documentation"
 msgstr "Nuovo documento"
@@ -1789,58 +1525,24 @@ msgstr "Nuovo documento"
 msgid "Download"
 msgstr ""
 
+#: cms/future.py:256
+#, fuzzy
+msgid "Dressable"
+msgstr "Preambolo"
+
 #: cms/ui/user/edit_account.xml.en:0
 #, fuzzy
 msgid "E-mail"
 msgstr "Email"
 
-#: cms/ui/root/license.xml.en:0
-msgid "END OF TERMS AND CONDITIONS"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER "
-"PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER "
-"EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES "
-"OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
-msgstr ""
-"EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER "
-"PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER "
-"EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES "
-"OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Each contributor grants you a non-exclusive, worldwide, royalty-free patent "
-"license under the contributor's essential patent claims, to make, use, sell, "
-"offer for sale, import and otherwise run, modify and propagate the contents "
-"of its contributor version."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "Each licensee is addressed as \"you\"."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"Each time you convey a covered work, the recipient automatically receives a "
-"license from the original licensors, to run, modify and propagate that work, "
-"subject to this License."
-msgstr ""
-"<strong>6.</strong> Each time you redistribute the Program (or any work "
-"based on the Program), the recipient automatically receives a license from "
-"the original licensor to copy, distribute or modify the Program subject to "
-"these terms and conditions."
-
-#: cms/ui/root/license.xml.en:0
-msgid "Each version is given a distinguishing version number."
-msgstr "Ad ogni versione è associato un numero di versione univoco."
-
 #: cms/ui/tracker/edit_issue.xml.en:0
 msgid "Edit"
 msgstr "Modifica"
+
+#: cms/ui/tracker/view_tracker.xml.en:0
+#, fuzzy
+msgid "Edit Issues"
+msgstr "Utenti"
 
 #: cms/ui/Handler_edit_metadata.xml.en:0
 msgid "Edit Metadata in Current Language"
@@ -1859,6 +1561,10 @@ msgstr ""
 #, fuzzy
 msgid "Edit preferences;"
 msgstr "Preferenze"
+
+#: cms/ui/table/edit_record.xml.en:0
+msgid "Edit record ${id}"
+msgstr ""
 
 #: cms/ui/csv/edit_row.xml.en:0
 msgid "Edit row ${index}"
@@ -1889,15 +1595,15 @@ msgstr ""
 msgid "Epoz-Toolbox"
 msgstr "Epoz-Toolbox"
 
-#: cms/ical.py:703
+#: cms/ical.py:705
 msgid "Event"
 msgstr ""
 
-#: cms/ical.py:1215
+#: cms/ical.py:1220
 msgid "Event definitely deleted."
 msgstr ""
 
-#: cms/ical.py:761
+#: cms/ical.py:765
 msgid "Event not found"
 msgstr ""
 
@@ -1905,16 +1611,29 @@ msgstr ""
 msgid "Everything is alright."
 msgstr ""
 
-#: cms/binary.py:144
+#: cms/binary.py:147
 #, fuzzy
 msgid "Excel"
 msgstr "Esterno"
 
-#: cms/ical.py:1106
+#: cms/tracker.py:429
+msgid "Export as CSV"
+msgstr ""
+
+#: cms/ical.py:1110
 msgid "Export in ical format"
 msgstr ""
 
-#: cms/file.py:162
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid "Export to CSV"
+msgstr ""
+
+#: cms/ui/tracker/view_tracker.xml.en:0
+#, fuzzy
+msgid "Export to Text"
+msgstr "Testo integrale"
+
+#: cms/file.py:170
 msgid "External"
 msgstr "Esterno"
 
@@ -1938,19 +1657,13 @@ msgstr "Editor esterno"
 msgid "Extranet"
 msgstr "Esterno"
 
-#: cms/ical.py:34
+#: cms/ical.py:36
 msgid "February"
 msgstr ""
 
 #: cms/ui/file/upload.xml.en:0
 msgid "File"
 msgstr "File"
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "Finally, every program is threatened constantly by software patents."
-msgstr ""
-"Finally, any free program is threatened constantly by software patents."
 
 #: cms/ui/website/register.xml.en:0
 #, fuzzy
@@ -1966,133 +1679,18 @@ msgstr "Nome completo"
 msgid "Fix"
 msgstr "Ripara"
 
-#: cms/tracker.py:83
+#: cms/tracker.py:104
 #, fuzzy
 msgid "Fixed"
 msgstr "File"
 
-#: cms/binary.py:114
+#: cms/binary.py:117
 msgid "Flash"
 msgstr ""
 
-#: cms/folder.py:61
+#: cms/folder.py:64
 msgid "Folder"
 msgstr "Cartella"
-
-#: cms/future.py:103
-#, fuzzy
-msgid "Folders already down."
-msgstr "Tutti gli utenti sono stati aggiunti."
-
-#: cms/future.py:148
-#, fuzzy
-msgid "Folders already on bottom."
-msgstr "Tutti gli utenti sono stati aggiunti."
-
-#: cms/future.py:127
-#, fuzzy
-msgid "Folders already on top."
-msgstr "Tutti gli utenti sono stati aggiunti."
-
-#: cms/future.py:80
-msgid "Folders already up."
-msgstr ""
-
-#: cms/future.py:113
-msgid "Folders ordered down."
-msgstr ""
-
-#: cms/future.py:155
-#, fuzzy
-msgid "Folders ordered on bottom."
-msgstr "Tutti gli utenti sono stati aggiunti."
-
-#: cms/future.py:134
-#, fuzzy
-msgid "Folders ordered on top."
-msgstr "Tutti gli utenti sono stati aggiunti."
-
-#: cms/future.py:89
-msgid "Folders ordered up."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"For a particular product received by a particular user, \"normally used\" "
-"refers to a typical or common use of that class of product, regardless of "
-"the status of the particular user or of the way in which the particular user "
-"actually uses, or expects or is expected to use, the product."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"For both users' and authors' sake, the GPL requires that modified versions "
-"be marked as changed, so that their problems will not be attributed "
-"erroneously to authors of previous versions."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"For example, Corresponding Source includes interface definition files "
-"associated with source files for the work, and the source code for shared "
-"libraries and dynamically linked subprograms that the work is specifically "
-"designed to require, such as by intimate data communication or control flow "
-"between those subprograms and other parts of the work."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"For example, if you agree to terms that obligate you to collect a royalty "
-"for further conveying from those to whom you convey the Program, the only "
-"way you could satisfy both those terms and this License would be to refrain "
-"entirely from conveying the Program."
-msgstr ""
-"For example, if a patent license would not permit royalty-free "
-"redistribution of the Program by all those who receive copies directly or "
-"indirectly through you, then the only way you could satisfy both it and this "
-"License would be to refrain entirely from distribution of the Program."
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"For example, if you distribute copies of such a program, whether gratis or "
-"for a fee, you must pass on to the recipients the same freedoms that you "
-"received."
-msgstr ""
-"For example, if you distribute copies of such a program, whether gratis or "
-"for a fee, you must give the recipients all the rights that you have."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"For example, you may not impose a license fee, royalty, or other charge for "
-"exercise of rights granted under this License, and you may not initiate "
-"litigation (including a cross-claim or counterclaim in a lawsuit) alleging "
-"that any patent claim is infringed by making, using, selling, offering for "
-"sale, or importing the Program or any portion of it."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"For more information on this, and how to apply and follow the GNU GPL, see "
-"<a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"For purposes of this definition, \"control\" includes the right to grant "
-"patent sublicenses in a manner consistent with the requirements of this "
-"License."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"For the developers' and authors' protection, the GPL clearly explains that "
-"there is no warranty for this free software."
-msgstr ""
-"Also, for each author's protection and ours, we want to make certain that "
-"everyone understands that there is no warranty for this free software."
 
 #: cms/ui/website/forgotten_password_form.xml.en:0
 #, fuzzy
@@ -2109,12 +1707,12 @@ msgstr "Formato"
 msgid "Formatted"
 msgstr "Formato"
 
-#: cms/forum.py:184
+#: cms/forum.py:219
 #, fuzzy
 msgid "Forum"
 msgstr "Formato"
 
-#: cms/ical.py:39
+#: cms/ical.py:41
 msgid "Friday"
 msgstr ""
 
@@ -2122,7 +1720,7 @@ msgstr ""
 msgid "From"
 msgstr "Da"
 
-#: cms/wiki.py:78
+#: cms/wiki.py:82
 msgid "Front Page"
 msgstr ""
 
@@ -2130,17 +1728,23 @@ msgstr ""
 msgid "Full day"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "GNU GENERAL PUBLIC LICENSE"
-msgstr "GNU GENERAL PUBLIC LICENSE"
+#: cms/ui/tracker/search.xml.en:0
+msgid ""
+"Go to issue #<input name=\"issue_name\" size=\"6\" type=\"text\"/> <input "
+"class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
+msgstr ""
 
-#: cms/root.py:430
+#: cms/root.py:444
 #, fuzzy
 msgid "Groups fixed."
 msgstr "Gruppo aggiunto"
 
-#: cms/access.py:95
+#: cms/access.py:98
 msgid "Guest"
+msgstr ""
+
+#: cms/binary.py:292
+msgid "Gzip"
 msgstr ""
 
 #: cms/ui/epoz/rte.xml.en:0
@@ -2182,27 +1786,19 @@ msgstr "in attesa di pubblicazione"
 msgid "Heading 6"
 msgstr "in attesa di pubblicazione"
 
-#: cms/wiki.py:503
+#: cms/wiki.py:527
 msgid "Help"
 msgstr "Aiuto"
-
-#: cms/ui/root/credits.xml.en:0
-msgid "Henry Obein"
-msgstr ""
-
-#: cms/ui/root/credits.xml.en:0
-msgid "Hervé Cauwelier"
-msgstr ""
 
 #: cms/ui/root/credits.xml.en:0
 msgid "Hervé Cauwelier (French)"
 msgstr ""
 
-#: cms/tracker.py:82
+#: cms/tracker.py:103
 msgid "High"
 msgstr ""
 
-#: cms/tracker.py:97
+#: cms/tracker.py:118
 msgid "High Priority"
 msgstr ""
 
@@ -2211,158 +1807,9 @@ msgid "History"
 msgstr "Storico"
 
 #: cms/ui/root/license.xml.en:0
-msgid "How to Apply These Terms to Your New Programs"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
 msgid ""
-"However, if you cease all violation of this License, then your license from "
-"a particular copyright holder is reinstated (a) provisionally, unless and "
-"until the copyright holder explicitly and finally terminates your license, "
-"and (b) permanently, if the copyright holder fails to notify you of the "
-"violation by some reasonable means prior to 60 days after the cessation."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"However, it does not include the work's System Libraries, or general-purpose "
-"tools or generally available free programs which are used unmodified in "
-"performing those activities but which are not part of the work."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"However, no additional obligations are imposed on any author or copyright "
-"holder as a result of your choosing to follow a later version."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"However, nothing other than this License grants you permission to propagate "
-"or modify any covered work."
-msgstr ""
-"However, nothing else grants you permission to modify or distribute the "
-"Program or its derivative works."
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL "
-"ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE "
-"PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY "
-"GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE "
-"OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA "
-"OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD "
-"PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), "
-"EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF "
-"SUCH DAMAGES."
-msgstr ""
-"<strong>12.</strong> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED "
-"TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY "
-"AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR "
-"DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES "
-"ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT "
-"LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES "
-"SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE "
-"WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN "
-"ADVISED OF THE POSSIBILITY OF SUCH DAMAGES."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If a license document contains a further restriction but permits relicensing "
-"or conveying under this License, you may add to a covered work material "
-"governed by the terms of that license document, provided that the further "
-"restriction does not survive such relicensing or conveying."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If additional permissions apply only to part of the Program, that part may "
-"be used separately under those permissions, but the entire Program remains "
-"governed by this License without regard to the additional permissions."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"If conditions are imposed on you (whether by court order, agreement or "
-"otherwise) that contradict the conditions of this License, they do not "
-"excuse you from the conditions of this License."
-msgstr ""
-"<strong>7.</strong> If, as a consequence of a court judgment or allegation "
-"of patent infringement or for any other reason (not limited to patent "
-"issues), conditions are imposed on you (whether by court order, agreement or "
-"otherwise) that contradict the conditions of this License, they do not "
-"excuse you from the conditions of this License."
-
-#: cms/ui/root/license.xml.en:0
-msgid "If not, see &lt;http://www.gnu.org/licenses/>."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If propagation of a covered work results from an entity transaction, each "
-"party to that transaction who receives a copy of the work also receives "
-"whatever licenses to the work the party's predecessor in interest had or "
-"could give under the previous paragraph, plus a right to possession of the "
-"Corresponding Source of the work from the predecessor in interest, if the "
-"predecessor has it or can get it with reasonable efforts."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If such problems arise substantially in other domains, we stand ready to "
-"extend this provision to those domains in future versions of the GPL, as "
-"needed to protect the freedom of users."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If the Program as you received it, or any part of it, contains a notice "
-"stating that it is governed by this License along with a term that is a "
-"further restriction, you may remove that term."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"If the Program does not specify a version number of the GNU General Public "
-"License, you may choose any version ever published by the Free Software "
-"Foundation."
-msgstr ""
-"If the Program does not specify a version number of this License, you may "
-"choose any version ever published by the Free Software Foundation."
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"If the Program specifies that a certain numbered version of the GNU General "
-"Public License \"or any later version\" applies to it, you have the option "
-"of following the terms and conditions either of that numbered version or of "
-"any later version published by the Free Software Foundation."
-msgstr ""
-"If the Program specifies a version number of this License which applies to "
-"it and \"any later version\", you have the option of following the terms and "
-"conditions either of that version or of any later version published by the "
-"Free Software Foundation."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If the Program specifies that a proxy can decide which future versions of "
-"the GNU General Public License can be used, that proxy's public statement of "
-"acceptance of a version permanently authorizes you to choose that version "
-"for the Program."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If the disclaimer of warranty and limitation of liability provided above "
-"cannot be given local legal effect according to their terms, reviewing "
-"courts shall apply local law that most closely approximates an absolute "
-"waiver of all civil liability in connection with the Program, unless a "
-"warranty or assumption of liability accompanies a copy of the Program in "
-"return for a fee."
+"If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/"
+"licenses/</a>."
 msgstr ""
 
 #: cms/ui/root/internal_server_error.xml.en:0
@@ -2371,82 +1818,6 @@ msgid "If the error persits contact with the system administrator."
 msgstr ""
 "L'errore dovrebbe essere riportato automaticamente all'amministratore di "
 "sistema."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If the interface presents a list of user commands or options, such as a "
-"menu, a prominent item in the list meets this criterion."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If the place to copy the object code is a network server, the Corresponding "
-"Source may be on a different server (operated by you or a third party) that "
-"supports equivalent copying facilities, provided you maintain clear "
-"directions next to the object code saying where to find the Corresponding "
-"Source."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If the program does terminal interaction, make it output a short notice like "
-"this when it starts in an interactive mode:"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If this is what you want to do, use the GNU Lesser General Public License "
-"instead of this License."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If you add terms to a covered work in accord with this section, you must "
-"place, in the relevant source files, a statement of the additional terms "
-"that apply to those files, or a notice indicating where to find the "
-"applicable terms."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"If you cannot convey a covered work so as to satisfy simultaneously your "
-"obligations under this License and any other pertinent obligations, then as "
-"a consequence you may not convey it at all."
-msgstr ""
-"If you cannot distribute so as to satisfy simultaneously your obligations "
-"under this License and any other pertinent obligations, then as a "
-"consequence you may not distribute the Program at all."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If you convey a covered work, knowingly relying on a patent license, and the "
-"Corresponding Source of the work is not available for anyone to copy, free "
-"of charge and under the terms of this License, through a publicly available "
-"network server or other readily accessible means, then you must either (1) "
-"cause the Corresponding Source to be so available, or (2) arrange to deprive "
-"yourself of the benefit of the patent license for this particular work, or "
-"(3) arrange, in a manner consistent with the requirements of this License, "
-"to extend the patent license to downstream recipients."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If you convey an object code work under this section in, or with, or "
-"specifically for use in, a User Product, and the conveying occurs as part of "
-"a transaction in which the right of possession and use of the User Product "
-"is transferred to the recipient in perpetuity or for a fixed term "
-"(regardless of how the transaction is characterized), the Corresponding "
-"Source conveyed under this section must be accompanied by the Installation "
-"Information."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If you develop a new program, and you want it to be of the greatest possible "
-"use to the public, the best way to achieve this is to make it free software "
-"which everyone can redistribute and change under these terms."
-msgstr ""
 
 #: cms/ui/text/externaledit.xml.en:0
 msgid "If you don't, you can download it from a link below."
@@ -2458,61 +1829,19 @@ msgid ""
 "ikaaro.org\">file a bug report</a>."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If your program is a subroutine library, you may consider it more useful to "
-"permit linking proprietary applications with the library."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If your rights have been terminated and not permanently reinstated, you do "
-"not qualify to receive new licenses for the same material under section 10."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"If, pursuant to or in connection with a single transaction or arrangement, "
-"you convey, or propagate by procuring conveyance of, a covered work, and "
-"grant a patent license to some of the parties receiving the covered work "
-"authorizing them to use, propagate, modify or convey a specific copy of the "
-"covered work, then the patent license you grant is automatically extended to "
-"all recipients of the covered work and works based on it."
-msgstr ""
-
-#: cms/binary.py:43
+#: cms/ui/dressable/upload_image.xml.en:0
 msgid "Image"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"In determining whether a product is a consumer product, doubtful cases shall "
-"be resolved in favor of coverage."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"In the following three paragraphs, a \"patent license\" is any express "
-"agreement or commitment, however denominated, not to enforce a patent (such "
-"as an express permission to practice a patent or covenant not to sue for "
-"patent infringement)."
 msgstr ""
 
 #: i18n/segment.py:19
 msgid "Inc"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Inclusion of a covered work in an aggregate does not cause this License to "
-"apply to the other parts of the aggregate."
-msgstr ""
-
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Indent"
 msgstr ""
 
-#: cms/text.py:202
+#: cms/text.py:204
 msgid "Inline"
 msgstr "In linea"
 
@@ -2545,19 +1874,15 @@ msgstr ""
 msgid "Internal Server Error"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "Interpretation of Sections 15 and 16."
-msgstr ""
-
 #: cms/ui/website/anonymous.xml.en:0
 msgid "Intranet"
 msgstr ""
 
-#: cms/forum.py:257
+#: cms/forum.py:299
 msgid "Invalid title."
 msgstr ""
 
-#: cms/tracker.py:515
+#: cms/tracker.py:895
 msgid "Issue"
 msgstr ""
 
@@ -2565,45 +1890,47 @@ msgstr ""
 msgid "Issue #${number}"
 msgstr ""
 
-#: cms/tracker.py:51
+#: cms/tracker.py:72
 msgid "Issue Tracker"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"It is safest to attach them to the start of each source file to most "
-"effectively state the exclusion of warranty;"
+#: cms/tracker.py:738
+msgid "Issue not found."
 msgstr ""
+
+#: cms/tracker.py:797
+#, fuzzy
+msgid "Issues"
+msgstr "Utenti"
 
 #: cms/ui/epoz/rte.xml.en:0
 #, fuzzy
 msgid "Italic"
 msgstr "Italiano"
 
-#: cms/ical.py:34
+#: cms/ical.py:36
 msgid "January"
 msgstr ""
-
-#: cms/ui/root/credits.xml.en:0
-#, fuzzy
-msgid "Juan David Ibáñez Palomar"
-msgstr "J. David Ibáñez, sviluppatore principale"
 
 #: cms/ui/root/credits.xml.en:0
 #, fuzzy
 msgid "Juan David Ibáñez Palomar (Spanish)"
 msgstr "J. David Ibáñez, sviluppatore principale"
 
-#: cms/ical.py:35
+#: cms/ical.py:37
 msgid "July"
 msgstr ""
 
-#: cms/ical.py:35
+#: cms/ical.py:37
 msgid "June"
 msgstr ""
 
-#: cms/text.py:38
+#: cms/text.py:40
 msgid "Keep your notes with plain text files."
+msgstr ""
+
+#: cms/ui/Handler_edit_metadata.xml.en:0
+msgid "Keywords"
 msgstr ""
 
 #: cms/ui/user/edit.xml.en:0
@@ -2615,28 +1942,28 @@ msgstr "Linguaggio"
 msgid "Language Settings"
 msgstr "Impostazioni linguaggi"
 
-#: cms/website.py:157
+#: cms/website.py:159
 msgid "Language added."
 msgstr "Linguaggio aggiunto."
 
-#: cms/website.py:85
+#: cms/website.py:87
 msgid "Languages"
 msgstr "Linguaggi"
 
-#: cms/website.py:144
+#: cms/website.py:146
 msgid "Languages removed."
 msgstr "Linguaggi rimossi"
 
-#: cms/folder.py:919
+#: cms/folder.py:889
 msgid "Last Author"
 msgstr ""
 
-#: cms/folder.py:869
+#: cms/folder.py:839
 #, fuzzy
 msgid "Last Changes"
 msgstr "OK"
 
-#: cms/folder.py:918
+#: cms/folder.py:888
 #, fuzzy
 msgid "Last Modified"
 msgstr "modificato:"
@@ -2656,28 +1983,15 @@ msgid "Last name"
 msgstr "nome"
 
 #: cms/ui/root/license.xml.en:0
-msgid ""
-"Later license versions may give you additional or different permissions."
-msgstr ""
-
-#: cms/root.py:339
 msgid "License"
 msgstr "Licenza"
-
-#: cms/ui/root/license.xml.en:0
-msgid "Limitation of Liability."
-msgstr ""
-
-#: cms/ui/html/addlink.xml.en:0
-msgid "Link"
-msgstr "Collegamento"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 #, fuzzy
 msgid "Location"
 msgstr "Azione"
 
-#: cms/ui/aruni/template.xhtml.en:0
+#: cms/ui/html/addlink.xml.en:0
 #, fuzzy
 msgid "Location:"
 msgstr "Azione"
@@ -2690,19 +2004,15 @@ msgstr "Entra"
 msgid "Login"
 msgstr "Entra"
 
-#: cms/tracker.py:82
+#: cms/tracker.py:103
 msgid "Low"
 msgstr ""
 
-#: cms/ui/root/credits.xml.en:0
-msgid "Luis Belmar-Letelier"
-msgstr ""
-
-#: cms/skins.py:107
+#: cms/skins.py:111
 msgid "Main Menu"
 msgstr ""
 
-#: cms/root.py:400
+#: cms/root.py:414
 msgid "Maintenance"
 msgstr ""
 
@@ -2718,53 +2028,52 @@ msgstr ""
 msgid "Manage personal content;"
 msgstr ""
 
-#: cms/ical.py:34
+#: cms/ical.py:36
 #, fuzzy
 msgid "March"
 msgstr "Cerca"
 
-#: cms/ical.py:35
+#: cms/ical.py:37
 msgid "May"
 msgstr ""
 
-#: cms/tracker.py:82
+#: cms/tracker.py:103
 msgid "Medium"
 msgstr ""
 
-#: cms/access.py:96
+#: cms/access.py:99
 msgid "Member"
 msgstr ""
 
-#: cms/access.py:445
+#: cms/access.py:448
 msgid "Members"
 msgstr ""
 
-#: cms/access.py:414
+#: cms/access.py:417
 #, fuzzy
 msgid "Members deleted."
 msgstr "Nessun oggetto selezionato."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Mere interaction with a user through a computer network, with no transfer of "
-"a copy, is not conveying."
-msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
 msgid "Message"
 msgstr "Messaggio"
 
-#: cms/text.py:190
+#: cms/ui/html/addlink.xml.en:0
+#, fuzzy
+msgid "Message :${message}"
+msgstr "Messaggio"
+
+#: cms/text.py:192
 #, fuzzy
 msgid "Message Catalog"
 msgstr "Salva la traduzione"
 
-#: cms/forum.py:44
+#: cms/forum.py:58
 #, fuzzy
 msgid "Message in a thread"
 msgstr "Messaggio modificato."
 
-#: cms/website.py:557
+#: cms/website.py:561
 #, fuzzy
 msgid "Message sent."
 msgstr "Messaggio modificato."
@@ -2774,9 +2083,19 @@ msgstr "Messaggio modificato."
 msgid "Message:"
 msgstr "Messaggio"
 
-#: cms/ical.py:1103
+#: cms/ical.py:1107
 msgid "Metadata"
 msgstr "Metadati"
+
+#: cms/tracker.py:525
+#, fuzzy
+msgid "Modifications:"
+msgstr "Azione"
+
+#: cms/tracker.py:66
+#, fuzzy
+msgid "Modified"
+msgstr "modificato:"
 
 #: cms/ui/website/search_form.xml.en:0
 #, fuzzy
@@ -2787,34 +2106,33 @@ msgstr "modificato:"
 msgid "Modified before"
 msgstr ""
 
-#: cms/ui/tracker/search.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "Module"
 msgstr "Codice"
 
-#: cms/ical.py:38
+#: cms/ical.py:40
 msgid "Monday"
 msgstr ""
 
-#: cms/ical.py:466
+#: cms/ical.py:468
 msgid "Monthly"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Moreover, your license from a particular copyright holder is reinstated "
-"permanently if the copyright holder notifies you of the violation by some "
-"reasonable means, this is the first time you have received notice of "
-"violation of this License (for any work) from that copyright holder, and you "
-"cure the violation prior to 30 days after your receipt of the notice."
+#: cms/ui/folder/order_items.xml.en:0
+msgid "Move into ordered category"
 msgstr ""
 
-#: cms/skins.py:74
+#: cms/ui/folder/order_items.xml.en:0
+msgid "Move into unordered category"
+msgstr ""
+
+#: cms/skins.py:78
 #, fuzzy
 msgid "My Content"
 msgstr "Contenuti"
 
-#: cms/skins.py:71
+#: cms/skins.py:75
 msgid "My Profile"
 msgstr ""
 
@@ -2835,7 +2153,7 @@ msgstr ""
 msgid "Name:"
 msgstr "Nome"
 
-#: cms/skins.py:116
+#: cms/ui/tracker/search.xml.en:0
 msgid "Navigation"
 msgstr ""
 
@@ -2848,7 +2166,7 @@ msgstr ""
 msgid "New Comment"
 msgstr "Commenti:"
 
-#: cms/tracker.py:79
+#: cms/tracker.py:100
 #, fuzzy
 msgid "New Feature"
 msgstr "Nuova risorsa"
@@ -2858,7 +2176,7 @@ msgstr "Nuova risorsa"
 msgid "New Language:"
 msgstr "Linguaggio"
 
-#: cms/access.py:446
+#: cms/access.py:449
 #, fuzzy
 msgid "New Member"
 msgstr "Nuova cartella"
@@ -2868,7 +2186,7 @@ msgstr "Nuova cartella"
 msgid "New Password"
 msgstr "Parola d'accesso"
 
-#: cms/wiki.py:485
+#: cms/wiki.py:509
 msgid "New Resource"
 msgstr "Nuova risorsa"
 
@@ -2885,12 +2203,17 @@ msgstr ""
 msgid "New Wiki Page"
 msgstr "Nuova area di lavoro"
 
-#: cms/tracker.py:419
+#: cms/tracker.py:728
 #, fuzzy
 msgid "New issue addded."
 msgstr "Aggiunta nuova risorsa"
 
-#: cms/csv.py:220
+#: cms/table.py:305
+#, fuzzy
+msgid "New record added."
+msgstr "Aggiunta nuova risorsa"
+
+#: cms/csv.py:223
 #, fuzzy
 msgid "New row added."
 msgstr "Aggiunta nuova risorsa"
@@ -2901,34 +2224,18 @@ msgid "Next"
 msgstr "Testo"
 
 #: cms/ui/root/credits.xml.en:0
-msgid "Nicolas Deram"
-msgstr ""
-
-#: cms/ui/root/credits.xml.en:0
 msgid "Nicolas Deram (French)"
 msgstr ""
 
-#: cms/ui/root/credits.xml.en:0
-msgid "Nicolas Oyez"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "No Surrender of Others' Freedom."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"No covered work shall be deemed part of an effective technological measure "
-"under any applicable law fulfilling obligations under article 11 of the WIPO "
-"copyright treaty adopted on 20 December 1996, or similar laws prohibiting or "
-"restricting circumvention of such measures."
+#: cms/tracker.py:465
+msgid "No data to export."
 msgstr ""
 
 #: cms/ui/user/tasks.xml.en:0
 msgid "No document awaits your review."
 msgstr ""
 
-#: cms/file.py:246
+#: cms/file.py:254
 msgid "No file has been entered."
 msgstr "Nessun file è stato inserito."
 
@@ -2937,11 +2244,11 @@ msgstr "Nessun file è stato inserito."
 msgid "No history."
 msgstr "Storico"
 
-#: cms/folder.py:710
+#: cms/folder.py:714
 msgid "No objects selected."
 msgstr "Nessun oggetto selezionato."
 
-#: cms/forum.py:253
+#: cms/forum.py:295
 msgid "No title given."
 msgstr ""
 
@@ -2950,7 +2257,7 @@ msgstr ""
 msgid "Normal"
 msgstr "Formato"
 
-#: cms/tracker.py:96
+#: cms/tracker.py:117
 msgid "Not Assigned"
 msgstr ""
 
@@ -2967,87 +2274,65 @@ msgstr ""
 msgid "Note:"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Nothing in this License shall be construed as excluding or limiting any "
-"implied license or other defenses to infringement that may otherwise be "
-"available to you under applicable patent law."
-msgstr ""
-
-#: cms/ical.py:1253
+#: cms/ical.py:1258
 #, fuzzy
 msgid "Nothing to change."
 msgstr "Metadati modificati"
 
-#: cms/folder.py:724
+#: cms/folder.py:728
 #, fuzzy
 msgid "Nothing to paste."
 msgstr "Metadati modificati"
 
-#: cms/ical.py:1259
+#: cms/ical.py:1264
 msgid "Nothing to remove."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Notwithstanding any other provision of this License, for material you add to "
-"a covered work, you may (if authorized by the copyright holders of that "
-"material) supplement the terms of this License with terms:"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Notwithstanding any other provision of this License, you have permission to "
-"link or combine any covered work with a work licensed under version 3 of the "
-"GNU Affero General Public License into a single combined work, and to convey "
-"the resulting work."
-msgstr ""
-
-#: cms/ical.py:36
+#: cms/ical.py:38
 msgid "November"
 msgstr ""
 
-#: cms/binary.py:215
-#, fuzzy
-msgid "ODF Document"
-msgstr "Nuovo documento"
-
-#: cms/binary.py:234
+#: cms/binary.py:237
 msgid "ODP"
 msgstr ""
 
-#: cms/binary.py:235
+#: cms/binary.py:238
 #, fuzzy
 msgid "ODP Document"
 msgstr "Nuovo documento"
 
-#: cms/binary.py:224
+#: cms/binary.py:227
 msgid "ODS"
 msgstr ""
 
-#: cms/binary.py:225
+#: cms/binary.py:228
 #, fuzzy
 msgid "ODS Document"
 msgstr "Nuovo documento"
 
-#: cms/binary.py:214
+#: cms/binary.py:217
 msgid "ODT"
 msgstr ""
+
+#: cms/binary.py:218
+#, fuzzy
+msgid "ODT Document"
+msgstr "Nuovo documento"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "OK"
 msgstr "OK"
 
-#: cms/binary.py:174
+#: cms/binary.py:177
 msgid "OOo Calc"
 msgstr ""
 
-#: cms/binary.py:184
+#: cms/binary.py:187
 #, fuzzy
 msgid "OOo Impress"
 msgstr "Documento modificato."
 
-#: cms/binary.py:164
+#: cms/binary.py:167
 #, fuzzy
 msgid "OOo Writer"
 msgstr "scrivi"
@@ -3056,36 +2341,82 @@ msgstr "scrivi"
 msgid "OPTIONNAL"
 msgstr ""
 
-#: cms/folder.py:697
+#: cms/future.py:159
+#, fuzzy
+msgid "Objects already down."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:204
+#, fuzzy
+msgid "Objects already on bottom."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:183
+#, fuzzy
+msgid "Objects already on top."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:136
+#, fuzzy
+msgid "Objects already up."
+msgstr "Oggetti rinominati."
+
+#: cms/folder.py:701
 msgid "Objects copied."
 msgstr "Oggetti copiati."
 
-#: cms/folder.py:717
+#: cms/folder.py:721
 msgid "Objects cut."
 msgstr "Oggetti tagliati."
 
-#: cms/folder.py:778
+#: cms/future.py:243
+#, fuzzy
+msgid "Objects moved to ordered category."
+msgstr "Oggetti rimossi: %s."
+
+#: cms/future.py:169
+#, fuzzy
+msgid "Objects ordered down."
+msgstr "Oggetti rinominati."
+
+#: cms/future.py:211
+#, fuzzy
+msgid "Objects ordered on bottom."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:190
+#, fuzzy
+msgid "Objects ordered on top."
+msgstr "Tutti gli utenti sono stati aggiunti."
+
+#: cms/future.py:145
+#, fuzzy
+msgid "Objects ordered up."
+msgstr "Oggetti rinominati."
+
+#: cms/folder.py:761
 msgid "Objects pasted."
 msgstr "Oggetti incollati."
 
-#: cms/folder.py:619
+#: cms/folder.py:623
 #, fuzzy
 msgid "Objects removed: $objects."
 msgstr "Oggetti rimossi: %s."
 
-#: cms/folder.py:676
+#: cms/future.py:460
+#, fuzzy
+msgid "Objects removed: %s"
+msgstr "Oggetti rimossi: %s."
+
+#: cms/folder.py:680
 msgid "Objects renamed."
 msgstr "Oggetti rinominati."
 
-#: cms/ical.py:36
+#: cms/ical.py:38
 msgid "October"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "Of course, your program's commands might be different;"
-msgstr ""
-
-#: cms/ical.py:925
+#: cms/ical.py:929
 msgid "One or more field is invalid."
 msgstr ""
 
@@ -3093,31 +2424,31 @@ msgstr ""
 msgid "Only administrators will be able to register new users."
 msgstr ""
 
-#: cms/tracker.py:83
+#: cms/tracker.py:104
 msgid "Open"
 msgstr ""
 
-#: cms/tracker.py:95
+#: cms/tracker.py:116
 msgid "Open Issues"
 msgstr ""
 
-#: cms/binary.py:165
+#: cms/binary.py:168
 msgid "OpenOffice.org Document"
 msgstr ""
 
-#: cms/binary.py:185
+#: cms/binary.py:188
 msgid "OpenOffice.org Presentation"
 msgstr ""
 
-#: cms/binary.py:175
+#: cms/binary.py:178
 msgid "OpenOffice.org Spreadsheet"
 msgstr ""
 
-#: cms/users.py:216
+#: cms/users.py:218
 msgid "Operation successful ! Welcome."
 msgstr ""
 
-#: cms/future.py:54
+#: cms/future.py:101
 #, fuzzy
 msgid "Order"
 msgstr "Cartella"
@@ -3144,38 +2475,29 @@ msgstr ""
 msgid "Ordered List"
 msgstr "Cartella"
 
-#: cms/folder.py:62
+#: cms/ui/folder/order_items.xml.en:0
+#, fuzzy
+msgid "Ordered Objects"
+msgstr "Rinomina oggetti.."
+
+#: cms/folder.py:65
 msgid "Organize your files and documents with folders."
 msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"Our General Public Licenses are designed to make sure that you have the "
-"freedom to distribute copies of free software (and charge for them if you "
-"wish), that you receive source code or can get it if you want it, that you "
-"can change the software or use pieces of it in new free programs, and that "
-"you know you can do these things."
-msgstr ""
-"Our General Public Licenses are designed to make sure that you have the "
-"freedom to distribute copies of free software (and charge for this service "
-"if you wish), that you receive source code or can get it if you want it, "
-"that you can change the software or use pieces of it in new free programs;"
 
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Outdent"
 msgstr ""
 
-#: cms/binary.py:194
+#: cms/binary.py:197
 msgid "PDF"
 msgstr ""
 
-#: cms/binary.py:195
+#: cms/binary.py:198
 #, fuzzy
 msgid "PDF Document"
 msgstr "Nuovo documento"
 
-#: cms/wiki.py:400
+#: cms/wiki.py:405
 msgid "PDF generation failed."
 msgstr ""
 
@@ -3196,30 +2518,25 @@ msgstr "Parola d'accesso"
 msgid "Password Change"
 msgstr "Parola d'accesso modificata."
 
-#: cms/users.py:376
+#: cms/users.py:378
 msgid "Password changed."
 msgstr "Parola d'accesso modificata."
 
-#: cms/users.py:360
+#: cms/users.py:362
 #, fuzzy
 msgid "Password empty, please type one."
 msgstr "La password è errata, tenta di nuovo."
 
-#: cms/users.py:363
+#: cms/users.py:365
 #, fuzzy
 msgid "Passwords mismatch, please try again."
 msgstr "La password è errata, tenta di nuovo."
 
-#: cms/folder.py:511
+#: cms/folder.py:515
 msgid "Paste"
 msgstr "Incolla"
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "Patents."
-msgstr "Contenuti"
-
-#: cms/workflow.py:31
+#: cms/workflow.py:32
 #, fuzzy
 msgid "Pending"
 msgstr "in attesa di pubblicazione"
@@ -3229,45 +2546,56 @@ msgstr "in attesa di pubblicazione"
 msgid "Pending tasks."
 msgstr "in attesa di pubblicazione"
 
-#: cms/tracker.py:81
+#: cms/tracker.py:102
 msgid "Performance Improvement"
 msgstr ""
 
-#: cms/ui/root/credits.xml.en:0
-msgid "Piotr Macuk"
-msgstr ""
-
-#: cms/text.py:118
+#: cms/text.py:120
 msgid "Plain Text"
 msgstr "Testo integrale"
 
-#: cms/website.py:543
-msgid "Please fill the missing fields."
-msgstr ""
-
-#: cms/ical.py:861
+#: cms/ical.py:865
 #, fuzzy
 msgid "Please select a resource."
 msgstr "Devi scegliere un collaboratore da rimuovere."
 
-#: cms/future.py:98
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid "Please select encoding:<br/><br/>"
+msgstr ""
+
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
-msgid "Please select the folders to order down."
+msgid "Please select the columns to export:"
 msgstr "Devi scegliere un collaboratore da rimuovere."
 
-#: cms/future.py:142
+#: cms/future.py:234
 #, fuzzy
-msgid "Please select the folders to order on bottom."
+msgid "Please select the ordered objects to move into the unordered category."
 msgstr "Devi scegliere un collaboratore da rimuovere."
 
-#: cms/future.py:121
+#: cms/future.py:154
 #, fuzzy
-msgid "Please select the folders to order on top."
+msgid "Please select the ordered objects to order down."
 msgstr "Devi scegliere un collaboratore da rimuovere."
 
-#: cms/future.py:75
+#: cms/future.py:198
 #, fuzzy
-msgid "Please select the folders to order up."
+msgid "Please select the ordered objects to order on bottom."
+msgstr "Devi scegliere un collaboratore da rimuovere."
+
+#: cms/future.py:177
+#, fuzzy
+msgid "Please select the ordered objects to order on top."
+msgstr "Devi scegliere un collaboratore da rimuovere."
+
+#: cms/future.py:131
+#, fuzzy
+msgid "Please select the ordered objects to order up."
+msgstr "Devi scegliere un collaboratore da rimuovere."
+
+#: cms/future.py:219
+#, fuzzy
+msgid "Please select the unordered objects to move into the ordered category."
 msgstr "Devi scegliere un collaboratore da rimuovere."
 
 #: cms/ui/forum/Forum_new_thread.xml.en:0
@@ -3279,15 +2607,11 @@ msgstr "Incolla"
 msgid "Post a Reply"
 msgstr ""
 
-#: cms/binary.py:154
+#: cms/binary.py:157
 msgid "PowerPoint"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "Preamble"
-msgstr "Preambolo"
-
-#: cms/users.py:245
+#: cms/users.py:247
 msgid "Preferences"
 msgstr "Preferenze"
 
@@ -3296,45 +2620,34 @@ msgstr "Preferenze"
 msgid "Presence"
 msgstr "Preferenze"
 
-#: cms/widgets.py:75
+#: cms/widgets.py:82
 #, fuzzy
 msgid "Previous"
 msgstr "Gruppi"
 
-#: cms/ui/tracker/search.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 msgid "Priority"
 msgstr ""
 
-#: cms/workflow.py:28
+#: cms/workflow.py:29
 #, fuzzy
 msgid "Private"
 msgstr "privato"
 
-#: cms/users.py:224
+#: cms/users.py:226
 msgid "Profile"
 msgstr ""
 
-#: cms/tracker.py:77
+#: cms/tracker.py:98
 msgid "Programming Interface"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Propagation includes copying, distribution (with or without modification), "
-"making available to the public, and in some countries other activities as "
-"well."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "Protecting Users' Legal Rights From Anti-Circumvention Law."
-msgstr ""
-
-#: cms/workflow.py:34
+#: cms/workflow.py:35
 #, fuzzy
 msgid "Public"
 msgstr "pubblicato"
 
-#: cms/workflow.py:39
+#: cms/workflow.py:40
 msgid "Publish the document."
 msgstr "Pubblica il documento."
 
@@ -3342,11 +2655,11 @@ msgstr "Pubblica il documento."
 msgid "REQUIRED"
 msgstr ""
 
-#: cms/binary.py:204
+#: cms/binary.py:207
 msgid "RTF"
 msgstr ""
 
-#: cms/binary.py:205
+#: cms/binary.py:208
 #, fuzzy
 msgid "RTF Document"
 msgstr "Nuovo documento"
@@ -3356,17 +2669,15 @@ msgstr "Nuovo documento"
 msgid "Recipient"
 msgstr "Anteprima"
 
+#: cms/table.py:230
+#, fuzzy
+msgid "Record deleted."
+msgstr "Registrazione modificata."
+
 #: cms/ui/epoz/rte.xml.en:0
 #, fuzzy
 msgid "Redo"
 msgstr "Rimuovi"
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Regardless of what server hosts the Corresponding Source, you remain "
-"obligated to ensure that it is available for as long as needed to satisfy "
-"these requirements."
-msgstr ""
 
 #: cms/ui/website/register.xml.en:0
 #, fuzzy
@@ -3382,11 +2693,11 @@ msgstr "Anteprima"
 msgid "Reindex"
 msgstr "Re-indicizza"
 
-#: cms/workflow.py:45
+#: cms/workflow.py:46
 msgid "Reject the document."
 msgstr "Rifiuta il documento."
 
-#: cms/tracker.py:469
+#: cms/tracker.py:850
 #, fuzzy
 msgid "Released"
 msgstr "Anteprima"
@@ -3424,11 +2735,7 @@ msgstr "Ripeti la parola d'accesso"
 msgid "Replies"
 msgstr "Anteprima"
 
-#: cms/ui/forum/Thread_view.xml.en:0
-msgid "Reply"
-msgstr ""
-
-#: cms/forum.py:177
+#: cms/forum.py:209
 msgid "Reply Posted."
 msgstr ""
 
@@ -3436,7 +2743,7 @@ msgstr ""
 msgid "Reported by <em>${reported_by}</em>"
 msgstr ""
 
-#: cms/workflow.py:41
+#: cms/workflow.py:42
 msgid "Request the document publication."
 msgstr "Richiedi la pubblicazione del documento."
 
@@ -3450,48 +2757,36 @@ msgstr "Nuova risorsa"
 msgid "Results"
 msgstr "Cerca nelle sottocartelle"
 
-#: cms/workflow.py:49
+#: cms/workflow.py:50
 msgid "Retire the document."
 msgstr "Ritira il documento."
 
-#: cms/workflow.py:43
+#: cms/workflow.py:44
 #, fuzzy
 msgid "Retract the document."
 msgstr "Rifiuta il documento."
 
-#: cms/access.py:97
+#: cms/access.py:100
 #, fuzzy
 msgid "Reviewer"
 msgstr "Anteprima"
-
-#: cms/ui/root/license.xml.en:0
-msgid "Revised Versions of this License."
-msgstr ""
 
 #: cms/ui/access/new_user.xml.en:0
 #, fuzzy
 msgid "Role"
 msgstr "Rimuovi"
 
-#: cms/access.py:439
+#: cms/access.py:442
 #, fuzzy
 msgid "Role updated."
 msgstr "File aggiornato."
 
-#: cms/csv.py:173
+#: cms/csv.py:176
 #, fuzzy
 msgid "Row deleted."
 msgstr "Nessun oggetto selezionato."
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY "
-"SERVICING, REPAIR OR CORRECTION."
-msgstr ""
-"SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY "
-"SERVICING, REPAIR OR CORRECTION."
-
-#: cms/ical.py:39
+#: cms/ical.py:41
 msgid "Saturday"
 msgstr ""
 
@@ -3499,7 +2794,7 @@ msgstr ""
 msgid "Save"
 msgstr "Salva"
 
-#: cms/ical.py:978
+#: cms/ical.py:982
 msgid "Schedule your time with calendar files."
 msgstr ""
 
@@ -3516,7 +2811,7 @@ msgstr "Cerca nelle sottocartelle"
 msgid "Search:"
 msgstr "Cerca"
 
-#: cms/tracker.py:79
+#: cms/tracker.py:100
 #, fuzzy
 msgid "Security Issue"
 msgstr "sicurezza"
@@ -3530,14 +2825,6 @@ msgstr "Sicurezza"
 msgid "See the GNU General Public License for more details."
 msgstr ""
 
-#: cms/folder.py:498
-msgid "Select All"
-msgstr ""
-
-#: cms/folder.py:500
-msgid "Select None"
-msgstr ""
-
 #: cms/ui/website/contact_form.xml.en:0
 msgid "Send"
 msgstr ""
@@ -3547,11 +2834,11 @@ msgstr ""
 msgid "Sender"
 msgstr "Generale"
 
-#: cms/ical.py:35
+#: cms/ical.py:37
 msgid "September"
 msgstr ""
 
-#: cms/website.py:189
+#: cms/website.py:191
 msgid "Settings"
 msgstr "Impostazioni"
 
@@ -3559,7 +2846,7 @@ msgstr "Impostazioni"
 msgid "Show Issues modified sometime the last"
 msgstr ""
 
-#: cms/folder.py:488
+#: cms/folder.py:496
 msgid "Size"
 msgstr "Dimensione"
 
@@ -3572,17 +2859,11 @@ msgstr ""
 msgid "Size:"
 msgstr "Dimensione"
 
-#: cms/skins.py:42
+#: cms/skins.py:46
 msgid "Skin"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Some devices are designed to deny users access to install or run modified "
-"versions of the software inside them, although the manufacturer can do so."
-msgstr ""
-
-#: web/context.py:275
+#: web/context.py:281
 msgid ""
 "Some required fields are missing, or some values are not valid. Please "
 "correct them and continue."
@@ -3592,11 +2873,7 @@ msgstr ""
 msgid "Some things you can do with ikaaro:"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "Source Code."
-msgstr ""
-
-#: cms/tracker.py:80
+#: cms/tracker.py:101
 msgid "Stability Issue"
 msgstr ""
 
@@ -3605,15 +2882,15 @@ msgstr ""
 msgid "Start"
 msgstr "Stato"
 
-#: cms/ical.py:930
+#: cms/ical.py:934
 msgid "Start date MUST be earlier than end date."
 msgstr ""
 
-#: cms/ical.py:88
+#: cms/ical.py:90
 msgid "Start time must be earlier than end time."
 msgstr ""
 
-#: cms/workflow.py:103
+#: cms/workflow.py:104
 msgid "State"
 msgstr "Stato"
 
@@ -3622,15 +2899,7 @@ msgstr "Stato"
 msgid "State History"
 msgstr "Storico"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"States should not allow patents to restrict development and use of software "
-"on general-purpose computers, but in those that do, we wish to avoid the "
-"special danger that patents applied to a free program could make it "
-"effectively proprietary."
-msgstr ""
-
-#: cms/ui/tracker/search.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "Status"
 msgstr "Stato"
@@ -3639,7 +2908,7 @@ msgstr "Stato"
 msgid "Status (mandatory)"
 msgstr ""
 
-#: cms/tracker.py:481
+#: cms/tracker.py:861
 #, fuzzy
 msgid "Stored Search"
 msgstr "Cerca"
@@ -3657,10 +2926,6 @@ msgstr ""
 msgid "Subject"
 msgstr "Soggetto"
 
-#: cms/ui/root/license.xml.en:0
-msgid "Sublicensing is not allowed;"
-msgstr ""
-
 #: cms/ui/website/forgotten_password_form.xml.en:0
 #, fuzzy
 msgid "Submit"
@@ -3671,19 +2936,11 @@ msgstr "Soggetto"
 msgid "Subscript"
 msgstr "Soggetto"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Such new versions will be similar in spirit to the present version, but may "
-"differ in detail to address new problems or concerns."
-msgstr ""
-"Such new versions will be similar in spirit to the present version, but may "
-"differ in detail to address new problems or concerns."
-
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "Summary"
 msgstr ""
 
-#: cms/ical.py:39
+#: cms/ical.py:41
 msgid "Sunday"
 msgstr ""
 
@@ -3693,35 +2950,17 @@ msgid "Superscript"
 msgstr "descrizione"
 
 #: cms/ui/root/credits.xml.en:0
-msgid "Sylvain Taverne"
-msgstr ""
-
-#: cms/ui/root/credits.xml.en:0
 msgid "Sylvain Taverne (French)"
 msgstr ""
 
-#: cms/wiki.py:447
+#: cms/wiki.py:471
 msgid "Syntax error, please check the view for details."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "TERMS AND CONDITIONS"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
-msgstr ""
-"THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU."
-
-#: cms/ui/root/license.xml.en:0
+#: cms/table.py:51
 #, fuzzy
-msgid ""
-"THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE "
-"LAW."
-msgstr ""
-"<strong>11.</strong> BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE "
-"IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW."
+msgid "Table"
+msgstr "Titolo"
 
 #: cms/ui/epoz/script_table.xml.en:0
 msgid "Table columns"
@@ -3731,7 +2970,7 @@ msgstr ""
 msgid "Table rows"
 msgstr ""
 
-#: cms/binary.py:273
+#: cms/binary.py:276
 msgid "Tar Archive"
 msgstr ""
 
@@ -3739,28 +2978,16 @@ msgstr ""
 msgid "Tasks"
 msgstr "Incarichi"
 
-#: cms/tracker.py:81
+#: cms/tracker.py:102
 msgid "Technology Upgrade"
 msgstr ""
 
-#: cms/ical.py:95
+#: cms/ical.py:97
 #, fuzzy
 msgid "Tentative"
 msgstr "Il titolo"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Termination of your rights under this section does not terminate the "
-"licenses of parties who have received copies or rights from you under this "
-"License."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "Termination."
-msgstr "Traduzione memorizzata."
-
-#: cms/folder.py:75
+#: cms/folder.py:78
 msgid "Text"
 msgstr "Testo"
 
@@ -3776,7 +3003,7 @@ msgstr ""
 msgid "Text contains"
 msgstr ""
 
-#: cms/ical.py:1116
+#: cms/ical.py:1121
 #, fuzzy
 msgid "Text view"
 msgstr "Il titolo"
@@ -3785,68 +3012,9 @@ msgstr "Il titolo"
 msgid "Thank you for using ikaaro."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The \"Corresponding Source\" for a work in object code form means all the "
-"source code needed to generate, install, and (for an executable work) run "
-"the object code and to modify the work, including scripts to control those "
-"activities."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The \"System Libraries\" of an executable work include anything, other than "
-"the work as a whole, that (a) is included in the normal form of packaging a "
-"Major Component, but which is not part of that Major Component, and (b) "
-"serves only to enable use of the work with that Major Component, or to "
-"implement a Standard Interface for which an implementation is available to "
-"the public in source code form."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"The \"source code\" for a work means the preferred form of the work for "
-"making modifications to it."
-msgstr ""
-"The source code for a work means the preferred form of the work for making "
-"modifications to it."
-
 #: cms/ui/website/register.xml.en:0
 msgid ""
 "The <span class=\"field_required\">emphasized</span> fields are required."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The Corresponding Source for a work in source code form is that same work."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The Corresponding Source need not include anything that users can regenerate "
-"automatically from other parts of the Corresponding Source."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"The Free Software Foundation may publish revised and/or new versions of the "
-"GNU General Public License from time to time."
-msgstr ""
-"<strong>9.</strong> The Free Software Foundation may publish revised and/or "
-"new versions of the General Public License from time to time."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The GNU General Public License does not permit incorporating your program "
-"into proprietary programs."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The GNU General Public License is a free, copyleft license for software and "
-"other kinds of works."
 msgstr ""
 
 #: cms/messages.py:20
@@ -3854,7 +3022,7 @@ msgstr ""
 msgid "The changes have been saved."
 msgstr "Il linguaggio predefinito è stato modificato."
 
-#: cms/website.py:127
+#: cms/website.py:129
 msgid "The default language has been changed."
 msgstr "Il linguaggio predefinito è stato modificato."
 
@@ -3866,70 +3034,39 @@ msgstr "Il nome del documento contiene caratteri illegali, scegline un altro."
 msgid "The documents below await review for publication:"
 msgstr "Documenti in attesa di essere valutati per la pubblicazione:"
 
-#: cms/access.py:469
+#: cms/access.py:472
 #, fuzzy
 msgid "The email address is missing, please type it."
 msgstr "Il nome utente è errato, tenta di nuovo"
 
-#: cms/messages.py:21
+#: cms/messages.py:24
 #, fuzzy
 msgid "The email address provided is invalid."
 msgstr "Il nome utente è errato, tenta di nuovo"
 
-#: cms/file.py:65
-msgid "The file must be entered"
+#: cms/future.py:438
+msgid "The file is not an image"
+msgstr ""
+
+#: cms/messages.py:23
+#, fuzzy
+msgid "The file must be entered."
 msgstr "Deve essere inserito un file"
 
 #: cms/ui/root/check_groups.xml.en:0
 msgid "The following groups contain users that don't exist anymore:"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The hypothetical commands `show w' and `show c' should show the appropriate "
-"parts of the General Public License."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The information must suffice to ensure that the continued functioning of the "
-"modified object code is in no case prevented or interfered with solely "
-"because modification has been made."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"The licenses for most software and other practical works are designed to "
-"take away your freedom to share and change the works."
-msgstr ""
-"The licenses for most software are designed to take away your freedom to "
-"share and change it."
-
-#: cms/messages.py:23
+#: cms/messages.py:26
 msgid "The name is missing."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The output from running a covered work is covered by this License only if "
-"the output, given its content, constitutes a covered work."
-msgstr ""
-
-#: cms/website.py:340
+#: cms/website.py:342
 #, fuzzy
 msgid "The password is wrong."
 msgstr "La password è errata"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The precise terms and conditions for copying, distribution and modification "
-"follow."
-msgstr ""
-"The precise terms and conditions for copying, distribution and modification "
-"follow."
-
-#: cms/messages.py:25
+#: cms/messages.py:28
 #, fuzzy
 msgid "The provided passwords do not match."
 msgstr "La password è errata"
@@ -3938,60 +3075,27 @@ msgstr "La password è errata"
 msgid "The requested URL ${uri} was not found on this server."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The requirement to provide Installation Information does not include a "
-"requirement to continue to provide support service, warranty, or updates for "
-"a work that has been modified or installed by the recipient, or for the User "
-"Product in which it has been modified or installed."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The resulting work is called a \"modified version\" of the earlier work or a "
-"work \"based on\" the earlier work."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The systematic pattern of such abuse occurs in the area of products for "
-"individuals to use, which is precisely where it is most unacceptable."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The terms of this License will continue to apply to the part which is the "
-"covered work, but the special requirements of the GNU Affero General Public "
-"License, section 13, concerning interaction through a network will apply to "
-"the combination as such."
-msgstr ""
-
-#: cms/website.py:326
+#: cms/website.py:328
 #, fuzzy
 msgid "The user \"$username\" does not exist."
 msgstr "L'utente \"%s\" non esiste"
 
-#: cms/website.py:335
+#: cms/website.py:337
 #, fuzzy
 msgid "The user \"$username\" is not active."
 msgstr "L'utente \"%s\" non esiste"
 
-#: cms/tracker.py:618
+#: cms/tracker.py:1002
 #, fuzzy
 msgid "The user %s did some changes."
 msgstr "L'utente \"%s\" non esiste"
 
-#: cms/access.py:510
+#: cms/access.py:513
 #, fuzzy
 msgid "The user is already here."
 msgstr "Tutti gli utenti sono stati aggiunti."
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"The work thus licensed is called the contributor's \"contributor version\"."
-msgstr ""
-
-#: cms/widgets.py:40
+#: cms/widgets.py:47
 #, fuzzy
 msgid "There are ${n} objects."
 msgstr "Non sono presenti immagini."
@@ -4010,120 +3114,46 @@ msgstr "Non sono presenti messaggi."
 msgid "There has been an error, please try again later."
 msgstr "Il nome utente è errato, tenta di nuovo"
 
-#: cms/widgets.py:40
+#: cms/widgets.py:47
 msgid "There is 1 object."
 msgstr ""
 
-#: cms/website.py:268
+#: cms/website.py:270
 #, fuzzy
 msgid "There is already an active user with that email."
 msgstr "Esiste già un altro gruppo con questo nome."
 
-#: cms/messages.py:22
+#: cms/messages.py:25
 #, fuzzy
 msgid "There is already another object with this name."
 msgstr "Esiste già un altro oggetto con questo nome"
 
-#: cms/users.py:315
+#: cms/users.py:317
 #, fuzzy
 msgid "There is another user with the email \"%s\", please try again"
 msgstr ""
 "Esiste già un altro utente che ha scelto \"%s\" come nome utente, tenta di "
 "nuovo"
 
-#: cms/website.py:385
+#: cms/website.py:387
 #, fuzzy
 msgid "There is not a user identified as \"$username\""
 msgstr ""
 "Esiste già un altro utente che ha scelto \"%s\" come nome utente, tenta di "
 "nuovo"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Therefore, by modifying or propagating a covered work, you indicate your "
-"acceptance of this License to do so."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Therefore, we have designed this version of the GPL to prohibit the practice "
-"for those products."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"Therefore, you have certain responsibilities if you distribute copies of the "
-"software, or if you modify it:"
-msgstr ""
-"These restrictions translate to certain responsibilities for you if you "
-"distribute copies of the software, or if you modify it."
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "These actions infringe copyright if you do not accept this License."
-msgstr "These actions are prohibited by law if you do not accept this License."
-
-#: cms/ui/root/credits.xml.en:0
-msgid "Thierry Fromon"
-msgstr ""
-
-#: cms/ui/root/credits.xml.en:0
-msgid "Thilo Ernst"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"This License acknowledges your rights of fair use or other equivalent, as "
-"provided by copyright law."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"This License explicitly affirms your unlimited permission to run the "
-"unmodified Program."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"This License gives no permission to license the work in any other way, but "
-"it does not invalidate such permission if you have separately received it."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"This License will therefore apply, along with any applicable section 7 "
-"additional terms, to the whole of the work, and all its parts, regardless of "
-"how they are packaged."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"This alternative is allowed only occasionally and noncommercially, and only "
-"if you received the object code with such an offer, in accord with "
-"subsection 6b."
-msgstr ""
-"(This alternative is allowed only for noncommercial distribution and only if "
-"you received the program in object code or executable form with such an "
-"offer, in accord with Subsection b above.)"
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"This is free software, and you are welcome to redistribute it under certain "
-"conditions;"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"This is fundamentally incompatible with the aim of protecting users' freedom "
-"to change the software."
-msgstr ""
-
 #: cms/ui/user/profile.xml.en:0
 msgid ""
 "This is your personal space where you can manage your own documents and "
 "publish them."
+msgstr ""
+
+#: cms/file.py:212
+msgid "This page is lock by another user"
+msgstr ""
+
+#: cms/messages.py:29
+msgid "This page is locked by $user"
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
@@ -4133,46 +3163,36 @@ msgid ""
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
-msgid ""
-"This requirement modifies the requirement in section 4 to \"keep intact all "
-"notices\"."
+msgid "This program is free software:"
 msgstr ""
 
-#: cms/forum.py:260
+#: cms/forum.py:302
 msgid "This thread already exists."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"Those thus making or running the covered works for you must do so "
-"exclusively on your behalf, under your direction and control, on terms that "
-"prohibit them from making any copies of your copyrighted material outside "
-"their relationship with you."
-msgstr ""
-
-#: cms/forum.py:70
+#: cms/forum.py:106
 #, fuzzy
 msgid "Thread"
 msgstr "leggi"
 
-#: cms/forum.py:273
+#: cms/forum.py:313
 msgid "Thread Created."
 msgstr ""
 
-#: cms/ical.py:38
+#: cms/ical.py:40
 msgid "Thursday"
 msgstr ""
 
-#: cms/ical.py:1264
+#: cms/ical.py:1269
 msgid "Timetable(s) removed successfully."
 msgstr ""
 
-#: cms/ical.py:1220
+#: cms/ical.py:1225
 #, fuzzy
 msgid "Timetables"
 msgstr "Titolo"
 
-#: cms/ical.py:1284
+#: cms/ical.py:1289
 msgid "Timetables updated successfully."
 msgstr ""
 
@@ -4194,34 +3214,7 @@ msgstr ""
 msgid "Title:"
 msgstr "Titolo"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"To \"convey\" a work means any kind of propagation that enables other "
-"parties to make or receive copies."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"To \"grant\" such a patent license to a party means to make such an "
-"agreement or commitment not to enforce a patent against the party."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"To \"modify\" a work means to copy from or adapt all or part of the work in "
-"a fashion requiring copyright permission, other than the making of an exact "
-"copy."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"To \"propagate\" a work means to do anything with it that, without "
-"permission, would make you directly or secondarily liable for infringement "
-"under applicable copyright law, except executing it on a computer or "
-"modifying a private copy."
-msgstr ""
-
-#: cms/wiki.py:275
+#: cms/wiki.py:280
 msgid "To PDF"
 msgstr ""
 
@@ -4229,7 +3222,7 @@ msgstr ""
 msgid "To activate your account, please type a password."
 msgstr ""
 
-#: cms/ical.py:728
+#: cms/ical.py:732
 msgid "To add an event, click on + symbol from the views."
 msgstr ""
 
@@ -4237,15 +3230,11 @@ msgstr ""
 msgid "To confirm these changes, you must type your actual password."
 msgstr ""
 
-#: cms/users.py:160
+#: cms/users.py:162
 msgid ""
 "To confirm your identity click the link:\n"
 "\n"
 "  $confirm_url"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "To do so, attach the following notices to the program."
 msgstr ""
 
 #: cms/ui/file/download_form.xml.en:0
@@ -4257,11 +3246,11 @@ msgstr "/ <a stl:content=\"x/name\" stl:attributes=\"href x/url\"></a>"
 msgid "To learn more, check out these resources:"
 msgstr ""
 
-#: cms/tracker.py:52
+#: cms/tracker.py:73
 msgid "To manage bugs and tasks"
 msgstr ""
 
-#: cms/users.py:527
+#: cms/users.py:529
 msgid "To manage the users please go <a href=\"/;permissions_form\">here</a>."
 msgstr ""
 
@@ -4271,38 +3260,11 @@ msgid ""
 "<strong>External Editor...</strong>"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"To prevent this, the GPL assures that patents cannot be used to render the "
-"program non-free."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"To protect your rights, we need to prevent others from denying you these "
-"rights or asking you to surrender the rights."
-msgstr ""
-"To protect your rights, we need to make restrictions that forbid anyone to "
-"deny you these rights or to ask you to surrender the rights."
-
 #: cms/ui/root/catalog.xml.en:0
 msgid "To reindex the whole site click the button below:"
 msgstr "Per re-indicizzare l'intero sito clicca il pulsante:"
 
-#: cms/root.py:276
-msgid ""
-"To: %(to_addr)s\n"
-"From: %(from_addr)s\n"
-"Date: %(date)s\n"
-"Subject: %(subject)s\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=\"%(encoding)s\"\n"
-"\n"
-"%(body)s\n"
-msgstr ""
-
-#: cms/workflow.py:156
+#: cms/workflow.py:157
 msgid "Transition done."
 msgstr "Transizione effettuata."
 
@@ -4311,11 +3273,11 @@ msgstr "Transizione effettuata."
 msgid "Translators"
 msgstr "Traduzione memorizzata."
 
-#: cms/ical.py:38
+#: cms/ical.py:40
 msgid "Tuesday"
 msgstr ""
 
-#: cms/ui/tracker/search.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "Type"
 msgstr "Tipo"
@@ -4324,7 +3286,7 @@ msgstr "Tipo"
 msgid "Type (mandatory)"
 msgstr ""
 
-#: cms/website.py:317
+#: cms/website.py:319
 msgid "Type your email please."
 msgstr ""
 
@@ -4332,7 +3294,15 @@ msgstr ""
 msgid "Type your text here..."
 msgstr ""
 
-#: cms/base.py:315
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid "UTF-8, Separator:"
+msgstr ""
+
+#: scripts/icms-start.py:75
+msgid "Unable to daemonize on Windows... Please use the option -d"
+msgstr ""
+
+#: cms/base.py:295
 msgid "Unavailable"
 msgstr ""
 
@@ -4345,7 +3315,7 @@ msgstr "In linea"
 msgid "Undo"
 msgstr ""
 
-#: cms/tracker.py:76
+#: cms/tracker.py:97
 #, fuzzy
 msgid "Unit Tests"
 msgstr "Testo integrale"
@@ -4355,15 +3325,24 @@ msgstr "Testo integrale"
 msgid "Unordered List"
 msgstr "Lista utenti:"
 
+#: cms/ui/folder/order_items.xml.en:0
+#, fuzzy
+msgid "Unordered Objects"
+msgstr "Lista utenti:"
+
 #: cms/ui/ical/ical_edit_timetables.xml.en:0
 #, fuzzy
 msgid "Update"
 msgstr "Aggiorna il catalogo"
 
-#: cms/root.py:353
+#: cms/root.py:367
 #, fuzzy
 msgid "Update Catalog"
 msgstr "Aggiorna il catalogo"
+
+#: cms/ui/tracker/view_tracker.xml.en:0
+msgid "Update text export"
+msgstr ""
 
 #: cms/ui/file/upload.xml.en:0
 msgid "Upload"
@@ -4373,45 +3352,46 @@ msgstr "Carica"
 msgid "Upload File"
 msgstr "Carica file"
 
-#: cms/file.py:254
+#: cms/ui/dressable/upload_image.xml.en:0
+#, fuzzy
+msgid "Upload Image"
+msgstr "Carica un file"
+
+#: cms/file.py:262
 #, fuzzy
 msgid ""
 "Upload failed: either the file does not match this document type ($mimetype) "
 "or it contains errors."
 msgstr "Il file caricato non corrisponde con questo tipo di documento."
 
-#: cms/file.py:42
+#: cms/file.py:44
 msgid "Upload office documents, images, media files, etc."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "Use with the GNU Affero General Public License."
 msgstr ""
 
 #: cms/ui/file/history.xml.en:0
 msgid "User"
 msgstr "Utente"
 
-#: cms/access.py:386
+#: cms/access.py:389
 #, fuzzy
 msgid "User ID"
 msgstr "Utente"
 
-#: cms/access.py:524
+#: cms/access.py:527
 #, fuzzy
 msgid "User added."
 msgstr "Utente aggiunto"
 
-#: cms/root.py:163
+#: cms/root.py:175
 msgid "Users"
 msgstr "Utenti"
 
-#: cms/skins.py:77
+#: cms/skins.py:81
 #, fuzzy
 msgid "Users Directory"
 msgstr "Utenti rimossi."
 
-#: cms/ui/tracker/search.xml.en:0
+#: cms/ui/tracker/view_tracker.xml.en:0
 #, fuzzy
 msgid "Version"
 msgstr "Personale"
@@ -4420,12 +3400,7 @@ msgstr "Personale"
 msgid "Version (mandatory)"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "Version 3, 29 June 2007"
-msgstr "Version 2, June 1991"
-
-#: cms/file.py:258
+#: cms/file.py:266
 msgid "Version uploaded."
 msgstr "Versione caricata."
 
@@ -4434,7 +3409,7 @@ msgstr "Versione caricata."
 msgid "Version:"
 msgstr "Personale"
 
-#: cms/binary.py:87
+#: cms/binary.py:90
 #, fuzzy
 msgid "Video"
 msgstr "Vedi"
@@ -4443,11 +3418,11 @@ msgstr "Vedi"
 msgid "View"
 msgstr "Vedi"
 
-#: cms/ui/tracker/view_tracker.xml.en:0
+#: cms/tracker.py:359
 msgid "View Tracker"
 msgstr ""
 
-#: cms/widgets.py:98
+#: cms/widgets.py:105
 msgid "View from ${start} to ${end} (${link}):"
 msgstr ""
 
@@ -4456,7 +3431,7 @@ msgstr ""
 msgid "Visit the project's <a href=\"http://www.ikaaro.org/\">Web Site</a>;"
 msgstr "<a href=\"http://www.ikaaro.org\">IKAARO.org</a>."
 
-#: cms/tracker.py:78
+#: cms/tracker.py:99
 #, fuzzy
 msgid "Visual Interface"
 msgstr "Scegli un'interfaccia"
@@ -4465,33 +3440,24 @@ msgstr "Scegli un'interfaccia"
 msgid "Want to know who is behind this software?"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"We, the Free Software Foundation, use the GNU General Public License for "
-"most of our software;"
-msgstr ""
-"(Some other Free Software Foundation software is covered by the GNU Library "
-"General Public License instead.) You can apply it to your programs, too."
-
-#: cms/html.py:38
+#: cms/html.py:101
 #, fuzzy
 msgid "Web Document"
 msgstr "Nuovo documento"
 
-#: cms/website.py:41
+#: cms/website.py:43
 msgid "Web Site"
 msgstr ""
 
-#: cms/ical.py:38
+#: cms/ical.py:40
 msgid "Wednesday"
 msgstr ""
 
-#: cms/ical.py:167
+#: cms/ical.py:169
 msgid "Week "
 msgstr ""
 
-#: cms/ical.py:646
+#: cms/ical.py:648
 msgid "Weekly"
 msgstr ""
 
@@ -4499,37 +3465,16 @@ msgstr ""
 msgid "Welcome to your home folder."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "When we speak of free software, we are referring to freedom, not price."
-msgstr ""
-"When we speak of free software, we are referring to freedom, not price."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"When you convey a copy of a covered work, you may at your option remove any "
-"additional permissions from that copy, or from any part of it."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"When you convey a covered work, you waive any legal power to forbid "
-"circumvention of technological measures to the extent such circumvention is "
-"effected by exercising rights under this License with respect to the covered "
-"work, and you disclaim any intention to limit operation or modification of "
-"the work as a means of enforcing, against the work's users, your or third "
-"parties' legal rights to forbid circumvention of technological measures."
-msgstr ""
-
-#: cms/wiki.py:57
+#: cms/wiki.py:61
 #, fuzzy
 msgid "Wiki Folder"
 msgstr "Cartella"
 
-#: cms/wiki.py:111
+#: cms/wiki.py:115
 msgid "Wiki Page"
 msgstr ""
 
-#: cms/wiki.py:112
+#: cms/wiki.py:116
 #, fuzzy
 msgid "Wiki contents"
 msgstr "Contenuti"
@@ -4542,7 +3487,7 @@ msgstr ""
 msgid "Without head"
 msgstr ""
 
-#: cms/binary.py:134
+#: cms/binary.py:137
 msgid "Word"
 msgstr ""
 
@@ -4558,15 +3503,15 @@ msgstr ""
 msgid "Workflow state"
 msgstr ""
 
-#: cms/ical.py:86
+#: cms/ical.py:88
 msgid "Wrong time selection (HH:MM)."
 msgstr ""
 
-#: cms/ical.py:81
+#: cms/ical.py:83
 msgid "Wrong time selection."
 msgstr ""
 
-#: pdf/rml.py:1444
+#: pdf/rml.py:1445
 msgid "X%sX"
 msgstr ""
 
@@ -4578,34 +3523,12 @@ msgstr ""
 msgid "You Are Now Logged out"
 msgstr ""
 
-#: cms/ical.py:887
+#: cms/ical.py:891
 msgid "You are not authorized to modify this event."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"You are not required to accept this License in order to receive or run a "
-"copy of the Program."
-msgstr ""
-"<strong>5.</strong> You are not required to accept this License, since you "
-"have not signed it."
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"You are not responsible for enforcing compliance by third parties with this "
-"License."
-msgstr ""
-"You are not responsible for enforcing compliance by third parties to this "
-"License."
-
 #: cms/ui/website/logout.xml.en:0
 msgid "You are now an anonymous visitor."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "You can apply it to your programs, too."
 msgstr ""
 
 #: cms/ui/user/profile.xml.en:0
@@ -4613,13 +3536,19 @@ msgstr ""
 msgid "You can do the following actions:"
 msgstr "Come collaboratore fai parte di questi gruppi:"
 
+#: cms/ui/dressable/upload_image.xml.en:0
+msgid ""
+"You can download the current picture by clicking right on the image and "
+"click Save Image As."
+msgstr ""
+
 #: cms/ui/text/externaledit.xml.en:0
 msgid ""
 "You can edit this document using an application from your desktop, like MS "
 "Office or OpenOffice.org."
 msgstr ""
 
-#: cms/website.py:138
+#: cms/website.py:140
 msgid "You can not remove the default language."
 msgstr "Non puoi rimuovere il linguaggio predefinito."
 
@@ -4632,125 +3561,23 @@ msgstr ""
 msgid "You can upload a new file to replace the current one."
 msgstr "Puoi caricare un file dal filesystem o creare un nuovo documento."
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"You may charge any price or no price for each copy that you convey, and you "
-"may offer support or warranty protection for a fee."
-msgstr ""
-"You may charge a fee for the physical act of transferring a copy, and you "
-"may at your option offer warranty protection in exchange for a fee."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"You may convey a covered work in object code form under the terms of "
-"sections 4 and 5, provided that you also convey the machine-readable "
-"Corresponding Source under the terms of this License, in one of these ways:"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"You may convey a work based on the Program, or the modifications to produce "
-"it from the Program, in the form of source code under the terms of section "
-"4, provided that you also meet all of these conditions:"
-msgstr ""
-"<strong>2.</strong> You may modify your copy or copies of the Program or any "
-"portion of it, thus forming a work based on the Program, and copy and "
-"distribute such modifications or work under the terms of Section 1 above, "
-"provided that you also meet all of these conditions:"
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"You may convey covered works to others for the sole purpose of having them "
-"make modifications exclusively for you, or provide you with facilities for "
-"running those works, provided that you comply with the terms of this License "
-"in conveying all material for which you do not control copyright."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"You may convey verbatim copies of the Program's source code as you receive "
-"it, in any medium, provided that you conspicuously and appropriately publish "
-"on each copy an appropriate copyright notice;"
-msgstr ""
-"<strong>1.</strong> You may copy and distribute verbatim copies of the "
-"Program's source code as you receive it, in any medium, provided that you "
-"conspicuously and appropriately publish on each copy an appropriate "
-"copyright notice and disclaimer of warranty;"
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"You may make, run and propagate covered works that you do not convey, "
-"without conditions so long as your license otherwise remains in force."
-msgstr ""
-
 #: cms/ui/text/externaledit.xml.en:0
 msgid ""
 "You may need to change the character encoding if your application doesn't "
 "support UTF-8 (not recommended)."
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"You may not convey a covered work if you are a party to an arrangement with "
-"a third party that is in the business of distributing software, under which "
-"you make payment to the third party based on the extent of your activity of "
-"conveying the work, and under which the third party grants, to any of the "
-"parties who would receive the covered work from you, a discriminatory patent "
-"license (a) in connection with copies of the covered work conveyed by you "
-"(or copies made from those copies), or (b) primarily for and in connection "
-"with specific products or compilations that contain the covered work, unless "
-"you entered into that arrangement, or that patent license was granted, prior "
-"to 28 March 2007."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"You may not impose any further restrictions on the exercise of the rights "
-"granted or affirmed under this License."
-msgstr ""
-"You may not impose any further restrictions on the recipients' exercise of "
-"the rights granted herein."
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid ""
-"You may not propagate or modify a covered work except as expressly provided "
-"under this License."
-msgstr ""
-"<strong>4.</strong> You may not copy, modify, sublicense, or distribute the "
-"Program except as expressly provided under this License."
-
-#: cms/users.py:355
+#: cms/users.py:357
 msgid "You mistyped your actual password, your account is not changed."
 msgstr ""
 
-#: cms/website.py:151
+#: cms/website.py:153
 msgid "You must choose a language"
 msgstr "Devi scegliere un linguaggio"
 
-#: cms/ui/root/license.xml.en:0
-msgid "You must make sure that they, too, receive or can get the source code."
-msgstr "You must make sure that they, too, receive or can get the source code."
-
-#: cms/website.py:119
+#: cms/website.py:121
 msgid "You must select one and only one language."
 msgstr "Devi scegliere uno e un solo linguaggio."
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"You need not require recipients to copy the Corresponding Source along with "
-"the object code."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"You should also get your employer (if you work as a programmer) or school, "
-"if any, to sign a \"copyright disclaimer\" for the program, if necessary."
-msgstr ""
 
 #: cms/ui/root/license.xml.en:0
 msgid ""
@@ -4766,31 +3593,22 @@ msgstr ""
 msgid "Zhou Li (Chinese)"
 msgstr ""
 
-#: cms/binary.py:266
+#: cms/binary.py:269
 msgid "Zip Archive"
 msgstr ""
 
-#: cms/users.py:158
+#: cms/ui/tracker/edit_issue.xml.en:0
+msgid ""
+"[ <a onclick=\"javascript:reply('${comment/number}');\" href=\"#\"> Reply </"
+"a>]"
+msgstr ""
+
+#: cms/tracker.py:555
+msgid "[%s]"
+msgstr ""
+
+#: cms/users.py:160
 msgid "[%s] Confirmation required"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"a) Convey the object code in, or embodied in, a physical product (including "
-"a physical distribution medium), accompanied by the Corresponding Source "
-"fixed on a durable physical medium customarily used for software interchange."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"a) Disclaiming warranty or limiting liability differently from the terms of "
-"sections 15 and 16 of this License;"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"a) The work must carry prominent notices stating that you modified it, and "
-"giving a relevant date."
 msgstr ""
 
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
@@ -4803,19 +3621,6 @@ msgstr ""
 msgid "and"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"and each file should have at least the \"copyright\" line and a pointer to "
-"where the full notice is found."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "and give all recipients a copy of this License along with the Program."
-msgstr ""
-"and give any other recipients of the Program a copy of this License along "
-"with the Program."
-
 #: i18n/oracle.py:62
 #, fuzzy
 msgid "are"
@@ -4823,33 +3628,6 @@ msgstr "Confronta"
 
 #: i18n/oracle.py:64
 msgid "aux"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"b) Convey the object code in, or embodied in, a physical product (including "
-"a physical distribution medium), accompanied by a written offer, valid for "
-"at least three years and valid for as long as you offer spare parts or "
-"customer support for that product model, to give anyone who possesses the "
-"object code either (1) a copy of the Corresponding Source for all the "
-"software in the product that is covered by this License, on a durable "
-"physical medium customarily used for software interchange, for a price no "
-"more than your reasonable cost of physically performing this conveying of "
-"source, or (2) access to copy the Corresponding Source from a network server "
-"at no charge."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"b) Requiring preservation of specified reasonable legal notices or author "
-"attributions in that material or in the Appropriate Legal Notices displayed "
-"by works containing it;"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"b) The work must carry prominent notices stating that it is released under "
-"this License and any conditions added under section 7."
 msgstr ""
 
 #: i18n/oracle.py:65
@@ -4862,25 +3640,6 @@ msgstr "A proposito di"
 msgid "button."
 msgstr "A proposito di"
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"c) Convey individual copies of the object code with a copy of the written "
-"offer to provide the Corresponding Source."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"c) Prohibiting misrepresentation of the origin of that material, or "
-"requiring that modified versions of such material be marked in reasonable "
-"ways as different from the original version;"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"c) You must license the entire work, as a whole, under this License to "
-"anyone who comes into possession of a copy."
-msgstr ""
-
 #: i18n/oracle.py:66
 msgid "como"
 msgstr ""
@@ -4889,25 +3648,6 @@ msgstr ""
 #, fuzzy
 msgid "con"
 msgstr "Azione"
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"d) Convey the object code by offering access from a designated place (gratis "
-"or for a charge), and offer equivalent access to the Corresponding Source in "
-"the same way through the same place at no further charge."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"d) If the work has interactive user interfaces, each must display "
-"Appropriate Legal Notices;"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"d) Limiting the use for publicity purposes of names of licensors or authors "
-"of the material;"
-msgstr ""
 
 #: i18n/oracle.py:69
 msgid "del"
@@ -4919,20 +3659,6 @@ msgstr ""
 
 #: i18n/oracle.py:71
 msgid "donc"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"e) Convey the object code using peer-to-peer transmission, provided you "
-"inform other peers where the object code and Corresponding Source of the "
-"work are being offered to the general public at no charge under subsection "
-"6d."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"e) Declining to grant rights under trademark law for use of some trade "
-"names, trademarks, or service marks;"
 msgstr ""
 
 #: i18n/oracle.py:74
@@ -4951,27 +3677,10 @@ msgstr ""
 msgid "está"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"f) Requiring indemnification of licensors and authors of that material by "
-"anyone who conveys the material (or modified versions of it) with "
-"contractual assumptions of liability to the recipient, for any liability "
-"that these contractual assumptions directly impose on those licensors and "
-"authors."
-msgstr ""
-
-#: pdf/rml.py:2019
+#: pdf/rml.py:2020
 #, fuzzy
 msgid "false"
 msgstr "Incolla"
-
-#: cms/ui/root/license.xml.en:0
-msgid "for a GUI interface, you would use an \"about box\"."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "for details type `show w'."
-msgstr ""
 
 #: i18n/oracle.py:80
 #, fuzzy
@@ -4982,13 +3691,7 @@ msgstr "Da"
 msgid "hay"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"however, if the Program has interactive interfaces that do not display "
-"Appropriate Legal Notices, your work need not make them do so."
-msgstr ""
-
-#: cms/root.py:55
+#: cms/root.py:66
 msgid "iKaaro"
 msgstr "iKaaro"
 
@@ -5003,23 +3706,6 @@ msgstr ""
 #, fuzzy
 msgid "ils"
 msgstr "Dettagli"
-
-#: cms/ui/root/license.xml.en:0
-msgid "it applies also to any other work released this way by its authors."
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "keep intact all notices of the absence of any warranty;"
-msgstr ""
-"keep intact all the notices that refer to this License and to the absence of "
-"any warranty;"
-
-#: cms/ui/root/license.xml.en:0
-msgid ""
-"keep intact all notices stating that this License and any non-permissive "
-"terms added in accord with section 7 apply to the code;"
-msgstr ""
 
 #: i18n/oracle.py:90
 msgid "las"
@@ -5047,11 +3733,6 @@ msgstr "Gruppi"
 msgid "nueva"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "or"
-msgstr "o, "
-
 #: i18n/oracle.py:104
 msgid "para"
 msgstr ""
@@ -5074,22 +3755,14 @@ msgstr "Basco"
 msgid "qué"
 msgstr ""
 
-#: http/request.py:100
+#: http/request.py:101
 msgid "request method \"%s\" not yet implemented"
 msgstr ""
 
-#: cms/ui/root/license.xml.en:0
-msgid "responsibilities to respect the freedom of others."
-msgstr ""
-
-#: cms/tracker.py:921
+#: cms/tracker.py:1356
 #, fuzzy
 msgid "search"
 msgstr "Cerca"
-
-#: cms/ui/root/license.xml.en:0
-msgid "section 10 makes it unnecessary."
-msgstr ""
 
 #: i18n/oracle.py:109
 msgid "she"
@@ -5107,11 +3780,6 @@ msgstr "Stato"
 #: i18n/oracle.py:113
 msgid "the"
 msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-#, fuzzy
-msgid "the above requirements apply either way."
-msgstr "These requirements apply to the modified work as a whole."
 
 #: i18n/oracle.py:114
 msgid "their"
@@ -5131,12 +3799,8 @@ msgid ""
 "textarea>"
 msgstr ""
 
-#: pdf/rml.py:2018
+#: pdf/rml.py:2019
 msgid "true"
-msgstr ""
-
-#: cms/ui/root/license.xml.en:0
-msgid "type `show c' for details."
 msgstr ""
 
 #: i18n/oracle.py:119
@@ -5167,7 +3831,7 @@ msgid ""
 "PARTICULAR PURPOSE."
 msgstr ""
 
-#: pdf/rml.py:2018
+#: pdf/rml.py:2019
 msgid "yes"
 msgstr ""
 
@@ -5187,23 +3851,41 @@ msgid "your"
 msgstr ""
 
 #: cms/ui/html/addlink.xml.en:0
-msgid "» Browse and link an image from the workspace:"
+msgid "» Add a file in this folder:"
+msgstr ""
+
+#: cms/ui/html/addimage.xml.en:0
+msgid "» Add an image in this folder"
+msgstr ""
+
+#: cms/ui/html/addimage.xml.en:0
+#, fuzzy
+msgid "» Browse and insert an Image from the workspace:"
 msgstr "» Naviga e collega un'immagine presente nell'area di lavoro: "
 
-#: cms/ui/folder/browsedir.xml.en:0
-msgid "» Browse and link an object from the workspace:"
-msgstr "» Naviga e collega un oggetto presente nell'area di lavoro:"
+#: cms/ui/html/addlink.xml.en:0
+#, fuzzy
+msgid "» Browse and link a file from the workspace:"
+msgstr "» Naviga e collega un'immagine presente nell'area di lavoro: "
 
 #: cms/ui/html/addlink.xml.en:0
 msgid "» Type the url to add:"
 msgstr "» Inserisci l'URL da aggiungere:"
 
-#: rest/rest.py:279
+#: rest/rest.py:281
 msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"
 msgstr ""
 
 #~ msgid "\n"
 #~ msgstr "\n"
+
+#, fuzzy
+#~ msgid "  State: %s"
+#~ msgstr "Stato:"
+
+#, fuzzy
+#~ msgid "  Title: %s"
+#~ msgstr "Titolo"
 
 #~ msgid "\"<stl:inline content=\"name\"></stl:inline>\" to"
 #~ msgstr "\"<stl:inline content=\"name\"></stl:inline>\" a"
@@ -5224,6 +3906,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "%d obs"
 #~ msgstr "%d bytes"
+
+#, fuzzy
+#~ msgid ""
+#~ "(1) assert copyright on the software, and (2) offer you this License "
+#~ "giving you legal permission to copy, distribute and/or modify it."
+#~ msgstr ""
+#~ "(1) copyright the software, and (2) offer you this license which gives "
+#~ "you legal permission to copy, distribute and/or modify the software."
 
 #~ msgid "(Exception:"
 #~ msgstr "(Exception:"
@@ -5353,6 +4043,14 @@ msgstr ""
 #~ "\"not user\">\n"
 #~ "                                <em>non identificato</em>\n"
 #~ "                              </span>"
+
+#, fuzzy
+#~ msgid ""
+#~ "<stl:inline stl:repeat=\"x bc/path\"> / <a href=\"${x/url}\">${x/name}</"
+#~ "a> </stl:inline> <br/>"
+#~ msgstr ""
+#~ "/ <a stl:if=\"x/url\" stl:content=\"x/name\" stl:attributes=\"href x/url"
+#~ "\"></a>"
 
 #, fuzzy
 #~ msgid "<strong class=\"wf_%s\">%s</strong>"
@@ -5513,15 +4211,14 @@ msgstr ""
 #~ msgstr "Aggiungi un utente<span stl:if=\"nb_users\">s</span>"
 
 #, fuzzy
-#~ msgid "Add a Folder"
-#~ msgstr "Cartella"
-
-#, fuzzy
 #~ msgid "Add a member"
 #~ msgstr "Nuovo utente"
 
 #~ msgid "Add a new translator skill:"
 #~ msgstr "Aggiungi una nuova traduzione"
+
+#~ msgid "And you must show them these terms so they know their rights."
+#~ msgstr "And you must show them these terms so they know their rights."
 
 #, fuzzy
 #~ msgid "Anonymous"
@@ -5536,6 +4233,16 @@ msgstr ""
 #~ msgstr "L'accesso al sito è consentito agli utenti anonimi"
 
 #, fuzzy
+#~ msgid ""
+#~ "Any attempt otherwise to propagate or modify it is void, and will "
+#~ "automatically terminate your rights under this License (including any "
+#~ "patent licenses granted under the third paragraph of section 11)."
+#~ msgstr ""
+#~ "Any attempt otherwise to copy, modify, sublicense or distribute the "
+#~ "Program is void, and will automatically terminate your rights under this "
+#~ "License."
+
+#, fuzzy
 #~ msgid "Application"
 #~ msgstr "Azione"
 
@@ -5544,6 +4251,9 @@ msgstr ""
 
 #~ msgid "Browse"
 #~ msgstr "Naviga"
+
+#~ msgid "Browse-Directories"
+#~ msgstr "Naviga tra le cartelle"
 
 #~ msgid ""
 #~ "But to use this feature you have to install the client first (you do not "
@@ -5564,6 +4274,16 @@ msgstr ""
 #~ "terms of this License, whose permissions for other licensees extend to "
 #~ "the entire whole, and thus to each and every part regardless of who wrote "
 #~ "it."
+
+#, fuzzy
+#~ msgid ""
+#~ "By contrast, the GNU General Public License is intended to guarantee your "
+#~ "freedom to share and change all versions of a program--to make sure it "
+#~ "remains free software for all its users."
+#~ msgstr ""
+#~ "By contrast, the GNU General Public License is intended to guarantee your "
+#~ "freedom to share and change free software--to make sure the software is "
+#~ "free for all its users."
 
 #~ msgid "Catalan"
 #~ msgstr "Catalano"
@@ -5614,6 +4334,19 @@ msgstr ""
 #~ msgstr "Copia come attuale"
 
 #, fuzzy
+#~ msgid ""
+#~ "Copyright (C) 2007 Free Software Foundation, Inc. <a href=\"http://fsf."
+#~ "org/\">http://fsf.org/</a> Everyone is permitted to copy and distribute "
+#~ "verbatim copies of this license document, but changing it is not allowed."
+#~ msgstr ""
+#~ "\n"
+#~ "Copyright (C) 1989, 1991 Free Software Foundation, Inc.  \n"
+#~ "59 Temple Place - Suite 330, Boston, MA  02111-1307, USA\n"
+#~ "\n"
+#~ "Everyone is permitted to copy and distribute verbatim copies\n"
+#~ "of this license document, but changing it is not allowed."
+
+#, fuzzy
 #~ msgid "Create a New Group"
 #~ msgstr "Crea un nuovo gruppo"
 
@@ -5633,6 +4366,10 @@ msgstr ""
 #~ msgstr "Data <stl:inline content=\"table/sortcontrol(mtime)\"></stl:inline>"
 
 #, fuzzy
+#~ msgid "Definitions."
+#~ msgstr "Descrizione"
+
+#, fuzzy
 #~ msgid "Demo"
 #~ msgstr "Rimuovi"
 
@@ -5643,6 +4380,10 @@ msgstr ""
 
 #~ msgid "Details"
 #~ msgstr "Dettagli"
+
+#, fuzzy
+#~ msgid "Developers that use the GNU GPL protect your rights with two steps:"
+#~ msgstr "We protect your rights with two steps:"
 
 #, fuzzy
 #~ msgid "Document Calc"
@@ -5662,10 +4403,6 @@ msgstr ""
 
 #, fuzzy
 #~ msgid "Document Writer"
-#~ msgstr "Documento modificato."
-
-#, fuzzy
-#~ msgid "Document changed."
 #~ msgstr "Documento modificato."
 
 #~ msgid "Document edited."
@@ -5688,6 +4425,31 @@ msgstr ""
 #~ msgid "E-Mail"
 #~ msgstr "Email"
 
+#~ msgid ""
+#~ "EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR "
+#~ "OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, "
+#~ "EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED "
+#~ "WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+#~ msgstr ""
+#~ "EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR "
+#~ "OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, "
+#~ "EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED "
+#~ "WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
+
+#, fuzzy
+#~ msgid ""
+#~ "Each time you convey a covered work, the recipient automatically receives "
+#~ "a license from the original licensors, to run, modify and propagate that "
+#~ "work, subject to this License."
+#~ msgstr ""
+#~ "<strong>6.</strong> Each time you redistribute the Program (or any work "
+#~ "based on the Program), the recipient automatically receives a license "
+#~ "from the original licensor to copy, distribute or modify the Program "
+#~ "subject to these terms and conditions."
+
+#~ msgid "Each version is given a distinguishing version number."
+#~ msgstr "Ad ogni versione è associato un numero di versione univoco."
+
 #, fuzzy
 #~ msgid "Edit Groups"
 #~ msgstr "Gruppi"
@@ -5697,6 +4459,11 @@ msgstr ""
 
 #~ msgid "File uploaded."
 #~ msgstr "File aggiornato."
+
+#, fuzzy
+#~ msgid "Finally, every program is threatened constantly by software patents."
+#~ msgstr ""
+#~ "Finally, any free program is threatened constantly by software patents."
 
 #~ msgid "Folders are used to classify documents"
 #~ msgstr "Le cartelle sono usate per classificare documenti"
@@ -5718,12 +4485,42 @@ msgstr ""
 #~ "files, plus the scripts used to control compilation and installation of "
 #~ "the executable."
 
+#, fuzzy
+#~ msgid ""
+#~ "For example, if you agree to terms that obligate you to collect a royalty "
+#~ "for further conveying from those to whom you convey the Program, the only "
+#~ "way you could satisfy both those terms and this License would be to "
+#~ "refrain entirely from conveying the Program."
+#~ msgstr ""
+#~ "For example, if a patent license would not permit royalty-free "
+#~ "redistribution of the Program by all those who receive copies directly or "
+#~ "indirectly through you, then the only way you could satisfy both it and "
+#~ "this License would be to refrain entirely from distribution of the "
+#~ "Program."
+
+#, fuzzy
+#~ msgid ""
+#~ "For example, if you distribute copies of such a program, whether gratis "
+#~ "or for a fee, you must pass on to the recipients the same freedoms that "
+#~ "you received."
+#~ msgstr ""
+#~ "For example, if you distribute copies of such a program, whether gratis "
+#~ "or for a fee, you must give the recipients all the rights that you have."
+
 #~ msgid ""
 #~ "For software which is copyrighted by the Free Software Foundation, write "
 #~ "to the Free Software Foundation;"
 #~ msgstr ""
 #~ "For software which is copyrighted by the Free Software Foundation, write "
 #~ "to the Free Software Foundation;"
+
+#, fuzzy
+#~ msgid ""
+#~ "For the developers' and authors' protection, the GPL clearly explains "
+#~ "that there is no warranty for this free software."
+#~ msgstr ""
+#~ "Also, for each author's protection and ours, we want to make certain that "
+#~ "everyone understands that there is no warranty for this free software."
 
 #, fuzzy
 #~ msgid "French (fr)"
@@ -5736,6 +4533,9 @@ msgstr ""
 #~ msgstr ""
 #~ "Nome completo <stl:inline content=\"table/sortcontrol(fullname)\"></stl:"
 #~ "inline>"
+
+#~ msgid "GNU GENERAL PUBLIC LICENSE"
+#~ msgstr "GNU GENERAL PUBLIC LICENSE"
 
 #~ msgid "General"
 #~ msgstr "Generale"
@@ -5792,6 +4592,14 @@ msgstr ""
 #~ "operating system on which the executable runs, unless that component "
 #~ "itself accompanies the executable."
 
+#, fuzzy
+#~ msgid ""
+#~ "However, nothing other than this License grants you permission to "
+#~ "propagate or modify any covered work."
+#~ msgstr ""
+#~ "However, nothing else grants you permission to modify or distribute the "
+#~ "Program or its derivative works."
+
 #~ msgid ""
 #~ "However, parties who have received copies, or rights, from you under this "
 #~ "License will not have their licenses terminated so long as such parties "
@@ -5804,6 +4612,28 @@ msgstr ""
 #~ msgid "Hungarian"
 #~ msgstr "Ungherese"
 
+#, fuzzy
+#~ msgid ""
+#~ "IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING "
+#~ "WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS "
+#~ "THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING "
+#~ "ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF "
+#~ "THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO "
+#~ "LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU "
+#~ "OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER "
+#~ "PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE "
+#~ "POSSIBILITY OF SUCH DAMAGES."
+#~ msgstr ""
+#~ "<strong>12.</strong> IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR "
+#~ "AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO "
+#~ "MAY MODIFY AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE "
+#~ "TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR "
+#~ "CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE "
+#~ "PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED "
+#~ "INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF "
+#~ "THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR "
+#~ "OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES."
+
 #~ msgid ""
 #~ "If any portion of this section is held invalid or unenforceable under any "
 #~ "particular circumstance, the balance of the section is intended to apply "
@@ -5812,6 +4642,18 @@ msgstr ""
 #~ "If any portion of this section is held invalid or unenforceable under any "
 #~ "particular circumstance, the balance of the section is intended to apply "
 #~ "and the section as a whole is intended to apply in other circumstances."
+
+#, fuzzy
+#~ msgid ""
+#~ "If conditions are imposed on you (whether by court order, agreement or "
+#~ "otherwise) that contradict the conditions of this License, they do not "
+#~ "excuse you from the conditions of this License."
+#~ msgstr ""
+#~ "<strong>7.</strong> If, as a consequence of a court judgment or "
+#~ "allegation of patent infringement or for any other reason (not limited to "
+#~ "patent issues), conditions are imposed on you (whether by court order, "
+#~ "agreement or otherwise) that contradict the conditions of this License, "
+#~ "they do not excuse you from the conditions of this License."
 
 #~ msgid ""
 #~ "If distribution of executable or object code is made by offering access "
@@ -5836,6 +4678,27 @@ msgstr ""
 #~ "and can be reasonably considered independent and separate works in "
 #~ "themselves, then this License, and its terms, do not apply to those "
 #~ "sections when you distribute them as separate works."
+
+#, fuzzy
+#~ msgid ""
+#~ "If the Program does not specify a version number of the GNU General "
+#~ "Public License, you may choose any version ever published by the Free "
+#~ "Software Foundation."
+#~ msgstr ""
+#~ "If the Program does not specify a version number of this License, you may "
+#~ "choose any version ever published by the Free Software Foundation."
+
+#, fuzzy
+#~ msgid ""
+#~ "If the Program specifies that a certain numbered version of the GNU "
+#~ "General Public License \"or any later version\" applies to it, you have "
+#~ "the option of following the terms and conditions either of that numbered "
+#~ "version or of any later version published by the Free Software Foundation."
+#~ msgstr ""
+#~ "If the Program specifies a version number of this License which applies "
+#~ "to it and \"any later version\", you have the option of following the "
+#~ "terms and conditions either of that version or of any later version "
+#~ "published by the Free Software Foundation."
 
 #~ msgid ""
 #~ "If the software is modified by someone else and passed on, we want its "
@@ -5851,6 +4714,16 @@ msgstr ""
 #, fuzzy
 #~ msgid "If you already installed the client just click the button below:"
 #~ msgstr "Se hai già installato il client segui il link:"
+
+#, fuzzy
+#~ msgid ""
+#~ "If you cannot convey a covered work so as to satisfy simultaneously your "
+#~ "obligations under this License and any other pertinent obligations, then "
+#~ "as a consequence you may not convey it at all."
+#~ msgstr ""
+#~ "If you cannot distribute so as to satisfy simultaneously your obligations "
+#~ "under this License and any other pertinent obligations, then as a "
+#~ "consequence you may not distribute the Program at all."
 
 #~ msgid ""
 #~ "In addition, mere aggregation of another work not based on the Program "
@@ -5903,6 +4776,10 @@ msgstr ""
 #~ msgid "Join the Community"
 #~ msgstr "Diventa collaboratore"
 
+#, fuzzy
+#~ msgid "Juan David Ibáñez Palomar"
+#~ msgstr "J. David Ibáñez, sviluppatore principale"
+
 #~ msgid ""
 #~ "Keeps an historical record with the changes made, it is possible to come "
 #~ "back to an older version."
@@ -5944,6 +4821,9 @@ msgstr ""
 #~ "Permette di visualizzare il contenuto di una cartella, ordinarlo per nome "
 #~ "o data, e di eseguire differenti tipi di azione (rimozione, modifica del "
 #~ "nome, copia, taglia, incolla)."
+
+#~ msgid "Link"
+#~ msgstr "Collegamento"
 
 #~ msgid "Link added"
 #~ msgstr "Collegamento aggiunto"
@@ -6038,6 +4918,20 @@ msgstr ""
 #~ msgid "Ok"
 #~ msgstr "Ok"
 
+#, fuzzy
+#~ msgid ""
+#~ "Our General Public Licenses are designed to make sure that you have the "
+#~ "freedom to distribute copies of free software (and charge for them if you "
+#~ "wish), that you receive source code or can get it if you want it, that "
+#~ "you can change the software or use pieces of it in new free programs, and "
+#~ "that you know you can do these things."
+#~ msgstr ""
+#~ "Our General Public Licenses are designed to make sure that you have the "
+#~ "freedom to distribute copies of free software (and charge for this "
+#~ "service if you wish), that you receive source code or can get it if you "
+#~ "want it, that you can change the software or use pieces of it in new free "
+#~ "programs;"
+
 #~ msgid ""
 #~ "Our decision will be guided by the two goals of preserving the free "
 #~ "status of all derivatives of our free software and of promoting the "
@@ -6046,6 +4940,10 @@ msgstr ""
 #~ "Our decision will be guided by the two goals of preserving the free "
 #~ "status of all derivatives of our free software and of promoting the "
 #~ "sharing and reuse of software generally."
+
+#, fuzzy
+#~ msgid "Patents."
+#~ msgstr "Contenuti"
 
 #, fuzzy
 #~ msgid "Please give a title to your folder."
@@ -6071,9 +4969,6 @@ msgstr ""
 #~ msgid "Record added."
 #~ msgstr "Registrazione aggiunta."
 
-#~ msgid "Record edited."
-#~ msgstr "Registrazione modificata."
-
 #~ msgid "Record removed."
 #~ msgstr "Registrazione rimossa."
 
@@ -6097,6 +4992,13 @@ msgstr ""
 
 #~ msgid "Revision copied to present."
 #~ msgstr "Revisione copiata nel presente."
+
+#~ msgid ""
+#~ "SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY "
+#~ "SERVICING, REPAIR OR CORRECTION."
+#~ msgstr ""
+#~ "SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY "
+#~ "SERVICING, REPAIR OR CORRECTION."
 
 #, fuzzy
 #~ msgid "Save Changes"
@@ -6127,6 +5029,29 @@ msgstr ""
 #~ msgstr ""
 #~ "Stato <stl:inline content=\"table/sortcontrol(state)\"></stl:inline>"
 
+#~ msgid ""
+#~ "Such new versions will be similar in spirit to the present version, but "
+#~ "may differ in detail to address new problems or concerns."
+#~ msgstr ""
+#~ "Such new versions will be similar in spirit to the present version, but "
+#~ "may differ in detail to address new problems or concerns."
+
+#~ msgid ""
+#~ "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH "
+#~ "YOU."
+#~ msgstr ""
+#~ "THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH "
+#~ "YOU."
+
+#, fuzzy
+#~ msgid ""
+#~ "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY "
+#~ "APPLICABLE LAW."
+#~ msgstr ""
+#~ "<strong>11.</strong> BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, "
+#~ "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY "
+#~ "APPLICABLE LAW."
+
 #, fuzzy
 #~ msgid "Table view"
 #~ msgstr "Il titolo"
@@ -6134,6 +5059,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "Target language"
 #~ msgstr "linguaggio:"
+
+#, fuzzy
+#~ msgid "Termination."
+#~ msgstr "Traduzione memorizzata."
 
 #~ msgid "Terms and Conditions for Copying, Distribution and Modification"
 #~ msgstr "Terms and Conditions for Copying, Distribution and Modification"
@@ -6161,6 +5090,22 @@ msgstr ""
 #~ "based on the Program\" means either the Program or any derivative work "
 #~ "under copyright law:"
 
+#, fuzzy
+#~ msgid ""
+#~ "The \"source code\" for a work means the preferred form of the work for "
+#~ "making modifications to it."
+#~ msgstr ""
+#~ "The source code for a work means the preferred form of the work for "
+#~ "making modifications to it."
+
+#, fuzzy
+#~ msgid ""
+#~ "The Free Software Foundation may publish revised and/or new versions of "
+#~ "the GNU General Public License from time to time."
+#~ msgstr ""
+#~ "<strong>9.</strong> The Free Software Foundation may publish revised and/"
+#~ "or new versions of the General Public License from time to time."
+
 #~ msgid ""
 #~ "The act of running the Program is not restricted, and the output from the "
 #~ "Program is covered only if its contents constitute a work based on the "
@@ -6180,6 +5125,14 @@ msgstr ""
 #~ msgstr ""
 #~ "Il contenuto di questo documento HTML è corrotto in quanto non è HTML "
 #~ "valido."
+
+#, fuzzy
+#~ msgid ""
+#~ "The licenses for most software and other practical works are designed to "
+#~ "take away your freedom to share and change the works."
+#~ msgstr ""
+#~ "The licenses for most software are designed to take away your freedom to "
+#~ "share and change it."
 
 #~ msgid "The list below describes your skills as a translator:"
 #~ msgstr ""
@@ -6206,6 +5159,13 @@ msgstr ""
 
 #~ msgid "The password is wrong, please try again."
 #~ msgstr "La password è errata, tenta di nuovo."
+
+#~ msgid ""
+#~ "The precise terms and conditions for copying, distribution and "
+#~ "modification follow."
+#~ msgstr ""
+#~ "The precise terms and conditions for copying, distribution and "
+#~ "modification follow."
 
 #, fuzzy
 #~ msgid "The resource title"
@@ -6239,6 +5199,19 @@ msgstr ""
 #~ "all its terms and conditions for copying, distributing or modifying the "
 #~ "Program or works based on it."
 
+#, fuzzy
+#~ msgid ""
+#~ "Therefore, you have certain responsibilities if you distribute copies of "
+#~ "the software, or if you modify it:"
+#~ msgstr ""
+#~ "These restrictions translate to certain responsibilities for you if you "
+#~ "distribute copies of the software, or if you modify it."
+
+#, fuzzy
+#~ msgid "These actions infringe copyright if you do not accept this License."
+#~ msgstr ""
+#~ "These actions are prohibited by law if you do not accept this License."
+
 #~ msgid ""
 #~ "This General Public License applies to most of the Free Software "
 #~ "Foundation's software and to any other program whose authors commit to "
@@ -6247,6 +5220,16 @@ msgstr ""
 #~ "This General Public License applies to most of the Free Software "
 #~ "Foundation's software and to any other program whose authors commit to "
 #~ "using it."
+
+#, fuzzy
+#~ msgid ""
+#~ "This alternative is allowed only occasionally and noncommercially, and "
+#~ "only if you received the object code with such an offer, in accord with "
+#~ "subsection 6b."
+#~ msgstr ""
+#~ "(This alternative is allowed only for noncommercial distribution and only "
+#~ "if you received the program in object code or executable form with such "
+#~ "an offer, in accord with Subsection b above.)"
 
 #, fuzzy
 #~ msgid "This folder is empty."
@@ -6306,6 +5289,14 @@ msgstr ""
 #~ "To prevent this, we have made it clear that any patent must be licensed "
 #~ "for everyone's free use or not licensed at all."
 
+#, fuzzy
+#~ msgid ""
+#~ "To protect your rights, we need to prevent others from denying you these "
+#~ "rights or asking you to surrender the rights."
+#~ msgstr ""
+#~ "To protect your rights, we need to make restrictions that forbid anyone "
+#~ "to deny you these rights or to ask you to surrender the rights."
+
 #~ msgid ""
 #~ "To rebuild the document from the default language and from the "
 #~ "translations stored in the catalog, click the button below (be careful, "
@@ -6350,9 +5341,6 @@ msgstr ""
 #~ msgid "Unpack"
 #~ msgstr "Decomprimi"
 
-#~ msgid "Upload a File"
-#~ msgstr "Carica un file"
-
 #, fuzzy
 #~ msgid "Upload and return"
 #~ msgstr "Carica un file"
@@ -6389,6 +5377,10 @@ msgstr ""
 #~ msgid "Users added"
 #~ msgstr "Elenco utenti inseriti"
 
+#, fuzzy
+#~ msgid "Version 3, 29 June 2007"
+#~ msgstr "Version 2, June 1991"
+
 #~ msgid "Version edited."
 #~ msgstr "Versione modificata."
 
@@ -6400,6 +5392,15 @@ msgstr ""
 #~ "We wish to avoid the danger that redistributors of a free program will "
 #~ "individually obtain patent licenses, in effect making the program "
 #~ "proprietary."
+
+#, fuzzy
+#~ msgid ""
+#~ "We, the Free Software Foundation, use the GNU General Public License for "
+#~ "most of our software;"
+#~ msgstr ""
+#~ "(Some other Free Software Foundation software is covered by the GNU "
+#~ "Library General Public License instead.) You can apply it to your "
+#~ "programs, too."
 
 #, fuzzy
 #~ msgid "Welcome to the iKaaro Content Management System"
@@ -6414,6 +5415,11 @@ msgstr ""
 #~ "negoziazione del linguaggio, ed in base a questa operazione viene "
 #~ "restituita una risorsa piuttosto che un'altra."
 
+#~ msgid ""
+#~ "When we speak of free software, we are referring to freedom, not price."
+#~ msgstr ""
+#~ "When we speak of free software, we are referring to freedom, not price."
+
 #~ msgid "XXX Folders are used to classify documents."
 #~ msgstr "XXX Le cartelle vengono usate per classificare documenti."
 
@@ -6422,6 +5428,22 @@ msgstr ""
 
 #~ msgid "You are not a translator, <em>woaaahh</em>"
 #~ msgstr "Non sei un traduttore, <em>woaaahh</em>"
+
+#, fuzzy
+#~ msgid ""
+#~ "You are not required to accept this License in order to receive or run a "
+#~ "copy of the Program."
+#~ msgstr ""
+#~ "<strong>5.</strong> You are not required to accept this License, since "
+#~ "you have not signed it."
+
+#, fuzzy
+#~ msgid ""
+#~ "You are not responsible for enforcing compliance by third parties with "
+#~ "this License."
+#~ msgstr ""
+#~ "You are not responsible for enforcing compliance by third parties to this "
+#~ "License."
 
 #~ msgid ""
 #~ "You can edit your document with a desktop application (MS Word, "
@@ -6438,8 +5460,59 @@ msgstr ""
 #~ msgid "You don't belong to any group."
 #~ msgstr "Non appartieni ad alcun gruppo."
 
+#, fuzzy
+#~ msgid ""
+#~ "You may charge any price or no price for each copy that you convey, and "
+#~ "you may offer support or warranty protection for a fee."
+#~ msgstr ""
+#~ "You may charge a fee for the physical act of transferring a copy, and you "
+#~ "may at your option offer warranty protection in exchange for a fee."
+
+#, fuzzy
+#~ msgid ""
+#~ "You may convey a work based on the Program, or the modifications to "
+#~ "produce it from the Program, in the form of source code under the terms "
+#~ "of section 4, provided that you also meet all of these conditions:"
+#~ msgstr ""
+#~ "<strong>2.</strong> You may modify your copy or copies of the Program or "
+#~ "any portion of it, thus forming a work based on the Program, and copy and "
+#~ "distribute such modifications or work under the terms of Section 1 above, "
+#~ "provided that you also meet all of these conditions:"
+
+#, fuzzy
+#~ msgid ""
+#~ "You may convey verbatim copies of the Program's source code as you "
+#~ "receive it, in any medium, provided that you conspicuously and "
+#~ "appropriately publish on each copy an appropriate copyright notice;"
+#~ msgstr ""
+#~ "<strong>1.</strong> You may copy and distribute verbatim copies of the "
+#~ "Program's source code as you receive it, in any medium, provided that you "
+#~ "conspicuously and appropriately publish on each copy an appropriate "
+#~ "copyright notice and disclaimer of warranty;"
+
+#, fuzzy
+#~ msgid ""
+#~ "You may not impose any further restrictions on the exercise of the rights "
+#~ "granted or affirmed under this License."
+#~ msgstr ""
+#~ "You may not impose any further restrictions on the recipients' exercise "
+#~ "of the rights granted herein."
+
+#, fuzzy
+#~ msgid ""
+#~ "You may not propagate or modify a covered work except as expressly "
+#~ "provided under this License."
+#~ msgstr ""
+#~ "<strong>4.</strong> You may not copy, modify, sublicense, or distribute "
+#~ "the Program except as expressly provided under this License."
+
 #~ msgid "You must add user(s) in parent group:"
 #~ msgstr "Devi aggiungere l'utente/gli utenti in un gruppo:"
+
+#~ msgid ""
+#~ "You must make sure that they, too, receive or can get the source code."
+#~ msgstr ""
+#~ "You must make sure that they, too, receive or can get the source code."
 
 #~ msgid "You must select one and only one revision."
 #~ msgstr "Devi scegliere una e una sola revisione."
@@ -6458,6 +5531,13 @@ msgstr ""
 #~ "documenti  multilingua, un potente sistema di tracciatura delle versioni "
 #~ "dei contenuti, l'integrazione con il desktop, il supporto per servizi web "
 #~ "e altro ancora."
+
+#, fuzzy
+#~ msgid ""
+#~ "and give all recipients a copy of this License along with the Program."
+#~ msgstr ""
+#~ "and give any other recipients of the Program a copy of this License along "
+#~ "with the Program."
 
 #~ msgid "and that you know you can do these things."
 #~ msgstr "and that you know you can do these things."
@@ -6499,6 +5579,12 @@ msgstr ""
 #~ "distribute software through any other system and a licensee cannot impose "
 #~ "that choice."
 
+#, fuzzy
+#~ msgid "keep intact all notices of the absence of any warranty;"
+#~ msgstr ""
+#~ "keep intact all the notices that refer to this License and to the absence "
+#~ "of any warranty;"
+
 #~ msgid "keywords from the vocabulary:"
 #~ msgstr "parole chiave dal vocabolario:"
 
@@ -6508,6 +5594,10 @@ msgstr ""
 #~ msgid "ok"
 #~ msgstr "ok"
 
+#, fuzzy
+#~ msgid "or"
+#~ msgstr "o, "
+
 #~ msgid ""
 #~ "rather, the intent is to exercise the right to control the distribution "
 #~ "of derivative or collective works based on the Program."
@@ -6521,6 +5611,10 @@ msgstr ""
 #~ msgstr ""
 #~ "that is to say, a work containing the Program or a portion of it, either "
 #~ "verbatim or with modifications and/or translated into another language."
+
+#, fuzzy
+#~ msgid "the above requirements apply either way."
+#~ msgstr "These requirements apply to the modified work as a whole."
 
 #, fuzzy
 #~ msgid "the resource \"%s\" does not exist"
@@ -6561,3 +5655,6 @@ msgstr ""
 
 #~ msgid "» <a stl:attributes=\"href user/logout\">Log out</a>"
 #~ msgstr "» <a stl:attributes=\"href user/logout\">Esci</a>"
+
+#~ msgid "» Browse and link an object from the workspace:"
+#~ msgstr "» Naviga e collega un oggetto presente nell'area di lavoro:"

@@ -31,10 +31,11 @@ from itools.rest import checkid
 from itools.web import get_context
 
 # Import from itools.cms
-from itools.cms.registry import get_object_class
-from itools.cms.folder import Folder
-from itools.cms.html import XHTMLFile
-from itools.cms.messages import *
+from registry import register_object_class, get_object_class
+from folder import Folder
+from file import File
+from html import XHTMLFile, EpozEditable
+from messages import *
 
 
 
@@ -244,11 +245,34 @@ class OrderAware(object):
 
 
 
-class Dressable(Folder):
+def add_dressable_style(context):
+    style = context.root.get_handler('ui/dressable/dressable.css')
+    context.styles.append(context.handler.get_pathto(style))
 
-    class_views = [['edit_document']]
-    template = None
-    schema = {}
+
+
+class Dressable(Folder, EpozEditable):
+    class_id = 'dressable'
+    class_title = u'Dressable'
+    class_description = u'A dressable folder'
+    class_views = ([['view'], ['edit_document']] + Folder.class_views)
+    template = '/ui/dressable/view.xml'
+    schema = {'content': ('index.xhtml', XHTMLFile),
+              'browse_folder': 'browse_folder',
+              'browse_file': 'browse_file'}
+
+    browse_template = list(Parser("""
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <h2>${title}</h2>
+  <ul id="${id}">
+    <li stl:repeat="handler handlers">
+      <img src="${handler/icon}" />
+      <a href="${handler/path}">${handler/label}</a>
+    </li>
+  </ul>
+</stl:block>
+    """))
 
 
     def new(self, **kw):
@@ -281,6 +305,16 @@ class Dressable(Folder):
         return set_prefix(stream, prefix)
 
 
+    def _get_schema_handler(self):
+        handlers = []
+        for key, data in self.schema.iteritems():
+            if isinstance(data, tuple):
+                name, kk = data
+                handlers.append(name)
+        return handlers
+
+
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
         namespace = {}
@@ -300,9 +334,17 @@ class Dressable(Folder):
             else:
                 content = getattr(self, data)(context)
             namespace[key] = content
+        add_dressable_style(context)
 
         handler = self.get_handler(self.template)
         return stl(handler, namespace)
+
+
+    def get_views(self):
+        l = [ x[0] for x in self.class_views ]
+        edit_index = l.index('edit_document')
+        l[edit_index] = self.get_first_edit_subview()
+        return l
 
 
     #######################################################################
@@ -423,11 +465,57 @@ class Dressable(Folder):
         return self.get_handler(name)
 
 
+    def get_browse(self, context, cls, exclude=[]):
+        namespace = {}
+        here = context.handler
+        folders = []
+        handlers = self.search_handlers(handler_class=cls)
+        # Check access rights
+        user = context.user
+
+        for handler in handlers:
+            if handler.name in exclude:
+                continue
+            ac = handler.get_access_control()
+            if ac.is_allowed_to_view(user, handler):
+                d = {}
+                label = handler.get_property('dc:title')
+                if label is None or label == '':
+                    label = handler.name
+                path_to_icon = handler.get_path_to_icon(from_handler=self)
+                if path_to_icon.startswith(';'):
+                    path_to_icon = Path('%s/' % handler.name).resolve(path_to_icon)
+                d['label'] = label
+                d['icon'] = path_to_icon
+                d['path'] = here.get_pathto(handler)
+                folders.append((label, d))
+
+        folders.sort()
+        return [folder for kk, folder in folders]
+
+
+    def browse_folder(self, context):
+        namespace = {}
+        namespace['id'] = 'browse_folder'
+        namespace['title'] = 'Folders'
+        namespace['handlers'] = self.get_browse(context, Folder)
+        return stl(events=self.browse_template, namespace=namespace)
+
+
+    def browse_file(self, context):
+        exclude = self._get_schema_handler()
+        namespace = {}
+        namespace['id'] = 'browse_file'
+        namespace['title'] = 'Files'
+        namespace['handlers'] = self.get_browse(context, File, exclude=exclude)
+        return stl(events=self.browse_template, namespace=namespace)
+
+
     #######################################################################
     # User interface
     #######################################################################
     def get_subviews(self, name):
-        if name == 'edit_document':
+        if name.split('?')[0] == 'edit_document':
             subviews = []
             for key, data in self.schema.iteritems():
                 if isinstance(data, tuple):
@@ -438,8 +526,20 @@ class Dressable(Folder):
                     elif is_datatype(cls, Image):
                         ref = 'edit_image?name=%s' % name
                         subviews.append(ref)
+            subviews.sort()
             return subviews
         return Folder.get_subviews(self, name)
+
+
+    def get_first_edit_subview(self):
+        for key, data in self.schema.iteritems():
+            if isinstance(data, tuple):
+                name, cls = data
+                if is_datatype(cls, Document):
+                    return 'edit_document?dress_name=%s' % name
+                elif is_datatype(cls, Image):
+                    return 'edit_image?name=%s' % name
+        return name
 
 
     def edit_document__sublabel__(self, **kw):
@@ -454,3 +554,7 @@ class Dressable(Folder):
             handler = self.get_handler(name)
             return handler.get_property('dc:title') or handler.name
         return name
+
+
+
+register_object_class(Dressable)

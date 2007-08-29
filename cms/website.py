@@ -49,9 +49,12 @@ class WebSite(RoleAware, Folder):
          'browse_content?mode=list',
          'browse_content?mode=image'],
         ['new_resource_form'],
-        ['edit_metadata_form'],
-        ['languages_form', 'anonymous_form', 'contact_options_form'],
-        ['permissions_form', 'new_user_form'],
+        ['edit_metadata_form',
+         'anonymous_form',
+         'languages_form',
+         'contact_options_form'],
+        ['permissions_form',
+         'new_user_form'],
         ['last_changes']]
 
     __fixed_handlers__ = ['skin', 'index']
@@ -79,11 +82,12 @@ class WebSite(RoleAware, Folder):
     ########################################################################
     # User interface
     ########################################################################
+    edit_metadata_form__label__ = u'Edit'
 
     ######################################################################
-    # Settings / Languages
+    # Edit / Languages
     languages_form__access__ = 'is_admin'
-    languages_form__label__ = u'Settings'
+    languages_form__label__ = u'Edit'
     languages_form__sublabel__ = u'Languages'
     def languages_form(self, context):
         namespace = {}
@@ -160,10 +164,10 @@ class WebSite(RoleAware, Folder):
 
 
     ######################################################################
-    # Settings / Registration
+    # Edit / Security
     anonymous_form__access__ = 'is_allowed_to_edit'
-    anonymous_form__label__ = u'Settings'
-    anonymous_form__sublabel__ = u'Registration'
+    anonymous_form__label__ = u'Edit'
+    anonymous_form__sublabel__ = u'Security Policy'
     def anonymous_form(self, context):
         # Build the namespace
         namespace = {}
@@ -186,9 +190,9 @@ class WebSite(RoleAware, Folder):
 
 
     ######################################################################
-    # Settings / Contact
+    # Edit / Contact
     contact_options_form__access__ = 'is_allowed_to_edit'
-    contact_options_form__label__ = u'Settings'
+    contact_options_form__label__ = u'Edit'
     contact_options_form__sublabel__ = u'Contact'
     def contact_options_form(self, context):
         # Find out the contacts

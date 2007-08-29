@@ -155,8 +155,39 @@ class Folder(Handler, BaseFolder, CalendarAware):
     #######################################################################
     # API
     #######################################################################
-    def has_object(self, path):
-        return self.has_handler('%s.metadata' % path)
+    def _has_object(self, name):
+        return self.has_handler('%s.metadata' % name)
+
+
+    def _get_names(self):
+        return [ x[:-9] for x in self.get_handler_names()
+                 if x[-9:] == '.metadata' ]
+
+
+    def _get_object(self, name):
+        database = self.database
+        uri = self.uri.resolve2(name)
+        # The metadata
+        metadata = self.get_handler('%s.metadata' % name)
+        format = metadata.get_property('format')
+        # The object
+        cls = get_object_class(format)
+        try:
+            handler = self.get_handler(name)
+        except LookupError:
+            handler = cls()
+        else:
+            if isinstance(handler, cls):
+                return handler
+            handler = object.__new__(cls)
+            database.cache[uri] = handler
+
+        # Attach
+        handler.database = database
+        handler.uri = uri
+        handler.timestamp = None
+        handler.dirty = False
+        return handler
 
 
     def set_object(self, name, handler, metadata=None):
@@ -199,45 +230,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
         self.del_handler('%s.metadata' % name)
         if self.has_handler(name):
             self.del_handler(name)
-
-
-    def _get_names(self):
-        return [ x[:-9] for x in self.get_handler_names()
-                 if x[-9:] == '.metadata' ]
-
-
-    def _get_object(self, name):
-        database = self.database
-        uri = self.uri.resolve2(name)
-        # The metadata
-        metadata = self.get_handler('%s.metadata' % name)
-        format = metadata.get_property('format')
-        # The object
-        cls = get_object_class(format)
-        try:
-            handler = self.get_handler(name)
-        except LookupError:
-            handler = cls()
-        else:
-            if isinstance(handler, cls):
-                return handler
-            handler = object.__new__(cls)
-            database.cache[uri] = handler
-
-        # Attach
-        handler.database = database
-        handler.uri = uri
-        handler.timestamp = None
-        handler.dirty = False
-        handler.parent = self
-        handler.name = name
-        return handler
-
-
-    def get_objects(self):
-        suffix = len('.metadata')
-        for name in self.get_names():
-            yield self.get_object(name)
 
 
     def traverse_objects(self):

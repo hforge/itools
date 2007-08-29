@@ -75,8 +75,6 @@ class UIFolder(Node, Folder):
             format = handler.get_mimetype()
             handler = get_object_class(format)(handler.uri)
         handler.database = self.database
-        handler.parent = self
-        handler.name = name
         return handler
 
 
@@ -560,8 +558,6 @@ class UI(AccessControl, UIFolder):
         if name in skin_registry:
             skin = skin_registry[name]
             skin.database = self.database
-            skin.parent = self
-            skin.name = name
             return skin
         return UIFolder._get_object(self, name)
 

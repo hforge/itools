@@ -25,6 +25,36 @@ class Node(object):
     control API.
     """
 
+    #######################################################################
+    # API / Obsolete
+    #######################################################################
+    def get_real_handler(self):
+        return self
+
+
+    def get_physical_path(self):
+        # TODO Should return a Path instance
+        return self.get_abspath()
+
+
+    #######################################################################
+    # API / Private
+    #######################################################################
+    def _has_object(self, name):
+        raise NotImplementedError
+
+
+    def _get_names(self):
+        raise NotImplementedError
+
+
+    def _get_object(self, name):
+        raise NotImplementedError
+
+
+    #######################################################################
+    # API / Tree
+    #######################################################################
     def get_abspath(self):
         # TODO Should return a Path instance
         if self.parent is None:
@@ -37,15 +67,6 @@ class Node(object):
         return parent_path + self.name
 
     abspath = property(get_abspath, None, None, '')
-
-
-    def get_real_handler(self):
-        return self
-
-
-    def get_physical_path(self):
-        # TODO Should return a Path instance
-        return self.get_abspath()
 
 
     def get_root(self):
@@ -70,17 +91,20 @@ class Node(object):
         return path.get_pathto(handler.get_abspath())
 
 
-    def _get_object(self, name):
-        raise NotImplementedError, 'the method "_get_object" is missing'
+    def has_object(self, path):
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        path, name = path[:-1], path[-1]
+        container = self.get_object(path)
+        return container._has_object(name)
 
 
-    def _get_names(self):
-        raise NotImplementedError, 'the method "_get_names" is missing'
+    def get_names(self, path='.'):
+        object = self.get_object(path)
+        return object._get_names()
 
 
-    ########################################################################
-    # Publishing
-    ########################################################################
     def get_object(self, path):
         if not isinstance(path, Path):
             path = Path(path)
@@ -98,16 +122,46 @@ class Node(object):
             path = path[1:]
 
         for name in path:
-            here = here._get_object(name)
+            object = here._get_object(name)
+            object.parent = here
+            object.name = name
+            here = object
 
         return here
 
 
-    def get_names(self, path='.'):
-        object = self.get_object(path)
-        return object._get_names()
+    def get_objects(self, path='.'):
+        here = self.get_object(path)
+        for name in here._get_names():
+            object = here._get_object(name)
+            object.parent = here
+            object.name = name
+            yield object
 
 
+    def set_object(self, path, object):
+        raise NotImplementedError
+
+
+    def del_object(self, path):
+        raise NotImplementedError
+
+
+    def copy_object(self, source, target):
+        raise NotImplementedError
+
+
+    def move_object(self, source, target):
+        raise NotImplementedError
+
+
+    def traverse_objects(self):
+        raise NotImplementedError
+
+
+    #######################################################################
+    # API / HTTP
+    #######################################################################
     def get_method(self, name):
         try:
             method = getattr(self, name)
@@ -143,9 +197,9 @@ class Node(object):
         raise NotImplementedError
 
 
-    ########################################################################
-    # Security
-    ########################################################################
+    #######################################################################
+    # API / Security
+    #######################################################################
     def get_access_control(self):
         node = self
         while node is not None:
@@ -158,31 +212,30 @@ class Node(object):
 
 
 class Root(AccessControl, Node):
-    """The Root is the main entry point of the Web application. Responsible for
-    traversal, user retrieval, and error pages.
-    It is a handler of type Foldern so check out the Handler and Folder API.
+    """The Root is the main entry point of the Web application.  Responsible
+    for traversal, user retrieval, and error pages.  It is a handler of
+    type Foldern so check out the Handler and Folder API.
     """
 
     def init(self, context):
-        """Initialize the root for the new context.
-        Useful for resetting attributes, etc."""
+        """Initialize the root for the new context.  Useful for resetting
+        attributes, etc."""
         pass
 
 
     def get_user(self, username):
-        """Return an object representing the user named after the username, or
-        None.
-        The nature of the object, the location of the storage and the retrieval
-        of the data remain at your discretion. The only requirements are the
-        "name" attribute, and the "authenticate" method with a "password"
-        parameter.
+        """Return an object representing the user named after the username,
+        or 'None'.  The nature of the object, the location of the storage
+        and the retrieval of the data remain at your discretion. The only
+        requirements are the "name" attribute, and the "authenticate" method
+        with a "password" parameter.
         """
         return None
 
 
-    ########################################################################
-    # Publishing
-    ########################################################################
+    #######################################################################
+    # API / Publishing
+    #######################################################################
     def before_traverse(self, context):
         """Pre-publishing process.
         Possible actions are language negotiation, etc.
@@ -196,9 +249,9 @@ class Root(AccessControl, Node):
         return body
 
 
-    ########################################################################
-    # Error Pages
-    ########################################################################
+    #######################################################################
+    # API / Error Pages
+    #######################################################################
     def unauthorized(self, context):
         """Called on status 401 for replacing the body by an error page."""
         return '401 Unauthorized'

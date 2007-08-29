@@ -75,17 +75,6 @@ class Node(object):
         return self.parent.get_root()
 
 
-    def get_pathtoroot(self):
-        i = 0
-        parent = self.parent
-        while parent is not None:
-            parent = parent.parent
-            i += 1
-        if i == 0:
-            return './'
-        return '../' * i
-
-
     def get_pathto(self, handler):
         path = Path(self.get_abspath())
         return path.get_pathto(handler.get_abspath())
@@ -163,11 +152,7 @@ class Node(object):
     # API / HTTP
     #######################################################################
     def get_method(self, name):
-        try:
-            method = getattr(self, name)
-        except AttributeError:
-            return None
-        return method
+        return getattr(self, name, None)
 
 
     def GET(self, context):

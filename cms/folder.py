@@ -21,7 +21,7 @@
 # Import from the Standard Library
 import marshal
 from string import Template
-import urllib
+from urllib import quote, quote_plus, unquote
 import zlib
 import mimetypes
 
@@ -269,7 +269,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             subviews = []
             for cls in self.get_document_types():
                 id = cls.class_id
-                ref = 'new_resource_form?type=%s' % urllib.quote_plus(id)
+                ref = 'new_resource_form?type=%s' % quote_plus(id)
                 subviews.append(ref)
             return subviews
         return Handler.get_subviews(self, name)
@@ -633,7 +633,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         path = self.get_abspath()
         cp = (False, [ '%s/%s' % (path, x) for x in names ])
-        cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
+        cp = quote(zlib.compress(marshal.dumps(cp), 9))
         context.set_cookie('ikaaro_cp', cp, path='/')
 
         return context.come_back(u'Objects copied.')
@@ -653,7 +653,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         path = self.get_abspath()
         cp = (True, [ '%s/%s' % (path, x) for x in names ])
-        cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
+        cp = quote(zlib.compress(marshal.dumps(cp), 9))
         context.set_cookie('ikaaro_cp', cp, path='/')
 
         return context.come_back(u'Objects cut.')
@@ -667,7 +667,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         root = context.root
         allowed_types = tuple(self.get_document_types())
-        cut, paths = marshal.loads(zlib.decompress(urllib.unquote(cp)))
+        cut, paths = marshal.loads(zlib.decompress(unquote(cp)))
         for path in paths:
             handler = root.get_object(path)
             if not isinstance(handler, allowed_types):
@@ -738,19 +738,13 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace = {}
         namespace['types'] = []
 
-        for handler_class in self.get_document_types():
-            type_ns = {}
-            gettext = handler_class.gettext
-            format = urllib.quote(handler_class.class_id)
-            type_ns['format'] = format
-            icon = handler_class.class_icon48
-            type_ns['icon'] = self.get_pathtoroot() + 'ui/' + icon
-            title = handler_class.class_title
-            type_ns['title'] = gettext(title)
-            description = handler_class.class_description
-            type_ns['description'] = gettext(description)
-            type_ns['url'] = ';new_resource_form?type=' + format
-            namespace['types'].append(type_ns)
+        base = Path(self.abspath).get_pathto('/ui/')
+        for cls in self.get_document_types():
+            namespace['types'].append({
+                'icon': base.resolve2(cls.class_icon48),
+                'title': cls.gettext(cls.class_title),
+                'description': cls.gettext(cls.class_description),
+                'url': ';new_resource_form?type=%s' % quote(cls.class_id)})
 
         handler = self.get_object('/ui/folder/new_resource.xml')
         return stl(handler, namespace)

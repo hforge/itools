@@ -600,17 +600,14 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             start = self.parent
         else:
             start = self
-        bc = Breadcrumb(filter_type=Image, start=start)
-        # Fix the bc style
-        style = context.root.get_handler('ui/aruni/aruni.css')
-        bc.style = context.handler.get_pathto(style)
         # Construct namespace
         namespace = {}
-        namespace['bc'] = bc
+        namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
         namespace['message'] = context.get_form_value('message')
 
+        prefix = Path(self.abspath).get_pathto('/ui/html/addimage.xml')
         handler = self.get_handler('/ui/html/addimage.xml')
-        return stl(handler, namespace)
+        return stl(handler, namespace, prefix=prefix)
 
 
     addimage__access__ = 'is_allowed_to_edit'
@@ -647,17 +644,14 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             start = self.parent
         else:
             start = self
-        bc = Breadcrumb(filter_type=File, start=start)
-        # Fix the bc style
-        style = context.root.get_handler('ui/aruni/aruni.css')
-        bc.style = context.handler.get_pathto(style)
         # Construct namespace
         namespace = {}
-        namespace['bc'] = bc
+        namespace['bc'] = Breadcrumb(filter_type=File, start=start)
         namespace['message'] = context.get_form_value('message')
 
+        prefix = Path(self.abspath).get_pathto('/ui/html/addimage.xml')
         handler = self.get_handler('/ui/html/addlink.xml')
-        return stl(handler, namespace)
+        return stl(handler, namespace, prefix=prefix)
 
 
     addlink__access__ = 'is_allowed_to_edit'

@@ -5,10 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title>Epoz-Toolbox</title>
-    <link rel="stylesheet" type="text/css" href="${bc/style}" />
-  </head>
-
-  <body>
+    <link rel="stylesheet" type="text/css" href="../aruni/aruni.css" />
     <script type="text/javascript">
       function select_link(){
         value = ''
@@ -34,66 +31,46 @@
       }
     </script>
     <style>
-      .title{
-        width:400px;
-        border-bottom: 1px solid gray;
-        margin-bottom: 10px;
-      }
-      #insert_link td, #insert_link td a {
-        font: 14px Verdana;
-        color: #7986A8; 
-      }
-      #browse_zone{
-        width: 400px;
-        height: 350px;
-        overflow: auto;
+      #body {
+        padding: 20px;
       }
       #header_blue{
         height: 20px;
         background-color: #30569D;
         border-bottom: 4px solid #729FCF;
       }
+      #insert_link td, #insert_link td a {
+        font: 14px Verdana;
+        color: #7986A8; 
+      }
     </style>
+  </head>
 
+  <body>
     <div id="header_blue"></div>
-
     <div id="body">
-    <div id="message" stl:if="message">Message :${message}</div>
-    <dl>
-      <!-- Link -->
-      <dd class="title">
-        &raquo; Type the url to add:
-      </dd>
-      <dd>
-          <input type="text" id="uri" name="uri" size="40" value="http://"/>
-          <input type="button" value="Add" class="button_ok"
-            onclick="javascript:select_uri()"/>
-          <br/>
-          <br/>
-      </dd>
+      <!-- Message -->
+      <div id="message" stl:if="message">Message :${message}</div>
+      <!-- External Link -->
+      <h3>Type the URL of an external resource</h3>
+      <form>
+        <input type="text" id="uri" name="uri" size="40" value="http://"/>
+        <input type="button" value="Add" class="button_ok"
+          onclick="javascript:select_uri()"/>
+      </form>
+      <!-- Internal Link -->
+      <h3>Browse and link to a File from the workspace</h3>
       <!-- Breadcrumbs -->
-      <dt>
-        <div id="maintitle">
-          <div id="breadcrumbs">
-            <label>Location:</label>
-            <span stl:repeat="x bc/path">
-              <a href="${x/url}">${x/name}</a> /
-            </span>
-          </div>
+      <div id="maintitle">
+        <div id="breadcrumbs">
+          <label>Location:</label>
+          <span stl:repeat="x bc/path">
+            <a href="${x/url}">${x/name}</a> /
+          </span>
         </div>
-      </dt>
-      <!-- Internal Document -->
-      <dd class="title">
-        &raquo; Browse and link a file from the workspace:
-      </dd>
-      <dd>
-        <input stl:if="bc/is_submit" type="button" value="Link"
-          class="button_ok"
-          onclick="select_link()"/>
-        <br/>
-        <div id="browse_zone">
+      </div>
+      <form action=";addlink_form" method="get">
         <table id="insert_link">
-          <form name="add_internal_url" action=";addlink_form" method="get">
           <tr stl:repeat="object bc/objects">
             <td>
               <input type="radio" name="object" value="${object/path}" />
@@ -113,25 +90,18 @@
               <stl:inline if="not object/is_folder">${object/name}</stl:inline>
             </td>
           </tr>
-          </form>
-          </table>
-          </div>
-          <br/>
-          </dd>
-          <dd class="title">
-            &raquo; Add a file in this folder:
-          </dd>
-          <dd>
-          <form name="addlink" method="post" enctype="multipart/form-data"
-            action=";addlink">
-            <input type="hidden" name="target_path" value="${bc/target_path}"/>
-            <input id="file" name="file" size="35" type="file"/>
-            <p>
-              <input class="button_add" type="submit" value="Add"/>
-            </p>
-          </form>
-          </dd>
-        </dl>
-        </div>
+        </table>
+        <input stl:if="bc/is_submit" type="button" value="Link"
+          class="button_ok" onclick="select_link()"/>
+      </form>
+      <!-- Upload and Link -->
+      <form action=";addlink" method="post" enctype="multipart/form-data">
+        <p>Upload a file to the current folder and link to it:</p>
+        <input type="hidden" name="target_path" value="${bc/target_path}"/>
+        <input id="file" name="file" size="35" type="file"/>
+        <br/>
+        <input class="button_add" type="submit" value="Upload and Link" />
+      </form>
+    </div>
   </body>
 </html>

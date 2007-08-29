@@ -5,10 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title>Epoz-Toolbox</title>
-    <link rel="stylesheet" type="text/css" href="${bc/style}" />
-  </head>
-
-  <body>
+    <link rel="stylesheet" type="text/css" href="../aruni/aruni.css" />
     <script type="text/javascript">
       function select_img(){
         value = ''
@@ -28,64 +25,37 @@
       }
     </script>
     <style>
-      .title{
-        width:400px;
-        border-bottom: 1px solid gray;
-        margin-bottom: 10px;
-      }
-      #insert_image td, #insert_image td a {
-        font: 14px Verdana;
-        color: #7986A8; 
-      }
-      #browse_zone{
-        width: 400px;
-        height: 350px;
-        overflow: auto;
+      #body {
+        padding: 20px;
       }
       #header_blue{
         height: 20px;
         background-color: #30569D;
         border-bottom: 4px solid #729FCF;
       }
+      #insert_image td, #insert_image td a {
+        font: 14px Verdana;
+        color: #7986A8; 
+      }
     </style>
+  </head>
 
+  <body>
     <div id="header_blue"></div>
-
     <div id="body">
-    <div id="message" stl:if="message">${message}</div>
-    <dl>
-      <!-- Breadcrumbs -->
-      <dt>
-        <div id="maintitle">
-          <div id="breadcrumbs">
-            <label>Location:</label>
-            <span stl:repeat="x bc/path">
-              <a href="${x/url}">${x/name}</a> /
-            </span>
-          </div>
-        </div>
-      </dt>
-      <!-- Add an image -->
-      <dd class="title">
-        &raquo; Add an image in this folder
-      </dd>
-      <dd>
-        <form name="addimage" method="post" enctype="multipart/form-data"
-        action=";addimage">
-        <input type="hidden" name="target_path" value="${bc/target_path}"/>
-        <input id="file" name="file" size="35" type="file"/><br/>
-        <input class="button_add" type="submit" value="Add"/>
-        </form>
-      </dd>
+      <div id="message" stl:if="message">${message}</div>
       <!-- List of files -->
-      <dd class="title">
-        &raquo; Browse and insert an Image from the workspace:
-      </dd>
-      <dd>
-        <input stl:if="bc/is_submit" type="button" value="Insert Image"
-          class="button_ok" onclick="javascript:select_img()"/><br/>
-        <div id="browse_zone">
-        <form action=";addimage_form" method="get">
+      <h3>Browse and insert an Image from the workspace</h3>
+      <!-- Breadcrumbs -->
+      <div id="maintitle">
+        <div id="breadcrumbs">
+          <label>Location:</label>
+          <span stl:repeat="x bc/path">
+            <a href="${x/url}">${x/name}</a> /
+          </span>
+        </div>
+      </div>
+      <form action=";addimage_form" method="get">
         <table id="insert_image">
           <tr stl:repeat="object bc/objects">
             <td>
@@ -106,12 +76,18 @@
               <stl:inline if="not object/is_folder">${object/name}</stl:inline>
             </td>
           </tr>
-          </table>
-        </form>
-        </div>
-      </dd>
-      <dd class="title"><br/></dd>
-    </dl>
+        </table>
+        <input stl:if="bc/is_submit" type="button" value="Insert Image"
+          class="button_ok" onclick="javascript:select_img()"/>
+      </form>
+      <!-- Add an image -->
+      <form action=";addimage" method="post" enctype="multipart/form-data">
+        <p>Upload an image to the current folder and insert it:</p>
+        <input type="hidden" name="target_path" value="${bc/target_path}" />
+        <input id="file" name="file" size="35" type="file" />
+        <br/>
+        <input class="button_add" type="submit" value="Upload and Insert" />
+      </form>
     </div>
   </body>
 </html>

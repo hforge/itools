@@ -84,22 +84,6 @@ The PDF file can be downloaded from http://www.ikaaro.org/itools
 
 
 
-Deploy itools.cms: Virtual Hosting
-----------------------------------
-
-To deploy an instance of itools.cms check the documentation about itools
-(see http://www.ikaaro.org/itools). To install an itools.cms instance
-behind Apache, with virtual hosting the rewrite rule to use will look like:
-
-  <VirtualHost *:80>
-    ServerName example
-    RewriteEngine On
-    RewriteRule ^/(.*) http://localhost:8080/example/$1 [P]
-    RequestHeader set X-Base-Path example
-  </VirtualHost>
-
-
-
 Resources
 ---------
 

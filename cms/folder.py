@@ -245,25 +245,13 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def search_handlers(self, path='.', format=None, state=None,
                         handler_class=None):
-        container = self.get_handler(path)
-
-        for name in container.get_handler_names():
-            # Skip hidden handlers
-            if name.startswith('.'):
-                continue
-            if name.endswith('.metadata'):
-                continue
-
-            filename, type, language = FileName.decode(name)
-            if language is not None:
-                continue
-
-            handler = container.get_handler(name)
+        container = self.get_object(path)
+        for handler in container.get_objects():
             if handler_class is not None:
                 if not isinstance(handler, handler_class):
                     continue
 
-            get_property = getattr(handler, 'get_property', lambda x: None)
+            get_property = handler.get_metadata().get_property
             if format is None or get_property('format') == format:
                 if state is None:
                     yield handler

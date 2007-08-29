@@ -50,6 +50,7 @@ class WebSite(RoleAware, Folder):
          'browse_content?mode=image'],
         ['new_resource_form'],
         ['edit_metadata_form',
+         'virtual_hosts_form',
          'anonymous_form',
          'languages_form',
          'contact_options_form'],
@@ -83,6 +84,31 @@ class WebSite(RoleAware, Folder):
     # User interface
     ########################################################################
     edit_metadata_form__label__ = u'Edit'
+
+    ######################################################################
+    # Edit / Virtual Hosts
+    virtual_hosts_form__access__ = 'is_admin'
+    virtual_hosts_form__label__ = u'Edit'
+    virtual_hosts_form__sublabel__ = u'Virtual Hosts'
+    def virtual_hosts_form(self, context):
+        namespace = {}
+        vhosts = self.get_property('ikaaro:vhosts')
+        namespace['vhosts'] = '\n'.join(vhosts)
+
+        handler = self.get_object('/ui/website/virtual_hosts.xml')
+        return stl(handler, namespace)
+
+
+    edit_virtual_hosts__access__ = 'is_admin'
+    def edit_virtual_hosts(self, context):
+        vhosts = context.get_form_value('vhosts')
+        vhosts = [ x.strip() for x in vhosts.splitlines() ]
+        vhosts = [ x for x in vhosts if x ]
+        vhosts = tuple(vhosts)
+        self.set_property('ikaaro:vhosts', vhosts)
+
+        return context.come_back(MSG_CHANGES_SAVED)
+
 
     ######################################################################
     # Edit / Languages

@@ -510,8 +510,16 @@ class Server(object):
         root.init(context)
         user = context.user = self.get_user(context)
         root.before_traverse(context)
+        site_root = self.get_site_root(context.uri.authority.host)
+        context.site_root = site_root
+        # Traverse
+        path = str(context.path)
+        if path[0] == '/':
+            path = path[1:]
+            if path == '':
+                path = '.'
         try:
-            handler = root.get_object(context.path)
+            handler = site_root.get_object(path)
         except LookupError:
             handler = None
         context.handler = handler
@@ -616,3 +624,8 @@ class Server(object):
 
     def before_commit(self):
         pass
+
+
+    def get_site_root(self, hostname):
+        raise NotImplementedError
+

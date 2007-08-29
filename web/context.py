@@ -64,17 +64,7 @@ class Context(object):
             scheme = 'http'
 
         # The requested uri
-        request_uri = request.request_uri
-        path = request_uri.path
-        if request.has_header('X-Base-Path'):
-            base_path = Path(request.get_header('X-Base-Path'))
-            request_uri = deepcopy(request_uri)
-            diff_path = base_path.get_pathto(request_uri.path)
-            if request_uri.path.endswith_slash:
-                request_uri.path = Path('/%s/' % diff_path)
-            else:
-                request_uri.path = Path('/%s' % diff_path)
-        reference = '%s://%s%s' % (scheme, host, request_uri)
+        reference = '%s://%s%s' % (scheme, host, request.request_uri)
         self.uri = get_reference(reference)
 
         # Split the path into path and method ("a/b/c/;view")

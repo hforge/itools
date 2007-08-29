@@ -29,9 +29,10 @@ from itools import vfs
 from itools.catalog import Catalog
 from itools.handlers import Config, Database
 from itools.web import Server as BaseServer
-from itools.cms.handlers import Metadata
-from itools.cms import registry
+from handlers import Metadata
+import registry
 from catalog import get_to_index, get_to_unindex
+from website import WebSite
 
 
 def ask_confirmation(message):
@@ -135,6 +136,20 @@ class Server(BaseServer):
     #######################################################################
     # Override
     #######################################################################
+    def get_site_root(self, hostname):
+        root = self.root
+
+        sites = [root]
+        for site in root.search_handlers(handler_class=WebSite):
+            sites.append(site)
+
+        for site in sites:
+            if hostname in site.get_property('ikaaro:vhosts'):
+                return site
+
+        return root
+
+
     def get_databases(self):
         return [self.database, self.catalog]
 

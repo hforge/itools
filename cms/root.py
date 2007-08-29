@@ -70,9 +70,12 @@ class Root(WebSite):
         ['browse_content?mode=thumbnails',
          'browse_content?mode=list'],
         ['new_resource_form'],
-        ['edit_metadata_form'],
-        ['languages_form', 'anonymous_form', 'contact_options_form'],
-        ['permissions_form', 'new_user_form'],
+        ['edit_metadata_form',
+         'anonymous_form',
+         'languages_form',
+         'contact_options_form'],
+        ['permissions_form',
+         'new_user_form'],
         ['last_changes']]
 
     __fixed_handlers__ = ['users', 'ui']

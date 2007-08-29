@@ -71,6 +71,7 @@ class Root(WebSite):
          'browse_content?mode=list'],
         ['new_resource_form'],
         ['edit_metadata_form',
+         'virtual_hosts_form',
          'anonymous_form',
          'languages_form',
          'contact_options_form'],

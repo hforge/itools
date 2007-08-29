@@ -123,7 +123,8 @@ class Schema(BaseSchema):
         'guests': Tokens(default=()),
         'members': Tokens(default=()),
         'reviewers': Tokens(default=()),
-        # Settings
+        # Websites
+        'vhosts': Tokens(default=()),
         'contacts': Tokens(default=()),
         # ical
         'timetables': Timetables,

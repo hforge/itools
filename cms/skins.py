@@ -50,18 +50,6 @@ class Skin(Folder):
     __fixed_handlers__ = ['template.xhtml.en']
 
 
-    # XXX This belongs to the context
-    def _get_site_root(self, context):
-        root = context.root
-
-        request = context.request
-        if request.has_header('X-Base-Path'):
-            path = request.get_header('X-Base-Path')
-            return root.get_handler(path)
-                
-        return root
-
-
     #######################################################################
     # Left Menu
     #######################################################################
@@ -88,7 +76,7 @@ class Skin(Folder):
 
     def get_main_menu(self, context):
         user = context.user
-        root = self._get_site_root(context)
+        root = context.site_root
         here = context.handler or root
 
         menu = []
@@ -114,9 +102,8 @@ class Skin(Folder):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        root = self._get_site_root(context)
-        menu = tree(root, active_node=context.handler, filter=Folder,
-                    user=context.user)
+        menu = tree(context.site_root, active_node=context.handler,
+                    filter=Folder, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
 
@@ -179,7 +166,7 @@ class Skin(Folder):
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
         here = context.handler
-        root = self._get_site_root(context)
+        root = context.site_root
 
         # Build the list of handlers that make up the breadcrumb
         handlers = [root]
@@ -316,7 +303,7 @@ class Skin(Folder):
         user = context.user
 
         if user is None:
-            root = self._get_site_root(context)
+            root = context.site_root
             joinisopen = root.get_property('ikaaro:website_is_open')
             return {'info': None, 'joinisopen': joinisopen}
 

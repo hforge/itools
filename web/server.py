@@ -510,10 +510,20 @@ class Server(object):
         root.init(context)
         user = context.user = self.get_user(context)
         root.before_traverse(context)
+        site_root = self.get_site_root(context.uri.authority.host)
+        context.site_root = site_root
+        # Traverse
+        path = str(context.path)
+        if not context.request.has_header('X-Base-Path'):
+            if path[0] == '/':
+                path = path[1:]
+                if path == '':
+                    path = '.'
         try:
-            handler = context.handler = root.get_handler(context.path)
+            handler = site_root.get_handler(path)
         except LookupError:
             handler = None
+        context.handler = handler
 
         if not isinstance(handler, Node):
             # Find an ancestor to render the page
@@ -616,3 +626,8 @@ class Server(object):
 
     def before_commit(self):
         pass
+
+
+    def get_site_root(self, hostname):
+        raise NotImplementedError
+

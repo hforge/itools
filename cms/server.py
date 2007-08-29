@@ -28,11 +28,12 @@ from itools.uri import get_absolute_reference2
 from itools import vfs
 from itools.catalog import Catalog
 from itools.handlers import Config, get_transaction
-from itools.web import Server as BaseServer
+from itools.web import Server as BaseServer, get_context
 from itools.cms.database import DatabaseFS
-from itools.cms.handlers import Metadata
-from itools.cms import registry
+from handlers import Metadata
+import registry
 from catalog import get_to_index, get_to_unindex
+from website import WebSite
 
 
 def ask_confirmation(message):
@@ -143,6 +144,27 @@ class Server(BaseServer):
     #######################################################################
     # Override
     #######################################################################
+    def get_site_root(self, hostname):
+        root = self.root
+
+        # Old Method
+        request = get_context().request
+        if request.has_header('X-Base-Path'):
+            path = request.get_header('X-Base-Path')
+            return root.get_handler(path)
+
+        # New Method
+        sites = [root]
+        for site in root.search_handlers(handler_class=WebSite):
+            sites.append(site)
+
+        for site in sites:
+            if hostname in site.get_property('ikaaro:vhosts'):
+                return site
+
+        return root
+
+
     def get_databases(self):
         return [self.database, self.catalog]
 

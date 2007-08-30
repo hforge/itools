@@ -79,11 +79,6 @@ class Handler(object):
     ########################################################################
     # API
     ########################################################################
-    def get_handler_names(self, path='.'):
-        container = self.get_handler(path)
-        return container.get_handler_names()
-
-
     def has_handler(self, path):
         # Normalize the path
         if not isinstance(path, Path):
@@ -93,6 +88,14 @@ class Handler(object):
 
         container = self.get_handler(path)
         return name in container.get_handler_names()
+
+
+    def get_handler_names(self, reference='.'):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        uri = self.uri.resolve2(reference)
+        return self.database.get_handler_names(uri)
 
 
     def get_handler(self, reference):

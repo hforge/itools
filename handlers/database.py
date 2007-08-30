@@ -97,16 +97,18 @@ class Database(object):
     def get_handler_names(self, reference):
         fs, uri = cwd.get_fs_and_reference(reference)
 
-        if not fs.exists(uri):
-            return []
+        if fs.exists(uri):
+            names = fs.get_names(uri)
+            names = set(names)
+        else:
+            names = set()
 
-        names = fs.get_names(uri)
         removed = [ str(x.path[-1]) for x in self.removed
                     if uri.resolve2(str(x.path[-1])) == x ]
         added = [ str(x.path[-1]) for x in self.added
                   if uri.resolve2(str(x.path[-1])) == x ]
 
-        return list(set(names) - set(removed) | set(added))
+        return list(names - set(removed) | set(added))
 
 
     def get_handler(self, reference, cls=None):
@@ -138,9 +140,8 @@ class Database(object):
             # Clean the cache
             if reference in cache:
                 del cache[reference]
-            folder = object.__new__(Folder)
+            folder = Folder(reference)
             folder.database = self
-            folder.uri = reference
             return folder
 
         # Lookup the cache
@@ -182,17 +183,19 @@ class Database(object):
             raise IOError, 'XXX'
 
         reference = get_absolute_reference(reference)
-        handler.database = self
-        handler.uri = reference
         if isinstance(handler, Folder):
             if handler.cache is None:
-                raise NotImplementedError
+                for name in handler.get_handler_names():
+                    subhandler = handler.get_handler(name)
+                    self.set_handler(reference.resolve2(name), subhandler)
             else:
                 for name, subhandler in handler.cache.items():
                     self.set_handler(reference.resolve2(name), subhandler)
         else:
             self.cache[reference] = handler
             self.added.add(reference)
+        handler.database = self
+        handler.uri = reference
 
 
     def del_handler(self, reference):
@@ -224,8 +227,8 @@ class Database(object):
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
-            for name in handler.get_names():
-                self.copy(source.resolve2(name), target.resolve2(name))
+            for name in handler.get_handler_names():
+                self.copy_handler(source.resolve2(name), target.resolve2(name))
         else:
             # File
             handler = handler.clone()
@@ -238,8 +241,8 @@ class Database(object):
 
     def move_handler(self, source, target):
         # XXX Not efficient implementation
-        self.copy(source, target)
-        self.remove(source)
+        self.copy_handler(source, target)
+        self.del_handler(source)
 
 
     #######################################################################

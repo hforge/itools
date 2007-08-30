@@ -180,7 +180,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
             if isinstance(handler, cls):
                 return handler
             handler = object.__new__(cls)
-            database.cache[uri] = handler
+            if isinstance(handler, BaseFolder):
+                handler.cache = None
+            else:
+                database.cache[uri] = handler
 
         # Attach
         handler.database = database
@@ -230,6 +233,28 @@ class Folder(Handler, BaseFolder, CalendarAware):
         self.del_handler('%s.metadata' % name)
         if self.has_handler(name):
             self.del_handler(name)
+
+
+    def move_object(self, source, target):
+        # Schedule to unindex
+        handler = self.get_object(source)
+        if isinstance(handler, Folder):
+            for x in handler.traverse_objects():
+                schedule_to_unindex(x)
+        else:
+            schedule_to_unindex(handler)
+
+        # Move
+        self.move_handler(source, target)
+        self.move_handler('%s.metadata' % source, '%s.metadata' % target)
+
+        # Schedule to index
+        handler = self.get_object(target)
+        if isinstance(handler, Folder):
+            for x in handler.traverse_objects():
+                schedule_to_index(x)
+        else:
+            schedule_to_index(handler)
 
 
     def traverse_objects(self):
@@ -563,12 +588,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     rename_form__access__ = 'is_allowed_to_move'
     def rename_form(self, context):
-        ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to move
-        handlers = [ self.get_handler(x) for x in ids ]
         ac = self.get_access_control()
-        names = [ x.name for x in handlers
-                  if ac.is_allowed_to_move(context.user, x) ]
+        names = [
+            x for x in context.get_form_values('ids')
+            if ac.is_allowed_to_move(context.user, self.get_object(x)) ]
 
         # Check input data
         if not names:
@@ -608,12 +632,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 return context.come_back(MSG_BAD_NAME)
             # Rename
             if new_name != old_name:
-                # XXX itools should provide an API to copy and move handlers
-                handler = self.get_object(old_name)
-                handler_metadata = handler.get_metadata()
-                self.set_object(new_name, handler, handler_metadata)
-                self.del_object(old_name)
-
+                self.move_object(old_name, new_name)
 
         message = u'Objects renamed.'
         return context.come_back(message, goto=';browse_content')

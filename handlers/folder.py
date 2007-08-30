@@ -89,14 +89,6 @@ class Folder(Handler):
         return self.database.has_handler(uri)
 
 
-    def get_handler_names(self, reference='.'):
-        if self.database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        uri = self.uri.resolve2(reference)
-        return self.database.get_handler_names(uri)
-
-
     def get_handlers(self, reference='.'):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
@@ -119,6 +111,15 @@ class Folder(Handler):
 
         uri = self.uri.resolve2(reference)
         self.database.del_handler(uri)
+
+
+    def move_handler(self, source, target):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        source = self.uri.resolve2(source)
+        target = self.uri.resolve2(target)
+        self.database.move_handler(source, target)
 
 
     ########################################################################

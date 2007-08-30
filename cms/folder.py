@@ -179,10 +179,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         else:
             if isinstance(handler, cls):
                 return handler
-            handler = object.__new__(cls)
             if isinstance(handler, BaseFolder):
+                handler = object.__new__(cls)
                 handler.cache = None
             else:
+                handler = handler.clone(cls=cls)
                 database.cache[uri] = handler
 
         # Attach
@@ -235,8 +236,23 @@ class Folder(Handler, BaseFolder, CalendarAware):
             self.del_handler(name)
 
 
+    def copy_object(self, source, target):
+        # Copy
+        source = self.get_object(source).uri
+        self.copy_handler(source, target)
+        self.copy_handler('%s.metadata' % source, '%s.metadata' % target)
+
+        # Index
+        handler = self.get_object(target)
+        if isinstance(handler, Folder):
+            for x in handler.traverse_objects():
+                schedule_to_index(x)
+        else:
+            schedule_to_index(handler)
+
+
     def move_object(self, source, target):
-        # Schedule to unindex
+        # Unindex
         handler = self.get_object(source)
         if isinstance(handler, Folder):
             for x in handler.traverse_objects():
@@ -245,10 +261,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
             schedule_to_unindex(handler)
 
         # Move
+        source = self.get_object(source).uri
         self.move_handler(source, target)
         self.move_handler('%s.metadata' % source, '%s.metadata' % target)
 
-        # Schedule to index
+        # Index
         handler = self.get_object(target)
         if isinstance(handler, Folder):
             for x in handler.traverse_objects():
@@ -640,18 +657,18 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     copy__access__ = 'is_allowed_to_copy'
     def copy(self, context):
-        ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to copy
-        handlers = [ self.get_handler(x) for x in ids ]
         ac = self.get_access_control()
-        names = [ x.name for x in handlers
-                  if ac.is_allowed_to_copy(context.user, x) ]
+        names = [
+            x for x in context.get_form_values('ids')
+            if ac.is_allowed_to_copy(context.user, self.get_object(x)) ]
 
+        # Check input data
         if not names:
             return context.come_back(u'No objects selected.')
 
-        path = self.get_abspath()
-        cp = (False, [ '%s/%s' % (path, x) for x in names ])
+        abspath = Path(self.abspath)
+        cp = (False, [ str(abspath.resolve2(x)) for x in names ])
         cp = quote(zlib.compress(marshal.dumps(cp), 9))
         context.set_cookie('ikaaro_cp', cp, path='/')
 
@@ -660,18 +677,18 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     cut__access__ = 'is_allowed_to_move'
     def cut(self, context):
-        ids = context.get_form_values('ids')
         # Filter names which the authenticated user is not allowed to move
-        handlers = [ self.get_handler(x) for x in ids ]
         ac = self.get_access_control()
-        names = [ x.name for x in handlers
-                  if ac.is_allowed_to_move(context.user, x) ]
+        names = [
+            x for x in context.get_form_values('ids')
+            if ac.is_allowed_to_move(context.user, self.get_object(x)) ]
 
+        # Check input data
         if not names:
             return context.come_back(u'No objects selected.')
 
-        path = self.get_abspath()
-        cp = (True, [ '%s/%s' % (path, x) for x in names ])
+        abspath = Path(self.abspath)
+        cp = (True, [ str(abspath.resolve2(x)) for x in names ])
         cp = quote(zlib.compress(marshal.dumps(cp), 9))
         context.set_cookie('ikaaro_cp', cp, path='/')
 
@@ -697,19 +714,16 @@ class Folder(Handler, BaseFolder, CalendarAware):
             if cut and self.get_real_handler() is container:
                 continue
 
-            name = handler.name
-            # Cut&Paste (remove original)
+            name = generate_name(handler.name, self.get_names(), '_copy_')
             if cut is True:
-                container.del_object(name)
-
-            # Find a non used name
-            name = generate_name(name, self.get_handler_names(), '_copy_')
-            # Add it here
-            metadata = handler.get_metadata()
-            self.set_object(name, handler, metadata)
-            # Copy&Paste (fix metadata properties)
-            if cut is False:
+                # Cut&Paste
+                self.move_object(path, name)
+            else:
+                # Copy&Paste
+                self.copy_object(path, name)
+                # Fix metadata properties
                 handler = self.get_object(name)
+                metadata = handler.get_metadata()
                 # Fix state
                 if isinstance(handler, WorkflowAware):
                     metadata.set_property('state', handler.workflow.initstate)

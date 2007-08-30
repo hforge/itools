@@ -113,6 +113,15 @@ class Folder(Handler):
         self.database.del_handler(uri)
 
 
+    def copy_handler(self, source, target):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        source = self.uri.resolve2(source)
+        target = self.uri.resolve2(target)
+        self.database.copy_handler(source, target)
+
+
     def move_handler(self, source, target):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED

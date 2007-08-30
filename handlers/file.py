@@ -134,12 +134,10 @@ class File(Handler):
         file.truncate()
 
 
-    def clone(self):
-        # Deep load
-        if (self.uri is not None) and (self.timestamp is None):
-            self.load_state()
+    def clone(self, cls=None):
         # Create and initialize the instance
-        cls = self.__class__
+        if cls is None:
+            cls = self.__class__
         copy = object.__new__(cls)
         copy.database = None
         copy.uri = None

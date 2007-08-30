@@ -246,8 +246,9 @@ class OrderAware(object):
 
 
 def add_dressable_style(context):
-    style = context.root.get_object('ui/dressable/dressable.css')
-    context.styles.append(context.handler.get_pathto(style))
+    here = context.handler
+    css = Path(here.abspath).get_pathto('ui/dressable/dressable.css')
+    context.styles.append(str(css))
 
 
 
@@ -327,6 +328,20 @@ class Dressable(Folder, EpozEditable):
                 name, kk = data
                 handlers.append(name)
         return handlers
+
+
+    def _get_handler_label(self, name):
+        handler = self.get_handler(name)
+        label = handler.get_property('dc:title')
+        if label:
+            return label
+
+        for key, data in self.schema.iteritems():
+            if isinstance(data, tuple):
+                handler_name, kk = data
+                if handler_name == name:
+                    return key
+        return None
 
 
     view__access__ = 'is_allowed_to_view'
@@ -559,16 +574,12 @@ class Dressable(Folder, EpozEditable):
 
     def edit_document__sublabel__(self, **kw):
         dress_name = kw.get('dress_name')
-        handler = self.get_handler(dress_name)
-        return handler.get_property('dc:title') or handler.name
+        return self._get_handler_label(dress_name)
 
 
     def edit_image__sublabel__(self, **kw):
         name = kw.get('name')
-        if self.has_handler(name):
-            handler = self.get_handler(name)
-            return handler.get_property('dc:title') or handler.name
-        return name
+        return self._get_handler_label(name)
 
 
 

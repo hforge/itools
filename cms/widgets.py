@@ -580,7 +580,7 @@ class CheckBoxWidget(Widget):
         namespace['value'] = value
         namespace['is_selected'] = is_selected
 
-        return stl(events=BooleanCheckBox.template, namespace=namespace)
+        return stl(events=CheckBoxWidget.template, namespace=namespace)
 
 
 

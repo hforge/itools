@@ -157,7 +157,7 @@ class Tracker(Folder):
         Returns a namespace (list of dictionaries) to be used for the
         selection box of users (the 'assigned to' field).
         """
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         members = []
         if not_assigned is True:
             members.append({'id': 'nobody', 'title': 'NOT ASSIGNED'})
@@ -199,8 +199,8 @@ class Tracker(Folder):
     search_form__label__ = u'Search'
     def search_form(self, context):
         # Set Style
-        css = self.get_handler('/ui/tracker/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/tracker/tracker.css')
+        context.styles.append(str(css))
 
         # Build the namespace
         namespace = {}
@@ -253,7 +253,7 @@ class Tracker(Folder):
         pathto_website = self.get_pathto(self.get_site_root())
         namespace['manage_assigned'] = '%s/;permissions_form' % pathto_website 
 
-        handler = self.get_handler('/ui/tracker/search.xml')
+        handler = self.get_object('/ui/tracker/search.xml')
         return stl(handler, namespace)
 
 
@@ -309,8 +309,8 @@ class Tracker(Folder):
     view__label__ = u'View'
     def view(self, context):
         # Set Style
-        css = self.get_handler('/ui/tracker/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/tracker/tracker.css')
+        context.styles.append(str(css))
 
         namespace = {}
         namespace['method'] = 'GET'
@@ -418,10 +418,10 @@ class Tracker(Folder):
             namespace['states'] = get('states.csv').get_options()
             namespace['types'] = get('types.csv').get_options()
             namespace['states'] = get('states.csv').get_options()
-            users = self.get_handler('/users')
+            users = self.get_object('/users')
             namespace['users'] = self.get_members_namespace('')
 
-        handler = self.get_handler('/ui/tracker/view_tracker.xml')
+        handler = self.get_object('/ui/tracker/view_tracker.xml')
         return stl(handler, namespace)
 
 
@@ -619,7 +619,7 @@ class Tracker(Folder):
         error = context.check_form_input(search_fields)
         if error is not None:
             return context.come_back(error, keep=[])
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         # Choose stored Search or personalized search
         search_name = context.get_form_value('search_name')
         if search_name:
@@ -681,8 +681,8 @@ class Tracker(Folder):
     add_form__label__ = u'Add'
     def add_form(self, context):
         # Set Style
-        css = self.get_handler('/ui/tracker/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/tracker/tracker.css')
+        context.styles.append(str(css))
 
         # Build the namespace
         namespace = {}
@@ -702,11 +702,11 @@ class Tracker(Folder):
         state = context.get_form_value('state', type=Integer)
         namespace['states'] = get('states.csv').get_options(state, sort=False)
 
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         assigned_to = context.get_form_value('assigned_to', type=String)
         namespace['users'] = self.get_members_namespace(assigned_to)
 
-        handler = self.get_handler('/ui/tracker/add_issue.xml')
+        handler = self.get_object('/ui/tracker/add_issue.xml')
         return stl(handler, namespace)
 
 
@@ -832,7 +832,7 @@ class SelectTable(CSV):
         namespace['table'] = widgets.table(columns, rows, [sortby], sortorder,
                                            actions)
 
-        handler = self.get_handler('/ui/csv/view.xml')
+        handler = self.get_object('/ui/csv/view.xml')
         return stl(handler, namespace)
 
 
@@ -926,7 +926,7 @@ class Issue(Folder, VersioningAware):
         user = context.user
         root = context.root
         parent = self.parent
-        users = root.get_handler('users')
+        users = root.get_object('users')
 
         # Datetime
         row = [datetime.now()]
@@ -1094,11 +1094,11 @@ class Issue(Folder, VersioningAware):
         This dict is used to construct a line for a table.
         """
         parent = self.parent
-        tables = {'module': parent.get_handler('modules.csv'),
-                  'version': parent.get_handler('versions.csv'),
-                  'type': parent.get_handler('types.csv'),
-                  'priority': parent.get_handler('priorities.csv'),
-                  'state': parent.get_handler('states.csv')}
+        tables = {'module': parent.get_object('modules.csv'),
+                  'version': parent.get_object('versions.csv'),
+                  'type': parent.get_object('types.csv'),
+                  'priority': parent.get_object('priorities.csv'),
+                  'state': parent.get_object('states.csv')}
         infos = {'name': self.name,
                  'id': int(self.name),
                  'title': self.get_value('title')}
@@ -1108,7 +1108,7 @@ class Issue(Folder, VersioningAware):
             infos[name] = row and row.get_value('title') or None
         assigned_to = self.get_value('assigned_to')
         # solid in case the user has been removed
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         if assigned_to and users.has_handler(assigned_to):
                 user = users.get_handler(assigned_to)
                 infos['assigned_to'] = user.get_title()
@@ -1159,15 +1159,15 @@ class Issue(Folder, VersioningAware):
     edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     def edit_form(self, context):
-        # Set Style
-        css = self.get_handler('/ui/tracker/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
-        # Set JS
-        js = self.get_handler('/ui/tracker/tracker.js')
-        context.scripts.append(str(self.get_pathto(js)))
+        # Set Style & JS
+        abspath = Path(self.abspath) 
+        css = abspath.get_pathto('/ui/tracker/tracker.css')
+        context.styles.append(str(css))
+        js = abspath.get_pathto('/ui/tracker/tracker.js')
+        context.scripts.append(str(js))
 
         # Local variables
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         (kk, kk, title, module, version, type, priority, assigned_to, state,
             comment, file) = self.get_handler('.history').lines[-1]
 
@@ -1177,7 +1177,7 @@ class Issue(Folder, VersioningAware):
         namespace['title'] = title
         # Reported by
         reported_by = self.get_reported_by()
-        reported_by = self.get_handler('/users/%s' % reported_by)
+        reported_by = users.get_object(reported_by)
         namespace['reported_by'] = reported_by.get_title()
         # Topics, Version, Priority, etc.
         get = self.parent.get_handler
@@ -1191,7 +1191,6 @@ class Issue(Folder, VersioningAware):
         # Assign To
         namespace['users'] = self.parent.get_members_namespace(assigned_to)
         # Comments
-        users = self.get_handler('/users')
         comments = []
         i = 0
         for row in self.get_rows():
@@ -1215,7 +1214,7 @@ class Issue(Folder, VersioningAware):
         comments.reverse()
         namespace['comments'] = comments
 
-        handler = self.get_handler('/ui/tracker/edit_issue.xml')
+        handler = self.get_object('/ui/tracker/edit_issue.xml')
         return stl(handler, namespace)
 
 
@@ -1237,16 +1236,16 @@ class Issue(Folder, VersioningAware):
     history__label__ = u'History'
     def history(self, context):
         # Set Style
-        css = self.get_handler('/ui/tracker/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/tracker/tracker.css')
+        context.styles.append(str(css))
 
         # Local variables
-        users = self.get_handler('/users')
-        versions = self.get_handler('../versions.csv')
-        types = self.get_handler('../types.csv')
-        states = self.get_handler('../states.csv')
-        modules = self.get_handler('../modules.csv')
-        priorities = self.get_handler('../priorities.csv')
+        users = self.get_object('/users')
+        versions = self.get_object('../versions.csv')
+        types = self.get_object('../types.csv')
+        states = self.get_object('../states.csv')
+        modules = self.get_object('../modules.csv')
+        priorities = self.get_object('../priorities.csv')
         # Initial values
         previous_title = None
         previous_version = None
@@ -1336,7 +1335,7 @@ class Issue(Folder, VersioningAware):
         rows.reverse()
         namespace['rows'] = rows
 
-        handler = self.get_handler('/ui/tracker/issue_history.xml')
+        handler = self.get_object('/ui/tracker/issue_history.xml')
         return stl(handler, namespace)
 
 

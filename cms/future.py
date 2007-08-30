@@ -120,7 +120,7 @@ class OrderAware(object):
         namespace['ordered_folders'] = ordered_folders
         namespace['unordered_folders'] = unordered_folders
 
-        handler = self.get_handler('/ui/folder/order_items.xml')
+        handler = self.get_object('/ui/folder/order_items.xml')
         return stl(handler, namespace)
 
 
@@ -246,7 +246,7 @@ class OrderAware(object):
 
 
 def add_dressable_style(context):
-    style = context.root.get_handler('ui/dressable/dressable.css')
+    style = context.root.get_object('ui/dressable/dressable.css')
     context.styles.append(context.handler.get_pathto(style))
 
 
@@ -401,7 +401,7 @@ class Dressable(Folder, EpozEditable):
         namespace['width'] = width
         namespace['height'] = height
 
-        handler = self.get_handler('/ui/dressable/upload_image.xml')
+        handler = self.get_object('/ui/dressable/upload_image.xml')
         return stl(handler, namespace)
 
 
@@ -424,7 +424,7 @@ class Dressable(Folder, EpozEditable):
         namespace['name'] = name
         namespace['class_id'] = self.get_class_id_image(name)
 
-        handler = self.get_handler('/ui/dressable/Image_new_instance.xml')
+        handler = self.get_object('/ui/dressable/Image_new_instance.xml')
         return stl(handler, namespace)
 
 

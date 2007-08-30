@@ -56,7 +56,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     def new_instance_form(cls, context):
         namespace = {}
         namespace['class_id'] = cls.class_id
-        handler = context.root.get_handler('ui/file/new_instance.xml')
+        handler = context.root.get_object('ui/file/new_instance.xml')
         return stl(handler, namespace)
 
 

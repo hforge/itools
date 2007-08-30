@@ -163,7 +163,7 @@ class WikiPage(Text):
         # Class id
         namespace['class_id'] = cls.class_id
 
-        handler = root.get_handler('ui/wiki/WikiPage_new_instance.xml')
+        handler = root.get_object('ui/wiki/WikiPage_new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -374,11 +374,11 @@ class WikiPage(Text):
         with tempdir.make_file(self.name) as file:
             file.write(output)
         # The stylesheet...
-        stylesheet = self.get_handler('/ui/wiki/style.tex')
+        stylesheet = self.get_object('/ui/wiki/style.tex')
         with tempdir.make_file('style.tex') as file:
             stylesheet.save_state_to_file(file)
         # The 'powered' image...
-        image = self.get_handler('/ui/images/ikaaro_powered.png')
+        image = self.get_object('/ui/images/ikaaro_powered.png')
         with tempdir.make_file('ikaaro.png') as file:
             image.save_state_to_file(file)
         # And referenced images
@@ -413,8 +413,8 @@ class WikiPage(Text):
 
 
     def view(self, context):
-        css = self.get_handler('/ui/wiki/wiki.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
+        context.styles.append(str(css))
 
         return self.to_html()
 
@@ -439,8 +439,8 @@ class WikiPage(Text):
             self.lock()
             context.commit = True
 
-        css = self.get_handler('/ui/wiki/wiki.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
+        context.styles.append(str(css))
         text_size = context.get_form_value('text_size');
         text_size_cookie = context.get_cookie('wiki_text_size')
 
@@ -456,7 +456,7 @@ class WikiPage(Text):
         namespace['data'] = self.to_str()
         namespace['text_size'] = text_size
 
-        handler = self.get_handler('/ui/wiki/WikiPage_edit.xml')
+        handler = self.get_object('/ui/wiki/WikiPage_edit.xml')
         return stl(handler, namespace)
 
 
@@ -527,10 +527,10 @@ class WikiPage(Text):
     help__label__ = u"Help"
     def help(self, context):
         namespace = {}
-        css = self.get_handler('/ui/wiki/wiki.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
+        context.styles.append(str(css))
 
-        source = self.get_handler('/ui/wiki/help.txt')
+        source = self.get_object('/ui/wiki/help.txt')
         source = source.to_str()
         html = core.publish_string(source, writer_name='html',
                 settings_overrides=self.overrides)
@@ -538,7 +538,7 @@ class WikiPage(Text):
         namespace['help_source'] = source
         namespace['help_html'] = Parser(html)
 
-        handler = self.get_handler('/ui/wiki/WikiPage_help.xml')
+        handler = self.get_object('/ui/wiki/WikiPage_help.xml')
         return stl(handler, namespace)
 
 

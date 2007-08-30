@@ -76,7 +76,7 @@ class Table(File, iTable):
                               'isdefault': code == default_language})
         namespace['languages'] = languages
 
-        handler = root.get_handler('ui/table/new_instance.xml')
+        handler = root.get_object('ui/table/new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -216,7 +216,7 @@ class Table(File, iTable):
         namespace['table'] = widgets.table(fields, records, [sortby], sortorder,
                                            actions)
 
-        handler = self.get_handler('/ui/table/view.xml')
+        handler = self.get_object('/ui/table/view.xml')
         return stl(handler, namespace)
 
 
@@ -263,7 +263,7 @@ class Table(File, iTable):
             fields.append(field)
         namespace['fields'] = fields
 
-        handler = self.get_handler('/ui/table/add_record.xml')
+        handler = self.get_object('/ui/table/add_record.xml')
         return stl(handler, namespace)
     
     
@@ -351,7 +351,7 @@ class Table(File, iTable):
             # Append
             fields.append(field)
         namespace['fields'] = fields
-        handler = self.get_handler('/ui/table/edit_record.xml')
+        handler = self.get_object('/ui/table/edit_record.xml')
         return stl(handler, namespace)
 
 

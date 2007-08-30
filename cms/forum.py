@@ -36,18 +36,19 @@ from text import Text
 
 
 def add_forum_style(context):
-    style = context.root.get_handler('ui/forum/forum.css')
-    context.styles.append(context.handler.get_pathto(style))
+    here = context.handler
+    css = Path(here.abspath).get_pathto('/ui/forum/forum.css')
+    context.styles.append(str(css))
 
 
 def get_forum_handler(container, handler_name):
     """Used for retro-compatibility with Itools 0.16.3 and anterior versions"""
-    #XXX To remove in 0.17
+    # XXX To remove in 0.17
     xhtml_document = '%s.xhtml' % handler_name
     if container.has_handler(xhtml_document):
         return container.get_handler(xhtml_document)
-    else:
-        return container.get_handler('%s.txt' % handler_name)
+
+    return container.get_object('%s.txt' % handler_name)
 
 
 
@@ -79,10 +80,9 @@ class Message(XHTMLFile):
         """WYSIWYG editor for HTML documents."""
         # Edit with a rich text editor
         namespace = {}
-        # Epoz expects HTML
         namespace['rte'] = self.get_rte(context, 'data', self.events)
 
-        handler = self.get_handler('/ui/html/edit.xml')
+        handler = self.get_object('/ui/html/edit.xml')
         return stl(handler, namespace)
 
 
@@ -157,13 +157,13 @@ class Thread(Folder):
         user = context.user
         username = user and user.name
         namespace = []
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         ac = self.get_access_control()
         accept_language = context.get_accept_language()
         for i, id in enumerate([0] + self.get_replies()):
             message = get_forum_handler(self, id)
             author_id = message.get_property('owner')
-            metadata = users.get_handler('%s.metadata' % author_id)
+            metadata = users.get_object('%s.metadata' % author_id)
             namespace.append({
                 'author': (metadata.get_property('dc:title') or
                     metadata.get_property('ikaaro:email')),
@@ -187,7 +187,7 @@ class Thread(Folder):
         namespace['rte'] = self.get_rte(context, 'data', None)
         add_forum_style(context)
 
-        handler = self.get_handler('/ui/forum/Thread_view.xml')
+        handler = self.get_object('/ui/forum/Thread_view.xml')
         return stl(handler, namespace)
 
 
@@ -232,7 +232,7 @@ class Forum(Folder):
     def get_thread_namespace(self, context):
         accept_language = context.get_accept_language()
         namespace = []
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         # XXX Retrocompatibility (For 0.17 -> only search xhtml Documents)
         from text import Text
         thread_txt = list(self.search_handlers(handler_class=Text))
@@ -242,10 +242,10 @@ class Forum(Folder):
         for thread in threads:
             first = get_forum_handler(thread, '0')
             first_author_id = first.get_property('owner')
-            first_metadata = users.get_handler('%s.metadata' % first_author_id)
+            first_metadata = users.get_object('%s.metadata' % first_author_id)
             last = thread.get_last_post()
             last_author_id = last.get_property('owner')
-            last_metadata = users.get_handler('%s.metadata' % last_author_id)
+            last_metadata = users.get_object('%s.metadata' % last_author_id)
             namespace.append({
                 'name': thread.name,
                 'title': thread.get_title(),
@@ -274,7 +274,7 @@ class Forum(Folder):
 
         add_forum_style(context)
 
-        handler = self.get_handler('/ui/forum/Forum_view.xml')
+        handler = self.get_object('/ui/forum/Forum_view.xml')
         return stl(handler, namespace)
 
 
@@ -284,7 +284,7 @@ class Forum(Folder):
         namespace = {}
         namespace['rte'] =  self.get_rte(context, 'data', None)
         add_forum_style(context)
-        handler = self.get_handler('/ui/forum/Forum_new_thread.xml')
+        handler = self.get_object('/ui/forum/Forum_new_thread.xml')
         return stl(handler, namespace)
 
 

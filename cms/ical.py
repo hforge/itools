@@ -424,8 +424,8 @@ class CalendarAware(object):
     daily_view__sublabel__ = u'As calendar'
     def daily_view(self, context):
         # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/ical/calendar.css')
+        context.styles.append(str(css))
 
         method = context.get_cookie('method')
         if method != 'daily_view':
@@ -459,7 +459,7 @@ class CalendarAware(object):
             ns_calendars.append(ns_calendar)
         namespace['calendars'] = ns_calendars
 
-        handler = self.get_handler('/ui/ical/daily_view.xml')
+        handler = self.get_object('/ui/ical/daily_view.xml')
         return stl(handler, namespace)
 
 
@@ -471,8 +471,9 @@ class CalendarAware(object):
         today_date = date.today()
 
         # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
+        abspath = Path(self.abspath)
+        css = abspath.get_pathto('/ui/ical/calendar.css')
+        context.styles.append(str(css))
 
         # Current date
         c_date = get_current_date(context.get_form_value('date', None))
@@ -581,10 +582,10 @@ class CalendarAware(object):
                 day = day + timedelta(1)
             namespace['weeks'].append(ns_week)
 
-        add_icon = self.get_handler('/ui/images/button_add.png')
-        namespace['add_icon'] = self.get_pathto(add_icon)
+        add_icon = abspath.get_pathto('/ui/images/button_add.png')
+        namespace['add_icon'] = str(add_icon)
 
-        handler = self.get_handler('/ui/ical/ical_monthly_view.xml')
+        handler = self.get_object('/ui/ical/ical_monthly_view.xml')
         return stl(handler, namespace)
 
 
@@ -650,8 +651,9 @@ class CalendarAware(object):
         ndays = 7
 
         # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
+        abspath = Path(self.abspath)
+        css = abspath.get_pathto('/ui/ical/calendar.css')
+        context.styles.append(str(css))
 
         # Current date
         c_date = context.get_form_value('date', None)
@@ -677,8 +679,8 @@ class CalendarAware(object):
         namespace = self.add_selector_ns(c_date, 'weekly_view' ,namespace)
 
         # Get icon to appear to add a new event
-        add_icon = self.get_handler('/ui/images/button_add.png')
-        namespace['add_icon'] = self.get_pathto(add_icon)
+        add_icon = abspath.get_pathto('/ui/images/button_add.png')
+        namespace['add_icon'] = str(add_icon)
 
         # Get header line with days of the week
         days_of_week_ns = Calendar.days_of_week_ns(start, True, ndays, c_date)
@@ -696,7 +698,7 @@ class CalendarAware(object):
         timetable = get_grid_data(events, timetables, start)
         namespace['timetable_data'] = timetable
 
-        handler = self.get_handler('/ui/ical/ical_grid_weekly_view.xml')
+        handler = self.get_object('/ui/ical/ical_grid_weekly_view.xml')
         return stl(handler, namespace)
 
 
@@ -715,10 +717,11 @@ class CalendarAware(object):
                 resource = self.get_handler(resource_name)
 
         # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
-        js = self.get_handler('/ui/ical/calendar.js')
-        context.scripts.append(str(self.get_pathto(js)))
+        abspath = Path(self.abspath)
+        css = abspath.get_pathto('/ui/ical/calendar.css')
+        context.styles.append(str(css))
+        js = abspath.get_pathto('/ui/ical/calendar.js')
+        context.scripts.append(str(js))
 
         uid = context.get_form_value('uid', None)
         # Method
@@ -839,7 +842,7 @@ class CalendarAware(object):
         # Set first day of week
         namespace['firstday'] = self.get_first_day()
 
-        handler = self.get_handler('/ui/ical/ical_edit_event_form.xml')
+        handler = self.get_object('/ui/ical/ical_edit_event_form.xml')
         return stl(handler, namespace)
 
 
@@ -1225,8 +1228,8 @@ class Calendar(Text, icalendar, CalendarAware):
     edit_timetables_form__sublabel__ = u'Timetables'
     def edit_timetables_form(self, context):
         # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
+        css = Path(self.abspath).get_pathto('/ui/ical/calendar.css')
+        context.styles.append(str(css))
 
         # Initialization
         namespace = {}
@@ -1243,7 +1246,7 @@ class Calendar(Text, icalendar, CalendarAware):
                 ns['start'] = Time.encode(start)
                 ns['end'] = Time.encode(end)
                 namespace['timetables'].append(ns)
-        handler = self.get_handler('/ui/ical/ical_edit_timetables.xml')
+        handler = self.get_object('/ui/ical/ical_edit_timetables.xml')
         return stl(handler, namespace)
 
 

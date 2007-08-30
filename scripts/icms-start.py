@@ -55,12 +55,12 @@ def start(parser, options, target):
         try:
             p_server.wait()
         except KeyboardInterrupt:
-            sleep(1.0)
+            sleep(0.1)
             print "Terminated by user."
         except:
             pass
 
-    sleep(1.0)
+
 
 if __name__ == '__main__':
     # The command line parser

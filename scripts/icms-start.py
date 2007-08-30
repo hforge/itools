@@ -18,94 +18,49 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
+from time import sleep
+import subprocess
 import sys
-
+import os
 # Import from itools
 import itools
-from itools import vfs
-from itools.cms.server import Server
-from itools.cms.spool import Spool
-
 
 
 def start(parser, options, target):
-    # Check wether the instance uses a backup database (XXX remove for 0.17).
-    folder = vfs.open(target)
-    if folder.exists('database/.catalog'):
-        print ('The database must be updated, type:')
-        print
-        print '    $ icms-update.py <instance>'
-        print
-        return
+    script_path = os.path.realpath(os.path.dirname(sys.argv[0]))
+    # Start Server
+    print u'[Start Server]'
+    path_icms_start_server = os.path.join(script_path, 'icms-start-server.py')
+    args = [path_icms_start_server, target]
+    if options.debug:
+        args.append('-d')
+    if options.port:
+        args.append('-p %s' % options.port)
+    if options.address:
+        args.append('-a %s' % options.address)
+    p_server = subprocess.Popen(' '.join(args), shell=True)
+    sleep(1.0)
 
-    # Check for database consistency
-    if vfs.exists('%s/database.commit' % target):
-        print 'The database is not in a consistent state, to fix it up type:'
-        print
-        print '    $ icms-restore.py <instance>'
-        print
-        return
-
-    # Set-up the servers
-    server = Server(target, address=options.address, port=options.port)
-    spool = Spool(target)
-
-    # Check the instance is up-to-date
-    root = server.root
-    if root.get_property('version') < root.class_version:
-        print 'The instance is not up-to-date, please type:'
-        print
-        print '    $ icms-update.py <instance>'
-        print
-        return
-
-    # Check the server is not running
-    pid = server.get_pid()
-    if pid is not None:
-        print '%s: The server is already running.' % target
-        return
-
-    print '%s: Listen port %s' % (target, server.port)
-
+    # Start the Mail Spool
+    print u'[Start Mail Spool]'
+    path_icms_start_spool = os.path.join(script_path, 'icms-start-spool.py')
+    args = [path_icms_start_spool, target]
+    if options.debug:
+        args.append('-d')
+    p_spool = subprocess.Popen(' '.join(args), shell=True)
+    sleep(1.0)
+    
     # Debugging mode
-    if options.debug is False:
-        if sys.platform.startswith('win'):
-            # TODO Implement it for Windows
-            msg = u'Unable to daemonize on Windows... Please use the option -d'
-            raise NotImplementedError, msg
-        # Detach from the console (this code derives from the Python
-        # Cookbook, see section "Forking a Daemon on Unix").
-        pid = os.fork()
-        # The father exits
-        if pid > 0:
-            return
-        # The child becomes its own session leader with its own tty
-        # that doesn't exist for now but may be affected later
-        os.setsid()
-        # So forking again to decouple for good
-        pid = os.fork()
-        # the new father exits
-        if pid > 0:
-            sys.exit(0)
-        # Redirect standard file descriptors to '/dev/null' (see Bugzilla #284)
-        devnull = os.open(os.devnull, os.O_RDWR)
-        sys.stdin.close()
-        os.dup2(devnull, 0)
-        sys.stdout.flush()
-        os.dup2(devnull, 1)
-        sys.stderr.flush()
-        os.dup2(devnull, 2)
+    if options.debug is True:
+        try:
+            p_server.wait()
+        except KeyboardInterrupt:
+            sleep(1.0)
+            print "Terminated by user."
+        except:
+            pass
 
-    pid = os.fork()
-    if pid > 0:
-        # Start the Web Server
-        server.start()
-    else:
-        # Start the Mail Spool
-        spool.start()
-
-
+    sleep(1.0)
 
 if __name__ == '__main__':
     # The command line parser

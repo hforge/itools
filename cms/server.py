@@ -19,7 +19,7 @@
 from __future__ import with_statement
 
 # Import from the Standard Library
-from os import fdopen, getpgid
+from os import fdopen
 import sys
 from tempfile import mkstemp
 
@@ -115,11 +115,19 @@ class Server(BaseServer):
             return None
 
         pid = int(pid)
-        try:
-            # XXX This only works on Unix
-            getpgid(pid)
-        except OSError:
-            return None
+        # Check if PID exist
+        if sys.platform[:3] == 'win':
+            try:
+                import win32api
+                win32api.OpenProcess(1, False, pid)
+            except:
+                return None
+        else:
+            try:
+                from os import getpgid
+                getpgid(pid)
+            except OSError:
+                return None
 
         return pid
 

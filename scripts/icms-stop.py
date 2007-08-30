@@ -18,12 +18,22 @@
 # Import from the Standard Library
 from optparse import OptionParser
 import os
+import sys
 from signal import SIGINT
 
 # Import from itools
 import itools
 from itools.cms.server import Server
 from itools.cms.spool import Spool
+
+
+def kill(pid):
+    if sys.platform.startswith('win'):
+        import win32api
+        handle = win32api.OpenProcess(1, 0, pid)
+        win32api.TerminateProcess(handle, 0)
+    else:
+        os.kill(pid, SIGINT)
 
 
 def stop(parser, options, target):
@@ -33,7 +43,7 @@ def stop(parser, options, target):
     if pid is None:
         print '[%s] Web Server not running.' % target
     else:
-        os.kill(pid, SIGINT)
+        kill(pid)
         print '[%s] Web Server shutting down (gracefully)...' % target
     # Stop the Mail Spool
     spool = Spool(target)
@@ -41,7 +51,7 @@ def stop(parser, options, target):
     if pid is None:
         print '[%s] Mail Spool not running.' % target
     else:
-        os.kill(pid, SIGINT)
+        kill(pid)
         print '[%s] Mail Spool shutting down (gracefully)...' % target
 
 

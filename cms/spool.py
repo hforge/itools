@@ -18,6 +18,7 @@
 from datetime import datetime
 from email.parser import HeaderParser
 import os
+import sys
 from signal import signal, SIGINT
 from smtplib import SMTP
 from socket import gaierror
@@ -60,11 +61,19 @@ class Spool(object):
             return None
 
         pid = int(pid)
-        try:
-            # XXX This only works on Unix
-            os.getpgid(pid)
-        except OSError:
-            return None
+        # Check if PID exist
+        if sys.platform[:3] == 'win':
+            try:
+                import win32api
+                win32api.OpenProcess(1, False, pid)
+            except:
+                return None
+        else:
+            try:
+                from os import getpgid
+                getpgid(pid)
+            except OSError:
+                return None
 
         return pid
 

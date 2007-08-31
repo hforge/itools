@@ -7,49 +7,13 @@
   <h2>${title}</h2>
   <p><em>${description}</em></p>
 
-  <a href=";new_thread_form">New Thread</a>
-
-  <table width="100%" id="forum_thread_list">
-    <colgroup>
-      <col width="50%" />
-      <col width="10%" />
-      <col width="10%" />
-      <col width="20%" />
-      <col width="10%" />
-    </colgroup>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Replies</th>
-        <th>Last Post</th>
-        <th>By</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr stl:repeat="thread threads" class="${repeat/thread/even}">
-        <td>
-          <a class="forum_thread_title" href="${thread/name}"
-            >${thread/title}</a>
-          <br />
-          <em>${thread/description}</em>
-        </td>
-        <td>
-          <span class="forum_thread_author">${thread/author}</span>
-        </td>
-        <td>
-          <span class="forum_thread_replies">${thread/replies}</span>
-        </td>
-        <td>
-          <span class="forum_thread_date">${thread/last_date}</span>
-        </td>
-        <td>
-          <span class="forum_thread_by">${thread/last_author}</span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <a href=";new_thread_form">New Thread</a>
+  <p class="${repeat/thread/even}" stl:repeat="thread threads">
+    <a class="forum_thread_title" href="${thread/name}">${thread/title}</a>
+    <br/>
+    Posted by <span class="forum_thread_author">${thread/author}</span>,
+    the <span class="forum_thread_date">${thread/date}</span>.
+    <br/>
+    ${thread/comments} comments.
+  </p>
 
 </stl:block>

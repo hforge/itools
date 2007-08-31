@@ -2,6 +2,11 @@
   text-align: left;
 }
 
+p.even, p.odd {
+  margin: 5px;
+  padding: 5px;
+}
+
 .odd {
   background-color: #ededed;
 }
@@ -18,17 +23,27 @@
   background-color: #729fcf;
 }
 
+.forum_thread_title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.forum_thread_author {
+  font-weight: bold;
+}
+
 .forum_message_author {
   font-weight: bold;
 }
 
-/* Hide epoz button */
 
-#content .formatblock{
+/* Hide epoz buttons */
+#content .formatblock {
   display: none;
 }
 
-.button.epoz_button_anchor, .button.epoz_button_table,
-.button.epoz_button_bgcolor{
+.button.epoz_button_anchor,
+.button.epoz_button_table,
+.button.epoz_button_bgcolor {
   display: none;
 }

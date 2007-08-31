@@ -22,6 +22,7 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import FileName, Unicode
+from itools.uri import Path
 from itools.i18n import format_datetime
 from itools.stl import stl
 from itools.xml import Parser
@@ -39,16 +40,6 @@ def add_forum_style(context):
     here = context.handler
     css = Path(here.abspath).get_pathto('/ui/forum/forum.css')
     context.styles.append(str(css))
-
-
-def get_forum_handler(container, handler_name):
-    """Used for retro-compatibility with Itools 0.16.3 and anterior versions"""
-    # XXX To remove in 0.17
-    xhtml_document = '%s.xhtml' % handler_name
-    if container.has_handler(xhtml_document):
-        return container.get_handler(xhtml_document)
-
-    return container.get_object('%s.txt' % handler_name)
 
 
 
@@ -119,12 +110,9 @@ class Thread(Folder):
 
 
     def to_text(self):
-        text = []
-
-        # index messages in order (XXX necessary?)
-        for id in ([0] + self.get_replies()):
-            message = get_forum_handler(self, id)
-            text.append(message.to_text())
+        # Index the thread by the content of all its posts
+        text = [ x.to_text()
+                 for x in self.search_handlers(handler_class=Message) ]
 
         return u'\n'.join(text)
 
@@ -133,59 +121,43 @@ class Thread(Folder):
         return [self.message_class]
 
 
-    def get_replies(self):
-        #XXX To remove in 0.17
-        replies = self.search_handlers(handler_class=(XHTMLFile, Text))
-        posts = [int(FileName.decode(x.name)[0]) for x in replies]
+    def get_posts(self):
+        posts = [ (int(FileName.decode(x.name)[0]), x)
+                  for x in self.search_handlers(handler_class=Message) ]
         posts.sort()
-
-        # deduce original post
-        return posts[1:]
+        return [ x[1] for x in posts ]
 
 
-    def get_last_post(self):
-        replies = self.get_replies()
-        if replies:
-            last = replies[-1]
-        else:
-            last = 0
-
-        return get_forum_handler(self, last)
-
-
-    def get_message_namespace(self, context):
-        user = context.user
-        username = user and user.name
-        namespace = []
-        users = self.get_object('/users')
-        ac = self.get_access_control()
-        accept_language = context.get_accept_language()
-        for i, id in enumerate([0] + self.get_replies()):
-            message = get_forum_handler(self, id)
-            author_id = message.get_property('owner')
-            metadata = users.get_object('%s.metadata' % author_id)
-            namespace.append({
-                'author': (metadata.get_property('dc:title') or
-                    metadata.get_property('ikaaro:email')),
-                'mtime': format_datetime(message.get_mtime(), accept_language),
-                'body': message.events,
-                'editable': ac.is_admin(user, message),
-                'edit_form': '%s/;edit_form' % message.name,
-            })
-
-        return namespace
+    def get_last_post_id(self):
+        posts = self.search_handlers(handler_class=Message)
+        ids = [ int(FileName.decode(x.name)[0]) for x in posts ]
+        return max(ids)
 
 
     view__access__ = 'is_allowed_to_view'
     view__label__ = u"View"
     def view(self, context):
-        namespace = {}
+        add_forum_style(context)
 
+        user = context.user
+        users = self.get_object('/users')
+        ac = self.get_access_control()
+        accept_language = context.get_accept_language()
+        # The namespace
+        namespace = {}
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
-        namespace['messages'] = self.get_message_namespace(context)
+        namespace['messages'] = []
+        for message in self.get_posts():
+            author_id = message.get_property('owner')
+            namespace['messages'].append({
+                'name': message.name,
+                'author': users.get_object(author_id).get_title(),
+                'mtime': format_datetime(message.get_mtime(), accept_language),
+                'body': message.events,
+                'editable': ac.is_admin(user, message),
+            })
         namespace['rte'] = self.get_rte(context, 'data', None)
-        add_forum_style(context)
 
         handler = self.get_object('/ui/forum/Thread_view.xml')
         return stl(handler, namespace)
@@ -193,15 +165,11 @@ class Thread(Folder):
 
     new_reply__access__ = 'is_allowed_to_edit'
     def new_reply(self, context):
-        replies = self.get_replies()
-        if replies:
-            last_reply = max(replies)
-        else:
-            last_reply = 0
+        # Find out the name for the new post
+        id = self.get_last_post_id()
+        name = '%s.xhtml' % (id + 1)
 
-        next_reply = str(last_reply + 1)
-        name = FileName.encode((next_reply, 'xhtml', None))
-
+        # Post
         data = context.get_form_value('data')
         reply = self.message_class(data=data)
         self.set_object(name, reply)
@@ -229,50 +197,33 @@ class Forum(Folder):
         return [self.thread_class]
 
 
-    def get_thread_namespace(self, context):
-        accept_language = context.get_accept_language()
-        namespace = []
-        users = self.get_object('/users')
-        # XXX Retrocompatibility (For 0.17 -> only search xhtml Documents)
-        from text import Text
-        thread_txt = list(self.search_handlers(handler_class=Text))
-        threads = list(self.search_handlers(handler_class=self.thread_class))
-        threads += thread_txt
-
-        for thread in threads:
-            first = get_forum_handler(thread, '0')
-            first_author_id = first.get_property('owner')
-            first_metadata = users.get_object('%s.metadata' % first_author_id)
-            last = thread.get_last_post()
-            last_author_id = last.get_property('owner')
-            last_metadata = users.get_object('%s.metadata' % last_author_id)
-            namespace.append({
-                'name': thread.name,
-                'title': thread.get_title(),
-                'description': thread.get_property('dc:description'),
-                'author': (first_metadata.get_property('dc:title') or
-                    first_metadata.get_property('ikaaro:email')),
-                'replies': len(thread.get_replies()),
-                'last_date': format_datetime(last.get_mtime(), accept_language),
-                'last_author': (last_metadata.get_property('dc:title') or
-                    last_metadata.get_property('ikaaro:email')),
-            })
-
-        namespace.sort(key=itemgetter('last_date'), reverse=True)
-
-        return namespace
-
-
     view__access__ = 'is_allowed_to_view'
     view__label__ = u"View"
     def view(self, context):
+        add_forum_style(context)
+        # Namespace
         namespace = {}
-
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
-        namespace['threads'] = self.get_thread_namespace(context)
+        # Namespace / Threads
+        accept_language = context.get_accept_language()
+        users = self.get_object('/users')
+        namespace['threads'] = []
+        for thread in self.search_handlers(handler_class=Thread):
+            message = thread.get_object('0.xhtml')
+            author = users.get_object(thread.get_property('owner'))
+            posts = thread.search_handlers(handler_class=Message)
+            posts = list(posts)
+            namespace['threads'].append({
+                'name': thread.name,
+                'title': thread.get_title(),
+                'author': author.get_title(),
+                'date': format_datetime(message.get_mtime(), accept_language),
+                'comments': len(posts) - 1,
+##                'description': thread.get_property('dc:description'),
+            })
+        namespace['threads'].sort(key=itemgetter('date'), reverse=True)
 
-        add_forum_style(context)
 
         handler = self.get_object('/ui/forum/Forum_view.xml')
         return stl(handler, namespace)

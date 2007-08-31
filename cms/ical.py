@@ -21,6 +21,7 @@ from calendar import monthrange, isleap
 from datetime import datetime, date, time, timedelta
 
 # Import from itools
+from itools.uri import Path
 from itools.i18n import get_language_name
 from itools.datatypes import Enumerate, Unicode, ISOTime, Date, DataType
 from itools.ical import get_grid_data, icalendar, PropertyValue, DateTime

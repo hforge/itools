@@ -28,7 +28,7 @@ from subprocess import call
 import urllib
 
 # Import from itools
-from ..uri import get_reference
+from ..uri import get_reference, Path
 from .. import vfs
 from ..stl import stl
 from ..datatypes import Unicode, FileName
@@ -389,9 +389,11 @@ class WikiPage(Text):
             with tempdir.make_file(filename) as file:
                 image.save_state_to_file(file)
 
-        call(['pdflatex', '-8bit', '-no-file-line-error', '-interaction=batchmode', self.name], cwd=dirname)
+        call(['pdflatex', '-8bit', '-no-file-line-error',
+              '-interaction=batchmode', self.name], cwd=dirname)
         # Twice for correct page numbering
-        call(['pdflatex', '-8bit', '-no-file-line-error', '-interaction=batchmode', self.name], cwd=dirname)
+        call(['pdflatex', '-8bit', '-no-file-line-error',
+              '-interaction=batchmode', self.name], cwd=dirname)
 
         pdfname = '%s.pdf' % self.name
         try:

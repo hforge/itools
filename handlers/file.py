@@ -138,6 +138,10 @@ class File(Handler):
         # Create and initialize the instance
         if cls is None:
             cls = self.__class__
+        elif not issubclass(cls, self.__class__):
+            msg = 'the given class must be a subclass of the object'
+            raise ValueError, msg
+
         copy = object.__new__(cls)
         copy.database = None
         copy.uri = None

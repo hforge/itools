@@ -32,7 +32,7 @@ from itools.handlers import Config
 from itools.csv import IntegerKey, CSV as BaseCSV
 from itools.xml import Parser
 from itools.stl import stl
-from itools.uri import encode_query, Reference
+from itools.uri import encode_query, Reference, Path
 from csv import CSV
 from file import File
 from folder import Folder

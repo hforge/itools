@@ -132,9 +132,7 @@ class Tracker(Folder):
     #######################################################################
     def get_new_id(self, prefix=''):
         ids = []
-        for name in self.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
+        for name in self.get_names():
             if prefix:
                 if not name.startswith(prefix):
                     continue
@@ -162,7 +160,7 @@ class Tracker(Folder):
         if not_assigned is True:
             members.append({'id': 'nobody', 'title': 'NOT ASSIGNED'})
         for username in self.get_site_root().get_members():
-            user = users.get_handler(username)
+            user = users.get_object(username)
             members.append({'id': username, 'title': user.get_title()})
         # Select
         for member in members:
@@ -189,7 +187,7 @@ class Tracker(Folder):
         if search_name is None:
             return u'View'
 
-        search = self.get_handler(search_name)
+        search = self.get_object(search_name)
         return search.get_title()
 
 
@@ -214,7 +212,7 @@ class Tracker(Folder):
         # Search Form
         search_name = context.get_form_value('search_name')
         if search_name:
-            search = self.get_handler(search_name)
+            search = self.get_object(search_name)
             namespace['search_name'] = search_name
             namespace['search_title'] = search.get_property('dc:title')
             namespace['text'] = search.get_value('text', type=Unicode)
@@ -238,7 +236,7 @@ class Tracker(Folder):
             assign = getter('assigned_to')
             state = getter('state', type=Integer)
 
-        get = self.get_handler
+        get = self.get_object
         namespace['modules'] = get('modules.csv').get_options(module)
         namespace['types'] = get('types.csv').get_options(type)
         namespace['versions'] = get('versions.csv').get_options(version)
@@ -269,7 +267,7 @@ class Tracker(Folder):
         if search_name:
             # Edit an Stored Search
             try:
-                stored_search = self.get_handler(search_name)
+                stored_search = self.get_object(search_name)
                 stored_search_title = stored_search.get_property('dc:title')
             except LookupError:
                 pass
@@ -353,7 +351,7 @@ class Tracker(Folder):
         # Set title of search
         search_name = context.get_form_value('search_name')
         if search_name:
-            search = self.get_handler(search_name)
+            search = self.get_object(search_name)
             title = search.get_title()
         else:
             title = self.gettext(u'View Tracker')
@@ -408,7 +406,7 @@ class Tracker(Folder):
         # Edit several bugs at once
         namespace['change_several_bugs'] = False
         if context.get_form_value('change_several_bugs'):
-            get = self.get_handler
+            get = self.get_object
             namespace['method'] = 'POST'
             namespace['action'] = ';change_several_bugs'
             namespace['change_several_bugs'] = True
@@ -623,7 +621,7 @@ class Tracker(Folder):
         # Choose stored Search or personalized search
         search_name = context.get_form_value('search_name')
         if search_name:
-            search = self.get_handler(search_name)
+            search = self.get_object(search_name)
             getter = search.get_value
         else:
             getter = context.get_form_value
@@ -689,7 +687,7 @@ class Tracker(Folder):
         namespace['title'] = context.get_form_value('title', type=Unicode)
         namespace['comment'] = context.get_form_value('comment', type=Unicode)
         # Others
-        get = self.get_handler
+        get = self.get_object
         module = context.get_form_value('module', type=Integer)
         namespace['modules'] = get('modules.csv').get_options(module)
         version = context.get_form_value('version', type=Integer)
@@ -731,12 +729,15 @@ class Tracker(Folder):
     go_to_issue__access__ = 'is_allowed_to_view'
     def go_to_issue(self, context):
         issue_name = context.get_form_value('issue_name')
-        if not issue_name in self.get_handler_names():
+        if not self.has_object(issue_name):
             return context.come_back(u'Issue not found.')
-        issue = self.get_handler(issue_name)
+
+        issue = self.get_object(issue_name)
         if not isinstance(issue, Issue):
             return context.come_back(u'Issue not found.')
+
         return context.uri.resolve2('../%s/;edit_form' % issue_name)
+
 
 register_object_class(Tracker)
 
@@ -963,7 +964,7 @@ class Issue(Folder, VersioningAware):
 
             # Find a non used name
             filename = checkid(filename)
-            filename = generate_name(filename, self.get_handler_names())
+            filename = generate_name(filename, self.get_names())
             row.append(filename)
 
             handler, metadata = self.set_object(filename, handler)
@@ -1013,7 +1014,7 @@ class Issue(Folder, VersioningAware):
             body += modifications
         # Notify / Send
         for to_addr in to_addrs:
-            to_addr = users.get_handler(to_addr)
+            to_addr = users.get_object(to_addr)
             to_addr = to_addr.get_property('ikaaro:email')
             root.send_email(from_addr, to_addr, subject, body)
 
@@ -1049,7 +1050,7 @@ class Issue(Folder, VersioningAware):
             # Detect if modifications
             if last_value==new_value:
                 continue
-            csv = self.parent.get_handler(csv_name)
+            csv = self.parent.get_object(csv_name)
             last_title = csv.get_row_by_id(last_value)
             if last_title:
                 last_title = last_title.get_value('title')
@@ -1109,8 +1110,8 @@ class Issue(Folder, VersioningAware):
         assigned_to = self.get_value('assigned_to')
         # solid in case the user has been removed
         users = self.get_object('/users')
-        if assigned_to and users.has_handler(assigned_to):
-                user = users.get_handler(assigned_to)
+        if assigned_to and users.has_object(assigned_to):
+                user = users.get_object(assigned_to)
                 infos['assigned_to'] = user.get_title()
         else:
             infos['assigned_to'] = ''
@@ -1180,7 +1181,7 @@ class Issue(Folder, VersioningAware):
         reported_by = users.get_object(reported_by)
         namespace['reported_by'] = reported_by.get_title()
         # Topics, Version, Priority, etc.
-        get = self.parent.get_handler
+        get = self.parent.get_object
         namespace['modules'] = get('modules.csv').get_options(module)
         namespace['versions'] = get('versions.csv').get_options(version)
         namespace['types'] = get('types.csv').get_options(type)
@@ -1202,8 +1203,8 @@ class Issue(Folder, VersioningAware):
             # solid in case the user has been removed
             username = row.get_value('username')
             user_title = username
-            if users.has_handler(username):
-                user_title = users.get_handler(username).get_title()
+            if users.has_object(username):
+                user_title = users.get_object(username).get_title()
             i += 1
             comments.append({
                 'number': i,
@@ -1264,9 +1265,9 @@ class Issue(Folder, VersioningAware):
             (datetime, username, title, module, version, type, priority,
                 assigned_to, state, comment, file) = row
             # solid in case the user has been removed
-            user_exist = users.has_handler(username) 
+            user_exist = users.has_object(username)
             usertitle = (user_exist and 
-                         users.get_handler(username).get_title() or username)
+                         users.get_object(username).get_title() or username)
             comment = XML.encode(Unicode.encode(comment))
             comment = Parser(comment.replace('\n', '<br />'))
             i += 1
@@ -1324,8 +1325,8 @@ class Issue(Folder, VersioningAware):
                     row_ns['priority'] = priority
             if assigned_to != previous_assigned_to:
                 previous_assigned_to = assigned_to
-                if assigned_to and users.has_handler(assigned_to):
-                    assigned_to_user = users.get_handler(assigned_to)
+                if assigned_to and users.has_object(assigned_to):
+                    assigned_to_user = users.get_object(assigned_to)
                     row_ns['assigned_to'] = assigned_to_user.get_title()
                 else:
                     row_ns['assigned_to'] = ' '
@@ -1377,7 +1378,7 @@ class Issue(Folder, VersioningAware):
         if search_name is None:
             return u'View'
 
-        search = self.parent.get_handler(search_name)
+        search = self.parent.get_object(search_name)
         return search.get_title()
 
 

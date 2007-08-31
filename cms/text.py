@@ -93,12 +93,11 @@ class Text(File, BaseText):
             return context.come_back(MSG_NAME_CLASH)
 
         # Build the object
-        handler = cls()
-        metadata = handler.build_metadata()
+        metadata = cls.build_metadata()
         metadata.set_property('dc:title', title, language=language)
         metadata.set_property('dc:language', language)
         # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
+        handler, metadata = container.set_object(name, cls, metadata)
 
         goto = './%s/;%s' % (name, handler.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)

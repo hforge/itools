@@ -167,6 +167,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def _get_object(self, name):
         database = self.database
         uri = self.uri.resolve2(name)
+        timestamp = None
+        dirty = False
         # The metadata
         metadata = self.get_handler('%s.metadata' % name)
         format = metadata.get_property('format')
@@ -176,6 +178,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             handler = self.get_handler(name)
         except LookupError:
             handler = cls()
+            database.cache[uri] = handler
         else:
             if isinstance(handler, cls):
                 return handler
@@ -183,29 +186,45 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 handler = object.__new__(cls)
                 handler.cache = None
             else:
-                handler = handler.clone(cls=cls)
+                clone = handler.clone(cls=cls)
+                timestamp = handler.timestamp
+                dirty = handler.dirty
+                handler = clone
                 database.cache[uri] = handler
 
         # Attach
         handler.database = database
         handler.uri = uri
-        handler.timestamp = None
-        handler.dirty = False
+        handler.timestamp = timestamp
+        handler.dirty = dirty
         return handler
 
 
     def set_object(self, name, handler, metadata=None):
+        """
+        Adds the given handler (and metadata). The handler may be not an
+        instance but a class, then the handler will not be added, only
+        the metadata.
+        """
         if metadata is None:
             metadata = handler.build_metadata()
 
-        # Add
-        self.set_handler(name, handler)
+        # The metadata
         self.set_handler('%s.metadata' % name, metadata)
-        # Attach
-        handler.parent = self
-        handler.name = name
         metadata.parent = self
         metadata.name = '%s.metadata' % name
+
+        # The handler
+        if type(handler) is type:
+            # Class
+            handler = handler()
+            handler.database = self.database
+            handler.uri = self.uri.resolve2(name)
+        else:
+            # Instance
+            self.set_handler(name, handler)
+        handler.parent = self
+        handler.name = name
 
         # Versioning
         if isinstance(handler, VersioningAware):

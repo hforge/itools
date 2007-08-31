@@ -176,9 +176,12 @@ class File(Handler):
         if self.uri is not None:
             self.dirty = True
             database = self.database
-            if database is not None:
-                if self.uri not in database.added:
-                    database.changed.add(self.uri)
+            if database is None:
+                return
+            if self.timestamp is None:
+                database.added.add(self.uri)
+            else:
+                database.changed.add(self.uri)
 
 
     def abort_changes(self):

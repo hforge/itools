@@ -130,7 +130,7 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
     # User Interface
     #######################################################################
     def get_human_size(self):
-        bytes = vfs.get_size(self.uri)
+        bytes = len(self.to_str())
         size = bytes / 1024.0
         if size >= 1024:
             size = size / 1024.0

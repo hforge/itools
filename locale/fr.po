@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-08-28 12:08+CET\n"
-"PO-Revision-Date: 2007-08-17 18:02+0100\n"
+"PO-Revision-Date: 2007-08-31 17:00+0100\n"
 "Last-Translator: Henry Obein <henry@itaapy.com>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -2001,11 +2001,11 @@ msgstr "Mensuel"
 
 #: cms/ui/folder/order_items.xml.en:0
 msgid "Move into ordered category"
-msgstr ""
+msgstr "Déplacer vers ordonnés"
 
 #: cms/ui/folder/order_items.xml.en:0
 msgid "Move into unordered category"
-msgstr ""
+msgstr "Déplacer vers sans ordre"
 
 #: cms/skins.py:78
 msgid "My Content"
@@ -2332,9 +2332,8 @@ msgid "Ordered List"
 msgstr "Liste numérotée"
 
 #: cms/ui/folder/order_items.xml.en:0
-#, fuzzy
 msgid "Ordered Objects"
-msgstr "Renommer les objets"
+msgstr "Objets ordonnés"
 
 #: cms/folder.py:65
 msgid "Organize your files and documents with folders."
@@ -3127,9 +3126,8 @@ msgid "Unordered List"
 msgstr "Liste à puces"
 
 #: cms/ui/folder/order_items.xml.en:0
-#, fuzzy
 msgid "Unordered Objects"
-msgstr "Liste à puces"
+msgstr "Objets sans ordre"
 
 #: cms/ui/ical/ical_edit_timetables.xml.en:0
 msgid "Update"

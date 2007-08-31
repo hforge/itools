@@ -4,55 +4,61 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <form action="." method="post">
-    <stl:block stl:if="ordered_folders">
+    <stl:block>
       <h2>Ordered Objects</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Title</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr stl:repeat="folder ordered_folders" class="${repeat/folder/even}">
-            <td><input type="checkbox" name="ordered_names" value="${folder/name}" /></td>
-            <td>${folder/name}</td>
-            <td>${folder/title}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p>
-        <input type="submit" name=";order_folders_up" value="Order up" />
-        <input type="submit" name=";order_folders_down" value="Order down" />
-        <input type="submit" name=";order_folders_top" value="Order top" />
-        <input type="submit" name=";order_folders_bottom" value="Order bottom" />
-        <input type="submit" name=";order_folders_unordered"
-               value="Move into unordered category" />
-      </p>
+      <p stl:if="not ordered_folders">There are no ordered objects</p>
+      <stl:block stl:if="ordered_folders">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr stl:repeat="folder ordered_folders" class="${repeat/folder/even}">
+              <td><input type="checkbox" name="ordered_names" value="${folder/name}" /></td>
+              <td>${folder/name}</td>
+              <td>${folder/title}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <input type="submit" name=";order_folders_up" value="Order up" />
+          <input type="submit" name=";order_folders_down" value="Order down" />
+          <input type="submit" name=";order_folders_top" value="Order top" />
+          <input type="submit" name=";order_folders_bottom" value="Order bottom" />
+          <input type="submit" name=";order_folders_unordered"
+                 value="Move into unordered category" />
+        </p>
+      </stl:block>
     </stl:block>
-    <stl:block stl:if="unordered_folders">
+    <stl:block>
       <h2>Unordered Objects</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Title</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr stl:repeat="folder unordered_folders" class="${repeat/folder/even}">
-            <td><input type="checkbox" name="unordered_names" value="${folder/name}" /></td>
-            <td>${folder/name}</td>
-            <td>${folder/title}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p>
-        <input type="submit" name=";order_folders_ordered"
-               value="Move into ordered category" />
-      </p>
+      <p stl:if="not unordered_folders">There are no unordered objects</p>
+      <stl:block stl:if="unordered_folders">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr stl:repeat="folder unordered_folders" class="${repeat/folder/even}">
+              <td><input type="checkbox" name="unordered_names" value="${folder/name}" /></td>
+              <td>${folder/name}</td>
+              <td>${folder/title}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <input type="submit" name=";order_folders_ordered"
+                 value="Move into ordered category" />
+        </p>
+      </stl:block>
     </stl:block>
   </form>
 </stl:block>

@@ -62,7 +62,7 @@ itools_target_languages = config.get_value('target_languages')
 class Root(WebSite):
 
     class_id = 'iKaaro'
-    class_version = '20070531'
+    class_version = '20070816'
     class_title = u'iKaaro'
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
@@ -444,23 +444,20 @@ class Root(WebSite):
     #######################################################################
     # Update
     #######################################################################
-    def update_20070531(self):
-        pass
-
-
     def update_20070816(self):
-        # Forum messages are formal XHTML documents
         from forum import Message
 
-        for handler, ctx in self.traverse2(caching=False):
+        for handler in self.traverse_objects():
+            # Forum messages are formal XHTML documents
+            # XXX To test with old versions (TXT and XHTML fragments)
             if isinstance(handler, Message):
                 body = handler.get_body()
                 if body is None:
                     # Re-generage message with document fragment
                     data = handler.to_str()
                     new_message = Message(data=data)
-                    handler.events = new_message.events
                     handler.set_changed()
+                    handler.events = new_message.events
 
 
 register_object_class(Root)

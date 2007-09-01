@@ -21,16 +21,16 @@ from optparse import OptionParser
 from time import sleep
 import subprocess
 import sys
-import os
+from os.path import dirname, join, realpath
+
 # Import from itools
 import itools
 
 
 def start(parser, options, target):
-    script_path = os.path.realpath(os.path.dirname(sys.argv[0]))
+    script_path = dirname(realpath(sys.argv[0]))
     # Start Server
-    print u'[Start Server]'
-    path_icms_start_server = os.path.join(script_path, 'icms-start-server.py')
+    path_icms_start_server = join(script_path, 'icms-start-server.py')
     args = [path_icms_start_server, target]
     if options.debug:
         args.append('-d')
@@ -39,17 +39,16 @@ def start(parser, options, target):
     if options.address:
         args.append('-a %s' % options.address)
     p_server = subprocess.Popen(' '.join(args), shell=True)
-    sleep(1.0)
+    sleep(0.1)
 
     # Start the Mail Spool
-    print u'[Start Mail Spool]'
-    path_icms_start_spool = os.path.join(script_path, 'icms-start-spool.py')
+    path_icms_start_spool = join(script_path, 'icms-start-spool.py')
     args = [path_icms_start_spool, target]
     if options.debug:
         args.append('-d')
     p_spool = subprocess.Popen(' '.join(args), shell=True)
-    sleep(1.0)
-    
+    sleep(0.3)
+
     # Debugging mode
     if options.debug is True:
         try:

@@ -27,9 +27,10 @@ def start(optios, target):
     spool = Spool(target)
     pid = spool.get_pid()
     if pid is not None:
-        print 'The spool is already running.'
+        print '[%s] The Mail Spool is already running.' % target
         return
 
+    print '[%s] Start Mail Spool.' % target
     if options.debug is False:
         # Redirect standard file descriptors to '/dev/null'
         devnull = os.open(os.devnull, os.O_RDWR)

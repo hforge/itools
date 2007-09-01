@@ -50,11 +50,10 @@ def start(options, target):
     # Check the server is not running
     pid = server.get_pid()
     if pid is not None:
-        print '%s: The server is already running.' % target
+        print '[%s] The Web Server is already running.' % target
         return
 
-    print '%s: Listen port %s' % (target, server.port)
-
+    print '[%s] Start Web Server (listens port %s).' % (target, server.port)
     if options.debug is False:
         # Redirect standard file descriptors to '/dev/null'
         devnull = os.open(os.devnull, os.O_RDWR)

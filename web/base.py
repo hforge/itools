@@ -26,18 +26,6 @@ class Node(object):
     """
 
     #######################################################################
-    # API / Obsolete
-    #######################################################################
-    def get_real_handler(self):
-        return self
-
-
-    def get_physical_path(self):
-        # TODO Should return a Path instance
-        return self.get_abspath()
-
-
-    #######################################################################
     # API / Private
     #######################################################################
     def _has_object(self, name):

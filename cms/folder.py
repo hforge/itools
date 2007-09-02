@@ -728,9 +728,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
             if not isinstance(handler, allowed_types):
                 continue
 
-            container = handler.parent.get_real_handler()
+            container = handler.parent
             # Cut&Paste in the same place (do nothing)
-            if cut and self.get_real_handler() is container:
+            if cut and self is container:
                 continue
 
             name = generate_name(handler.name, self.get_names(), '_copy_')

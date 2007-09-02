@@ -392,43 +392,31 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def lock(self):
         lock = Lock(username=get_context().user.name)
 
-        handler = self.get_real_handler()
-        if handler.parent is None:
-            handler.set_handler('.lock', lock)
+        if self.parent is None:
+            self.set_handler('.lock', lock)
         else:
-            parent = handler.parent
-            parent.set_handler('%s.lock' % handler.name, lock)
+            self.parent.set_handler('%s.lock' % self.name, lock)
 
         return lock.key
 
 
     def unlock(self):
-        handler = self.get_real_handler()
-        if handler.parent is None:
-            handler.del_handler('.lock')
+        if self.parent is None:
+            self.del_handler('.lock')
         else:
-            parent = handler.parent
-            parent.del_handler('%s.lock' % handler.name)
+            self.parent.del_handler('%s.lock' % self.name)
 
 
     def is_locked(self):
-        handler = self.get_real_handler()
-        if handler.parent is None:
-            return handler.has_handler('.lock')
-        else:
-            parent = handler.parent
-            return parent.has_handler('%s.lock' % handler.name)
+        if self.parent is None:
+            return self.has_handler('.lock')
+        return self.parent.has_handler('%s.lock' % self.name)
 
 
     def get_lock(self):
-        handler = self.get_real_handler()
-        if handler.parent is None:
-            lock = handler.get_handler('.lock')
-        else:
-            parent = handler.parent
-            lock = parent.get_handler('%s.lock' % handler.name)
-
-        return lock
+        if self.parent is None:
+            return self.get_handler('.lock')
+        return self.parent.get_handler('%s.lock' % self.name)
 
 
     ########################################################################
@@ -516,12 +504,10 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
 
     def get_metadata(self):
-        real = self.get_real_handler()
-
-        parent = real.parent
+        parent = self.parent
         if parent is None:
             return None
-        metadata_name = '%s.metadata' % real.name
+        metadata_name = '%s.metadata' % self.name
         if parent.has_handler(metadata_name):
             return parent.get_handler(metadata_name)
         return None

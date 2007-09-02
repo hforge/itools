@@ -157,8 +157,6 @@ class Root(WebSite):
         # Versioning Aware
         BoolField('is_version_aware'),
         KeywordField('last_author', is_indexed=False, is_stored=True),
-        # XXX OBSOLETE TO REMOVE
-        KeywordField('title_or_name', is_stored=True),
         ]
 
 

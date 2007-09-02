@@ -210,13 +210,6 @@ class Node(BaseNode):
         return []
 
 
-    #######################################################################
-    # XXX OBSOLETE TO REMOVE
-    #######################################################################
-    get_title_or_name = get_title
-    mtime = property(get_mtime, None, None, "")
-
-
 
 class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
@@ -253,10 +246,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             'format': get_property('format'),
             'title': title,
             'owner': get_property('owner'),
-            'mtime': mtime.strftime('%Y%m%d%H%M%S'),
-            # XXX OBSOLETE TO REMOVE
-            'title_or_name': title or name,
-            }
+            'mtime': mtime.strftime('%Y%m%d%H%M%S')}
 
         # Full text
         try:
@@ -705,39 +695,3 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         handler = self.get_object('/ui/epoz/script_table.xml')
         return handler.to_str()
 
-
-    #######################################################################
-    # XXX OBSOLETE TO REMOVE
-    #######################################################################
-    title = property(get_title, None, None, '')
-    title_or_name = property(get_title, None, None, '')
-
-
-    def get_description(self, language=None):
-        return self.get_property('dc:description', language=language)
-
-
-    get_title_or_name = get_title
-
-
-    def get_format(self):
-        return self.get_property('format')
-
-
-    def get_owner(self):
-        return self.get_property('owner')
-
-
-    def get_language(self):
-        return self.get_property('dc:language')
-
-
-    def get_parent_path(self):
-        parent = self.parent
-        if parent is None:
-            return ''
-        elif parent.parent is None:
-            return '/'
-        return parent.get_abspath()
-
-    parent_path = property(get_parent_path, None, None, '')

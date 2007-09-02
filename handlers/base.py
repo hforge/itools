@@ -98,13 +98,13 @@ class Handler(object):
         return self.database.get_handler_names(uri)
 
 
-    def get_handler(self, reference):
+    def get_handler(self, reference, cls=None):
         database = self.database
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         uri = self.uri.resolve2(reference)
-        return self.database.get_handler(uri)
+        return self.database.get_handler(uri, cls=cls)
 
 
     def to_text(self):

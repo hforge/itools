@@ -140,7 +140,9 @@ class Database(object):
             # Clean the cache
             if reference in cache:
                 del cache[reference]
-            folder = Folder(reference)
+            if cls is None:
+                cls = Folder
+            folder = cls(reference)
             folder.database = self
             return folder
 

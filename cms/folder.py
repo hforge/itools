@@ -175,28 +175,15 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # The object
         cls = get_object_class(format)
         try:
-            handler = self.get_handler(name)
+            handler = self.get_handler(name, cls=cls)
         except LookupError:
             handler = cls()
             database.cache[uri] = handler
-        else:
-            if isinstance(handler, cls):
-                return handler
-            if isinstance(handler, BaseFolder):
-                handler = object.__new__(cls)
-                handler.cache = None
-            else:
-                clone = handler.clone(cls=cls)
-                timestamp = handler.timestamp
-                dirty = handler.dirty
-                handler = clone
-                database.cache[uri] = handler
-
-        # Attach
-        handler.database = database
-        handler.uri = uri
-        handler.timestamp = timestamp
-        handler.dirty = dirty
+            # Attach
+            handler.database = database
+            handler.uri = uri
+            handler.timestamp = timestamp
+            handler.dirty = dirty
         return handler
 
 
@@ -398,9 +385,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return line
 
 
-    def browse_namespace(self, icon_size, sortby=['title_or_name'],
-                         sortorder='up', batchstart=0, batchsize=20,
-                         query=None, results=None):
+    def browse_namespace(self, icon_size, sortby=['title'], sortorder='up',
+                         batchstart=0, batchsize=20, query=None,
+                         results=None):
         context = get_context()
         # Load variables from the request
         start = context.get_form_value('batchstart', type=Integer,
@@ -454,7 +441,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         return stl(handler, namespace)
 
 
-    def browse_list(self, context, sortby=['title_or_name'], sortorder='up'):
+    def browse_list(self, context, sortby=['title'], sortorder='up'):
         context.set_cookie('browse', 'list')
 
         # Get the form values

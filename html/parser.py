@@ -28,37 +28,143 @@ from itools.xhtml import xhtml_uri
 # TODO Test the parser with different encodings. The behavior must be
 # compatible with the XML parser.
 
-# List of empty elements, which don't have a close tag
-# XXX Sentenced to dead, to use namespace schema instead.
-empty_elements = set([
-    # XHTML 1.0 strict
-    'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param',
-    # XHTML 1.0 transitional
-    'basefont', 'isindex',
-    # XHTML 1.0 frameset
-    'frame',
+###########################################################################
+# DTD (transitional)
+# TODO Implement parsing and support of any DTD
+###########################################################################
+dtd_TEXT = 0  # PCDATA or CDATA
+dtd_empty = frozenset()
+dtd_fontstyle = frozenset(['tt', 'i', 'b', 'u', 's', 'strike', 'big', 'small'])
+dtd_phrase = frozenset(['em', 'strong', 'dfn', 'code', 'samp', 'kbd', 'var',
+    'cite', 'abbr', 'acronym'])
+dtd_special = frozenset(['a', 'img', 'applet', 'object', 'font', 'basefont',
+    'br', 'script', 'map', 'q', 'sub', 'sup', 'span', 'bdo', 'iframe'])
+dtd_formctrl = frozenset(['input', 'select', 'textarea', 'label', 'button'])
+dtd_inline = (frozenset([dtd_TEXT]) | dtd_fontstyle | dtd_phrase | dtd_special
+    | dtd_formctrl)
+
+dtd_heading = frozenset(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+dtd_list = frozenset(['ul', 'ol', 'dir', 'menu'])
+dtd_preformatted = frozenset(['pre'])
+dtd_block = dtd_heading | dtd_list | dtd_preformatted | frozenset(['p',
+    'dl', 'div', 'center', 'noscript', 'noframes', 'blockquote', 'form',
+    'isindex', 'hr', 'table', 'fieldset', 'address'])
+dtd_flow = dtd_block | dtd_inline
+dtd_ = frozenset([])
+
+
+# FIXME This code is duplicated from "itools.xhtml" (actually, this one is
+# more complete).
+dtd = {
+    # Strict (http://www.w3.org/TR/html4/sgml/dtd.html)
+    'a': {'contains': dtd_inline},
+    'abbr': {'contains': dtd_inline},
+    'acronym': {'contains': dtd_inline},
+    'address': {'contains': dtd_inline},
+    'area': {'contains': dtd_empty},
+    'b': {'contains': dtd_inline},
+    'base': {'contains': dtd_empty},
+    'bdo': {'contains': dtd_inline},
+    'big': {'contains': dtd_inline},
+    'blockquote': {'contains': dtd_block},
+    'body': {'contains': dtd_flow | frozenset(['del', 'ins'])},
+    'br': {'contains': dtd_empty},
+    'button': {'contains': dtd_flow - (dtd_formctrl | frozenset(['a', 'form',
+                                       'isindex', 'fieldset', 'iframe']))},
+    'caption': {'contains': dtd_inline},
+    'cite': {'contains': dtd_inline},
+    'code': {'contains': dtd_inline},
+    'col': {'contains': dtd_empty},
+    'colgroup': {'contains': frozenset(['col'])},
+    'dd': {'contains': dtd_flow},
+    'del': {'contains': dtd_flow},
+    'dfn': {'contains': dtd_inline},
+    'div': {'contains': dtd_flow},
+    'dl': {'contains': frozenset(['dt', 'dd'])},
+    'dt': {'contains': dtd_inline},
+    'em': {'contains': dtd_inline},
+    'fieldset': {'contains': frozenset([dtd_TEXT, 'legend']) | dtd_flow},
+    'form': {'contains': dtd_block - frozenset(['form'])},
+    'h1': {'contains': dtd_inline},
+    'h2': {'contains': dtd_inline},
+    'h3': {'contains': dtd_inline},
+    'h4': {'contains': dtd_inline},
+    'h5': {'contains': dtd_inline},
+    'h6': {'contains': dtd_inline},
+    'head': {'contains': frozenset(['title', 'isindex', 'base', 'script',
+                                    'style', 'meta', 'link', 'object'])},
+    'hr': {'contains': dtd_empty},
+    'html': {'contains': frozenset(['head', 'body', 'frameset'])},
+    'i': {'contains': dtd_inline},
+    'img': {'contains': dtd_empty},
+    'ins': {'contains': dtd_flow},
+    'input': {'contains': dtd_empty},
+    'kbd': {'contains': dtd_inline},
+    'label': {'contains': dtd_inline - frozenset(['label'])},
+    'legend': {'contains': dtd_inline},
+    'li': {'contains': dtd_flow},
+    'link': {'contains': dtd_empty},
+    'map': {'contains': dtd_block | frozenset(['area'])},
+    'meta': {'contains': dtd_empty},
+    'noscript': {'contains': dtd_block},
+    'object': {'contains': frozenset(['param']) | dtd_flow},
+    'ol': {'contains': frozenset(['li'])},
+    'optgroup': {'contains': frozenset(['option'])},
+    'option': {'contains': frozenset([dtd_TEXT])},
+    'p': {'contains': dtd_inline},
+    'param': {'contains': dtd_empty},
+    'pre': {'contains': dtd_inline - frozenset(['img', 'object', 'applet',
+                                                'big', 'small', 'sub', 'sup',
+                                                'font', 'basefont'])},
+    'q': {'contains': dtd_inline},
+    'samp': {'contains': dtd_inline},
+    'script': {'contains': frozenset([dtd_TEXT])},
+    'select': {'contains': frozenset(['optgroup', 'option'])},
+    'small': {'contains': dtd_inline},
+    'span': {'contains': dtd_inline},
+    'strong': {'contains': dtd_inline},
+    'style': {'contains': frozenset([dtd_TEXT])},
+    'sub': {'contains': dtd_inline},
+    'sup': {'contains': dtd_inline},
+    'table': {'contains': frozenset(['caption', 'col', 'colgroup', 'thead',
+                                     'tfoot', 'tbody'])},
+    'tbody': {'contains': frozenset(['tr'])},
+    'td': {'contains': dtd_flow},
+    'textarea': {'contains': frozenset([dtd_TEXT])},
+    'tfoot': {'contains': frozenset(['tr'])},
+    'th': {'contains': dtd_flow},
+    'thead': {'contains': frozenset(['tr'])},
+    'title': {'contains': frozenset([dtd_TEXT])},
+    'tr': {'contains': frozenset(['th', 'td'])},
+    'tt': {'contains': dtd_inline},
+    'ul': {'contains': frozenset(['li'])},
+    'var': {'contains': dtd_inline},
+    # Loose (http://www.w3.org/TR/html4/sgml/loosedtd.html)
+    'applet': {'contains': frozenset(['param']) | dtd_flow},
+    'basefont': {'contains': dtd_empty},
+    'center': {'contains': dtd_flow},
+    'dir': {'contains': frozenset(['li'])},
+    'font': {'contains': dtd_inline},
+    'iframe': {'contains': dtd_flow},
+    'isindex': {'contains': dtd_empty},
+    'menu': {'contains': frozenset(['li'])},
+    's': {'contains': dtd_inline},
+    'strike': {'contains': dtd_inline},
+    'u': {'contains': dtd_inline},
+    # Frames (XXX)
+    'frame': {'contains': dtd_empty},
+    'frameset': {'contains': frozenset(['frameset', 'frame', 'noframes'])},
+    'noframes': {'contains': dtd_flow},
     # Vendor specific, not approved by W3C
-    'embed'])
+    'embed': {'contains': dtd_empty},
+    }
+
 
 
 # Elements whose end tag is optional
 optional_end_tag_elements = set(['body', 'colgroup', 'dd', 'dt', 'head',
                                  'html', 'li', 'option', 'p', 'tbody', 'td',
                                  'tfoot', 'th', 'thead', 'tr'])
-
-# Elements whose end tag is optional and which can not contain a block tag
-# (hence must be closed before). XXX Finish.
-close_before_block = set(['dd', 'dt', 'p'])
-
-
-# Block elements
-block_elements = set([
-    'address', 'blockquote', 'center', 'dir', 'div', 'dl', 'fieldset', 'form',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'isindex', 'menu', 'noframes',
-    'noscript', 'ol', 'p', 'pre', 'table', 'ul',
-    # Considered as block elements because they can contain block elements
-    'dd', 'dt', 'frameset', 'li', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr',
-    ])
 
 # Boolean attributes
 boolean_attributes = set(['checked', 'compact', 'declare', 'defer',
@@ -67,6 +173,9 @@ boolean_attributes = set(['checked', 'compact', 'declare', 'defer',
                           'selected'])
 
 
+###########################################################################
+# The Parser
+###########################################################################
 class _Parser(HTMLParser, object):
 
     def parse(self, data):
@@ -127,13 +236,15 @@ class _Parser(HTMLParser, object):
 
 
     def handle_starttag(self, name, attrs):
+        stack = self.stack
+        events = self.events
         line = self.getpos()[0]
 
         # Close missing optional end tags
-        if self.stack and self.stack[-1] in close_before_block:
-            if name in block_elements:
-                tag_name = self.stack.pop()
-                self.events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
+        if stack and stack[-1] in optional_end_tag_elements:
+            if name not in dtd[stack[-1]]['contains']:
+                tag_name = stack.pop()
+                events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
 
         # Check the encoding
         if name == 'meta':
@@ -159,13 +270,13 @@ class _Parser(HTMLParser, object):
             attributes[(xhtml_uri, attribute_name)] = attribute_value
 
         # Start element
-        self.events.append((START_ELEMENT, (xhtml_uri, name, attributes), line))
+        events.append((START_ELEMENT, (xhtml_uri, name, attributes), line))
 
         # End element
-        if name in empty_elements:
-            self.events.append((END_ELEMENT, (xhtml_uri, name), line))
+        if name in dtd and dtd[name]['contains'] is dtd_empty:
+            events.append((END_ELEMENT, (xhtml_uri, name), line))
         else:
-            self.stack.append(name)
+            stack.append(name)
 
 
     def handle_endtag(self, name):

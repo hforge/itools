@@ -1,0 +1,60 @@
+
+itools 0.16.8 (2007/09/06)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+Virtual hosting support has been added to the itools.web and itools.cms
+packages.  From a practical point of view, it is still strongly advised
+to deploy Apache or another Web Server in front of an itools Web or CMS
+instance; but the rewritten rule has been vastly simplified, so the cost
+of maintaining a production environment is sensibly lower.  It also
+makes things easier in a development or testing environment.
+
+Further work has been done to improve the itools experience in the
+Windows platform.  Specifically the behaviour of the "icms-start.py" and
+"icms-stop.py" scripts is now the same as of in a Unix-like system.
+
+The Issue Tracker (CMS) has been extended with new features, specially
+the possibility to change several bugs at once.  The forms to insert
+images and links (HTML editor) are more intutive now.  And the French
+translation has been updated.
+
+Several bugs have been fixed, most notably the HTML parser now correctly
+interprets elements like <li> that are missing their optional end tag.
+Other packages with minor fixes are itools.vfs and itools.xml.
+
+
+Credits:
+
+ - Hervé Cauwelier updated the French translation;
+ - Nicolas Deram worked on itools.cms;
+ - J. David Ibáñez implemented virtual hosting and fixed bugs;
+ - Henry Obein worked on itools.cms;
+ - Sylvain Taverne worked on Windows and the tracker;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.8.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

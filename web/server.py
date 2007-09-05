@@ -627,5 +627,5 @@ class Server(object):
 
 
     def get_site_root(self, hostname):
-        raise NotImplementedError
+        return self.root
 

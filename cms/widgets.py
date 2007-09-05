@@ -534,15 +534,18 @@ class ReadOnlyWidget(Widget):
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
                    xmlns:stl="http://xml.itools.org/namespaces/stl">
             <input type="hidden" name="${name}" value="${value}" />
-            ${value}
+            ${displayed}
         </stl:block>
         """))
 
     @staticmethod
-    def to_html(datatype, name, value):
+    def to_html(datatype, name, value, displayed=None):
         namespace = {}
         namespace['name'] = name
         namespace['value'] = value
+        namespace['displayed'] = value
+        if displayed is not None:
+            namespace['displayed'] = displayed
         return stl(events=ReadOnlyWidget.template, namespace=namespace)
 
 

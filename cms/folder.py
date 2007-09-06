@@ -203,26 +203,39 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
 
     def _get_virtual_handler(self, name):
-        languages = [ x.split('.')[-1] for x in self.cache
-                      if x.startswith(name) ]
-        languages = [ x for x in languages if has_language(x) ]
+        name, extension, language = FileName.decode(name)
+        if language is not None:
+            raise LookupError, 'the resource "%s" does not exist' % name
 
-        if languages:
-            # Get the best variant
-            context = get_context()
-            if context is None:
-                language = None
+        names = [ FileName.decode(x) for x in self.cache ]
+        names = [ x for x in names if x[0] == name ]
+        # Content Negotiation (TODO)
+        if extension is None:
+            extensions = set([ x[1] for x in names ])
+            if len(extensions) == 1:
+                extension = list(extensions)[0]
             else:
-                accept = context.get_accept_language()
-                language = accept.select_language(languages)
+                raise LookupError, 'the resource "%s" does not exist' % name
 
-            # By default use whatever variant
-            # (XXX we need a way to define the default)
-            if language is None:
-                language = languages[0]
-            return self.get_handler('%s.%s' % (name, language))
+        # Filter by extension
+        names = [ x for x in names if x[1] == extension ]
+        if not names:
+            raise LookupError, 'the resource "%s" does not exist' % name
 
-        return BaseFolder._get_virtual_handler(self, name)
+        # Language Negotiation
+        languages = [ x[2] for x in names ]
+        context = get_context()
+        if context is None:
+            language = None
+        else:
+            accept = context.get_accept_language()
+            language = accept.select_language(languages)
+        # Use the default language (TODO)
+        if language is None:
+            language = languages[0]
+
+        name = FileName.encode((name, extension, language))
+        return self.get_handler(name)
 
 
     # FIXME Rename this method to "traverse_objects"

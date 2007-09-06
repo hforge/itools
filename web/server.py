@@ -29,7 +29,7 @@ import traceback
 from urllib import unquote
 
 # Import from itools
-from itools.uri import Reference
+from itools.uri import Reference, Path
 from itools.http import (Forbidden, HTTPError, NotFound, Unauthorized,
                          Request, Response)
 from context import Context, get_context, set_context
@@ -526,14 +526,14 @@ class Server(object):
 
         if not isinstance(handler, Node):
             # Find an ancestor to render the page
-            abspath = context.path
+            abspath = Path(path)
             for x in range(len(abspath) - 1, 0, -1):
                 path = abspath[:x]
-                if root.has_handler(path):
-                    context.handler = root.get_handler(path)
+                if site_root.has_handler(path):
+                    context.handler = site_root.get_handler(path)
                     break
             else:
-                context.handler = root
+                context.handler = site_root
             return 404, root.not_found
 
         method = handler.get_method(context.method)

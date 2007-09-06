@@ -39,7 +39,7 @@ def start(parser, options, target):
     if options.address:
         args.append('-a %s' % options.address)
     p_server = subprocess.Popen(' '.join(args), shell=True)
-    sleep(0.1)
+    sleep(0.4)
 
     # Start the Mail Spool
     path_icms_start_spool = join(script_path, 'icms-start-spool.py')
@@ -47,7 +47,7 @@ def start(parser, options, target):
     if options.debug:
         args.append('-d')
     p_spool = subprocess.Popen(' '.join(args), shell=True)
-    sleep(0.3)
+    sleep(0.4)
 
     # Debugging mode
     if options.debug is True:

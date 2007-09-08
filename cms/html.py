@@ -147,6 +147,7 @@ class XHTMLFile(EpozEditable, Text, XHTMLDocument):
     # View
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
+    view__title__ = u'View'
     def view(self, context):
         namespace = {}
         body = self.get_body()

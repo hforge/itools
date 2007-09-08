@@ -87,7 +87,10 @@
           <!-- The Body -->
           <div id="body">
             <div id="message" stl:if="message">${message}</div>
-            <div id="content">${body}</div>
+            <div id="content">
+              <h2 stl:if="view_title">${view_title}</h2>
+              ${body}
+            </div>
           </div>
         </td>
       </tr>

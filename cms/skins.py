@@ -449,34 +449,29 @@ class Skin(UIFolder):
 
     def build_namespace(self, context):
         namespace = {}
-
-        # Resources
+        # CSS & JavaScript
         namespace['styles'] = self.get_styles(context)
         namespace['scripts'] = self.get_scripts(context)
-
+        # Title & Meta
+        namespace['title'] = self.get_template_title(context)
+        namespace['meta_tags']= self.get_meta_tags(context)
         # User menu
         namespace['user']= self.get_user_menu(context)
-
         # Left menus
         namespace['left_menus'] = self.get_left_menus(context)
-
-        # Breadcrumb
-        namespace['breadcrumb'] = self.get_breadcrumb(context)
-
-        # Metadata
+        # Object's metadata & Breadcrumb
         namespace['metadata'] = self.get_metadata_ns(context)
-
-        # Tabs
+        namespace['breadcrumb'] = self.get_breadcrumb(context)
+        # Tabs & Message
         namespace['tabs'] = self.get_tabs(context)
-
-        # Message
         namespace['message'] = self.get_message(context)
-
-        # Title
-        namespace['title'] = self.get_template_title(context)
-
-        # Meta
-        namespace['meta_tags']= self.get_meta_tags(context)
+        # View's title
+        here = context.handler
+        title = getattr(here, '%s__title__' % context.method, None)
+        if title is None:
+            namespace['view_title'] = None
+        else:
+            namespace['view_title'] = here.gettext(title)
 
         return namespace
 

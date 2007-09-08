@@ -50,15 +50,17 @@ class Text(File, BaseText):
     @classmethod
     def new_instance_form(cls, context, name=''):
         root = context.root
+        here = context.handler
 
         namespace = {}
         namespace['name'] = name
         # The class id
         namespace['class_id'] = cls.class_id
         # Languages
-        languages = []
-        website_languages = root.get_property('ikaaro:website_languages')
+        site_root = here.get_site_root()
+        website_languages = site_root.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
+        languages = []
         for code in website_languages:
             language_name = get_language_name(code)
             languages.append({'code': code,

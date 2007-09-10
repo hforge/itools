@@ -18,9 +18,6 @@
 Implements a catalog in memory.
 """
 
-# Import from itools
-from fields import get_field
-
 
 # TODO Refactor this code with the rest of itools.catalog
 
@@ -85,9 +82,9 @@ class MemoryCatalog(object):
         self.analysers = {}
 
 
-    def add_index(self, name, analyser_name):
+    def add_index(self, name, analyser):
         self.indexes[name] = Index()
-        self.analysers[name] = get_field(analyser_name)
+        self.analysers[name] = analyser
 
 
     def index_document(self, document, number):

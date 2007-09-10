@@ -52,12 +52,12 @@ issue_fields = [('title', True), ('version', True), ('type', True),
 
 search_fields = [('search_name', False, Unicode),
                  ('mtime', False, Integer),
-                 ('module', False, Integer),
-                 ('version', False, Integer),
-                 ('type', False, Integer),
-                 ('priority', False, Integer),
-                 ('assigned_to', False, Unicode),
-                 ('state', False, Integer)]
+                 ('module', False),
+                 ('version', False),
+                 ('type', False),
+                 ('priority', False),
+                 ('assigned_to', False),
+                 ('state', False)]
 
 table_columns = [('id', u'Id'), ('title', u'Title'), ('version', u'Version'),
                  ('module', u'Module'), ('type', u'Type'),
@@ -164,10 +164,9 @@ class Tracker(Folder):
             members.append({'id': username, 'title': user.get_title()})
         # Select
         for member in members:
-            member['is_selected'] = (member['id'] == value)
+            member['is_selected'] = (member['id'] in value)
 
         return members
-        
 
 
     #######################################################################
@@ -213,28 +212,24 @@ class Tracker(Folder):
         search_name = context.get_form_value('search_name')
         if search_name:
             search = self.get_object(search_name)
+            get_value = search.get_value
+            get_values = search.get_values
             namespace['search_name'] = search_name
             namespace['search_title'] = search.get_property('dc:title')
-            namespace['text'] = search.get_value('text', type=Unicode)
-            namespace['mtime'] = search.get_value('mtime', type=Integer)
-            module = search.get_value('module', type=Integer)
-            type = search.get_value('type', type=Integer)
-            version = search.get_value('version', type=Integer)
-            priority = search.get_value('priority', type=Integer)
-            assign = search.get_value('assigned_to')
-            state = search.get_value('state', type=Integer)
         else:
-            getter = context.get_form_value
-            namespace['search_name'] = getter('search_name')
-            namespace['search_title'] = getter('search_title')
-            namespace['text'] = getter('text')
-            namespace['mtime'] = getter('mtime')
-            module = getter('module', type=Integer)
-            type = getter('type', type=Integer)
-            version = getter('version', type=Integer)
-            priority = getter('priority', type=Integer)
-            assign = getter('assigned_to')
-            state = getter('state', type=Integer)
+            get_value = context.get_form_value
+            get_values = context.get_form_values
+            namespace['search_name'] = get_value('search_name')
+            namespace['search_title'] = get_value('search_title')
+
+        namespace['text'] = get_value('text', type=Unicode)
+        namespace['mtime'] = get_value('mtime', type=Integer)
+        module = get_values('module', type=Integer)
+        type = get_values('type', type=Integer)
+        version = get_values('version', type=Integer)
+        priority = get_values('priority', type=Integer)
+        assign = get_values('assigned_to')
+        state = get_values('state', type=Integer)
 
         get = self.get_object
         namespace['modules'] = get('modules.csv').get_options(module)
@@ -286,20 +281,18 @@ class Tracker(Folder):
         stored_search.set_property('dc:title', search_title, 'en')
         # Edit / Search Values
         text = context.get_form_value('text').strip().lower()
-        mtime = context.get_form_value('mtime', type=Integer)
-        module = context.get_form_value('module', type=Integer)
-        version = context.get_form_value('version', type=Integer)
-        type = context.get_form_value('type', type=Integer)
-        priority = context.get_form_value('priority', type=Integer)
-        assign = context.get_form_value('assigned_to')
-        state = context.get_form_value('state', type=Integer)
+        stored_search.set_value('text', text)
 
-        criterias = [('text', text), ('mtime', mtime), ('module', module),
-            ('version', version), ('type', type), ('priority', priority),
-            ('assigned_to', assign), ('state', state)]
-        for name, value in criterias:
-            stored_search.set_value(name, value)
- 
+        mtime = context.get_form_value('mtime', type=Integer)
+        stored_search.set_value('mtime', mtime)
+
+        criterias = [('module', Integer), ('version', Integer),
+            ('type', Integer), ('priority', Integer), ('assigned_to', String),
+            ('state', Integer)]
+        for name, type in criterias:
+            value = context.get_form_values(name, type=type)
+            stored_search.set_values(name, value, type=type)
+
         return context.uri.resolve(';view?search_name=%s' % search_name)
 
 
@@ -361,9 +354,10 @@ class Tracker(Folder):
         criteria = []
         search_parameters = {}
         for field in search_fields:
-            key, _, _ = field
-            search_parameters[key] = context.get_form_value(key) or ''
-            criteria.append({'name': key, 'value': context.get_form_value(key)})
+            key = field[0]
+            value = context.get_form_value(key)
+            search_parameters[key] = value or ''
+            criteria.append({'name': key, 'value': value})
         namespace['search_parameters'] = encode_query(search_parameters)
         namespace['criteria'] = criteria
         # Table
@@ -622,20 +616,22 @@ class Tracker(Folder):
         search_name = context.get_form_value('search_name')
         if search_name:
             search = self.get_object(search_name)
-            getter = search.get_value
+            get_value = search.get_value
+            get_values = search.get_values
         else:
-            getter = context.get_form_value
+            get_value = context.get_form_value
+            get_values = context.get_form_values
         # Get search criteria
-        text = getter('text', type=Unicode)
+        text = get_value('text', type=Unicode)
         if text is not None:
             text = text.strip().lower()
-        mtime = getter('mtime', type=Integer)
-        module = getter('module', type=Integer)
-        version = getter('version', type=Integer)
-        type = getter('type', type=Integer)
-        priority = getter('priority', type=Integer)
-        assign = getter('assigned_to', type=String)
-        state = getter('state', type=Integer)
+        mtime = get_value('mtime', type=Integer)
+        module = get_values('module', type=Integer)
+        version = get_values('version', type=Integer)
+        type = get_values('type', type=Integer)
+        priority = get_values('priority', type=Integer)
+        assign = get_values('assigned_to', type=String)
+        state = get_values('state', type=Integer)
         # Execute the search
         issues = []
         now = datetime.now()
@@ -646,28 +642,22 @@ class Tracker(Folder):
             if mtime is not None:
                 if (now - handler.get_mtime()).days >= mtime:
                     continue
-            if module is not None:
-                if module != handler.get_value('module'):
-                    continue
-            if version is not None:
-                if version != handler.get_value('version'):
-                    continue
-            if type is not None:
-                if type != handler.get_value('type'):
-                    continue
-            if priority is not None:
-                if priority != handler.get_value('priority'):
-                    continue
+            if module and handler.get_value('module') not in module:
+                continue
+            if version and handler.get_value('version') not in version:
+                continue
+            if type and handler.get_value('type') not in type:
+                continue
+            if priority and handler.get_value('priority') not in priority:
+                continue
             if assign:
                 value = handler.get_value('assigned_to')
-                if assign == 'nobody':
-                    if value != '':
-                        continue
-                elif assign != value:
+                if value == '':
+                    value = 'nobody'
+                if value not in assign:
                     continue
-            if state is not None:
-                if state != handler.get_value('state'):
-                    continue
+            if state and handler.get_value('state') not in state:
+                continue
             # Append
             issues.append(handler)
         return issues
@@ -739,8 +729,6 @@ class Tracker(Folder):
         return context.uri.resolve2('../%s/;edit_form' % issue_name)
 
 
-register_object_class(Tracker)
-
 
 ###########################################################################
 # Tables
@@ -761,6 +749,9 @@ class SelectTable(CSV):
         if value is None:
             for option in options:
                 option['is_selected'] = False
+        elif isinstance(value, list):
+            for option in options:
+                option['is_selected'] = (option['id'] in value)
         else:
             for option in options:
                 option['is_selected'] = (option['id'] == value)
@@ -837,9 +828,6 @@ class SelectTable(CSV):
         return stl(handler, namespace)
 
 
-register_object_class(SelectTable)
-
-
 
 class Versions(SelectTable):
     
@@ -850,7 +838,6 @@ class Versions(SelectTable):
               'title': Unicode(title=u'Title'),
               'released': Boolean(title=u'Released')}
 
-register_object_class(Versions)
 
 
 ###########################################################################
@@ -861,8 +848,15 @@ class StoredSearch(Text, Config):
     class_id = 'stored_search'
     class_title = u'Stored Search'
  
+    def get_values(self, name, type=String):
+        value = self.get_value(name, default='')
+        return [ type.decode(x) for x in value.split() ]
 
-register_object_class(StoredSearch)
+
+    def set_values(self, name, value, type=String):
+        value = [ type.encode(x) for x in value ]
+        value = ' '.join(value)
+        self.set_value(name, value)
 
 
 
@@ -1382,4 +1376,12 @@ class Issue(Folder, VersioningAware):
         return search.get_title()
 
 
+
+###########################################################################
+# Register
+###########################################################################
+register_object_class(Tracker)
 register_object_class(Issue)
+register_object_class(SelectTable)
+register_object_class(Versions)
+register_object_class(StoredSearch)

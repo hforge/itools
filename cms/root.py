@@ -178,10 +178,6 @@ class Root(WebSite):
             **{'dc:title': {'en': u'Users'}})
 
 
-    def get_catalog_metadata_fields(self):
-        return [field[0] for field in self._catalog_fields if field[3]]
-
-
     ########################################################################
     # Publish
     ########################################################################

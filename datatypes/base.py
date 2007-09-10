@@ -27,14 +27,21 @@ class DataType(object):
 
     @staticmethod
     def decode(data):
+        """Deserializes the given byte string to a value with a type."""
         raise NotImplementedError
 
 
     @staticmethod
     def encode(value):
+        """Serializes the given value to a byte string."""
         raise NotImplementedError
 
 
     @staticmethod
     def is_valid(value):
+        """Checks whether the given value is valid.
+
+        For example, for a natural number the value will be an integer,
+        and this method will check that it is not a negative number.
+        """
         return True

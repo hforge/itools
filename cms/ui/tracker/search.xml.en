@@ -22,12 +22,12 @@
           <label for="text">Text (search within the title and all
           comments)</label><br/>
           <input type="text" name="text" id="text" size="30" value="${text}"
-            class="tracker_search_input" />
+            class="tracker_select" />
         </td>
         <td colspan="1">
-          <label for="mtime">Modified since (days ago)</label><br/>
-          <input type="text" name="mtime" id="mtime" size="3" value="${mtime}"
-            class="tracker_search_input" />
+          <label for="mtime" alt="">Modified since:</label><br/>
+          <input type="text" name="mtime" id="mtime" size="2" value="${mtime}"
+            xclass="tracker_select" /> days ago
         </td>
       </tr>
       <tr>
@@ -35,7 +35,7 @@
           <label for="module">Module<stl:block if="is_admin"> (<a
             href="./modules.csv/;view">Edit</a>)</stl:block></label>
           <br/>
-          <select name="module" id="module" class="tracker_search_input"
+          <select name="module" id="module" class="tracker_select"
             multiple="multiple" size="3">
             <option stl:repeat="item modules" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>
@@ -46,7 +46,7 @@
             href="${manage_assigned}">Edit</a>)</stl:block></label>
           <br/>
           <select name="assigned_to" id="assigned_to"
-            class="tracker_search_input" multiple="multiple" size="3">
+            class="tracker_select" multiple="multiple" size="3">
             <option stl:repeat="item users" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>
           </select>
@@ -55,7 +55,7 @@
           <label for="version">Version<stl:block if="is_admin"> (<a
             href="./versions.csv/;view">Edit</a>)</stl:block></label>
           <br/>
-          <select name="version" id="version" class="tracker_search_input"
+          <select name="version" id="version" class="tracker_select"
             multiple="multiple" size="3">
             <option stl:repeat="item versions" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>
@@ -67,7 +67,7 @@
           <label for="type">Type<stl:block if="is_admin"> (<a
             href="./types.csv/;view">Edit</a>)</stl:block></label>
           <br/>
-          <select name="type" id="type" class="tracker_search_input"
+          <select name="type" id="type" class="tracker_select"
             multiple="multiple" size="3">
             <option stl:repeat="item types" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>
@@ -77,7 +77,7 @@
           <label for="state">Status<stl:block if="is_admin"> (<a
             href="./states.csv/;view">Edit</a>)</stl:block></label>
           <br/>
-          <select name="state" id="state" class="tracker_search_input"
+          <select name="state" id="state" class="tracker_select"
             multiple="multiple" size="3">
             <option stl:repeat="item states" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>
@@ -87,7 +87,7 @@
           <label for="priority">Priority<stl:block if="is_admin"> (<a
             href="./priorities.csv/;view">Edit</a>)</stl:block></label>
           <br/>
-          <select name="priority" id="priority" class="tracker_search_input"
+          <select name="priority" id="priority" class="tracker_select"
             multiple="multiple" size="3">
             <option stl:repeat="item priorities" value="${item/id}"
               selected="${item/is_selected}">${item/title}</option>

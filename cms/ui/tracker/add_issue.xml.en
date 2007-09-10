@@ -71,7 +71,7 @@
       <tr>
         <td valign="top" colspan="2">
           <label for="description">Description</label><br/>
-          <textarea name="comment" id="description" cols="68" rows="10"
+          <textarea name="comment" id="description" cols="60" rows="10"
             >${comment}</textarea>
         </td>
       </tr>

@@ -670,6 +670,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def rename(self, context):
         names = context.get_form_values('names')
         new_names = context.get_form_values('new_names')
+        used_names = self.get_handler_names()
         # Process input data
         for i, old_name in enumerate(names):
             xxx, extension, language = FileName.decode(old_name)
@@ -680,12 +681,14 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 return context.come_back(MSG_BAD_NAME)
             # Rename
             if new_name != old_name:
+                if new_name in used_names:
+                    # Name already exists
+                    return context.come_back(MSG_EXISTANT_FILENAME)
                 # XXX itools should provide an API to copy and move handlers
                 handler = self.get_handler(old_name)
                 handler_metadata = handler.get_metadata()
                 self.set_object(new_name, handler, handler_metadata)
                 self.del_object(old_name)
-
 
         message = u'Objects renamed.'
         return context.come_back(message, goto=';browse_content')

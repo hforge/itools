@@ -373,7 +373,8 @@ class Table(File):
         for name, datatype in self.schema.items():
             index = getattr(datatype, 'index', None)
             if index is not None:
-                self.catalog.add_index(name, index)
+                field = get_field(index)
+                self.catalog.add_index(name, field)
 
 
     def _load_state_from_file(self, file):

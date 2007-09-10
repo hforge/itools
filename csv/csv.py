@@ -100,7 +100,8 @@ class CSV(Text):
                 datatype = self.schema[column]
                 index = getattr(datatype, 'index', None)
                 if index is not None:
-                    self.catalog.add_index(column, index)
+                    field = get_field(index)
+                    self.catalog.add_index(column, field)
 
 
     def _load_state_from_file(self, file):

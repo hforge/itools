@@ -187,10 +187,6 @@ class Root(WebSite):
         self.set_user_role(user.name, 'ikaaro:admins')
 
 
-    def get_catalog_metadata_fields(self):
-        return [field[0] for field in self._catalog_fields if field[3]]
-
-
     ########################################################################
     # Publish
     ########################################################################

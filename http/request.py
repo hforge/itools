@@ -63,7 +63,7 @@ class Request(Message):
 
     def to_str(self):
         data = []
-        data.append(self.request_line_tostr())
+        data.append(self.request_line_to_str())
         data.append(self.headers_to_str())
         # The body (XXX to do)
         return ''.join(data)

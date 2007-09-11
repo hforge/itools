@@ -14,6 +14,7 @@
               <th></th>
               <th>Name</th>
               <th>Title</th>
+              <th>State</th>
             </tr>
           </thead>
           <tbody>
@@ -21,6 +22,7 @@
               <td><input type="checkbox" name="ordered_names" value="${folder/name}" /></td>
               <td>${folder/name}</td>
               <td>${folder/title}</td>
+              <td>${folder/workflow_state}</td>
             </tr>
           </tbody>
         </table>
@@ -44,6 +46,7 @@
               <th></th>
               <th>Name</th>
               <th>Title</th>
+              <th>State</th>
             </tr>
           </thead>
           <tbody>
@@ -51,6 +54,7 @@
               <td><input type="checkbox" name="unordered_names" value="${folder/name}" /></td>
               <td>${folder/name}</td>
               <td>${folder/title}</td>
+              <td>${folder/workflow_state}</td>
             </tr>
           </tbody>
         </table>

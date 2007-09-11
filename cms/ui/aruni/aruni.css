@@ -18,6 +18,7 @@ h6 { font-size: 1em; }
 select, input, textarea, button {
   color: #000;
   background: #fff;
+  font-size: 1.0em;
 }
 
 input {

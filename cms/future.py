@@ -36,6 +36,7 @@ from folder import Folder
 from file import File
 from html import XHTMLFile, EpozEditable
 from messages import *
+from workflow import WorkflowAware
 
 
 
@@ -113,10 +114,19 @@ class OrderAware(object):
                 folder = self.get_handler(name)
                 ns = {
                     'name': folder.name,
-                    'title': folder.get_property('dc:title')
+                    'title': folder.get_property('dc:title'),
+                    'workflow_state': ''
                 }
-                l.append(ns)
+                if isinstance(folder, WorkflowAware):
+                    statename = folder.get_statename()
+                    state = folder.get_state()
+                    msg = self.gettext(state['title']).encode('utf-8')
+                    state = ('<a href="%s/;state_form" class="workflow">'
+                             '<strong class="wf_%s">%s</strong>'
+                             '</a>') % (folder.name, statename, msg)
+                    ns['workflow_state'] = Parser(state)
 
+                l.append(ns)
         namespace['ordered_folders'] = ordered_folders
         namespace['unordered_folders'] = unordered_folders
 
@@ -404,7 +414,7 @@ class Dressable(Folder, EpozEditable):
 
         # size
         handler = self.get_handler(name)
-        width, height = handler.size
+        width, height = handler.get_size()
         if width > 640:
             coef = 640 / float(width)
             width = 640

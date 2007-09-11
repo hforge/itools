@@ -691,7 +691,7 @@ class Tracker(Folder):
         namespace['states'] = get('states.csv').get_options(state, sort=False)
 
         users = self.get_object('/users')
-        assigned_to = context.get_form_value('assigned_to', type=String)
+        assigned_to = context.get_form_values('assigned_to', type=String)
         namespace['users'] = self.get_members_namespace(assigned_to)
 
         handler = self.get_object('/ui/tracker/add_issue.xml')

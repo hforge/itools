@@ -75,7 +75,7 @@
       <tr>
         <td valign="top" colspan="2">
           <label for="comment">New Comment</label><br/>
-          <textarea name="comment" id="comment" cols="72" rows="10"
+          <textarea name="comment" id="comment" cols="60" rows="10"
             ></textarea>
         </td>
       </tr>

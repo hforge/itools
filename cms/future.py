@@ -414,7 +414,7 @@ class Dressable(Folder, EpozEditable):
 
         # size
         handler = self.get_handler(name)
-        width, height = handler.size
+        width, height = handler.get_size()
         if width > 640:
             coef = 640 / float(width)
             width = 640

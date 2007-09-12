@@ -355,14 +355,16 @@ class Tracker(Folder):
         nb_results = len(lines)
         namespace['title'] = title
         # Keep the search_parameters
+        namespace['search_parameters'] = encode_query(context.uri.query)
         criteria = []
-        search_parameters = {}
-        for field in search_fields:
-            key = field[0]
+        for key in ['search_name', 'mtime']:
             value = context.get_form_value(key)
-            search_parameters[key] = value or ''
             criteria.append({'name': key, 'value': value})
-        namespace['search_parameters'] = encode_query(search_parameters)
+        keys = 'module', 'version', 'type', 'priority', 'assigned_to', 'state'
+        for key in keys:
+            values = context.get_form_values(key)
+            for value in values:
+                criteria.append({'name': key, 'value': value})
         namespace['criteria'] = criteria
         # Table
         sortby = context.get_form_value('sortby', default='id')

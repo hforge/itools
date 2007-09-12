@@ -38,6 +38,18 @@ class ParserTestCase(TestCase):
         self.assertEqual(stream_to_str(stream), data)
 
 
+    def test_obvious(self):
+        data = '<p></p>'
+        expected = [(START_ELEMENT, 'p'), (END_ELEMENT, 'p')]
+        self.assertEqual(parse_tags(data), expected)
+
+
+    def test_empty(self):
+        data = '<br>'
+        expected = [(START_ELEMENT, 'br'), (END_ELEMENT, 'br')]
+        self.assertEqual(parse_tags(data), expected)
+
+
     def test_ul(self):
         data = '<ul><li><li></li></ul>'
         expected = [

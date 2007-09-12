@@ -20,9 +20,14 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.xml import stream_to_str
+from itools.xml import stream_to_str, START_ELEMENT, END_ELEMENT
 from itools.html import Document, Parser
 from itools.gettext import PO
+
+
+def parse_tags(data):
+    return [ (type, value[1]) for type, value, line in Parser(data)
+             if type == START_ELEMENT or type == END_ELEMENT ]
 
 
 class ParserTestCase(TestCase):
@@ -33,8 +38,27 @@ class ParserTestCase(TestCase):
         self.assertEqual(stream_to_str(stream), data)
 
 
+    def test_ul(self):
+        data = '<ul><li><li></li></ul>'
+        expected = [
+            (START_ELEMENT, 'ul'), (START_ELEMENT, 'li'), (END_ELEMENT, 'li'),
+            (START_ELEMENT, 'li'), (END_ELEMENT, 'li'), (END_ELEMENT, 'ul')]
+        self.assertEqual(parse_tags(data), expected)
 
-class HTMLTestCase(TestCase):
+
+    def test_forbidden(self):
+        data = '<html><body><title></title></body></html>'
+        expected = [
+            (START_ELEMENT, 'html'), (START_ELEMENT, 'body'),
+            (START_ELEMENT, 'title'), (END_ELEMENT, 'title'),
+            (END_ELEMENT, 'body'), (END_ELEMENT, 'html')]
+        self.assertEqual(parse_tags(data), expected)
+
+
+
+
+
+class i18nTestCase(TestCase):
 
     def test_case1(self):
         """Test element content."""

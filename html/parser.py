@@ -241,10 +241,12 @@ class _Parser(HTMLParser, object):
         line = self.getpos()[0]
 
         # Close missing optional end tags
-        if stack and stack[-1] in optional_end_tag_elements:
+        n = len(stack)
+        if n > 0 and stack[-1] in optional_end_tag_elements:
             if name not in dtd[stack[-1]]['contains']:
-                tag_name = stack.pop()
-                events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
+                if (n == 1) or (name in dtd[stack[-2]]['contains']):
+                    tag_name = stack.pop()
+                    events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
 
         # Check the encoding
         if name == 'meta':
@@ -280,7 +282,7 @@ class _Parser(HTMLParser, object):
 
 
     def handle_endtag(self, name):
-        line = self.getpos()[0]
+        line, col = self.getpos()
 
         # Discard lonely end tags
         index = len(self.stack) - 1
@@ -300,7 +302,8 @@ class _Parser(HTMLParser, object):
                 tag_name = self.stack.pop()
                 self.events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
             else:
-                raise ValueError, 'missing end tag </%s>' % tag_name
+                msg = 'missing end tag </%s> at line %s col %s'
+                raise ValueError, msg % (tag_name, line, col)
 
         self.events.append((END_ELEMENT, (xhtml_uri, name), line))
 

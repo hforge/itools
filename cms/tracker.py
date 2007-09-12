@@ -165,6 +165,8 @@ class Tracker(Folder):
             user = users.get_handler(username)
             members.append({'id': username, 'title': user.get_title()})
         # Select
+        if isinstance(value, str):
+            value = [value]
         for member in members:
             member['is_selected'] = (member['id'] in value)
 

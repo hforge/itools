@@ -163,6 +163,8 @@ class Tracker(Folder):
             user = users.get_object(username)
             members.append({'id': username, 'title': user.get_title()})
         # Select
+        if isinstance(value, str):
+            value = [value]
         for member in members:
             member['is_selected'] = (member['id'] in value)
 
@@ -351,14 +353,16 @@ class Tracker(Folder):
         nb_results = len(lines)
         namespace['title'] = title
         # Keep the search_parameters
+        namespace['search_parameters'] = encode_query(context.uri.query)
         criteria = []
-        search_parameters = {}
-        for field in search_fields:
-            key = field[0]
+        for key in ['search_name', 'mtime']:
             value = context.get_form_value(key)
-            search_parameters[key] = value or ''
             criteria.append({'name': key, 'value': value})
-        namespace['search_parameters'] = encode_query(search_parameters)
+        keys = 'module', 'version', 'type', 'priority', 'assigned_to', 'state'
+        for key in keys:
+            values = context.get_form_values(key)
+            for value in values:
+                criteria.append({'name': key, 'value': value})
         namespace['criteria'] = criteria
         # Table
         sortby = context.get_form_value('sortby', default='id')
@@ -791,6 +795,10 @@ class SelectTable(CSV):
         index = start
         getter = lambda x, y: x.get_value(y)
 
+        filter = self.name[:-5]
+        if self.name.startswith('priorit'):
+            filter = 'priority'
+
         for row in self.lines[start:start+size]:
             rows.append({})
             rows[-1]['id'] = str(index)
@@ -804,14 +812,14 @@ class SelectTable(CSV):
                 rows[-1][column] = value
             count = 0
             for handler in self.parent.search_handlers(handler_class=Issue):
-                if handler.get_value('version') == index:
+                if handler.get_value(filter) == index:
                     count += 1
             value = '0'
             if count != 0:
-                value = '<a href="../;view?version=%s">%s issues</a>'
+                value = '<a href="../;view?%s=%s">%s issues</a>'
                 if count == 1:
-                    value = '<a href="../;view?version=%s">%s issue</a>'
-                value = Parser(value % (index, count))
+                    value = '<a href="../;view?%s=%s">%s issue</a>'
+                value = Parser(value % (filter, index, count))
             rows[-1]['issues'] = value
             index += 1
 

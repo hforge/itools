@@ -182,7 +182,6 @@ class _Parser(HTMLParser, object):
         self.encoding = 'UTF-8'
 
         self.events = []
-        self.stack = []
         self.feed(data)
         self.close()
         return self.events
@@ -236,15 +235,8 @@ class _Parser(HTMLParser, object):
 
 
     def handle_starttag(self, name, attrs):
-        stack = self.stack
         events = self.events
         line = self.getpos()[0]
-
-        # Close missing optional end tags
-        if stack and stack[-1] in optional_end_tag_elements:
-            if name not in dtd[stack[-1]]['contains']:
-                tag_name = stack.pop()
-                events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
 
         # Check the encoding
         if name == 'meta':
@@ -272,37 +264,9 @@ class _Parser(HTMLParser, object):
         # Start element
         events.append((START_ELEMENT, (xhtml_uri, name, attributes), line))
 
-        # End element
-        if name in dtd and dtd[name]['contains'] is dtd_empty:
-            events.append((END_ELEMENT, (xhtml_uri, name), line))
-        else:
-            stack.append(name)
-
 
     def handle_endtag(self, name):
-        line = self.getpos()[0]
-
-        # Discard lonely end tags
-        index = len(self.stack) - 1
-        while index >= 0 and self.stack[index] != name:
-            index = index - 1
-
-        if index < 0:
-            # XXX Better to log it
-##            warnings.warn('discarding unexpected "</%s>" at line %s'
-##                          % (name, line))
-            return
-
-        tag_name = self.stack.pop()
-        # Close missing optional end tags
-        while name != tag_name:
-            if tag_name in optional_end_tag_elements:
-                tag_name = self.stack.pop()
-                self.events.append((END_ELEMENT, (xhtml_uri, tag_name), line))
-            else:
-                raise ValueError, 'missing end tag </%s>' % tag_name
-
-        self.events.append((END_ELEMENT, (xhtml_uri, name), line))
+        self.events.append((END_ELEMENT, (xhtml_uri, name), self.getpos()[0]))
 
 
     def handle_comment(self, data):
@@ -338,6 +302,54 @@ class _Parser(HTMLParser, object):
 
 
 
+def make_xml_compatible(stream):
+    stack = []
+    for event in stream:
+        type, value, line = event
+        if type == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            # Close missing optional end tags
+            n = len(stack)
+            if n > 0 and stack[-1] in optional_end_tag_elements:
+                if tag_name not in dtd[stack[-1]]['contains']:
+                    if (n == 1) or (tag_name in dtd[stack[-2]]['contains']):
+                        last = stack.pop()
+                        yield END_ELEMENT, (tag_uri, last), line
+            # Yield
+            yield event
+            # Close empty tags
+            if tag_name in dtd and dtd[tag_name]['contains'] is dtd_empty:
+                yield END_ELEMENT, (tag_uri, tag_name), line
+            else:
+                stack.append(tag_name)
+        elif type == END_ELEMENT:
+            tag_uri, tag_name = value
+            # Discard lonely end tags
+            index = len(stack) - 1
+            while index >= 0 and stack[index] != tag_name:
+                index = index - 1
+
+            if index < 0:
+                # XXX Warning!?
+                continue
+
+            last = stack.pop()
+            # Close missing optional end tags
+            while tag_name != last:
+                if last in optional_end_tag_elements:
+                    yield END_ELEMENT, (xhtml_uri, last), line
+                    last = stack.pop()
+                else:
+                    msg = 'missing end tag </%s> at line %s'
+                    raise ValueError, msg % (last, line)
+            yield event
+        else:
+            yield event
+
+
+
 def Parser(data):
-    parser = _Parser()
-    return parser.parse(data)
+    stream = _Parser().parse(data)
+    stream = make_xml_compatible(stream)
+    # TODO Don't transform to a list, keep the stream
+    return list(stream)

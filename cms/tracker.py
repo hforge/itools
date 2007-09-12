@@ -791,6 +791,10 @@ class SelectTable(CSV):
         index = start
         getter = lambda x, y: x.get_value(y)
 
+        filter = self.name[:-5]
+        if self.name.startswith('priorit'):
+            filter = 'priority'
+
         for row in self.lines[start:start+size]:
             rows.append({})
             rows[-1]['id'] = str(index)
@@ -804,14 +808,14 @@ class SelectTable(CSV):
                 rows[-1][column] = value
             count = 0
             for handler in self.parent.search_handlers(handler_class=Issue):
-                if handler.get_value('version') == index:
+                if handler.get_value(filter) == index:
                     count += 1
             value = '0'
             if count != 0:
-                value = '<a href="../;view?version=%s">%s issues</a>'
+                value = '<a href="../;view?%s=%s">%s issues</a>'
                 if count == 1:
-                    value = '<a href="../;view?version=%s">%s issue</a>'
-                value = Parser(value % (index, count))
+                    value = '<a href="../;view?%s=%s">%s issue</a>'
+                value = Parser(value % (filter, index, count))
             rows[-1]['issues'] = value
             index += 1
 

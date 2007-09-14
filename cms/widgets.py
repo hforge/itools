@@ -24,7 +24,7 @@ from string import Template
 from itools.uri import Path
 from itools.datatypes import (XMLAttribute, is_datatype, Integer, Decimal,
                               Unicode, Date, Enumerate, Boolean)
-from itools.handlers import Folder
+from itools.handlers import Folder, Image
 from itools.xml import Parser
 from itools.stl import stl
 from itools.web import get_context
@@ -353,6 +353,7 @@ class Breadcrumb(object):
                 path_to_icon = path_to_handler.resolve(path_to_icon)
             objects.append({'name': handler.name,
                             'is_folder': isinstance(handler, Folder),
+                            'is_image': isinstance(handler, Image),
                             'is_selectable': True,
                             'path': path,
                             'url': url,

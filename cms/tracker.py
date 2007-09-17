@@ -342,7 +342,10 @@ class Tracker(Folder):
         # Sort
         sortby = context.get_form_value('sortby', default='id')
         sortorder = context.get_form_value('sortorder', default='up')
-        lines.sort(key=itemgetter(sortby))
+        if sortby == 'mtime':
+            lines.sort(key=itemgetter('mtime_sort'))
+        else:
+            lines.sort(key=itemgetter(sortby))
         if sortorder == 'down':
             lines.reverse()
         # Set title of search
@@ -918,7 +921,7 @@ class Issue(Folder, VersioningAware):
     # API
     #######################################################################
     def get_title(self):
-        return self.get_value('title')
+        return '#%s %s' % (self.name, self.get_value('title'))
 
 
     def get_rows(self):
@@ -1119,6 +1122,7 @@ class Issue(Folder, VersioningAware):
             infos['assigned_to'] = ''
         infos['comment'] = self.get_value('comment')
         infos['mtime'] = format_datetime(self.get_mtime())
+        infos['mtime_sort'] = self.get_mtime()
         return infos
 
 

@@ -418,14 +418,15 @@ class Dressable(Folder, EpozEditable):
         size = handler.get_size()
         if size is not None:
             width, height = size
-            if width > 640:
-                coef = 640 / float(width)
-                width = 640
-                height = height * coef
-            elif height > 480:
-                coef = 480 / float(height)
-                height = 480
-                width = width * coef
+            ratio = width / float(height)
+            if ratio > 1:
+                if width > 640:
+                    height = height * 640.0 / width
+                    width = 640
+            else:
+                if height > 480:
+                    width = width * 480.0 / height
+                    height = 480
         else:
             width, height = (None, None)
         namespace['width'] = width

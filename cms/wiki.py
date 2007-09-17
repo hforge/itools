@@ -29,6 +29,7 @@ import urllib
 
 # Import from itools
 from ..uri import get_reference
+from ..datatypes import DateTime
 from .. import vfs
 from ..stl import stl
 from ..datatypes import Unicode, FileName
@@ -372,7 +373,8 @@ class WikiPage(Text):
             with tempdir.make_file(filename) as file:
                 image.save_state_to_file(file)
 
-        call(['pdflatex', '-8bit', '-no-file-line-error', '-interaction=batchmode', self.name], cwd=dirname)
+        call(['pdflatex', '-8bit', '-no-file-line-error',
+              '-interaction=batchmode', self.name], cwd=dirname)
         # Twice for correct page numbering
         call(['pdflatex', '-8bit', '-no-file-line-error',
               '-interaction=batchmode', self.name], cwd=dirname)
@@ -405,25 +407,6 @@ class WikiPage(Text):
 
 
     def edit_form(self, context):
-        root = context.root
-        if self.is_locked():
-            lock = self.get_lock()
-            # locks expire after 15 minutes
-            if lock.timestamp + timedelta(minutes=15) < datetime.now():
-                self.unlock()
-                context.commit = True
-            else:
-                if lock.username != context.user.name:
-                    user = root.get_user(lock.username)
-                    if user is not None:
-                        user = user.get_title()
-                    else:
-                        user = lock.username
-                    return context.come_back(MSG_PAGE_LOCK, user=user)
-        else:
-            self.lock()
-            context.commit = True
-
         css = self.get_handler('/ui/wiki/wiki.css')
         context.styles.append(str(self.get_pathto(css)))
         text_size = context.get_form_value('text_size');
@@ -438,6 +421,7 @@ class WikiPage(Text):
             context.set_cookie('wiki_text_size', text_size)
 
         namespace = {}
+        namespace['timestamp'] = DateTime.encode(datetime.now())
         namespace['data'] = self.to_str()
         namespace['text_size'] = text_size
 
@@ -446,6 +430,10 @@ class WikiPage(Text):
 
 
     def edit(self, context):
+        timestamp = context.get_form_value('timestamp', type=DateTime)
+        if timestamp is None or timestamp < self.timestamp:
+            return context.come_back(MSG_EDIT_CONFLICT)
+
         data = context.get_form_value('data', type=Unicode)
         text_size = context.get_form_value('text_size');
         # Ensure source is encoded to UTF-8

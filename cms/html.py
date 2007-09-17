@@ -83,7 +83,7 @@ class EpozEditable(object):
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context, sanitize=False):
         timestamp = context.get_form_value('timestamp', type=DateTime)
-        if timestamp < self.timestamp:
+        if timestamp is None or timestamp < self.timestamp:
             return context.come_back(MSG_EDIT_CONFLICT)
 
         new_body = context.get_form_value('data')

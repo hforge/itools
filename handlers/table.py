@@ -24,7 +24,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.vfs import vfs
-from itools.datatypes import DateTime, String
+from itools.datatypes import DateTime, String, Integer
 from itools.catalog import MemoryCatalog, PhraseQuery, AndQuery, get_field
 from file import File
 
@@ -361,6 +361,26 @@ class Table(File):
         return String(multiple=True)
 
 
+    def properties_to_dict(self, properties, version={}):
+        """
+        Add the given "properties" as Property objects or Property objects
+        list to the given dictionnary "version".
+        """
+        # Fix the type
+        for name, value in properties.items():
+            datatype = self.get_datatype(name)
+            if getattr(datatype, 'multiple', False) is True:
+                if not isinstance(value, list):
+                    value = [value, ]
+                value = [ x if isinstance(x, Property) else Property(x)
+                          for x in value ]
+            elif not isinstance(value, Property):
+                value = Property(value)
+            version[name] = value
+        return version
+
+
+
     #######################################################################
     # Handlers
     #######################################################################
@@ -448,6 +468,8 @@ class Table(File):
                     pvalues = ','.join(pvalues)
                     lines.append(';%s=%s' % (pname, pvalues))
                 value = datatype.encode(property.value)
+                if isinstance(value, Integer):
+                    value = str(value)
                 # Escape the value
                 value = escape_data(value)
                 lines.append(':%s\n' % fold_line(value))
@@ -523,16 +545,7 @@ class Table(File):
     def add_record(self, kw):
         id = len(self.records)
         record = Record(id)
-        version = {}
-        # Fix the type
-        for name, value in kw.items():
-            datatype = self.get_datatype(name)
-            if getattr(datatype, 'multiple', False) is True:
-                value = [ x if isinstance(x, Property) else Property(x)
-                          for x in value ]
-            elif not isinstance(value, Property):
-                value = Property(value)
-            version[name] = value
+        version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)
         # Change
@@ -547,14 +560,7 @@ class Table(File):
     def update_record(self, id, **kw):
         record = self.records[id]
         version = record[-1].copy()
-        for name, value in kw.items():
-            datatype = self.get_datatype(name)
-            if getattr(datatype, 'multiple', False) is True:
-                value = [ x if isinstance(x, Property) else Property(x)
-                          for x in value ]
-            elif not isinstance(value, Property):
-                value = Property(value)
-            version[name] = value
+        version = self.properties_to_dict(kw, version)
         version['ts'] = Property(datetime.now())
         # Change
         self.set_changed()

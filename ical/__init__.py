@@ -24,7 +24,7 @@ resources in standard type iCalendar specified in the RFC 2445
 
 # Import from itools
 from gridlayout import get_grid_data
-from icalendar import icalendar, PropertyValue
+from icalendar import icalendar, PropertyValue, icalendarTable
 from types import DateTime
 
 __all__ = [
@@ -34,4 +34,5 @@ __all__ = [
     'DateTime',
     # Handlers
     'PropertyValue',
-    'icalendar']
+    'icalendar', 
+    'icalendarTable']

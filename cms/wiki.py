@@ -66,6 +66,7 @@ class WikiFolder(Folder):
     class_views = [['browse_content?mode=thumbnails',
                     'browse_content?mode=list',
                     'browse_content?mode=image'],
+                   ['view'],
                    ['new_resource_form'],
                    ['edit_metadata_form'],
                    ['last_changes']]
@@ -90,10 +91,16 @@ class WikiFolder(Folder):
     # User interface
     #######################################################################
     def GET(self, context):
-        if context.has_form_value('message'):
-            message = context.get_form_value('message')
-            return context.come_back(message, 'FrontPage')
         return context.uri.resolve2('FrontPage')
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    def view(self, context):
+        if context.has_form_value('message'):
+            message = context.get_form_value('message', type=Unicode)
+            return context.come_back(message, goto='FrontPage')
+        return context.uri.resolve('FrontPage')
 
 
 

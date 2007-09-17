@@ -39,7 +39,7 @@ class Index(dict):
 
 
     def search_word(self, word):
-        word = self._normalise_word(word)
+#        word = self._normalise_word(word)
 
         if word in self:
             return self[word].copy()

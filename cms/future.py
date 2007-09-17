@@ -341,10 +341,11 @@ class Dressable(Folder, EpozEditable):
 
 
     def _get_handler_label(self, name):
-        handler = self.get_handler(name)
-        label = handler.get_property('dc:title')
-        if label:
-            return label
+        if self.has_handler(name):
+            handler = self.get_handler(name)
+            label = handler.get_property('dc:title')
+            if label:
+                return label
 
         for key, data in self.schema.iteritems():
             if isinstance(data, tuple):
@@ -414,15 +415,19 @@ class Dressable(Folder, EpozEditable):
 
         # size
         handler = self.get_handler(name)
-        width, height = handler.get_size()
-        if width > 640:
-            coef = 640 / float(width)
-            width = 640
-            height = height * coef
-        elif height > 480:
-            coef = 480 / float(height)
-            height = 480
-            width = width * coef
+        size = handler.get_size()
+        if size is not None:
+            width, height = size
+            if width > 640:
+                coef = 640 / float(width)
+                width = 640
+                height = height * coef
+            elif height > 480:
+                coef = 480 / float(height)
+                height = 480
+                width = width * coef
+        else:
+            width, height = (None, None)
         namespace['width'] = width
         namespace['height'] = height
 

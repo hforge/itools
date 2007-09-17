@@ -62,8 +62,7 @@ class WikiFolder(Folder):
     class_description = u"Container for a wiki"
     class_icon16 = 'images/WikiFolder16.png'
     class_icon48 = 'images/WikiFolder48.png'
-    class_views = [['view'],
-                   ['browse_content?mode=thumbnails',
+    class_views = [['browse_content?mode=thumbnails',
                     'browse_content?mode=list',
                     'browse_content?mode=image'],
                    ['new_resource_form'],
@@ -96,18 +95,6 @@ class WikiFolder(Folder):
         return context.uri.resolve2('FrontPage')
 
 
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u"View"
-    def view(self, context):
-        if context.has_form_value('message'):
-            message = context.get_form_value('message', type=Unicode)
-            return context.come_back(message, 'FrontPage')
-        return context.uri.resolve('FrontPage')
-
-
-register_object_class(WikiFolder)
-
-
 
 class WikiPage(Text):
     class_id = 'WikiPage'
@@ -116,15 +103,10 @@ class WikiPage(Text):
     class_description = u"Wiki contents"
     class_icon16 = 'images/WikiPage16.png'
     class_icon48 = 'images/WikiPage48.png'
-    class_views = [['view'],
+    class_views = [['view', 'to_pdf'],
                    ['edit_form', 'externaledit', 'upload_form'],
-                   ['state_form', 'edit_metadata_form'],
-                   ['browse_content?mode=thumbnails',
-                    'browse_content?mode=list',
-                    'browse_content?mode=image'],
-                   ['new_resource_form'],
-                   ['last_changes'],
-                   ['to_pdf'],
+                   ['edit_metadata_form'],
+                   ['state_form'],
                    ['help']]
     class_extension = None
 
@@ -277,7 +259,8 @@ class WikiPage(Text):
 
 
     to_pdf__access__ = 'is_allowed_to_view'
-    to_pdf__label__ = u"To PDF"
+    to_pdf__label__ = u"View"
+    to_pdf__sublabel__ = u"PDF"
     def to_pdf(self, context):
         parent = self.parent
         pages = [self.name]
@@ -391,7 +374,8 @@ class WikiPage(Text):
 
         call(['pdflatex', '-8bit', '-no-file-line-error', '-interaction=batchmode', self.name], cwd=dirname)
         # Twice for correct page numbering
-        call(['pdflatex', '-8bit', '-no-file-line-error', '-interaction=batchmode', self.name], cwd=dirname)
+        call(['pdflatex', '-8bit', '-no-file-line-error',
+              '-interaction=batchmode', self.name], cwd=dirname)
 
         pdfname = '%s.pdf' % self.name
         try:
@@ -412,6 +396,7 @@ class WikiPage(Text):
         return data
 
 
+    view__sublabel__ = u'HTML'
     def view(self, context):
         css = self.get_handler('/ui/wiki/wiki.css')
         context.styles.append(str(self.get_pathto(css)))
@@ -542,4 +527,8 @@ class WikiPage(Text):
         return stl(handler, namespace)
 
 
+###########################################################################
+# Register
+###########################################################################
+register_object_class(WikiFolder)
 register_object_class(WikiPage)

@@ -1145,8 +1145,10 @@ class Issue(Folder, VersioningAware):
 
 
     def indent(self, text):
-        """ Replace spaces at the begining of a line by &nbsp;
-            Replace '\n' by <br>\n and URL by HTML links"""
+        """ Replace spaces at the beginning of a line by &nbsp;
+            Replace '\n' by <br>\n and URL by HTML links
+            Fold lines (with spaces) to 150c.
+        """
         res = []
         text = text.encode('utf-8')
         text = XML.encode(text)
@@ -1155,8 +1157,25 @@ class Issue(Folder, VersioningAware):
             indent = len(line) - len(sline)
             if indent:
                 line = '&nbsp;' * indent + sline
-            line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
-            res.append(line)
+            if len(line) < 150:
+                line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
+                res.append(line)
+            else:
+                # Fold lines to 150c
+                text = line.split()
+                line = ''
+                while text != []:
+                    word = text.pop(0)
+                    if len(word) + len(line) > 150:
+                        line = sub('http://(.\S*)', 
+                                   r'<a href="http://\1">\1</a>', line)
+                        res.append(line)
+                        line = ''
+                    line = line + word + ' '
+                if line != '':
+                    line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', 
+                               line)
+                    res.append(line)
         return Parser('\n'.join(res))
 
 

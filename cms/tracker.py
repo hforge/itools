@@ -901,8 +901,6 @@ class Issue(Folder, VersioningAware):
     class_description = u'Issue'
     class_views = [
         ['edit_form'],
-        ['search_form'],
-        ['add_form'],
         ['browse_content?mode=list'],
         ['history']]
 
@@ -1369,43 +1367,6 @@ class Issue(Folder, VersioningAware):
     def to_str(self):
         # XXX Used by VersioningAware to define the size of the document
         return ''
-
-
-    add_form__access__ = 'is_allowed_to_edit'
-    add_form__label__ = u'Add'
-    def add_form(self, context):
-        reference = '../;add_form'
-        return context.uri.resolve(reference)
-
-
-    search_form__access__ = 'is_allowed_to_edit'
-    search_form__label__ = u'search'
-    def search_form(self, context):
-        reference = '../;search_form'
-        return context.uri.resolve(reference)
-
-
-    def get_subviews(self, name):
-        if name == 'search_form':
-            return self.parent.get_subviews(name)
-        return Folder.get_subviews(self, name)
-
-
-    view__access__ = Tracker.view__access__
-    view__label__ = Tracker.view__label__
-    def view(self, context):
-        query = encode_query(context.uri.query)
-        reference = '../;view?%s' % query
-        return context.uri.resolve(reference)
-
-
-    def view__sublabel__(self, **kw):
-        search_name = kw.get('search_name')
-        if search_name is None:
-            return u'View'
-
-        search = self.parent.get_handler(search_name)
-        return search.get_title()
 
 
 

@@ -63,10 +63,10 @@ class WikiFolder(Folder):
     class_description = u"Container for a wiki"
     class_icon16 = 'images/WikiFolder16.png'
     class_icon48 = 'images/WikiFolder48.png'
-    class_views = [['browse_content?mode=thumbnails',
+    class_views = [['view'],
+                   ['browse_content?mode=thumbnails',
                     'browse_content?mode=list',
                     'browse_content?mode=image'],
-                   ['view'],
                    ['new_resource_form'],
                    ['edit_metadata_form'],
                    ['last_changes']]
@@ -460,47 +460,6 @@ class WikiPage(Text):
         else:
             goto.fragment = 'bottom'
         return goto
-
-
-    browse_content__access__ = WikiFolder.browse_content__access__
-    browse_content__label__ = WikiFolder.browse_content__label__
-
-    def browse_content__sublabel__(self, **kw):
-        mode = kw.get('mode', 'thumbnails')
-        return {'thumbnails': u'As Icons',
-                'list': u'As List',
-                'image': u'As Image Gallery'}[mode]
-
-    def browse_content(self, context):
-        mode = context.get_form_value('mode')
-        if mode is None:
-            mode = context.get_cookie('browse_mode') or 'thumbnails'
-        return context.uri.resolve('../;browse_content?mode=%s' % mode)
-
-
-    new_resource_form__access__ = WikiFolder.new_resource_form__access__
-    new_resource_form__label__ = WikiFolder.new_resource_form__label__
-
-    def new_resource_form__sublabel__(self, **kw):
-        type = kw.get('type')
-        for cls in self.parent.get_document_types():
-            if cls.class_id == type:
-                return cls.class_title
-        return u'New Resource'
-
-    def new_resource_form(self, context):
-        type = context.get_form_value('type')
-        if type:
-            reference = '../;new_resource_form?type=%s' % type
-        else:
-            reference = '../;new_resource_form'
-        return context.uri.resolve(reference)
-
-
-    last_changes__access__ = WikiFolder.last_changes__access__
-    last_changes__label__ = WikiFolder.last_changes__label__
-    def last_changes(self, context):
-        return context.uri.resolve('../;last_changes')
 
 
     help__access__ = 'is_allowed_to_view'

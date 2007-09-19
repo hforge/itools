@@ -410,7 +410,7 @@ def build_menu(options):
 
 
 
-def _tree(node, root, depth, active_node, filter, user, width):
+def _tree(node, root, depth, active_node, allow, deny, user, width):
     # Build the namespace
     namespace = {}
     namespace['src'] = node.get_path_to_icon(size=16, from_handler=active_node)
@@ -451,18 +451,16 @@ def _tree(node, root, depth, active_node, filter, user, width):
     depth = depth - 1
 
     # Filter the handlers by the given class (don't filter by default)
-    if filter is None:
-        search = node.search_handlers()
-    else:
-        search = node.search_handlers(handler_class=filter)
+    search = node.search_handlers(handler_class=allow)
+    search = [ x for x in search if not isinstance(x, deny) ]
 
     children = []
     counter = 0
     for child in search:
         ac = child.get_access_control()
         if ac.is_allowed_to_view(user, child):
-            ns, in_path = _tree(child, root, depth, active_node, filter, user,
-                                width)
+            ns, in_path = _tree(child, root, depth, active_node, allow, deny,
+                                user, width)
             if in_path:
                 children.append(ns)
             elif counter < width:
@@ -480,8 +478,9 @@ def _tree(node, root, depth, active_node, filter, user, width):
 
 
 
-def tree(root, depth=6, active_node=None, filter=None, user=None, width=10):
-    ns, in_path = _tree(root, root, depth, active_node, filter, user, width)
+def tree(root, depth=6, active_node=None, allow=None, deny=None, user=None,
+         width=10):
+    ns, kk = _tree(root, root, depth, active_node, allow, deny, user, width)
     return build_menu([ns])
 
 

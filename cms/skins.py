@@ -102,8 +102,10 @@ class Skin(Folder):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
+        from tracker import Issue
+
         menu = tree(context.site_root, active_node=context.handler,
-                    filter=Folder, user=context.user)
+                    allow=Folder, deny=Issue, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
 

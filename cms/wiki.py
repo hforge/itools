@@ -64,8 +64,8 @@ class WikiFolder(Folder):
     class_icon16 = 'images/WikiFolder16.png'
     class_icon48 = 'images/WikiFolder48.png'
     class_views = [['view'],
-                   ['browse_content?mode=thumbnails',
-                    'browse_content?mode=list',
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails',
                     'browse_content?mode=image'],
                    ['new_resource_form'],
                    ['edit_metadata_form'],

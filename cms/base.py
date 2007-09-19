@@ -160,18 +160,19 @@ class Node(BaseNode):
         """
         Returns the first allowed object view url, or None if there aren't.
         """
-        user = get_context().user
-        ac = self.get_access_control()
         for view in self.get_views():
-            # Check the security
-            method_name = view.split('?')[0]
-            if ac.is_access_allowed(user, self, method_name):
-                return view
+            return view
         return None
 
 
     def get_views(self):
-        return [ x[0] for x in self.class_views ]
+        user = get_context().user
+        ac = self.get_access_control()
+        for view in self.class_views:
+            view = view[0]
+            name = view.split('?')[0]
+            if ac.is_access_allowed(user, self, name):
+                yield view
 
 
     def get_subviews(self, name):

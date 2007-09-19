@@ -382,10 +382,11 @@ class Dressable(Folder, EpozEditable):
 
 
     def get_views(self):
-        l = [ x[0] for x in self.class_views ]
-        edit_index = l.index('edit_document')
-        l[edit_index] = self.get_first_edit_subview()
-        return l
+        views = Folder.get_views(self)
+        views = list(views)
+        edit_index = views.index('edit_document')
+        views[edit_index] = self.get_first_edit_subview()
+        return views
 
 
     #######################################################################

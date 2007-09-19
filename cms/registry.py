@@ -67,3 +67,15 @@ def get_object_class(class_id):
 ##    return handler_class(resource)
 
 
+websites_registry = {}
+
+def register_website(website):
+    websites_registry[website.class_id] = website
+
+
+def get_register_websites():
+    return websites_registry.itervalues()
+
+
+def get_website_class(class_id):
+    return websites_registry[class_id]

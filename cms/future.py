@@ -384,8 +384,11 @@ class Dressable(Folder, EpozEditable):
     def get_views(self):
         views = Folder.get_views(self)
         views = list(views)
-        edit_index = views.index('edit_document')
-        views[edit_index] = self.get_first_edit_subview()
+        try:
+            edit_index = views.index('edit_document')
+            views[edit_index] = self.get_first_edit_subview()
+        except ValueError: # FO
+            pass
         return views
 
 

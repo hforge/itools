@@ -607,13 +607,13 @@ class BooleanCheckBox(Widget):
 class BooleanRadio(Widget):
 
     template = list(Parser("""
-        <label for="${name}_yes">Yes</label>
+        <label for="${name}_yes">${labels/yes}</label>
         <input id="${name}_yes" name="${name}" type="radio" value="1"
           checked="checked" stl:if="is_yes"/>
         <input id="${name}_yes" name="${name}" type="radio" value="1"
           stl:if="not is_yes"/>
 
-        <label for="${name}_no">No</label>
+        <label for="${name}_no">${labels/no}</label>
         <input id="${name}_no" name="${name}" type="radio" value="0"
           checked="checked" stl:if="not is_yes"/>
         <input id="${name}_no" name="${name}" type="radio" value="0"
@@ -621,10 +621,11 @@ class BooleanRadio(Widget):
         """, namespaces))
 
     @staticmethod
-    def to_html(datatype, name, value):
+    def to_html(datatype, name, value, labels={'yes': 'Yes', 'no': 'No'}):
         namespace = {}
         namespace['name'] = name
         namespace['is_yes'] = value in [True, 1, '1']
+        namespace['labels'] = labels
 
         return stl(events=BooleanRadio.template, namespace=namespace)
 

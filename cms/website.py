@@ -45,6 +45,7 @@ class WebSite(RoleAware, Folder):
     class_description = u'Create a new Web Site or Work Place.'
     class_icon16 = 'images/WebSite16.png'
     class_icon48 = 'images/WebSite48.png'
+    class_skin = 'ui/aruni'
     class_views = [
         ['browse_content?mode=list',
          'browse_content?mode=thumbnails',

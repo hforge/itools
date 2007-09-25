@@ -263,7 +263,14 @@ class Root(WebSite):
     ########################################################################
     # Skins
     def get_skin(self):
-        return self.get_handler('ui/aruni')
+        context = get_context()
+        # Back-Office
+        hostname = context.uri.authority.host
+        if hostname[:3] in ['bo.', 'bo-']:
+            return self.get_handler('ui/aruni')
+        # Fron-Office
+        skin = context.site_root.class_skin
+        return self.get_handler(skin)
 
 
     def get_available_languages(self):

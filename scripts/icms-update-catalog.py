@@ -88,7 +88,7 @@ def update_catalog(parser, options, target):
 
 if __name__ == '__main__':
     # The command line parser
-    usage = '%prog TARGET'
+    usage = '%prog [OPTIONS] TARGET'
     version = 'itools %s' % itools.__version__
     description = (
         'Rebuilds the catalog: first removes and creates a new empty one;'

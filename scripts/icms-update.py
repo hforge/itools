@@ -35,13 +35,16 @@ from itools.cms.server import Server, get_root_class, get_config
 
 def update(parser, options, target):
     folder = vfs.open(target)
+    confirmed = options.confirm
 
     # Update the config file (renamed from "config.ini" to "config.conf")
     # XXX Remove for 0.17
     if folder.exists('config.ini'):
         message = ('Update config file (will rename "config.ini" to'
-                   ' "config.conf")? (y/N)')
-        if ask_confirmation(message) is False:
+                   ' "config.conf")? (y/N) ')
+        if confirmed:
+            print message + 'y'
+        elif ask_confirmation(message) is False:
             return
         print '  * Updating the configuration file...'
         # Load the old config file
@@ -69,8 +72,10 @@ def update(parser, options, target):
     # XXX Remove for 0.17
     if folder.exists('database.bak'):
         message = ('Update database (will remove "database.bak" and add '
-                   '"database/.catalog.bak")? (y/N)')
-        if ask_confirmation(message) is False:
+                   '"database/.catalog.bak")? (y/N) ')
+        if confirmed:
+            print message + 'y'
+        elif ask_confirmation(message) is False:
             return
         print '  * Removing "database.bak"...'
         folder.remove('database.bak')
@@ -81,8 +86,10 @@ def update(parser, options, target):
     # XXX Remove for 0.17
     if folder.exists('database/.catalog'):
         message = ('Update database (will move the catalog out of the '
-                   'database folder)? (y/N)')
-        if ask_confirmation(message) is False:
+                   'database folder)? (y/N) ')
+        if confirmed:
+            print message + 'y'
+        elif ask_confirmation(message) is False:
             return
         print '  * Remove "database/.catalog" ...'
         folder.remove('database/.catalog')
@@ -126,7 +133,9 @@ def update(parser, options, target):
         # Ask
         message = 'Update instance from version %s to version %s (y/N)? ' \
                   % (instance_version, next_version)
-        if ask_confirmation(message) is False:
+        if confirmed:
+            print message + 'y'
+        elif ask_confirmation(message) is False:
             break
         # Update
         sys.stdout.write('.')
@@ -149,11 +158,14 @@ def update(parser, options, target):
 
 if __name__ == '__main__':
     # The command line parser
-    usage = '%prog TARGET'
+    usage = '%prog [OPTIONS] TARGET'
     version = 'itools %s' % itools.__version__
     description = ('Updates the TARGET itools.cms instance (if needed). Use'
                    ' this command when upgrading to a new version of itools.')
     parser = OptionParser(usage, version=version, description=description)
+    parser.add_option(
+        '-y', '--yes', action='store_true', dest='confirm',
+        help="start the update without asking confirmation")
 
     options, args = parser.parse_args()
     if len(args) != 1:

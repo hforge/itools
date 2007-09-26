@@ -337,10 +337,8 @@ class WikiPage(Text):
         for node in document.traverse(condition=nodes.image):
             node_uri = node['uri']
             if not self.has_handler(node_uri):
-                if parent.has_handler(node_uri):
-                    node_uri = '../' + node_uri
-                else:
-                    continue
+                # Try the parent
+                node_uri = '../' + node_uri
             reference = get_reference(node_uri)
             path = reference.path
             filename = str(path[-1])
@@ -376,7 +374,11 @@ class WikiPage(Text):
         for node_uri, filename in images:
             if tempdir.exists(filename):
                 continue
-            image = self.get_handler(node_uri)
+            if self.has_handler(node_uri):
+                image = self.get_handler(node_uri)
+            else:
+                # missing image but prevent pdfLaTeX failure
+                image = self.get_handler('/ui/wiki/missing.png')
             with tempdir.make_file(filename) as file:
                 image.save_state_to_file(file)
 

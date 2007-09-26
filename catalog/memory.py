@@ -32,8 +32,9 @@ class Index(dict):
             word = unicode(int(word))
         elif not isinstance(word, basestring):
             word = unicode(word)
-        elif isinstance(word, unicode):
-            word = word.lower()
+#      # To make icalendarTable search working, we comment this part:
+#        elif isinstance(word, unicode):
+#            word = word.lower()
 
         return word
 

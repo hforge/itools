@@ -67,8 +67,8 @@ class Root(WebSite):
     class_icon16 = 'images/Root16.png'
     class_icon48 = 'images/Root48.png'
     class_views = [
-        ['browse_content?mode=thumbnails',
-         'browse_content?mode=list'],
+        ['browse_content?mode=list',
+         'browse_content?mode=thumbnails'],
         ['new_resource_form'],
         ['edit_metadata_form',
          'virtual_hosts_form',
@@ -256,7 +256,14 @@ class Root(WebSite):
     ########################################################################
     # Skins
     def get_skin(self):
-        return self.get_object('ui/aruni')
+        context = get_context()
+        # Back-Office
+        hostname = context.uri.authority.host
+        if hostname[:3] in ['bo.', 'bo-']:
+            return self.get_object('ui/aruni')
+        # Fron-Office
+        skin = context.site_root.class_skin
+        return self.get_object(skin)
 
 
     def get_available_languages(self):

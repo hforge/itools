@@ -80,8 +80,11 @@
                 <img border="0" alt="${object/object_type}"
                   src="${object/icon}" />
               </a>
-              <img border="0" alt="${object/object_type}"
-                src="${object/icon}" stl:if="not object/is_folder"/>
+              <stl:block stl:if="not object/is_folder">
+                <img border="0" alt="${object/object_type}"
+                  src="${object/icon}" stl:if="not object/is_image"/>
+                <img src="${object/path}/;icon48" stl:if="object/is_image"/>
+              </stl:block>
             </td>
             <td>
               <a stl:if="object/is_folder" href="${object/url}">

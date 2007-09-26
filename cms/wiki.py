@@ -29,6 +29,7 @@ import urllib
 
 # Import from itools
 from ..uri import get_reference, Path
+from ..datatypes import DateTime
 from .. import vfs
 from ..stl import stl
 from ..datatypes import Unicode, FileName
@@ -63,8 +64,8 @@ class WikiFolder(Folder):
     class_icon16 = 'images/WikiFolder16.png'
     class_icon48 = 'images/WikiFolder48.png'
     class_views = [['view'],
-                   ['browse_content?mode=thumbnails',
-                    'browse_content?mode=list',
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails',
                     'browse_content?mode=image'],
                    ['new_resource_form'],
                    ['edit_metadata_form'],
@@ -90,22 +91,16 @@ class WikiFolder(Folder):
     # User interface
     #######################################################################
     def GET(self, context):
-        if context.has_form_value('message'):
-            message = context.get_form_value('message')
-            return context.come_back(message, 'FrontPage')
         return context.uri.resolve2('FrontPage')
 
 
     view__access__ = 'is_allowed_to_view'
-    view__label__ = u"View"
+    view__label__ = u'View'
     def view(self, context):
         if context.has_form_value('message'):
             message = context.get_form_value('message', type=Unicode)
-            return context.come_back(message, 'FrontPage')
+            return context.come_back(message, goto='FrontPage')
         return context.uri.resolve('FrontPage')
-
-
-register_object_class(WikiFolder)
 
 
 
@@ -116,15 +111,10 @@ class WikiPage(Text):
     class_description = u"Wiki contents"
     class_icon16 = 'images/WikiPage16.png'
     class_icon48 = 'images/WikiPage48.png'
-    class_views = [['view'],
+    class_views = [['view', 'to_pdf'],
                    ['edit_form', 'externaledit', 'upload_form'],
-                   ['state_form', 'edit_metadata_form'],
-                   ['browse_content?mode=thumbnails',
-                    'browse_content?mode=list',
-                    'browse_content?mode=image'],
-                   ['new_resource_form'],
-                   ['last_changes'],
-                   ['to_pdf'],
+                   ['edit_metadata_form'],
+                   ['state_form'],
                    ['help']]
     class_extension = None
 
@@ -277,7 +267,8 @@ class WikiPage(Text):
 
 
     to_pdf__access__ = 'is_allowed_to_view'
-    to_pdf__label__ = u"To PDF"
+    to_pdf__label__ = u"View"
+    to_pdf__sublabel__ = u"PDF"
     def to_pdf(self, context):
         parent = self.parent
         pages = [self.name]
@@ -414,6 +405,7 @@ class WikiPage(Text):
         return data
 
 
+    view__sublabel__ = u'HTML'
     def view(self, context):
         css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
         context.styles.append(str(css))
@@ -422,25 +414,6 @@ class WikiPage(Text):
 
 
     def edit_form(self, context):
-        root = context.root
-        if self.is_locked():
-            lock = self.get_lock()
-            # locks expire after 15 minutes
-            if lock.lock_timestamp + timedelta(minutes=15) < datetime.now():
-                self.unlock()
-                context.commit = True
-            else:
-                if lock.username != context.user.name:
-                    user = root.get_user(lock.username)
-                    if user is not None:
-                        user = user.get_title()
-                    else:
-                        user = lock.username
-                    return context.come_back(MSG_PAGE_LOCK, user=user)
-        else:
-            self.lock()
-            context.commit = True
-
         css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
         context.styles.append(str(css))
         text_size = context.get_form_value('text_size');
@@ -455,6 +428,7 @@ class WikiPage(Text):
             context.set_cookie('wiki_text_size', text_size)
 
         namespace = {}
+        namespace['timestamp'] = DateTime.encode(datetime.now())
         namespace['data'] = self.to_str()
         namespace['text_size'] = text_size
 
@@ -463,6 +437,10 @@ class WikiPage(Text):
 
 
     def edit(self, context):
+        timestamp = context.get_form_value('timestamp', type=DateTime)
+        if timestamp is None or timestamp < self.timestamp:
+            return context.come_back(MSG_EDIT_CONFLICT)
+
         data = context.get_form_value('data', type=Unicode)
         text_size = context.get_form_value('text_size');
         # Ensure source is encoded to UTF-8
@@ -484,47 +462,6 @@ class WikiPage(Text):
         return goto
 
 
-    browse_content__access__ = WikiFolder.browse_content__access__
-    browse_content__label__ = WikiFolder.browse_content__label__
-
-    def browse_content__sublabel__(self, **kw):
-        mode = kw.get('mode', 'thumbnails')
-        return {'thumbnails': u'As Icons',
-                'list': u'As List',
-                'image': u'As Image Gallery'}[mode]
-
-    def browse_content(self, context):
-        mode = context.get_form_value('mode')
-        if mode is None:
-            mode = context.get_cookie('browse_mode') or 'thumbnails'
-        return context.uri.resolve('../;browse_content?mode=%s' % mode)
-
-
-    new_resource_form__access__ = WikiFolder.new_resource_form__access__
-    new_resource_form__label__ = WikiFolder.new_resource_form__label__
-
-    def new_resource_form__sublabel__(self, **kw):
-        type = kw.get('type')
-        for cls in self.parent.get_document_types():
-            if cls.class_id == type:
-                return cls.class_title
-        return u'New Resource'
-
-    def new_resource_form(self, context):
-        type = context.get_form_value('type')
-        if type:
-            reference = '../;new_resource_form?type=%s' % type
-        else:
-            reference = '../;new_resource_form'
-        return context.uri.resolve(reference)
-
-
-    last_changes__access__ = WikiFolder.last_changes__access__
-    last_changes__label__ = WikiFolder.last_changes__label__
-    def last_changes(self, context):
-        return context.uri.resolve('../;last_changes')
-
-
     help__access__ = 'is_allowed_to_view'
     help__label__ = u"Help"
     def help(self, context):
@@ -544,4 +481,8 @@ class WikiPage(Text):
         return stl(handler, namespace)
 
 
+###########################################################################
+# Register
+###########################################################################
+register_object_class(WikiFolder)
 register_object_class(WikiPage)

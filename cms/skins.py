@@ -140,9 +140,46 @@ class Skin(UIFolder):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
+        from tracker import Issue
+
         menu = tree(context.site_root, active_node=context.handler,
-                    filter=DBFolder, user=context.user)
+                    allow=DBFolder, deny=Issue, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
+
+
+    def get_context_menu(self, context):
+        # FIXME Hard-Coded
+        from wiki import WikiFolder
+        from tracker import Tracker
+
+        here = context.handler
+        while here is not None:
+            if isinstance(here, (WikiFolder, Tracker)):
+                break
+            here = here.parent
+        else:
+            return None
+
+        base = context.handler.get_pathto(here)
+
+        menu = []
+        for view in here.get_views():
+            # Find out the title
+            if '?' in view:
+                name, args = view.split('?')
+                args = decode_query(args)
+            else:
+                name, args = view, {}
+            title = getattr(here, '%s__label__' % name)
+            if callable(title):
+                title = title(**args)
+            # Append to the menu
+            menu.append({'href': '%s/;%s' % (base, view),
+                         'title': self.gettext(title),
+                         'class': '', 'src': None, 'items': []})
+
+        return {'title': self.gettext(here.class_title),
+                'content': build_menu(menu)}
 
 
     def get_content_menu(self, context):
@@ -186,6 +223,10 @@ class Skin(UIFolder):
         menus = []
         # Main Menu
         menu = self.get_main_menu(context)
+        if menu is not None:
+            menus.append(menu)
+        # Parent's Menu
+        menu = self.get_context_menu(context)
         if menu is not None:
             menus.append(menu)
         # Navigation
@@ -257,11 +298,10 @@ class Skin(UIFolder):
         ac = here.get_access_control()
 
         # Tabs
-        views = here.get_views()
         subviews = here.get_subviews(context.method)
 
         tabs = []
-        for view in views:
+        for view in here.get_views():
             # From method?param1=value1&param2=value2&...
             # we separate method and arguments, then we get a dict with
             # the arguments and the subview active state
@@ -277,10 +317,6 @@ class Skin(UIFolder):
             else:
                 name, args = view, {}
                 active = name == context.method or name in subviews
-
-            # Check security
-            if not ac.is_access_allowed(user, here, name):
-                continue
 
             # Add the menu
             label = getattr(here, '%s__label__' % name)

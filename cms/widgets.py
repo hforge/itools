@@ -24,7 +24,7 @@ from string import Template
 from itools.uri import Path
 from itools.datatypes import (XMLAttribute, is_datatype, Integer, Decimal,
                               Unicode, Date, Enumerate, Boolean)
-from itools.handlers import Folder
+from itools.handlers import Folder, Image
 from itools.xml import Parser
 from itools.stl import stl
 from itools.web import get_context
@@ -353,6 +353,7 @@ class Breadcrumb(object):
                 path_to_icon = path_to_handler.resolve(path_to_icon)
             objects.append({'name': handler.name,
                             'is_folder': isinstance(handler, Folder),
+                            'is_image': isinstance(handler, Image),
                             'is_selectable': True,
                             'path': path,
                             'url': url,
@@ -409,7 +410,7 @@ def build_menu(options):
 
 
 
-def _tree(node, root, depth, active_node, filter, user, width):
+def _tree(node, root, depth, active_node, allow, deny, user, width):
     # Build the namespace
     namespace = {}
     namespace['src'] = node.get_path_to_icon(size=16, from_handler=active_node)
@@ -450,18 +451,16 @@ def _tree(node, root, depth, active_node, filter, user, width):
     depth = depth - 1
 
     # Filter the handlers by the given class (don't filter by default)
-    if filter is None:
-        search = node.search_handlers()
-    else:
-        search = node.search_handlers(handler_class=filter)
+    search = node.search_handlers(handler_class=allow)
+    search = [ x for x in search if not isinstance(x, deny) ]
 
     children = []
     counter = 0
     for child in search:
         ac = child.get_access_control()
         if ac.is_allowed_to_view(user, child):
-            ns, in_path = _tree(child, root, depth, active_node, filter, user,
-                                width)
+            ns, in_path = _tree(child, root, depth, active_node, allow, deny,
+                                user, width)
             if in_path:
                 children.append(ns)
             elif counter < width:
@@ -479,8 +478,9 @@ def _tree(node, root, depth, active_node, filter, user, width):
 
 
 
-def tree(root, depth=6, active_node=None, filter=None, user=None, width=10):
-    ns, in_path = _tree(root, root, depth, active_node, filter, user, width)
+def tree(root, depth=6, active_node=None, allow=None, deny=None, user=None,
+         width=10):
+    ns, kk = _tree(root, root, depth, active_node, allow, deny, user, width)
     return build_menu([ns])
 
 
@@ -607,13 +607,13 @@ class BooleanCheckBox(Widget):
 class BooleanRadio(Widget):
 
     template = list(Parser("""
-        <label for="${name}_yes">Yes</label>
+        <label for="${name}_yes">${labels/yes}</label>
         <input id="${name}_yes" name="${name}" type="radio" value="1"
           checked="checked" stl:if="is_yes"/>
         <input id="${name}_yes" name="${name}" type="radio" value="1"
           stl:if="not is_yes"/>
 
-        <label for="${name}_no">No</label>
+        <label for="${name}_no">${labels/no}</label>
         <input id="${name}_no" name="${name}" type="radio" value="0"
           checked="checked" stl:if="not is_yes"/>
         <input id="${name}_no" name="${name}" type="radio" value="0"
@@ -621,10 +621,11 @@ class BooleanRadio(Widget):
         """, namespaces))
 
     @staticmethod
-    def to_html(datatype, name, value):
+    def to_html(datatype, name, value, labels={'yes': 'Yes', 'no': 'No'}):
         namespace = {}
         namespace['name'] = name
         namespace['is_yes'] = value in [True, 1, '1']
+        namespace['labels'] = labels
 
         return stl(events=BooleanRadio.template, namespace=namespace)
 

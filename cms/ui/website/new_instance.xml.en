@@ -4,37 +4,40 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>New WebSite</h2>
+  <h2>Add Resource of Type "${class_title}"</h2>
 
   <form name="new_resource" action=";new_resource" method="post">
-    <input type="hidden" name="class_id" value="${class_id}" />
-    <table class="form">
-      <tr>
-        <th colspan="2" class="title">${class_title}</th>
-      </tr>
-      <tr>
-        <th align="right">Name</th>
-        <td><input type="text" name="name" size="50" /></td>
-      </tr>
-      <tr>
-        <th align="right">Title</th>
-        <td><input type="text" name="dc:title" size="50" /></td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <p>Choose a template:</p>
-          <stl:block repeat="skin skins">
-            <input type="radio" name="skin_name" value="${skin/name}" />
-            ${skin/title}<br/>
-            <img src="${skin/image_uri}" />
-          </stl:block>
+    <dl>
+      <dt><label for="dc:title">Title</label></dt>
+      <dd>
+        <input type="text" id="dc:title" name="dc:title" size="40" />
+      </dd>
+      <dt>(optional)<label for="name">Name</label></dt>
+      <dd>
+        <input type="text" id="name" name="name" size="40" />
+      </dd>
+    </dl>
+    <table stl:if="not alone">
+      <tr stl:repeat="website websites">
+        <td>
+          <input id="${website/class_id}" name="class_id" type="radio"
+                 value="${website/class_id}" checked="checked" stl:if="website/selected"/>
+          <input id="${website/class_id}" name="class_id" type="radio"
+                 value="${website/class_id}" stl:if="not website/selected"/>
         </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td class="submit"><input type="submit" value="Add" class="button_ok"/></td>
+        <td><img border="0" src="${website/icon}"/></td>
+        <td><label for="${website/class_id}">${website/title}</label></td>
       </tr>
     </table>
+    <stl:block stl:if="alone">
+      <input type="hidden" name="class_id" value="${alone/class_id}" />
+    </stl:block>
+    <p>
+      <input type="submit" value="Add" class="button_ok"/>
+    </p>
   </form>
 
+  <script type="text/javascript">
+    focus("dc:title")
+  </script>
 </stl:block>

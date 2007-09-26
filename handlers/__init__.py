@@ -46,7 +46,7 @@ from registry import get_handler_class, register_handler_class
 from text import Text
 from database import Database, READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
 from utils import get_handler
-from table import Table, parse_table, fold_line, escape_data
+from table import Table, parse_table, fold_line, escape_data, Record, Property
 
 
 __all__ = [
@@ -69,6 +69,8 @@ __all__ = [
     'READY',
     'TRANSACTION_PHASE1',
     'TRANSACTION_PHASE2',
+    'Record',
+    'Property',
     # Parsing functions
     'parse_table',
     'fold_line',

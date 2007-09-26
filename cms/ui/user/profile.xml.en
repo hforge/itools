@@ -20,7 +20,7 @@
         <a href=";edit_account_form">Edit account details;</a>
       </li>
       <li>
-        <a href=";browse_content?mode=thumbnails">Manage personal content;</a>
+        <a href=";browse_content?mode=list">Manage personal content;</a>
       </li>
       <li>
         <a href=";tasks_list">Pending tasks.</a>

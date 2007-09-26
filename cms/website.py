@@ -32,9 +32,10 @@ from messages import *
 import widgets
 from workflow import WorkflowAware
 from skins import ui
-from registry import register_object_class
+from registry import (register_object_class, register_website,
+    get_register_websites, get_website_class)
 from utils import generate_password
-
+from itools.rest import checkid
 
 
 class WebSite(RoleAware, Folder):
@@ -44,9 +45,10 @@ class WebSite(RoleAware, Folder):
     class_description = u'Create a new Web Site or Work Place.'
     class_icon16 = 'images/WebSite16.png'
     class_icon48 = 'images/WebSite48.png'
+    class_skin = 'ui/aruni'
     class_views = [
-        ['browse_content?mode=thumbnails',
-         'browse_content?mode=list',
+        ['browse_content?mode=list',
+         'browse_content?mode=thumbnails',
          'browse_content?mode=image'],
         ['new_resource_form'],
         ['edit_metadata_form',
@@ -71,6 +73,66 @@ class WebSite(RoleAware, Folder):
         if name in ('users', 'users.metadata'):
             return self.parent._get_object(name)
         return Folder._get_object(self, name)
+
+
+    @classmethod
+    def new_instance_form(cls, context):
+        namespace = {}
+        namespace['websites'] = []
+        namespace['class_title'] = cls.class_title
+        for handler_class in get_register_websites():
+            website_ns = {}
+            gettext = handler_class.gettext
+            title = handler_class.class_title
+            website_ns['title'] = gettext(title)
+            website_ns['class_id'] = handler_class.class_id
+            website_ns['selected'] = False
+            icon = handler_class.class_icon16
+            website_ns['icon'] = context.handler.get_pathtoroot() + 'ui/' + icon
+            namespace['websites'].append(website_ns)
+
+        namespace['alone'] = False
+        if len(namespace['websites']) == 1:
+            namespace['alone'] = namespace['websites'][0]
+        else:
+            namespace['websites'][0]['selected'] = True
+        handler = context.root.get_handler('ui/website/new_instance.xml')
+        return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            return context.come_back(MSG_NAME_MISSING)
+
+        name = checkid(name)
+        if name is None:
+            return context.come_back(MSG_BAD_NAME)
+
+        # Check the name is free
+        if container.has_handler(name):
+            return context.come_back(MSG_NAME_CLASH)
+
+        class_id = context.get_form_value('class_id')
+        if class_id is None:
+            return context.come_back(u'Please select a website.')
+
+        cls = get_website_class(class_id)
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        language = container.get_site_root().get_default_language()
+        metadata.set_property('dc:title', title, language=language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
     ########################################################################
@@ -592,3 +654,6 @@ class WebSite(RoleAware, Folder):
 
 
 register_object_class(WebSite)
+
+# Register the vanilla web site
+register_website(WebSite)

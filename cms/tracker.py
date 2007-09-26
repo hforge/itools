@@ -340,7 +340,10 @@ class Tracker(Folder):
         # Sort
         sortby = context.get_form_value('sortby', default='id')
         sortorder = context.get_form_value('sortorder', default='up')
-        lines.sort(key=itemgetter(sortby))
+        if sortby == 'mtime':
+            lines.sort(key=itemgetter('mtime_sort'))
+        else:
+            lines.sort(key=itemgetter(sortby))
         if sortorder == 'down':
             lines.reverse()
         # Set title of search
@@ -898,8 +901,6 @@ class Issue(Folder, VersioningAware):
     class_description = u'Issue'
     class_views = [
         ['edit_form'],
-        ['search_form'],
-        ['add_form'],
         ['browse_content?mode=list'],
         ['history']]
 
@@ -918,7 +919,7 @@ class Issue(Folder, VersioningAware):
     # API
     #######################################################################
     def get_title(self):
-        return self.get_value('title')
+        return '#%s %s' % (self.name, self.get_value('title'))
 
 
     def get_rows(self):
@@ -1119,6 +1120,7 @@ class Issue(Folder, VersioningAware):
             infos['assigned_to'] = ''
         infos['comment'] = self.get_value('comment')
         infos['mtime'] = format_datetime(self.get_mtime())
+        infos['mtime_sort'] = self.get_mtime()
         return infos
 
 
@@ -1141,8 +1143,10 @@ class Issue(Folder, VersioningAware):
 
 
     def indent(self, text):
-        """ Replace spaces at the begining of a line by &nbsp;
-            Replace '\n' by <br>\n and URL by HTML links"""
+        """ Replace spaces at the beginning of a line by &nbsp;
+            Replace '\n' by <br>\n and URL by HTML links
+            Fold lines (with spaces) to 150c.
+        """
         res = []
         text = text.encode('utf-8')
         text = XML.encode(text)
@@ -1151,8 +1155,25 @@ class Issue(Folder, VersioningAware):
             indent = len(line) - len(sline)
             if indent:
                 line = '&nbsp;' * indent + sline
-            line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
-            res.append(line)
+            if len(line) < 150:
+                line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', line)
+                res.append(line)
+            else:
+                # Fold lines to 150c
+                text = line.split()
+                line = ''
+                while text != []:
+                    word = text.pop(0)
+                    if len(word) + len(line) > 150:
+                        line = sub('http://(.\S*)', 
+                                   r'<a href="http://\1">\1</a>', line)
+                        res.append(line)
+                        line = ''
+                    line = line + word + ' '
+                if line != '':
+                    line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', 
+                               line)
+                    res.append(line)
         return Parser('\n'.join(res))
 
 
@@ -1345,44 +1366,6 @@ class Issue(Folder, VersioningAware):
     def to_str(self):
         # XXX Used by VersioningAware to define the size of the document
         return ''
-
-
-    add_form__access__ = 'is_allowed_to_edit'
-    add_form__label__ = u'Add'
-    def add_form(self, context):
-        reference = '../;add_form'
-        return context.uri.resolve(reference)
-
-
-    search_form__access__ = 'is_allowed_to_edit'
-    search_form__label__ = u'search'
-    def search_form(self, context):
-        reference = '../;search_form'
-        return context.uri.resolve(reference)
-
-
-    def get_subviews(self, name):
-        if name == 'search_form':
-            return self.parent.get_subviews(name)
-        return Folder.get_subviews(self, name)
-
-
-    view__access__ = Tracker.view__access__
-    view__label__ = Tracker.view__label__
-    def view(self, context):
-        query = encode_query(context.uri.query)
-        reference = '../;view?%s' % query
-        return context.uri.resolve(reference)
-
-
-    def view__sublabel__(self, **kw):
-        search_name = kw.get('search_name')
-        if search_name is None:
-            return u'View'
-
-        search = self.parent.get_object(search_name)
-        return search.get_title()
-
 
 
 ###########################################################################

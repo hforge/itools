@@ -341,10 +341,11 @@ class Dressable(Folder, EpozEditable):
 
 
     def _get_handler_label(self, name):
-        handler = self.get_handler(name)
-        label = handler.get_property('dc:title')
-        if label:
-            return label
+        if self.has_handler(name):
+            handler = self.get_handler(name)
+            label = handler.get_property('dc:title')
+            if label:
+                return label
 
         for key, data in self.schema.iteritems():
             if isinstance(data, tuple):
@@ -381,10 +382,14 @@ class Dressable(Folder, EpozEditable):
 
 
     def get_views(self):
-        l = [ x[0] for x in self.class_views ]
-        edit_index = l.index('edit_document')
-        l[edit_index] = self.get_first_edit_subview()
-        return l
+        views = Folder.get_views(self)
+        views = list(views)
+        try:
+            edit_index = views.index('edit_document')
+            views[edit_index] = self.get_first_edit_subview()
+        except ValueError: # FO
+            pass
+        return views
 
 
     #######################################################################
@@ -414,15 +419,20 @@ class Dressable(Folder, EpozEditable):
 
         # size
         handler = self.get_handler(name)
-        width, height = handler.get_size()
-        if width > 640:
-            coef = 640 / float(width)
-            width = 640
-            height = height * coef
-        elif height > 480:
-            coef = 480 / float(height)
-            height = 480
-            width = width * coef
+        size = handler.get_size()
+        if size is not None:
+            width, height = size
+            ratio = width / float(height)
+            if ratio > 1:
+                if width > 640:
+                    height = height * 640.0 / width
+                    width = 640
+            else:
+                if height > 480:
+                    width = width * 480.0 / height
+                    height = 480
+        else:
+            width, height = (None, None)
         namespace['width'] = width
         namespace['height'] = height
 

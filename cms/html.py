@@ -16,8 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
 from itools.uri import Path
+from itools.datatypes import DateTime
 from itools.xml import Document as XMLDocument, TEXT, START_ELEMENT
 from itools.stl import stl
 from itools.xhtml import Document as XHTMLDocument, sanitize_stream
@@ -60,7 +64,6 @@ class EpozEditable(object):
     edit_form__sublabel__ = u'Inline'
     def edit_form(self, context):
         """WYSIWYG editor for HTML documents."""
-        from text import Text
         data = self.get_epoz_data()
         # If the document has not a body (e.g. a frameset), edit as plain text
         if data is None:
@@ -68,6 +71,7 @@ class EpozEditable(object):
 
         # Edit with a rich text editor
         namespace = {}
+        namespace['timestamp'] = DateTime.encode(datetime.now())
         namespace['rte'] = self.get_rte(context, 'data', data)
 
         handler = self.get_object('/ui/html/edit.xml')
@@ -78,6 +82,10 @@ class EpozEditable(object):
     # Edit / Inline / edit
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context, sanitize=False):
+        timestamp = context.get_form_value('timestamp', type=DateTime)
+        if timestamp is None or timestamp < self.timestamp:
+            return context.come_back(MSG_EDIT_CONFLICT)
+
         # Sanitize
         new_body = context.get_form_value('data')
         new_body = HTMLParser(new_body)
@@ -178,7 +186,9 @@ class HTMLFile(HTMLDocument, XHTMLFile):
 
 
 
-# Register the objects
+###########################################################################
+# Register
+###########################################################################
 register_object_class(XMLFile)
 register_object_class(XMLFile, format='application/xml')
 register_object_class(XHTMLFile)

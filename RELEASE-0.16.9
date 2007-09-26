@@ -1,0 +1,59 @@
+
+itools 0.16.8 (2007/09/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+The focus of this release has been the CMS, there is one new feature,
+and a lot of small user interface improvements and bug fixes.
+
+The single new feature is for the Issue Tracker.  Now it is possible to
+search issues in the tracker by multiple values (for example to find
+issues of high or medium priority).
+
+We have implemented a restful technique to handle edit conflicts.  When
+two users try to modify an object at the same time, the user that changes
+the object first wins, the other one will get an error message.  (For now
+we apply this technique only to Web and Wiki pages.)
+
+There is a new menu in the left column for complex objects.  For now it
+works with the Wiki and the Tracker objects.
+
+There are also many bug fixes and user interface improvements accross
+the whole CMS.  Apart from "itools.cms", there have been some small
+changes in the "itools.catalog", "itools.http", "itools.html" and
+"itools.ical" packages.
+
+
+Credits:
+
+ - Hervé Cauwelier ;
+ - Nicolas Deram ;
+ - J. David Ibáñez ;
+ - Henry Obein ;
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.9.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

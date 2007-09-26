@@ -5,6 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <form action=";edit" method="post" id="wiki_form">
+    <input type="hidden" name="timestamp" value="${timestamp}" />
     <p id="wiki_toolbar">
       <a id="wiki_tool_size_s" href="#" onclick="return text_small()" />
       <a id="wiki_tool_size_m" href="#" onclick="return text_medium()" />

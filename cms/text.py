@@ -276,7 +276,7 @@ register_object_class(CSS)
 
 
 
-class Python(BasePython):
+class Python(Text, BasePython):
 
     class_id = 'text/x-python'
     class_icon48 = 'images/Python48.png'

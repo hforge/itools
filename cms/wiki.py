@@ -59,7 +59,7 @@ from docutils import nodes
 class WikiFolder(Folder):
     class_id = 'WikiFolder'
     class_version = '20061229'
-    class_title = u"Wiki Folder"
+    class_title = u"Wiki"
     class_description = u"Container for a wiki"
     class_icon16 = 'images/WikiFolder16.png'
     class_icon48 = 'images/WikiFolder48.png'

@@ -361,11 +361,13 @@ class Table(File):
         return String(multiple=True)
 
 
-    def properties_to_dict(self, properties, version={}):
+    def properties_to_dict(self, properties, version=None):
         """
         Add the given "properties" as Property objects or Property objects
         list to the given dictionnary "version".
         """
+        if version is None:
+            version = {}
         # Fix the type
         for name, value in properties.items():
             datatype = self.get_datatype(name)

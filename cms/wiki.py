@@ -382,11 +382,15 @@ class WikiPage(Text):
             with tempdir.make_file(filename) as file:
                 image.save_state_to_file(file)
 
-        call(['pdflatex', '-8bit', '-no-file-line-error',
-              '-interaction=batchmode', self.name], cwd=dirname)
-        # Twice for correct page numbering
-        call(['pdflatex', '-8bit', '-no-file-line-error',
-              '-interaction=batchmode', self.name], cwd=dirname)
+        try:
+            call(['pdflatex', '-8bit', '-no-file-line-error',
+                  '-interaction=batchmode', self.name], cwd=dirname)
+            # Twice for correct page numbering
+            call(['pdflatex', '-8bit', '-no-file-line-error',
+                  '-interaction=batchmode', self.name], cwd=dirname)
+        except OSError:
+            msg = u"PDF generation failed. Please install pdflatex."
+            return context.come_back(msg)
 
         pdfname = '%s.pdf' % self.name
         try:

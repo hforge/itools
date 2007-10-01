@@ -306,15 +306,17 @@ class Root(WebSite):
             raise TypeError, 'the body must be a Unicode string'
 
         # Build the message
+        context = get_context()
+        host = context.uri.authority.host
         encoding = 'utf-8'
         body = body.encode(encoding)
         message = MIMEText(body, _charset=encoding)
-        message['Subject'] = subject.encode(encoding)
+        message['Subject'] = u'[%s] %s' % (host, subject.encode(encoding))
         message['Date'] = formatdate(localtime=True)
         message['From'] = from_addr
         message['To'] = to_addr
         # Send email
-        server = get_context().server
+        server = context.server
         server.send_email(message)
 
 

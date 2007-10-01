@@ -311,7 +311,7 @@ class Root(WebSite):
         encoding = 'utf-8'
         body = body.encode(encoding)
         message = MIMEText(body, _charset=encoding)
-        message['Subject'] = u'[%s] %s' % (host, subject.encode(encoding))
+        message['Subject'] = '[%s] %s' % (host, subject.encode(encoding))
         message['Date'] = formatdate(localtime=True)
         message['From'] = from_addr
         message['To'] = to_addr

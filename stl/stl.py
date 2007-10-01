@@ -374,7 +374,7 @@ def process(events, start, end, stack, repeat_stack, encoding):
                         {name: {'index': j,
                                 'start': j == 0,
                                 'end': j == n_values - 1,
-                                'even': 'odd' if j % 2 else 'even'}})
+                                'even': j % 2 and 'odd' or 'even'}})
                     loops.append((loop_stack, loop_repeat))
                 # Filter the branches when "stl:if" is present
                 if stl_if in attributes:

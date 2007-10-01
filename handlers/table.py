@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from datetime import datetime
 
@@ -372,13 +369,21 @@ class Table(File):
         for name, value in properties.items():
             datatype = self.get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
-                if not isinstance(value, list):
-                    value = [value, ]
-                value = [ x if isinstance(x, Property) else Property(x)
-                          for x in value ]
+                if isinstance(value, list):
+                    version[name] = []
+                    for x in value:
+                        if isinstance(x, Property):
+                            version[name].append(x)
+                        else:
+                            version[name].append(Property(x))
+                elif isinstance(value, Property):
+                    version[name] = [value]
+                else:
+                    version[name] = [Property(value)]
             elif not isinstance(value, Property):
-                value = Property(value)
-            version[name] = value
+                version[name] = Property(value)
+            else:
+                version[name] = value
         return version
 
 
@@ -499,7 +504,8 @@ class Table(File):
     # Save (use append for scalability)
     #######################################################################
     def save_state(self):
-        with vfs.open(self.uri, 'a') as file:
+        file = vfs.open(self.uri, 'a')
+        try:
             # Added records
             for id, seq in self.added_records:
                 version = self.records[id][seq]
@@ -512,6 +518,8 @@ class Table(File):
                 file.write('ts:%s\n' % DateTime.encode(ts))
                 file.write('\n')
             self.removed_records = []
+        finally:
+            file.close()
 
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)

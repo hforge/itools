@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from itools
 from itools.vfs import vfs
 from io import (decode_character, encode_character, decode_link, encode_link,

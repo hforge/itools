@@ -16,8 +16,34 @@
 
 # Import from the Standard Library
 from datetime import date
-from _struct import Struct
 from sys import maxunicode
+
+try:
+    from struct import Struct
+except ImportError:
+    # Python 2.4
+    from struct import pack, unpack
+    # Integers (32 bits)
+    def uint32_unpack(value):
+        return unpack('>I', value)
+    def encode_uint32(value):
+        return pack('>I', value)
+    def decode_uint32(data):
+        return unpack('>I', data)[0]
+    # Two Integers (32 + 32 bits)
+    def encode_uint32_2(first, second):
+        return pack('>II', first, second)
+else:
+    # Python 2.5
+    uint32 = Struct('>I')
+    uint32_2 = Struct('>II')
+    # Integers (32 bits)
+    uint32_unpack = uint32.unpack
+    encode_uint32 = uint32.pack
+    def decode_uint32(data):
+        return uint32_unpack(data)[0]
+    # Two Integers (32 + 32 bits)
+    encode_uint32_2 = uint32_2.pack
 
 
 """
@@ -43,23 +69,6 @@ is the data that remains and does not belong to the value.
 # Bytes
 encode_byte = chr
 decode_byte = ord
-
-# Integers (32 bits)
-uint32 = Struct('>I')
-uint32_unpack = uint32.unpack
-
-
-encode_uint32 = uint32.pack
-
-def decode_uint32(data):
-    return uint32_unpack(data)[0]
-
-
-
-# Two Integers (32 + 32 bits)
-uint32_2 = Struct('>II')
-
-encode_uint32_2 = uint32_2.pack
 
 
 # Variable legth integers. Example

@@ -15,15 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import absolute_import
-
 # Import from the Standard Library
 import mimetypes
 
 # Import from itools
-from .csv import parse, CSV, Row, IntegerKey
-from .parser import parse
+from csv_ import parse, CSV, Row, IntegerKey
+from parser import parse
 
 
 __all__ = [

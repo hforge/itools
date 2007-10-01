@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import absolute_import
-
 # Import from the Standard Library
 import os
 
@@ -28,20 +25,20 @@ from itools import get_abspath
 from itools.gettext import register_domain
 
 # Import from itools.cms
-from . import root
-from .folder import Folder
-from .file import File
-from . import binary
-from . import csv
-from . import handlers
-from . import html
-from .html import XHTMLFile as Document
-from . import ical
-from . import text
-from .forum import Forum
-from .tracker import Tracker
+import root
+from folder import Folder
+from file import File
+import binary
+import csv
+import handlers
+import html
+from html import XHTMLFile as Document
+import ical
+import text
+from forum import Forum
+from tracker import Tracker
 try:
-    from . import wiki
+    import wiki
 except ImportError:
     wiki = None
 

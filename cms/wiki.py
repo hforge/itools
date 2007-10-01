@@ -18,7 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the future
-from __future__ import absolute_import
 from __future__ import with_statement
 
 # Import from the Standard Library
@@ -28,21 +27,21 @@ from subprocess import call
 import urllib
 
 # Import from itools
-from ..uri import get_reference
-from ..datatypes import DateTime
-from .. import vfs
-from ..stl import stl
-from ..datatypes import Unicode, FileName
-from ..rest import checkid
+from itools.uri import get_reference
+from itools.datatypes import DateTime
+from itools import vfs
+from itools.stl import stl
+from itools.datatypes import Unicode, FileName
+from itools.rest import checkid
 from itools.xml import Parser
 
 # Import from itools.cms
-from .file import File
-from .folder import Folder
-from itools.cms.messages import *
-from .text import Text
-from .registry import register_object_class
-from .binary import Image
+from file import File
+from folder import Folder
+from messages import *
+from text import Text
+from registry import register_object_class
+from binary import Image
 
 # Import from docutils
 try:

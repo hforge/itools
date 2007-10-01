@@ -228,7 +228,10 @@ def render_namespace(items, times):
     # add colspan to each row and fill the incomplete rows with free cells
     base = 0
     for nrows, ncols in blocks:
-        b_colspan = total_ncols/ncols if ncols != 0 else total_ncols
+        if ncols != 0:
+            b_colspan = total_ncols/ncols
+        else:
+            b_colspan = total_ncols
         for irow in range(nrows):
             cells = table[base + irow]
             for cell in cells:
@@ -394,7 +397,10 @@ def get_grid_data(data, grid, start_date=None):
     for i in range(len(events_with_time)):
         table, ncols = render_namespace(events_with_time[i], grid)
         if headers is not None:
-            h_class = 'cal_day_selected' if current_date == today else 'header'
+            if current_date == today:
+                h_class = 'cal_day_selected'
+            else:
+                h_class = 'header'
             ns_headers.append({'header': headers[i], 'width': ncols,
                                'class': h_class})
         if ns_full_day is not None:

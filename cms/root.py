@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from email.MIMEText import MIMEText
 from email.Utils import formatdate
@@ -348,10 +345,9 @@ class Root(WebSite):
         # Build the namespace
         credits = get_abspath(globals(), '../CREDITS')
         names = []
-        with vfs.open(credits, 'r') as file:
-            for line in file.readlines():
-                if line.startswith('N: '):
-                    names.append(line[3:].strip())
+        for line in vfs.open(credits, 'r').readlines():
+            if line.startswith('N: '):
+                names.append(line[3:].strip())
 
         namespace = {'hackers': names}
 

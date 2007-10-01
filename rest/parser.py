@@ -124,7 +124,10 @@ class Document(object):
                     last_type, last_indent = indents[-1]
             # Now check open list indent
             words = first_line.split()
-            first_word = words[0] if words else first_line
+            if words:
+                first_word = words[0]
+            else:
+                first_word = first_line
             if first_word == u'*':
                 list_indent = len(first_line[:first_line.index(u'*') + 2])
             elif first_word == u'-':

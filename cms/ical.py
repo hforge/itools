@@ -159,7 +159,10 @@ class CalendarAware(object):
         We adjust week numbers to fit rules which are used by french people.
         XXX Check for other countries
         """
-        format = '%W' if self.get_first_day() == 1 else '%U'
+        if self.get_first_day() == 1:
+            format = '%W'
+        else:
+            format = '%U'
         week_number = Unicode.encode(c_date.strftime(format))
         # Get day of 1st January, if < friday and != monday then number++
         day, kk = monthrange(c_date.year, 1)
@@ -1083,8 +1086,14 @@ class Calendar(Text, icalendar, CalendarAware):
         for index in range(ndays):
             ns =  {}
             ns['name'] = cls.gettext(days[current_date.weekday()])
-            ns['nday'] = current_date.day if num else None
-            ns['selected'] = (selected == current_date) if selected else None
+            if num:
+                ns['nday'] = current_date.day
+            else:
+                ns['nday'] = None
+            if selected:
+                ns['selected'] = (selected == current_date)
+            else:
+                ns['selected'] = None
             ns_days.append(ns)
             current_date = current_date + timedelta(1)
         return ns_days
@@ -1180,7 +1189,10 @@ class Calendar(Text, icalendar, CalendarAware):
                 value = ''
                 if starts_on:
                     value = ns['start']
-                    value = value + '-' if ends_on else value + '...'
+                    if ends_on:
+                        value = value + '-'
+                    else:
+                        value = value + '...'
                 if ends_on:
                     value = value + ns['end']
                     if not starts_on:

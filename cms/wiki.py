@@ -18,7 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the future
-from __future__ import absolute_import
 from __future__ import with_statement
 
 # Import from the Standard Library
@@ -28,21 +27,21 @@ from subprocess import call
 import urllib
 
 # Import from itools
-from ..uri import get_reference, Path
-from ..datatypes import DateTime
-from .. import vfs
-from ..stl import stl
-from ..datatypes import Unicode, FileName
-from ..rest import checkid
+from itools.uri import get_reference, Path
+from itools.datatypes import DateTime
+from itools import vfs
+from itools.stl import stl
+from itools.datatypes import Unicode, FileName
+from itools.rest import checkid
 from itools.xml import Parser
 
 # Import from itools.cms
-from .file import File
-from .folder import Folder
-from itools.cms.messages import *
-from .text import Text
-from .registry import register_object_class
-from .binary import Image
+from file import File
+from folder import Folder
+from messages import *
+from text import Text
+from registry import register_object_class
+from binary import Image
 
 # Import from docutils
 try:
@@ -59,7 +58,7 @@ from docutils import nodes
 class WikiFolder(Folder):
     class_id = 'WikiFolder'
     class_version = '20061229'
-    class_title = u"Wiki Folder"
+    class_title = u"Wiki"
     class_description = u"Container for a wiki"
     class_icon16 = 'images/WikiFolder16.png'
     class_icon48 = 'images/WikiFolder48.png'
@@ -186,6 +185,7 @@ class WikiPage(Text):
 
 
     GET__mtime__ = None
+    GET__access__ = True
     def GET(self, context):
         return context.uri.resolve2(';view')
 
@@ -337,10 +337,8 @@ class WikiPage(Text):
         for node in document.traverse(condition=nodes.image):
             node_uri = node['uri']
             if not self.has_handler(node_uri):
-                if parent.has_handler(node_uri):
-                    node_uri = '../' + node_uri
-                else:
-                    continue
+                # Try the parent
+                node_uri = '../' + node_uri
             reference = get_reference(node_uri)
             path = reference.path
             filename = str(path[-1])
@@ -376,15 +374,23 @@ class WikiPage(Text):
         for node_uri, filename in images:
             if tempdir.exists(filename):
                 continue
-            image = self.get_handler(node_uri)
+            if self.has_handler(node_uri):
+                image = self.get_handler(node_uri)
+            else:
+                # missing image but prevent pdfLaTeX failure
+                image = self.get_handler('/ui/wiki/missing.png')
             with tempdir.make_file(filename) as file:
                 image.save_state_to_file(file)
 
-        call(['pdflatex', '-8bit', '-no-file-line-error',
-              '-interaction=batchmode', self.name], cwd=dirname)
-        # Twice for correct page numbering
-        call(['pdflatex', '-8bit', '-no-file-line-error',
-              '-interaction=batchmode', self.name], cwd=dirname)
+        try:
+            call(['pdflatex', '-8bit', '-no-file-line-error',
+                  '-interaction=batchmode', self.name], cwd=dirname)
+            # Twice for correct page numbering
+            call(['pdflatex', '-8bit', '-no-file-line-error',
+                  '-interaction=batchmode', self.name], cwd=dirname)
+        except OSError:
+            msg = u"PDF generation failed. Please install pdflatex."
+            return context.come_back(msg)
 
         pdfname = '%s.pdf' % self.name
         try:

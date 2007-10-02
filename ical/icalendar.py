@@ -1199,7 +1199,7 @@ class icalendarTable(Table):
                     value = [ x if isinstance(x, Property) else Property(x)
                               for x in value ]
                     if not isinstance(expected, list):
-                        expected = [expected, ]
+                        expected = [expected]
                     for item in value:
                         if item.value in expected:
                             break

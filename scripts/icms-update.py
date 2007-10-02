@@ -30,6 +30,7 @@ from itools.cms.server import Server
 
 def update(parser, options, target):
     folder = vfs.open(target)
+    confirmed = options.confirm
 
     # Build the server object
     server = Server(target)
@@ -57,7 +58,9 @@ def update(parser, options, target):
         # Ask
         message = 'Update instance from version %s to version %s (y/N)? ' \
                   % (instance_version, next_version)
-        if ask_confirmation(message) is False:
+        if confirmed:
+            print message + 'y'
+        elif ask_confirmation(message) is False:
             break
         # Update
         sys.stdout.write('.')
@@ -80,11 +83,14 @@ def update(parser, options, target):
 
 if __name__ == '__main__':
     # The command line parser
-    usage = '%prog TARGET'
+    usage = '%prog [OPTIONS] TARGET'
     version = 'itools %s' % itools.__version__
     description = ('Updates the TARGET itools.cms instance (if needed). Use'
                    ' this command when upgrading to a new version of itools.')
     parser = OptionParser(usage, version=version, description=description)
+    parser.add_option(
+        '-y', '--yes', action='store_true', dest='confirm',
+        help="start the update without asking confirmation")
 
     options, args = parser.parse_args()
     if len(args) != 1:

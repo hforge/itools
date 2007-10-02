@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from __future__ import with_statement
-
 # Import from itools
 from itools.uri import get_absolute_reference2
 from registry import get_file_system
@@ -138,10 +135,12 @@ class Folder(object):
 
         # File
         if source_fs.is_file(source_ref):
-            target_fs.make_file(target_ref)
-            with source_fs.open(source_ref) as source:
-                with target_fs.open(target_ref, 'w') as target:
-                    target.write(source.read())
+            source = source_fs.open(source_ref).read()
+            target = target_fs.make_file(target_ref)
+            try:
+                target.write(source)
+            finally:
+                target.close()
             return
 
         # Folder
@@ -154,10 +153,12 @@ class Folder(object):
                 if source_fs.is_folder(source_ref):
                     target_fs.make_folder(target_ref)
                 else:
-                    with source_fs.open(source_ref, 'r') as file:
-                        data = file.read()
-                    with target_fs.make_file(target_ref) as file:
+                    data = source_fs.open(source_ref, 'r').read()
+                    file = target_fs.make_file(target_ref)
+                    try:
                         file.write(data)
+                    finally:
+                        file.close()
             return
 
         # Something else

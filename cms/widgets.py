@@ -744,7 +744,8 @@ class DateWidget(Widget):
 
     @staticmethod
     def to_html(datatype, name, value):
-        value = value if value else ''
+        if not value:
+            value = ''
         namespace = {}
         namespace['name'] = name
         if getattr(datatype, 'multiple', False) is False:

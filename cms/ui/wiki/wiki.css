@@ -34,8 +34,12 @@ textarea#data {
 }
 
 #content .document h3 {
-  margin: 9px 0 3px 15px;
+  margin: 9px 0 3px 18px;
   font-style: italic;
+}
+
+#content .document h4 {
+  margin: 9px 0 3px 27px;
 }
 
 #content .document a:link,
@@ -50,17 +54,29 @@ textarea#data {
   color: #000;
 }
 
+#content .document ul,
+#content .document ol {
+  padding-left: 40px;
+}
 
-.contents.topic {
+#content .document li {
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+#content .document blockquote {
+  margin-left: 20px;
+}
+
+#content .contents.topic {
   display: table;
   margin: 3px;
   border: 1px solid #ccc;
   background: #eec;
 }
 
-#content .contents.topic li {
-  margin-top: 1px;
-  margin-bottom: 1px;
+#content .contents.topic ul ul {
+  padding-left: 20px;
 }
 
 .topic-title.first {

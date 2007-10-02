@@ -15,14 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import absolute_import
-
 # Import from itools
 from itools.datatypes import XML as XMLContent
 from itools.i18n import Message
-from .namespaces import get_namespace, get_element_schema, XMLNSNamespace
-from .parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
+from namespaces import get_namespace, get_element_schema, XMLNSNamespace
+from parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
 
 
 
@@ -40,7 +37,7 @@ elements_to_keep_spaces = set(['pre'])
 # Code common to "get_messages" and "translate"
 ###########################################################################
 def process_buffer(buffer, hit, encoding):
-    from .xml import get_start_tag, get_end_tag
+    from xml import get_start_tag, get_end_tag
 
     # Miss: the buffer is really empty
     if hit is False:

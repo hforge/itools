@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from email.MIMEText import MIMEText
 from email.Utils import formatdate
@@ -299,15 +296,17 @@ class Root(WebSite):
             raise TypeError, 'the body must be a Unicode string'
 
         # Build the message
+        context = get_context()
+        host = context.uri.authority.host
         encoding = 'utf-8'
         body = body.encode(encoding)
         message = MIMEText(body, _charset=encoding)
-        message['Subject'] = subject.encode(encoding)
+        message['Subject'] = '[%s] %s' % (host, subject.encode(encoding))
         message['Date'] = formatdate(localtime=True)
         message['From'] = from_addr
         message['To'] = to_addr
         # Send email
-        server = get_context().server
+        server = context.server
         server.send_email(message)
 
 
@@ -339,10 +338,9 @@ class Root(WebSite):
         # Build the namespace
         credits = get_abspath(globals(), '../CREDITS')
         names = []
-        with vfs.open(credits, 'r') as file:
-            for line in file.readlines():
-                if line.startswith('N: '):
-                    names.append(line[3:].strip())
+        for line in vfs.open(credits, 'r').readlines():
+            if line.startswith('N: '):
+                names.append(line[3:].strip())
 
         namespace = {'hackers': names}
 

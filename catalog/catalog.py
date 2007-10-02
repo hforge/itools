@@ -72,9 +72,6 @@ If it is not it will be a list of terms:
 
 """
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from operator import itemgetter
 from os import listdir
@@ -234,20 +231,19 @@ class Catalog(object):
         self.indexes = []
         # Load
         base = vfs.open(self.uri)
-        with base.open('fields') as file:
-            for line in file.readlines():
-                line = line.strip()
-                if not line:
-                    continue
-                number, name, type, is_indexed, is_stored = line.split('#')
-                number = int(number)
-                is_indexed = bool(int(is_indexed))
-                is_stored = bool(int(is_stored))
-                cls = fields.get_field(type)
-                field = cls(name, is_indexed=is_indexed, is_stored=is_stored)
-                field.number = number
-                self.fields.append(field)
-                self.field_numbers[name] = number
+        for line in base.open('fields').readlines():
+            line = line.strip()
+            if not line:
+                continue
+            number, name, type, is_indexed, is_stored = line.split('#')
+            number = int(number)
+            is_indexed = bool(int(is_indexed))
+            is_stored = bool(int(is_stored))
+            cls = fields.get_field(type)
+            field = cls(name, is_indexed=is_indexed, is_stored=is_stored)
+            field.number = number
+            self.fields.append(field)
+            self.field_numbers[name] = number
         # Initialize the indexes
         data = self.uri.resolve2('data')
         for field in self.fields:
@@ -258,9 +254,12 @@ class Catalog(object):
         # Initialize the documents
         base = vfs.open(data)
         self.documents = {}
-        with base.open('documents_index') as index_file:
+        index_file = base.open('documents_index')
+        try:
             index_file.seek(0, 2)
             self.n_documents = index_file.tell() / 8
+        finally:
+            index_file.close()
         self.added_documents = []
         self.removed_documents = []
 
@@ -603,12 +602,18 @@ def make_catalog(uri, *fields):
             field.is_indexed, field.is_stored))
         # Create the index file
         base.make_file('data/%d_docs' % i)
-        with base.make_file('data/%d_tree' % i) as file:
+        file = base.make_file('data/%d_tree' % i)
+        try:
             file.write(''.join([VERSION, ZERO, NULL, NULL]))
+        finally:
+            file.close()
 
     # Write the metadata file
-    with base.make_file('fields') as file:
+    file = base.make_file('fields')
+    try:
         file.write(''.join(metadata))
+    finally:
+        file.close()
 
     # Create the documents
     base.make_file('data/documents')
@@ -616,8 +621,11 @@ def make_catalog(uri, *fields):
 
     # Create the backup data
     base.copy('data', 'data.bak')
-    with base.make_file('state') as file:
+    file = base.make_file('state')
+    try:
         file.write('OK\n')
+    finally:
+        file.close()
 
     return Catalog(uri)
 

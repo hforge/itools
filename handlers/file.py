@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from copy import deepcopy
 from cStringIO import StringIO
@@ -98,8 +95,11 @@ class File(Handler):
 
 
     def load_state_from(self, uri):
-        with vfs.open(uri) as file:
+        file = vfs.open(uri)
+        try:
             self.load_state_from_file(file)
+        finally:
+            file.close()
 
 
     def load_state_from_file(self, file):
@@ -113,16 +113,22 @@ class File(Handler):
 
 
     def save_state(self):
-        with self.safe_open(self.uri, 'w') as file:
+        file = self.safe_open(self.uri, 'w')
+        try:
             self.save_state_to_file(file)
+        finally:
+            file.close()
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
         self.dirty = False
 
 
     def save_state_to(self, uri):
-        with self.safe_make_file(uri) as file:
+        file = self.safe_make_file(uri)
+        try:
             self.save_state_to_file(file)
+        finally:
+            file.close()
 
 
     def save_state_to_file(self, file):

@@ -185,6 +185,7 @@ class WikiPage(Text):
 
 
     GET__mtime__ = None
+    GET__access__ = True
     def GET(self, context):
         return context.uri.resolve2(';view')
 

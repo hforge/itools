@@ -19,7 +19,8 @@
 # Import from the Standard Library
 from optparse import OptionParser
 import sys
-import zipfile
+from zipfile import is_zipfile
+
 # Import from itools
 import itools
 from itools.handlers import get_handler
@@ -29,41 +30,53 @@ import itools.stl
 import itools.odf
 
 
+def build(parser):
+    # Extract options and arguments
+    options, args = parser.parse_args()
+    if len(args) != 2:
+        parser.error('incorrect number of arguments')
+    source, catalog_name = args
+
+    # Check for ODF files
+    if is_zipfile(source) and options.output is None:
+        parser.error('The option -o is needed\n')
+
+    # Load the source handler (check the API)
+    handler = get_handler(source)
+    try:
+        translate = handler.translate
+    except AttributeError:
+        print 'Error: Unable to translate "%s", unsupported format.' % source
+        return
+    # Load the PO handler (check the API)
+    catalog = get_handler(catalog_name)
+    try:
+        catalog.gettext
+    except AttributeError:
+        print 'Error: The file "%s" is not a supported catalog.' % catalog_name
+        return
+    # Translate
+    data = translate(catalog)
+
+    # Save
+    if options.output is None:
+        sys.stdout.write(data)
+    else:
+        output = open(options.output, 'w')
+        try:
+            output.write(data)
+        finally:
+            output.close()
+
 
 if __name__ == '__main__':
     version = 'itools %s' % itools.__version__
-    description = ('Builds a new file from the given source file, but'
-                   ' replacing the translatable messages by the'
-                   ' translations found in the PO file.')
-    parser = OptionParser('%prog <source file> <PO file>',
-                          version=version, description=description)
+    description = ('Builds a new file from the given source file, but '
+        'replacing the translatable messages by the translations found '
+        'in the PO file.')
+    parser = OptionParser('%prog <source file> <PO file>', version=version,
+        description=description)
+    parser.add_option('-o', '--output', help='The output will be written to'
+        ' the given file, instead of printed to the standard output.')
 
-    parser.add_option('-o', '--output',
-                      help="The output will be written to the given file,"
-                           " instead of printed to the standard output.")
-
-    options, args = parser.parse_args()
-
-    if len(args) != 2:
-        parser.error('incorrect number of arguments')
-
-    if options.output is None:
-        output = sys.stdout
-    else:
-        output = open(options.output, 'w')
-
-    try:
-        source, po = args
-        if zipfile.is_zipfile(source) and options.output is None:
-            parser.error('The option -o is needed\n')
-
-        handler = get_handler(source)
-        try:
-            # Extract the messages
-            po = get_handler(po)
-            output.write(handler.translate(po))
-        except:
-            parser.error('The file "%s" could not be processed\n' % filename)
-    finally:
-        if options.output is not None:
-            output.close()
+    build(parser)

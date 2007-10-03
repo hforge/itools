@@ -19,10 +19,10 @@
 import mimetypes
 
 # Import from itools
-from xliff import XLIFF
+from xliff import XLIFF, Translation, Note, File
 
 
-__all__ = ['XLIFF']
+__all__ = ['XLIFF', 'Translation', 'Note', 'File']
 
 
 

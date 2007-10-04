@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from datetime import datetime
 from os import fdopen
@@ -119,8 +116,11 @@ class DatabaseFS(FileFS):
     def make_file(reference):
         # Update the log
         log = get_log(reference)
-        with open(log, 'a+b') as log:
+        log = open(log, 'a+b')
+        try:
             log.write('+%s\n' % reference.path)
+        finally:
+            log.close()
 
         # Create the file
         return FileFS.make_file(reference)
@@ -130,8 +130,11 @@ class DatabaseFS(FileFS):
     def make_folder(reference):
         # Update the log
         log = get_log(reference)
-        with open(log, 'a+b') as log:
+        log = open(log, 'a+b')
+        try:
             log.write('+%s\n' % reference.path)
+        finally:
+            log.close()
 
         # Create the folder
         return FileFS.make_folder(reference)
@@ -141,8 +144,11 @@ class DatabaseFS(FileFS):
     def remove(reference):
         # Update the log
         log = get_log(reference)
-        with open(log, 'a+b') as log:
+        log = open(log, 'a+b')
+        try:
             log.write('-%s\n' % reference.path)
+        finally:
+            log.close()
 
 
     @staticmethod
@@ -157,8 +163,11 @@ class DatabaseFS(FileFS):
             tmp_file, tmp_path = mkstemp(dir=commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference.path] = tmp_path
-            with open(log, 'a+b') as log:
+            log = open(log, 'a+b')
+            try:
                 log.write('~%s#%s\n' % (reference.path, tmp_path))
+            finally:
+                log.close()
             return fdopen(tmp_file, 'w')
         elif mode == APPEND:
             tmp_map = get_tmp_map()
@@ -170,8 +179,11 @@ class DatabaseFS(FileFS):
             tmp_file, tmp_path = mkstemp(dir=commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference.path] = tmp_path
-            with open(log, 'a+b') as log:
+            log = open(log, 'a+b')
+            try:
                 log.write('>%s#%s\n' % (reference.path, tmp_path))
+            finally:
+                log.close()
             return fdopen(tmp_file, 'w')
 
         return FileFS.open(reference, mode)
@@ -255,7 +267,8 @@ class DatabaseFS(FileFS):
         database state before the transaction started.
         """
         # The data
-        with open(self._log) as log:
+        log = open(self._log)
+        try:
             for line in log.readlines():
                 if line[-1] == '\n':
                     line = line[:-1]
@@ -273,6 +286,8 @@ class DatabaseFS(FileFS):
                     pass
                 else:
                     raise RuntimeError, 'log file corrupted'
+        finally:
+            log.close()
 
         # We are done. Remove the commit.
         commit = str(self._commit)
@@ -287,7 +302,8 @@ class DatabaseFS(FileFS):
         safe call this method again so it finish the work.
         """
         # Save the transaction
-        with open(self._log) as log:
+        log = open(self._log)
+        try:
             for line in log.readlines():
                 if line[-1] == '\n':
                     line = line[:-1]
@@ -307,10 +323,15 @@ class DatabaseFS(FileFS):
                 elif action == '>':
                     dst, src = line.rsplit('#', 1)
                     data = open(src, READ).read()
-                    with vfs.open(dst, APPEND) as file:
+                    file = vfs.open(dst, APPEND)
+                    try:
                         file.write(data)
+                    finally:
+                        file.close()
                 else:
                     raise RuntimeError, 'log file corrupted'
+        finally:
+            log.close()
 
         # We are done. Remove the commit.
         commit = str(self._commit)

@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from datetime import date
 from optparse import OptionParser
@@ -79,18 +76,20 @@ def make(parser, options, target):
 
     itools_path = dirname(itools.__file__)
     manifest = join(itools_path, 'MANIFEST')
-    with open(manifest) as manifest:
-        for path in manifest.readlines():
-            if not path.startswith(path_prefix):
-                continue
-            path = path.strip()
-            # Read and process the data
-            source = join(itools_path, path)
-            source = open(source).read()
-            data = Template(source).safe_substitute(**namespace)
-            # Create the target file
-            with folder.make_file(path[path_prefix_n:]) as file:
-                file.write(data)
+    for path in open(manifest).readlines():
+        if not path.startswith(path_prefix):
+            continue
+        path = path.strip()
+        # Read and process the data
+        source = join(itools_path, path)
+        source = open(source).read()
+        data = Template(source).safe_substitute(**namespace)
+        # Create the target file
+        file = folder.make_file(path[path_prefix_n:])
+        try:
+            file.write(data)
+        finally:
+            file.close()
 
     # Print a helpful message
     print '*'

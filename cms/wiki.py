@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from datetime import datetime, timedelta
 from tempfile import mkdtemp
@@ -360,16 +357,25 @@ class WikiPage(Text):
         tempdir = vfs.open(dirname)
 
         # Save the document...
-        with tempdir.make_file(self.name) as file:
+        file = tempdir.make_file(self.name)
+        try:
             file.write(output)
+        finally:
+            file.close()
         # The stylesheet...
         stylesheet = self.get_handler('/ui/wiki/style.tex')
-        with tempdir.make_file('style.tex') as file:
+        file = tempdir.make_file('style.tex')
+        try:
             stylesheet.save_state_to_file(file)
+        finally:
+            file.close()
         # The 'powered' image...
         image = self.get_handler('/ui/images/ikaaro_powered.png')
-        with tempdir.make_file('ikaaro.png') as file:
+        file = tempdir.make_file('ikaaro.png')
+        try:
             image.save_state_to_file(file)
+        finally:
+            file.close()
         # And referenced images
         for node_uri, filename in images:
             if tempdir.exists(filename):
@@ -379,8 +385,11 @@ class WikiPage(Text):
             else:
                 # missing image but prevent pdfLaTeX failure
                 image = self.get_handler('/ui/wiki/missing.png')
-            with tempdir.make_file(filename) as file:
+            file = tempdir.make_file(filename)
+            try:
                 image.save_state_to_file(file)
+            finally:
+                file.close()
 
         try:
             call(['pdflatex', '-8bit', '-no-file-line-error',
@@ -393,10 +402,13 @@ class WikiPage(Text):
             return context.come_back(msg)
 
         pdfname = '%s.pdf' % self.name
-        try:
-            with tempdir.open(pdfname) as file:
+        if tempdir.exists(pdfname):
+            file = tempdir.open(pdfname)
+            try:
                 data = file.read()
-        except LookupError:
+            finally:
+                file.close()
+        else:
             data = None
         vfs.remove(dirname)
 

@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from datetime import datetime
 import unittest
@@ -143,11 +140,17 @@ class FileTestCase(TestCase):
 
     def test20_append(self):
         # Initialize
-        with vfs.make_file('tests/toto.txt') as file:
+        file = vfs.make_file('tests/toto.txt')
+        try:
             file.write('hello\n')
+        finally:
+            file.close()
         # Test
-        with vfs.open('tests/toto.txt', APPEND) as file:
+        file = vfs.open('tests/toto.txt', APPEND)
+        try:
             file.write('bye\n')
+        finally:
+            file.close()
         self.assertEqual(open('tests/toto.txt').read(), 'hello\nbye\n')
         # Remove temporary file
         vfs.remove('tests/toto.txt')
@@ -194,26 +197,38 @@ class CopyTestCase(TestCase):
 
     def test_copy_file(self):
         vfs.copy('tests/hello.txt', 'tmp/hello.txt.bak')
-        with vfs.open('tmp/hello.txt.bak') as file:
+        file = vfs.open('tmp/hello.txt.bak')
+        try:
             self.assertEqual(file.read(), 'hello world\n')
+        finally:
+            file.close()
 
 
     def test_copy_file_to_folder(self):
         vfs.copy('tests/hello.txt', 'tmp')
-        with vfs.open('tmp/hello.txt') as file:
+        file = vfs.open('tmp/hello.txt')
+        try:
             self.assertEqual(file.read(), 'hello world\n')
+        finally:
+            file.close()
 
 
     def test_copy_folder(self):
         vfs.copy('tests', 'tmp/xxx')
-        with vfs.open('tmp/xxx/hello.txt') as file:
+        file = vfs.open('tmp/xxx/hello.txt')
+        try:
             self.assertEqual(file.read(), 'hello world\n')
+        finally:
+            file.close()
 
 
     def test_copy_folder_to_folder(self):
         vfs.copy('tests', 'tmp')
-        with vfs.open('tmp/tests/hello.txt') as file:
+        file = vfs.open('tmp/tests/hello.txt')
+        try:
             self.assertEqual(file.read(), 'hello world\n')
+        finally:
+            file.close()
 
 
 

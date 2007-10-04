@@ -438,7 +438,8 @@ class WikiPage(Text):
         text_size_cookie = context.get_cookie('wiki_text_size')
 
         if text_size_cookie is None:
-            text_size = text_size if text_size else 'small'
+            if not text_size:
+                text_size = 'small'
             context.set_cookie('wiki_text_size', text_size)
         elif text_size is None:
             text_size = context.get_cookie('wiki_text_size')

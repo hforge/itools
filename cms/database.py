@@ -220,8 +220,11 @@ class DatabaseFS(FileFS):
                 handler.abort_changes()
             # Rollback the changes in disk
             self.rollback()
+            # Clear
+            transaction.clear()
+            get_tmp_map().clear()
             raise
-        finally:
+        else:
             # Clear
             transaction.clear()
             get_tmp_map().clear()

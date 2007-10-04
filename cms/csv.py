@@ -46,16 +46,13 @@ class Row(iRow, Node):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
-        columns = self.columns
-        rows = []
-
-        for i, row in enumerate(self):
-            rows.append({
-                'column': columns[i] if columns else '',
-                'value': row})
-
         namespace = {}
-        namespace['rows'] = rows
+        # The rows
+        if self.columns:
+            namespace['rows'] = [ {'column': self.columns[i], 'value': x}
+                                  for i, x in enumerate(self) ]
+        else:
+            namespace['rows'] = [ {'column': '', 'value': x} for x in self ]
 
         handler = self.get_handler('/ui/csv/row_view.xml')
         return stl(handler, namespace)

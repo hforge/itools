@@ -15,28 +15,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools import get_abspath, get_version
-from itools.gettext import register_domain
+from itools import get_version, get_abspath
+
+# Import from itools.cms
 from itools.cms.skins import register_skin
 
-# Expose the root class for the icms scripts
-from root import Root
-
-# Import from our package so it registers new handlers, schemas, datatypes...
+# Import from menu
 import metadata
-
-from skins import FrontOffice1
-from base import Handler
+from mywebapp import MyWebApp
 
 # Make the product version available to Python code
 __version__ = get_version(globals())
 
-
-# Register the skin
-path = get_abspath(globals(), 'ui/frontoffice1')
-skin = FrontOffice1(path)
-register_skin('frontoffice1', skin)
-
-# Register domain (i18n)
-path = get_abspath(globals(), 'locale')
-register_domain(Handler.class_domain, path)
+# menu skin
+path = get_abspath(globals(), 'ui/menu')
+register_skin('menu', path)

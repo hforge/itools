@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from itools.cms
-from itools.cms.base import Handler as BaseHandler
+# Import from itools
+from itools.web import get_context
 
 
-class Handler(BaseHandler):
-
-    class_domain = '${PACKAGE_NAME}'
-
+def is_back_office(bo_skin='aruni'):
+    """Return true if the skin is equal to bo_skin"""
+    context = get_context()
+    return context.root.get_skin().name == bo_skin

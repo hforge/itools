@@ -22,9 +22,10 @@ from __future__ import with_statement
 # Import from the Standard Library
 from datetime import date
 from optparse import OptionParser
-from os import environ
-from os.path import exists, basename, dirname, join
+from os import environ, getcwd
+from os.path import exists, basename, dirname, join, sep, islink, realpath
 from string import Template
+from sys import executable
 
 # Import from itools
 import itools
@@ -34,14 +35,35 @@ from itools import vfs
 def make(parser, options, target):
     if exists(target):
         parser.error("Directory '%s' already existing" % target)
+    if len(target.split(sep)) > 1:
+        parser.error("%s is not a corect directory name" % target)
 
-    # Find out the name of the package
-    package = basename(target)
+    # Find out the name of the package_name
+    package_name, package_path = target, getcwd()
+
+    python_bin_path = python_bin_realpath = executable
+    if islink(python_bin_path):
+        python_bin_realpath = realpath(python_bin_path)
+
+    python_bin_realpath = python_bin_realpath.rsplit(sep, 1)[0]
+    python_bin_path= python_bin_path.rsplit(sep, 1)[0]
 
     # Build the namespace
     namespace = {}
     namespace['YEAR'] = date.today().year
-    namespace['PACKAGE_NAME'] = package
+    namespace['PACKAGE_NAME'] = package_name
+    namespace['PACKAGE'] = '%s/%s' % (package_path, package_name)
+    namespace['PYTHON_BIN_PATH'] = python_bin_path
+    namespace['PYTHON_BIN_REALPATH'] = python_bin_realpath
+
+    scripts = ('isetup-build.py', 'icms-start.py', 'icms-stop.py',
+               'icms-init.py', 'icms-update-catalog.py', 'python')
+    for s in scripts:
+        script_fn = '%s/%s' % (python_bin_path, s)
+        if not exists(script_fn):
+            script_fn = '%s/%s' % (python_bin_realpath, s)
+        script = s.split('.py', 1)[0].upper().replace('-', '_')
+        namespace[script] = script_fn
     if 'GIT_AUTHOR_NAME' in environ:
         namespace['AUTHOR_NAME'] = environ['GIT_AUTHOR_NAME']
     if 'GIT_AUTHOR_EMAIL' in environ:
@@ -72,16 +94,17 @@ def make(parser, options, target):
 
     # Print a helpful message
     print '*'
-    print '* Package "%s" created' % package
+    print '* Package "%s" created' % package_name
     print '*'
     print '* To install it type:'
     print '*'
-    print '*   $ cd %s' % target
-    print '*   $ %s' % __file__.replace('icms-make-package', 'isetup-build')
+    print '*   $ cd %s' % namespace['PACKAGE_NAME']
+    print '*   $ %s' % namespace['ISETUP_BUILD']
     print '*   ...'
-    print '*   $ %s setup.py install' % __file__.replace('icms-make-package', 'python')
+    print '*   $ %s setup.py install' % namespace['PYTHON']
     print '*'
-
+    if options.type == 'quickstart':
+        print '* Follow %s/README' % package_name
 
 
 if __name__ == '__main__':
@@ -90,8 +113,10 @@ if __name__ == '__main__':
     version = 'itools %s' % itools.__version__
     description = 'Creates a new Python package for itools.cms of name TARGET.'
     parser = OptionParser(usage, version=version, description=description)
-    parser.add_option('-t', '--type', type="string", default="bare",
-                      help='Choose the type of package to make.')
+    help=('Choose the type of package to make: --type=quickstart or '
+          '--type=bare [default]. "bare" is an empty package, "quickstart" is'
+          ' a kind of tutorial')
+    parser.add_option('-t', '--type', type="string", default="bare", help=help)
 
     # Get the name of the package to build
     options, args = parser.parse_args()

@@ -15,19 +15,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.schemas import Schema, register_schema
-#from itools.datatypes import DateTime, ...
+from itools.datatypes import Boolean, String
+from itools.schemas.base import Schema as BaseSchema
+from itools.schemas import register_schema
 
 
-class ExampleSchema(Schema):
 
-    class_uri = 'http://xml.ikaaro.org/namespaces/skeleton'
-    class_prefix = 'skeleton'
+class Schema(BaseSchema):
+
+    class_uri = 'http://xml.ikaaro.org/namespaces/metadata-menu'
+    class_prefix = 'menu'
 
     datatypes = {
-        #'expiration_date': DateTime,
+        'link': String,
+        'new_window': Boolean(default=False),
     }
 
 
-
-register_schema(ExampleSchema)
+register_schema(Schema)

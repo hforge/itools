@@ -1,35 +1,98 @@
+${PACKAGE_NAME} is a sample itools.cms package, it provide:
+  - the skeleton of a itools.cms Web Application
+  - a mywebapp.tgz tarball with a piece of database to populate your application
+  - illustration of the multisite feature : severals hostnames managed with one
+    website.
 
-The structure of a minimal iCMS application is:
-    
-  [1] __init__.py
-  [2] locale/
-        locale.pot
-        en.po
-  [3] root.py
-  [4] setup.conf
-  [5] setup.py
-  [6] ui/
+Setup an itools.cms Web application driven by ${PACKAGE_NAME}
+==============================================================
+
+Enter in your newly created package folder::
+
+  $ cd ${PACKAGE}
+
+Start by adding revision control to it
+
+======================== ====================================================
+with Cogito              or with Git
+======================== ====================================================
+                         $ git-init
+$ cg-init                $ git-add .
+                         $ git-commit
+======================== ====================================================
+
+Install ${PACKAGE_NAME} in your python::
+
+  $ ${ISETUP_BUILD}
+  $ ${PYTHON} setup.py install
+
+Now get out from your ${PACKAGE_NAME} package folder, and create a Database
+instance "myDB". Option are: -w for passwd and -e for login (an email)::
+
+  $ cd ~/
+  $ ${ICMS_INIT} -w a -e toto@gmail.com myDB
+
+Edit the config.conf file (to informe the myDB database about your package)::
+
+  $ vi myDB/config.conf
+  $ grep -E 'modules|port' myDB/config.conf
+  modules = ${PACKAGE_NAME}
+  port = 8080
+
+Starts a web server that publishes the database instance::
+
+  $ ${ICMS_START} myDB
+
+Point firefox  to::
+
+  http://localhost:8080/
+
+Populate the database with ``mywebapp.tgz``
+===========================================
+
+Stop the server, populate the database, update the catalog and restart
+the server::
+
+  $ ${ICMS_STOP} myDB
+  $ tar -xzf ${PACKAGE}/data/mywebapp.tgz -C myDB/database
+
+  $ ${ICMS_UPDATE_CATALOG} myDB
+  $ ${ICMS_START} myDB
+
+The database is a filesystem tree::
+
+  $ tree myDB/database/mywebapp/
+  |-- contact-form
+  |-- contact-form.metadata
+  |-- home
+  |   |-- left.xhtml
+  |   |-- left.xhtml.metadata
+  |   |-- right.xhtml
+  |   `-- right.xhtml.metadata
+  |-- home.metadata
+  |-- ikaaro
+  |-- ikaaro.metadata
+  |-- techno
+  |   |-- git
+  |   |   |-- index.xhtml
+  |   |   `-- index.xhtml.metadata
+  |   |-- git.metadata
+  |   |-- index.xhtml
+  |   |-- index.xhtml.metadata
+  |   |-- python
+  |   |   |-- index.xhtml
+  |   |   `-- index.xhtml.metadata
+  |   `-- python.metadata
+  `-- techno.metadata
 
 
-[1] The Python initialization file, "__init__.py", transforms a folder
-into a Python package. It contains initialization code.
+Manage severals hostnames with one WEB Application
+===================================================
 
-[2] The "locale" folder keeps the translations required to have a
-mutlingual product. The file "locale.pot" is the template, it just
-keeps the messages without any translation. The file "en.po" should
-be empty, since english is most of the time the source language.
+Add example.localhost into /etc/hosts::
 
-[3] The "root" module is where we will define the class for the
-application's root. This way we take the control of iCMS, so we
-can override its default behaviour. We want to do this most of
-the time.
+  $ grep 'example.toto.com' /etc/hosts
+  127.0.0.1 localhost example.toto.com
 
-[4] The configuration file, "setup.conf", defines some variables
-for use by "distutils", the Python's packaging system.
-
-[5] The "setup.py" file is required by "distutils", but with itools
-it should always be the same few lines, since we use the file "setup.conf"
-instead.
-
-[6] The folder "ui" will keep the product's skins. We need skins to publish
-content to the web, like images and CSS files.
+  $ point a firefox tab to http://localhost:8080/         the backoffice
+  $ point a firefox tab to http://example.toto.com:8080/  a frontoffice

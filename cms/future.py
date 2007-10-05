@@ -386,7 +386,11 @@ class Dressable(Folder, EpozEditable):
         views = list(views)
         try:
             edit_index = views.index('edit_document')
-            views[edit_index] = self.get_first_edit_subview()
+            first_edit_subview = self.get_first_edit_subview()
+            if first_edit_subview is not None:
+                views[edit_index] = first_edit_subview
+            else:
+                views.pop(edit_index)
         except ValueError: # FO
             pass
         return views
@@ -589,7 +593,7 @@ class Dressable(Folder, EpozEditable):
                     return 'edit_document?dress_name=%s' % name
                 elif is_datatype(cls, Image):
                     return 'edit_image?name=%s' % name
-        return name
+        return None
 
 
     def edit_document__sublabel__(self, **kw):

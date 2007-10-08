@@ -24,15 +24,17 @@ resources in standard type iCalendar specified in the RFC 2445
 
 # Import from itools
 from gridlayout import get_grid_data
-from icalendar import icalendar, PropertyValue, icalendarTable
-from types import DateTime
+from icalendar import icalendar, PropertyValue, Record, icalendarTable
+from types import DateTime, Time
 
 __all__ = [
     # Functions
     'get_grid_data',
     # DataTypes
     'DateTime',
+    'Time',
     # Handlers
     'PropertyValue',
-    'icalendar', 
+    'icalendar',
+    'Record',
     'icalendarTable']

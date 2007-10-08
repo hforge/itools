@@ -42,7 +42,7 @@ from file import File
 from base import Handler
 from binary import Image
 from handlers import Lock, Metadata, ListOfUsers
-from ical import CalendarAware, Calendar
+from ical import CalendarAware
 from messages import *
 from versioning import VersioningAware
 from workflow import WorkflowAware
@@ -906,11 +906,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         handler = self.get_handler('/ui/folder/browse_list.xml')
         return stl(handler, namespace)
-
-
-    # Get list of calendars
-    def get_calendars(self):
-        return list(self.search_handlers(handler_class=Calendar))
 
 
 register_object_class(Folder)

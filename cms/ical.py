@@ -18,26 +18,30 @@
 
 # Import from Standard Library
 from calendar import monthrange, isleap
+from cStringIO import StringIO
 from datetime import datetime, date, time, timedelta
 
 # Import from itools
 from itools.i18n import get_language_name
-from itools.datatypes import Enumerate, Unicode, ISOTime, Date, DataType
+from itools.datatypes import Enumerate, Unicode, Date, DataType
+from itools.handlers import Folder, Property
 from itools.ical import get_grid_data, icalendar, PropertyValue, DateTime
+from itools.ical import icalendarTable, Record, Time
 from itools.stl import stl
 from registry import register_object_class
 
 # Import from itools.cms
 from text import Text
 from base import Handler
+from table import Multiple, Table
 
 resolution = timedelta.resolution
 
-months = {1: u'January', 2: u'February', 3: u'March', 4: u'April', 
+months = {1: u'January', 2: u'February', 3: u'March', 4: u'April',
           5: u'May', 6: u'June', 7: u'July', 8: u'August', 9: u'September',
           10: u'October', 11: u'November', 12: u'December'}
 
-days = {0: u'Monday', 1: u'Tuesday', 2: u'Wednesday', 3: u'Thursday', 
+days = {0: u'Monday', 1: u'Tuesday', 2: u'Wednesday', 3: u'Thursday',
         4: u'Friday', 5: u'Saturday', 6: u'Sunday'}
 
 
@@ -95,32 +99,60 @@ def check_timetable_entry(context, key_start, key_end):
 class Status(Enumerate):
 
     options = [{'name': 'TENTATIVE', 'value': u'Tentative'},
-               {'name': 'CONFIRMED', 'value': u'Confirmed'}, 
+               {'name': 'CONFIRMED', 'value': u'Confirmed'},
                {'name': 'CANCELLED', 'value': u'Cancelled'}]
 
 
 
-class Time(ISOTime):
-    """
-    This datatype is the same as ISOTime except that its encode method don't use
-    seconds if not explicitely notified.
-    """
-    @staticmethod
-    def encode(value, seconds=False):
-        if value is None: 
-            return ''
-        if not seconds: 
-            return value.strftime('%H:%M')
-        return value.strftime('%H:%M:%S')
-
-
-
-class CalendarAware(object):
+class CalendarView(object):
 
     # Start 07:00, End 21:00, Interval 30min
     class_cal_range = (time(7,0), time(21,0), 30)
     class_cal_fields = ('SUMMARY', 'DTSTART', 'DTEND')
     class_weekly_shown = ('SUMMARY', )
+
+
+    timetables = [((7,0),(8,0)), ((8,0),(9,0)), ((9,0),(10,0)),
+                  ((10,0),(11,0)), ((11,0),(12,0)), ((12,0),(13,0)),
+                  ((13,0),(14,0)), ((14,0),(15,0)), ((15,0),(16,0)),
+                  ((16,0),(17,0)), ((17,0),(18,0)), ((18,0),(19,0)),
+                  ((19,0),(20,0)), ((20,0),(21,0))]
+
+    # default values for fields within namespace
+    default_fields = {
+        'UID': None, 'SUMMARY': u'', 'LOCATION': u'', 'DESCRIPTION': u'',
+        'DTSTART_year': None, 'DTSTART_month': None, 'DTSTART_day': None,
+        'DTSTART_hours': '', 'DTSTART_minutes': '',
+        'DTEND_year': None, 'DTEND_month': None, 'DTEND_day': None,
+        'DTEND_hours': '', 'DTEND_minutes': '',
+        'ATTENDEE': [], 'COMMENT': [], 'STATUS': {}
+      }
+
+    # default viewed fields on monthly_view
+    default_viewed_fields = ('DTSTART', 'DTEND', 'SUMMARY', 'STATUS')
+
+    @classmethod
+    def get_defaults(cls, selected_date=None, tt_start=None, tt_end=None):
+        """Return a dic with default values for default fields. """
+
+        # Default values for DTSTART and DTEND
+        default = cls.default_fields.copy()
+
+        if selected_date:
+            year, month, day = selected_date.split('-')
+            default['DTSTART_year'] = default['DTEND_year'] = year
+            default['DTSTART_month'] = default['DTEND_month'] = month
+            default['DTSTART_day'] = default['DTEND_day'] = day
+        if tt_start:
+            hours, minutes = Time.encode(tt_start).split(':')
+            default['DTSTART_hours'] = hours
+            default['DTSTART_minutes'] = minutes
+        if tt_end:
+            hours, minutes = Time.encode(tt_end).split(':')
+            default['DTEND_hours'] = hours
+            default['DTEND_minutes'] = minutes
+
+        return default
 
 
     @classmethod
@@ -153,7 +185,7 @@ class CalendarAware(object):
           datetime.strftime('%U') gives week number, starting week by Sunday
           datetime.strftime('%W') gives week number, starting week by Monday
           This week number is calculated as "Week O1" begins on the first
-          Sunday/Monday of the year. Its range is [0,53]. 
+          Sunday/Monday of the year. Its range is [0,53].
 
         We adjust week numbers to fit rules which are used by french people.
         XXX Check for other countries
@@ -215,6 +247,32 @@ class CalendarAware(object):
         return namespace
 
 
+    # Get days of week based on get_first_day's result for start
+    def days_of_week_ns(self, start, num=None, ndays=7, selected=None):
+        """
+          start : start date of the week
+          num : True if we want to get number of the day too
+          ndays : number of days we want
+          selected : selected date
+        """
+        current_date = start
+        ns_days = []
+        for index in range(ndays):
+            ns =  {}
+            ns['name'] = self.gettext(days[current_date.weekday()])
+            if num:
+                ns['nday'] = current_date.day
+            else:
+                ns['nday'] = None
+            if selected:
+                ns['selected'] = (selected == current_date)
+            else:
+                ns['selected'] = None
+            ns_days.append(ns)
+            current_date = current_date + timedelta(1)
+        return ns_days
+
+
     # Get one line with times of timetables for daily_view
     def get_header_timetables(self, timetables, delta=45):
         current_date = date.today()
@@ -241,7 +299,7 @@ class CalendarAware(object):
 
 
     # Get one line with header and empty cases with only '+' for daily_view
-    def get_header_columns(self, calendar_name, args, timetables, cal_fields, 
+    def get_header_columns(self, calendar_name, args, timetables, cal_fields,
                            new_class='add_event', new_value='+'):
         ns_columns = []
         for start, end in timetables:
@@ -250,6 +308,7 @@ class CalendarAware(object):
 
             tmp_args = args + '&start_time=%s' % start
             tmp_args = tmp_args + '&end_time=%s' % end
+            tmp_args = tmp_args + '&id=%s/' % calendar_name
             new_url = ';edit_event_form?%s' % (tmp_args)
 
             column =  {'class': None,
@@ -268,31 +327,553 @@ class CalendarAware(object):
         return ns_columns
 
 
+    def get_timetables(self):
+        """
+        Build a list of timetables represented as tuples(start, end).
+        Data are taken from metadata or from class value.
+
+        Example of metadata:
+          <timetables>(8,0),(10,0);(10,30),(12,0);(13,30),(17,30)</timetables>
+        """
+        if self.has_property('ikaaro:timetables'):
+            return self.get_property('ikaaro:timetables')
+
+        # From class value
+        timetables = []
+        for index, (start, end) in enumerate(self.timetables):
+            timetables.append((time(start[0], start[1]), time(end[0], end[1])))
+        return timetables
+
+
+    # Get timetables as a list of string containing time start of each one
+    def get_timetables_grid_ns(self, start_date):
+        """ Build namespace to give as grid to gridlayout factory."""
+        ns_timetables = []
+        for calendar in self.get_calendars():
+            for start, end in calendar.get_timetables():
+                for value in (start, end):
+                    value = Time.encode(value)
+                    if value not in ns_timetables:
+                        ns_timetables.append(value)
+        return ns_timetables
+
+
+    def get_grid_events(self, start_date, ndays=7, headers=None,
+                        step=timedelta(1)):
+        """ Build namespace to give as data to gridlayout factory."""
+        # Get events by day
+        ns_days = []
+        current_date = start_date
+
+        if headers is None:
+            headers = [None] * ndays
+
+        # For each found calendar (or self), get events
+        events = []
+        # Get a list of events to display on view
+        end = start_date + timedelta(days=ndays)
+        cal_indexes, events = self.get_events_to_display(start_date, end)
+        for header in headers:
+            ns_day = {}
+            # Add header if given
+            ns_day['header'] = header
+            # Insert events
+            ns_events, events = self.events_to_namespace(events, current_date,
+                                                         cal_indexes)
+            ns_day['events'] = ns_events
+            ns_days.append(ns_day)
+            current_date = current_date + step
+
+        return ns_days
+
+
+    monthly_view__access__ = 'is_allowed_to_view'
+    monthly_view__label__ = u'View'
+    monthly_view__sublabel__ = u'Monthly'
+    def monthly_view(self, context):
+        ndays = 7
+        today_date = date.today()
+
+        # Add ical css
+        css = self.get_handler('/ui/ical/calendar.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        # Current date
+        c_date = get_current_date(context.get_form_value('date', None))
+        # Save selected date
+        context.set_cookie('selected_date', c_date)
+
+        # Method
+        method = context.get_cookie('method')
+        if method != 'monthly_view':
+            context.set_cookie('method', 'monthly_view')
+
+        ###################################################################
+        # Calculate start of previous week
+        # 0 = Monday, ..., 6 = Sunday
+        weekday = c_date.weekday()
+        start = c_date - timedelta(7 + weekday)
+        if self.get_first_day() == 0:
+            start = start - timedelta(1)
+        # Calculate last date to take in account as we display  5*7 = 35 days
+        end = start + timedelta(35)
+
+        ###################################################################
+        # Get a list of events to display on view
+        cal_indexes, events = self.get_events_to_display(start, end)
+
+        ###################################################################
+        namespace = {}
+        # Add header to navigate into time
+        namespace = self.add_selector_ns(c_date, 'monthly_view', namespace)
+        # Get header line with days of the week
+        namespace['days_of_week'] = self.days_of_week_ns(start, ndays=ndays)
+
+        namespace['weeks'] = []
+        day = start
+        # 5 weeks
+        for w in range(5):
+            ns_week = {'days': [], 'month': u''}
+            # 7 days a week
+            for d in range(7):
+                # day in timetable
+                if d < ndays:
+                    ns_day = {}
+                    ns_day['nday'] = day.day
+                    ns_day['selected'] = (day == today_date)
+                    ns_day['url'] = self.get_action_url(day=day)
+                    # Insert events
+                    ns_events, events = self.events_to_namespace(events, day,
+                                                                 cal_indexes)
+                    ns_day['events'] = ns_events
+                    ns_week['days'].append(ns_day)
+                    if day.day == 1:
+                        month = self.gettext(months[day.month])
+                        ns_week['month'] = month
+                day = day + timedelta(1)
+            namespace['weeks'].append(ns_week)
+
+        add_icon = self.get_handler('/ui/images/button_add.png')
+        namespace['add_icon'] = self.get_pathto(add_icon)
+
+        handler = self.get_handler('/ui/ical/ical_monthly_view.xml')
+        return stl(handler, namespace)
+
+
+    weekly_view__access__ = 'is_allowed_to_view'
+    weekly_view__label__ = u'View'
+    weekly_view__sublabel__ = u'Weekly'
+    def weekly_view(self, context):
+        ndays = 7
+
+        # Add ical css
+        css = self.get_handler('/ui/ical/calendar.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        # Current date
+        c_date = context.get_form_value('date', None)
+        if not c_date:
+            c_date = context.get_cookie('selected_date')
+        c_date = get_current_date(c_date)
+        # Save selected date
+        context.set_cookie('selected_date', c_date)
+
+        # Method
+        method = context.get_cookie('method')
+        if method != 'weekly_view':
+            context.set_cookie('method', 'weekly_view')
+
+        # Calculate start of current week: 0 = Monday, ..., 6 = Sunday
+        weekday = c_date.weekday()
+        start = c_date - timedelta(weekday)
+        if self.get_first_day() == 0:
+            start = start - timedelta(1)
+
+        namespace = {}
+        # Add header to navigate into time
+        namespace = self.add_selector_ns(c_date, 'weekly_view' ,namespace)
+
+        # Get icon to appear to add a new event
+        add_icon = self.get_handler('/ui/images/button_add.png')
+        namespace['add_icon'] = self.get_pathto(add_icon)
+
+        # Get header line with days of the week
+        days_of_week_ns = self.days_of_week_ns(start, True, ndays, c_date)
+        ns_headers = []
+        for day in days_of_week_ns:
+            ns_header = '%s %s' % (day['name'], day['nday'])
+            # Tip: Use 'selected' for css class to highlight selected date
+            ns_headers.append(ns_header)
+        # Calculate timetables and events occurring for current week
+        timetables = self.get_timetables_grid_ns(start)
+
+        events = self.get_grid_events(start, headers=ns_headers)
+
+        # Fill data with grid (timetables) and data (events for each day)
+        timetable = get_grid_data(events, timetables, start)
+        namespace['timetable_data'] = timetable
+
+        handler = self.get_handler('/ui/ical/ical_grid_weekly_view.xml')
+        return stl(handler, namespace)
+
+
+    daily_view__access__ = 'is_allowed_to_edit'
+    daily_view__label__ = u'Contents'
+    daily_view__sublabel__ = u'As calendar'
+    def daily_view(self, context):
+        raise NotImplemented
+
+
+    ######################################################################
+    # Public API
+    ######################################################################
+    def get_action_url(self, **kw):
+        """ Action to call on form submission. """
+        return None
+
+
+    def get_calendars(self):
+        """ List of sources from which taking events. """
+        return []
+
+
+    def get_events_to_display(self, start, end):
+        """
+          Get a list of events as tuples (resource_name, start, properties{})
+          and a dict with all resources from whom they belong to.
+        """
+        resources, events = {}, []
+        for index, calendar in enumerate(self.get_calendars()):
+            res, evts = calendar.get_events_to_display(start, end)
+            events.extend(evts)
+            resources[calendar.name] = index
+        events.sort(lambda x, y : cmp(x[1], y[1]))
+        return resources, events
+
+
+    def events_to_namespace(self, events, day, cal_indexes):
+        """
+        Build namespace for events occuring on current day.
+        Update events, removing past ones.
+
+        Events is a list of events where each one follows:
+          (resource_name, dtstart, event)
+          'event' object must have a methods:
+              - get_end
+              - get_ns_event.
+        """
+        ns_events = []
+        index = 0
+        while index < len(events):
+            resource_name, dtstart, event = events[index]
+            e_dtstart = dtstart.date()
+            e_dtend = event.get_end().date()
+            # Current event occurs on current date
+            # event begins during current tt
+            starts_on = e_dtstart == day
+            # event ends during current tt
+            ends_on = e_dtend == day
+            # event begins before and ends after
+            out_on = (e_dtstart < day and e_dtend > day)
+
+            if starts_on or ends_on or out_on:
+                cal_index = cal_indexes[resource_name]
+                if len(cal_indexes.items()) < 2:
+                    resource_name = None
+                ns_event = event.get_ns_event(day, resource_name=resource_name,
+                                              starts_on=starts_on,
+                                              ends_on=ends_on, out_on=out_on)
+                if resource_name is not None:
+                    resource = self.get_handler(resource_name)
+                else:
+                    resource = self
+                ns_event['url'] = resource.get_action_url(**ns_event)
+                ns_event['cal'] = cal_index
+                ns_events.append(ns_event)
+                # Current event end on current date
+                if e_dtend == day:
+                    events.remove(events[index])
+                    if events == []:
+                        break
+                else:
+                    index = index + 1
+            # Current event occurs only later
+            elif e_dtstart > day:
+                break
+            else:
+                index = index + 1
+        return ns_events, events
+
+
+    edit_event_form__access__ = 'is_allowed_to_edit'
+    edit_event_form__label__ = u'Edit'
+    edit_event_form__sublabel__ = u'Event'
+    def edit_event_form(self, context):
+        keys = context.get_form_keys()
+
+        # Add ical css
+        css = self.get_handler('/ui/ical/calendar.css')
+        context.styles.append(str(self.get_pathto(css)))
+        js = self.get_handler('/ui/ical/calendar.js')
+        context.scripts.append(str(self.get_pathto(js)))
+
+        uid = context.get_form_value('id', None)
+        # Method
+        method = context.get_cookie('method') or 'monthly_view'
+        goto = ';%s' % method
+
+        # Get date to add event
+        selected_date = context.get_form_value('date', None)
+        if uid is None:
+            if not selected_date:
+                message = u'To add an event, click on + symbol from the views.'
+                return context.come_back(message, goto=goto)
+        else:
+            # Get it as a datetime object
+            if not selected_date:
+                c_date = get_current_date(selected_date)
+                selected_date = Date.encode(c_date)
+
+        # Timetables
+        tt_start = context.get_form_value('start_time', None)
+        tt_end = context.get_form_value('end_time', None)
+        if tt_start:
+            tt_start = Time.decode(tt_start)
+        if tt_end:
+            tt_end = Time.decode(tt_end)
+
+        # Initialization
+        namespace = {}
+        namespace['remove'] = None
+        namespace['resources'] = namespace['resource'] = None
+        properties = []
+        status = Status()
+
+        # Existant event
+        resource = None
+        if uid:
+            resource = self
+            id = uid
+            if '/' in uid:
+                name, id = uid.split('/')
+                if not self.has_handler(name):
+                    return context.come_back(u'Invalid argument.',
+                                             goto=';edit_event_form', keys=keys)
+                resource = self.get_handler(name)
+
+            # UID is used to remind which resource/id is being modified
+            namespace['UID'] = uid
+
+            if id != '':
+                event = resource.get_record(id)
+                if not event:
+                    message = u'Event not found'
+                    return context.come_back(message, goto=goto)
+                namespace['remove'] = True
+                properties = event.get_property()
+                # Get values
+                for key in properties:
+                    if key == 'UID':
+                        continue
+                    value = properties[key]
+                    if isinstance(value, list):
+                        namespace[key] = value
+                    elif key == 'STATUS':
+                        namespace['STATUS'] = value.value
+                    # Split date fields into dd/mm/yyyy and hh:mm
+                    elif key in ('DTSTART', 'DTEND'):
+                        value, params = value.value, value.parameters
+                        year, month, day = Date.encode(value).split('-')
+                        namespace['%s_year' % key] = year
+                        namespace['%s_month' % key] = month
+                        namespace['%s_day' % key] = day
+                        param = params.get('VALUE', '')
+                        if not param or param != ['DATE']:
+                            hours, minutes = Time.encode(value).split(':')
+                            namespace['%s_hours' % key] = hours
+                            namespace['%s_minutes' % key] = minutes
+                        else:
+                            namespace['%s_hours' % key] = ''
+                            namespace['%s_minutes' % key] = ''
+                    else:
+                        namespace[key] = value.value
+            else:
+                event = None
+
+        if not uid:
+            event = None
+            # Selected calendar
+            ns_calendars = []
+            for calendar in self.get_calendars():
+                ns_calendars.append({'name': calendar.name,
+                                     'value': calendar.get_title(),
+                                     'selected': False})
+            namespace['resources'] = ns_calendars
+
+
+        # Default managed fields are :
+        # SUMMARY, LOCATION, DTSTART, DTEND, DESCRIPTION,
+        # STATUS ({}), ATTENDEE ([]), COMMENT ([])
+        defaults = self.get_defaults(selected_date, tt_start, tt_end)
+        # Set values from context or default, if not already set
+        for field in defaults:
+            if field not in namespace:
+                if field.startswith('DTSTART_') or field.startswith('DTEND_'):
+                    for attr in ('year', 'month', 'day', 'hours', 'minutes'):
+                        key = 'DTSTART_%s' % attr
+                        if field.startswith('DTEND_'):
+                            key = 'DTEND_%s' % attr
+                        value = context.get_form_value(key) or defaults[key]
+                        namespace[key] = value
+                # Get value from context, used when invalid input given
+                elif context.has_form_value(field):
+                    namespace[field] = context.get_form_value(field)
+                else:
+                    # Set default value in the right format
+                    namespace[field] = defaults[field]
+        # STATUS is an enumerate
+        try:
+            namespace['STATUS'] = status.get_namespace(namespace['STATUS'])
+        except:
+            namespace['STATUS'] = status.get_namespace('TENTATIVE')
+        # Call to gettext on Status values
+        for value in namespace['STATUS']:
+            value['value'] = self.gettext(value['value'])
+
+        # Show action buttons only if current user is authorized
+        if resource is None:
+            namespace['allowed'] = True
+        else:
+            namespace['allowed'] = resource.is_organizer_or_admin(context, event)
+        # Set first day of week
+        namespace['firstday'] = self.get_first_day()
+
+        handler = self.get_handler('/ui/ical/ical_edit_event_form.xml')
+        return stl(handler, namespace)
+
+
+    edit_event__access__ = 'is_allowed_to_edit'
+    def edit_event(self, context):
+        id = context.get_form_value('id')
+        if '/' in id:
+            name, id = id.split('/', 1)
+        else:
+            name = context.get_form_value('resource')
+        if name and self.has_handler(name):
+            handler = self.get_handler(name)
+            return handler.__class__.edit_event(handler, context)
+        return context.come_back(u'Resource not found.')
+
+
+    edit_timetables_form__access__ = 'is_allowed_to_edit'
+    edit_timetables_form__label__ = u'Edit'
+    edit_timetables_form__sublabel__ = u'Timetables'
+    def edit_timetables_form(self, context):
+        # Add ical css
+        css = self.get_handler('/ui/ical/calendar.css')
+        context.styles.append(str(self.get_pathto(css)))
+
+        # Initialization
+        namespace = {}
+        namespace['timetables'] = []
+
+        # Show current timetables only if previously set in metadata
+        if self.has_property('ikaaro:timetables'):
+            timetables = self.get_property('ikaaro:timetables')
+            for index, (start, end) in enumerate(timetables):
+                ns = {}
+                ns['index'] = index
+                ns['startname'] = '%s_start' % index
+                ns['endname'] = '%s_end' % index
+                ns['start'] = Time.encode(start)
+                ns['end'] = Time.encode(end)
+                namespace['timetables'].append(ns)
+        handler = self.get_handler('/ui/ical/ical_edit_timetables.xml')
+        return stl(handler, namespace)
+
+
+    edit_timetables__access__ = True
+    def edit_timetables(self, context):
+        timetables = []
+        if self.has_property('ikaaro:timetables'):
+            timetables = self.get_property('ikaaro:timetables')
+
+        # Nothing to change
+        if timetables == [] and not context.has_form_value('add'):
+            return context.come_back(u'Nothing to change.')
+
+        # Remove selected lines
+        if context.has_form_value('remove'):
+            ids = context.get_form_values('ids')
+            if ids == []:
+                return context.come_back(u'Nothing to remove.')
+            new_timetables = []
+            for index, timetable in enumerate(timetables):
+                if str(index) not in ids:
+                    new_timetables.append(timetable)
+            message = u'Timetable(s) removed successfully.'
+        else:
+            new_timetables = []
+            # Update timetable or just set index to next index
+            for index in range(len(timetables)):
+                timetable = check_timetable_entry(context, '%s_start' % index,
+                                                           '%s_end' % index)
+                if not isinstance(timetable, tuple):
+                    return context.come_back(timetable)
+                new_timetables.append(timetable)
+
+            # Add a new timetable
+            if context.has_form_value('add'):
+                timetable = check_timetable_entry(context, 'new_start',
+                                                           'new_end')
+                if not isinstance(timetable, tuple):
+                    return context.come_back(timetable)
+                new_timetables.append(timetable)
+
+            new_timetables.sort()
+            message = u'Timetables updated successfully.'
+
+        self.set_property('ikaaro:timetables', tuple(new_timetables))
+        return context.come_back(message=message)
+
+
+
+class CalendarAware(CalendarView):
+
+    def get_calendars(self, types=None):
+        """ List of sources from which taking events. """
+        if not types:
+            types = (Calendar, CalendarTable)
+        if isinstance(self, Folder):
+            calendars = []
+            for cc in types:
+                calendars.extend(list(self.search_handlers(handler_class=cc)))
+            return calendars
+        return [self]
+
+
     # Get namespace for a resource's lines into daily_view
-    def get_ns_calendar(self, calendar, c_date, cal_fields, shown_fields, 
+    def get_ns_calendar(self, calendar, c_date, cal_fields, shown_fields,
                         timetables, method='daily_view', show_conflicts=False):
         calendar_name = calendar.name
         args = 'date=%s&method=%s' % (Date.encode(c_date), method)
-        args = '%s&resource=%s' % (args, calendar_name)
         new_url = ';edit_event_form?%s' % args
 
         ns_calendar = {}
         ns_calendar['name'] = calendar.get_title()
 
         ###############################################################
-        # Get a dict for each event with shown_fields, tt_start, tt_end, 
+        # Get a dict for each event with shown_fields, tt_start, tt_end,
         # uid and colspan ; the result is a list sorted by tt_start
-        # Previously method :
-        #   get_ns_events(self, selected_date, shown_fields, timetables):
         events_list = calendar.search_events_in_date(c_date)
         # Get dict from events_list and sort events by start date
         ns_events = []
         for event in events_list:
             ns_event = {}
             for field in shown_fields:
-                ns_event[field] = event.get_property_values(field).value
-            event_start = event.get_property_values('DTSTART').value
-            event_end = event.get_property_values('DTEND').value
+                ns_event[field] = event.get_property(field).value
+            event_start = event.get_property('DTSTART').value
+            event_end = event.get_property('DTEND').value
             # Add timetables info
             tt_start = 0
             tt_end = len(timetables)-1
@@ -306,7 +887,10 @@ class CalendarAware(object):
                     break
             ns_event['tt_start'] = tt_start
             ns_event['tt_end'] = tt_end
-            ns_event['UID'] = event.uid
+            uid = getattr(event, 'id', getattr(event, 'uid', None))
+            if calendar_name and uid:
+                uid = '%s/%s' % (calendar_name, uid)
+            ns_event['UID'] = uid
             ns_event['colspan'] = tt_end - tt_start + 1
             ns_events.append(ns_event)
         ns_events.sort(lambda x, y: cmp(x['tt_start'], y['tt_start']))
@@ -323,7 +907,7 @@ class CalendarAware(object):
         # Organize events in rows
         rows = []
         for index in range(len(timetables)):
-            row_index = 0 
+            row_index = 0
             # Search events in current timetable
             for event in ns_events:
                 if index >= event['tt_start'] and index <= event['tt_end']:
@@ -370,7 +954,7 @@ class CalendarAware(object):
                 # Add event
                 if event and tt_index == event['tt_start']:
                     uid = event['UID']
-                    event_params = '%s&uid=%s' % (args, uid)
+                    event_params = '%s&id=%s' % (args, uid)
                     go_url = ';edit_event_form?%s' % event_params
                     if show_conflicts and uid in conflicts_list:
                         css_class = 'cal_conflict'
@@ -381,7 +965,7 @@ class CalendarAware(object):
                     column['colspan'] = event['colspan']
                     column['evt_url'] = go_url
                     column['new_url'] = None
-                    column['evt_value'] = '>>' 
+                    column['evt_value'] = '>>'
 
                     # Fields to show
                     for field in shown_fields:
@@ -411,9 +995,9 @@ class CalendarAware(object):
         ns_calendar['rows'] = ns_rows
 
         # Add one line with header and empty cases with only '+'
-        header_columns = self.get_header_columns(calendar_name, args, 
+        header_columns = self.get_header_columns(calendar_name, args,
                                                  timetables, cal_fields)
-        ns_calendar['header_columns'] = header_columns 
+        ns_calendar['header_columns'] = header_columns
 
         # Add url to calendar keeping args
         ns_calendar['url'] = ';monthly_view?%s' % args
@@ -453,11 +1037,11 @@ class CalendarAware(object):
         start, end, interval = self.get_cal_range()
         timetables = build_timetables(start, end, interval)
         namespace['header_timetables'] = self.get_header_timetables(timetables)
-        
+
         # For each found calendar
         ns_calendars = []
         for calendar in self.get_calendars():
-            ns_calendar = self.get_ns_calendar(calendar, c_date, cal_fields, 
+            ns_calendar = self.get_ns_calendar(calendar, c_date, cal_fields,
                                                shown_fields, timetables)
             ns_calendars.append(ns_calendar)
         namespace['calendars'] = ns_calendars
@@ -466,384 +1050,91 @@ class CalendarAware(object):
         return stl(handler, namespace)
 
 
-    monthly_view__access__ = 'is_allowed_to_view'
-    monthly_view__label__ = u'View'
-    monthly_view__sublabel__ = u'Monthly'
-    def monthly_view(self, context):
-        ndays = 7
-        today_date = date.today()
 
-        # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
+class Calendar(Text, CalendarView, icalendar):
 
-        # Current date
-        c_date = get_current_date(context.get_form_value('date', None))
-        # Save selected date
-        context.set_cookie('selected_date', c_date)
-        
-        # Method
-        method = context.get_cookie('method')
-        if method != 'monthly_view':
-            context.set_cookie('method', 'monthly_view')
+    class_id = 'calendar'
+    class_version = '20060720'
+    class_title = u'Calendar'
+    class_description = u'Schedule your time with calendar files.'
+    class_icon16 = 'images/icalendar16.png'
+    class_icon48 = 'images/icalendar48.png'
 
-        ###################################################################
-        # Calculate start of previous week
-        # 0 = Monday, ..., 6 = Sunday
-        weekday = c_date.weekday()
-        start = c_date - timedelta(7 + weekday)
-        if self.get_first_day() == 0:
-            start = start - timedelta(1)
-        # Calculate last date to take in account as we display  5*7 = 35 days
-        end = start + timedelta(35)
+    class_views = [['monthly_view', 'weekly_view', 'download_form'],
+                   ['upload_form', 'edit_timetables_form',
+                    'edit_metadata_form', 'edit_event_form']]
 
-        ###################################################################
-        # For each found calendar (or self), get events
+    def get_action_url(self, **kw):
+        url = ';edit_event_form'
+        params = []
+        if 'day' in kw:
+            params.append('date=%s' % Date.encode(kw['day']))
+        if 'id' in kw:
+            params.append('id=%s' % kw['id'])
+        if params != []:
+            url = '%s?%s' % (url, '&'.join(params))
+        return url
+
+
+    def get_calendars(self):
+        return [self]
+
+
+    def get_events_to_display(self, start, end):
         events = []
-        cal_indexes = {}
-        calendars = self.get_calendars()
-        if len(calendars) == 0:
-            cal_indexes[self.name] = None
-        for index, calendar in enumerate(calendars):
-            for event in calendar.search_events_in_range(start, end,
-                                                         sortby='date'):
-                e_dtstart = event.get_property_values('DTSTART')
-                events.append((calendar.name, e_dtstart, event))
-            cal_indexes[calendar.name] = index
-        events.sort(lambda x, y : cmp(x[1].value, y[1].value))
-
-        ###################################################################
-        namespace = {}
-        # Add header to navigate into time
-        namespace = self.add_selector_ns(c_date, 'monthly_view', namespace)
-        # Get header line with days of the week
-        namespace['days_of_week'] = Calendar.days_of_week_ns(start, ndays=ndays)
-
-        namespace['weeks'] = []
-        day = start
-        # 5 weeks
-        for w in range(5):
-            ns_week = {'days': [], 'month': u''}
-            # 7 days a week
-            for d in range(7):
-                # day in timetable
-                if d < ndays:
-                    ns_day = {}
-                    ns_day['nday'] = day.day
-                    ns_day['selected'] = (day == today_date)
-                    ns_day['url'] = ';edit_event_form?date=%s' % Date.encode(day)
-                    #######################################################
-                    # For each day, we add events occuring on this day
-                    # We keep events until they end.
-                    ns_events = []
-                    if events != []:
-                        index = 0
-                        while index < len(events):
-                            resource_name, dtstart, event = events[index]
-                            e_dtstart = dtstart.value.date()
-                            e_dtend = event.get_property_values('DTEND')
-                            e_dtend = e_dtend.value.date()
-                            # Current event occurs on current date
-                            # event begins during current tt
-                            starts_on = e_dtstart == day
-                            # event ends during current tt
-                            ends_on = e_dtend == day
-                            # event begins before and ends after
-                            out_on = (e_dtstart < day and e_dtend > day)
-
-                            if starts_on or ends_on or out_on:
-                                cal_index = cal_indexes[resource_name]
-                                if isinstance(self, Calendar):
-                                    resource_name = None
-                                ns_event = Calendar.get_ns_event(day, event,
-                                                resource_name=resource_name,
-                                                starts_on=starts_on, 
-                                                ends_on=ends_on, out_on=out_on)
-
-                                ns_event['cal'] = cal_index
-                                ns_events.append(ns_event)
-                                # Current event end on current date
-                                if e_dtend == day:
-                                    events.remove(events[index])
-                                    if events == []:
-                                        break
-                                else:
-                                    index = index + 1
-                            # Current event occurs only later
-                            elif e_dtstart > day:
-                                break
-                            else:
-                                index = index + 1
-                    #######################################################
-
-                    ns_day['events'] = ns_events
-                    ns_week['days'].append(ns_day)
-                    if day.day == 1:
-                        month = self.gettext(months[day.month])
-                        ns_week['month'] = month
-                day = day + timedelta(1)
-            namespace['weeks'].append(ns_week)
-
-        add_icon = self.get_handler('/ui/images/button_add.png')
-        namespace['add_icon'] = self.get_pathto(add_icon)
-
-        handler = self.get_handler('/ui/ical/ical_monthly_view.xml')
-        return stl(handler, namespace)
+        for event in self.search_events_in_range(start, end, sortby='date'):
+            e_dtstart = event.get_property('DTSTART').value
+            events.append((self.name, e_dtstart, event))
+        events.sort(lambda x, y : cmp(x[1], y[1]))
+        return {self.name: 0}, events
 
 
-    def get_grid_events(self, start_date, resource_name=None, ndays=7,
-                        headers=None, step=timedelta(1)):
-        """ Build namespace to give as data to gridlayout factory."""
-        # Get events by day
-        ns_days = []
-        current_date = start_date
-
-        if headers is None:
-            headers = [None] * ndays
-
-        # For each found calendar (or self), get events
-        events = []
-        calendars = self.get_calendars()
-        cal_indexes = {}
-        for index, calendar in enumerate(calendars):
-            cal_indexes[calendar.name] = index
-        for header in headers:
-            ns_day = {}
-            # Add header if given
-            ns_day['header'] = header
-
-            # Add each event by day
-            ns_events = []
-            for calendar in calendars:
-                resource_name = calendar.name
-                cal_index = cal_indexes[resource_name]
-                if isinstance(self, Calendar):
-                    resource_name = None
-                for event in calendar.search_events_in_date(current_date,
-                                                            sortby='date'):
-                    ns_event = calendar.get_ns_event(current_date, event,
-                                 resource_name=resource_name, grid=True)
-                    ns_event['cal'] = cal_index
-                    ns_events.append(ns_event)
-            ns_day['events'] = ns_events
-
-            ns_days.append(ns_day)
-            current_date = current_date + step
-
-        return ns_days
+    # Test if user in context is the organizer of a given event (or is admin)
+    def is_organizer_or_admin(self, context, event):
+        if self.get_access_control().is_admin(context.user, self):
+            return True
+        if event:
+            organizer = event.get_property_values('ORGANIZER')
+            return organizer and context.user.get_abspath() == organizer.value
+        ac = self.parent.get_access_control()
+        return ac.is_allowed_to_edit(context.user, self.parent)
 
 
-    # Get timetables as a list of string containing time start of each one
-    def get_timetables_grid_ns(self, start_date):
-        """ Build namespace to give as grid to gridlayout factory."""
-        ns_timetables = []
-        for calendar in self.get_calendars():
-            for start, end in calendar.get_timetables():
-                for value in (start, end):
-                    value = Time.encode(value)
-                    if value not in ns_timetables:
-                        ns_timetables.append(value)
-        return ns_timetables
+    #######################################################################
+    # User interface
+    #######################################################################
+
+    edit_metadata_form__sublabel__ = u'Metadata'
+
+    download_form__access__ = 'is_allowed_to_view'
+    download_form__sublabel__ = u'Export in ical format'
 
 
-    weekly_view__access__ = 'is_allowed_to_view'
-    weekly_view__label__ = u'View'
-    weekly_view__sublabel__ = u'Weekly'
-    def weekly_view(self, context):
-        ndays = 7
-
-        # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
-
-        # Current date
-        c_date = context.get_form_value('date', None)
-        if not c_date:
-            c_date = context.get_cookie('selected_date')
-        c_date = get_current_date(c_date)
-        # Save selected date
-        context.set_cookie('selected_date', c_date)
-
-        # Method
-        method = context.get_cookie('method')
-        if method != 'weekly_view':
-            context.set_cookie('method', 'weekly_view')
-
-        # Calculate start of current week: 0 = Monday, ..., 6 = Sunday
-        weekday = c_date.weekday()
-        start = c_date - timedelta(weekday)
-        if self.get_first_day() == 0:
-            start = start - timedelta(1)
-
-        namespace = {}
-        # Add header to navigate into time
-        namespace = self.add_selector_ns(c_date, 'weekly_view' ,namespace)
-
-        # Get icon to appear to add a new event
-        add_icon = self.get_handler('/ui/images/button_add.png')
-        namespace['add_icon'] = self.get_pathto(add_icon)
-
-        # Get header line with days of the week
-        days_of_week_ns = Calendar.days_of_week_ns(start, True, ndays, c_date)
-        ns_headers = []
-        for day in days_of_week_ns:
-            ns_header = '%s %s' % (day['name'], day['nday'])
-            # XXX Use 'selected' for css class to highlight selected date
-            ns_headers.append(ns_header)
-        # Calculate timetables and events occurring for current week
-        timetables = self.get_timetables_grid_ns(start)
-
-        events = self.get_grid_events(start, headers=ns_headers)
-
-        # Fill data with grid (timetables) and data (events for each day)
-        timetable = get_grid_data(events, timetables, start)
-        namespace['timetable_data'] = timetable
-
-        handler = self.get_handler('/ui/ical/ical_grid_weekly_view.xml')
-        return stl(handler, namespace)
+    GET__mtime__ = None
+    def GET(self, context):
+        return Handler.GET(self, context)
 
 
-    edit_event_form__access__ = 'is_allowed_to_edit'
-    edit_event_form__label__ = u'Edit'
-    edit_event_form__sublabel__ = u'Event'
-    def edit_event_form(self, context):
-        keys = context.get_form_keys()
+    # View
+    text_view__access__ = 'is_allowed_to_edit'
+    text_view__label__ = u'Text view'
+    text_view__sublabel__ = u'Text view'
+    def text_view(self, context):
+        return '<pre>%s</pre>' % self.to_str()
 
-        if isinstance(self, Calendar):
-            resource = self
-        else:
-            resource_name = context.get_form_value('resource') or None
-            resource = None
-            if resource_name and self.has_handler(resource_name):
-                resource = self.get_handler(resource_name)
 
-        # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
-        js = self.get_handler('/ui/ical/calendar.js')
-        context.scripts.append(str(self.get_pathto(js)))
-
-        uid = context.get_form_value('uid', None)
-        # Method
+    remove__access__ = 'is_allowed_to_edit'
+    def remove(self, context):
         method = context.get_cookie('method') or 'monthly_view'
-        goto = ';%s' % method 
+        goto = ';%s?%s' % (method, get_current_date())
+        if method not in dir(self):
+            goto = '../;%s?%s' % (method, get_current_date())
 
-        # Get date to add event
-        selected_date = context.get_form_value('date', None)
-        if uid is None:
-            if not selected_date:
-                message = u'To add an event, click on + symbol from the views.'
-                return context.come_back(message, goto=goto)
-        else:
-            # Get it as a datetime object
-            if not selected_date:
-                c_date = get_current_date(selected_date)
-                selected_date = Date.encode(c_date)
-
-        # Timetables
-        tt_start = context.get_form_value('start_time', None)
-        tt_end = context.get_form_value('end_time', None)
-        if tt_start:
-            tt_start = Time.decode(tt_start)
-        if tt_end:
-            tt_end = Time.decode(tt_end)
-
-        # Initialization
-        namespace = {}
-        namespace['remove'] = None
-        namespace['resources'] = namespace['resource'] = None
-        if resource:
-            namespace['resource'] = resource.name
-        properties = []
-        status = Status()
-
-        # Existant event
-        if uid:
-            if not resource:
-                return context.come_back(u'Please select a resource.', 
-                                         goto=';edit_event_form', keys=keys)
-            namespace['UID'] = uid
-            event = resource.get_component_by_uid(uid)
-            if not event:
-                message = u'Event not found'
-                return context.come_back(message, goto=goto)
-            namespace['remove'] = True
-            properties = event.get_property_values()
-            # Get values
-            for key in properties:
-                value = properties[key]
-                if isinstance(value, list):
-                    namespace[key] = value
-                elif key == 'STATUS':
-                    namespace['STATUS'] = value.value
-                # Split date fields into dd/mm/yyyy and hh:mm
-                elif key in ('DTSTART', 'DTEND'):
-                    value, params = value.value, value.parameters
-                    year, month, day = Date.encode(value).split('-')
-                    namespace['%s_year' % key] = year
-                    namespace['%s_month' % key] = month
-                    namespace['%s_day' % key] = day
-                    param = params.get('VALUE', '')
-                    if not param or param != ['DATE']:
-                        hours, minutes = Time.encode(value).split(':')
-                        namespace['%s_hours' % key] = hours
-                        namespace['%s_minutes' % key] = minutes
-                    else:
-                        namespace['%s_hours' % key] = ''
-                        namespace['%s_minutes' % key] = ''
-                else:
-                    namespace[key] = value.value
-        else:
-            event = None
-            # Selected calendar
-            if resource is None:
-                ns_calendars = []
-                for calendar in self.search_handlers(handler_class=Calendar):
-                    ns_calendars.append({'name': calendar.name,
-                                         'value': calendar.get_title(),
-                                         'selected': False})
-                namespace['resources'] = ns_calendars
-
-        # Default managed fields are :
-        # SUMMARY, LOCATION, DTSTART, DTEND, DESCRIPTION, 
-        # STATUS ({}), ATTENDEE ([]), COMMENT ([])
-        defaults = Calendar.get_defaults(selected_date, tt_start, tt_end)
-        # Set values from context or default, if not already set
-        for field in defaults:
-            if field not in namespace:
-                if field.startswith('DTSTART_') or field.startswith('DTEND_'):
-                    for attr in ('year', 'month', 'day', 'hours', 'minutes'):
-                        key = 'DTSTART_%s' % attr
-                        if field.startswith('DTEND_'):
-                            key = 'DTEND_%s' % attr
-                        value = context.get_form_value(key) or defaults[key]
-                        namespace[key] = value
-                # Get value from context, used when invalid input given
-                elif context.has_form_value(field):
-                    namespace[field] = context.get_form_value(field)
-                else:
-                    # Set default value in the right format
-                    namespace[field] = defaults[field]
-        # STATUS is an enumerate
-        try:
-            namespace['STATUS'] = status.get_namespace(namespace['STATUS'])
-        except:
-            namespace['STATUS'] = status.get_namespace('TENTATIVE')
-        # Call to gettext on Status values
-        for value in namespace['STATUS']:
-            value['value'] = self.gettext(value['value'])
-
-        # Show action buttons only if current user is authorized
-        if resource is None:
-            namespace['allowed'] = True
-        else:
-            namespace['allowed'] = resource.is_organizer_or_admin(context,
-                                                                  event)
-        # Set first day of week
-        namespace['firstday'] = self.get_first_day()
-
-        handler = self.get_handler('/ui/ical/ical_edit_event_form.xml')
-        return stl(handler, namespace)
+        uid = context.get_form_value('uid')
+        if not uid:
+            return context.come_back('', goto)
+        icalendar.remove(self, uid)
+        return context.come_back(u'Event definitely deleted.', goto=goto)
 
 
     edit_event__access__ = 'is_allowed_to_edit'
@@ -854,22 +1145,16 @@ class CalendarAware(object):
         # Method
         method = context.get_cookie('method') or 'monthly_view'
         goto = ';%s' % method
-        if method not in dir(self):
-            goto = '../;%s' % method
+##        if method not in dir(self):
+##            goto = '../;%s' % method
 
-        if isinstance(self, Calendar):
-            resource = self
-        else:
-            resource_name = context.get_form_value('resource') or None
-            if resource_name and self.has_handler(resource_name):
-                resource = self.get_handler(resource_name)
-                goto = '%s?%s' % (goto, resource_name)
-            else:
-                return context.come_back(u'Please select a resource.', goto,
-                                         keys=keys)
+        # Get event id
+        uid = context.get_form_value('id') or ''
+        if '/' in uid:
+            name, uid = uid.split('/', 1)
 
         if context.has_form_value('remove'):
-            return resource.remove(context)
+            return self.remove(context)
 
         # Get selected_date from the 3 fields 'dd','mm','yyyy' into 'yyyy/mm/dd'
         v_items = []
@@ -877,20 +1162,19 @@ class CalendarAware(object):
             v_items.append(context.get_form_value('DTSTART_%s' % item))
         selected_date = '-'.join(v_items)
 
-        # Keys to keep from url
-        keys = ['resource']
+##        # Keys to keep from url
+##        keys = ['resource']
 
         # Cancel
         if context.has_form_value('cancel'):
             return context.come_back('', goto, keys=keys)
 
-        # Get UID and Component object
+        # Get id and Record object
         properties = {}
-        uid = context.get_form_value('uid')
         if uid:
-            event = resource.get_component_by_uid(uid)
+            event = self.get_record(uid)
             # Test if current user is admin or organizer of this event
-            if not resource.is_organizer_or_admin(context, event):
+            if not self.is_organizer_or_admin(context, event):
                 message = u'You are not authorized to modify this event.'
                 return context.come_back(goto, message, keys=keys)
         else:
@@ -899,7 +1183,7 @@ class CalendarAware(object):
             properties['ORGANIZER'] = PropertyValue(organizer)
 
         for key in context.get_form_keys():
-            if key in ('uid', 'update', 'resource'):
+            if key in ('id', 'update', 'resource'):
                 continue
             # Get date and time for DTSTART and DTEND
             if key.startswith('DTSTART_day'):
@@ -954,8 +1238,10 @@ class CalendarAware(object):
             elif key.startswith('DTSTART') or key.startswith('DTEND'):
                 continue
             else:
-                datatype = resource.get_datatype(key)
+                datatype = self.get_datatype(key)
                 values = context.get_form_values(key)
+                if key == 'SUMMARY' and not values[0]:
+                    return context.come_back(u'Summary must be filled.', goto)
 
                 decoded_values = []
                 for value in values:
@@ -968,155 +1254,32 @@ class CalendarAware(object):
                     properties[key] = decoded_values
 
         if uid:
-            resource.update_component(uid, **properties)
+            self.update_component(uid, **properties)
         else:
-            resource.add_component('VEVENT', **properties)
+            self.add_component('VEVENT', **properties)
 
         goto = '%s?date=%s' % (goto, selected_date)
         return context.come_back(u'Data updated', goto=goto, keys=keys)
 
 
+register_object_class(Calendar)
+register_object_class(icalendar, format='text/calendar')
 
-class Calendar(Text, icalendar, CalendarAware):
 
-    class_id = 'calendar'
+
+class CalendarTable(Table, CalendarView, icalendarTable):
+
+    class_id = 'calendarTable'
     class_version = '20060720'
-    class_title = u'Calendar'
+    class_title = u'CalendarTable'
     class_description = u'Schedule your time with calendar files.'
     class_icon16 = 'images/icalendar16.png'
     class_icon48 = 'images/icalendar48.png'
-
     class_views = [['monthly_view', 'weekly_view', 'download_form'],
                    ['upload_form', 'edit_timetables_form',
                     'edit_metadata_form', 'edit_event_form']]
 
-    # default values for fields within namespace
-    default_fields = {
-        'UID': None, 'SUMMARY': u'', 'LOCATION': u'', 'DESCRIPTION': u'',  
-        'DTSTART_year': None, 'DTSTART_month': None, 'DTSTART_day': None, 
-        'DTSTART_hours': '', 'DTSTART_minutes': '',
-        'DTEND_year': None, 'DTEND_month': None, 'DTEND_day': None, 
-        'DTEND_hours': '', 'DTEND_minutes': '',
-        'ATTENDEE': [], 'COMMENT': [], 'STATUS': {}
-      }
-
-    # default viewed fields on monthly_view
-    default_viewed_fields = ('DTSTART', 'DTEND', 'SUMMARY', 'STATUS')
-
-    timetables = [((7,0),(8,0)), ((8,0),(9,0)), ((9,0),(10,0)), 
-                  ((10,0),(11,0)), ((11,0),(12,0)), ((12,0),(13,0)), 
-                  ((13,0),(14,0)), ((14,0),(15,0)), ((15,0),(16,0)), 
-                  ((16,0),(17,0)), ((17,0),(18,0)), ((18,0),(19,0)), 
-                  ((19,0),(20,0)), ((20,0),(21,0))]
-
-
-    @classmethod
-    def get_defaults(cls, selected_date=None, tt_start=None, tt_end=None):
-        """Return a dic with default values for default fields. """
-
-        # Default values for DTSTART and DTEND
-        default = cls.default_fields.copy()
-
-        if selected_date:
-            year, month, day = selected_date.split('-')
-            default['DTSTART_year'] = default['DTEND_year'] = year
-            default['DTSTART_month'] = default['DTEND_month'] = month
-            default['DTSTART_day'] = default['DTEND_day'] = day
-        if tt_start:
-            hours, minutes = Time.encode(tt_start).split(':')
-            default['DTSTART_hours'] = hours
-            default['DTSTART_minutes'] = minutes
-        if tt_end:
-            hours, minutes = Time.encode(tt_end).split(':')
-            default['DTEND_hours'] = hours
-            default['DTEND_minutes'] = minutes
-
-        return default
-
-
-    # Used by all views
-    def get_calendars(self):
-        return [self]
-
-
-    # Test if user in context is the organizer of a given event (or is admin)
-    def is_organizer_or_admin(self, context, event):
-        if self.get_access_control().is_admin(context.user, self):
-            return True
-        if event:
-            organizer = event.get_property_values('ORGANIZER')
-            return organizer and context.user.get_abspath() == organizer.value
-        ac = self.parent.get_access_control()
-        return ac.is_allowed_to_edit(context.user, self.parent)
-
-
-    def get_timetables(self):
-        """
-        Build a list of timetables represented as tuples(start, end).
-        Data are taken from metadata or from class value.
-
-        Example of metadata:
-          <timetables>(8,0),(10,0);(10,30),(12,0);(13,30),(17,30)</timetables>
-        """
-        if self.has_property('ikaaro:timetables'):
-            return self.get_property('ikaaro:timetables')
-
-        # From class value
-        timetables = []
-        for index, (start, end) in enumerate(self.timetables):
-            timetables.append((time(start[0], start[1]), time(end[0], end[1])))
-        return timetables
-
-
-    # Get days of week based on get_first_day's result for start
-    @classmethod
-    def days_of_week_ns(cls, start, num=None, ndays=7, selected=None):
-        """
-          start : start date of the week
-          num : True if we want to get number of the day too
-          ndays : number of days we want
-          selected : selected date
-        """
-        current_date = start
-        ns_days = []
-        for index in range(ndays):
-            ns =  {}
-            ns['name'] = cls.gettext(days[current_date.weekday()])
-            if num:
-                ns['nday'] = current_date.day
-            else:
-                ns['nday'] = None
-            if selected:
-                ns['selected'] = (selected == current_date)
-            else:
-                ns['selected'] = None
-            ns_days.append(ns)
-            current_date = current_date + timedelta(1)
-        return ns_days
-
-
-    #########################################################################
-    # Get timetables as a list of string containing time start of each one
-    def get_timetables_grid_ns(self, start_date):
-        """ Build namespace to give as grid to gridlayout factory."""
-        ns_timetables = []
-        timetables = self.get_timetables()
-        for timetable in timetables:
-            ns_timetables.append(Time.encode(timetable[0]))
-        if ns_timetables != []:
-            ns_timetables.append(Time.encode(timetables[-1][1]))
-
-        return ns_timetables
-
-
-    #######################################################################
-    # User interface
-    #######################################################################
-
-    edit_metadata_form__sublabel__ = u'Metadata'
-
-    download_form__access__ = 'is_allowed_to_view'
-    download_form__sublabel__ = u'Export in ical format'
+    record_class = Record
 
 
     GET__mtime__ = None
@@ -1124,185 +1287,257 @@ class Calendar(Text, icalendar, CalendarAware):
         return Handler.GET(self, context)
 
 
-    # View
-    text_view__access__ = 'is_allowed_to_edit'
-    text_view__label__ = u'Text view'
-    text_view__sublabel__ = u'Text view'
-    def text_view(self, context):
-        return '<pre>%s</pre>' % self.to_str()
+    # Test if user in context is the organizer of a given event (or is admin)
+    def is_organizer_or_admin(self, context, event):
+        if self.get_access_control().is_admin(context.user, self):
+            return True
+        if event:
+            organizer = event.get_property('ORGANIZER')
+            return organizer and context.user.get_abspath() == organizer.value
+        ac = self.parent.get_access_control()
+        return ac.is_allowed_to_edit(context.user, self.parent)
 
 
-    @staticmethod
-    def get_ns_event(day, event, resource_name=None, conflicts_list=[],
-                     timetable=None, grid=False,
-                     starts_on=True, ends_on=True, out_on=True):
-        """
-        Specify the namespace given on views to represent an event.
+    def get_record(self, id):
+        return icalendarTable.get_record(self, int(id))
 
-        day: date selected XXX not used for now
-        event: event selected
-        resource_name: specify the resource for daily_view
-        conflicts_list: list of conflicts for current resource, [] if not used
-        timetable: timetable index
-        grid: current calculated view uses gridlayout
 
-        By default, we get:
+    def edit_record(self, context):
+        # check form
+        check_fields = []
+        for name, kk in self.get_fields():
+            datatype = self.get_datatype(name)
+            if getattr(datatype, 'multiple', False) is True:
+                datatype = Multiple(type=datatype)
+            check_fields.append((name, getattr(datatype, 'mandatory', False),
+                                 datatype))
 
-          start: HH:MM, end: HH:MM, 
-            TIME: (HH:MM-HH:MM) or TIME: (HH:MM...) or TIME: (...HH:MM)
-          or
-          start: None,  end: None, TIME: None 
-  
-          SUMMARY: 'summary of the event'
-          STATUS: 'status' (class: cal_conflict, if uid in conflicts_list)
-          ORGANIZER: 'organizer of the event'
+        error = context.check_form_input(check_fields)
+        if error is not None:
+            return context.come_back(error, keep=context.get_form_keys())
 
-          url: url to access edit_event_form on current event
-        """
-        properties = event.get_property_values
-        ns = {}
-        ns['SUMMARY'] = properties('SUMMARY').value
-        ns['ORGANIZER'] = properties('ORGANIZER').value
-
-        ###############################################################
-        # Set dtstart and dtend values using '...' for events which 
-        # appear into more than one cell
-        start = properties('DTSTART')
-        end = properties('DTEND')
-        param = start.parameters
-        ns['start'] = Time.encode(start.value.time())
-        ns['end'] = Time.encode(end.value.time())
-        ns['TIME'] = None
-        if grid:
-            # Neither a full day event nor a multiple days event
-            if ('VALUE' not in param or 'DATE' not in param['VALUE']) \
-              and start.value.date() == end.value.date():
-                ns['TIME'] = '%s - %s' % (ns['start'], ns['end']) 
+        # Get the record
+        id = context.get_form_value('id', type=Integer)
+        record = {}
+        for name, title in self.get_fields():
+            datatype = self.get_datatype(name)
+            if getattr(datatype, 'multiple', False) is True:
+                if is_datatype(datatype, Enumerate):
+                    value = context.get_form_values(name)
+                else: # textarea -> string
+                    values = context.get_form_value(name)
+                    values = values.splitlines()
+                    value = []
+                    for index in range(len(values)):
+                        tmp = values[index].strip()
+                        if tmp:
+                            value.append(datatype.decode(tmp))
             else:
-                ns['start'] = ns['end'] = None
-        elif not out_on:
-            if 'VALUE' not in param or 'DATE' not in param['VALUE']:
-                value = ''
-                if starts_on:
-                    value = ns['start']
-                    if ends_on:
-                        value = value + '-'
-                    else:
-                        value = value + '...'
-                if ends_on:
-                    value = value + ns['end']
-                    if not starts_on:
-                        value = '...' + value
-                ns['TIME'] = '(' + value + ')'
+                value = context.get_form_value(name, type=datatype)
+            record[name] = value
 
-        ###############################################################
-        # Set class for conflicting events or just from status value
-        uid = event.uid
-        if uid in conflicts_list:
-            ns['STATUS'] = 'cal_conflict'
-        else:
-            ns['STATUS'] = ''
-            status = properties('STATUS')
-            if status:
-                ns['STATUS'] = status.value
-
-        # Set url to edit_event_form
-        ns['UID'] = '%s' % uid
-        url = ';edit_event_form?uid=%s' % uid
-        if timetable:
-            url = '%s&timetable=%s' % (url, timetable)
-        if resource_name:
-            url = '%s&resource=%s' % (url, resource_name)
-        ns['url'] = url
-
-        return ns
+        self.update_record(id, **record)
+        self.set_changed()
+        goto = context.uri.resolve2('../;edit_record_form')
+        return context.come_back(MSG_CHANGES_SAVED, goto=goto, keep=['id'])
 
 
-    remove__access__ = 'is_allowed_to_edit'
-    def remove(self, context):
-        method = context.get_cookie('method') or 'monthly_view'
-        goto = ';%s?%s' % (method, get_current_date())
-        if method not in dir(self):
-            goto = '../;%s?%s' % (method, get_current_date())
+    upload_form__sublabel__ = u'Upload from an ical file'
+    def upload(self, context):
+        file = context.get_form_value('file')
 
-        uid = context.get_form_value('uid') 
-        if not uid:
-            return context.come_back('', goto)
-        icalendar.remove(self, uid)
-        return context.come_back(u'Event definitely deleted.', goto=goto)
+        if file is None:
+            return context.come_back(u'No file has been entered.')
+
+        # Check wether the handler is able to deal with the uploaded file
+        filename, mimetype, data = file
+        self.set_changed()
+        try:
+            self._load_state_from_ical_file(StringIO(data))
+        except:
+            message = (u'Upload failed: either the file does not match this'
+                       u' document type ($mimetype) or it contains errors.')
+            return context.come_back(message, mimetype=self.get_mimetype())
+
+        return context.come_back(u'Version uploaded.')
 
 
-    edit_timetables_form__access__ = 'is_allowed_to_edit'
-    edit_timetables_form__label__ = u'Edit'
-    edit_timetables_form__sublabel__ = u'Timetables'
-    def edit_timetables_form(self, context):
-        # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
-
-        # Initialization
+    def download_form(self, context):
         namespace = {}
-        namespace['timetables'] = []
-
-        # Show current timetables only if previously set in metadata
-        if self.has_property('ikaaro:timetables'):
-            timetables = self.get_property('ikaaro:timetables')
-            for index, (start, end) in enumerate(timetables):
-                ns = {}
-                ns['index'] = index
-                ns['startname'] = '%s_start' % index
-                ns['endname'] = '%s_end' % index
-                ns['start'] = Time.encode(start)
-                ns['end'] = Time.encode(end)
-                namespace['timetables'].append(ns)
-        handler = self.get_handler('/ui/ical/ical_edit_timetables.xml')
+        namespace['url'] = '../%s/;download' % self.name
+        namespace['title_or_name'] = self.get_title()
+        handler = self.get_handler('/ui/file/download_form.xml')
         return stl(handler, namespace)
 
 
-    edit_timetables__access__ = True
-    def edit_timetables(self, context):
-        timetables = []
-        if self.has_property('ikaaro:timetables'):
-            timetables = self.get_property('ikaaro:timetables')
+    def download(self, context):
+        response = context.response
+        response.set_header('Content-Type', 'calendar')
+        return self.to_ical()
 
-        # Nothing to change
-        if timetables == [] and not context.has_form_value('add'):
-            return context.come_back(u'Nothing to change.')
 
-        # Remove selected lines
+    #######################################################################
+    # API related to CalendarView
+    #######################################################################
+
+    def get_action_url(self, **kw):
+        url = ';edit_event_form'
+        params = []
+        if 'day' in kw:
+            params.append('date=%s' % Date.encode(kw['day']))
+        if 'id' in kw:
+            params.append('id=%s' % kw['id'])
+        if params != []:
+            url = '%s?%s' % (url, '&'.join(params))
+        return url
+
+
+    def get_calendars(self):
+        return [self]
+
+
+    def get_events_to_display(self, start, end):
+        events = []
+        for event in self.search_events_in_range(start, end, sortby='date'):
+            e_dtstart = event.get_property('DTSTART').value
+            events.append((self.name, e_dtstart, event))
+        events.sort(lambda x, y : cmp(x[1], y[1]))
+        return {self.name: 0}, events
+
+
+    edit_record__access__ = 'is_allowed_to_edit'
+    edit_event__access__ = 'is_allowed_to_edit'
+    def edit_event(self, context):
+        # Keys to keep from url
+        keys = context.get_form_keys()
+
+        # Method
+        method = context.get_cookie('method') or 'monthly_view'
+        goto = ';%s' % method
+##        if method not in dir(self):
+##            goto = '../;%s' % method
+
+        # Get event id
+        uid = context.get_form_value('id') or ''
+        if '/' in uid:
+            name, uid = uid.split('/', 1)
+
         if context.has_form_value('remove'):
-            ids = context.get_form_values('ids')
-            if ids == []:
-                return context.come_back(u'Nothing to remove.')
-            new_timetables = []
-            for index, timetable in enumerate(timetables):
-                if str(index) not in ids:
-                    new_timetables.append(timetable)
-            message = u'Timetable(s) removed successfully.'
+            return self.remove(context)
+
+        # Get selected_date from the 3 fields 'dd','mm','yyyy' into 'yyyy/mm/dd'
+        v_items = []
+        for item in ('year', 'month', 'day'):
+            v_items.append(context.get_form_value('DTSTART_%s' % item))
+        selected_date = '-'.join(v_items)
+
+##        # Keys to keep from url
+##        keys = ['resource']
+
+        # Cancel
+        if context.has_form_value('cancel'):
+            return context.come_back('', goto, keys=keys)
+
+        # Get id and Record object
+        properties = {}
+        if uid:
+            uid = int(uid)
+            event = self.get_record(uid)
+            # Test if current user is admin or organizer of this event
+            if not self.is_organizer_or_admin(context, event):
+                message = u'You are not authorized to modify this event.'
+                return context.come_back(goto, message, keys=keys)
         else:
-            new_timetables = []
-            # Update timetable or just set index to next index
-            for index in range(len(timetables)):
-                timetable = check_timetable_entry(context, '%s_start' % index, 
-                                                           '%s_end' % index)
-                if not isinstance(timetable, tuple):
-                    return context.come_back(timetable)
-                new_timetables.append(timetable)
+            # Add user as Organizer
+            organizer = context.user.get_abspath()
+            properties['ORGANIZER'] = Property(organizer)
 
-            # Add a new timetable
-            if context.has_form_value('add'):
-                timetable = check_timetable_entry(context, 'new_start',
-                                                           'new_end')
-                if not isinstance(timetable, tuple):
-                    return context.come_back(timetable)
-                new_timetables.append(timetable)
+        for key in context.get_form_keys():
+            if key in ('id', 'update', 'resource'):
+                continue
+            # Get date and time for DTSTART and DTEND
+            if key.startswith('DTSTART_day'):
+                values = {}
+                for real_key in ('DTSTART', 'DTEND'):
+                    # Get date
+                    v_items = []
+                    for item in ('year', 'month', 'day'):
+                        item = '%s_%s' % (real_key, item)
+                        v_item = context.get_form_value(item)
+                        v_items.append(v_item)
+                    v_date = '-'.join(v_items)
+                    # Get time
+                    hours = context.get_form_value('%s_hours' % real_key)
+                    minutes = context.get_form_value('%s_minutes' % real_key)
+                    params = {}
+                    if hours is '':
+                        value = v_date
+                        params['VALUE'] = ['DATE']
+                    else:
+                        if minutes is '':
+                            minutes = 0
+                        v_time = '%s:%s' % (hours, minutes)
+                        value = ' '.join([v_date, v_time])
+                    # Get value as a datetime object
+                    try:
+                        value = DateTime.from_str(value)
+                    except:
+                        goto = ';edit_event_form?date=%s' % selected_date
+                        message = u'One or more field is invalid.'
+                        return context.come_back(goto=goto, message=message)
+                    values[real_key] = value, params
+                # Check if start <= end
+                if values['DTSTART'][0] > values['DTEND'][0]:
+                    message = u'Start date MUST be earlier than end date.'
+                    goto = ';edit_event_form?date=%s' % \
+                                             Date.encode(values['DTSTART'][0])
+                    if uid:
+                        goto = goto + '&uid=%s' % uid
+                    elif context.has_form_value('timetable'):
+                        timetable = context.get_form_value('timetable', 0)
+                        goto = goto + '&timetable=%s' % timetable
+                    return context.come_back(goto=goto, message=message)
+                # Save values
+                for key in ('DTSTART', 'DTEND'):
+                    if key == 'DTEND' and 'VALUE' in values[key][1]:
+                        value = values[key][0] + timedelta(days=1) - resolution
+                        value = Property(value, values[key][1])
+                    else:
+                        value = Property(values[key][0], values[key][1])
+                    properties[key] = value
+            elif key.startswith('DTSTART') or key.startswith('DTEND'):
+                continue
+            else:
+                check_fields = []
+                datatype = self.get_datatype(key)
+                multiple = getattr(datatype, 'multiple', False) is True
+                if multiple:
+                    datatype = Multiple(type=datatype)
+                check_fields.append((key, getattr(datatype,
+                                              'mandatory', False), datatype))
+                # XXX Check inputs
+                error = context.check_form_input(check_fields)
+                if error is not None:
+                    return context.come_back(error, keep=context.get_form_keys())
+                if multiple:
+                    values = context.get_form_values(key)
+                    decoded_values = []
+                    for value in values:
+                        value = datatype.decode(value)
+                        decoded_values.append(Property(value))
+                    values = decoded_values
+                else:
+                    values = context.get_form_value(key)
+                    values = datatype.decode(values)
+                properties[key] = values
 
-            new_timetables.sort()
-            message = u'Timetables updated successfully.'
+        if uid:
+            self.update_record(uid, **properties)
+        else:
+            properties['type'] = 'VEVENT'
+            self.add_record(properties)
 
-        self.set_property('ikaaro:timetables', tuple(new_timetables))
-        return context.come_back(message=message)
-        
+        goto = '%s?date=%s' % (goto, selected_date)
+        return context.come_back(u'Data updated', goto=goto, keys=keys)
 
-register_object_class(Calendar)
-register_object_class(icalendar, format='text/calendar')
+register_object_class(CalendarTable)

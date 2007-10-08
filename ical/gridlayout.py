@@ -25,7 +25,7 @@ from itools.xhtml import Document
 
 
 template_string = """
-  <td colspan="${cell/colspan}" rowspan="${cell/rowspan}" 
+  <td colspan="${cell/colspan}" rowspan="${cell/rowspan}"
     valign="top" class="color${cell/content/cal}">
       <a stl:if="cell/newurl" class="add_event"
          href="${cell/newurl}">
@@ -176,7 +176,7 @@ def render_namespace(items, times):
                 cells.append(Cell(Cell.busy, colspan=1))
             else:
                 cells.append(Cell(Cell.free, start=time, end=tt_end))
-                                   
+
         # add new cells
         icell = 0
         while iitems < nitems:
@@ -232,12 +232,13 @@ def render_namespace(items, times):
             b_colspan = total_ncols/ncols
         else:
             b_colspan = total_ncols
+
         for irow in range(nrows):
             cells = table[base + irow]
             for cell in cells:
                 cell.colspan = b_colspan
             for icol in range(len(cells), ncols):
-                cells.append(Cell(Cell.free, start=times[base+irow], 
+                cells.append(Cell(Cell.free, start=times[base+irow],
                                   colspan=b_colspan))
             table[base + irow] = cells
         base = base + nrows
@@ -313,7 +314,7 @@ def render_namespace(items, times):
                             celltest.type = Cell.busy
                             cell.colspan = cell.colspan + celltest.colspan
                     jcelltest = jcelltest + 1
- 
+
 
     ######################################################################
     # render_namespace
@@ -334,7 +335,7 @@ def render_namespace(items, times):
                 new_url = '%sstart_time=%s' % (url, Time.encode(cell.start))
             if cell.end:
                 new_url = '%s&end_time=%s' % (new_url, Time.encode(cell.end))
-            ns_cell['newurl'] = new_url 
+            ns_cell['newurl'] = new_url
             ns_cells.append(ns_cell)
 
         ns_rows.append({'cells': ns_cells})
@@ -344,7 +345,7 @@ def render_namespace(items, times):
 
 def get_grid_data(data, grid, start_date=None):
     """
-    Build final namespace from data and grid to be used in gridlayout 
+    Build final namespace from data and grid to be used in gridlayout
     templates.
     """
     # Build grid with Time objects
@@ -359,7 +360,7 @@ def get_grid_data(data, grid, start_date=None):
         events = column['events']
         # Build the time grid
         for event in events:
-            start, end = event['start'], event['end']            
+            start, end = event['start'], event['end']
             # Put the event in the right place
             if not event['TIME']:
                 full_day.append(event)
@@ -417,7 +418,7 @@ def get_grid_data(data, grid, start_date=None):
                         url = '%s&date=%s' % (cell['newurl'], str_date)
                         cell['newurl'] = url
                     if cell['new']:
-                        cell['ns'] = stl(template, {'cell': cell, 
+                        cell['ns'] = stl(template, {'cell': cell,
                                                     'add_icon': icon_path})
             current_date = current_date + timedelta(1)
         cols.append(table)

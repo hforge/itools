@@ -52,6 +52,7 @@ Folder.register_document_type(File)
 Folder.register_document_type(text.Text)
 Folder.register_document_type(html.XHTMLFile)
 Folder.register_document_type(ical.Calendar)
+Folder.register_document_type(ical.CalendarTable)
 Folder.register_document_type(Forum)
 Folder.register_document_type(Tracker)
 if wiki is not None:

@@ -47,8 +47,8 @@
         <span stl:if="not day/selected" class="bold">${day/nday}</span>
         <span stl:if="day/selected" class="cal_day_selected">${day/nday}</span>
 
-        <a class="add_event" href="${day/url}"><img width="16"
-          height="16" src="${add_icon}" /></a>
+        <a stl:if="day/url" class="add_event" href="${day/url}">
+          <img width="16" height="16" src="${add_icon}" /></a>
 
         <table class="event" width="100%">
           <tr stl:repeat="event day/events" class="color${event/cal}">

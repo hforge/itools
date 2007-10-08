@@ -19,11 +19,26 @@
 from datetime import datetime
 
 # Import from itools
-from itools.datatypes import DataType, Integer, URI, Unicode, String
+from itools.datatypes import DataType, Integer, ISOTime , URI, Unicode, String
+
+
+class Time(ISOTime):
+    """
+    This datatype is the same as ISOTime except that its encode method don't use
+    seconds if not explicitely notified.
+    """
+    @staticmethod
+    def encode(value, seconds=False):
+        if value is None:
+            return ''
+        if not seconds:
+            return value.strftime('%H:%M')
+        return value.strftime('%H:%M:%S')
+
 
 
 class DateTime(DataType):
-    """ 
+    """
     iCalendar Date format:
 
     DTSTART:19970714T133000.000000 (Local time)
@@ -42,7 +57,7 @@ class DateTime(DataType):
         date = value[:8]
         year, month, day = int(date[:4]), int(date[4:6]), int(date[6:8])
 
-        # Time can be omitted 
+        # Time can be omitted
         if 'T' in value:
             time = value[9:]
 
@@ -67,7 +82,7 @@ class DateTime(DataType):
 
     @staticmethod
     def encode(value):
-    # PROBLEM --> 2 formats, with or without final 'Z' 
+    # PROBLEM --> 2 formats, with or without final 'Z'
         if value is None:
             return ''
 
@@ -75,7 +90,7 @@ class DateTime(DataType):
         dt = dt.replace(':','')
         dt = dt.replace('-','')
 
-        return dt   
+        return dt
 
 
     @staticmethod
@@ -119,66 +134,66 @@ class DateTime(DataType):
 # --> TO VERIFY AND COMPLETE
 # occurs = 0  means 0..n occurrences
 data_properties = {
-  'BEGIN': Unicode(occurs=1), 
-  'END': Unicode(occurs=1), 
-  'VERSION': Unicode(occurs=1), 
-  'PRODID': Unicode(occurs=1), 
-  'METHOD': Unicode(occurs=1), 
+  'BEGIN': Unicode(occurs=1),
+  'END': Unicode(occurs=1),
+  'VERSION': Unicode(occurs=1),
+  'PRODID': Unicode(occurs=1),
+  'METHOD': Unicode(occurs=1),
   # Component properties
-  'ATTACH': URI(occurs=0), 
-  'CATEGORY': Unicode(occurs=1), 
-  'CATEGORIES': Unicode(occurs=0), 
-  'CLASS': Unicode(occurs=1), 
-  'COMMENT': Unicode(occurs=0), 
-  'DESCRIPTION': Unicode(occurs=1), 
-  'GEO': Unicode(occurs=1), 
-  'LOCATION': Unicode(occurs=1), 
-  'PERCENT-COMPLETE': Integer(occurs=1), 
-  'PRIORITY': Integer(occurs=1), 
-  'RESOURCES': Unicode(occurs=0), 
-  'STATUS': Unicode(occurs=1), 
-  'SUMMARY': Unicode(occurs=1), 
+  'ATTACH': URI(occurs=0),
+  'CATEGORY': Unicode(occurs=1),
+  'CATEGORIES': Unicode(occurs=0),
+  'CLASS': Unicode(occurs=1),
+  'COMMENT': Unicode(occurs=0),
+  'DESCRIPTION': Unicode(occurs=1),
+  'GEO': Unicode(occurs=1),
+  'LOCATION': Unicode(occurs=1),
+  'PERCENT-COMPLETE': Integer(occurs=1),
+  'PRIORITY': Integer(occurs=1),
+  'RESOURCES': Unicode(occurs=0),
+  'STATUS': Unicode(occurs=1),
+  'SUMMARY': Unicode(occurs=1),
   # Date & Time component properties
-  'COMPLETED': DateTime(occurs=1), 
-  'DTEND': DateTime(occurs=1), 
-  'DUE': DateTime(occurs=1), 
-  'DTSTART': DateTime(occurs=1), 
-  'DURATION': Unicode(occurs=1), 
-  'FREEBUSY': Unicode(occurs=1), 
-  'TRANSP': Unicode(occurs=1), 
+  'COMPLETED': DateTime(occurs=1),
+  'DTEND': DateTime(occurs=1),
+  'DUE': DateTime(occurs=1),
+  'DTSTART': DateTime(occurs=1),
+  'DURATION': Unicode(occurs=1),
+  'FREEBUSY': Unicode(occurs=1),
+  'TRANSP': Unicode(occurs=1),
   # Time Zone component properties
-  'TZID': Unicode(occurs=1), 
-  'TZNAME': Unicode(occurs=0), 
-  'TZOFFSETFROM': Unicode(occurs=1), 
-  'TZOFFSETTO': Unicode(occurs=1), 
+  'TZID': Unicode(occurs=1),
+  'TZNAME': Unicode(occurs=0),
+  'TZOFFSETFROM': Unicode(occurs=1),
+  'TZOFFSETTO': Unicode(occurs=1),
   'TZURL': URI(occurs=1),
   # Relationship component properties
   'ATTENDEE': URI(occurs=0),
   'CONTACT': Unicode(occurs=0),
-  'ORGANIZER': URI(occurs=1), 
+  'ORGANIZER': URI(occurs=1),
   # Recurrence component properties
-  'EXDATE': DateTime(occurs=0), 
-  'EXRULE': Unicode(occurs=0), 
-  'RDATE': Unicode(occurs=0), 
-  'RRULE': Unicode(occurs=0), 
+  'EXDATE': DateTime(occurs=0),
+  'EXRULE': Unicode(occurs=0),
+  'RDATE': Unicode(occurs=0),
+  'RRULE': Unicode(occurs=0),
   # Alarm component properties
-  'ACTION': Unicode(occurs=1), 
-  'REPEAT': Integer(occurs=1), 
-  'TRIGGER': Unicode(occurs=1), 
+  'ACTION': Unicode(occurs=1),
+  'REPEAT': Integer(occurs=1),
+  'TRIGGER': Unicode(occurs=1),
   # Change management component properties
-  'CREATED': DateTime(occurs=1), 
-  'DTSTAMP': DateTime(occurs=1), 
-  'LAST-MODIFIED': DateTime(occurs=1), 
-  'SEQUENCE': Integer(occurs=1), 
+  'CREATED': DateTime(occurs=1),
+  'DTSTAMP': DateTime(occurs=1),
+  'LAST-MODIFIED': DateTime(occurs=1),
+  'SEQUENCE': Integer(occurs=1),
   # Others
-  'RECURRENCE-ID': DateTime(occurs=1), 
-  'RELATED-TO': Unicode(occurs=1), 
-  'URL': URI(occurs=1), 
+  'RECURRENCE-ID': DateTime(occurs=1),
+  'RELATED-TO': Unicode(occurs=1),
+  'URL': URI(occurs=1),
   'UID': String(occurs=1)
 }
 
 ################################################################
-#                         NOT USED ACTUALLY  
+#                         NOT USED ACTUALLY
 #statvalue = {'VEVENT': ['TENTATIVE', 'CONFIRMED', 'CANCELLED']}
 #classvalue = ['PRIVATE', 'PUBLIC', 'CONFIDENTIAL']
 ################################################################
@@ -189,13 +204,13 @@ data_properties = {
 #   name *(;param-name=param-value1[, param-value2, ...]) : value CRLF
 #
 #
-# Parse the property line separating as :  
+# Parse the property line separating as :
 #
 #   property name  >  name
-#   value & parameter list > property_value 
-# 
-#   XXX test if the property accepts the given parameters 
+#   value & parameter list > property_value
+#
+#   XXX test if the property accepts the given parameters
 #       could be a great idea but could be done on Component
-# 
+#
 ###################################################################
 

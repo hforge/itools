@@ -73,6 +73,30 @@
         </td>
       </tr>
       <tr>
+        <td>
+          <label for="start_date">Start</label>
+          <input type="text" name="start_date" id="start_date" size="10"
+            maxlength="10" value="${start_date}" title="Date (YYYY-MM-DD)" />
+          <label for="start_time">T</label>
+          <input type="text" name="start_time" id="start_time" size="5"
+            maxlength="5" value="${start_time}" title="Time (HH:MM)" />
+        </td>
+        <td>
+          <label for="end_date">End</label>
+          <input type="text" name="end_date" id="end_date" size="10"
+            maxlength="10" value="${end_date}" title="Date (YYYY-MM-DD)" />
+          <label for="end_time">T</label>
+          <input type="text" name="end_time" id="end_time" size="5"
+            maxlength="5" value="${end_time}" title="Time (HH:MM)" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr>
         <td valign="top" colspan="2">
           <label for="comment">New Comment</label><br/>
           <textarea name="comment" id="comment" cols="60" rows="10"
@@ -121,5 +145,17 @@
     </table>
     <br/>
   </stl:block>
+
+
+<script language="javascript">
+  Calendar.setup({
+    firstDay: 1,
+    inputField: "start_date"});
+
+  Calendar.setup({
+    firstDay: 1,
+    inputField: "end_date"});
+</script>
+
 
 </stl:block>

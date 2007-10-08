@@ -1211,9 +1211,13 @@ class Issue(Folder, VersioningAware):
         namespace['priorities'] = get('priorities.csv').get_options(priority,
             sort=False)
         namespace['states'] = get('states.csv').get_options(state, sort=False)
-
         # Assign To
         namespace['users'] = self.parent.get_members_namespace(assigned_to)
+        # Date Start / Date End
+        namespace['start_date'] = None
+        namespace['start_time'] = None
+        namespace['end_date'] = None
+        namespace['end_time'] = None
         # Comments
         comments = []
         i = 0

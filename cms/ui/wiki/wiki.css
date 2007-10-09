@@ -73,6 +73,7 @@ textarea#data {
   margin: 3px;
   border: 1px solid #ccc;
   background: #eec;
+  padding: 0 3px;
 }
 
 #content .contents.topic ul ul {
@@ -115,8 +116,8 @@ textarea#data {
 
 .literal-block {
   padding: 1em;
-  border: 1px solid #999;
-  background: #ffe;
+  border: 1px dashed #729fcf;
+  background: #fafafa;
 }
 
 .problematic {
@@ -129,4 +130,23 @@ textarea#data {
 
 .system-message-title {
   font-weight: bold;
+}
+
+table.docutils {
+  border-collapse: collapse;
+  border: 2px solid #cacecf;
+}
+
+table.docutils td {
+  border-bottom: 1px solid #bec1c2;
+  padding: 1px 5px;
+  margin: 0 5px;
+}
+
+table.docutils.field-list {
+  border: none;
+}
+
+table.docutils.field-list td {
+  border: none;
 }

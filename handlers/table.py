@@ -338,6 +338,7 @@ class Table(File):
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
                  'records', 'catalog', 'added_records', 'removed_records']
 
+    record_class = Record
 
     #######################################################################
     # Hash with field names and its types
@@ -420,7 +421,7 @@ class Table(File):
                 if uid >= n:
                     # New record
                     records.extend([None] * (uid - n))
-                    record = Record(uid)
+                    record = self.record_class(uid)
                     records.append(record)
                     n = uid + 1
                 else:
@@ -555,7 +556,7 @@ class Table(File):
 
     def add_record(self, kw):
         id = len(self.records)
-        record = Record(id)
+        record = self.record_class(uid)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)

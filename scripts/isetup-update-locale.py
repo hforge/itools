@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from __future__ import with_statement
 from optparse import OptionParser
 import os
 import sys
@@ -55,45 +54,43 @@ if __name__ == '__main__':
     # Process Python files
     print '(1) Processing Python files',
     sys.stdout.flush()
-    with open('MANIFEST') as manifest:
-        for line in manifest.readlines():
-            path = line.strip()
-            if (not path.endswith('.py') or 'test_' in path or
-                    path == 'cms/utils.py' or path.startswith('cms/skeleton')):
-                continue
-            sys.stdout.write('.')
-            sys.stdout.flush()
-            handler = Python(path)
-            for msgid, line_number in handler.get_messages():
-                if len(msgid) > 2:
-                    po.set_message(msgid, references={path: [line_number]})
+    for line in open('MANIFEST').readlines():
+        path = line.strip()
+        if (not path.endswith('.py') or 'test_' in path or
+                path == 'cms/utils.py' or path.startswith('cms/skeleton')):
+            continue
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        handler = Python(path)
+        for msgid, line_number in handler.get_messages():
+            if len(msgid) > 2:
+                po.set_message(msgid, references={path: [line_number]})
     print ' OK'
 
     # Process XHTML files
     print '(2) Processing XHTML files',
     sys.stdout.flush()
-    with open('MANIFEST') as manifest:
-        for line in manifest.readlines():
-            path = line.strip()
-            if (not (path.endswith('.xhtml.' + source_language) or
-                    path.endswith('.xml.' + source_language)) or
-                    path.startswith('cms/skeleton')):
-                continue
-            sys.stdout.write('.')
-            sys.stdout.flush()
-            handler = Document(path)
-            messages = handler.get_messages()
-            try:
-                messages = list(messages)
-            except:
-                print
-                print
-                print 'ERROR:', path
-                print
-                raise
-            for msgid, line_number in messages:
-                if len(msgid) > 1:
-                    po.set_message(msgid, references={path: [line_number]})
+    for line in open('MANIFEST').readlines():
+        path = line.strip()
+        if (not (path.endswith('.xhtml.' + source_language) or
+                path.endswith('.xml.' + source_language)) or
+                path.startswith('cms/skeleton')):
+            continue
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        handler = Document(path)
+        messages = handler.get_messages()
+        try:
+            messages = list(messages)
+        except:
+            print
+            print
+            print 'ERROR:', path
+            print
+            raise
+        for msgid, line_number in messages:
+            if len(msgid) > 1:
+                po.set_message(msgid, references={path: [line_number]})
     print ' OK'
 
     # Update locale.pot

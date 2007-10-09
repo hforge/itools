@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 import unittest
 from unittest import TestCase
@@ -49,8 +46,11 @@ class FolderTestCase(TestCase):
         root = get_handler('.')
         root.database = database
         self.root = root
-        with vfs.make_file('tests/toto.txt') as file:
+        file = vfs.make_file('tests/toto.txt')
+        try:
             file.write('I am Toto\n')
+        finally:
+            file.close()
 
 
     def tearDown(self):

@@ -22,12 +22,12 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import Integer, String, Unicode, URI
+from itools.datatypes import Integer, ISOTime, String, Unicode, URI
 from itools.catalog import (EqQuery, RangeQuery, OrQuery, AndQuery,
     KeywordField, MemoryCatalog)
 from itools.handlers import Text, parse_table, fold_line, escape_data
 from itools.handlers import Table, Record as TableRecord, Property
-from types import data_properties, DateTime
+from types import data_properties, DateTime, Time
 
 
 # The smallest possible difference between non-equal timedelta objects.
@@ -42,7 +42,6 @@ from types import data_properties, DateTime
 # more complete set: GreaterThan, GreaterThanOrEqual, LesserThan and
 # LesserThanOrEqual.
 resolution = timedelta.resolution
-
 
 
 class PropertyValue(object):
@@ -61,17 +60,17 @@ class PropertyValue(object):
 class Component(object):
     """
     Parses and evaluates a component block.
-        
+
         input :   string values for c_type and uid
-                  a list of Property objects 
+                  a list of Property objects
                   (Property objects can share the same name as a property
                   name can appear more than one time in a component)
-        
+
         output :  unchanged c_type and uid
                   a dictionnary of versions of this component including
                   a dict {'property_name': PropertyValue[] } for properties
     """
-    # XXX A parse method should be added to test properties inside of current 
+    # XXX A parse method should be added to test properties inside of current
     # component-type/properties (for example to test if property can appear
     # more than one time, ...)
 
@@ -156,7 +155,7 @@ class Component(object):
 
 
     # Get a property of current component
-    def get_property_values(self, name=None):
+    def get_property(self, name=None):
         """
         Return the value of given name property as a PropertyValue or as a list
         of PropertyValue objects if it can occur more than once.
@@ -171,6 +170,101 @@ class Component(object):
         if name:
             return version.get(name, None)
         return version
+
+    get_property_values = get_property
+
+
+    def get_end(self):
+        return self.get_property('DTEND').value
+
+
+    def get_ns_event(self, day, resource_name=None, conflicts_list=[],
+                     timetable=None, grid=False,
+                     starts_on=True, ends_on=True, out_on=True):
+        """
+        Specify the namespace given on views to represent an event.
+
+        day: date selected XXX not used for now
+        conflicts_list: list of conflicts for current resource, [] if not used
+        timetable: timetable index or None
+        grid: current calculated view uses gridlayout
+        starts_on, ends_on and out_on are used to adjust display.
+
+        By default, we get:
+
+          start: HH:MM, end: HH:MM,
+            TIME: (HH:MM-HH:MM) or TIME: (HH:MM...) or TIME: (...HH:MM)
+          or
+          start: None,  end: None, TIME: None
+
+          SUMMARY: 'summary of the event'
+          STATUS: 'status' (class: cal_conflict, if id in conflicts_list)
+          ORGANIZER: 'organizer of the event'
+
+##          XXX url: url to access edit_event_form on current event
+        """
+        properties = self.get_property
+        ns = {}
+        ns['SUMMARY'] = properties('SUMMARY').value
+        ns['ORGANIZER'] = properties('ORGANIZER').value
+
+        ###############################################################
+        # Set dtstart and dtend values using '...' for events which
+        # appear into more than one cell
+        start = properties('DTSTART')
+        end = properties('DTEND')
+        param = start.parameters
+        ns['start'] = Time.encode(start.value.time())
+        ns['end'] = Time.encode(end.value.time())
+        ns['TIME'] = None
+        if grid:
+            # Neither a full day event nor a multiple days event
+            if ('VALUE' not in param or 'DATE' not in param['VALUE']) \
+              and start.value.date() == end.value.date():
+                ns['TIME'] = '%s - %s' % (ns['start'], ns['end'])
+            else:
+                ns['start'] = ns['end'] = None
+        elif not out_on:
+            if 'VALUE' not in param or 'DATE' not in param['VALUE']:
+                value = ''
+                if starts_on:
+                    value = ns['start']
+                    if ends_on:
+                        value = value + '-'
+                    else:
+                        value = value + '...'
+                if ends_on:
+                    value = value + ns['end']
+                    if not starts_on:
+                        value = '...' + value
+                ns['TIME'] = '(' + value + ')'
+
+        ###############################################################
+        # Set class for conflicting events or just from status value
+        id = self.uid
+        if id in conflicts_list:
+            ns['STATUS'] = 'cal_conflict'
+        else:
+            ns['STATUS'] = ''
+            status = properties('STATUS')
+            if status:
+                ns['STATUS'] = status.value
+
+        if not resource_name:
+            id = str(id)
+        else:
+            id = '%s/%s' % (resource_name, id)
+        ns['id'] = id
+#        resource =
+        # Set url to action like edit_event_form
+#        url = resource_name.get_action_url(day=day)
+#        if url:
+#            url = '%s?id=%s' % (url, id)
+#            if timetable:
+#                url = '%s&timetable=%s' % (url, timetable)
+#        ns['url'] = url
+
+        return ns
 
 
 
@@ -233,7 +327,7 @@ class icalendar(Text):
         self._init_ical()
 
         properties = (
-            ('VERSION', {}, u'2.0'), 
+            ('VERSION', {}, u'2.0'),
             ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
           )
         for name, param, value in properties:
@@ -272,7 +366,7 @@ class icalendar(Text):
         # Read first line
         first = lines[0]
         if (first[0] != 'BEGIN' or first[1].value != 'VCALENDAR'
-            or len(first[1].parameters) != 0): 
+            or len(first[1].parameters) != 0):
             raise ValueError, 'icalendar must begin with BEGIN:VCALENDAR'
 
         lines = lines[1:]
@@ -294,7 +388,7 @@ class icalendar(Text):
             # Add the property
             self.properties[name] = value
             n_line += 1
-        
+
         # The properties VERSION and PRODID are mandatory
         if 'VERSION' not in self.properties or 'PRODID' not in self.properties:
             raise ValueError, 'PRODID or VERSION parameter missing'
@@ -305,7 +399,7 @@ class icalendar(Text):
         # Read components
         c_type = None
         uid = None
- 
+
         for prop_name, prop_value in lines[:-1]:
             if prop_name in ('PRODID', 'VERSION'):
                 raise ValueError, 'PRODID and VERSION must appear before '\
@@ -496,7 +590,7 @@ class icalendar(Text):
 
     def update_component(self, uid, **kw):
         """
-        Update component with given uid with properties given as kw, 
+        Update component with given uid with properties given as kw,
         creating a new version based on the previous one.
         """
         # Check the properties
@@ -525,7 +619,7 @@ class icalendar(Text):
     def remove(self, uid):
         """
         Definitely remove from the calendar an existant component with all its
-        versions. 
+        versions.
         """
         self.set_changed()
         # Remove
@@ -539,7 +633,7 @@ class icalendar(Text):
         """
         Return PropertyValue[] for the given icalendar property name
         or
-        Return icalendar property values as a dict 
+        Return icalendar property values as a dict
             {property_name: PropertyValue object, ...}
 
         *searching only for general properties, not components ones.
@@ -574,7 +668,7 @@ class icalendar(Text):
     def get_components(self, type=None):
         """
         Return a dict {component_type: Component[], ...}
-        or 
+        or
         Return Component[] of given type.
         """
         if type is None:
@@ -592,7 +686,7 @@ class icalendar(Text):
         It should be used like this, for example:
 
             events = cal.search_events(
-                STATUS='TENTATIVE', 
+                STATUS='TENTATIVE',
                 PRIORITY=1,
                 ATTENDEE=[URI.decode('mailto:jdoe@itaapy.com'),
                           URI.decode('mailto:jsmith@itaapy.com')])
@@ -608,7 +702,7 @@ class icalendar(Text):
         filters = kw.keys()
 
         # For each event
-        events = subset or [self.components[x] 
+        events = subset or [self.components[x]
                             for x in self.search(type='VEVENT')]
         for event in events:
             version = event.get_version()
@@ -637,6 +731,11 @@ class icalendar(Text):
             else:
                 res_events.append(event)
         return res_events
+
+
+    # Used to factorize code of cms ical between Calendar & CalendarTable
+    def get_record(self, uid):
+        return self.components.get(uid)
 
 
     def get_component_by_uid(self, uid):
@@ -678,7 +777,7 @@ class icalendar(Text):
         query = AndQuery(
             EqQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('dtstart', dtstart, dtend),
-                    RangeQuery('dtend', dtstart + resolution, 
+                    RangeQuery('dtend', dtstart + resolution,
                                         dtend + resolution),
                     AndQuery(RangeQuery('dtstart', None, dtstart),
                              RangeQuery('dtend', dtend, None))))
@@ -714,10 +813,10 @@ class icalendar(Text):
             if e['dtstart'] == current[0]['dtstart']:
                 current.append(e)
             else:
-                res.extend(x['event'] 
+                res.extend(x['event']
                            for x in sorted(current, key=itemgetter('dtend')))
                 current = [e]
-        res.extend(x['event'] for x in sorted(current, 
+        res.extend(x['event'] for x in sorted(current,
                                               key=itemgetter('dtend')))
         return res
 
@@ -831,6 +930,99 @@ class Record(TableRecord):
         return self[-1]
 
 
+    def get_end(self):
+        return self.get_property('DTEND').value
+
+
+    def get_ns_event(self, day, resource_name=None, conflicts_list=[],
+                     timetable=None, grid=False,
+                     starts_on=True, ends_on=True, out_on=True):
+        """
+        Specify the namespace given on views to represent an event.
+
+        day: date selected XXX not used for now
+        conflicts_list: list of conflicts for current resource, [] if not used
+        timetable: timetable index or None
+        grid: current calculated view uses gridlayout
+        starts_on, ends_on and out_on are used to adjust display.
+
+        By default, we get:
+
+          start: HH:MM, end: HH:MM,
+            TIME: (HH:MM-HH:MM) or TIME: (HH:MM...) or TIME: (...HH:MM)
+          or
+          start: None,  end: None, TIME: None
+
+          SUMMARY: 'summary of the event'
+          STATUS: 'status' (class: cal_conflict, if id in conflicts_list)
+          ORGANIZER: 'organizer of the event'
+
+##          XXX url: url to access edit_event_form on current event
+        """
+        properties = self.get_property
+        ns = {}
+        ns['SUMMARY'] = properties('SUMMARY').value
+        ns['ORGANIZER'] = properties('ORGANIZER').value
+
+        ###############################################################
+        # Set dtstart and dtend values using '...' for events which
+        # appear into more than one cell
+        start = properties('DTSTART')
+        end = properties('DTEND')
+        param = start.parameters
+        ns['start'] = Time.encode(start.value.time())
+        ns['end'] = Time.encode(end.value.time())
+        ns['TIME'] = None
+        if grid:
+            # Neither a full day event nor a multiple days event
+            if ('VALUE' not in param or 'DATE' not in param['VALUE']) \
+              and start.value.date() == end.value.date():
+                ns['TIME'] = '%s - %s' % (ns['start'], ns['end'])
+            else:
+                ns['start'] = ns['end'] = None
+        elif not out_on:
+            if 'VALUE' not in param or 'DATE' not in param['VALUE']:
+                value = ''
+                if starts_on:
+                    value = ns['start']
+                    if ends_on:
+                        value = value + '-'
+                    else:
+                        value = value + '...'
+                if ends_on:
+                    value = value + ns['end']
+                    if not starts_on:
+                        value = '...' + value
+                ns['TIME'] = '(' + value + ')'
+
+        ###############################################################
+        # Set class for conflicting events or just from status value
+        id = self.id
+        if id in conflicts_list:
+            ns['STATUS'] = 'cal_conflict'
+        else:
+            ns['STATUS'] = ''
+            status = properties('STATUS')
+            if status:
+                ns['STATUS'] = status.value
+
+        if not resource_name:
+            id = str(id)
+        else:
+            id = '%s/%s' % (resource_name, id)
+        ns['id'] = id
+#        resource =
+#        # Set url to action like edit_event_form
+#        url = resource_name.get_action_url(day=day)
+#        if url:
+#            url = '%s?id=%s' % (url, id)
+#            if timetable:
+#                url = '%s&timetable=%s' % (url, timetable)
+#        ns['url'] = url
+
+        return ns
+
+
 
 class icalendarTable(Table):
     """
@@ -841,61 +1033,61 @@ class icalendarTable(Table):
     schema = {
       'type': String(index='keyword'),
       # Calendar properties
-      'BEGIN': String(), 
-      'END': String(), 
-      'VERSION': Unicode(), 
-      'PRODID': Unicode(), 
-      'METHOD': Unicode(), 
+      'BEGIN': String(),
+      'END': String(),
+      'VERSION': Unicode(),
+      'PRODID': Unicode(),
+      'METHOD': Unicode(),
       # Component properties
-      'ATTACH': URI(multiple=True), 
-      'CATEGORY': Unicode(), 
-      'CATEGORIES': Unicode(multiple=True), 
-      'CLASS': Unicode(), 
-      'COMMENT': Unicode(multiple=True), 
-      'DESCRIPTION': Unicode(), 
-      'GEO': Unicode(), 
-      'LOCATION': Unicode(), 
-      'PERCENT-COMPLETE': Integer(), 
-      'PRIORITY': Integer(), 
-      'RESOURCES': Unicode(multiple=True), 
-      'STATUS': Unicode(), 
-      'SUMMARY': Unicode(index='keyword'), 
+      'ATTACH': URI(multiple=True),
+      'CATEGORY': Unicode(),
+      'CATEGORIES': Unicode(multiple=True),
+      'CLASS': Unicode(),
+      'COMMENT': Unicode(multiple=True),
+      'DESCRIPTION': Unicode(),
+      'GEO': Unicode(),
+      'LOCATION': Unicode(),
+      'PERCENT-COMPLETE': Integer(),
+      'PRIORITY': Integer(),
+      'RESOURCES': Unicode(multiple=True),
+      'STATUS': Unicode(),
+      'SUMMARY': Unicode(index='keyword', mandatory=True),
       # Date & Time component properties
-      'COMPLETED': DateTime(), 
-      'DTEND': DateTime(index='keyword'), 
-      'DUE': DateTime(), 
-      'DTSTART': DateTime(index='keyword'), 
-      'DURATION': Unicode(), 
-      'FREEBUSY': Unicode(), 
-      'TRANSP': Unicode(), 
+      'COMPLETED': DateTime(),
+      'DTEND': DateTime(index='keyword'),
+      'DUE': DateTime(),
+      'DTSTART': DateTime(index='keyword'),
+      'DURATION': Unicode(),
+      'FREEBUSY': Unicode(),
+      'TRANSP': Unicode(),
       # Time Zone component properties
-      'TZID': Unicode(), 
-      'TZNAME': Unicode(multiple=True), 
-      'TZOFFSETFROM': Unicode(), 
-      'TZOFFSETTO': Unicode(), 
+      'TZID': Unicode(),
+      'TZNAME': Unicode(multiple=True),
+      'TZOFFSETFROM': Unicode(),
+      'TZOFFSETTO': Unicode(),
       'TZURL': URI(),
       # Relationship component properties
       'ATTENDEE': URI(multiple=True),
       'CONTACT': Unicode(multiple=True),
-      'ORGANIZER': URI(), 
+      'ORGANIZER': URI(),
       # Recurrence component properties
-      'EXDATE': DateTime(multiple=True), 
-      'EXRULE': Unicode(multiple=True), 
-      'RDATE': Unicode(multiple=True), 
-      'RRULE': Unicode(multiple=True), 
+      'EXDATE': DateTime(multiple=True),
+      'EXRULE': Unicode(multiple=True),
+      'RDATE': Unicode(multiple=True),
+      'RRULE': Unicode(multiple=True),
       # Alarm component properties
-      'ACTION': Unicode(), 
-      'REPEAT': Integer(), 
-      'TRIGGER': Unicode(), 
+      'ACTION': Unicode(),
+      'REPEAT': Integer(),
+      'TRIGGER': Unicode(),
       # Change management component properties
-      'CREATED': DateTime(), 
-      'DTSTAMP': DateTime(), 
-      'LAST-MODIFIED': DateTime(), 
-      'SEQUENCE': Integer(), 
+      'CREATED': DateTime(),
+      'DTSTAMP': DateTime(),
+      'LAST-MODIFIED': DateTime(),
+      'SEQUENCE': Integer(),
       # Others
-      'RECURRENCE-ID': DateTime(), 
-      'RELATED-TO': Unicode(), 
-      'URL': URI(), 
+      'RECURRENCE-ID': DateTime(),
+      'RELATED-TO': Unicode(),
+      'URL': URI(),
       'UID': String(index='keyword')
     }
 
@@ -904,7 +1096,7 @@ class icalendarTable(Table):
         Table.new(self)
 
         properties = (
-            ('VERSION', {}, u'2.0'), 
+            ('VERSION', {}, u'2.0'),
             ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
           )
         self.properties = {}
@@ -917,7 +1109,7 @@ class icalendarTable(Table):
     #########################################################################
     def _load_state_from_ical_file(self, file):
         """
-        Deserialize an ical file, generally named .ics 
+        Deserialize an ical file, generally named .ics
         Output data structure is a table.
         """
         self.new()
@@ -941,7 +1133,7 @@ class icalendarTable(Table):
         # Read first line
         first = lines[0]
         if (first[0] != 'BEGIN' or first[1].value != 'VCALENDAR'
-            or len(first[1].parameters) != 0): 
+            or len(first[1].parameters) != 0):
             raise ValueError, 'icalendar must begin with BEGIN:VCALENDAR'
 
         lines = lines[1:]
@@ -963,7 +1155,7 @@ class icalendarTable(Table):
             # Add the property
             properties[name] = value
             n_line += 1
-        
+ 
         # The properties VERSION and PRODID are mandatory
         if 'VERSION' not in properties or 'PRODID' not in properties:
             raise ValueError, 'PRODID or VERSION parameter missing'
@@ -980,7 +1172,7 @@ class icalendarTable(Table):
         records = self.records
         id = 0
         uids = {}
- 
+
         for prop_name, prop_value in lines[:-1]:
             if prop_name in ('PRODID', 'VERSION'):
                 raise ValueError, 'PRODID and VERSION must appear before '\
@@ -1009,7 +1201,7 @@ class icalendarTable(Table):
                     else:
                         n = 0
                         uids[uid] = 0
-                    self.added_records.append((uid, n))
+                    self.added_records.append((id, n))
                     records.append(record)
 
                     # Next
@@ -1050,7 +1242,7 @@ class icalendarTable(Table):
 
         line = 'BEGIN:VCALENDAR\n'
         lines.append(Unicode.encode(line))
-        
+ 
         # Calendar properties
         for name in self.properties:
             value = self.properties[name]
@@ -1071,7 +1263,7 @@ class icalendarTable(Table):
                     for name in names:
                         if name in ('id', 'ts', 'type'):
                             continue
-                        elif name == 'DTSTAMP': 
+                        elif name == 'DTSTAMP':
                             value = version['ts']
                         else:
                             value = version[name]
@@ -1131,7 +1323,7 @@ class icalendarTable(Table):
         """
         Return Property[] for the given icalendar property name
         or
-        Return icalendar property values as a dict 
+        Return icalendar property values as a dict
             {property_name: Property object, ...}
 
         *searching only for general properties, not components ones.
@@ -1145,7 +1337,7 @@ class icalendarTable(Table):
     def get_components(self, type=None):
         """
         Return a dict {component_type: Record[], ...}
-        or 
+        or
         Return Record[] of given type.
         """
         if type is None:
@@ -1163,7 +1355,7 @@ class icalendarTable(Table):
         It should be used like this, for example:
 
             events = cal.search_events(
-                STATUS='TENTATIVE', 
+                STATUS='TENTATIVE',
                 PRIORITY=1,
                 ATTENDEE=[URI.decode('mailto:jdoe@itaapy.com'),
                           URI.decode('mailto:jsmith@itaapy.com')])
@@ -1199,7 +1391,7 @@ class icalendarTable(Table):
                     value = [ x if isinstance(x, Property) else Property(x)
                               for x in value ]
                     if not isinstance(expected, list):
-                        expected = [expected]
+                        expected = [expected, ]
                     for item in value:
                         if item.value in expected:
                             break
@@ -1238,7 +1430,7 @@ class icalendarTable(Table):
         query = AndQuery(
             EqQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('DTSTART', dtstart, dtend),
-                    RangeQuery('DTEND', dtstart + resolution, 
+                    RangeQuery('DTEND', dtstart + resolution,
                                         dtend + resolution),
                     AndQuery(RangeQuery('DTSTART', None, dtstart),
                              RangeQuery('DTEND', dtend, None))))
@@ -1258,7 +1450,7 @@ class icalendarTable(Table):
         # Get results as a dict to sort them
         res_events = []
         for event in results:
-            version = event.get_version()
+            version = event[-1]
             value = {
                 'dtstart': version['DTSTART'].value,
                 'dtend': version['DTEND'].value,
@@ -1274,10 +1466,10 @@ class icalendarTable(Table):
             if e['dtstart'] == current[0]['dtstart']:
                 current.append(e)
             else:
-                res.extend(x['event'] 
+                res.extend(x['event']
                            for x in sorted(current, key=itemgetter('dtend')))
                 current = [e]
-        res.extend(x['event'] for x in sorted(current, 
+        res.extend(x['event'] for x in sorted(current,
                                               key=itemgetter('dtend')))
         return res
 

@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from optparse import OptionParser
 
@@ -39,7 +36,8 @@ def format_int_as_hex(x, length=4):
 
 
 def inspect_index(target):
-    with target.open('tree') as file:
+    file = target.open('tree')
+    try:
         i = 0
         data = file.read(16)
         while data:
@@ -60,6 +58,8 @@ def inspect_index(target):
             # Next
             i += 1
             data = file.read(16)
+    finally:
+        file.close()
 
 
 def inspect_documents(target):

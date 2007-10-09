@@ -20,6 +20,7 @@ from primitive import (Integer, Decimal, Unicode, String, Boolean, Email, URI,
                        FileName, QName, Tokens, Enumerate, XML, XMLAttribute,
                        is_datatype)
 from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, InternetDateTime
+from languages import LanguageTag
 # Define alias Date, Time and DateTime (use ISO standard)
 from datetime_ import (ISOCalendarDate as Date, ISOTime as Time,
                        ISODateTime as DateTime)
@@ -46,6 +47,7 @@ __all__ = [
     'ISOTime',
     'ISODateTime',
     'InternetDateTime',
+    'LanguageTag',
     # Alias
     'Date',
     'Time',

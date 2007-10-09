@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from os import fdopen
 import sys
@@ -137,8 +134,11 @@ class Server(BaseServer):
         spool = self.target.resolve2('spool')
         spool = str(spool.path)
         tmp_file, tmp_path = mkstemp(dir=spool)
-        with fdopen(tmp_file, 'w') as file:
+        file = fdopen(tmp_file, 'w')
+        try:
             file.write(message.as_string())
+        finally:
+            file.close()
 
 
     #######################################################################

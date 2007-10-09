@@ -180,11 +180,6 @@ class HTMLFile(HTMLDocument, XHTMLFile):
     class_id = 'text/html'
 
 
-    GET__mtime__ = Text.get_mtime
-    def GET(self, context):
-        return Text.GET(self, context)
-
-
 
 ###########################################################################
 # Register

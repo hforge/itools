@@ -130,8 +130,9 @@ class Spool(object):
                     log('SENT "%s" from "%s" to "%s"' % (subject, from_addr,
                         to_addr))
             except:
+                smtp.quit()
                 self.log_error()
-            finally:
+            else:
                 smtp.quit()
 
         # Close files

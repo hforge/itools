@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from datetime import datetime
 from optparse import OptionParser
@@ -82,24 +79,23 @@ if __name__ == '__main__':
     credits_mails = {}  # Mapping from secondary email to canonical email
     emails = []
     if vfs.exists('CREDITS'):
-        with vfs.open('CREDITS') as file:
-            for line in file.readlines():
-                line = line.strip()
-                if line.startswith('#'):
-                    continue
-                if line:
-                    key, value = line.split(':', 1)
-                    value = value.lstrip()
-                    if key == 'N':
-                        name = value
-                    elif key == 'E':
-                        emails.append(value)
-                        if len(emails) == 1:
-                            credits_names[value] = name
-                        else:
-                            credits_mails[value] = emails[0]
-                else:
-                    emails = []
+        for line in vfs.open('CREDITS').readlines():
+            line = line.strip()
+            if line.startswith('#'):
+                continue
+            if line:
+                key, value = line.split(':', 1)
+                value = value.lstrip()
+                if key == 'N':
+                    name = value
+                elif key == 'E':
+                    emails.append(value)
+                    if len(emails) == 1:
+                        credits_names[value] = name
+                    else:
+                        credits_mails[value] = emails[0]
+            else:
+                emails = []
 
     # Go!
     for filename in args:

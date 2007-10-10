@@ -110,7 +110,11 @@ class Node(object):
 
         path, name = path[:-1], path[-1]
 
-        container = self.get_handler(path)
+        try:
+            container = self.get_handler(path)
+        except LookupError:
+            return False
+
         return name in container.get_handler_names()
 
 

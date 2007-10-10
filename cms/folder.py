@@ -376,7 +376,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             href = None
         else:
             href = '%s/;%s' % (id, firstview)
-        line['name'] = (id, href)
+        line['name'] = (object.name, href)
         line['format'] = self.gettext(object.class_title)
         line['title'] = object.get_property('dc:title')
         # Titles
@@ -458,7 +458,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def browse_thumbnails(self, context):
         context.set_cookie('browse', 'thumb')
 
-        query = EqQuery('parent_path', self.get_abspath())
+        real_handler = self.get_real_handler()
+        query = EqQuery('parent_path', real_handler.get_abspath())
         namespace = self.browse_namespace(48, query=query)
 
         handler = self.get_handler('/ui/folder/browse_thumbnails.xml')
@@ -480,7 +481,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         sortorder = context.get_form_value('sortorder', sortorder)
 
         # Build the query
-        abspath = self.get_abspath()
+        abspath = self.get_real_handler().abspath
         if term:
             if search_subfolders is True:
                 query = EqQuery('paths', abspath)
@@ -546,7 +547,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 selected_image = None
 
         # look up available images
-        query = EqQuery('parent_path', self.get_abspath())
+        real_handler = self.get_real_handler()
+        query = EqQuery('parent_path', real_handler.get_abspath())
         namespace = self.browse_namespace(48, query=query, batchsize=0)
         objects = []
         offset = 0

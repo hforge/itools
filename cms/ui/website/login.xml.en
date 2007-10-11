@@ -15,7 +15,7 @@
       <dt><label for="password">Password</label></dt>
       <dd>
         <input type="password" id="password" name="password" />
-        <a href=";forgotten_password_form">I forgot my password</a>
+        <a href="/;forgotten_password_form">I forgot my password</a>
       </dd>
     </dl>
     <p>

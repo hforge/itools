@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the future
-from __future__ import with_statement
-
 # Import from the Standard Library
 from os import fdopen
 from tempfile import mkstemp
@@ -256,8 +253,11 @@ class Database(object):
             return vfs.make_file(reference)
 
         # Safe
-        with open(self.log, 'a+b') as log:
+        log = open(self.log, 'a+b')
+        try:
             log.write('+%s\n' % reference)
+        finally:
+            log.close()
 
         return vfs.make_file(reference)
 
@@ -268,8 +268,11 @@ class Database(object):
             return vfs.make_folder(reference)
 
         # Safe
-        with open(self.log, 'a+b') as log:
+        log = open(self.log, 'a+b')
+        try:
             log.write('+%s\n' % reference)
+        finally:
+            log.close()
 
         return vfs.make_folder(reference)
 
@@ -280,8 +283,11 @@ class Database(object):
             return vfs.remove(reference)
 
         # Safe
-        with open(self.log, 'a+b') as log:
+        log = open(self.log, 'a+b')
+        try:
             log.write('-%s\n' % reference)
+        finally:
+            log.close()
 
 
     def safe_open(self, reference, mode=None):
@@ -299,8 +305,11 @@ class Database(object):
             tmp_file, tmp_path = mkstemp(dir=self.commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference] = tmp_path
-            with open(self.log, 'a+b') as log:
+            log = open(self.log, 'a+b')
+            try:
                 log.write('~%s#%s\n' % (reference, tmp_path))
+            finally:
+                log.close()
             return fdopen(tmp_file, 'w')
         elif mode == APPEND:
             tmp_map = get_tmp_map()
@@ -311,8 +320,11 @@ class Database(object):
             tmp_file, tmp_path = mkstemp(dir=self.commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference] = tmp_path
-            with open(self.log, 'a+b') as log:
+            log = open(self.log, 'a+b')
+            try:
                 log.write('>%s#%s\n' % (reference, tmp_path))
+            finally:
+                log.close()
             return fdopen(tmp_file, 'w')
 
         return vfs.open(reference, mode)
@@ -377,8 +389,9 @@ class Database(object):
             # Rollback the changes in disk
             if self.log is not None:
                 self.rollback()
+                get_tmp_map().clear()
             raise
-        finally:
+        else:
             if self.log is not None:
                 get_tmp_map().clear()
 
@@ -407,7 +420,8 @@ class Database(object):
         database state before the transaction started.
         """
         # The data
-        with open(self.log) as log:
+        log = open(self.log)
+        try:
             for line in log.readlines():
                 if line[-1] == '\n':
                     line = line[:-1]
@@ -425,6 +439,8 @@ class Database(object):
                     pass
                 else:
                     raise RuntimeError, 'log file corrupted'
+        finally:
+            log.close()
 
         # We are done. Remove the commit.
         vfs.remove(self.commit)
@@ -438,7 +454,8 @@ class Database(object):
         safe call this method again so it finishes the work.
         """
         # Save the transaction
-        with open(self.log) as log:
+        log = open(self.log)
+        try:
             for line in log.readlines():
                 if line[-1] == '\n':
                     line = line[:-1]
@@ -458,10 +475,15 @@ class Database(object):
                 elif action == '>':
                     dst, src = line.rsplit('#', 1)
                     data = open(src, READ).read()
-                    with vfs.open(dst, APPEND) as file:
+                    file = vfs.open(dst, APPEND)
+                    try:
                         file.write(data)
+                    finally:
+                        file.close()
                 else:
                     raise RuntimeError, 'log file corrupted'
+        finally:
+            log.close()
 
         # We are done. Remove the commit.
         vfs.remove(self.commit)

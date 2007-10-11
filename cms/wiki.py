@@ -214,7 +214,7 @@ class WikiPage(Text):
                     try:
                         ref = container.get_handler(path)
                         break
-                    except LookupError:
+                    except (LookupError, UnicodeEncodeError):
                         pass
 
                 if ref is None:

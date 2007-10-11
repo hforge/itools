@@ -1388,7 +1388,7 @@ class icalendarTable(Table):
                 datatype = self.get_datatype(filter)
 
                 if getattr(datatype, 'multiple', False) is True:
-                    value = [ x if isinstance(x, Property) else Property(x)
+                    value = [ isinstance(x, Property) and x or Property(x)
                               for x in value ]
                     if not isinstance(expected, list):
                         expected = [expected, ]

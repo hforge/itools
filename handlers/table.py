@@ -556,7 +556,7 @@ class Table(File):
 
     def add_record(self, kw):
         id = len(self.records)
-        record = self.record_class(uid)
+        record = self.record_class(id)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)

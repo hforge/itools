@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime, timedelta
+from datetime import datetime
 from tempfile import mkdtemp
 from subprocess import call
 import urllib
@@ -35,7 +35,8 @@ from itools.xml import Parser
 # Import from itools.cms
 from file import File
 from folder import Folder
-from messages import *
+from messages import (MSG_NAME_MISSING, MSG_BAD_NAME, MSG_NAME_CLASH,
+        MSG_NEW_RESOURCE, MSG_EDIT_CONFLICT, MSG_CHANGES_SAVED)
 from text import Text
 from registry import register_object_class
 from binary import Image
@@ -96,6 +97,7 @@ class WikiFolder(Folder):
         if context.has_form_value('message'):
             message = context.get_form_value('message', type=Unicode)
             return context.come_back(message, goto='FrontPage')
+
         return context.uri.resolve('FrontPage')
 
 
@@ -187,8 +189,11 @@ class WikiPage(Text):
         return context.uri.resolve2(';view')
 
 
-    def to_html(self):
+    view__sublabel__ = u'HTML'
+    def view(self, context):
+        context.styles.append('/ui/wiki/wiki.css')
         parent = self.parent
+        here = context.handler
 
         # Override dandling links handling
         StandaloneReader = readers.get_reader_class('standalone')
@@ -198,11 +203,26 @@ class WikiPage(Text):
             def wiki_reference_resolver(target):
                 refname = target['name']
                 name = checkid(refname)
-                target['wiki_name'] = name
-                if parent.has_handler(name):
-                    target['wiki_refname'] = refname
-                else:
+
+                # It may be the page or its container
+                # It may a page title to convert or a path
+                ref = None
+                for container, path in ((self, name),
+                                        (parent, name),
+                                        (self, refname),
+                                        (parent, refname)):
+                    try:
+                        ref = container.get_handler(path)
+                        break
+                    except LookupError:
+                        pass
+
+                if ref is None:
                     target['wiki_refname'] = False
+                    target['wiki_name'] = name
+                else:
+                    target['wiki_refname'] = refname
+                    target['wiki_name'] = str(here.get_pathto(ref))
                 return True
 
             wiki_reference_resolver.priority = 851
@@ -234,19 +254,30 @@ class WikiPage(Text):
                 if refname is False:
                     refuri = ";new_resource_form?type=%s&name=%s"
                     refuri = refuri % (self.__class__.__name__, name)
+                    prefix = here.get_pathto(parent)
+                    refuri = '%s/%s' % (prefix, refuri)
                     css_class = 'nowiki'
                 else:
+                    # 'name' is now the path to existing handler
                     refuri = name
                     css_class = 'wiki'
-                node['refuri'] = '../' + refuri
+                node['refuri'] = refuri
                 node['classes'].append(css_class)
 
-        # Allow to reference images by name
+        # Allow to reference images by name without their path
         for node in document.traverse(condition=nodes.image):
             node_uri = node['uri']
-            if not self.has_handler(node_uri):
-                if parent.has_handler(node_uri):
-                    node['uri'] = '../' + node_uri
+            # Is the path is correct?
+            image = None
+            for container in (self, parent):
+                try:
+                    image = container.get_handler(node_uri)
+                    break
+                except LookupError:
+                    pass
+
+            if image is not None:
+                node['uri'] = str(here.get_pathto(image))
 
         # Manipulate publisher directly (from publish_from_doctree)
         reader = readers.doctree.Reader(parser_name='null')
@@ -333,12 +364,20 @@ class WikiPage(Text):
         # Find the list of images to append
         for node in document.traverse(condition=nodes.image):
             node_uri = node['uri']
-            if not self.has_handler(node_uri):
-                # Try the parent
-                node_uri = '../' + node_uri
-            reference = get_reference(node_uri)
-            path = reference.path
-            filename = str(path[-1])
+            image = None
+            for container in (self, parent):
+                try:
+                    image = container.get_handler(node_uri)
+                    break
+                except LookupError:
+                    pass
+            if image is None:
+                # missing image but prevent pdfLaTeX failure
+                node_uri = '/ui/wiki/missing.png'
+                filename = 'missing.png'
+            else:
+                node_uri = image.get_abspath()
+                filename = image.name
             name, ext, lang = FileName.decode(filename)
             if ext == 'jpeg':
                 # pdflatex does not support this extension
@@ -380,11 +419,7 @@ class WikiPage(Text):
         for node_uri, filename in images:
             if tempdir.exists(filename):
                 continue
-            if self.has_handler(node_uri):
-                image = self.get_handler(node_uri)
-            else:
-                # missing image but prevent pdfLaTeX failure
-                image = self.get_handler('/ui/wiki/missing.png')
+            image = self.get_handler(node_uri)
             file = tempdir.make_file(filename)
             try:
                 image.save_state_to_file(file)
@@ -423,17 +458,8 @@ class WikiPage(Text):
         return data
 
 
-    view__sublabel__ = u'HTML'
-    def view(self, context):
-        css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
-        context.styles.append(str(css))
-
-        return self.to_html()
-
-
     def edit_form(self, context):
-        css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
-        context.styles.append(str(css))
+        context.styles.append('/ui/wiki/wiki.css')
         text_size = context.get_form_value('text_size');
         text_size_cookie = context.get_cookie('wiki_text_size')
 
@@ -466,7 +492,7 @@ class WikiPage(Text):
         data = data.encode('utf_8')
         self.load_state_from_string(data)
 
-        if 'class="system-message"' in self.to_html():
+        if 'class="system-message"' in self.view(context):
             message = u"Syntax error, please check the view for details."
         else:
             message = MSG_CHANGES_SAVED
@@ -484,9 +510,8 @@ class WikiPage(Text):
     help__access__ = 'is_allowed_to_view'
     help__label__ = u"Help"
     def help(self, context):
+        context.styles.append('/ui/wiki/wiki.css')
         namespace = {}
-        css = Path(self.abspath).get_pathto('/ui/wiki/wiki.css')
-        context.styles.append(str(css))
 
         source = self.get_object('/ui/wiki/help.txt')
         source = source.to_str()

@@ -1,0 +1,57 @@
+
+itools 0.16.8 (2007/10/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog        itools.i18n             itools.tmx
+  itools.cms            itools.ical             itools.uri
+  itools.csv            itools.odf              itools.vfs
+  itools.datatypes      itools.pdf              itools.web
+  itools.gettext        itools.rest             itools.workflow
+  itools.handlers       itools.rss              itools.xhtml
+  itools.html           itools.schemas          itools.xliff
+  itools.http           itools.stl              itools.xml
+
+The big news this release is that itools has been downgraded Python 2.4;
+so now itools works with both Python 2.4 and 2.5.  (Why this? Because
+this way it will be possible to use the latest itools with Zope [1],
+since Zope does not yet work with Python 2.5, we had no choice).
+
+And for the first time we release (two) binary tarballs for the Windows
+platform.  One for Python 2.4, and another for Python 2.5.
+
+Something else important, the "Quick Start" [2] has been updated, and
+so has the itools related code (the "icms-make-package" script).
+
+There have been also some minor fixes and user interface improvements
+to the CMS.
+
+[1] http://www.zope.org/
+[2] http://XXX
+
+Credits:
+
+  Luis Belamar-Letelier
+  Hervé Cauwelier
+  Nicolas Deram
+  J. David Ibáñez
+  Henry Obein
+  Sylvain Taverne
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.16.10.tar.gz
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/

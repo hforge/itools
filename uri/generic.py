@@ -663,6 +663,8 @@ class GenericDataType(object):
             return Reference('', Authority(''), Path(''), {}, '')
 
         # All other cases, split the reference in its components
+        # FIXME This is wrong for Windows paths like "c:/a/b", since
+        # "urlsplit" thinks the scheme is "c"
         scheme, authority, path, query, fragment = urlsplit(data)
         # The path
         if path:

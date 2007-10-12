@@ -1130,7 +1130,7 @@ class Calendar(Text, CalendarView, icalendar):
         if method not in dir(self):
             goto = '../;%s?%s' % (method, get_current_date())
 
-        uid = context.get_form_value('uid')
+        uid = context.get_form_value('id')
         if not uid:
             return context.come_back('', goto)
         icalendar.remove(self, uid)

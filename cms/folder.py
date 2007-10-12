@@ -367,7 +367,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def _browse_namespace(self, object, icon_size):
         line = {}
-        id = str(self.get_pathto(object))
+        real = self.get_real_handler()
+        id = str(real.get_pathto(object))
         line['id'] = id
         title = object.get_title()
         line['title_or_name'] = title
@@ -376,7 +377,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             href = None
         else:
             href = '%s/;%s' % (id, firstview)
-        line['name'] = (object.name, href)
+        line['name'] = (id, href)
         line['format'] = self.gettext(object.class_title)
         line['title'] = object.get_property('dc:title')
         # Titles

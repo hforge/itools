@@ -64,16 +64,13 @@ def normalize_whitespace(text):
 
 
 
-def parse_blocks(stream):
-    for event, value in stream:
-        if event != 'text':
-            raise ValueError, "can only split initial text"
-        buffer = []
-        for line in value.splitlines():
-            buffer.append(line)
-            if not line.strip(u' \t'):
-                yield 'block', buffer
-                buffer = []
+def parse_blocks(text):
+    buffer = []
+    for line in text.splitlines():
+        buffer.append(line)
+        if not line.strip(u' \t'):
+            yield 'block', buffer
+            buffer = []
 
     # Buffer left:
     if buffer:
@@ -260,8 +257,7 @@ def parse_titles(stream):
 
 def parse_everything(text):
     # The variable "text" must be a unicode string
-    events = [('text', text)]
-    events = parse_blocks(events)
+    events = parse_blocks(text)
     events = parse_lists(events)
     events = parse_literal_blocks(events)
     events = parse_titles(events)

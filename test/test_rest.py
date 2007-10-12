@@ -191,8 +191,7 @@ I am a block.
 
 I am another
 block."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = list(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0], ('block', [u'I am a block.', u'']))
@@ -206,8 +205,7 @@ block."""
 
 1. I am an ordered list item
    on several lines."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_lists(events)
         self.assertEqual(len(events), 10)
         self.assertEqual(events[0], ('list_begin', u'*'))
@@ -231,8 +229,7 @@ block."""
 1. I am an ordered list item;
 
 2. on several lines."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_lists(events)
         self.assertEqual(len(events), 16)
         self.assertEqual(events[0], ('list_begin', u'*'))
@@ -262,8 +259,7 @@ block."""
      Second list, second paragraph.
 
   First list, second paragraph."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_lists(events)
         self.assertEqual(len(events), 12)
         self.assertEqual(events[0], ('list_begin', u'*'))
@@ -287,8 +283,7 @@ The code reads as follow::
     >>> from itools.rest import parser
 
 But failed with a NotImplementedError."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_literal_blocks(events)
         events = list(events)
         self.assertEqual(len(events), 3)
@@ -306,8 +301,7 @@ But failed with a NotImplementedError."""
 
 2. and several
    items."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_lists(events)
         events = parse_literal_blocks(events)
         events = list(events)
@@ -328,8 +322,7 @@ But failed with a NotImplementedError."""
 I am a paragraph.
 
 I am another one."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_titles(events)
         events = list(events)
         self.assertEqual(len(events), 2)
@@ -342,8 +335,7 @@ I am another one."""
 #############################
 I am the king of the titles
 #############################"""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_titles(events)
         events = list(events)
         self.assertEqual(len(events), 1)
@@ -355,8 +347,7 @@ I am the king of the titles
         text = u"""\
 I am the prince of the titles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%"""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_titles(events)
         events = list(events)
         self.assertEqual(len(events), 1)
@@ -369,8 +360,7 @@ I am the prince of the titles
 Please allow to introduce myself
 ````````````````````````````````
 I'm a man of wealth and taste"""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_titles(events)
         events = list(events)
         self.assertEqual(len(events), 2)
@@ -386,8 +376,7 @@ The code reads as follow::
     >>> from itools.rest import parser
 
 But failed with a NotImplementedError."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_literal_blocks(events)
         events = parse_titles(events)
         events = list(events)
@@ -404,8 +393,7 @@ But failed with a NotImplementedError."""
   I am the same block.
 
 I am a paragraph."""
-        events = [('text', text)]
-        events = parse_blocks(events)
+        events = parse_blocks(text)
         events = parse_lists(events)
         events = parse_titles(events)
         events = list(events)

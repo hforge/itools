@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.xml import TEXT, START_ELEMENT, END_ELEMENT
 
 # Statuses
 # Common
@@ -441,6 +443,94 @@ def parse_inline(text):
 
 
 
+def inline_stream(text):
+    """Turn a text into a list of events similar to XML: START_ELEMENT,
+    END_ELEMENT, TEXT.
+
+    Inline elements (emphasis, strong, reference sources...) are concerned.
+    """
+    events = []
+
+    for event, value in parse_inline(text):
+        if event == 'text':
+            events.append((TEXT, value.encode('utf-8'), None))
+        elif event == 'footnote':
+            target = checkid(value).lower()
+            attributes = {'target': target}
+            events.append((START_ELEMENT, (rest_uri, event, attributes), None))
+            events.append((TEXT, value.encode('utf-8'), None))
+            events.append((END_ELEMENT, (rest_uri, event), None))
+        elif event == 'reference':
+            target = checkid(value).lower()
+            attributes = {'target': target}
+            events.append((START_ELEMENT, (rest_uri, event, attributes), None))
+            events.append((TEXT, value.encode('utf-8'), None))
+            events.append((END_ELEMENT, (rest_uri, event), None))
+        else:
+            events.append((START_ELEMENT, (rest_uri, event, {}), None))
+            events.append((TEXT, value.encode('utf-8'), None))
+            events.append((END_ELEMENT, (rest_uri, event), None))
+
+    return events
+
+
+
+###########################################################################
+# Public API
+###########################################################################
+# XXX dummy
+rest_uri = 'http://docutils.sourceforge.net/docs/ref/docutils.dtd'
+
+
+
+def block_stream(text):
+    """Turn a text into a list of events similar to XML: START_ELEMENT,
+    END_ELEMENT, TEXT.
+
+    Block elements (lists, literal blocks, paragraphs, titles...) are
+    concerned. Inline elements are loaded as well where applicable.
+    """
+    if isinstance(text, str):
+        text = unicode(text, 'utf-8')
+
+    events = []
+    for event, value in Document(text):
+        if event == 'title':
+            overline, title, underline = value
+            target = checkid(title).lower()
+            attributes = {(rest_uri, 'overline'): overline,
+                          (rest_uri, 'underline'): underline,
+                          (rest_uri, 'target'): target}
+            events.append((START_ELEMENT, (rest_uri, event, attributes), None))
+            events.extend(inline_stream(title))
+            events.append((END_ELEMENT, (rest_uri, event), None))
+        elif event == 'paragraph':
+            events.append((START_ELEMENT, (rest_uri, event, {}), None))
+            events.extend(inline_stream(value))
+            events.append((END_ELEMENT, (rest_uri, event), None))
+        elif event == 'literal_block':
+            events.append((START_ELEMENT, (rest_uri, event, {}), None))
+            events.append((TEXT, value.encode('utf-8'), None))
+            events.append((END_ELEMENT, (rest_uri, event), None))
+        elif event == 'list_begin':
+            events.append((START_ELEMENT, (rest_uri, 'list',
+                {(rest_uri, 'item'): value}), None))
+        elif event == 'list_end':
+            events.append((END_ELEMENT, (rest_uri, 'list'), None))
+        elif event == 'list_item_begin':
+            events.append((START_ELEMENT, (rest_uri, 'list_item', {}), None))
+        elif event == 'list_item_end':
+            events.append((END_ELEMENT, (rest_uri, 'list_item'), None))
+        else:
+            raise NotImplementedError, event
+
+    return events
+
+
+
+###########################################################################
+# Test (FIXME This belongs to the "test/test_rest.py" file
+###########################################################################
 if __name__ == '__main__':
     from itools.handlers import Text
     from pprint import pprint
@@ -452,3 +542,6 @@ if __name__ == '__main__':
     doc = Document(text)
     print "events"
     pprint(doc.events)
+
+
+

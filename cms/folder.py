@@ -770,6 +770,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
                     metadata.set_property('state', handler.workflow.initstate)
                 # Fix owner
                 metadata.set_property('owner', context.user.name)
+        # Cut, clean cookie
+        if cut is True:
+            context.del_cookie('ikaaro_cp')
 
         return context.come_back(u'Objects pasted.')
 

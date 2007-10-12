@@ -65,7 +65,6 @@ def normalize_whitespace(text):
 
 
 def parse_blocks(stream):
-    events = []
     for event, value in stream:
         if event != 'text':
             raise ValueError, "can only split initial text"
@@ -73,14 +72,13 @@ def parse_blocks(stream):
         for line in value.splitlines():
             buffer.append(line)
             if not line.strip(u' \t'):
-                events.append(('block', buffer))
+                yield 'block', buffer
                 buffer = []
 
     # Buffer left:
     if buffer:
-        events.append(('block', buffer))
+        yield 'block', buffer
 
-    return events
 
 
 def parse_lists(stream):
@@ -144,7 +142,6 @@ def parse_lists(stream):
 
 
 def parse_literal_blocks(stream):
-    events = []
     status = DEFAULT
     indent_level = None
     buffer = []
@@ -152,7 +149,7 @@ def parse_literal_blocks(stream):
     for event, value in stream:
         if status == DEFAULT:
             if event != 'block':
-                events.append((event, value))
+                yield event, value
                 continue
             block = strip_block(value)
             if block:
@@ -164,12 +161,12 @@ def parse_literal_blocks(stream):
                     indent_level = len(first_line) - len(first_line.lstrip(u' \t'))
                     buffer = []
             if block and block != [u':']:
-                events.append(('block', block))
+                yield 'block', block
         elif status == LITERAL:
             if event != 'block':
                 block = strip_block(buffer)
-                events.append(('literal_block', u'\n'.join(block)))
-                events.append((event, value))
+                yield 'literal_block', u'\n'.join(block)
+                yield event, value
                 status = DEFAULT
             elif strip_block(value):
                 first_line = value[0]
@@ -178,22 +175,19 @@ def parse_literal_blocks(stream):
                     buffer.extend(value)
                 else:
                     block = strip_block(buffer)
-                    events.append(('literal_block', u'\n'.join(block)))
-                    events.append((event, value))
+                    yield 'literal_block', u'\n'.join(block)
+                    yield event, value
                     status = DEFAULT
             else:
                 buffer.extend(value)
 
 
-    return events
-
 
 def parse_titles(stream):
-    events = []
 
     for event, value in stream:
         if event != 'block':
-            events.append((event, value))
+            yield event, value
             continue
         first_line = value[0]
         first_char = first_line[0]
@@ -210,7 +204,7 @@ def parse_titles(stream):
                 if block:
                     text = u' '.join(block)
                     text = normalize_whitespace(text)
-                    events.append(('paragraph', text))
+                    yield 'paragraph', text
                 continue
             # Split title and possible paragraph
             title = value[:i + 2]
@@ -218,14 +212,14 @@ def parse_titles(stream):
             overline = title[0][0]
             underline = title[-1][0]
             title = u'\n'.join(title[1:-1])
-            events.append(('title', (overline, title, underline)))
+            yield 'title', (overline, title, underline)
             # A paragraph may be glued
             buffer = value[i + 2:]
             block = strip_block(buffer)
             if block:
                 text = u' '.join(block)
                 text = normalize_whitespace(text)
-                events.append(('paragraph', text))
+                yield 'paragraph', text
         else:
             # Look for an underlined title
             for i, line in enumerate(value):
@@ -238,7 +232,7 @@ def parse_titles(stream):
                 if block:
                     text = u' '.join(block)
                     text = normalize_whitespace(text)
-                    events.append(('paragraph', text))
+                    yield 'paragraph', text
                 continue
             # Split title and possible paragraph
             title = value[:i + 1]
@@ -247,22 +241,20 @@ def parse_titles(stream):
             if title[-1] == u'..':
                 text = u' '.join(value)
                 text = normalize_whitespace(text)
-                events.append(('paragraph', text))
+                yield 'paragraph', text
                 continue
             # Return title and adornments separately
             overline = u''
             underline = title[-1][0]
             title = u'\n'.join(title[:-1])
-            events.append(('title', (overline, title, underline)))
+            yield 'title', (overline, title, underline)
             # A paragraph may be glued
             buffer = value[i + 1:]
             block = strip_block(buffer)
             if block:
                 text = u' '.join(block)
                 text = normalize_whitespace(text)
-                events.append(('paragraph', text))
-
-    return events
+                yield 'paragraph', text
 
 
 
@@ -512,5 +504,4 @@ def block_stream(text):
             raise NotImplementedError, event
 
     return events
-
 

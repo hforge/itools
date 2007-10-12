@@ -193,6 +193,7 @@ I am another
 block."""
         events = [('text', text)]
         events = parse_blocks(events)
+        events = list(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0], ('block', [u'I am a block.', u'']))
         self.assertEqual(events[1], ('block', [u'I am another', u'block.']))
@@ -289,6 +290,7 @@ But failed with a NotImplementedError."""
         events = [('text', text)]
         events = parse_blocks(events)
         events = parse_literal_blocks(events)
+        events = list(events)
         self.assertEqual(len(events), 3)
         self.assertEqual(events[0], ('block', [u'The code reads as follow:']))
         self.assertEqual(events[1], ('literal_block', u'    >>> from itools.rest import parser'))
@@ -308,6 +310,7 @@ But failed with a NotImplementedError."""
         events = parse_blocks(events)
         events = parse_lists(events)
         events = parse_literal_blocks(events)
+        events = list(events)
         self.assertEqual(len(events), 9)
         self.assertEqual(events[0], ('list_begin', u'#'))
         self.assertEqual(events[1], ('list_item_begin', 3))
@@ -328,6 +331,7 @@ I am another one."""
         events = [('text', text)]
         events = parse_blocks(events)
         events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0], ('paragraph', u'I am a paragraph.'))
         self.assertEqual(events[1], ('paragraph', u'I am another one.'))
@@ -341,6 +345,7 @@ I am the king of the titles
         events = [('text', text)]
         events = parse_blocks(events)
         events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0],
                          ('title', (u'#', u'I am the king of the titles', u'#')))
@@ -353,6 +358,7 @@ I am the prince of the titles
         events = [('text', text)]
         events = parse_blocks(events)
         events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0],
                          ('title', (u'', u'I am the prince of the titles', u'%')))
@@ -366,6 +372,7 @@ I'm a man of wealth and taste"""
         events = [('text', text)]
         events = parse_blocks(events)
         events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0],
                         ('title', (u'', u'Please allow to introduce myself', u'`')))
@@ -383,6 +390,7 @@ But failed with a NotImplementedError."""
         events = parse_blocks(events)
         events = parse_literal_blocks(events)
         events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 3)
         self.assertEqual(events[0], ('paragraph', u'The code reads as follow:'))
         self.assertEqual(events[1], ('literal_block', u'    >>> from itools.rest import parser'))
@@ -400,6 +408,7 @@ I am a paragraph."""
         events = parse_blocks(events)
         events = parse_lists(events)
         events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 7)
         self.assertEqual(events[0], ('list_begin', u'*'))
         self.assertEqual(events[1], ('list_item_begin', 2))

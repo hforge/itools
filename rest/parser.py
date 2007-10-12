@@ -18,25 +18,35 @@
 # Import from itools
 from itools.xml import TEXT, START_ELEMENT, END_ELEMENT
 
-# Statuses
-# Common
-DEFAULT = 'DEFAULT'
-# Block
-LITERAL = 'LITERAL'
-# Inline
-EMPHASIS_OR_STRONG = 'EMPHASIS_OR_STRONG'
-EMPHASIS = 'EMPHASIS'
-EMPHASIS_STRONG = 'EMPHASIS_STRONG'
-INTERPRETED_OR_LITERAL = 'INTERPRETED_OR_LITERAL'
-INTERPRETED = 'INTERPRETED'
-INTERPRETED_OR_REFERENCE = 'INTERPRETED_OR_REFERENCE'
-FOOTNOTE = 'FOOTNOTE'
-FOOTNOTE_OR_TEXT = 'FOOTNOTE_OR_TEXT'
-SUBSTITUTION = 'SUBSTITUTION'
-TARGET_INLINE = 'TARGET_INLINE'
-REFERENCE_OR_TEXT = 'REFERENCE_OR_TEXT'
 
-ADORNMENTS = r'''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~'''
+# Statuses for use in automatons
+(DEFAULT, LITERAL, EMPHASIS_OR_STRONG, EMPHASIS, EMPHASIS_STRONG,
+ INTERPRETED_OR_LITERAL, INTERPRETED, INTERPRETED_OR_REFERENCE, FOOTNOTE,
+ FOOTNOTE_OR_TEXT, SUBSTITUTION, TARGET_INLINE, REFERENCE_OR_TEXT) = range(13)
+
+# Events of the internal data structure
+(XBLOCK, XCITATION, XEMPHASIS, XFOOTNOTE, XINTERPRETED, XLIST_BEGIN,
+ XLIST_END, XLIST_ITEM_BEGIN, XLIST_ITEM_END, XLITERAL, XLITERAL_BLOCK,
+ XPARAGRAPH, XREFERENCE, XSTRONG, XSUBSTITUTION, XTARGET, XTEXT,
+ XTITLE) = range(18)
+
+
+
+
+def parse_blocks(text):
+    """Splits the given text in blocks separated by blank lines.
+    """
+    buffer = []
+    for line in text.splitlines():
+        buffer.append(line)
+        if not line.strip():
+            yield XBLOCK, buffer
+            buffer = []
+
+    # Buffer left
+    if buffer:
+        yield XBLOCK, buffer
+
 
 
 def strip_block(block):
@@ -64,26 +74,12 @@ def normalize_whitespace(text):
 
 
 
-def parse_blocks(text):
-    buffer = []
-    for line in text.splitlines():
-        buffer.append(line)
-        if not line.strip(u' \t'):
-            yield 'block', buffer
-            buffer = []
-
-    # Buffer left:
-    if buffer:
-        yield 'block', buffer
-
-
-
 def parse_lists(stream):
     events = []
     indents = [(None, 0)]
 
     for event, value in stream:
-        if event != 'block':
+        if event != XBLOCK:
             events.append((event, value))
             continue
         last_type, last_indent = indents[-1]
@@ -93,9 +89,9 @@ def parse_lists(stream):
         if indent < last_indent:
             while indent < last_indent:
                 last_type, last_indent = indents.pop()
-                events.append(('list_item_end', last_indent))
+                events.append((XLIST_ITEM_END, last_indent))
                 # Prepare end of list just in case
-                events.append(('list_end', last_type))
+                events.append((XLIST_END, last_type))
                 last_type, last_indent = indents[-1]
         # Now check open list indent
         words = first_line.split()
@@ -114,26 +110,26 @@ def parse_lists(stream):
         else:
             list_indent = None
         if list_indent is not None:
-            if not events or (events[-1] != ('list_end', first_word)):
+            if not events or (events[-1] != (XLIST_END, first_word)):
                 # The list was not begun
-                events.append(('list_begin', first_word))
+                events.append((XLIST_BEGIN, first_word))
             else:
-                # Remove 'list_end', another item follows
+                # Remove XLIST_END, another item follows
                 events.pop()
-            events.append(('list_item_begin', list_indent))
+            events.append((XLIST_ITEM_BEGIN, list_indent))
             block = [value[0][list_indent:]] + value[1:]
-            events.append(('block', block))
+            events.append((XBLOCK, block))
             indents.append((first_word, list_indent))
         else:
-            events.append(('block', value))
+            events.append((XBLOCK, value))
 
     # Indents left (except default indent)
     if len(indents) > 1:
         del indents[0]
         while indents:
             last_type, last_indent = indents.pop()
-            events.append(('list_item_end', last_indent))
-        events.append(('list_end', last_type))
+            events.append((XLIST_ITEM_END, last_indent))
+        events.append((XLIST_END, last_type))
 
     return events
 
@@ -145,7 +141,7 @@ def parse_literal_blocks(stream):
 
     for event, value in stream:
         if status == DEFAULT:
-            if event != 'block':
+            if event != XBLOCK:
                 yield event, value
                 continue
             block = strip_block(value)
@@ -158,11 +154,11 @@ def parse_literal_blocks(stream):
                     indent_level = len(first_line) - len(first_line.lstrip(u' \t'))
                     buffer = []
             if block and block != [u':']:
-                yield 'block', block
+                yield XBLOCK, block
         elif status == LITERAL:
-            if event != 'block':
+            if event != XBLOCK:
                 block = strip_block(buffer)
-                yield 'literal_block', u'\n'.join(block)
+                yield XLITERAL_BLOCK, u'\n'.join(block)
                 yield event, value
                 status = DEFAULT
             elif strip_block(value):
@@ -172,7 +168,7 @@ def parse_literal_blocks(stream):
                     buffer.extend(value)
                 else:
                     block = strip_block(buffer)
-                    yield 'literal_block', u'\n'.join(block)
+                    yield XLITERAL_BLOCK, u'\n'.join(block)
                     yield event, value
                     status = DEFAULT
             else:
@@ -181,15 +177,16 @@ def parse_literal_blocks(stream):
 
 
 def parse_titles(stream):
+    adornments = r'''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~'''
 
     for event, value in stream:
-        if event != 'block':
+        if event != XBLOCK:
             yield event, value
             continue
         first_line = value[0]
         first_char = first_line[0]
         # Look for an overlined title
-        if (first_char in ADORNMENTS
+        if (first_char in adornments
                 and first_line.count(first_char) == len(first_line)):
             # Look for underline
             for i, line in enumerate(value[1:]):
@@ -201,7 +198,7 @@ def parse_titles(stream):
                 if block:
                     text = u' '.join(block)
                     text = normalize_whitespace(text)
-                    yield 'paragraph', text
+                    yield XPARAGRAPH, text
                 continue
             # Split title and possible paragraph
             title = value[:i + 2]
@@ -209,18 +206,18 @@ def parse_titles(stream):
             overline = title[0][0]
             underline = title[-1][0]
             title = u'\n'.join(title[1:-1])
-            yield 'title', (overline, title, underline)
+            yield XTITLE, (overline, title, underline)
             # A paragraph may be glued
             buffer = value[i + 2:]
             block = strip_block(buffer)
             if block:
                 text = u' '.join(block)
                 text = normalize_whitespace(text)
-                yield 'paragraph', text
+                yield XPARAGRAPH, text
         else:
             # Look for an underlined title
             for i, line in enumerate(value):
-                if (line and line[0] in ADORNMENTS
+                if (line and line[0] in adornments
                         and line.count(line[0]) == len(line)):
                     break
             else:
@@ -229,7 +226,7 @@ def parse_titles(stream):
                 if block:
                     text = u' '.join(block)
                     text = normalize_whitespace(text)
-                    yield 'paragraph', text
+                    yield XPARAGRAPH, text
                 continue
             # Split title and possible paragraph
             title = value[:i + 1]
@@ -238,20 +235,20 @@ def parse_titles(stream):
             if title[-1] == u'..':
                 text = u' '.join(value)
                 text = normalize_whitespace(text)
-                yield 'paragraph', text
+                yield XPARAGRAPH, text
                 continue
             # Return title and adornments separately
             overline = u''
             underline = title[-1][0]
             title = u'\n'.join(title[:-1])
-            yield 'title', (overline, title, underline)
+            yield XTITLE, (overline, title, underline)
             # A paragraph may be glued
             buffer = value[i + 1:]
             block = strip_block(buffer)
             if block:
                 text = u' '.join(block)
                 text = normalize_whitespace(text)
-                yield 'paragraph', text
+                yield XPARAGRAPH, text
 
 
 
@@ -265,6 +262,10 @@ def parse_everything(text):
 
 
 
+###########################################################################
+# Parse inline elements
+###########################################################################
+
 def parse_inline(text):
     status = DEFAULT
     buffer = []
@@ -276,29 +277,29 @@ def parse_inline(text):
         if status == DEFAULT:
             if c == u'*':
                 if buffer:
-                    yield 'text', u''.join(buffer)
+                    yield XTEXT, u''.join(buffer)
                     buffer = []
                 status = EMPHASIS_OR_STRONG
             elif c == u'`':
                 if buffer:
-                    yield 'text', u''.join(buffer)
+                    yield XTEXT, u''.join(buffer)
                     buffer = []
                 status = INTERPRETED_OR_LITERAL
             elif c == u'[':
                 if buffer:
-                    yield 'text', u''.join(buffer)
+                    yield XTEXT, u''.join(buffer)
                 # Keep opening bracket in case it was a false positive
                 buffer = [u'[']
                 status = FOOTNOTE
             elif c == u'|':
                 if buffer:
-                    yield 'text', u''.join(buffer)
+                    yield XTEXT, u''.join(buffer)
                     buffer = []
                 status = SUBSTITUTION
             elif c == u'_':
                 # Before or after a word?
                 if buffer and buffer[-1].isspace():
-                    yield 'text', u''.join(buffer)
+                    yield XTEXT, u''.join(buffer)
                     buffer = []
                     status = TARGET_INLINE
                 else:
@@ -314,14 +315,14 @@ def parse_inline(text):
                 status = EMPHASIS
         elif status == EMPHASIS:
             if c == u'*':
-                yield 'emphasis', u''.join(buffer)
+                yield XEMPHASIS, u''.join(buffer)
                 buffer = []
                 status = DEFAULT
             else:
                 buffer.append(c)
         elif status == EMPHASIS_STRONG:
             if c == u'*' and buffer and buffer[-1] == u'*':
-                yield 'strong', u''.join(buffer[:-1])
+                yield XSTRONG, u''.join(buffer[:-1])
                 buffer = []
                 status = DEFAULT
             else:
@@ -334,7 +335,7 @@ def parse_inline(text):
                 status = INTERPRETED
         elif status == LITERAL:
             if c == u'`' and buffer and buffer[-1] == u'`':
-                yield 'literal', u''.join(buffer[:-1])
+                yield XLITERAL, u''.join(buffer[:-1])
                 buffer = []
                 status = DEFAULT
             else:
@@ -349,11 +350,11 @@ def parse_inline(text):
                 reference = u''.join(buffer)
                 # Whitespace should not be significant in a reference
                 reference = normalize_whitespace(reference)
-                yield 'reference', reference
+                yield XREFERENCE, reference
                 buffer = []
                 status = DEFAULT
             else:
-                yield 'interpreted', u''.join(buffer)
+                yield XINTERPRETED, u''.join(buffer)
                 buffer = [c]
                 status = DEFAULT
         elif status == FOOTNOTE:
@@ -368,20 +369,20 @@ def parse_inline(text):
                 # Reference as expected
                 footnote = ''.join(buffer[1:-1])
                 if footnote.isdigit() or footnote == u'#':
-                    yield 'footnote', footnote
+                    yield XFOOTNOTE, footnote
                 else:
-                    yield 'citation', footnote
+                    yield XCITATION, footnote
                 buffer = []
                 status = DEFAULT
             else:
                 # False positive
                 buffer.append(c)
-                yield 'text', u''.join(buffer)
+                yield XTEXT, u''.join(buffer)
             buffer = []
             status = DEFAULT
         elif status == SUBSTITUTION:
             if c == u'|':
-                yield 'substitution', u''.join(buffer)
+                yield XSUBSTITUTION, u''.join(buffer)
                 buffer = []
                 status = DEFAULT
             else:
@@ -389,7 +390,7 @@ def parse_inline(text):
         elif status == TARGET_INLINE:
             if c == u'`':
                 if buffer:
-                    yield 'target', u''.join(buffer)
+                    yield XTARGET, u''.join(buffer)
                     buffer = []
                     status = DEFAULT
             else:
@@ -402,10 +403,10 @@ def parse_inline(text):
                     separator_index = reference.rindex(u' ') + 1
                     remain, reference = (reference[:separator_index],
                                          reference[separator_index:-1])
-                    yield 'text', remain
+                    yield XTEXT, remain
                 # Whitespace should not be significant in a reference
                 reference = normalize_whitespace(reference)
-                yield 'reference', reference
+                yield XREFERENCE, reference
                 buffer = [c]
             else:
                 # Was a regular '_' in a word
@@ -414,7 +415,7 @@ def parse_inline(text):
 
     # Buffer left
     if buffer:
-        yield 'text', u''.join(buffer)
+        yield XTEXT, u''.join(buffer)
 
 
 
@@ -427,17 +428,17 @@ def inline_stream(text):
     events = []
 
     for event, value in parse_inline(text):
-        if event == 'text':
+        if event == XTEXT:
             events.append((TEXT, value.encode('utf-8'), None))
-        elif event == 'footnote':
+        elif event == XFOOTNOTE:
             target = checkid(value).lower()
-            attributes = {'target': target}
+            attributes = {XTARGET: target}
             events.append((START_ELEMENT, (rest_uri, event, attributes), None))
             events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
-        elif event == 'reference':
+        elif event == XREFERENCE:
             target = checkid(value).lower()
-            attributes = {'target': target}
+            attributes = {XTARGET: target}
             events.append((START_ELEMENT, (rest_uri, event, attributes), None))
             events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
@@ -470,31 +471,31 @@ def block_stream(text):
 
     events = []
     for event, value in parse_everything(text):
-        if event == 'title':
+        if event == XTITLE:
             overline, title, underline = value
             target = checkid(title).lower()
             attributes = {(rest_uri, 'overline'): overline,
                           (rest_uri, 'underline'): underline,
-                          (rest_uri, 'target'): target}
+                          (rest_uri, XTARGET): target}
             events.append((START_ELEMENT, (rest_uri, event, attributes), None))
             events.extend(inline_stream(title))
             events.append((END_ELEMENT, (rest_uri, event), None))
-        elif event == 'paragraph':
+        elif event == XPARAGRAPH:
             events.append((START_ELEMENT, (rest_uri, event, {}), None))
             events.extend(inline_stream(value))
             events.append((END_ELEMENT, (rest_uri, event), None))
-        elif event == 'literal_block':
+        elif event == XLITERAL_BLOCK:
             events.append((START_ELEMENT, (rest_uri, event, {}), None))
             events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
-        elif event == 'list_begin':
+        elif event == XLIST_BEGIN:
             events.append((START_ELEMENT, (rest_uri, 'list',
                 {(rest_uri, 'item'): value}), None))
-        elif event == 'list_end':
+        elif event == XLIST_END:
             events.append((END_ELEMENT, (rest_uri, 'list'), None))
-        elif event == 'list_item_begin':
+        elif event == XLIST_ITEM_BEGIN:
             events.append((START_ELEMENT, (rest_uri, 'list_item', {}), None))
-        elif event == 'list_item_end':
+        elif event == XLIST_ITEM_END:
             events.append((END_ELEMENT, (rest_uri, 'list_item'), None))
         else:
             raise NotImplementedError, event

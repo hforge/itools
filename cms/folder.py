@@ -661,7 +661,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace = {}
         namespace['objects'] = []
         for real_name in names:
-            name, extension, language = FileName.decode(real_name)
+            handler = self.get_handler(real_name)
+            if handler.class_extension is None:
+                name = real_name
+            else:
+                name, extension, language = FileName.decode(real_name)
             namespace['objects'].append({'real_name': real_name, 'name': name})
 
         # Process the template
@@ -676,8 +680,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         used_names = self.get_handler_names()
         # Process input data
         for i, old_name in enumerate(names):
-            xxx, extension, language = FileName.decode(old_name)
-            new_name = FileName.encode((new_names[i], extension, language))
+            new_name = new_names[i]
+            handler = self.get_handler(old_name)
+            if handler.class_extension is not None:
+                xxx, extension, language = FileName.decode(old_name)
+                new_name = FileName.encode((new_name, extension, language))
             new_name = checkid(new_name)
             if new_name is None:
                 # Invalid name

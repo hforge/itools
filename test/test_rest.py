@@ -20,8 +20,8 @@ import unittest
 
 # Import from itools.rest
 from itools.rest.parser import strip_block, normalize_whitespace
-from itools.rest.parser import parse_inline
-from itools.rest.parser import Document
+from itools.rest.parser import (parse_inline, parse_blocks, parse_lists,
+    parse_literal_blocks, parse_titles)
 
 
 
@@ -192,7 +192,7 @@ I am a block.
 I am another
 block."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
+        events = parse_blocks(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0], ('block', [u'I am a block.', u'']))
         self.assertEqual(events[1], ('block', [u'I am another', u'block.']))
@@ -206,8 +206,8 @@ block."""
 1. I am an ordered list item
    on several lines."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
+        events = parse_blocks(events)
+        events = parse_lists(events)
         self.assertEqual(len(events), 10)
         self.assertEqual(events[0], ('list_begin', u'*'))
         self.assertEqual(events[1], ('list_item_begin', 2))
@@ -231,8 +231,8 @@ block."""
 
 2. on several lines."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
+        events = parse_blocks(events)
+        events = parse_lists(events)
         self.assertEqual(len(events), 16)
         self.assertEqual(events[0], ('list_begin', u'*'))
         self.assertEqual(events[1], ('list_item_begin', 2))
@@ -262,8 +262,8 @@ block."""
 
   First list, second paragraph."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
+        events = parse_blocks(events)
+        events = parse_lists(events)
         self.assertEqual(len(events), 12)
         self.assertEqual(events[0], ('list_begin', u'*'))
         self.assertEqual(events[1], ('list_item_begin', 2))
@@ -287,8 +287,8 @@ The code reads as follow::
 
 But failed with a NotImplementedError."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_literal_blocks(events)
+        events = parse_blocks(events)
+        events = parse_literal_blocks(events)
         self.assertEqual(len(events), 3)
         self.assertEqual(events[0], ('block', [u'The code reads as follow:']))
         self.assertEqual(events[1], ('literal_block', u'    >>> from itools.rest import parser'))
@@ -305,9 +305,9 @@ But failed with a NotImplementedError."""
 2. and several
    items."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
-        events = Document.parse_literal_blocks(events)
+        events = parse_blocks(events)
+        events = parse_lists(events)
+        events = parse_literal_blocks(events)
         self.assertEqual(len(events), 9)
         self.assertEqual(events[0], ('list_begin', u'#'))
         self.assertEqual(events[1], ('list_item_begin', 3))
@@ -326,8 +326,8 @@ I am a paragraph.
 
 I am another one."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(events)
+        events = parse_titles(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0], ('paragraph', u'I am a paragraph.'))
         self.assertEqual(events[1], ('paragraph', u'I am another one.'))
@@ -339,8 +339,8 @@ I am another one."""
 I am the king of the titles
 #############################"""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(events)
+        events = parse_titles(events)
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0],
                          ('title', (u'#', u'I am the king of the titles', u'#')))
@@ -351,8 +351,8 @@ I am the king of the titles
 I am the prince of the titles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%"""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(events)
+        events = parse_titles(events)
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0],
                          ('title', (u'', u'I am the prince of the titles', u'%')))
@@ -364,8 +364,8 @@ Please allow to introduce myself
 ````````````````````````````````
 I'm a man of wealth and taste"""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(events)
+        events = parse_titles(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0],
                         ('title', (u'', u'Please allow to introduce myself', u'`')))
@@ -380,9 +380,9 @@ The code reads as follow::
 
 But failed with a NotImplementedError."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_literal_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(events)
+        events = parse_literal_blocks(events)
+        events = parse_titles(events)
         self.assertEqual(len(events), 3)
         self.assertEqual(events[0], ('paragraph', u'The code reads as follow:'))
         self.assertEqual(events[1], ('literal_block', u'    >>> from itools.rest import parser'))
@@ -397,9 +397,9 @@ But failed with a NotImplementedError."""
 
 I am a paragraph."""
         events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(events)
+        events = parse_lists(events)
+        events = parse_titles(events)
         self.assertEqual(len(events), 7)
         self.assertEqual(events[0], ('list_begin', u'*'))
         self.assertEqual(events[1], ('list_item_begin', 2))

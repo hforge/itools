@@ -64,229 +64,216 @@ def normalize_whitespace(text):
 
 
 
-class Document(object):
+def parse_blocks(stream):
+    events = []
+    for event, value in stream:
+        if event != 'text':
+            raise ValueError, "can only split initial text"
+        buffer = []
+        for line in value.splitlines():
+            buffer.append(line)
+            if not line.strip(u' \t'):
+                events.append(('block', buffer))
+                buffer = []
 
-    __slots__ = ['events']
+    # Buffer left:
+    if buffer:
+        events.append(('block', buffer))
 
-    def __init__(self, text):
-        if not isinstance(text, unicode):
-            raise TypeError, "Text must be decoded to unicode"
-        events = [('text', text)]
-        events = self.parse_blocks(events)
-        events = self.parse_lists(events)
-        events = self.parse_literal_blocks(events)
-        events = self.parse_titles(events)
-        self.events = events
-
-
-    def __iter__(self):
-        for event, value in self.events:
-            yield event, value
-
-
-    @staticmethod
-    def parse_blocks(stream):
-        events = []
-        for event, value in stream:
-            if event != 'text':
-                raise ValueError, "can only split initial text"
-            buffer = []
-            for line in value.splitlines():
-                buffer.append(line)
-                if not line.strip(u' \t'):
-                    events.append(('block', buffer))
-                    buffer = []
-
-        # Buffer left:
-        if buffer:
-            events.append(('block', buffer))
-
-        return events
+    return events
 
 
-    @staticmethod
-    def parse_lists(stream):
-        events = []
-        indents = [(None, 0)]
+def parse_lists(stream):
+    events = []
+    indents = [(None, 0)]
 
-        for event, value in stream:
+    for event, value in stream:
+        if event != 'block':
+            events.append((event, value))
+            continue
+        last_type, last_indent = indents[-1]
+        # Check exit of list indent
+        first_line = value[0]
+        indent = len(first_line) - len(first_line.lstrip(u' \t'))
+        if indent < last_indent:
+            while indent < last_indent:
+                last_type, last_indent = indents.pop()
+                events.append(('list_item_end', last_indent))
+                # Prepare end of list just in case
+                events.append(('list_end', last_type))
+                last_type, last_indent = indents[-1]
+        # Now check open list indent
+        words = first_line.split()
+        if words:
+            first_word = words[0]
+        else:
+            first_word = first_line
+        if first_word == u'*':
+            list_indent = len(first_line[:first_line.index(u'*') + 2])
+        elif first_word == u'-':
+            list_indent = len(first_line[:first_line.index(u'-') + 2])
+        elif first_word[:-1].isdigit() and first_word[-1] == u'.':
+            list_indent = len(first_line[:first_line.index(u'.') + 2])
+            # Unify marker for ordered lists
+            first_word = u'#'
+        else:
+            list_indent = None
+        if list_indent is not None:
+            if not events or (events[-1] != ('list_end', first_word)):
+                # The list was not begun
+                events.append(('list_begin', first_word))
+            else:
+                # Remove 'list_end', another item follows
+                events.pop()
+            events.append(('list_item_begin', list_indent))
+            block = [value[0][list_indent:]] + value[1:]
+            events.append(('block', block))
+            indents.append((first_word, list_indent))
+        else:
+            events.append(('block', value))
+
+    # Indents left (except default indent)
+    if len(indents) > 1:
+        del indents[0]
+        while indents:
+            last_type, last_indent = indents.pop()
+            events.append(('list_item_end', last_indent))
+        events.append(('list_end', last_type))
+
+    return events
+
+
+def parse_literal_blocks(stream):
+    events = []
+    status = DEFAULT
+    indent_level = None
+    buffer = []
+
+    for event, value in stream:
+        if status == DEFAULT:
             if event != 'block':
                 events.append((event, value))
                 continue
-            last_type, last_indent = indents[-1]
-            # Check exit of list indent
-            first_line = value[0]
-            indent = len(first_line) - len(first_line.lstrip(u' \t'))
-            if indent < last_indent:
-                while indent < last_indent:
-                    last_type, last_indent = indents.pop()
-                    events.append(('list_item_end', last_indent))
-                    # Prepare end of list just in case
-                    events.append(('list_end', last_type))
-                    last_type, last_indent = indents[-1]
-            # Now check open list indent
-            words = first_line.split()
-            if words:
-                first_word = words[0]
-            else:
-                first_word = first_line
-            if first_word == u'*':
-                list_indent = len(first_line[:first_line.index(u'*') + 2])
-            elif first_word == u'-':
-                list_indent = len(first_line[:first_line.index(u'-') + 2])
-            elif first_word[:-1].isdigit() and first_word[-1] == u'.':
-                list_indent = len(first_line[:first_line.index(u'.') + 2])
-                # Unify marker for ordered lists
-                first_word = u'#'
-            else:
-                list_indent = None
-            if list_indent is not None:
-                if not events or (events[-1] != ('list_end', first_word)):
-                    # The list was not begun
-                    events.append(('list_begin', first_word))
-                else:
-                    # Remove 'list_end', another item follows
-                    events.pop()
-                events.append(('list_item_begin', list_indent))
-                block = [value[0][list_indent:]] + value[1:]
+            block = strip_block(value)
+            if block:
+                last_line = block[-1]
+                if last_line.endswith(u'::'):
+                    block = block[:-1] + [last_line[:-1]]
+                    status = LITERAL
+                    first_line = block[0]
+                    indent_level = len(first_line) - len(first_line.lstrip(u' \t'))
+                    buffer = []
+            if block and block != [u':']:
                 events.append(('block', block))
-                indents.append((first_word, list_indent))
-            else:
-                events.append(('block', value))
-
-        # Indents left (except default indent)
-        if len(indents) > 1:
-            del indents[0]
-            while indents:
-                last_type, last_indent = indents.pop()
-                events.append(('list_item_end', last_indent))
-            events.append(('list_end', last_type))
-
-        return events
-
-
-    @staticmethod
-    def parse_literal_blocks(stream):
-        events = []
-        status = DEFAULT
-        indent_level = None
-        buffer = []
-
-        for event, value in stream:
-            if status == DEFAULT:
-                if event != 'block':
-                    events.append((event, value))
-                    continue
-                block = strip_block(value)
-                if block:
-                    last_line = block[-1]
-                    if last_line.endswith(u'::'):
-                        block = block[:-1] + [last_line[:-1]]
-                        status = LITERAL
-                        first_line = block[0]
-                        indent_level = len(first_line) - len(first_line.lstrip(u' \t'))
-                        buffer = []
-                if block and block != [u':']:
-                    events.append(('block', block))
-            elif status == LITERAL:
-                if event != 'block':
+        elif status == LITERAL:
+            if event != 'block':
+                block = strip_block(buffer)
+                events.append(('literal_block', u'\n'.join(block)))
+                events.append((event, value))
+                status = DEFAULT
+            elif strip_block(value):
+                first_line = value[0]
+                indent = len(first_line) - len(first_line.lstrip(u' \t'))
+                if indent > indent_level:
+                    buffer.extend(value)
+                else:
                     block = strip_block(buffer)
                     events.append(('literal_block', u'\n'.join(block)))
                     events.append((event, value))
                     status = DEFAULT
-                elif strip_block(value):
-                    first_line = value[0]
-                    indent = len(first_line) - len(first_line.lstrip(u' \t'))
-                    if indent > indent_level:
-                        buffer.extend(value)
-                    else:
-                        block = strip_block(buffer)
-                        events.append(('literal_block', u'\n'.join(block)))
-                        events.append((event, value))
-                        status = DEFAULT
-                else:
-                    buffer.extend(value)
-
-
-        return events
-
-
-    @staticmethod
-    def parse_titles(stream):
-        events = []
-
-        for event, value in stream:
-            if event != 'block':
-                events.append((event, value))
-                continue
-            first_line = value[0]
-            first_char = first_line[0]
-            # Look for an overlined title
-            if (first_char in ADORNMENTS
-                    and first_line.count(first_char) == len(first_line)):
-                # Look for underline
-                for i, line in enumerate(value[1:]):
-                    if line == first_line:
-                        break
-                else:
-                    # Failed to recognize a title
-                    block = strip_block(value)
-                    if block:
-                        text = u' '.join(block)
-                        text = normalize_whitespace(text)
-                        events.append(('paragraph', text))
-                    continue
-                # Split title and possible paragraph
-                title = value[:i + 2]
-                # Return title and adornments separately
-                overline = title[0][0]
-                underline = title[-1][0]
-                title = u'\n'.join(title[1:-1])
-                events.append(('title', (overline, title, underline)))
-                # A paragraph may be glued
-                buffer = value[i + 2:]
-                block = strip_block(buffer)
-                if block:
-                    text = u' '.join(block)
-                    text = normalize_whitespace(text)
-                    events.append(('paragraph', text))
             else:
-                # Look for an underlined title
-                for i, line in enumerate(value):
-                    if (line and line[0] in ADORNMENTS
-                            and line.count(line[0]) == len(line)):
-                        break
-                else:
-                    # No title found
-                    block = strip_block(value)
-                    if block:
-                        text = u' '.join(block)
-                        text = normalize_whitespace(text)
-                        events.append(('paragraph', text))
-                    continue
-                # Split title and possible paragraph
-                title = value[:i + 1]
-                # Special case: '..' on its own means directive
-                # TODO remove when directives are implemented?
-                if title[-1] == u'..':
-                    text = u' '.join(value)
-                    text = normalize_whitespace(text)
-                    events.append(('paragraph', text))
-                    continue
-                # Return title and adornments separately
-                overline = u''
-                underline = title[-1][0]
-                title = u'\n'.join(title[:-1])
-                events.append(('title', (overline, title, underline)))
-                # A paragraph may be glued
-                buffer = value[i + 1:]
-                block = strip_block(buffer)
+                buffer.extend(value)
+
+
+    return events
+
+
+def parse_titles(stream):
+    events = []
+
+    for event, value in stream:
+        if event != 'block':
+            events.append((event, value))
+            continue
+        first_line = value[0]
+        first_char = first_line[0]
+        # Look for an overlined title
+        if (first_char in ADORNMENTS
+                and first_line.count(first_char) == len(first_line)):
+            # Look for underline
+            for i, line in enumerate(value[1:]):
+                if line == first_line:
+                    break
+            else:
+                # Failed to recognize a title
+                block = strip_block(value)
                 if block:
                     text = u' '.join(block)
                     text = normalize_whitespace(text)
                     events.append(('paragraph', text))
+                continue
+            # Split title and possible paragraph
+            title = value[:i + 2]
+            # Return title and adornments separately
+            overline = title[0][0]
+            underline = title[-1][0]
+            title = u'\n'.join(title[1:-1])
+            events.append(('title', (overline, title, underline)))
+            # A paragraph may be glued
+            buffer = value[i + 2:]
+            block = strip_block(buffer)
+            if block:
+                text = u' '.join(block)
+                text = normalize_whitespace(text)
+                events.append(('paragraph', text))
+        else:
+            # Look for an underlined title
+            for i, line in enumerate(value):
+                if (line and line[0] in ADORNMENTS
+                        and line.count(line[0]) == len(line)):
+                    break
+            else:
+                # No title found
+                block = strip_block(value)
+                if block:
+                    text = u' '.join(block)
+                    text = normalize_whitespace(text)
+                    events.append(('paragraph', text))
+                continue
+            # Split title and possible paragraph
+            title = value[:i + 1]
+            # Special case: '..' on its own means directive
+            # TODO remove when directives are implemented?
+            if title[-1] == u'..':
+                text = u' '.join(value)
+                text = normalize_whitespace(text)
+                events.append(('paragraph', text))
+                continue
+            # Return title and adornments separately
+            overline = u''
+            underline = title[-1][0]
+            title = u'\n'.join(title[:-1])
+            events.append(('title', (overline, title, underline)))
+            # A paragraph may be glued
+            buffer = value[i + 1:]
+            block = strip_block(buffer)
+            if block:
+                text = u' '.join(block)
+                text = normalize_whitespace(text)
+                events.append(('paragraph', text))
 
-        return events
+    return events
+
+
+
+def parse_everything(text):
+    # The variable "text" must be a unicode string
+    events = [('text', text)]
+    events = parse_blocks(events)
+    events = parse_lists(events)
+    events = parse_literal_blocks(events)
+    events = parse_titles(events)
+    return events
 
 
 
@@ -494,7 +481,7 @@ def block_stream(text):
         text = unicode(text, 'utf-8')
 
     events = []
-    for event, value in Document(text):
+    for event, value in parse_everything(text):
         if event == 'title':
             overline, title, underline = value
             target = checkid(title).lower()
@@ -525,23 +512,5 @@ def block_stream(text):
             raise NotImplementedError, event
 
     return events
-
-
-
-###########################################################################
-# Test (FIXME This belongs to the "test/test_rest.py" file
-###########################################################################
-if __name__ == '__main__':
-    from itools.handlers import Text
-    from pprint import pprint
-
-    f = open('../../pep-0333.txt')
-    data = f.read()
-    encoding = Text.guess_encoding(data)
-    text = unicode(data, encoding)
-    doc = Document(text)
-    print "events"
-    pprint(doc.events)
-
 
 

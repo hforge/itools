@@ -534,7 +534,9 @@ class WebSite(RoleAware, Folder):
             query = [ OrQuery(EqQuery('title', word), EqQuery('text', word))
                       for word, kk in TextField.split(text) ]
             if query:
-                query = AndQuery(*query)
+                abspath = self.get_real_handler().abspath
+                q1 = EqQuery('paths', abspath)
+                query = AndQuery(q1, *query)
                 results = root.search(query=query)
                 documents = results.get_documents()
             else:

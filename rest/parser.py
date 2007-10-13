@@ -65,8 +65,8 @@ def strip_block(block):
 
 
 def normalize_whitespace(text):
-    """Replace all adjacent whitespace (including carriage returns) by a single
-    space.
+    """Replace all adjacent whitespace (including carriage returns) by a
+    single space.
 
     Only use where whitespace is not significant, e.g. not in literal blocks.
     """
@@ -86,13 +86,12 @@ def parse_lists(stream):
         # Check exit of list indent
         first_line = value[0]
         indent = len(first_line) - len(first_line.lstrip(u' \t'))
-        if indent < last_indent:
-            while indent < last_indent:
-                last_type, last_indent = indents.pop()
-                events.append((XLIST_ITEM_END, last_indent))
-                # Prepare end of list just in case
-                events.append((XLIST_END, last_type))
-                last_type, last_indent = indents[-1]
+        while indent < last_indent:
+            last_type, last_indent = indents.pop()
+            events.append((XLIST_ITEM_END, last_indent))
+            # Prepare end of list just in case
+            events.append((XLIST_END, last_type))
+            last_type, last_indent = indents[-1]
         # Now check open list indent
         words = first_line.split()
         if words:

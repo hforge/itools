@@ -106,8 +106,8 @@ class EpozEditable(object):
 class XHTMLFile(EpozEditable, Text, XHTMLDocument):
 
     class_id = 'application/xhtml+xml'
-    class_title = u'Web Document'
-    class_description = u'Create and publish a Web Document.'
+    class_title = u'Web Page'
+    class_description = u'Create and publish a Web Page.'
     class_icon16 = 'images/HTML16.png'
     class_icon48 = 'images/HTML48.png'
     class_views = [['view'],

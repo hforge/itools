@@ -17,7 +17,6 @@
         <option value="&lt;h6&gt;">Heading 6</option>
         <option value="&lt;pre&gt;">Formatted</option>
       </select>
-      <br />
       <img class="button epoz_button_bold" name="epoz_button_bold"
         src="../images/epoz/epoz_button_bold.png" alt="Bold" title="Bold"
         onclick="FormatText('bold', '');" /><img

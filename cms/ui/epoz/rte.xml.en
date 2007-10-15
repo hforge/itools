@@ -5,7 +5,8 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <div style="display: none" id="epoz_widget_${form_name}">
     <div id="ToolBar_${form_name}">
-      <select class="formatblock" onchange="SelectFormat(this);">
+      <select id="formatblock" class="formatblock"
+        onchange="SelectFormat(this);">
         <option value="">Normal</option>
         <option value="&lt;p&gt;">Paragraph</option>
         <option value="&lt;h1&gt;">Heading 1</option>

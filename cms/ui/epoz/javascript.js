@@ -194,12 +194,15 @@ function CreateTable(rows, cols, border, head) {
 
 // Sets selected formats
 function SelectFormat(selectname) {
+    index = selectname.selectedIndex;
+    content = EpozElement.contentWindow;
     // First one is only a label
-    if (selectname.selectedIndex != 0) {
-        EpozElement.contentWindow.document.execCommand(selectname.id, false, selectname.options[selectname.selectedIndex].value);
+    if (index != 0) {
+        value = selectname.options[index].value;
+        content.document.execCommand(selectname.id, false, value);
         selectname.selectedIndex = 0;
     }
-    EpozElement.contentWindow.focus();
+    content.focus();
 }
 
 

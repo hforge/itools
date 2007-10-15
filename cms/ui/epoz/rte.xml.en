@@ -5,6 +5,20 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <div style="display: none" id="epoz_widget_${form_name}">
     <div id="ToolBar_${form_name}">
+      <img name="epoz_button_hyperlink" class="button epoz_button_hyperlink"
+        src="../images/epoz/epoz_button_hyperlink.png" width="23" height="22"
+        alt="Insert Link" title="Insert Link"
+        onclick="popup(';addlink_form', 640, 480);"/><img
+        class="button epoz_button_anchor"
+        src="../images/epoz/epoz_button_anchor.png" width="23" height="22"
+        alt="Insert Anchor" title="Insert Anchor" onclick="CreateAnchor();"
+        name="epoz_button_anchor" /><img
+        class="button epoz_button_image"
+        src="../images/epoz/epoz_button_image.png" width="23" height="22"
+        alt="Insert Image" title="Insert Image"
+        onclick="popup(';addimage_form', 640, 480);"
+        name="epoz_button_image" />
+      &nbsp;&nbsp;
       <select id="formatblock" class="formatblock"
         onchange="SelectFormat(this);">
         <option value="">Normal</option>
@@ -88,20 +102,7 @@
         src="../images/epoz/epoz_button_indent.png" width="23" height="22"
         alt="Indent" title="Indent" onclick="FormatText('indent', '');"
         name="epoz_button_indent" />
-      <img class="button epoz_button_hyperlink"
-        src="../images/epoz/epoz_button_hyperlink.png" width="23" height="22"
-        alt="Insert Link" title="Insert Link"
-        onclick="popup(';addlink_form', 640, 480);"
-        name="epoz_button_hyperlink" /><img
-        class="button epoz_button_anchor"
-        src="../images/epoz/epoz_button_anchor.png" width="23" height="22"
-        alt="Insert Anchor" title="Insert Anchor" onclick="CreateAnchor();"
-        name="epoz_button_anchor" /><img
-        class="button epoz_button_image"
-        src="../images/epoz/epoz_button_image.png" width="23" height="22"
-        alt="Insert Image" title="Insert Image"
-        onclick="popup(';addimage_form', 640, 480);" name="epoz_button_image"
-        /><img class="button epoz_button_hr"
+      <img class="button epoz_button_hr"
         src="../images/epoz/epoz_button_hr.gif" width="23" height="22"
         alt="Insert Rule" title="Insert Rule"
         onclick="FormatText('inserthorizontalrule', '');"

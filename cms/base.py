@@ -28,12 +28,13 @@ from itools.stl import stl
 from itools.gettext import DomainAware, get_domain
 from itools.http import Forbidden
 from itools.web import get_context, Node as BaseNode
+from catalog import schedule_to_reindex
 from handlers import Lock, Metadata
 from messages import *
-import webdav
+from registry import get_object_class
 from versioning import VersioningAware
+import webdav
 from workflow import WorkflowAware
-from catalog import schedule_to_reindex
 
 
 
@@ -640,6 +641,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def addlink_form(self, context):
         from file import File
         from widgets import Breadcrumb
+
         # Build the bc
         if isinstance(self, File):
             start = self.parent
@@ -647,6 +649,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             start = self
         # Construct namespace
         namespace = {}
+        namespace['language'] = self.get_property('dc:language') or 'en'
         namespace['bc'] = Breadcrumb(filter_type=File, start=start)
         namespace['message'] = context.get_form_value('message')
 
@@ -660,12 +663,13 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         """
         Allow to upload a file and link it to epoz
         """
-        from file import File
-        root = context.root
         # Get the container
+        root = context.root
         container = root.get_handler(context.get_form_value('target_path'))
         # Add the image to the handler
-        uri = File.new_instance(container, context)
+        class_id = context.get_form_value('type')
+        cls = get_object_class(class_id)
+        uri = cls.new_instance(container, context)
         if ';addlink_form' not in uri.path:
             handler = container.get_handler(uri.path[0])
             return """

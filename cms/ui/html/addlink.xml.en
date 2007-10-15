@@ -97,9 +97,20 @@
         <input stl:if="bc/is_submit" type="button" value="Link"
           class="button_ok" onclick="select_link()"/>
       </form>
+      <!-- New Web Page -->
+      <form action=";addlink" method="post">
+        <p>Create a new Web Page and link to it:</p>
+        <input type="hidden" name="type" value="application/xhtml+xml" />
+        <input type="hidden" name="target_path" value="${bc/target_path}"/>
+        <input type="text" name="dc:title" size="40" />
+        <input type="hidden" name="name" value="" />
+        <input type="hidden" name="dc:language" value="${language}" />
+        <input class="button_add" type="submit" value="Ok" />
+      </form>
       <!-- Upload and Link -->
       <form action=";addlink" method="post" enctype="multipart/form-data">
         <p>Upload a file to the current folder and link to it:</p>
+        <input type="hidden" name="type" value="file" />
         <input type="hidden" name="target_path" value="${bc/target_path}"/>
         <input id="file" name="file" size="35" type="file"/>
         <br/>

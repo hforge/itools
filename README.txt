@@ -18,8 +18,8 @@ The scripts included are:
   icatalog-inspect.py     icms-update.py          isetup-build.py
   icms-init.py            icms-update-catalog.py  isetup-copyright.py
   icms-restore.py         igettext-build.py       isetup-doc.py
-  icms-start.py           igettext-extract.py     isetup-update-locale.py
-  icms-stop.py            igettext-merge.py
+  icms-start.py           igettext-extract.py     isetup-quality.py
+  icms-stop.py            igettext-merge.py       isetup-update-locale.py
 
 
 Requirements

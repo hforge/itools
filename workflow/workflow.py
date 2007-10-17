@@ -97,7 +97,7 @@ class Workflow(object):
         describe the transition.
         """
         transition = Transition(state_from, state_to, **kw)
-        try:    
+        try:
             state_from = self.states[state_from]
         except KeyError:
             raise WorkflowError, "unregistered state: '%s'" % state_from
@@ -168,11 +168,11 @@ class WorkflowAware(object):
     this means that they keep track of the current state of the object.
 
     Specific application semantics for states and transitions can be
-    implemented as methods of the WorkflowAware-derived "developer 
+    implemented as methods of the WorkflowAware-derived "developer
     class". These methods get associated with the individual
-    states and transitions by a simple naming scheme. For example, 
-    if a workflow has two states 'private' and 'public', and a 
-    transition 'publish' that goes from 'private' to 'public', 
+    states and transitions by a simple naming scheme. For example,
+    if a workflow has two states 'private' and 'public', and a
+    transition 'publish' that goes from 'private' to 'public',
     the following happens when the transition is executed:
 
       1. if implemented, the method 'onleave_private' is called
@@ -186,7 +186,7 @@ class WorkflowAware(object):
 
     These state/transition "handlers" can also be passed arguments
     from the caller of the transition; for instance, in a web-based
-    system it might be useful to have the HTTP request that triggered 
+    system it might be useful to have the HTTP request that triggered
     the current transition available in the handlers.
 
     A simple stack with three methods, 'pushdata', 'popdata' adn 'getdata',
@@ -206,7 +206,7 @@ class WorkflowAware(object):
         a default initial state).
 
         Extra arguments args are passed to the enter-state handler (if any)
-        of the initial state. 
+        of the initial state.
         """
         # Set the associated workflow
         if workflow is not None:
@@ -233,7 +233,7 @@ class WorkflowAware(object):
     def do_trans(self, transname, *args, **kw):
         """
         Performs a transition, changes the state of the object and
-        runs any defined state/transition handlers. Extra 
+        runs any defined state/transition handlers. Extra
         arguments are passed down to all handlers called.
         """
         # Get the workflow
@@ -241,7 +241,7 @@ class WorkflowAware(object):
 
         # Get the current state
         state = workflow.states[self.workflow_state]
-        
+
         try:
             # Get the new state name
             state = state.transitions[transname].state_to
@@ -249,7 +249,7 @@ class WorkflowAware(object):
             raise WorkflowError, \
                   "transition '%s' is invalid from state '%s'" \
                   % (transname, self.workflow_state)
-        
+
         # call app-specific leave- state  handler if any
         name = 'onleave_%s' % self.workflow_state
         if hasattr(self, name):

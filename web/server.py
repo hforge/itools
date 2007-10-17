@@ -63,7 +63,7 @@ except ImportError:
             for wtd in self.iwtd, self.owtd, self.ewtd:
                 if fileno in wtd:
                     wtd.remove(fileno)
-        
+
         def poll(self):
             iwtd, owtd, ewtd = select(self.iwtd, self.owtd, self.ewtd)
             return [ (x, POLLIN) for x in iwtd ] \
@@ -97,7 +97,7 @@ class SocketWrapper(object):
             data, self.buffer = buffer[:size], buffer[size:]
             return data
         # Try to read the remaining
-        try: 
+        try:
             data = self.socket.recv(size - buffer_size)
         except:
             return None
@@ -153,7 +153,7 @@ class SocketWrapper(object):
             # Miss
             if len(data) < 512:
                 self.buffer = buffer
-                return None 
+                return None
             # FIXME Catch only the relevant exceptions (see note above)
             try:
                 data = recv(512)
@@ -338,7 +338,7 @@ class Server(object):
                             return 304, None
         # Call the method
         try:
-            body = method(context) 
+            body = method(context)
         except Forbidden:
             if context.user is None:
                 status = 401
@@ -383,7 +383,7 @@ class Server(object):
         status, method = self.traverse(context)
         # Call the method
         try:
-            body = method(context) 
+            body = method(context)
         except Forbidden:
             if context.user is None:
                 status = 401
@@ -409,7 +409,7 @@ class Server(object):
         # Traverse
         status, method = self.traverse(context)
         # Call the method
-        body = method(context) 
+        body = method(context)
         return 204, None
 
 
@@ -418,7 +418,7 @@ class Server(object):
         # Traverse
         status, method = self.traverse(context)
         # Call the method
-        body = method(context) 
+        body = method(context)
         if isinstance(body, str):
             return 200, body
         elif body is None:
@@ -431,7 +431,7 @@ class Server(object):
         # Traverse
         status, method = self.traverse(context)
         # Call the method
-        body = method(context) 
+        body = method(context)
         return 204, None
 
 

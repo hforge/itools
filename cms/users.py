@@ -489,7 +489,7 @@ class UserFolder(Folder):
 
     def get_usernames(self):
         """Return all user names."""
-        usernames = [ x[:-9] for x in self.get_handler_names() 
+        usernames = [ x[:-9] for x in self.get_handler_names()
                       if x.endswith('.metadata') ]
         return frozenset(usernames)
 

@@ -109,7 +109,7 @@ def _stl2stl(stream):
     if changed is False:
         raise AssertionError, 'nothing to do'
 
- 
+
 
 if __name__ == '__main__':
     usage = '%prog FILENAME [FILENAME...]'

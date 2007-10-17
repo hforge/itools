@@ -234,7 +234,7 @@ class RoleAware(AccessControl):
             if user_id in self.get_property(role):
                 return True
         return False
- 
+
 
     def set_user_role(self, user_ids, role):
         """
@@ -480,7 +480,7 @@ class RoleAware(AccessControl):
             user_id = results.get_documents()[0].name
         else:
             user_id = None
- 
+
         # Get the user (create it if needed)
         if user_id is None:
             # New user

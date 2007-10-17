@@ -131,18 +131,18 @@ def read_name(line):
 # Manage an icalendar content line value property [with parameters] :
 #
 #   *(;param-name=param-value1[, param-value2, ...]) : value CRLF
-  
+
 
 # Lexical & syntaxic analysis
 #   status :
 #     1 --> parameter begun (just after ';')
-#     2 --> param-name begun 
+#     2 --> param-name begun
 #     3 --> param-name ended, param-value beginning
 #     4 --> param-value quoted begun (just after '"')
-#     5 --> param-value NOT quoted begun 
+#     5 --> param-value NOT quoted begun
 #     6 --> param-value ended (just after '"' for quoted ones)
 #     7 --> value to begin (just after ':')
-#     8 --> value begun 
+#     8 --> value begun
 
 # Tokens
 TPARAM, TVALUE = range(2)
@@ -158,7 +158,7 @@ def get_tokens(property):
         status = 1
     elif c == ':':
         status = 7
-        
+
     for c in property:
         # parameter begun (just after ';')
         if status == 1:
@@ -168,7 +168,7 @@ def get_tokens(property):
                 raise SyntaxError, 'unexpected character (%s) at status %s'\
                                     % (c, status)
 
-        # param-name begun 
+        # param-name begun
         elif status == 2:
             if c.isalnum() or c in ('-'):
                 lexeme += c
@@ -187,7 +187,7 @@ def get_tokens(property):
             elif c in (';',':',',') :
                 raise SyntaxError, 'unexpected character (%s) at status %s'\
                                     % (c, status)
-            else:    
+            else:
                 lexeme += c
                 status = 5
 
@@ -199,21 +199,21 @@ def get_tokens(property):
             else:
                 lexeme += c
 
-        # param-value NOT quoted begun 
+        # param-value NOT quoted begun
         elif status == 5:
             if c in (':',';',',') :
                 status = 6
             elif c=='"':
                 raise SyntaxError, 'unexpected character (%s) at status %s'\
                                     % (c, status)
-            else:    
+            else:
                 lexeme += c
 
         # value to begin (just after ':')
         elif status == 7:
             lexeme, status = c, 8
 
-        # value begun 
+        # value begun
         elif status == 8:
             lexeme += c
 
@@ -222,10 +222,10 @@ def get_tokens(property):
             if c == ':':
                 status = 7
                 yield TPARAM, lexeme
-            elif c == ';': 
+            elif c == ';':
                 status = 1
                 yield TPARAM, lexeme
-            elif c == ',': 
+            elif c == ',':
                 lexeme += c
                 status = 3
             elif c == '"':
@@ -334,7 +334,7 @@ class Record(list):
 
 
 class Table(File):
-    
+
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
                  'records', 'catalog', 'added_records', 'removed_records']
 
@@ -344,7 +344,7 @@ class Table(File):
     # Hash with field names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some fields the schema should be declared as:
-    # schema = {'firstname': Unicode, 'lastname': Unicode, 
+    # schema = {'firstname': Unicode, 'lastname': Unicode,
     #           'age': Integer(index='<analyser>')}
     # where <analyser> is an itools.catalog analyser or derivate: keyword,
     # book, text, path.

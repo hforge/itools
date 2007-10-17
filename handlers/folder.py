@@ -376,6 +376,6 @@ def build_virtual_handler(handler):
     virtual_handler.real_handler = handler
 
     return virtual_handler
-    
+
 
 registry.register_handler_class(Folder)

@@ -91,7 +91,7 @@ def get_most_similar(a, *args):
 ##    for word, abrevations in dictionary.items():
 ##        for abrevation in abrevations:
 ##            t = t.replace(' ' + abrevation + ' ', ' ' + word + ' ')
-##    return t             
+##    return t
 
 
 ##def get_distance(a, b):

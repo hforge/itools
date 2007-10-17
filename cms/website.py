@@ -516,7 +516,7 @@ class WebSite(RoleAware, Folder):
         context.set_cookie('language', lang)
         return goto
 
-    
+
     ########################################################################
     # Search
     site_search__access__ = True

@@ -233,7 +233,7 @@ class Config(Text):
         lines, using double quotes as delimiters"
 
     The "values" data structure is:
-        
+
         self.values:
             {<var name>: line no}
 

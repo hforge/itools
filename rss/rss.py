@@ -26,7 +26,7 @@ from itools.datatypes import (is_datatype, Unicode, URI, Integer, String,
 rss_elements = {
     'channel': {
         'required': ['title', 'link', 'description'],
-        'optional': ['language', 'copyright', 'pubDate', 
+        'optional': ['language', 'copyright', 'pubDate',
                      'ttl', 'image', 'lastBuildDate', 'generator']
     },
     'image': {
@@ -197,7 +197,7 @@ class RSS(Text):
                 namespace, local_name = value
                 # Save item data
                 if local_name == 'item':
-                    item = RssChannelItem(fields['title'], 
+                    item = RssChannelItem(fields['title'],
                                           fields['link'],
                                           fields['description'])
                     # Add other (optional) elements
@@ -207,7 +207,7 @@ class RSS(Text):
                     fields = {}
                 # Save image data
                 elif local_name == 'image':
-                    image = RssChannelImage(fields['url'], 
+                    image = RssChannelImage(fields['url'],
                                             fields['title'],
                                             fields['link'])
                     # Add other (optional) elements

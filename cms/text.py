@@ -122,7 +122,7 @@ class Text(File, BaseText):
     view__sublabel__ = u'Plain Text'
     def view(self, context):
         namespace = {}
-        namespace['text'] = self.to_str() 
+        namespace['text'] = self.to_str()
 
         handler = self.get_handler('/ui/text/view.xml')
         return stl(handler, namespace)

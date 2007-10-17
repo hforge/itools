@@ -115,7 +115,7 @@ class MSPowerPoint(OfficeDocument):
 
         if stderr != "":
             return u''
-        
+
         return xml_to_text(stdout)
 
 

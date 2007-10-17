@@ -35,10 +35,10 @@ class Namespace(AbstractNamespace):
             'date': {'is_empty': False, 'is_inline': False},
             'language': {'is_empty': False, 'is_inline': False}
             }
-        
+
         if name not in elements_schema:
             raise XMLError, 'unknown property "%s"' % name
- 
+
         return elements_schema.get(name)
 
 

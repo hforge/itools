@@ -79,7 +79,7 @@ class OdfDocument(OpenOfficeDocument):
         meta = {}
         meta_tags = ['title', 'description', 'subject', 'initial-creator',
                      'creation-date', 'creator', 'date', 'keyword', 'language']
-        
+
         meta_events = self.get_events('meta.xml')
         previous_tag_name = None
         for type, value, line in meta_events:
@@ -90,7 +90,7 @@ class OdfDocument(OpenOfficeDocument):
                 if previous_tag_name in meta_tags:
                     if meta.has_key(previous_tag_name):
                         meta[previous_tag_name] = '%s\n%s' % (
-                                                meta[previous_tag_name], value)                                                 
+                                                meta[previous_tag_name], value)
                     else:
                         meta[previous_tag_name] = value
         return meta
@@ -134,7 +134,7 @@ class OdfDocument(OpenOfficeDocument):
 
 
 class ODT(OdfDocument):
-    
+
     class_mimetypes = ['application/vnd.oasis.opendocument.text']
     class_extension = 'odt'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
@@ -143,7 +143,7 @@ class ODT(OdfDocument):
 
 
 class ODS(OdfDocument):
-  
+
     class_mimetypes = ['application/vnd.oasis.opendocument.spreadsheet']
     class_extension = 'ods'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:spreadsheet:1.0'

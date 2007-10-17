@@ -37,4 +37,4 @@ class LanguageTag(DataType):
             return language.lower()
         return '%s-%s' % (language.lower(), locality.upper())
 ##        return '-'.join([i for i in value if i != None])
-    
+

@@ -40,7 +40,7 @@ class FileTestCase(TestCase):
         exists = vfs.exists('tests/fdsfsf')
         self.assertEqual(exists, False)
 
-    
+
     def test02_is_file(self):
         is_file = vfs.is_file('tests/index.html.en')
         self.assertEqual(is_file, True)
@@ -173,7 +173,7 @@ class FSTestCase(TestCase):
 
 
 class FoldersTestCase(TestCase):
- 
+
     def setUp(self):
         self.tests = vfs.open('tests/')
 

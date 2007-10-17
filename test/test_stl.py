@@ -96,7 +96,7 @@ class STLTestCase(unittest.TestCase):
         # Assert
         events = list(stream)
         self.assertEqual(events, [])
-        
+
 
     def test_if_not(self):
         handler = Document(string=

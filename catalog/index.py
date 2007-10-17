@@ -69,7 +69,7 @@ has 4 slots of 4 bytes each.
 
 The first block is special, it represents the root node, the empty string.
 Its format is:
-    
+
   - version number [version]
   - <unused> (4 bytes)
   - first child [link]
@@ -108,7 +108,7 @@ ZERO = encode_uint32(0)
 # Data Structure
 ##########################################################################
 class Node(object):
-    
+
     __slots__ = ['children', 'documents', 'block']
 
 
@@ -236,7 +236,7 @@ class Node(object):
                     documents[n] += child_documents[n]
                 else:
                     documents[n] = child_documents[n]
-                
+
         return documents
 
 

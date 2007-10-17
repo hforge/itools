@@ -198,19 +198,19 @@ class OracleTestCase(unittest.TestCase):
         les soldats sur le terrain, loccupation de lIrak se transforme en une
         descente aux enfers."""
         self.assertEqual(guess_language(text), 'fr')
-                
+
 
     def test_french_short(self):
         text = u"""un dossier spécial consacré à la « révolution de velours »
         géorgienne sur le site de lagence Radio Free Europe fondée par le
         Congrès des Etats-Unis."""
         self.assertEqual(guess_language(text), 'fr')
-                
+
 
     def test_french_very_sort(self):
         text = u"""Les déclarations du président Vladimir Poutine"""
         self.assertEqual(guess_language(text), 'fr')
-                
+
 
     def test_english_long(self):
         text = """INDIA SOFTWARE REVENUE UP: India's revenue from exports of

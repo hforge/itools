@@ -17,23 +17,23 @@
 
 ###########################################################################
 # To add a new language, edit the dictionaries below:
-# 
+#
 #   - positive_chars
-# 
+#
 #     Defines special characters (like accentuated characters) that belong
 #     to the language.
-# 
+#
 #   - negative_chars
-# 
+#
 #     Defines special characters (like accentuated characters) that do not
 #     belong to the language.
-# 
+#
 #   - positive_words
-# 
+#
 #     Defines common words that belong to the language.
-# 
+#
 #   - negative_words
-# 
+#
 #     Defines some words that do not belong to the language.
 ###########################################################################
 positive_chars = {
@@ -204,6 +204,6 @@ def guess_language(text):
         return languages[0][1]
     if languages[-1][0] - languages[-2][0] >= distance:
         return languages[-1][1]
-     
+
     return None
 

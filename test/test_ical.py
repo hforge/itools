@@ -29,7 +29,7 @@ from itools.ical import icalendar, PropertyValue, icalendarTable
 
 
 # Example with 1 event
-content = """ 
+content = """
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN
@@ -54,7 +54,7 @@ END:VCALENDAR
 """
 
 # Example with 2 events
-content2 = """ 
+content2 = """
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN
@@ -112,7 +112,7 @@ class icalTestCase(unittest.TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;{}:2.0', 
+            u'VERSION;{}:2.0',
             u'PRODID;{}:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
         self.assertEqual(properties, expected_properties)
 
@@ -166,7 +166,7 @@ class icalTestCase(unittest.TestCase):
         # Component properties
         properties = {}
         properties['MYADD'] = PropertyValue(u'Résumé à crêtes')
-        value = PropertyValue(u'Property added by calling add_property') 
+        value = PropertyValue(u'Property added by calling add_property')
         properties['DESCRIPTION'] = value
         param = '"mailto:DEV-GROUP@host2.com"'
         value = PropertyValue('mailto:darwin@itaapy.com', MEMBER=[param])
@@ -195,7 +195,7 @@ class icalTestCase(unittest.TestCase):
 
 
     def property_to_string(self, prop_name, prop):
-        """ 
+        """
         Method only used by test_load and test_load2.
         """
         value, params = prop.value, ''
@@ -223,9 +223,9 @@ class icalTestCase(unittest.TestCase):
             properties.append(property)
 
         expected_properties = [
-            u'VERSION;{}:2.0', 
+            u'VERSION;{}:2.0',
             u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ] 
+            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
         self.assertEqual(properties, expected_properties)
 
         # Test component properties
@@ -244,20 +244,20 @@ class icalTestCase(unittest.TestCase):
                     properties.append(property)
 
         expected_event_properties = [
-            u'STATUS:TENTATIVE', 
-            u'DTSTAMP:2005-06-01 07:46:04',  
-            u'DESCRIPTION:all all all', 
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
-                     ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
+            u'STATUS:TENTATIVE',
+            u'DTSTAMP:2005-06-01 07:46:04',
+            u'DESCRIPTION:all all all',
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
+                     ';RSVP=TRUE:mailto:jdoe@itaapy.com',
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
                      ':mailto:jsmith@itaapy.com',
-            u'SUMMARY:Résumé', 
-            u'PRIORITY:1', 
-            u'LOCATION:France', 
-            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0', 
-            u'DTEND;VALUE=DATE:2005-05-31 00:00:00', 
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00', 
-            u'CLASS:PRIVATE'] 
+            u'SUMMARY:Résumé',
+            u'PRIORITY:1',
+            u'LOCATION:France',
+            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+            u'DTEND;VALUE=DATE:2005-05-31 00:00:00',
+            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
+            u'CLASS:PRIVATE']
 
         self.assertEqual(event.uid, '581361a0-1dd2-11b2-9a42-bd3958eeac9a')
         self.assertEqual(properties, expected_event_properties)
@@ -288,9 +288,9 @@ class icalTestCase(unittest.TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;{}:2.0', 
+            u'VERSION;{}:2.0',
             u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ] 
+            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
         self.assertEqual(properties, expected_properties)
 
         events = []
@@ -315,22 +315,22 @@ class icalTestCase(unittest.TestCase):
 
         # Test events
         expected_events = [[
-            u'STATUS:TENTATIVE', 
-            u'DESCRIPTION:all all all', 
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
-                     ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
-            u'SUMMARY:Refound', 
-            u'PRIORITY:1', 
-            u'LOCATION:France', 
-            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0', 
-            u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999', 
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00', 
-            u'CLASS:PRIVATE'], 
+            u'STATUS:TENTATIVE',
+            u'DESCRIPTION:all all all',
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
+                     ';RSVP=TRUE:mailto:jdoe@itaapy.com',
+            u'SUMMARY:Refound',
+            u'PRIORITY:1',
+            u'LOCATION:France',
+            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+            u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999',
+            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
+            u'CLASS:PRIVATE'],
             [
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'\
-             ':mailto:jdoe@itaapy.com', 
-            u'SUMMARY:222222222', 
-            u'PRIORITY:2',  
+             ':mailto:jdoe@itaapy.com',
+            u'SUMMARY:222222222',
+            u'PRIORITY:2',
             u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
             u'DTSTART;VALUE="DATE":2005-07-01 00:00:00'
             ]]
@@ -414,7 +414,7 @@ class icalTestCase(unittest.TestCase):
 
         name, value = 'ATTENDEE', []
         param = ['"mailto:DEV-GROUP@host2.com"']
-        value.append(PropertyValue(URI.decode('mailto:darwin@itaapy.com'), 
+        value.append(PropertyValue(URI.decode('mailto:darwin@itaapy.com'),
                                    MEMBER=param))
         value.append(PropertyValue(URI.decode('mailto:jdoe@itaapy.com')))
         value.append(PropertyValue(URI.decode('mailto:jsmith@itaapy.com')))
@@ -445,7 +445,7 @@ class icalTestCase(unittest.TestCase):
 
         events = cal.search_events(
             ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
-            STATUS='TENTATIVE', 
+            STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
 
@@ -470,7 +470,7 @@ class icalTestCase(unittest.TestCase):
 
         events = cal.search_events(
             ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
-            STATUS='TENTATIVE', 
+            STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
 
@@ -497,10 +497,10 @@ class icalTestCase(unittest.TestCase):
         attendee_value = URI.decode('mailto:jdoe@itaapy.com')
         events = cal.search_events_in_date(date, ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
-        events = cal.search_events_in_date(date, ATTENDEE=attendee_value, 
+        events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
                                                  STATUS='TENTATIVE')
         self.assertEqual(len(events), 1)
-        events = cal.search_events_in_date(date, ATTENDEE=attendee_value, 
+        events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
                                                  STATUS='CONFIRMED')
         self.assertEqual(len(events), 0)
 
@@ -555,7 +555,7 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(len(events), 0)
 
         attendee_value = URI.decode('mailto:jdoe@itaapy.com')
-        events = cal.search_events_in_range(dtstart, dtend, 
+        events = cal.search_events_in_range(dtstart, dtend,
                                             ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
         events = cal.search_events_in_range(dtstart, dtend,
@@ -569,13 +569,13 @@ class icalTestCase(unittest.TestCase):
     def test_get_conflicts(self):
         """
         Test get_conflicts method which returns uid couples of events
-        conflicting on a given date. 
+        conflicting on a given date.
         """
         cal = self.cal2
         date = datetime(2005, 05, 30)
 
         conflicts = cal.get_conflicts(date)
-        self.assertEqual(conflicts, None) 
+        self.assertEqual(conflicts, None)
 
         # Set a conflict
         uid1 = '581361a0-1dd2-11b2-9a42-bd3958eeac9a'
@@ -583,7 +583,7 @@ class icalTestCase(unittest.TestCase):
         cal.update_component(uid2,
                              DTSTART=PropertyValue(datetime(2005, 05, 30)),
                              DTEND=PropertyValue(datetime(2005, 05, 31)))
-            
+
         conflicts = cal.get_conflicts(date)
         self.assertEqual(conflicts, [(uid1, uid2)])
 
@@ -619,7 +619,7 @@ class icalTableTestCase(unittest.TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;{}:2.0', 
+            u'VERSION;{}:2.0',
             u'PRODID;{}:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
         self.assertEqual(properties, expected_properties)
 
@@ -673,7 +673,7 @@ class icalTableTestCase(unittest.TestCase):
         # Component properties
         properties = {}
         properties['MYADD'] = Property(u'Résumé à crêtes')
-        value = Property(u'Property added by calling add_property') 
+        value = Property(u'Property added by calling add_property')
         properties['DESCRIPTION'] = value
         param = '"mailto:DEV-GROUP@host2.com"'
         value = Property('mailto:darwin@itaapy.com', {'MEMBER': [param]})
@@ -703,7 +703,7 @@ class icalTableTestCase(unittest.TestCase):
 
 
     def property_to_string(self, prop_name, prop):
-        """ 
+        """
         Method only used by test_load and test_load2.
         """
         value, params = prop.value, ''
@@ -731,9 +731,9 @@ class icalTableTestCase(unittest.TestCase):
             properties.append(property)
 
         expected_properties = [
-            u'VERSION;{}:2.0', 
+            u'VERSION;{}:2.0',
             u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ] 
+            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
         self.assertEqual(properties, expected_properties)
 
         # Test component properties
@@ -754,20 +754,20 @@ class icalTableTestCase(unittest.TestCase):
                     properties.append(property)
 
         expected_event_properties = [
-            u'STATUS:TENTATIVE', 
-            u'DTSTAMP:2005-06-01 07:46:04',  
-            u'DESCRIPTION:all all all', 
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
-                     ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
+            u'STATUS:TENTATIVE',
+            u'DTSTAMP:2005-06-01 07:46:04',
+            u'DESCRIPTION:all all all',
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
+                     ';RSVP=TRUE:mailto:jdoe@itaapy.com',
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
                      ':mailto:jsmith@itaapy.com',
-            u'SUMMARY:Résumé', 
-            u'PRIORITY:1', 
-            u'LOCATION:France', 
-            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0', 
-            u'DTEND;VALUE=DATE:2005-05-31 00:00:00', 
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00', 
-            u'CLASS:PRIVATE'] 
+            u'SUMMARY:Résumé',
+            u'PRIORITY:1',
+            u'LOCATION:France',
+            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+            u'DTEND;VALUE=DATE:2005-05-31 00:00:00',
+            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
+            u'CLASS:PRIVATE']
 
         self.assertEqual(event.UID, '581361a0-1dd2-11b2-9a42-bd3958eeac9a')
         self.assertEqual(properties, expected_event_properties)
@@ -798,9 +798,9 @@ class icalTableTestCase(unittest.TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;{}:2.0', 
+            u'VERSION;{}:2.0',
             u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ] 
+            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
         self.assertEqual(properties, expected_properties)
 
         events = []
@@ -828,23 +828,23 @@ class icalTableTestCase(unittest.TestCase):
         # Test events
         expected_events = [[
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'\
-             ':mailto:jdoe@itaapy.com', 
-            u'SUMMARY:222222222', 
-            u'PRIORITY:2',  
+             ':mailto:jdoe@itaapy.com',
+            u'SUMMARY:222222222',
+            u'PRIORITY:2',
             u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
             u'DTSTART;VALUE="DATE":2005-07-01 00:00:00'
             ],
             [
-            u'STATUS:TENTATIVE', 
-            u'DESCRIPTION:all all all', 
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"' 
-                     ';RSVP=TRUE:mailto:jdoe@itaapy.com', 
-            u'SUMMARY:Refound', 
-            u'PRIORITY:1', 
-            u'LOCATION:France', 
-            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0', 
-            u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999', 
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00', 
+            u'STATUS:TENTATIVE',
+            u'DESCRIPTION:all all all',
+            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
+                     ';RSVP=TRUE:mailto:jdoe@itaapy.com',
+            u'SUMMARY:Refound',
+            u'PRIORITY:1',
+            u'LOCATION:France',
+            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+            u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999',
+            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
             u'CLASS:PRIVATE']
             ]
 
@@ -895,7 +895,7 @@ class icalTableTestCase(unittest.TestCase):
         name = 'ATTENDEE'
         value = event.get_property(name)
         param = ['"mailto:DEV-GROUP@host2.com"']
-        value.append(Property('mailto:darwin@itaapy.com', 
+        value.append(Property('mailto:darwin@itaapy.com',
                               {'MEMBER': param}))
         cal.update_record(event.id, **{name: value})
 
@@ -929,7 +929,7 @@ class icalTableTestCase(unittest.TestCase):
 
         name, value = 'ATTENDEE', []
         param = ['"mailto:DEV-GROUP@host2.com"']
-        value.append(Property(URI.decode('mailto:darwin@itaapy.com'), 
+        value.append(Property(URI.decode('mailto:darwin@itaapy.com'),
                               {'MEMBER': param}))
         value.append(Property(URI.decode('mailto:jdoe@itaapy.com')))
         value.append(Property(URI.decode('mailto:jsmith@itaapy.com')))
@@ -960,7 +960,7 @@ class icalTableTestCase(unittest.TestCase):
 
         events = cal.search_events(
             ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
-            STATUS='TENTATIVE', 
+            STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
 
@@ -986,7 +986,7 @@ class icalTableTestCase(unittest.TestCase):
 
         events = cal.search_events(
             ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
-            STATUS='TENTATIVE', 
+            STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
 
@@ -1013,10 +1013,10 @@ class icalTableTestCase(unittest.TestCase):
         attendee_value = URI.decode('mailto:jdoe@itaapy.com')
         events = cal.search_events_in_date(date, ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
-        events = cal.search_events_in_date(date, ATTENDEE=attendee_value, 
+        events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
                                                  STATUS='TENTATIVE')
         self.assertEqual(len(events), 1)
-        events = cal.search_events_in_date(date, ATTENDEE=attendee_value, 
+        events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
                                                  STATUS='CONFIRMED')
         self.assertEqual(len(events), 0)
 
@@ -1071,7 +1071,7 @@ class icalTableTestCase(unittest.TestCase):
         self.assertEqual(len(events), 0)
 
         attendee_value = URI.decode('mailto:jdoe@itaapy.com')
-        events = cal.search_events_in_range(dtstart, dtend, 
+        events = cal.search_events_in_range(dtstart, dtend,
                                             ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
         events = cal.search_events_in_range(dtstart, dtend,
@@ -1085,20 +1085,20 @@ class icalTableTestCase(unittest.TestCase):
     def test_get_conflicts(self):
         """
         Test get_conflicts method which returns uid couples of events
-        conflicting on a given date. 
+        conflicting on a given date.
         """
         cal = self.cal2
         date = datetime(2005, 05, 30)
 
         conflicts = cal.get_conflicts(date)
-        self.assertEqual(conflicts, None) 
+        self.assertEqual(conflicts, None)
 
         # Set a conflict
         uid1 = 0
         uid2 = 1
         cal.update_record(uid1, DTSTART=Property(datetime(2005, 05, 30)),
                                 DTEND=Property(datetime(2005, 05, 31)))
-            
+
         conflicts = cal.get_conflicts(date)
         self.assertEqual(conflicts, [(uid1, uid2)])
 

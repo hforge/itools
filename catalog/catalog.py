@@ -20,7 +20,7 @@ set of fields, each field has a value (a unicode string) and is identified
 with a number. Documents are also identified with numbers.
 
 So, the data structure is:
-    
+
   - documents: {<doc number>: Document}
   - n_documents: int
 
@@ -36,7 +36,7 @@ The index file (index)
 ----------------------
 
 The index file is made of fixed length blocks of 8 bytes each:
-    
+
   - pointer to the documents file [link]
   - size of the block in the documents file [uint32]
 
@@ -48,23 +48,23 @@ The documents file (documents)
 
 Within the documents file each document is stored in variable length blocks,
 one after another. And a document is made of its fields:
-    
+
   - field number, is stored [byte]
   - field value
 
 The first byte is split in two parts, the highest weight bit tells whether
 the field is stored or not, the lower 7 bits tell are the field number. For
 example:
-    
+
   1 0000010 (field number: 3, is stored: false)
 
 The structure of the field value depends on whether the field is stored or
 not. If it is stored it will be an string:
-    
+
   - field value [string]
 
 If it is not it will be a list of terms:
-    
+
   - n_terms [vint]
   - term 0 [string]
   ...
@@ -105,7 +105,7 @@ class Field(object):
 
 
 class Document(object):
- 
+
     __slots__ = ['__number__', 'fields', 'field_numbers']
 
     def __init__(self, n, *args):
@@ -162,7 +162,7 @@ class SearchResults(object):
             takes effect if the parameter "sort_by" is also given.
 
         It is also possible to ask for a subset of the documents:
-            
+
           - "start": returns the documents starting from the given start
             position.
 

@@ -17,7 +17,7 @@
 
 # Import from itools
 from odf import ODT, ODP, ODS
-from OO import OOWriter, OOCalc, OOImpress 
+from OO import OOWriter, OOCalc, OOImpress
 
 __all__ = [
     'ODT',

@@ -28,7 +28,7 @@ from itools.cms.database import DatabaseFS
 
 
 class BrokenHandler(Text):
-    
+
     def to_str(self):
         iamsobroken
 
@@ -123,6 +123,6 @@ class DatabaseTestCase(TestCase):
         self.assertEqual(len(ids), 1)
 
 
- 
+
 if __name__ == '__main__':
     unittest.main()

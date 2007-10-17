@@ -113,12 +113,12 @@ class ISOCalendarDate(DataType):
 
     Basic formats: %Y%m%d, %Y%m, %Y
     """
- 
+
     @staticmethod
     def decode(data):
         if not data:
             return None
-        
+
         # The year
         year = int(data[:4])
         data = data[4:]
@@ -164,7 +164,7 @@ class ISOTime(DataType):
 
     Basic formats: %H%M%S, %H%M, %H
     """
- 
+
     @staticmethod
     def decode(data):
         if not data:

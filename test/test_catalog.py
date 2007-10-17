@@ -126,7 +126,7 @@ class FieldsTestCase(TestCase):
         words = list(TextField.split(value))
         expected = [ (y, x) for x, y in enumerate(expected) ]
         self.assertEqual(words, expected)
- 
+
 
     def test_text_russian(self):
         text = u'Это наш дом'
@@ -136,7 +136,7 @@ class FieldsTestCase(TestCase):
 
 
 class CatalogTestCase(TestCase):
- 
+
     def setUp(self):
         # Make the catalog
         catalog = make_catalog('tests/catalog',

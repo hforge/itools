@@ -37,7 +37,7 @@ and to ask this registry.
 It also provides a registry from namespace prefixes to namespace uris.
 While namespace prefixes are local to an XML document, it is sometimes
 useful to refer to a namespace through its prefix. This feature must
-be used carefully, collisions 
+be used carefully, collisions
 """
 
 

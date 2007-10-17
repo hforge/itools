@@ -48,13 +48,13 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 
-__tab_para_alignment = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT, 
+__tab_para_alignment = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT,
                         'CENTER': TA_CENTER, 'JUSTIFY': TA_JUSTIFY}
-__tab_page_size = {'LETTER': letter, 'LEGAL': legal, 
+__tab_page_size = {'LETTER': letter, 'LEGAL': legal,
                    #'elevenSeventeen': elevenSeventeen,
-                   'A0': A0, 'A1': A1, 'A2': A2, 'A3': A3, 
+                   'A0': A0, 'A1': A1, 'A2': A2, 'A3': A3,
                    'A4': A4, 'A5': A5, 'A6': A6,
-                   'B0': B0, 'B1': B1, 'B2': B2, 'B3': B3, 
+                   'B0': B0, 'B1': B1, 'B2': B2, 'B3': B3,
                    'B4': B4, 'B5': B5, 'B6': B6}
 
 encoding = 'UTF-8'
@@ -95,7 +95,7 @@ class iIllustration(Flowable):
         self.height = rml_value(_attributes.get((None, 'height')))
         self.pageGraphics = iPageGraphics(stream, _tag_name, {})
 
-    
+
     def wrap(self, *args):
         return (self.width, self.height)
 
@@ -110,15 +110,15 @@ class iCanvas(object):
         self.story = story
 
     def render(self, cnv, doc):
-        fn_draw_string = {'drawString': cnv.drawString, 
-                          'drawRightString': cnv.drawRightString, 
-                          'drawCentredString': cnv.drawCentredString, 
+        fn_draw_string = {'drawString': cnv.drawString,
+                          'drawRightString': cnv.drawRightString,
+                          'drawCentredString': cnv.drawCentredString,
                           'drawCenteredString': cnv.drawCentredString}
-        fn_no_change = {'setFont': cnv.setFont, 'fill': cnv.setFillColorRGB, 
+        fn_no_change = {'setFont': cnv.setFont, 'fill': cnv.setFillColorRGB,
                         'stroke': cnv.setStrokeColorRGB, 'ellipse': cnv.ellipse,
-                        'lineWidth': cnv.setLineWidth, 'lineDash': cnv.setDash, 
+                        'lineWidth': cnv.setLineWidth, 'lineDash': cnv.setDash,
                         'lineJoin': cnv.setLineJoin, 'lineCap': cnv.setLineCap,
-                        'circle': cnv.circle, 'lines': cnv.lines, 
+                        'circle': cnv.circle, 'lines': cnv.lines,
                         'curves': cnv.bezier, 'grid': cnv.grid,
                         'translate': cnv.translate, 'scale': cnv.scale,
                         'rotate': cnv.rotate, 'skew': cnv.skew,
@@ -127,7 +127,7 @@ class iCanvas(object):
         cnv.saveState()
         for obj in self.story:
             fn, attrs = obj
-            if fn in ['drawString', 'drawRightString', 'drawCentredString', 
+            if fn in ['drawString', 'drawRightString', 'drawCentredString',
                       'drawCenteredString']:
                 if doc is not None:
                     attrs2 = attrs.copy()
@@ -173,7 +173,7 @@ class iPageGraphics(object):
             #### START ELEMENT ####
             if event == START_ELEMENT:
                 tag_uri, tag_name, attrs = value
-                if tag_name in ['drawString', 'drawRightString', 
+                if tag_name in ['drawString', 'drawRightString',
                                 'drawCentredString', 'drawCenteredString']:
                     if exist_attribute(attrs, ['x', 'y']) == True:
                         content = []
@@ -204,19 +204,19 @@ class iPageGraphics(object):
                             fn_attrs['preserveAspectRatio'] = to_bool(preserve)
                         if exist_attribute(attrs, ['anchor']):
                             anchor = attrs.get((None, 'anchor')).lower()
-                            if anchor in ['nw', 'n', 'ne', 'w', 'c', 'e', 
+                            if anchor in ['nw', 'n', 'ne', 'w', 'c', 'e',
                                           'sw', 's', 'se']:
                                 fn_attrs['anchor'] = anchor
 
                 elif tag_name == 'rect':
-                    if exist_attribute(attrs, ['x', 'y', 'width', 
+                    if exist_attribute(attrs, ['x', 'y', 'width',
                                                'height']) == True:
                         fn_attrs = {}
                         fn_attrs['x'] = rml_value(attrs.get((None, 'x')))
                         fn_attrs['y'] = rml_value(attrs.get((None, 'y')))
-                        fn_attrs['width'] = rml_value(attrs.get((None, 
+                        fn_attrs['width'] = rml_value(attrs.get((None,
                                                                  'width')))
-                        fn_attrs['height'] = rml_value(attrs.get((None, 
+                        fn_attrs['height'] = rml_value(attrs.get((None,
                                                                   'height')))
                         if exist_attribute(attrs, ['fill']) == True:
                             fill = to_bool(attrs.get((None, 'fill')))
@@ -260,13 +260,13 @@ class iPageGraphics(object):
                         fn_attrs['y_cen'] = rml_value(attrs.get((None, 'y')))
                         fn_attrs['r'] = rml_value(attrs.get((None, 'radius')))
                         if exist_attribute(attrs, ['fill']):
-                            fn_attrs['fill'] = to_bool(attrs.get((None, 
+                            fn_attrs['fill'] = to_bool(attrs.get((None,
                                                                   'fill')))
                         if exist_attribute(attrs, ['stroke']):
-                            fn_attrs['stroke'] = to_bool(attrs.get((None, 
+                            fn_attrs['stroke'] = to_bool(attrs.get((None,
                                                                     'stroke')))
                 elif tag_name == 'ellipse':
-                    if exist_attribute(attrs, ['x', 'y', 'width', 
+                    if exist_attribute(attrs, ['x', 'y', 'width',
                                                'height']) == True:
                         fn_attrs = {}
                         fn_attrs['x1'] = rml_value(attrs.get((None, 'x')))
@@ -325,7 +325,7 @@ class iPageGraphics(object):
                 else:
                     print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 stack.append((tag_name, attrs, None))
-            #### END ELEMENT ####   
+            #### END ELEMENT ####
             elif event == END_ELEMENT:
                 tag_uri, tag_name = value
                 if tag_name == _tag_name:
@@ -335,17 +335,17 @@ class iPageGraphics(object):
                         content.append(build_end_tag(tag_name))
                     elif fn_attrs is not None:
                         push = True
-                        if tag_name in ['drawString', 'drawRightString', 
-                                       'drawCentredString', 
+                        if tag_name in ['drawString', 'drawRightString',
+                                       'drawCentredString',
                                        'drawCenteredString']:
                             if content is not None:
-                                fn_attrs['text'] = ''.join(content) 
+                                fn_attrs['text'] = ''.join(content)
                                 content = None
                         elif tag_name == 'lines':
                             content = content.split()
                             lines = []
                             while len(content) > 3:
-                                lines.append([rml_value(v) 
+                                lines.append([rml_value(v)
                                               for v in content[0:4]])
                                 content = content[4:]
                             fn_attrs['linelist'] = lines
@@ -354,8 +354,8 @@ class iPageGraphics(object):
                             content = content.split()
                             while len(content) > 7:
                                 d = {}
-                                for i, elt in enumerate(['x1', 'y1', 'x2', 
-                                                         'y2', 'x3', 'y3', 
+                                for i, elt in enumerate(['x1', 'y1', 'x2',
+                                                         'y2', 'x3', 'y3',
                                                          'x4', 'y4']):
                                     d[elt] = rml_value(content[i])
                                     self.story.append((tag_name, d))
@@ -376,13 +376,13 @@ class iPageGraphics(object):
             elif event == TEXT:
                 prev_elt = stack[-1]
                 if fn_attrs is not None:
-                    if prev_elt[0] in ['drawString', 'drawRightString', 
-                                       'drawCentredString', 
+                    if prev_elt[0] in ['drawString', 'drawRightString',
+                                       'drawCentredString',
                                        'drawCenteredString']:
                         content.append(XML.encode(value))
                     elif prev_elt[0] in ['lines', 'curves', 'transform']:
                         content = value
-       
+
         o = iCanvas(self.story)
         self.render = o.render
 
@@ -396,7 +396,7 @@ def rmlLaterPages(canvas, doc):
 
 
 def document_stream(stream, pdf_stream, is_test=False):
-    """ 
+    """
         stream : parser stream
         pdf_stream : reportlab write the pdf into pdf_stream.
 
@@ -414,7 +414,7 @@ def document_stream(stream, pdf_stream, is_test=False):
     pdf_table_style = {}
     # tag alias
     # Aliases allow you to assign more than one name to a paragraph style.
-    alias_style = {} 
+    alias_style = {}
     page_templates = []
     stack = []
     story = []
@@ -431,21 +431,21 @@ def document_stream(stream, pdf_stream, is_test=False):
             elif tag_name == 'docinit':
                 docinit_stream(stream, tag_uri, tag_name, attributes)
             elif tag_name == 'template':
-                page_templates = template_stream(stream, tag_uri, tag_name, 
+                page_templates = template_stream(stream, tag_uri, tag_name,
                                 attributes, document_attrs)
             elif tag_name == 'stylesheet':
-                alias_style = stylesheet_stream(stream, tag_uri, tag_name, 
-                                                attributes, pdf_stylesheet, 
+                alias_style = stylesheet_stream(stream, tag_uri, tag_name,
+                                                attributes, pdf_stylesheet,
                                                 pdf_table_style, alias_style)
             elif tag_name == 'story':
               story = story_stream(stream, tag_uri,tag_name, attributes,
                                    pdf_stylesheet, pdf_table_style,
                                    alias_style)
-            else: 
+            else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == 'document':
@@ -473,7 +473,7 @@ def document_stream(stream, pdf_stream, is_test=False):
 
 
 def docinit_stream(stream, _tag_uri, _tag_name, _attributes):
-    """ 
+    """
         stream : parser stream
         Register external font
     """
@@ -522,20 +522,20 @@ def docinit_stream(stream, _tag_uri, _tag_name, _attributes):
                 attrs = prev_elt[1]
                 if exist_attribute(attrs, ['afmFile', 'pfbFile']) == True:
                     tag_registerType1Face = True
-                    afmFile = os.path.join(register_font_folder, 
+                    afmFile = os.path.join(register_font_folder,
                                            attrs.get((None, 'afmFile')))
-                    pfbFile = os.path.join(register_font_folder, 
+                    pfbFile = os.path.join(register_font_folder,
                                            attrs.get((None, 'pfbFile')))
 
             elif prev_elt[1] == 'registerFont':
                 if tag_registerType1Face == True:
-                    if exist_attribute(attrs, ['name', 'faceName', 
-                                               'encName']) == True: 
+                    if exist_attribute(attrs, ['name', 'faceName',
+                                               'encName']) == True:
                         name = attrs.get((None, 'name'))
                         faceName = attrs.get((None, 'faceName'))
                         encName = attrs.get((None, 'encName'))
 
-                        justFace = pdfmetrics.EmbeddedType1Face(afmFile, 
+                        justFace = pdfmetrics.EmbeddedType1Face(afmFile,
                                                                 pfbFile)
                         pdfmetrics.registerTypeFace(justFace)
                         justFont = pdfmetrics.Font(name, faceName, encName)
@@ -561,7 +561,7 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, document_attrs):
     for key in document_attrs.keys():
         if _attributes.has_key((None, key)):
             document_attrs[key] = _attributes[(None, key)]
-    
+
     document_attrs['pageSize'] = get_value_page_size(document_attrs['pageSize'])
     document_attrs['rotation'] = \
         to_int(document_attrs['rotation'])
@@ -590,7 +590,7 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, document_attrs):
             if tag_name == 'pageTemplate':
                 on_page_function = None
                 page_template_data = {'frame':[]}
-                attrs = attributes 
+                attrs = attributes
                 id = attrs.get((None, 'id'))
                 rotation = attrs.get((None, 'rotation'))
                 page_size = attrs.get((None, 'pageSize'))
@@ -608,7 +608,7 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, document_attrs):
                     template_attrs = None
                     page_template_data =None
                 else:
-                    template_attrs = {'id': id, 
+                    template_attrs = {'id': id,
                                       'frames': page_template_data['frame'],
                                       'pagesize': page_size}
                 stack.append((tag_name, attributes, None))
@@ -633,21 +633,21 @@ def template_stream(stream, _tag_uri, _tag_name, _attributes, document_attrs):
                         page_template_data = None
             elif prev_elt[0] == 'frame':
                 if tag_name == 'frame' and page_template_data is not None:
-                    frame = create_frame(prev_elt[1], template_attrs, 
+                    frame = create_frame(prev_elt[1], template_attrs,
                                          document_attrs)
                     if frame is not None:
                         page_template_data['frame'].append(frame)
-            
+
             stack.pop()
 
 
 def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes,
                       pdf_stylesheet, pdf_table_style, alias_style):
-    """ 
+    """
         Stylesheet define the different style of the document
         Childs : initialize, paraStyle, blockTableStyle
     """
-    
+
     stack = []
     stack.append((_tag_name, _attributes, None))
     stylesheet_xml = []
@@ -661,12 +661,12 @@ def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes,
             tag_uri, tag_name, attributes = value
             if tag_name == 'initialize':
                 alias_style = {}
-                initialize_stream(stream, tag_uri, tag_name, attributes, 
+                initialize_stream(stream, tag_uri, tag_name, attributes,
                                   pdf_stylesheet, alias_style)
             elif tag_name == 'paraStyle':
                 stylesheet_xml.append(attributes)
             elif tag_name == 'blockTableStyle':
-                tableStyle_stream(stream, tag_uri, tag_name, attributes, 
+                tableStyle_stream(stream, tag_uri, tag_name, attributes,
                                   pdf_stylesheet, pdf_table_style)
             else:
                 print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
@@ -682,13 +682,13 @@ def stylesheet_stream(stream, _tag_uri, _tag_name, _attributes,
                 pass
 
 
-def initialize_stream(stream, _tag_uri, _tag_name, _attributes, 
+def initialize_stream(stream, _tag_uri, _tag_name, _attributes,
                       pdf_stylesheet, alias_style):
-    """ 
+    """
         Generate the document alias for the paragraph style
         Childs : alias
     """
-    
+
     stack = []
     stack.append((_tag_name, _attributes, None))
     while True:
@@ -703,33 +703,33 @@ def initialize_stream(stream, _tag_uri, _tag_name, _attributes,
                 value = attributes.get((None, 'value'))
                 if id is not None and value is not None:
                     if is_alias_style(alias_style, value) == True:
-                        alias_style[id] = get_style_name(pdf_stylesheet, 
+                        alias_style[id] = get_style_name(pdf_stylesheet,
                                                          alias_style, value)
                     else:
                         if value[:6] == 'style.':
                             value = value[6:]
                         alias_style[id] = value
             stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 return
             else:
                 stack.pop()
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
 
 
 def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes,
                       pdf_stylesheet, pdf_table_style):
-    """  
-       Childs : blockFont, blockTextColor, blockLeading, blockAlignment, 
-                blockValign, blockLeftPadding, blockRightPadding, 
+    """
+       Childs : blockFont, blockTextColor, blockLeading, blockAlignment,
+                blockValign, blockLeftPadding, blockRightPadding,
                 blockBottomPadding, blockTopPadding, blockBackground, lineStyle
     """
-    
+
     stack = []
     stack.append((_tag_name, _attributes, None))
     id = _attributes.get((None, 'id'), None)
@@ -754,9 +754,9 @@ def tableStyle_stream(stream, _tag_uri, _tag_name, _attributes,
                     add_table_style(pdf_table_style, id, current_table_style)
                 return id
             elif tag_name in ['blockFont', 'blockTextColor', 'blockLeading',
-                              'blockAlignment', 'blockValign', 
-                              'blockLeftPadding', 'blockRightPadding', 
-                              'blockBottomPadding', 'blockTopPadding', 
+                              'blockAlignment', 'blockValign',
+                              'blockLeftPadding', 'blockRightPadding',
+                              'blockBottomPadding', 'blockTopPadding',
                               'blockBackground', 'lineStyle', 'blockSpan']:
                 element = stack.pop()
                 current_table_style.append(element)
@@ -769,12 +769,12 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                  pdf_table_style, alias_style):
     """
         Create the document 'story'.
-        Childs : setNextTemplate, nextPage, nextFrame, keepInFrame, h1, h2, h3, 
+        Childs : setNextTemplate, nextPage, nextFrame, keepInFrame, h1, h2, h3,
                  para, pre, xpre, image, spacer, blockTable
 
         return (first_page_template, story)
     """
-    
+
     stack = []
     story = []
     stack.append((_tag_name, _attributes, None))
@@ -812,13 +812,13 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 if widget is not None:
                     story.append(widget)
             elif tag_name in ['h1', 'h2', 'h3']:
-                story.append(heading_stream(stream, tag_uri, tag_name, 
+                story.append(heading_stream(stream, tag_uri, tag_name,
                              attributes, pdf_stylesheet, alias_style))
             elif tag_name == 'hr':
-                story.append(hr_stream(stream, tag_uri, tag_name, 
+                story.append(hr_stream(stream, tag_uri, tag_name,
                                        attributes))
             elif tag_name == 'para':
-                story.append(paragraph_stream(stream, tag_uri, tag_name, 
+                story.append(paragraph_stream(stream, tag_uri, tag_name,
                                               attributes, pdf_stylesheet,
                                               alias_style))
             elif tag_name in ['pre', 'xpre']:
@@ -850,13 +850,13 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 stack.append((tag_name, attributes, None))
             elif tag_name == 'illustration':
                 if exist_attribute(attributes, ['width', 'height']):
-                    story.append(iIllustration(stream, tag_uri, tag_name, 
+                    story.append(iIllustration(stream, tag_uri, tag_name,
                                                attributes))
             else:
 ##                print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             prev_elt = stack[-1]
@@ -871,7 +871,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 stack.pop()
             else:
                 stack.pop()
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             if stack:
                 prev_elt = stack[-1]
@@ -889,7 +889,7 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes,
         Childs : keepInFrame, h1, h2, h3, para, pre, xpre, image, spacer,
                  blockTable
     """
-    
+
     story = []
     stack = []
     stack.append((_tag_name, _attributes, None))
@@ -905,7 +905,7 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes,
         attrs['mode'] = mode
     if merge_space is not None:
         attrs['mergeSpace'] = to_bool(merge_space)
-    
+
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -920,13 +920,13 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes,
                 if widget is not None:
                     story.append(widget)
             elif tag_name in ['h1', 'h2', 'h3']:
-                story.append(heading_stream(stream, tag_uri, tag_name, 
+                story.append(heading_stream(stream, tag_uri, tag_name,
                              attributes, pdf_stylesheet))
             elif tag_name == 'hr':
-                story.append(hr_stream(stream, tag_uri, tag_name, 
+                story.append(hr_stream(stream, tag_uri, tag_name,
                                        attributes))
             elif tag_name == 'para':
-                story.append(paragraph_stream(stream, tag_uri, tag_name, 
+                story.append(paragraph_stream(stream, tag_uri, tag_name,
                                               attributes, pdf_stylesheet,
                                               alias_style))
             elif tag_name in ['pre', 'xpre']:
@@ -952,7 +952,7 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes,
             else:
                 print TAG_NOT_SUPPORTED % (_tag_name, line_number, tag_name)
                 stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             prev_elt = stack[-1]
@@ -961,7 +961,7 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes,
                 return KeepInFrame(**attrs)
             else:
                 stack.pop()
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             if stack:
                 prev_elt = stack[-1]
@@ -978,7 +978,7 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
     """
         Create a heading widget.
     """
-    
+
     content = []
     stack = []
     stack.append((_tag_name, _attributes, None))
@@ -993,18 +993,18 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
             tag_uri, tag_name, attributes = value
             content.append(build_start_tag(tag_name, attributes))
             stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 content = ''.join(content)
                 widget = Paragraph(content, style)
-                return widget 
+                return widget
             else:
                 element = stack.pop()
                 content.append(build_end_tag(element[0]))
 
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             if stack:
                 value = normalize(Unicode.decode(value, encoding), True)
@@ -1017,7 +1017,7 @@ def hr_stream(stream, _tag_uri, _tag_name, _attributes):
     """
         Create a hr widget.
     """
-   
+
     stack = []
     stack.append((_tag_name, _attributes, None))
     while True:
@@ -1028,15 +1028,15 @@ def hr_stream(stream, _tag_uri, _tag_name, _attributes):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 widget = create_hr(_attributes)
-                return widget 
+                return widget
             else:
                 element = stack.pop()
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
 
@@ -1046,7 +1046,7 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
     """
         Create a paragraph widget.
     """
-    
+
     content = []
     stack = []
     stack.append((_tag_name, _attributes, None))
@@ -1059,14 +1059,14 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            if tag_name == 'br': 
+            if tag_name == 'br':
                 # check if the tag is a br tag
                 # we trim at le right the previous text
-                # in order to not include a default : 	a superfluous space 
+                # in order to not include a default : 	a superfluous space
                 content[-1] = content[-1].rstrip()
             content.append(build_start_tag(tag_name, attributes))
             stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
@@ -1078,12 +1078,12 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 element = stack.pop()
                 content.append(build_end_tag(element[0]))
 
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             if stack:
                 value = normalize(Unicode.decode(value, encoding), True)
                 if len(value) > 0:
-                    # alow to write : 
+                    # alow to write :
                     # <para><u><i>foo</i> </u></para>
                     value = XML.encode(value) # entities
                     if has_content and content[-1] == '</br>':
@@ -1097,7 +1097,7 @@ def preformatted_stream(stream, _tag_uri, _tag_name, _attributes,
     """
         Create a preformatted widget (pre or xpre)
     """
-    
+
     content = []
     stack = []
     stack.append((_tag_name, _attributes, None))
@@ -1112,20 +1112,20 @@ def preformatted_stream(stream, _tag_uri, _tag_name, _attributes,
             tag_uri, tag_name, attributes = value
             content.append(build_start_tag(tag_name, attributes))
             stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 content = ''.join(content)
                 element = stack.pop()
-                widget = create_preformatted(pdf_stylesheet, alias_style, 
+                widget = create_preformatted(pdf_stylesheet, alias_style,
                                              element, content)
-                return widget 
+                return widget
             else:
                 element = stack.pop()
                 content.append(build_end_tag(element[0]))
 
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             if stack:
                 # we dont strip the string --> preformatted widget
@@ -1138,7 +1138,7 @@ def image_stream(stream, _tag_uri, _tag_name, _attributes,
     """
         Create an image widget.
     """
-    
+
     stack = []
     stack.append((_tag_name, _attributes, None))
 
@@ -1150,17 +1150,17 @@ def image_stream(stream, _tag_uri, _tag_name, _attributes,
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 element = stack.pop()
                 widget = create_image(element, check_dimension)
-                return widget 
+                return widget
             else:
                 stack.pop()
 
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
 
@@ -1169,7 +1169,7 @@ def spacer_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet):
     """
         Create a spacer widget.
     """
-    
+
     stack = []
     stack.append((_tag_name, _attributes, None))
 
@@ -1181,16 +1181,16 @@ def spacer_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 element = stack.pop()
                 widget = create_spacer(element)
-                return widget 
+                return widget
             else:
                 element = stack.pop()
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
 
@@ -1216,7 +1216,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
         vAlign = _attributes.get((None, 'vAlign')).upper()
         if vAlign in ['TOP', 'MIDDLE', 'BOTTOM']:
             table_attrs['vAlign'] = vAlign
-        
+
     data_table = []
     style_id = _attributes.get((None, 'style'))
     style_table = pdf_table_style.get(style_id, TableStyle())
@@ -1252,7 +1252,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 # call tableStyle_stream et get the id of the table style
                 # get the tablestyle from the id
                 push = False
-                id = tableStyle_stream(stream, tag_uri, tag_name, attributes, 
+                id = tableStyle_stream(stream, tag_uri, tag_name, attributes,
                                        pdf_stylesheet, pdf_table_style)
                 style_table = pdf_table_style.get(id, TableStyle())
             elif tag_name == 'tr':
@@ -1267,7 +1267,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 end_tag_td = False
                 td_number += 1
                 if len(attributes) > 0:
-                    build_td_attributes(style_table, attributes, tr_number, 
+                    build_td_attributes(style_table, attributes, tr_number,
                                         td_number)
             elif tag_name == 'image':
                 if stack[-1][0] == 'td':
@@ -1293,7 +1293,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                     td_only_text = False
                 else:
                     pass
-            
+
             elif tag_name in ['pre', 'xpre']:
                 if stack[-1][0] == 'td':
                     push = False
@@ -1306,7 +1306,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                     td_only_text = False
                 else:
                     pass
-            
+
             elif tag_name == 'hr':
                 if stack[-1][0] == 'td':
                     push = False
@@ -1327,7 +1327,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                         td_only_text = False
                 else:
                     pass
-            
+
             elif tag_name == 'blockTable':
                 if stack[-1][0] == 'td':
                     push = False
@@ -1347,7 +1347,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                     push = False
                     if td_only_text == True:
                         table_td = [x for x in  table_td if not is_str(x)]
-                    widget = iIllustration(stream, tag_uri, tag_name, 
+                    widget = iIllustration(stream, tag_uri, tag_name,
                                            attributes)
                     table_td.append(widget)
                     td_only_text = False
@@ -1365,7 +1365,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                         table_td.append(' ')
             if push:
                 stack.append((tag_name, attributes, None))
-        #### END ELEMENT ####   
+        #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if stack[-1][0] == _tag_name:
@@ -1379,7 +1379,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                     return widget
                 except ValueError, msg:
                     if tag_not_supported == False:
-                        raise ValueError, 'Error line %s, %s' % (line_number, 
+                        raise ValueError, 'Error line %s, %s' % (line_number,
                                                                  msg)
                     else:
                         return None
@@ -1397,7 +1397,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 stack.pop()
             else:
                 stack.pop()
-        #### TEXT ELEMENT ####   
+        #### TEXT ELEMENT ####
         elif event == TEXT:
             if stack[-1][0] == 'blockTable':
                 pass
@@ -1422,7 +1422,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
 # FUNCTION
 
 def stream_next(stream):
-    """ 
+    """
         return the next value of the stream
         (event, value, line_number)
         or
@@ -1437,7 +1437,7 @@ def stream_next(stream):
 
 
 def normalize(data, least=False):
-    """ 
+    """
         Normalize data
     """
 
@@ -1451,17 +1451,17 @@ def normalize(data, least=False):
 
 
 def build_start_tag(tag_name, attributes):
-    """ 
+    """
         Create the XML start tag from his name and his attributes
     """
 
-    attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])  
+    attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
                         for key in attributes.keys()])
     return '<%s%s>' % (tag_name, attr_str)
 
 
 def build_end_tag(tag_name):
-    """ 
+    """
         Create the XML end tag from his name.
     """
 
@@ -1469,10 +1469,10 @@ def build_end_tag(tag_name):
 
 
 def create_hr(attributes):
-    """ 
+    """
         Create a reportlab hr widget
     """
-    
+
     attrs = {}
     for key in ['width', 'thickness', 'spaceBefore', 'spaceAfter']:
         if exist_attribute(attributes, [key]):
@@ -1496,7 +1496,7 @@ def create_hr(attributes):
 
 
 def create_paragraph(pdf_stylesheet, alias_style, element, content):
-    """ 
+    """
         Create a reportlab paragraph widget.
     """
 
@@ -1513,11 +1513,11 @@ def create_paragraph(pdf_stylesheet, alias_style, element, content):
             bulletText = attr_value
         else:
             if key == 'alignment':
-                attr_value = __tab_para_alignment.get(attr_value.upper()) 
+                attr_value = __tab_para_alignment.get(attr_value.upper())
             elif key in ['leftIndent', 'rightIndent']:
                 attr_value = rml_value(attr_value)
             style_attr[key] = attr_value
-   
+
     style_name = parent_style
     parent_style = get_style(pdf_stylesheet, alias_style, parent_style)
     style = ParagraphStyle(style_name, parent=parent_style, **style_attr)
@@ -1525,13 +1525,13 @@ def create_paragraph(pdf_stylesheet, alias_style, element, content):
 
 
 def create_preformatted(pdf_stylesheet, alias_style, element, content):
-    """ 
+    """
         Create a reportlab preformatted widget.
     """
 
     content = ''.join(content)
     style_name = 'Normal'
-    
+
     for key, attr_value in element[1].iteritems():
         if key[1] == 'style':
             style_name = attr_value
@@ -1542,13 +1542,13 @@ def create_preformatted(pdf_stylesheet, alias_style, element, content):
         fn = XPreformatted
 
     style = get_style(pdf_stylesheet, alias_style, style_name)
-  
+
     widget = fn(content, style)
     return widget
 
 
 def create_image(element, check_dimension):
-    """ 
+    """
         Create a reportlab image widget.
         If check_dimension is true and the width and the height attributes
         are not set we return None
@@ -1565,7 +1565,7 @@ def create_image(element, check_dimension):
             width = rml_value(attr_value)
         elif key == 'height':
             height = rml_value(attr_value)
-    
+
     if filename is None:
         return None
 
@@ -1593,7 +1593,7 @@ def create_image(element, check_dimension):
 
 
 def create_spacer(element):
-    """ 
+    """
         Create a reportlab spacer widget.
     """
 
@@ -1644,7 +1644,7 @@ def create_frame(attributes, template_attrs, document_attrs):
 
 
 def build_stylesheet(pdf_stylesheet, styles):
-    """ 
+    """
         Create the paragraph styles contained in the stylesheet tag.
         Add it to the pdf stylesheet.
     """
@@ -1661,9 +1661,9 @@ def build_stylesheet(pdf_stylesheet, styles):
             elif key == 'parent':
                 parent_style = attr_value
             else:
-                if key in ['fontSize', 'leading', 'leftIndent', 'rightIndent', 
+                if key in ['fontSize', 'leading', 'leftIndent', 'rightIndent',
                            'firstLineIndent', 'spaceBefore', 'spaceAfter',
-                           'bulletFontSize', 'bulletIndent', 
+                           'bulletFontSize', 'bulletIndent',
                            'borderWidth', 'borderPadding', 'borderRadius']:
                     attr_value = rml_value(attr_value)
                 elif key in ['textColor', 'backColor', 'borderColor']:
@@ -1671,12 +1671,12 @@ def build_stylesheet(pdf_stylesheet, styles):
                 elif key == 'keepWithNext':
                     attr_value = to_bool(attr_value)
                 elif key == 'alignment':
-                    attr_value = __tab_para_alignment.get(attr_value.upper(), 
+                    attr_value = __tab_para_alignment.get(attr_value.upper(),
                                                           None)
                     if attr_value is None:
                         # tag not well formed
                         attr_value = __tab_para_alignment.get('LEFT')
-                
+
                 style_attr[key] = attr_value
 
         if not pdf_stylesheet.has_key(parent_style):
@@ -1686,7 +1686,7 @@ def build_stylesheet(pdf_stylesheet, styles):
             style_attr['leading'] = 1.2 * float(style_attr['fontSize'])
 
         try:
-            nstyle = ParagraphStyle(name, parent=pdf_stylesheet[parent_style], 
+            nstyle = ParagraphStyle(name, parent=pdf_stylesheet[parent_style],
                                     **style_attr)
             pdf_stylesheet.add(nstyle)
         except KeyError:
@@ -1696,7 +1696,7 @@ def build_stylesheet(pdf_stylesheet, styles):
 
 
 def add_table_style(pdf_table_style, id, table_style):
-    """ 
+    """
         Create the tableStyle and add it to the pdf table style.
         If the style id already exist, the old style will be erased.
     """
@@ -1707,7 +1707,7 @@ def add_table_style(pdf_table_style, id, table_style):
         # default start & stop
         start = (0, 0)
         stop = (-1, -1)
-        attr = {} # attributes bag 
+        attr = {} # attributes bag
         for key, value in attrs.iteritems():
             key = key[1]
             # start and stop value
@@ -1726,13 +1726,13 @@ def add_table_style(pdf_table_style, id, table_style):
                         stop = tuple(_tuple)
             else:
                 attr[key] = value
-            
+
         attr['start'] = start
         attr['stop'] = stop
         if elt_id == 'blockTextColor':
             if attr.has_key('colorName'):
                 attr['colorName'] = get_color(attr['colorName'])
-                style.add('TEXTCOLOR', attr['start'], attr['stop'], 
+                style.add('TEXTCOLOR', attr['start'], attr['stop'],
                           attr['colorName'])
             else:
                 # tag not well formed
@@ -1741,50 +1741,50 @@ def add_table_style(pdf_table_style, id, table_style):
             if attr.has_key('name') == True:
                 # fontname, optional fontsize and optional leading
                 if attr.has_key('size') == False:
-                    style.add('FONT', attr['start'], attr['stop'], 
+                    style.add('FONT', attr['start'], attr['stop'],
                               attr['name'])
                 else:
                     if attr.has_key('leading') == False:
                         attr['size'] = to_float(attr['size'])
-                        style.add('FONT', attr['start'], attr['stop'], 
+                        style.add('FONT', attr['start'], attr['stop'],
                               attr['name'], attr['size'])
                     else:
                         attr['size'] = to_float(attr['size'])
                         attr['leading'] = to_float(attr['leading'])
 
-                        style.add('FONT', attr['start'], attr['stop'], 
+                        style.add('FONT', attr['start'], attr['stop'],
                               attr['name'], attr['size'], attr['leading'])
             else:
                 # tag not well formed
                 pass
-        
+
         elif elt_id == 'blockBackground':
             if attr.has_key('colorName') == True:
                 attr['colorName'] = get_color(attr['colorName'])
-                style.add('BACKGROUND', attr['start'], attr['stop'], 
+                style.add('BACKGROUND', attr['start'], attr['stop'],
                           attr['colorName'])
             else:
                 # tag not well formed
                 pass
-        
+
         elif elt_id == 'blockLeading':
             if attr.has_key('length') == True:
                 attr['length'] = to_float(attr['length'])
-                style.add('LEADING', attr['start'], attr['stop'], 
+                style.add('LEADING', attr['start'], attr['stop'],
                           attr['length'])
             else:
                 # tag not well formed
                 pass
-                  
+
         elif elt_id == 'blockAlignment':
             if attr.has_key('value') == True:
                 attr['value'] = attr['value'].upper()
-                if attr['value'] not in ['LEFT', 'RIGHT', 'CENTER', 
+                if attr['value'] not in ['LEFT', 'RIGHT', 'CENTER',
                                          'CENTRE', 'DECIMAL']:
                     # tag not well formed
                     attr['value'] = 'LEFT'
-                
-                style.add('ALIGNMENT', attr['start'], attr['stop'], 
+
+                style.add('ALIGNMENT', attr['start'], attr['stop'],
                           attr['value'])
             else:
                 # tag not well formed
@@ -1796,31 +1796,31 @@ def add_table_style(pdf_table_style, id, table_style):
                 if attr['value'] not in ['TOP', 'MIDDLE', 'BOTTOM']:
                     attr['value'] = 'BOTTOM'
 
-                style.add('VALIGN', attr['start'], attr['stop'], 
+                style.add('VALIGN', attr['start'], attr['stop'],
                           attr['value'])
             else:
                 # tag not well formed
                 pass
 
-        elif elt_id in ['blockLeftPadding', 'blockRightPadding', 
+        elif elt_id in ['blockLeftPadding', 'blockRightPadding',
                         'blockTopPadding', 'blockBottomPadding']:
             if attr.has_key('length') == True:
                 attr['length'] = rml_value(attr['length'])
-                style.add(elt_id[5:].upper(), attr['start'], attr['stop'], 
+                style.add(elt_id[5:].upper(), attr['start'], attr['stop'],
                           attr['length'])
             else:
                 # tag not well formed
                 pass
-        
+
         elif elt_id == 'lineStyle':
             kind_ok = attr.has_key('kind')
             color_ok = attr.has_key('colorName')
             if kind_ok and color_ok:
-                kind_list = ['GRID', 'BOX', 'OUTLINE', 'INNERGRID', 
-                             'LINEBELOW', 'LINEABOVE', 'LINEBEFORE', 
+                kind_list = ['GRID', 'BOX', 'OUTLINE', 'INNERGRID',
+                             'LINEBELOW', 'LINEABOVE', 'LINEBEFORE',
                              'LINEAFTER']
                 attr['kind'] = attr['kind'].upper()
-                if attr['kind'] not in kind_list: 
+                if attr['kind'] not in kind_list:
                     # tag not well formed
                     pass
                 else:
@@ -1832,13 +1832,13 @@ def add_table_style(pdf_table_style, id, table_style):
                     else:
                         attr['count'] = to_int(attr['count'], 1)
                     attr['thickness'] = to_float(attr['thickness'], 1)
-                    style.add(attr['kind'], attr['start'], attr['stop'], 
-                              attr['thickness'], attr['colorName'], 
+                    style.add(attr['kind'], attr['start'], attr['stop'],
+                              attr['thickness'], attr['colorName'],
                               attr['count'])
             else:
                 # tag not well formed
                 pass
-        
+
         elif elt_id == 'blockSpan':
             style.add('SPAN', attr['start'], attr['stop'])
 
@@ -1854,7 +1854,7 @@ def build_td_attributes(style, attributes, line, column):
 
     for key, value in attributes.iteritems():
         key = key[1]
-       
+
         if key == 'fontColor':
             color = get_color(value)
             style.add('TEXTCOLOR', start, stop, color)
@@ -1865,7 +1865,7 @@ def build_td_attributes(style, attributes, line, column):
             style.add('FONTSIZE', start, stop, size)
         elif key == 'leading':
             style.add('LEADING', start, stop, to_float(value))
-        elif key in ['leftPadding', 'rightPadding', 'topPadding', 
+        elif key in ['leftPadding', 'rightPadding', 'topPadding',
                      'bottomPadding']:
             value = rml_value(value)
             style.add(key.upper(), start, stop, value)
@@ -1880,7 +1880,7 @@ def build_td_attributes(style, attributes, line, column):
             value = value.upper()
             if value in ['TOP', 'MIDDLE', 'BOTTOM']:
                 style.add('VALIGN', start, stop, value)
-        elif key in ['lineBelowColor', 'lineAboveColor', 'lineLeftColor', 
+        elif key in ['lineBelowColor', 'lineAboveColor', 'lineLeftColor',
                      'lineRightColor']:
             key_tab = key.replace('Color', '')
             color = get_color(value)
@@ -1958,7 +1958,7 @@ def get_style_name(stylesheet, alias, name):
 
 
 def is_alias_style(alias, name):
-    """ 
+    """
         Check id name is an alias.
     """
 
@@ -1981,7 +1981,7 @@ def is_str(str, check_is_unicode=True):
 
 
 def to_float(str, default=0):
-    """ 
+    """
         Return the float value of str.
         If ValueError exception is raised return default value
     """
@@ -1997,11 +1997,11 @@ def to_float(str, default=0):
 
 
 def to_int(str, default=0):
-    """ 
+    """
         Return the integer value of str.
         If ValueError exception is raised return default value
     """
-    
+
     if type(default) != type(0):
         default = 0
     try:
@@ -2030,7 +2030,7 @@ def to_bool(str, default=False):
 
 
 def rml_value(value, default=None):
-    """ 
+    """
        Return the reportlab value of value
        only if value is a string
        '2cm' -> 2 * cm
@@ -2064,7 +2064,7 @@ def rml_value(value, default=None):
 
     elif value[-1:] == '%':
         return value
-    
+
     try:
         value = float(value) * coef
     except ValueError:
@@ -2073,7 +2073,7 @@ def rml_value(value, default=None):
 
 
 def get_value_from_percentage(value, ref):
-    """ 
+    """
         Return the value percentage of ref
         example:
         get_value_from_percentage('10%', 400) = 40
@@ -2084,13 +2084,13 @@ def get_value_from_percentage(value, ref):
     index = value.find('%')
     if index != -1:
         value = value[:index]
-    
+
     value = to_float(value)
     return ref * value / 100.0
 
 
 def get_value_page_size(data):
-    """ 
+    """
         Return a tuple (width, height)
     """
     if is_str(data):
@@ -2112,15 +2112,15 @@ def get_value_page_size(data):
             data = (w, h)
         else:
             data = pagesizes.A4
-      
+
         return orienter(data)
     return pagesizes.A4
-    
+
 
 def get_page_size_orientation(data):
-    """ 
+    """
         Return the orienter and the pagesize
-        example: 
+        example:
         data = 'letter landscape'
         return (landscape, 'letter')
 
@@ -2137,12 +2137,12 @@ def get_page_size_orientation(data):
     if index != -1:
         data = data.replace('landscape', '')
         return (landscape, data)
-    
+
     return (portrait, data)
 
 
 def exist_attribute(attrs, keys):
-    """ 
+    """
         Return True if all key in keys
         are contained in the dictionnary attrs
     """
@@ -2154,7 +2154,7 @@ def exist_attribute(attrs, keys):
 
 
 def get_color(col_str):
-    """ 
+    """
         col_str can be one of this value type
 
         red, blue, ... : color name
@@ -2190,5 +2190,5 @@ def get_color(col_str):
         yellow = to_float(components[2])
         black = to_float(components[3])
         return CMYKColor(cyan , magenta, yellow, black)
-        
+
     return colors.black

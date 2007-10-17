@@ -68,9 +68,9 @@ class STLTypeError(TypeError):
 def evaluate(expression, stack, repeat_stack):
     """
     Parses and evaluates stl expressions.
-    
+
     Examples of allowed expressions:
-    
+
       none
       a
       a/b/c

@@ -58,7 +58,7 @@ class FileFS(BaseFS):
         # File
         elif st_mode & 0100000:
             return st_mode & 4
- 
+
         return False
 
 

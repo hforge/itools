@@ -212,7 +212,7 @@ class RTF(File, BaseRTF):
 
 
 class ODT(File, BaseODT):
-  
+
     class_id ='application/vnd.oasis.opendocument.text'
     class_title = u'ODT'
     class_description = u'ODT Document'
@@ -222,7 +222,7 @@ class ODT(File, BaseODT):
 
 
 class ODS(File, BaseODS):
-  
+
     class_id ='application/vnd.oasis.opendocument.spreadsheet'
     class_title = u'ODS'
     class_description = u'ODS Document'
@@ -232,7 +232,7 @@ class ODS(File, BaseODS):
 
 
 class ODP(File, BaseODP):
-  
+
     class_id ='application/vnd.oasis.opendocument.presentation'
     class_title = u'ODP'
     class_description = u'ODP Document'

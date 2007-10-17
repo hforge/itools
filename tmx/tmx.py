@@ -89,21 +89,21 @@ class Message(object):
     def to_str(self):
         s = []
         if self.attributes != {}:
-            att = [' %s="%s"' %(k, self.attributes[k]) 
+            att = [' %s="%s"' %(k, self.attributes[k])
                   for k in self.attributes.keys()]
             s.append('<tu%s>\n' % ''.join(att))
         else:
             s.append('<tu>\n')
-        
+
         if self.notes:
             for l in self.notes:
                 s.append(l.to_str())
-       
+
         languages = self.msgstr.keys()
         languages.sort()
         for language in languages:
             s.append(self.msgstr[language].to_str())
-            
+
         s.append('</tu>\n')
         return ''.join(s)
 
@@ -210,7 +210,7 @@ class TMX(Text):
             s.append('<tmx version="%s">\n' % self.version)
         else:
             s.append('<tmx>\n')
-        
+
         if self.header != {}:
             attributes = [ '\n%s="%s"' % (k, self.header[k])
                            for k in self.header.keys() ]

@@ -50,7 +50,7 @@ def batch(uri, start, size, total, gettext=Handler.gettext,
     of objects.
 
     Input data:
-        
+
         uri -- The base URI to use to build the navigation links.
 
         start -- The start of the batch (from 0).
@@ -192,7 +192,7 @@ table_template = list(Parser("""
       </td>
     </tr>
   </tbody>
-</table> 
+</table>
 <p stl:if="actions">
   <stl:block repeat="action actions">
     <input type="submit" name=";${action/name}" value="${action/value}"
@@ -397,7 +397,7 @@ def build_menu(options):
         'items': [....]}
        ...
        ]
-       
+
     """
     for option in options:
         if option['items']:
@@ -469,11 +469,11 @@ def _tree(node, root, depth, active_node, allow, deny, user, width):
     if counter > width:
         children.append({'href': None,
                          'class': '',
-                         'src': None, 
+                         'src': None,
                          'title': '...',
                          'items': []})
     namespace['items'] = children
- 
+
     return namespace, True
 
 

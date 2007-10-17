@@ -1165,7 +1165,7 @@ class icalendarTable(Table):
             # Add the property
             properties[name] = value
             n_line += 1
- 
+
         # The properties VERSION and PRODID are mandatory
         if 'VERSION' not in properties or 'PRODID' not in properties:
             raise ValueError, 'PRODID or VERSION parameter missing'
@@ -1252,7 +1252,7 @@ class icalendarTable(Table):
 
         line = 'BEGIN:VCALENDAR\n'
         lines.append(Unicode.encode(line))
- 
+
         # Calendar properties
         for name in self.properties:
             value = self.properties[name]

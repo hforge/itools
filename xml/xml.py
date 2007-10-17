@@ -220,8 +220,8 @@ class Document(Text):
         # XML is a meta-language, it does not make change to create a bare
         # XML handler without a resource.
         raise NotImplementedError
-    
-    
+
+
     def _load_state_from_file(self, file):
         data = file.read()
         stream = Parser(data)

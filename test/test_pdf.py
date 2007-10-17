@@ -41,11 +41,11 @@ class FunctionTestCase(unittest.TestCase):
         s = u''
         _s = normalize(s)
         self.assertEqual(_s, u'')
-        
+
         s = u''
         _s = normalize(s, True)
         self.assertEqual(_s, u'')
-        
+
         s = u' '
         _s = normalize(s, True)
         self.assertEqual(_s, u' ')
@@ -161,7 +161,7 @@ class FunctionTestCase(unittest.TestCase):
         self.assertEqual(tag_uri, None)
         self.assertEqual(tag_name, 'document')
 
-    
+
     def test_get_color(self):
         black = Color(0, 0, 0)
         color = get_color('teal')
@@ -174,11 +174,11 @@ class FunctionTestCase(unittest.TestCase):
 
         color = get_color('(1, 0, 1)')
         self.assertEqual(color.rgb(), (1.0, 0.0, 1.0))
-        
+
         color = get_color('[1,0,0,0]')
         cmyk_color = CMYKColor(1, 0, 0, 0)
         self.assertEqual(color.rgb(), cmyk_color.rgb())
-        
+
         color = get_color('[1,0]')
         self.assertEqual(color.rgb(), black.rgb())
 
@@ -201,22 +201,22 @@ class FunctionTestCase(unittest.TestCase):
         orienter, data = get_page_size_orientation('landscape %s' % content)
         self.assertEqual(type(orienter), type(landscape))
         self.assertEqual(data.strip(), content)
-        
+
         content = '(176 mm, 297 mm)'
         orienter, data = get_page_size_orientation('%s landscape' % content)
         self.assertEqual(type(orienter), type(landscape))
         self.assertEqual(data.strip(), content)
-    
+
         content = 'A4'
         orienter, data = get_page_size_orientation('%s landscape' % content)
         self.assertEqual(type(orienter), type(landscape))
         self.assertEqual(data.strip(), content)
-        
+
         content = 'A3'
         orienter, data = get_page_size_orientation('%s' % content)
         self.assertEqual(type(orienter), type(portrait))
         self.assertEqual(data.strip(), content)
-        
+
         content = '176 mm, 297 mm'
         orienter, data = get_page_size_orientation('%s landscape' % content)
         self.assertEqual(type(orienter), type(landscape))
@@ -229,7 +229,7 @@ class FunctionTestCase(unittest.TestCase):
 
 
 class DocumentTestCase(unittest.TestCase):
-    
+
     def test_no_story(self):
         story, stylesheet = rmltopdf_test('pdf/01.xml')
         self.assertEqual(len(story), 0)
@@ -239,7 +239,7 @@ class StylesheetTestCase(unittest.TestCase):
 
     def test_style_sheet_empty(self):
         story, stylesheet = rmltopdf_test('pdf/20.xml')
-    
+
 
     def test_style_sheet_para_style(self):
         story, stylesheet = rmltopdf_test('pdf/21.xml')
@@ -264,7 +264,7 @@ class StylesheetTestCase(unittest.TestCase):
         self.assertEqual(style.leftIndent, 1 * inch)
         self.assertEqual(style.rightIndent, 1 * inch)
 
-    
+
     def test_style_sheet_report_lab_exemple(self):
         story, stylesheet = rmltopdf_test('pdf/22.xml')
 
@@ -273,7 +273,7 @@ class StylesheetTestCase(unittest.TestCase):
         story, stylesheet = rmltopdf_test('pdf/23.xml')
         self.assertRaises(LayoutError, rmltopdf_test, 'pdf/24.xml')
 
-    
+
     def test_template(self):
         story, stylesheet = rmltopdf_test('pdf/25.xml')
         content = rmltopdf('pdf/25.xml')
@@ -302,10 +302,10 @@ class StylesheetTestCase(unittest.TestCase):
                 f = open('%s.pdf' % temp, 'w')
                 f.write(content)
                 f.close()
-       
+
 
 class StoryTestCase(unittest.TestCase):
-    
+
     def test_raw(self):
         story, stylesheet = rmltopdf_test('pdf/02.xml')
         self.assertEqual(len(story), 0)
@@ -319,12 +319,12 @@ class StoryTestCase(unittest.TestCase):
     def test_pre(self):
         story, stylesheet = rmltopdf_test('pdf/04.xml')
         self.assertEqual(len(story), 5)
-    
+
 
     def test_para(self):
         story, stylesheet = rmltopdf_test('pdf/06.xml')
         self.assertEqual(len(story), 6)
-    
+
 
     def test_spacer(self):
         story, stylesheet = rmltopdf_test('pdf/07.xml')
@@ -341,10 +341,10 @@ class StoryTestCase(unittest.TestCase):
         f = open('pdf/26.pdf', 'w')
         f.write(content)
         f.close()
-              
-              
+
+
 class ImageTestCase(unittest.TestCase):
-             
+
     def test_image(self):
         story, stylesheet = rmltopdf_test('pdf/05.xml')
         self.assertEqual(len(story), 9)
@@ -369,7 +369,7 @@ class TableTestCase(unittest.TestCase):
     def test_inner_widget(self):
         story, stylesheet = rmltopdf_test('pdf/13.xml')
         self.assertEqual(len(story), 1)
-    
+
 
     def test_inner_table(self):
         story, stylesheet = rmltopdf_test('pdf/14.xml')

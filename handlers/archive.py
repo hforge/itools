@@ -37,15 +37,15 @@ class ZipArchive(File):
         contents = zip.namelist()
         zip.close()
         return contents
-    
-    
+
+
     def get_file(self, filename):
         archive = StringIO(self.to_str())
         zip = ZipFile(archive)
         contents = zip.read(filename)
         zip.close()
         return contents
-   
+
 
 
 class TarArchive(File):

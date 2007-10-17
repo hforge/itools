@@ -464,7 +464,7 @@ class Root(WebSite):
         for name in users.get_handler_names():
             if name.endswith('.metadata'):
                 continue
-            user, metadata = users.get_object(name) 
+            user, metadata = users.get_object(name)
             user_id = str(i)
             # Rename user
             user, metadata = users.set_object(user_id, user, metadata)

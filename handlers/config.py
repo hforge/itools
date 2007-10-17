@@ -21,12 +21,200 @@ from textwrap import wrap
 from text import Text
 
 
+###########################################################################
+# Lines Analyser (an automaton)
+###########################################################################
+BLANK, COMMENT, VAR, VAR_START, VAR_CONT, VAR_END, EOF = range(7)
 
-class Config(Text):
+def get_lines(file):
+    """Analyses the physical lines, identifies the type and parses them.
+    Every line is returned as a three-elements tuple:
+
+        <type>, <value>, <line number>
+
+    There are six line types:
+
+        BLANK -- made up of white spaces.
+
+        COMMENT -- starts by the sharp character (#).
+
+        VAR -- a variable definition (name and value) in a single line;
+          the value may be delimited by double quotes.
+
+        VAR_START -- the first line in a multi-line variable (when the
+          value, delimited by double quotes, splits accross several
+          physical lines).
+
+        VAR_CONT -- the continuation of a multiline variable.
+
+        VAR_END -- the last physical line in a multiline variable.
+
+    This table shows the line value for every line type:
+
+        BLANK      =>   None
+        COMMENT    =>   <line>
+        VAR        =>   <name>, <value>
+        VAR_START  =>   <name>, <first line>
+        VAR_CONT   =>   <line>
+        VAR_END    =>   <line>
+    """
+    state = 0
+    line_num = 1
+
+    for line in file.readlines():
+        line = line.strip()
+        if state == 0:
+            # Initial state (waiting a new block)
+            if len(line) == 0:
+                yield BLANK, None, line_num
+            elif line[0] == '#':
+                yield COMMENT, line.lstrip('#').strip(), line_num
+            elif '=' in line:
+                name, value = line.split('=', 1)
+                name = name.strip()
+                value = value.strip()
+                if value[0] == '"':
+                    if value[-1] == '"' and len(value) > 1:
+                        value = value[1:-1]
+                        yield VAR, (name, value), line_num
+                    else:
+                        yield VAR_START, (name, value[1:]), line_num
+                        state = 1
+                else:
+                    yield VAR, (name, value), line_num
+            else:
+                raise SyntaxError, 'unknown line "%d"' % line_num
+        elif state == 1:
+            # Multiline value
+            if line[-1] == '"':
+                yield VAR_END, line[:-1], line_num
+                state = 0
+            else:
+                yield VAR_CONT, line, line_num
+
+        # Next
+        line_num += 1
+
+    yield EOF, None, line_num
+
+
+class Lines(object):
+
+    def __init__(self, file):
+        self.lines = get_lines(file)
+        self.next()
+
+
+    def next(self):
+        self.current = self.lines.next()
+
+
+
+###########################################################################
+# Blocks Analyser (a grammar)
+###########################################################################
+def parse(file):
+    """This parser is based on an automaton (see above) and a grammar.
+
+    Each production of the grammar is implemented as a function, see
+    the function doc strings for the definition of the production they
+    implement.
+    """
+    lines = Lines(file)
+
+    blocks = []
+    values = {}
+    while lines.current[0] != EOF:
+        block = read_block(lines)
+        # Semantics: keep the blocks, map from variable names to blocks
+        if block is not None:
+            comment, variable = block
+            if variable is not None:
+                name, value = variable
+                values[name] = len(blocks)
+        blocks.append(block)
+    return blocks, values
+
+
+def read_block(lines):
+    """Grammar production:
+
+      BLANK | COMMENT <comment> <variable> | VAR | VAR_START <multiline>
 
     """
-    The data structure of this handler is:
-        
+    type, value, line_num = lines.current
+    if type == BLANK:
+        lines.next()
+        return None
+    elif type == COMMENT:
+        lines.next()
+        comment = [value] + read_comment(lines)
+        variable = read_variable(lines)
+        return comment, variable
+    elif type == VAR:
+        lines.next()
+        return [], value
+    elif type == VAR_START:
+        name, value = value
+        lines.next()
+        value = value + ' ' + read_multiline(lines)
+        return [], (name, value)
+    else:
+        raise SyntaxError, 'unexpected line "%d"' % line_num
+
+
+def read_comment(lines):
+    """Grammar production:
+
+      COMMENT <comment> | lambda
+
+    """
+    type, value, line_num = lines.current
+    if type == COMMENT:
+        lines.next()
+        return [value] + read_comment(lines)
+    return []
+
+
+def read_variable(lines):
+    """Grammar production:
+
+      VAR | VAR_START <multiline> | lambda
+
+    """
+    type, value, line_num = lines.current
+    if type == VAR:
+        lines.next()
+        return value
+    elif type == VAR_START:
+        name, value = value
+        lines.next()
+        return name, value + ' ' + read_multiline(lines)
+
+
+def read_multiline(lines):
+    """Grammar production:
+
+      VAR_CONT <multiline> | VAR_END
+
+    """
+    type, value, line_num = lines.current
+    if type == VAR_CONT:
+        lines.next()
+        return value + ' ' + read_multiline(lines)
+    elif type == VAR_END:
+        lines.next()
+        return value
+    else:
+        raise SyntaxError, 'unexpected line "%s"' % line_num
+
+
+###########################################################################
+# The handler
+###########################################################################
+class Config(Text):
+    """The data structure of this handler is:
+
       self.lines:
         [None, <block>, None, None, <block>]
 
@@ -34,9 +222,15 @@ class Config(Text):
 
         ([comment_line_1, ..., comment_line_n], <variable>)
 
-    A comment is stored as list of strings, one for every comment line. The
+    A comment is stored as list of strings, one for every comment line.  The
     variable may be None (then the comment is isolated), or a tuple with the
     variable name and value.
+
+    If the value is a list, then it appears in the source as a multiline
+    delimited by double quotes, for example:
+
+      description = "This is an example of a value splitted accross several
+        lines, using double quotes as delimiters"
 
     The "values" data structure is:
         
@@ -73,55 +267,7 @@ class Config(Text):
 
 
     def _load_state_from_file(self, file):
-        values = {}
-        lines = []
-
-        line = file.readline()
-        while line:
-            line = line.strip()
-            if not line:
-                # Blank
-                lines.append(None)
-                # Next line
-                line = file.readline()
-            elif line[0] == '#':
-                # Just a comment, or a comment with a variable
-                comment = [line.lstrip('#').strip()]
-                # Parse the comment
-                line = file.readline()
-                while True:
-                    line_stripped = line.strip()
-                    if not line_stripped.startswith('#'):
-                        break
-                    comment.append(line_stripped.lstrip('#').strip())
-                    line = file.readline()
-
-                # Is there a variable?
-                if line_stripped:
-                    # Parse the variable
-                    name, value = line.split('=', 1)
-                    name = name.strip()
-                    value = value.strip()
-                    # Update the data structure
-                    lines.append((comment, (name, value)))
-                    values[name] = len(lines) - 1
-                    # Next
-                    line = file.readline()
-                else:
-                    # A solitary comment 
-                    lines.append((comment, None))
-            else:
-                # Variable without a comment
-                name, value = line.split('=', 1)
-                name = name.strip()
-                value = value.strip()
-                lines.append(([], (name, value)))
-                values[name] = len(lines) - 1
-                # Next line
-                line = file.readline()
-
-        self.lines = lines
-        self.values = values
+        self.lines, self.values = parse(file)
 
 
     def to_str(self):

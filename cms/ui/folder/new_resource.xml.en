@@ -6,17 +6,18 @@
 
   <h2>Add new content</h2>
 
-  <stl:block repeat="type types">
-    <dl class="thumb new_resource_thumb">
-      <dt>
+  <table stl:repeat="type types" class="new_resource_thumb">
+    <tr>
+      <td valign="top" style="width: 48px">
         <a href="${type/url}"><img alt="" src="${type/icon}" /></a>
-      </dt>
-      <dd>
+      </td>
+      <td valign="top">
         <a href="${type/url}">${type/title}</a>
-      </dd>
-      <dd>${type/description}</dd>
-    </dl>
-  </stl:block>
+        <br/>
+        ${type/description}
+      </td>
+    </tr>
+  </table>
   <div class="clear"></div>
 
 </stl:block>

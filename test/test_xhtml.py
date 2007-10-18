@@ -152,7 +152,7 @@ class TranslationTestCase(TestCase):
             '  <head></head>\n'
             '  <body>%s</body>\n'
             '</html>\n')
- 
+
 
     def test_case1(self):
         """Test element content."""
@@ -165,7 +165,7 @@ class TranslationTestCase(TestCase):
 
     def test_case2(self):
         """Test simple attribute."""
-        data = self.template % '<img alt="The beach" src="beach.jpg" />' 
+        data = self.template % '<img alt="The beach" src="beach.jpg" />'
         doc = Document(string=data)
         messages = list(doc.get_messages())
 

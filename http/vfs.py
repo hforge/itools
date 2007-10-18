@@ -69,7 +69,7 @@ class HTTPFS(BaseFS):
     @staticmethod
     def open(reference, mode=None):
         reference = str(reference)
-        return urlopen(reference) 
+        return urlopen(reference)
 
 
 register_file_system('http', HTTPFS)

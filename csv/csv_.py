@@ -72,7 +72,7 @@ class CSV(Text):
     # Hash with column names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some columns the schema should be declared as:
-    # schema = {'firstname': Unicode, 'lastname': Unicode, 
+    # schema = {'firstname': Unicode, 'lastname': Unicode,
     #           'age': Integer(index='<analyser>')}
     # where <analyser> is an itools.catalog analyser or derivate: keyword,
     # book, text, path.
@@ -126,7 +126,7 @@ class CSV(Text):
 
     def to_str(self, encoding='UTF-8', separator=','):
         lines = []
-        # When schema or columns (or both) are None there is plain 
+        # When schema or columns (or both) are None there is plain
         # string to string conversion
         schema = self.schema
         columns = self.columns

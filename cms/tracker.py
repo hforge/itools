@@ -146,7 +146,7 @@ class Tracker(Folder):
         if ids:
             ids.sort()
             return prefix + str(ids[-1] + 1)
-        
+
         return prefix + '0'
 
 
@@ -242,11 +242,11 @@ class Tracker(Folder):
         namespace['states'] = get('states.csv').get_options(state, sort=False)
         namespace['users'] = self.get_members_namespace(assign, True)
 
-        # is_admin 
+        # is_admin
         ac = self.get_access_control()
         namespace['is_admin'] = ac.is_admin(context.user, self)
         pathto_website = self.get_pathto(self.get_site_root())
-        namespace['manage_assigned'] = '%s/;permissions_form' % pathto_website 
+        namespace['manage_assigned'] = '%s/;permissions_form' % pathto_website
 
         handler = self.get_object('/ui/tracker/search.xml')
         return stl(handler, namespace)
@@ -274,7 +274,7 @@ class Tracker(Folder):
             search_name = self.get_new_id('s')
             stored_search, kk = self.set_object(search_name, StoredSearch())
 
-        if stored_search is None: 
+        if stored_search is None:
             # Just Search
             return context.uri.resolve(';view').replace(**context.uri.query)
 
@@ -613,7 +613,7 @@ class Tracker(Folder):
 
     def get_search_results(self, context):
         """
-        Method that return a list of issues that correspond to the search 
+        Method that return a list of issues that correspond to the search
         """
         error = context.check_form_input(search_fields)
         if error is not None:
@@ -841,7 +841,7 @@ class SelectTable(CSV):
 
 
 class Versions(SelectTable):
-    
+
     class_id = 'tracker_versions'
 
     columns = ['id', 'title', 'released']
@@ -858,7 +858,7 @@ class StoredSearch(Text, Config):
 
     class_id = 'stored_search'
     class_title = u'Stored Search'
- 
+
     def get_values(self, name, type=String):
         value = self.get_value(name, default='')
         return [ type.decode(x) for x in value.split() ]
@@ -1165,13 +1165,13 @@ class Issue(Folder, VersioningAware):
                 while text != []:
                     word = text.pop(0)
                     if len(word) + len(line) > 150:
-                        line = sub('http://(.\S*)', 
+                        line = sub('http://(.\S*)',
                                    r'<a href="http://\1">\1</a>', line)
                         res.append(line)
                         line = ''
                     line = line + word + ' '
                 if line != '':
-                    line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>', 
+                    line = sub('http://(.\S*)', r'<a href="http://\1">\1</a>',
                                line)
                     res.append(line)
         return Parser('\n'.join(res))
@@ -1293,7 +1293,7 @@ class Issue(Folder, VersioningAware):
                 assigned_to, state, comment, file) = row
             # solid in case the user has been removed
             user_exist = users.has_object(username)
-            usertitle = (user_exist and 
+            usertitle = (user_exist and
                          users.get_object(username).get_title() or username)
             comment = XML.encode(Unicode.encode(comment))
             comment = Parser(comment.replace('\n', '<br />'))

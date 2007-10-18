@@ -70,7 +70,7 @@ class POTestCase(TestCase):
 
         self.assertEqual((po.get_messages())[0].to_str(), content)
 
-        
+
     def test_fuzzy(self):
         """Test fuzzy."""
         content = '# Comment\n' \

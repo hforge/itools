@@ -74,7 +74,7 @@ class PathComparisonTestCase(unittest.TestCase):
         """The path to the same with a trailing slash returns Path('.')."""
         self.assertEqual(self.wo_to_w, Path('.'))
 
-    
+
     #########################################################################
     # Comparing with string conversions.
     def test_path_wo_slash_eq_string(self):

@@ -141,7 +141,7 @@ class OrderAware(object):
             return context.come_back(u"Please select the ordered objects to order up.")
 
         ordered_names = self.get_ordered_folder_names('ordered')
-        
+
         if ordered_names[0] == names[0]:
             return context.come_back(u"Objects already up.")
 
@@ -154,20 +154,20 @@ class OrderAware(object):
         self.set_property('ikaaro:order', tuple(temp))
         message = u"Objects ordered up."
         return context.come_back(message)
-        
-        
+
+
     order_folders_down__access__ = 'is_allowed_to_edit'
     def order_folders_down(self, context):
         names = context.get_form_values('ordered_names')
         if not names:
             return context.come_back(
                 u"Please select the ordered objects to order down.")
-        
+
         ordered_names = self.get_ordered_folder_names('ordered')
 
         if ordered_names[-1] == names[-1]:
             return context.come_back(u"Objects already down.")
-            
+
         temp = list(ordered_names)
         names.reverse()
         for name in names:
@@ -188,7 +188,7 @@ class OrderAware(object):
             return context.come_back(message)
 
         ordered_names = self.get_ordered_folder_names('ordered')
-        
+
         if ordered_names[0] == names[0]:
             message = u"Objects already on top."
             return context.come_back(message)
@@ -199,8 +199,8 @@ class OrderAware(object):
         self.set_property('ikaaro:order', tuple(temp))
         message = u"Objects ordered on top."
         return context.come_back(message)
-        
-        
+
+
     order_folders_bottom__access__ = 'is_allowed_to_edit'
     def order_folders_bottom(self, context):
         names = context.get_form_values('ordered_names')
@@ -209,7 +209,7 @@ class OrderAware(object):
             return context.come_back(message)
 
         ordered_names = self.get_ordered_folder_names('ordered')
-        
+
         if ordered_names[-1] == names[-1]:
             message = u"Objects already on bottom."
             return context.come_back(message)

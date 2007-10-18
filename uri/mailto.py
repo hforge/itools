@@ -30,7 +30,7 @@ class Mailto(object):
     def get_username(self):
         if '@' in self.address:
             return self.address.split('@', 1)[0]
-        return None 
+        return None
     username = property(get_username, None, None, "")
 
 

@@ -74,25 +74,25 @@ ${name}
 ${doc}
 <block if="exceptions">Exceptions
 ==========
-    
+
 <block repeat="item exceptions">* ${item/name}
 
 ${item/doc}</block></block>
 <block if="constants">Constants
 =========
-    
+
 <block repeat="item constants">* ${item/name}
 
 ${item/doc}</block></block>
 <block if="functions">Functions
 =========
-    
+
 <block repeat="item functions">* ${item/name}
 
 ${item/doc}</block></block>
 <block if="classes">Classes
 =======
-    
+
 <block repeat="item classes">* ${item/name}
 
 ${item/doc}</block></block>
@@ -107,7 +107,7 @@ latex_template = Document(string=
 ${doc}
 <block if="exceptions">
 \\section{Exceptions}
- 
+
 <block repeat="item exceptions">
 \\subsubsection{${item/name}}
 \\index{${item/name}}
@@ -131,7 +131,7 @@ ${item/doc}</block></block>
 ${item/doc}</block></block>
 <block if="classes">
 \\section{Classes}
- 
+
 <block repeat="item classes">
 \\subsubsection{${item/name}}
 \\index{${item/name}}
@@ -175,7 +175,7 @@ def build_namespace(pkg, format, escape=lambda x: x):
         # Build the item namespace
         title = escape(name)
         ns = {'name': title, 'doc': doc}
-        # Do whatever 
+        # Do whatever
         if isinstance(object, FunctionType):
             # Find out the function prototype
             # FIXME Remains to find the argument names

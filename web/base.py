@@ -215,7 +215,7 @@ class Root(AccessControl, Node):
         """
         pass
 
-    
+
     def after_traverse(self, context, body):
         """Post-publishing process.
         Possible actions are wrapping the body into a template, etc."""

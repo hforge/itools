@@ -103,14 +103,14 @@ class CSVTestCase(TestCase):
         rows = list(handler.get_rows())
         self.assertEqual(len(rows), 3)
 
-    
+
     def test_load_state_with_schema(self):
         handler = Languages()
         handler.load_state_from_string(TEST_DATA_1)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [
             [u"python", URI.decode('http://python.org'), 52343,
-             Date.decode('2003-10-23')], 
+             Date.decode('2003-10-23')],
             [u"ruby", URI.decode('http://ruby-lang.org'), 42352,
              Date.decode('2001-03-28')]])
 
@@ -119,7 +119,7 @@ class CSVTestCase(TestCase):
         handler = CSV(string=TEST_DATA_1)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [
-            ["python", 'http://python.org/', '52343', '2003-10-23'], 
+            ["python", 'http://python.org/', '52343', '2003-10-23'],
             ["ruby", 'http://ruby-lang.org/', '42352', '2001-03-28']])
 
 
@@ -148,7 +148,7 @@ class CSVTestCase(TestCase):
     def test_get_rows(self):
         handler = CSV(string=TEST_DATA_2)
         rows = list(handler.get_rows([0, 1]))
-        self.assertEqual(rows, [['one', 'two', 'three'], 
+        self.assertEqual(rows, [['one', 'two', 'three'],
                                 ['four', 'five', 'six']])
 
 

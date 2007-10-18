@@ -61,7 +61,7 @@ class Message(XHTMLFile):
                        + self.events[old_body.end:])
 
 
-    def _load_state_from_file(self, file): 
+    def _load_state_from_file(self, file):
         data = file.read()
         stream = Parser(data, {None: xhtml_uri})
         self.events = list(stream)

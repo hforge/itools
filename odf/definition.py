@@ -42,7 +42,7 @@ class OdtTextNamespace(AbstractNamespace):
             'alphabetical-index-mark': {'is_inline': False, 'is_empty': True},
             'alphabetical-index-mark-end': {'is_inline': False, 'is_empty': True},
             'alphabetical-index-mark-start': {'is_inline': False, 'is_empty': True},
-            'alphabetical-index-source': {'is_inline': False, 'is_empty': False}, 
+            'alphabetical-index-source': {'is_inline': False, 'is_empty': False},
             #'anchor-page-number'
              #'anchor-type'
             #'animation'
@@ -117,15 +117,15 @@ class OdtTextNamespace(AbstractNamespace):
             'insertion': {'is_inline': False, 'is_empty': False},
             'keywords': {'is_inline': False, 'is_empty': True},
             #'level'
-            'line-break': {'is_inline': False, 'is_empty': True}, 
-            'linenumbering-configuration': {'is_inline': False, 
+            'line-break': {'is_inline': False, 'is_empty': True},
+            'linenumbering-configuration': {'is_inline': False,
                                             'is_empty': False},
             'linenumbering-separator': {'is_inline': False, 'is_empty': True},
-            'list': {'is_inline': False, 'is_empty': False}, 
-            'list-header':{'is_inline': False, 'is_empty': False}, 
-            'list-item': {'is_inline': False, 'is_empty': False}, 
-            'list-level-style-bullet': {'is_inline': False, 'is_empty': False}, 
-            'list-level-style-image': {'is_inline': False, 'is_empty': False}, 
+            'list': {'is_inline': False, 'is_empty': False},
+            'list-header':{'is_inline': False, 'is_empty': False},
+            'list-item': {'is_inline': False, 'is_empty': False},
+            'list-level-style-bullet': {'is_inline': False, 'is_empty': False},
+            'list-level-style-image': {'is_inline': False, 'is_empty': False},
             'list-level-style-number': {'is_inline': False, 'is_empty': False},
             'list-style': {'is_inline': False, 'is_empty': False},
             'measure': {'is_inline': False, 'is_empty': True},
@@ -161,7 +161,7 @@ class OdtTextNamespace(AbstractNamespace):
             'print-time': {'is_inline': False, 'is_empty': True},
             'printed-by': {'is_inline': False, 'is_empty': True},
             'reference-mark': {'is_inline': False, 'is_empty': True},
-            'reference-mark-end': {'is_inline': False, 'is_empty': True},   
+            'reference-mark-end': {'is_inline': False, 'is_empty': True},
             'reference-mark-start': {'is_inline': False, 'is_empty': True},
             'reference-ref': {'is_inline': False, 'is_empty': False},
             'ruby': {'is_inline': False, 'is_empty': False},
@@ -187,25 +187,25 @@ class OdtTextNamespace(AbstractNamespace):
             'sender-street': {'is_inline': False, 'is_empty': True},
             'sender-title': {'is_inline': False, 'is_empty': True},
             'sequence': {'is_inline': False, 'is_empty': True,
-                         'translate_content': False}, 
+                         'translate_content': False},
             'sequence-decl':  {'is_inline': False, 'is_empty': True},
             'sequence-decls': {'is_inline': False, 'is_empty': False},
-            'sequence-ref': {'is_inline': False, 'is_empty': True}, 
+            'sequence-ref': {'is_inline': False, 'is_empty': True},
             'sheet-name': {'is_inline': False, 'is_empty': True},
             'sort-key': {'is_inline': False, 'is_empty': True},
             #'space-before'
             'span': {'is_inline': True, 'is_empty': False},
             #'style-name'
             'subject': {'is_inline': False, 'is_empty': True},
-            'tab': {'is_inline': False, 'is_empty': True}, 
+            'tab': {'is_inline': False, 'is_empty': True},
             #'table-count'
             'table-formula': {'is_inline': False, 'is_empty': True},
             'table-index': {'is_inline': False, 'is_empty': False},
             'table-index-entry-template': {'is_inline': False, 'is_empty': False},
             'table-index-source': {'is_inline': False, 'is_empty': False},
-            'table-of-content': {'is_inline': False, 'is_empty': False}, 
-            'table-of-content-entry-template': {'is_inline': False, 'is_empty': False}, 
-            'table-of-content-source': {'is_inline': False, 'is_empty': False}, 
+            'table-of-content': {'is_inline': False, 'is_empty': False},
+            'table-of-content-entry-template': {'is_inline': False, 'is_empty': False},
+            'table-of-content-source': {'is_inline': False, 'is_empty': False},
             'template-name': {'is_inline': False, 'is_empty': True},
             'text-input': {'is_inline': False, 'is_empty': True},
             'time': {'is_inline': False, 'is_empty': True},
@@ -218,7 +218,7 @@ class OdtTextNamespace(AbstractNamespace):
             'user-defined': {'is_inline': False, 'is_empty': True},
             'user-field-decl': {'is_inline': False, 'is_empty': True},
             'user-field-decls': {'is_inline': False, 'is_empty': False},
-            'user-field-get':  {'is_inline': False, 'is_empty': True}, 
+            'user-field-get':  {'is_inline': False, 'is_empty': True},
             'user-field-input': {'is_inline': False, 'is_empty': True},
             'user-index': {'is_inline': False, 'is_empty': False},
             'user-index-entry-template': {'is_inline': False, 'is_empty': False},
@@ -226,7 +226,7 @@ class OdtTextNamespace(AbstractNamespace):
             'user-index-mark-end': {'is_inline': False, 'is_empty': True},
             'user-index-mark-start': {'is_inline': False, 'is_empty': True},
             'user-index-source': {'is_inline': False, 'is_empty': False},
-            'variable-decl': {'is_inline': False, 'is_empty': True}, 
+            'variable-decl': {'is_inline': False, 'is_empty': True},
             'variable-decls': {'is_inline': False, 'is_empty': False},
             'variable-get': {'is_inline': False, 'is_empty': True},
             'variable-input': {'is_inline': False, 'is_empty': True},
@@ -287,7 +287,7 @@ class OdtOfficeNamespace(AbstractNamespace):
             'master-styles': {'is_inline': False, 'is_empty': False},
             'meta': {'is_inline': False, 'is_empty': False},
             'presentation': {'is_inline': False, 'is_empty': False},
-            'script': {'is_inline': False, 'is_empty': False}, 
+            'script': {'is_inline': False, 'is_empty': False},
             'scripts': {'is_inline': False, 'is_empty': False},
             'settings': {'is_inline': False, 'is_empty': False},
             'spreadsheet': {'is_inline': False, 'is_empty': False},
@@ -307,7 +307,7 @@ class OdtOfficeSchema(BaseSchema):
     class_prefix = 'office'
 
     datatypes = {'version': Unicode}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -427,7 +427,7 @@ class OdtStyleSchema(BaseSchema):
     class_prefix = 'style'
 
     datatypes = {'name': Unicode}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -560,7 +560,7 @@ class OdtTableSchema(BaseSchema):
     class_prefix = 'table'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -639,7 +639,7 @@ class OdtDrawingSchema(BaseSchema):
     class_prefix = 'draw'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -673,7 +673,7 @@ class OdtFoSchema(BaseSchema):
     class_prefix = 'fo'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -722,7 +722,7 @@ class OdtMetaSchema(BaseSchema):
     class_prefix = 'meta'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -767,7 +767,7 @@ class OdtSvgSchema(BaseSchema):
     class_prefix = 'svg'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -808,7 +808,7 @@ class OdtDr3dSchema(BaseSchema):
     class_prefix = 'dr3d'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -873,7 +873,7 @@ class OdtFormSchema(BaseSchema):
     class_prefix = 'form'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -910,7 +910,7 @@ class OdtScriptSchema(BaseSchema):
     class_prefix = 'script'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -944,7 +944,7 @@ class OdtOooSchema(BaseSchema):
     class_prefix = 'ooo'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -977,7 +977,7 @@ class OdtWriterSchema(BaseSchema):
     class_prefix = 'ooow'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1010,7 +1010,7 @@ class OdtCalcSchema(BaseSchema):
     class_prefix = 'oooc'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1052,7 +1052,7 @@ class OdtDataStyleNamespace(AbstractNamespace):
             'quarter': {'is_inline': False, 'is_empty': True},
             'scientific-number': {'is_inline': False, 'is_empty': True},
             'seconds': {'is_inline': False, 'is_empty': True},
-            'text': {'is_inline': False, 'is_empty': True},    
+            'text': {'is_inline': False, 'is_empty': True},
             'text-content': {'is_inline': False, 'is_empty': True},
             'text-style': {'is_inline': False, 'is_empty': False},
             'time-style': {'is_inline': False, 'is_empty': False},
@@ -1072,7 +1072,7 @@ class OdtDataStyleSchema(BaseSchema):
     class_prefix = 'number'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1119,7 +1119,7 @@ class OdtAnimationSchema(BaseSchema):
     class_prefix = 'anim'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1176,7 +1176,7 @@ class OdtChartSchema(BaseSchema):
     class_prefix = 'chart'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1217,7 +1217,7 @@ class OdtConfigSchema(BaseSchema):
     class_prefix = 'config'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1258,7 +1258,7 @@ class OdtManifestSchema(BaseSchema):
     class_prefix = 'manifest'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1314,7 +1314,7 @@ class OdtPresentationSchema(BaseSchema):
     class_prefix = 'presentation'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
@@ -1348,7 +1348,7 @@ class OdtSmilSchema(BaseSchema):
     class_prefix = 'smil'
 
     datatypes = {}
-    
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)

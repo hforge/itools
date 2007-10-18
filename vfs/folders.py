@@ -121,7 +121,7 @@ class Folder(object):
         if fs.is_file(reference):
             return fs.open(reference, mode)
         elif fs.is_folder(reference):
-            return Folder(reference)            
+            return Folder(reference)
 
         raise OSError, str(reference)
 

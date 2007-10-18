@@ -26,7 +26,7 @@ from itools.web import Server, Root
 
 
 class ServerTestCase(TestCase):
-    
+
     def test00_simple(self):
         class MyRoot(Root):
             GET__access__ = True

@@ -340,7 +340,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def _browse_namespace(self, object, icon_size):
         line = {}
-        id = str(self.get_pathto(object))
+        real = self.get_real_handler()
+        id = str(real.get_pathto(object))
         line['id'] = id
         title = object.get_title()
         line['title_or_name'] = title
@@ -431,7 +432,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def browse_thumbnails(self, context):
         context.set_cookie('browse', 'thumb')
 
-        query = EqQuery('parent_path', self.get_abspath())
+        real_handler = self.get_real_handler()
+        query = EqQuery('parent_path', real_handler.get_abspath())
         namespace = self.browse_namespace(48, query=query)
 
         handler = self.get_object('/ui/folder/browse_thumbnails.xml')
@@ -453,7 +455,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         sortorder = context.get_form_value('sortorder', sortorder)
 
         # Build the query
-        abspath = self.get_abspath()
+        abspath = self.get_real_handler().abspath
         if term:
             if search_subfolders is True:
                 query = EqQuery('paths', abspath)
@@ -519,7 +521,8 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 selected_image = None
 
         # look up available images
-        query = EqQuery('parent_path', self.get_abspath())
+        real_handler = self.get_real_handler()
+        query = EqQuery('parent_path', real_handler.get_abspath())
         namespace = self.browse_namespace(48, query=query, batchsize=0)
         objects = []
         offset = 0
@@ -630,7 +633,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace = {}
         namespace['objects'] = []
         for real_name in names:
-            name, extension, language = FileName.decode(real_name)
+            handler = self.get_handler(real_name)
+            if handler.class_extension is None:
+                name = real_name
+            else:
+                name, extension, language = FileName.decode(real_name)
             namespace['objects'].append({'real_name': real_name, 'name': name})
 
         # Process the template
@@ -645,8 +652,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         used_names = self.get_names()
         # Process input data
         for i, old_name in enumerate(names):
-            xxx, extension, language = FileName.decode(old_name)
-            new_name = FileName.encode((new_names[i], extension, language))
+            new_name = new_names[i]
+            handler = self.get_handler(old_name)
+            if handler.class_extension is not None:
+                xxx, extension, language = FileName.decode(old_name)
+                new_name = FileName.encode((new_name, extension, language))
             new_name = checkid(new_name)
             if new_name is None:
                 # Invalid name
@@ -736,6 +746,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
                     metadata.set_property('state', handler.workflow.initstate)
                 # Fix owner
                 metadata.set_property('owner', context.user.name)
+        # Cut, clean cookie
+        if cut is True:
+            context.del_cookie('ikaaro_cp')
 
         return context.come_back(u'Objects pasted.')
 

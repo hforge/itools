@@ -31,6 +31,6 @@ class TMXTestCase(TestCase):
         xliff = XLIFF('gettext_en_es.xlf')
         xliff.to_str()
 
- 
+
 if __name__ == '__main__':
     unittest.main()

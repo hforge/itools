@@ -40,7 +40,7 @@ def is_datatype(type, base_type):
     if isinstance(type, base_type):
         return True
     return False
- 
+
 
 
 class Integer(DataType):
@@ -106,7 +106,7 @@ class String(DataType):
 
 
 class Boolean(DataType):
-    
+
     default = False
 
     @staticmethod

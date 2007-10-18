@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.handlers import Text
-from itools.xml import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, 
+from itools.xml import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                         COMMENT, TEXT)
 
 
@@ -37,7 +37,7 @@ class Note(object):
     def to_str(self):
         s = []
         if self.attributes != {}:
-            att = ['%s="%s"' % (k, self.attributes[k]) 
+            att = ['%s="%s"' % (k, self.attributes[k])
                   for k in self.attributes.keys() if k != 'lang']
             s.append('<note %s ' % ' '.join(att))
             if 'lang' in self.attributes.keys():
@@ -45,7 +45,7 @@ class Note(object):
             s.append('>')
         else:
             s.append('<note>')
-            
+
         s.append(self.text)
         s.append('</note>\n')
         return ''.join(s)
@@ -64,7 +64,7 @@ class Translation(object):
     def to_str(self):
         s = []
         if self.attributes != {}:
-            att = ['%s="%s"' % (k, self.attributes[k]) 
+            att = ['%s="%s"' % (k, self.attributes[k])
                   for k in self.attributes.keys() if k != 'space']
             s.append('<trans-unit %s ' % '\n'.join(att))
             if 'space' in self.attributes.keys():
@@ -100,7 +100,7 @@ class File(object):
 
         # Opent tag
         if self.attributes != {}:
-            att = [' %s="%s"' % (k, self.attributes[k]) 
+            att = [' %s="%s"' % (k, self.attributes[k])
                   for k in self.attributes.keys() if k != 'space']
             s.append('<file %s' % '\n'.join(att))
             if 'space' in self.attributes.keys():
@@ -217,7 +217,7 @@ class XLIFF(Text):
             s.append('version="%s"' % self.version)
         if self.lang:
             s.append('xml:lang="%s"' % self.lang)
-        s.append('>\n') 
+        s.append('>\n')
 
         return ' '.join(s)
 

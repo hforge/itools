@@ -84,26 +84,26 @@ class Document(WorkflowAware):
 
     def onleave_private(self, msg):
         pass
-        
+
     def onenter_pending(self, msg):
         pass
-        
+
     def onleave_pending(self, msg):
         pass
 
     def onenter_public(self, msg):
         pass
 
-    # transition handlers        
+    # transition handlers
     def ontrans_reject(self, msg):
         pass
-        
+
     def ontrans_request(self, msg):
         pass
-        
+
     def ontrans_accept(self, msg):
         pass
-        
+
 
 
 if __name__ == '__main__':

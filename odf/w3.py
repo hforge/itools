@@ -117,7 +117,7 @@ class EventsSchema(BaseSchema):
 
     class_uri =  "http://www.w3.org/2001/xml-events"
     class_prefix = 'dom'
-    
+
 register_schema(EventsSchema)
 
 

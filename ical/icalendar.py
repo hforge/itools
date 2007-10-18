@@ -124,7 +124,7 @@ class Component(object):
 
 
     def add_version(self, properties):
-        # Sequence
+        # Sequence in properties only if just loading file
         if 'SEQUENCE' in properties:
             sequence = properties.pop('SEQUENCE')
             sequence = sequence.value
@@ -415,9 +415,13 @@ class icalendar(Text):
                     if uid is None:
                         raise ValueError, 'UID is not present'
 
-                    component = Component(c_type, uid)
-                    component.add_version(c_properties)
-                    self.components[uid] = component
+                    if uid in self.components:
+                        component = self.components[uid]
+                        component.add_version(c_properties)
+                    else:
+                        component = Component(c_type, uid)
+                        component.add_version(c_properties)
+                        self.components[uid] = component
                     # Next
                     c_type = None
                     uid = None
@@ -580,6 +584,9 @@ class icalendar(Text):
         # Add the component
         self.set_changed()
         self.components[uid] = component
+        # Remove SEQUENCE number if any
+        if 'SEQUENCE' in kw:
+            del kw['SEQUENCE']
         component.add_version(kw)
 
         # Index the component
@@ -600,6 +607,9 @@ class icalendar(Text):
         component = self.components[uid]
         version = component.get_version()
         version = version.copy()
+        # Remove SEQUENCE number if any
+        if 'SEQUENCE' in kw:
+            del kw['SEQUENCE']
         version.update(kw)
         # Remove deleted properties (value is None or [None])
         keys = []
@@ -1155,7 +1165,7 @@ class icalendarTable(Table):
             # Add the property
             properties[name] = value
             n_line += 1
- 
+
         # The properties VERSION and PRODID are mandatory
         if 'VERSION' not in properties or 'PRODID' not in properties:
             raise ValueError, 'PRODID or VERSION parameter missing'
@@ -1242,7 +1252,7 @@ class icalendarTable(Table):
 
         line = 'BEGIN:VCALENDAR\n'
         lines.append(Unicode.encode(line))
- 
+
         # Calendar properties
         for name in self.properties:
             value = self.properties[name]

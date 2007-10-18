@@ -143,14 +143,14 @@ def generate_name(name, used, suffix='_'):
     basename = items[0]
     extent = ''
     if len(items) > 1:
-        extent = '.%s' % items[1] 
+        extent = '.%s' % items[1]
 
     # 1st time called
     if suffix not in basename:
         index = 0
     else:
         basename, index = basename.rsplit(suffix, 1)
-        try: 
+        try:
             index = int(index) + 1
         except ValueError:
             basename = '%s%s%s' % (basename, suffix, index)

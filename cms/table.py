@@ -44,7 +44,7 @@ class Multiple(DataType):
                 for x in lines]
 
 
-        
+
 class Table(File, iTable):
 
     class_id = 'table'
@@ -168,13 +168,13 @@ class Table(File, iTable):
         fields = self.get_fields()
         fields.insert(0, ('index', u'id'))
         records = []
-       
+
         for record in self.get_records():
             id = record.id
             records.append({})
             records[-1]['id'] = str(id)
             records[-1]['checkbox'] = True
-            # Fields 
+            # Fields
             records[-1]['index'] = id, ';edit_record_form?id=%s' % id
             for field, field_title in fields[1:]:
                 value = self.get_value(record, field)
@@ -203,7 +203,7 @@ class Table(File, iTable):
         sortorder = context.get_form_value('sortorder', 'up')
         if sortby:
             records.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
-        
+
         records = records[start:start+size]
         for record in records:
             for field, field_title in fields[1:]:
@@ -265,9 +265,9 @@ class Table(File, iTable):
 
         handler = self.get_object('/ui/table/add_record.xml')
         return stl(handler, namespace)
-    
-    
-    
+
+
+
     add_record_action__access__ = 'is_allowed_to_edit'
     def add_record_action(self, context):
         # check form
@@ -301,7 +301,7 @@ class Table(File, iTable):
                 value = context.get_form_value(name, type=datatype)
             record[name] = value
         self.add_record(record)
-        
+
         message = u'New record added.'
         goto = context.uri.resolve2('../;add_record_form')
         return context.come_back(message, goto=goto)
@@ -363,7 +363,7 @@ class Table(File, iTable):
             datatype = self.get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
                 datatype = Multiple(type=datatype)
-            check_fields.append((name, getattr(datatype, 'mandatory', False), 
+            check_fields.append((name, getattr(datatype, 'mandatory', False),
                                  datatype))
 
         error = context.check_form_input(check_fields)
@@ -389,7 +389,7 @@ class Table(File, iTable):
             else:
                 value = context.get_form_value(name, type=datatype)
             record[name] = value
-            
+
         self.update_record(id, **record)
         self.set_changed()
         goto = context.uri.resolve2('../;edit_record_form')

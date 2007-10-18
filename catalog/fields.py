@@ -25,7 +25,7 @@ class BaseField(object):
     """
     Abstract class, the base for every field class. To define a new field
     class these methods must be implemented:
-        
+
     * split(value) -- returns a sequence of two-elements tuple, where the
       first element is a word to be indexed and the second element is the
       position of the word. For example: [(word, 0), (word, 1), ...]. It
@@ -49,7 +49,7 @@ class BaseField(object):
             self.is_indexed = is_indexed
         if is_stored is not None:
             self.is_stored = is_stored
- 
+
 
     @staticmethod
     def split(value):

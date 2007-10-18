@@ -19,9 +19,13 @@
 import unittest
 
 # Import from itools.rest
-from itools.rest.parser import strip_block, normalize_whitespace
-from itools.rest.parser import parse_inline
-from itools.rest.parser import Document
+from itools.rest.parser import (strip_block, normalize_whitespace,
+    parse_inline, parse_blocks, parse_lists, parse_literal_blocks,
+    parse_titles)
+from itools.rest.parser import (XBLOCK, XCITATION, XEMPHASIS, XFOOTNOTE,
+    XINTERPRETED, XLIST_BEGIN, XLIST_END, XLIST_ITEM_BEGIN, XLIST_ITEM_END,
+    XLITERAL, XLITERAL_BLOCK, XPARAGRAPH, XREFERENCE, XSTRONG, XSUBSTITUTION,
+    XTARGET, XTEXT, XTITLE)
 
 
 
@@ -70,116 +74,116 @@ class TestInlineParser(unittest.TestCase):
         """I am a regular text."""
         data = u"""I am a regular text."""
         events = parse_inline(data).next()
-        self.assertEqual(events, ('text', u'I am a regular text.'))
+        self.assertEqual(events, (XTEXT, u'I am a regular text.'))
 
 
     def test_emphasis(self):
         """This text *contains* emphasis."""
         data = u"""This text *contains* emphasis."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'This text '))
-        self.assertEqual(events[1], ('emphasis', u'contains'))
-        self.assertEqual(events[2], ('text', u' emphasis.'))
+        self.assertEqual(events[0], (XTEXT, u'This text '))
+        self.assertEqual(events[1], (XEMPHASIS, u'contains'))
+        self.assertEqual(events[2], (XTEXT, u' emphasis.'))
 
 
     def test_emphasis_strong(self):
         """This text *contains* **strong** emphasis."""
         data = u"""This text *contains* **strong** emphasis."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'This text '))
-        self.assertEqual(events[1], ('emphasis', u'contains'))
-        self.assertEqual(events[2], ('text', u' '))
-        self.assertEqual(events[3], ('strong', u'strong'))
-        self.assertEqual(events[4], ('text', u' emphasis.'))
+        self.assertEqual(events[0], (XTEXT, u'This text '))
+        self.assertEqual(events[1], (XEMPHASIS, u'contains'))
+        self.assertEqual(events[2], (XTEXT, u' '))
+        self.assertEqual(events[3], (XSTRONG, u'strong'))
+        self.assertEqual(events[4], (XTEXT, u' emphasis.'))
 
 
     def test_interpreted(self):
         """This `word` is interpreted."""
         data = u"""This `word` is interpreted."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'This '))
-        self.assertEqual(events[1], ('interpreted', u'word'))
-        self.assertEqual(events[2], ('text', u' is interpreted.'))
+        self.assertEqual(events[0], (XTEXT, u'This '))
+        self.assertEqual(events[1], (XINTERPRETED, u'word'))
+        self.assertEqual(events[2], (XTEXT, u' is interpreted.'))
 
 
     def test_inline_literal(self):
         """This ``word`` is inline literal."""
         data = u"""This ``word`` is inline literal."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'This '))
-        self.assertEqual(events[1], ('literal', u'word'))
-        self.assertEqual(events[2], ('text', u' is inline literal.'))
+        self.assertEqual(events[0], (XTEXT, u'This '))
+        self.assertEqual(events[1], (XLITERAL, u'word'))
+        self.assertEqual(events[2], (XTEXT, u' is inline literal.'))
 
 
     def test_reference_simple(self):
         """This word_ is a reference to a target."""
         data = u"""This word_ is a reference to a target."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'This '))
-        self.assertEqual(events[1], ('reference', u'word'))
-        self.assertEqual(events[2], ('text', u' is a reference to a target.'))
+        self.assertEqual(events[0], (XTEXT, u'This '))
+        self.assertEqual(events[1], (XREFERENCE, u'word'))
+        self.assertEqual(events[2], (XTEXT, u' is a reference to a target.'))
 
 
     def test_reference_quoted(self):
         """This `couple of words`_ is a reference too."""
         data = u"""This `couple of words`_ is a reference too."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'This '))
-        self.assertEqual(events[1], ('reference', u'couple of words'))
-        self.assertEqual(events[2], ('text', u' is a reference too.'))
+        self.assertEqual(events[0], (XTEXT, u'This '))
+        self.assertEqual(events[1], (XREFERENCE, u'couple of words'))
+        self.assertEqual(events[2], (XTEXT, u' is a reference too.'))
 
 
     def test_not_reference(self):
         """This is a_trap for the ``__parser__``."""
         data = u"""This is a_trap for the ``__parser__``."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'This is a_trap for the '))
-        self.assertEqual(events[1], ('literal', u'__parser__'))
-        self.assertEqual(events[2], ('text', u'.'))
+        self.assertEqual(events[0], (XTEXT, u'This is a_trap for the '))
+        self.assertEqual(events[1], (XLITERAL, u'__parser__'))
+        self.assertEqual(events[2], (XTEXT, u'.'))
 
 
     def test_fake_footnote(self):
         """I look like a footnote[1]."""
         data = u"""I look like a footnote[1]."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'I look like a footnote'))
-        self.assertEqual(events[1], ('text', u'[1].'))
+        self.assertEqual(events[0], (XTEXT, u'I look like a footnote'))
+        self.assertEqual(events[1], (XTEXT, u'[1].'))
 
 
     def test_reference_footnote(self):
         """See the footnote[1]_."""
         data = u"""See the footnote[1]_."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'See the footnote'))
-        self.assertEqual(events[1], ('footnote', u'1'))
-        self.assertEqual(events[2], ('text', u'.'))
+        self.assertEqual(events[0], (XTEXT, u'See the footnote'))
+        self.assertEqual(events[1], (XFOOTNOTE, u'1'))
+        self.assertEqual(events[2], (XTEXT, u'.'))
 
 
     def test_reference_citation(self):
         """See the citation [CIT2002]_."""
         data = u"""See the citation [CIT2002]_."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'See the citation '))
-        self.assertEqual(events[1], ('citation', u'CIT2002'))
-        self.assertEqual(events[2], ('text', u'.'))
+        self.assertEqual(events[0], (XTEXT, u'See the citation '))
+        self.assertEqual(events[1], (XCITATION, u'CIT2002'))
+        self.assertEqual(events[2], (XTEXT, u'.'))
 
 
     def test_reference_substitution(self):
         """Introducing the |substitution|!"""
         data = u"""Introducing the |substitution|!"""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'Introducing the '))
-        self.assertEqual(events[1], ('substitution', u'substitution'))
-        self.assertEqual(events[2], ('text', u'!'))
+        self.assertEqual(events[0], (XTEXT, u'Introducing the '))
+        self.assertEqual(events[1], (XSUBSTITUTION, u'substitution'))
+        self.assertEqual(events[2], (XTEXT, u'!'))
 
 
     def test_target_inline(self):
         """I am a _`inline target`."""
         data = u"""I am a _`inline target`."""
         events = list(parse_inline(data))
-        self.assertEqual(events[0], ('text', u'I am a '))
-        self.assertEqual(events[1], ('target', u'inline target'))
-        self.assertEqual(events[2], ('text', u'.'))
+        self.assertEqual(events[0], (XTEXT, u'I am a '))
+        self.assertEqual(events[1], (XTARGET, u'inline target'))
+        self.assertEqual(events[2], (XTEXT, u'.'))
 
 
 
@@ -191,11 +195,11 @@ I am a block.
 
 I am another
 block."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
+        events = parse_blocks(text)
+        events = list(events)
         self.assertEqual(len(events), 2)
-        self.assertEqual(events[0], ('block', [u'I am a block.', u'']))
-        self.assertEqual(events[1], ('block', [u'I am another', u'block.']))
+        self.assertEqual(events[0], (XBLOCK, [u'I am a block.', u'']))
+        self.assertEqual(events[1], (XBLOCK, [u'I am another', u'block.']))
 
 
     def test_single_lists(self):
@@ -205,20 +209,19 @@ block."""
 
 1. I am an ordered list item
    on several lines."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
+        events = parse_blocks(text)
+        events = parse_lists(events)
         self.assertEqual(len(events), 10)
-        self.assertEqual(events[0], ('list_begin', u'*'))
-        self.assertEqual(events[1], ('list_item_begin', 2))
-        self.assertEqual(events[2], ('block', [u'I am an unordered list item', u'  on several lines.', u'']))
-        self.assertEqual(events[3], ('list_item_end', 2))
-        self.assertEqual(events[4], ('list_end', u'*'))
-        self.assertEqual(events[5], ('list_begin', u'#'))
-        self.assertEqual(events[6], ('list_item_begin', 3))
-        self.assertEqual(events[7], ('block', [u'I am an ordered list item', u'   on several lines.']))
-        self.assertEqual(events[8], ('list_item_end', 3))
-        self.assertEqual(events[9], ('list_end', u'#'))
+        self.assertEqual(events[0], (XLIST_BEGIN, u'*'))
+        self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 2))
+        self.assertEqual(events[2], (XBLOCK, [u'I am an unordered list item', u'  on several lines.', u'']))
+        self.assertEqual(events[3], (XLIST_ITEM_END, 2))
+        self.assertEqual(events[4], (XLIST_END, u'*'))
+        self.assertEqual(events[5], (XLIST_BEGIN, u'#'))
+        self.assertEqual(events[6], (XLIST_ITEM_BEGIN, 3))
+        self.assertEqual(events[7], (XBLOCK, [u'I am an ordered list item', u'   on several lines.']))
+        self.assertEqual(events[8], (XLIST_ITEM_END, 3))
+        self.assertEqual(events[9], (XLIST_END, u'#'))
 
 
     def test_double_lists(self):
@@ -230,26 +233,25 @@ block."""
 1. I am an ordered list item;
 
 2. on several lines."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
+        events = parse_blocks(text)
+        events = parse_lists(events)
         self.assertEqual(len(events), 16)
-        self.assertEqual(events[0], ('list_begin', u'*'))
-        self.assertEqual(events[1], ('list_item_begin', 2))
-        self.assertEqual(events[2], ('block', [u'I am an unordered list item;', u'']))
-        self.assertEqual(events[3], ('list_item_end', 2))
-        self.assertEqual(events[4], ('list_item_begin', 2))
-        self.assertEqual(events[5], ('block', [u'on several lines.', u'']))
-        self.assertEqual(events[6], ('list_item_end', 2))
-        self.assertEqual(events[7], ('list_end', u'*'))
-        self.assertEqual(events[8], ('list_begin', u'#'))
-        self.assertEqual(events[9], ('list_item_begin', 3))
-        self.assertEqual(events[10], ('block', [u'I am an ordered list item;', u'']))
-        self.assertEqual(events[11], ('list_item_end', 3))
-        self.assertEqual(events[12], ('list_item_begin', 3))
-        self.assertEqual(events[13], ('block', [u'on several lines.']))
-        self.assertEqual(events[14], ('list_item_end', 3))
-        self.assertEqual(events[15], ('list_end', u'#'))
+        self.assertEqual(events[0], (XLIST_BEGIN, u'*'))
+        self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 2))
+        self.assertEqual(events[2], (XBLOCK, [u'I am an unordered list item;', u'']))
+        self.assertEqual(events[3], (XLIST_ITEM_END, 2))
+        self.assertEqual(events[4], (XLIST_ITEM_BEGIN, 2))
+        self.assertEqual(events[5], (XBLOCK, [u'on several lines.', u'']))
+        self.assertEqual(events[6], (XLIST_ITEM_END, 2))
+        self.assertEqual(events[7], (XLIST_END, u'*'))
+        self.assertEqual(events[8], (XLIST_BEGIN, u'#'))
+        self.assertEqual(events[9], (XLIST_ITEM_BEGIN, 3))
+        self.assertEqual(events[10], (XBLOCK, [u'I am an ordered list item;', u'']))
+        self.assertEqual(events[11], (XLIST_ITEM_END, 3))
+        self.assertEqual(events[12], (XLIST_ITEM_BEGIN, 3))
+        self.assertEqual(events[13], (XBLOCK, [u'on several lines.']))
+        self.assertEqual(events[14], (XLIST_ITEM_END, 3))
+        self.assertEqual(events[15], (XLIST_END, u'#'))
 
 
     def test_nested_lists(self):
@@ -261,22 +263,21 @@ block."""
      Second list, second paragraph.
 
   First list, second paragraph."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
+        events = parse_blocks(text)
+        events = parse_lists(events)
         self.assertEqual(len(events), 12)
-        self.assertEqual(events[0], ('list_begin', u'*'))
-        self.assertEqual(events[1], ('list_item_begin', 2))
-        self.assertEqual(events[2], ('block', [u'First list.', u'']))
-        self.assertEqual(events[3], ('list_begin', u'#'))
-        self.assertEqual(events[4], ('list_item_begin', 5))
-        self.assertEqual(events[5], ('block', [u'Second list.', u'']))
-        self.assertEqual(events[6], ('block', [u'     Second list, second paragraph.', u'']))
-        self.assertEqual(events[7], ('list_item_end', 5))
-        self.assertEqual(events[8], ('list_end', u'#'))
-        self.assertEqual(events[9], ('block', [u'  First list, second paragraph.']))
-        self.assertEqual(events[10], ('list_item_end', 2))
-        self.assertEqual(events[11], ('list_end', u'*'))
+        self.assertEqual(events[0], (XLIST_BEGIN, u'*'))
+        self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 2))
+        self.assertEqual(events[2], (XBLOCK, [u'First list.', u'']))
+        self.assertEqual(events[3], (XLIST_BEGIN, u'#'))
+        self.assertEqual(events[4], (XLIST_ITEM_BEGIN, 5))
+        self.assertEqual(events[5], (XBLOCK, [u'Second list.', u'']))
+        self.assertEqual(events[6], (XBLOCK, [u'     Second list, second paragraph.', u'']))
+        self.assertEqual(events[7], (XLIST_ITEM_END, 5))
+        self.assertEqual(events[8], (XLIST_END, u'#'))
+        self.assertEqual(events[9], (XBLOCK, [u'  First list, second paragraph.']))
+        self.assertEqual(events[10], (XLIST_ITEM_END, 2))
+        self.assertEqual(events[11], (XLIST_END, u'*'))
 
 
     def test_literal_blocks(self):
@@ -286,13 +287,13 @@ The code reads as follow::
     >>> from itools.rest import parser
 
 But failed with a NotImplementedError."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_literal_blocks(events)
+        events = parse_blocks(text)
+        events = parse_literal_blocks(events)
+        events = list(events)
         self.assertEqual(len(events), 3)
-        self.assertEqual(events[0], ('block', [u'The code reads as follow:']))
-        self.assertEqual(events[1], ('literal_block', u'    >>> from itools.rest import parser'))
-        self.assertEqual(events[2], ('block', [u'But failed with a NotImplementedError.']))
+        self.assertEqual(events[0], (XBLOCK, [u'The code reads as follow:']))
+        self.assertEqual(events[1], (XLITERAL_BLOCK, u'    >>> from itools.rest import parser'))
+        self.assertEqual(events[2], (XBLOCK, [u'But failed with a NotImplementedError.']))
 
 
     def test_list_literal(self):
@@ -304,20 +305,20 @@ But failed with a NotImplementedError."""
 
 2. and several
    items."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
-        events = Document.parse_literal_blocks(events)
+        events = parse_blocks(text)
+        events = parse_lists(events)
+        events = parse_literal_blocks(events)
+        events = list(events)
         self.assertEqual(len(events), 9)
-        self.assertEqual(events[0], ('list_begin', u'#'))
-        self.assertEqual(events[1], ('list_item_begin', 3))
-        self.assertEqual(events[2], ('block', [u'I am a list',  u'   containing a literal:']))
-        self.assertEqual(events[3], ('literal_block', u'     >>> from itools.rest import parser'))
-        self.assertEqual(events[4], ('list_item_end', 3))
-        self.assertEqual(events[5], ('list_item_begin', 3))
-        self.assertEqual(events[6], ('block', [u'and several',  u'   items.']))
-        self.assertEqual(events[7], ('list_item_end', 3))
-        self.assertEqual(events[8], ('list_end', u'#'))
+        self.assertEqual(events[0], (XLIST_BEGIN, u'#'))
+        self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 3))
+        self.assertEqual(events[2], (XBLOCK, [u'I am a list',  u'   containing a literal:']))
+        self.assertEqual(events[3], (XLITERAL_BLOCK, u'     >>> from itools.rest import parser'))
+        self.assertEqual(events[4], (XLIST_ITEM_END, 3))
+        self.assertEqual(events[5], (XLIST_ITEM_BEGIN, 3))
+        self.assertEqual(events[6], (XBLOCK, [u'and several',  u'   items.']))
+        self.assertEqual(events[7], (XLIST_ITEM_END, 3))
+        self.assertEqual(events[8], (XLIST_END, u'#'))
 
 
     def test_paragraph(self):
@@ -325,12 +326,12 @@ But failed with a NotImplementedError."""
 I am a paragraph.
 
 I am another one."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(text)
+        events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 2)
-        self.assertEqual(events[0], ('paragraph', u'I am a paragraph.'))
-        self.assertEqual(events[1], ('paragraph', u'I am another one.'))
+        self.assertEqual(events[0], (XPARAGRAPH, u'I am a paragraph.'))
+        self.assertEqual(events[1], (XPARAGRAPH, u'I am another one.'))
 
 
     def test_title_overline(self):
@@ -338,24 +339,24 @@ I am another one."""
 #############################
 I am the king of the titles
 #############################"""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(text)
+        events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0],
-                         ('title', (u'#', u'I am the king of the titles', u'#')))
+                         (XTITLE, (u'#', u'I am the king of the titles', u'#')))
 
 
     def test_title_underline(self):
         text = u"""\
 I am the prince of the titles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%"""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(text)
+        events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0],
-                         ('title', (u'', u'I am the prince of the titles', u'%')))
+                         (XTITLE, (u'', u'I am the prince of the titles', u'%')))
 
 
     def test_title_paragraph(self):
@@ -363,13 +364,13 @@ I am the prince of the titles
 Please allow to introduce myself
 ````````````````````````````````
 I'm a man of wealth and taste"""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(text)
+        events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 2)
         self.assertEqual(events[0],
-                        ('title', (u'', u'Please allow to introduce myself', u'`')))
-        self.assertEqual(events[1], ('paragraph', u"I'm a man of wealth and taste"))
+                        (XTITLE, (u'', u'Please allow to introduce myself', u'`')))
+        self.assertEqual(events[1], (XPARAGRAPH, u"I'm a man of wealth and taste"))
 
 
     def test_paragraph_literal(self):
@@ -379,14 +380,14 @@ The code reads as follow::
     >>> from itools.rest import parser
 
 But failed with a NotImplementedError."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_literal_blocks(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(text)
+        events = parse_literal_blocks(events)
+        events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 3)
-        self.assertEqual(events[0], ('paragraph', u'The code reads as follow:'))
-        self.assertEqual(events[1], ('literal_block', u'    >>> from itools.rest import parser'))
-        self.assertEqual(events[2], ('paragraph', u'But failed with a NotImplementedError.'))
+        self.assertEqual(events[0], (XPARAGRAPH, u'The code reads as follow:'))
+        self.assertEqual(events[1], (XLITERAL_BLOCK, u'    >>> from itools.rest import parser'))
+        self.assertEqual(events[2], (XPARAGRAPH, u'But failed with a NotImplementedError.'))
 
 
     def test_paragraph_list(self):
@@ -396,18 +397,18 @@ But failed with a NotImplementedError."""
   I am the same block.
 
 I am a paragraph."""
-        events = [('text', text)]
-        events = Document.parse_blocks(events)
-        events = Document.parse_lists(events)
-        events = Document.parse_titles(events)
+        events = parse_blocks(text)
+        events = parse_lists(events)
+        events = parse_titles(events)
+        events = list(events)
         self.assertEqual(len(events), 7)
-        self.assertEqual(events[0], ('list_begin', u'*'))
-        self.assertEqual(events[1], ('list_item_begin', 2))
-        self.assertEqual(events[2], ('paragraph', u'I am a block.'))
-        self.assertEqual(events[3], ('paragraph', u'I am the same block.'))
-        self.assertEqual(events[4], ('list_item_end', 2))
-        self.assertEqual(events[5], ('list_end', u'*'))
-        self.assertEqual(events[6], ('paragraph', u'I am a paragraph.'))
+        self.assertEqual(events[0], (XLIST_BEGIN, u'*'))
+        self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 2))
+        self.assertEqual(events[2], (XPARAGRAPH, u'I am a block.'))
+        self.assertEqual(events[3], (XPARAGRAPH, u'I am the same block.'))
+        self.assertEqual(events[4], (XLIST_ITEM_END, 2))
+        self.assertEqual(events[5], (XLIST_END, u'*'))
+        self.assertEqual(events[6], (XPARAGRAPH, u'I am a paragraph.'))
 
 
 

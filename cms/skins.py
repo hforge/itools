@@ -130,7 +130,7 @@ class Skin(UIFolder):
                 href = '%s/;%s' % (here.get_pathto(handler), method)
                 menu.append({'href': href, 'title': self.gettext(title),
                              'class': '', 'src': src, 'items': []})
-    
+
         if not menu:
             return None
 
@@ -271,7 +271,7 @@ class Skin(UIFolder):
                 url = '%s/;%s' % (here.get_pathto(handler), view)
             # The title
             title = handler.get_title()
-            short_title = reduce_string(title, 15, 30) 
+            short_title = reduce_string(title, 15, 30)
             # Name
             breadcrumb.append({'name': title, 'short_name': short_title,
                                'url': url})
@@ -412,7 +412,7 @@ class Skin(UIFolder):
         # Calendar
         styles.append('/ui/ical/calendar.css')
         # Table
-        styles.append('/ui/table/style.css')        
+        styles.append('/ui/table/style.css')
         # This skin's style
         if self.has_handler('style.css'):
             styles.append('%s/style.css' % self.abspath)
@@ -441,7 +441,7 @@ class Skin(UIFolder):
         scripts.append('/ui/calendar/lang/calendar-%s.js' % language)
         scripts.append('/ui/calendar/calendar-setup.js')
         # Table
-        scripts.append('/ui/table/javascript.js')        
+        scripts.append('/ui/table/javascript.js')
         # This skin's JavaScript
         if self.has_handler('javascript.js'):
             scripts.append('%s/javascript.js' % self.abspath)
@@ -453,7 +453,7 @@ class Skin(UIFolder):
 
 
     #######################################################################
-    # 
+    #
     #######################################################################
     def get_template_title(self, context):
         """Return the title to give to the template document."""

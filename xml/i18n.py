@@ -103,7 +103,7 @@ def get_translatable_blocks(events):
     sequence is returned, identified by an special event type (MESSAGE).
 
     A translatable block is one that:
-    
+
       - contains at least one non-empty text node;
       - does not contain block-elements;
 
@@ -257,5 +257,5 @@ def translate(events, catalog):
                 for event in Parser(segment, namespaces):
                     yield event
         else:
-            yield event 
+            yield event
 

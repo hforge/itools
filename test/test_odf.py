@@ -30,19 +30,19 @@ from itools.xml.i18n import get_messages, translate
 
 
 class Test_ODT_File(TestCase):
-    
+
     def setUp(self):
         file = vfs.open('odf/Document.odt', 'r')
         self.doc = OdtDocument()
         self.doc.load_state_from_file(file)
-    
+
 
     def test_get_msg(self):
         messages = list(self.doc.get_messages())
         txt = u'Hello <text:span text:style-name="T1">world</text:span> !'
         expected = [(txt, 0)]
         self.assertEqual(messages, expected)
-    
+
 
     def test_translation(self):
         # Translate the document
@@ -63,7 +63,7 @@ class Test_ODT_File(TestCase):
     def test_meta(self):
         expected_meta = {'initial-creator': u'sylvain',
                          'description': u"it\n'\ns a very good document",
-                         'keyword': u'itools\nodt\nodf', 
+                         'keyword': u'itools\nodt\nodf',
                          'creator': u'sylvain',
                          'title': u'Hello world Document',
                          'language': u'fr-FR',
@@ -88,7 +88,7 @@ class Test_ODP_File(TestCase):
         messages = list(self.doc.get_messages())
         expected = [(u'<text:span text:style-name="T1">Hello </text:span><text:span text:style-name="T2">World</text:span><text:span text:style-name="T1"> !</text:span>', 0), (u'Welcome', 0)]
         self.assertEqual(messages, expected)
-    
+
 
 
 
@@ -160,7 +160,7 @@ class Test_ODT_Parser(TestCase):
 
     def test_table(self):
         content = """
-        <office:text> 
+        <office:text>
         <table:table table:name="Tableau1" table:style-name="Tableau1">
         <table:table-column table:style-name="Tableau1.A"
         table:number-columns-repeated="3"/>
@@ -188,8 +188,8 @@ class Test_ODT_Parser(TestCase):
         </table:table-row>
         </table:table>
         </office:text>
-                  """ 
-        
+                  """
+
         content = self.template % content
         events = Parser(content)
         messages = list(get_messages(events))

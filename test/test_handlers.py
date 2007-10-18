@@ -135,7 +135,7 @@ class FolderTestCase(TestCase):
 
 
 class TextTestCase(TestCase):
-    
+
     def test_load_file(self):
         handler = get_handler('tests/hello.txt')
         self.assertEqual(handler.data, u'hello world\n')

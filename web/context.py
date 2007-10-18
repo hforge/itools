@@ -216,7 +216,7 @@ class Context(object):
         or not.
 
         The output is like:
-            
+
             {<field name>: {'value': <field value>,
                             'class': <CSS class>}
              ...}
@@ -261,7 +261,7 @@ class Context(object):
 
         Its input data is a list (fields) that defines the form variables
         to consider:
-            
+
             [(<field name>, <is field required>[ , <datatype>]),
              ...]
 

@@ -53,7 +53,7 @@ def get_abspath(globals_namespace, local_path):
 
 ############################################################################
 # XXX To be removed once distutils works again:
-# http://sourceforge.net/tracker/index.php?func=detail&aid=1183712&group_id=5470&atid=305470
+# http://bugs.python.org/issue1183712
 class build_py_fixed(build_py):
 
     def get_data_files(self):
@@ -101,7 +101,7 @@ def setup(namespace, description='', classifiers=[], ext_modules=[]):
     except ImportError:
         # Are we trying to install itools?
         # XXX Should use relative imports, by they don't work well yet, see
-        # https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1510172&group_id=5470
+        # http://bugs.python.org/issue1510172
         start_local_import()
         from handlers import Config
         end_local_import()

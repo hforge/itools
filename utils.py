@@ -22,7 +22,7 @@ from os.path import exists, join as join_path, sep, splitdrive
 import sys
 
 # Import from itools
-from itools import git
+import git
 
 
 

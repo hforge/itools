@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import datetime
 from os import popen
 
 
@@ -27,7 +28,7 @@ def is_available():
 def get_filenames():
     """Returns the list of filenames tracked by git.
     """
-    if not git_is_available():
+    if not is_available():
         return []
 
     return [ x.strip() for x in popen('git-ls-files').readlines() ]

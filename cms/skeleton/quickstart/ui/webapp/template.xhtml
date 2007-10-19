@@ -26,7 +26,8 @@
             onmouseover="show('menu_${menu/id}')"
             onmouseout="hide('menu_${menu/id}')">
             <div class="menu">
-                <a href="${menu/name}" id="${menu/id}" target="${menu/target}">
+                <a href="${menu/path}" id="${menu/id}" target="${menu/target}"
+                   title="${menu/description}">
                 <span>${menu/label}</span></a>
             </div>
             <stl:block stl:if="menu/options">
@@ -35,10 +36,12 @@
                 <ul>
                   <stl:block stl:repeat="option menu/options/items">
                     <li stl:if="not repeat/option/end" class="${option/class}">
-                      <a href="${option/name}" target="${menu/target}">${option/label}</a>
+                      <a href="${option/path}" target="${menu/target}"
+                         title="${option/description}">${option/label}</a>
                     </li>
                     <li stl:if="repeat/option/end" class="last ${option/class}">
-                      <a href="${option/name}" target="${menu/target}">${option/label}</a>
+                      <a href="${option/path}" target="${menu/target}"
+                         title="${option/description}">${option/label}</a>
                     </li>
                   </stl:block>
                 </ul>
@@ -50,9 +53,10 @@
     </div>
     <!-- FLAT SUBMENU -->
     <!--
-    <div id="flat_submenu" stl:if="tabs/flat_items">
-      <span stl:repeat="item tabs/flat_items/items">
-        <a href="${item/name}" class="${item/class}" target="${item/target}">
+    <div id="flat_submenu" stl:if="tabs/flat/lvl1">
+      <span stl:repeat="item tabs/flat/lvl1">
+        <a href="${item/path}" class="${item/class}" target="${item/target}"
+           title="${menu/description}">
           ${item/label}
         </a>
         <stl:inline if="not repeat/item/end">

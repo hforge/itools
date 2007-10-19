@@ -46,7 +46,8 @@ class Skin(iSkin):
     def build_namespace(self, context):
         namespace = iSkin.build_namespace(self, context)
         namespace['tabs'] = get_menu_namespace(context, depth=2,
-                                               show_first_child=False)
+                                               show_first_child=False,
+                                               link_like=Link)
         namespace['today'] = date.today().strftime('%A, %B %d, %Y')
         return namespace
 

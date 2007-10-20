@@ -17,9 +17,12 @@
 # Import from the Standard Library
 from distutils import core
 from distutils.command.build_py import build_py
-import os
-import subprocess
+from os import getcwd, getpid
+from os.path import exists, join as join_path, sep, splitdrive
 import sys
+
+# Import from itools
+import git
 
 
 
@@ -30,7 +33,7 @@ def get_abspath(globals_namespace, local_path):
     mname = globals_namespace['__name__']
 
     if mname == '__main__' or mname == '__init__':
-        mpath = os.getcwd()
+        mpath = getcwd()
     else:
         module = sys.modules[mname]
         if hasattr(module, '__path__'):
@@ -40,12 +43,12 @@ def get_abspath(globals_namespace, local_path):
         else:
             mpath = mname
 
-    drive, mpath = os.path.splitdrive(mpath)
-    mpath = drive + os.path.join(mpath, local_path)
+    drive, mpath = splitdrive(mpath)
+    mpath = drive + join_path(mpath, local_path)
 
     # Make it working with Windows. Internally we use always the "/".
-    if os.path.sep == '\\':
-        mpath = mpath.replace(os.path.sep, '/')
+    if sep == '\\':
+        mpath = mpath.replace(sep, '/')
 
     return mpath
 
@@ -53,7 +56,7 @@ def get_abspath(globals_namespace, local_path):
 
 ############################################################################
 # XXX To be removed once distutils works again:
-# http://sourceforge.net/tracker/index.php?func=detail&aid=1183712&group_id=5470&atid=305470
+# http://bugs.python.org/issue1183712
 class build_py_fixed(build_py):
 
     def get_data_files(self):
@@ -66,7 +69,7 @@ class build_py_fixed(build_py):
             src_dir = self.get_package_dir(package)
 
             # Compute package build directory
-            build_dir = os.path.join(*([self.build_lib] + package.split('.')))
+            build_dir = join_path(*([self.build_lib] + package.split('.')))
 
             # Length of path to strip from found files
             if src_dir:
@@ -88,7 +91,7 @@ class build_py_fixed(build_py):
 ############################################################################
 def get_version(namespace):
     path = get_abspath(namespace, 'version.txt')
-    if os.path.exists(path):
+    if exists(path):
         return open(path).read().strip()
     return None
 
@@ -101,7 +104,7 @@ def setup(namespace, description='', classifiers=[], ext_modules=[]):
     except ImportError:
         # Are we trying to install itools?
         # XXX Should use relative imports, by they don't work well yet, see
-        # https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1510172&group_id=5470
+        # http://bugs.python.org/issue1510172
         start_local_import()
         from handlers import Config
         end_local_import()
@@ -121,30 +124,32 @@ def setup(namespace, description='', classifiers=[], ext_modules=[]):
     else:
         subpackages = []
 
-    # Write the manifest file if it does not exists
-    if not os.path.exists('MANIFEST'):
-        subprocess.call(['git-ls-files'], stdout=open('MANIFEST', 'w'))
+    # Write the manifest file if it does not exist
+    if exists('MANIFEST'):
+        filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
+    else:
+        filenames = git.get_filenames()
+        lines = [ x + '\n' for x in filenames ]
+        open('MANIFEST', 'w').write(''.join(lines))
+
+    # Python files are included by default
+    filenames = [ x for x in filenames if not x.endswith('.py') ]
 
     # The data files
-    for line in open('MANIFEST').readlines():
-        line = line.strip()
-        # Python files are included by default
-        if line.endswith('.py'):
-            continue
-
+    for line in filenames:
         path = line.split('/')
         n = len(path)
         if path[0] in subpackages:
             subpackage = '%s.%s' % (package_name, path[0])
             files = package_data.setdefault(subpackage, [])
-            files.append(os.path.join(*path[1:]))
+            files.append(join_path(*path[1:]))
         elif path[0] not in ('scripts', 'test'):
             package_data[package_name].append(line)
 
     # The scripts
     if config.has_value('scripts'):
         scripts = config.get_value('scripts').split()
-        scripts = [ os.path.join(*['scripts', x]) for x in scripts ]
+        scripts = [ join_path(*['scripts', x]) for x in scripts ]
     else:
         scripts = []
 
@@ -202,11 +207,10 @@ def end_local_import():
 ###########################################################################
 def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
                   'KB': 1024.0, 'MB': 1024.0*1024.0}):
-    status = '/proc/%d/status' % os.getpid()
+    status = '/proc/%d/status' % getpid()
     status = open(status).read()
     i = status.index('VmSize:')
     status = status[i:].split(None, 3)  # whitespace
     # convert Vm value to bytes
     return float(status[1]) * scale[status[2]]
-
 

@@ -73,7 +73,7 @@ def get_lines(file):
                 name, value = line.split('=', 1)
                 name = name.strip()
                 value = value.strip()
-                if value[0] == '"':
+                if value and value[0] == '"':
                     if value[-1] == '"' and len(value) > 1:
                         value = value[1:-1]
                         yield VAR, (name, value), line_num

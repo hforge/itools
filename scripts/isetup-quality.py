@@ -22,6 +22,7 @@ from tempfile import TemporaryFile
 
 # Import from itools
 import itools
+from itools import git
 
 
 def analyse(filenames):
@@ -80,6 +81,9 @@ if __name__ == '__main__':
 
     if args:
         filenames = args
+    elif git.is_available():
+        filenames = git.get_filenames()
+        filenames = [ x for x in filenames if x.endswith('.py') ]
     else:
         file = TemporaryFile()
         call(['find', '-name', '*.py'], stdout=file)

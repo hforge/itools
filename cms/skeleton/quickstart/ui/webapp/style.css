@@ -88,13 +88,17 @@ a:hover {
   text-align: left;
 }
 
-#menu .menu a:hover,
-#menu td.active .menu a {
+#menu .menu a:hover {
   background-color: #fff;
   color: #ffa953;
 }
 
-#menu td.in_path .menu a {
+#menu td.active .menu a, #menu li.active a {
+  background-color: #fff;
+  color: #339953;
+}
+
+#menu li.in_path a, #menu td.in_path .menu a {
   color: #ffa953;
   background-color: #fff;
 }

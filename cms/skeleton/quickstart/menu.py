@@ -57,37 +57,7 @@ class Link(File):
 
     def GET(self, context):
         link = self.get_property('menu:link')
-        return context.uri.resolve(link)
-
-
-    def get_target(self):
-        if self.get_property('menu:new_window') is True:
-            return '_blank'
-        return '_top'
-
-
-    def get_target_names(self):
-        """
-        Return the target names
-        http://abc.org -> http://abc.org
-        ../../a/b/;method -> [a, b]
-        ../../a/b/c -> [a, b, c]
-        ../;method -> [;method]
-        """
-        target = self.get_property('menu:link')
-        if not target or target.startswith('http://'):
-            return target
-        targets = target.split('/')
-        # If the target is the parent
-        if len(targets) == 1 and targets == ['..']:
-            return targets
-        start = 0
-        while targets[start] == '..':
-            start += 1
-        targets = targets[start:]
-        if targets[-1][0] == ';' and len(targets) > 1:
-            return targets[:-1]
-        return targets
+        return context.uri.resolve2(link)
 
 
     add_link_form__access__ = 'is_allowed_to_edit'
@@ -152,116 +122,199 @@ class Link(File):
         return context.come_back(MSG_CHANGES_SAVED)
 
 
+    #######################################################################
+    # API to be used by menu.py get_menu_namespace method
+    #######################################################################
+    def get_target_info(self):
+        """
+        Return a tuple with:
+        example1 : '_blank', '../../;contact_form'
+        example2 : '_top', '../../python'
+        example3 : '_blank', 'http://www.google.com'
+        """
+
+        new_window = '_top'
+        if self.get_property('menu:new_window') is True:
+            new_window = '_blank'
+
+        return new_window, self.get_property('menu:link')
+
+
 
 register_object_class(Link)
-
 
 ###########################################################################
 # Menu gestion
 ###########################################################################
-def get_menu_namespace_level(context, url, parent, depth, show_first_child,
-                             flat):
-    if is_datatype(parent, OrderAware) is False:
+def get_target_info(context, handler):
+    """
+    Return a tuple with:
+    - a list made with the target path and if any the target handler
+    - the target info '_top' or '_blank' or ...
+    """
+    new_window = '_top'
+    new_window, target = handler.get_target_info()
+
+    if target and target.startswith('http://'):
+        return [target], new_window
+
+    target_rpath = Path(target)
+
+    # split relative target path and target method if any
+    target_method = None
+    endswithparams = target_rpath[-1].params
+    if endswithparams:
+        target_method = target_rpath.pop()
+
+    # get the real target handler
+    site_root = context.handler.get_site_root()
+    try:
+        h = handler.get_handler(target_rpath)
+        if target_method is None:
+            target_method = ';%s' % h.get_firstview()
+        target_path = site_root.get_pathto(h)
+    except LookupError:
+        return None, None
+
+    # make a url list with the target handler
+    target_url = [seg.name for seg in target_path if seg.name]
+    if target_method:
+        target_url.append(target_method)
+
+    return target_url, new_window
+
+
+
+def get_menu_namespace_level(context, url, menu_root, depth, show_first_child,
+                             link_like=None):
+    """
+    Return a tabs list with the following structure:
+
+    tabs = [{'active': False,
+             'class': None,
+             'id': u'tab_python',
+             'label': u'Python',
+             'path': '../python',
+             'options': ...}, {...}]
+
+    link_like can be class that implement get_target_info method
+    """
+    if is_datatype(menu_root, OrderAware) is False:
         return {}
 
-    here = context.handler
-    last_url = (len(url) == 1)
-    tabs = {}
+    here, user = context.handler, context.user
     items = []
-    flat_items = []
-    user = context.user
-    handler_names = parent.get_ordered_folder_names('ordered')
-    next_depth = depth - 1
-    url = url or ''
-    if is_datatype(url, list) is False:
-        url = [url]
+    tabs = {}
 
-    for name in handler_names:
+    for name in menu_root.get_ordered_folder_names('ordered'):
         # Get the handlers, check security
-        handler = parent.get_handler(name)
+        handler = menu_root.get_handler(name)
+
         ac = handler.get_access_control()
         if ac.is_allowed_to_view(user, handler) is False:
             continue
 
+        # Link special case for target and actual_url
+        target = '_top'
+        actual_url = here.abspath == handler.abspath
+        if link_like and isinstance(handler, link_like):
+            target_url, new_window = get_target_info(context, handler)
+            if target_url:
+                actual_url = url == target_url
+
         # Subtabs
         subtabs = {}
-        if next_depth >= 0:
-            subtabs = get_menu_namespace_level(context, url[1:], handler,
-                                               next_depth, show_first_child,
-                                               flat)
+        if depth > 1:
+            subtabs = get_menu_namespace_level(context, url, handler, depth-1,
+                                               show_first_child, link_like)
 
-        # Add the menu
-        active = False
-        in_path = False
-        target = '_top'
-        # Link
-        if isinstance(handler, Link):
-            name = handler.get_target_names()
-            active = (name == url)
-            target = handler.get_target()
-        else:
-            if name == url[0]:
-                if last_url is True: # last level
-                    active = True
-                else:
-                    in_path = True
+        # set active, in_path
+        active, in_path = False, name in url
+        if actual_url:
+            active, in_path = True, False
 
-        label = handler.get_property('dc:title') or name
-        if show_first_child and depth >= 1:
-            if subtabs.has_key('items') and len(subtabs['items']) > 0:
-                path = subtabs['items'][0]['name']
-            else:
-                path = here.get_pathto(handler)
-        else:
-            path = here.get_pathto(handler)
-
+        # set css class to 'active', 'in_path' or None
         css = (active and 'active') or (in_path and 'in_path') or None
+
+        # set label and description
+        label = handler.get_property('dc:title') or name
+        description = handler.get_property('dc:description') or label
+
+        # set path
+        path = here.get_pathto(handler)
+        if show_first_child and depth > 1:
+            if subtabs.get('items', None):
+                childs = subtabs['items']
+                first_child = childs[0]['path']
+                first_child = here.get_handler(first_child)
+                path = here.get_pathto(first_child)
+
+
         items.append({'id': 'tab_%s' % label.lower().replace(' ', '_'),
-                      'name': path,
+                      'path': str(path),
+                      'name': name,
                       'label': here.gettext(label),
+                      'description': here.gettext(description),
                       'active': active,
                       'class': css,
                       'target': target})
 
-        if flat and not flat_items and (css in ['in_path', 'active']):
-            flat_items = subtabs
-
+        # add options to the last dict in items
         items[-1]['options'] = subtabs
-    tabs['items'] = items
-    if flat:
-        tabs['flat_items'] = flat_items
+        tabs['items'] = items
     return tabs
 
 
-def get_menu_namespace(context, depth=3, show_first_child=False, flat=True):
+def get_menu_namespace(context, depth=3, show_first_child=False, flat=True,
+                       link_like=None):
+    """ Return dict with the following structure (for depth=3 lvl{0,1,2})
+
+    {'flat': {'lvl0': [item_dic*],
+              'lvl1': [item_dic*],
+              'lvl2': [item_dic*]},
+     'items': [item_dic*]}
+
+    with
+
+    item_dic =  [{'active': False,
+                  'class': None,
+                  'id': u'tab_python',
+                  'label': u'Python',
+                  'path': '../python',
+                  'options': item_dic}]
     """
-    Return tabs and subtabs as a dict {tabs, subtabs} of list of dicts
-    [{name, label, active, style}...].
-    """
-    # Get request, path, etc...
+
     request = context.request
-    user = context.user
-    here = context.handler
-    site_root = here.get_site_root()
-    if here is None:
-        return []
-
     request_uri = str(request.request_uri)
-    if request_uri[0] == '/':
-        request_uri = request_uri[1:]
-
-    # split the url
-    url = request_uri.split(';')
-    if url[0] == '' and len(url) == 2:
-        url = ';%s' % url[1]
-    else:
-        url = url[0]
-    if url and url[-1] == '/':
-        url = url[:-1]
-    url = url.split('/')
+    site_root = context.handler.get_site_root()
+    method, path = context.method, context.uri.path
+    url = [seg.name for seg in path if seg.name]
+    if method:
+        url += [';%s' % method]
     tabs = get_menu_namespace_level(context, url, site_root, depth,
-                                    show_first_child, flat)
+                                    show_first_child, link_like)
 
+    if flat:
+        tabs['flat'] = {}
+        items = tabs['flat']['lvl0'] = tabs['items']
+        # initialize the levels
+        for i in range(1, depth):
+            tabs['flat']['lvl%s' % i] = None
+        exist_items = True
+        lvl = 1
+        while (items is not None) and exist_items:
+            exist_items = False
+            for item in items:
+                if item['class'] in ['active', 'in_path']:
+                    if item['options']:
+                        items = exist_items = item['options'].get('items')
+                        if items:
+                            tabs['flat']['lvl%s' % lvl] = items
+                            lvl += 1
+                        break
+                    else:
+                        items = None
+                        break
     return tabs
 
 

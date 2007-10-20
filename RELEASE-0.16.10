@@ -1,40 +1,44 @@
-
-itools 0.16.8 (2007/10/XX)
+itools 0.16.10 (2007/10/25)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
 meta-package for easier development and deployment:
 
-  itools.catalog        itools.i18n             itools.tmx
-  itools.cms            itools.ical             itools.uri
-  itools.csv            itools.odf              itools.vfs
-  itools.datatypes      itools.pdf              itools.web
-  itools.gettext        itools.rest             itools.workflow
-  itools.handlers       itools.rss              itools.xhtml
-  itools.html           itools.schemas          itools.xliff
-  itools.http           itools.stl              itools.xml
+  itools.catalog          itools.i18n             itools.uri
+  itools.cms              itools.ical             itools.vfs
+  itools.csv              itools.odf              itools.web
+  itools.datatypes        itools.pdf              itools.workflow
+  itools.gettext          itools.rest             itools.xhtml
+  itools.git              itools.rss              itools.xliff
+  itools.handlers         itools.schemas          itools.xml
+  itools.html             itools.stl
+  itools.http             itools.tmx
 
-The big news this release is that itools has been downgraded Python 2.4;
-so now itools works with both Python 2.4 and 2.5.  (Why this? Because
-Zope [1] does not yet work with Python 2.5, and we need to use itools
-and Zope together from time to time).
+The big news this release is that itools has been downgraded to Python
+2.4; so now itools works with both Python 2.4 and 2.5.  (Rationale: we
+need to use itools with Zope [1] from time to time, and Zope does not
+work with Python 2.5).
 
-Related to the above, for the first time we make a binary releases for
-the Windows [2] platform.  There are two Windows installers, one for
-Python 2.4 and the other for Python 2.5.
+For the first time we make binary releases for the Windows [2] platform.
+There are two Windows installers, one for Python 2.4 and the other for
+Python 2.5.
 
-The CMS "Quick Start" [3] has been updated, and so has the itools related
-code (the "icms-make-package" script).
+We have a new package, "itools.git", which offers the beginning of a
+Python programming interface for GIT [3].
+
+The CMS Quick Start [4] has been updated.  And so has the itools related
+code, the "icms-make-package" script.
 
 And we have a new script, "isetup-quality.py", which makes some simple
 statistics about Python source code.
 
-There have been also some minor fixes and user interface improvements
-to the CMS, including #128, #131, #133, #134, #135 and #136.
+There have been also some minor fixes and user interface improvements to
+the CMS, including #128, #131, #133, #134, #135 and #136.
 
 [1] http://www.zope.org/
 [2] http://XXX
 [3] http://XXX
+[4] http://XXX
 
 Credits:
 
@@ -51,6 +55,8 @@ Resources
 
 Download
 http://download.ikaaro.org/itools/itools-0.16.10.tar.gz
+http://download.ikaaro.org/itools/itools-0.16.10.win32-py2.5.exe
+http://download.ikaaro.org/itools/itools-0.16.10.win32-py2.4.exe
 
 Home
 http://www.ikaaro.org/itools

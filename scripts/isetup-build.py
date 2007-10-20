@@ -17,53 +17,32 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime
 from optparse import OptionParser
-import os
+from os import popen, system
+from os.path import islink
 import sys
 
 # Import from itools
 import itools
-from itools.uri import Path
 from itools import vfs
-from itools.handlers import Config, get_handler
 import itools.gettext
-from itools.xhtml import Document
+from itools import git
+from itools.handlers import Config, get_handler
 import itools.stl
-
-
-
-def get_commit_metadata(reference):
-    lines = os.popen('git-cat-file commit %s' % reference).readlines()
-    # The commit id
-    commit_id = lines[0].strip().split()[1]
-    # The author
-    for line in lines:
-        if line.startswith('author'):
-            author = line
-            break
-    else:
-        raise ValueError, ("cannot find the commit author, "
-            "please report the output of 'git-cat-file commit %s'" % reference)
-    # The timestamp
-    timestamp = datetime.fromtimestamp(int(author.strip().split()[-2]))
-
-    return commit_id, timestamp
+from itools.uri import Path
+from itools.xhtml import Document
 
 
 
 def get_version():
-    # Find out the current branch
-    for line in os.popen('git-branch').readlines():
-        if line.startswith('*'):
-            branch_name = line[2:-1]
-            break
-    else:
+    # Find out the name of the active branch
+    branch_name = git.get_branch_name()
+    if branch_name is None:
         return None
 
     # Look for tags
-    cmd = 'git-ls-remote -t . %s*' % branch_name
-    tags = [ x.strip().split('/')[-1] for x in os.popen(cmd).readlines() ]
+    tags = git.get_tag_names()
+    tags = [ x for x in tags if x.startswith(branch_name) ]
 
     # And the version name is...
     if tags:
@@ -76,8 +55,8 @@ def get_version():
         version_name = branch_name
 
     # Get the timestamp
-    head_id, head_timestamp = get_commit_metadata('HEAD')
-    tag_id, tag_timestamp = get_commit_metadata(version_name)
+    head_id, head_timestamp = git.get_metadata()
+    tag_id, tag_timestamp = git.get_metadata(version_name)
 
     if not tags or tag_id != head_id:
         timestamp = head_timestamp.strftime('%Y%m%d%H%M')
@@ -98,7 +77,7 @@ if __name__ == '__main__':
         parser.error('incorrect number of arguments')
 
     # Try using git facilities
-    git_available = bool(os.popen('git-branch').read())
+    git_available = git.is_available()
     if not git_available:
         print "Warning: not using git."
 
@@ -110,14 +89,13 @@ if __name__ == '__main__':
     # Initialize the list of files to install (the MANIFEST)
     manifest = ['MANIFEST']
     if git_available:
-        cmd = 'git-ls-files'
+        filenames = git.get_filenames()
     else:
         cmd = ('find -type f|grep -Ev "^./(build|dist)"'
                '|grep -Ev "*.(~|pyc|%s)"' % '|'.join(target_languages))
-    for path in os.popen(cmd).readlines():
-        path = path.strip()
-        if not os.path.islink(path):
-            manifest.append(path)
+        filenames = [ x.strip() for x in popen(cmd).readlines() ]
+    filenames = [ x for x in filenames if not islink(x) ]
+    manifest.extend(filenames)
 
     # Build MO files
     print '(1) Compiling message catalogs:',
@@ -125,7 +103,7 @@ if __name__ == '__main__':
     for language in [source_language] + target_languages:
         print language,
         sys.stdout.flush()
-        os.system('msgfmt locale/%s.po -o locale/%s.mo' % (language, language))
+        system('msgfmt locale/%s.po -o locale/%s.mo' % (language, language))
         # Add to the manifest
         manifest.append('locale/%s.mo' % language)
     print 'OK'
@@ -142,7 +120,7 @@ if __name__ == '__main__':
     # XXX The directory "cms/skeleton" is specific to itools, should not be
     # hardcoded.
     cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|cms/skeleton)"'
-    for path in os.popen(cmd % source_language).readlines():
+    for path in popen(cmd % source_language).readlines():
         # Load the handler
         path = path.strip()
         src_mtime = vfs.get_mtime(path)

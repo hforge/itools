@@ -26,35 +26,60 @@ from itools import git
 
 
 def analyse(filenames):
-    total = 0
+    # Cumulative statistics
+    lines = 0
     too_long = 0
     trailing_whites = 0
     tabs = 0
+
+    # Analyse
+    files = []
     for filename in filenames:
+        f_lines = 0
+        f_too_long = 0
+        f_trailing_whites = 0
+        f_tabs = 0
         for line in open(filename).readlines():
-            total += 1
+            f_lines += 1
             # Strip trailing newline
             line = line[:-1]
             length = len(line)
             # Maximum line length is 79
             if length > 79:
-                too_long += 1
+                f_too_long += 1
             # Trailing whitespaces are a bad thing
             if len(line.rstrip()) < length:
-                trailing_whites += 1
+                f_trailing_whites += 1
             # Lines with tabs
             if '\t' in line:
-                tabs += 1
+                f_tabs += 1
+        # File
+        weight = f_too_long + f_trailing_whites + f_tabs
+        files.append((weight, filename))
+        # Cumulative
+        lines += f_lines
+        too_long += f_too_long
+        trailing_whites += f_trailing_whites
+        tabs += f_tabs
 
-    # Show results of the analysis
-    print 'Total number of lines: %d' % total
+    # Show quality summary
+    print 'Total number of lines: %d' % lines
     print
-    too_long = (too_long*100.0)/total
+    too_long = (too_long*100.0)/lines
     print ' - longer than 79 characters: %.02f%%' % too_long
-    trailing_whites = (trailing_whites*100.0)/total
+    trailing_whites = (trailing_whites*100.0)/lines
     print ' - with trailing whitespaces: %.02f%%' % trailing_whites
-    tabs = (tabs*100.0)/total
+    tabs = (tabs*100.0)/lines
     print ' - with tabulators          : %.02f%%' % tabs
+    print
+    # Show list of worse files
+    print 'Worse files:'
+    print
+    files.sort()
+    files.reverse()
+    files = files[:3]
+    for weight, filename in files:
+        print ' - %s' % filename
     print
 
 

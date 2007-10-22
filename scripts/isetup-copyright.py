@@ -128,12 +128,13 @@ if __name__ == '__main__':
         # Keep old copyright
         if options.keep:
             lines = open(filename).readlines()
-            # Skip shebang and encoding
+            n_lines = len(lines)
             i = 0
-            while not lines[i].startswith('# Copyright (C) '):
+            # Skip shebang and encoding
+            while i < n_lines and not lines[i].startswith('# Copyright (C) '):
                 i += 1
             # Process
-            while lines[i].startswith('# Copyright (C) '):
+            while i < n_lines and lines[i].startswith('# Copyright (C) '):
                 line = lines[i]
                 email, name, years = parse_copyright(line)
                 if email in credits_mails:
@@ -178,10 +179,28 @@ if __name__ == '__main__':
 
         # Replace the old copyright by the new one
         lines = open(filename).readlines()
+        n_lines = len(lines)
         i = 0
-        while not lines[i].startswith('# Copyright (C) '):
+        # Skip shebang and encoding
+        while i < n_lines and not lines[i].startswith('# Copyright (C) '):
             i += 1
-        while lines[i].startswith('# Copyright (C) '):
+        # No copyright found
+        if i == n_lines:
+            if lines[0].startswith('#!'):
+                if lines[1].startswith('# -*-'):
+                    # Shebang plus encoding
+                    i = 2
+                else:
+                    # Only shebang
+                    i = 1
+            elif lines[0].startswith('# -*-'):
+                # Only encoding
+                i = 1
+            else:
+                # None of them
+                i = 0
+        # Process
+        while i < n_lines and lines[i].startswith('# Copyright (C) '):
             del lines[i]
         lines = lines[:i] + copyright + lines[i:]
 

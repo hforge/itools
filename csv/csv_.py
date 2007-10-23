@@ -21,7 +21,7 @@
 # Import from itools
 from itools.datatypes import String, Integer, is_datatype
 from itools.handlers import Text, register_handler_class
-from itools.catalog import EqQuery, AndQuery, get_field, MemoryCatalog
+from itools.catalog import PhraseQuery, AndQuery, get_field, MemoryCatalog
 from parser import parse
 
 
@@ -304,20 +304,18 @@ class CSV(Text):
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    # FIXME This should be "PhraseQuery", to have the same
-                    # behaviour of "itools.catalog"
-                    atoms.append(EqQuery(key, value))
+                    atoms.append(PhraseQuery(key, value))
 
                 query = AndQuery(*atoms)
             else:
                 raise ValueError, "expected a query"
 
         documents = query.search(self)
-        # Sort by weight
-        documents = documents.keys()
-        documents.sort()
+        numbers = documents.keys()
+        # Sort by row order
+        numbers.sort()
 
-        return documents
+        return numbers
 
 
     def get_unique_values(self, name):

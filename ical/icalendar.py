@@ -22,9 +22,9 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import Integer, ISOTime, String, Unicode, URI
-from itools.catalog import (EqQuery, RangeQuery, OrQuery, AndQuery,
-    KeywordField, MemoryCatalog)
+from itools.datatypes import Integer, String, Unicode, URI
+from itools.catalog import (PhraseQuery, EqQuery, RangeQuery, OrQuery,
+        AndQuery, KeywordField, MemoryCatalog)
 from itools.handlers import Text, parse_table, fold_line, escape_data
 from itools.handlers import Table, Record as TableRecord, Property
 from types import data_properties, DateTime, Time
@@ -784,11 +784,14 @@ class icalendar(Text):
             dtend = dtend + timedelta(days=1) - resolution
 
         # Get only the events which matches
+        dtstart_limit = str(dtstart + resolution)
+        dtend_limit = str(dtend + resolution)
+        dtstart = str(dtstart)
+        dtend = str(dtend)
         query = AndQuery(
             EqQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('dtstart', dtstart, dtend),
-                    RangeQuery('dtend', dtstart + resolution,
-                                        dtend + resolution),
+                    RangeQuery('dtend', dtstart_limit, dtend_limit),
                     AndQuery(RangeQuery('dtstart', None, dtstart),
                              RangeQuery('dtend', dtend, None))))
         results = [self.components[uid] for uid in self.search(query)]
@@ -876,6 +879,13 @@ class icalendar(Text):
 
     #######################################################################
     # API / Search
+    def get_analyser(self, name):
+        try:
+            return self.catalog.analysers[name]
+        except KeyError:
+            raise ValueError, 'the field "%s" is not indexed' % name
+
+
     def get_index(self, name):
         try:
             return self.catalog.indexes[name]
@@ -891,18 +901,18 @@ class icalendar(Text):
             if kw:
                 atoms = []
                 for key, value in kw.items():
-                    atoms.append(EqQuery(key, value))
+                    atoms.append(PhraseQuery(key, value))
 
                 query = AndQuery(*atoms)
             else:
                 raise ValueError, "expected a query"
 
         documents = query.search(self)
+        uids = documents.keys()
         # Sort by weight
-        documents = documents.keys()
-        documents.sort()
+        uids.sort()
 
-        return documents
+        return uids
 
 
 
@@ -1437,11 +1447,14 @@ class icalendarTable(Table):
             dtend = dtend + timedelta(days=1) - resolution
 
         # Get only the events which matches
+        dtstart_limit = str(dtstart + resolution)
+        dtend_limit = str(dtend + resolution)
+        dtstart = str(dtstart)
+        dtend = str(dtend)
         query = AndQuery(
             EqQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('DTSTART', dtstart, dtend),
-                    RangeQuery('DTEND', dtstart + resolution,
-                                        dtend + resolution),
+                    RangeQuery('DTEND', dtstart_limit, dtend_limit),
                     AndQuery(RangeQuery('DTSTART', None, dtstart),
                              RangeQuery('DTEND', dtend, None))))
         results = self.search(query)

@@ -19,8 +19,16 @@
           </thead>
           <tbody>
             <tr stl:repeat="folder ordered_folders" class="${repeat/folder/even}">
-              <td><input type="checkbox" name="ordered_names" value="${folder/name}" /></td>
-              <td>${folder/name}</td>
+              <td><input type="checkbox" name="ordered_names"
+                         value="${folder/name}" /></td>
+              <td>
+                <a stl:if="folder/is_orderaware" href="${folder/path}">
+                  ${folder/name}
+                </a>
+                <stl:inline stl:if="not folder/is_orderaware">
+                  ${folder/name}
+                </stl:inline>
+              </td>
               <td>${folder/title}</td>
               <td>${folder/workflow_state}</td>
             </tr>

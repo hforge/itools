@@ -10,19 +10,22 @@
     <dl>
       <dt><label for="dc:title">Title</label></dt>
       <dd>
-        <input type="text" id="dc:title" name="dc:title" size="40" />
+        <input type="text" id="dc:title" name="dc:title" size="40"
+          value="${title}" />
       </dd>
       <dt>(optional)<label for="name">Name</label></dt>
       <dd>
         <input type="text" id="name" name="name" size="40" value="${name}" />
       </dd>
-      <dt><label for="dc:language">Language</label></dt>
-      <dd>
-        <select id="dc:language" name="dc:language">
-          <option stl:repeat="lang languages" value="${lang/code}"
-            selected="${lang/isdefault}">${lang/name}</option>
-        </select>
-      </dd>
+      <stl:block if="languages">
+        <dt><label for="dc:language">Language</label></dt>
+        <dd>
+          <select id="dc:language" name="dc:language">
+            <option stl:repeat="lang languages" value="${lang/code}"
+              selected="${lang/isdefault}">${lang/name}</option>
+          </select>
+        </dd>
+      </stl:block>
     </dl>
     <p>
       <input type="hidden" name="class_id" value="${class_id}" />
@@ -34,7 +37,7 @@
     focus("dc:title")
   </script>
 
-  <p>
+  <p stl:if="languages">
     Note: administrators can add new languages at the root of the application,
     tab "Settings", subtab "Languages".
   </p>

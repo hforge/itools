@@ -21,7 +21,7 @@
 from datetime import datetime
 from tempfile import mkdtemp
 from subprocess import call
-import urllib
+from urllib import urlencode
 
 # Import from itools
 from itools.uri import get_reference
@@ -128,59 +128,9 @@ class WikiPage(Text):
     #######################################################################
     # User interface
     #######################################################################
-    def get_subviews(self, name):
-        if name == 'new_resource_form':
-            subviews = []
-            for cls in self.parent.get_document_types():
-                id = cls.class_id
-                ref = 'new_resource_form?type=%s' % urllib.quote_plus(id)
-                subviews.append(ref)
-            return subviews
-        return Text.get_subviews(self, name)
-
-
     @classmethod
-    def new_instance_form(cls, context, name=''):
-        root = context.root
-        namespace = {}
-
-        # Page name
-        name = context.get_form_value('name', default=u'', type=Unicode)
-        namespace['name'] = checkid(name) or False
-
-        # Class id
-        namespace['class_id'] = cls.class_id
-
-        handler = root.get_handler('ui/wiki/WikiPage_new_instance.xml')
-        return stl(handler, namespace)
-
-
-    @classmethod
-    def new_instance(cls, container, context):
-        name = context.get_form_value('name')
-        data = context.get_form_value('data', default='')
-
-        # Check the name
-        name = name.strip()
-        if not name:
-            return context.come_back(MSG_NAME_MISSING)
-
-        name = checkid(name)
-        if name is None:
-            return context.come_back(MSG_BAD_NAME)
-
-        # Check the name is free
-        if container.has_handler(name):
-            return context.come_back(MSG_NAME_CLASH)
-
-        # Build the object
-        handler = cls(string=data)
-        metadata = handler.build_metadata()
-        # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
-
-        goto = './%s/;%s' % (name, handler.get_firstview())
-        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+    def new_instance_form(cls, context):
+        return Text.new_instance_form(context, with_language=False)
 
 
     GET__mtime__ = None
@@ -219,6 +169,7 @@ class WikiPage(Text):
 
                 if ref is None:
                     target['wiki_refname'] = False
+                    target['wiki_title'] = refname
                     target['wiki_name'] = name
                 else:
                     target['wiki_refname'] = refname
@@ -250,10 +201,13 @@ class WikiPage(Text):
                 elif node.get('refuri'):
                     node['classes'].append('external')
             else:
+                title = node['wiki_title']
                 name = node['wiki_name']
                 if refname is False:
-                    refuri = ";new_resource_form?type=%s&name=%s"
-                    refuri = refuri % (self.__class__.__name__, name)
+                    params = {'type': self.__class__.__name__,
+                              'dc:title': title.encode('utf_8'),
+                              'name': name}
+                    refuri = ";new_resource_form?%s" % urlencode(params)
                     prefix = here.get_pathto(parent)
                     refuri = '%s/%s' % (prefix, refuri)
                     css_class = 'nowiki'
